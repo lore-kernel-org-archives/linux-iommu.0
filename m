@@ -1,333 +1,71 @@
-From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH v2 3/3] PCI/of fix of_dma_get_range;
-	get PCI specific dma-ranges
-Date: Fri,  5 May 2017 14:07:54 +0530
-Message-ID: <1493973474-13939-3-git-send-email-oza.oza@broadcom.com>
-References: <1493973474-13939-1-git-send-email-oza.oza@broadcom.com>
-Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
+Date: Fri, 05 May 2017 12:24:25 +0300
+Message-ID: <1493976265.30052.21.camel@linux.intel.com>
+References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
+ <CAPcyv4jzD0MEBRNTwTokVzgdDWas682ArUjRAGT1hp=QRE8Pjg@mail.gmail.com>
+ <CAOQ4uxjha8_2_HwgdgBN=G-vNytAW5Gk155E9z8OWyFiGNEZVw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1493973474-13939-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <CAOQ4uxjha8_2_HwgdgBN=G-vNytAW5Gk155E9z8OWyFiGNEZVw@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Amir Goldstein <amir73il@gmail.com>, Dan Williams <dan.j.williams@intel.com>
+Cc: alsa-devel@alsa-project.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Liam Girdwood <lgirdwood@gmail.com>, linux-pci@vger.kernel.org, Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>, Adrian Hunter <adrian.hunter@intel.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Linux ACPI <linux-acpi@vger.kernel.org>, tpmdd-devel@lists.sourceforge.net, Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org, linux-mmc@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>, Borislav Petkov <bp@suse.de>, Yisen Zhuang <yisen.zhuang@huawei.com>, Mathias Nyman <mathias.nyman@intel.com>, intel-gfx@lists.freedesktop.org, linux-input@vger.kernel.org, Mark Brown <broonie@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Felipe Balbi <balbi@kernel.org>, Ne
 List-Id: iommu@lists.linux-foundation.org
 
-current device framework and OF framework integration assumes
-dma-ranges in a way where memory-mapped devices define their
-dma-ranges. (child-bus-address, parent-bus-address, length).
-
-of_dma_configure is specifically written to take care of memory
-mapped devices. but no implementation exists for pci to take
-care of pcie based memory ranges.
-
-for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
-world dma-ranges.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
-
-this patch fixes the bug in of_dma_get_range, which with as is,
-parses the PCI memory ranges and return wrong size as 0.
-
-in order to get largest possible dma_mask. this patch also
-retuns the largest possible size based on dma-ranges,
-
-for e.g.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
-we should get dev->coherent_dma_mask=0x7fffffffff.
-
-based on which IOVA allocation space will honour PCI host
-bridge limitations.
-
-the implementation hooks bus specific callbacks for getting
-dma-ranges.
-
-Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903..cc0fc28 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -6,6 +6,7 @@
- #include <linux/ioport.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
-+#include <linux/of_pci.h>
- #include <linux/pci.h>
- #include <linux/pci_regs.h>
- #include <linux/sizes.h>
-@@ -46,6 +47,8 @@ struct of_bus {
- 				int na, int ns, int pna);
- 	int		(*translate)(__be32 *addr, u64 offset, int na);
- 	unsigned int	(*get_flags)(const __be32 *addr);
-+	int		(*get_dma_ranges)(struct device_node *np,
-+					  u64 *dma_addr, u64 *paddr, u64 *size);
- };
- 
- /*
-@@ -171,6 +174,146 @@ static int of_bus_pci_translate(__be32 *addr, u64 offset, int na)
- {
- 	return of_bus_default_translate(addr + 1, offset, na - 1);
- }
-+
-+static int of_bus_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				     u64 *paddr, u64 *size)
-+{
-+	struct device_node *node = of_node_get(np);
-+	int ret = 0;
-+	struct resource_entry *window;
-+	LIST_HEAD(res);
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	if (of_bus_pci_match(np)) {
-+		*size = 0;
-+		/*
-+		 * PCI dma-ranges is not mandatory property.
-+		 * many devices do no need to have it, since
-+		 * host bridge does not require inbound memory
-+		 * configuration or rather have design limitations.
-+		 * so we look for dma-ranges, if missing we
-+		 * just return the caller full size, and also
-+		 * no dma-ranges suggests that, host bridge allows
-+		 * whatever comes in, so we set dma_addr to 0.
-+		 */
-+		ret = of_pci_get_dma_ranges(np, &res);
-+		if (!ret) {
-+			resource_list_for_each_entry(window, &res) {
-+			struct resource *res_dma = window->res;
-+
-+			if (*size < resource_size(res_dma)) {
-+				*dma_addr = res_dma->start - window->offset;
-+				*paddr = res_dma->start;
-+				*size = resource_size(res_dma);
-+				}
-+			}
-+		}
-+		pci_free_resource_list(&res);
-+
-+		/*
-+		 * return the largest possible size,
-+		 * since PCI master allows everything.
-+		 */
-+		if (*size == 0) {
-+			pr_debug("empty/zero size dma-ranges found for node(%s)\n",
-+				np->full_name);
-+			*size = DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1;
-+			*dma_addr = *paddr = 0;
-+			ret = 0;
-+		}
-+
-+		pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+			 *dma_addr, *paddr, *size);
-+	}
-+
-+	of_node_put(node);
-+
-+	return ret;
-+}
-+
-+static int get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+		          u64 *paddr, u64 *size)
-+{
-+	struct device_node *node = of_node_get(np);
-+	const __be32 *ranges = NULL;
-+	int len, naddr, nsize, pna;
-+	int ret = 0;
-+	u64 dmaaddr;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	while (1) {
-+		naddr = of_n_addr_cells(node);
-+		nsize = of_n_size_cells(node);
-+		node = of_get_next_parent(node);
-+		if (!node)
-+			break;
-+
-+		ranges = of_get_property(node, "dma-ranges", &len);
-+
-+		/* Ignore empty ranges, they imply no translation required */
-+		if (ranges && len > 0)
-+			break;
-+
-+		/*
-+		 * At least empty ranges has to be defined for parent node if
-+		 * DMA is supported
-+		 */
-+		if (!ranges)
-+			break;
-+	}
-+
-+	if (!ranges) {
-+		pr_debug("no dma-ranges found for node(%s)\n", np->full_name);
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	len /= sizeof(u32);
-+
-+	pna = of_n_addr_cells(node);
-+
-+	/* dma-ranges format:
-+	 * DMA addr	: naddr cells
-+	 * CPU addr	: pna cells
-+	 * size		: nsize cells
-+	 */
-+	dmaaddr = of_read_number(ranges, naddr);
-+	*paddr = of_translate_dma_address(np, ranges);
-+	if (*paddr == OF_BAD_ADDR) {
-+		pr_err("translation of DMA address(%pad) to CPU address failed node(%s)\n",
-+		       dma_addr, np->full_name);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+	*dma_addr = dmaaddr;
-+
-+	*size = of_read_number(ranges + naddr + pna, nsize);
-+
-+	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+		 *dma_addr, *paddr, *size);
-+
-+out:
-+	of_node_put(node);
-+
-+	return ret;
-+}
-+
-+static int of_bus_isa_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				     u64 *paddr, u64 *size)
-+{
-+	return get_dma_ranges(np, dma_addr, paddr, size);
-+}
-+
-+static int of_bus_default_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+					 u64 *paddr, u64 *size)
-+{
-+	return get_dma_ranges(np, dma_addr, paddr, size);
-+}
-+
- #endif /* CONFIG_OF_ADDRESS_PCI */
- 
- #ifdef CONFIG_PCI
-@@ -424,6 +567,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_pci_map,
- 		.translate = of_bus_pci_translate,
- 		.get_flags = of_bus_pci_get_flags,
-+		.get_dma_ranges = of_bus_pci_get_dma_ranges,
- 	},
- #endif /* CONFIG_OF_ADDRESS_PCI */
- 	/* ISA */
-@@ -435,6 +579,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_isa_map,
- 		.translate = of_bus_isa_translate,
- 		.get_flags = of_bus_isa_get_flags,
-+		.get_dma_ranges = of_bus_isa_get_dma_ranges,
- 	},
- 	/* Default */
- 	{
-@@ -445,6 +590,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_default_map,
- 		.translate = of_bus_default_translate,
- 		.get_flags = of_bus_default_get_flags,
-+		.get_dma_ranges = of_bus_default_get_dma_ranges,
- 	},
- };
- 
-@@ -820,74 +966,20 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
-  *	size			: nsize cells
-  *
-  * It returns -ENODEV if "dma-ranges" property was not found
-- * for this device in DT.
-+ * for this device in DT, except if PCI device then, dma-ranges
-+ * can be optional property, and in that case returns size with
-+ * entire host memory.
-  */
- int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
- {
--	struct device_node *node = of_node_get(np);
--	const __be32 *ranges = NULL;
--	int len, naddr, nsize, pna;
--	int ret = 0;
--	u64 dmaaddr;
--
--	if (!node)
--		return -EINVAL;
--
--	while (1) {
--		naddr = of_n_addr_cells(node);
--		nsize = of_n_size_cells(node);
--		node = of_get_next_parent(node);
--		if (!node)
--			break;
--
--		ranges = of_get_property(node, "dma-ranges", &len);
--
--		/* Ignore empty ranges, they imply no translation required */
--		if (ranges && len > 0)
--			break;
--
--		/*
--		 * At least empty ranges has to be defined for parent node if
--		 * DMA is supported
--		 */
--		if (!ranges)
--			break;
--	}
--
--	if (!ranges) {
--		pr_debug("no dma-ranges found for node(%s)\n", np->full_name);
--		ret = -ENODEV;
--		goto out;
--	}
--
--	len /= sizeof(u32);
--
--	pna = of_n_addr_cells(node);
--
--	/* dma-ranges format:
--	 * DMA addr	: naddr cells
--	 * CPU addr	: pna cells
--	 * size		: nsize cells
--	 */
--	dmaaddr = of_read_number(ranges, naddr);
--	*paddr = of_translate_dma_address(np, ranges);
--	if (*paddr == OF_BAD_ADDR) {
--		pr_err("translation of DMA address(%pad) to CPU address failed node(%s)\n",
--		       dma_addr, np->full_name);
--		ret = -EINVAL;
--		goto out;
--	}
--	*dma_addr = dmaaddr;
--
--	*size = of_read_number(ranges + naddr + pna, nsize);
--
--	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
--		 *dma_addr, *paddr, *size);
-+	struct of_bus *bus;
- 
--out:
--	of_node_put(node);
-+	/* get bus specific dma-ranges. */
-+	bus = of_match_bus(np);
-+	if (bus->get_dma_ranges)
-+		return bus->get_dma_ranges(np, dma_addr, paddr, size);
- 
--	return ret;
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_get_range);
- 
--- 
-1.9.1
+T24gRnJpLCAyMDE3LTA1LTA1IGF0IDEwOjA2ICswMzAwLCBBbWlyIEdvbGRzdGVpbiB3cm90ZToK
+PiBPbiBGcmksIE1heSA1LCAyMDE3IGF0IDk6MjAgQU0sIERhbiBXaWxsaWFtcyA8ZGFuLmoud2ls
+bGlhbXNAaW50ZWwuY29tCj4gPiB3cm90ZToKPiA+IE9uIFRodSwgTWF5IDQsIDIwMTcgYXQgMjoy
+MSBBTSwgQW5keSBTaGV2Y2hlbmtvCj4gPiA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwu
+Y29tPiB3cm90ZToKCgo+ID4gPiDCoMKgwqDCoMKgwqDCoMKgZm9yIChpID0gMDsgaSA8IE5GSVRf
+VVVJRF9NQVg7IGkrKykKPiA+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGlmICht
+ZW1jbXAodG9fbmZpdF91dWlkKGkpLCBzcGEtPnJhbmdlX2d1aWQsIDE2KQo+ID4gPiA9PSAwKQo+
+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKCF1dWlkX2xlX2NtcF9wcCh0
+b19uZml0X3V1aWQoaSksICh1dWlkX2xlCj4gPiA+ICopc3BhLT5yYW5nZV9ndWlkKSkKPiA+IAo+
+ID4gV2hhdCBpcyBfY21wX3BwPyBXaHkgbm90IF9jb21wYXJlPwoKRGFuLCBpdCdzIGEgdHlwby4g
+SW4gdGhpcyBwYXRjaCBpdCBzaG91bGQgYmUganVzdCAuLi5fY21wKCksIHdoaWNoIGlzCmFscmVh
+ZHkgYSBwYXJ0IG9mIEFQSS4KCj4gPiAKPiAKPiBJIHNlY29uZCB0aGF0Lgo+IAo+IEFuZHksCgpB
+bWlyLCBqdXN0IHRvIGJlIGNsZWFyLiBUaGlzIHBhdGNoIGNhbiBiZSBhcHBsaWVkIHdpdGhvdXQg
+YW55IGFkZG9ucyB0bwphbiBleGlzdGluZyBBUEkuIEFib3ZlIGlzIGp1c3QgYSB0eXBvIGR1ZSB0
+byByZWJhc2UgaW4gbXkgdHJlZS4gSSB3aWxsCnJlcGxhY2UgaXQgdG8ganVzdCB1dWlkX2xlX2Nt
+cCgpLgoKPiBJIG11Y2ggcmF0aGVyIHRoYXQgeW91IHNvcnQgb3V0IHV1aWQgaGVscGVycyBpbiBh
+IHdheSB0aGF0IHdpbGwKPiBzYXRpc2Z5IHRoZSBmaWxlc3lzdGVtCj4gbmVlZHMgKGp1c3QgcHJv
+dmlkZSB0aGUgaGVscGVycyBkb24ndCBuZWVkIHRvIGNvbnZlcnQgZmlsZXN5c3RlbXMKPiBjb2Rl
+KS4KCj4gVGhlIG9ubHkgcmVhc29uIEkgdG9vayBhIHN3aW5nIGF0IGhvaXN0aW5nIHRoZSB4ZnMg
+dXVpZCBoZWxwZXJzIGlzCj4gYmVjYXVzZSBpdCBkaWRuJ3QKPiBzZWVtIGxpa2UgeW91ciBwcm9w
+b3NhbCB3YXMgZ29pbmcgdG8gYmUgcG9zdGVkIHNvb24gb3Igd2Fzbid0IGdvaW5nIHRvCj4gc2F0
+aXNmeQo+IHRoZSBmaWxlc3lzdGVtcyB1c2UgY2FzZS4KCj4gCj4gTXkgb3BpbmlvbiBub3csIGlz
+IHRoYXQgeW91ciBzdWdnZXN0aW9uIGlzIHByb2JhYmx5IG11Y2ggY2xvc2VyIHRvIHRoZQo+IHJl
+YWwgZGVhbAo+IHRoYW4gbWluZS4KPiAKPiBJTU8sIHlvdSBzaG91bGQgYWNrbm93bGVkZ2UgdGhh
+dCB0aGUgY29tbW9uIHVzZSBjYXNlIGZvciBmaWxlc3lzdGVtcwo+IGlzCj4gdG8gaGFuZGxlIGFu
+IG9wYXF1ZSBjaGFyWzE2XSB3aGljaCBtb3N0IGxpa2VseSBob2xkcyBhIHV1aWRfYmUgYW5kIHlv
+dQo+IHNob3VsZCBwcm92aWRlICduZXV0cmFsJyBoZWxwZXJzIHRvIHNhdGlzZnkgdGhpcyB1c2Ug
+Y2FzZS4KPiAKPiBUaGUgc2ltcGxlc3Qgd291bGQgYmUgdG8gdHlwZWRlZiB1dWlkX3QgdG8gc3Ry
+dWN0IHV1aWRfYmUgYW5kIHRvIG5hbWUKPiAnbmV1dHJhbCcKPiBoZWxwZXJzJyB1dWlkX2NtcC91
+dWlkX2NvcHkodXVpZF90ICosIHV1aWRfdCAqKSwgc2ltaWxhciB0byBteQo+IHByb3Bvc2FsLgoK
+PiBJIHRoaW5rIHdpdGggdGhpcyBzZW1hbnRpYyBjaGFuZ2UsIG91ciBwcm9wb3NhbHMgY2FuIHJl
+YWNoIGNvbW1vbgo+IGdyb3VuZHMKPiBhbmQgc2F0aXNmeSBhIHdpZGVyIGdyb3VwIG9mIHVzZXJz
+IChpLmUuIGZpbGVzeXN0ZW0gZGV2ZWxvcGVycykuCj4gCj4gQ2hyaXN0b3BoIGFsc28gc3VnZ2Vz
+dGVkIGEgc2ltaWxhciB0cmVhdG1lbnQgdG8gdHlwZWRlZiBndWlkX3QgdG8KPiBzdHJ1Y3QgdXVp
+ZF9sZS4KPiBJIGRvbid0IGtub3cgdGhlIHVzZSBjYXNlcyBlbm91Z2ggdG8gY29tbWVudCBvbiB0
+aGF0LgoKV2UgbWF5IGdvIHRoaXMgd2F5LiBCdXQgSSB3b3VsZG4ndCBwcmV2ZW50IGN1cnJlbnQg
+dXNlcnMgb2YgdXVpZF9sZSB0bwpjb250aW51ZSB1c2luZyBpdCB3aXRob3V0IGNvbnZlcnNpb24g
+KGl0IG1heSBiZSBkb25lIGNhc2UgYnkgY2FzZSBhZnRlcgp3ZSBzZXR0bGUgYW4gQVBJKQoKU28s
+IHN1bW1hcml6ZSB3aGF0IENocmlzdG9waCBzYWlkIGl0IHdpbGwgbG9vayBsaWtlCgp0eXBlZGVm
+IHV1aWRfYmUgdXVpZF90Owp0eXBlZGVmIHV1aWRfbGUgZ3VpZF90Cgp1dWlkX2NtcCgpIC8gdXVp
+ZF9jb3B5KCkgLyB1dWlkX3RvX2JpbigpIC8gZXRjCmd1aWRfY21wKCkgLyBndWlkX2NvcHkoKSAv
+IGd1aWRfdG9fYmluKCkgLyBldGMKCkNvcnJlY3Q/IENocmlzdG9waD8KCi0tIApBbmR5IFNoZXZj
+aGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4KSW50ZWwgRmlubGFuZCBP
+eQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1n
+ZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9s
+aXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
