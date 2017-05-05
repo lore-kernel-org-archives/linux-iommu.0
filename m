@@ -1,89 +1,119 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH] iommu: add qcom_iommu
-Date: Fri, 5 May 2017 16:27:11 -0400
-Message-ID: <CAF6AEGsPcGuGJzkC0SL23c=4z7VDwvRE6kqfmsu2u0X8TVF0ag@mail.gmail.com>
-References: <20170504133436.24288-4-robdclark@gmail.com> <20170505182151.22931-1-robdclark@gmail.com>
- <CAL_Jsq+5noR6pE5da9C8PTdX2c5HE9s4Mt4ovMi6w9FbhX6EXg@mail.gmail.com>
- <CAF6AEGuZgt8OVg+YwOYh5ECOU66ZBAf_6XchAA1NR586S8TouA@mail.gmail.com> <CAL_Jsq+nheA0=Boz0EeNvW7TNZvYQvUi3Z_=hFk9yTN8bLV+fg@mail.gmail.com>
+From: Robert Richter <robert.richter@cavium.com>
+Subject: Re: [PATCH v3 2/7] iommu/arm-smmu-v3: Do resource size checks based
+ on SMMU
+Date: Sat, 6 May 2017 00:18:44 +0200
+Message-ID: <20170505221844.GW16981@rric.localdomain>
+References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
+ <1493986091-30521-3-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <CAL_Jsq+nheA0=Boz0EeNvW7TNZvYQvUi3Z_=hFk9yTN8bLV+fg@mail.gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Linux IOMMU <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Archit Taneja <architt@codeaurora.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1493986091-30521-3-git-send-email-gakula@caviumnetworks.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Geetha sowjanya <gakula@caviumnetworks.com>
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 5, 2017 at 3:50 PM, Rob Herring <robh@kernel.org> wrote:
-> On Fri, May 5, 2017 at 2:37 PM, Rob Clark <robdclark@gmail.com> wrote:
->> On Fri, May 5, 2017 at 3:04 PM, Rob Herring <robh@kernel.org> wrote:
->>> On Fri, May 5, 2017 at 1:21 PM, Rob Clark <robdclark@gmail.com> wrote:
->>>> An iommu driver for Qualcomm "B" family devices which do not completely
->>>> implement the ARM SMMU spec.  These devices have context-bank register
->>>> layout that is similar to ARM SMMU, but no global register space (or at
->>>> least not one that is accessible).
->>>>
->>>> Signed-off-by: Rob Clark <robdclark@gmail.com>
->>>> ---
->>>> v1: original
->>>> v2: bindings cleanups and kconfig issues that kbuild robot pointed out
->>>> v4: fix issues pointed out by Rob H. and actually make device removal
->>>>     work
->>>> v3: fix WARN_ON() splats reported by Archit
->>>>
->>>>  drivers/iommu/Kconfig      |   9 +
->>>>  drivers/iommu/Makefile     |   1 +
->>>>  drivers/iommu/qcom_iommu.c | 833 +++++++++++++++++++++++++++++++++++++++++++++
->>>>  3 files changed, 843 insertions(+)
->>>>  create mode 100644 drivers/iommu/qcom_iommu.c
->>>>
->>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->>>> index 37e204f..f8f79a4 100644
->>>> --- a/drivers/iommu/Kconfig
->>>> +++ b/drivers/iommu/Kconfig
->>>> @@ -359,4 +359,13 @@ config MTK_IOMMU_V1
->>>>
->>>>           if unsure, say N here.
->>>>
->>>> +config QCOM_IOMMU
->>>> +       bool "Qualcomm IOMMU Support"
->>>
->>> Either this needs to be tristate or...
->>>
->>> [...]
->>>> +#include <linux/module.h>
->>>
->>> this include and the things that need it should go. Or some
->>> explanation like "once X happens, then we can enable as module" and
->>> leave it all for now.
->>
->> tbh, I'm not sure what the issue is for modules (other than
->> potentially that you'd want the iommu driver fairly early in boot if
->> you didn't have an initrd).  I just saw that the other iommu drivers
->> are all bool.  (Sorry, I don't really follow iommu-devel so not
->> familiar with the history.)  With my distro hat on, I would prefer
->> them to be modules eventually.
->
-> For starters, does it even build as a module if you allow that? It
-> might not work because of some run-time ordering, but that's good
-> enough for this discussion.
+On 05.05.17 17:38:06, Geetha sowjanya wrote:
+> From: Linu Cherian <linu.cherian@cavium.com>
+> 
+> With implementations supporting only page 0 register space,
+> resource size can be 64k as well and hence perform size checks
+> based on SMMU option PAGE0_REGS_ONLY.
+> 
+> For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
+> platform_get_resource call, so that SMMU options are set beforehand.
+> 
+> Signed-off-by:  Linu Cherian <linu.cherian@cavium.com>
+> Signed-off-by:  Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 26 +++++++++++++++++---------
+>  1 file changed, 17 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 107b4a6..f027676 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2672,6 +2672,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+>  	return ret;
+>  }
+>  
+> +static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
+> +{
+> +	if (ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+> +		return SZ_64K;
+> +	else
+> +		return SZ_128K;
+> +}
+> +
 
-It does in fact build as a module..  I suppose I need to figure out a
-more convenient way to re-pack modules in an initrd to actually test
-it and see what does or does not explode..
+I think this can be dropped. See below.
 
-BR,
--R
+>  static int arm_smmu_device_probe(struct platform_device *pdev)
+>  {
+>  	int irq, ret;
+> @@ -2688,9 +2696,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	}
+>  	smmu->dev = dev;
+>  
+> +	if (dev->of_node) {
+> +		ret = arm_smmu_device_dt_probe(pdev, smmu);
+> +	} else {
+> +		ret = arm_smmu_device_acpi_probe(pdev, smmu);
+> +		if (ret == -ENODEV)
+> +			return ret;
+> +	}
+> +
+>  	/* Base address */
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	if (resource_size(res) + 1 < SZ_128K) {
+> +	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
+>  		dev_err(dev, "MMIO region too small (%pr)\n", res);
+>  		return -EINVAL;
+>  	}
 
->>
->>> See this[1] for some background.
->>
->> it mentions there are some downsides, but I can't see where those
->> downsides are listed ;-)
->>
->> I would kinda prefer to leave the MODULE_*() stuff in place unless
->> modular iommu drivers are never going to happen.
->
-> Maybe a note, so the module police don't fix it.
->
-> Rob
+Why not just do the follwoing here:
+
+ 	/* Base address */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
+ 		dev_err(dev, "MMIO region too small (%pr)\n", res);
+ 		return -EINVAL;
+ 	}
+ 	ioaddr = res->start;
+
++	/*
++	 * Override the size, for Cavium ThunderX2 implementation
++	 * which doesn't support the page 1 SMMU register space.
++	 */
++	if (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
++		res->end = res->size + SZ_64K -1;
++
+ 	smmu->base = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(smmu->base))
+ 		return PTR_ERR(smmu->base);
+
+Since we can drop patch #5 then, the fix would be isolated to this
+file only. And we can use smmu->options as the onle check for this.
+
+-Robert
+
+> @@ -2717,14 +2733,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	if (irq > 0)
+>  		smmu->gerr_irq = irq;
+>  
+> -	if (dev->of_node) {
+> -		ret = arm_smmu_device_dt_probe(pdev, smmu);
+> -	} else {
+> -		ret = arm_smmu_device_acpi_probe(pdev, smmu);
+> -		if (ret == -ENODEV)
+> -			return ret;
+> -	}
+> -
+>  	/* Set bypass mode according to firmware probing result */
+>  	bypass = !!ret;
+>  
+> -- 
+> 1.8.3.1
+> 
