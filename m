@@ -1,11 +1,11 @@
 From: Oza Pawandeep <oza.oza@broadcom.com>
-Subject: [PATCH v3 3/3] PCI/of fix of_dma_get_range; get PCI specific dma-ranges
-Date: Fri,  5 May 2017 17:27:17 +0530
-Message-ID: <1493985437-2748-3-git-send-email-oza.oza@broadcom.com>
+Subject: [PATCH v3 1/3] of/pci/dma: fix DMA configuration for PCI masters
+Date: Fri,  5 May 2017 17:27:16 +0530
+Message-ID: <1493985437-2748-2-git-send-email-oza.oza@broadcom.com>
 References: <1493985437-2748-1-git-send-email-oza.oza@broadcom.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1493985437-2748-1-git-send-email-oza.oza@broadcom.com>
-Sender: linux-pci-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
 Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Oza Pawandeep <oza.pawandeep@gmail.com>, Oza Pawandeep <oza.oza@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
@@ -22,299 +22,144 @@ for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
 world dma-ranges.
 dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-this patch fixes the bug in of_dma_get_range, which with as is,
-parses the PCI memory ranges and return wrong size as 0.
+this patch serves following:
 
-in order to get largest possible dma_mask. this patch also
-retuns the largest possible size based on dma-ranges,
+1) exposes interface to the pci host driver for their
+inbound memory ranges
 
+2) provide an interface to callers such as of_dma_get_ranges.
+so then the returned size get best possible (largest) dma_mask.
+because PCI RC drivers do not call APIs such as
+dma_set_coherent_mask() and hence rather it shows its addressing
+capabilities based on dma-ranges.
 for e.g.
 dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 we should get dev->coherent_dma_mask=0x7fffffffff.
 
-based on which IOVA allocation space will honour PCI host
-bridge limitations.
+3) this patch handles multiple inbound windows and dma-ranges.
+it is left to the caller, how it wants to use them.
+the new function returns the resources in a standard and unform way
 
-the implementation hooks bus specific callbacks for getting
-dma-ranges.
+4) this way the callers of for e.g. of_dma_get_ranges
+does not need to change.
+
+5) leaves scope of adding PCI flag handling for inbound memory
+by the new function.
 
 Signed-off-by: Oza Pawandeep <oza.oza@broadcom.com>
 
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903..cc0fc28 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -6,6 +6,7 @@
- #include <linux/ioport.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
-+#include <linux/of_pci.h>
- #include <linux/pci.h>
- #include <linux/pci_regs.h>
- #include <linux/sizes.h>
-@@ -46,6 +47,8 @@ struct of_bus {
- 				int na, int ns, int pna);
- 	int		(*translate)(__be32 *addr, u64 offset, int na);
- 	unsigned int	(*get_flags)(const __be32 *addr);
-+	int		(*get_dma_ranges)(struct device_node *np,
-+					  u64 *dma_addr, u64 *paddr, u64 *size);
- };
- 
- /*
-@@ -171,6 +174,146 @@ static int of_bus_pci_translate(__be32 *addr, u64 offset, int na)
- {
- 	return of_bus_default_translate(addr + 1, offset, na - 1);
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 0ee42c3..ed6e69a 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -283,6 +283,83 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 	return err;
  }
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
 +
-+static int of_bus_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				     u64 *paddr, u64 *size)
++/**
++ * of_pci_get_dma_ranges - Parse PCI host bridge inbound resources from DT
++ * @np: device node of the host bridge having the dma-ranges property
++ * @resources: list where the range of resources will be added after DT parsing
++ *
++ * It is the caller's job to free the @resources list.
++ *
++ * This function will parse the "dma-ranges" property of a
++ * PCI host bridge device node and setup the resource mapping based
++ * on its content.
++ *
++ * It returns zero if the range parsing has been successful or a standard error
++ * value if it failed.
++ */
++
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
 +{
 +	struct device_node *node = of_node_get(np);
++	int rlen;
 +	int ret = 0;
-+	struct resource_entry *window;
-+	LIST_HEAD(res);
++	const int na = 3, ns = 2;
++	struct resource *res;
++	struct of_pci_range_parser parser;
++	struct of_pci_range range;
 +
 +	if (!node)
 +		return -EINVAL;
 +
-+	if (of_bus_pci_match(np)) {
-+		*size = 0;
-+		/*
-+		 * PCI dma-ranges is not mandatory property.
-+		 * many devices do no need to have it, since
-+		 * host bridge does not require inbound memory
-+		 * configuration or rather have design limitations.
-+		 * so we look for dma-ranges, if missing we
-+		 * just return the caller full size, and also
-+		 * no dma-ranges suggests that, host bridge allows
-+		 * whatever comes in, so we set dma_addr to 0.
-+		 */
-+		ret = of_pci_get_dma_ranges(np, &res);
-+		if (!ret) {
-+			resource_list_for_each_entry(window, &res) {
-+			struct resource *res_dma = window->res;
++	parser.node = node;
++	parser.pna = of_n_addr_cells(node);
++	parser.np = parser.pna + na + ns;
 +
-+			if (*size < resource_size(res_dma)) {
-+				*dma_addr = res_dma->start - window->offset;
-+				*paddr = res_dma->start;
-+				*size = resource_size(res_dma);
-+				}
-+			}
-+		}
-+		pci_free_resource_list(&res);
++	parser.range = of_get_property(node, "dma-ranges", &rlen);
 +
-+		/*
-+		 * return the largest possible size,
-+		 * since PCI master allows everything.
-+		 */
-+		if (*size == 0) {
-+			pr_debug("empty/zero size dma-ranges found for node(%s)\n",
-+				np->full_name);
-+			*size = DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1;
-+			*dma_addr = *paddr = 0;
-+			ret = 0;
-+		}
-+
-+		pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+			 *dma_addr, *paddr, *size);
-+	}
-+
-+	of_node_put(node);
-+
-+	return ret;
-+}
-+
-+static int get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+		          u64 *paddr, u64 *size)
-+{
-+	struct device_node *node = of_node_get(np);
-+	const __be32 *ranges = NULL;
-+	int len, naddr, nsize, pna;
-+	int ret = 0;
-+	u64 dmaaddr;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	while (1) {
-+		naddr = of_n_addr_cells(node);
-+		nsize = of_n_size_cells(node);
-+		node = of_get_next_parent(node);
-+		if (!node)
-+			break;
-+
-+		ranges = of_get_property(node, "dma-ranges", &len);
-+
-+		/* Ignore empty ranges, they imply no translation required */
-+		if (ranges && len > 0)
-+			break;
-+
-+		/*
-+		 * At least empty ranges has to be defined for parent node if
-+		 * DMA is supported
-+		 */
-+		if (!ranges)
-+			break;
-+	}
-+
-+	if (!ranges) {
-+		pr_debug("no dma-ranges found for node(%s)\n", np->full_name);
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	len /= sizeof(u32);
-+
-+	pna = of_n_addr_cells(node);
-+
-+	/* dma-ranges format:
-+	 * DMA addr	: naddr cells
-+	 * CPU addr	: pna cells
-+	 * size		: nsize cells
-+	 */
-+	dmaaddr = of_read_number(ranges, naddr);
-+	*paddr = of_translate_dma_address(np, ranges);
-+	if (*paddr == OF_BAD_ADDR) {
-+		pr_err("translation of DMA address(%pad) to CPU address failed node(%s)\n",
-+		       dma_addr, np->full_name);
++	if (!parser.range) {
++		pr_debug("pcie device has no dma-ranges defined for node(%s)\n",
++			  np->full_name);
 +		ret = -EINVAL;
 +		goto out;
 +	}
-+	*dma_addr = dmaaddr;
 +
-+	*size = of_read_number(ranges + naddr + pna, nsize);
++	parser.end = parser.range + rlen / sizeof(__be32);
 +
-+	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+		 *dma_addr, *paddr, *size);
++	for_each_of_pci_range(&parser, &range) {
++		/*
++		 * If we failed translation or got a zero-sized region
++		 * then skip this range
++		 */
++		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
++			continue;
 +
-+out:
-+	of_node_put(node);
++		res = kzalloc(sizeof(struct resource), GFP_KERNEL);
++		if (!res) {
++			ret = -ENOMEM;
++			goto parse_failed;
++		}
++
++		ret = of_pci_range_to_resource(&range, np, res);
++		if (ret) {
++			kfree(res);
++			continue;
++		}
++
++		pci_add_resource_offset(resources, res,
++					res->start - range.pci_addr);
++	}
 +
 +	return ret;
-+}
 +
-+static int of_bus_isa_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				     u64 *paddr, u64 *size)
-+{
-+	return get_dma_ranges(np, dma_addr, paddr, size);
++parse_failed:
++	pci_free_resource_list(resources);
++out:
++	of_node_put(node);
++	return ret;
 +}
-+
-+static int of_bus_default_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+					 u64 *paddr, u64 *size)
-+{
-+	return get_dma_ranges(np, dma_addr, paddr, size);
-+}
-+
- #endif /* CONFIG_OF_ADDRESS_PCI */
++EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
+ #endif /* CONFIG_OF_ADDRESS */
  
- #ifdef CONFIG_PCI
-@@ -424,6 +567,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_pci_map,
- 		.translate = of_bus_pci_translate,
- 		.get_flags = of_bus_pci_get_flags,
-+		.get_dma_ranges = of_bus_pci_get_dma_ranges,
- 	},
- #endif /* CONFIG_OF_ADDRESS_PCI */
- 	/* ISA */
-@@ -435,6 +579,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_isa_map,
- 		.translate = of_bus_isa_translate,
- 		.get_flags = of_bus_isa_get_flags,
-+		.get_dma_ranges = of_bus_isa_get_dma_ranges,
- 	},
- 	/* Default */
- 	{
-@@ -445,6 +590,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_default_map,
- 		.translate = of_bus_default_translate,
- 		.get_flags = of_bus_default_get_flags,
-+		.get_dma_ranges = of_bus_default_get_dma_ranges,
- 	},
- };
- 
-@@ -820,74 +966,20 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
-  *	size			: nsize cells
-  *
-  * It returns -ENODEV if "dma-ranges" property was not found
-- * for this device in DT.
-+ * for this device in DT, except if PCI device then, dma-ranges
-+ * can be optional property, and in that case returns size with
-+ * entire host memory.
-  */
- int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index 0e0974e..617b90d 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
+ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+ 			struct list_head *resources, resource_size_t *io_base);
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources);
+ #else
+ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+@@ -83,6 +84,12 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
  {
--	struct device_node *node = of_node_get(np);
--	const __be32 *ranges = NULL;
--	int len, naddr, nsize, pna;
--	int ret = 0;
--	u64 dmaaddr;
--
--	if (!node)
--		return -EINVAL;
--
--	while (1) {
--		naddr = of_n_addr_cells(node);
--		nsize = of_n_size_cells(node);
--		node = of_get_next_parent(node);
--		if (!node)
--			break;
--
--		ranges = of_get_property(node, "dma-ranges", &len);
--
--		/* Ignore empty ranges, they imply no translation required */
--		if (ranges && len > 0)
--			break;
--
--		/*
--		 * At least empty ranges has to be defined for parent node if
--		 * DMA is supported
--		 */
--		if (!ranges)
--			break;
--	}
--
--	if (!ranges) {
--		pr_debug("no dma-ranges found for node(%s)\n", np->full_name);
--		ret = -ENODEV;
--		goto out;
--	}
--
--	len /= sizeof(u32);
--
--	pna = of_n_addr_cells(node);
--
--	/* dma-ranges format:
--	 * DMA addr	: naddr cells
--	 * CPU addr	: pna cells
--	 * size		: nsize cells
--	 */
--	dmaaddr = of_read_number(ranges, naddr);
--	*paddr = of_translate_dma_address(np, ranges);
--	if (*paddr == OF_BAD_ADDR) {
--		pr_err("translation of DMA address(%pad) to CPU address failed node(%s)\n",
--		       dma_addr, np->full_name);
--		ret = -EINVAL;
--		goto out;
--	}
--	*dma_addr = dmaaddr;
--
--	*size = of_read_number(ranges + naddr + pna, nsize);
--
--	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
--		 *dma_addr, *paddr, *size);
-+	struct of_bus *bus;
- 
--out:
--	of_node_put(node);
-+	/* get bus specific dma-ranges. */
-+	bus = of_match_bus(np);
-+	if (bus->get_dma_ranges)
-+		return bus->get_dma_ranges(np, dma_addr, paddr, size);
- 
--	return ret;
-+	return 0;
+ 	return -EINVAL;
  }
- EXPORT_SYMBOL_GPL(of_dma_get_range);
++
++static inline int of_pci_get_dma_ranges(struct device_node *np,
++					struct list_head *resources)
++{
++	return -EINVAL;
++}
+ #endif
  
+ #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
 -- 
 1.9.1
