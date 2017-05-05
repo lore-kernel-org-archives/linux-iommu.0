@@ -1,52 +1,76 @@
-From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 3/7] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
-	definition.
-Date: Fri, 5 May 2017 21:53:26 +0800
-Message-ID: <330d0438-f9ed-ef65-8ffd-d556d149b4e1@linaro.org>
-References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
-	<1493986091-30521-4-git-send-email-gakula@caviumnetworks.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1493986091-30521-4-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
+From: Oza Pawandeep <oza.oza@broadcom.com>
+Subject: [PATCH v5 0/3] OF/PCI address PCI inbound memory limitations
+Date: Fri,  5 May 2017 19:30:24 +0530
+Message-ID: <1493992827-1553-1-git-send-email-oza.oza@broadcom.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Oza Pawandeep <oza.pawandeep@gmail.com>, Oza Pawandeep <oza.oza@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017/5/5 20:08, Geetha sowjanya wrote:
-> From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->
-> Add SMMUv3 model definition for ThunderX2.
->
-> Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> ---
->  include/acpi/actbl2.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-> index faa9f2c..76a6f5d 100644
-> --- a/include/acpi/actbl2.h
-> +++ b/include/acpi/actbl2.h
-> @@ -779,6 +779,8 @@ struct acpi_iort_smmu {
->  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
->  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
->
-> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000002 /* Cavium ThunderX2 SMMUv3 */
+It is possible that PCI device supports 64-bit DMA addressing,
+and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
+however PCI host bridge may have limitations on the inbound 
+transaction addressing.
 
-There are some other model numbers in the unreleased spec,
-I think we need to wait for the updated IORT spec to
-be released.
+This is particularly problematic on ARM/ARM64 SOCs where the 
+IOMMU (i.e. SMMU) translates IOVA to PA for in-bound transactions
+only after PCI Host has forwarded these transactions on SOC IO bus. 
 
-Thanks
-Hanjun
+This means, on such ARM/ARM64 SOCs the IOVA of in-bound transactions
+has to honor the addressing restrictions of the PCI Host.
+
+Current device framework and OF framework integration assumes
+dma-ranges in a way where memory-mapped devices define their
+dma-ranges. (child-bus-address, parent-bus-address, length).
+
+of_dma_configure is specifically written to take care of memory
+mapped devices but no implementation exists for pci devices.
+
+For e.g. iproc based SOCs and other SOCs (such as rcar) have
+PCI world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+
+This patchset
+reserves the IOVA ranges for PCI masters based
+on the PCI world dma-ranges.
+fix of_dma_get_range to cater to PCI dma-ranges.
+fix of_dma_get_range which currently returns size 0 for PCI devices.
+
+IOVA allocation patch:
+[PATCH 2/3] iommu/pci: reserve iova for PCI masters
+
+Fix of_dma_get_range bug and address PCI master.
+[PATCH 3/3] PCI/of fix of_dma_get_range; get PCI specific
+
+Base patch for both of the above patches:
+[PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
+
+Changes since v4:
+- something wrong with my mail client: not all teh patch went out, attempting again:
+Changes since v3:
+- minor change, redudant checkes removed
+Changes since v2:
+- removed internal review
+Changes since v1:
+- Remove internal GERRIT details from patch descriptions
+- address Rob's comments.
+- Add a get_dma_ranges() function to of_bus struct..
+- Convert existing contents of this function to of_bus_default_dma_get_ranges
+  and adding that to the default of_bus struct.
+- Make of_dma_get_range call of_bus_match() and then bus->get_dma_ranges.
+- no revison for [PATCH 2/3] iommu/pci: reserve iova for PCI masters; since under discussion with Robin
+
+Oza Pawandeep (3):
+  of/pci/dma: fix DMA configuration for PCI masters
+  iommu/pci: reserve IOVA for PCI masters
+  PCI/of fix of_dma_get_range; get PCI specific dma-ranges
+
+ drivers/iommu/dma-iommu.c |  35 ++++++++
+ drivers/of/address.c      | 216 ++++++++++++++++++++++++++++++++--------------
+ drivers/of/of_pci.c       |  77 +++++++++++++++++
+ include/linux/of_pci.h    |   7 ++
+ 4 files changed, 272 insertions(+), 63 deletions(-)
+
+-- 
+1.9.1
