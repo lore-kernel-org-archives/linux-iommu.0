@@ -1,109 +1,177 @@
-From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-Subject: Re: [Qemu-devel] [RFC PATCH 0/8] Shared Virtual Memory
- virtualization for VT-d
-Date: Sun, 7 May 2017 15:33:42 +0800
-Message-ID: <20170507073342.GA2931@gmail.com>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
- <3a67fc54-905a-b7f8-2eb5-1d75a89c2335@gmail.com>
+From: Linu Cherian <linu.cherian@cavium.com>
+Subject: Re: [PATCH v3 1/7] iommu/arm-smmu-v3: Introduce SMMU option
+ PAGE0_REGS_ONLY for ThunderX2 errata #74
+Date: Mon, 8 May 2017 14:47:39 +0530
+Message-ID: <20170508091739.GA26003@virtx40>
+References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
+ <1493986091-30521-2-git-send-email-gakula@caviumnetworks.com>
+ <20170505230328.GN4906@rric.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <kvm-owner@vger.kernel.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <3a67fc54-905a-b7f8-2eb5-1d75a89c2335@gmail.com>
-Sender: kvm-owner@vger.kernel.org
-To: Xiao Guangrong <guangrong.xiao@gmail.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com, tianyu.lan@intel.com, kevin.tian@intel.com, ashok.raj@intel.com, jean-philippe.brucker@arm.com, jasowang@redhat.com, qemu-devel@nongnu.org, jacob.jun.pan@intel.com
+In-Reply-To: <20170505230328.GN4906@rric.localdomain>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robert Richter <rric@kernel.org>
+Cc: Geetha sowjanya <gakula@caviumnetworks.com>, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 08, 2017 at 12:09:42PM +0800, Xiao Guangrong wrote:
+On Sat May 06, 2017 at 01:03:28AM +0200, Robert Richter wrote:
+> On 05.05.17 17:38:05, Geetha sowjanya wrote:
+> > From: Linu Cherian <linu.cherian@cavium.com>
+> > 
+> > Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
+> > and PAGE0_REGS_ONLY option will be enabled as an errata workaround.
+> > 
+> > This option when turned on, replaces all page 1 offsets used for
+> > EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
+> > 
+> > Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+> > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> > ---
+> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 +++
+> >  drivers/iommu/arm-smmu-v3.c                        | 44 ++++++++++++++++------
+> >  2 files changed, 38 insertions(+), 12 deletions(-)
 > 
-> Hi Liu Yi,
+> > @@ -1995,8 +2011,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+> >  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+> >  		return 0;
+> >  
+> > -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
+> > -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
+> > +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q,
+> > +				       ARM_SMMU_PRIQ_PROD(smmu),
+> > +				       ARM_SMMU_PRIQ_CONS(smmu),
+> > +				       PRIQ_ENT_DWORDS);
 > 
-> I haven't started to read the code yet, however, could you
-> detail more please? It emulates a SVM capable iommu device in
-> a VM? Or It speeds up device's DMA access in a VM? Or it is a
-> new facility introduced for a VM? Could you please add a bit
-> more for its usage?
-
-Hi Guangrong,
-
-Nice to hear from you.
-
-This patchset is part of the whole SVM virtualization work. The whole
-patchset wants to expose a SVM capable Intel IOMMU to guest. And yes,
-it is an emulated iommu.
-
-For the detail introduction for SVM and SVM virtualization, I think
-you may get more from the link below.
-
-http://www.spinics.net/lists/kvm/msg148798.html
-
-For the usage, I can give an example with IGD. Latest IGD is SVM capable
-device. On bare metal(Intel IOMMU is also SVM capable), application could
-request to share its virtual address(an allocated buffer) with IGD device
-through the IOCTL cmd provided by IGD driver. e.g. OpenCL application. When
-IGD is assigned to a guest, it is expected to support such usage in guest.
-With the SVM virtualization patchset, the application in guest would also
-be able to share its virtual address with IGD device. Different from bare
-metal, it's sharing GVA with IGD. The hardware IOMMU needs to help translate
-the GVA to HPA. So hardware IOMMU needs to know the GVA->HPA mapping. This
-patchset would make sure the GVA->HPA mapping is built and maintain the TLB.
-
-Be free to let me know if you want more detail.
-
-Thanks,
-Yi L
-
+> I would also suggest Robin's idea from the v1 review here. This works
+> if we rework arm_smmu_init_one_queue() to pass addresses instead of
+> offsets.
 > 
-> Thanks!
-> 
-> On 04/26/2017 06:11 PM, Liu, Yi L wrote:
-> >Hi,
-> >
-> >This patchset introduces SVM virtualization for intel_iommu in
-> >IOMMU/VFIO. The total SVM virtualization for intel_iommu touched
-> >Qemu/IOMMU/VFIO.
-> >
-> >Another patchset would change the Qemu. It is "[RFC PATCH 0/20] Qemu:
-> >Extend intel_iommu emulator to support Shared Virtual Memory"
-> >
-> >In this patchset, it adds two new IOMMU APIs and their implementation
-> >in intel_iommu driver. In VFIO, it adds two IOCTL cmd attached on
-> >container->fd to propagate data from QEMU to kernel space.
-> >
-> >[Patch Overview]
-> >* 1 adds iommu API definition for binding guest PASID table
-> >* 2 adds binding PASID table API implementation in VT-d iommu driver
-> >* 3 adds iommu API definition to do IOMMU TLB invalidation from guest
-> >* 4 adds IOMMU TLB invalidation implementation in VT-d iommu driver
-> >* 5 adds VFIO IOCTL for propagating PASID table binding from guest
-> >* 6 adds processing of pasid table binding in vfio_iommu_type1
-> >* 7 adds VFIO IOCTL for propagating IOMMU TLB invalidation from guest
-> >* 8 adds processing of IOMMU TLB invalidation in vfio_iommu_type1
-> >
-> >Best Wishes,
-> >Yi L
-> >
-> >
-> >Jacob Pan (3):
-> >   iommu: Introduce bind_pasid_table API function
-> >   iommu/vt-d: add bind_pasid_table function
-> >   iommu/vt-d: Add iommu do invalidate function
-> >
-> >Liu, Yi L (5):
-> >   iommu: Introduce iommu do invalidate API function
-> >   VFIO: Add new IOTCL for PASID Table bind propagation
-> >   VFIO: do pasid table binding
-> >   VFIO: Add new IOCTL for IOMMU TLB invalidate propagation
-> >   VFIO: do IOMMU TLB invalidation from guest
-> >
-> >  drivers/iommu/intel-iommu.c     | 146 ++++++++++++++++++++++++++++++++++++++++
-> >  drivers/iommu/iommu.c           |  32 +++++++++
-> >  drivers/vfio/vfio_iommu_type1.c |  98 +++++++++++++++++++++++++++
-> >  include/linux/dma_remapping.h   |   1 +
-> >  include/linux/intel-iommu.h     |  11 +++
-> >  include/linux/iommu.h           |  47 +++++++++++++
-> >  include/uapi/linux/vfio.h       |  26 +++++++
-> >  7 files changed, 361 insertions(+)
-> >
-> 
+> This would make these widespread offset calculations obsolete.
+>
+
+Have pasted here the relevant changes for doing fixups on smmu base instead
+of offset to get feedback. 
+
+This actually results in more lines of changes. If you think the below
+approach is still better, will post a V4 of this series with this change.
+
+
++static inline unsigned long arm_smmu_page1_base(
++	struct arm_smmu_device *smmu)
++{
++	if (ARM_SMMU_PAGE0_REGS_ONLY(smmu))
++		return smmu->base;
++	else
++		return smmu->base + SZ_64K;
++}
++
+
+@@ -1948,8 +1962,8 @@ static void arm_smmu_put_resv_regions(struct device *dev,
+ /* Probing and initialisation functions */
+ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 				   struct arm_smmu_queue *q,
+-				   unsigned long prod_off,
+-				   unsigned long cons_off,
++				   unsigned long prod_addr,
++				   unsigned long cons_addr,
+ 				   size_t dwords)
+ {
+ 	size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
+@@ -1961,8 +1975,8 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 		return -ENOMEM;
+ 	}
+ 
+-	q->prod_reg	= smmu->base + prod_off;
+-	q->cons_reg	= smmu->base + cons_off;
++	q->prod_reg	= prod_addr;
++	q->cons_reg	= cons_addr;
+ 	q->ent_dwords	= dwords;
+ 
+ 	q->q_base  = Q_BASE_RWA;
+@@ -1977,17 +1991,25 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
++	unsigned long page1_base, page0_base;
++
++	page0_base = smmu->base;
++	page1_base = arm_smmu_page1_base(smmu);
+ 
+ 	/* cmdq */
+ 	spin_lock_init(&smmu->cmdq.lock);
+-	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
+-				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS);
++	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, 
++				      page0_base + ARM_SMMU_CMDQ_PROD,
++				      page0_base + ARM_SMMU_CMDQ_CONS, 
++				      CMDQ_ENT_DWORDS);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* evtq */
+-	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
+-				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
++	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
++				      page1_base + ARM_SMMU_EVTQ_PROD,
++				      page1_base + ARM_SMMU_EVTQ_CONS,
++				      EVTQ_ENT_DWORDS);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1995,8 +2017,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+ 	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+ 		return 0;
+ 
+-	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
+-				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
++	return arm_smmu_init_one_queue(smmu, &smmu->priq.q,
++				       page1_base + ARM_SMMU_PRIQ_PROD,
++				       page1_base + ARM_SMMU_PRIQ_CONS,
++				       PRIQ_ENT_DWORDS);
+ }
+
+
+
+@@ -2301,8 +2349,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ {
+ 	int ret;
+ 	u32 reg, enables;
++	unsigned long page1_base;
+ 	struct arm_smmu_cmdq_ent cmd;
+ 
++	page1_base = arm_smmu_page1_base(smmu);
++
+ 	/* Clear CR0 and sync (disables SMMU and queue processing) */
+ 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+ 	if (reg & CR0_SMMUEN)
+@@ -2363,8 +2414,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 
+ 	/* Event queue */
+ 	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+-	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
+-	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
++	writel_relaxed(smmu->evtq.q.prod, page1_base + ARM_SMMU_EVTQ_PROD);
++	writel_relaxed(smmu->evtq.q.cons, page1_base + ARM_SMMU_EVTQ_CONS);
+ 
+ 	enables |= CR0_EVTQEN;
+ 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+@@ -2379,9 +2430,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 		writeq_relaxed(smmu->priq.q.q_base,
+ 			       smmu->base + ARM_SMMU_PRIQ_BASE);
+ 		writel_relaxed(smmu->priq.q.prod,
+-			       smmu->base + ARM_SMMU_PRIQ_PROD);
++			       page1_base + ARM_SMMU_PRIQ_PROD);
+ 		writel_relaxed(smmu->priq.q.cons,
+-			       smmu->base + ARM_SMMU_PRIQ_CONS);
++			       page1_base + ARM_SMMU_PRIQ_CONS);
+ 
+ 		enables |= CR0_PRIQEN;
+ 		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+
+
+
+Thanks.
+-- 
+Linu cherian
