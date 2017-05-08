@@ -1,17 +1,15 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 03/20] intel_iommu: add "svm" option
-Date: Mon, 8 May 2017 19:20:34 +0800
-Message-ID: <20170508112034.GE2820@pxdev.xzpeter.org>
-References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
-	<1493201210-14357-4-git-send-email-yi.l.liu@linux.intel.com>
-	<20170427105317.GE1542@pxdev.xzpeter.org>
-	<A2975661238FB949B60364EF0F2C25743906890D@shsmsx102.ccr.corp.intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 6/7] iommu/arm-smmu-v3: Add workaround for Cavium
+	ThunderX2 erratum #126
+Date: Mon, 8 May 2017 12:21:28 +0100
+Message-ID: <a2618ab6-6609-7885-3b62-c1c1f170c318@arm.com>
+References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
+	<1493986091-30521-7-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <A2975661238FB949B60364EF0F2C25743906890D-E2R4CRU6q/6iAffOGbnezLfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <1493986091-30521-7-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,90 +19,122 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu,
-	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBNYXkgMDgsIDIwMTcgYXQgMTA6Mzg6MDlBTSArMDAwMCwgTGl1LCBZaSBMIHdyb3Rl
-Ogo+IE9uIFRodSwgMjcgQXByIDIwMTcgMTg6NTM6MTcgKzA4MDAKPiBQZXRlciBYdSA8cGV0ZXJ4
-QHJlZGhhdC5jb20+IHdyb3RlOgo+IAo+ID4gT24gV2VkLCBBcHIgMjYsIDIwMTcgYXQgMDY6MDY6
-MzNQTSArMDgwMCwgTGl1LCBZaSBMIHdyb3RlOgo+ID4gPiBFeHBvc2UgIlNoYXJlZCBWaXJ0dWFs
-IE1lbW9yeSIgdG8gZ3Vlc3QgYnkgdXNpbmcgInN2bSIgb3B0aW9uLgo+ID4gPiBBbHNvIHVzZSAi
-c3ZtIiB0byBleHBvc2UgU1ZNIHJlbGF0ZWQgY2FwYWJpbGl0aWVzIHRvIGd1ZXN0Lgo+ID4gPiBl
-LmcuICItZGV2aWNlIGludGVsLWlvbW11LCBzdm09b24iCj4gPiA+Cj4gPiA+IFNpZ25lZC1vZmYt
-Ynk6IExpdSwgWWkgTCA8eWkubC5saXVAbGludXguaW50ZWwuY29tPgo+ID4gPiAtLS0KPiA+ID4g
-IGh3L2kzODYvaW50ZWxfaW9tbXUuYyAgICAgICAgICB8IDEwICsrKysrKysrKysKPiA+ID4gIGh3
-L2kzODYvaW50ZWxfaW9tbXVfaW50ZXJuYWwuaCB8ICA1ICsrKysrCj4gPiA+IGluY2x1ZGUvaHcv
-aTM4Ni9pbnRlbF9pb21tdS5oICB8ICAxICsKPiA+ID4gIDMgZmlsZXMgY2hhbmdlZCwgMTYgaW5z
-ZXJ0aW9ucygrKQo+ID4gPgo+ID4gPiBkaWZmIC0tZ2l0IGEvaHcvaTM4Ni9pbnRlbF9pb21tdS5j
-IGIvaHcvaTM4Ni9pbnRlbF9pb21tdS5jIGluZGV4Cj4gPiA+IGJmOThmYTUuLmJhMWU3ZWIgMTAw
-NjQ0Cj4gPiA+IC0tLSBhL2h3L2kzODYvaW50ZWxfaW9tbXUuYwo+ID4gPiArKysgYi9ody9pMzg2
-L2ludGVsX2lvbW11LmMKPiA+ID4gQEAgLTI0NTMsNiArMjQ1Myw3IEBAIHN0YXRpYyBQcm9wZXJ0
-eSB2dGRfcHJvcGVydGllc1tdID0gewo+ID4gPiAgICAgIERFRklORV9QUk9QX0JPT0woIngtYnVn
-Z3ktZWltIiwgSW50ZWxJT01NVVN0YXRlLCBidWdneV9laW0sIGZhbHNlKSwKPiA+ID4gICAgICBE
-RUZJTkVfUFJPUF9CT09MKCJjYWNoaW5nLW1vZGUiLCBJbnRlbElPTU1VU3RhdGUsIGNhY2hpbmdf
-bW9kZSwKPiA+IEZBTFNFKSwKPiA+ID4gICAgICBERUZJTkVfUFJPUF9CT09MKCJlY3MiLCBJbnRl
-bElPTU1VU3RhdGUsIGVjcywgRkFMU0UpLAo+ID4gPiArICAgIERFRklORV9QUk9QX0JPT0woInN2
-bSIsIEludGVsSU9NTVVTdGF0ZSwgc3ZtLCBGQUxTRSksCj4gPiA+ICAgICAgREVGSU5FX1BST1Bf
-RU5EX09GX0xJU1QoKSwKPiA+ID4gIH07Cj4gPiA+Cj4gPiA+IEBAIC0yOTczLDYgKzI5NzQsMTUg
-QEAgc3RhdGljIHZvaWQgdnRkX2luaXQoSW50ZWxJT01NVVN0YXRlICpzKQo+ID4gPiAgICAgICAg
-ICBzLT5lY2FwIHw9IFZURF9FQ0FQX0VDUzsKPiA+ID4gICAgICB9Cj4gPiA+Cj4gPiA+ICsgICAg
-aWYgKHMtPnN2bSkgewo+ID4gPiArICAgICAgICBpZiAoIXMtPmVjcyB8fCAheDg2X2lvbW11LT5w
-dF9zdXBwb3J0ZWQgfHwgIXMtPmNhY2hpbmdfbW9kZSkgewo+ID4gPiArICAgICAgICAgICAgZXJy
-b3JfcmVwb3J0KCJOZWVkIHRvIHNldCBlY3MsIHB0LCBjYWNoaW5nLW1vZGUgZm9yIHN2bSIpOwo+
-ID4gPiArICAgICAgICAgICAgZXhpdCgxKTsKPiA+ID4gKyAgICAgICAgfQo+ID4gPiArICAgICAg
-ICBzLT5jYXAgfD0gVlREX0NBUF9EV0QgfCBWVERfQ0FQX0RSRDsKPiA+ID4gKyAgICAgICAgcy0+
-ZWNhcCB8PSBWVERfRUNBUF9QUlMgfCBWVERfRUNBUF9QVFMgfCBWVERfRUNBUF9QQVNJRDI4Owo+
-ID4gPiArICAgIH0KPiA+ID4gKwo+ID4gPiAgICAgIGlmIChzLT5jYWNoaW5nX21vZGUpIHsKPiA+
-ID4gICAgICAgICAgcy0+Y2FwIHw9IFZURF9DQVBfQ007Cj4gPiA+ICAgICAgfQo+ID4gPiBkaWZm
-IC0tZ2l0IGEvaHcvaTM4Ni9pbnRlbF9pb21tdV9pbnRlcm5hbC5oCj4gPiA+IGIvaHcvaTM4Ni9p
-bnRlbF9pb21tdV9pbnRlcm5hbC5oIGluZGV4IDcxYTFjMWUuLmYyYTdkMTIgMTAwNjQ0Cj4gPiA+
-IC0tLSBhL2h3L2kzODYvaW50ZWxfaW9tbXVfaW50ZXJuYWwuaAo+ID4gPiArKysgYi9ody9pMzg2
-L2ludGVsX2lvbW11X2ludGVybmFsLmgKPiA+ID4gQEAgLTE5MSw2ICsxOTEsOSBAQAo+ID4gPiAg
-I2RlZmluZSBWVERfRUNBUF9QVCAgICAgICAgICAgICAgICAgKDFVTEwgPDwgNikKPiA+ID4gICNk
-ZWZpbmUgVlREX0VDQVBfTUhNViAgICAgICAgICAgICAgICgxNVVMTCA8PCAyMCkKPiA+ID4gICNk
-ZWZpbmUgVlREX0VDQVBfRUNTICAgICAgICAgICAgICAgICgxVUxMIDw8IDI0KQo+ID4gPiArI2Rl
-ZmluZSBWVERfRUNBUF9QQVNJRDI4ICAgICAgICAgICAgKDFVTEwgPDwgMjgpCj4gPiAKPiA+IENv
-dWxkIEkgYXNrIHdoYXQncyB0aGlzIGJpdD8gT24gbXkgc3BlYywgaXQgc2F5cyB0aGlzIGJpdCBp
-cyByZXNlcnZlZCBhbmQgZGVmdW5jdCAoc3BlYwo+ID4gdmVyc2lvbjogSnVuZSAyMDE2KS4KPiAK
-PiBBcyBBc2hvayBjb25maXJtZWQsIHllcyBpdCBzaG91bGQgYmUgYml0IDQwLiB3b3VsZCB1cGRh
-dGUgaXQuCgpPay4KCj4gCj4gPiA+ICsjZGVmaW5lIFZURF9FQ0FQX1BSUyAgICAgICAgICAgICAg
-ICAoMVVMTCA8PCAyOSkKPiA+ID4gKyNkZWZpbmUgVlREX0VDQVBfUFRTICAgICAgICAgICAgICAg
-ICgweGVVTEwgPDwgMzUpCj4gPiAKPiA+IFdvdWxkIGl0IGJldHRlciB3ZSBhdm9pZCB1c2luZyAw
-eGUgaGVyZSwgb3IgYXQgbGVhc3QgYWRkIHNvbWUgY29tbWVudD8KPiAKPiBGb3IgdGhpcyB2YWx1
-ZSwgaXQgbXVzdCBiZSBubyBtb3JlIHRoYW4gdGhlIGJpdHMgaG9zdCBzdXBwb3J0cy4gU28gaXQg
-bWF5IGJlCj4gYmV0dGVyIHRvIGhhdmUgYSBkZWZhdWx0IHZhbHVlIGFuZCBtZWFud2hpbGUgZXhw
-b3NlIGFuIG9wdGlvbiB0byBsZXQgdXNlcgo+IHNldCBpdC4gaG93IGFib3V0IHlvdXIgb3Bpbmlv
-bj8KCkkgdGhpbmsgYSBtb3JlIGltcG9ydGFudCBwb2ludCBpcyB0aGF0IHdlIG5lZWQgdG8gbWFr
-ZSBzdXJlIHRoaXMgdmFsdWUKaXMgbm8gbGFyZ2VyIHRoYW4gaGFyZHdhcmUgc3VwcG9ydD8gU2lu
-Y2UgeW91IGFyZSBhbHNvIHdvcmtpbmcgb24gdGhlCnZmaW8gaW50ZXJmYWNlIGZvciB2aXJ0LXN2
-bS4uLiB3b3VsZCBpdCBiZSBwb3NzaWJsZSB0aGF0IHdlIGNhbiB0YWxrCnRvIGtlcm5lbCBpbiBz
-b21lIHdheSBzbyB0aGF0IHdlIGNhbiBrbm93IHRoZSBzdXBwb3J0ZWQgcGFzaWQgc2l6ZSBpbgpo
-b3N0IElPTU1VPyBTbyB0aGF0IHdoZW4gZ3Vlc3Qgc3BlY2lmaWVzIHNvbWV0aGluZyBiaWdnZXIs
-IHdlIGNhbiBzdG9wCnRoZSB1c2VyLgoKSSBkb24ndCBrbm93IHRoZSBwcmFjdGljYWwgdmFsdWUg
-Zm9yIHRoaXMgZmllbGQsIGlmIGl0J3Mgc3RhdGljCmVub3VnaCwgSSB0aGluayBpdCdzIGFsc28g
-b2theSB3ZSBtYWtlIGl0IHN0YXRpYyBoZXJlIGFzIHdlbGwuIEJ1dAphZ2FpbiwgSSB3b3VsZCBw
-cmVmZXIgYXQgbGVhc3Qgc29tZSBjb21tZW50LCBsaWtlOgoKICAvKiBWYWx1ZSBOIGluZGljYXRl
-cyBQQVNJRCBmaWVsZCBvZiBOKzEgYml0cywgaGVyZSAweGUgc3RhbmRzIGZvci4uICovCgo+IAo+
-ID4gCj4gPiA+Cj4gPiA+ICAvKiBDQVBfUkVHICovCj4gPiA+ICAvKiAob2Zmc2V0ID4+IDQpIDw8
-IDI0ICovCj4gPiA+IEBAIC0yMDcsNiArMjEwLDggQEAKPiA+ID4gICNkZWZpbmUgVlREX0NBUF9Q
-U0kgICAgICAgICAgICAgICAgICgxVUxMIDw8IDM5KQo+ID4gPiAgI2RlZmluZSBWVERfQ0FQX1NM
-TFBTICAgICAgICAgICAgICAgKCgxVUxMIDw8IDM0KSB8ICgxVUxMIDw8IDM1KSkKPiA+ID4gICNk
-ZWZpbmUgVlREX0NBUF9DTSAgICAgICAgICAgICAgICAgICgxVUxMIDw8IDcpCj4gPiA+ICsjZGVm
-aW5lIFZURF9DQVBfRFdEICAgICAgICAgICAgICAgICAoMVVMTCA8PCA1NCkKPiA+ID4gKyNkZWZp
-bmUgVlREX0NBUF9EUkQgICAgICAgICAgICAgICAgICgxVUxMIDw8IDU1KQo+ID4gCj4gPiBKdXN0
-IHRvIGNvbmZpcm06IGFmdGVyIHRoaXMgc2VyaWVzLCB3ZSBzaG91bGQgc3VwcG9ydCBkcmFpbiBy
-ZWFkL3dyaXRlIHRoZW4sIHJpZ2h0Pwo+IAo+IEkgaGF2ZW7igJl0IGRvbmUgc3BlY2lhbCBwcm9j
-ZXNzIGFnYWluc3QgaXQgaW4gSU9NTVUgZW11bGF0b3IuIEl0J3Mgc2V0IHRvIGtlZXAKPiBjb25z
-aXN0ZW5jZSB3aXRoIFZULWQgc3BlYyBzaW5jZSBEV0QgYW5kIERSVyBpcyByZXF1aXJlZCBjYXBh
-YmlsaXR5IHdoZW4KPiBQQVNJRCBpdCByZXBvcnRlZCBhcyBTZXQuIEhvd2V2ZXIsIEkgdGhpbmsg
-aXQgc2hvdWxkIGJlIGZpbmUgaWYgZ3Vlc3QgaXNzdWUgUUkKPiB3aXRoIGRyYWluIHJlYWQvd3Jp
-dGUgc2V0IGluIHRoZSBkZXNjcmlwdG9yLiBIb3N0IHNob3VsZCBiZSBhYmxlIHRvIHByb2Nlc3Mg
-aXQuCgpJIHNlZS4gSUlVQyB0aGUgcG9pbnQgaGVyZSBpcyB3ZSBuZWVkIHRvIGRlbGl2ZXIgdGhl
-c2UgcmVxdWVzdHMgdG8KaG9zdCBJT01NVSwgYW5kIEkgZ3Vlc3Mgd2UgbmVlZCB0byBiZSBhYmxl
-IHRvIGRvIHRoaXMgaW4gYSBzeW5jaHJvbm91cwp3YXkgYXMgd2VsbC4KClRoYW5rcywKCi0tIApQ
-ZXRlciBYdQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 05/05/17 13:08, Geetha sowjanya wrote:
+> From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> 
+> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
+> lines for gerror, eventq and cmdq-sync.
+> 
+> This patch addresses the issue by checking if any interrupt sources are
+> using same irq number, then they are registered as shared irqs.
+> 
+> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 32 ++++++++++++++++++++++++++++----
+>  1 file changed, 28 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 016b702..46428e7 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2236,10 +2236,30 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>  	devm_add_action(dev, arm_smmu_free_msis, dev);
+>  }
+>  
+> +static int get_irq_flags(struct arm_smmu_device *smmu, int irq)
+> +{
+> +	int match_count = 0;
+> +
+> +	if (irq == smmu->evtq.q.irq)
+> +		match_count++;
+> +	if (irq == smmu->cmdq.q.irq)
+> +		match_count++;
+> +	if (irq == smmu->gerr_irq)
+> +		match_count++;
+> +	if (irq == smmu->priq.q.irq)
+> +		match_count++;
+> +
+> +	if (match_count > 1)
+> +		return IRQF_SHARED | IRQF_ONESHOT;
+> +
+> +	return 0;
+
+I'd say just have this return IRQF_ONESHOT in the non-shared case...
+
+> +}
+> +
+>  static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  {
+>  	int ret, irq;
+>  	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> +	u32 irqflags = 0;
+>  
+>  	/* Disable IRQs first */
+>  	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> @@ -2254,9 +2274,10 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  	/* Request interrupt lines */
+>  	irq = smmu->evtq.q.irq;
+>  	if (irq) {
+> +		irqflags = get_irq_flags(smmu, irq);
+>  		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+>  						arm_smmu_evtq_thread,
+> -						IRQF_ONESHOT,
+> +						IRQF_ONESHOT | irqflags,
+
+...and pass get_irq_flags(smmu, irq) directly as the argument here.
+
+The local variable and intermediate logic only seem to add unnecessary
+complexity, given that the two cases we actually end up with are:
+
+IRQF_ONESHOT | 0
+
+vs.
+
+IRQF_ONESHOT | IRQF_SHARED | IRQF_ONESHOT
+
+neither of which looks particularly sensible.
+
+Robin.
+
+>  						"arm-smmu-v3-evtq", smmu);
+>  		if (ret < 0)
+>  			dev_warn(smmu->dev, "failed to enable evtq irq\n");
+> @@ -2264,8 +2285,9 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  
+>  	irq = smmu->cmdq.q.irq;
+>  	if (irq) {
+> +		irqflags = get_irq_flags(smmu, irq);
+>  		ret = devm_request_irq(smmu->dev, irq,
+> -				       arm_smmu_cmdq_sync_handler, 0,
+> +				       arm_smmu_cmdq_sync_handler, irqflags,
+>  				       "arm-smmu-v3-cmdq-sync", smmu);
+>  		if (ret < 0)
+>  			dev_warn(smmu->dev, "failed to enable cmdq-sync irq\n");
+> @@ -2273,8 +2295,9 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  
+>  	irq = smmu->gerr_irq;
+>  	if (irq) {
+> +		irqflags = get_irq_flags(smmu, irq);
+>  		ret = devm_request_irq(smmu->dev, irq, arm_smmu_gerror_handler,
+> -				       0, "arm-smmu-v3-gerror", smmu);
+> +				       irqflags, "arm-smmu-v3-gerror", smmu);
+>  		if (ret < 0)
+>  			dev_warn(smmu->dev, "failed to enable gerror irq\n");
+>  	}
+> @@ -2282,9 +2305,10 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  	if (smmu->features & ARM_SMMU_FEAT_PRI) {
+>  		irq = smmu->priq.q.irq;
+>  		if (irq) {
+> +			irqflags = get_irq_flags(smmu, irq);
+>  			ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+>  							arm_smmu_priq_thread,
+> -							IRQF_ONESHOT,
+> +							IRQF_ONESHOT | irqflags,
+>  							"arm-smmu-v3-priq",
+>  							smmu);
+>  			if (ret < 0)
+> 
