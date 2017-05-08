@@ -1,52 +1,114 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/2] Fix incorrect warning from dma-debug
-Date: Mon, 8 May 2017 10:39:36 +0100
-Message-ID: <963c75b8-2d8b-8710-58af-ac0685d6aa17@arm.com>
-References: <1462705196-10857-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <57305A4B.70401@arm.com> <57305FD8.7070006@arm.com>
- <477ded30-eef2-3598-3a8d-95d206e11efb@jonmasters.org>
+From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 2/7] iommu/arm-smmu-v3: Do resource size checks based
+	on SMMU
+Date: Mon, 8 May 2017 15:14:37 +0530
+Message-ID: <20170508094437.GA26538@virtx40>
+References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
+	<1493986091-30521-3-git-send-email-gakula@caviumnetworks.com>
+	<20170505221844.GW16981@rric.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <477ded30-eef2-3598-3a8d-95d206e11efb@jonmasters.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Jon Masters <jcm@jonmasters.org>
-Cc: =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, linux-renesas-soc@vger.kernel.org, will.deacon@arm.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170505221844.GW16981-vWBEXY7mpu582hYKe6nXyg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/05/17 01:06, Jon Masters wrote:
-> On 05/09/2016 06:00 AM, Robin Murphy wrote:
->> On 09/05/16 10:37, Robin Murphy wrote:
->>> Hi Niklas,
->>>
->>> On 08/05/16 11:59, Niklas Söderlund wrote:
->>>> Hi,
->>>>
->>>> While using CONFIG_DMA_API_DEBUG i came across this warning which I
->>>> think is a false positive. As shown dma_sync_single_for_device() are
->>>> called from the dma_map_single() call path. This triggers the warning
->>>> since the dma-debug code have not yet been made aware of the mapping.
->>>
->>> Almost right ;) The thing being mapped (the SPI device's buffer) and the
->>> thing being synced (the IOMMU's PTE) are entirely unrelated. Due to the
->>> current of_iommu_init() setup, the IOMMU is probed long before
->>> dma_debug_init() gets called, therefore DMA debug is missing entries for
->>> some of the initial page table mappings and gets confused when we update
->>> them later.
+On Sat May 06, 2017 at 12:18:44AM +0200, Robert Richter wrote:
+> On 05.05.17 17:38:06, Geetha sowjanya wrote:
+> > From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> > 
+> > With implementations supporting only page 0 register space,
+> > resource size can be 64k as well and hence perform size checks
+> > based on SMMU option PAGE0_REGS_ONLY.
+> > 
+> > For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
+> > platform_get_resource call, so that SMMU options are set beforehand.
+> > 
+> > Signed-off-by:  Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> > Signed-off-by:  Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/arm-smmu-v3.c | 26 +++++++++++++++++---------
+> >  1 file changed, 17 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> > index 107b4a6..f027676 100644
+> > --- a/drivers/iommu/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm-smmu-v3.c
+> > @@ -2672,6 +2672,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+> >  	return ret;
+> >  }
+> >  
+> > +static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
+> > +{
+> > +	if (ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+> > +		return SZ_64K;
+> > +	else
+> > +		return SZ_128K;
+> > +}
+> > +
 > 
-> What was the eventual followup/fix for this? We're seeing similar traces
-> to this during internal testing of 4.11 kernels.
-
-The IOMMU probe-deferral patches queued for the current merge window get
-rid of the need for early device creation bodges that cause the problem
-(of IOMMU pagetables being mapped for DMA before dma-debug is up and
-running). In the meantime, I'd suggest either adjusting the initcall
-level per 256ff1cf6b44, or turning off the IOMMU driver and/or using
-dma-debug's driver-filter option if you're doing more targeted debugging.
-
-Robin.
-
+> I think this can be dropped. See below.
 > 
-> Jon.
+> >  static int arm_smmu_device_probe(struct platform_device *pdev)
+> >  {
+> >  	int irq, ret;
+> > @@ -2688,9 +2696,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >  	}
+> >  	smmu->dev = dev;
+> >  
+> > +	if (dev->of_node) {
+> > +		ret = arm_smmu_device_dt_probe(pdev, smmu);
+> > +	} else {
+> > +		ret = arm_smmu_device_acpi_probe(pdev, smmu);
+> > +		if (ret == -ENODEV)
+> > +			return ret;
+> > +	}
+> > +
+> >  	/* Base address */
+> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > -	if (resource_size(res) + 1 < SZ_128K) {
+> > +	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
+> >  		dev_err(dev, "MMIO region too small (%pr)\n", res);
+> >  		return -EINVAL;
+> >  	}
 > 
+> Why not just do the follwoing here:
+> 
+>  	/* Base address */
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
+>  		dev_err(dev, "MMIO region too small (%pr)\n", res);
+>  		return -EINVAL;
+>  	}
+>  	ioaddr = res->start;
+> 
+> +	/*
+> +	 * Override the size, for Cavium ThunderX2 implementation
+> +	 * which doesn't support the page 1 SMMU register space.
+> +	 */
+> +	if (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
+> +		res->end = res->size + SZ_64K -1;
+> +
+>  	smmu->base = devm_ioremap_resource(dev, res);
+>  	if (IS_ERR(smmu->base))
+>  		return PTR_ERR(smmu->base);
+
+
+This might not work, since platform_device_add is being called from
+iort.c before the res->end gets fixed up here. 
+
+
+-- 
+Linu cherian
