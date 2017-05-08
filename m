@@ -1,52 +1,109 @@
-From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 1/7] iommu/arm-smmu-v3: Introduce SMMU option
-	PAGE0_REGS_ONLY for ThunderX2 errata #74
-Date: Mon, 8 May 2017 12:04:43 +0200
-Message-ID: <20170508100443.GG16981@rric.localdomain>
+From: Robert Richter <robert.richter@cavium.com>
+Subject: Re: [PATCH v3 2/7] iommu/arm-smmu-v3: Do resource size checks based
+ on SMMU
+Date: Mon, 8 May 2017 12:09:32 +0200
+Message-ID: <20170508100932.GH16981@rric.localdomain>
 References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
-	<1493986091-30521-2-git-send-email-gakula@caviumnetworks.com>
-	<20170505230328.GN4906@rric.localdomain>
-	<20170508091739.GA26003@virtx40>
-	<b4881237-aca6-63ca-467e-30e36b1f02df@arm.com>
+ <1493986091-30521-3-git-send-email-gakula@caviumnetworks.com>
+ <20170505221844.GW16981@rric.localdomain>
+ <20170508094437.GA26538@virtx40>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <b4881237-aca6-63ca-467e-30e36b1f02df-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Robert Richter <rric-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
+In-Reply-To: <20170508094437.GA26538@virtx40>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Linu Cherian <linu.cherian@cavium.com>
+Cc: Geetha sowjanya <gakula@caviumnetworks.com>, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08.05.17 10:59:46, Robin Murphy wrote:
-> On 08/05/17 10:17, Linu Cherian wrote:
-> > This actually results in more lines of changes. If you think the below
-> > approach is still better, will post a V4 of this series with this change.
+On 08.05.17 15:14:37, Linu Cherian wrote:
+> On Sat May 06, 2017 at 12:18:44AM +0200, Robert Richter wrote:
+> > On 05.05.17 17:38:06, Geetha sowjanya wrote:
+> > > From: Linu Cherian <linu.cherian@cavium.com>
+> > > 
+> > > With implementations supporting only page 0 register space,
+> > > resource size can be 64k as well and hence perform size checks
+> > > based on SMMU option PAGE0_REGS_ONLY.
+> > > 
+> > > For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
+> > > platform_get_resource call, so that SMMU options are set beforehand.
+> > > 
+> > > Signed-off-by:  Linu Cherian <linu.cherian@cavium.com>
+> > > Signed-off-by:  Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> > > ---
+> > >  drivers/iommu/arm-smmu-v3.c | 26 +++++++++++++++++---------
+> > >  1 file changed, 17 insertions(+), 9 deletions(-)
+> > > 
+> > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> > > index 107b4a6..f027676 100644
+> > > --- a/drivers/iommu/arm-smmu-v3.c
+> > > +++ b/drivers/iommu/arm-smmu-v3.c
+> > > @@ -2672,6 +2672,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+> > >  	return ret;
+> > >  }
+> > >  
+> > > +static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
+> > > +{
+> > > +	if (ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+> > > +		return SZ_64K;
+> > > +	else
+> > > +		return SZ_128K;
+> > > +}
+> > > +
+> > 
+> > I think this can be dropped. See below.
+> > 
+> > >  static int arm_smmu_device_probe(struct platform_device *pdev)
+> > >  {
+> > >  	int irq, ret;
+> > > @@ -2688,9 +2696,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> > >  	}
+> > >  	smmu->dev = dev;
+> > >  
+> > > +	if (dev->of_node) {
+> > > +		ret = arm_smmu_device_dt_probe(pdev, smmu);
+> > > +	} else {
+> > > +		ret = arm_smmu_device_acpi_probe(pdev, smmu);
+> > > +		if (ret == -ENODEV)
+> > > +			return ret;
+> > > +	}
+> > > +
+> > >  	/* Base address */
+> > >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > -	if (resource_size(res) + 1 < SZ_128K) {
+> > > +	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
+> > >  		dev_err(dev, "MMIO region too small (%pr)\n", res);
+> > >  		return -EINVAL;
+> > >  	}
+> > 
+> > Why not just do the follwoing here:
+> > 
+> >  	/* Base address */
+> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >  	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
+> >  		dev_err(dev, "MMIO region too small (%pr)\n", res);
+> >  		return -EINVAL;
+> >  	}
+> >  	ioaddr = res->start;
+> > 
+> > +	/*
+> > +	 * Override the size, for Cavium ThunderX2 implementation
+> > +	 * which doesn't support the page 1 SMMU register space.
+> > +	 */
+> > +	if (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
+> > +		res->end = res->size + SZ_64K -1;
+> > +
+> >  	smmu->base = devm_ioremap_resource(dev, res);
+> >  	if (IS_ERR(smmu->base))
+> >  		return PTR_ERR(smmu->base);
 > 
-> Why not just do this?:
 > 
-> static inline unsigned long page1_offset_adjust(
-> 	unsigned long off, struct arm_smmu_device *smmu)
-> {
-> 	if (off > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
-> 		return (off - SZ_64K);
-> 
-> 	return off;
-> }
-> 
-> AFAICS that should be the least disruptive way to go about it.
+> This might not work, since platform_device_add is being called from
+> iort.c before the res->end gets fixed up here. 
 
-Yeah, let's go with this.
-
-Thanks Robin,
+It should. You added it with 128k and you get it back with
+platform_get_resource(), but before ioremap you shrink the size to
+64k.
 
 -Robert
