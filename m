@@ -1,125 +1,110 @@
-From: Geetha Akula <geethasowjanya.akula@gmail.com>
-Subject: Re: [PATCH v3 2/7] iommu/arm-smmu-v3: Do resource size checks based
- on SMMU
-Date: Mon, 8 May 2017 16:33:21 +0530
-Message-ID: <CANHdaibz+RkLPwbme0NQ_Bq38=dLJS6OFDnFZpO1ubXKQzH_Zw@mail.gmail.com>
-References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
- <1493986091-30521-3-git-send-email-gakula@caviumnetworks.com>
- <20170505221844.GW16981@rric.localdomain> <20170508094437.GA26538@virtx40> <20170508100932.GH16981@rric.localdomain>
+From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 03/20] intel_iommu: add "svm" option
+Date: Mon, 8 May 2017 19:20:34 +0800
+Message-ID: <20170508112034.GE2820@pxdev.xzpeter.org>
+References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
+	<1493201210-14357-4-git-send-email-yi.l.liu@linux.intel.com>
+	<20170427105317.GE1542@pxdev.xzpeter.org>
+	<A2975661238FB949B60364EF0F2C25743906890D@shsmsx102.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170508100932.GH16981@rric.localdomain>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robert Richter <robert.richter@cavium.com>
-Cc: Linu Cherian <linu.cherian@cavium.com>, Geetha sowjanya <gakula@caviumnetworks.com>, Will Deacon <will.deacon@arm.com>, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, Sunil Goutham <sgoutham@cavium.com>, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <A2975661238FB949B60364EF0F2C25743906890D-E2R4CRU6q/6iAffOGbnezLfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu,
+	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 8, 2017 at 3:39 PM, Robert Richter
-<robert.richter@cavium.com> wrote:
-> On 08.05.17 15:14:37, Linu Cherian wrote:
->> On Sat May 06, 2017 at 12:18:44AM +0200, Robert Richter wrote:
->> > On 05.05.17 17:38:06, Geetha sowjanya wrote:
->> > > From: Linu Cherian <linu.cherian@cavium.com>
->> > >
->> > > With implementations supporting only page 0 register space,
->> > > resource size can be 64k as well and hence perform size checks
->> > > based on SMMU option PAGE0_REGS_ONLY.
->> > >
->> > > For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
->> > > platform_get_resource call, so that SMMU options are set beforehand.
->> > >
->> > > Signed-off-by:  Linu Cherian <linu.cherian@cavium.com>
->> > > Signed-off-by:  Geetha Sowjanya <geethasowjanya.akula@cavium.com>
->> > > ---
->> > >  drivers/iommu/arm-smmu-v3.c | 26 +++++++++++++++++---------
->> > >  1 file changed, 17 insertions(+), 9 deletions(-)
->> > >
->> > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> > > index 107b4a6..f027676 100644
->> > > --- a/drivers/iommu/arm-smmu-v3.c
->> > > +++ b/drivers/iommu/arm-smmu-v3.c
->> > > @@ -2672,6 +2672,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
->> > >   return ret;
->> > >  }
->> > >
->> > > +static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
->> > > +{
->> > > + if (ARM_SMMU_PAGE0_REGS_ONLY(smmu))
->> > > +         return SZ_64K;
->> > > + else
->> > > +         return SZ_128K;
->> > > +}
->> > > +
->> >
->> > I think this can be dropped. See below.
->> >
->> > >  static int arm_smmu_device_probe(struct platform_device *pdev)
->> > >  {
->> > >   int irq, ret;
->> > > @@ -2688,9 +2696,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->> > >   }
->> > >   smmu->dev = dev;
->> > >
->> > > + if (dev->of_node) {
->> > > +         ret = arm_smmu_device_dt_probe(pdev, smmu);
->> > > + } else {
->> > > +         ret = arm_smmu_device_acpi_probe(pdev, smmu);
->> > > +         if (ret == -ENODEV)
->> > > +                 return ret;
->> > > + }
->> > > +
->> > >   /* Base address */
->> > >   res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> > > - if (resource_size(res) + 1 < SZ_128K) {
->> > > + if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
->> > >           dev_err(dev, "MMIO region too small (%pr)\n", res);
->> > >           return -EINVAL;
->> > >   }
->> >
->> > Why not just do the follwoing here:
->> >
->> >     /* Base address */
->> >     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> >     if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
->> >             dev_err(dev, "MMIO region too small (%pr)\n", res);
->> >             return -EINVAL;
->> >     }
->> >     ioaddr = res->start;
->> >
->> > +   /*
->> > +    * Override the size, for Cavium ThunderX2 implementation
->> > +    * which doesn't support the page 1 SMMU register space.
->> > +    */
->> > +   if (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
->> > +           res->end = res->size + SZ_64K -1;
->> > +
->> >     smmu->base = devm_ioremap_resource(dev, res);
->> >     if (IS_ERR(smmu->base))
->> >             return PTR_ERR(smmu->base);
->>
->>
->> This might not work, since platform_device_add is being called from
->> iort.c before the res->end gets fixed up here.
->
-> It should. You added it with 128k and you get it back with
-> platform_get_resource(), but before ioremap you shrink the size to
-> 64k.
->
-> -Robert
-
-Hi Robert,
-
-Linu is right. You are missing the sequence of event. If we skip the
-changes in iort file, smmu initialization in acpi fails.
-
-
-[    3.721647] ACPI: IORT: iort_add_smmu_platform_device
-[    3.726826] platform arm-smmu-v3.1.auto: failed to claim resource
-0: [mem 0x402310000-0x40232ffff]
-[    3.736052] arm-smmu-v3 arm-smmu-v3.0.auto: option mask 0x1
-[    3.741753] arm_smmu_device_probe
-
-
-Thank you,
-Geetha.
+T24gTW9uLCBNYXkgMDgsIDIwMTcgYXQgMTA6Mzg6MDlBTSArMDAwMCwgTGl1LCBZaSBMIHdyb3Rl
+Ogo+IE9uIFRodSwgMjcgQXByIDIwMTcgMTg6NTM6MTcgKzA4MDAKPiBQZXRlciBYdSA8cGV0ZXJ4
+QHJlZGhhdC5jb20+IHdyb3RlOgo+IAo+ID4gT24gV2VkLCBBcHIgMjYsIDIwMTcgYXQgMDY6MDY6
+MzNQTSArMDgwMCwgTGl1LCBZaSBMIHdyb3RlOgo+ID4gPiBFeHBvc2UgIlNoYXJlZCBWaXJ0dWFs
+IE1lbW9yeSIgdG8gZ3Vlc3QgYnkgdXNpbmcgInN2bSIgb3B0aW9uLgo+ID4gPiBBbHNvIHVzZSAi
+c3ZtIiB0byBleHBvc2UgU1ZNIHJlbGF0ZWQgY2FwYWJpbGl0aWVzIHRvIGd1ZXN0Lgo+ID4gPiBl
+LmcuICItZGV2aWNlIGludGVsLWlvbW11LCBzdm09b24iCj4gPiA+Cj4gPiA+IFNpZ25lZC1vZmYt
+Ynk6IExpdSwgWWkgTCA8eWkubC5saXVAbGludXguaW50ZWwuY29tPgo+ID4gPiAtLS0KPiA+ID4g
+IGh3L2kzODYvaW50ZWxfaW9tbXUuYyAgICAgICAgICB8IDEwICsrKysrKysrKysKPiA+ID4gIGh3
+L2kzODYvaW50ZWxfaW9tbXVfaW50ZXJuYWwuaCB8ICA1ICsrKysrCj4gPiA+IGluY2x1ZGUvaHcv
+aTM4Ni9pbnRlbF9pb21tdS5oICB8ICAxICsKPiA+ID4gIDMgZmlsZXMgY2hhbmdlZCwgMTYgaW5z
+ZXJ0aW9ucygrKQo+ID4gPgo+ID4gPiBkaWZmIC0tZ2l0IGEvaHcvaTM4Ni9pbnRlbF9pb21tdS5j
+IGIvaHcvaTM4Ni9pbnRlbF9pb21tdS5jIGluZGV4Cj4gPiA+IGJmOThmYTUuLmJhMWU3ZWIgMTAw
+NjQ0Cj4gPiA+IC0tLSBhL2h3L2kzODYvaW50ZWxfaW9tbXUuYwo+ID4gPiArKysgYi9ody9pMzg2
+L2ludGVsX2lvbW11LmMKPiA+ID4gQEAgLTI0NTMsNiArMjQ1Myw3IEBAIHN0YXRpYyBQcm9wZXJ0
+eSB2dGRfcHJvcGVydGllc1tdID0gewo+ID4gPiAgICAgIERFRklORV9QUk9QX0JPT0woIngtYnVn
+Z3ktZWltIiwgSW50ZWxJT01NVVN0YXRlLCBidWdneV9laW0sIGZhbHNlKSwKPiA+ID4gICAgICBE
+RUZJTkVfUFJPUF9CT09MKCJjYWNoaW5nLW1vZGUiLCBJbnRlbElPTU1VU3RhdGUsIGNhY2hpbmdf
+bW9kZSwKPiA+IEZBTFNFKSwKPiA+ID4gICAgICBERUZJTkVfUFJPUF9CT09MKCJlY3MiLCBJbnRl
+bElPTU1VU3RhdGUsIGVjcywgRkFMU0UpLAo+ID4gPiArICAgIERFRklORV9QUk9QX0JPT0woInN2
+bSIsIEludGVsSU9NTVVTdGF0ZSwgc3ZtLCBGQUxTRSksCj4gPiA+ICAgICAgREVGSU5FX1BST1Bf
+RU5EX09GX0xJU1QoKSwKPiA+ID4gIH07Cj4gPiA+Cj4gPiA+IEBAIC0yOTczLDYgKzI5NzQsMTUg
+QEAgc3RhdGljIHZvaWQgdnRkX2luaXQoSW50ZWxJT01NVVN0YXRlICpzKQo+ID4gPiAgICAgICAg
+ICBzLT5lY2FwIHw9IFZURF9FQ0FQX0VDUzsKPiA+ID4gICAgICB9Cj4gPiA+Cj4gPiA+ICsgICAg
+aWYgKHMtPnN2bSkgewo+ID4gPiArICAgICAgICBpZiAoIXMtPmVjcyB8fCAheDg2X2lvbW11LT5w
+dF9zdXBwb3J0ZWQgfHwgIXMtPmNhY2hpbmdfbW9kZSkgewo+ID4gPiArICAgICAgICAgICAgZXJy
+b3JfcmVwb3J0KCJOZWVkIHRvIHNldCBlY3MsIHB0LCBjYWNoaW5nLW1vZGUgZm9yIHN2bSIpOwo+
+ID4gPiArICAgICAgICAgICAgZXhpdCgxKTsKPiA+ID4gKyAgICAgICAgfQo+ID4gPiArICAgICAg
+ICBzLT5jYXAgfD0gVlREX0NBUF9EV0QgfCBWVERfQ0FQX0RSRDsKPiA+ID4gKyAgICAgICAgcy0+
+ZWNhcCB8PSBWVERfRUNBUF9QUlMgfCBWVERfRUNBUF9QVFMgfCBWVERfRUNBUF9QQVNJRDI4Owo+
+ID4gPiArICAgIH0KPiA+ID4gKwo+ID4gPiAgICAgIGlmIChzLT5jYWNoaW5nX21vZGUpIHsKPiA+
+ID4gICAgICAgICAgcy0+Y2FwIHw9IFZURF9DQVBfQ007Cj4gPiA+ICAgICAgfQo+ID4gPiBkaWZm
+IC0tZ2l0IGEvaHcvaTM4Ni9pbnRlbF9pb21tdV9pbnRlcm5hbC5oCj4gPiA+IGIvaHcvaTM4Ni9p
+bnRlbF9pb21tdV9pbnRlcm5hbC5oIGluZGV4IDcxYTFjMWUuLmYyYTdkMTIgMTAwNjQ0Cj4gPiA+
+IC0tLSBhL2h3L2kzODYvaW50ZWxfaW9tbXVfaW50ZXJuYWwuaAo+ID4gPiArKysgYi9ody9pMzg2
+L2ludGVsX2lvbW11X2ludGVybmFsLmgKPiA+ID4gQEAgLTE5MSw2ICsxOTEsOSBAQAo+ID4gPiAg
+I2RlZmluZSBWVERfRUNBUF9QVCAgICAgICAgICAgICAgICAgKDFVTEwgPDwgNikKPiA+ID4gICNk
+ZWZpbmUgVlREX0VDQVBfTUhNViAgICAgICAgICAgICAgICgxNVVMTCA8PCAyMCkKPiA+ID4gICNk
+ZWZpbmUgVlREX0VDQVBfRUNTICAgICAgICAgICAgICAgICgxVUxMIDw8IDI0KQo+ID4gPiArI2Rl
+ZmluZSBWVERfRUNBUF9QQVNJRDI4ICAgICAgICAgICAgKDFVTEwgPDwgMjgpCj4gPiAKPiA+IENv
+dWxkIEkgYXNrIHdoYXQncyB0aGlzIGJpdD8gT24gbXkgc3BlYywgaXQgc2F5cyB0aGlzIGJpdCBp
+cyByZXNlcnZlZCBhbmQgZGVmdW5jdCAoc3BlYwo+ID4gdmVyc2lvbjogSnVuZSAyMDE2KS4KPiAK
+PiBBcyBBc2hvayBjb25maXJtZWQsIHllcyBpdCBzaG91bGQgYmUgYml0IDQwLiB3b3VsZCB1cGRh
+dGUgaXQuCgpPay4KCj4gCj4gPiA+ICsjZGVmaW5lIFZURF9FQ0FQX1BSUyAgICAgICAgICAgICAg
+ICAoMVVMTCA8PCAyOSkKPiA+ID4gKyNkZWZpbmUgVlREX0VDQVBfUFRTICAgICAgICAgICAgICAg
+ICgweGVVTEwgPDwgMzUpCj4gPiAKPiA+IFdvdWxkIGl0IGJldHRlciB3ZSBhdm9pZCB1c2luZyAw
+eGUgaGVyZSwgb3IgYXQgbGVhc3QgYWRkIHNvbWUgY29tbWVudD8KPiAKPiBGb3IgdGhpcyB2YWx1
+ZSwgaXQgbXVzdCBiZSBubyBtb3JlIHRoYW4gdGhlIGJpdHMgaG9zdCBzdXBwb3J0cy4gU28gaXQg
+bWF5IGJlCj4gYmV0dGVyIHRvIGhhdmUgYSBkZWZhdWx0IHZhbHVlIGFuZCBtZWFud2hpbGUgZXhw
+b3NlIGFuIG9wdGlvbiB0byBsZXQgdXNlcgo+IHNldCBpdC4gaG93IGFib3V0IHlvdXIgb3Bpbmlv
+bj8KCkkgdGhpbmsgYSBtb3JlIGltcG9ydGFudCBwb2ludCBpcyB0aGF0IHdlIG5lZWQgdG8gbWFr
+ZSBzdXJlIHRoaXMgdmFsdWUKaXMgbm8gbGFyZ2VyIHRoYW4gaGFyZHdhcmUgc3VwcG9ydD8gU2lu
+Y2UgeW91IGFyZSBhbHNvIHdvcmtpbmcgb24gdGhlCnZmaW8gaW50ZXJmYWNlIGZvciB2aXJ0LXN2
+bS4uLiB3b3VsZCBpdCBiZSBwb3NzaWJsZSB0aGF0IHdlIGNhbiB0YWxrCnRvIGtlcm5lbCBpbiBz
+b21lIHdheSBzbyB0aGF0IHdlIGNhbiBrbm93IHRoZSBzdXBwb3J0ZWQgcGFzaWQgc2l6ZSBpbgpo
+b3N0IElPTU1VPyBTbyB0aGF0IHdoZW4gZ3Vlc3Qgc3BlY2lmaWVzIHNvbWV0aGluZyBiaWdnZXIs
+IHdlIGNhbiBzdG9wCnRoZSB1c2VyLgoKSSBkb24ndCBrbm93IHRoZSBwcmFjdGljYWwgdmFsdWUg
+Zm9yIHRoaXMgZmllbGQsIGlmIGl0J3Mgc3RhdGljCmVub3VnaCwgSSB0aGluayBpdCdzIGFsc28g
+b2theSB3ZSBtYWtlIGl0IHN0YXRpYyBoZXJlIGFzIHdlbGwuIEJ1dAphZ2FpbiwgSSB3b3VsZCBw
+cmVmZXIgYXQgbGVhc3Qgc29tZSBjb21tZW50LCBsaWtlOgoKICAvKiBWYWx1ZSBOIGluZGljYXRl
+cyBQQVNJRCBmaWVsZCBvZiBOKzEgYml0cywgaGVyZSAweGUgc3RhbmRzIGZvci4uICovCgo+IAo+
+ID4gCj4gPiA+Cj4gPiA+ICAvKiBDQVBfUkVHICovCj4gPiA+ICAvKiAob2Zmc2V0ID4+IDQpIDw8
+IDI0ICovCj4gPiA+IEBAIC0yMDcsNiArMjEwLDggQEAKPiA+ID4gICNkZWZpbmUgVlREX0NBUF9Q
+U0kgICAgICAgICAgICAgICAgICgxVUxMIDw8IDM5KQo+ID4gPiAgI2RlZmluZSBWVERfQ0FQX1NM
+TFBTICAgICAgICAgICAgICAgKCgxVUxMIDw8IDM0KSB8ICgxVUxMIDw8IDM1KSkKPiA+ID4gICNk
+ZWZpbmUgVlREX0NBUF9DTSAgICAgICAgICAgICAgICAgICgxVUxMIDw8IDcpCj4gPiA+ICsjZGVm
+aW5lIFZURF9DQVBfRFdEICAgICAgICAgICAgICAgICAoMVVMTCA8PCA1NCkKPiA+ID4gKyNkZWZp
+bmUgVlREX0NBUF9EUkQgICAgICAgICAgICAgICAgICgxVUxMIDw8IDU1KQo+ID4gCj4gPiBKdXN0
+IHRvIGNvbmZpcm06IGFmdGVyIHRoaXMgc2VyaWVzLCB3ZSBzaG91bGQgc3VwcG9ydCBkcmFpbiBy
+ZWFkL3dyaXRlIHRoZW4sIHJpZ2h0Pwo+IAo+IEkgaGF2ZW7igJl0IGRvbmUgc3BlY2lhbCBwcm9j
+ZXNzIGFnYWluc3QgaXQgaW4gSU9NTVUgZW11bGF0b3IuIEl0J3Mgc2V0IHRvIGtlZXAKPiBjb25z
+aXN0ZW5jZSB3aXRoIFZULWQgc3BlYyBzaW5jZSBEV0QgYW5kIERSVyBpcyByZXF1aXJlZCBjYXBh
+YmlsaXR5IHdoZW4KPiBQQVNJRCBpdCByZXBvcnRlZCBhcyBTZXQuIEhvd2V2ZXIsIEkgdGhpbmsg
+aXQgc2hvdWxkIGJlIGZpbmUgaWYgZ3Vlc3QgaXNzdWUgUUkKPiB3aXRoIGRyYWluIHJlYWQvd3Jp
+dGUgc2V0IGluIHRoZSBkZXNjcmlwdG9yLiBIb3N0IHNob3VsZCBiZSBhYmxlIHRvIHByb2Nlc3Mg
+aXQuCgpJIHNlZS4gSUlVQyB0aGUgcG9pbnQgaGVyZSBpcyB3ZSBuZWVkIHRvIGRlbGl2ZXIgdGhl
+c2UgcmVxdWVzdHMgdG8KaG9zdCBJT01NVSwgYW5kIEkgZ3Vlc3Mgd2UgbmVlZCB0byBiZSBhYmxl
+IHRvIGRvIHRoaXMgaW4gYSBzeW5jaHJvbm91cwp3YXkgYXMgd2VsbC4KClRoYW5rcywKCi0tIApQ
+ZXRlciBYdQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
+b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
+Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
