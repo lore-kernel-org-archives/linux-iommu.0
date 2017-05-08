@@ -1,15 +1,18 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/4] Docs: dt: document qcom iommu bindings
-Date: Mon, 8 May 2017 11:43:10 -0500
-Message-ID: <20170508164310.ys5jms5dmvpwdttc@rob-hp-laptop>
-References: <20170504133436.24288-1-robdclark@gmail.com>
-	<20170504133436.24288-2-robdclark@gmail.com>
+From: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+Date: Mon, 8 May 2017 12:22:07 -0600
+Message-ID: <CAD8Lp46afzjYKyZqjVuLJ5pTV-PHU64d=mbwNgyWgcdq23iWjw@mail.gmail.com>
+References: <20170322112242.GK29659@8bytes.org>
+	<1490595427-11979-1-git-send-email-arindam.nath@amd.com>
+	<CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
+	<MWHPR12MB15186B0A864F247BFBEF8EAD9C340@MWHPR12MB1518.namprd12.prod.outlook.com>
+	<CAD8Lp47VQ0X0ydsGMrpTu-y4LAXfg9N7+Mzb0hDWDsKc2P-kQg@mail.gmail.com>
+	<MWHPR12MB15183AFF01D7D74109CC62FF9C0A0@MWHPR12MB1518.namprd12.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170504133436.24288-2-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <MWHPR12MB15183AFF01D7D74109CC62FF9C0A0-Gy0DoCVfaSXKu+HfpMNLNQdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,16 +22,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
+Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 04, 2017 at 09:34:33AM -0400, Rob Clark wrote:
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++++++++++++++++++++
->  1 file changed, 121 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+On Wed, Apr 5, 2017 at 9:01 AM, Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org> wrote:
+>
+> >-----Original Message-----
+> >From: Daniel Drake [mailto:drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org]
+> >Sent: Thursday, March 30, 2017 7:15 PM
+> >To: Nath, Arindam
+> >Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Deucher, Alexander; Bridgman, John; amd-
+> >gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit,
+> >Suravee; Linux Upstreaming Team
+> >Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+> >
+> >On Thu, Mar 30, 2017 at 12:23 AM, Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
+> >wrote:
+> >> Daniel, did you get chance to test this patch?
+> >
+> >Not yet. Should we test it alone or alongside "PCI: Blacklist AMD
+> >Stoney GPU devices for ATS"?
+>
+> Daniel, any luck with this patch?
 
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sorry for the delay. The patch appears to be working fine.
+
+Daniel
