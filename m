@@ -1,111 +1,84 @@
-From: Xiao Guangrong <guangrong.xiao@gmail.com>
-Subject: Re: [RFC PATCH 6/8] VFIO: do pasid table binding
-Date: Tue, 9 May 2017 15:55:20 +0800
-Message-ID: <9441ea23-1867-f59a-1ae3-be5afa4d51da@gmail.com>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
- <1493201525-14418-7-git-send-email-yi.l.liu@intel.com>
+From: Felipe Balbi <balbi@kernel.org>
+Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
+Date: Tue, 09 May 2017 10:56:43 +0300
+Message-ID: <87o9v2jwec.fsf@linux.intel.com>
+References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1493201525-14418-7-git-send-email-yi.l.liu@intel.com>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com
-Cc: jasowang@redhat.com, qemu-devel@nongnu.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, jean-philippe.brucker@arm.com, "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-acpi@vger.kernel.org, tpmdd-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org, linux-input@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-pci@vger.kernel.org, linux-usb@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Borislav Petkov <bp@suse.de>, Dan Williams <dan.j.williams@intel.com>, Amir Goldstein <amir73il@gmail.com>, Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, Ben Skeggs <bskeggs@redhat.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Joerg Roedel <joro@8bytes.org>, Adrian Hunter <adrian.hunter@intel.com>, Yisen Zhuang <yisen.zhuang@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, Zhang Rui <rui.zhang@intel.com>, Mathias Nyman <mathias.nyman@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark
 List-Id: iommu@lists.linux-foundation.org
 
 
+Hi,
 
-On 04/26/2017 06:12 PM, Liu, Yi L wrote:
-> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-> 
-> This patch adds IOCTL processing in vfio_iommu_type1 for
-> VFIO_IOMMU_SVM_BIND_TASK. Binds the PASID table bind by
-> calling iommu_ops->bind_pasid_table to link the whole
-> PASID table to pIOMMU.
-> 
-> For VT-d, it is linking the guest PASID table to host pIOMMU.
-> This is key point to support SVM virtualization on VT-d.
-> 
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> ---
->   drivers/vfio/vfio_iommu_type1.c | 72 +++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 72 insertions(+)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index b3cc33f..30b6d48 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1512,6 +1512,50 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
->   	return ret;
->   }
->   
-> +struct vfio_svm_task {
-> +	struct iommu_domain *domain;
-> +	void *payload;
-> +};
-> +
-> +static int bind_pasid_tbl_fn(struct device *dev, void *data)
-> +{
-> +	int ret = 0;
-> +	struct vfio_svm_task *task = data;
-> +	struct pasid_table_info *pasidt_binfo;
-> +
-> +	pasidt_binfo = task->payload;
-> +	ret = iommu_bind_pasid_table(task->domain, dev, pasidt_binfo);
-> +	return ret;
-> +}
-> +
-> +static int vfio_do_svm_task(struct vfio_iommu *iommu, void *data,
-> +				int (*fn)(struct device *, void *))
-> +{
-> +	int ret = 0;
-> +	struct vfio_domain *d;
-> +	struct vfio_group *g;
-> +	struct vfio_svm_task task;
-> +
-> +	task.payload = data;
-> +
-> +	mutex_lock(&iommu->lock);
-> +
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		list_for_each_entry(g, &d->group_list, next) {
-> +			if (g->iommu_group != NULL) {
-> +				task.domain = d->domain;
-> +				ret = iommu_group_for_each_dev(
-> +					g->iommu_group, &task, fn);
-> +				if (ret != 0)
-> +					break;
-> +			}
-> +		}
-> +	}
-> +
-> +	mutex_unlock(&iommu->lock);
-> +	return ret;
-> +}
-> +
->   static long vfio_iommu_type1_ioctl(void *iommu_data,
->   				   unsigned int cmd, unsigned long arg)
->   {
-> @@ -1582,6 +1626,34 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->   
->   		return copy_to_user((void __user *)arg, &unmap, minsz) ?
->   			-EFAULT : 0;
-> +	} else if (cmd == VFIO_IOMMU_SVM_BIND_TASK) {
-> +		struct vfio_device_svm hdr;
-> +		u8 *data = NULL;
-> +		int ret = 0;
-> +
-> +		minsz = offsetofend(struct vfio_device_svm, length);
-> +		if (copy_from_user(&hdr, (void __user *)arg, minsz))
-> +			return -EFAULT;
-> +
-> +		if (hdr.length == 0)
-> +			return -EINVAL;
-> +
-> +		data = memdup_user((void __user *)(arg + minsz),
-> +					hdr.length);
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> acpi_evaluate_dsm() and friends take a pointer to a raw buffer of 16
+> bytes. Instead we convert them to use uuid_le type. At the same time we
+> convert current users.
+>
+> acpi_str_to_uuid() becomes useless after the conversion and it's safe to
+> get rid of it.
+>
+> The conversion fixes a potential bug in int340x_thermal as well since
+> we have to use memcmp() on binary data.
+>
+> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Borislav Petkov <bp@suse.de>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: Amir Goldstein <amir73il@gmail.com>
+> Cc: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Ben Skeggs <bskeggs@redhat.com>
+> Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Adrian Hunter <adrian.hunter@intel.com>
+> Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Felipe Balbi <balbi@kernel.org>
+> Cc: Mathias Nyman <mathias.nyman@intel.com>
+> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+> index a15ec71d0423..6b5284ec76df 100644
+> --- a/drivers/usb/dwc3/dwc3-pci.c
+> +++ b/drivers/usb/dwc3/dwc3-pci.c
+> @@ -56,7 +56,7 @@ struct dwc3_pci {
+>  	struct platform_device *dwc3;
+>  	struct pci_dev *pci;
+>  
+> -	u8 uuid[16];
+> +	uuid_le uuid;
+>  
+>  	unsigned int has_dsm_for_pm:1;
+>  };
+> @@ -118,7 +118,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
+>  
+>  		if (pdev->device == PCI_DEVICE_ID_INTEL_BXT ||
+>  				pdev->device == PCI_DEVICE_ID_INTEL_BXT_M) {
+> -			acpi_str_to_uuid(PCI_INTEL_BXT_DSM_UUID, dwc->uuid);
+> +			uuid_le_to_bin(PCI_INTEL_BXT_DSM_UUID, &dwc->uuid);
+>  			dwc->has_dsm_for_pm = true;
+>  		}
+>  
+> @@ -288,7 +288,7 @@ static int dwc3_pci_dsm(struct dwc3_pci *dwc, int param)
+>  	tmp.type = ACPI_TYPE_INTEGER;
+>  	tmp.integer.value = param;
+>  
+> -	obj = acpi_evaluate_dsm(ACPI_HANDLE(&dwc->pci->dev), dwc->uuid,
+> +	obj = acpi_evaluate_dsm(ACPI_HANDLE(&dwc->pci->dev), &dwc->uuid,
+>  			1, PCI_INTEL_BXT_FUNC_PMU_PWR, &argv4);
+>  	if (!obj) {
+>  		dev_err(&dwc->pci->dev, "failed to evaluate _DSM\n");
 
-You should check the @length is at least sizeof(struct pasid_table_info) as
-kernel uses it as pasid_table_info, a evil application can crash kernel.
+Acked-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+
+-- 
+balbi
