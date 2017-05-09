@@ -1,51 +1,111 @@
-From: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
-Date: Mon, 8 May 2017 12:22:07 -0600
-Message-ID: <CAD8Lp46afzjYKyZqjVuLJ5pTV-PHU64d=mbwNgyWgcdq23iWjw@mail.gmail.com>
-References: <20170322112242.GK29659@8bytes.org>
-	<1490595427-11979-1-git-send-email-arindam.nath@amd.com>
-	<CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
-	<MWHPR12MB15186B0A864F247BFBEF8EAD9C340@MWHPR12MB1518.namprd12.prod.outlook.com>
-	<CAD8Lp47VQ0X0ydsGMrpTu-y4LAXfg9N7+Mzb0hDWDsKc2P-kQg@mail.gmail.com>
-	<MWHPR12MB15183AFF01D7D74109CC62FF9C0A0@MWHPR12MB1518.namprd12.prod.outlook.com>
+From: Xiao Guangrong <guangrong.xiao@gmail.com>
+Subject: Re: [RFC PATCH 6/8] VFIO: do pasid table binding
+Date: Tue, 9 May 2017 15:55:20 +0800
+Message-ID: <9441ea23-1867-f59a-1ae3-be5afa4d51da@gmail.com>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+ <1493201525-14418-7-git-send-email-yi.l.liu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <MWHPR12MB15183AFF01D7D74109CC62FF9C0A0-Gy0DoCVfaSXKu+HfpMNLNQdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1493201525-14418-7-git-send-email-yi.l.liu@intel.com>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com
+Cc: jasowang@redhat.com, qemu-devel@nongnu.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, jean-philippe.brucker@arm.com, "Liu, Yi L" <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 5, 2017 at 9:01 AM, Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org> wrote:
->
-> >-----Original Message-----
-> >From: Daniel Drake [mailto:drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org]
-> >Sent: Thursday, March 30, 2017 7:15 PM
-> >To: Nath, Arindam
-> >Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Deucher, Alexander; Bridgman, John; amd-
-> >gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit,
-> >Suravee; Linux Upstreaming Team
-> >Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
-> >
-> >On Thu, Mar 30, 2017 at 12:23 AM, Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-> >wrote:
-> >> Daniel, did you get chance to test this patch?
-> >
-> >Not yet. Should we test it alone or alongside "PCI: Blacklist AMD
-> >Stoney GPU devices for ATS"?
->
-> Daniel, any luck with this patch?
 
-Sorry for the delay. The patch appears to be working fine.
 
-Daniel
+On 04/26/2017 06:12 PM, Liu, Yi L wrote:
+> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+> 
+> This patch adds IOCTL processing in vfio_iommu_type1 for
+> VFIO_IOMMU_SVM_BIND_TASK. Binds the PASID table bind by
+> calling iommu_ops->bind_pasid_table to link the whole
+> PASID table to pIOMMU.
+> 
+> For VT-d, it is linking the guest PASID table to host pIOMMU.
+> This is key point to support SVM virtualization on VT-d.
+> 
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> ---
+>   drivers/vfio/vfio_iommu_type1.c | 72 +++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 72 insertions(+)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index b3cc33f..30b6d48 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -1512,6 +1512,50 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+>   	return ret;
+>   }
+>   
+> +struct vfio_svm_task {
+> +	struct iommu_domain *domain;
+> +	void *payload;
+> +};
+> +
+> +static int bind_pasid_tbl_fn(struct device *dev, void *data)
+> +{
+> +	int ret = 0;
+> +	struct vfio_svm_task *task = data;
+> +	struct pasid_table_info *pasidt_binfo;
+> +
+> +	pasidt_binfo = task->payload;
+> +	ret = iommu_bind_pasid_table(task->domain, dev, pasidt_binfo);
+> +	return ret;
+> +}
+> +
+> +static int vfio_do_svm_task(struct vfio_iommu *iommu, void *data,
+> +				int (*fn)(struct device *, void *))
+> +{
+> +	int ret = 0;
+> +	struct vfio_domain *d;
+> +	struct vfio_group *g;
+> +	struct vfio_svm_task task;
+> +
+> +	task.payload = data;
+> +
+> +	mutex_lock(&iommu->lock);
+> +
+> +	list_for_each_entry(d, &iommu->domain_list, next) {
+> +		list_for_each_entry(g, &d->group_list, next) {
+> +			if (g->iommu_group != NULL) {
+> +				task.domain = d->domain;
+> +				ret = iommu_group_for_each_dev(
+> +					g->iommu_group, &task, fn);
+> +				if (ret != 0)
+> +					break;
+> +			}
+> +		}
+> +	}
+> +
+> +	mutex_unlock(&iommu->lock);
+> +	return ret;
+> +}
+> +
+>   static long vfio_iommu_type1_ioctl(void *iommu_data,
+>   				   unsigned int cmd, unsigned long arg)
+>   {
+> @@ -1582,6 +1626,34 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>   
+>   		return copy_to_user((void __user *)arg, &unmap, minsz) ?
+>   			-EFAULT : 0;
+> +	} else if (cmd == VFIO_IOMMU_SVM_BIND_TASK) {
+> +		struct vfio_device_svm hdr;
+> +		u8 *data = NULL;
+> +		int ret = 0;
+> +
+> +		minsz = offsetofend(struct vfio_device_svm, length);
+> +		if (copy_from_user(&hdr, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (hdr.length == 0)
+> +			return -EINVAL;
+> +
+> +		data = memdup_user((void __user *)(arg + minsz),
+> +					hdr.length);
+
+You should check the @length is at least sizeof(struct pasid_table_info) as
+kernel uses it as pasid_table_info, a evil application can crash kernel.
