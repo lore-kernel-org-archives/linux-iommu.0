@@ -1,7 +1,8 @@
 From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [v4 1/4] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model definition.
-Date: Tue,  9 May 2017 17:15:11 +0530
-Message-ID: <1494330314-30179-2-git-send-email-gakula@caviumnetworks.com>
+Subject: [v4 2/4] ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2
+	SMMUv3 model
+Date: Tue,  9 May 2017 17:15:12 +0530
+Message-ID: <1494330314-30179-3-git-send-email-gakula@caviumnetworks.com>
 References: <1494330314-30179-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,26 +24,40 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Add SMMUv3 model definition for ThunderX2.
+Cavium ThunderX2 implementation doesn't support second page in SMMU
+register space. Hence, resource size is set as 64k for this model.
 
 Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 ---
- include/acpi/actbl2.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/acpi/arm64/iort.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index faa9f2c..76a6f5d 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -779,6 +779,8 @@ struct acpi_iort_smmu {
- #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
- #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index c5fecf9..23c5350 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -833,12 +833,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
+ {
+ 	struct acpi_iort_smmu_v3 *smmu;
+ 	int num_res = 0;
++	unsigned long size = SZ_128K;
  
-+#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000002 /* Cavium ThunderX2 SMMUv3 */
+ 	/* Retrieve SMMUv3 specific data */
+ 	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+ 
++	/*
++	 * Override the size, for Cavium ThunderX2 implementation
++	 * which doesn't support the page 1 SMMU register space.
++	 */
++	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
++		size = SZ_64K;
 +
- /* Masks for Flags field above */
+ 	res[num_res].start = smmu->base_address;
+-	res[num_res].end = smmu->base_address + SZ_128K - 1;
++	res[num_res].end = smmu->base_address + size - 1;
+ 	res[num_res].flags = IORESOURCE_MEM;
  
- #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
+ 	num_res++;
 -- 
 1.8.3.1
