@@ -1,55 +1,214 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: userspace emulated smmu/vfio integration: how to trap updates to
- the table structures?
-Date: Tue, 9 May 2017 15:48:05 +0200
-Message-ID: <54faea49-b939-5172-7e14-5df981916f64@redhat.com>
-References: <52559520-f311-71de-a849-cac83d0c0e81@redhat.com>
- <20170502202537-mutt-send-email-mst@kernel.org>
+From: Linu Cherian <linu.cherian@cavium.com>
+Subject: Re: [v4 3/4] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
+ erratum #74
+Date: Tue, 9 May 2017 19:18:56 +0530
+Message-ID: <20170509134856.GA1090@virtx40>
+References: <1494330314-30179-1-git-send-email-gakula@caviumnetworks.com>
+ <1494330314-30179-4-git-send-email-gakula@caviumnetworks.com>
+ <bd0b9567-ccc5-8bf2-b113-d0f7a1ab2ed2@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20170502202537-mutt-send-email-mst@kernel.org>
-Sender: kvm-owner@vger.kernel.org
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <Jean-Philippe.Brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Christoffer Dall <christoffer.dall@linaro.org>, Marc Zyngier <Marc.Zyngier@arm.com>, Alex Williamson <alex.williamson@redhat.com>, Peter Xu <peterx@redhat.com>, Andrew Jones <drjones@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <bd0b9567-ccc5-8bf2-b113-d0f7a1ab2ed2@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Geetha sowjanya <gakula@caviumnetworks.com>, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Michael,
-
-On 02/05/2017 19:36, Michael S. Tsirkin wrote:
-> On Tue, May 02, 2017 at 09:30:39AM +0200, Auger Eric wrote:
->> Hi Will, Robin, Jean-Philippe,
->>
->> I have been working on the integration between user-space emulated
->> SMMU-v3 and VFIO in QEMU. At the moment I fail identifying a proper easy
->> way to trap page table updates. This is requested to keep the host
->> translation structures consistent to guest translation structures.
->>
->> On Intel VTD there is a so-called "caching mode" (CM, see VTD spec
->> paragraph 6.1) that forces the OS to explicitly invalidate caches
->> whenever it updates any remapping structure (updates to not-present or
->> present entries). Those invalidation commands are used to trap and
->> update host structures. This mode was devised for virtualization. I was
->> not able to find such "caching mode" on ARM SMMU. Is there any?
->>
->> If not, do you have any other suggestion, I mean, besides the
->> virtio-based solution.
->>
->> Thanks
->>
->> Eric
+On Tue May 09, 2017 at 02:02:58PM +0100, Robin Murphy wrote:
+> On 09/05/17 12:45, Geetha sowjanya wrote:
+> > From: Linu Cherian <linu.cherian@cavium.com>
+> > 
+> > Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
+> > and PAGE0_REGS_ONLY option is enabled as an errata workaround.
+> > This option when turned on, replaces all page 1 offsets used for
+> > EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
+> > 
+> > SMMU resource size checks are now based on SMMU option PAGE0_REGS_ONLY,
+> > since resource size can be either 64k/128k.
+> > For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
+> > platform_get_resource call, so that SMMU options are set beforehand.
+> > 
+> > Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+> > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> > ---
+> >  Documentation/arm64/silicon-errata.txt             |  1 +
+> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 ++
+> >  drivers/iommu/arm-smmu-v3.c                        | 80 ++++++++++++++++------
+> >  3 files changed, 66 insertions(+), 21 deletions(-)
+> > 
+> > diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+> > index 10f2ddd..4693a32 100644
+> > --- a/Documentation/arm64/silicon-errata.txt
+> > +++ b/Documentation/arm64/silicon-errata.txt
+> > @@ -62,6 +62,7 @@ stable kernels.
+> >  | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154        |
+> >  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
+> >  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
+> > +| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
+> >  |                |                 |                 |                             |
+> >  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
+> >  |                |                 |                 |                             |
+> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> > index be57550..e6da62b 100644
+> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> > @@ -49,6 +49,12 @@ the PCIe specification.
+> >  - hisilicon,broken-prefetch-cmd
+> >                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
+> >  
+> > +- cavium-cn99xx,broken-page1-regspace
+> > +                    : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
+> > +						PRIQ_PROD/CONS register access with page 0 offsets.
+> > +						Set for Caviun ThunderX2 silicon that doesn't support
+> > +						SMMU page1 register space.
+> > +
+> >  ** Example
+> >  
+> >          smmu@2b400000 {
+> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> > index 380969a..1e986a0 100644
+> > --- a/drivers/iommu/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm-smmu-v3.c
+> > @@ -176,15 +176,15 @@
+> >  #define ARM_SMMU_CMDQ_CONS		0x9c
+> >  
+> >  #define ARM_SMMU_EVTQ_BASE		0xa0
+> > -#define ARM_SMMU_EVTQ_PROD		0x100a8
+> > -#define ARM_SMMU_EVTQ_CONS		0x100ac
+> > +#define ARM_SMMU_EVTQ_PROD(smmu)	(page1_offset_adjust(0x100a8, smmu))
+> > +#define ARM_SMMU_EVTQ_CONS(smmu)	(page1_offset_adjust(0x100ac, smmu))
 > 
-> Does SMMU hardware have nested page table support?
-> Some IOMMUs have this.
-Sorry for the delay. Yes it has and was supposed to serve that use case;
-but using the feature was not advised as far as I understand.
-
-Thanks
-
-Eric
+> Sorry, perhaps I should have communicated the rest of the idea more
+> explicitly - you now don't need to change these definitions...
 > 
-> If yes then for some workloads this has the potential to perform better
-> than the invalidation hack with host SMMU performing nested translations
-> using guest page tables.
+
+Fine. 
+
+
+> >  #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
+> >  #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
+> >  #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
+> >  
+> >  #define ARM_SMMU_PRIQ_BASE		0xc0
+> > -#define ARM_SMMU_PRIQ_PROD		0x100c8
+> > -#define ARM_SMMU_PRIQ_CONS		0x100cc
+> > +#define ARM_SMMU_PRIQ_PROD(smmu)	(page1_offset_adjust(0x100c8, smmu))
+> > +#define ARM_SMMU_PRIQ_CONS(smmu)	(page1_offset_adjust(0x100cc, smmu))
+> >  #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
+> >  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
+> >  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+> > @@ -412,6 +412,9 @@
+> >  #define MSI_IOVA_BASE			0x8000000
+> >  #define MSI_IOVA_LENGTH			0x100000
+> >  
+> > +#define ARM_SMMU_PAGE0_REGS_ONLY(smmu)		\
+> > +	((smmu)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
+> > +
+> >  static bool disable_bypass;
+> >  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+> >  MODULE_PARM_DESC(disable_bypass,
+> > @@ -597,6 +600,7 @@ struct arm_smmu_device {
+> >  	u32				features;
+> >  
+> >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> > +#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
+> >  	u32				options;
+> >  
+> >  	struct arm_smmu_cmdq		cmdq;
+> > @@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
+> >  
+> >  static struct arm_smmu_option_prop arm_smmu_options[] = {
+> >  	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+> > +	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium-cn99xx,broken-page1-regspace"},
+> >  	{ 0, NULL},
+> >  };
+> >  
+> > +static inline unsigned long page1_offset_adjust(
+> > +	unsigned long off, struct arm_smmu_device *smmu)
+> > +{
+> > +	if (off > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+> > +		return (off - SZ_64K);
+> > +
+> > +	return off;
+> > +}
+> > +
+> >  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+> >  {
+> >  	return container_of(dom, struct arm_smmu_domain, domain);
+> > @@ -1986,8 +2000,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+> >  		return ret;
+> >  
+> >  	/* evtq */
+> > -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
+> > -				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
+> > +	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
+> > +				      ARM_SMMU_EVTQ_PROD(smmu),
+> > +				      ARM_SMMU_EVTQ_CONS(smmu),
+> > +				      EVTQ_ENT_DWORDS);
 > 
+> ...or these callsites; you can just use page1_offset_adjust() directly
+> within arm_smmu_init_one_queue(), i.e.
+
+> 
+> 
+>        q->prod_reg = smmu->base + page1_offset_adjust(prod_off, smmu);
+>        q->cons_reg = smmu->base + page1_offset_adjust(cons_off, smmu);
+> 
+> because it won't affect page 0 offsets either way.
+> 
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > @@ -1995,8 +2011,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+> >  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+> >  		return 0;
+> >  
+> > -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
+> > -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
+> > +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q,
+> > +				       ARM_SMMU_PRIQ_PROD(smmu),
+> > +				       ARM_SMMU_PRIQ_CONS(smmu),
+> > +				       PRIQ_ENT_DWORDS);
+> >  }
+> >  
+> >  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+> > @@ -2363,8 +2381,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+> >  
+> >  	/* Event queue */
+> >  	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+> > -	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
+> > -	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
+> > +	writel_relaxed(smmu->evtq.q.prod, smmu->base +
+> > +		       ARM_SMMU_EVTQ_PROD(smmu));
+> 
+> And correspondingly just use page1_offset_adjust(ARM_SMMU_EVTQ_*, smmu)
+> explicitly for these writes.
+> 
+> In fact, if all the potential callsites are immediately converting the
+> offset into an address, then it may be worth just factoring that into
+> the helper as well, something like:
+> 
+> static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+> 					struct arm_smmu_device *smmu)
+> {
+> 	if (offset > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+> 		offset -= SZ_64K;
+> 
+> 	return smmu->base + offset;
+> }
+> 
+> What do you reckon?
+> 
+
+Just had a opinion that, replacing all page1 offset macros(ARM_SMMU_EVTQ/PRIQ_PROD/CONS) with
+page1_offset_adjust(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu) will make the changes 
+more uniform. In that case, we wont need, offset > SZ_64K  check as
+well.
+
+Hope the intention is not to change the offset definitions.
+
+
+-- 
+Linu cherian
