@@ -1,214 +1,939 @@
-From: Linu Cherian <linu.cherian@cavium.com>
-Subject: Re: [v4 3/4] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
- erratum #74
-Date: Tue, 9 May 2017 19:18:56 +0530
-Message-ID: <20170509134856.GA1090@virtx40>
-References: <1494330314-30179-1-git-send-email-gakula@caviumnetworks.com>
- <1494330314-30179-4-git-send-email-gakula@caviumnetworks.com>
- <bd0b9567-ccc5-8bf2-b113-d0f7a1ab2ed2@arm.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 3/4] iommu: add qcom_iommu
+Date: Tue,  9 May 2017 10:23:10 -0400
+Message-ID: <20170509142310.10535-1-robdclark@gmail.com>
+References: <20170505182151.22931-1-robdclark@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <bd0b9567-ccc5-8bf2-b113-d0f7a1ab2ed2@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Geetha sowjanya <gakula@caviumnetworks.com>, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170505182151.22931-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue May 09, 2017 at 02:02:58PM +0100, Robin Murphy wrote:
-> On 09/05/17 12:45, Geetha sowjanya wrote:
-> > From: Linu Cherian <linu.cherian@cavium.com>
-> > 
-> > Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
-> > and PAGE0_REGS_ONLY option is enabled as an errata workaround.
-> > This option when turned on, replaces all page 1 offsets used for
-> > EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
-> > 
-> > SMMU resource size checks are now based on SMMU option PAGE0_REGS_ONLY,
-> > since resource size can be either 64k/128k.
-> > For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
-> > platform_get_resource call, so that SMMU options are set beforehand.
-> > 
-> > Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
-> > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
-> > ---
-> >  Documentation/arm64/silicon-errata.txt             |  1 +
-> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 ++
-> >  drivers/iommu/arm-smmu-v3.c                        | 80 ++++++++++++++++------
-> >  3 files changed, 66 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-> > index 10f2ddd..4693a32 100644
-> > --- a/Documentation/arm64/silicon-errata.txt
-> > +++ b/Documentation/arm64/silicon-errata.txt
-> > @@ -62,6 +62,7 @@ stable kernels.
-> >  | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154        |
-> >  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
-> >  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
-> > +| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
-> >  |                |                 |                 |                             |
-> >  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
-> >  |                |                 |                 |                             |
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > index be57550..e6da62b 100644
-> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > @@ -49,6 +49,12 @@ the PCIe specification.
-> >  - hisilicon,broken-prefetch-cmd
-> >                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
-> >  
-> > +- cavium-cn99xx,broken-page1-regspace
-> > +                    : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
-> > +						PRIQ_PROD/CONS register access with page 0 offsets.
-> > +						Set for Caviun ThunderX2 silicon that doesn't support
-> > +						SMMU page1 register space.
-> > +
-> >  ** Example
-> >  
-> >          smmu@2b400000 {
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> > index 380969a..1e986a0 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -176,15 +176,15 @@
-> >  #define ARM_SMMU_CMDQ_CONS		0x9c
-> >  
-> >  #define ARM_SMMU_EVTQ_BASE		0xa0
-> > -#define ARM_SMMU_EVTQ_PROD		0x100a8
-> > -#define ARM_SMMU_EVTQ_CONS		0x100ac
-> > +#define ARM_SMMU_EVTQ_PROD(smmu)	(page1_offset_adjust(0x100a8, smmu))
-> > +#define ARM_SMMU_EVTQ_CONS(smmu)	(page1_offset_adjust(0x100ac, smmu))
-> 
-> Sorry, perhaps I should have communicated the rest of the idea more
-> explicitly - you now don't need to change these definitions...
-> 
+An iommu driver for Qualcomm "B" family devices which do not completely
+implement the ARM SMMU spec.  These devices have context-bank register
+layout that is similar to ARM SMMU, but no global register space (or at
+least not one that is accessible).
 
-Fine. 
+Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+v1: original
+v2: bindings cleanups and kconfig issues that kbuild robot pointed out
+v4: fix issues pointed out by Rob H. and actually make device removal
+    work
+v3: fix WARN_ON() splats reported by Archit
+v4: some fixes to build as a module.. note that it cannot actually
+    be built as a module yet (at minimum a bunch of other iommu syms
+    that are needed are not exported, but there may be more to it
+    than that), but at least qcom_iommu is ready should it become
+    possible to build iommu drivers as modules.
 
+ drivers/iommu/Kconfig      |  10 +
+ drivers/iommu/Makefile     |   1 +
+ drivers/iommu/qcom_iommu.c | 855 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 866 insertions(+)
+ create mode 100644 drivers/iommu/qcom_iommu.c
 
-> >  #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
-> >  #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
-> >  #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
-> >  
-> >  #define ARM_SMMU_PRIQ_BASE		0xc0
-> > -#define ARM_SMMU_PRIQ_PROD		0x100c8
-> > -#define ARM_SMMU_PRIQ_CONS		0x100cc
-> > +#define ARM_SMMU_PRIQ_PROD(smmu)	(page1_offset_adjust(0x100c8, smmu))
-> > +#define ARM_SMMU_PRIQ_CONS(smmu)	(page1_offset_adjust(0x100cc, smmu))
-> >  #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
-> >  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
-> >  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
-> > @@ -412,6 +412,9 @@
-> >  #define MSI_IOVA_BASE			0x8000000
-> >  #define MSI_IOVA_LENGTH			0x100000
-> >  
-> > +#define ARM_SMMU_PAGE0_REGS_ONLY(smmu)		\
-> > +	((smmu)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
-> > +
-> >  static bool disable_bypass;
-> >  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
-> >  MODULE_PARM_DESC(disable_bypass,
-> > @@ -597,6 +600,7 @@ struct arm_smmu_device {
-> >  	u32				features;
-> >  
-> >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> > +#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
-> >  	u32				options;
-> >  
-> >  	struct arm_smmu_cmdq		cmdq;
-> > @@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
-> >  
-> >  static struct arm_smmu_option_prop arm_smmu_options[] = {
-> >  	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
-> > +	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium-cn99xx,broken-page1-regspace"},
-> >  	{ 0, NULL},
-> >  };
-> >  
-> > +static inline unsigned long page1_offset_adjust(
-> > +	unsigned long off, struct arm_smmu_device *smmu)
-> > +{
-> > +	if (off > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
-> > +		return (off - SZ_64K);
-> > +
-> > +	return off;
-> > +}
-> > +
-> >  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> >  {
-> >  	return container_of(dom, struct arm_smmu_domain, domain);
-> > @@ -1986,8 +2000,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
-> >  		return ret;
-> >  
-> >  	/* evtq */
-> > -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
-> > -				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
-> > +	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
-> > +				      ARM_SMMU_EVTQ_PROD(smmu),
-> > +				      ARM_SMMU_EVTQ_CONS(smmu),
-> > +				      EVTQ_ENT_DWORDS);
-> 
-> ...or these callsites; you can just use page1_offset_adjust() directly
-> within arm_smmu_init_one_queue(), i.e.
-
-> 
-> 
->        q->prod_reg = smmu->base + page1_offset_adjust(prod_off, smmu);
->        q->cons_reg = smmu->base + page1_offset_adjust(cons_off, smmu);
-> 
-> because it won't affect page 0 offsets either way.
-> 
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > @@ -1995,8 +2011,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
-> >  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
-> >  		return 0;
-> >  
-> > -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
-> > -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
-> > +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q,
-> > +				       ARM_SMMU_PRIQ_PROD(smmu),
-> > +				       ARM_SMMU_PRIQ_CONS(smmu),
-> > +				       PRIQ_ENT_DWORDS);
-> >  }
-> >  
-> >  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
-> > @@ -2363,8 +2381,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-> >  
-> >  	/* Event queue */
-> >  	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> > -	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
-> > -	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
-> > +	writel_relaxed(smmu->evtq.q.prod, smmu->base +
-> > +		       ARM_SMMU_EVTQ_PROD(smmu));
-> 
-> And correspondingly just use page1_offset_adjust(ARM_SMMU_EVTQ_*, smmu)
-> explicitly for these writes.
-> 
-> In fact, if all the potential callsites are immediately converting the
-> offset into an address, then it may be worth just factoring that into
-> the helper as well, something like:
-> 
-> static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
-> 					struct arm_smmu_device *smmu)
-> {
-> 	if (offset > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
-> 		offset -= SZ_64K;
-> 
-> 	return smmu->base + offset;
-> }
-> 
-> What do you reckon?
-> 
-
-Just had a opinion that, replacing all page1 offset macros(ARM_SMMU_EVTQ/PRIQ_PROD/CONS) with
-page1_offset_adjust(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu) will make the changes 
-more uniform. In that case, we wont need, offset > SZ_64K  check as
-well.
-
-Hope the intention is not to change the offset definitions.
-
-
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 37e204f..55d68c9 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -359,4 +359,14 @@ config MTK_IOMMU_V1
+ 
+ 	  if unsure, say N here.
+ 
++config QCOM_IOMMU
++	# Note: iommu drivers cannot (yet?) be built as modules
++	bool "Qualcomm IOMMU Support"
++	depends on ARCH_QCOM || COMPILE_TEST
++	select IOMMU_API
++	select IOMMU_IO_PGTABLE_LPAE
++	select ARM_DMA_USE_IOMMU
++	help
++	  Support for IOMMU on certain Qualcomm SoCs.
++
+ endif # IOMMU_SUPPORT
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 195f7b9..b910aea 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -27,3 +27,4 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
+ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
++obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+new file mode 100644
+index 0000000..85fe364
+--- /dev/null
++++ b/drivers/iommu/qcom_iommu.c
+@@ -0,0 +1,855 @@
++/*
++ * IOMMU API for QCOM secure IOMMUs.  Somewhat based on arm-smmu.c
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ * Copyright (C) 2013 ARM Limited
++ * Copyright (C) 2017 Red Hat
++ */
++
++#include <linux/atomic.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/dma-iommu.h>
++#include <linux/dma-mapping.h>
++#include <linux/err.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/io-64-nonatomic-hi-lo.h>
++#include <linux/iommu.h>
++#include <linux/iopoll.h>
++#include <linux/kconfig.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/of.h>
++#include <linux/of_address.h>
++#include <linux/of_device.h>
++#include <linux/of_iommu.h>
++#include <linux/platform_device.h>
++#include <linux/pm.h>
++#include <linux/pm_runtime.h>
++#include <linux/qcom_scm.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++
++#include "io-pgtable.h"
++#include "arm-smmu-regs.h"
++
++#define SMMU_INTR_SEL_NS     0x2000
++
++struct qcom_iommu_dev {
++	/* IOMMU core code handle */
++	struct iommu_device	 iommu;
++	struct device		*dev;
++	struct clk		*iface_clk;
++	struct clk		*bus_clk;
++	void __iomem		*local_base;
++	u32			 sec_id;
++	struct list_head	 context_list;   /* list of qcom_iommu_context */
++};
++
++struct qcom_iommu_ctx {
++	struct device		*dev;
++	void __iomem		*base;
++	unsigned int		 irq;
++	bool			 secure_init;
++	u32			 asid;      /* asid and ctx bank # are 1:1 */
++	struct iommu_group	*group;
++	struct list_head	 node;      /* head in qcom_iommu_device::context_list */
++};
++
++struct qcom_iommu_domain {
++	struct io_pgtable_ops	*pgtbl_ops;
++	spinlock_t		 pgtbl_lock;
++	struct mutex		 init_mutex; /* Protects iommu pointer */
++	struct iommu_domain	 domain;
++	struct qcom_iommu_dev	*iommu;
++};
++
++static struct qcom_iommu_domain *to_qcom_iommu_domain(struct iommu_domain *dom)
++{
++	return container_of(dom, struct qcom_iommu_domain, domain);
++}
++
++static const struct iommu_ops qcom_iommu_ops;
++
++static struct qcom_iommu_dev * __to_iommu(struct iommu_fwspec *fwspec)
++{
++	if (!fwspec || fwspec->ops != &qcom_iommu_ops)
++		return NULL;
++	return fwspec->iommu_priv;
++}
++
++static struct qcom_iommu_dev * to_iommu(struct iommu_fwspec *fwspec)
++{
++	struct qcom_iommu_dev *qcom_iommu = __to_iommu(fwspec);
++	WARN_ON(!qcom_iommu);
++	return qcom_iommu;
++}
++
++static struct qcom_iommu_ctx * to_ctx(struct iommu_fwspec *fwspec, unsigned asid)
++{
++	struct qcom_iommu_dev *qcom_iommu = to_iommu(fwspec);
++	struct qcom_iommu_ctx *ctx;
++
++	if (!qcom_iommu)
++		return NULL;
++
++	list_for_each_entry(ctx, &qcom_iommu->context_list, node)
++		if (ctx->asid == asid)
++			return ctx;
++
++	WARN(1, "no ctx for asid %u\n", asid);
++	return NULL;
++}
++
++static inline void
++iommu_writel(struct qcom_iommu_ctx *ctx, unsigned reg, u32 val)
++{
++	writel_relaxed(val, ctx->base + reg);
++}
++
++static inline void
++iommu_writeq(struct qcom_iommu_ctx *ctx, unsigned reg, u64 val)
++{
++	writeq_relaxed(val, ctx->base + reg);
++}
++
++static inline u32
++iommu_readl(struct qcom_iommu_ctx *ctx, unsigned reg)
++{
++	return readl_relaxed(ctx->base + reg);
++}
++
++static inline u64
++iommu_readq(struct qcom_iommu_ctx *ctx, unsigned reg)
++{
++	return readq_relaxed(ctx->base + reg);
++}
++
++static void __sync_tlb(struct qcom_iommu_ctx *ctx)
++{
++	unsigned int val;
++	unsigned int ret;
++
++	iommu_writel(ctx, ARM_SMMU_CB_TLBSYNC, 0);
++
++	ret = readl_poll_timeout(ctx->base + ARM_SMMU_CB_TLBSTATUS, val,
++				 (val & 0x1) == 0, 0, 5000000);
++	if (ret)
++		dev_err(ctx->dev, "timeout waiting for TLB SYNC\n");
++}
++
++static void qcom_iommu_tlb_sync(void *cookie)
++{
++	struct iommu_fwspec *fwspec = cookie;
++	unsigned i;
++
++	for (i = 0; i < fwspec->num_ids; i++)
++		__sync_tlb(to_ctx(fwspec, fwspec->ids[i]));
++}
++
++static void qcom_iommu_tlb_inv_context(void *cookie)
++{
++	struct iommu_fwspec *fwspec = cookie;
++	unsigned i;
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
++
++		iommu_writel(ctx, ARM_SMMU_CB_S1_TLBIASID, ctx->asid);
++		__sync_tlb(ctx);
++	}
++}
++
++static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
++					    size_t granule, bool leaf, void *cookie)
++{
++	struct iommu_fwspec *fwspec = cookie;
++	unsigned i, reg;
++
++	reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
++		size_t s = size;
++
++		iova &= ~12UL;
++		iova |= ctx->asid;
++		do {
++			iommu_writel(ctx, reg, iova);
++			iova += granule;
++		} while (s -= granule);
++	}
++}
++
++static const struct iommu_gather_ops qcom_gather_ops = {
++	.tlb_flush_all	= qcom_iommu_tlb_inv_context,
++	.tlb_add_flush	= qcom_iommu_tlb_inv_range_nosync,
++	.tlb_sync	= qcom_iommu_tlb_sync,
++};
++
++static irqreturn_t qcom_iommu_fault(int irq, void *dev)
++{
++	struct qcom_iommu_ctx *ctx = dev;
++	u32 fsr, fsynr;
++	unsigned long iova;
++
++	fsr = iommu_readl(ctx, ARM_SMMU_CB_FSR);
++
++	if (!(fsr & FSR_FAULT))
++		return IRQ_NONE;
++
++	fsynr = iommu_readl(ctx, ARM_SMMU_CB_FSYNR0);
++	iova = iommu_readq(ctx, ARM_SMMU_CB_FAR);
++
++	dev_err_ratelimited(ctx->dev,
++			    "Unhandled context fault: fsr=0x%x, "
++			    "iova=0x%08lx, fsynr=0x%x, cb=%d\n",
++			    fsr, iova, fsynr, ctx->asid);
++
++	iommu_writel(ctx, ARM_SMMU_CB_FSR, fsr);
++
++	return IRQ_HANDLED;
++}
++
++static int qcom_iommu_init_domain(struct iommu_domain *domain,
++				  struct qcom_iommu_dev *qcom_iommu,
++				  struct iommu_fwspec *fwspec)
++{
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++	struct io_pgtable_ops *pgtbl_ops;
++	struct io_pgtable_cfg pgtbl_cfg;
++	int i, ret = 0;
++	u32 reg;
++
++	mutex_lock(&qcom_domain->init_mutex);
++	if (qcom_domain->iommu)
++		goto out_unlock;
++
++	pgtbl_cfg = (struct io_pgtable_cfg) {
++		.pgsize_bitmap	= qcom_iommu_ops.pgsize_bitmap,
++		.ias		= 32,
++		.oas		= 40,
++		.tlb		= &qcom_gather_ops,
++		.iommu_dev	= qcom_iommu->dev,
++	};
++
++	qcom_domain->iommu = qcom_iommu;
++	pgtbl_ops = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &pgtbl_cfg, fwspec);
++	if (!pgtbl_ops) {
++		dev_err(qcom_iommu->dev, "failed to allocate pagetable ops\n");
++		ret = -ENOMEM;
++		goto out_clear_iommu;
++	}
++
++	/* Update the domain's page sizes to reflect the page table format */
++	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
++	domain->geometry.aperture_end = (1ULL << pgtbl_cfg.ias) - 1;
++	domain->geometry.force_aperture = true;
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
++
++		if (!ctx->secure_init) {
++			ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, ctx->asid);
++			if (ret) {
++				dev_err(qcom_iommu->dev, "secure init failed: %d\n", ret);
++				goto out_clear_iommu;
++			}
++			ctx->secure_init = true;
++		}
++
++		/* TTBRs */
++		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
++				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
++				((u64)ctx->asid << TTBRn_ASID_SHIFT));
++		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
++				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
++				((u64)ctx->asid << TTBRn_ASID_SHIFT));
++
++		/* TTBCR */
++		iommu_writel(ctx, ARM_SMMU_CB_TTBCR2,
++				(pgtbl_cfg.arm_lpae_s1_cfg.tcr >> 32) |
++				TTBCR2_SEP_UPSTREAM);
++		iommu_writel(ctx, ARM_SMMU_CB_TTBCR,
++				pgtbl_cfg.arm_lpae_s1_cfg.tcr);
++
++		/* MAIRs (stage-1 only) */
++		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0,
++				pgtbl_cfg.arm_lpae_s1_cfg.mair[0]);
++		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1,
++				pgtbl_cfg.arm_lpae_s1_cfg.mair[1]);
++
++		/* SCTLR */
++		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE |
++			SCTLR_M | SCTLR_S1_ASIDPNE;
++
++		if (IS_ENABLED(CONFIG_BIG_ENDIAN))
++			reg |= SCTLR_E;
++
++		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, reg);
++	}
++
++	mutex_unlock(&qcom_domain->init_mutex);
++
++	/* Publish page table ops for map/unmap */
++	qcom_domain->pgtbl_ops = pgtbl_ops;
++
++	return 0;
++
++out_clear_iommu:
++	qcom_domain->iommu = NULL;
++out_unlock:
++	mutex_unlock(&qcom_domain->init_mutex);
++	return ret;
++}
++
++static struct iommu_domain *qcom_iommu_domain_alloc(unsigned type)
++{
++	struct qcom_iommu_domain *qcom_domain;
++
++	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
++		return NULL;
++	/*
++	 * Allocate the domain and initialise some of its data structures.
++	 * We can't really do anything meaningful until we've added a
++	 * master.
++	 */
++	qcom_domain = kzalloc(sizeof(*qcom_domain), GFP_KERNEL);
++	if (!qcom_domain)
++		return NULL;
++
++	if (type == IOMMU_DOMAIN_DMA &&
++	    iommu_get_dma_cookie(&qcom_domain->domain)) {
++		kfree(qcom_domain);
++		return NULL;
++	}
++
++	mutex_init(&qcom_domain->init_mutex);
++	spin_lock_init(&qcom_domain->pgtbl_lock);
++
++	return &qcom_domain->domain;
++}
++
++static void qcom_iommu_domain_free(struct iommu_domain *domain)
++{
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++
++	if (WARN_ON(qcom_domain->iommu))    /* forgot to detach? */
++		return;
++
++	iommu_put_dma_cookie(domain);
++
++	free_io_pgtable_ops(qcom_domain->pgtbl_ops);
++
++	kfree(qcom_domain);
++}
++
++static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
++{
++	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev->iommu_fwspec);
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++	int ret;
++
++	if (!qcom_iommu) {
++		dev_err(dev, "cannot attach to IOMMU, is it on the same bus?\n");
++		return -ENXIO;
++	}
++
++	/* Ensure that the domain is finalized */
++	pm_runtime_get_sync(qcom_iommu->dev);
++	ret = qcom_iommu_init_domain(domain, qcom_iommu, dev->iommu_fwspec);
++	pm_runtime_put_sync(qcom_iommu->dev);
++	if (ret < 0)
++		return ret;
++
++	/*
++	 * Sanity check the domain. We don't support domains across
++	 * different IOMMUs.
++	 */
++	if (qcom_domain->iommu != qcom_iommu) {
++		dev_err(dev, "cannot attach to IOMMU %s while already "
++			"attached to domain on IOMMU %s\n",
++			dev_name(qcom_domain->iommu->dev),
++			dev_name(qcom_iommu->dev));
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct qcom_iommu_dev *qcom_iommu = to_iommu(fwspec);
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++	unsigned i;
++
++	if (!qcom_domain->iommu)
++		return;
++
++	pm_runtime_get_sync(qcom_iommu->dev);
++	for (i = 0; i < fwspec->num_ids; i++) {
++		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
++
++		/* Disable the context bank: */
++		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
++	}
++	pm_runtime_put_sync(qcom_iommu->dev);
++
++	qcom_domain->iommu = NULL;
++}
++
++static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
++			  phys_addr_t paddr, size_t size, int prot)
++{
++	int ret;
++	unsigned long flags;
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++	struct io_pgtable_ops *ops = qcom_domain->pgtbl_ops;
++
++	if (!ops)
++		return -ENODEV;
++
++	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
++	ret = ops->map(ops, iova, paddr, size, prot);
++	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
++	return ret;
++}
++
++static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
++			       size_t size)
++{
++	size_t ret;
++	unsigned long flags;
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++	struct io_pgtable_ops *ops = qcom_domain->pgtbl_ops;
++
++	if (!ops)
++		return 0;
++
++	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
++	ret = ops->unmap(ops, iova, size);
++	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
++	return ret;
++}
++
++static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
++					   dma_addr_t iova)
++{
++	phys_addr_t ret;
++	unsigned long flags;
++	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
++	struct io_pgtable_ops *ops = qcom_domain->pgtbl_ops;
++
++	if (!ops)
++		return 0;
++
++	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
++	ret = ops->iova_to_phys(ops, iova);
++	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
++
++	return ret;
++}
++
++static bool qcom_iommu_capable(enum iommu_cap cap)
++{
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
++		/*
++		 * Return true here as the SMMU can always send out coherent
++		 * requests.
++		 */
++		return true;
++	case IOMMU_CAP_NOEXEC:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static int qcom_iommu_add_device(struct device *dev)
++{
++	struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
++	struct iommu_group *group;
++	struct device_link *link;
++
++	if (!qcom_iommu)
++		return -ENODEV;
++
++	/*
++	 * Establish the link between iommu and master, so that the
++	 * iommu gets runtime enabled/disabled as per the master's
++	 * needs.
++	 */
++	link = device_link_add(dev, qcom_iommu->dev, DL_FLAG_PM_RUNTIME);
++	if (!link) {
++		dev_err(qcom_iommu->dev, "Unable to create device link between %s and %s\n",
++			dev_name(qcom_iommu->dev), dev_name(dev));
++		return -ENODEV;
++	}
++
++	group = iommu_group_get_for_dev(dev);
++	if (IS_ERR_OR_NULL(group))
++		return PTR_ERR_OR_ZERO(group);
++
++	iommu_group_put(group);
++	iommu_device_link(&qcom_iommu->iommu, dev);
++
++	return 0;
++}
++
++static void qcom_iommu_remove_device(struct device *dev)
++{
++	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev->iommu_fwspec);
++
++	if (!qcom_iommu)
++		return;
++
++	iommu_device_unlink(&qcom_iommu->iommu, dev);
++	iommu_group_remove_device(dev);
++	iommu_fwspec_free(dev);
++}
++
++static struct iommu_group *qcom_iommu_device_group(struct device *dev)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_group *group = NULL;
++	unsigned i;
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
++
++		if (group && ctx->group && group != ctx->group)
++			return ERR_PTR(-EINVAL);
++
++		group = ctx->group;
++	}
++
++	if (group)
++		return iommu_group_ref_get(group);
++
++	group = generic_device_group(dev);
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
++		ctx->group = iommu_group_ref_get(group);
++	}
++
++	return group;
++}
++
++static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
++{
++	struct platform_device *iommu_pdev;
++
++	if (args->args_count != 1) {
++		dev_err(dev, "incorrect number of iommu params found for %s "
++			"(found %d, expected 1)\n",
++			args->np->full_name, args->args_count);
++		return -EINVAL;
++	}
++
++	if (!dev->iommu_fwspec->iommu_priv) {
++		iommu_pdev = of_find_device_by_node(args->np);
++		if (WARN_ON(!iommu_pdev))
++			return -EINVAL;
++
++		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(iommu_pdev);
++	}
++
++	return iommu_fwspec_add_ids(dev, &args->args[0], 1);
++}
++
++static const struct iommu_ops qcom_iommu_ops = {
++	.capable	= qcom_iommu_capable,
++	.domain_alloc	= qcom_iommu_domain_alloc,
++	.domain_free	= qcom_iommu_domain_free,
++	.attach_dev	= qcom_iommu_attach_dev,
++	.detach_dev	= qcom_iommu_detach_dev,
++	.map		= qcom_iommu_map,
++	.unmap		= qcom_iommu_unmap,
++	.map_sg		= default_iommu_map_sg,
++	.iova_to_phys	= qcom_iommu_iova_to_phys,
++	.add_device	= qcom_iommu_add_device,
++	.remove_device	= qcom_iommu_remove_device,
++	.device_group	= qcom_iommu_device_group,
++	.of_xlate	= qcom_iommu_of_xlate,
++	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
++};
++
++static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
++{
++	int ret;
++
++	ret = clk_prepare_enable(qcom_iommu->iface_clk);
++	if (ret) {
++		dev_err(qcom_iommu->dev, "Couldn't enable iface_clk\n");
++		return ret;
++	}
++
++	ret = clk_prepare_enable(qcom_iommu->bus_clk);
++	if (ret) {
++		dev_err(qcom_iommu->dev, "Couldn't enable bus_clk\n");
++		clk_disable_unprepare(qcom_iommu->iface_clk);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
++{
++	clk_disable_unprepare(qcom_iommu->bus_clk);
++	clk_disable_unprepare(qcom_iommu->iface_clk);
++}
++
++static int qcom_iommu_ctx_probe(struct platform_device *pdev)
++{
++	struct qcom_iommu_ctx *ctx;
++	struct device *dev = &pdev->dev;
++	struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev->parent);
++	struct resource *res;
++	int ret;
++	u32 reg;
++
++	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
++	if (!ctx)
++		return -ENOMEM;
++
++	ctx->dev = dev;
++	platform_set_drvdata(pdev, ctx);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	ctx->base = devm_ioremap_resource(dev, res);
++	if (IS_ERR(ctx->base))
++		return PTR_ERR(ctx->base);
++
++	ctx->irq = platform_get_irq(pdev, 0);
++	if (ctx->irq < 0) {
++		dev_err(dev, "failed to get irq\n");
++		return -ENODEV;
++	}
++
++	ret = devm_request_irq(dev, ctx->irq,
++			       qcom_iommu_fault,
++			       IRQF_SHARED,
++			       "qcom-iommu-fault",
++			       ctx);
++	if (ret) {
++		dev_err(dev, "failed to request IRQ %u\n", ctx->irq);
++		return ret;
++	}
++
++	/* read the "reg" property directly to get the relative address
++	 * of the context bank, and calculate the asid from that:
++	 */
++	if (of_property_read_u32_index(dev->of_node, "reg", 0, &reg)) {
++		dev_err(dev, "missing reg property\n");
++		return -ENODEV;
++	}
++
++	ctx->asid = reg / 0x1000;      /* context banks are 0x1000 apart */
++
++	dev_dbg(dev, "found asid %u\n", ctx->asid);
++
++	list_add_tail(&ctx->node, &qcom_iommu->context_list);
++
++	return 0;
++}
++
++static int qcom_iommu_ctx_remove(struct platform_device *pdev)
++{
++	struct qcom_iommu_ctx *ctx = platform_get_drvdata(pdev);
++
++	iommu_group_put(ctx->group);
++	platform_set_drvdata(pdev, NULL);
++
++	list_del(&ctx->node);
++
++	return 0;
++}
++
++static const struct of_device_id ctx_of_match[] = {
++	{ .compatible = "qcom,msm-iommu-v1-ns" },
++	{ .compatible = "qcom,msm-iommu-v1-sec" },
++	{ /* sentinel */ }
++};
++
++static struct platform_driver qcom_iommu_ctx_driver = {
++	.driver	= {
++		.name		= "qcom-iommu-ctx",
++		.of_match_table	= of_match_ptr(ctx_of_match),
++	},
++	.probe	= qcom_iommu_ctx_probe,
++	.remove = qcom_iommu_ctx_remove,
++};
++
++static int qcom_iommu_device_probe(struct platform_device *pdev)
++{
++	struct qcom_iommu_dev *qcom_iommu;
++	struct device *dev = &pdev->dev;
++	struct resource *res;
++	int ret;
++
++	qcom_iommu = devm_kzalloc(dev, sizeof(*qcom_iommu), GFP_KERNEL);
++	if (!qcom_iommu)
++		return -ENOMEM;
++	qcom_iommu->dev = dev;
++
++	INIT_LIST_HEAD(&qcom_iommu->context_list);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (res)
++		qcom_iommu->local_base = devm_ioremap_resource(dev, res);
++
++	qcom_iommu->iface_clk = devm_clk_get(dev, "iface");
++	if (IS_ERR(qcom_iommu->iface_clk)) {
++		dev_err(dev, "failed to get iface clock\n");
++		return PTR_ERR(qcom_iommu->iface_clk);
++	}
++
++	qcom_iommu->bus_clk = devm_clk_get(dev, "bus");
++	if (IS_ERR(qcom_iommu->bus_clk)) {
++		dev_err(dev, "failed to get bus clock\n");
++		return PTR_ERR(qcom_iommu->bus_clk);
++	}
++
++	if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
++				 &qcom_iommu->sec_id)) {
++		dev_err(dev, "missing qcom,iommu-secure-id property\n");
++		return -ENODEV;
++	}
++
++	platform_set_drvdata(pdev, qcom_iommu);
++
++	/* register context bank devices, which are child nodes: */
++	ret = devm_of_platform_populate(dev);
++	if (ret) {
++		dev_err(dev, "Failed to populate iommu contexts\n");
++		return ret;
++	}
++
++	ret = iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
++				     dev_name(dev));
++	if (ret) {
++		dev_err(dev, "Failed to register iommu in sysfs\n");
++		return ret;
++	}
++
++	iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
++	iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
++
++	ret = iommu_device_register(&qcom_iommu->iommu);
++	if (ret) {
++		dev_err(dev, "Failed to register iommu\n");
++		return ret;
++	}
++
++	pm_runtime_enable(dev);
++	bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
++
++	if (qcom_iommu->local_base) {
++		pm_runtime_get_sync(dev);
++		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
++		pm_runtime_put_sync(dev);
++	}
++
++	return 0;
++}
++
++static int qcom_iommu_device_remove(struct platform_device *pdev)
++{
++	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
++
++	bus_set_iommu(&platform_bus_type, NULL);
++
++	pm_runtime_force_suspend(&pdev->dev);
++	platform_set_drvdata(pdev, NULL);
++	iommu_device_sysfs_remove(&qcom_iommu->iommu);
++	iommu_device_unregister(&qcom_iommu->iommu);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM
++static int qcom_iommu_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
++
++	return qcom_iommu_enable_clocks(qcom_iommu);
++}
++
++static int qcom_iommu_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
++
++	qcom_iommu_disable_clocks(qcom_iommu);
++
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops qcom_iommu_pm_ops = {
++	SET_RUNTIME_PM_OPS(qcom_iommu_suspend, qcom_iommu_resume, NULL)
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
++				pm_runtime_force_resume)
++};
++
++static const struct of_device_id qcom_iommu_of_match[] = {
++	{ .compatible = "qcom,msm-iommu-v1" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, qcom_iommu_of_match);
++
++static struct platform_driver qcom_iommu_driver = {
++	.driver	= {
++		.name		= "qcom-iommu",
++		.of_match_table	= of_match_ptr(qcom_iommu_of_match),
++		.pm		= &qcom_iommu_pm_ops,
++	},
++	.probe	= qcom_iommu_device_probe,
++	.remove	= qcom_iommu_device_remove,
++};
++
++static int __init qcom_iommu_init(void)
++{
++	int ret;
++
++	ret = platform_driver_register(&qcom_iommu_ctx_driver);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&qcom_iommu_driver);
++	if (ret)
++		platform_driver_unregister(&qcom_iommu_ctx_driver);
++
++	return ret;
++}
++
++static void __exit qcom_iommu_exit(void)
++{
++	platform_driver_unregister(&qcom_iommu_driver);
++	platform_driver_unregister(&qcom_iommu_ctx_driver);
++}
++
++module_init(qcom_iommu_init);
++module_exit(qcom_iommu_exit);
++
++IOMMU_OF_DECLARE(qcom_iommu_dev, "qcom,msm-iommu-v1", NULL);
++
++MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
++MODULE_LICENSE("GPL v2");
 -- 
-Linu cherian
+2.9.3
