@@ -1,14 +1,14 @@
-From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [v5 4/4] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
-	erratum #126
-Date: Wed, 10 May 2017 17:01:58 +0530
-Message-ID: <1494415918-13770-5-git-send-email-gakula@caviumnetworks.com>
-References: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com>
+From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
+Date: Wed, 10 May 2017 14:54:26 +0200
+Message-ID: <bc1237e2-3690-bc1e-b7bc-86b982c9058f@semihalf.com>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+	<20170227195441.5170-5-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1494415918-13770-1-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <20170227195441.5170-5-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,103 +18,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Hi Jean,
 
-Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
-lines for gerror, eventq and cmdq-sync.
+On 27.02.2017 20:54, Jean-Philippe Brucker wrote:
+> +/*
+> + * Returns -ENOSYS if ATS is not supported either by the device or by the SMMU
+> + */
+> +static int arm_smmu_enable_ats(struct arm_smmu_master_data *master)
+> +{
+> +	int ret;
+> +	size_t stu;
+> +	struct pci_dev *pdev;
+> +	struct arm_smmu_device *smmu = master->smmu;
+> +
+> +	if (!(smmu->features & ARM_SMMU_FEAT_ATS) || !dev_is_pci(master->dev))
+> +		return -ENOSYS;
+> +
+> +	pdev = to_pci_dev(master->dev);
+> +
+> +#ifdef CONFIG_PCI_ATS
+> +	if (!pdev->ats_cap)
+> +		return -ENOSYS;
+> +#else
+> +	return -ENOSYS;
+> +#endif
 
-This patch addresses the issue by checking if any interrupt sources are
-using same irq number, then they are registered as shared irqs.
+Nit: This deserves to be another helper in ats.c like:
 
-Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
- Documentation/arm64/silicon-errata.txt |  1 +
- drivers/iommu/arm-smmu-v3.c            | 29 +++++++++++++++++++++++++----
- 2 files changed, 26 insertions(+), 4 deletions(-)
+int pci_ats_supported(struct pci_dev *dev) {
+         if (!pdev->ats_cap)
+                 return 0;
 
-diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-index 4693a32..42422f6 100644
---- a/Documentation/arm64/silicon-errata.txt
-+++ b/Documentation/arm64/silicon-errata.txt
-@@ -63,6 +63,7 @@ stable kernels.
- | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
- | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
- | Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
-+| Cavium         | ThunderX2 SMMUv3| #126            | N/A                         |
- |                |                 |                 |                             |
- | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
- |                |                 |                 |                             |
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5836b72..6ae5d3b 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2232,6 +2232,25 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
- 	devm_add_action(dev, arm_smmu_free_msis, dev);
- }
- 
-+static int get_irq_flags(struct arm_smmu_device *smmu, int irq)
-+{
-+	int match_count = 0;
-+
-+	if (irq == smmu->evtq.q.irq)
-+		match_count++;
-+	if (irq == smmu->cmdq.q.irq)
-+		match_count++;
-+	if (irq == smmu->gerr_irq)
-+		match_count++;
-+	if (irq == smmu->priq.q.irq)
-+		match_count++;
-+
-+	if (match_count > 1)
-+		return IRQF_SHARED | IRQF_ONESHOT;
-+
-+	return IRQF_ONESHOT;
-+}
-+
- static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- {
- 	int ret, irq;
-@@ -2252,7 +2271,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 	if (irq) {
- 		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
- 						arm_smmu_evtq_thread,
--						IRQF_ONESHOT,
-+						get_irq_flags(smmu, irq),
- 						"arm-smmu-v3-evtq", smmu);
- 		if (ret < 0)
- 			dev_warn(smmu->dev, "failed to enable evtq irq\n");
-@@ -2261,7 +2280,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 	irq = smmu->cmdq.q.irq;
- 	if (irq) {
- 		ret = devm_request_irq(smmu->dev, irq,
--				       arm_smmu_cmdq_sync_handler, 0,
-+				       arm_smmu_cmdq_sync_handler,
-+					   get_irq_flags(smmu, irq),
- 				       "arm-smmu-v3-cmdq-sync", smmu);
- 		if (ret < 0)
- 			dev_warn(smmu->dev, "failed to enable cmdq-sync irq\n");
-@@ -2270,7 +2290,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 	irq = smmu->gerr_irq;
- 	if (irq) {
- 		ret = devm_request_irq(smmu->dev, irq, arm_smmu_gerror_handler,
--				       0, "arm-smmu-v3-gerror", smmu);
-+						get_irq_flags(smmu, irq),
-+						"arm-smmu-v3-gerror", smmu);
- 		if (ret < 0)
- 			dev_warn(smmu->dev, "failed to enable gerror irq\n");
- 	}
-@@ -2280,7 +2301,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 		if (irq) {
- 			ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
- 							arm_smmu_priq_thread,
--							IRQF_ONESHOT,
-+							get_irq_flags(smmu, irq),
- 							"arm-smmu-v3-priq",
- 							smmu);
- 			if (ret < 0)
--- 
-1.8.3.1
+         return 1;
+}
+
+Thanks,
+Tomasz
