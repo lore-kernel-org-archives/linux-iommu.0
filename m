@@ -1,71 +1,89 @@
-From: Robert Richter <robert.richter@cavium.com>
-Subject: Re: [PATCH v3 0/7] Cavium ThunderX2 SMMUv3 errata workarounds
-Date: Tue, 9 May 2017 18:07:29 +0200
-Message-ID: <20170509160729.GN16981@rric.localdomain>
-References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
- <20170505222250.GY16981@rric.localdomain>
- <20170508151536.GA27789@virtx40>
+From: Zhang Rui <rui.zhang@intel.com>
+Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
+Date: Wed, 10 May 2017 09:20:51 +0800
+Message-ID: <1494379251.2129.15.camel@intel.com>
+References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170508151536.GA27789@virtx40>
+In-Reply-To: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Linu Cherian <linu.cherian@cavium.com>
-Cc: Geetha sowjanya <gakula@caviumnetworks.com>, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, Charles.Garcia-Tobin@arm.com
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-acpi@vger.kernel.org, tpmdd-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org, linux-input@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-pci@vger.kernel.org, linux-usb@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Borislav Petkov <bp@suse.de>, Dan Williams <dan.j.williams@intel.com>, Amir Goldstein <amir73il@gmail.com>, Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, Ben Skeggs <bskeggs@redhat.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Joerg Roedel <joro@8bytes.org>, Adrian Hunter <adrian.hunter@intel.com>, Yisen Zhuang <yisen.zhuang@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, Felipe Balbi <balbi@kernel.org>, Mathias Nyman <mathias.nyman@intel.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08.05.17 20:45:36, Linu Cherian wrote:
-> On Sat May 06, 2017 at 12:22:50AM +0200, Robert Richter wrote:
-> > On 05.05.17 17:38:04, Geetha sowjanya wrote:
-> > > From: Linu Cherian <linu.cherian@cavium.com>
-> > > 
-> > > Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
-> > > 1. Errata ID #74
-> > >    SMMU register alias Page 1 is not implemented
-> > > 2. Errata ID #126
-> > >    SMMU doesnt support unique IRQ lines and also MSI for gerror, 
-> > >    eventq and cmdq-sync
-> > > 
-> > > The following patchset does software workaround for these two erratas.
-> > > 
-> > > This series is based on patchset. 
-> > > https://www.spinics.net/lists/arm-kernel/msg578443.html
-> > > 
-> > > Changes from v1:
-> > >  Since the use of MIDR register is rejected and SMMU_IIDR is broken on this 
-> > >  silicon, as suggested by Will Deacon modified the patches to use ThunderX2 
-> > >  SMMUv3 IORT model number to enable errata workaround.
-> > > 
-> > > Changes from v2:
-> > >  Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with 
-> > >  new SMMU option used to enable errata workaround.
-> > >  
-> > > Geetha Sowjanya (1):
-> > >   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
-> > > 
-> > > Linu Cherian (6):
-> > >   iommu/arm-smmu-v3: Introduce smmu option PAGE0_REGS_ONLY for ThunderX2
-> > >     errata#74.
-> > >   iommu/arm-smmu-v3: Do resource size checks based on SMMU option
-> > >     PAGE0_REGS_ONLY
-> > >   ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model definition.
-> > >   iommu/arm-smmu-v3: For ACPI based device probing, set PAGE0_REGS_ONLY
-> > >     option     for ThunderX2 SMMUv3 implementations.
-> > >   ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
-> > >     model
-> > >   arm64: Documentation: Add Cavium ThunderX2 SMMUv3 erratas
-> > 
-> > This split into patches does not look reasonable to me. 1 patch only
-> > for each workaround should be sufficient.
-> > 
+On Thu, 2017-05-04 at 12:21 +0300, Andy Shevchenko wrote:
+> acpi_evaluate_dsm() and friends take a pointer to a raw buffer of 16
+> bytes. Instead we convert them to use uuid_le type. At the same time
+> we
+> convert current users.
 > 
-> * Should we not atleast keep the changes in drivers/acpi/iort.c and
->  include/acpi/actbl2.h seperate, since they are outside smmuv3 driver ? 
+> acpi_str_to_uuid() becomes useless after the conversion and it's safe
+> to
+> get rid of it.
+> 
+> The conversion fixes a potential bug in int340x_thermal as well since
+> we have to use memcmp() on binary data.
+> 
+> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Borislav Petkov <bp@suse.de>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: Amir Goldstein <amir73il@gmail.com>
+> Cc: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Ben Skeggs <bskeggs@redhat.com>
+> Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Adrian Hunter <adrian.hunter@intel.com>
+> Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Felipe Balbi <balbi@kernel.org>
+> Cc: Mathias Nyman <mathias.nyman@intel.com>
+> Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> 
+> diff --git a/drivers/thermal/int340x_thermal/int3400_thermal.c
+> b/drivers/thermal/int340x_thermal/int3400_thermal.c
+> index 9413c4abf0b9..c0eb3bb19b23 100644
+> --- a/drivers/thermal/int340x_thermal/int3400_thermal.c
+> +++ b/drivers/thermal/int340x_thermal/int3400_thermal.c
+> @@ -23,7 +23,7 @@ enum int3400_thermal_uuid {
+>  	INT3400_THERMAL_MAXIMUM_UUID,
+>  };
+>  
+> -static u8 *int3400_thermal_uuids[INT3400_THERMAL_MAXIMUM_UUID] = {
+> +static const char
+> *int3400_thermal_uuids[INT3400_THERMAL_MAXIMUM_UUID] = {
+>  	"42A441D6-AE6A-462b-A84B-4A8CE79027D3",
+>  	"3A95C389-E4B8-4629-A526-C52C88626BAE",
+>  	"97C68AE7-15FA-499c-B8C9-5DA81D606E0A",
+> @@ -141,10 +141,10 @@ static int int3400_thermal_get_uuids(struct
+> int3400_thermal_priv *priv)
+>  		}
+>  
+>  		for (j = 0; j < INT3400_THERMAL_MAXIMUM_UUID; j++) {
+> -			u8 uuid[16];
+> +			uuid_le u;
+>  
+> -			acpi_str_to_uuid(int3400_thermal_uuids[j],
+> uuid);
+> -			if (!strncmp(uuid, objb->buffer.pointer,
+> 16)) {
+> +			uuid_le_to_bin(int3400_thermal_uuids[j],
+> &u);
+> +			if (!uuid_le_cmp(*(uuid_le *)objb-
+> >buffer.pointer), u) {
+>  				priv->uuid_bitmap |= (1 << j);
+>  				break;
+>  			}
+thanks for the fix.
 
-IMO both patches depend each other. You can't shrink the io space
-first without adjusting the offset when accessing it. At least the
-order should be changed. But since it is one workaround I would prefer
-also one patch.
+Acked-by: Zhang Rui <rui.zhang@intel.com>
 
--Robert
+-rui
