@@ -1,61 +1,232 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Wed, 10 May 2017 14:35:20 +0100
-Message-ID: <d4ad80e6-4654-710c-4b30-35fd81ab3f06@arm.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-5-jean-philippe.brucker@arm.com>
- <bc1237e2-3690-bc1e-b7bc-86b982c9058f@semihalf.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+From: Ashok Raj <ashok.raj@intel.com>
+Subject: [PATCH 1/2] PCI: Save properties required to handle FLR for replay purposes.
+Date: Wed, 10 May 2017 11:28:05 -0700
+Message-ID: <1494440886-8096-1-git-send-email-ashok.raj@intel.com>
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <bc1237e2-3690-bc1e-b7bc-86b982c9058f@semihalf.com>
 Sender: linux-pci-owner@vger.kernel.org
-To: Tomasz Nowicki <tn@semihalf.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>
+To: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org
+Cc: CQ Tang <cq.tang@intel.com>, Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>, David Woodhouse <dwm2@infradead.org>, iommu@lists.linux-foundation.org, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/05/17 13:54, Tomasz Nowicki wrote:
-> Hi Jean,
-> 
-> On 27.02.2017 20:54, Jean-Philippe Brucker wrote:
->> +/*
->> + * Returns -ENOSYS if ATS is not supported either by the device or by
->> the SMMU
->> + */
->> +static int arm_smmu_enable_ats(struct arm_smmu_master_data *master)
->> +{
->> +    int ret;
->> +    size_t stu;
->> +    struct pci_dev *pdev;
->> +    struct arm_smmu_device *smmu = master->smmu;
->> +
->> +    if (!(smmu->features & ARM_SMMU_FEAT_ATS) || !dev_is_pci(master->dev))
->> +        return -ENOSYS;
->> +
->> +    pdev = to_pci_dev(master->dev);
->> +
->> +#ifdef CONFIG_PCI_ATS
->> +    if (!pdev->ats_cap)
->> +        return -ENOSYS;
->> +#else
->> +    return -ENOSYS;
->> +#endif
-> 
-> Nit: This deserves to be another helper in ats.c like:
-> 
-> int pci_ats_supported(struct pci_dev *dev) {
->         if (!pdev->ats_cap)
->                 return 0;
-> 
->         return 1;
-> }
+From: CQ Tang <cq.tang@intel.com>
 
-Indeed, although in my next version I'll remove this check altogether.
-Instead I now rely on pci_enable_ats to check for ats_cap (as discussed in
-patch 3). The downside is that we can't distinguish between absence of ATS
-and error in enabling ATS. So we don't print a message in the latter case
-anymore, we expect device drivers to check whether ATS is enabled.
+Requires: https://patchwork.kernel.org/patch/9593891
 
-Thanks,
-Jean
+
+After a FLR, pci-states need to be restored. This patch saves PASID features
+and PRI reqs cached.
+
+Cc: Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>
+Cc: David Woodhouse <dwm2@infradead.org>
+Cc: iommu@lists.linux-foundation.org
+
+Signed-off-by: CQ Tang <cq.tang@intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+---
+ drivers/pci/ats.c       | 65 +++++++++++++++++++++++++++++++++++++------------
+ drivers/pci/pci.c       |  3 +++
+ include/linux/pci-ats.h | 10 ++++++++
+ include/linux/pci.h     |  6 +++++
+ 4 files changed, 69 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index 2126497..a769955 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -160,17 +160,16 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+ 	if (!pos)
+ 		return -EINVAL;
+ 
+-	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+ 	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+-	if ((control & PCI_PRI_CTRL_ENABLE) ||
+-	    !(status & PCI_PRI_STATUS_STOPPED))
++	if (!(status & PCI_PRI_STATUS_STOPPED))
+ 		return -EBUSY;
+ 
+ 	pci_read_config_dword(pdev, pos + PCI_PRI_MAX_REQ, &max_requests);
+ 	reqs = min(max_requests, reqs);
++	pdev->pri_reqs_alloc = reqs;
+ 	pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+ 
+-	control |= PCI_PRI_CTRL_ENABLE;
++	control = PCI_PRI_CTRL_ENABLE;
+ 	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+ 
+ 	pdev->pri_enabled = 1;
+@@ -206,6 +205,29 @@ void pci_disable_pri(struct pci_dev *pdev)
+ EXPORT_SYMBOL_GPL(pci_disable_pri);
+ 
+ /**
++ * pci_restore_pri_state - Restore PRI
++ * @pdev: PCI device structure
++ *
++ */
++void pci_restore_pri_state(struct pci_dev *pdev)
++{
++   u16 control = PCI_PRI_CTRL_ENABLE;
++   u32 reqs = pdev->pri_reqs_alloc;
++   int pos;
++
++   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
++   if (!pos)
++       return;
++
++   if (!pdev->pri_enabled)
++       return;
++
++   pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
++   pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
++}
++EXPORT_SYMBOL_GPL(pci_restore_pri_state);
++
++/**
+  * pci_reset_pri - Resets device's PRI state
+  * @pdev: PCI device structure
+  *
+@@ -224,12 +246,7 @@ int pci_reset_pri(struct pci_dev *pdev)
+ 	if (!pos)
+ 		return -EINVAL;
+ 
+-	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+-	if (control & PCI_PRI_CTRL_ENABLE)
+-		return -EBUSY;
+-
+-	control |= PCI_PRI_CTRL_RESET;
+-
++	control = PCI_PRI_CTRL_RESET;
+ 	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+ 
+ 	return 0;
+@@ -259,12 +276,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+ 	if (!pos)
+ 		return -EINVAL;
+ 
+-	pci_read_config_word(pdev, pos + PCI_PASID_CTRL, &control);
+ 	pci_read_config_word(pdev, pos + PCI_PASID_CAP, &supported);
+-
+-	if (control & PCI_PASID_CTRL_ENABLE)
+-		return -EINVAL;
+-
+ 	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
+ 
+ 	/* User wants to enable anything unsupported? */
+@@ -272,6 +284,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+ 		return -EINVAL;
+ 
+ 	control = PCI_PASID_CTRL_ENABLE | features;
++	pdev->pasid_features = features;
+ 
+ 	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+ 
+@@ -305,6 +318,28 @@ void pci_disable_pasid(struct pci_dev *pdev)
+ EXPORT_SYMBOL_GPL(pci_disable_pasid);
+ 
+ /**
++ * pci_restore_pasid_state - Restore PASID capabilities.
++ * @pdev: PCI device structure
++ *
++ */
++void pci_restore_pasid_state(struct pci_dev *pdev)
++{
++   u16 control;
++   int pos;
++
++   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
++   if (!pos)
++       return;
++
++   if (!pdev->pasid_enabled)
++       return;
++
++   control = PCI_PASID_CTRL_ENABLE | pdev->pasid_features;
++   pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
++}
++EXPORT_SYMBOL_GPL(pci_restore_pasid_state);
++
++/**
+  * pci_pasid_features - Check which PASID features are supported
+  * @pdev: PCI device structure
+  *
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 7904d02..c9a6510 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -28,6 +28,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/pci_hotplug.h>
+ #include <linux/vmalloc.h>
++#include <linux/pci-ats.h>
+ #include <asm/setup.h>
+ #include <asm/dma.h>
+ #include <linux/aer.h>
+@@ -1171,6 +1172,8 @@ void pci_restore_state(struct pci_dev *dev)
+ 
+ 	/* PCI Express register must be restored first */
+ 	pci_restore_pcie_state(dev);
++	pci_restore_pasid_state(dev);
++	pci_restore_pri_state(dev);
+ 	pci_restore_ats_state(dev);
+ 	pci_restore_vc_state(dev);
+ 
+diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+index 57e0b82..782fb8e 100644
+--- a/include/linux/pci-ats.h
++++ b/include/linux/pci-ats.h
+@@ -7,6 +7,7 @@
+ 
+ int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+ void pci_disable_pri(struct pci_dev *pdev);
++void pci_restore_pri_state(struct pci_dev *pdev);
+ int pci_reset_pri(struct pci_dev *pdev);
+ 
+ #else /* CONFIG_PCI_PRI */
+@@ -20,6 +21,10 @@ static inline void pci_disable_pri(struct pci_dev *pdev)
+ {
+ }
+ 
++static inline void pci_restore_pri_state(struct pci_dev *pdev)
++{
++}
++
+ static inline int pci_reset_pri(struct pci_dev *pdev)
+ {
+ 	return -ENODEV;
+@@ -31,6 +36,7 @@ static inline int pci_reset_pri(struct pci_dev *pdev)
+ 
+ int pci_enable_pasid(struct pci_dev *pdev, int features);
+ void pci_disable_pasid(struct pci_dev *pdev);
++void pci_restore_pasid_state(struct pci_dev *pdev);
+ int pci_pasid_features(struct pci_dev *pdev);
+ int pci_max_pasids(struct pci_dev *pdev);
+ 
+@@ -45,6 +51,10 @@ static inline void pci_disable_pasid(struct pci_dev *pdev)
+ {
+ }
+ 
++static inline void pci_restore_pasid_state(struct pci_dev *pdev)
++{
++}
++
+ static inline int pci_pasid_features(struct pci_dev *pdev)
+ {
+ 	return -EINVAL;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index bee980e..1ddb8e0 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -395,6 +395,12 @@ struct pci_dev {
+ 	u8		ats_stu;	/* ATS Smallest Translation Unit */
+ 	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
+ #endif
++#ifdef CONFIG_PCI_PRI
++	u32		pri_reqs_alloc; /* Number of PRI requests allocated */
++#endif
++#ifdef CONFIG_PCI_PASID
++	u16		pasid_features;
++#endif
+ 	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+ 	size_t romlen; /* Length of ROM if it's not from the BAR */
+ 	char *driver_override; /* Driver name to force a match */
+-- 
+2.7.4
