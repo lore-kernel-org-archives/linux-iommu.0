@@ -1,56 +1,63 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Subject: Re: [PATCH] iommu/rockchip: Remove build dependency on ARM
-Date: Wed, 10 May 2017 12:37:56 +0200
-Message-ID: <2219350.J3uHR7SeXA@diego>
-References: <1494412092-25458-1-git-send-email-jeffy.chen@rock-chips.com>
+From: Geetha sowjanya <gakula@caviumnetworks.com>
+Subject: [v5 0/4] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Wed, 10 May 2017 17:01:54 +0530
+Message-ID: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1494412092-25458-1-git-send-email-jeffy.chen@rock-chips.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jeffy Chen <jeffy.chen@rock-chips.com>
-Cc: linux-kernel@vger.kernel.org, briannorris@chromium.org, dianders@chromium.org, tfiga@chromium.org, seanpaul@chromium.org, zyw@rock-chips.com, mark.yao@rock-chips.com, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org
+Cc: jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jeffy,
+From: Linu Cherian <linu.cherian@cavium.com>
 
-Am Mittwoch, 10. Mai 2017, 18:28:12 CEST schrieb Jeffy Chen:
-> This patch removes the build dependency on ARM, so we can build on arm64
-> as well.
-> 
-> Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
-> ---
-> 
->  drivers/iommu/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 6ee3a25..cb26f45 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -219,7 +219,6 @@ config OMAP_IOMMU_DEBUG
-> 
->  config ROCKCHIP_IOMMU
->  	bool "Rockchip IOMMU Support"
-> -	depends on ARM
+Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+1. Errata ID #74
+   SMMU register alias Page 1 is not implemented
+2. Errata ID #126
+   SMMU doesnt support unique IRQ lines and also MSI for gerror,
+   eventq and cmdq-sync
 
-The previous patch from Simon Xue that was delayed due to the drm
-changes needed did a
-	depends in ARM || ARM64
-instead.
+The following patchset does software workaround for these two erratas.
 
-I'm not sure which variant is better and Rockchip is currently not
-providing any other cpu architectures, just noting the difference and
-letting you and Joerg decide which one to choose :-) .
+This series is based on patchset.
+https://www.spinics.net/lists/arm-kernel/msg578443.html
 
-Enabling the iommu on arm64 looks good to me in any case.
+Changes since v4:
+ - Replaced all page1 offset macros ARM_SMMU_EVTQ/PRIQ_PROD/CONS with
+	arm_smmu_page1_fixup(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu)
 
+Changes since v3:
+ - Merged patches 1, 2 and 4 of Version 3.
+ - Modified the page1_offset_adjust() and get_irq_flags() implementation as
+   suggested by Robin.
 
-Heiko
+Changes since v2:
+ - Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with
+   new SMMU option used to enable errata workaround.
 
+Changes since v1:
+ - Since the use of MIDR register is rejected and SMMU_IIDR is broken on this
+   silicon, as suggested by Will Deacon modified the patches to use ThunderX2
+   SMMUv3 IORT model number to enable errata workaround.
 
+Geetha Sowjanya (1):
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
 
->  	depends on ARCH_ROCKCHIP || COMPILE_TEST
->  	select IOMMU_API
->  	select ARM_DMA_USE_IOMMU
+Linu Cherian (3):
+  ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model definition.
+  ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
+    model
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #74
+
+ Documentation/arm64/silicon-errata.txt             |  2 +
+ .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 ++
+ drivers/acpi/arm64/iort.c                          | 10 ++-
+ drivers/iommu/arm-smmu-v3.c                        | 93 +++++++++++++++++-----
+ include/acpi/actbl2.h                              |  2 +
+ 5 files changed, 93 insertions(+), 20 deletions(-)
+
+-- 
+1.8.3.1
+
