@@ -1,63 +1,257 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [v5 1/4] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
- definition.
-Date: Thu, 11 May 2017 09:45:25 +0100
-Message-ID: <20170511084525.GA18839@arm.com>
-References: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com>
- <1494415918-13770-2-git-send-email-gakula@caviumnetworks.com>
- <3122711.vgvub3W1fy@aspire.rjw.lan>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] PCI: Save properties required to handle FLR for
+	replay purposes.
+Date: Thu, 11 May 2017 11:50:24 +0100
+Message-ID: <aa916e13-063f-3b25-34a5-b1a24200e021@arm.com>
+References: <1494441543-8216-1-git-send-email-ashok.raj@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <3122711.vgvub3W1fy@aspire.rjw.lan>
-Sender: linux-acpi-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Geetha sowjanya <gakula@caviumnetworks.com>, Lv Zheng <lv.zheng@intel.com>, Robert Moore <robert.moore@intel.com>, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1494441543-8216-1-git-send-email-ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 11, 2017 at 02:26:02AM +0200, Rafael J. Wysocki wrote:
-> On Wednesday, May 10, 2017 05:01:55 PM Geetha sowjanya wrote:
-> > From: Linu Cherian <linu.cherian@cavium.com>
-> > 
-> > Add SMMUv3 model definition for ThunderX2.
-> > 
-> > Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
-> > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
-> 
-> This is an ACPICA change, but you have not included the ACPICA maintainers
-> into your original CC list (added now).
-> 
-> Bob, Lv, how should this be routed?
-> 
-> Do you want to apply this patch upstream first or can we make this change in
-> Linux and upstream in parallel?  That shouldn't be a big deal, right?
+Hi,
 
-I think we're still waiting for the updated IORT document to be published (I
-think this should be in the next week or so), so I don't think we should
-commit the new ID before that happens.
-
-Will
-
-> > ---
-> >  include/acpi/actbl2.h | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-> > index faa9f2c..76a6f5d 100644
-> > --- a/include/acpi/actbl2.h
-> > +++ b/include/acpi/actbl2.h
-> > @@ -779,6 +779,8 @@ struct acpi_iort_smmu {
-> >  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
-> >  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
-> >  
-> > +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000002 /* Cavium ThunderX2 SMMUv3 */
-> > +
-> >  /* Masks for Flags field above */
-> >  
-> >  #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
-> > 
+On 10/05/17 19:39, Ashok Raj wrote:
+> From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > 
-> Thanks,
-> Rafael
+> Requires: https://patchwork.kernel.org/patch/9593891
+
+Since your series is likely to go in much earlier than my SVM mess, maybe
+you could carry that PCI patch along with it? Or I could resend it on its
+own if you prefer.
+
+I'm planning to resend the SVM series in a few weeks but it still won't
+make it into mainline since it hasn't run on hardware.
+
+Thanks,
+Jean-Philippe
+
+> After a FLR, pci-states need to be restored. This patch saves PASID features
+> and PRI reqs cached.
+> 
+> Cc: Jean-Phillipe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> 
+> Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/pci/ats.c       | 65 +++++++++++++++++++++++++++++++++++++------------
+>  drivers/pci/pci.c       |  3 +++
+>  include/linux/pci-ats.h | 10 ++++++++
+>  include/linux/pci.h     |  6 +++++
+>  4 files changed, 69 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index 2126497..a769955 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -160,17 +160,16 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+>  	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+> -	if ((control & PCI_PRI_CTRL_ENABLE) ||
+> -	    !(status & PCI_PRI_STATUS_STOPPED))
+> +	if (!(status & PCI_PRI_STATUS_STOPPED))
+>  		return -EBUSY;
+>  
+>  	pci_read_config_dword(pdev, pos + PCI_PRI_MAX_REQ, &max_requests);
+>  	reqs = min(max_requests, reqs);
+> +	pdev->pri_reqs_alloc = reqs;
+>  	pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+>  
+> -	control |= PCI_PRI_CTRL_ENABLE;
+> +	control = PCI_PRI_CTRL_ENABLE;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+>  	pdev->pri_enabled = 1;
+> @@ -206,6 +205,29 @@ void pci_disable_pri(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_disable_pri);
+>  
+>  /**
+> + * pci_restore_pri_state - Restore PRI
+> + * @pdev: PCI device structure
+> + *
+> + */
+> +void pci_restore_pri_state(struct pci_dev *pdev)
+> +{
+> +   u16 control = PCI_PRI_CTRL_ENABLE;
+> +   u32 reqs = pdev->pri_reqs_alloc;
+> +   int pos;
+> +
+> +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+> +   if (!pos)
+> +       return;
+> +
+> +   if (!pdev->pri_enabled)
+> +       return;
+> +
+> +   pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+> +   pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_restore_pri_state);
+> +
+> +/**
+>   * pci_reset_pri - Resets device's PRI state
+>   * @pdev: PCI device structure
+>   *
+> @@ -224,12 +246,7 @@ int pci_reset_pri(struct pci_dev *pdev)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+> -	if (control & PCI_PRI_CTRL_ENABLE)
+> -		return -EBUSY;
+> -
+> -	control |= PCI_PRI_CTRL_RESET;
+> -
+> +	control = PCI_PRI_CTRL_RESET;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+>  	return 0;
+> @@ -259,12 +276,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PASID_CTRL, &control);
+>  	pci_read_config_word(pdev, pos + PCI_PASID_CAP, &supported);
+> -
+> -	if (control & PCI_PASID_CTRL_ENABLE)
+> -		return -EINVAL;
+> -
+>  	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
+>  
+>  	/* User wants to enable anything unsupported? */
+> @@ -272,6 +284,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  		return -EINVAL;
+>  
+>  	control = PCI_PASID_CTRL_ENABLE | features;
+> +	pdev->pasid_features = features;
+>  
+>  	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+>  
+> @@ -305,6 +318,28 @@ void pci_disable_pasid(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_disable_pasid);
+>  
+>  /**
+> + * pci_restore_pasid_state - Restore PASID capabilities.
+> + * @pdev: PCI device structure
+> + *
+> + */
+> +void pci_restore_pasid_state(struct pci_dev *pdev)
+> +{
+> +   u16 control;
+> +   int pos;
+> +
+> +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
+> +   if (!pos)
+> +       return;
+> +
+> +   if (!pdev->pasid_enabled)
+> +       return;
+> +
+> +   control = PCI_PASID_CTRL_ENABLE | pdev->pasid_features;
+> +   pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_restore_pasid_state);
+> +
+> +/**
+>   * pci_pasid_features - Check which PASID features are supported
+>   * @pdev: PCI device structure
+>   *
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 7904d02..c9a6510 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pci_hotplug.h>
+>  #include <linux/vmalloc.h>
+> +#include <linux/pci-ats.h>
+>  #include <asm/setup.h>
+>  #include <asm/dma.h>
+>  #include <linux/aer.h>
+> @@ -1171,6 +1172,8 @@ void pci_restore_state(struct pci_dev *dev)
+>  
+>  	/* PCI Express register must be restored first */
+>  	pci_restore_pcie_state(dev);
+> +	pci_restore_pasid_state(dev);
+> +	pci_restore_pri_state(dev);
+>  	pci_restore_ats_state(dev);
+>  	pci_restore_vc_state(dev);
+>  
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index 57e0b82..782fb8e 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -7,6 +7,7 @@
+>  
+>  int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+>  void pci_disable_pri(struct pci_dev *pdev);
+> +void pci_restore_pri_state(struct pci_dev *pdev);
+>  int pci_reset_pri(struct pci_dev *pdev);
+>  
+>  #else /* CONFIG_PCI_PRI */
+> @@ -20,6 +21,10 @@ static inline void pci_disable_pri(struct pci_dev *pdev)
+>  {
+>  }
+>  
+> +static inline void pci_restore_pri_state(struct pci_dev *pdev)
+> +{
+> +}
+> +
+>  static inline int pci_reset_pri(struct pci_dev *pdev)
+>  {
+>  	return -ENODEV;
+> @@ -31,6 +36,7 @@ static inline int pci_reset_pri(struct pci_dev *pdev)
+>  
+>  int pci_enable_pasid(struct pci_dev *pdev, int features);
+>  void pci_disable_pasid(struct pci_dev *pdev);
+> +void pci_restore_pasid_state(struct pci_dev *pdev);
+>  int pci_pasid_features(struct pci_dev *pdev);
+>  int pci_max_pasids(struct pci_dev *pdev);
+>  
+> @@ -45,6 +51,10 @@ static inline void pci_disable_pasid(struct pci_dev *pdev)
+>  {
+>  }
+>  
+> +static inline void pci_restore_pasid_state(struct pci_dev *pdev)
+> +{
+> +}
+> +
+>  static inline int pci_pasid_features(struct pci_dev *pdev)
+>  {
+>  	return -EINVAL;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index bee980e..1ddb8e0 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -395,6 +395,12 @@ struct pci_dev {
+>  	u8		ats_stu;	/* ATS Smallest Translation Unit */
+>  	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
+>  #endif
+> +#ifdef CONFIG_PCI_PRI
+> +	u32		pri_reqs_alloc; /* Number of PRI requests allocated */
+> +#endif
+> +#ifdef CONFIG_PCI_PASID
+> +	u16		pasid_features;
+> +#endif
+>  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+>  	size_t romlen; /* Length of ROM if it's not from the BAR */
+>  	char *driver_override; /* Driver name to force a match */
 > 
