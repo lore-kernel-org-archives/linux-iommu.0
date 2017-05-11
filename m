@@ -1,50 +1,58 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] iommu/mediatek: include linux/dma-mapping.h
-Date: Thu, 11 May 2017 13:35:51 +0200
-Message-ID: <20170511113619.2596882-1-arnd@arndb.de>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: [PATCH 3.18 12/39] x86/pci-calgary: Fix iommu_free() comparison of
+	unsigned expression >= 0
+Date: Thu, 11 May 2017 15:02:47 +0200
+Message-ID: <20170511130240.713629291@linuxfoundation.org>
+References: <20170511130238.045434679@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, Honghui Zhang <honghui.zhang@mediatek.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170511130238.045434679-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikola Pajkovsky <npajkovsky-AlSwsSmVLrQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The mediatek iommu driver relied on an implicit include of dma-mapping.h,
-but for some reason that is no longer there in 4.12-rc1:
-
-drivers/iommu/mtk_iommu_v1.c: In function 'mtk_iommu_domain_finalise':
-drivers/iommu/mtk_iommu_v1.c:233:16: error: implicit declaration of function 'dma_zalloc_coherent'; did you mean 'debug_dma_alloc_coherent'? [-Werror=implicit-function-declaration]
-drivers/iommu/mtk_iommu_v1.c: In function 'mtk_iommu_domain_free':
-drivers/iommu/mtk_iommu_v1.c:265:2: error: implicit declaration of function 'dma_free_coherent'; did you mean 'debug_dma_free_coherent'? [-Werror=implicit-function-declaration]
-
-This adds an explicit #include to make it build again.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/iommu/mtk_iommu_v1.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index a27ef570c328..bc1efbfb9ddf 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -18,6 +18,7 @@
- #include <linux/clk.h>
- #include <linux/component.h>
- #include <linux/device.h>
-+#include <linux/dma-mapping.h>
- #include <linux/dma-iommu.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
--- 
-2.9.0
+My4xOC1zdGFibGUgcmV2aWV3IHBhdGNoLiAgSWYgYW55b25lIGhhcyBhbnkgb2JqZWN0aW9ucywg
+cGxlYXNlIGxldCBtZSBrbm93LgoKLS0tLS0tLS0tLS0tLS0tLS0tCgpGcm9tOiBOaWtvbGEgUGFq
+a292c2t5IDxucGFqa292c2t5QHN1c2UuY3o+Cgpjb21taXQgNjhkZWU4ZTJmMmNhY2M1NGQwMzgz
+OTRlNzBkMjI0MTFkZWU4OWRhMiB1cHN0cmVhbS4KCmNvbW1pdCA4ZmQ1MjRiMzU1ZGEgKCJ4ODY6
+IEtpbGwgYmFkX2RtYV9hZGRyZXNzIHZhcmlhYmxlIikgaGFzIGtpbGxlZApiYWRfZG1hX2FkZHJl
+c3MgdmFyaWFibGUgYW5kIHVzZWQgaW5zdGVhZCBvZiBtYWNybyBETUFfRVJST1JfQ09ERQp3aGlj
+aCBpcyBhbHdheXMgemVyby4gU2luY2UgZG1hX2FkZHIgaXMgdW5zaWduZWQsIHRoZSBzdGF0ZW1l
+bnQKCiAgIGRtYV9hZGRyID49IERNQV9FUlJPUl9DT0RFCgppcyBhbHdheXMgdHJ1ZSwgYW5kIG5v
+dCBuZWVkZWQuCgphcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYzogSW4gZnVuY3Rpb24g
+4oCYaW9tbXVfZnJlZeKAmToKYXJjaC94ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmM6Mjk5OjI6
+IHdhcm5pbmc6IGNvbXBhcmlzb24gb2YgdW5zaWduZWQgZXhwcmVzc2lvbiA+PSAwIGlzIGFsd2F5
+cyB0cnVlIFstV3R5cGUtbGltaXRzXQogIGlmICh1bmxpa2VseSgoZG1hX2FkZHIgPj0gRE1BX0VS
+Uk9SX0NPREUpICYmIChkbWFfYWRkciA8IGJhZGVuZCkpKSB7CgpGaXhlczogOGZkNTI0YjM1NWRh
+ICgieDg2OiBLaWxsIGJhZF9kbWFfYWRkcmVzcyB2YXJpYWJsZSIpClNpZ25lZC1vZmYtYnk6IE5p
+a29sYSBQYWprb3Zza3kgPG5wYWprb3Zza3lAc3VzZS5jej4KQ2M6IGlvbW11QGxpc3RzLmxpbnV4
+LWZvdW5kYXRpb24ub3JnCkNjOiBKb24gTWFzb24gPGpkbWFzb25Aa3VkenUudXM+CkNjOiBNdWxp
+IEJlbi1ZZWh1ZGEgPG11bGl4QG11bGl4Lm9yZz4KTGluazogaHR0cDovL2xrbWwua2VybmVsLm9y
+Zy9yLzc2MTJjMGY5ZGQ3YzEyOTA0MDdkYmY4ZTgwOWRlZjkyMjAwNjkyMGIuMTQ3OTE2MTE3Ny5n
+aXQubnBhamtvdnNreUBzdXNlLmN6ClNpZ25lZC1vZmYtYnk6IFRob21hcyBHbGVpeG5lciA8dGds
+eEBsaW51dHJvbml4LmRlPgpTaWduZWQtb2ZmLWJ5OiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdr
+aEBsaW51eGZvdW5kYXRpb24ub3JnPgoKLS0tCiBhcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlf
+NjQuYyB8ICAgIDIgKy0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlv
+bigtKQoKLS0tIGEvYXJjaC94ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmMKKysrIGIvYXJjaC94
+ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmMKQEAgLTI5Niw3ICsyOTYsNyBAQCBzdGF0aWMgdm9p
+ZCBpb21tdV9mcmVlKHN0cnVjdCBpb21tdV90YWJsCiAKIAkvKiB3ZXJlIHdlIGNhbGxlZCB3aXRo
+IGJhZF9kbWFfYWRkcmVzcz8gKi8KIAliYWRlbmQgPSBETUFfRVJST1JfQ09ERSArIChFTUVSR0VO
+Q1lfUEFHRVMgKiBQQUdFX1NJWkUpOwotCWlmICh1bmxpa2VseSgoZG1hX2FkZHIgPj0gRE1BX0VS
+Uk9SX0NPREUpICYmIChkbWFfYWRkciA8IGJhZGVuZCkpKSB7CisJaWYgKHVubGlrZWx5KGRtYV9h
+ZGRyIDwgYmFkZW5kKSkgewogCQlXQVJOKDEsIEtFUk5fRVJSICJDYWxnYXJ5OiBkcml2ZXIgdHJp
+ZWQgdW5tYXBwaW5nIGJhZCBETUEgIgogCQkgICAgICAgImFkZHJlc3MgMHglTHhcbiIsIGRtYV9h
+ZGRyKTsKIAkJcmV0dXJuOwoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
