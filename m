@@ -1,11 +1,14 @@
-From: Aaron Sierra <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] iova: allow allocation of lowest domain PFN
-Date: Thu, 11 May 2017 08:36:35 -0500 (CDT)
-Message-ID: <102275367.137137.1494509795293.JavaMail.zimbra@xes-inc.com>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: [PATCH 4.9 044/103] x86/pci-calgary: Fix iommu_free() comparison of
+	unsigned expression >= 0
+Date: Thu, 11 May 2017 16:12:13 +0200
+Message-ID: <20170511141214.248336526@linuxfoundation.org>
+References: <20170511141210.778405364@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170511141210.778405364-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,109 +18,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikola Pajkovsky <npajkovsky-AlSwsSmVLrQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-I found it was impossible to allocate all of the address space
-defined by an IOVA domain. For example, a trivial domain with 2 pages
-would cover PFNs 0 (start) and 1 (limit), but attempting to allocate
-more than one total PFN would fail because the start PFN could never be
-allocated.
-
-This adds a function to prevent PFN limit calculations from dipping
-"below" the start PFN in __alloc_and_insert_iova_range() and
-__get_cached_rbnode(). It also alters the PFN validity checks in
-__alloc_and_insert_iova_range() to anticipate possible PFN rollover.
-These combine to allow every PFN within the IOVA domain to be available
-for allocation.
-
-Signed-off-by: Aaron Sierra <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/iova.c | 43 +++++++++++++++++++++++++++++++------------
- 1 file changed, 31 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 5c88ba7..9d92005b 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -32,6 +32,18 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
- static void init_iova_rcaches(struct iova_domain *iovad);
- static void free_iova_rcaches(struct iova_domain *iovad);
- 
-+static inline unsigned long
-+bounded_next_pfn(struct iova_domain *iovad, struct iova *iova)
-+{
-+	unsigned long next_pfn = iova->pfn_lo - 1;
-+
-+	if (!iova->pfn_lo)
-+		return iovad->start_pfn;
-+
-+	/* make sure the PFN doesn't rollover */
-+	return (next_pfn > iova->pfn_lo) ? iovad->start_pfn : next_pfn;
-+}
-+
- void
- init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn, unsigned long pfn_32bit)
-@@ -63,7 +75,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
- 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
- 		struct iova *curr_iova =
- 			rb_entry(iovad->cached32_node, struct iova, node);
--		*limit_pfn = curr_iova->pfn_lo - 1;
-+		*limit_pfn = bounded_next_pfn(iovad, curr_iova);
- 		return prev_node;
- 	}
- }
-@@ -146,6 +158,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	unsigned long flags;
- 	unsigned long saved_pfn;
- 	unsigned int pad_size = 0;
-+	unsigned long pfn_lo, pfn_hi;
- 
- 	/* Walk the tree backwards */
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-@@ -166,24 +179,30 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 				break;	/* found a free slot */
- 		}
- adjust_limit_pfn:
--		limit_pfn = curr_iova->pfn_lo ? (curr_iova->pfn_lo - 1) : 0;
-+		limit_pfn = bounded_next_pfn(iovad, curr_iova);
- move_left:
- 		prev = curr;
- 		curr = rb_prev(curr);
- 	}
- 
--	if (!curr) {
--		if (size_aligned)
--			pad_size = iova_get_pad_size(size, limit_pfn);
--		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
--			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--			return -ENOMEM;
--		}
--	}
-+	if (size_aligned)
-+		pad_size = iova_get_pad_size(size, limit_pfn);
- 
- 	/* pfn_lo will point to size aligned address if size_aligned is set */
--	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
--	new->pfn_hi = new->pfn_lo + size - 1;
-+	pfn_lo = limit_pfn - (size + pad_size) + 1;
-+	pfn_hi = pfn_lo + size - 1;
-+
-+	/*
-+	 * We're working with unsigned values, so we have to be careful about
-+	 * how we detect a PFN "below" the lowest PFN possible; zero.
-+	 */
-+	if (pfn_lo < iovad->start_pfn || pfn_lo > limit_pfn) {
-+		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+		return -ENOMEM;
-+	}
-+
-+	new->pfn_lo = pfn_lo;
-+	new->pfn_hi = pfn_hi;
- 
- 	/* If we have 'prev', it's a valid place to start the insertion. */
- 	iova_insert_rbtree(&iovad->rbroot, new, prev);
--- 
-2.7.4
+NC45LXN0YWJsZSByZXZpZXcgcGF0Y2guICBJZiBhbnlvbmUgaGFzIGFueSBvYmplY3Rpb25zLCBw
+bGVhc2UgbGV0IG1lIGtub3cuCgotLS0tLS0tLS0tLS0tLS0tLS0KCkZyb206IE5pa29sYSBQYWpr
+b3Zza3kgPG5wYWprb3Zza3lAc3VzZS5jej4KCmNvbW1pdCA2OGRlZThlMmYyY2FjYzU0ZDAzODM5
+NGU3MGQyMjQxMWRlZTg5ZGEyIHVwc3RyZWFtLgoKY29tbWl0IDhmZDUyNGIzNTVkYSAoIng4Njog
+S2lsbCBiYWRfZG1hX2FkZHJlc3MgdmFyaWFibGUiKSBoYXMga2lsbGVkCmJhZF9kbWFfYWRkcmVz
+cyB2YXJpYWJsZSBhbmQgdXNlZCBpbnN0ZWFkIG9mIG1hY3JvIERNQV9FUlJPUl9DT0RFCndoaWNo
+IGlzIGFsd2F5cyB6ZXJvLiBTaW5jZSBkbWFfYWRkciBpcyB1bnNpZ25lZCwgdGhlIHN0YXRlbWVu
+dAoKICAgZG1hX2FkZHIgPj0gRE1BX0VSUk9SX0NPREUKCmlzIGFsd2F5cyB0cnVlLCBhbmQgbm90
+IG5lZWRlZC4KCmFyY2gveDg2L2tlcm5lbC9wY2ktY2FsZ2FyeV82NC5jOiBJbiBmdW5jdGlvbiDi
+gJhpb21tdV9mcmVl4oCZOgphcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYzoyOTk6Mjog
+d2FybmluZzogY29tcGFyaXNvbiBvZiB1bnNpZ25lZCBleHByZXNzaW9uID49IDAgaXMgYWx3YXlz
+IHRydWUgWy1XdHlwZS1saW1pdHNdCiAgaWYgKHVubGlrZWx5KChkbWFfYWRkciA+PSBETUFfRVJS
+T1JfQ09ERSkgJiYgKGRtYV9hZGRyIDwgYmFkZW5kKSkpIHsKCkZpeGVzOiA4ZmQ1MjRiMzU1ZGEg
+KCJ4ODY6IEtpbGwgYmFkX2RtYV9hZGRyZXNzIHZhcmlhYmxlIikKU2lnbmVkLW9mZi1ieTogTmlr
+b2xhIFBhamtvdnNreSA8bnBhamtvdnNreUBzdXNlLmN6PgpDYzogaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKQ2M6IEpvbiBNYXNvbiA8amRtYXNvbkBrdWR6dS51cz4KQ2M6IE11bGkg
+QmVuLVllaHVkYSA8bXVsaXhAbXVsaXgub3JnPgpMaW5rOiBodHRwOi8vbGttbC5rZXJuZWwub3Jn
+L3IvNzYxMmMwZjlkZDdjMTI5MDQwN2RiZjhlODA5ZGVmOTIyMDA2OTIwYi4xNDc5MTYxMTc3Lmdp
+dC5ucGFqa292c2t5QHN1c2UuY3oKU2lnbmVkLW9mZi1ieTogVGhvbWFzIEdsZWl4bmVyIDx0Z2x4
+QGxpbnV0cm9uaXguZGU+ClNpZ25lZC1vZmYtYnk6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2to
+QGxpbnV4Zm91bmRhdGlvbi5vcmc+CgotLS0KIGFyY2gveDg2L2tlcm5lbC9wY2ktY2FsZ2FyeV82
+NC5jIHwgICAgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9u
+KC0pCgotLS0gYS9hcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYworKysgYi9hcmNoL3g4
+Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYwpAQCAtMjk2LDcgKzI5Niw3IEBAIHN0YXRpYyB2b2lk
+IGlvbW11X2ZyZWUoc3RydWN0IGlvbW11X3RhYmwKIAogCS8qIHdlcmUgd2UgY2FsbGVkIHdpdGgg
+YmFkX2RtYV9hZGRyZXNzPyAqLwogCWJhZGVuZCA9IERNQV9FUlJPUl9DT0RFICsgKEVNRVJHRU5D
+WV9QQUdFUyAqIFBBR0VfU0laRSk7Ci0JaWYgKHVubGlrZWx5KChkbWFfYWRkciA+PSBETUFfRVJS
+T1JfQ09ERSkgJiYgKGRtYV9hZGRyIDwgYmFkZW5kKSkpIHsKKwlpZiAodW5saWtlbHkoZG1hX2Fk
+ZHIgPCBiYWRlbmQpKSB7CiAJCVdBUk4oMSwgS0VSTl9FUlIgIkNhbGdhcnk6IGRyaXZlciB0cmll
+ZCB1bm1hcHBpbmcgYmFkIERNQSAiCiAJCSAgICAgICAiYWRkcmVzcyAweCVMeFxuIiwgZG1hX2Fk
+ZHIpOwogCQlyZXR1cm47CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
