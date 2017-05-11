@@ -1,14 +1,11 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.10 060/129] x86/pci-calgary: Fix iommu_free() comparison of
-	unsigned expression >= 0
-Date: Thu, 11 May 2017 16:11:48 +0200
-Message-ID: <20170511141224.168603596@linuxfoundation.org>
-References: <20170511141220.039886885@linuxfoundation.org>
+From: Aaron Sierra <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH] iova: allow allocation of lowest domain PFN
+Date: Thu, 11 May 2017 08:36:35 -0500 (CDT)
+Message-ID: <102275367.137137.1494509795293.JavaMail.zimbra@xes-inc.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170511141220.039886885-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,41 +15,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikola Pajkovsky <npajkovsky-AlSwsSmVLrQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-NC4xMC1zdGFibGUgcmV2aWV3IHBhdGNoLiAgSWYgYW55b25lIGhhcyBhbnkgb2JqZWN0aW9ucywg
-cGxlYXNlIGxldCBtZSBrbm93LgoKLS0tLS0tLS0tLS0tLS0tLS0tCgpGcm9tOiBOaWtvbGEgUGFq
-a292c2t5IDxucGFqa292c2t5QHN1c2UuY3o+Cgpjb21taXQgNjhkZWU4ZTJmMmNhY2M1NGQwMzgz
-OTRlNzBkMjI0MTFkZWU4OWRhMiB1cHN0cmVhbS4KCmNvbW1pdCA4ZmQ1MjRiMzU1ZGEgKCJ4ODY6
-IEtpbGwgYmFkX2RtYV9hZGRyZXNzIHZhcmlhYmxlIikgaGFzIGtpbGxlZApiYWRfZG1hX2FkZHJl
-c3MgdmFyaWFibGUgYW5kIHVzZWQgaW5zdGVhZCBvZiBtYWNybyBETUFfRVJST1JfQ09ERQp3aGlj
-aCBpcyBhbHdheXMgemVyby4gU2luY2UgZG1hX2FkZHIgaXMgdW5zaWduZWQsIHRoZSBzdGF0ZW1l
-bnQKCiAgIGRtYV9hZGRyID49IERNQV9FUlJPUl9DT0RFCgppcyBhbHdheXMgdHJ1ZSwgYW5kIG5v
-dCBuZWVkZWQuCgphcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYzogSW4gZnVuY3Rpb24g
-4oCYaW9tbXVfZnJlZeKAmToKYXJjaC94ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmM6Mjk5OjI6
-IHdhcm5pbmc6IGNvbXBhcmlzb24gb2YgdW5zaWduZWQgZXhwcmVzc2lvbiA+PSAwIGlzIGFsd2F5
-cyB0cnVlIFstV3R5cGUtbGltaXRzXQogIGlmICh1bmxpa2VseSgoZG1hX2FkZHIgPj0gRE1BX0VS
-Uk9SX0NPREUpICYmIChkbWFfYWRkciA8IGJhZGVuZCkpKSB7CgpGaXhlczogOGZkNTI0YjM1NWRh
-ICgieDg2OiBLaWxsIGJhZF9kbWFfYWRkcmVzcyB2YXJpYWJsZSIpClNpZ25lZC1vZmYtYnk6IE5p
-a29sYSBQYWprb3Zza3kgPG5wYWprb3Zza3lAc3VzZS5jej4KQ2M6IGlvbW11QGxpc3RzLmxpbnV4
-LWZvdW5kYXRpb24ub3JnCkNjOiBKb24gTWFzb24gPGpkbWFzb25Aa3VkenUudXM+CkNjOiBNdWxp
-IEJlbi1ZZWh1ZGEgPG11bGl4QG11bGl4Lm9yZz4KTGluazogaHR0cDovL2xrbWwua2VybmVsLm9y
-Zy9yLzc2MTJjMGY5ZGQ3YzEyOTA0MDdkYmY4ZTgwOWRlZjkyMjAwNjkyMGIuMTQ3OTE2MTE3Ny5n
-aXQubnBhamtvdnNreUBzdXNlLmN6ClNpZ25lZC1vZmYtYnk6IFRob21hcyBHbGVpeG5lciA8dGds
-eEBsaW51dHJvbml4LmRlPgpTaWduZWQtb2ZmLWJ5OiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdyZWdr
-aEBsaW51eGZvdW5kYXRpb24ub3JnPgoKLS0tCiBhcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlf
-NjQuYyB8ICAgIDIgKy0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlv
-bigtKQoKLS0tIGEvYXJjaC94ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmMKKysrIGIvYXJjaC94
-ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmMKQEAgLTI5Niw3ICsyOTYsNyBAQCBzdGF0aWMgdm9p
-ZCBpb21tdV9mcmVlKHN0cnVjdCBpb21tdV90YWJsCiAKIAkvKiB3ZXJlIHdlIGNhbGxlZCB3aXRo
-IGJhZF9kbWFfYWRkcmVzcz8gKi8KIAliYWRlbmQgPSBETUFfRVJST1JfQ09ERSArIChFTUVSR0VO
-Q1lfUEFHRVMgKiBQQUdFX1NJWkUpOwotCWlmICh1bmxpa2VseSgoZG1hX2FkZHIgPj0gRE1BX0VS
-Uk9SX0NPREUpICYmIChkbWFfYWRkciA8IGJhZGVuZCkpKSB7CisJaWYgKHVubGlrZWx5KGRtYV9h
-ZGRyIDwgYmFkZW5kKSkgewogCQlXQVJOKDEsIEtFUk5fRVJSICJDYWxnYXJ5OiBkcml2ZXIgdHJp
-ZWQgdW5tYXBwaW5nIGJhZCBETUEgIgogCQkgICAgICAgImFkZHJlc3MgMHglTHhcbiIsIGRtYV9h
-ZGRyKTsKIAkJcmV0dXJuOwoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+I found it was impossible to allocate all of the address space
+defined by an IOVA domain. For example, a trivial domain with 2 pages
+would cover PFNs 0 (start) and 1 (limit), but attempting to allocate
+more than one total PFN would fail because the start PFN could never be
+allocated.
+
+This adds a function to prevent PFN limit calculations from dipping
+"below" the start PFN in __alloc_and_insert_iova_range() and
+__get_cached_rbnode(). It also alters the PFN validity checks in
+__alloc_and_insert_iova_range() to anticipate possible PFN rollover.
+These combine to allow every PFN within the IOVA domain to be available
+for allocation.
+
+Signed-off-by: Aaron Sierra <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/iova.c | 43 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 31 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 5c88ba7..9d92005b 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -32,6 +32,18 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ static void init_iova_rcaches(struct iova_domain *iovad);
+ static void free_iova_rcaches(struct iova_domain *iovad);
+ 
++static inline unsigned long
++bounded_next_pfn(struct iova_domain *iovad, struct iova *iova)
++{
++	unsigned long next_pfn = iova->pfn_lo - 1;
++
++	if (!iova->pfn_lo)
++		return iovad->start_pfn;
++
++	/* make sure the PFN doesn't rollover */
++	return (next_pfn > iova->pfn_lo) ? iovad->start_pfn : next_pfn;
++}
++
+ void
+ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	unsigned long start_pfn, unsigned long pfn_32bit)
+@@ -63,7 +75,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+ 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
+ 		struct iova *curr_iova =
+ 			rb_entry(iovad->cached32_node, struct iova, node);
+-		*limit_pfn = curr_iova->pfn_lo - 1;
++		*limit_pfn = bounded_next_pfn(iovad, curr_iova);
+ 		return prev_node;
+ 	}
+ }
+@@ -146,6 +158,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	unsigned long flags;
+ 	unsigned long saved_pfn;
+ 	unsigned int pad_size = 0;
++	unsigned long pfn_lo, pfn_hi;
+ 
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+@@ -166,24 +179,30 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 				break;	/* found a free slot */
+ 		}
+ adjust_limit_pfn:
+-		limit_pfn = curr_iova->pfn_lo ? (curr_iova->pfn_lo - 1) : 0;
++		limit_pfn = bounded_next_pfn(iovad, curr_iova);
+ move_left:
+ 		prev = curr;
+ 		curr = rb_prev(curr);
+ 	}
+ 
+-	if (!curr) {
+-		if (size_aligned)
+-			pad_size = iova_get_pad_size(size, limit_pfn);
+-		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
+-			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+-			return -ENOMEM;
+-		}
+-	}
++	if (size_aligned)
++		pad_size = iova_get_pad_size(size, limit_pfn);
+ 
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+-	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
+-	new->pfn_hi = new->pfn_lo + size - 1;
++	pfn_lo = limit_pfn - (size + pad_size) + 1;
++	pfn_hi = pfn_lo + size - 1;
++
++	/*
++	 * We're working with unsigned values, so we have to be careful about
++	 * how we detect a PFN "below" the lowest PFN possible; zero.
++	 */
++	if (pfn_lo < iovad->start_pfn || pfn_lo > limit_pfn) {
++		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
++		return -ENOMEM;
++	}
++
++	new->pfn_lo = pfn_lo;
++	new->pfn_hi = pfn_hi;
+ 
+ 	/* If we have 'prev', it's a valid place to start the insertion. */
+ 	iova_insert_rbtree(&iovad->rbroot, new, prev);
+-- 
+2.7.4
