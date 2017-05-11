@@ -1,113 +1,53 @@
-From: Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH 2/2] iommu/vt-d: Helper function to query if a pasid has any active users
-Date: Wed, 10 May 2017 11:39:03 -0700
-Message-ID: <1494441543-8216-2-git-send-email-ashok.raj@intel.com>
-References: <1494441543-8216-1-git-send-email-ashok.raj@intel.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1494441543-8216-1-git-send-email-ashok.raj@intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
-Cc: CQ Tang <cq.tang@intel.com>, linux-pci@vger.kernel.org, Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, Ashok Raj <ashok.raj@intel.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [v5 1/4] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model definition.
+Date: Thu, 11 May 2017 02:26:02 +0200
+Message-ID: <3122711.vgvub3W1fy@aspire.rjw.lan>
+References: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com> <1494415918-13770-2-git-send-email-gakula@caviumnetworks.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1494415918-13770-2-git-send-email-gakula@caviumnetworks.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Geetha sowjanya <gakula@caviumnetworks.com>, Lv Zheng <lv.zheng@intel.com>, Robert Moore <robert.moore@intel.com>
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: CQ Tang <cq.tang@intel.com>
+On Wednesday, May 10, 2017 05:01:55 PM Geetha sowjanya wrote:
+> From: Linu Cherian <linu.cherian@cavium.com>
+> 
+> Add SMMUv3 model definition for ThunderX2.
+> 
+> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 
-A driver would need to know if there are any active references to a
-a PASID before cleaning up its resources. This function helps check
-if there are any active users of a PASID before it can perform any
-recovery on that device.
+This is an ACPICA change, but you have not included the ACPICA maintainers
+into your original CC list (added now).
 
-To: Joerg Roedel <joro@8bytes.org>
-To: linux-kernel@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>
-Cc: iommu@lists.linux-foundation.org
+Bob, Lv, how should this be routed?
 
-Signed-off-by: CQ Tang <cq.tang@intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
----
- drivers/iommu/intel-svm.c | 30 ++++++++++++++++++++++++++++++
- include/linux/intel-svm.h | 20 ++++++++++++++++++++
- 2 files changed, 50 insertions(+)
+Do you want to apply this patch upstream first or can we make this change in
+Linux and upstream in parallel?  That shouldn't be a big deal, right?
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 23c4276..f167c0d 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -489,6 +489,36 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- }
- EXPORT_SYMBOL_GPL(intel_svm_unbind_mm);
- 
-+int intel_svm_is_pasid_valid(struct device *dev, int pasid)
-+{
-+	struct intel_iommu *iommu;
-+	struct intel_svm *svm;
-+	int ret = -EINVAL;
-+
-+	mutex_lock(&pasid_mutex);
-+	iommu = intel_svm_device_to_iommu(dev);
-+	if (!iommu || !iommu->pasid_table)
-+		goto out;
-+
-+	svm = idr_find(&iommu->pasid_idr, pasid);
-+	if (!svm)
-+		goto out;
-+
-+	/* init_mm is used in this case */
-+	if (!svm->mm)
-+		ret = 1;
-+	else if (atomic_read(&svm->mm->mm_users) > 0)
-+		ret = 1;
-+	else
-+		ret = 0;
-+
-+ out:
-+	mutex_unlock(&pasid_mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(intel_svm_is_pasid_valid);
-+
- /* Page request queue descriptor */
- struct page_req_dsc {
- 	u64 srr:1;
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index 3c25794..99bc5b3 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -102,6 +102,21 @@ extern int intel_svm_bind_mm(struct device *dev, int *pasid, int flags,
-  */
- extern int intel_svm_unbind_mm(struct device *dev, int pasid);
- 
-+/**
-+ * intel_svm_is_pasid_valid() - check if pasid is valid
-+ * @dev:	Device for which PASID was allocated
-+ * @pasid:	PASID value to be checked
-+ *
-+ * This function checks if the specified pasid is still valid. A
-+ * valid pasid means the backing mm is still having a valid user.
-+ * For kernel callers init_mm is always valid. for other mm, if mm->mm_users
-+ * is non-zero, it is valid.
-+ *
-+ * returns -EINVAL if invalid pasid, 0 if pasid ref count is invalid
-+ * 1 if pasid is valid.
-+ */
-+extern int intel_svm_is_pasid_valid(struct device *dev, int pasid);
-+
- #else /* CONFIG_INTEL_IOMMU_SVM */
- 
- static inline int intel_svm_bind_mm(struct device *dev, int *pasid,
-@@ -114,6 +129,11 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
- {
- 	BUG();
- }
-+
-+static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
-+{
-+	return -EINVAL;
-+}
- #endif /* CONFIG_INTEL_IOMMU_SVM */
- 
- #define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL, 0, NULL))
--- 
-2.7.4
+> ---
+>  include/acpi/actbl2.h | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+> index faa9f2c..76a6f5d 100644
+> --- a/include/acpi/actbl2.h
+> +++ b/include/acpi/actbl2.h
+> @@ -779,6 +779,8 @@ struct acpi_iort_smmu {
+>  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
+>  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
+>  
+> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000002 /* Cavium ThunderX2 SMMUv3 */
+> +
+>  /* Masks for Flags field above */
+>  
+>  #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
+> 
+
+Thanks,
+Rafael
+
