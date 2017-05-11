@@ -1,58 +1,54 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.4 17/60] x86/pci-calgary: Fix iommu_free() comparison of
-	unsigned expression >= 0
-Date: Thu, 11 May 2017 16:12:40 +0200
-Message-ID: <20170511141237.813249766@linuxfoundation.org>
-References: <20170511141237.094835992@linuxfoundation.org>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [v5 1/4] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
+ definition.
+Date: Thu, 11 May 2017 16:40:51 +0200
+Message-ID: <3624921.NlXkYaVXxR@aspire.rjw.lan>
+References: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com>
+ <3122711.vgvub3W1fy@aspire.rjw.lan> <20170511084525.GA18839@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170511141237.094835992-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikola Pajkovsky <npajkovsky-AlSwsSmVLrQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170511084525.GA18839@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, catalin.marinas@arm.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, geethasowjanya.akula@gmail.com, jcm@redhat.com, Geetha sowjanya <gakula@caviumnetworks.com>, Robert Moore <robert.moore@intel.com>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Geetha Sowjanya <geethasowjanya.akula@cavium.com>, Lv Zheng <lv.zheng@intel.com>, sudeep.holla@arm.com, sgoutham@cavium.com, robin.murphy@arm.com, robert.richter@cavium.com, hanjun.guo@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-NC40LXN0YWJsZSByZXZpZXcgcGF0Y2guICBJZiBhbnlvbmUgaGFzIGFueSBvYmplY3Rpb25zLCBw
-bGVhc2UgbGV0IG1lIGtub3cuCgotLS0tLS0tLS0tLS0tLS0tLS0KCkZyb206IE5pa29sYSBQYWpr
-b3Zza3kgPG5wYWprb3Zza3lAc3VzZS5jej4KCmNvbW1pdCA2OGRlZThlMmYyY2FjYzU0ZDAzODM5
-NGU3MGQyMjQxMWRlZTg5ZGEyIHVwc3RyZWFtLgoKY29tbWl0IDhmZDUyNGIzNTVkYSAoIng4Njog
-S2lsbCBiYWRfZG1hX2FkZHJlc3MgdmFyaWFibGUiKSBoYXMga2lsbGVkCmJhZF9kbWFfYWRkcmVz
-cyB2YXJpYWJsZSBhbmQgdXNlZCBpbnN0ZWFkIG9mIG1hY3JvIERNQV9FUlJPUl9DT0RFCndoaWNo
-IGlzIGFsd2F5cyB6ZXJvLiBTaW5jZSBkbWFfYWRkciBpcyB1bnNpZ25lZCwgdGhlIHN0YXRlbWVu
-dAoKICAgZG1hX2FkZHIgPj0gRE1BX0VSUk9SX0NPREUKCmlzIGFsd2F5cyB0cnVlLCBhbmQgbm90
-IG5lZWRlZC4KCmFyY2gveDg2L2tlcm5lbC9wY2ktY2FsZ2FyeV82NC5jOiBJbiBmdW5jdGlvbiDi
-gJhpb21tdV9mcmVl4oCZOgphcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYzoyOTk6Mjog
-d2FybmluZzogY29tcGFyaXNvbiBvZiB1bnNpZ25lZCBleHByZXNzaW9uID49IDAgaXMgYWx3YXlz
-IHRydWUgWy1XdHlwZS1saW1pdHNdCiAgaWYgKHVubGlrZWx5KChkbWFfYWRkciA+PSBETUFfRVJS
-T1JfQ09ERSkgJiYgKGRtYV9hZGRyIDwgYmFkZW5kKSkpIHsKCkZpeGVzOiA4ZmQ1MjRiMzU1ZGEg
-KCJ4ODY6IEtpbGwgYmFkX2RtYV9hZGRyZXNzIHZhcmlhYmxlIikKU2lnbmVkLW9mZi1ieTogTmlr
-b2xhIFBhamtvdnNreSA8bnBhamtvdnNreUBzdXNlLmN6PgpDYzogaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKQ2M6IEpvbiBNYXNvbiA8amRtYXNvbkBrdWR6dS51cz4KQ2M6IE11bGkg
-QmVuLVllaHVkYSA8bXVsaXhAbXVsaXgub3JnPgpMaW5rOiBodHRwOi8vbGttbC5rZXJuZWwub3Jn
-L3IvNzYxMmMwZjlkZDdjMTI5MDQwN2RiZjhlODA5ZGVmOTIyMDA2OTIwYi4xNDc5MTYxMTc3Lmdp
-dC5ucGFqa292c2t5QHN1c2UuY3oKU2lnbmVkLW9mZi1ieTogVGhvbWFzIEdsZWl4bmVyIDx0Z2x4
-QGxpbnV0cm9uaXguZGU+ClNpZ25lZC1vZmYtYnk6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2to
-QGxpbnV4Zm91bmRhdGlvbi5vcmc+CgotLS0KIGFyY2gveDg2L2tlcm5lbC9wY2ktY2FsZ2FyeV82
-NC5jIHwgICAgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9u
-KC0pCgotLS0gYS9hcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYworKysgYi9hcmNoL3g4
-Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYwpAQCAtMjk2LDcgKzI5Niw3IEBAIHN0YXRpYyB2b2lk
-IGlvbW11X2ZyZWUoc3RydWN0IGlvbW11X3RhYmwKIAogCS8qIHdlcmUgd2UgY2FsbGVkIHdpdGgg
-YmFkX2RtYV9hZGRyZXNzPyAqLwogCWJhZGVuZCA9IERNQV9FUlJPUl9DT0RFICsgKEVNRVJHRU5D
-WV9QQUdFUyAqIFBBR0VfU0laRSk7Ci0JaWYgKHVubGlrZWx5KChkbWFfYWRkciA+PSBETUFfRVJS
-T1JfQ09ERSkgJiYgKGRtYV9hZGRyIDwgYmFkZW5kKSkpIHsKKwlpZiAodW5saWtlbHkoZG1hX2Fk
-ZHIgPCBiYWRlbmQpKSB7CiAJCVdBUk4oMSwgS0VSTl9FUlIgIkNhbGdhcnk6IGRyaXZlciB0cmll
-ZCB1bm1hcHBpbmcgYmFkIERNQSAiCiAJCSAgICAgICAiYWRkcmVzcyAweCVMeFxuIiwgZG1hX2Fk
-ZHIpOwogCQlyZXR1cm47CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+On Thursday, May 11, 2017 09:45:25 AM Will Deacon wrote:
+> On Thu, May 11, 2017 at 02:26:02AM +0200, Rafael J. Wysocki wrote:
+> > On Wednesday, May 10, 2017 05:01:55 PM Geetha sowjanya wrote:
+> > > From: Linu Cherian <linu.cherian@cavium.com>
+> > > 
+> > > Add SMMUv3 model definition for ThunderX2.
+> > > 
+> > > Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+> > > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> > 
+> > This is an ACPICA change, but you have not included the ACPICA maintainers
+> > into your original CC list (added now).
+> > 
+> > Bob, Lv, how should this be routed?
+> > 
+> > Do you want to apply this patch upstream first or can we make this change in
+> > Linux and upstream in parallel?  That shouldn't be a big deal, right?
+> 
+> I think we're still waiting for the updated IORT document to be published (I
+> think this should be in the next week or so), so I don't think we should
+> commit the new ID before that happens.
+
+OK, thanks for the heads-up.
+
+I think it's better to submit the actbl2.h update directly to ACPICA
+upstream when the doc is published and then work on top of that.
+
+Thanks,
+Rafael
