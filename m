@@ -1,67 +1,53 @@
 From: Geetha sowjanya <gakula@caviumnetworks.com>
-Subject: [v6 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
-Date: Fri, 12 May 2017 18:11:03 +0530
-Message-ID: <1494592866-14076-1-git-send-email-gakula@caviumnetworks.com>
+Subject: [v6 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3 model
+Date: Fri, 12 May 2017 18:11:04 +0530
+Message-ID: <1494592866-14076-2-git-send-email-gakula@caviumnetworks.com>
+References: <1494592866-14076-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1494592866-14076-1-git-send-email-gakula@caviumnetworks.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org
-Cc: robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com
+Cc: robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian@cavium.com>
 
-Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
-1. Errata ID #74
-   SMMU register alias Page 1 is not implemented
-2. Errata ID #126
-   SMMU doesnt support unique IRQ lines and also MSI for gerror,
-   eventq and cmdq-sync
+Cavium ThunderX2 implementation doesn't support second page in SMMU
+register space. Hence, resource size is set as 64k for this model.
 
-The following patchset does software workaround for these two erratas.
+Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+---
+ drivers/acpi/arm64/iort.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-This series is based on patchset.
-https://www.spinics.net/lists/arm-kernel/msg578443.html
-
-Changes since v5:
-  - Rebased on Robin's "Update SMMU models for IORT rev. C" patch.
-     https://www.spinics.net/lists/arm-kernel/msg580728.html
-  - Replaced ACPI_IORT_SMMU_V3_CAVIUM_CN99XX macro with ACPI_IORT_SMMU_CAVIUM_CN99XX
-
-Changes since v4:
- - Replaced all page1 offset macros ARM_SMMU_EVTQ/PRIQ_PROD/CONS with
-    arm_smmu_page1_fixup(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu)
-
-Changes since v3:
- - Merged patches 1, 2 and 4 of Version 3.
- - Modified the page1_offset_adjust() and get_irq_flags() implementation as
-   suggested by Robin.
-
-Changes since v2:
- - Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with
-   new SMMU option used to enable errata workaround.
-
-Changes since v1:
- - Since the use of MIDR register is rejected and SMMU_IIDR is broken on this
-   silicon, as suggested by Will Deacon modified the patches to use ThunderX2
-   SMMUv3 IORT model number to enable errata workaround. 
-
-
-Geetha Sowjanya (1):
-  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
-
-Linu Cherian (2):
-  ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
-    model
-  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #74
-
- Documentation/arm64/silicon-errata.txt             |  2 +
- .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 ++
- drivers/acpi/arm64/iort.c                          | 10 ++-
- drivers/iommu/arm-smmu-v3.c                        | 93 +++++++++++++++++-----
- 4 files changed, 91 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index c5fecf9..bba2b59 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -833,12 +833,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
+ {
+ 	struct acpi_iort_smmu_v3 *smmu;
+ 	int num_res = 0;
++	unsigned long size = SZ_128K;
+ 
+ 	/* Retrieve SMMUv3 specific data */
+ 	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+ 
++	/*
++	 * Override the size, for Cavium ThunderX2 implementation
++	 * which doesn't support the page 1 SMMU register space.
++	 */
++	if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
++		size = SZ_64K;
++
+ 	res[num_res].start = smmu->base_address;
+-	res[num_res].end = smmu->base_address + SZ_128K - 1;
++	res[num_res].end = smmu->base_address + size - 1;
+ 	res[num_res].flags = IORESOURCE_MEM;
+ 
+ 	num_res++;
 -- 
 1.8.3.1
-
