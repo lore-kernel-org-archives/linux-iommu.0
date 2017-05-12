@@ -1,114 +1,67 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB invalidate
- propagation
-Date: Fri, 12 May 2017 13:11:02 +0100
-Message-ID: <cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
- <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
+From: Geetha sowjanya <gakula@caviumnetworks.com>
+Subject: [v6 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Fri, 12 May 2017 18:11:03 +0530
+Message-ID: <1494592866-14076-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
-Sender: kvm-owner@vger.kernel.org
-To: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com
-Cc: jasowang@redhat.com, qemu-devel@nongnu.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org
+Cc: robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Yi,
+From: Linu Cherian <linu.cherian@cavium.com>
 
-On 26/04/17 11:12, Liu, Yi L wrote:
-> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-> 
-> This patch adds VFIO_IOMMU_TLB_INVALIDATE to propagate IOMMU TLB
-> invalidate request from guest to host.
-> 
-> In the case of SVM virtualization on VT-d, host IOMMU driver has
-> no knowledge of caching structure updates unless the guest
-> invalidation activities are passed down to the host. So a new
-> IOCTL is needed to propagate the guest cache invalidation through
-> VFIO.
-> 
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> ---
->  include/uapi/linux/vfio.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 6b97987..50c51f8 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -564,6 +564,15 @@ struct vfio_device_svm {
->  
->  #define VFIO_IOMMU_SVM_BIND_TASK	_IO(VFIO_TYPE, VFIO_BASE + 22)
->  
-> +/* For IOMMU TLB Invalidation Propagation */
-> +struct vfio_iommu_tlb_invalidate {
-> +	__u32	argsz;
-> +	__u32	length;
-> +	__u8	data[];
-> +};
+Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+1. Errata ID #74
+   SMMU register alias Page 1 is not implemented
+2. Errata ID #126
+   SMMU doesnt support unique IRQ lines and also MSI for gerror,
+   eventq and cmdq-sync
 
-We initially discussed something a little more generic than this, with
-most info explicitly described and only pIOMMU-specific quirks and hints
-in an opaque structure. Out of curiosity, why the change? I'm not against
-a fully opaque structure, but there seem to be a large overlap between TLB
-invalidations across architectures.
+The following patchset does software workaround for these two erratas.
+
+This series is based on patchset.
+https://www.spinics.net/lists/arm-kernel/msg578443.html
+
+Changes since v5:
+  - Rebased on Robin's "Update SMMU models for IORT rev. C" patch.
+     https://www.spinics.net/lists/arm-kernel/msg580728.html
+  - Replaced ACPI_IORT_SMMU_V3_CAVIUM_CN99XX macro with ACPI_IORT_SMMU_CAVIUM_CN99XX
+
+Changes since v4:
+ - Replaced all page1 offset macros ARM_SMMU_EVTQ/PRIQ_PROD/CONS with
+    arm_smmu_page1_fixup(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu)
+
+Changes since v3:
+ - Merged patches 1, 2 and 4 of Version 3.
+ - Modified the page1_offset_adjust() and get_irq_flags() implementation as
+   suggested by Robin.
+
+Changes since v2:
+ - Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with
+   new SMMU option used to enable errata workaround.
+
+Changes since v1:
+ - Since the use of MIDR register is rejected and SMMU_IIDR is broken on this
+   silicon, as suggested by Will Deacon modified the patches to use ThunderX2
+   SMMUv3 IORT model number to enable errata workaround. 
 
 
-For what it's worth, when prototyping the paravirtualized IOMMU I came up
-with the following.
+Geetha Sowjanya (1):
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
 
-(From the paravirtualized POV, the SMMU also has to swizzle endianess
-after unpacking an opaque structure, since userspace doesn't know what's
-in it and guest might use a different endianess. So we need to force all
-opaque data to be e.g. little-endian.)
+Linu Cherian (2):
+  ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
+    model
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #74
 
-struct vfio_iommu_tlb_invalidate {
-	__u32	argsz;
-	__u32	scope;
-	__u32	flags;
-	__u32	pasid;
-	__u64	vaddr;
-	__u64	size;
-	__u8	data[];
-};
+ Documentation/arm64/silicon-errata.txt             |  2 +
+ .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 ++
+ drivers/acpi/arm64/iort.c                          | 10 ++-
+ drivers/iommu/arm-smmu-v3.c                        | 93 +++++++++++++++++-----
+ 4 files changed, 91 insertions(+), 20 deletions(-)
 
-Scope is a bitfields restricting the invalidation scope. By default
-invalidate the whole container (all PASIDs and all VAs). @pasid, @vaddr
-and @size are unused.
+-- 
+1.8.3.1
 
-Adding VFIO_IOMMU_INVALIDATE_PASID (1 << 0) restricts the invalidation
-scope to the pasid described by @pasid.
-Adding VFIO_IOMMU_INVALIDATE_VADDR (1 << 1) restricts the invalidation
-scope to the address range described by (@vaddr, @size).
-
-So setting scope = VFIO_IOMMU_INVALIDATE_VADDR would invalidate the VA
-range for *all* pasids (as well as no_pasid). Setting scope =
-(VFIO_IOMMU_INVALIDATE_VADDR|VFIO_IOMMU_INVALIDATE_PASID) would invalidate
-the VA range only for @pasid.
-
-Flags depend on the selected scope:
-
-VFIO_IOMMU_INVALIDATE_NO_PASID, indicating that invalidation (either
-without scope or with INVALIDATE_VADDR) targets non-pasid mappings
-exclusively (some architectures, e.g. SMMU, allow this)
-
-VFIO_IOMMU_INVALIDATE_VADDR_LEAF, indicating that the pIOMMU doesn't need
-to invalidate all intermediate tables cached as part of the PTW for vaddr,
-only the last-level entry (pte). This is a hint.
-
-I guess what's missing for Intel IOMMU and would go in @data is the
-"global" hint (which we don't have in SMMU invalidations). Do you see
-anything else, that the pIOMMU cannot deduce from this structure?
-
-Thanks,
-Jean
-
-
-> +#define VFIO_IOMMU_TLB_INVALIDATE	_IO(VFIO_TYPE, VFIO_BASE + 23)
-> +
->  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
->  
->  /*
-> 
