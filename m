@@ -1,77 +1,114 @@
-From: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [v5 1/4] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
-	definition.
-Date: Fri, 12 May 2017 17:21:59 +0530
-Message-ID: <CANHdaib_fswMdcrht_PE+-A1trfcUU56+arvorNkB-Nj4ZRz2Q@mail.gmail.com>
-References: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com>
-	<3122711.vgvub3W1fy@aspire.rjw.lan> <20170511084525.GA18839@arm.com>
-	<3624921.NlXkYaVXxR@aspire.rjw.lan> <20170512102459.GF26181@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB invalidate
+ propagation
+Date: Fri, 12 May 2017 13:11:02 +0100
+Message-ID: <cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+ <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170512102459.GF26181-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Charles Garcia-Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Robert Moore <robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Lv Zheng <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
+Sender: kvm-owner@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com
+Cc: jasowang@redhat.com, qemu-devel@nongnu.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, "Liu, Yi L" <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 12, 2017 at 3:54 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Thu, May 11, 2017 at 04:40:51PM +0200, Rafael J. Wysocki wrote:
->> On Thursday, May 11, 2017 09:45:25 AM Will Deacon wrote:
->> > On Thu, May 11, 2017 at 02:26:02AM +0200, Rafael J. Wysocki wrote:
->> > > On Wednesday, May 10, 2017 05:01:55 PM Geetha sowjanya wrote:
->> > > > From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->> > > >
->> > > > Add SMMUv3 model definition for ThunderX2.
->> > > >
->> > > > Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->> > > > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->> > >
->> > > This is an ACPICA change, but you have not included the ACPICA maintainers
->> > > into your original CC list (added now).
->> > >
->> > > Bob, Lv, how should this be routed?
->> > >
->> > > Do you want to apply this patch upstream first or can we make this change in
->> > > Linux and upstream in parallel?  That shouldn't be a big deal, right?
->> >
->> > I think we're still waiting for the updated IORT document to be published (I
->> > think this should be in the next week or so), so I don't think we should
->> > commit the new ID before that happens.
->>
->> OK, thanks for the heads-up.
->>
->> I think it's better to submit the actbl2.h update directly to ACPICA
->> upstream when the doc is published and then work on top of that.
->
-> The doc is now published:
->
-> http://infocenter.arm.com/help/topic/com.arm.doc.den0049c/DEN0049C_IO_Remapping_Table.pdf
->
-> so the new model numbers are confirmed.
->
-> Cheers,
->
-> Will
+Hi Yi,
 
-Thanks Will.
+On 26/04/17 11:12, Liu, Yi L wrote:
+> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+> 
+> This patch adds VFIO_IOMMU_TLB_INVALIDATE to propagate IOMMU TLB
+> invalidate request from guest to host.
+> 
+> In the case of SVM virtualization on VT-d, host IOMMU driver has
+> no knowledge of caching structure updates unless the guest
+> invalidation activities are passed down to the host. So a new
+> IOCTL is needed to propagate the guest cache invalidation through
+> VFIO.
+> 
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> ---
+>  include/uapi/linux/vfio.h | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 6b97987..50c51f8 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -564,6 +564,15 @@ struct vfio_device_svm {
+>  
+>  #define VFIO_IOMMU_SVM_BIND_TASK	_IO(VFIO_TYPE, VFIO_BASE + 22)
+>  
+> +/* For IOMMU TLB Invalidation Propagation */
+> +struct vfio_iommu_tlb_invalidate {
+> +	__u32	argsz;
+> +	__u32	length;
+> +	__u8	data[];
+> +};
 
-Will resubmit the patches based on Robin's latest patch "acpica: iort:
-Update SMMU models for IORT rev. C",
-as there is a miss match in the macro name used to define ThunderX2
-iort model number.
-https://lkml.org/lkml/2017/5/12/211
+We initially discussed something a little more generic than this, with
+most info explicitly described and only pIOMMU-specific quirks and hints
+in an opaque structure. Out of curiosity, why the change? I'm not against
+a fully opaque structure, but there seem to be a large overlap between TLB
+invalidations across architectures.
 
 
+For what it's worth, when prototyping the paravirtualized IOMMU I came up
+with the following.
 
-Thank you,
-Geetha.
+(From the paravirtualized POV, the SMMU also has to swizzle endianess
+after unpacking an opaque structure, since userspace doesn't know what's
+in it and guest might use a different endianess. So we need to force all
+opaque data to be e.g. little-endian.)
+
+struct vfio_iommu_tlb_invalidate {
+	__u32	argsz;
+	__u32	scope;
+	__u32	flags;
+	__u32	pasid;
+	__u64	vaddr;
+	__u64	size;
+	__u8	data[];
+};
+
+Scope is a bitfields restricting the invalidation scope. By default
+invalidate the whole container (all PASIDs and all VAs). @pasid, @vaddr
+and @size are unused.
+
+Adding VFIO_IOMMU_INVALIDATE_PASID (1 << 0) restricts the invalidation
+scope to the pasid described by @pasid.
+Adding VFIO_IOMMU_INVALIDATE_VADDR (1 << 1) restricts the invalidation
+scope to the address range described by (@vaddr, @size).
+
+So setting scope = VFIO_IOMMU_INVALIDATE_VADDR would invalidate the VA
+range for *all* pasids (as well as no_pasid). Setting scope =
+(VFIO_IOMMU_INVALIDATE_VADDR|VFIO_IOMMU_INVALIDATE_PASID) would invalidate
+the VA range only for @pasid.
+
+Flags depend on the selected scope:
+
+VFIO_IOMMU_INVALIDATE_NO_PASID, indicating that invalidation (either
+without scope or with INVALIDATE_VADDR) targets non-pasid mappings
+exclusively (some architectures, e.g. SMMU, allow this)
+
+VFIO_IOMMU_INVALIDATE_VADDR_LEAF, indicating that the pIOMMU doesn't need
+to invalidate all intermediate tables cached as part of the PTW for vaddr,
+only the last-level entry (pte). This is a hint.
+
+I guess what's missing for Intel IOMMU and would go in @data is the
+"global" hint (which we don't have in SMMU invalidations). Do you see
+anything else, that the pIOMMU cannot deduce from this structure?
+
+Thanks,
+Jean
+
+
+> +#define VFIO_IOMMU_TLB_INVALIDATE	_IO(VFIO_TYPE, VFIO_BASE + 23)
+> +
+>  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+>  
+>  /*
+> 
