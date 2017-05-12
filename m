@@ -1,115 +1,77 @@
-From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-Subject: Re: [Qemu-devel] [RFC PATCH 6/8] VFIO: do pasid table binding
-Date: Thu, 11 May 2017 18:29:56 +0800
-Message-ID: <20170511102956.GE2931@gmail.com>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
- <1493201525-14418-7-git-send-email-yi.l.liu@intel.com>
- <9441ea23-1867-f59a-1ae3-be5afa4d51da@gmail.com>
+From: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [v5 1/4] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
+	definition.
+Date: Fri, 12 May 2017 17:21:59 +0530
+Message-ID: <CANHdaib_fswMdcrht_PE+-A1trfcUU56+arvorNkB-Nj4ZRz2Q@mail.gmail.com>
+References: <1494415918-13770-1-git-send-email-gakula@caviumnetworks.com>
+	<3122711.vgvub3W1fy@aspire.rjw.lan> <20170511084525.GA18839@arm.com>
+	<3624921.NlXkYaVXxR@aspire.rjw.lan> <20170512102459.GF26181@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <kvm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9441ea23-1867-f59a-1ae3-be5afa4d51da@gmail.com>
-Sender: kvm-owner@vger.kernel.org
-To: Xiao Guangrong <guangrong.xiao@gmail.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com, tianyu.lan@intel.com, kevin.tian@intel.com, ashok.raj@intel.com, jean-philippe.brucker@arm.com, jasowang@redhat.com, qemu-devel@nongnu.org, jacob.jun.pan@intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170512102459.GF26181-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Charles Garcia-Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Robert Moore <robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Lv Zheng <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 09, 2017 at 03:55:20PM +0800, Xiao Guangrong wrote:
-> 
-> 
-> On 04/26/2017 06:12 PM, Liu, Yi L wrote:
-> >From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-> >
-> >This patch adds IOCTL processing in vfio_iommu_type1 for
-> >VFIO_IOMMU_SVM_BIND_TASK. Binds the PASID table bind by
-> >calling iommu_ops->bind_pasid_table to link the whole
-> >PASID table to pIOMMU.
-> >
-> >For VT-d, it is linking the guest PASID table to host pIOMMU.
-> >This is key point to support SVM virtualization on VT-d.
-> >
-> >Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> >---
-> >  drivers/vfio/vfio_iommu_type1.c | 72 +++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 72 insertions(+)
-> >
-> >diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> >index b3cc33f..30b6d48 100644
-> >--- a/drivers/vfio/vfio_iommu_type1.c
-> >+++ b/drivers/vfio/vfio_iommu_type1.c
-> >@@ -1512,6 +1512,50 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
-> >  	return ret;
-> >  }
-> >+struct vfio_svm_task {
-> >+	struct iommu_domain *domain;
-> >+	void *payload;
-> >+};
-> >+
-> >+static int bind_pasid_tbl_fn(struct device *dev, void *data)
-> >+{
-> >+	int ret = 0;
-> >+	struct vfio_svm_task *task = data;
-> >+	struct pasid_table_info *pasidt_binfo;
-> >+
-> >+	pasidt_binfo = task->payload;
-> >+	ret = iommu_bind_pasid_table(task->domain, dev, pasidt_binfo);
-> >+	return ret;
-> >+}
-> >+
-> >+static int vfio_do_svm_task(struct vfio_iommu *iommu, void *data,
-> >+				int (*fn)(struct device *, void *))
-> >+{
-> >+	int ret = 0;
-> >+	struct vfio_domain *d;
-> >+	struct vfio_group *g;
-> >+	struct vfio_svm_task task;
-> >+
-> >+	task.payload = data;
-> >+
-> >+	mutex_lock(&iommu->lock);
-> >+
-> >+	list_for_each_entry(d, &iommu->domain_list, next) {
-> >+		list_for_each_entry(g, &d->group_list, next) {
-> >+			if (g->iommu_group != NULL) {
-> >+				task.domain = d->domain;
-> >+				ret = iommu_group_for_each_dev(
-> >+					g->iommu_group, &task, fn);
-> >+				if (ret != 0)
-> >+					break;
-> >+			}
-> >+		}
-> >+	}
-> >+
-> >+	mutex_unlock(&iommu->lock);
-> >+	return ret;
-> >+}
-> >+
-> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  				   unsigned int cmd, unsigned long arg)
-> >  {
-> >@@ -1582,6 +1626,34 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  		return copy_to_user((void __user *)arg, &unmap, minsz) ?
-> >  			-EFAULT : 0;
-> >+	} else if (cmd == VFIO_IOMMU_SVM_BIND_TASK) {
-> >+		struct vfio_device_svm hdr;
-> >+		u8 *data = NULL;
-> >+		int ret = 0;
-> >+
-> >+		minsz = offsetofend(struct vfio_device_svm, length);
-> >+		if (copy_from_user(&hdr, (void __user *)arg, minsz))
-> >+			return -EFAULT;
-> >+
-> >+		if (hdr.length == 0)
-> >+			return -EINVAL;
-> >+
-> >+		data = memdup_user((void __user *)(arg + minsz),
-> >+					hdr.length);
-> 
-> You should check the @length is at least sizeof(struct pasid_table_info) as
-> kernel uses it as pasid_table_info, a evil application can crash kernel.
+On Fri, May 12, 2017 at 3:54 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Thu, May 11, 2017 at 04:40:51PM +0200, Rafael J. Wysocki wrote:
+>> On Thursday, May 11, 2017 09:45:25 AM Will Deacon wrote:
+>> > On Thu, May 11, 2017 at 02:26:02AM +0200, Rafael J. Wysocki wrote:
+>> > > On Wednesday, May 10, 2017 05:01:55 PM Geetha sowjanya wrote:
+>> > > > From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> > > >
+>> > > > Add SMMUv3 model definition for ThunderX2.
+>> > > >
+>> > > > Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> > > > Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> > >
+>> > > This is an ACPICA change, but you have not included the ACPICA maintainers
+>> > > into your original CC list (added now).
+>> > >
+>> > > Bob, Lv, how should this be routed?
+>> > >
+>> > > Do you want to apply this patch upstream first or can we make this change in
+>> > > Linux and upstream in parallel?  That shouldn't be a big deal, right?
+>> >
+>> > I think we're still waiting for the updated IORT document to be published (I
+>> > think this should be in the next week or so), so I don't think we should
+>> > commit the new ID before that happens.
+>>
+>> OK, thanks for the heads-up.
+>>
+>> I think it's better to submit the actbl2.h update directly to ACPICA
+>> upstream when the doc is published and then work on top of that.
+>
+> The doc is now published:
+>
+> http://infocenter.arm.com/help/topic/com.arm.doc.den0049c/DEN0049C_IO_Remapping_Table.pdf
+>
+> so the new model numbers are confirmed.
+>
+> Cheers,
+>
+> Will
 
-Yes, thx for the remind.
+Thanks Will.
 
-Thanks,
-Yi L 
+Will resubmit the patches based on Robin's latest patch "acpica: iort:
+Update SMMU models for IORT rev. C",
+as there is a miss match in the macro name used to define ThunderX2
+iort model number.
+https://lkml.org/lkml/2017/5/12/211
+
+
+
+Thank you,
+Geetha.
