@@ -1,29 +1,21 @@
-From: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [v6 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
-	ThunderX2 SMMUv3 model
-Date: Sat, 13 May 2017 08:33:59 +0800
-Message-ID: <201705130808.K3USl83S%fengguang.wu@intel.com>
-References: <1494592866-14076-2-git-send-email-gakula@caviumnetworks.com>
+From: kbuild test robot <lkp@intel.com>
+Subject: Re: [v6 2/3] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
+ erratum #74
+Date: Sat, 13 May 2017 09:04:57 +0800
+Message-ID: <201705130903.fQrzniDd%fengguang.wu@intel.com>
+References: <1494592866-14076-3-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="W/nzBZO5zC0uMSeA"
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/mixed; boundary="jI8keyz6grp/JLjh"
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1494592866-14076-2-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+In-Reply-To: <1494592866-14076-3-git-send-email-gakula@caviumnetworks.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Geetha sowjanya <gakula@caviumnetworks.com>
+Cc: kbuild-all@01.org, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
---W/nzBZO5zC0uMSeA
+--jI8keyz6grp/JLjh
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -45,35 +37,35 @@ reproduce:
 
 All errors (new ones prefixed by >>):
 
-   drivers/acpi/arm64/iort.c: In function 'arm_smmu_v3_init_resources':
->> drivers/acpi/arm64/iort.c:777:21: error: 'ACPI_IORT_SMMU_CAVIUM_CN99XX' undeclared (first use in this function)
-     if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
-                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/acpi/arm64/iort.c:777:21: note: each undeclared identifier is reported only once for each function it appears in
+   drivers//iommu/arm-smmu-v3.c: In function 'acpi_smmu_get_options':
+>> drivers//iommu/arm-smmu-v3.c:2605:15: error: 'ACPI_IORT_SMMU_CAVIUM_CN99XX' undeclared (first use in this function)
+     if (model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers//iommu/arm-smmu-v3.c:2605:15: note: each undeclared identifier is reported only once for each function it appears in
 
-vim +/ACPI_IORT_SMMU_CAVIUM_CN99XX +777 drivers/acpi/arm64/iort.c
+vim +/ACPI_IORT_SMMU_CAVIUM_CN99XX +2605 drivers//iommu/arm-smmu-v3.c
 
-   771		smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-   772	
-   773		/*
-   774		 * Override the size, for Cavium ThunderX2 implementation
-   775		 * which doesn't support the page 1 SMMU register space.
-   776		 */
- > 777		if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
-   778			size = SZ_64K;
-   779	
-   780		res[num_res].start = smmu->base_address;
+  2599		return 0;
+  2600	}
+  2601	
+  2602	#ifdef CONFIG_ACPI
+  2603	static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+  2604	{
+> 2605		if (model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
+  2606			smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
+  2607	
+  2608		dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---W/nzBZO5zC0uMSeA
+--jI8keyz6grp/JLjh
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICMZPFlkAAy5jb25maWcAlFxLd9u4kt73r9BJz2JmcdN+xUnOHC8gEpRwRRI0AEqyNzyK
+H4sICKtWFlkAAy5jb25maWcAlFxLd9u4kt73r9BJz2JmcdN+xUnOHC8gEpRwRRI0AEqyNzyK
 o6R92o9cWe57M79+qgA+ABCQlV6kzaoPRTwK9QKo33/7fUJe98+Pm/393ebh4efk+/Zpu9vs
 t18n3+4ftv87Sfmk5GpCU6beAzi/f3r9zx+b3ePlxeTi/enp+5N/7O7OJ4vt7mn7MEmen77d
 f3+F9vfPT7/9/lvCy4zNGiKKy4urn93j5cWUqeGRiGTeVPMb2ZA0FY3y+UVR22AQ1VRkRhs5
@@ -715,11 +707,4 @@ jwsLgFIB4wRD2q1bhaSXJpPMK+uyDX+HpnuZ40thizNATzBH9JS5kUJb/brKKbtEWDeWv60q
 Swd00wMc2ujSPmnP9I2yYVNblR15ww/ppHsQxF/8vHByuPgpWe1Rwb/0ra+PpLqyXbHpe0Kg
 SOXYkdSqe2lI+D8/801HyksCAA==
 
---W/nzBZO5zC0uMSeA
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---W/nzBZO5zC0uMSeA--
+--jI8keyz6grp/JLjh--
