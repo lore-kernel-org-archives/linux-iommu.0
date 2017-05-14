@@ -1,184 +1,58 @@
-From: shameer <shameerali.kolothum.thodi@huawei.com>
-Subject: [RFC v1 7/7] iommu/arm-smmu-v3: Enable ACPI based HiSilicon erratum 161010801
-Date: Sat, 13 May 2017 10:47:31 +0100
-Message-ID: <20170513094731.3676-8-shameerali.kolothum.thodi@huawei.com>
-References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: [patch 10/18] iommu/vt-d: Adjust system_state checks
+Date: Sun, 14 May 2017 20:27:26 +0200
+Message-ID: <20170514183613.238367369@linutronix.de>
+References: <20170514182716.347236777@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: will.deacon@arm.com, robin.murphy@arm.com, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline;
+	filename=iommu-vt-d--Adjust-system_state-check.patch
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+To enable smp_processor_id() and might_sleep() debug checks earlier, it's
+required to add system states between SYSTEM_BOOTING and SYSTEM_RUNNING.
 
-On these platforms GICv3 ITS translator is presented with the deviceID
-by extending the MSI payload data to 64 bits to include the deviceID.
-Hence, the PCIe controller on this platforms has to differentiate the
-MSI payload against other DMA payload and has to modify the MSI payload.
-This basically makes it difficult for this platforms to have a SMMU
-translation for MSI.
+Adjust the system_state checks in dmar_parse_one_atsr() and
+dmar_iommu_notify_scope_dev() to handle the extra states.
 
-This patch implements a ACPI table based quirk to reserve the hw msi
-regions in the smmu-v3 driver which means these address regions will
-not be translated and will be excluded from iova allocations.
-
-ACPI CSRT vendor specific blobs are used to pass the reserve address
-region info on these platforms. HiSilicon CSRT table contains a resource
-group whose device Id matches with the SMMU device model id defined
-in the IORT spec. This SMMU group will not have the optional Resource
-group shared info.
-
-typedef struct {
-  UINT32  Length;
-  UINT32  VendorId;
-  UINT32  SubvendorId;
-  UINT16  DeviceId;      ---->Set to IORT SMMU Model number.
-  UINT16  SubdeviceId;
-  UINT16  Revision;
-  UINT8   Reserved[2];
-  UINT32  SharedInfoLength;  ---->Set to zero.
-  ACPI_CSRT_RESOURCE_DESCRIPTOR RsrcDesc;
-} ACPI_CSRT_RESOURCE_GROUP;
-
-The resource descriptor associated with this group will have the vendor
-specific section populated to represent the MSI region as below.
-
-typedef struct {
-  UINT32  Length;
-  UINT16  ResourceType;
-  UINT16  ResourceSubtype;
-  UINT32  UID;
-  /* Vendor defined info */
-  UINT64  Base;        -->Corresponding SMMU node base address.
-  UINT64  MSIResvStart; -----> HW MSI reserve start address.
-  UINT32  MSIResvLen; -------> HW MSI reserve len.
-} ACPI_CSRT_RESOURCE_DESCRIPTOR;
-
-Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 ---
- arch/arm64/Kconfig          | 10 ++++++
- drivers/iommu/arm-smmu-v3.c | 75 +++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 85 insertions(+)
+ drivers/iommu/intel-iommu.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 21d61ff..e7ebd97 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -516,6 +516,16 @@ config HISILICON_ERRATUM_161010701
- 	  CMD_PREFETCH_CFG. This will skip the prefetch cmd usage.
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4312,7 +4312,7 @@ int dmar_parse_one_atsr(struct acpi_dmar
+ 	struct acpi_dmar_atsr *atsr;
+ 	struct dmar_atsr_unit *atsru;
  
- 	  If unsure, say Y.
-+config HISILICON_ERRATUM_161010801
-+	bool "HiSilicon erratum 161010801: Reserve HW MSI regions"
-+	default y
-+	help
-+	  On HiSilicon Hip06/Hip07 platforms, the SMMU v3 has to bypass the
-+	  GIC ITS doorbel msi address regions. This will make sure that ITS
-+	  doorbell address regions are reserved and excluded from iova
-+	  allocations.
-+
-+	  If unsure, say Y.
+-	if (system_state != SYSTEM_BOOTING && !intel_iommu_enabled)
++	if (system_state >= SYSTEM_RUNNING && !intel_iommu_enabled)
+ 		return 0;
  
- endmenu
+ 	atsr = container_of(hdr, struct acpi_dmar_atsr, header);
+@@ -4562,7 +4562,7 @@ int dmar_iommu_notify_scope_dev(struct d
+ 	struct acpi_dmar_atsr *atsr;
+ 	struct acpi_dmar_reserved_memory *rmrr;
  
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e7a8a50..a33e339 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -663,6 +663,73 @@ void erratum_skip_prefetch_cmd(struct arm_smmu_device *smmu, void *arg)
- 	smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
- }
+-	if (!intel_iommu_enabled && system_state != SYSTEM_BOOTING)
++	if (!intel_iommu_enabled && system_state >= SYSTEM_RUNNING)
+ 		return 0;
  
-+#ifdef CONFIG_HISILICON_ERRATUM_161010801
-+static void parse_hisi_csrt_msi(struct arm_smmu_device *smmu,
-+		const struct acpi_iort_smmu_v3 *iort)
-+
-+{
-+	struct acpi_csrt_group *grp, *end;
-+	struct acpi_table_csrt *csrt;
-+	acpi_status status;
-+
-+	status = acpi_get_table(ACPI_SIG_CSRT, 0,
-+				(struct acpi_table_header **)&csrt);
-+	if (ACPI_FAILURE(status)) {
-+		dev_warn(smmu->dev, "HiSi CSRT table get failed: 0x%x\n",
-+								status);
-+		return;
-+	}
-+
-+	grp = (struct acpi_csrt_group *)(csrt + 1);
-+	end = (struct acpi_csrt_group *)((void *)csrt + csrt->header.length);
-+
-+	while (grp < end) {
-+		if (grp->device_id == iort->model) {
-+			/*
-+			 * We don't have the optional shared info for this grp
-+			 * and has only one resource descriptor with vendor
-+			 * defined msi region for this group. Go straight to
-+			 * vendor defined info.
-+			 */
-+			struct acpi_csrt_descriptor *desc =
-+					(struct acpi_csrt_descriptor *)&grp[1];
-+
-+			/*
-+			 * HiSilicon CSRT vendor info. First 8 bytes gives smmu
-+			 * node base addr, next 8 bytes HW MSI reserve region
-+			 * addr and the remaining 4 byte the len.
-+			 */
-+			void *vendor = &desc[1];
-+			u64 base = (*(u64 *)vendor);
-+
-+			if (base == iort->base_address && smmu->msi_region) {
-+				/* Replace the default SW msi with HW msi */
-+
-+				smmu->msi_region->start =
-+						*((u64 *)((u64 *)vendor+1));
-+				smmu->msi_region->length =
-+						*((u32 *)((u64 *)vendor+2));
-+				smmu->msi_region->type = IOMMU_RESV_MSI;
-+				dev_info(smmu->dev,
-+					"HiSi msi addr 0x%pa size 0x%zx\n",
-+					&smmu->msi_region->start,
-+					smmu->msi_region->length);
-+				return;
-+			}
-+		}
-+
-+		grp = (struct acpi_csrt_group *)((void *)grp + grp->length);
-+	}
-+
-+}
-+void erratum_hisi_resv_hw_msi(struct arm_smmu_device *smmu, void *arg)
-+{
-+	const struct acpi_iort_smmu_v3 *iort_smmu = arg;
-+
-+	parse_hisi_csrt_msi(smmu, iort_smmu);
-+}
-+#endif
-+
- struct smmu_erratum_workaround {
- 	enum smmu_erratum_match_type match_type;
- 	const void *id;	/* Indicate the Erratum ID */
-@@ -686,6 +753,14 @@ static const struct smmu_erratum_workaround smmu_workarounds[] = {
- 	},
- 
- #endif
-+#ifdef CONFIG_HISILICON_ERRATUM_161010801
-+	{
-+		.match_type = se_match_acpi_iort_model,
-+		.id = (void *)ACPI_IORT_SMMU_HISILICON_HI161X,
-+		.desc_str = "HiSilicon erratum 161010801",
-+		.enable = erratum_hisi_resv_hw_msi,
-+	},
-+#endif
- 	{
- 
- 	},
--- 
-2.5.0
-
-
+ 	list_for_each_entry(rmrru, &dmar_rmrr_units, list) {
