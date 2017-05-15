@@ -1,40 +1,69 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC v1 3/7] iommu/arm-smmu-v3: Replace the device tree binding
- for hisilicon broken prefetch cmd with erratum id
-Date: Mon, 15 May 2017 10:23:51 -0500
-Message-ID: <CAL_JsqLH7iT7O2U3g6J26YGBUmt53PDymLJ5VCLByW_97L_M4w@mail.gmail.com>
-References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com> <20170513094731.3676-4-shameerali.kolothum.thodi@huawei.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v5 14/32] efi: Add an EFI table address match function
+Date: Mon, 15 May 2017 20:09:13 +0200
+Message-ID: <20170515180913.lhma7xw52irrdtvr@pd.tnic>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418211848.10190.65062.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170513094731.3676-4-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: shameer <shameerali.kolothum.thodi@huawei.com>
-Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Mark Rutland <mark.rutland@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, devel@acpica.org, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, Hanjun Guo <guohanjun@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170418211848.10190.65062.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-arch-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, May 13, 2017 at 4:47 AM, shameer
-<shameerali.kolothum.thodi@huawei.com> wrote:
-> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+On Tue, Apr 18, 2017 at 04:18:48PM -0500, Tom Lendacky wrote:
+> Add a function that will determine if a supplied physical address matches
+> the address of an EFI table.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 > ---
->  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> index be57550..bf48e92 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> @@ -46,7 +46,7 @@ the PCIe specification.
->                          devicetree/bindings/interrupt-controller/msi.txt
->                        for a description of the msi-parent property.
->
-> -- hisilicon,broken-prefetch-cmd
-> +- hisilicon,erratum-161010701
+>  drivers/firmware/efi/efi.c |   33 +++++++++++++++++++++++++++++++++
+>  include/linux/efi.h        |    7 +++++++
+>  2 files changed, 40 insertions(+)
+> 
+> diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+> index b372aad..8f606a3 100644
+> --- a/drivers/firmware/efi/efi.c
+> +++ b/drivers/firmware/efi/efi.c
+> @@ -55,6 +55,25 @@ struct efi __read_mostly efi = {
+>  };
+>  EXPORT_SYMBOL(efi);
+>  
+> +static unsigned long *efi_tables[] = {
+> +	&efi.mps,
+> +	&efi.acpi,
+> +	&efi.acpi20,
+> +	&efi.smbios,
+> +	&efi.smbios3,
+> +	&efi.sal_systab,
+> +	&efi.boot_info,
+> +	&efi.hcdp,
+> +	&efi.uga,
+> +	&efi.uv_systab,
+> +	&efi.fw_vendor,
+> +	&efi.runtime,
+> +	&efi.config_table,
+> +	&efi.esrt,
+> +	&efi.properties_table,
+> +	&efi.mem_attr_table,
+> +};
+> +
+>  static bool disable_runtime;
+>  static int __init setup_noefi(char *arg)
+>  {
+> @@ -854,6 +873,20 @@ int efi_status_to_err(efi_status_t status)
+>  	return err;
+>  }
+>  
+> +bool efi_table_address_match(unsigned long phys_addr)
 
-Why? Your missing commit msg should answer that. This breaks
-compatibility, so you are stuck with the old string.
+efi_is_table_address() reads easier/better in the code.
 
-I'd prefer that you start using the compatible string rather than
-every vendor adding a property for every errata.
+-- 
+Regards/Gruss,
+    Boris.
 
-Rob
+Good mailing practices for 400: avoid top-posting and trim the reply.
