@@ -1,231 +1,303 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iova: allow allocation of lowest domain PFN
-Date: Mon, 15 May 2017 19:32:12 +0100
-Message-ID: <3df9e5cd-0c42-8a6d-c3cf-0c3fe57729a0@arm.com>
-References: <102275367.137137.1494509795293.JavaMail.zimbra@xes-inc.com>
-	<7c703cfd-e667-bdce-de49-ae31a696b5dd@arm.com>
-	<433111847.511288.1494527238012.JavaMail.zimbra@xes-inc.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
+ in the clear
+Date: Mon, 15 May 2017 20:35:17 +0200
+Message-ID: <20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <433111847.511288.1494527238012.JavaMail.zimbra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Aaron Sierra <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-arch-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/05/17 19:27, Aaron Sierra wrote:
-> ----- Original Message -----
->> From: "Robin Murphy" <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> To: "Aaron Sierra" <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>, "Joerg Roedel" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->> Cc: "iommu" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Nate Watterson" <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> Sent: Thursday, May 11, 2017 12:39:01 PM
->> Subject: Re: [PATCH] iova: allow allocation of lowest domain PFN
+On Tue, Apr 18, 2017 at 04:19:21PM -0500, Tom Lendacky wrote:
+> Boot data (such as EFI related data) is not encrypted when the system is
+> booted because UEFI/BIOS does not run with SME active. In order to access
+> this data properly it needs to be mapped decrypted.
 > 
-> Robin,
-> 
->> Hi Aaron,
->>
->> On 11/05/17 14:36, Aaron Sierra wrote:
->>> I found it was impossible to allocate all of the address space
->>> defined by an IOVA domain. For example, a trivial domain with 2 pages
->>> would cover PFNs 0 (start) and 1 (limit), but attempting to allocate
->>> more than one total PFN would fail because the start PFN could never be
->>> allocated.
->>
->> Does this only happen when start_pfn is 0? The recent fix in
->> 5016bdb796b3 implies that allocating the entire address space works
->> fine, albeit with a non-zero start_pfn. I was about to say that for all
->> current callers, start_pfn is always at least 1 anyway, but I see the
->> Nvidia DRM stuff in next is making that no longer true, oh well.
-> 
-> No, this limitation exists regardless of the start_pfn value. I've tested
-> 0, 1, then powers-of-two up to half of the limit_pfn.
-> 
-> The problem with the test case laid out in 5016bdb796b3 is that start_pfn
-> is 1 and limit_pfn is odd (as usual), so the number of available PFNs is odd.
-> Therefore allocating two at a time can't possibly allocate all of the address
-> space.
+> The early_memremap() support is updated to provide an arch specific
 
-Ah, right you are. I had misread Nate's example as a 2-page address
-space, not a 3-page one.
+"Update early_memremap() to provide... "
 
->>> This adds a function to prevent PFN limit calculations from dipping
->>> "below" the start PFN in __alloc_and_insert_iova_range() and
->>> __get_cached_rbnode(). It also alters the PFN validity checks in
->>> __alloc_and_insert_iova_range() to anticipate possible PFN rollover.
->>> These combine to allow every PFN within the IOVA domain to be available
->>> for allocation.
->>>
->>> Signed-off-by: Aaron Sierra <asierra-AQeFf1F/bRxBDgjK7y7TUQ@public.gmane.org>
->>> ---
->>>  drivers/iommu/iova.c | 43 +++++++++++++++++++++++++++++++------------
->>>  1 file changed, 31 insertions(+), 12 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>> index 5c88ba7..9d92005b 100644
->>> --- a/drivers/iommu/iova.c
->>> +++ b/drivers/iommu/iova.c
->>> @@ -32,6 +32,18 @@ static unsigned long iova_rcache_get(struct iova_domain
->>> *iovad,
->>>  static void init_iova_rcaches(struct iova_domain *iovad);
->>>  static void free_iova_rcaches(struct iova_domain *iovad);
->>>  
->>> +static inline unsigned long
->>> +bounded_next_pfn(struct iova_domain *iovad, struct iova *iova)
->>> +{
->>> +	unsigned long next_pfn = iova->pfn_lo - 1;
->>> +
->>> +	if (!iova->pfn_lo)
->>> +		return iovad->start_pfn;
->>> +
->>> +	/* make sure the PFN doesn't rollover */
->>> +	return (next_pfn > iova->pfn_lo) ? iovad->start_pfn : next_pfn;
->>
->> Why this check? Substituting the definition of next_pfn:
->>
->> 	((iova->pfn_lo - 1) > iova->pfn_lo)
->>
->> which is only true if iova->pfn_lo == 0, in which case we never get this
->> far anyway.
+> routine to modify the pagetable protection attributes before they are
+> applied to the new mapping. This is used to remove the encryption mask
+> for boot related data.
 > 
-> That's a good question. That should be able to be simplified.
+> The memremap() support is updated to provide an arch specific routine
+
+Ditto. Passive tone always reads harder than an active tone,
+"doer"-sentence.
+
+> to determine if RAM remapping is allowed.  RAM remapping will cause an
+> encrypted mapping to be generated. By preventing RAM remapping,
+> ioremap_cache() will be used instead, which will provide a decrypted
+> mapping of the boot related data.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/include/asm/io.h |    4 +
+>  arch/x86/mm/ioremap.c     |  182 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/io.h        |    2 
+>  kernel/memremap.c         |   20 ++++-
+>  mm/early_ioremap.c        |   18 ++++
+>  5 files changed, 219 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+> index 7afb0e2..75f2858 100644
+> --- a/arch/x86/include/asm/io.h
+> +++ b/arch/x86/include/asm/io.h
+> @@ -381,4 +381,8 @@ extern int __must_check arch_phys_wc_add(unsigned long base,
+>  #define arch_io_reserve_memtype_wc arch_io_reserve_memtype_wc
+>  #endif
 >  
->> I'm also not sure about returning start_pfn instead of 0 in the
->> underflow case, since reserved entries may exist in the tree such that
->> pfn_lo < start_pfn, and I'm not convinced that returning a "next" PFN
->> which is actually "previous" to the lowest entry won't cause things to
->> go horrendously wrong.
-> 
-> I didn't realize that reservations could occur below the defined IOVA
-> domain lower limit. Is that really intended behavior? I'd expected that if
-> you wanted to reserve 0, for example, you'd define a domain starting at
-> zero, then reserve that PFN before making the domain generally available.
+> +extern bool arch_memremap_do_ram_remap(resource_size_t offset, size_t size,
+> +				       unsigned long flags);
+> +#define arch_memremap_do_ram_remap arch_memremap_do_ram_remap
+> +
+>  #endif /* _ASM_X86_IO_H */
+> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+> index 9bfcb1f..bce0604 100644
+> --- a/arch/x86/mm/ioremap.c
+> +++ b/arch/x86/mm/ioremap.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/vmalloc.h>
+>  #include <linux/mmiotrace.h>
+> +#include <linux/efi.h>
+>  
+>  #include <asm/cacheflush.h>
+>  #include <asm/e820/api.h>
+> @@ -21,6 +22,7 @@
+>  #include <asm/tlbflush.h>
+>  #include <asm/pgalloc.h>
+>  #include <asm/pat.h>
+> +#include <asm/setup.h>
+>  
+>  #include "physaddr.h"
+>  
+> @@ -419,6 +421,186 @@ void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
+>  	iounmap((void __iomem *)((unsigned long)addr & PAGE_MASK));
+>  }
+>  
+> +/*
+> + * Examine the physical address to determine if it is an area of memory
+> + * that should be mapped decrypted.  If the memory is not part of the
+> + * kernel usable area it was accessed and created decrypted, so these
+> + * areas should be mapped decrypted.
+> + */
+> +static bool memremap_should_map_decrypted(resource_size_t phys_addr,
+> +					  unsigned long size)
+> +{
+> +	/* Check if the address is outside kernel usable area */
+> +	switch (e820__get_entry_type(phys_addr, phys_addr + size - 1)) {
+> +	case E820_TYPE_RESERVED:
+> +	case E820_TYPE_ACPI:
+> +	case E820_TYPE_NVS:
+> +	case E820_TYPE_UNUSABLE:
+> +		return true;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +/*
+> + * Examine the physical address to determine if it is EFI data. Check
+> + * it against the boot params structure and EFI tables and memory types.
+> + */
+> +static bool memremap_is_efi_data(resource_size_t phys_addr,
+> +				 unsigned long size)
+> +{
+> +	u64 paddr;
+> +
+> +	/* Check if the address is part of EFI boot/runtime data */
+> +	if (efi_enabled(EFI_BOOT)) {
 
-Yes, reservations are inserted directly into the tree without reference
-to the allocation limits. It's not really set in stone, but it seems
-that the general pattern is the the limits are for addresses which would
-never be considered valid (i.e. anything physically out of range for the
-given device, plus 0 for the sake of software), whereas reservations are
-for addresses which are nominally valid, but can't be remapped due to
-other reasons.
+Save indentation level:
 
-> [ snip ]
-> 
->>>  
->>> -	if (!curr) {
->>> -		if (size_aligned)
->>> -			pad_size = iova_get_pad_size(size, limit_pfn);
->>> -		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
->>
->> Wouldn't it be sufficient to just change this to
->>
->> 	if ((iovad->start_pfn + size + pad_size - 1) > limit_pfn)
-> 
-> That may be. My original solution was equivalent, but factored differently
-> (i.e. limit_pfn + 1). I couldn't fully wrap my head around the logic and
-> was worried about missing corner cases. If that is indeed a complete fix,
-> could the refactoring below still be beneficial?
+	if (!efi_enabled(EFI_BOOT))
+		return false;
 
-Having given it some more thought, it's clear that the fundamental
-problem is that having both start_pfn and limit_pfn be inclusive creates
-a troublesome ambiguity, and we're really just adding further
-complication in attempts to paper over that. I reckon it might be a lot
-more straightforward to cut that ambiguity out altogether by just making
-limit_pfn exclusive, since it has plenty of room to avoid overflow -
-I've lightly tested the below via dma-iommu (i.e. booting a machine and
-doing some I/O), but at this stage it comes with no guarantees (after
-all, it's basically the mother of all off-by-ones...)
 
-If it checks out I'm happy to write up a proper patch.
+> +		paddr = boot_params.efi_info.efi_memmap_hi;
+> +		paddr <<= 32;
+> +		paddr |= boot_params.efi_info.efi_memmap;
+> +		if (phys_addr == paddr)
+> +			return true;
+> +
+> +		paddr = boot_params.efi_info.efi_systab_hi;
+> +		paddr <<= 32;
+> +		paddr |= boot_params.efi_info.efi_systab;
 
-Robin.
+So those two above look like could be two global vars which are
+initialized somewhere in the EFI init path:
 
------>8-----
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 5c88ba70e4e0..0c809441f9c2 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -48,7 +48,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
-long granule,
- 	iovad->cached32_node = NULL;
- 	iovad->granule = granule;
- 	iovad->start_pfn = start_pfn;
--	iovad->dma_32bit_pfn = pfn_32bit;
-+	iovad->dma_32bit_pfn = pfn_32bit + 1;
- 	init_iova_rcaches(iovad);
- }
- EXPORT_SYMBOL_GPL(init_iova_domain);
-@@ -63,7 +63,7 @@ __get_cached_rbnode(struct iova_domain *iovad,
-unsigned long *limit_pfn)
- 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
- 		struct iova *curr_iova =
- 			rb_entry(iovad->cached32_node, struct iova, node);
--		*limit_pfn = curr_iova->pfn_lo - 1;
-+		*limit_pfn = curr_iova->pfn_lo;
- 		return prev_node;
- 	}
- }
-@@ -135,7 +135,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova
-*iova,
- static unsigned int
- iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
- {
--	return (limit_pfn + 1 - size) & (__roundup_pow_of_two(size) - 1);
-+	return (limit_pfn - size) & (__roundup_pow_of_two(size) - 1);
- }
+efi_memmap_phys and efi_systab_phys or so.
 
- static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
-@@ -155,18 +155,18 @@ static int __alloc_and_insert_iova_range(struct
-iova_domain *iovad,
- 	while (curr) {
- 		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+Matt ?
 
--		if (limit_pfn < curr_iova->pfn_lo)
-+		if (limit_pfn <= curr_iova->pfn_lo)
- 			goto move_left;
--		else if (limit_pfn < curr_iova->pfn_hi)
-+		else if (limit_pfn <= curr_iova->pfn_hi)
- 			goto adjust_limit_pfn;
- 		else {
- 			if (size_aligned)
- 				pad_size = iova_get_pad_size(size, limit_pfn);
--			if ((curr_iova->pfn_hi + size + pad_size) <= limit_pfn)
-+			if ((curr_iova->pfn_hi + size + pad_size) < limit_pfn)
- 				break;	/* found a free slot */
- 		}
- adjust_limit_pfn:
--		limit_pfn = curr_iova->pfn_lo ? (curr_iova->pfn_lo - 1) : 0;
-+		limit_pfn = curr_iova->pfn_lo;
- move_left:
- 		prev = curr;
- 		curr = rb_prev(curr);
-@@ -182,7 +182,7 @@ static int __alloc_and_insert_iova_range(struct
-iova_domain *iovad,
- 	}
+And then you won't need to create that paddr each time on the fly. I
+mean, it's not a lot of instructions but still...
 
- 	/* pfn_lo will point to size aligned address if size_aligned is set */
--	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
-+	new->pfn_lo = limit_pfn - (size + pad_size);
- 	new->pfn_hi = new->pfn_lo + size - 1;
+> +		if (phys_addr == paddr)
+> +			return true;
+> +
+> +		if (efi_table_address_match(phys_addr))
+> +			return true;
+> +
+> +		switch (efi_mem_type(phys_addr)) {
+> +		case EFI_BOOT_SERVICES_DATA:
+> +		case EFI_RUNTIME_SERVICES_DATA:
+> +			return true;
+> +		default:
+> +			break;
+> +		}
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +/*
+> + * Examine the physical address to determine if it is boot data by checking
+> + * it against the boot params setup_data chain.
+> + */
+> +static bool memremap_is_setup_data(resource_size_t phys_addr,
+> +				   unsigned long size)
+> +{
+> +	struct setup_data *data;
+> +	u64 paddr, paddr_next;
+> +
+> +	paddr = boot_params.hdr.setup_data;
+> +	while (paddr) {
+> +		bool is_setup_data = false;
 
- 	/* If we have 'prev', it's a valid place to start the insertion. */
-@@ -269,7 +269,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long
-size,
- 	if (!new_iova)
- 		return NULL;
+You don't need that bool:
 
--	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn,
-+	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
- 			new_iova, size_aligned);
+static bool memremap_is_setup_data(resource_size_t phys_addr,
+                                   unsigned long size)
+{
+        struct setup_data *data;
+        u64 paddr, paddr_next;
 
- 	if (ret) {
+        paddr = boot_params.hdr.setup_data;
+        while (paddr) {
+                if (phys_addr == paddr)
+                        return true;
+
+                data = memremap(paddr, sizeof(*data), MEMREMAP_WB | MEMREMAP_DEC);
+
+                paddr_next = data->next;
+
+                if ((phys_addr > paddr) && (phys_addr < (paddr + data->len))) {
+                        memunmap(data);
+                        return true;
+                }
+
+                memunmap(data);
+
+                paddr = paddr_next;
+        }
+        return false;
+}
+
+Flow is a bit clearer.
+
+> +/*
+> + * Examine the physical address to determine if it is boot data by checking
+> + * it against the boot params setup_data chain (early boot version).
+> + */
+> +static bool __init early_memremap_is_setup_data(resource_size_t phys_addr,
+> +						unsigned long size)
+> +{
+> +	struct setup_data *data;
+> +	u64 paddr, paddr_next;
+> +
+> +	paddr = boot_params.hdr.setup_data;
+> +	while (paddr) {
+> +		bool is_setup_data = false;
+> +
+> +		if (phys_addr == paddr)
+> +			return true;
+> +
+> +		data = early_memremap_decrypted(paddr, sizeof(*data));
+> +
+> +		paddr_next = data->next;
+> +
+> +		if ((phys_addr > paddr) && (phys_addr < (paddr + data->len)))
+> +			is_setup_data = true;
+> +
+> +		early_memunmap(data, sizeof(*data));
+> +
+> +		if (is_setup_data)
+> +			return true;
+> +
+> +		paddr = paddr_next;
+> +	}
+> +
+> +	return false;
+> +}
+
+This one is begging to be unified with memremap_is_setup_data() to both
+call a __ worker function.
+
+> +
+> +/*
+> + * Architecture function to determine if RAM remap is allowed. By default, a
+> + * RAM remap will map the data as encrypted. Determine if a RAM remap should
+> + * not be done so that the data will be mapped decrypted.
+> + */
+> +bool arch_memremap_do_ram_remap(resource_size_t phys_addr, unsigned long size,
+> +				unsigned long flags)
+
+So this function doesn't do anything - it replies to a yes/no question.
+So the name should not say "do" but sound like a question. Maybe:
+
+	if (arch_memremap_can_remap( ... ))
+
+or so...
+
+> +{
+> +	if (!sme_active())
+> +		return true;
+> +
+> +	if (flags & MEMREMAP_ENC)
+> +		return true;
+> +
+> +	if (flags & MEMREMAP_DEC)
+> +		return false;
+
+So this looks strange to me: both flags MEMREMAP_ENC and _DEC override
+setup and efi data checking. But we want to remap setup and EFI  data
+*always* decrypted because that data was not encrypted as, as you say,
+firmware doesn't run with SME active.
+
+So my simple logic says that EFI stuff should *always* be mapped DEC,
+regardless of flags. Ditto for setup data. So that check below should
+actually *override* the flags checks and go before them, no?
+
+> +
+> +	if (memremap_is_setup_data(phys_addr, size) ||
+> +	    memremap_is_efi_data(phys_addr, size) ||
+> +	    memremap_should_map_decrypted(phys_addr, size))
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+> +/*
+> + * Architecture override of __weak function to adjust the protection attributes
+> + * used when remapping memory. By default, early_memremp() will map the data
+
+early_memremAp() - a is missing.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
