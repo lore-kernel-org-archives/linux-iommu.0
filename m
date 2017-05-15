@@ -1,82 +1,40 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH RESEND] iommu/dma: Don't touch invalid iova_domain members
-Date: Mon, 15 May 2017 16:01:30 +0100
-Message-ID: <122f47aa5596dc8ef0a1ee76e4425c7b597479a4.1494859975.git.robin.murphy@arm.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC v1 3/7] iommu/arm-smmu-v3: Replace the device tree binding
+ for hisilicon broken prefetch cmd with erratum id
+Date: Mon, 15 May 2017 10:23:51 -0500
+Message-ID: <CAL_JsqLH7iT7O2U3g6J26YGBUmt53PDymLJ5VCLByW_97L_M4w@mail.gmail.com>
+References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com> <20170513094731.3676-4-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170513094731.3676-4-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: shameer <shameerali.kolothum.thodi@huawei.com>
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Mark Rutland <mark.rutland@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, devel@acpica.org, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, Hanjun Guo <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When __iommu_dma_map() and iommu_dma_free_iova() are called from
-iommu_dma_get_msi_page(), various iova_*() helpers are still invoked in
-the process, whcih is unwise since they access a different member of the
-union (the iova_domain) from that which was last written, and there's no
-guarantee that sensible values will result anyway.
+On Sat, May 13, 2017 at 4:47 AM, shameer
+<shameerali.kolothum.thodi@huawei.com> wrote:
+> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> index be57550..bf48e92 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> @@ -46,7 +46,7 @@ the PCIe specification.
+>                          devicetree/bindings/interrupt-controller/msi.txt
+>                        for a description of the msi-parent property.
+>
+> -- hisilicon,broken-prefetch-cmd
+> +- hisilicon,erratum-161010701
 
-CLean up the code paths that are valid for an MSI cookie to ensure we
-only do iova_domain-specific things when we're actually dealing with one.
+Why? Your missing commit msg should answer that. This breaks
+compatibility, so you are stuck with the old string.
 
-Fixes: a44e6657585b ("iommu/dma: Clean up MSI IOVA allocation")
-Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Tested-by: Shanker Donthineni <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+I'd prefer that you start using the compatible string rather than
+every vendor adding a property for every errata.
 
-Resending rebased to 4.12-rc1 with fixes tag.
-
- drivers/iommu/dma-iommu.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 8348f366ddd1..62618e77bedc 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
- 		dma_addr_t iova, size_t size)
- {
- 	struct iova_domain *iovad = &cookie->iovad;
--	unsigned long shift = iova_shift(iovad);
- 
- 	/* The MSI case is only ever cleaning up its most recent allocation */
- 	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
- 		cookie->msi_iova -= size;
- 	else
--		free_iova_fast(iovad, iova >> shift, size >> shift);
-+		free_iova_fast(iovad, iova_pfn(iovad, iova),
-+				size >> iova_shift(iovad));
- }
- 
- static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
-@@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
- {
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
--	struct iova_domain *iovad = &cookie->iovad;
--	size_t iova_off = iova_offset(iovad, phys);
-+	size_t iova_off = 0;
- 	dma_addr_t iova;
- 
--	size = iova_align(iovad, size + iova_off);
-+	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
-+		iova_off = iova_offset(&cookie->iovad, phys);
-+		size = iova_align(&cookie->iovad, size + iova_off);
-+	}
-+
- 	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
- 	if (!iova)
- 		return DMA_ERROR_CODE;
--- 
-2.12.2.dirty
+Rob
