@@ -1,303 +1,129 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
- in the clear
-Date: Mon, 15 May 2017 20:35:17 +0200
-Message-ID: <20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
+	deferred probing or error
+Date: Mon, 15 May 2017 23:37:16 +0300
+Message-ID: <1900421.tkAiezvoW8@avalon>
+References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
+	<2bfd11dc-9f94-2b69-7b03-c640e53155e1@arm.com>
+	<26defadf-6380-4af4-6323-b51198376bc1@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <26defadf-6380-4af4-6323-b51198376bc1-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 18, 2017 at 04:19:21PM -0500, Tom Lendacky wrote:
-> Boot data (such as EFI related data) is not encrypted when the system is
-> booted because UEFI/BIOS does not run with SME active. In order to access
-> this data properly it needs to be mapped decrypted.
+Hi Sricharan,
+
+On Wednesday 03 May 2017 15:54:59 Sricharan R wrote:
+> On 5/3/2017 3:24 PM, Robin Murphy wrote:
+> > On 02/05/17 19:35, Geert Uytterhoeven wrote:
+> >> On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R wrote:
+> >>> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> >>> 
+> >>> Failures to look up an IOMMU when parsing the DT iommus property need to
+> >>> be handled separately from the .of_xlate() failures to support deferred
+> >>> probing.
+> >>> 
+> >>> The lack of a registered IOMMU can be caused by the lack of a driver for
+> >>> the IOMMU, the IOMMU device probe not having been performed yet, having
+> >>> been deferred, or having failed.
+> >>> 
+> >>> The first case occurs when the device tree describes the bus master and
+> >>> IOMMU topology correctly but no device driver exists for the IOMMU yet
+> >>> or the device driver has not been compiled in. Return NULL, the caller
+> >>> will configure the device without an IOMMU.
+> >>> 
+> >>> The second and third cases are handled by deferring the probe of the bus
+> >>> master device which will eventually get reprobed after the IOMMU.
+> >>> 
+> >>> The last case is currently handled by deferring the probe of the bus
+> >>> master device as well. A mechanism to either configure the bus master
+> >>> device without an IOMMU or to fail the bus master device probe depending
+> >>> on whether the IOMMU is optional or mandatory would be a good
+> >>> enhancement.
+> >>> 
+> >>> Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> >>> Signed-off-by: Laurent Pichart
+> >>> <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> >>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> >> 
+> >> This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
+> >> As the IOMMU nodes in DT are not yet enabled, all devices having iommus
+> >> properties in DT now fail to probe.
+> > 
+> > How exactly do they fail to probe? Per d7b0558230e4, if there are no ops
+> > registered then they should merely defer until we reach the point of
+> > giving up and ignoring the IOMMU. Is it just that you have no other
+> > late-probing drivers or post-init module loads to kick the deferred
+> > queue after that point? I did try to find a way to explicitly kick it
+> > from a suitably late initcall, but there didn't seem to be any obvious
+> > public interface - anyone have any suggestions?
+> > 
+> > I think that's more of a general problem with the probe deferral
+> > mechanism itself (I've seen the same thing happen with some of the
+> > CoreSight stuff on Juno due to the number of inter-component
+> > dependencies) rather than any specific fault of this series.
 > 
-> The early_memremap() support is updated to provide an arch specific
-
-"Update early_memremap() to provide... "
-
-> routine to modify the pagetable protection attributes before they are
-> applied to the new mapping. This is used to remove the encryption mask
-> for boot related data.
+> I was thinking of an additional check like below to avoid the
+> situation ?
 > 
-> The memremap() support is updated to provide an arch specific routine
-
-Ditto. Passive tone always reads harder than an active tone,
-"doer"-sentence.
-
-> to determine if RAM remapping is allowed.  RAM remapping will cause an
-> encrypted mapping to be generated. By preventing RAM remapping,
-> ioremap_cache() will be used instead, which will provide a decrypted
-> mapping of the boot related data.
+> From 499b6e662f60f23740b8880882b0a16f16434501 Mon Sep 17 00:00:00 2001
+> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Date: Wed, 3 May 2017 13:16:59 +0530
+> Subject: [PATCH] iommu: of: Fix check for returning EPROBE_DEFER
 > 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> While returning EPROBE_DEFER for iommu masters
+> take in to account of iommu nodes that could be
+> marked in DT as 'status=disabled', in which case
+> simply return NULL and let the master's probe
+> continue rather than deferring.
+> 
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > ---
->  arch/x86/include/asm/io.h |    4 +
->  arch/x86/mm/ioremap.c     |  182 +++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/io.h        |    2 
->  kernel/memremap.c         |   20 ++++-
->  mm/early_ioremap.c        |   18 ++++
->  5 files changed, 219 insertions(+), 7 deletions(-)
+>  drivers/iommu/of_iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-> index 7afb0e2..75f2858 100644
-> --- a/arch/x86/include/asm/io.h
-> +++ b/arch/x86/include/asm/io.h
-> @@ -381,4 +381,8 @@ extern int __must_check arch_phys_wc_add(unsigned long base,
->  #define arch_io_reserve_memtype_wc arch_io_reserve_memtype_wc
->  #endif
->  
-> +extern bool arch_memremap_do_ram_remap(resource_size_t offset, size_t size,
-> +				       unsigned long flags);
-> +#define arch_memremap_do_ram_remap arch_memremap_do_ram_remap
-> +
->  #endif /* _ASM_X86_IO_H */
-> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-> index 9bfcb1f..bce0604 100644
-> --- a/arch/x86/mm/ioremap.c
-> +++ b/arch/x86/mm/ioremap.c
-> @@ -13,6 +13,7 @@
->  #include <linux/slab.h>
->  #include <linux/vmalloc.h>
->  #include <linux/mmiotrace.h>
-> +#include <linux/efi.h>
->  
->  #include <asm/cacheflush.h>
->  #include <asm/e820/api.h>
-> @@ -21,6 +22,7 @@
->  #include <asm/tlbflush.h>
->  #include <asm/pgalloc.h>
->  #include <asm/pat.h>
-> +#include <asm/setup.h>
->  
->  #include "physaddr.h"
->  
-> @@ -419,6 +421,186 @@ void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
->  	iounmap((void __iomem *)((unsigned long)addr & PAGE_MASK));
->  }
->  
-> +/*
-> + * Examine the physical address to determine if it is an area of memory
-> + * that should be mapped decrypted.  If the memory is not part of the
-> + * kernel usable area it was accessed and created decrypted, so these
-> + * areas should be mapped decrypted.
-> + */
-> +static bool memremap_should_map_decrypted(resource_size_t phys_addr,
-> +					  unsigned long size)
-> +{
-> +	/* Check if the address is outside kernel usable area */
-> +	switch (e820__get_entry_type(phys_addr, phys_addr + size - 1)) {
-> +	case E820_TYPE_RESERVED:
-> +	case E820_TYPE_ACPI:
-> +	case E820_TYPE_NVS:
-> +	case E820_TYPE_UNUSABLE:
-> +		return true;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +/*
-> + * Examine the physical address to determine if it is EFI data. Check
-> + * it against the boot params structure and EFI tables and memory types.
-> + */
-> +static bool memremap_is_efi_data(resource_size_t phys_addr,
-> +				 unsigned long size)
-> +{
-> +	u64 paddr;
-> +
-> +	/* Check if the address is part of EFI boot/runtime data */
-> +	if (efi_enabled(EFI_BOOT)) {
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 9f44ee8..e6e9bec 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct device_node
+> *np)
+> 
+>         ops = iommu_ops_from_fwnode(fwnode);
+>         if ((ops && !ops->of_xlate) ||
+> +           !of_device_is_available(iommu_spec->np) ||
+>             (!ops && !of_iommu_driver_present(iommu_spec->np)))
+>                 return NULL;
 
-Save indentation level:
+This looks good to me, but won't be enough. The ipmmu-vmsa driver in v4.12-rc1 
+doesn't call iommu_device_register() and thus won't be found by 
+iommu_ops_from_fwnode(). Furthermore, it doesn't IOMMU_OF_DECLARE(), and thus 
+will always be considered as absent.
 
-	if (!efi_enabled(EFI_BOOT))
-		return false;
+I agree that the ipmmu-vmsa driver needs to be fixed, but it would have been 
+nice to check existing IOMMU drivers before merging this patch series...
 
-
-> +		paddr = boot_params.efi_info.efi_memmap_hi;
-> +		paddr <<= 32;
-> +		paddr |= boot_params.efi_info.efi_memmap;
-> +		if (phys_addr == paddr)
-> +			return true;
-> +
-> +		paddr = boot_params.efi_info.efi_systab_hi;
-> +		paddr <<= 32;
-> +		paddr |= boot_params.efi_info.efi_systab;
-
-So those two above look like could be two global vars which are
-initialized somewhere in the EFI init path:
-
-efi_memmap_phys and efi_systab_phys or so.
-
-Matt ?
-
-And then you won't need to create that paddr each time on the fly. I
-mean, it's not a lot of instructions but still...
-
-> +		if (phys_addr == paddr)
-> +			return true;
-> +
-> +		if (efi_table_address_match(phys_addr))
-> +			return true;
-> +
-> +		switch (efi_mem_type(phys_addr)) {
-> +		case EFI_BOOT_SERVICES_DATA:
-> +		case EFI_RUNTIME_SERVICES_DATA:
-> +			return true;
-> +		default:
-> +			break;
-> +		}
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +/*
-> + * Examine the physical address to determine if it is boot data by checking
-> + * it against the boot params setup_data chain.
-> + */
-> +static bool memremap_is_setup_data(resource_size_t phys_addr,
-> +				   unsigned long size)
-> +{
-> +	struct setup_data *data;
-> +	u64 paddr, paddr_next;
-> +
-> +	paddr = boot_params.hdr.setup_data;
-> +	while (paddr) {
-> +		bool is_setup_data = false;
-
-You don't need that bool:
-
-static bool memremap_is_setup_data(resource_size_t phys_addr,
-                                   unsigned long size)
-{
-        struct setup_data *data;
-        u64 paddr, paddr_next;
-
-        paddr = boot_params.hdr.setup_data;
-        while (paddr) {
-                if (phys_addr == paddr)
-                        return true;
-
-                data = memremap(paddr, sizeof(*data), MEMREMAP_WB | MEMREMAP_DEC);
-
-                paddr_next = data->next;
-
-                if ((phys_addr > paddr) && (phys_addr < (paddr + data->len))) {
-                        memunmap(data);
-                        return true;
-                }
-
-                memunmap(data);
-
-                paddr = paddr_next;
-        }
-        return false;
-}
-
-Flow is a bit clearer.
-
-> +/*
-> + * Examine the physical address to determine if it is boot data by checking
-> + * it against the boot params setup_data chain (early boot version).
-> + */
-> +static bool __init early_memremap_is_setup_data(resource_size_t phys_addr,
-> +						unsigned long size)
-> +{
-> +	struct setup_data *data;
-> +	u64 paddr, paddr_next;
-> +
-> +	paddr = boot_params.hdr.setup_data;
-> +	while (paddr) {
-> +		bool is_setup_data = false;
-> +
-> +		if (phys_addr == paddr)
-> +			return true;
-> +
-> +		data = early_memremap_decrypted(paddr, sizeof(*data));
-> +
-> +		paddr_next = data->next;
-> +
-> +		if ((phys_addr > paddr) && (phys_addr < (paddr + data->len)))
-> +			is_setup_data = true;
-> +
-> +		early_memunmap(data, sizeof(*data));
-> +
-> +		if (is_setup_data)
-> +			return true;
-> +
-> +		paddr = paddr_next;
-> +	}
-> +
-> +	return false;
-> +}
-
-This one is begging to be unified with memremap_is_setup_data() to both
-call a __ worker function.
-
-> +
-> +/*
-> + * Architecture function to determine if RAM remap is allowed. By default, a
-> + * RAM remap will map the data as encrypted. Determine if a RAM remap should
-> + * not be done so that the data will be mapped decrypted.
-> + */
-> +bool arch_memremap_do_ram_remap(resource_size_t phys_addr, unsigned long size,
-> +				unsigned long flags)
-
-So this function doesn't do anything - it replies to a yes/no question.
-So the name should not say "do" but sound like a question. Maybe:
-
-	if (arch_memremap_can_remap( ... ))
-
-or so...
-
-> +{
-> +	if (!sme_active())
-> +		return true;
-> +
-> +	if (flags & MEMREMAP_ENC)
-> +		return true;
-> +
-> +	if (flags & MEMREMAP_DEC)
-> +		return false;
-
-So this looks strange to me: both flags MEMREMAP_ENC and _DEC override
-setup and efi data checking. But we want to remap setup and EFI  data
-*always* decrypted because that data was not encrypted as, as you say,
-firmware doesn't run with SME active.
-
-So my simple logic says that EFI stuff should *always* be mapped DEC,
-regardless of flags. Ditto for setup data. So that check below should
-actually *override* the flags checks and go before them, no?
-
-> +
-> +	if (memremap_is_setup_data(phys_addr, size) ||
-> +	    memremap_is_efi_data(phys_addr, size) ||
-> +	    memremap_should_map_decrypted(phys_addr, size))
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
-> +/*
-> + * Architecture override of __weak function to adjust the protection attributes
-> + * used when remapping memory. By default, early_memremp() will map the data
-
-early_memremAp() - a is missing.
+> >> This can be fixed by either:
+> >>   - Disabling CONFIG_IPMMU_VMSA, or
+> >>   - Reverting commit 7b07cbefb68d486f (but keeping "int ret = 0;").
+> >> 
+> >> Note that this was a bit hard to investigate, as R-Car Gen3 support
+> >> wasn't upstreamed yet, so bisection pointed to a merge commit.
 
 -- 
-Regards/Gruss,
-    Boris.
+Regards,
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
+Laurent Pinchart
