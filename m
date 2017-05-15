@@ -1,171 +1,154 @@
-From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 1/8] iommu: Introduce bind_pasid_table API function
-Date: Sun, 14 May 2017 18:56:51 +0800
-Message-ID: <20170514105651.GC22110@gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB invalidate
+ propagation
+Date: Mon, 15 May 2017 13:14:06 +0100
+Message-ID: <909f827d-e620-1f18-dc74-dfb46d93d305@arm.com>
 References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
-	<1493201525-14418-2-git-send-email-yi.l.liu@intel.com>
-	<20170512155914.73bad777@t450s.home>
+ <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
+ <cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
+ <20170514101258.GA22110@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170512155914.73bad777-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20170514101258.GA22110@gmail.com>
+Sender: kvm-owner@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com, jasowang@redhat.com, qemu-devel@nongnu.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 12, 2017 at 03:59:14PM -0600, Alex Williamson wrote:
-> On Wed, 26 Apr 2017 18:11:58 +0800
-> "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+On 14/05/17 11:12, Liu, Yi L wrote:
+> On Fri, May 12, 2017 at 01:11:02PM +0100, Jean-Philippe Brucker wrote:
+>> Hi Yi,
+>>
+>> On 26/04/17 11:12, Liu, Yi L wrote:
+>>> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+>>>
+>>> This patch adds VFIO_IOMMU_TLB_INVALIDATE to propagate IOMMU TLB
+>>> invalidate request from guest to host.
+>>>
+>>> In the case of SVM virtualization on VT-d, host IOMMU driver has
+>>> no knowledge of caching structure updates unless the guest
+>>> invalidation activities are passed down to the host. So a new
+>>> IOCTL is needed to propagate the guest cache invalidation through
+>>> VFIO.
+>>>
+>>> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+>>> ---
+>>>  include/uapi/linux/vfio.h | 9 +++++++++
+>>>  1 file changed, 9 insertions(+)
+>>>
+>>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>>> index 6b97987..50c51f8 100644
+>>> --- a/include/uapi/linux/vfio.h
+>>> +++ b/include/uapi/linux/vfio.h
+>>> @@ -564,6 +564,15 @@ struct vfio_device_svm {
+>>>  
+>>>  #define VFIO_IOMMU_SVM_BIND_TASK	_IO(VFIO_TYPE, VFIO_BASE + 22)
+>>>  
+>>> +/* For IOMMU TLB Invalidation Propagation */
+>>> +struct vfio_iommu_tlb_invalidate {
+>>> +	__u32	argsz;
+>>> +	__u32	length;
+>>> +	__u8	data[];
+>>> +};
+>>
+>> We initially discussed something a little more generic than this, with
+>> most info explicitly described and only pIOMMU-specific quirks and hints
+>> in an opaque structure. Out of curiosity, why the change? I'm not against
+>> a fully opaque structure, but there seem to be a large overlap between TLB
+>> invalidations across architectures.
 > 
-> > From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > 
-> > Virtual IOMMU was proposed to support Shared Virtual Memory (SVM) use
-> > case in the guest:
-> > https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
-> > 
-> > As part of the proposed architecture, when a SVM capable PCI
-> > device is assigned to a guest, nested mode is turned on. Guest owns the
-> > first level page tables (request with PASID) and performs GVA->GPA
-> > translation. Second level page tables are owned by the host for GPA->HPA
-> > translation for both request with and without PASID.
-> > 
-> > A new IOMMU driver interface is therefore needed to perform tasks as
-> > follows:
-> > * Enable nested translation and appropriate translation type
-> > * Assign guest PASID table pointer (in GPA) and size to host IOMMU
-> > 
-> > This patch introduces new functions called iommu_(un)bind_pasid_table()
-> > to IOMMU APIs. Architecture specific IOMMU function can be added later
-> > to perform the specific steps for binding pasid table of assigned devices.
-> > 
-> > This patch also adds model definition in iommu.h. It would be used to
-> > check if the bind request is from a compatible entity. e.g. a bind
-> > request from an intel_iommu emulator may not be supported by an ARM SMMU
-> > driver.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> >  drivers/iommu/iommu.c | 19 +++++++++++++++++++
-> >  include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
-> >  2 files changed, 50 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index dbe7f65..f2da636 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -1134,6 +1134,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
-> >  }
-> >  EXPORT_SYMBOL_GPL(iommu_attach_device);
-> >  
-> > +int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-> > +			struct pasid_table_info *pasidt_binfo)
-> > +{
-> > +	if (unlikely(!domain->ops->bind_pasid_table))
-> > +		return -EINVAL;
-> > +
-> > +	return domain->ops->bind_pasid_table(domain, dev, pasidt_binfo);
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
-> > +
-> > +int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-> > +{
-> > +	if (unlikely(!domain->ops->unbind_pasid_table))
-> > +		return -EINVAL;
-> > +
-> > +	return domain->ops->unbind_pasid_table(domain, dev);
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
-> > +
-> >  static void __iommu_detach_device(struct iommu_domain *domain,
-> >  				  struct device *dev)
-> >  {
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index 0ff5111..491a011 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -131,6 +131,15 @@ struct iommu_dm_region {
-> >  	int			prot;
-> >  };
-> >  
-> > +struct pasid_table_info {
-> > +	__u64	ptr;	/* PASID table ptr */
-> > +	__u64	size;	/* PASID table size*/
-> > +	__u32	model;	/* magic number */
-> > +#define INTEL_IOMMU	(1 << 0)
-> > +#define ARM_SMMU	(1 << 1)
-> > +	__u8	opaque[];/* IOMMU-specific details */
-> > +};
+> Hi Jean,
 > 
-> This needs to be in uapi since you're expecting a user to pass it 
+> As my cover letter mentioned, it is an open on the iommu tlb invalidate
+> propagation. Paste it here since it's in the cover letter for Qemu part
+> changes. Pls refer to the [Open] session in the following link.
+> 
+> http://www.spinics.net/lists/kvm/msg148798.html
+> 
+> I want to see if community wants to have opaque structure or not
+> on iommu tlb invalidate propagation. Personally, I incline to use
+> opaque structure. But it's better to gather the comments before
+> deciding it. To assist the discussion, I put the full opaque structure
+> here. Once community gets consensus on using opaque structure for
+> iommu tlb invalidate propagation, I'm glad to work with you on a
+> structure with partial opaque since there seems to be overlap across
+> arch.
 
-yes, it is. Thx for the correction.
+I see, thanks for the pointer. I'm not fan of using the pIOMMU format in
+invalidations, but I understand the appeal in your case, where you can
+shave off the overhead of parsing/re-assembling the pIOMMU format.
+
+It's not suitable for generic io-pgtable, where different pIOMMUs may
+offer the same page table format but different invalidation methods. I
+guess I could make it work by negotiating invalidation method at bind
+time, falling back to the generic format for virtio-iommu. We already have
+to do some related negotiation for SVM on SMMU, where in embedded
+implementations the guest doesn't need to send invalidation requests via
+IOMMU queue, but can do it using CPU instructions instead.
+
+>> For what it's worth, when prototyping the paravirtualized IOMMU I came up
+>> with the following.
+>>
+>> (From the paravirtualized POV, the SMMU also has to swizzle endianess
+>> after unpacking an opaque structure, since userspace doesn't know what's
+>> in it and guest might use a different endianess. So we need to force all
+>> opaque data to be e.g. little-endian.)
+>>
+>> struct vfio_iommu_tlb_invalidate {
+>> 	__u32	argsz;
+>> 	__u32	scope;
+>> 	__u32	flags;
+>> 	__u32	pasid;
+>> 	__u64	vaddr;
+>> 	__u64	size;
+>> 	__u8	data[];
+>> };
+>>
+>> Scope is a bitfields restricting the invalidation scope. By default
+>> invalidate the whole container (all PASIDs and all VAs). @pasid, @vaddr
+>> and @size are unused.
+>>
+>> Adding VFIO_IOMMU_INVALIDATE_PASID (1 << 0) restricts the invalidation
+>> scope to the pasid described by @pasid.
+>> Adding VFIO_IOMMU_INVALIDATE_VADDR (1 << 1) restricts the invalidation
+>> scope to the address range described by (@vaddr, @size).
+>>
+>> So setting scope = VFIO_IOMMU_INVALIDATE_VADDR would invalidate the VA
+>> range for *all* pasids (as well as no_pasid). Setting scope =
+>> (VFIO_IOMMU_INVALIDATE_VADDR|VFIO_IOMMU_INVALIDATE_PASID) would invalidate
+>> the VA range only for @pasid.
+>>
+> 
+> Besides VA range flusing, there is PASID Cache flushing on VT-d. How about
+> SMMU? So I think besides the two scope you defined, may need one more to
+> indicate if it's PASID Cache flushing.
+
+Yes, invalidating all TLB entries associated to a PASID would be done by
+setting scope = VFIO_IOMMU_INVALIDATE_PASID. In which case field @pasid is
+valid, and fields (@vaddr, @size) aren't used.
 
 Thanks,
-Yi L
-> > +
-> >  #ifdef CONFIG_IOMMU_API
-> >  
-> >  /**
-> > @@ -159,6 +168,8 @@ struct iommu_dm_region {
-> >   * @domain_get_windows: Return the number of windows for a domain
-> >   * @of_xlate: add OF master IDs to iommu grouping
-> >   * @pgsize_bitmap: bitmap of all possible supported page sizes
-> > + * @bind_pasid_table: bind pasid table pointer for guest SVM
-> > + * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-> >   */
-> >  struct iommu_ops {
-> >  	bool (*capable)(enum iommu_cap);
-> > @@ -200,6 +211,10 @@ struct iommu_ops {
-> >  	u32 (*domain_get_windows)(struct iommu_domain *domain);
-> >  
-> >  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-> > +	int (*bind_pasid_table)(struct iommu_domain *domain, struct device *dev,
-> > +				struct pasid_table_info *pasidt_binfo);
-> > +	int (*unbind_pasid_table)(struct iommu_domain *domain,
-> > +				struct device *dev);
-> >  
-> >  	unsigned long pgsize_bitmap;
-> >  };
-> > @@ -221,6 +236,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
-> >  			       struct device *dev);
-> >  extern void iommu_detach_device(struct iommu_domain *domain,
-> >  				struct device *dev);
-> > +extern int iommu_bind_pasid_table(struct iommu_domain *domain,
-> > +		struct device *dev, struct pasid_table_info *pasidt_binfo);
-> > +extern int iommu_unbind_pasid_table(struct iommu_domain *domain,
-> > +				struct device *dev);
-> >  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
-> >  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> >  		     phys_addr_t paddr, size_t size, int prot);
-> > @@ -595,6 +614,18 @@ const struct iommu_ops *iommu_get_instance(struct fwnode_handle *fwnode)
-> >  	return NULL;
-> >  }
-> >  
-> > +static inline
-> > +int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-> > +			struct pasid_table_info *pasidt_binfo)
-> > +{
-> > +	return -EINVAL;
-> > +}
-> > +static inline
-> > +int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-> > +{
-> > +	return -EINVAL;
-> > +}
-> > +
-> >  #endif /* CONFIG_IOMMU_API */
-> >  
-> >  #endif /* __LINUX_IOMMU_H */
+Jean
+
+>> Flags depend on the selected scope:
+>>
+>> VFIO_IOMMU_INVALIDATE_NO_PASID, indicating that invalidation (either
+>> without scope or with INVALIDATE_VADDR) targets non-pasid mappings
+>> exclusively (some architectures, e.g. SMMU, allow this)
+>>
+>> VFIO_IOMMU_INVALIDATE_VADDR_LEAF, indicating that the pIOMMU doesn't need
+>> to invalidate all intermediate tables cached as part of the PTW for vaddr,
+>> only the last-level entry (pte). This is a hint.
+>>
+>> I guess what's missing for Intel IOMMU and would go in @data is the
+>> "global" hint (which we don't have in SMMU invalidations). Do you see
+>> anything else, that the pIOMMU cannot deduce from this structure?
+>>
+> 
+> For Intel platform, Drain read/write would be needed in the opaque.
+> 
+> Thanks,
+> Yi L
 > 
