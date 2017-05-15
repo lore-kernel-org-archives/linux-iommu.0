@@ -1,15 +1,15 @@
-From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Subject: Re: [RFC PATCH 07/30] iommu/arm-smmu-v3: Add second level of context
-	descriptor table
-Date: Mon, 15 May 2017 14:47:25 +0200
-Message-ID: <ef690c27-95cc-c15d-7e70-7e89de7bc08a@semihalf.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-8-jean-philippe.brucker@arm.com>
+From: jacob pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 2/8] iommu/vt-d: add bind_pasid_table function
+Date: Mon, 15 May 2017 06:14:22 -0700
+Message-ID: <20170515061422.0000350b@intel.com>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+	<1493201525-14418-3-git-send-email-yi.l.liu@intel.com>
+	<20170512155929.66809113@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170227195441.5170-8-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170512155929.66809113-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,77 +19,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
+On Fri, 12 May 2017 15:59:29 -0600
+Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 
-On 27.02.2017 20:54, Jean-Philippe Brucker wrote:
-> @@ -1213,17 +1356,59 @@ static void arm_smmu_free_cd_tables(struct arm_smmu_master_data *master)
->  __maybe_unused
->  static int arm_smmu_alloc_cd(struct arm_smmu_master_data *master)
->  {
-> +	int ssid;
-> +	int i, ret;
->  	struct arm_smmu_cd_cfg *cfg = &master->ste.cd_cfg;
->
-> -	return arm_smmu_bitmap_alloc(cfg->context_map, ilog2(cfg->num_entries));
-> +	if (cfg->linear)
-> +		return arm_smmu_bitmap_alloc(cfg->table.context_map,
-> +					     ilog2(cfg->num_entries));
-> +
-> +	/* Find first leaf table with an empty slot, or allocate a new leaf */
-> +	for (i = cfg->l1.cur_table; i < cfg->num_entries; i++) {
-> +		struct arm_smmu_cd_table *table = &cfg->l1.tables[i];
-> +
-> +		if (!table->cdptr) {
-> +			__le64 *l1ptr = cfg->l1.ptr + i * CTXDESC_L1_DESC_DWORD;
-> +
-> +			ret = arm_smmu_alloc_cd_leaf_table(master->smmu, table,
-> +							   CTXDESC_NUM_L2_ENTRIES);
-> +			if (ret)
-> +				return ret;
-> +
-> +			arm_smmu_write_cd_l1_desc(l1ptr, table);
-> +			arm_smmu_sync_cd(master, i << CTXDESC_SPLIT, false);
-> +		}
-> +
-> +		ssid = arm_smmu_bitmap_alloc(table->context_map, CTXDESC_SPLIT);
-> +		if (ssid < 0)
-> +			continue;
-> +
-> +		cfg->l1.cur_table = i;
-> +		return i << CTXDESC_SPLIT | ssid;
-> +	}
-> +
-> +	return -ENOSPC;
->  }
->
->  __maybe_unused
->  static void arm_smmu_free_cd(struct arm_smmu_master_data *master, u32 ssid)
->  {
-> +	unsigned long l1_idx, idx;
->  	struct arm_smmu_cd_cfg *cfg = &master->ste.cd_cfg;
->
-> -	arm_smmu_bitmap_free(cfg->context_map, ssid);
-> +	if (cfg->linear) {
-> +		arm_smmu_bitmap_free(cfg->table.context_map, ssid);
-> +		return;
-> +	}
-> +
-> +	l1_idx = ssid >> CTXDESC_SPLIT;
-> +	idx = ssid & ((1 << CTXDESC_SPLIT) - 1);
-> +	arm_smmu_bitmap_free(cfg->l1.tables[l1_idx].context_map, idx);
-> +
-> +	/* Prepare next allocation */
-> +	if (cfg->l1.cur_table > idx)
-> +		cfg->l1.cur_table = idx;
->  }
+> > +	if (pasidt_binfo->size >= intel_iommu_get_pts(iommu)) {
+> > +		pr_err("Invalid gPASID table size %llu, host size
+> > %lu\n",
+> > +			pasidt_binfo->size,
+> > +			intel_iommu_get_pts(iommu));
+> > +		ret = -EINVAL;
+> > +		goto out;  
+> 
+> equal is not valid?
 
-I am not sure what is the logic here. idx becomes index of l1.tables in 
-arm_smmu_alloc_cd() which in turn may be out of allocated memory. I may 
-miss something. Can you please elaborate on this?
+you are right, equal is valid. I was thinking of shared PASID space
+between guest and host but that is not the case here.
 
-Thanks,
-Tomasz
+The rest of your comments are taken too, thanks for the review.
+
+Jacob
