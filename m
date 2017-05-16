@@ -1,98 +1,80 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/dma: Don't touch invalid iova_domain members
-Date: Tue, 16 May 2017 22:21:10 +0200
-Message-ID: <9efc4b80-b816-76d7-9472-b07a72ef9b7e@redhat.com>
-References: <16c0483f5e66d51a11ba6d71bf64a969480a1587.1493977757.git.robin.murphy@arm.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v5 14/32] efi: Add an EFI table address match function
+Date: Tue, 16 May 2017 16:53:33 -0500
+Message-ID: <2364b148-5168-1583-51c2-0beaa7230235@amd.com>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418211848.10190.65062.stgit@tlendack-t1.amdoffice.net>
+ <20170515180913.lhma7xw52irrdtvr@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <16c0483f5e66d51a11ba6d71bf64a969480a1587.1493977757.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170515180913.lhma7xw52irrdtvr@pd.tnic>
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 5/15/2017 1:09 PM, Borislav Petkov wrote:
+> On Tue, Apr 18, 2017 at 04:18:48PM -0500, Tom Lendacky wrote:
+>> Add a function that will determine if a supplied physical address matches
+>> the address of an EFI table.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  drivers/firmware/efi/efi.c |   33 +++++++++++++++++++++++++++++++++
+>>  include/linux/efi.h        |    7 +++++++
+>>  2 files changed, 40 insertions(+)
+>>
+>> diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+>> index b372aad..8f606a3 100644
+>> --- a/drivers/firmware/efi/efi.c
+>> +++ b/drivers/firmware/efi/efi.c
+>> @@ -55,6 +55,25 @@ struct efi __read_mostly efi = {
+>>  };
+>>  EXPORT_SYMBOL(efi);
+>>
+>> +static unsigned long *efi_tables[] = {
+>> +	&efi.mps,
+>> +	&efi.acpi,
+>> +	&efi.acpi20,
+>> +	&efi.smbios,
+>> +	&efi.smbios3,
+>> +	&efi.sal_systab,
+>> +	&efi.boot_info,
+>> +	&efi.hcdp,
+>> +	&efi.uga,
+>> +	&efi.uv_systab,
+>> +	&efi.fw_vendor,
+>> +	&efi.runtime,
+>> +	&efi.config_table,
+>> +	&efi.esrt,
+>> +	&efi.properties_table,
+>> +	&efi.mem_attr_table,
+>> +};
+>> +
+>>  static bool disable_runtime;
+>>  static int __init setup_noefi(char *arg)
+>>  {
+>> @@ -854,6 +873,20 @@ int efi_status_to_err(efi_status_t status)
+>>  	return err;
+>>  }
+>>
+>> +bool efi_table_address_match(unsigned long phys_addr)
+>
+> efi_is_table_address() reads easier/better in the code.
 
-On 05/05/2017 12:04, Robin Murphy wrote:
-> When __iommu_dma_map() and iommu_dma_free_iova() are called from
-> iommu_dma_get_msi_page(), various iova_*() helpers are still invoked in
-> the process, whcih is unwise since they access a different member of the
-> union (the iova_domain) from that which was last written, and there's no
-> guarantee that sensible values will result anyway.
-> 
-> CLean up the code paths that are valid for an MSI cookie to ensure we
-> only do iova_domain-specific things when we're actually dealing with one.
-> 
-> Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Tested-by: Shanker Donthineni <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Will do.
 
-Thanks
+Thanks,
+Tom
 
-Eric
+>
 
-> ---
-> 
-> I've taken the liberty of upgrading the prose testing confirmations
-> into tested-by tags, hope that's OK.
-> 
-> Joerg; I'm happy to resend this after -rc1 with a fixes tag if you'd
-> rather - I'm just throwing it out now for the sake of catching up with
-> things.
-> 
-> Robin.
-> 
->  drivers/iommu/dma-iommu.c | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 8348f366ddd1..62618e77bedc 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
->  		dma_addr_t iova, size_t size)
->  {
->  	struct iova_domain *iovad = &cookie->iovad;
-> -	unsigned long shift = iova_shift(iovad);
->  
->  	/* The MSI case is only ever cleaning up its most recent allocation */
->  	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
->  		cookie->msi_iova -= size;
->  	else
-> -		free_iova_fast(iovad, iova >> shift, size >> shift);
-> +		free_iova_fast(iovad, iova_pfn(iovad, iova),
-> +				size >> iova_shift(iovad));
->  }
->  
->  static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
-> @@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->  {
->  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> -	struct iova_domain *iovad = &cookie->iovad;
-> -	size_t iova_off = iova_offset(iovad, phys);
-> +	size_t iova_off = 0;
->  	dma_addr_t iova;
->  
-> -	size = iova_align(iovad, size + iova_off);
-> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
-> +		iova_off = iova_offset(&cookie->iovad, phys);
-> +		size = iova_align(&cookie->iovad, size + iova_off);
-> +	}
-> +
->  	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
->  	if (!iova)
->  		return DMA_ERROR_CODE;
-> 
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
