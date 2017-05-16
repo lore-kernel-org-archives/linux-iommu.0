@@ -1,18 +1,13 @@
 From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/dma: Setup iova_domain granule for IOMMU_DMA_MSI
-	cookies
-Date: Tue, 16 May 2017 22:20:56 +0200
-Message-ID: <131c7b30-ab20-6ba0-743b-f61095f878c0@redhat.com>
-References: <1492073715-7811-1-git-send-email-nwatters@codeaurora.org>
-	<90fe2111-42e5-ecb1-d0bd-10e06883ae5d@arm.com>
-	<95dfaf27-9a74-7a6c-fa77-0fcfe1edbe6e@codeaurora.org>
-	<694f109c-78ec-ec1e-037f-0a3807c4ef6d@redhat.com>
-	<2fa1c68c-2c9a-850c-d5b8-0e30cfd077b0@codeaurora.org>
+Subject: Re: [PATCH] iommu/dma: Don't touch invalid iova_domain members
+Date: Tue, 16 May 2017 22:21:10 +0200
+Message-ID: <9efc4b80-b816-76d7-9472-b07a72ef9b7e@redhat.com>
+References: <16c0483f5e66d51a11ba6d71bf64a969480a1587.1493977757.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2fa1c68c-2c9a-850c-d5b8-0e30cfd077b0-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <16c0483f5e66d51a11ba6d71bf64a969480a1587.1493977757.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,160 +17,82 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Nate,
+Hi,
 
-On 16/05/2017 22:07, Nate Watterson wrote:
+On 05/05/2017 12:04, Robin Murphy wrote:
+> When __iommu_dma_map() and iommu_dma_free_iova() are called from
+> iommu_dma_get_msi_page(), various iova_*() helpers are still invoked in
+> the process, whcih is unwise since they access a different member of the
+> union (the iova_domain) from that which was last written, and there's no
+> guarantee that sensible values will result anyway.
 > 
+> CLean up the code paths that are valid for an MSI cookie to ensure we
+> only do iova_domain-specific things when we're actually dealing with one.
 > 
-> On 5/16/2017 3:55 PM, Auger Eric wrote:
->> Hi,
->>
->> On 13/04/2017 21:38, Nate Watterson wrote:
->>> Hi Robin,
->>>
->>> On 4/13/2017 7:21 AM, Robin Murphy wrote:
->>>> Hi Nate,
->>>>
->>>> On 13/04/17 09:55, Nate Watterson wrote:
->>>>> Currently, the __iommu_dma_{map/free} functions call
->>>>> iova_{offset/align}
->>>>> making them unsuitable for use with iommu_domains having an
->>>>> IOMMU_DMA_MSI
->>>>> cookie since the cookie's iova_domain member, iovad, is uninitialized.
->>>>>
->>>>> Now that iommu_dma_get_msi_page() calls __iommu_dma_map() regardless
->>>>> of cookie type, failures are being seen when mapping MSI target
->>>>> addresses for devices attached to UNMANAGED domains. To work around
->>>>> this issue, the iova_domain granule for IOMMU_DMA_MSI cookies is
->>>>> initialized to the value returned by cookie_msi_granule().
->>>>
->>>> Oh bum. Thanks for the report.
->>>>
->>>> However, I really don't like bodging around it with deliberate
->>>> undefined
->>>> behaviour. Fixing things properly doesn't seem too hard:
->>>
->>> I was not especially please with my solution, but I wanted to avoid
->>> potentially missing any other spots in the code where granule was
->>> used uninitialized. The compile time check made me feel a little
->>> less dirty about innappropriately using the iova_domain with MSI
->>> cookies.
->>>
->>>>
->>>> ----->8-----
->>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>>> index 8348f366ddd1..62618e77bedc 100644
->>>> --- a/drivers/iommu/dma-iommu.c
->>>> +++ b/drivers/iommu/dma-iommu.c
->>>> @@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct
->>>> iommu_dma_cookie *cookie,
->>>>                   dma_addr_t iova, size_t size)
->>>>    {
->>>>           struct iova_domain *iovad = &cookie->iovad;
->>>> -       unsigned long shift = iova_shift(iovad);
->>>>
->>>>           /* The MSI case is only ever cleaning up its most recent
->>>> allocation */
->>>>           if (cookie->type == IOMMU_DMA_MSI_COOKIE)
->>>>                   cookie->msi_iova -= size;
->>>>           else
->>>> -               free_iova_fast(iovad, iova >> shift, size >> shift);
->>>> +               free_iova_fast(iovad, iova_pfn(iovad, iova),
->>>> +                               size >> iova_shift(iovad));
->>>>    }
->>>>
->>>>    static void __iommu_dma_unmap(struct iommu_domain *domain,
->>>> dma_addr_t
->>>> dma_addr,
->>>> @@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device
->>>> *dev, phys_addr_t phys,
->>>>    {
->>>>           struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->>>>           struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>>> -       struct iova_domain *iovad = &cookie->iovad;
->>>> -       size_t iova_off = iova_offset(iovad, phys);
->>>> +       size_t iova_off = 0;
->>>>           dma_addr_t iova;
->>>>
->>>> -       size = iova_align(iovad, size + iova_off);
->>>> +       if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
->>>> +               iova_off = iova_offset(&cookie->iovad, phys);
->>>> +               size = iova_align(&cookie->iovad, size + iova_off);
->>>> +       }
->>>> +
->>>>           iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev),
->>>> dev);
->>>>           if (!iova)
->>>>                   return DMA_ERROR_CODE;
->>>> -----8<-----
->>>>
->>>> Untested, and you'll probably want to double-check it anyway given that
->>>> the original oversight was mine in the first place ;)
->>>
->>> This looks good to me. As Shanker has already mentioned, it does fix the
->>> faults we were previously seeing with direct device assignment. I also
->>> verified that there aren't any other obvious cases of a granule == 0
->>> being used in the dma_iommu code by adding BUG_ON(!iovad->granule) to
->>> iova_{mask/align/offset/...} and running a variety of tests without
->>> issue.
->>>
->>> Are you going to post the patch?
->>
->> I also noticed PCIe passthrough/ARM is broken for me with 4.12-r1. I
->> tested Robin's patch as well, on Cavium ThunderX, and this fixes the
->> faults I have seen.
->>
->> Has anyone sent a formal patch?
-> 
-> iommu/dma: Don't touch invalid iova_domain members
+> Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Tested-by: Shanker Donthineni <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Tested-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-thanks!
-
-Best Regards
+Thanks
 
 Eric
+
+> ---
 > 
->>
->> Thanks
->>
->> Eric
->>
->>>
->>>>
->>>> Robin.
->>>>
->>>>> Fixes: a44e6657585b ("iommu/dma: Clean up MSI IOVA allocation")
->>>>> Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>> ---
->>>>>    drivers/iommu/dma-iommu.c | 10 ++++++++++
->>>>>    1 file changed, 10 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>>>> index 8348f366..d7b0816 100644
->>>>> --- a/drivers/iommu/dma-iommu.c
->>>>> +++ b/drivers/iommu/dma-iommu.c
->>>>> @@ -127,6 +127,16 @@ int iommu_get_msi_cookie(struct iommu_domain
->>>>> *domain, dma_addr_t base)
->>>>>          cookie->msi_iova = base;
->>>>>        domain->iova_cookie = cookie;
->>>>> +
->>>>> +    /*
->>>>> +     * Setup granule for compatibility with __iommu_dma_{alloc/free}
->>>>> and
->>>>> +     * add a compile time check to ensure that writing granule won't
->>>>> +     * clobber msi_iova.
->>>>> +     */
->>>>> +    cookie->iovad.granule = cookie_msi_granule(cookie);
->>>>> +    BUILD_BUG_ON(offsetof(struct iova_domain, granule) <
->>>>> +            sizeof(cookie->msi_iova));
->>>>> +
->>>>>        return 0;
->>>>>    }
->>>>>    EXPORT_SYMBOL(iommu_get_msi_cookie);
->>>>>
->>>>
+> I've taken the liberty of upgrading the prose testing confirmations
+> into tested-by tags, hope that's OK.
+> 
+> Joerg; I'm happy to resend this after -rc1 with a fixes tag if you'd
+> rather - I'm just throwing it out now for the sake of catching up with
+> things.
+> 
+> Robin.
+> 
+>  drivers/iommu/dma-iommu.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 8348f366ddd1..62618e77bedc 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+>  		dma_addr_t iova, size_t size)
+>  {
+>  	struct iova_domain *iovad = &cookie->iovad;
+> -	unsigned long shift = iova_shift(iovad);
+>  
+>  	/* The MSI case is only ever cleaning up its most recent allocation */
+>  	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
+>  		cookie->msi_iova -= size;
+>  	else
+> -		free_iova_fast(iovad, iova >> shift, size >> shift);
+> +		free_iova_fast(iovad, iova_pfn(iovad, iova),
+> +				size >> iova_shift(iovad));
+>  }
+>  
+>  static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+> @@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>  {
+>  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> -	struct iova_domain *iovad = &cookie->iovad;
+> -	size_t iova_off = iova_offset(iovad, phys);
+> +	size_t iova_off = 0;
+>  	dma_addr_t iova;
+>  
+> -	size = iova_align(iovad, size + iova_off);
+> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+> +		iova_off = iova_offset(&cookie->iovad, phys);
+> +		size = iova_align(&cookie->iovad, size + iova_off);
+> +	}
+> +
+>  	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+>  	if (!iova)
+>  		return DMA_ERROR_CODE;
 > 
