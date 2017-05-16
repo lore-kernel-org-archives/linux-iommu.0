@@ -1,125 +1,128 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC v1 2/7] iommu/arm-smmu-v3: Add erratum framework functions
-Date: Tue, 16 May 2017 14:08:00 +0100
-Message-ID: <44374533-c1ed-5f13-d70c-8a7431bf8451@arm.com>
+Subject: Re: [RFC v1 4/7] iommu/arm-smmu-v3: Enable HiSilicon erratum
+ 161010701
+Date: Tue, 16 May 2017 14:13:13 +0100
+Message-ID: <6d290334-cb68-5b20-a969-0cc6010922d5@arm.com>
 References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com>
- <20170513094731.3676-3-shameerali.kolothum.thodi@huawei.com>
+ <20170513094731.3676-5-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170513094731.3676-3-shameerali.kolothum.thodi@huawei.com>
+In-Reply-To: <20170513094731.3676-5-shameerali.kolothum.thodi@huawei.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: shameer <shameerali.kolothum.thodi@huawei.com>, will.deacon@arm.com, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
+Cc: devicetree@vger.kernel.org, gabriele.paoloni@huawei.com, john.garry@huawei.com, linuxarm@huawei.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, wangzhou1@hisilicon.com, guohanjun@huawei.com, linux-arm-kernel@lists.infradead.org, devel@acpica.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 13/05/17 10:47, shameer wrote:
-> This will provide a way to replace the existing skip_prefetch_cmd
-> erratum using the new framework.
+> This replaces the existing broken_prefetch_cmd quirk using
+> the new erratum framework.
+> 
+> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  arch/arm64/Kconfig          | 10 +++++++++-
+>  drivers/iommu/arm-smmu-v3.c | 36 ++++++++++--------------------------
+>  2 files changed, 19 insertions(+), 27 deletions(-)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index a39029b..21d61ff 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -508,8 +508,16 @@ config QCOM_FALKOR_ERRATUM_1009
+>  
+>  	  If unsure, say Y.
+>  
+> -endmenu
+> +config HISILICON_ERRATUM_161010701
+> +	bool "HiSilicon erratum 161010701: Skip SMMU Prefetch Cmd"
+> +	default y
+> +	help
+> +	  On HiSilicon Hip06/Hip07 platforms, the SMMU v3 doesn't support the
+> +	  CMD_PREFETCH_CFG. This will skip the prefetch cmd usage.
+>  
+> +	  If unsure, say Y.
 
-Yikes, between this and patch 1 we're already pushing 70 lines of new
-code, and it still doesn't actually do anything yet. Implementing the
-SMMUv3 equivalent of SMMUv2's acpi_smmu_get_data() would probably be
-about 10 lines; all you need to do is set some quirk flags based on a
-compatible value. These quirks aren't really any different in principle
-to the firmware COHACC overrides that we already process.
-
-Sorry, I'm saying no to a massively overengineered "framework" for
-something so relatively simple.
+We don't need a config. This feature (not to mention others like it) is
+runtime-detected, and has effectively zero execution overhead and
+negligible Image-size overhead either way; why would anyone ever turn it
+off?
 
 Robin.
 
-> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 58 +++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 58 insertions(+)
-> 
+> +
+> +endmenu
+>  
+>  choice
+>  	prompt "Page size"
 > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index a166590..f20d5d5 100644
+> index f20d5d5..14538cb 100644
 > --- a/drivers/iommu/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -664,16 +664,72 @@ enum smmu_erratum_match_type {
->  	se_match_dt,
+> @@ -650,16 +650,6 @@ struct arm_smmu_domain {
+>  	struct iommu_domain		domain;
 >  };
 >  
-> +void erratum_skip_prefetch_cmd(struct arm_smmu_device *smmu, void *arg)
-> +{
-> +	smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-> +}
-> +
->  struct smmu_erratum_workaround {
->  	enum smmu_erratum_match_type match_type;
->  	const void *id;	/* Indicate the Erratum ID */
->  	const char *desc_str;
-> +	void (*enable)(struct arm_smmu_device *, void *);
+> -struct arm_smmu_option_prop {
+> -	u32 opt;
+> -	const char *prop;
+> -};
+> -
+> -static struct arm_smmu_option_prop arm_smmu_options[] = {
+> -	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+> -	{ 0, NULL},
+> -};
+> -
+>  enum smmu_erratum_match_type {
+>  	se_match_dt,
+>  };
+> @@ -677,7 +667,17 @@ struct smmu_erratum_workaround {
 >  };
 >  
 >  static const struct smmu_erratum_workaround smmu_workarounds[] = {
+> +#ifdef CONFIG_HISILICON_ERRATUM_161010701
+> +	{
+> +		.match_type = se_match_dt,
+> +		.id = "hisilicon,erratum-161010701",
+> +		.desc_str = "HiSilicon erratum 161010701",
+> +		.enable = erratum_skip_prefetch_cmd,
+> +	},
+> +#endif
+> +	{
 >  
+> +	},
 >  };
 >  
-> +typedef bool (*se_match_fn_t)(const struct smmu_erratum_workaround *,
-> +							  const void *);
-> +static
-> +bool smmu_check_dt_erratum(const struct smmu_erratum_workaround *wa,
-> +						   const void *arg)
-> +{
-> +	const struct device_node *np = arg;
-> +
-> +	return of_property_read_bool(np, wa->id);
-> +}
-> +
-> +static void smmu_enable_errata(struct arm_smmu_device *smmu,
-> +				enum smmu_erratum_match_type type,
-> +				se_match_fn_t match_fn,
-> +				void *arg)
-> +{
-> +	const struct smmu_erratum_workaround *wa = smmu_workarounds;
-> +
-> +	for (; wa->desc_str; wa++) {
-> +		if (wa->match_type != type)
-> +			continue;
-> +
-> +		if (match_fn(wa, arg)) {
-> +			if (wa->enable) {
-> +				wa->enable(smmu, arg);
-> +				dev_info(smmu->dev,
-> +					"Enabling workaround for %s\n",
-> +					 wa->desc_str);
-> +			}
-> +		}
-> +	}
-> +}
-> +
-> +
-> +static void smmu_check_workarounds(struct arm_smmu_device *smmu,
-> +				  enum smmu_erratum_match_type type,
-> +				  void *arg)
-> +{
-> +	se_match_fn_t match_fn = NULL;
-> +
-> +	switch (type) {
-> +	case se_match_dt:
-> +		match_fn = smmu_check_dt_erratum;
-> +		break;
-> +	}
-> +
-> +	smmu_enable_errata(smmu, type, match_fn, arg);
-> +
-> +}
-> +
->  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
->  {
+>  typedef bool (*se_match_fn_t)(const struct smmu_erratum_workaround *,
+> @@ -735,20 +735,6 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
 >  	return container_of(dom, struct arm_smmu_domain, domain);
-> @@ -2641,6 +2697,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+>  }
 >  
->  	parse_driver_options(smmu);
+> -static void parse_driver_options(struct arm_smmu_device *smmu)
+> -{
+> -	int i = 0;
+> -
+> -	do {
+> -		if (of_property_read_bool(smmu->dev->of_node,
+> -						arm_smmu_options[i].prop)) {
+> -			smmu->options |= arm_smmu_options[i].opt;
+> -			dev_notice(smmu->dev, "option %s\n",
+> -				arm_smmu_options[i].prop);
+> -		}
+> -	} while (arm_smmu_options[++i].opt);
+> -}
+> -
+>  /* Low-level queue manipulation functions */
+>  static bool queue_full(struct arm_smmu_queue *q)
+>  {
+> @@ -2695,8 +2681,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+>  	else
+>  		ret = 0;
 >  
-> +	smmu_check_workarounds(smmu, se_match_dt, dev->of_node);
-> +
+> -	parse_driver_options(smmu);
+> -
+>  	smmu_check_workarounds(smmu, se_match_dt, dev->of_node);
+>  
 >  	if (of_dma_is_coherent(dev->of_node))
->  		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
->  
 > 
 
