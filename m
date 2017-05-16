@@ -1,141 +1,88 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
-	deferred probing or error
-Date: Tue, 16 May 2017 15:52:52 +0100
-Message-ID: <6d9fa319-4401-c47a-7985-9a349838bcaf@arm.com>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
-	<1924197.MWBQ7kvoOo@avalon>
-	<5724f819-40db-e830-1ec1-62c887ba39ee@arm.com>
-	<1825810.fLbCv8umR7@avalon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1825810.fLbCv8umR7@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-arm-msm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH] ARM: dma-mapping: Don't tear third-party mappings
+Date: Tue, 16 May 2017 18:14:34 +0300
+Message-ID: <20170516151434.18830-1-laurent.pinchart+renesas@ideasonboard.com>
+References: <6d9fa319-4401-c47a-7985-9a349838bcaf@arm.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <6d9fa319-4401-c47a-7985-9a349838bcaf@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Sricharan R <sricharan@codeaurora.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 16/05/17 15:10, Laurent Pinchart wrote:
-> Hi Robin,
-> 
-> On Tuesday 16 May 2017 15:04:55 Robin Murphy wrote:
->> On 16/05/17 08:17, Laurent Pinchart wrote:
->>> On Tuesday 16 May 2017 07:53:57 sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org wrote:
-> 
-> [snip]
-> 
->>>> arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops()
->>>> ,dma_ops should be cleared in the teardown path. Otherwise
->>>> this causes problem when the probe of device is retried after
->>>> being deferred. The device's iommu structures are cleared
->>>> after EPROBEDEFER error, but on the next try dma_ops will still
->>>> be set to old value, which is not right.
->>>>
->>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>> ---
->>>>
->>>>   arch/arm/mm/dma-mapping.c | 1 +
->>>>   1 file changed, 1 insertion(+)
->>>>
->>>> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
->>>> index ab4f745..a40f03e 100644
->>>> --- a/arch/arm/mm/dma-mapping.c
->>>> +++ b/arch/arm/mm/dma-mapping.c
->>>> @@ -2358,6 +2358,7 @@ static void arm_teardown_iommu_dma_ops(struct
->>>> device *dev)
->>>
->>>>   	__arm_iommu_detach_device(dev);
->>>>   	arm_iommu_release_mapping(mapping);
->>>> +	set_dma_ops(dev, NULL);
->>>>   }
->>>>   #else
->>>
->>> The subject mentions arch_teardown_dma_ops(), which I think is correct,
->>> but the patch adds the set_dma_ops() call to arm_teardown_iommu_dma_ops().
->>>
->>> However, the situation is perhaps more complex. Note the check at the
->>> beginning of arch_setup_dma_ops():
->>> 	/*
->>> 	 * Don't override the dma_ops if they have already been set. Ideally
->>> 	 * this should be the only location where dma_ops are set, remove this
->>> 	 * check when all other callers of set_dma_ops will have disappeared.
->>> 	 */
->>> 	if (dev->dma_ops)
->>> 		return;
->>>
->>> If you set the dma_ops to NULL in arm_teardown_iommu_dma_ops() or
->>> arch_teardown_dma_ops(), the next call to arch_setup_dma_ops() will
->>> override them. To be safe you should only set them to NULL if they have
->>> been set by arch_setup_dma_ops(). More than that, arch_teardown_dma_ops()
->>> should probably not call arm_teardown_iommu_dma_ops() at all if the
->>> dma_ops were set by arm_iommu_attach_device() and not
->>> arch_teardown_dma_ops().
->>
->> Under what circumstances is that an issue? We'll only be tearing down
->> the DMA ops when unbinding the driver,
-> 
-> Or when deferring probe.
-> 
->> and I think it would be erroneous to expect the device to retain much state
->> after that. Everything else would be set up from scratch again if it get
->> reprobed later, so why not the DMA ops?
-> 
-> Because the DMA ops might have been set elsewhere than arch_setup_dma_ops(). 
-> If you look at the patch that added the above warning, its commit message 
-> states
-> 
-> commit 26b37b946a5c2658dbc37dd5d6df40aaa9685d70 (iommu-joerg/arm/core)
-> Author: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> Date:   Fri May 15 02:00:02 2015 +0300
-> 
->     arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
->     
->     The arch_setup_dma_ops() function is in charge of setting dma_ops with a
->     call to set_dma_ops(). set_dma_ops() is also called from
->     
->     - highbank and mvebu bus notifiers
->     - dmabounce (to be replaced with swiotlb)
->     - arm_iommu_attach_device
->     
->     (arm_iommu_attach_device is itself called from IOMMU and bus master
->     device drivers)
->     
->     To allow the arch_setup_dma_ops() call to be moved from device add time
->     to device probe time we must ensure that dma_ops already setup by any of
->     the above callers will not be overriden.
->     
->     Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
->     of_xlate and taking care of highbank and mvebu, the workaround should be
->     removed.
-> 
-> I'm concerned about potentially breaking these if we unconditionally remove 
-> the DMA ops and mapping.
+arch_setup_dma_ops() is used in device probe code paths to create an
+IOMMU mapping and attach it to the device. The function assumes that the
+device is attached to a device-specific IOMMU instance (or at least a
+device-specific TLB in a shared IOMMU instance) and thus creates a
+separate mapping for every device.
 
-Ah, sorry, I see now - it was taking a long time to page the 32-bit code
-back in, and I'd forgotten the specifics of the mess of competing
-"default domain" notions. Indeed, it's not the device's driver expecting
-any state to be preserved as I got stuck on, it's the IOMMU driver,
-which does "know better" to an extent, expecting its changes to the
-struct device to stick for the lifetime of that structure.
+On several systems (Renesas R-Car Gen2 being one of them), that
+assumption is not true, and IOMMU mappings must be shared between
+multiple devices. In those cases the IOMMU driver knows better than the
+generic ARM dma-mapping layer and attaches mapping to devices manually
+with arm_iommu_attach_device(), which sets the DMA ops for the device.
 
-I agree there shouldn't be a disparity - arch_setup_dma_ops() only does
-things given certain circumstances, so arch_teardown_dma_ops() should
-only undo them under the same. With probe-deferral in place I'll be
-reviving my work to convert this path over to IOMMU API default domains,
-which will make some of these issues go away again, but in the meantime
-I also agree that the most expedient fix is indeed to add a flag to say
-whether the dma ops were automatically set or not (this is implicitly
-true on arm64, which was partly what was tripping me up).
+The arch_setup_dma_ops() function takes this into account and bails out
+immediately if the device already has DMA ops assigned. However, the
+corresponding arch_teardown_dma_ops() function, called from driver
+unbind code paths (including probe deferral), will tear the mapping down
+regardless of who created it. When the device is reprobed
+arch_setup_dma_ops() will be called again but won't perform any
+operation as the DMA ops will still be set.
 
-Robin.
+We need to reset the DMA ops in arch_teardown_dma_ops() to fix this.
+However, we can't do so unconditionally, as then a new mapping would be
+created by arch_setup_dma_ops() when the device is reprobed, regardless
+of whether the device needs to share a mapping or not. We must thus keep
+track of whether arch_setup_dma_ops() created the mapping, and only in
+that case tear it down in arch_teardown_dma_ops().
+
+Keep track of that information in the dev_archdata structure. As the
+structure is embedded in all instances of struct device let's not grow
+it, but turn the existing dma_coherent bool field into a bitfield that
+can be used for other purposes.
+
+Fixes: 7b07cbefb68d ("iommu: of: Handle IOMMU lookup failure with deferred probing or error")
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ arch/arm/include/asm/device.h | 3 ++-
+ arch/arm/mm/dma-mapping.c     | 5 +++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
+index 36ec9c8f6e16..3234fe9bba6e 100644
+--- a/arch/arm/include/asm/device.h
++++ b/arch/arm/include/asm/device.h
+@@ -19,7 +19,8 @@ struct dev_archdata {
+ #ifdef CONFIG_XEN
+ 	const struct dma_map_ops *dev_dma_ops;
+ #endif
+-	bool dma_coherent;
++	unsigned int dma_coherent:1;
++	unsigned int dma_ops_setup:1;
+ };
+ 
+ struct omap_device;
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index c742dfd2967b..e0272f9140e2 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2430,9 +2430,14 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 		dev->dma_ops = xen_dma_ops;
+ 	}
+ #endif
++	dev->archdata.dma_ops_setup = true;
+ }
+ 
+ void arch_teardown_dma_ops(struct device *dev)
+ {
++	if (!dev->archdata.dma_ops_setup)
++		return;
++
+ 	arm_teardown_iommu_dma_ops(dev);
++	set_dma_ops(dev, NULL);
+ }
+-- 
+Regards,
+
+Laurent Pinchart
