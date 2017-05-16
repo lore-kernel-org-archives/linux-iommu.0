@@ -1,330 +1,242 @@
-From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH v6 3/3] PCI/of fix of_dma_get_range;
-	get PCI specific dma-ranges
-Date: Tue, 16 May 2017 10:52:07 +0530
-Message-ID: <1494912127-12890-4-git-send-email-oza.oza@broadcom.com>
-References: <1494912127-12890-1-git-send-email-oza.oza@broadcom.com>
-Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Oza Oza <oza.oza@broadcom.com>
+Subject: Re: [PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
+Date: Tue, 16 May 2017 10:54:13 +0530
+Message-ID: <CAMSpPPfG9aAAWGNTWoeV9+tMz9GcSeP_dyVrzyJkupmUJG6YGA@mail.gmail.com>
+References: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
+ <d7203258-e39a-a59b-d14f-c0c92a1d3f41@arm.com> <CAMSpPPcC6wN+2HeZPak+gWxoy2WaO14epHNQfHT1W0FnTRHnOQ@mail.gmail.com>
+ <48cd8da2-5928-3d5d-0f07-dfdb83f50ccb@arm.com> <CAMSpPPemCV+J7gMzQ2CZ7mO+vhedAGwrtyQ0v-ymH9Z3NxYfJQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1494912127-12890-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAMSpPPemCV+J7gMzQ2CZ7mO+vhedAGwrtyQ0v-ymH9Z3NxYfJQ@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, Oza Pawandeep <oza.pawandeep@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-current device framework and OF framework integration assumes
-dma-ranges in a way where memory-mapped devices define their
-dma-ranges. (child-bus-address, parent-bus-address, length).
+On Sat, May 6, 2017 at 11:00 AM, Oza Oza <oza.oza@broadcom.com> wrote:
+> On Fri, May 5, 2017 at 8:55 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+>> On 04/05/17 19:41, Oza Oza wrote:
+>> [...]
+>>>>> 5) leaves scope of adding PCI flag handling for inbound memory
+>>>>> by the new function.
+>>>>
+>>>> Which flags would ever actually matter? DMA windows aren't going to be
+>>>> to config or I/O space, so the memory type can be assumed, and the
+>>>> 32/64-bit distinction is irrelevant as it's not a relocatable BAR;
+>>>> DMA-able system memory isn't going to be read-sensitive, so the
+>>>> prefetchable flag shouldn't matter; and not being a BAR none of the
+>>>> others would be relevant either.
+>>>>
+>>>
+>>> Thanks Robin; for your reply and attention:
+>>>
+>>> agree with you, at present it would not matter,
+>>> but it does not mean that we do not scope it to make it matter in future.
+>>>
+>>> now where it could matter:
+>>> there is Relaxed Ordering for inbound memory for PCI.
+>>> According to standard, Relaxed Ordering (RO) bit can be set only for
+>>> Memory requests and completions (if present in the original request).
+>>> Also, according to transaction ordering rules, I/O and configuration
+>>> requests can still be re-ordered ahead of each other.
+>>> and we would like to make use of it.
+>>> for e.g. lets say we mark memory as Relaxed Ordered with flag.
+>>> the special about this memory is incoming PCI transactions can be
+>>> reordered and rest memory has to be strongly ordered.
+>>
+>> Please look at "PCI Bus Binding to: IEEE Std 1275-1994 Standard for Boot
+>> (Initialization Configuration) Firmware" (as referenced in DTSpec) and
+>> explain how PCIe Relaxed Order has anything to do with the DT binding.
+>>
+>>> how it our SOC would make use of this is out of scope for the
+>>> discussion at this point of time, but I am just bringing in the
+>>> idea/point how flags could be useful
+>>> for inbound memory, since we would not like throw-away flags completely.
+>>
+>> The premise for implementing a PCI-specific parser is that you claim we
+>> need to do something with the phys.hi cell of a DT PCI address, rather
+>> than just taking the numerical part out of the phys.mid and phys.lo
+>> cells. Please make that argument in reference to the flags which that
+>> upper cell actually encodes, not unrelated things.
+>>
+>
+> I think, the whole discussion around inbound flags is not what I
+> intended to bring.
+> this patch does nothing about inbound flag and never intends to solve
+> anything regarding inbound flags.
+> infact I would like to remove point 5 form the commit message. which
+> should keep it out of discussion completely.
+>
+> let met tell what this patch is trying to address/solve 2 BUGs
+> 1) fix wrong size return from of_dma_configure for PCI masters. (which
+> is right now BUG)
+>
+> 2) handles multiple dma-ranges cleanly
+>
+> 3) It takes care of dma-ranges being optional.
+>
+> 4) following is the comment on function of_dma_get_range (which is also a BUG)
+>                 "It returns -ENODEV if "dma-ranges" property was not found
+>                  * for this device in DT."
+> which I think is wrong for PCI device, because if dma-ranges are
+> absent then instead of returning  -ENODEV,
+> it should return 0 with largest possible host memory.
+>
+> it solves all the above 4 problems.
+>
+>> [...]
+>>>>> +int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
+>>>>> +{
+>>>>> +     struct device_node *node = of_node_get(np);
+>>>>> +     int rlen;
+>>>>> +     int ret = 0;
+>>>>> +     const int na = 3, ns = 2;
+>>>>> +     struct resource *res;
+>>>>> +     struct of_pci_range_parser parser;
+>>>>> +     struct of_pci_range range;
+>>>>> +
+>>>>> +     if (!node)
+>>>>> +             return -EINVAL;
+>>>>> +
+>>>>> +     parser.node = node;
+>>>>> +     parser.pna = of_n_addr_cells(node);
+>>>>> +     parser.np = parser.pna + na + ns;
+>>>>> +
+>>>>> +     parser.range = of_get_property(node, "dma-ranges", &rlen);
+>>>>> +
+>>>>> +     if (!parser.range) {
+>>>>> +             pr_debug("pcie device has no dma-ranges defined for node(%s)\n",
+>>>>> +                       np->full_name);
+>>>>> +             ret = -EINVAL;
+>>>>> +             goto out;
+>>>>> +     }
+>>>>> +
+>>>>> +     parser.end = parser.range + rlen / sizeof(__be32);
+>>>>> +
+>>>>> +     for_each_of_pci_range(&parser, &range) {
+>>>>
+>>>> This is plain wrong - of_pci_range_parser_one() will translate upwards
+>>>> through parent "ranges" properties, which is completely backwards for
+>>>> DMA addresses.
+>>>>
+>>>> Robin.
+>>>>
+>>>
+>>> No it does not, this patch is thoroughly tested on our SOC and it works.
+>>> of_pci_range_parser_one does not translate upwards through parent. it
+>>> just sticks to given PCI parser.
+>>
+>> Frankly, I'm losing patience with this attitude. Please look at the code
+>> you call:
+>>
+>> #define for_each_of_pci_range(parser, range) \
+>>         for (; of_pci_range_parser_one(parser, range);)
+>>
+>>
+>> struct of_pci_range *of_pci_range_parser_one(struct of_pci_range_parser
+>> *parser,
+>>                                                 struct of_pci_range *range)
+>> {
+>>         const int na = 3, ns = 2;
+>>
+>>         if (!range)
+>>                 return NULL;
+>>
+>>         if (!parser->range || parser->range + parser->np > parser->end)
+>>                 return NULL;
+>>
+>>         range->pci_space = parser->range[0];
+>>         range->flags = of_bus_pci_get_flags(parser->range);
+>>         range->pci_addr = of_read_number(parser->range + 1, ns);
+>>         range->cpu_addr = of_translate_address(parser->node,
+>>                                 parser->range + na);
+>> ...
+>>
+>>
+>> u64 of_translate_address(struct device_node *dev, const __be32 *in_addr)
+>> {
+>>         return __of_translate_address(dev, in_addr, "ranges");
+>> }
+>>
+>>
+>> I don't doubt that you still manage to get the right result on *your*
+>> SoC, because you probably have neither further "ranges" nor "dma-ranges"
+>> translations above your host controller node anyway. That does not
+>> change the fact that the proposed code is still obviously wrong for more
+>> complex DT topologies that do.
+>
+> sorry but I am confused, and sorry again for not getting through on
+> what you said.
+>
+> this patch assumes that the root bus would have dma-ranges.
+> are you saying this code doesn't iterate through way up till it finds
+> valid dma-ranges ?
+>
+> or
+>
+> you are saying
+> of_pci_range_parser_one() will translate upwards
+> through parent "ranges" properties
+>
+>>
+>> We're doing upstream work in core code here: I don't particularly care
+>> about making your SoC work; I don't really care about making Juno work
+>> properly either; what I do care about is that code to parse dma-ranges
+>> actually parses dma-ranges *correctly* for all possible valid uses of
+>> dma-ranges, which means fixing the existing bugs and not introducing
+>> more. The principal side-effect of that is that *all* systems with valid
+>> DTs will then work correctly.
+>>
+>
+> I do see your point now.....and my apologies for not getting it right
+> at the first time.
+>
+> but I would not know all the nitty-gritty of all the code of framework and
+> every complex DT topology of other SOCs.
+> that is the reason we seek for comments from experts like you, to make
+> the patch better.
+>
+> when I say it works on our SOC, I only meant that this patch is
+> tested. so again apologies there.
+>
+> there is one obvious problem is
+> of_translate_dma_address should get called instead of
+> of_translate_address (so no "ranges") instead ("dma-ranges")
+>
+> but with that also as you said, it will traverse all the way up to the
+> DT hierarchy.
+>
+> I think there are 2 problems with this patch.
+>
+> 1) this patch should try to iterate through all the way up to find
+> first dma-ranges and should stop when it finds it.
+>     it should not assume that dma-ranges will always be found at the
+> current node.
+>
+> 2) of_translate_dma_address is broken, because if point 1 is achieved,
+> then no need to traverse anymore.
+>
+> but before that, again seeking your opinion, whether we want to go
+> down this path.
+> registering bus specific get_ranges as in PATCH v5 ? in my opinion it
+> is better way of handling it.
+>
+> the original patch which you had in mind, you will have to club both
+> PCI and memory -mapped implementation together.
+> even if dma-ranges (ignoring flags) remain the same in nature, still
+> you have to parse it differently. because address-cells are different.
+> and you will have to handle multiple ranges.
+>
+> I just tried to bring it out to different path with registering bus
+> specific callbacks.
+>
+>> Robin.
 
-of_dma_configure is specifically written to take care of memory
-mapped devices. but no implementation exists for pci to take
-care of pcie based memory ranges.
+Hi Robin,
 
-for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
-world dma-ranges.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+I have addressed your comments to the best of my understanding.
+please have a look at PATCH v6
 
-this patch fixes the following problems of_dma_get_range.
-1) return of wrong size as 0.
-2) not handling absence of dma-ranges which is valid for PCI master.
-3) not handling multipe inbound windows.
-4) in order to get largest possible dma_mask. this patch also
-retuns the largest possible size based on dma-ranges,
-
-for e.g.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
-we should get dev->coherent_dma_mask=0x7fffffffff.
-
-based on which IOVA allocation space will honour PCI host
-bridge limitations.
-
-the implementation hooks bus specific callbacks for getting
-dma-ranges.
-
-Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903..800731c 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -6,6 +6,7 @@
- #include <linux/ioport.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
-+#include <linux/of_pci.h>
- #include <linux/pci.h>
- #include <linux/pci_regs.h>
- #include <linux/sizes.h>
-@@ -46,6 +47,8 @@ struct of_bus {
- 				int na, int ns, int pna);
- 	int		(*translate)(__be32 *addr, u64 offset, int na);
- 	unsigned int	(*get_flags)(const __be32 *addr);
-+	int		(*get_dma_ranges)(struct device_node *np,
-+					  u64 *dma_addr, u64 *paddr, u64 *size);
- };
- 
- /*
-@@ -171,6 +174,144 @@ static int of_bus_pci_translate(__be32 *addr, u64 offset, int na)
- {
- 	return of_bus_default_translate(addr + 1, offset, na - 1);
- }
-+
-+static int of_bus_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				     u64 *paddr, u64 *size)
-+{
-+	struct device_node *node = of_node_get(np);
-+	int ret = 0;
-+	struct resource_entry *window;
-+	LIST_HEAD(res);
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	*size = 0;
-+	/*
-+	 * PCI dma-ranges is not mandatory property.
-+	 * many devices do no need to have it, since
-+	 * host bridge does not require inbound memory
-+	 * configuration or rather have design limitations.
-+	 * so we look for dma-ranges, if missing we
-+	 * just return the caller full size, and also
-+	 * no dma-ranges suggests that, host bridge allows
-+	 * whatever comes in, so we set dma_addr to 0.
-+	 */
-+	ret = of_pci_get_dma_ranges(np, &res);
-+	if (!ret) {
-+		resource_list_for_each_entry(window, &res) {
-+		struct resource *res_dma = window->res;
-+
-+		if (*size < resource_size(res_dma)) {
-+			*dma_addr = res_dma->start - window->offset;
-+			*paddr = res_dma->start;
-+			*size = resource_size(res_dma);
-+			}
-+		}
-+	}
-+	pci_free_resource_list(&res);
-+
-+	/*
-+	 * return the largest possible size,
-+	 * since PCI master allows everything.
-+	 */
-+	if (*size == 0) {
-+		pr_debug("empty/zero size dma-ranges found for node(%s)\n",
-+			np->full_name);
-+		*size = DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1;
-+		*dma_addr = *paddr = 0;
-+		ret = 0;
-+	}
-+
-+	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+		 *dma_addr, *paddr, *size);
-+
-+	of_node_put(node);
-+
-+	return ret;
-+}
-+
-+static int get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				u64 *paddr, u64 *size)
-+{
-+	struct device_node *node = of_node_get(np);
-+	const __be32 *ranges = NULL;
-+	int len, naddr, nsize, pna;
-+	int ret = 0;
-+	u64 dmaaddr;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	while (1) {
-+		naddr = of_n_addr_cells(node);
-+		nsize = of_n_size_cells(node);
-+		node = of_get_next_parent(node);
-+		if (!node)
-+			break;
-+
-+		ranges = of_get_property(node, "dma-ranges", &len);
-+
-+		/* Ignore empty ranges, they imply no translation required */
-+		if (ranges && len > 0)
-+			break;
-+
-+		/*
-+		 * At least empty ranges has to be defined for parent node if
-+		 * DMA is supported
-+		 */
-+		if (!ranges)
-+			break;
-+	}
-+
-+	if (!ranges) {
-+		pr_debug("no dma-ranges found for node(%s)\n", np->full_name);
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	len /= sizeof(u32);
-+
-+	pna = of_n_addr_cells(node);
-+
-+	/* dma-ranges format:
-+	 * DMA addr	: naddr cells
-+	 * CPU addr	: pna cells
-+	 * size		: nsize cells
-+	 */
-+	dmaaddr = of_read_number(ranges, naddr);
-+	*paddr = of_translate_dma_address(np, ranges);
-+	if (*paddr == OF_BAD_ADDR) {
-+		pr_err("translation of DMA address(%pad) to CPU address failed node(%s)\n",
-+		       dma_addr, np->full_name);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+	*dma_addr = dmaaddr;
-+
-+	*size = of_read_number(ranges + naddr + pna, nsize);
-+
-+	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+		 *dma_addr, *paddr, *size);
-+
-+out:
-+	of_node_put(node);
-+
-+	return ret;
-+}
-+
-+static int of_bus_isa_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+				     u64 *paddr, u64 *size)
-+{
-+	return get_dma_ranges(np, dma_addr, paddr, size);
-+}
-+
-+static int of_bus_default_get_dma_ranges(struct device_node *np, u64 *dma_addr,
-+					 u64 *paddr, u64 *size)
-+{
-+	return get_dma_ranges(np, dma_addr, paddr, size);
-+}
-+
- #endif /* CONFIG_OF_ADDRESS_PCI */
- 
- #ifdef CONFIG_PCI
-@@ -424,6 +565,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_pci_map,
- 		.translate = of_bus_pci_translate,
- 		.get_flags = of_bus_pci_get_flags,
-+		.get_dma_ranges = of_bus_pci_get_dma_ranges,
- 	},
- #endif /* CONFIG_OF_ADDRESS_PCI */
- 	/* ISA */
-@@ -435,6 +577,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_isa_map,
- 		.translate = of_bus_isa_translate,
- 		.get_flags = of_bus_isa_get_flags,
-+		.get_dma_ranges = of_bus_isa_get_dma_ranges,
- 	},
- 	/* Default */
- 	{
-@@ -445,6 +588,7 @@ static unsigned int of_bus_isa_get_flags(const __be32 *addr)
- 		.map = of_bus_default_map,
- 		.translate = of_bus_default_translate,
- 		.get_flags = of_bus_default_get_flags,
-+		.get_dma_ranges = of_bus_default_get_dma_ranges,
- 	},
- };
- 
-@@ -820,74 +964,17 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
-  *	size			: nsize cells
-  *
-  * It returns -ENODEV if "dma-ranges" property was not found
-- * for this device in DT.
-+ * for this device in DT, except if PCI device then, dma-ranges
-+ * can be optional property, and in that case returns size with
-+ * entire host memory.
-  */
- int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
- {
--	struct device_node *node = of_node_get(np);
--	const __be32 *ranges = NULL;
--	int len, naddr, nsize, pna;
--	int ret = 0;
--	u64 dmaaddr;
--
--	if (!node)
--		return -EINVAL;
--
--	while (1) {
--		naddr = of_n_addr_cells(node);
--		nsize = of_n_size_cells(node);
--		node = of_get_next_parent(node);
--		if (!node)
--			break;
--
--		ranges = of_get_property(node, "dma-ranges", &len);
--
--		/* Ignore empty ranges, they imply no translation required */
--		if (ranges && len > 0)
--			break;
--
--		/*
--		 * At least empty ranges has to be defined for parent node if
--		 * DMA is supported
--		 */
--		if (!ranges)
--			break;
--	}
--
--	if (!ranges) {
--		pr_debug("no dma-ranges found for node(%s)\n", np->full_name);
--		ret = -ENODEV;
--		goto out;
--	}
--
--	len /= sizeof(u32);
--
--	pna = of_n_addr_cells(node);
--
--	/* dma-ranges format:
--	 * DMA addr	: naddr cells
--	 * CPU addr	: pna cells
--	 * size		: nsize cells
--	 */
--	dmaaddr = of_read_number(ranges, naddr);
--	*paddr = of_translate_dma_address(np, ranges);
--	if (*paddr == OF_BAD_ADDR) {
--		pr_err("translation of DMA address(%pad) to CPU address failed node(%s)\n",
--		       dma_addr, np->full_name);
--		ret = -EINVAL;
--		goto out;
--	}
--	*dma_addr = dmaaddr;
--
--	*size = of_read_number(ranges + naddr + pna, nsize);
--
--	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
--		 *dma_addr, *paddr, *size);
--
--out:
--	of_node_put(node);
-+	struct of_bus *bus;
- 
--	return ret;
-+	/* get bus specific dma-ranges. */
-+	bus = of_match_bus(np);
-+	return bus->get_dma_ranges(np, dma_addr, paddr, size);
- }
- EXPORT_SYMBOL_GPL(of_dma_get_range);
- 
--- 
-1.9.1
+Regards,
+Oza.
