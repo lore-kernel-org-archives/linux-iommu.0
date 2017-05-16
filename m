@@ -1,85 +1,58 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 26/32] x86, drm, fbdev: Do not specify encrypted
- memory for video mappings
-Date: Tue, 16 May 2017 19:35:41 +0200
-Message-ID: <20170516173541.q2rbh5dhkluzsjae@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418212056.10190.25468.stgit@tlendack-t1.amdoffice.net>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: [patch V2 10/17] iommu/vt-d: Adjust system_state checks
+Date: Tue, 16 May 2017 20:42:41 +0200
+Message-ID: <20170516184735.712365947@linutronix.de>
+References: <20170516184231.564888231@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20170418212056.10190.25468.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline;
+	filename=iommu-vt-d--Adjust-system_state-check.patch
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 18, 2017 at 04:20:56PM -0500, Tom Lendacky wrote:
-> Since video memory needs to be accessed decrypted, be sure that the
-> memory encryption mask is not set for the video ranges.
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/vga.h       |   13 +++++++++++++
->  arch/x86/mm/pageattr.c           |    2 ++
->  drivers/gpu/drm/drm_gem.c        |    2 ++
->  drivers/gpu/drm/drm_vm.c         |    4 ++++
->  drivers/gpu/drm/ttm/ttm_bo_vm.c  |    7 +++++--
->  drivers/gpu/drm/udl/udl_fb.c     |    4 ++++
->  drivers/video/fbdev/core/fbmem.c |   12 ++++++++++++
->  7 files changed, 42 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/vga.h b/arch/x86/include/asm/vga.h
-> index c4b9dc2..5c7567a 100644
-> --- a/arch/x86/include/asm/vga.h
-> +++ b/arch/x86/include/asm/vga.h
-> @@ -7,12 +7,25 @@
->  #ifndef _ASM_X86_VGA_H
->  #define _ASM_X86_VGA_H
->  
-> +#include <asm/cacheflush.h>
-> +
->  /*
->   *	On the PC, we can just recalculate addresses and then
->   *	access the videoram directly without any black magic.
-> + *	To support memory encryption however, we need to access
-> + *	the videoram as decrypted memory.
->   */
->  
-> +#ifdef CONFIG_AMD_MEM_ENCRYPT
-> +#define VGA_MAP_MEM(x, s)					\
-> +({								\
-> +	unsigned long start = (unsigned long)phys_to_virt(x);	\
-> +	set_memory_decrypted(start, (s) >> PAGE_SHIFT);		\
-> +	start;							\
-> +})
-> +#else
->  #define VGA_MAP_MEM(x, s) (unsigned long)phys_to_virt(x)
-> +#endif
+To enable smp_processor_id() and might_sleep() debug checks earlier, it's
+required to add system states between SYSTEM_BOOTING and SYSTEM_RUNNING.
 
-Can we push the check in and save us the ifdeffery?
+Adjust the system_state checks in dmar_parse_one_atsr() and
+dmar_iommu_notify_scope_dev() to handle the extra states.
 
-#define VGA_MAP_MEM(x, s)                                       \
-({                                                              \
-        unsigned long start = (unsigned long)phys_to_virt(x);   \
-                                                                \
-        if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT))                 \
-                set_memory_decrypted(start, (s) >> PAGE_SHIFT); \
-                                                                \
-        start;                                                  \
-})
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Acked-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+---
+ drivers/iommu/intel-iommu.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-It does build here. :)
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4312,7 +4312,7 @@ int dmar_parse_one_atsr(struct acpi_dmar
+ 	struct acpi_dmar_atsr *atsr;
+ 	struct dmar_atsr_unit *atsru;
+ 
+-	if (system_state != SYSTEM_BOOTING && !intel_iommu_enabled)
++	if (system_state >= SYSTEM_RUNNING && !intel_iommu_enabled)
+ 		return 0;
+ 
+ 	atsr = container_of(hdr, struct acpi_dmar_atsr, header);
+@@ -4562,7 +4562,7 @@ int dmar_iommu_notify_scope_dev(struct d
+ 	struct acpi_dmar_atsr *atsr;
+ 	struct acpi_dmar_reserved_memory *rmrr;
+ 
+-	if (!intel_iommu_enabled && system_state != SYSTEM_BOOTING)
++	if (!intel_iommu_enabled && system_state >= SYSTEM_RUNNING)
+ 		return 0;
+ 
+ 	list_for_each_entry(rmrru, &dmar_rmrr_units, list) {
