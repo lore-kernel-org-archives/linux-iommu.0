@@ -1,52 +1,126 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: RE: [RFC v1 3/7] iommu/arm-smmu-v3: Replace the device tree binding
- for hisilicon broken prefetch cmd with erratum id
-Date: Tue, 16 May 2017 10:15:28 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA838350804@FRAEML521-MBX.china.huawei.com>
-References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com>
- <20170513094731.3676-4-shameerali.kolothum.thodi@huawei.com>
- <CAL_JsqLH7iT7O2U3g6J26YGBUmt53PDymLJ5VCLByW_97L_M4w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <CAL_JsqLH7iT7O2U3g6J26YGBUmt53PDymLJ5VCLByW_97L_M4w@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Mark Rutland <mark.rutland@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] iommu/iova: Sort out rbtree limit_pfn handling
+Date: Tue, 16 May 2017 12:26:48 +0100
+Message-ID: <2f161f6406fd33ea979f6b128f36bb8ac9044d06.1494933782.git.robin.murphy@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, asierra@xes-inc.com, nwatters@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iIEhlcnJpbmcgW21h
-aWx0bzpyb2JoQGtlcm5lbC5vcmddDQo+IFNlbnQ6IE1vbmRheSwgTWF5IDE1LCAyMDE3IDQ6MjQg
-UE0NCj4gVG86IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGkNCj4gQ2M6IFdpbGwgRGVhY29uOyBS
-b2JpbiBNdXJwaHk7IE1hcmsgUnV0bGFuZDsgTG9yZW56byBQaWVyYWxpc2k7IEhhbmp1biBHdW87
-DQo+IEdhYnJpZWxlIFBhb2xvbmk7IEpvaG4gR2Fycnk7IExpbnV4IElPTU1VOyBkZXZpY2V0cmVl
-QHZnZXIua2VybmVsLm9yZzsNCj4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3Jn
-OyBsaW51eC1hY3BpQHZnZXIua2VybmVsLm9yZzsNCj4gZGV2ZWxAYWNwaWNhLm9yZzsgTGludXhh
-cm07IFdhbmd6aG91IChCKTsgR3VvaGFuanVuIChIYW5qdW4gR3VvKQ0KPiBTdWJqZWN0OiBSZTog
-W1JGQyB2MSAzLzddIGlvbW11L2FybS1zbW11LXYzOiBSZXBsYWNlIHRoZSBkZXZpY2UgdHJlZQ0K
-PiBiaW5kaW5nIGZvciBoaXNpbGljb24gYnJva2VuIHByZWZldGNoIGNtZCB3aXRoIGVycmF0dW0g
-aWQNCj4gDQo+IE9uIFNhdCwgTWF5IDEzLCAyMDE3IGF0IDQ6NDcgQU0sIHNoYW1lZXINCj4gPHNo
-YW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4gd3JvdGU6DQo+ID4gU2lnbmVkLW9m
-Zi1ieTogc2hhbWVlciA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPg0KPiA+
-IC0tLQ0KPiA+ICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNt
-bXUtdjMudHh0IHwgMiArLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEg
-ZGVsZXRpb24oLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNtbXUtdjMudHh0DQo+ID4gYi9Eb2N1bWVudGF0aW9uL2Rl
-dmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNtbXUtdjMudHh0DQo+ID4gaW5kZXggYmU1NzU1
-MC4uYmY0OGU5MiAxMDA2NDQNCj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
-ZGluZ3MvaW9tbXUvYXJtLHNtbXUtdjMudHh0DQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZp
-Y2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LXYzLnR4dA0KPiA+IEBAIC00Niw3ICs0Niw3
-IEBAIHRoZSBQQ0llIHNwZWNpZmljYXRpb24uDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAg
-IGRldmljZXRyZWUvYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvbXNpLnR4dA0KPiA+ICAg
-ICAgICAgICAgICAgICAgICAgICAgZm9yIGEgZGVzY3JpcHRpb24gb2YgdGhlIG1zaS1wYXJlbnQg
-cHJvcGVydHkuDQo+ID4NCj4gPiAtLSBoaXNpbGljb24sYnJva2VuLXByZWZldGNoLWNtZA0KPiA+
-ICstIGhpc2lsaWNvbixlcnJhdHVtLTE2MTAxMDcwMQ0KPiANCj4gV2h5PyBZb3VyIG1pc3Npbmcg
-Y29tbWl0IG1zZyBzaG91bGQgYW5zd2VyIHRoYXQuIFRoaXMgYnJlYWtzDQo+IGNvbXBhdGliaWxp
-dHksIHNvIHlvdSBhcmUgc3R1Y2sgd2l0aCB0aGUgb2xkIHN0cmluZy4NCj4gDQo+IEknZCBwcmVm
-ZXIgdGhhdCB5b3Ugc3RhcnQgdXNpbmcgdGhlIGNvbXBhdGlibGUgc3RyaW5nIHJhdGhlciB0aGFu
-IGV2ZXJ5IHZlbmRvcg0KPiBhZGRpbmcgYSBwcm9wZXJ0eSBmb3IgZXZlcnkgZXJyYXRhLg0KDQpP
-ay4gSSB3aWxsIHdhaXQgZm9yIHRoZSByZXZpZXcgb2Ygb3RoZXIgcGF0Y2hlcyBpbiB0aGlzIHNl
-cmllcyBhbmQgdXBkYXRlIGl0IGFjY29yZGluZ2x5DQppbiB0aGUgbmV4dCByZXZpc2lvbi4NCg0K
-VGhhbmtzLA0KU2hhbWVlcg0KDQoNCg==
+When walking the rbtree, the fact that iovad->start_pfn and limit_pfn
+are both inclusive limits creates an ambiguity once limit_pfn reaches
+the bottom of the address space and they overlap. Commit 5016bdb796b3
+("iommu/iova: Fix underflow bug in __alloc_and_insert_iova_range") fixed
+the worst side-effect of this, that of underflow wraparound leading to
+bogus allocations, but the remaining fallout is that any attempt to
+allocate start_pfn itself erroneously fails.
+
+The cleanest way to resolve the ambiguity is to simply make limit_pfn an
+exclusive limit when inside the guts of the rbtree. Since we're working
+with PFNs, representing one past the top of the address space is always
+possible without fear of overflow, and elsewhere it just makes life a
+little more straightforward.
+
+Reported-by: Aaron Sierra <asierra@xes-inc.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+
+I've now run this through some more targeted testing, and I'm
+confident that it works as intended - Aaron, can you confirm if
+this satisfies your tests as well?
+
+Thanks,
+Robin.
+
+ drivers/iommu/dma-iommu.c |  2 +-
+ drivers/iommu/iova.c      | 21 +++++++++------------
+ 2 files changed, 10 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 62618e77bedc..f1db86939031 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -314,7 +314,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 		 * If we have devices with different DMA masks, move the free
+ 		 * area cache limit down for the benefit of the smaller one.
+ 		 */
+-		iovad->dma_32bit_pfn = min(end_pfn, iovad->dma_32bit_pfn);
++		iovad->dma_32bit_pfn = min(end_pfn + 1, iovad->dma_32bit_pfn);
+ 
+ 		return 0;
+ 	}
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 5c88ba70e4e0..3f24c9a831c9 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -48,7 +48,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->cached32_node = NULL;
+ 	iovad->granule = granule;
+ 	iovad->start_pfn = start_pfn;
+-	iovad->dma_32bit_pfn = pfn_32bit;
++	iovad->dma_32bit_pfn = pfn_32bit + 1;
+ 	init_iova_rcaches(iovad);
+ }
+ EXPORT_SYMBOL_GPL(init_iova_domain);
+@@ -63,7 +63,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+ 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
+ 		struct iova *curr_iova =
+ 			rb_entry(iovad->cached32_node, struct iova, node);
+-		*limit_pfn = curr_iova->pfn_lo - 1;
++		*limit_pfn = curr_iova->pfn_lo;
+ 		return prev_node;
+ 	}
+ }
+@@ -135,7 +135,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
+ static unsigned int
+ iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
+ {
+-	return (limit_pfn + 1 - size) & (__roundup_pow_of_two(size) - 1);
++	return (limit_pfn - size) & (__roundup_pow_of_two(size) - 1);
+ }
+ 
+ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+@@ -155,18 +155,15 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	while (curr) {
+ 		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+ 
+-		if (limit_pfn < curr_iova->pfn_lo)
++		if (limit_pfn <= curr_iova->pfn_lo) {
+ 			goto move_left;
+-		else if (limit_pfn < curr_iova->pfn_hi)
+-			goto adjust_limit_pfn;
+-		else {
++		} else if (limit_pfn > curr_iova->pfn_hi) {
+ 			if (size_aligned)
+ 				pad_size = iova_get_pad_size(size, limit_pfn);
+-			if ((curr_iova->pfn_hi + size + pad_size) <= limit_pfn)
++			if ((curr_iova->pfn_hi + size + pad_size) < limit_pfn)
+ 				break;	/* found a free slot */
+ 		}
+-adjust_limit_pfn:
+-		limit_pfn = curr_iova->pfn_lo ? (curr_iova->pfn_lo - 1) : 0;
++		limit_pfn = curr_iova->pfn_lo;
+ move_left:
+ 		prev = curr;
+ 		curr = rb_prev(curr);
+@@ -182,7 +179,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	}
+ 
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+-	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
++	new->pfn_lo = limit_pfn - (size + pad_size);
+ 	new->pfn_hi = new->pfn_lo + size - 1;
+ 
+ 	/* If we have 'prev', it's a valid place to start the insertion. */
+@@ -269,7 +266,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 	if (!new_iova)
+ 		return NULL;
+ 
+-	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn,
++	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
+ 			new_iova, size_aligned);
+ 
+ 	if (ret) {
+-- 
+2.12.2.dirty
