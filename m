@@ -1,69 +1,160 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v5 06/32] x86/mm: Add Secure Memory Encryption (SME)
- support
-Date: Tue, 16 May 2017 14:28:42 -0500
-Message-ID: <6d266f5b-c28d-fe19-24b5-5133532f9eea@amd.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211727.10190.18774.stgit@tlendack-t1.amdoffice.net>
- <20170427154631.2tsqgax4kqcvydnx@pd.tnic>
- <d9d9f10a-0ce5-53e8-41f5-f8690dbd7362@amd.com>
- <20170504143622.zy2f66e4mkm6xvsq@pd.tnic>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/dma: Setup iova_domain granule for IOMMU_DMA_MSI
+	cookies
+Date: Tue, 16 May 2017 21:55:19 +0200
+Message-ID: <694f109c-78ec-ec1e-037f-0a3807c4ef6d@redhat.com>
+References: <1492073715-7811-1-git-send-email-nwatters@codeaurora.org>
+	<90fe2111-42e5-ecb1-d0bd-10e06883ae5d@arm.com>
+	<95dfaf27-9a74-7a6c-fa77-0fcfe1edbe6e@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170504143622.zy2f66e4mkm6xvsq@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
- Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
- Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <95dfaf27-9a74-7a6c-fa77-0fcfe1edbe6e-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/4/2017 9:36 AM, Borislav Petkov wrote:
-> On Thu, May 04, 2017 at 09:24:11AM -0500, Tom Lendacky wrote:
->> I did this so that an the include order wouldn't cause issues (including
->> asm/mem_encrypt.h followed by later by a linux/mem_encrypt.h include).
->> I can make this a bit clearer by having separate #defines for each
->> thing, e.g.:
+Hi,
+
+On 13/04/2017 21:38, Nate Watterson wrote:
+> Hi Robin,
+> 
+> On 4/13/2017 7:21 AM, Robin Murphy wrote:
+>> Hi Nate,
 >>
->> #ifndef sme_me_mask
->> #define sme_me_mask 0UL
->> #endif
+>> On 13/04/17 09:55, Nate Watterson wrote:
+>>> Currently, the __iommu_dma_{map/free} functions call iova_{offset/align}
+>>> making them unsuitable for use with iommu_domains having an
+>>> IOMMU_DMA_MSI
+>>> cookie since the cookie's iova_domain member, iovad, is uninitialized.
+>>>
+>>> Now that iommu_dma_get_msi_page() calls __iommu_dma_map() regardless
+>>> of cookie type, failures are being seen when mapping MSI target
+>>> addresses for devices attached to UNMANAGED domains. To work around
+>>> this issue, the iova_domain granule for IOMMU_DMA_MSI cookies is
+>>> initialized to the value returned by cookie_msi_granule().
 >>
->> #ifndef sme_active
->> #define sme_active sme_active
->> static inline ...
->> #endif
+>> Oh bum. Thanks for the report.
 >>
->> Is that better/clearer?
->
-> I guess but where do we have to include both the asm/ and the linux/
-> version?
+>> However, I really don't like bodging around it with deliberate undefined
+>> behaviour. Fixing things properly doesn't seem too hard:
+> 
+> I was not especially please with my solution, but I wanted to avoid
+> potentially missing any other spots in the code where granule was
+> used uninitialized. The compile time check made me feel a little
+> less dirty about innappropriately using the iova_domain with MSI
+> cookies.
+> 
+>>
+>> ----->8-----
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 8348f366ddd1..62618e77bedc 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct
+>> iommu_dma_cookie *cookie,
+>>                  dma_addr_t iova, size_t size)
+>>   {
+>>          struct iova_domain *iovad = &cookie->iovad;
+>> -       unsigned long shift = iova_shift(iovad);
+>>
+>>          /* The MSI case is only ever cleaning up its most recent
+>> allocation */
+>>          if (cookie->type == IOMMU_DMA_MSI_COOKIE)
+>>                  cookie->msi_iova -= size;
+>>          else
+>> -               free_iova_fast(iovad, iova >> shift, size >> shift);
+>> +               free_iova_fast(iovad, iova_pfn(iovad, iova),
+>> +                               size >> iova_shift(iovad));
+>>   }
+>>
+>>   static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t
+>> dma_addr,
+>> @@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device
+>> *dev, phys_addr_t phys,
+>>   {
+>>          struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>>          struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>> -       struct iova_domain *iovad = &cookie->iovad;
+>> -       size_t iova_off = iova_offset(iovad, phys);
+>> +       size_t iova_off = 0;
+>>          dma_addr_t iova;
+>>
+>> -       size = iova_align(iovad, size + iova_off);
+>> +       if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+>> +               iova_off = iova_offset(&cookie->iovad, phys);
+>> +               size = iova_align(&cookie->iovad, size + iova_off);
+>> +       }
+>> +
+>>          iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev),
+>> dev);
+>>          if (!iova)
+>>                  return DMA_ERROR_CODE;
+>> -----8<-----
+>>
+>> Untested, and you'll probably want to double-check it anyway given that
+>> the original oversight was mine in the first place ;)
+> 
+> This looks good to me. As Shanker has already mentioned, it does fix the
+> faults we were previously seeing with direct device assignment. I also
+> verified that there aren't any other obvious cases of a granule == 0
+> being used in the dma_iommu code by adding BUG_ON(!iovad->granule) to
+> iova_{mask/align/offset/...} and running a variety of tests without
+> issue.
+> 
+> Are you going to post the patch?
 
-It's more of the sequence of various includes.  For example,
-init/do_mounts.c includes <linux/module.h> that eventually gets down
-to <asm/pgtable_types.h> and then <asm/mem_encrypt.h>.  However, a
-bit further down <linux/nfs_fs.h> is included which eventually gets
-down to <linux/dma-mapping.h> and then <linux/mem_encyrpt.h>.
+I also noticed PCIe passthrough/ARM is broken for me with 4.12-r1. I
+tested Robin's patch as well, on Cavium ThunderX, and this fixes the
+faults I have seen.
 
->
-> IOW, can we avoid these issues altogether by partitioning symbol
-> declarations differently among the headers?
+Has anyone sent a formal patch?
 
-It's most problematic when CONFIG_AMD_MEM_ENCRYPT is not defined since
-we never include an asm/ version from the linux/ path.  I could create
-a mem_encrypt.h in include/asm-generic/ that contains the info that
-is in the !CONFIG_AMD_MEM_ENCRYPT path of the linux/ version. Let me
-look into that.
+Thanks
 
-Thanks,
-Tom
+Eric
 
->
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+> 
+>>
+>> Robin.
+>>
+>>> Fixes: a44e6657585b ("iommu/dma: Clean up MSI IOVA allocation")
+>>> Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>> ---
+>>>   drivers/iommu/dma-iommu.c | 10 ++++++++++
+>>>   1 file changed, 10 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index 8348f366..d7b0816 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -127,6 +127,16 @@ int iommu_get_msi_cookie(struct iommu_domain
+>>> *domain, dma_addr_t base)
+>>>         cookie->msi_iova = base;
+>>>       domain->iova_cookie = cookie;
+>>> +
+>>> +    /*
+>>> +     * Setup granule for compatibility with __iommu_dma_{alloc/free}
+>>> and
+>>> +     * add a compile time check to ensure that writing granule won't
+>>> +     * clobber msi_iova.
+>>> +     */
+>>> +    cookie->iovad.granule = cookie_msi_granule(cookie);
+>>> +    BUILD_BUG_ON(offsetof(struct iova_domain, granule) <
+>>> +            sizeof(cookie->msi_iova));
+>>> +
+>>>       return 0;
+>>>   }
+>>>   EXPORT_SYMBOL(iommu_get_msi_cookie);
+>>>
+>>
