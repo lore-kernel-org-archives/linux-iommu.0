@@ -1,216 +1,175 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with deferred probing or error
-Date: Tue, 16 May 2017 10:17:08 +0300
-Message-ID: <1924197.MWBQ7kvoOo@avalon>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org> <1804176.uxVOFWagsb@avalon> <9952978e7ac69193daf67ccb77eebe29@codeaurora.org>
+From: kbuild test robot <lkp@intel.com>
+Subject: Re: [PATCH v6 3/3] PCI/of fix of_dma_get_range; get PCI specific
+ dma-ranges
+Date: Tue, 16 May 2017 15:41:44 +0800
+Message-ID: <201705161534.hBTKNcfz%fengguang.wu@intel.com>
+References: <1494912127-12890-4-git-send-email-oza.oza@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <9952978e7ac69193daf67ccb77eebe29@codeaurora.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: sricharan@codeaurora.org
-Cc: Robin Murphy <robin.murphy@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tn@semihalf.com, Hanjun Guo <hanjun.guo@linaro.org>, okaya@codeaurora.org, Magnus Damm <magnus.damm@gmail.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, linux-arm-msm-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="jI8keyz6grp/JLjh"
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1494912127-12890-4-git-send-email-oza.oza@broadcom.com>
+Sender: linux-pci-owner@vger.kernel.org
+Cc: kbuild-all@01.org, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Oza Pawandeep <oza.pawandeep@gmail.com>, Oza Pawandeep <oza.oza@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
 
-On Tuesday 16 May 2017 07:53:57 sricharan@codeaurora.org wrote:
-> On 2017-05-16 03:04, Laurent Pinchart wrote:
-> > On Monday 15 May 2017 23:37:16 Laurent Pinchart wrote:
-> >> On Wednesday 03 May 2017 15:54:59 Sricharan R wrote:
-> >>> On 5/3/2017 3:24 PM, Robin Murphy wrote:
-> >>>> On 02/05/17 19:35, Geert Uytterhoeven wrote:
-> >>>>> On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R wrote:
-> >>>>>> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> >>>>>> 
-> >>>>>> Failures to look up an IOMMU when parsing the DT iommus property
-> >>>>>> need to be handled separately from the .of_xlate() failures to
-> >>>>>> support deferred probing.
-> >>>>>> 
-> >>>>>> The lack of a registered IOMMU can be caused by the lack of a driver
-> >>>>>> for the IOMMU, the IOMMU device probe not having been performed yet,
-> >>>>>> having been deferred, or having failed.
-> >>>>>> 
-> >>>>>> The first case occurs when the device tree describes the bus master
-> >>>>>> and IOMMU topology correctly but no device driver exists for the
-> >>>>>> IOMMU yet or the device driver has not been compiled in. Return NULL,
-> >>>>>> the caller will configure the device without an IOMMU.
-> >>>>>> 
-> >>>>>> The second and third cases are handled by deferring the probe of the
-> >>>>>> bus master device which will eventually get reprobed after the
-> >>>>>> IOMMU.
-> >>>>>> 
-> >>>>>> The last case is currently handled by deferring the probe of the bus
-> >>>>>> master device as well. A mechanism to either configure the bus
-> >>>>>> master device without an IOMMU or to fail the bus master device probe
-> >>>>>> depending on whether the IOMMU is optional or mandatory would be a
-> >>>>>> good enhancement.
-> >>>>>> 
-> >>>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >>>>>> Signed-off-by: Laurent Pichart
-> >>>>>> <laurent.pinchart+renesas@ideasonboard.com>
-> >>>>>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> >>>>> 
-> >>>>> This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
-> >>>>> As the IOMMU nodes in DT are not yet enabled, all devices having
-> >>>>> iommus properties in DT now fail to probe.
-> >>>> 
-> >>>> How exactly do they fail to probe? Per d7b0558230e4, if there are no
-> >>>> ops registered then they should merely defer until we reach the point
-> >>>> of giving up and ignoring the IOMMU. Is it just that you have no other
-> >>>> late-probing drivers or post-init module loads to kick the deferred
-> >>>> queue after that point? I did try to find a way to explicitly kick it
-> >>>> from a suitably late initcall, but there didn't seem to be any obvious
-> >>>> public interface - anyone have any suggestions?
-> >>>> 
-> >>>> I think that's more of a general problem with the probe deferral
-> >>>> mechanism itself (I've seen the same thing happen with some of the
-> >>>> CoreSight stuff on Juno due to the number of inter-component
-> >>>> dependencies) rather than any specific fault of this series.
-> >>> 
-> >>> I was thinking of an additional check like below to avoid the
-> >>> situation ?
-> >>> 
-> >>> From 499b6e662f60f23740b8880882b0a16f16434501 Mon Sep 17 00:00:00 2001
-> >>> From: Sricharan R <sricharan@codeaurora.org>
-> >>> Date: Wed, 3 May 2017 13:16:59 +0530
-> >>> Subject: [PATCH] iommu: of: Fix check for returning EPROBE_DEFER
-> >>> 
-> >>> While returning EPROBE_DEFER for iommu masters
-> >>> take in to account of iommu nodes that could be
-> >>> marked in DT as 'status=disabled', in which case
-> >>> simply return NULL and let the master's probe
-> >>> continue rather than deferring.
-> >>> 
-> >>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> >>> ---
-> >>> 
-> >>>  drivers/iommu/of_iommu.c | 1 +
-> >>>  1 file changed, 1 insertion(+)
-> >>> 
-> >>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> >>> index 9f44ee8..e6e9bec 100644
-> >>> --- a/drivers/iommu/of_iommu.c
-> >>> +++ b/drivers/iommu/of_iommu.c
-> >>> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct
-> >>> device_node *np)
-> >>> 
-> >>>         ops = iommu_ops_from_fwnode(fwnode);
-> >>>         if ((ops && !ops->of_xlate) ||
-> >>> +           !of_device_is_available(iommu_spec->np) ||
-> >>>             (!ops && !of_iommu_driver_present(iommu_spec->np)))
-> >>>                 return NULL;
-> >> 
-> >> This looks good to me, but won't be enough. The ipmmu-vmsa driver in
-> >> v4.12-rc1 doesn't call iommu_device_register() and thus won't be found
-> >> by iommu_ops_from_fwnode(). Furthermore, it doesn't IOMMU_OF_DECLARE(),
-> >> and thus will always be considered as absent.
-> >> 
-> >> I agree that the ipmmu-vmsa driver needs to be fixed, but it would
-> >> have been nice to check existing IOMMU drivers before merging this patch
-> >> series...
-> > 
-> > Please pardon the question, but has this patch series been tested on
-> > ARM32 ?
-> > 
-> > When the device is probed the arch_setup_dma_ops() function is called.
-> > It sets the device's dma_ops and the mapping (in
-> > __arm_iommu_attach_device()). If probe is deferred,
-> > arch_teardown_dma_ops() is called which in turn calls
-> > arch_teardown_dma_ops(). This removes the mapping but doesn't touch the
-> > dma_ops. The next time the device is probed, arch_setup_dma_ops() bails
-> > out immediately as the dma_ops are already set, leaving us with a device
-> > bound to IOMMU operations but with no mapping. This oopses later as soon
-> > as the kernel tries to map memory for the device through the IOMMU.
-> 
-> Resetting the dma_ops for arm32 was added in this patch [1], which I
-> missed to send in the original series, but now have added to Russell's patch
-> tracking system.
+--jI8keyz6grp/JLjh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thank you. I fear that won't be enough though.
+Hi Oza,
 
-> [1] https://patchwork.kernel.org/patch/9434105/
+[auto build test ERROR on v4.9-rc8]
+[cannot apply to next-20170516]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
-Quoting the patch:
+url:    https://github.com/0day-ci/linux/commits/Oza-Pawandeep/of-pci-dma-fix-DMA-configuration-for-PCI-masters/20170516-141222
+config: c6x-evmc6678_defconfig (attached as .config)
+compiler: c6x-elf-gcc (GCC) 6.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/01org/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # save the attached .config to linux build tree
+        make.cross ARCH=c6x 
 
-> arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops()
-> ,dma_ops should be cleared in the teardown path. Otherwise
-> this causes problem when the probe of device is retried after
-> being deferred. The device's iommu structures are cleared
-> after EPROBEDEFER error, but on the next try dma_ops will still
-> be set to old value, which is not right.
->
-> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->   arch/arm/mm/dma-mapping.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index ab4f745..a40f03e 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2358,6 +2358,7 @@ static void arm_teardown_iommu_dma_ops(struct device 
-*dev)
->   	__arm_iommu_detach_device(dev);
->   	arm_iommu_release_mapping(mapping);
-> +	set_dma_ops(dev, NULL);
->   }
->   #else
+All errors (new ones prefixed by >>):
 
-The subject mentions arch_teardown_dma_ops(), which I think is correct, but 
-the patch adds the set_dma_ops() call to arm_teardown_iommu_dma_ops().
+>> drivers//of/address.c:580:21: error: 'of_bus_isa_get_dma_ranges' undeclared here (not in a function)
+      .get_dma_ranges = of_bus_isa_get_dma_ranges,
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers//of/address.c:591:21: error: 'of_bus_default_get_dma_ranges' undeclared here (not in a function)
+      .get_dma_ranges = of_bus_default_get_dma_ranges,
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-However, the situation is perhaps more complex. Note the check at the 
-beginning of arch_setup_dma_ops():
+vim +/of_bus_isa_get_dma_ranges +580 drivers//of/address.c
 
-	/*
-	 * Don't override the dma_ops if they have already been set. Ideally
-	 * this should be the only location where dma_ops are set, remove this
-	 * check when all other callers of set_dma_ops will have disappeared.
-	 */
-	if (dev->dma_ops)
-		return;
+   574			.addresses = "reg",
+   575			.match = of_bus_isa_match,
+   576			.count_cells = of_bus_isa_count_cells,
+   577			.map = of_bus_isa_map,
+   578			.translate = of_bus_isa_translate,
+   579			.get_flags = of_bus_isa_get_flags,
+ > 580			.get_dma_ranges = of_bus_isa_get_dma_ranges,
+   581		},
+   582		/* Default */
+   583		{
+   584			.name = "default",
+   585			.addresses = "reg",
+   586			.match = NULL,
+   587			.count_cells = of_bus_default_count_cells,
+   588			.map = of_bus_default_map,
+   589			.translate = of_bus_default_translate,
+   590			.get_flags = of_bus_default_get_flags,
+ > 591			.get_dma_ranges = of_bus_default_get_dma_ranges,
+   592		},
+   593	};
+   594	
 
-If you set the dma_ops to NULL in arm_teardown_iommu_dma_ops() or 
-arch_teardown_dma_ops(), the next call to arch_setup_dma_ops() will override 
-them. To be safe you should only set them to NULL if they have been set by 
-arch_setup_dma_ops(). More than that, arch_teardown_dma_ops() should probably 
-not call arm_teardown_iommu_dma_ops() at all if the dma_ops were set by 
-arm_iommu_attach_device() and not arch_teardown_dma_ops(). One option would be 
-to add a field to struct dev_archdata to store that information. To avoid 
-growing the structure, which is embedded in every struct device, you could 
-possibly turn the dma_coherent bool into a bitfield.
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
-@@ -19,7 +19,8 @@ struct dev_archdata {
- #ifdef CONFIG_XEN
- 	const struct dma_map_ops *dev_dma_ops;
- #endif
--	bool dma_coherent;
-+	bool dma_coherent:1;
-+	bool dma_ops_setup:1;
- };
- 
- struct omap_device;
+--jI8keyz6grp/JLjh
+Content-Type: application/gzip
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
 
-I haven't checked, however, whether the dma_coherent field would need to be 
-accessed atomically, so this might be a bad idea.
+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
 
-Last but not least, a fix must be merged in v4.12, and the sooner the better.
-
-> > I might be missing something obvious, but I don't see how this can
-> > work.
-> > 
-> >>>>> This can be fixed by either:
-> >>>>>   - Disabling CONFIG_IPMMU_VMSA, or
-> >>>>>   - Reverting commit 7b07cbefb68d486f (but keeping "int ret = 0;").
-> >>>>> 
-> >>>>> Note that this was a bit hard to investigate, as R-Car Gen3 support
-> >>>>> wasn't upstreamed yet, so bisection pointed to a merge commit.
-
--- 
-Regards,
-
-Laurent Pinchart
-
+--jI8keyz6grp/JLjh--
