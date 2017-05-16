@@ -1,131 +1,83 @@
-From: sricharan@codeaurora.org
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
- deferred probing or error
-Date: Tue, 16 May 2017 07:56:08 +0530
-Message-ID: <c9c3cdcc43eba9b9aa68fa750b61a099@codeaurora.org>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
- <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
- <CAMuHMdV05uCcVss+V1E+_OQYosJO6P95rU1WynV-G08-iHJnyg@mail.gmail.com>
- <2bfd11dc-9f94-2b69-7b03-c640e53155e1@arm.com>
- <26defadf-6380-4af4-6323-b51198376bc1@codeaurora.org>
- <20170515142238.GD3605@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20170515142238.GD3605@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, linux-arm-msm@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Magnus Damm <magnus.damm@gmail.com>, okaya@codeaurora.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, iommu@lists.linux-foundation.org, Geert Uytterhoeven <geert@linux-m68k.org>, Hanjun Guo <hanjun.guo@linaro.org>, linux-pci <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, tn@semihalf.com, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+From: Oza Pawandeep <oza.oza@broadcom.com>
+Subject: [PATCH v6 0/3] OF/PCI address PCI inbound memory limitations
+Date: Tue, 16 May 2017 10:52:04 +0530
+Message-ID: <1494912127-12890-1-git-send-email-oza.oza@broadcom.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Oza Pawandeep <oza.pawandeep@gmail.com>, Oza Pawandeep <oza.oza@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+It is possible that PCI device supports 64-bit DMA addressing,
+and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
+however PCI host bridge may have limitations on the inbound 
+transaction addressing.
 
-On 2017-05-15 19:52, Will Deacon wrote:
-> Hi Sricharan,
-> 
-> On Wed, May 03, 2017 at 03:54:59PM +0530, Sricharan R wrote:
->> On 5/3/2017 3:24 PM, Robin Murphy wrote:
->> > On 02/05/17 19:35, Geert Uytterhoeven wrote:
->> >> On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R <sricharan@codeaurora.org> wrote:
->> >>> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
->> >>>
->> >>> Failures to look up an IOMMU when parsing the DT iommus property need to
->> >>> be handled separately from the .of_xlate() failures to support deferred
->> >>> probing.
->> >>>
->> >>> The lack of a registered IOMMU can be caused by the lack of a driver for
->> >>> the IOMMU, the IOMMU device probe not having been performed yet, having
->> >>> been deferred, or having failed.
->> >>>
->> >>> The first case occurs when the device tree describes the bus master and
->> >>> IOMMU topology correctly but no device driver exists for the IOMMU yet
->> >>> or the device driver has not been compiled in. Return NULL, the caller
->> >>> will configure the device without an IOMMU.
->> >>>
->> >>> The second and third cases are handled by deferring the probe of the bus
->> >>> master device which will eventually get reprobed after the IOMMU.
->> >>>
->> >>> The last case is currently handled by deferring the probe of the bus
->> >>> master device as well. A mechanism to either configure the bus master
->> >>> device without an IOMMU or to fail the bus master device probe depending
->> >>> on whether the IOMMU is optional or mandatory would be a good
->> >>> enhancement.
->> >>>
->> >>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> >>> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
->> >>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> >>
->> >> This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
->> >> As the IOMMU nodes in DT are not yet enabled, all devices having iommus
->> >> properties in DT now fail to probe.
->> >
->> > How exactly do they fail to probe? Per d7b0558230e4, if there are no ops
->> > registered then they should merely defer until we reach the point of
->> > giving up and ignoring the IOMMU. Is it just that you have no other
->> > late-probing drivers or post-init module loads to kick the deferred
->> > queue after that point? I did try to find a way to explicitly kick it
->> > from a suitably late initcall, but there didn't seem to be any obvious
->> > public interface - anyone have any suggestions?
->> >
->> > I think that's more of a general problem with the probe deferral
->> > mechanism itself (I've seen the same thing happen with some of the
->> > CoreSight stuff on Juno due to the number of inter-component
->> > dependencies) rather than any specific fault of this series.
->> >
->> 
->> I was thinking of an additional check like below to avoid the
->> situation ?
->> 
->> From 499b6e662f60f23740b8880882b0a16f16434501 Mon Sep 17 00:00:00 2001
->> From: Sricharan R <sricharan@codeaurora.org>
->> Date: Wed, 3 May 2017 13:16:59 +0530
->> Subject: [PATCH] iommu: of: Fix check for returning EPROBE_DEFER
->> 
->> While returning EPROBE_DEFER for iommu masters
->> take in to account of iommu nodes that could be
->> marked in DT as 'status=disabled', in which case
->> simply return NULL and let the master's probe
->> continue rather than deferring.
->> 
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ---
->>  drivers/iommu/of_iommu.c | 1 +
->>  1 file changed, 1 insertion(+)
->> 
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 9f44ee8..e6e9bec 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct 
->> device_node *np)
->> 
->>         ops = iommu_ops_from_fwnode(fwnode);
->>         if ((ops && !ops->of_xlate) ||
->> +           !of_device_is_available(iommu_spec->np) ||
->>             (!ops && !of_iommu_driver_present(iommu_spec->np)))
->>                 return NULL;
-> 
-> Without this patch, v4.12-rc1 hangs on my Juno waiting to mount the 
-> root
-> filesystem. The problem is that the USB controller is behind an SMMU 
-> which
-> is marked as 'status = "disabled"' in the devicetree. Whilst there was 
-> a
-> separate thread with Ard about exactly what this means in terms of the 
-> DMA
-> ops used by upstream devices, your patch above fixes the regression and
-> I think should go in regardless. The DMA ops issue will likely require
-> an additional DT binding anyway, to advertise the behaviour of the
-> IOMMU when it is disabled.
-> 
-> Tested-by: Will Deacon <will.deacon@arm.com>
-> Acked-by: Will Deacon <will.deacon@arm.com>
-> 
-> Could you resend it as a proper patch, please?
+This is particularly problematic on ARM/ARM64 SOCs where the 
+IOMMU (i.e. SMMU) translates IOVA to PA for in-bound transactions
+only after PCI Host has forwarded these transactions on SOC IO bus. 
 
-Sure, will send this as a separate patch.
+This means, on such ARM/ARM64 SOCs the IOVA of in-bound transactions
+has to honor the addressing restrictions of the PCI Host.
 
-Regards,
-  Sricharan
+Current device framework and OF framework integration assumes
+dma-ranges in a way where memory-mapped devices define their
+dma-ranges. (child-bus-address, parent-bus-address, length).
+
+of_dma_configure is specifically written to take care of memory
+mapped devices but no implementation exists for pci devices.
+
+For e.g. iproc based SOCs and other SOCs (such as rcar) have
+PCI world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+
+This patchset
+reserves the IOVA ranges for PCI masters based
+on the PCI world dma-ranges.
+fix of_dma_get_range to cater to PCI dma-ranges.
+fix of_dma_get_range which currently returns size 0 for PCI devices.
+
+IOVA allocation patch:
+[PATCH 2/3] iommu/pci: reserve iova for PCI masters
+
+Fix of_dma_get_range bug and address PCI master.
+[PATCH 3/3] PCI/of fix of_dma_get_range; get PCI specific
+this patch fixes the following problems of_dma_get_range.
+1) return of wrong size as 0.
+2) not handling absence of dma-ranges, which is valid for PCI master.
+3) not handling multipe inbound windows.
+4) in order to get largest possible dma_mask. this patch also
+retuns the largest possible size based on dma-ranges,
+
+Base patch for both of the above patches:
+[PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
+
+Changes since v6:
+- Robin's comments addressed.
+Changes since v5:
+Changes since v4:
+Changes since v3:
+Changes since v2:
+- minor changes, redudant checkes removed
+- removed internal review
+Changes since v1:
+- address Rob's comments.
+- Add a get_dma_ranges() function to of_bus struct..
+- Convert existing contents of of_dma_get_range function to
+  of_bus_default_dma_get_ranges and adding that to the
+  default of_bus struct.
+- Make of_dma_get_range call of_bus_match() and then bus->get_dma_ranges.
+
+Oza Pawandeep (3):
+  of/pci/dma: fix DMA configuration for PCI masters
+  iommu/pci: reserve IOVA for PCI masters
+  PCI/of fix of_dma_get_range; get PCI specific dma-ranges
+
+ drivers/iommu/dma-iommu.c |  35 ++++++++
+ drivers/of/address.c      | 215 ++++++++++++++++++++++++++++++++--------------
+ drivers/of/of_pci.c       |  95 ++++++++++++++++++++
+ include/linux/of_pci.h    |   7 ++
+ 4 files changed, 288 insertions(+), 64 deletions(-)
+
+-- 
+1.9.1
