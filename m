@@ -1,133 +1,85 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] ARM: dma-mapping: Don't tear third-party mappings
-Date: Tue, 16 May 2017 19:44:42 +0300
-Message-ID: <4043121.T8QnJes2jP@avalon>
-References: <6d9fa319-4401-c47a-7985-9a349838bcaf@arm.com> <20170516151434.18830-1-laurent.pinchart+renesas@ideasonboard.com> <2602abb1-e777-700c-bc95-14e576372537@arm.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v5 26/32] x86, drm, fbdev: Do not specify encrypted
+ memory for video mappings
+Date: Tue, 16 May 2017 19:35:41 +0200
+Message-ID: <20170516173541.q2rbh5dhkluzsjae@pd.tnic>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418212056.10190.25468.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <2602abb1-e777-700c-bc95-14e576372537@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-arm-kernel@lists.infradead.org, Sricharan R <sricharan@codeaurora.org>, Joerg Roedel <jroedel@suse.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20170418212056.10190.25468.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Tuesday 16 May 2017 16:47:36 Robin Murphy wrote:
-> On 16/05/17 16:14, Laurent Pinchart wrote:
-> > arch_setup_dma_ops() is used in device probe code paths to create an
-> > IOMMU mapping and attach it to the device. The function assumes that the
-> > device is attached to a device-specific IOMMU instance (or at least a
-> > device-specific TLB in a shared IOMMU instance) and thus creates a
-> > separate mapping for every device.
-> > 
-> > On several systems (Renesas R-Car Gen2 being one of them), that
-> > assumption is not true, and IOMMU mappings must be shared between
-> > multiple devices. In those cases the IOMMU driver knows better than the
-> > generic ARM dma-mapping layer and attaches mapping to devices manually
-> > with arm_iommu_attach_device(), which sets the DMA ops for the device.
-> > 
-> > The arch_setup_dma_ops() function takes this into account and bails out
-> > immediately if the device already has DMA ops assigned. However, the
-> > corresponding arch_teardown_dma_ops() function, called from driver
-> > unbind code paths (including probe deferral), will tear the mapping down
-> > regardless of who created it. When the device is reprobed
-> > arch_setup_dma_ops() will be called again but won't perform any
-> > operation as the DMA ops will still be set.
-> > 
-> > We need to reset the DMA ops in arch_teardown_dma_ops() to fix this.
-> > However, we can't do so unconditionally, as then a new mapping would be
-> > created by arch_setup_dma_ops() when the device is reprobed, regardless
-> > of whether the device needs to share a mapping or not. We must thus keep
-> > track of whether arch_setup_dma_ops() created the mapping, and only in
-> > that case tear it down in arch_teardown_dma_ops().
-> > 
-> > Keep track of that information in the dev_archdata structure. As the
-> > structure is embedded in all instances of struct device let's not grow
-> > it, but turn the existing dma_coherent bool field into a bitfield that
-> > can be used for other purposes.
-> > 
-> > Fixes: 7b07cbefb68d ("iommu: of: Handle IOMMU lookup failure with deferred
-> > probing or error") Signed-off-by: Laurent Pinchart
-> > <laurent.pinchart+renesas@ideasonboard.com> ---
-> > 
-> >  arch/arm/include/asm/device.h | 3 ++-
-> >  arch/arm/mm/dma-mapping.c     | 5 +++++
-> >  2 files changed, 7 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
-> > index 36ec9c8f6e16..3234fe9bba6e 100644
-> > --- a/arch/arm/include/asm/device.h
-> > +++ b/arch/arm/include/asm/device.h
-> > @@ -19,7 +19,8 @@ struct dev_archdata {
-> >  #ifdef CONFIG_XEN
-> >  	const struct dma_map_ops *dev_dma_ops;
-> >  #endif
-> > -	bool dma_coherent;
-> > +	unsigned int dma_coherent:1;
+On Tue, Apr 18, 2017 at 04:20:56PM -0500, Tom Lendacky wrote:
+> Since video memory needs to be accessed decrypted, be sure that the
+> memory encryption mask is not set for the video ranges.
 > 
-> This should only ever be accessed by the Xen DMA code via the
-> is_device_dma_coherent() helper, so I can't see the change of storage
-> type causing any problems.
-
-Thank you for double-checking. I agree with your analysis.
-
-> > +	unsigned int dma_ops_setup:1;
-> >  };
-> >  
-> >  struct omap_device;
-> > diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> > index c742dfd2967b..e0272f9140e2 100644
-> > --- a/arch/arm/mm/dma-mapping.c
-> > +++ b/arch/arm/mm/dma-mapping.c
-> > @@ -2430,9 +2430,14 @@ void arch_setup_dma_ops(struct device *dev, u64
-> > dma_base, u64 size,
-> >  		dev->dma_ops = xen_dma_ops;
-> >  	}
-> >  #endif
-> > +	dev->archdata.dma_ops_setup = true;
-> >  }
-> >  
-> >  void arch_teardown_dma_ops(struct device *dev)
-> >  {
-> > +	if (!dev->archdata.dma_ops_setup)
-> > +		return;
-> > +
-> >  	arm_teardown_iommu_dma_ops(dev);
-> > +	set_dma_ops(dev, NULL);
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/include/asm/vga.h       |   13 +++++++++++++
+>  arch/x86/mm/pageattr.c           |    2 ++
+>  drivers/gpu/drm/drm_gem.c        |    2 ++
+>  drivers/gpu/drm/drm_vm.c         |    4 ++++
+>  drivers/gpu/drm/ttm/ttm_bo_vm.c  |    7 +++++--
+>  drivers/gpu/drm/udl/udl_fb.c     |    4 ++++
+>  drivers/video/fbdev/core/fbmem.c |   12 ++++++++++++
+>  7 files changed, 42 insertions(+), 2 deletions(-)
 > 
-> Should we clear dma_ops_setup here for symmetry? I guess in practice
-> it's down to the IOMMU driver so will never change after the first
-> probe, but it still feels like a bit of a nagging loose end.
+> diff --git a/arch/x86/include/asm/vga.h b/arch/x86/include/asm/vga.h
+> index c4b9dc2..5c7567a 100644
+> --- a/arch/x86/include/asm/vga.h
+> +++ b/arch/x86/include/asm/vga.h
+> @@ -7,12 +7,25 @@
+>  #ifndef _ASM_X86_VGA_H
+>  #define _ASM_X86_VGA_H
+>  
+> +#include <asm/cacheflush.h>
+> +
+>  /*
+>   *	On the PC, we can just recalculate addresses and then
+>   *	access the videoram directly without any black magic.
+> + *	To support memory encryption however, we need to access
+> + *	the videoram as decrypted memory.
+>   */
+>  
+> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+> +#define VGA_MAP_MEM(x, s)					\
+> +({								\
+> +	unsigned long start = (unsigned long)phys_to_virt(x);	\
+> +	set_memory_decrypted(start, (s) >> PAGE_SHIFT);		\
+> +	start;							\
+> +})
+> +#else
+>  #define VGA_MAP_MEM(x, s) (unsigned long)phys_to_virt(x)
+> +#endif
 
-To make a difference, we would need an IOMMU driver that creates a mapping 
-after a first round of arch_setup_dma_ops() / arch_teardown_dma_ops() calls, 
-follow by a second round. I don't think this could happen, but if it did, I 
-believe we'd be screwed already, as there would be a time were an incorrect 
-mapping (created by arch_setup_dma_ops() while the IOMMU driver needs to take 
-care of mapping creation) exists.
+Can we push the check in and save us the ifdeffery?
 
-> With that (or firm reassurance that it's OK not to),
-> 
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> Apologies for being too arm64-focused in the earlier reviews and
-> overlooking this. Should the patch supersede 8674/1 currently in
-> Russell's incoming box?
+#define VGA_MAP_MEM(x, s)                                       \
+({                                                              \
+        unsigned long start = (unsigned long)phys_to_virt(x);   \
+                                                                \
+        if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT))                 \
+                set_memory_decrypted(start, (s) >> PAGE_SHIFT); \
+                                                                \
+        start;                                                  \
+})
 
-Yes I think it should. Could you please take care of that ?
-
-You can also add my
-
-Tested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
-as I've tested that this paptch restores proper IOMMU operation on the Renesas 
-R-Car H2 Lager board. I believe the problem related to Sricharan's patch 
-reported by Geert still affects us and needs to be addressed separately.
+It does build here. :)
 
 -- 
-Regards,
+Regards/Gruss,
+    Boris.
 
-Laurent Pinchart
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
