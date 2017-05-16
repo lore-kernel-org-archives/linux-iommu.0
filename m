@@ -1,126 +1,125 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH] iommu/iova: Sort out rbtree limit_pfn handling
-Date: Tue, 16 May 2017 12:26:48 +0100
-Message-ID: <2f161f6406fd33ea979f6b128f36bb8ac9044d06.1494933782.git.robin.murphy@arm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, asierra@xes-inc.com, nwatters@codeaurora.org
+Subject: Re: [RFC v1 2/7] iommu/arm-smmu-v3: Add erratum framework functions
+Date: Tue, 16 May 2017 14:08:00 +0100
+Message-ID: <44374533-c1ed-5f13-d70c-8a7431bf8451@arm.com>
+References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com>
+ <20170513094731.3676-3-shameerali.kolothum.thodi@huawei.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170513094731.3676-3-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: shameer <shameerali.kolothum.thodi@huawei.com>, will.deacon@arm.com, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-When walking the rbtree, the fact that iovad->start_pfn and limit_pfn
-are both inclusive limits creates an ambiguity once limit_pfn reaches
-the bottom of the address space and they overlap. Commit 5016bdb796b3
-("iommu/iova: Fix underflow bug in __alloc_and_insert_iova_range") fixed
-the worst side-effect of this, that of underflow wraparound leading to
-bogus allocations, but the remaining fallout is that any attempt to
-allocate start_pfn itself erroneously fails.
+On 13/05/17 10:47, shameer wrote:
+> This will provide a way to replace the existing skip_prefetch_cmd
+> erratum using the new framework.
 
-The cleanest way to resolve the ambiguity is to simply make limit_pfn an
-exclusive limit when inside the guts of the rbtree. Since we're working
-with PFNs, representing one past the top of the address space is always
-possible without fear of overflow, and elsewhere it just makes life a
-little more straightforward.
+Yikes, between this and patch 1 we're already pushing 70 lines of new
+code, and it still doesn't actually do anything yet. Implementing the
+SMMUv3 equivalent of SMMUv2's acpi_smmu_get_data() would probably be
+about 10 lines; all you need to do is set some quirk flags based on a
+compatible value. These quirks aren't really any different in principle
+to the firmware COHACC overrides that we already process.
 
-Reported-by: Aaron Sierra <asierra@xes-inc.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+Sorry, I'm saying no to a massively overengineered "framework" for
+something so relatively simple.
 
-I've now run this through some more targeted testing, and I'm
-confident that it works as intended - Aaron, can you confirm if
-this satisfies your tests as well?
-
-Thanks,
 Robin.
 
- drivers/iommu/dma-iommu.c |  2 +-
- drivers/iommu/iova.c      | 21 +++++++++------------
- 2 files changed, 10 insertions(+), 13 deletions(-)
+> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 58 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 58 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index a166590..f20d5d5 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -664,16 +664,72 @@ enum smmu_erratum_match_type {
+>  	se_match_dt,
+>  };
+>  
+> +void erratum_skip_prefetch_cmd(struct arm_smmu_device *smmu, void *arg)
+> +{
+> +	smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+> +}
+> +
+>  struct smmu_erratum_workaround {
+>  	enum smmu_erratum_match_type match_type;
+>  	const void *id;	/* Indicate the Erratum ID */
+>  	const char *desc_str;
+> +	void (*enable)(struct arm_smmu_device *, void *);
+>  };
+>  
+>  static const struct smmu_erratum_workaround smmu_workarounds[] = {
+>  
+>  };
+>  
+> +typedef bool (*se_match_fn_t)(const struct smmu_erratum_workaround *,
+> +							  const void *);
+> +static
+> +bool smmu_check_dt_erratum(const struct smmu_erratum_workaround *wa,
+> +						   const void *arg)
+> +{
+> +	const struct device_node *np = arg;
+> +
+> +	return of_property_read_bool(np, wa->id);
+> +}
+> +
+> +static void smmu_enable_errata(struct arm_smmu_device *smmu,
+> +				enum smmu_erratum_match_type type,
+> +				se_match_fn_t match_fn,
+> +				void *arg)
+> +{
+> +	const struct smmu_erratum_workaround *wa = smmu_workarounds;
+> +
+> +	for (; wa->desc_str; wa++) {
+> +		if (wa->match_type != type)
+> +			continue;
+> +
+> +		if (match_fn(wa, arg)) {
+> +			if (wa->enable) {
+> +				wa->enable(smmu, arg);
+> +				dev_info(smmu->dev,
+> +					"Enabling workaround for %s\n",
+> +					 wa->desc_str);
+> +			}
+> +		}
+> +	}
+> +}
+> +
+> +
+> +static void smmu_check_workarounds(struct arm_smmu_device *smmu,
+> +				  enum smmu_erratum_match_type type,
+> +				  void *arg)
+> +{
+> +	se_match_fn_t match_fn = NULL;
+> +
+> +	switch (type) {
+> +	case se_match_dt:
+> +		match_fn = smmu_check_dt_erratum;
+> +		break;
+> +	}
+> +
+> +	smmu_enable_errata(smmu, type, match_fn, arg);
+> +
+> +}
+> +
+>  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>  {
+>  	return container_of(dom, struct arm_smmu_domain, domain);
+> @@ -2641,6 +2697,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+>  
+>  	parse_driver_options(smmu);
+>  
+> +	smmu_check_workarounds(smmu, se_match_dt, dev->of_node);
+> +
+>  	if (of_dma_is_coherent(dev->of_node))
+>  		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+>  
+> 
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 62618e77bedc..f1db86939031 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -314,7 +314,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		 * If we have devices with different DMA masks, move the free
- 		 * area cache limit down for the benefit of the smaller one.
- 		 */
--		iovad->dma_32bit_pfn = min(end_pfn, iovad->dma_32bit_pfn);
-+		iovad->dma_32bit_pfn = min(end_pfn + 1, iovad->dma_32bit_pfn);
- 
- 		return 0;
- 	}
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 5c88ba70e4e0..3f24c9a831c9 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -48,7 +48,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->cached32_node = NULL;
- 	iovad->granule = granule;
- 	iovad->start_pfn = start_pfn;
--	iovad->dma_32bit_pfn = pfn_32bit;
-+	iovad->dma_32bit_pfn = pfn_32bit + 1;
- 	init_iova_rcaches(iovad);
- }
- EXPORT_SYMBOL_GPL(init_iova_domain);
-@@ -63,7 +63,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
- 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
- 		struct iova *curr_iova =
- 			rb_entry(iovad->cached32_node, struct iova, node);
--		*limit_pfn = curr_iova->pfn_lo - 1;
-+		*limit_pfn = curr_iova->pfn_lo;
- 		return prev_node;
- 	}
- }
-@@ -135,7 +135,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
- static unsigned int
- iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
- {
--	return (limit_pfn + 1 - size) & (__roundup_pow_of_two(size) - 1);
-+	return (limit_pfn - size) & (__roundup_pow_of_two(size) - 1);
- }
- 
- static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
-@@ -155,18 +155,15 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	while (curr) {
- 		struct iova *curr_iova = rb_entry(curr, struct iova, node);
- 
--		if (limit_pfn < curr_iova->pfn_lo)
-+		if (limit_pfn <= curr_iova->pfn_lo) {
- 			goto move_left;
--		else if (limit_pfn < curr_iova->pfn_hi)
--			goto adjust_limit_pfn;
--		else {
-+		} else if (limit_pfn > curr_iova->pfn_hi) {
- 			if (size_aligned)
- 				pad_size = iova_get_pad_size(size, limit_pfn);
--			if ((curr_iova->pfn_hi + size + pad_size) <= limit_pfn)
-+			if ((curr_iova->pfn_hi + size + pad_size) < limit_pfn)
- 				break;	/* found a free slot */
- 		}
--adjust_limit_pfn:
--		limit_pfn = curr_iova->pfn_lo ? (curr_iova->pfn_lo - 1) : 0;
-+		limit_pfn = curr_iova->pfn_lo;
- move_left:
- 		prev = curr;
- 		curr = rb_prev(curr);
-@@ -182,7 +179,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	}
- 
- 	/* pfn_lo will point to size aligned address if size_aligned is set */
--	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
-+	new->pfn_lo = limit_pfn - (size + pad_size);
- 	new->pfn_hi = new->pfn_lo + size - 1;
- 
- 	/* If we have 'prev', it's a valid place to start the insertion. */
-@@ -269,7 +266,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
- 	if (!new_iova)
- 		return NULL;
- 
--	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn,
-+	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
- 			new_iova, size_aligned);
- 
- 	if (ret) {
--- 
-2.12.2.dirty
