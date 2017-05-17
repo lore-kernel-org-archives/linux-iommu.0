@@ -1,55 +1,196 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC v1 7/7] iommu/arm-smmu-v3: Enable ACPI based HiSilicon
- erratum 161010801
-Date: Wed, 17 May 2017 09:05:20 +0100
-Message-ID: <2271be83-fd92-a3d9-ce61-a5471cde51be@huawei.com>
-References: <20170513094731.3676-1-shameerali.kolothum.thodi@huawei.com>
- <20170513094731.3676-8-shameerali.kolothum.thodi@huawei.com>
- <a4e62cb2-9eb6-99a0-3443-df77ae9af8f8@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA838350A62@FRAEML521-MBX.china.huawei.com>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
+ deferred probing or error
+Date: Wed, 17 May 2017 18:22:24 +0900
+Message-ID: <CANqRtoSEwdoufUxP-Rm=qZJ7G8V3ow5F0ggV3tALrfiRad+j4Q@mail.gmail.com>
+References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
+ <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
+ <CAMuHMdV05uCcVss+V1E+_OQYosJO6P95rU1WynV-G08-iHJnyg@mail.gmail.com>
+ <2bfd11dc-9f94-2b69-7b03-c640e53155e1@arm.com> <26defadf-6380-4af4-6323-b51198376bc1@codeaurora.org>
+ <CAMuHMdUoLp1oVT_=NG8HS-jgG6AhOeVUsGgu7fLbGY+7A+0cOg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838350A62-WFPaWmAhWqtUuCJht5byYAK1hpo4iccwjNknBlVQO8k@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdUoLp1oVT_=NG8HS-jgG6AhOeVUsGgu7fLbGY+7A+0cOg@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Sricharan R <sricharan@codeaurora.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tn@semihalf.com, Hanjun Guo <hanjun.guo@linaro.org>, okaya@codeaurora.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 16/05/2017 15:03, Shameerali Kolothum Thodi wrote:
->> > Lorenzo made a point that it might be relatively straightforward to just
->> > follow the IORT mapping for the SMMU through to the ITS MADT entry and
->> > pull the ITS geometry out of that. It would certainly be nicer to have
->> > such a helper abstracted away in the IORT code than have to go parsing
->> > vendor-specific tables directly in the SMMU driver. I reckon it might be
->> > worth taking that idea a bit further to see how it looks.
-> Ok. John has already mentioned this idea in our off-list discussion and we
-> have one implementation where we go through the IORT node ID mappings
-> array to find out the associated IORT ITS  node. It then iterates over the ACPI
-> MADT  GIC ITS table entries, , looking for a match for the GIC ITS id, and
-> retrieves the base address of the matching ITS.
+Hi Geert, everyone,
+
+On Fri, May 5, 2017 at 10:23 PM, Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+> Hi Sricharan, Robin,
 >
-> But as you said, it requires some helper from the IORT code , otherwise we
-> will end up adding all the ACPI table parse code in SMMUv3. We will take
-> another look at this.
+> On Wed, May 3, 2017 at 12:24 PM, Sricharan R <sricharan@codeaurora.org> wrote:
+>> On 5/3/2017 3:24 PM, Robin Murphy wrote:
+>>> On 02/05/17 19:35, Geert Uytterhoeven wrote:
+>>>> On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R <sricharan@codeaurora.org> wrote:
+>>>>> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+>>>>>
+>>>>> Failures to look up an IOMMU when parsing the DT iommus property need to
+>>>>> be handled separately from the .of_xlate() failures to support deferred
+>>>>> probing.
+>>>>>
+>>>>> The lack of a registered IOMMU can be caused by the lack of a driver for
+>>>>> the IOMMU, the IOMMU device probe not having been performed yet, having
+>>>>> been deferred, or having failed.
+>>>>>
+>>>>> The first case occurs when the device tree describes the bus master and
+>>>>> IOMMU topology correctly but no device driver exists for the IOMMU yet
+>>>>> or the device driver has not been compiled in. Return NULL, the caller
+>>>>> will configure the device without an IOMMU.
+>>>>>
+>>>>> The second and third cases are handled by deferring the probe of the bus
+>>>>> master device which will eventually get reprobed after the IOMMU.
+>>>>>
+>>>>> The last case is currently handled by deferring the probe of the bus
+>>>>> master device as well. A mechanism to either configure the bus master
+>>>>> device without an IOMMU or to fail the bus master device probe depending
+>>>>> on whether the IOMMU is optional or mandatory would be a good
+>>>>> enhancement.
+>>>>>
+>>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
+>>>>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>>>>
+>>>> This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
+>>>> As the IOMMU nodes in DT are not yet enabled, all devices having iommus
+>>>> properties in DT now fail to probe.
+>>>
+>>> How exactly do they fail to probe? Per d7b0558230e4, if there are no ops
+>>> registered then they should merely defer until we reach the point of
+>>> giving up and ignoring the IOMMU. Is it just that you have no other
+>>> late-probing drivers or post-init module loads to kick the deferred
+>>> queue after that point? I did try to find a way to explicitly kick it
+>>> from a suitably late initcall, but there didn't seem to be any obvious
+>>> public interface - anyone have any suggestions?
+>>>
+>>> I think that's more of a general problem with the probe deferral
+>>> mechanism itself (I've seen the same thing happen with some of the
+>>> CoreSight stuff on Juno due to the number of inter-component
+>>> dependencies) rather than any specific fault of this series.
 >
-> Thanks,
-> Shameer
+> I had a deeper look into the issue.
 >
+> What changed, is that of_dma_configure() now returns an error code,
+> and dma_configure() looks at it.
+>
+> Actually there are two failure modes:
+>   1. Devices with an iommus property pointing to a disabled IOMMU node.
+>      These return -EPROBE_DEFER, and are now retried forever.
+>   2. Devices that are blacklisted in the IPMMU driver, as we don't want to
+>      use them with an IOMMU yet.
+>      These return -ENODEV, due to ipmmu_of_xlate_dma().
+>
+>> I was thinking of an additional check like below to avoid the
+>> situation ?
+>>
+>> From 499b6e662f60f23740b8880882b0a16f16434501 Mon Sep 17 00:00:00 2001
+>> From: Sricharan R <sricharan@codeaurora.org>
+>> Date: Wed, 3 May 2017 13:16:59 +0530
+>> Subject: [PATCH] iommu: of: Fix check for returning EPROBE_DEFER
+>>
+>> While returning EPROBE_DEFER for iommu masters
+>> take in to account of iommu nodes that could be
+>> marked in DT as 'status=disabled', in which case
+>> simply return NULL and let the master's probe
+>> continue rather than deferring.
+>>
+>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> ---
+>>  drivers/iommu/of_iommu.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index 9f44ee8..e6e9bec 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct device_node *np)
+>>
+>>         ops = iommu_ops_from_fwnode(fwnode);
+>>         if ((ops && !ops->of_xlate) ||
+>> +           !of_device_is_available(iommu_spec->np) ||
+>>             (!ops && !of_iommu_driver_present(iommu_spec->np)))
+>>                 return NULL;
+>
+> Thanks, this fixes the first class of failures.
+>
+> The second class can be worked around using:
+>
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -196,6 +196,11 @@ static const struct iommu_ops
+>                 ops = of_iommu_xlate(dev, &iommu_spec);
+>                 of_node_put(iommu_spec.np);
+>                 idx++;
+> +               if (PTR_ERR(ops) == -ENODEV) {
+> +                       dev_info(dev, "%s: Ignoring -ENODEV => NULL\n",
+> +                                __func__);
+> +                       return NULL;
+> +               }
+>                 if (IS_ERR_OR_NULL(ops))
+>                         break;
+>         }
+>
+> but obviously that's too hackish to apply...
+> Magnus, do you have a suggestion?
 
-It could also be worth considering hard-coding the reserved address in 
-the SMMUv3 driver for this model. This would not involve (more) reliance 
-on CSRT or IORT driver. However, note that hip07 has multiple SMMUs, and 
-we only need to enable the quirk for the SMMU in front the PCIe host 
-controller.
+Thanks for your efforts guys!
 
-John
+I've recently been working on up-porting the IPMMU patches and
+addressing review comments. Now with my local driver stack on top of
+v4.12-rc (a95cfad) I did not notice these issues initially since I
+only tested devices with IPMMU enabled. Once these issues were pointed
+out to me by Geert I have now reproduced the 64-bit ARM specific ones
+on r8a7796 Salvator-X.
 
-BTW, FYI, hi161x is alias for hip07/06
+On my r8a7796 platform I'm using the following IOMMU and DMA Engine devices:
+
+IOMMU device IPMMU-DS0 - Connected to SYS-DMAC0
+IOMMU device IPMMU-DS1 - Connected to SYS-DMAC1 and SYS-DMAC2
+IOMMU device IPMMU-MM - Root device serving IPMMU-DS0 and IPMMU-DS1
+
+For testing the serial port SCIF1 is used with DMA Engine devices
+SYS-DMAC1 or SYS-DMAC2.
+
+The software environment is configured as follows:
+- The DTS comes with all devices above enabled except IPMMU-DS0 which
+comes with status = "disabled".
+- The IPMMU driver is during run time only allowing use of SYS-DMAC2.
+For other devices ->of_xlate() returns -ENODEV.
+
+The above used to work just fine with v4.11 or earlier.
+
+My observations for v4.12-rc:
+
+1) Default state for a95cfad
+
+The devices SYS-DMAC0 and SYS-DMAC1 will never probe. However SYS-DMAC2 is fine.
+
+2) After applying "[PATCH] iommu: of: Fix check for returning EPROBE_DEFER" [1]
+
+This fixes SYS-DMAC0 that now probes and operates without IPMMU-DS0 as
+expected. Same as v4.11 or earlier.
+
+3) After also applying "[PATCH] of: iommu: Ignore all errors except
+EPROBE_DEFER" [2]
+
+This fixes SYS-DMAC1 that now probes and operates without IPMMU-DS1 as
+expected. Same as v4.11 or earlier.
+
+With fix [1] and [2] things seem back to normal. Unless I'm mistaken
+it also seems that [1] allows me to drop the similar patch "[PATCH/RFC
+v2 1/4] iommu/of: Skip IOMMU devices disabled in DT".
+
+Thanks for your help.
+
+Cheers,
+
+/ magnus
 
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+[1] https://lkml.org/lkml/2017/5/16/25
+[2] https://www.spinics.net/lists/arm-kernel/msg581485.html
+[3] https://patchwork.kernel.org/patch/9540605/
