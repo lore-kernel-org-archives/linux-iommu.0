@@ -1,13 +1,16 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V2 3/3] ARM: dma-mapping: Don't tear third-party mappings
-Date: Thu, 18 May 2017 15:37:10 +0530
-Message-ID: <1495102030-10548-3-git-send-email-sricharan@codeaurora.org>
-References: <1495102030-10548-1-git-send-email-sricharan@codeaurora.org>
+From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC PATCH 3/8] iommu: Introduce iommu do invalidate API function
+Date: Wed, 17 May 2017 18:23:07 +0800
+Message-ID: <20170517102307.GD22110@gmail.com>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+	<1493201525-14418-4-git-send-email-yi.l.liu@intel.com>
+	<20170512155924.755ee17f@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1495102030-10548-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170512155924.755ee17f-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,82 +20,170 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+On Fri, May 12, 2017 at 03:59:24PM -0600, Alex Williamson wrote:
+> On Wed, 26 Apr 2017 18:12:00 +0800
+> "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> 
 
-arch_setup_dma_ops() is used in device probe code paths to create an
-IOMMU mapping and attach it to the device. The function assumes that the
-device is attached to a device-specific IOMMU instance (or at least a
-device-specific TLB in a shared IOMMU instance) and thus creates a
-separate mapping for every device.
+Hi Alex,
 
-On several systems (Renesas R-Car Gen2 being one of them), that
-assumption is not true, and IOMMU mappings must be shared between
-multiple devices. In those cases the IOMMU driver knows better than the
-generic ARM dma-mapping layer and attaches mapping to devices manually
-with arm_iommu_attach_device(), which sets the DMA ops for the device.
+Pls refer to the open I mentioned in this email, I need your comments
+on it to prepare the formal patchset for SVM virtualization. Thx.
 
-The arch_setup_dma_ops() function takes this into account and bails out
-immediately if the device already has DMA ops assigned. However, the
-corresponding arch_teardown_dma_ops() function, called from driver
-unbind code paths (including probe deferral), will tear the mapping down
-regardless of who created it. When the device is reprobed
-arch_setup_dma_ops() will be called again but won't perform any
-operation as the DMA ops will still be set.
+> > From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > 
+> > When a SVM capable device is assigned to a guest, the first level page
+> > tables are owned by the guest and the guest PASID table pointer is
+> > linked to the device context entry of the physical IOMMU.
+> > 
+> > Host IOMMU driver has no knowledge of caching structure updates unless
+> > the guest invalidation activities are passed down to the host. The
+> > primary usage is derived from emulated IOMMU in the guest, where QEMU
+> > can trap invalidation activities before pass them down the
+> > host/physical IOMMU. There are IOMMU architectural specific actions
+> > need to be taken which requires the generic APIs introduced in this
+> > patch to have opaque data in the tlb_invalidate_info argument.
+> > 
+> > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > ---
+> >  drivers/iommu/iommu.c | 13 +++++++++++++
+> >  include/linux/iommu.h | 16 ++++++++++++++++
+> >  2 files changed, 29 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index f2da636..ca7cff2 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -1153,6 +1153,19 @@ int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
+> >  }
+> >  EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
+> >  
+> > +int iommu_do_invalidate(struct iommu_domain *domain,
+> > +		struct device *dev, struct tlb_invalidate_info *inv_info)
+> > +{
+> > +	int ret = 0;
+> > +
+> > +	if (unlikely(domain->ops->do_invalidate == NULL))
+> > +		return -ENODEV;
+> > +
+> > +	ret = domain->ops->do_invalidate(domain, dev, inv_info);
+> > +	return ret;
+> 
+> nit, ret is unnecessary.
 
-We need to reset the DMA ops in arch_teardown_dma_ops() to fix this.
-However, we can't do so unconditionally, as then a new mapping would be
-created by arch_setup_dma_ops() when the device is reprobed, regardless
-of whether the device needs to share a mapping or not. We must thus keep
-track of whether arch_setup_dma_ops() created the mapping, and only in
-that case tear it down in arch_teardown_dma_ops().
-
-Keep track of that information in the dev_archdata structure. As the
-structure is embedded in all instances of struct device let's not grow
-it, but turn the existing dma_coherent bool field into a bitfield that
-can be used for other purposes.
-
-Fixes: 09515ef5ddad ("of/acpi: Configure dma operations at probe time for platform/amba/pci bus devices")
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- arch/arm/include/asm/device.h | 3 ++-
- arch/arm/mm/dma-mapping.c     | 4 ++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
-index 36ec9c8..3234fe9 100644
---- a/arch/arm/include/asm/device.h
-+++ b/arch/arm/include/asm/device.h
-@@ -19,7 +19,8 @@ struct dev_archdata {
- #ifdef CONFIG_XEN
- 	const struct dma_map_ops *dev_dma_ops;
- #endif
--	bool dma_coherent;
-+	unsigned int dma_coherent:1;
-+	unsigned int dma_ops_setup:1;
- };
+yes, would modify it. Thx.
  
- struct omap_device;
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index c742dfd..b48998f 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2430,9 +2430,13 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		dev->dma_ops = xen_dma_ops;
- 	}
- #endif
-+	dev->archdata.dma_ops_setup = true;
- }
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_do_invalidate);
+> > +
+> >  static void __iommu_detach_device(struct iommu_domain *domain,
+> >  				  struct device *dev)
+> >  {
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 491a011..a48e3b75 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -140,6 +140,11 @@ struct pasid_table_info {
+> >  	__u8	opaque[];/* IOMMU-specific details */
+> >  };
+> >  
+> > +struct tlb_invalidate_info {
+> > +	__u32	model;
+> > +	__u8	opaque[];
+> > +};
+> 
+> I'm wondering if 'model' is really necessary here, shouldn't this
+> function only be called if a bind_pasid_table() succeeded, and then the
+> model would be set at that time?
+
+For this model, I'm thinking about another potential usage which
+is from Tianyu's idea to use tlb_invalidate_info to pass invalidations
+for iova related mappings. In such case, there would be no bind_pasid_table()
+before it, so a model check would be needed. But I may remove it since this
+patchset is focusing on SVM.
+
+Here, I have an open to check with you. I defined the tlb_invalidate_info
+with full opaque data. The opaque would include the invalidate info for
+different vendors. But we have two choices for the tlb_invalidate_info
+definition.
+
+a) as proposed in this patchset, passing raw data to host. Host pIOMMU
+   driver submits invalidation request after replacing specific fields.
+   Reject if the IOMMU model is not correct.
+   * Pros: no need to do parse and re-assembling, better performance
+   * Cons: unable to support the scenarios which emulates an Intel IOMMU
+           on an ARM platform.
+b) parse the invalidation info into specific data, e.g. gran, addr,
+   size, invalidation type etc. then fill the data in a generic
+   structure. In host, pIOMMU driver re-assemble the invalidation
+   request and submit to pIOMMU.
+   * Pros: may be able to support the scenario above. But it is still in
+           question since different vendor may have vendor specific
+           invalidation info. This would make it difficult to have vendor
+           agnostic invalidation propagation API.
+
+   * Cons: needs additional complexity to do parse and re-assembling.
+           The generic structure would be a hyper-set of all possible
+           invalidate info, this may be hard to maintain in future.
+
+As the pros/cons show, I proposed a) as an initial version. But it is an
+open. Jean from ARM has gave some comments on it and inclined to the opaque
+way with generic part defined explicitly. Jean's reply is in the link below.
+
+http://www.spinics.net/lists/kvm/msg149884.html
+
+I'd like to see your comments on it before moving forward. I'm fine with
+Jean's idea. For VT-d, I may define it as "generic part" + "raw data".
+
+Thanks,
+Yi L
+
+> This also needs to be uapi since you're expecting a user to provide it
+> to vfio.  The opaque data needs to be fully specified (relative to
+> uapi) per model.
+> 
+
+would do it as you pointed.
  
- void arch_teardown_dma_ops(struct device *dev)
- {
-+	if (!dev->archdata.dma_ops_setup)
-+		return;
-+
- 	arm_teardown_iommu_dma_ops(dev);
- }
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+> > +
+> >  #ifdef CONFIG_IOMMU_API
+> >  
+> >  /**
+> > @@ -215,6 +220,8 @@ struct iommu_ops {
+> >  				struct pasid_table_info *pasidt_binfo);
+> >  	int (*unbind_pasid_table)(struct iommu_domain *domain,
+> >  				struct device *dev);
+> > +	int (*do_invalidate)(struct iommu_domain *domain,
+> > +		struct device *dev, struct tlb_invalidate_info *inv_info);
+> >  
+> >  	unsigned long pgsize_bitmap;
+> >  };
+> > @@ -240,6 +247,9 @@ extern int iommu_bind_pasid_table(struct iommu_domain *domain,
+> >  		struct device *dev, struct pasid_table_info *pasidt_binfo);
+> >  extern int iommu_unbind_pasid_table(struct iommu_domain *domain,
+> >  				struct device *dev);
+> > +extern int iommu_do_invalidate(struct iommu_domain *domain,
+> > +		struct device *dev, struct tlb_invalidate_info *inv_info);
+> > +
+> >  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+> >  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+> >  		     phys_addr_t paddr, size_t size, int prot);
+> > @@ -626,6 +636,12 @@ int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
+> >  	return -EINVAL;
+> >  }
+> >  
+> > +static inline int iommu_do_invalidate(struct iommu_domain *domain,
+> > +		struct device *dev, struct tlb_invalidate_info *inv_info)
+> > +{
+> > +	return -EINVAL;
+> > +}
+> > +
+> >  #endif /* CONFIG_IOMMU_API */
+> >  
+> >  #endif /* __LINUX_IOMMU_H */
+> 
