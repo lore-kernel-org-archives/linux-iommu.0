@@ -1,204 +1,45 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: RE: [v6 2/3] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
- erratum #74
-Date: Wed, 17 May 2017 10:13:01 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA838351762@FRAEML521-MBX.china.huawei.com>
-References: <1494592866-14076-1-git-send-email-gakula@caviumnetworks.com>
- <1494592866-14076-3-git-send-email-gakula@caviumnetworks.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH v8 08/08] iommu/ipmmu-vmsa: Fix pgsize_bitmap semicolon
+	typo
+Date: Wed, 17 May 2017 12:24:45 +0200
+Message-ID: <CAMuHMdXUc-UzPfXtxh8yoaa0edbO9O2k8X68oGpOW4wfwoRcXg@mail.gmail.com>
+References: <149501557669.21593.1017116915706613060.sendpatchset@little-apple>
+	<149501566125.21593.3631162285769723783.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1494592866-14076-3-git-send-email-gakula@caviumnetworks.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Geetha sowjanya <gakula@caviumnetworks.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "Charles.Garcia-Tobin@arm.com" <Charles.Garcia-Tobin@arm.com>, Geetha Sowjanya <geethasowjanya.akula@cavium.com>, "geethasowjanya.akula@gmail.com" <geethasowjanya.akula@gmail.com>, "jcm@redhat.com" <jcm@redhat.com>, "linu.cherian@cavium.com" <linu.cherian@cavium.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "robert.moore@intel.com" <robert.moore@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "robert.richter@cavium.com" <robert.richter@cavium.com>, "lv.zheng@intel.com" <lv.zheng@intel.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "sgoutham@cavium.com" <sgoutham@cavium.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, devel@acpica
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <149501566125.21593.3631162285769723783.sendpatchset@little-apple>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geetha,
+On Wed, May 17, 2017 at 12:07 PM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+>
+> Fix comma-instead-of-semicolon typo error present
+> in the latest version of the IPMMU driver.
+>
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-> -----Original Message-----
-> From: linux-arm-kernel [mailto:linux-arm-kernel-
-> bounces@lists.infradead.org] On Behalf Of Geetha sowjanya
-> Sent: Friday, May 12, 2017 1:41 PM
-> To: will.deacon@arm.com; robin.murphy@arm.com;
-> lorenzo.pieralisi@arm.com; hanjun.guo@linaro.org; sudeep.holla@arm.com;
-> iommu@lists.linux-foundation.org
-> Cc: Charles.Garcia-Tobin@arm.com; Geetha Sowjanya;
-> geethasowjanya.akula@gmail.com; jcm@redhat.com;
-> linu.cherian@cavium.com; rjw@rjwysocki.net; robert.moore@intel.com;
-> linux-kernel@vger.kernel.org; linux-acpi@vger.kernel.org;
-> robert.richter@cavium.com; lv.zheng@intel.com; catalin.marinas@arm.com;
-> sgoutham@cavium.com; linux-arm-kernel@lists.infradead.org;
-> devel@acpica.org
-> Subject: [v6 2/3] iommu/arm-smmu-v3: Add workaround for Cavium
-> ThunderX2 erratum #74
-> 
-> From: Linu Cherian <linu.cherian@cavium.com>
-> 
-> Cavium ThunderX2 SMMU implementation doesn't support page 1 register
-> space and PAGE0_REGS_ONLY option is enabled as an errata workaround.
-> This option when turned on, replaces all page 1 offsets used for
-> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
-> 
-> SMMU resource size checks are now based on SMMU option
-> PAGE0_REGS_ONLY, since resource size can be either 64k/128k.
-> For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
-> platform_get_resource call, so that SMMU options are set beforehand.
-> 
-> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
-> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
-> ---
->  Documentation/arm64/silicon-errata.txt             |  1 +
->  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 ++
->  drivers/iommu/arm-smmu-v3.c                        | 64 +++++++++++++++++-----
->  3 files changed, 56 insertions(+), 15 deletions(-)
-> 
-> diff --git a/Documentation/arm64/silicon-errata.txt
-> b/Documentation/arm64/silicon-errata.txt
-> index 10f2ddd..4693a32 100644
-> --- a/Documentation/arm64/silicon-errata.txt
-> +++ b/Documentation/arm64/silicon-errata.txt
-> @@ -62,6 +62,7 @@ stable kernels.
->  | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154
-> |
->  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456
-> |
->  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
-> +| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
->  |                |                 |                 |                             |
->  | Freescale/NXP  | LS2080A/LS1043A | A-008585        |
-> FSL_ERRATUM_A008585         |
->  |                |                 |                 |                             |
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> index be57550..e6da62b 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> @@ -49,6 +49,12 @@ the PCIe specification.
->  - hisilicon,broken-prefetch-cmd
->                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
-> 
-> +- cavium-cn99xx,broken-page1-regspace
-> +                    : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
-> +						PRIQ_PROD/CONS register
-> access with page 0 offsets.
-> +						Set for Caviun ThunderX2
-> silicon that doesn't support
-> +						SMMU page1 register space.
-> +
->  ** Example
-> 
->          smmu@2b400000 {
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 380969a..c519927c 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -412,6 +412,9 @@
->  #define MSI_IOVA_BASE			0x8000000
->  #define MSI_IOVA_LENGTH			0x100000
-> 
-> +#define ARM_SMMU_PAGE0_REGS_ONLY(smmu)		\
-> +	((smmu)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
-> +
->  static bool disable_bypass;
->  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
-> MODULE_PARM_DESC(disable_bypass, @@ -597,6 +600,7 @@ struct
-> arm_smmu_device {
->  	u32				features;
-> 
->  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> +#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
->  	u32				options;
-> 
->  	struct arm_smmu_cmdq		cmdq;
-> @@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
-> 
->  static struct arm_smmu_option_prop arm_smmu_options[] = {
->  	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-
-> cmd" },
-> +	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY,
-> +"cavium-cn99xx,broken-page1-regspace"},
->  	{ 0, NULL},
->  };
-> 
-> +static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
-> +						 struct arm_smmu_device
-> *smmu)
-> +{
-> +	if (offset > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
-> +		offset -= SZ_64K;
-> +
-> +	return smmu->base + offset;
-> +}
-> +
->  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain
-> *dom)  {
->  	return container_of(dom, struct arm_smmu_domain, domain); @@ -
-> 1961,8 +1975,8 @@ static int arm_smmu_init_one_queue(struct
-> arm_smmu_device *smmu,
->  		return -ENOMEM;
->  	}
-> 
-> -	q->prod_reg	= smmu->base + prod_off;
-> -	q->cons_reg	= smmu->base + cons_off;
-> +	q->prod_reg	= arm_smmu_page1_fixup(prod_off, smmu);
-> +	q->cons_reg	= arm_smmu_page1_fixup(cons_off, smmu);
->  	q->ent_dwords	= dwords;
-> 
->  	q->q_base  = Q_BASE_RWA;
-> @@ -2363,8 +2377,10 @@ static int arm_smmu_device_reset(struct
-> arm_smmu_device *smmu, bool bypass)
-> 
->  	/* Event queue */
->  	writeq_relaxed(smmu->evtq.q.q_base, smmu->base +
-> ARM_SMMU_EVTQ_BASE);
-> -	writel_relaxed(smmu->evtq.q.prod, smmu->base +
-> ARM_SMMU_EVTQ_PROD);
-> -	writel_relaxed(smmu->evtq.q.cons, smmu->base +
-> ARM_SMMU_EVTQ_CONS);
-> +	writel_relaxed(smmu->evtq.q.prod,
-> +		       arm_smmu_page1_fixup(ARM_SMMU_EVTQ_PROD,
-> smmu));
-> +	writel_relaxed(smmu->evtq.q.cons,
-> +		       arm_smmu_page1_fixup(ARM_SMMU_EVTQ_CONS,
-> smmu));
-> 
->  	enables |= CR0_EVTQEN;
->  	ret = arm_smmu_write_reg_sync(smmu, enables,
-> ARM_SMMU_CR0, @@ -2379,9 +2395,9 @@ static int
-> arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->  		writeq_relaxed(smmu->priq.q.q_base,
->  			       smmu->base + ARM_SMMU_PRIQ_BASE);
->  		writel_relaxed(smmu->priq.q.prod,
-> -			       smmu->base + ARM_SMMU_PRIQ_PROD);
-> +
-> arm_smmu_page1_fixup(ARM_SMMU_PRIQ_PROD, smmu));
->  		writel_relaxed(smmu->priq.q.cons,
-> -			       smmu->base + ARM_SMMU_PRIQ_CONS);
-> +
-> arm_smmu_page1_fixup(ARM_SMMU_PRIQ_CONS, smmu));
-> 
->  		enables |= CR0_PRIQEN;
->  		ret = arm_smmu_write_reg_sync(smmu, enables,
-> ARM_SMMU_CR0, @@ -2605,6 +2621,14 @@ static int
-> arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)  }
-> 
->  #ifdef CONFIG_ACPI
-> +static void acpi_smmu_get_options(u32 model, struct arm_smmu_device
-> +*smmu) {
-> +	if (model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
-> +		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
+Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 
-HiSIlicon hip06/07 boards have a similar existing option to enable,
-ARM_SMMU_OPT_SKIP_PREFETCH. I have just sent out a similar patch to enable
-It-" [PATCH] iommu/arm-smmu-v3: Enable ACPI based HiSilicon CMD_PREFETCH
- quirk(erratum 161010701)".  May be it can be merged here, if this series goes through.
- Not sure about the protocol though.
+Gr{oetje,eeting}s,
 
-Thanks,
-Shameer
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
 
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
