@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v8 07/08] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
-Date: Wed, 17 May 2017 19:07:30 +0900
-Message-ID: <149501565080.21593.5373464892088228227.sendpatchset@little-apple>
+Subject: [PATCH v8 08/08] iommu/ipmmu-vmsa: Fix pgsize_bitmap semicolon typo
+Date: Wed, 17 May 2017 19:07:41 +0900
+Message-ID: <149501566125.21593.3631162285769723783.sendpatchset@little-apple>
 References: <149501557669.21593.1017116915706613060.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,31 +23,26 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Neither the ARM page table code enabled by IOMMU_IO_PGTABLE_LPAE
-nor the IPMMU_VMSA driver actually depends on ARM_LPAE, so get
-rid of the dependency.
-
-Tested with ipmmu-vmsa on r8a7794 ALT and a kernel config using:
- # CONFIG_ARM_LPAE is not set
+Fix comma-instead-of-semicolon typo error present
+in the latest version of the IPMMU driver.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
 
- Changes since V7:
- - None
+ Earlier posted as:
+ [PATCH] iommu/ipmmu-vmsa: Fix pgsize_bitmap semicolon typo
 
- drivers/iommu/Kconfig |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- 0010/drivers/iommu/Kconfig
-+++ work/drivers/iommu/Kconfig	2017-05-17 16:45:15.530607110 +0900
-@@ -275,7 +275,6 @@ config EXYNOS_IOMMU_DEBUG
- config IPMMU_VMSA
- 	bool "Renesas VMSA-compatible IPMMU"
- 	depends on ARM || IOMMU_DMA
--	depends on ARM_LPAE
- 	depends on ARCH_RENESAS || COMPILE_TEST
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
+--- 0014/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-05-17 16:50:02.850607110 +0900
+@@ -358,7 +358,7 @@ static int ipmmu_domain_init_context(str
+ 	 * non-secure mode.
+ 	 */
+ 	domain->cfg.quirks = IO_PGTABLE_QUIRK_ARM_NS;
+-	domain->cfg.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
++	domain->cfg.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K;
+ 	domain->cfg.ias = 32;
+ 	domain->cfg.oas = 40;
+ 	domain->cfg.tlb = &ipmmu_gather_ops;
