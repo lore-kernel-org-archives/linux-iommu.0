@@ -1,14 +1,15 @@
 From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/3] iommu: of: Fix check for returning EPROBE_DEFER
-Date: Wed, 17 May 2017 12:04:30 -0500
-Message-ID: <20170517170430.GD31462@bhelgaas-glaptop.roam.corp.google.com>
-References: <1495020609-13397-1-git-send-email-sricharan@codeaurora.org>
+Subject: Re: [PATCH v6 1/3] of/pci/dma: fix DMA configuration for PCI masters
+Date: Wed, 17 May 2017 12:10:16 -0500
+Message-ID: <20170517171016.GE31462@bhelgaas-glaptop.roam.corp.google.com>
+References: <1494912127-12890-1-git-send-email-oza.oza@broadcom.com>
+	<1494912127-12890-2-git-send-email-oza.oza@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1495020609-13397-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1494912127-12890-2-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,53 +19,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 17, 2017 at 05:00:07PM +0530, Sricharan R wrote:
-> Now with iommu probe deferral, we return -EPROBE_DEFER
-> for master's that are connected to an iommu which is not
+On Tue, May 16, 2017 at 10:52:05AM +0530, Oza Pawandeep wrote:
+> current device framework and OF framework integration assumes
 
-s/master's/masters/
+s/current/The current/
 
-s/iommu/IOMMU/ in your English text (changelogs and comments).  That seems
-to be the convention, based on "git log drivers/iommu/of_iommu.c"
+> dma-ranges in a way where memory-mapped devices define their
+> dma-ranges. (child-bus-address, parent-bus-address, length).
+> 
+> of_dma_configure is specifically written to take care of memory
+> mapped devices. but no implementation exists for pci to take
+> care of pcie based memory ranges.
 
-> probed yet, but going to get probed, so that we can attach
-> the correct dma_ops. So while trying to defer the probe of
-> the master, check if the of_iommu node that it is connected
-> to is marked in DT as 'status=disabled', then the iommu is never
-> is going to get probed. So simply return NULL and let the master
-> work without an iommu.
+s/pci/PCI/	(also other occurrences below)
+s/pcie/PCIe/
+
+I don't see how PCIe is relevant here.  The bridge might support PCIe,
+but I don't think anything here is actually specific to PCIe.  If
+that's the case, I think it's confusing to mention PCIe.
+
+> for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
+> world dma-ranges.
+> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 > 
-> Fixes: 7b07cbefb68d ("iommu: of: Handle IOMMU lookup failure with deferred probing or error")
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Reported-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Tested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Tested-by: Magnus Damn <magnus.damn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/of_iommu.c | 1 +
->  1 file changed, 1 insertion(+)
+> this patch serves following:
 > 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 9f44ee8..e6e9bec 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct device_node *np)
->  
->  	ops = iommu_ops_from_fwnode(fwnode);
->  	if ((ops && !ops->of_xlate) ||
-> +	    !of_device_is_available(iommu_spec->np) ||
->  	    (!ops && !of_iommu_driver_present(iommu_spec->np)))
->  		return NULL;
->  
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+> 1) exposes interface to the pci host driver for their
+> inbound memory ranges
 > 
+> 2) provide an interface to callers such as of_dma_get_ranges.
+> so then the returned size get best possible (largest) dma_mask.
+> because PCI RC drivers do not call APIs such as
+> dma_set_coherent_mask() and hence rather it shows its addressing
+> capabilities based on dma-ranges.
+> for e.g.
+> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+> we should get dev->coherent_dma_mask=0x7fffffffff.
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 3) this patch handles multiple inbound windows and dma-ranges.
+> it is left to the caller, how it wants to use them.
+> the new function returns the resources in a standard and unform way
+> 
+> 4) this way the callers of for e.g. of_dma_get_ranges
+> does not need to change.
+
+Please start sentences with a capital letter.
