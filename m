@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH RESEND] iommu/dma: Don't touch invalid iova_domain members
-Date: Wed, 17 May 2017 14:36:31 +0200
-Message-ID: <20170517123631.GB11068@8bytes.org>
-References: <122f47aa5596dc8ef0a1ee76e4425c7b597479a4.1494859975.git.robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu: intel: Flush the IOTLB to get rid of the initial
+	kdump mappings
+Date: Wed, 17 May 2017 14:46:30 +0200
+Message-ID: <20170517124630.GC11068@8bytes.org>
+References: <1494009599-20962-1-git-send-email-karahmed@amazon.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <122f47aa5596dc8ef0a1ee76e4425c7b597479a4.1494859975.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1494009599-20962-1-git-send-email-karahmed-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,28 +19,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: KarimAllah Ahmed <karahmed-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>, Anthony Liguori <aliguori-vV1OtcyAfmbQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 15, 2017 at 04:01:30PM +0100, Robin Murphy wrote:
-> When __iommu_dma_map() and iommu_dma_free_iova() are called from
-> iommu_dma_get_msi_page(), various iova_*() helpers are still invoked in
-> the process, whcih is unwise since they access a different member of the
-> union (the iova_domain) from that which was last written, and there's no
-> guarantee that sensible values will result anyway.
+On Fri, May 05, 2017 at 11:39:59AM -0700, KarimAllah Ahmed wrote:
+> Ever since commit 091d42e43d ("iommu/vt-d: Copy translation tables from
+> old kernel") 
+
+Please put the commit-information into a Fixes: tag next time. I'll
+added a Fixes tag to the commit this time.
+
+> the kdump kernel copies the IOMMU context tables from the
+> previous kernel. Each device mappings will be destroyed once the driver
+> for the respective device takes over.
 > 
-> CLean up the code paths that are valid for an MSI cookie to ensure we
-> only do iova_domain-specific things when we're actually dealing with one.
+> This unfortunately breaks the workflow of mapping and unmapping a new
+> context to the IOMMU. The mapping function assumes that either:
 > 
-> Fixes: a44e6657585b ("iommu/dma: Clean up MSI IOVA allocation")
-> Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Tested-by: Shanker Donthineni <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> 1) Unmapping did the proper IOMMU flushing and it only ever flush if the
+>    IOMMU unit supports caching invalid entries.
+> 2) The system just booted and the initialization code took care of
+>    flushing all IOMMU caches.
+> 
+> This assumption is not true for the kdump kernel since the context
+> tables have been copied from the previous kernel and translations could
+> have been cached ever since. So make sure to flush the IOTLB as well
+> when we destroy these old copied mappings.
+> 
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: David Woodhouse <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>
+> Cc: Anthony Liguori <aliguori-vV1OtcyAfmbQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: KarimAllah Ahmed <karahmed-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
 
-Applied to iommu/fixes. Why didn't you add the Tested-by from Eric in
-you resend?
-
-
-	Joerg
+Applied to iommu/fixes, thanks.
