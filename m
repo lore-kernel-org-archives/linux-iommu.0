@@ -1,32 +1,28 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH/RFC] iommu: Move over to unsigned int domain type
-Date: Wed, 17 May 2017 15:18:54 +0200
-Message-ID: <20170517131853.GC1912@8bytes.org>
-References: <149501695257.25282.12037681018061688033.sendpatchset@little-apple>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v8 00/08] iommu/ipmmu-vmsa: IPMMU multi-arch update V8
+Date: Wed, 17 May 2017 15:29:41 +0200
+Message-ID: <20170517132940.GF11068@8bytes.org>
+References: <149501557669.21593.1017116915706613060.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <149501695257.25282.12037681018061688033.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <149501557669.21593.1017116915706613060.sendpatchset@little-apple>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, sricharan@codeaurora.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 17, 2017 at 07:29:12PM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+On Wed, May 17, 2017 at 07:06:16PM +0900, Magnus Damm wrote:
+> iommu/ipmmu-vmsa: IPMMU multi-arch update V8
 > 
-> Checkpatch dislikes the type unsigned, so update the iommu
-> domain type and consumers to use unsigned int to reduce noise.
+> [PATCH v8 01/08] iommu/ipmmu-vmsa: Remove platform data handling
+> [PATCH v8 02/08] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+> [PATCH v8 03/08] iommu/ipmmu-vmsa: Break out utlb parsing code
+> [PATCH v8 04/08] iommu/ipmmu-vmsa: Break out domain allocation code
+> [PATCH v8 05/08] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+> [PATCH v8 06/08] iommu/ipmmu-vmsa: Use fwspec iommu_priv on ARM64
+> [PATCH v8 07/08] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
+> [PATCH v8 08/08] iommu/ipmmu-vmsa: Fix pgsize_bitmap semicolon typo
 
-And I hate stupid checkpatch warnings and refuse to fix them. This
-clearly is one.
+Applied, thanks.
