@@ -1,96 +1,264 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
- deferred probing or error
-Date: Wed, 17 May 2017 15:58:12 +0530
-Message-ID: <3b154db4-6ebb-c05c-91f0-beefa75fae00@codeaurora.org>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
- <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
- <CAMuHMdV05uCcVss+V1E+_OQYosJO6P95rU1WynV-G08-iHJnyg@mail.gmail.com>
- <2bfd11dc-9f94-2b69-7b03-c640e53155e1@arm.com>
- <26defadf-6380-4af4-6323-b51198376bc1@codeaurora.org>
- <CAMuHMdUoLp1oVT_=NG8HS-jgG6AhOeVUsGgu7fLbGY+7A+0cOg@mail.gmail.com>
- <CANqRtoSEwdoufUxP-Rm=qZJ7G8V3ow5F0ggV3tALrfiRad+j4Q@mail.gmail.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH/RFC] iommu: Move over to unsigned int domain type
+Date: Wed, 17 May 2017 19:29:12 +0900
+Message-ID: <149501695257.25282.12037681018061688033.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <CANqRtoSEwdoufUxP-Rm=qZJ7G8V3ow5F0ggV3tALrfiRad+j4Q@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tn@semihalf.com, Hanjun Guo <hanjun.guo@linaro.org>, okaya@codeaurora.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-<snip..>
+Checkpatch dislikes the type unsigned, so update the iommu
+domain type and consumers to use unsigned int to reduce noise.
 
->> Magnus, do you have a suggestion?
-> 
-> Thanks for your efforts guys!
-> 
-> I've recently been working on up-porting the IPMMU patches and
-> addressing review comments. Now with my local driver stack on top of
-> v4.12-rc (a95cfad) I did not notice these issues initially since I
-> only tested devices with IPMMU enabled. Once these issues were pointed
-> out to me by Geert I have now reproduced the 64-bit ARM specific ones
-> on r8a7796 Salvator-X.
-> 
-> On my r8a7796 platform I'm using the following IOMMU and DMA Engine devices:
-> 
-> IOMMU device IPMMU-DS0 - Connected to SYS-DMAC0
-> IOMMU device IPMMU-DS1 - Connected to SYS-DMAC1 and SYS-DMAC2
-> IOMMU device IPMMU-MM - Root device serving IPMMU-DS0 and IPMMU-DS1
-> 
-> For testing the serial port SCIF1 is used with DMA Engine devices
-> SYS-DMAC1 or SYS-DMAC2.
-> 
-> The software environment is configured as follows:
-> - The DTS comes with all devices above enabled except IPMMU-DS0 which
-> comes with status = "disabled".
-> - The IPMMU driver is during run time only allowing use of SYS-DMAC2.
-> For other devices ->of_xlate() returns -ENODEV.
-> 
-> The above used to work just fine with v4.11 or earlier.
-> 
-> My observations for v4.12-rc:
-> 
-> 1) Default state for a95cfad
-> 
-> The devices SYS-DMAC0 and SYS-DMAC1 will never probe. However SYS-DMAC2 is fine.
-> 
-> 2) After applying "[PATCH] iommu: of: Fix check for returning EPROBE_DEFER" [1]
-> 
-> This fixes SYS-DMAC0 that now probes and operates without IPMMU-DS0 as
-> expected. Same as v4.11 or earlier.
-> 
-> 3) After also applying "[PATCH] of: iommu: Ignore all errors except
-> EPROBE_DEFER" [2]
-> 
-> This fixes SYS-DMAC1 that now probes and operates without IPMMU-DS1 as
-> expected. Same as v4.11 or earlier.
-> 
-> With fix [1] and [2] things seem back to normal. Unless I'm mistaken
+$ ./scripts/checkpatch.pl ../linux-v4.13-pre-drivers-iommu-ipmmu-dma-ops-20170517b.patch
+WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+#89: FILE: drivers/iommu/ipmmu-vmsa.c:720:
++static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
 
-Thanks, will use this as your Tested-by.
+WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
+#111: FILE: drivers/iommu/ipmmu-vmsa.c:844:
++static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
 
-Regards,
- Sricharan
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
 
-> it also seems that [1] allows me to drop the similar patch "[PATCH/RFC
-> v2 1/4] iommu/of: Skip IOMMU devices disabled in DT".
-> 
-> Thanks for your help.
-> 
-> Cheers,
-> 
-> / magnus
-> 
-> 
-> [1] https://lkml.org/lkml/2017/5/16/25
-> [2] https://www.spinics.net/lists/arm-kernel/msg581485.html
-> [3] https://patchwork.kernel.org/patch/9540605/
-> 
+ Untested for now.
 
--- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+ drivers/iommu/amd_iommu.c       |    2 +-
+ drivers/iommu/arm-smmu-v3.c     |    2 +-
+ drivers/iommu/arm-smmu.c        |    2 +-
+ drivers/iommu/exynos-iommu.c    |    2 +-
+ drivers/iommu/fsl_pamu_domain.c |    2 +-
+ drivers/iommu/intel-iommu.c     |    2 +-
+ drivers/iommu/iommu.c           |    4 ++--
+ drivers/iommu/ipmmu-vmsa.c      |    2 +-
+ drivers/iommu/msm_iommu.c       |    2 +-
+ drivers/iommu/mtk_iommu.c       |    2 +-
+ drivers/iommu/mtk_iommu_v1.c    |    2 +-
+ drivers/iommu/omap-iommu.c      |    2 +-
+ drivers/iommu/rockchip-iommu.c  |    2 +-
+ drivers/iommu/s390-iommu.c      |    2 +-
+ drivers/iommu/tegra-gart.c      |    2 +-
+ drivers/iommu/tegra-smmu.c      |    2 +-
+ include/linux/iommu.h           |    4 ++--
+ 17 files changed, 19 insertions(+), 19 deletions(-)
+
+--- 0001/drivers/iommu/amd_iommu.c
++++ work/drivers/iommu/amd_iommu.c	2017-05-17 19:19:00.810607110 +0900
+@@ -2940,7 +2940,7 @@ out_err:
+ 	return NULL;
+ }
+ 
+-static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *amd_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct protection_domain *pdomain;
+ 	struct dma_ops_domain *dma_domain;
+--- 0001/drivers/iommu/arm-smmu-v3.c
++++ work/drivers/iommu/arm-smmu-v3.c	2017-05-17 19:17:18.300607110 +0900
+@@ -1381,7 +1381,7 @@ static bool arm_smmu_capable(enum iommu_
+ 	}
+ }
+ 
+-static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
++static struct iommu_domain *arm_smmu_domain_alloc(unsigned int type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+--- 0001/drivers/iommu/arm-smmu.c
++++ work/drivers/iommu/arm-smmu.c	2017-05-17 19:17:35.410607110 +0900
+@@ -1078,7 +1078,7 @@ static void arm_smmu_destroy_domain_cont
+ 	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
+ }
+ 
+-static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
++static struct iommu_domain *arm_smmu_domain_alloc(unsigned int type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+--- 0001/drivers/iommu/exynos-iommu.c
++++ work/drivers/iommu/exynos-iommu.c	2017-05-17 19:15:55.760607110 +0900
+@@ -730,7 +730,7 @@ static inline void update_pte(sysmmu_pte
+ 				   DMA_TO_DEVICE);
+ }
+ 
+-static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *exynos_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct exynos_iommu_domain *domain;
+ 	dma_addr_t handle;
+--- 0001/drivers/iommu/fsl_pamu_domain.c
++++ work/drivers/iommu/fsl_pamu_domain.c	2017-05-17 19:15:19.190607110 +0900
+@@ -416,7 +416,7 @@ static void fsl_pamu_domain_free(struct
+ 	kmem_cache_free(fsl_pamu_domain_cache, dma_domain);
+ }
+ 
+-static struct iommu_domain *fsl_pamu_domain_alloc(unsigned type)
++static struct iommu_domain *fsl_pamu_domain_alloc(unsigned int type)
+ {
+ 	struct fsl_dma_domain *dma_domain;
+ 
+--- 0001/drivers/iommu/intel-iommu.c
++++ work/drivers/iommu/intel-iommu.c	2017-05-17 19:14:56.520607110 +0900
+@@ -5021,7 +5021,7 @@ static int md_domain_init(struct dmar_do
+ 	return 0;
+ }
+ 
+-static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *intel_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
+--- 0001/drivers/iommu/iommu.c
++++ work/drivers/iommu/iommu.c	2017-05-17 19:20:48.720607110 +0900
+@@ -105,7 +105,7 @@ void iommu_device_unregister(struct iomm
+ }
+ 
+ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+-						 unsigned type);
++						 unsigned int type);
+ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev);
+ static int __iommu_attach_group(struct iommu_domain *domain,
+@@ -1255,7 +1255,7 @@ void iommu_set_fault_handler(struct iomm
+ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
+ 
+ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+-						 unsigned type)
++						 unsigned int type)
+ {
+ 	struct iommu_domain *domain;
+ 
+--- 0001/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-05-17 19:13:42.310607110 +0900
+@@ -455,7 +455,7 @@ static irqreturn_t ipmmu_irq(int irq, vo
+  * IOMMU Operations
+  */
+ 
+-static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
++static struct iommu_domain *ipmmu_domain_alloc(unsigned int type)
+ {
+ 	struct ipmmu_vmsa_domain *domain;
+ 
+--- 0001/drivers/iommu/msm_iommu.c
++++ work/drivers/iommu/msm_iommu.c	2017-05-17 19:13:25.990607110 +0900
+@@ -312,7 +312,7 @@ static void __program_context(void __iom
+ 	SET_M(base, ctx, 1);
+ }
+ 
+-static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *msm_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct msm_priv *priv;
+ 
+--- 0001/drivers/iommu/mtk_iommu.c
++++ work/drivers/iommu/mtk_iommu.c	2017-05-17 19:13:11.170607110 +0900
+@@ -249,7 +249,7 @@ static int mtk_iommu_domain_finalise(str
+ 	return 0;
+ }
+ 
+-static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *mtk_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct mtk_iommu_domain *dom;
+ 
+--- 0001/drivers/iommu/mtk_iommu_v1.c
++++ work/drivers/iommu/mtk_iommu_v1.c	2017-05-17 19:12:57.140607110 +0900
+@@ -243,7 +243,7 @@ static int mtk_iommu_domain_finalise(str
+ 	return 0;
+ }
+ 
+-static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *mtk_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct mtk_iommu_domain *dom;
+ 
+--- 0001/drivers/iommu/omap-iommu.c
++++ work/drivers/iommu/omap-iommu.c	2017-05-17 19:12:38.240607110 +0900
+@@ -1137,7 +1137,7 @@ static void omap_iommu_detach_dev(struct
+ 	spin_unlock(&omap_domain->lock);
+ }
+ 
+-static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *omap_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct omap_iommu_domain *omap_domain;
+ 
+--- 0001/drivers/iommu/rockchip-iommu.c
++++ work/drivers/iommu/rockchip-iommu.c	2017-05-17 19:12:23.120607110 +0900
+@@ -885,7 +885,7 @@ static void rk_iommu_detach_device(struc
+ 	dev_dbg(dev, "Detached from iommu domain\n");
+ }
+ 
+-static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *rk_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct rk_iommu_domain *rk_domain;
+ 	struct platform_device *pdev;
+--- 0001/drivers/iommu/s390-iommu.c
++++ work/drivers/iommu/s390-iommu.c	2017-05-17 19:12:02.700607110 +0900
+@@ -48,7 +48,7 @@ static bool s390_iommu_capable(enum iomm
+ 	}
+ }
+ 
+-static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
++static struct iommu_domain *s390_domain_alloc(unsigned int domain_type)
+ {
+ 	struct s390_domain *s390_domain;
+ 
+--- 0001/drivers/iommu/tegra-gart.c
++++ work/drivers/iommu/tegra-gart.c	2017-05-17 19:11:52.660607110 +0900
+@@ -218,7 +218,7 @@ out:
+ 	spin_unlock(&gart->client_lock);
+ }
+ 
+-static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *gart_iommu_domain_alloc(unsigned int type)
+ {
+ 	struct gart_domain *gart_domain;
+ 	struct gart_device *gart;
+--- 0001/drivers/iommu/tegra-smmu.c
++++ work/drivers/iommu/tegra-smmu.c	2017-05-17 19:11:40.240607110 +0900
+@@ -258,7 +258,7 @@ static bool tegra_smmu_capable(enum iomm
+ 	return false;
+ }
+ 
+-static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
++static struct iommu_domain *tegra_smmu_domain_alloc(unsigned int type)
+ {
+ 	struct tegra_smmu_as *as;
+ 
+--- 0001/include/linux/iommu.h
++++ work/include/linux/iommu.h	2017-05-17 19:11:00.790607110 +0900
+@@ -87,7 +87,7 @@ struct iommu_domain_geometry {
+ 				 __IOMMU_DOMAIN_DMA_API)
+ 
+ struct iommu_domain {
+-	unsigned type;
++	unsigned int type;
+ 	const struct iommu_ops *ops;
+ 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+ 	iommu_fault_handler_t handler;
+@@ -188,7 +188,7 @@ struct iommu_ops {
+ 	bool (*capable)(enum iommu_cap);
+ 
+ 	/* Domain allocation and freeing by the iommu driver */
+-	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
++	struct iommu_domain *(*domain_alloc)(unsigned int iommu_domain_type);
+ 	void (*domain_free)(struct iommu_domain *);
+ 
+ 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
