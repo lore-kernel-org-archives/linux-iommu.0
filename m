@@ -1,196 +1,93 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
- deferred probing or error
-Date: Wed, 17 May 2017 18:22:24 +0900
-Message-ID: <CANqRtoSEwdoufUxP-Rm=qZJ7G8V3ow5F0ggV3tALrfiRad+j4Q@mail.gmail.com>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
- <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
- <CAMuHMdV05uCcVss+V1E+_OQYosJO6P95rU1WynV-G08-iHJnyg@mail.gmail.com>
- <2bfd11dc-9f94-2b69-7b03-c640e53155e1@arm.com> <26defadf-6380-4af4-6323-b51198376bc1@codeaurora.org>
- <CAMuHMdUoLp1oVT_=NG8HS-jgG6AhOeVUsGgu7fLbGY+7A+0cOg@mail.gmail.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v8 00/08] iommu/ipmmu-vmsa: IPMMU multi-arch update V8
+Date: Wed, 17 May 2017 19:06:16 +0900
+Message-ID: <149501557669.21593.1017116915706613060.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdUoLp1oVT_=NG8HS-jgG6AhOeVUsGgu7fLbGY+7A+0cOg@mail.gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Sricharan R <sricharan@codeaurora.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tn@semihalf.com, Hanjun Guo <hanjun.guo@linaro.org>, okaya@codeaurora.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert, everyone,
+iommu/ipmmu-vmsa: IPMMU multi-arch update V8
 
-On Fri, May 5, 2017 at 10:23 PM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> Hi Sricharan, Robin,
->
-> On Wed, May 3, 2017 at 12:24 PM, Sricharan R <sricharan@codeaurora.org> wrote:
->> On 5/3/2017 3:24 PM, Robin Murphy wrote:
->>> On 02/05/17 19:35, Geert Uytterhoeven wrote:
->>>> On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R <sricharan@codeaurora.org> wrote:
->>>>> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
->>>>>
->>>>> Failures to look up an IOMMU when parsing the DT iommus property need to
->>>>> be handled separately from the .of_xlate() failures to support deferred
->>>>> probing.
->>>>>
->>>>> The lack of a registered IOMMU can be caused by the lack of a driver for
->>>>> the IOMMU, the IOMMU device probe not having been performed yet, having
->>>>> been deferred, or having failed.
->>>>>
->>>>> The first case occurs when the device tree describes the bus master and
->>>>> IOMMU topology correctly but no device driver exists for the IOMMU yet
->>>>> or the device driver has not been compiled in. Return NULL, the caller
->>>>> will configure the device without an IOMMU.
->>>>>
->>>>> The second and third cases are handled by deferring the probe of the bus
->>>>> master device which will eventually get reprobed after the IOMMU.
->>>>>
->>>>> The last case is currently handled by deferring the probe of the bus
->>>>> master device as well. A mechanism to either configure the bus master
->>>>> device without an IOMMU or to fail the bus master device probe depending
->>>>> on whether the IOMMU is optional or mandatory would be a good
->>>>> enhancement.
->>>>>
->>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>>> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
->>>>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->>>>
->>>> This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
->>>> As the IOMMU nodes in DT are not yet enabled, all devices having iommus
->>>> properties in DT now fail to probe.
->>>
->>> How exactly do they fail to probe? Per d7b0558230e4, if there are no ops
->>> registered then they should merely defer until we reach the point of
->>> giving up and ignoring the IOMMU. Is it just that you have no other
->>> late-probing drivers or post-init module loads to kick the deferred
->>> queue after that point? I did try to find a way to explicitly kick it
->>> from a suitably late initcall, but there didn't seem to be any obvious
->>> public interface - anyone have any suggestions?
->>>
->>> I think that's more of a general problem with the probe deferral
->>> mechanism itself (I've seen the same thing happen with some of the
->>> CoreSight stuff on Juno due to the number of inter-component
->>> dependencies) rather than any specific fault of this series.
->
-> I had a deeper look into the issue.
->
-> What changed, is that of_dma_configure() now returns an error code,
-> and dma_configure() looks at it.
->
-> Actually there are two failure modes:
->   1. Devices with an iommus property pointing to a disabled IOMMU node.
->      These return -EPROBE_DEFER, and are now retried forever.
->   2. Devices that are blacklisted in the IPMMU driver, as we don't want to
->      use them with an IOMMU yet.
->      These return -ENODEV, due to ipmmu_of_xlate_dma().
->
->> I was thinking of an additional check like below to avoid the
->> situation ?
->>
->> From 499b6e662f60f23740b8880882b0a16f16434501 Mon Sep 17 00:00:00 2001
->> From: Sricharan R <sricharan@codeaurora.org>
->> Date: Wed, 3 May 2017 13:16:59 +0530
->> Subject: [PATCH] iommu: of: Fix check for returning EPROBE_DEFER
->>
->> While returning EPROBE_DEFER for iommu masters
->> take in to account of iommu nodes that could be
->> marked in DT as 'status=disabled', in which case
->> simply return NULL and let the master's probe
->> continue rather than deferring.
->>
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ---
->>  drivers/iommu/of_iommu.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 9f44ee8..e6e9bec 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct device_node *np)
->>
->>         ops = iommu_ops_from_fwnode(fwnode);
->>         if ((ops && !ops->of_xlate) ||
->> +           !of_device_is_available(iommu_spec->np) ||
->>             (!ops && !of_iommu_driver_present(iommu_spec->np)))
->>                 return NULL;
->
-> Thanks, this fixes the first class of failures.
->
-> The second class can be worked around using:
->
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -196,6 +196,11 @@ static const struct iommu_ops
->                 ops = of_iommu_xlate(dev, &iommu_spec);
->                 of_node_put(iommu_spec.np);
->                 idx++;
-> +               if (PTR_ERR(ops) == -ENODEV) {
-> +                       dev_info(dev, "%s: Ignoring -ENODEV => NULL\n",
-> +                                __func__);
-> +                       return NULL;
-> +               }
->                 if (IS_ERR_OR_NULL(ops))
->                         break;
->         }
->
-> but obviously that's too hackish to apply...
-> Magnus, do you have a suggestion?
+[PATCH v8 01/08] iommu/ipmmu-vmsa: Remove platform data handling
+[PATCH v8 02/08] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+[PATCH v8 03/08] iommu/ipmmu-vmsa: Break out utlb parsing code
+[PATCH v8 04/08] iommu/ipmmu-vmsa: Break out domain allocation code
+[PATCH v8 05/08] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+[PATCH v8 06/08] iommu/ipmmu-vmsa: Use fwspec iommu_priv on ARM64
+[PATCH v8 07/08] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
+[PATCH v8 08/08] iommu/ipmmu-vmsa: Fix pgsize_bitmap semicolon typo
 
-Thanks for your efforts guys!
+These patches update the IPMMU driver with a modifications to support
+build on multiple architectures. In the process of doing so the interrupt
+code gets reworked, the foundation for supporting multiple contexts are
+added and in case of CONFIG_IOMMU_DMA=y (on 64-bit or 32-bit ARM) devices
+are grouped together and handled via ->xlate(). In this verison fwspec is
+used on 64-bit ARM instead of archdata. Support for existing 32-bit ARM
+SoCs from R-Car Gen2 is kept as-is.
 
-I've recently been working on up-porting the IPMMU patches and
-addressing review comments. Now with my local driver stack on top of
-v4.12-rc (a95cfad) I did not notice these issues initially since I
-only tested devices with IPMMU enabled. Once these issues were pointed
-out to me by Geert I have now reproduced the 64-bit ARM specific ones
-on r8a7796 Salvator-X.
+Changes since V7:
+ - Rebased on top of v4.12-rc1
+ - Added Reviewed-by from Geert to patch 1/8 and 4/8, thanks!
+ - Reworked patch 6/8 to use fwspec, thanks Robin!
+ - Added patch 8/8
 
-On my r8a7796 platform I'm using the following IOMMU and DMA Engine devices:
+Changes since V6:
+ - Rebased on top of v4.11-rc1 and the following fast-tracked change:
+   3b6bb5b iommu/ipmmu-vmsa: Restrict IOMMU Domain Geometry to 32-bit address spac
+ - Updated patch 5/7 to roll in a few patches from other series
+   See individual patch for more details
+ - Build tested on 32-bit and 64-bit ARM
+ - Run time tested on 64-bit ARM (with additional SoC-specific patches)
 
-IOMMU device IPMMU-DS0 - Connected to SYS-DMAC0
-IOMMU device IPMMU-DS1 - Connected to SYS-DMAC1 and SYS-DMAC2
-IOMMU device IPMMU-MM - Root device serving IPMMU-DS0 and IPMMU-DS1
+Changes since V5:
+ - Rebased series on top of next-20161019
+ - Updated patch 5/7 to simplify domain allocation/free code - thanks Joerg!
+ - Added reviewed-by tag from Joerg for patch 1-4 and 6-7.
+ 
+Changes since V4:
+ - Updated patch 3/7 to work on top on the following commit in next-20160920:
+   b1e2afc iommu/ipmmu-vmsa: Fix wrong error handle of ipmmu_add_device
+ - Add Kconfig hunk to patch 5/7 to avoid undeclared ipmmu_ops if COMPILE_TEST
+ - Rebased patch 7/7 to fit on top of new Kconfig bits in 5/7
 
-For testing the serial port SCIF1 is used with DMA Engine devices
-SYS-DMAC1 or SYS-DMAC2.
+Changes since V3:
+ - Updated patch 3/7 to fix hang-on-boot issue on 32-bit ARM - thanks Geert!
+ - Reworked group parameter handling in patch 3/7 and 5/7.
+ - Added patch 6/7 to fix build of the driver on s390/tile/um architectures
 
-The software environment is configured as follows:
-- The DTS comes with all devices above enabled except IPMMU-DS0 which
-comes with status = "disabled".
-- The IPMMU driver is during run time only allowing use of SYS-DMAC2.
-For other devices ->of_xlate() returns -ENODEV.
+Changes since V2:
+ - Got rid of patch 3 from the V2 however patch 1, 2 and 4 are kept.
+ - V3 patch 3, 4 and 5 come from
+   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+ - Patch 5 has been reworked to include patch 3 of the V1 of this series 
 
-The above used to work just fine with v4.11 or earlier.
+Changes since V1:
+ - Got rid of patch 2 and 3 from initial series
+ - Updated bitmap code locking and also used lighter bitop functions
+ - Updated the Kconfig bits to apply on top of ARCH_RENESAS
 
-My observations for v4.12-rc:
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
 
-1) Default state for a95cfad
+ Developed on top of a95cfad (v4.12-rc1 + fixes):
 
-The devices SYS-DMAC0 and SYS-DMAC1 will never probe. However SYS-DMAC2 is fine.
+ Compile tested on 32-bit and 64-bit ARM
 
-2) After applying "[PATCH] iommu: of: Fix check for returning EPROBE_DEFER" [1]
+ Run time tested on 64-bit ARM r8a7796 Salvator-X
 
-This fixes SYS-DMAC0 that now probes and operates without IPMMU-DS0 as
-expected. Same as v4.11 or earlier.
-
-3) After also applying "[PATCH] of: iommu: Ignore all errors except
-EPROBE_DEFER" [2]
-
-This fixes SYS-DMAC1 that now probes and operates without IPMMU-DS1 as
-expected. Same as v4.11 or earlier.
-
-With fix [1] and [2] things seem back to normal. Unless I'm mistaken
-it also seems that [1] allows me to drop the similar patch "[PATCH/RFC
-v2 1/4] iommu/of: Skip IOMMU devices disabled in DT".
-
-Thanks for your help.
-
-Cheers,
-
-/ magnus
-
-
-[1] https://lkml.org/lkml/2017/5/16/25
-[2] https://www.spinics.net/lists/arm-kernel/msg581485.html
-[3] https://patchwork.kernel.org/patch/9540605/
+ drivers/iommu/Kconfig      |    2 
+ drivers/iommu/ipmmu-vmsa.c |  421 ++++++++++++++++++++++++++++++++++----------
+ 2 files changed, 331 insertions(+), 92 deletions(-)
