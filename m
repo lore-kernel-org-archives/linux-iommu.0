@@ -1,30 +1,43 @@
-From: Robert Richter <robert.richter@cavium.com>
-Subject: Re: [PATCH 1/2] acpica: iort: Update SMMU models for IORT rev. C
-Date: Wed, 17 May 2017 13:26:07 +0200
-Message-ID: <20170517112607.GD658@rric.localdomain>
-References: <0bb462748c0a08dbf1db103d2a96b80c71412817.1494585645.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <0bb462748c0a08dbf1db103d2a96b80c71412817.1494585645.git.robin.murphy@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will.deacon@arm.com, rjw@rjwysocki.net, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linux-kernel@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, Robert Moore <robert.moore@intel.com>, Lv Zheng <lv.zheng@intel.com>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH 1/3] iommu: of: Fix check for returning EPROBE_DEFER
+Date: Wed, 17 May 2017 17:00:07 +0530
+Message-ID: <1495020609-13397-1-git-send-email-sricharan@codeaurora.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+Sender: linux-arch-owner@vger.kernel.org
+To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org, robh+dt@kernel.org, frowand.list@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, catalin.marinas@arm.com, arnd@arndb.de, linux-arch@vger.kernel.org, magnus.damm@gmail.com, geert@linux-m68k.org, j.neuschaefer@gmx.net
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12.05.17 11:41:41, Robin Murphy wrote:
-> IORT revision C has been published with a number of new SMMU
-> implementation identifiers; define them.
-> 
-> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
-> CC: Robert Moore <robert.moore@intel.com>
-> CC: Lv Zheng <lv.zheng@intel.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Now with iommu probe deferral, we return -EPROBE_DEFER
+for master's that are connected to an iommu which is not
+probed yet, but going to get probed, so that we can attach
+the correct dma_ops. So while trying to defer the probe of
+the master, check if the of_iommu node that it is connected
+to is marked in DT as 'status=disabled', then the iommu is never
+is going to get probed. So simply return NULL and let the master
+work without an iommu.
 
-For the whole series:
+Fixes: 7b07cbefb68d ("iommu: of: Handle IOMMU lookup failure with deferred probing or error")
+Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Tested-by: Will Deacon <will.deacon@arm.com>
+Tested-by: Magnus Damn <magnus.damn@gmail.com>
+Acked-by: Will Deacon <will.deacon@arm.com>
+---
+ drivers/iommu/of_iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Acked-by: Robert Richter <rrichter@cavium.com>
-Tested--by: Robert Richter <rrichter@cavium.com>
-
-Thanks Robin
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 9f44ee8..e6e9bec 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct device_node *np)
+ 
+ 	ops = iommu_ops_from_fwnode(fwnode);
+ 	if ((ops && !ops->of_xlate) ||
++	    !of_device_is_available(iommu_spec->np) ||
+ 	    (!ops && !of_iommu_driver_present(iommu_spec->np)))
+ 		return NULL;
+ 
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
