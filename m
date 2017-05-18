@@ -1,164 +1,77 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v5 18/32] x86, mpparse: Use memremap to map the mpf and
- mpc data
-Date: Wed, 17 May 2017 15:26:58 -0500
-Message-ID: <6e155b8f-b691-2ee0-8977-969aaab6199a@amd.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211930.10190.62640.stgit@tlendack-t1.amdoffice.net>
- <20170516083658.fq2h4ysmrbgn23cs@pd.tnic>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH v8 06/08] iommu/ipmmu-vmsa: Use fwspec iommu_priv on ARM64
+Date: Thu, 18 May 2017 14:23:29 +0900
+Message-ID: <CANqRtoQRCZsU9873=M+ac1qDBE5jtFOpDeZJZUgvvuoz+7YwEg@mail.gmail.com>
+References: <149501557669.21593.1017116915706613060.sendpatchset@little-apple>
+ <149501564036.21593.16964345443958773870.sendpatchset@little-apple> <2c64bcfc-e93b-703a-0326-54b6eef73766@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170516083658.fq2h4ysmrbgn23cs@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
- Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
- Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <2c64bcfc-e93b-703a-0326-54b6eef73766@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Sricharan R <sricharan@codeaurora.org>, Will Deacon <will.deacon@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, iommu@lists.linux-foundation.org, Simon Horman <horms+renesas@verge.net.au>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/16/2017 3:36 AM, Borislav Petkov wrote:
-> On Tue, Apr 18, 2017 at 04:19:30PM -0500, Tom Lendacky wrote:
->> The SMP MP-table is built by UEFI and placed in memory in a decrypted
->> state. These tables are accessed using a mix of early_memremap(),
->> early_memunmap(), phys_to_virt() and virt_to_phys(). Change all accesses
->> to use early_memremap()/early_memunmap(). This allows for proper setting
->> of the encryption mask so that the data can be successfully accessed when
->> SME is active.
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/x86/kernel/mpparse.c |  102 +++++++++++++++++++++++++++++++--------------
->>  1 file changed, 71 insertions(+), 31 deletions(-)
->>
->> diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
->> index fd37f39..afbda41d 100644
->> --- a/arch/x86/kernel/mpparse.c
->> +++ b/arch/x86/kernel/mpparse.c
->> @@ -429,7 +429,21 @@ static inline void __init construct_default_ISA_mptable(int mpc_default_type)
->>  	}
->>  }
->>
->> -static struct mpf_intel *mpf_found;
->> +static unsigned long mpf_base;
->> +
->> +static void __init unmap_mpf(struct mpf_intel *mpf)
->> +{
->> +	early_memunmap(mpf, sizeof(*mpf));
->> +}
->> +
->> +static struct mpf_intel * __init map_mpf(unsigned long paddr)
->> +{
->> +	struct mpf_intel *mpf;
->> +
->> +	mpf = early_memremap(paddr, sizeof(*mpf));
->> +
->> +	return mpf;
->
-> 	return early_memremap(paddr, sizeof(*mpf));
->
+Hi Robin,
 
-Ok.
-
-> ...
+On Wed, May 17, 2017 at 11:29 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> Hi Magnus,
 >
->> @@ -842,25 +873,26 @@ static int __init update_mp_table(void)
->>  	if (!enable_update_mptable)
->>  		return 0;
+> On 17/05/17 11:07, Magnus Damm wrote:
+>> From: Magnus Damm <damm+renesas@opensource.se>
 >>
->> -	mpf = mpf_found;
->> -	if (!mpf)
->> +	if (!mpf_base)
->>  		return 0;
+>> Convert from archdata to iommu_priv via iommu_fwspec on ARM64 but
+>> let 32-bit ARM keep on using archdata for now.
 >>
->> +	mpf = map_mpf(mpf_base);
->> +
->>  	/*
->>  	 * Now see if we need to go further.
->>  	 */
->>  	if (mpf->feature1 != 0)
->
-> You're kidding, right? map_mpf() *can* return NULL.
-
-Ugh...  don't know how I forgot about that. Will fix everywhere.
-
->
-> Also, simplify that test:
->
-> 	if (mpf->feature1)
-> 		...
-
-Ok, I can do that but I hope no one says anything about it being
-unrelated to the patch. :)
-
->
->
->> -		return 0;
->> +		goto do_unmap_mpf;
+>> Once the 32-bit ARM code and the IPMMU driver is able to move over
+>> to CONFIG_IOMMU_DMA=y then coverting to fwspec via ->of_xlate() will
+>> be easy.
 >>
->>  	if (!mpf->physptr)
->> -		return 0;
->> +		goto do_unmap_mpf;
->>
->> -	mpc = phys_to_virt(mpf->physptr);
->> +	mpc = map_mpc(mpf->physptr);
+>> For now fwspec ids and num_ids are not used to allow code sharing between
+>> 32-bit and 64-bit ARM code inside the driver.
 >
-> Again: error checking !!!
+> That's not what I meant at all - this just looks like a crazy
+> unmaintainable mess that's making things that much harder to unpick in
+> future.
 >
-> You have other calls to early_memremap()/map_mpf() in this patch. Please
-> add error checking everywhere.
+> Leaving the existing code fossilised and building up half of a second
+> separate driver around it wrapped in ifdefs is not only hideous, it's
+> more work in the end than simply pulling things into the right shape to
+> begin with. What I meant was to start with the below (compile-tested
+> only), and add the of_xlate support on top. AFAICS the arm/arm64
+> differences overall should only come down to a bit of special-casing in
+> add_device(), and (optionally) whether you outright reject
+> IOMMU_DOMAIN_DMA or not.
+>
+> Sorry, but I just can't agree with the two-drivers-in-one approach.
 
-Yup.
+Thanks for checking the code and sorry to disappoint you by not using
+->ids[] and ->num_ids right away. The two-drivers-on-one approach
+comes from wanting to use the same IOMMU driver on both 32-bit and
+64-bit ARM architectures but the former is lacking IOMMU_DMA support
+upstream.
 
->
->>
->>  	if (!smp_check_mpc(mpc, oem, str))
->> -		return 0;
->> +		goto do_unmap_mpc;
->>
->> -	pr_info("mpf: %llx\n", (u64)virt_to_phys(mpf));
->> +	pr_info("mpf: %llx\n", (u64)mpf_base);
->>  	pr_info("physptr: %x\n", mpf->physptr);
->>
->>  	if (mpc_new_phys && mpc->length > mpc_new_length) {
->> @@ -878,21 +910,23 @@ static int __init update_mp_table(void)
->>  		new = mpf_checksum((unsigned char *)mpc, mpc->length);
->>  		if (old == new) {
->>  			pr_info("mpc is readonly, please try alloc_mptable instead\n");
->> -			return 0;
->> +			goto do_unmap_mpc;
->>  		}
->>  		pr_info("use in-position replacing\n");
->>  	} else {
->>  		mpf->physptr = mpc_new_phys;
->> -		mpc_new = phys_to_virt(mpc_new_phys);
->> +		mpc_new = map_mpc(mpc_new_phys);
->
-> Ditto.
->
->>  		memcpy(mpc_new, mpc, mpc->length);
->> +		unmap_mpc(mpc);
->>  		mpc = mpc_new;
->>  		/* check if we can modify that */
->>  		if (mpc_new_phys - mpf->physptr) {
->>  			struct mpf_intel *mpf_new;
->>  			/* steal 16 bytes from [0, 1k) */
->>  			pr_info("mpf new: %x\n", 0x400 - 16);
->> -			mpf_new = phys_to_virt(0x400 - 16);
->> +			mpf_new = map_mpf(0x400 - 16);
->
-> Ditto.
->
->>  			memcpy(mpf_new, mpf, 16);
->> +			unmap_mpf(mpf);
->>  			mpf = mpf_new;
->>  			mpf->physptr = mpc_new_phys;
->>  		}
->
+Obviously using ->ids[] and ->num_ids is the right forward, and in my
+mind it is only a question of time and merge order. I'm more than
+happy to make use of your patch but I'm wondering if it will work on
+32-bit ARM and R-Car Gen2 that currently does not use ->of_xlate(). I
+can see that you're using iommu_fwspec_init() so it might work right
+out of the box. Thanks for your help cooking up the patch by the way.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+>From my side I was hoping on doing one larger feature jump for 32-bit
+ARM by moving over to IOMMU_DMA=y together with ->of_xlate()and fwspec
+at the same time. Doing minor increments of the legacy code that is
+still using special mapping code instead of OMMU_DMA=y in case of
+32-bit ARM just feels like a lot of potential breakage and little gain
+to me.
+
+What's the plan for supporting IOMMU_DMA=y on 32-bit ARM? Anything I
+can do to help? Or do you prefer minor increments on 32-bit ARM over
+larger feature jumps?
+
+Let me know what you think. My plan is to revisit this topic early next week.
+
+Cheers,
+
+/ magnus
