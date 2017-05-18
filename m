@@ -1,43 +1,97 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH/RFC] iommu: Move over to unsigned int domain type
-Date: Thu, 18 May 2017 14:26:31 +0900
-Message-ID: <CANqRtoR_ra2ygfEc9e7Ong254e2xoRuSoezn=1v+YSjWBw4Mgw@mail.gmail.com>
-References: <149501695257.25282.12037681018061688033.sendpatchset@little-apple>
-	<20170517131853.GC1912@8bytes.org>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v3 3/6] iommu/iova: adjust __cached_rbnode_insert_update
+Date: Thu, 18 May 2017 15:59:54 +0800
+Message-ID: <1495094397-9132-4-git-send-email-thunder.leizhen@huawei.com>
+References: <1495094397-9132-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170517131853.GC1912-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1495094397-9132-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+For case 2 and 3, adjust cached32_node to the new place, case 1 keep no
+change.
 
-On Wed, May 17, 2017 at 10:18 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> On Wed, May 17, 2017 at 07:29:12PM +0900, Magnus Damm wrote:
->> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
->>
->> Checkpatch dislikes the type unsigned, so update the iommu
->> domain type and consumers to use unsigned int to reduce noise.
->
-> And I hate stupid checkpatch warnings and refuse to fix them. This
-> clearly is one.
+For example:
+case1: (the right part was allocated)
+	|------------------------------|
+	|<-----free---->|<--new_iova-->|
+	|
+	|
+   cached32_node
 
-Gotcha, fine by me! Let me know if there is anything more non-cosmetic
-in the IOMMU subsystem that you think would be more useful to spend
-cycles on.
+case2: (all was allocated)
+	|------------------------------|
+	|<---------new_iova----------->|
+	|
+	|
+   cached32_node
 
-Cheers,
+case3:
+	|-----------------------|......|---------|
+        |..free..|<--new_iova-->|<not enough iova space>
+        |                              |
+        |                              |
+   cached32_node(new)             cached32_node(old)
 
-/ magnus
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/iova.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index d0c19ec..1b8e136 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -91,12 +91,16 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+ }
+ 
+ static void
+-__cached_rbnode_insert_update(struct iova_domain *iovad,
+-	unsigned long limit_pfn, struct iova *new)
++__cached_rbnode_insert_update(struct iova_domain *iovad, struct iova *new)
+ {
+-	if (limit_pfn != iovad->dma_32bit_pfn)
++	struct iova *cached_iova;
++
++	if (new->pfn_hi > iovad->dma_32bit_pfn)
+ 		return;
+-	iovad->cached32_node = &new->node;
++
++	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
++	if (new->pfn_lo <= cached_iova->pfn_lo)
++		iovad->cached32_node = rb_prev(&new->node);
+ }
+ 
+ static void
+@@ -159,12 +163,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ {
+ 	struct rb_node *prev, *curr;
+ 	unsigned long flags;
+-	unsigned long saved_pfn;
+ 	unsigned int pad_size = 0;
+ 
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+-	saved_pfn = limit_pfn;
+ 	curr = __get_cached_rbnode(iovad, &limit_pfn);
+ 	prev = curr;
+ 	while (curr) {
+@@ -198,11 +200,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 	/* If we have 'prev', it's a valid place to start the insertion. */
+ 	iova_insert_rbtree(&iovad->rbroot, new, prev);
+-	__cached_rbnode_insert_update(iovad, saved_pfn, new);
++	__cached_rbnode_insert_update(iovad, new);
+ 
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 
+-
+ 	return 0;
+ }
+ 
+-- 
+2.5.0
