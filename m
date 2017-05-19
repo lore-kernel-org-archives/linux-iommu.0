@@ -1,111 +1,137 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.12-rc1
-Date: Fri, 19 May 2017 11:32:24 +0200
-Message-ID: <20170519093218.GA6658@8bytes.org>
+From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Subject: Re: [Qemu-devel] [RFC PATCH 09/20] Memory: introduce
+ iommu_ops->record_device
+Date: Fri, 19 May 2017 17:35:59 +0800
+Message-ID: <20170519093559.GB10952@sky-dev>
+References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
+ <1493201210-14357-10-git-send-email-yi.l.liu@linux.intel.com>
+ <5c64416d-7d8a-f1a6-64f9-cb0bf1d95a4a@intel.com>
+ <20170519052338.GA10952@sky-dev>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CD9CA5@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3327733894776003941=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <kvm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190CD9CA5@SHSMSX101.ccr.corp.intel.com>
+Sender: kvm-owner@vger.kernel.org
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "peterx@redhat.com" <peterx@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, May 19, 2017 at 09:07:49AM +0000, Tian, Kevin wrote:
+> > From: Liu, Yi L [mailto:yi.l.liu@linux.intel.com]
+> > Sent: Friday, May 19, 2017 1:24 PM
+> > 
+> > Hi Alex,
+> > 
+> > What's your opinion with Tianyu's question? Is it accepatable
+> > to use VFIO API in intel_iommu emulator?
+> 
+> Did you actually need such translation at all? SID should be
+> filled by kernel IOMMU driver based on which device is
+> requested with invalidation request, regardless of which 
+> guest SID is used in user space. Qemu only needs to know
+> which fd corresponds to guest SID, and then initiates an
+> invalidation request on that fd?
 
---===============3327733894776003941==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="17pEHd4RhPHOinZp"
-Content-Disposition: inline
+Kevin,
 
+It actually depends on the svm binding behavior we expect in host
+IOMMU driver side. If we want to have the binding per-device, this
+translation is needed in Qemu either in VFIO or intel_iommu emulator.
+So that the host SID could be used as a device selector when looping
+devices in a group.
 
---17pEHd4RhPHOinZp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit 2ea659a9ef488125eb46da6eb571de5eae5c43f6:
-
-  Linux 4.12-rc1 (2017-05-13 13:19:49 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.12-rc1
-
-for you to fetch changes up to 745b6e74704782488dd875292bc49e24d23e81fd:
-
-  iommu/mediatek: Include linux/dma-mapping.h (2017-05-17 14:51:54 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.12-rc1
-
-Including:
-
-	* Another compile-fix as a fallout of the recent header-file
-	  cleanup
-
-	* Add a missing IO/TLB flush to the Intel VT-d kdump code path
-
-	* A fix for ARM64 dma code to only access initialized
-	  iova_domain members
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      iommu/mediatek: Include linux/dma-mapping.h
-
-KarimAllah Ahmed (1):
-      iommu/vt-d: Flush the IOTLB to get rid of the initial kdump mappings
-
-Robin Murphy (1):
-      iommu/dma: Don't touch invalid iova_domain members
-
- drivers/iommu/dma-iommu.c    | 13 ++++++++-----
- drivers/iommu/intel-iommu.c  |  5 ++++-
- drivers/iommu/mtk_iommu_v1.c |  1 +
- 3 files changed, 13 insertions(+), 6 deletions(-)
-
-Please pull.
+If we can use VFIO API directly, we also may trigger the svm bind/qi
+propagation straightforwardly instead of using notifier.
 
 Thanks,
-
-	Joerg
-
---17pEHd4RhPHOinZp
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJZHruiAAoJECvwRC2XARrjbKgP+wSYD++A4DTZ2DoxFwIeeXtj
-4XgN0uNN01uoiP3rvhH/EkTQmzuCioFRgM87xRPfb8v5mdSWkLJtLCaVgfcpEb2z
-hxDkyGcMS14Zwfun/nqDF/fJRXUhpgQDQHedokZ7QM1bkPQ/isCZ3CVCFUQ1wMdV
-jzulifLa5hFbynKni6bv9pYNVh5VGlUkHIVDKrWOj6OIHyQsM1cOnXQ4AUJx8LtJ
-OIe09bHi4IbA7VK0RfaXshFevmmZr1jR8YzkLfg6gohHocQBe0dp/YO9Tq2RvX+O
-Cm8OAQba0zU3RTtb8dNrOzPhJbbZfLTxIeb0eB8QqTv1B9ENjKQ79HcU/eKWO9x0
-Iml+3uS4iNeOFkqthw74eTWQVonYVbk0qpg59UvdAybzZGQay3x3KhZ5sGnUiAXL
-NlS4qt3H6DS9ZzqoVhJB8WbDvZCkkZqpFbKGZ9o2LvI5WiziOtTJWLtCCHbINLHJ
-LDT8PB0eFTfxj/9WODSbA0SqclUgtBIOJAYF/WVVBhvbyBvl29kjpUtFZBBI33Ng
-YMkSdpqKskB/Kw4a4xEMBHIu9ao/LOTB7TvUtIwaQEeebQV8CLB4b0hMEnAVMsCH
-KfEQshN+MgGiGzxmrqe/RZ3NgC6QFeKmtpT4g9T7un04dFl1rO1f8eu8Yk4P4XLc
-dHVb1x/RcCRjEwU3Buny
-=yF9t
------END PGP SIGNATURE-----
-
---17pEHd4RhPHOinZp--
-
---===============3327733894776003941==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3327733894776003941==--
+Yi L
+ 
+> > 
+> > Thanks,
+> > Yi L
+> > On Fri, Apr 28, 2017 at 02:46:16PM +0800, Lan Tianyu wrote:
+> > > On 2017年04月26日 18:06, Liu, Yi L wrote:
+> > > > With vIOMMU exposed to guest, vIOMMU emulator needs to do
+> > translation
+> > > > between host and guest. e.g. a device-selective TLB flush, vIOMMU
+> > > > emulator needs to replace guest SID with host SID so that to limit
+> > > > the invalidation. This patch introduces a new callback
+> > > > iommu_ops->record_device() to notify vIOMMU emulator to record
+> > necessary
+> > > > information about the assigned device.
+> > >
+> > > This patch is to prepare to translate guest sbdf to host sbdf.
+> > >
+> > > Alex:
+> > > 	Could we add a new vfio API to do such translation? This will be more
+> > > straight forward than storing host sbdf in the vIOMMU device model.
+> > >
+> > > >
+> > > > Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> > > > ---
+> > > >  include/exec/memory.h | 11 +++++++++++
+> > > >  memory.c              | 12 ++++++++++++
+> > > >  2 files changed, 23 insertions(+)
+> > > >
+> > > > diff --git a/include/exec/memory.h b/include/exec/memory.h
+> > > > index 7bd13ab..49087ef 100644
+> > > > --- a/include/exec/memory.h
+> > > > +++ b/include/exec/memory.h
+> > > > @@ -203,6 +203,8 @@ struct MemoryRegionIOMMUOps {
+> > > >                                  IOMMUNotifierFlag new_flags);
+> > > >      /* Set this up to provide customized IOMMU replay function */
+> > > >      void (*replay)(MemoryRegion *iommu, IOMMUNotifier *notifier);
+> > > > +    void (*record_device)(MemoryRegion *iommu,
+> > > > +                          void *device_info);
+> > > >  };
+> > > >
+> > > >  typedef struct CoalescedMemoryRange CoalescedMemoryRange;
+> > > > @@ -708,6 +710,15 @@ void
+> > memory_region_notify_iommu(MemoryRegion *mr,
+> > > >  void memory_region_notify_one(IOMMUNotifier *notifier,
+> > > >                                IOMMUTLBEntry *entry);
+> > > >
+> > > > +/*
+> > > > + * memory_region_notify_device_record: notify IOMMU to record
+> > assign
+> > > > + * device.
+> > > > + * @mr: the memory region to notify
+> > > > + * @ device_info: device information
+> > > > + */
+> > > > +void memory_region_notify_device_record(MemoryRegion *mr,
+> > > > +                                        void *info);
+> > > > +
+> > > >  /**
+> > > >   * memory_region_register_iommu_notifier: register a notifier for
+> > changes to
+> > > >   * IOMMU translation entries.
+> > > > diff --git a/memory.c b/memory.c
+> > > > index 0728e62..45ef069 100644
+> > > > --- a/memory.c
+> > > > +++ b/memory.c
+> > > > @@ -1600,6 +1600,18 @@ static void
+> > memory_region_update_iommu_notify_flags(MemoryRegion *mr)
+> > > >      mr->iommu_notify_flags = flags;
+> > > >  }
+> > > >
+> > > > +void memory_region_notify_device_record(MemoryRegion *mr,
+> > > > +                                        void *info)
+> > > > +{
+> > > > +    assert(memory_region_is_iommu(mr));
+> > > > +
+> > > > +    if (mr->iommu_ops->record_device) {
+> > > > +        mr->iommu_ops->record_device(mr, info);
+> > > > +    }
+> > > > +
+> > > > +    return;
+> > > > +}
+> > > > +
+> > > >  void memory_region_register_iommu_notifier(MemoryRegion *mr,
+> > > >                                             IOMMUNotifier *n)
+> > > >  {
+> > > >
+> > >
+> > >
