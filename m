@@ -1,66 +1,31 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 32/32] x86/mm: Add support to make use of Secure
- Memory Encryption
-Date: Fri, 19 May 2017 13:30:05 +0200
-Message-ID: <20170519113005.3f5kwzg4pgh7j6a5@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418212223.10190.85121.stgit@tlendack-t1.amdoffice.net>
- <c29edaff-24f2-ee9b-4142-bdbf8c42083f@amd.com>
+From: Robert Richter <robert.richter@cavium.com>
+Subject: Re: [PATCH 1/2] acpica: iort: Update SMMU models for IORT rev. C
+Date: Fri, 19 May 2017 13:32:37 +0200
+Message-ID: <20170519113237.GN658@rric.localdomain>
+References: <0bb462748c0a08dbf1db103d2a96b80c71412817.1494585645.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c29edaff-24f2-ee9b-4142-bdbf8c42083f@amd.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>, Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
+In-Reply-To: <0bb462748c0a08dbf1db103d2a96b80c71412817.1494585645.git.robin.murphy@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will.deacon@arm.com, rjw@rjwysocki.net, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linux-kernel@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, Robert Moore <robert.moore@intel.com>, Lv Zheng <lv.zheng@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 21, 2017 at 01:56:13PM -0500, Tom Lendacky wrote:
-> On 4/18/2017 4:22 PM, Tom Lendacky wrote:
-> > Add support to check if SME has been enabled and if memory encryption
-> > should be activated (checking of command line option based on the
-> > configuration of the default state).  If memory encryption is to be
-> > activated, then the encryption mask is set and the kernel is encrypted
-> > "in place."
-> > 
-> > Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> > ---
-> >  arch/x86/kernel/head_64.S |    1 +
-> >  arch/x86/mm/mem_encrypt.c |   83 +++++++++++++++++++++++++++++++++++++++++++--
-> >  2 files changed, 80 insertions(+), 4 deletions(-)
-> > 
+On 12.05.17 11:41:41, Robin Murphy wrote:
+> IORT revision C has been published with a number of new SMMU
+> implementation identifiers; define them.
 > 
-> ...
-> 
-> > 
-> > -unsigned long __init sme_enable(void)
-> > +unsigned long __init sme_enable(struct boot_params *bp)
-> >  {
-> > +	const char *cmdline_ptr, *cmdline_arg, *cmdline_on, *cmdline_off;
-> > +	unsigned int eax, ebx, ecx, edx;
-> > +	unsigned long me_mask;
-> > +	bool active_by_default;
-> > +	char buffer[16];
-> 
-> So it turns out that when KASLR is enabled (CONFIG_RAMDOMIZE_BASE=y)
-> the stack-protector support causes issues with this function because
+> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
+> CC: Robert Moore <robert.moore@intel.com>
+> CC: Lv Zheng <lv.zheng@intel.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-What issues?
+As an additional note, could these both patches being marked stable?
+If we are going to deploy fw with the new model number, older kernels
+become unusable as the smmu is not detected any longer.
 
-> it is called so early. I can get past it by adding:
-> 
-> CFLAGS_mem_encrypt.o := $(nostackp)
-> 
-> in the arch/x86/mm/Makefile, but that obviously eliminates the support
-> for the whole file.  Would it be better to split out the sme_enable()
-> and other boot routines into a separate file or just apply the
-> $(nostackp) to the whole file?
+Thanks,
 
-Josh might have a better idea here... CCed.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+-Robert
