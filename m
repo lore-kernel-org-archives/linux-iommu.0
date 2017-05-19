@@ -1,52 +1,59 @@
-From: Matt Fleming <matt@codeblueprint.co.uk>
-Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
- in the clear
-Date: Thu, 18 May 2017 20:50:51 +0100
-Message-ID: <20170518195051.GA5651@codeblueprint.co.uk>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
- <20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
+From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v6 2/3] iommu/pci: reserve IOVA for PCI masters
+Date: Fri, 19 May 2017 06:51:28 +0530
+Message-ID: <CAMSpPPfnhSb3w4te=k5aHGoC6wgn0iu7EAvc5gxwxGnNe4JehQ@mail.gmail.com>
+References: <1494912127-12890-1-git-send-email-oza.oza@broadcom.com>
+	<1494912127-12890-3-git-send-email-oza.oza@broadcom.com>
+	<20170517171154.GF31462@bhelgaas-glaptop.roam.corp.google.com>
+Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170517171154.GF31462-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 15 May, at 08:35:17PM, Borislav Petkov wrote:
-> On Tue, Apr 18, 2017 at 04:19:21PM -0500, Tom Lendacky wrote:
+On Wed, May 17, 2017 at 10:41 PM, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> On Tue, May 16, 2017 at 10:52:06AM +0530, Oza Pawandeep wrote:
+>> this patch reserves the IOVA for PCI masters.
+>> ARM64 based SOCs may have scattered memory banks.
+>> such as iproc based SOC has
+>>
+>> <0x00000000 0x80000000 0x0 0x80000000>, /* 2G @ 2G */
+>> <0x00000008 0x80000000 0x3 0x80000000>, /* 14G @ 34G */
+>> <0x00000090 0x00000000 0x4 0x00000000>, /* 16G @ 576G */
+>> <0x000000a0 0x00000000 0x4 0x00000000>; /* 16G @ 640G */
+>>
+>> but incoming PCI transcation addressing capability is limited
 >
-> > +		paddr = boot_params.efi_info.efi_memmap_hi;
-> > +		paddr <<= 32;
-> > +		paddr |= boot_params.efi_info.efi_memmap;
-> > +		if (phys_addr == paddr)
-> > +			return true;
-> > +
-> > +		paddr = boot_params.efi_info.efi_systab_hi;
-> > +		paddr <<= 32;
-> > +		paddr |= boot_params.efi_info.efi_systab;
-> 
-> So those two above look like could be two global vars which are
-> initialized somewhere in the EFI init path:
-> 
-> efi_memmap_phys and efi_systab_phys or so.
-> 
-> Matt ?
-> 
-> And then you won't need to create that paddr each time on the fly. I
-> mean, it's not a lot of instructions but still...
- 
-We should already have the physical memmap address available in
-'efi.memmap.phys_map'.
+> s/transcation/transaction/
+>
+>> by host bridge, for example if max incoming window capability
+>> is 512 GB, then 0x00000090 and 0x000000a0 will fall beyond it.
+>>
+>> to address this problem, iommu has to avoid allocating IOVA which
+>
+> s/iommu/IOMMU/
+>
+>> are reserved. which inturn does not allocate IOVA if it falls into hole.
+>
+> s/inturn/in turn/
 
-And the physical address of the system table should be in
-'efi_phys.systab'. See efi_init().
+Hi Bjorn,
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Thank you for the comments.
+Will take care of all your comments.
+
+Regards,
+Oza.
