@@ -1,10 +1,9 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/amd: Ratelimit io-page-faults per device
-Date: Fri, 19 May 2017 11:21:32 +0200
-Message-ID: <1495185692-18061-1-git-send-email-joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.12-rc1
+Date: Fri, 19 May 2017 11:32:24 +0200
+Message-ID: <20170519093218.GA6658@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3327733894776003941=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -15,88 +14,98 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: bp-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Misbehaving devices can cause an endless chain of
-io-page-faults, flooding dmesg and making the system-log
-unusable or even prevent the system from booting.
+--===============3327733894776003941==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="17pEHd4RhPHOinZp"
+Content-Disposition: inline
 
-So ratelimit the error messages about io-page-faults in a
-per-device basis.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+--17pEHd4RhPHOinZp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 63cacf5..f574a0f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -138,6 +138,8 @@ struct iommu_dev_data {
- 					     PPR completions */
- 	u32 errata;			  /* Bitmap for errata to apply */
- 	bool use_vapic;			  /* Enable device to use vapic mode */
-+
-+	struct ratelimit_state rs;	  /* Ratelimit IOPF messages */
- };
- 
- /*
-@@ -253,6 +255,8 @@ static struct iommu_dev_data *alloc_dev_data(u16 devid)
- 	list_add_tail(&dev_data->dev_data_list, &dev_data_list);
- 	spin_unlock_irqrestore(&dev_data_list_lock, flags);
- 
-+	ratelimit_default_init(&dev_data->rs);
-+
- 	return dev_data;
- }
- 
-@@ -551,6 +555,30 @@ static void dump_command(unsigned long phys_addr)
- 		pr_err("AMD-Vi: CMD[%d]: %08x\n", i, cmd->data[i]);
- }
- 
-+static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
-+					u64 address, int flags)
-+{
-+	struct iommu_dev_data *dev_data = NULL;
-+	struct pci_dev *pdev;
-+
-+	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
-+	if (pdev)
-+		dev_data = get_dev_data(&pdev->dev);
-+
-+	if (dev_data && __ratelimit(&dev_data->rs)) {
-+		dev_err(&pdev->dev, "IO_PAGE_FAULT domain=0x%04x address=0x%016llx flags=0x%04x]\n",
-+			domain_id, address, flags);
-+	} else if (printk_ratelimit()) {
-+		pr_err("IO_PAGE_FAULT device=%02x:%02x.%x "
-+		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
-+			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+			domain_id, address, flags);
-+	}
-+
-+	if (pdev)
-+		pci_dev_put(pdev);
-+}
-+
- static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- {
- 	int type, devid, domid, flags;
-@@ -586,10 +614,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 		dump_dte_entry(devid);
- 		break;
- 	case EVENT_TYPE_IO_FAULT:
--		printk("IO_PAGE_FAULT device=%02x:%02x.%x "
--		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
--		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--		       domid, address, flags);
-+		amd_iommu_report_page_fault(devid, domid, address, flags);
- 		break;
- 	case EVENT_TYPE_DEV_TAB_ERR:
- 		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
--- 
-2.7.4
+Hi Linus,
+
+The following changes since commit 2ea659a9ef488125eb46da6eb571de5eae5c43f6:
+
+  Linux 4.12-rc1 (2017-05-13 13:19:49 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.12-rc1
+
+for you to fetch changes up to 745b6e74704782488dd875292bc49e24d23e81fd:
+
+  iommu/mediatek: Include linux/dma-mapping.h (2017-05-17 14:51:54 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.12-rc1
+
+Including:
+
+	* Another compile-fix as a fallout of the recent header-file
+	  cleanup
+
+	* Add a missing IO/TLB flush to the Intel VT-d kdump code path
+
+	* A fix for ARM64 dma code to only access initialized
+	  iova_domain members
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      iommu/mediatek: Include linux/dma-mapping.h
+
+KarimAllah Ahmed (1):
+      iommu/vt-d: Flush the IOTLB to get rid of the initial kdump mappings
+
+Robin Murphy (1):
+      iommu/dma: Don't touch invalid iova_domain members
+
+ drivers/iommu/dma-iommu.c    | 13 ++++++++-----
+ drivers/iommu/intel-iommu.c  |  5 ++++-
+ drivers/iommu/mtk_iommu_v1.c |  1 +
+ 3 files changed, 13 insertions(+), 6 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--17pEHd4RhPHOinZp
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZHruiAAoJECvwRC2XARrjbKgP+wSYD++A4DTZ2DoxFwIeeXtj
+4XgN0uNN01uoiP3rvhH/EkTQmzuCioFRgM87xRPfb8v5mdSWkLJtLCaVgfcpEb2z
+hxDkyGcMS14Zwfun/nqDF/fJRXUhpgQDQHedokZ7QM1bkPQ/isCZ3CVCFUQ1wMdV
+jzulifLa5hFbynKni6bv9pYNVh5VGlUkHIVDKrWOj6OIHyQsM1cOnXQ4AUJx8LtJ
+OIe09bHi4IbA7VK0RfaXshFevmmZr1jR8YzkLfg6gohHocQBe0dp/YO9Tq2RvX+O
+Cm8OAQba0zU3RTtb8dNrOzPhJbbZfLTxIeb0eB8QqTv1B9ENjKQ79HcU/eKWO9x0
+Iml+3uS4iNeOFkqthw74eTWQVonYVbk0qpg59UvdAybzZGQay3x3KhZ5sGnUiAXL
+NlS4qt3H6DS9ZzqoVhJB8WbDvZCkkZqpFbKGZ9o2LvI5WiziOtTJWLtCCHbINLHJ
+LDT8PB0eFTfxj/9WODSbA0SqclUgtBIOJAYF/WVVBhvbyBvl29kjpUtFZBBI33Ng
+YMkSdpqKskB/Kw4a4xEMBHIu9ao/LOTB7TvUtIwaQEeebQV8CLB4b0hMEnAVMsCH
+KfEQshN+MgGiGzxmrqe/RZ3NgC6QFeKmtpT4g9T7un04dFl1rO1f8eu8Yk4P4XLc
+dHVb1x/RcCRjEwU3Buny
+=yF9t
+-----END PGP SIGNATURE-----
+
+--17pEHd4RhPHOinZp--
+
+--===============3327733894776003941==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3327733894776003941==--
