@@ -1,59 +1,78 @@
-From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH v6 2/3] iommu/pci: reserve IOVA for PCI masters
-Date: Fri, 19 May 2017 06:51:28 +0530
-Message-ID: <CAMSpPPfnhSb3w4te=k5aHGoC6wgn0iu7EAvc5gxwxGnNe4JehQ@mail.gmail.com>
-References: <1494912127-12890-1-git-send-email-oza.oza@broadcom.com>
-	<1494912127-12890-3-git-send-email-oza.oza@broadcom.com>
-	<20170517171154.GF31462@bhelgaas-glaptop.roam.corp.google.com>
-Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+Date: Fri, 19 May 2017 10:31:44 +0900
+Message-ID: <ffc6c11e-f33b-6092-9df2-b01c237561ff@daenzer.net>
+References: <20170322112242.GK29659@8bytes.org>
+ <1490595427-11979-1-git-send-email-arindam.nath@amd.com>
+ <20170407102039.GW7266@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170517171154.GF31462-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20170407102039.GW7266-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, arindam.nath-5C7GfCeVMHo@public.gmane.org
+Cc: John.Bridgman-5C7GfCeVMHo@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, Alexander.Deucher-5C7GfCeVMHo@public.gmane.org, linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 17, 2017 at 10:41 PM, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> On Tue, May 16, 2017 at 10:52:06AM +0530, Oza Pawandeep wrote:
->> this patch reserves the IOVA for PCI masters.
->> ARM64 based SOCs may have scattered memory banks.
->> such as iproc based SOC has
->>
->> <0x00000000 0x80000000 0x0 0x80000000>, /* 2G @ 2G */
->> <0x00000008 0x80000000 0x3 0x80000000>, /* 14G @ 34G */
->> <0x00000090 0x00000000 0x4 0x00000000>, /* 16G @ 576G */
->> <0x000000a0 0x00000000 0x4 0x00000000>; /* 16G @ 640G */
->>
->> but incoming PCI transcation addressing capability is limited
->
-> s/transcation/transaction/
->
->> by host bridge, for example if max incoming window capability
->> is 512 GB, then 0x00000090 and 0x000000a0 will fall beyond it.
->>
->> to address this problem, iommu has to avoid allocating IOVA which
->
-> s/iommu/IOMMU/
->
->> are reserved. which inturn does not allocate IOVA if it falls into hole.
->
-> s/inturn/in turn/
-
-Hi Bjorn,
-
-Thank you for the comments.
-Will take care of all your comments.
-
-Regards,
-Oza.
+T24gMDcvMDQvMTcgMDc6MjAgUE0sIEpvZXJnIFJvZWRlbCB3cm90ZToKPiBPbiBNb24sIE1hciAy
+NywgMjAxNyBhdCAxMTo0NzowN0FNICswNTMwLCBhcmluZGFtLm5hdGhAYW1kLmNvbSB3cm90ZToK
+Pj4gRnJvbTogQXJpbmRhbSBOYXRoIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KPj4KPj4gVGhlIGlk
+ZWEgYmVoaW5kIGZsdXNoIHF1ZXVlcyBpcyB0byBkZWZlciB0aGUgSU9UTEIgZmx1c2hpbmcKPj4g
+Zm9yIGRvbWFpbnMgZm9yIHdoaWNoIHRoZSBtYXBwaW5ncyBhcmUgbm8gbG9uZ2VyIHZhbGlkLiBX
+ZQo+PiBhZGQgc3VjaCBkb21haW5zIGluIHF1ZXVlX2FkZCgpLCBhbmQgd2hlbiB0aGUgcXVldWUg
+c2l6ZQo+PiByZWFjaGVzIEZMVVNIX1FVRVVFX1NJWkUsIHdlIHBlcmZvcm0gX19xdWV1ZV9mbHVz
+aCgpLgo+Pgo+PiBTaW5jZSB3ZSBoYXZlIGFscmVhZHkgdGFrZW4gbG9jayBiZWZvcmUgX19xdWV1
+ZV9mbHVzaCgpCj4+IGlzIGNhbGxlZCwgd2UgbmVlZCB0byBtYWtlIHN1cmUgdGhlIElPVExCIGZs
+dXNoaW5nIGlzCj4+IHBlcmZvcm1lZCBhcyBxdWlja2x5IGFzIHBvc3NpYmxlLgo+Pgo+PiBJbiB0
+aGUgY3VycmVudCBpbXBsZW1lbnRhdGlvbiwgd2UgcGVyZm9ybSBJT1RMQiBmbHVzaGluZwo+PiBm
+b3IgYWxsIGRvbWFpbnMgaXJyZXNwZWN0aXZlIG9mIHdoaWNoIG9uZXMgd2VyZSBhY3R1YWxseQo+
+PiBhZGRlZCBpbiB0aGUgZmx1c2ggcXVldWUgaW5pdGlhbGx5LiBUaGlzIGNhbiBiZSBxdWl0ZQo+
+PiBleHBlbnNpdmUgZXNwZWNpYWxseSBmb3IgZG9tYWlucyBmb3Igd2hpY2ggdW5tYXBwaW5nIGlz
+Cj4+IG5vdCByZXF1aXJlZCBhdCB0aGlzIHBvaW50IG9mIHRpbWUuCj4+Cj4+IFRoaXMgcGF0Y2gg
+bWFrZXMgdXNlIG9mIGRvbWFpbiBpbmZvcm1hdGlvbiBpbgo+PiAnc3RydWN0IGZsdXNoX3F1ZXVl
+X2VudHJ5JyB0byBtYWtlIHN1cmUgd2Ugb25seSBmbHVzaAo+PiBJT1RMQnMgZm9yIGRvbWFpbnMg
+d2hvIG5lZWQgaXQsIHNraXBwaW5nIG90aGVycy4KPj4KPj4gU2lnbmVkLW9mZi1ieTogQXJpbmRh
+bSBOYXRoIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KPj4gLS0tCj4+ICBkcml2ZXJzL2lvbW11L2Ft
+ZF9pb21tdS5jIHwgMTUgKysrKysrKystLS0tLS0tCj4+ICAxIGZpbGUgY2hhbmdlZCwgOCBpbnNl
+cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21t
+dS9hbWRfaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMKPj4gaW5kZXggOTg5NDBk
+MS4uNmE5YTA0OCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYwo+PiAr
+KysgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jCj4+IEBAIC0yMjI3LDE1ICsyMjI3LDE2IEBA
+IHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmFtZF9pb21tdV9kZXZpY2VfZ3JvdXAoc3RydWN0
+IGRldmljZSAqZGV2KQo+PiAgCj4+ICBzdGF0aWMgdm9pZCBfX3F1ZXVlX2ZsdXNoKHN0cnVjdCBm
+bHVzaF9xdWV1ZSAqcXVldWUpCj4+ICB7Cj4+IC0Jc3RydWN0IHByb3RlY3Rpb25fZG9tYWluICpk
+b21haW47Cj4+IC0JdW5zaWduZWQgbG9uZyBmbGFnczsKPj4gIAlpbnQgaWR4Owo+PiAgCj4+IC0J
+LyogRmlyc3QgZmx1c2ggVExCIG9mIGFsbCBrbm93biBkb21haW5zICovCj4+IC0Jc3Bpbl9sb2Nr
+X2lycXNhdmUoJmFtZF9pb21tdV9wZF9sb2NrLCBmbGFncyk7Cj4+IC0JbGlzdF9mb3JfZWFjaF9l
+bnRyeShkb21haW4sICZhbWRfaW9tbXVfcGRfbGlzdCwgbGlzdCkKPj4gLQkJZG9tYWluX2ZsdXNo
+X3RsYihkb21haW4pOwo+PiAtCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmFtZF9pb21tdV9wZF9s
+b2NrLCBmbGFncyk7Cj4+ICsJLyogRmlyc3QgZmx1c2ggVExCIG9mIGFsbCBkb21haW5zIHdoaWNo
+IHdlcmUgYWRkZWQgdG8gZmx1c2ggcXVldWUgKi8KPj4gKwlmb3IgKGlkeCA9IDA7IGlkeCA8IHF1
+ZXVlLT5uZXh0OyArK2lkeCkgewo+PiArCQlzdHJ1Y3QgZmx1c2hfcXVldWVfZW50cnkgKmVudHJ5
+Owo+PiArCj4+ICsJCWVudHJ5ID0gcXVldWUtPmVudHJpZXMgKyBpZHg7Cj4+ICsKPj4gKwkJZG9t
+YWluX2ZsdXNoX3RsYigmZW50cnktPmRtYV9kb20tPmRvbWFpbik7Cj4+ICsJfQo+IAo+IFdpdGgg
+dGhpcyB3ZSB3aWxsIGZsdXNoIGEgZG9tYWluIGV2ZXJ5IHRpbWUgd2UgZmluZCBvbmUgb2YgaXRz
+Cj4gaW92YS1hZGRyZXNzZXMgaW4gdGhlIGZsdXNoIHF1ZXVlLCBzbyBwb3RlbnRpYWxseSB3ZSBm
+bHVzaCBhIGRvbWFpbgo+IG11bHRpcGxlIHRpbWVzIHBlciBfX3F1ZXVlX2ZsdXNoKCkgY2FsbC4K
+PiAKPiBJdHMgYmV0dGVyIHRvIGVpdGhlciBhZGQgYSBmbHVzaC1mbGFnIHRvIHRoZSBkb21haW5z
+IGFuZCBldmFsdWF0ZSB0aGF0Cj4gaW4gX19xdWV1ZV9mbHVzaCBvciBrZWVwIGEgbGlzdCBvZiBk
+b21haW5zIHRvIGZsdXNoIHRvIG1ha2UgdGhlIGZsdXNoaW5nCj4gcmVhbGx5IG1vcmUgZWZmaWNp
+ZW50LgoKQXJpbmRhbSwgY2FuIHlvdSBpbmNvcnBvcmF0ZSBKb2VyZydzIGZlZWRiYWNrPwoKRldJ
+VywgbG9va3MgbGlrZSBDYXJyaXpvIHN5c3RlbXMgYXJlIGFmZmVjdGVkIGJ5IHRoaXMgYXMgd2Vs
+bCAoc2VlIGUuZy4KaHR0cHM6Ly9idWdzLmZyZWVkZXNrdG9wLm9yZy9zaG93X2J1Zy5jZ2k/aWQ9
+MTAxMDI5I2MyMSksIHNvIGl0IHdvdWxkIGJlCmdvb2QgdG8gbGFuZCB0aGlzIGZpeCBpbiBzb21l
+IGZvcm0gQVNBUC4KCgotLSAKRWFydGhsaW5nIE1pY2hlbCBEw6RuemVyICAgICAgICAgICAgICAg
+fCAgICAgICAgICAgICAgIGh0dHA6Ly93d3cuYW1kLmNvbQpMaWJyZSBzb2Z0d2FyZSBlbnRodXNp
+YXN0ICAgICAgICAgICAgIHwgICAgICAgICAgICAgTWVzYSBhbmQgWCBkZXZlbG9wZXIKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KYW1kLWdmeCBtYWlsaW5n
+IGxpc3QKYW1kLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
+a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9hbWQtZ2Z4Cg==
