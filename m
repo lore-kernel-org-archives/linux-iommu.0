@@ -1,185 +1,107 @@
-From: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only (v2)
-Date: Fri, 19 May 2017 09:35:30 -0400
-Message-ID: <1495200930.4360.6.camel@rutgers.edu>
-References: <20170407102039.GW7266@8bytes.org>
- <1495188151-14358-1-git-send-email-arindam.nath@amd.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v5 19/32] x86/mm: Add support to access persistent memory
+ in the clear
+Date: Fri, 19 May 2017 14:52:58 -0500
+Message-ID: <adce040c-66ba-55ad-4431-780b9c8d1d72@amd.com>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418211941.10190.19751.stgit@tlendack-t1.amdoffice.net>
+ <20170516140449.zmp3sm4krro55bbi@pd.tnic>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2112141829=="
-Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <1495188151-14358-1-git-send-email-arindam.nath-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
-List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: arindam.nath-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: John.Bridgman-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, michel-otUistvHUpPR7s880joybQ@public.gmane.org, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, Alexander.Deucher-5C7GfCeVMHo@public.gmane.org, linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Felix.Kuehling-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170516140449.zmp3sm4krro55bbi@pd.tnic>
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On 5/16/2017 9:04 AM, Borislav Petkov wrote:
+> On Tue, Apr 18, 2017 at 04:19:42PM -0500, Tom Lendacky wrote:
+>> Persistent memory is expected to persist across reboots. The encryption
+>> key used by SME will change across reboots which will result in corrupted
+>> persistent memory.  Persistent memory is handed out by block devices
+>> through memory remapping functions, so be sure not to map this memory as
+>> encrypted.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  arch/x86/mm/ioremap.c |   31 ++++++++++++++++++++++++++++++-
+>>  1 file changed, 30 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+>> index bce0604..55317ba 100644
+>> --- a/arch/x86/mm/ioremap.c
+>> +++ b/arch/x86/mm/ioremap.c
+>> @@ -425,17 +425,46 @@ void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
+>>   * Examine the physical address to determine if it is an area of memory
+>>   * that should be mapped decrypted.  If the memory is not part of the
+>>   * kernel usable area it was accessed and created decrypted, so these
+>> - * areas should be mapped decrypted.
+>> + * areas should be mapped decrypted. And since the encryption key can
+>> + * change across reboots, persistent memory should also be mapped
+>> + * decrypted.
+>>   */
+>>  static bool memremap_should_map_decrypted(resource_size_t phys_addr,
+>>  					  unsigned long size)
+>>  {
+>> +	int is_pmem;
+>> +
+>> +	/*
+>> +	 * Check if the address is part of a persistent memory region.
+>> +	 * This check covers areas added by E820, EFI and ACPI.
+>> +	 */
+>> +	is_pmem = region_intersects(phys_addr, size, IORESOURCE_MEM,
+>> +				    IORES_DESC_PERSISTENT_MEMORY);
+>> +	if (is_pmem != REGION_DISJOINT)
+>> +		return true;
+>> +
+>> +	/*
+>> +	 * Check if the non-volatile attribute is set for an EFI
+>> +	 * reserved area.
+>> +	 */
+>> +	if (efi_enabled(EFI_BOOT)) {
+>> +		switch (efi_mem_type(phys_addr)) {
+>> +		case EFI_RESERVED_TYPE:
+>> +			if (efi_mem_attributes(phys_addr) & EFI_MEMORY_NV)
+>> +				return true;
+>> +			break;
+>> +		default:
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>>  	/* Check if the address is outside kernel usable area */
+>>  	switch (e820__get_entry_type(phys_addr, phys_addr + size - 1)) {
+>>  	case E820_TYPE_RESERVED:
+>>  	case E820_TYPE_ACPI:
+>>  	case E820_TYPE_NVS:
+>>  	case E820_TYPE_UNUSABLE:
+>> +	case E820_TYPE_PRAM:
+>
+> Can't you simply add:
+>
+> 	case E820_TYPE_PMEM:
+>
+> here too and thus get rid of the region_intersects() thing above?
+>
+> Because, for example, e820_type_to_iores_desc() maps E820_TYPE_PMEM to
+> IORES_DESC_PERSISTENT_MEMORY so those should be equivalent...
 
---===============2112141829==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-BlivSvaPNFHysyNDKbTM"
+I'll have to double-check this, but I believe that when persistent
+memory is identified through the NFIT table it adds it as a resource
+but doesn't add it as an e820 entry so I can't rely on the type being
+returned as E820_TYPE_PMEM by e820__get_entry_type().
 
+Thanks,
+Tom
 
---=-BlivSvaPNFHysyNDKbTM
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+>
 
-On Fri, 2017-05-19 at 15:32 +0530, arindam.nath-5C7GfCeVMHo@public.gmane.org wrote:
-> From: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
->=20
-> Change History
-> --------------
->=20
-> v2: changes suggested by Joerg
-> - add flush flag to improve efficiency of flush operation
->=20
-> v1:
-> - The idea behind flush queues is to defer the IOTLB flushing
->   for domains for which the mappings are no longer valid. We
->   add such domains in queue_add(), and when the queue size
->   reaches FLUSH_QUEUE_SIZE, we perform __queue_flush().
->=20
->   Since we have already taken lock before __queue_flush()
->   is called, we need to make sure the IOTLB flushing is
->   performed as quickly as possible.
->=20
->   In the current implementation, we perform IOTLB flushing
->   for all domains irrespective of which ones were actually
->   added in the flush queue initially. This can be quite
->   expensive especially for domains for which unmapping is
->   not required at this point of time.
->=20
->   This patch makes use of domain information in
->   'struct flush_queue_entry' to make sure we only flush
->   IOTLBs for domains who need it, skipping others.
-
-Hi,
-
-just a note, the patch also fixes "AMD-Vi: Completion-Wait loop timed
-out" boot hang on my system (carrizo + iceland) [0,1,2]. Presumably the
-old loop also tried to flush domains that included powered-off devices.
-
-regards,
-Jan
-
-[0] https://github.com/RadeonOpenCompute/ROCK-Kernel-Driver/issues/20
-[1] https://bugs.freedesktop.org/show_bug.cgi?id=3D101029
-[2] https://bugzilla.redhat.com/show_bug.cgi?id=3D1448121
-
->=20
-> Suggested-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu.c       | 27 ++++++++++++++++++++-------
->  drivers/iommu/amd_iommu_types.h |  2 ++
->  2 files changed, 22 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 63cacf5..1edeebec 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -2227,15 +2227,26 @@ static struct iommu_group *amd_iommu_device_group=
-(struct device *dev)
-> =20
->  static void __queue_flush(struct flush_queue *queue)
->  {
-> -	struct protection_domain *domain;
-> -	unsigned long flags;
->  	int idx;
-> =20
-> -	/* First flush TLB of all known domains */
-> -	spin_lock_irqsave(&amd_iommu_pd_lock, flags);
-> -	list_for_each_entry(domain, &amd_iommu_pd_list, list)
-> -		domain_flush_tlb(domain);
-> -	spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
-> +	/* First flush TLB of all domains which were added to flush queue */
-> +	for (idx =3D 0; idx < queue->next; ++idx) {
-> +		struct flush_queue_entry *entry;
-> +
-> +		entry =3D queue->entries + idx;
-> +
-> +		/*
-> +		 * There might be cases where multiple IOVA entries for the
-> +		 * same domain are queued in the flush queue. To avoid
-> +		 * flushing the same domain again, we check whether the
-> +		 * flag is set or not. This improves the efficiency of
-> +		 * flush operation.
-> +		 */
-> +		if (!entry->dma_dom->domain.already_flushed) {
-> +			entry->dma_dom->domain.already_flushed =3D true;
-> +			domain_flush_tlb(&entry->dma_dom->domain);
-> +		}
-> +	}
-> =20
->  	/* Wait until flushes have completed */
->  	domain_flush_complete(NULL);
-> @@ -2289,6 +2300,8 @@ static void queue_add(struct dma_ops_domain *dma_do=
-m,
->  	pages     =3D __roundup_pow_of_two(pages);
->  	address >>=3D PAGE_SHIFT;
-> =20
-> +	dma_dom->domain.already_flushed =3D false;
-> +
->  	queue =3D get_cpu_ptr(&flush_queue);
->  	spin_lock_irqsave(&queue->lock, flags);
-> =20
-> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_ty=
-pes.h
-> index 4de8f41..4f5519d 100644
-> --- a/drivers/iommu/amd_iommu_types.h
-> +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -454,6 +454,8 @@ struct protection_domain {
->  	bool updated;		/* complete domain flush required */
->  	unsigned dev_cnt;	/* devices assigned to this domain */
->  	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
-> +	bool already_flushed;	/* flag to avoid flushing the same domain again
-> +				   in a single invocation of __queue_flush() */
->  };
-> =20
->  /*
-
---=20
-Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
---=-BlivSvaPNFHysyNDKbTM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEjGgSoFJq63cCYGKvY+M/tz9IsiAFAlke9KIACgkQY+M/tz9I
-siCsJBAA3J63FOaebkCw8SMZEGWxPcVhPd1zoILhvVo+RpHZdMPw2SW/kuIlbzX5
-4HAtMageu26c1TVLMg969rCrbkgpU26Dv4kLDbi31266IDeTPw7dAOoAuwCZ7QhC
-fMd8diHTUbKpl83WFca/NWyxCwnebdaX5LdCnA/5sEIYKv7ou2NtPuYwx5ZW6Ur9
-YUmuKO6kPtHveKryI2djp1xVQycFRBzwlPgFuX5d2JM7oPc2ePSfKkubmo5sOcCT
-CUaVff57egmmTtj8Y7ScnxgK7rnoDt/Hyk0tliYobrhZIXRUxAOihZWWk31HW9Mk
-BeVv/wSnjzWTkoaneX+frLyDyRdfKDRo0bq1rV6BXiOws09bW2sJwLL+1CM6p0O9
-goyD+sJnMHpIuuPUi487EfoQ/sLq/uHAphlsFK4ylZ8Zx6NOgezpkm1OCP5JxkIV
-BiNP5xrEReSnSeFJLEQLPpZHRW8cUsH1SK+A/PtZa+t6tvl3Uhs4t5MDcoqc/M19
-d+PN7WlpW1wpGeusE87PaTy0AHhuuVznxb90TSiHVWGEFDdgzjCzLpEJNDbtgTgc
-EnLmgdu0FHRobxVyncMBnuzzjg7CbhMqVR9ZyNLA2SQHyd7qh2+kTP5vB8XJPuc9
-buGvoGfN8P0fa0EBJkw7+fJDg5JZ6uMQmjEd9wqoCiofeDSROko=
-=HN3S
------END PGP SIGNATURE-----
-
---=-BlivSvaPNFHysyNDKbTM--
-
-
---===============2112141829==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KYW1kLWdmeCBt
-YWlsaW5nIGxpc3QKYW1kLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
-cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9hbWQtZ2Z4Cg==
-
---===============2112141829==--
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
