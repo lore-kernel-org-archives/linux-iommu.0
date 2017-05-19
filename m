@@ -1,18 +1,11 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [Qemu-devel] [RFC PATCH 09/20] Memory: introduce
-	iommu_ops->record_device
-Date: Fri, 19 May 2017 09:07:49 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190CD9CA5@SHSMSX101.ccr.corp.intel.com>
-References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
-	<1493201210-14357-10-git-send-email-yi.l.liu@linux.intel.com>
-	<5c64416d-7d8a-f1a6-64f9-cb0bf1d95a4a@intel.com>
-	<20170519052338.GA10952@sky-dev>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/amd: Ratelimit io-page-faults per device
+Date: Fri, 19 May 2017 11:21:32 +0200
+Message-ID: <1495185692-18061-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170519052338.GA10952@sky-dev>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,75 +15,88 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: bp-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBMaXUsIFlpIEwgW21haWx0bzp5aS5sLmxpdUBsaW51eC5pbnRlbC5jb21dDQo+IFNl
-bnQ6IEZyaWRheSwgTWF5IDE5LCAyMDE3IDE6MjQgUE0NCj4gDQo+IEhpIEFsZXgsDQo+IA0KPiBX
-aGF0J3MgeW91ciBvcGluaW9uIHdpdGggVGlhbnl1J3MgcXVlc3Rpb24/IElzIGl0IGFjY2VwYXRh
-YmxlDQo+IHRvIHVzZSBWRklPIEFQSSBpbiBpbnRlbF9pb21tdSBlbXVsYXRvcj8NCg0KRGlkIHlv
-dSBhY3R1YWxseSBuZWVkIHN1Y2ggdHJhbnNsYXRpb24gYXQgYWxsPyBTSUQgc2hvdWxkIGJlDQpm
-aWxsZWQgYnkga2VybmVsIElPTU1VIGRyaXZlciBiYXNlZCBvbiB3aGljaCBkZXZpY2UgaXMNCnJl
-cXVlc3RlZCB3aXRoIGludmFsaWRhdGlvbiByZXF1ZXN0LCByZWdhcmRsZXNzIG9mIHdoaWNoIA0K
-Z3Vlc3QgU0lEIGlzIHVzZWQgaW4gdXNlciBzcGFjZS4gUWVtdSBvbmx5IG5lZWRzIHRvIGtub3cN
-CndoaWNoIGZkIGNvcnJlc3BvbmRzIHRvIGd1ZXN0IFNJRCwgYW5kIHRoZW4gaW5pdGlhdGVzIGFu
-DQppbnZhbGlkYXRpb24gcmVxdWVzdCBvbiB0aGF0IGZkPw0KDQo+IA0KPiBUaGFua3MsDQo+IFlp
-IEwNCj4gT24gRnJpLCBBcHIgMjgsIDIwMTcgYXQgMDI6NDY6MTZQTSArMDgwMCwgTGFuIFRpYW55
-dSB3cm90ZToNCj4gPiBPbiAyMDE35bm0MDTmnIgyNuaXpSAxODowNiwgTGl1LCBZaSBMIHdyb3Rl
-Og0KPiA+ID4gV2l0aCB2SU9NTVUgZXhwb3NlZCB0byBndWVzdCwgdklPTU1VIGVtdWxhdG9yIG5l
-ZWRzIHRvIGRvDQo+IHRyYW5zbGF0aW9uDQo+ID4gPiBiZXR3ZWVuIGhvc3QgYW5kIGd1ZXN0LiBl
-LmcuIGEgZGV2aWNlLXNlbGVjdGl2ZSBUTEIgZmx1c2gsIHZJT01NVQ0KPiA+ID4gZW11bGF0b3Ig
-bmVlZHMgdG8gcmVwbGFjZSBndWVzdCBTSUQgd2l0aCBob3N0IFNJRCBzbyB0aGF0IHRvIGxpbWl0
-DQo+ID4gPiB0aGUgaW52YWxpZGF0aW9uLiBUaGlzIHBhdGNoIGludHJvZHVjZXMgYSBuZXcgY2Fs
-bGJhY2sNCj4gPiA+IGlvbW11X29wcy0+cmVjb3JkX2RldmljZSgpIHRvIG5vdGlmeSB2SU9NTVUg
-ZW11bGF0b3IgdG8gcmVjb3JkDQo+IG5lY2Vzc2FyeQ0KPiA+ID4gaW5mb3JtYXRpb24gYWJvdXQg
-dGhlIGFzc2lnbmVkIGRldmljZS4NCj4gPg0KPiA+IFRoaXMgcGF0Y2ggaXMgdG8gcHJlcGFyZSB0
-byB0cmFuc2xhdGUgZ3Vlc3Qgc2JkZiB0byBob3N0IHNiZGYuDQo+ID4NCj4gPiBBbGV4Og0KPiA+
-IAlDb3VsZCB3ZSBhZGQgYSBuZXcgdmZpbyBBUEkgdG8gZG8gc3VjaCB0cmFuc2xhdGlvbj8gVGhp
-cyB3aWxsIGJlIG1vcmUNCj4gPiBzdHJhaWdodCBmb3J3YXJkIHRoYW4gc3RvcmluZyBob3N0IHNi
-ZGYgaW4gdGhlIHZJT01NVSBkZXZpY2UgbW9kZWwuDQo+ID4NCj4gPiA+DQo+ID4gPiBTaWduZWQt
-b2ZmLWJ5OiBMaXUsIFlpIEwgPHlpLmwubGl1QGxpbnV4LmludGVsLmNvbT4NCj4gPiA+IC0tLQ0K
-PiA+ID4gIGluY2x1ZGUvZXhlYy9tZW1vcnkuaCB8IDExICsrKysrKysrKysrDQo+ID4gPiAgbWVt
-b3J5LmMgICAgICAgICAgICAgIHwgMTIgKysrKysrKysrKysrDQo+ID4gPiAgMiBmaWxlcyBjaGFu
-Z2VkLCAyMyBpbnNlcnRpb25zKCspDQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
-ZXhlYy9tZW1vcnkuaCBiL2luY2x1ZGUvZXhlYy9tZW1vcnkuaA0KPiA+ID4gaW5kZXggN2JkMTNh
-Yi4uNDkwODdlZiAxMDA2NDQNCj4gPiA+IC0tLSBhL2luY2x1ZGUvZXhlYy9tZW1vcnkuaA0KPiA+
-ID4gKysrIGIvaW5jbHVkZS9leGVjL21lbW9yeS5oDQo+ID4gPiBAQCAtMjAzLDYgKzIwMyw4IEBA
-IHN0cnVjdCBNZW1vcnlSZWdpb25JT01NVU9wcyB7DQo+ID4gPiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBJT01NVU5vdGlmaWVyRmxhZyBuZXdfZmxhZ3MpOw0KPiA+ID4gICAgICAv
-KiBTZXQgdGhpcyB1cCB0byBwcm92aWRlIGN1c3RvbWl6ZWQgSU9NTVUgcmVwbGF5IGZ1bmN0aW9u
-ICovDQo+ID4gPiAgICAgIHZvaWQgKCpyZXBsYXkpKE1lbW9yeVJlZ2lvbiAqaW9tbXUsIElPTU1V
-Tm90aWZpZXIgKm5vdGlmaWVyKTsNCj4gPiA+ICsgICAgdm9pZCAoKnJlY29yZF9kZXZpY2UpKE1l
-bW9yeVJlZ2lvbiAqaW9tbXUsDQo+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICB2b2lk
-ICpkZXZpY2VfaW5mbyk7DQo+ID4gPiAgfTsNCj4gPiA+DQo+ID4gPiAgdHlwZWRlZiBzdHJ1Y3Qg
-Q29hbGVzY2VkTWVtb3J5UmFuZ2UgQ29hbGVzY2VkTWVtb3J5UmFuZ2U7DQo+ID4gPiBAQCAtNzA4
-LDYgKzcxMCwxNSBAQCB2b2lkDQo+IG1lbW9yeV9yZWdpb25fbm90aWZ5X2lvbW11KE1lbW9yeVJl
-Z2lvbiAqbXIsDQo+ID4gPiAgdm9pZCBtZW1vcnlfcmVnaW9uX25vdGlmeV9vbmUoSU9NTVVOb3Rp
-ZmllciAqbm90aWZpZXIsDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSU9N
-TVVUTEJFbnRyeSAqZW50cnkpOw0KPiA+ID4NCj4gPiA+ICsvKg0KPiA+ID4gKyAqIG1lbW9yeV9y
-ZWdpb25fbm90aWZ5X2RldmljZV9yZWNvcmQ6IG5vdGlmeSBJT01NVSB0byByZWNvcmQNCj4gYXNz
-aWduDQo+ID4gPiArICogZGV2aWNlLg0KPiA+ID4gKyAqIEBtcjogdGhlIG1lbW9yeSByZWdpb24g
-dG8gbm90aWZ5DQo+ID4gPiArICogQCBkZXZpY2VfaW5mbzogZGV2aWNlIGluZm9ybWF0aW9uDQo+
-ID4gPiArICovDQo+ID4gPiArdm9pZCBtZW1vcnlfcmVnaW9uX25vdGlmeV9kZXZpY2VfcmVjb3Jk
-KE1lbW9yeVJlZ2lvbiAqbXIsDQo+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIHZvaWQgKmluZm8pOw0KPiA+ID4gKw0KPiA+ID4gIC8qKg0KPiA+ID4gICAqIG1l
-bW9yeV9yZWdpb25fcmVnaXN0ZXJfaW9tbXVfbm90aWZpZXI6IHJlZ2lzdGVyIGEgbm90aWZpZXIg
-Zm9yDQo+IGNoYW5nZXMgdG8NCj4gPiA+ICAgKiBJT01NVSB0cmFuc2xhdGlvbiBlbnRyaWVzLg0K
-PiA+ID4gZGlmZiAtLWdpdCBhL21lbW9yeS5jIGIvbWVtb3J5LmMNCj4gPiA+IGluZGV4IDA3Mjhl
-NjIuLjQ1ZWYwNjkgMTAwNjQ0DQo+ID4gPiAtLS0gYS9tZW1vcnkuYw0KPiA+ID4gKysrIGIvbWVt
-b3J5LmMNCj4gPiA+IEBAIC0xNjAwLDYgKzE2MDAsMTggQEAgc3RhdGljIHZvaWQNCj4gbWVtb3J5
-X3JlZ2lvbl91cGRhdGVfaW9tbXVfbm90aWZ5X2ZsYWdzKE1lbW9yeVJlZ2lvbiAqbXIpDQo+ID4g
-PiAgICAgIG1yLT5pb21tdV9ub3RpZnlfZmxhZ3MgPSBmbGFnczsNCj4gPiA+ICB9DQo+ID4gPg0K
-PiA+ID4gK3ZvaWQgbWVtb3J5X3JlZ2lvbl9ub3RpZnlfZGV2aWNlX3JlY29yZChNZW1vcnlSZWdp
-b24gKm1yLA0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB2
-b2lkICppbmZvKQ0KPiA+ID4gK3sNCj4gPiA+ICsgICAgYXNzZXJ0KG1lbW9yeV9yZWdpb25faXNf
-aW9tbXUobXIpKTsNCj4gPiA+ICsNCj4gPiA+ICsgICAgaWYgKG1yLT5pb21tdV9vcHMtPnJlY29y
-ZF9kZXZpY2UpIHsNCj4gPiA+ICsgICAgICAgIG1yLT5pb21tdV9vcHMtPnJlY29yZF9kZXZpY2Uo
-bXIsIGluZm8pOw0KPiA+ID4gKyAgICB9DQo+ID4gPiArDQo+ID4gPiArICAgIHJldHVybjsNCj4g
-PiA+ICt9DQo+ID4gPiArDQo+ID4gPiAgdm9pZCBtZW1vcnlfcmVnaW9uX3JlZ2lzdGVyX2lvbW11
-X25vdGlmaWVyKE1lbW9yeVJlZ2lvbiAqbXIsDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIElPTU1VTm90aWZpZXIgKm4pDQo+ID4gPiAgew0KPiA+ID4N
-Cj4gPg0KPiA+DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
-cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+
+Misbehaving devices can cause an endless chain of
+io-page-faults, flooding dmesg and making the system-log
+unusable or even prevent the system from booting.
+
+So ratelimit the error messages about io-page-faults in a
+per-device basis.
+
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 33 +++++++++++++++++++++++++++++----
+ 1 file changed, 29 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 63cacf5..f574a0f 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -138,6 +138,8 @@ struct iommu_dev_data {
+ 					     PPR completions */
+ 	u32 errata;			  /* Bitmap for errata to apply */
+ 	bool use_vapic;			  /* Enable device to use vapic mode */
++
++	struct ratelimit_state rs;	  /* Ratelimit IOPF messages */
+ };
+ 
+ /*
+@@ -253,6 +255,8 @@ static struct iommu_dev_data *alloc_dev_data(u16 devid)
+ 	list_add_tail(&dev_data->dev_data_list, &dev_data_list);
+ 	spin_unlock_irqrestore(&dev_data_list_lock, flags);
+ 
++	ratelimit_default_init(&dev_data->rs);
++
+ 	return dev_data;
+ }
+ 
+@@ -551,6 +555,30 @@ static void dump_command(unsigned long phys_addr)
+ 		pr_err("AMD-Vi: CMD[%d]: %08x\n", i, cmd->data[i]);
+ }
+ 
++static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
++					u64 address, int flags)
++{
++	struct iommu_dev_data *dev_data = NULL;
++	struct pci_dev *pdev;
++
++	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
++	if (pdev)
++		dev_data = get_dev_data(&pdev->dev);
++
++	if (dev_data && __ratelimit(&dev_data->rs)) {
++		dev_err(&pdev->dev, "IO_PAGE_FAULT domain=0x%04x address=0x%016llx flags=0x%04x]\n",
++			domain_id, address, flags);
++	} else if (printk_ratelimit()) {
++		pr_err("IO_PAGE_FAULT device=%02x:%02x.%x "
++		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
++			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++			domain_id, address, flags);
++	}
++
++	if (pdev)
++		pci_dev_put(pdev);
++}
++
+ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ {
+ 	int type, devid, domid, flags;
+@@ -586,10 +614,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_IO_FAULT:
+-		printk("IO_PAGE_FAULT device=%02x:%02x.%x "
+-		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+-		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+-		       domid, address, flags);
++		amd_iommu_report_page_fault(devid, domid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+ 		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+-- 
+2.7.4
