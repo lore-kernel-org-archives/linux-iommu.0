@@ -1,137 +1,86 @@
-From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-Subject: Re: [Qemu-devel] [RFC PATCH 09/20] Memory: introduce
- iommu_ops->record_device
-Date: Fri, 19 May 2017 17:35:59 +0800
-Message-ID: <20170519093559.GB10952@sky-dev>
-References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
- <1493201210-14357-10-git-send-email-yi.l.liu@linux.intel.com>
- <5c64416d-7d8a-f1a6-64f9-cb0bf1d95a4a@intel.com>
- <20170519052338.GA10952@sky-dev>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CD9CA5@SHSMSX101.ccr.corp.intel.com>
+From: arindam.nath-5C7GfCeVMHo@public.gmane.org
+Subject: [PATCH] iommu/amd: flush IOTLB for specific domains only (v2)
+Date: Fri, 19 May 2017 15:32:31 +0530
+Message-ID: <1495188151-14358-1-git-send-email-arindam.nath@amd.com>
+References: <20170407102039.GW7266@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <kvm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190CD9CA5@SHSMSX101.ccr.corp.intel.com>
-Sender: kvm-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "peterx@redhat.com" <peterx@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20170407102039.GW7266-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: John.Bridgman-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, Alexander.Deucher-5C7GfCeVMHo@public.gmane.org, Felix.Kuehling-5C7GfCeVMHo@public.gmane.org, linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, michel-otUistvHUpPR7s880joybQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 19, 2017 at 09:07:49AM +0000, Tian, Kevin wrote:
-> > From: Liu, Yi L [mailto:yi.l.liu@linux.intel.com]
-> > Sent: Friday, May 19, 2017 1:24 PM
-> > 
-> > Hi Alex,
-> > 
-> > What's your opinion with Tianyu's question? Is it accepatable
-> > to use VFIO API in intel_iommu emulator?
-> 
-> Did you actually need such translation at all? SID should be
-> filled by kernel IOMMU driver based on which device is
-> requested with invalidation request, regardless of which 
-> guest SID is used in user space. Qemu only needs to know
-> which fd corresponds to guest SID, and then initiates an
-> invalidation request on that fd?
-
-Kevin,
-
-It actually depends on the svm binding behavior we expect in host
-IOMMU driver side. If we want to have the binding per-device, this
-translation is needed in Qemu either in VFIO or intel_iommu emulator.
-So that the host SID could be used as a device selector when looping
-devices in a group.
-
-If we can use VFIO API directly, we also may trigger the svm bind/qi
-propagation straightforwardly instead of using notifier.
-
-Thanks,
-Yi L
- 
-> > 
-> > Thanks,
-> > Yi L
-> > On Fri, Apr 28, 2017 at 02:46:16PM +0800, Lan Tianyu wrote:
-> > > On 2017年04月26日 18:06, Liu, Yi L wrote:
-> > > > With vIOMMU exposed to guest, vIOMMU emulator needs to do
-> > translation
-> > > > between host and guest. e.g. a device-selective TLB flush, vIOMMU
-> > > > emulator needs to replace guest SID with host SID so that to limit
-> > > > the invalidation. This patch introduces a new callback
-> > > > iommu_ops->record_device() to notify vIOMMU emulator to record
-> > necessary
-> > > > information about the assigned device.
-> > >
-> > > This patch is to prepare to translate guest sbdf to host sbdf.
-> > >
-> > > Alex:
-> > > 	Could we add a new vfio API to do such translation? This will be more
-> > > straight forward than storing host sbdf in the vIOMMU device model.
-> > >
-> > > >
-> > > > Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> > > > ---
-> > > >  include/exec/memory.h | 11 +++++++++++
-> > > >  memory.c              | 12 ++++++++++++
-> > > >  2 files changed, 23 insertions(+)
-> > > >
-> > > > diff --git a/include/exec/memory.h b/include/exec/memory.h
-> > > > index 7bd13ab..49087ef 100644
-> > > > --- a/include/exec/memory.h
-> > > > +++ b/include/exec/memory.h
-> > > > @@ -203,6 +203,8 @@ struct MemoryRegionIOMMUOps {
-> > > >                                  IOMMUNotifierFlag new_flags);
-> > > >      /* Set this up to provide customized IOMMU replay function */
-> > > >      void (*replay)(MemoryRegion *iommu, IOMMUNotifier *notifier);
-> > > > +    void (*record_device)(MemoryRegion *iommu,
-> > > > +                          void *device_info);
-> > > >  };
-> > > >
-> > > >  typedef struct CoalescedMemoryRange CoalescedMemoryRange;
-> > > > @@ -708,6 +710,15 @@ void
-> > memory_region_notify_iommu(MemoryRegion *mr,
-> > > >  void memory_region_notify_one(IOMMUNotifier *notifier,
-> > > >                                IOMMUTLBEntry *entry);
-> > > >
-> > > > +/*
-> > > > + * memory_region_notify_device_record: notify IOMMU to record
-> > assign
-> > > > + * device.
-> > > > + * @mr: the memory region to notify
-> > > > + * @ device_info: device information
-> > > > + */
-> > > > +void memory_region_notify_device_record(MemoryRegion *mr,
-> > > > +                                        void *info);
-> > > > +
-> > > >  /**
-> > > >   * memory_region_register_iommu_notifier: register a notifier for
-> > changes to
-> > > >   * IOMMU translation entries.
-> > > > diff --git a/memory.c b/memory.c
-> > > > index 0728e62..45ef069 100644
-> > > > --- a/memory.c
-> > > > +++ b/memory.c
-> > > > @@ -1600,6 +1600,18 @@ static void
-> > memory_region_update_iommu_notify_flags(MemoryRegion *mr)
-> > > >      mr->iommu_notify_flags = flags;
-> > > >  }
-> > > >
-> > > > +void memory_region_notify_device_record(MemoryRegion *mr,
-> > > > +                                        void *info)
-> > > > +{
-> > > > +    assert(memory_region_is_iommu(mr));
-> > > > +
-> > > > +    if (mr->iommu_ops->record_device) {
-> > > > +        mr->iommu_ops->record_device(mr, info);
-> > > > +    }
-> > > > +
-> > > > +    return;
-> > > > +}
-> > > > +
-> > > >  void memory_region_register_iommu_notifier(MemoryRegion *mr,
-> > > >                                             IOMMUNotifier *n)
-> > > >  {
-> > > >
-> > >
-> > >
+RnJvbTogQXJpbmRhbSBOYXRoIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KCkNoYW5nZSBIaXN0b3J5
+Ci0tLS0tLS0tLS0tLS0tCgp2MjogY2hhbmdlcyBzdWdnZXN0ZWQgYnkgSm9lcmcKLSBhZGQgZmx1
+c2ggZmxhZyB0byBpbXByb3ZlIGVmZmljaWVuY3kgb2YgZmx1c2ggb3BlcmF0aW9uCgp2MToKLSBU
+aGUgaWRlYSBiZWhpbmQgZmx1c2ggcXVldWVzIGlzIHRvIGRlZmVyIHRoZSBJT1RMQiBmbHVzaGlu
+ZwogIGZvciBkb21haW5zIGZvciB3aGljaCB0aGUgbWFwcGluZ3MgYXJlIG5vIGxvbmdlciB2YWxp
+ZC4gV2UKICBhZGQgc3VjaCBkb21haW5zIGluIHF1ZXVlX2FkZCgpLCBhbmQgd2hlbiB0aGUgcXVl
+dWUgc2l6ZQogIHJlYWNoZXMgRkxVU0hfUVVFVUVfU0laRSwgd2UgcGVyZm9ybSBfX3F1ZXVlX2Zs
+dXNoKCkuCgogIFNpbmNlIHdlIGhhdmUgYWxyZWFkeSB0YWtlbiBsb2NrIGJlZm9yZSBfX3F1ZXVl
+X2ZsdXNoKCkKICBpcyBjYWxsZWQsIHdlIG5lZWQgdG8gbWFrZSBzdXJlIHRoZSBJT1RMQiBmbHVz
+aGluZyBpcwogIHBlcmZvcm1lZCBhcyBxdWlja2x5IGFzIHBvc3NpYmxlLgoKICBJbiB0aGUgY3Vy
+cmVudCBpbXBsZW1lbnRhdGlvbiwgd2UgcGVyZm9ybSBJT1RMQiBmbHVzaGluZwogIGZvciBhbGwg
+ZG9tYWlucyBpcnJlc3BlY3RpdmUgb2Ygd2hpY2ggb25lcyB3ZXJlIGFjdHVhbGx5CiAgYWRkZWQg
+aW4gdGhlIGZsdXNoIHF1ZXVlIGluaXRpYWxseS4gVGhpcyBjYW4gYmUgcXVpdGUKICBleHBlbnNp
+dmUgZXNwZWNpYWxseSBmb3IgZG9tYWlucyBmb3Igd2hpY2ggdW5tYXBwaW5nIGlzCiAgbm90IHJl
+cXVpcmVkIGF0IHRoaXMgcG9pbnQgb2YgdGltZS4KCiAgVGhpcyBwYXRjaCBtYWtlcyB1c2Ugb2Yg
+ZG9tYWluIGluZm9ybWF0aW9uIGluCiAgJ3N0cnVjdCBmbHVzaF9xdWV1ZV9lbnRyeScgdG8gbWFr
+ZSBzdXJlIHdlIG9ubHkgZmx1c2gKICBJT1RMQnMgZm9yIGRvbWFpbnMgd2hvIG5lZWQgaXQsIHNr
+aXBwaW5nIG90aGVycy4KClN1Z2dlc3RlZC1ieTogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5v
+cmc+ClNpZ25lZC1vZmYtYnk6IEFyaW5kYW0gTmF0aCA8YXJpbmRhbS5uYXRoQGFtZC5jb20+Ci0t
+LQogZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyAgICAgICB8IDI3ICsrKysrKysrKysrKysrKysr
+KysrLS0tLS0tLQogZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaCB8ICAyICsrCiAyIGZp
+bGVzIGNoYW5nZWQsIDIyIGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMK
+aW5kZXggNjNjYWNmNS4uMWVkZWViZWMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lv
+bW11LmMKKysrIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYwpAQCAtMjIyNywxNSArMjIyNywy
+NiBAQCBzdGF0aWMgc3RydWN0IGlvbW11X2dyb3VwICphbWRfaW9tbXVfZGV2aWNlX2dyb3VwKHN0
+cnVjdCBkZXZpY2UgKmRldikKIAogc3RhdGljIHZvaWQgX19xdWV1ZV9mbHVzaChzdHJ1Y3QgZmx1
+c2hfcXVldWUgKnF1ZXVlKQogewotCXN0cnVjdCBwcm90ZWN0aW9uX2RvbWFpbiAqZG9tYWluOwot
+CXVuc2lnbmVkIGxvbmcgZmxhZ3M7CiAJaW50IGlkeDsKIAotCS8qIEZpcnN0IGZsdXNoIFRMQiBv
+ZiBhbGwga25vd24gZG9tYWlucyAqLwotCXNwaW5fbG9ja19pcnFzYXZlKCZhbWRfaW9tbXVfcGRf
+bG9jaywgZmxhZ3MpOwotCWxpc3RfZm9yX2VhY2hfZW50cnkoZG9tYWluLCAmYW1kX2lvbW11X3Bk
+X2xpc3QsIGxpc3QpCi0JCWRvbWFpbl9mbHVzaF90bGIoZG9tYWluKTsKLQlzcGluX3VubG9ja19p
+cnFyZXN0b3JlKCZhbWRfaW9tbXVfcGRfbG9jaywgZmxhZ3MpOworCS8qIEZpcnN0IGZsdXNoIFRM
+QiBvZiBhbGwgZG9tYWlucyB3aGljaCB3ZXJlIGFkZGVkIHRvIGZsdXNoIHF1ZXVlICovCisJZm9y
+IChpZHggPSAwOyBpZHggPCBxdWV1ZS0+bmV4dDsgKytpZHgpIHsKKwkJc3RydWN0IGZsdXNoX3F1
+ZXVlX2VudHJ5ICplbnRyeTsKKworCQllbnRyeSA9IHF1ZXVlLT5lbnRyaWVzICsgaWR4OworCisJ
+CS8qCisJCSAqIFRoZXJlIG1pZ2h0IGJlIGNhc2VzIHdoZXJlIG11bHRpcGxlIElPVkEgZW50cmll
+cyBmb3IgdGhlCisJCSAqIHNhbWUgZG9tYWluIGFyZSBxdWV1ZWQgaW4gdGhlIGZsdXNoIHF1ZXVl
+LiBUbyBhdm9pZAorCQkgKiBmbHVzaGluZyB0aGUgc2FtZSBkb21haW4gYWdhaW4sIHdlIGNoZWNr
+IHdoZXRoZXIgdGhlCisJCSAqIGZsYWcgaXMgc2V0IG9yIG5vdC4gVGhpcyBpbXByb3ZlcyB0aGUg
+ZWZmaWNpZW5jeSBvZgorCQkgKiBmbHVzaCBvcGVyYXRpb24uCisJCSAqLworCQlpZiAoIWVudHJ5
+LT5kbWFfZG9tLT5kb21haW4uYWxyZWFkeV9mbHVzaGVkKSB7CisJCQllbnRyeS0+ZG1hX2RvbS0+
+ZG9tYWluLmFscmVhZHlfZmx1c2hlZCA9IHRydWU7CisJCQlkb21haW5fZmx1c2hfdGxiKCZlbnRy
+eS0+ZG1hX2RvbS0+ZG9tYWluKTsKKwkJfQorCX0KIAogCS8qIFdhaXQgdW50aWwgZmx1c2hlcyBo
+YXZlIGNvbXBsZXRlZCAqLwogCWRvbWFpbl9mbHVzaF9jb21wbGV0ZShOVUxMKTsKQEAgLTIyODks
+NiArMjMwMCw4IEBAIHN0YXRpYyB2b2lkIHF1ZXVlX2FkZChzdHJ1Y3QgZG1hX29wc19kb21haW4g
+KmRtYV9kb20sCiAJcGFnZXMgICAgID0gX19yb3VuZHVwX3Bvd19vZl90d28ocGFnZXMpOwogCWFk
+ZHJlc3MgPj49IFBBR0VfU0hJRlQ7CiAKKwlkbWFfZG9tLT5kb21haW4uYWxyZWFkeV9mbHVzaGVk
+ID0gZmFsc2U7CisKIAlxdWV1ZSA9IGdldF9jcHVfcHRyKCZmbHVzaF9xdWV1ZSk7CiAJc3Bpbl9s
+b2NrX2lycXNhdmUoJnF1ZXVlLT5sb2NrLCBmbGFncyk7CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+aW9tbXUvYW1kX2lvbW11X3R5cGVzLmggYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV90eXBlcy5o
+CmluZGV4IDRkZThmNDEuLjRmNTUxOWQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lv
+bW11X3R5cGVzLmgKKysrIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaApAQCAtNDU0
+LDYgKzQ1NCw4IEBAIHN0cnVjdCBwcm90ZWN0aW9uX2RvbWFpbiB7CiAJYm9vbCB1cGRhdGVkOwkJ
+LyogY29tcGxldGUgZG9tYWluIGZsdXNoIHJlcXVpcmVkICovCiAJdW5zaWduZWQgZGV2X2NudDsJ
+LyogZGV2aWNlcyBhc3NpZ25lZCB0byB0aGlzIGRvbWFpbiAqLwogCXVuc2lnbmVkIGRldl9pb21t
+dVtNQVhfSU9NTVVTXTsgLyogcGVyLUlPTU1VIHJlZmVyZW5jZSBjb3VudCAqLworCWJvb2wgYWxy
+ZWFkeV9mbHVzaGVkOwkvKiBmbGFnIHRvIGF2b2lkIGZsdXNoaW5nIHRoZSBzYW1lIGRvbWFpbiBh
+Z2FpbgorCQkJCSAgIGluIGEgc2luZ2xlIGludm9jYXRpb24gb2YgX19xdWV1ZV9mbHVzaCgpICov
+CiB9OwogCiAvKgotLSAKMi43LjQKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmFtZC1nZnggbWFpbGluZyBsaXN0CmFtZC1nZnhAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vYW1k
+LWdmeAo=
