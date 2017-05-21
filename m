@@ -1,78 +1,134 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v5 28/32] x86/mm, kexec: Allow kexec to be used with SME
-Date: Fri, 19 May 2017 16:38:07 -0500
-Message-ID: <8baa170c-f0bd-3e5d-17d9-a031f4ff943c@amd.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
+ in the clear
+Date: Sun, 21 May 2017 09:16:50 +0200
+Message-ID: <20170521071650.pwwmw4agggaazfrh@pd.tnic>
 References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418212121.10190.94885.stgit@tlendack-t1.amdoffice.net>
- <20170517191755.h2xluopk2p6suw32@pd.tnic>
- <1b74e0e6-3dda-f638-461b-f73af9904360@amd.com>
- <20170519205836.3wvl3nztqyyouje3@pd.tnic>
- <5ef96f3a-6ebd-1d4d-7ac9-05dbed45d998@amd.com>
- <20170519212854.3dvtt3lawzij5cae@pd.tnic>
+ <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
+ <20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
+ <4845df29-bae7-9b78-0428-ff96dbef2128@amd.com>
+ <20170518090212.kebstmnjv4h3cjf2@pd.tnic>
+ <c0cb8a50-e860-169b-ee0c-7eb4db7c3fda@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
 Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170519212854.3dvtt3lawzij5cae@pd.tnic>
+Content-Disposition: inline
+In-Reply-To: <c0cb8a50-e860-169b-ee0c-7eb4db7c3fda@amd.com>
 Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
- Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
- Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/19/2017 4:28 PM, Borislav Petkov wrote:
-> On Fri, May 19, 2017 at 04:07:24PM -0500, Tom Lendacky wrote:
->> As long as those never change from static inline everything will be
->> fine. I can change it, but I really like how it explicitly indicates
->
-> I know what you want to do. But you're practically defining a helper
-> which contains two arbitrary instructions which probably no one else
-> will need.
->
-> So how about we simplify this function even more. We don't need to pay
-> attention to kexec being in progress because we're halting anyway so who
-> cares how fast we halt.
->
-> Might have to state that in the comment below though, instead of what's
-> there now.
->
-> And for the exact same moot reason, we don't need to look at SME CPUID
-> feature - we can just as well WBINVD unconditionally.
->
-> void stop_this_cpu(void *dummy)
-> {
->         local_irq_disable();
->         /*
->          * Remove this CPU:
->          */
->         set_cpu_online(smp_processor_id(), false);
->         disable_local_APIC();
->         mcheck_cpu_clear(this_cpu_ptr(&cpu_info));
->
->         for (;;) {
->                 /*
->                  * If we are performing a kexec and the processor supports
->                  * SME then we need to clear out cache information before
->                  * halting. With kexec, going from SME inactive to SME active
->                  * requires clearing cache entries so that addresses without
->                  * the encryption bit set don't corrupt the same physical
->                  * address that has the encryption bit set when caches are
->                  * flushed. Perform a wbinvd followed by a halt to achieve
->                  * this.
->                  */
->                 asm volatile("wbinvd; hlt" ::: "memory");
->         }
-> }
->
-> How's that?
+On Fri, May 19, 2017 at 03:50:32PM -0500, Tom Lendacky wrote:
+> The "worker" function would be doing the loop through the setup data,
+> but since the setup data is mapped inside the loop I can't do the __init
+> calling the non-init function and still hope to consolidate the code.
+> Maybe I'm missing something here...
 
-I can live with that!
+Hmm, I see what you mean. But the below change ontop doesn't fire any
+warnings here. Maybe your .config has something set which I don't...
 
-Thanks,
-Tom
+---
+diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+index 55317ba3b6dc..199c983192ae 100644
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -515,71 +515,50 @@ static bool memremap_is_efi_data(resource_size_t phys_addr,
+  * Examine the physical address to determine if it is boot data by checking
+  * it against the boot params setup_data chain.
+  */
+-static bool memremap_is_setup_data(resource_size_t phys_addr,
+-				   unsigned long size)
++static bool
++__memremap_is_setup_data(resource_size_t phys_addr, unsigned long size, bool early)
+ {
+ 	struct setup_data *data;
+ 	u64 paddr, paddr_next;
++	u32 len;
+ 
+ 	paddr = boot_params.hdr.setup_data;
+ 	while (paddr) {
+-		bool is_setup_data = false;
+ 
+ 		if (phys_addr == paddr)
+ 			return true;
+ 
+-		data = memremap(paddr, sizeof(*data),
+-				MEMREMAP_WB | MEMREMAP_DEC);
++		if (early)
++			data = early_memremap_decrypted(paddr, sizeof(*data));
++		else
++			data = memremap(paddr, sizeof(*data), MEMREMAP_WB | MEMREMAP_DEC);
+ 
+ 		paddr_next = data->next;
++		len = data->len;
+ 
+-		if ((phys_addr > paddr) && (phys_addr < (paddr + data->len)))
+-			is_setup_data = true;
++		if (early)
++			early_memunmap(data, sizeof(*data));
++		else
++			memunmap(data);
+ 
+-		memunmap(data);
+ 
+-		if (is_setup_data)
++		if ((phys_addr > paddr) && (phys_addr < (paddr + data->len)))
+ 			return true;
+ 
+ 		paddr = paddr_next;
+ 	}
+-
+ 	return false;
+ }
+ 
+-/*
+- * Examine the physical address to determine if it is boot data by checking
+- * it against the boot params setup_data chain (early boot version).
+- */
+ static bool __init early_memremap_is_setup_data(resource_size_t phys_addr,
+ 						unsigned long size)
+ {
+-	struct setup_data *data;
+-	u64 paddr, paddr_next;
+-
+-	paddr = boot_params.hdr.setup_data;
+-	while (paddr) {
+-		bool is_setup_data = false;
+-
+-		if (phys_addr == paddr)
+-			return true;
+-
+-		data = early_memremap_decrypted(paddr, sizeof(*data));
+-
+-		paddr_next = data->next;
+-
+-		if ((phys_addr > paddr) && (phys_addr < (paddr + data->len)))
+-			is_setup_data = true;
+-
+-		early_memunmap(data, sizeof(*data));
+-
+-		if (is_setup_data)
+-			return true;
+-
+-		paddr = paddr_next;
+-	}
++	return __memremap_is_setup_data(phys_addr, size, true);
++}
+ 
+-	return false;
++static bool memremap_is_setup_data(resource_size_t phys_addr, unsigned long size)
++{
++	return __memremap_is_setup_data(phys_addr, size, false);
+ }
+ 
+ /*
 
->
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
 
 --
 To unsubscribe, send a message with 'unsubscribe linux-mm' in
