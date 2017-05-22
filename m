@@ -1,92 +1,89 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [RFC PATCH 05/30] iommu/arm-smmu-v3: Disable tagged pointers when
- ATS is in use
-Date: Mon, 22 May 2017 14:27:35 +0800
-Message-ID: <592284D7.60002@huawei.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-6-jean-philippe.brucker@arm.com>
+From: arindam.nath-5C7GfCeVMHo@public.gmane.org
+Subject: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
+Date: Mon, 22 May 2017 13:18:01 +0530
+Message-ID: <1495439281-24005-1-git-send-email-arindam.nath@amd.com>
+References: <20170407102039.GW7266@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170227195441.5170-6-jean-philippe.brucker@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>, LinuxArm <linuxarm@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20170407102039.GW7266-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: John.Bridgman-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, Alexander.Deucher-5C7GfCeVMHo@public.gmane.org, Felix.Kuehling-5C7GfCeVMHo@public.gmane.org, linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, michel-otUistvHUpPR7s880joybQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2017/2/28 3:54, Jean-Philippe Brucker wrote:
-> The ARM architecture has a "Top Byte Ignore" (TBI) option that makes the
-> MMU mask out bits [63:56] of an address, allowing a userspace application
-> to store data in its pointers.
-> 
-> The ATS doesn't have an architected mechanism to enable TBI, and might
-> create ATC entries for addresses that include a tag. Software would then
-> have to send ATC invalidation packets for each 255 possible alias of an
-> address, or just wipe the whole address space. This is not a viable
-> option, so disable TBI when ATS is in use.
-> 
-> It is unclear for the moment how this restriction will affect user
-> applications. One example I can imagine (with my complete lack of
-> knowledge about JIT engines and their use of tagged pointers) is a JIT
-> translating a WebCL applications that uses SVM. Since this kind of
-> interpreted language doesn't expose addresses, the interpreter and SVM
-> implementations will be given the opportunity to do the right thing and
-> remove tags before handing pointers to devices.
-> 
-> Ideally we should remove TBI only for domains that are susceptible to use
-> ATS. But at the point we're writing the context descriptor of a domain, we
-> are still probing the first device in the group. If that device doesn't
-> have an ATC but the next one does, we would then have to clear the TBI
-> bit, invalidate the ATCs of previous devices, and notify the drivers that
-> their devices cannot use tagged pointers anymore. Such a level of
-> complexity doesn't make any sense here since it is unlikely devices will
-> use tagged pointers at all.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index e7b940146ae3..06b29d4fcf65 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -987,7 +987,7 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->  }
->  
->  /* Context descriptor manipulation functions */
-> -static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
-> +static u64 arm_smmu_cpu_tcr_to_cd(struct arm_smmu_device *smmu, u64 tcr)
->  {
->  	u64 val = 0;
->  
-> @@ -1000,7 +1000,8 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
->  	val |= ARM_SMMU_TCR2CD(tcr, EPD0);
->  	val |= ARM_SMMU_TCR2CD(tcr, EPD1);
->  	val |= ARM_SMMU_TCR2CD(tcr, IPS);
-> -	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
-> +	if (!(smmu->features & ARM_SMMU_FEAT_ATS))
-> +		val |= ARM_SMMU_TCR2CD(tcr, TBI0);
-Maybe we should always disable TBI. Otherwise, a device behind a ATS supported or
-non-supported SMMU should use different strategies.
-
->  
->  	return val;
->  }
-> @@ -1014,7 +1015,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
->  	 * We don't need to issue any invalidation here, as we'll invalidate
->  	 * the STE when installing the new entry anyway.
->  	 */
-> -	val = arm_smmu_cpu_tcr_to_cd(cfg->cd.tcr) |
-> +	val = arm_smmu_cpu_tcr_to_cd(smmu, cfg->cd.tcr) |
->  #ifdef __BIG_ENDIAN
->  	      CTXDESC_CD_0_ENDI |
->  #endif
-> 
-
--- 
-Thanks!
-BestRegards
+RnJvbTogQXJpbmRhbSBOYXRoIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KCkNoYW5nZSBIaXN0b3J5
+Ci0tLS0tLS0tLS0tLS0tCgp2MzoKLSBhZGQgRml4ZXMgYW5kIENDIHRhZ3MKLSBhZGQgbGluayB0
+byBCdWd6aWxsYQoKdjI6IGNoYW5nZXMgc3VnZ2VzdGVkIGJ5IEpvZXJnCi0gYWRkIGZsdXNoIGZs
+YWcgdG8gaW1wcm92ZSBlZmZpY2llbmN5IG9mIGZsdXNoIG9wZXJhdGlvbgoKdjE6Ci0gVGhlIGlk
+ZWEgYmVoaW5kIGZsdXNoIHF1ZXVlcyBpcyB0byBkZWZlciB0aGUgSU9UTEIgZmx1c2hpbmcKICBm
+b3IgZG9tYWlucyBmb3Igd2hpY2ggdGhlIG1hcHBpbmdzIGFyZSBubyBsb25nZXIgdmFsaWQuIFdl
+CiAgYWRkIHN1Y2ggZG9tYWlucyBpbiBxdWV1ZV9hZGQoKSwgYW5kIHdoZW4gdGhlIHF1ZXVlIHNp
+emUKICByZWFjaGVzIEZMVVNIX1FVRVVFX1NJWkUsIHdlIHBlcmZvcm0gX19xdWV1ZV9mbHVzaCgp
+LgoKICBTaW5jZSB3ZSBoYXZlIGFscmVhZHkgdGFrZW4gbG9jayBiZWZvcmUgX19xdWV1ZV9mbHVz
+aCgpCiAgaXMgY2FsbGVkLCB3ZSBuZWVkIHRvIG1ha2Ugc3VyZSB0aGUgSU9UTEIgZmx1c2hpbmcg
+aXMKICBwZXJmb3JtZWQgYXMgcXVpY2tseSBhcyBwb3NzaWJsZS4KCiAgSW4gdGhlIGN1cnJlbnQg
+aW1wbGVtZW50YXRpb24sIHdlIHBlcmZvcm0gSU9UTEIgZmx1c2hpbmcKICBmb3IgYWxsIGRvbWFp
+bnMgaXJyZXNwZWN0aXZlIG9mIHdoaWNoIG9uZXMgd2VyZSBhY3R1YWxseQogIGFkZGVkIGluIHRo
+ZSBmbHVzaCBxdWV1ZSBpbml0aWFsbHkuIFRoaXMgY2FuIGJlIHF1aXRlCiAgZXhwZW5zaXZlIGVz
+cGVjaWFsbHkgZm9yIGRvbWFpbnMgZm9yIHdoaWNoIHVubWFwcGluZyBpcwogIG5vdCByZXF1aXJl
+ZCBhdCB0aGlzIHBvaW50IG9mIHRpbWUuCgogIFRoaXMgcGF0Y2ggbWFrZXMgdXNlIG9mIGRvbWFp
+biBpbmZvcm1hdGlvbiBpbgogICdzdHJ1Y3QgZmx1c2hfcXVldWVfZW50cnknIHRvIG1ha2Ugc3Vy
+ZSB3ZSBvbmx5IGZsdXNoCiAgSU9UTEJzIGZvciBkb21haW5zIHdobyBuZWVkIGl0LCBza2lwcGlu
+ZyBvdGhlcnMuCgpCdWd6aWxsYTogaHR0cHM6Ly9idWdzLmZyZWVkZXNrdG9wLm9yZy8xMDEwMjkK
+Rml4ZXM6IGIxNTE2YTE0NjU3YSAoImlvbW11L2FtZDogSW1wbGVtZW50IGZsdXNoIHF1ZXVlIikK
+Q2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcKU3VnZ2VzdGVkLWJ5OiBKb2VyZyBSb2VkZWwgPGpv
+cm9AOGJ5dGVzLm9yZz4KU2lnbmVkLW9mZi1ieTogQXJpbmRhbSBOYXRoIDxhcmluZGFtLm5hdGhA
+YW1kLmNvbT4KLS0tCiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jICAgICAgIHwgMjcgKysrKysr
+KysrKysrKysrKysrKystLS0tLS0tCiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV90eXBlcy5oIHwg
+IDIgKysKIDIgZmlsZXMgY2hhbmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkK
+CmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9h
+bWRfaW9tbXUuYwppbmRleCA2M2NhY2Y1Li4xZWRlZWJlYyAxMDA2NDQKLS0tIGEvZHJpdmVycy9p
+b21tdS9hbWRfaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jCkBAIC0yMjI3
+LDE1ICsyMjI3LDI2IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmFtZF9pb21tdV9kZXZp
+Y2VfZ3JvdXAoc3RydWN0IGRldmljZSAqZGV2KQogCiBzdGF0aWMgdm9pZCBfX3F1ZXVlX2ZsdXNo
+KHN0cnVjdCBmbHVzaF9xdWV1ZSAqcXVldWUpCiB7Ci0Jc3RydWN0IHByb3RlY3Rpb25fZG9tYWlu
+ICpkb21haW47Ci0JdW5zaWduZWQgbG9uZyBmbGFnczsKIAlpbnQgaWR4OwogCi0JLyogRmlyc3Qg
+Zmx1c2ggVExCIG9mIGFsbCBrbm93biBkb21haW5zICovCi0Jc3Bpbl9sb2NrX2lycXNhdmUoJmFt
+ZF9pb21tdV9wZF9sb2NrLCBmbGFncyk7Ci0JbGlzdF9mb3JfZWFjaF9lbnRyeShkb21haW4sICZh
+bWRfaW9tbXVfcGRfbGlzdCwgbGlzdCkKLQkJZG9tYWluX2ZsdXNoX3RsYihkb21haW4pOwotCXNw
+aW5fdW5sb2NrX2lycXJlc3RvcmUoJmFtZF9pb21tdV9wZF9sb2NrLCBmbGFncyk7CisJLyogRmly
+c3QgZmx1c2ggVExCIG9mIGFsbCBkb21haW5zIHdoaWNoIHdlcmUgYWRkZWQgdG8gZmx1c2ggcXVl
+dWUgKi8KKwlmb3IgKGlkeCA9IDA7IGlkeCA8IHF1ZXVlLT5uZXh0OyArK2lkeCkgeworCQlzdHJ1
+Y3QgZmx1c2hfcXVldWVfZW50cnkgKmVudHJ5OworCisJCWVudHJ5ID0gcXVldWUtPmVudHJpZXMg
+KyBpZHg7CisKKwkJLyoKKwkJICogVGhlcmUgbWlnaHQgYmUgY2FzZXMgd2hlcmUgbXVsdGlwbGUg
+SU9WQSBlbnRyaWVzIGZvciB0aGUKKwkJICogc2FtZSBkb21haW4gYXJlIHF1ZXVlZCBpbiB0aGUg
+Zmx1c2ggcXVldWUuIFRvIGF2b2lkCisJCSAqIGZsdXNoaW5nIHRoZSBzYW1lIGRvbWFpbiBhZ2Fp
+biwgd2UgY2hlY2sgd2hldGhlciB0aGUKKwkJICogZmxhZyBpcyBzZXQgb3Igbm90LiBUaGlzIGlt
+cHJvdmVzIHRoZSBlZmZpY2llbmN5IG9mCisJCSAqIGZsdXNoIG9wZXJhdGlvbi4KKwkJICovCisJ
+CWlmICghZW50cnktPmRtYV9kb20tPmRvbWFpbi5hbHJlYWR5X2ZsdXNoZWQpIHsKKwkJCWVudHJ5
+LT5kbWFfZG9tLT5kb21haW4uYWxyZWFkeV9mbHVzaGVkID0gdHJ1ZTsKKwkJCWRvbWFpbl9mbHVz
+aF90bGIoJmVudHJ5LT5kbWFfZG9tLT5kb21haW4pOworCQl9CisJfQogCiAJLyogV2FpdCB1bnRp
+bCBmbHVzaGVzIGhhdmUgY29tcGxldGVkICovCiAJZG9tYWluX2ZsdXNoX2NvbXBsZXRlKE5VTEwp
+OwpAQCAtMjI4OSw2ICsyMzAwLDggQEAgc3RhdGljIHZvaWQgcXVldWVfYWRkKHN0cnVjdCBkbWFf
+b3BzX2RvbWFpbiAqZG1hX2RvbSwKIAlwYWdlcyAgICAgPSBfX3JvdW5kdXBfcG93X29mX3R3byhw
+YWdlcyk7CiAJYWRkcmVzcyA+Pj0gUEFHRV9TSElGVDsKIAorCWRtYV9kb20tPmRvbWFpbi5hbHJl
+YWR5X2ZsdXNoZWQgPSBmYWxzZTsKKwogCXF1ZXVlID0gZ2V0X2NwdV9wdHIoJmZsdXNoX3F1ZXVl
+KTsKIAlzcGluX2xvY2tfaXJxc2F2ZSgmcXVldWUtPmxvY2ssIGZsYWdzKTsKIApkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaCBiL2RyaXZlcnMvaW9tbXUvYW1kX2lv
+bW11X3R5cGVzLmgKaW5kZXggNGRlOGY0MS4uNGY1NTE5ZCAxMDA2NDQKLS0tIGEvZHJpdmVycy9p
+b21tdS9hbWRfaW9tbXVfdHlwZXMuaAorKysgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV90eXBl
+cy5oCkBAIC00NTQsNiArNDU0LDggQEAgc3RydWN0IHByb3RlY3Rpb25fZG9tYWluIHsKIAlib29s
+IHVwZGF0ZWQ7CQkvKiBjb21wbGV0ZSBkb21haW4gZmx1c2ggcmVxdWlyZWQgKi8KIAl1bnNpZ25l
+ZCBkZXZfY250OwkvKiBkZXZpY2VzIGFzc2lnbmVkIHRvIHRoaXMgZG9tYWluICovCiAJdW5zaWdu
+ZWQgZGV2X2lvbW11W01BWF9JT01NVVNdOyAvKiBwZXItSU9NTVUgcmVmZXJlbmNlIGNvdW50ICov
+CisJYm9vbCBhbHJlYWR5X2ZsdXNoZWQ7CS8qIGZsYWcgdG8gYXZvaWQgZmx1c2hpbmcgdGhlIHNh
+bWUgZG9tYWluIGFnYWluCisJCQkJICAgaW4gYSBzaW5nbGUgaW52b2NhdGlvbiBvZiBfX3F1ZXVl
+X2ZsdXNoKCkgKi8KIH07CiAKIC8qCi0tIAoyLjcuNAoKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KYW1kLWdmeCBtYWlsaW5nIGxpc3QKYW1kLWdmeEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9hbWQtZ2Z4Cg==
