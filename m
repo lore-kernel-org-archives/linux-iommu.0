@@ -1,56 +1,92 @@
-From: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only (v2)
-Date: Mon, 22 May 2017 10:12:50 +0900
-Message-ID: <dbbf0fae-d888-615e-4955-d46a7fa439d2@daenzer.net>
-References: <20170407102039.GW7266@8bytes.org>
-	<1495188151-14358-1-git-send-email-arindam.nath@amd.com>
-	<c03c7d65-52a7-b656-2278-0cfb24e8d07a@daenzer.net>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [RFC PATCH 05/30] iommu/arm-smmu-v3: Disable tagged pointers when
+ ATS is in use
+Date: Mon, 22 May 2017 14:27:35 +0800
+Message-ID: <592284D7.60002@huawei.com>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+ <20170227195441.5170-6-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c03c7d65-52a7-b656-2278-0cfb24e8d07a-otUistvHUpPR7s880joybQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: arindam.nath-5C7GfCeVMHo@public.gmane.org
-Cc: John.Bridgman-5C7GfCeVMHo@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexander.Deucher-5C7GfCeVMHo@public.gmane.org, linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org, Felix.Kuehling-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20170227195441.5170-6-jean-philippe.brucker@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>, LinuxArm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjIvMDUvMTcgMTA6MDggQU0sIE1pY2hlbCBEw6RuemVyIHdyb3RlOgo+IE9uIDE5LzA1LzE3
-IDA3OjAyIFBNLCBhcmluZGFtLm5hdGhAYW1kLmNvbSB3cm90ZToKPj4gRnJvbTogQXJpbmRhbSBO
-YXRoIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KPj4KPj4gQ2hhbmdlIEhpc3RvcnkKPj4gLS0tLS0t
-LS0tLS0tLS0KPj4KPj4gdjI6IGNoYW5nZXMgc3VnZ2VzdGVkIGJ5IEpvZXJnCj4+IC0gYWRkIGZs
-dXNoIGZsYWcgdG8gaW1wcm92ZSBlZmZpY2llbmN5IG9mIGZsdXNoIG9wZXJhdGlvbgo+Pgo+PiB2
-MToKPj4gLSBUaGUgaWRlYSBiZWhpbmQgZmx1c2ggcXVldWVzIGlzIHRvIGRlZmVyIHRoZSBJT1RM
-QiBmbHVzaGluZwo+PiAgIGZvciBkb21haW5zIGZvciB3aGljaCB0aGUgbWFwcGluZ3MgYXJlIG5v
-IGxvbmdlciB2YWxpZC4gV2UKPj4gICBhZGQgc3VjaCBkb21haW5zIGluIHF1ZXVlX2FkZCgpLCBh
-bmQgd2hlbiB0aGUgcXVldWUgc2l6ZQo+PiAgIHJlYWNoZXMgRkxVU0hfUVVFVUVfU0laRSwgd2Ug
-cGVyZm9ybSBfX3F1ZXVlX2ZsdXNoKCkuCj4+Cj4+ICAgU2luY2Ugd2UgaGF2ZSBhbHJlYWR5IHRh
-a2VuIGxvY2sgYmVmb3JlIF9fcXVldWVfZmx1c2goKQo+PiAgIGlzIGNhbGxlZCwgd2UgbmVlZCB0
-byBtYWtlIHN1cmUgdGhlIElPVExCIGZsdXNoaW5nIGlzCj4+ICAgcGVyZm9ybWVkIGFzIHF1aWNr
-bHkgYXMgcG9zc2libGUuCj4+Cj4+ICAgSW4gdGhlIGN1cnJlbnQgaW1wbGVtZW50YXRpb24sIHdl
-IHBlcmZvcm0gSU9UTEIgZmx1c2hpbmcKPj4gICBmb3IgYWxsIGRvbWFpbnMgaXJyZXNwZWN0aXZl
-IG9mIHdoaWNoIG9uZXMgd2VyZSBhY3R1YWxseQo+PiAgIGFkZGVkIGluIHRoZSBmbHVzaCBxdWV1
-ZSBpbml0aWFsbHkuIFRoaXMgY2FuIGJlIHF1aXRlCj4+ICAgZXhwZW5zaXZlIGVzcGVjaWFsbHkg
-Zm9yIGRvbWFpbnMgZm9yIHdoaWNoIHVubWFwcGluZyBpcwo+PiAgIG5vdCByZXF1aXJlZCBhdCB0
-aGlzIHBvaW50IG9mIHRpbWUuCj4+Cj4+ICAgVGhpcyBwYXRjaCBtYWtlcyB1c2Ugb2YgZG9tYWlu
-IGluZm9ybWF0aW9uIGluCj4+ICAgJ3N0cnVjdCBmbHVzaF9xdWV1ZV9lbnRyeScgdG8gbWFrZSBz
-dXJlIHdlIG9ubHkgZmx1c2gKPj4gICBJT1RMQnMgZm9yIGRvbWFpbnMgd2hvIG5lZWQgaXQsIHNr
-aXBwaW5nIG90aGVycy4KPj4KPj4gU3VnZ2VzdGVkLWJ5OiBKb2VyZyBSb2VkZWwgPGpvcm9AOGJ5
-dGVzLm9yZz4KPj4gU2lnbmVkLW9mZi1ieTogQXJpbmRhbSBOYXRoIDxhcmluZGFtLm5hdGhAYW1k
-LmNvbT4KPiAKPiBQbGVhc2UgYWRkIHRoZXNlIHRhZ3M6Cj4gCj4gRml4ZXM6IGIxNTE2YTE0NjU3
-YSAoImlvbW11L2FtZDogSW1wbGVtZW50IGZsdXNoIHF1ZXVlIikKPiBDYzogc3RhYmxlQHZnZXIu
-a2VybmVsLm9yZwoKQWxzbwoKQnVnemlsbGE6IGh0dHBzOi8vYnVncy5mcmVlZGVza3RvcC5vcmcv
-MTAxMDI5CgoKLS0gCkVhcnRobGluZyBNaWNoZWwgRMOkbnplciAgICAgICAgICAgICAgIHwgICAg
-ICAgICAgICAgICBodHRwOi8vd3d3LmFtZC5jb20KTGlicmUgc29mdHdhcmUgZW50aHVzaWFzdCAg
-ICAgICAgICAgICB8ICAgICAgICAgICAgIE1lc2EgYW5kIFggZGV2ZWxvcGVyCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+
+
+On 2017/2/28 3:54, Jean-Philippe Brucker wrote:
+> The ARM architecture has a "Top Byte Ignore" (TBI) option that makes the
+> MMU mask out bits [63:56] of an address, allowing a userspace application
+> to store data in its pointers.
+> 
+> The ATS doesn't have an architected mechanism to enable TBI, and might
+> create ATC entries for addresses that include a tag. Software would then
+> have to send ATC invalidation packets for each 255 possible alias of an
+> address, or just wipe the whole address space. This is not a viable
+> option, so disable TBI when ATS is in use.
+> 
+> It is unclear for the moment how this restriction will affect user
+> applications. One example I can imagine (with my complete lack of
+> knowledge about JIT engines and their use of tagged pointers) is a JIT
+> translating a WebCL applications that uses SVM. Since this kind of
+> interpreted language doesn't expose addresses, the interpreter and SVM
+> implementations will be given the opportunity to do the right thing and
+> remove tags before handing pointers to devices.
+> 
+> Ideally we should remove TBI only for domains that are susceptible to use
+> ATS. But at the point we're writing the context descriptor of a domain, we
+> are still probing the first device in the group. If that device doesn't
+> have an ATC but the next one does, we would then have to clear the TBI
+> bit, invalidate the ATCs of previous devices, and notify the drivers that
+> their devices cannot use tagged pointers anymore. Such a level of
+> complexity doesn't make any sense here since it is unlikely devices will
+> use tagged pointers at all.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index e7b940146ae3..06b29d4fcf65 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -987,7 +987,7 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+>  }
+>  
+>  /* Context descriptor manipulation functions */
+> -static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
+> +static u64 arm_smmu_cpu_tcr_to_cd(struct arm_smmu_device *smmu, u64 tcr)
+>  {
+>  	u64 val = 0;
+>  
+> @@ -1000,7 +1000,8 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
+>  	val |= ARM_SMMU_TCR2CD(tcr, EPD0);
+>  	val |= ARM_SMMU_TCR2CD(tcr, EPD1);
+>  	val |= ARM_SMMU_TCR2CD(tcr, IPS);
+> -	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
+> +	if (!(smmu->features & ARM_SMMU_FEAT_ATS))
+> +		val |= ARM_SMMU_TCR2CD(tcr, TBI0);
+Maybe we should always disable TBI. Otherwise, a device behind a ATS supported or
+non-supported SMMU should use different strategies.
+
+>  
+>  	return val;
+>  }
+> @@ -1014,7 +1015,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
+>  	 * We don't need to issue any invalidation here, as we'll invalidate
+>  	 * the STE when installing the new entry anyway.
+>  	 */
+> -	val = arm_smmu_cpu_tcr_to_cd(cfg->cd.tcr) |
+> +	val = arm_smmu_cpu_tcr_to_cd(smmu, cfg->cd.tcr) |
+>  #ifdef __BIG_ENDIAN
+>  	      CTXDESC_CD_0_ENDI |
+>  #endif
+> 
+
+-- 
+Thanks!
+BestRegards
