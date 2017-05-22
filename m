@@ -1,82 +1,42 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 2/2] iommu/arm-smmu: Plumb in new ACPI identifiers
-Date: Mon, 22 May 2017 16:06:38 +0100
-Message-ID: <ac4e7adc7ca636fc71e6a10f0d8ab273b3dfd5dc.1495459319.git.robin.murphy@arm.com>
+From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] ACPICA: IORT: Update SMMU models for IORT rev. C
+Date: Mon, 22 May 2017 17:49:17 +0200
+Message-ID: <20170522154917.GA16981@rric.localdomain>
 References: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: will.deacon@arm.com, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, rrichter@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, stable@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Revision C of IORT now allows us to identify ARM MMU-401 and the Cavium
-ThunderX implementation. Wire them up so that we can probe these models
-once firmware starts using the new codes, and so that the appropriate
-features and quirks get enabled when we do.
+On 22.05.17 16:06:37, Robin Murphy wrote:
+> IORT revision C has been published with a number of new SMMU
+> implementation identifiers. Since IORT doesn't have any way of falling
+> back to a more generic model code, we really need Linux to know about
+> these before vendors start updating their firmware tables to use them.
+> 
+> CC: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+> CC: Robert Moore <robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> CC: Lv Zheng <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Acked-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Tested-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-For the sake of backports and mitigating sychronisation problems with
-the ACPICA headers, we'll carry a backup copy of the new definitions
-locally for the short term to make life simpler.
+Robin, the stable tag is missing here, but we will need it for #2.
 
-CC: stable@vger.kernel.org # 4.10
-Acked-by: Robert Richter <rrichter@cavium.com>
-Tested-by: Robert Richter <rrichter@cavium.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+Thanks,
 
-v2: Add local backup definitions
-
-This is ready to go regardless of patch 1. The stable backport is in likely
-anticipation of machines with updated firmware paired with stable distro
-kernels, which would be unable to recognise and probe the SMMU otherwise.
-
-Robin.
-
- drivers/iommu/arm-smmu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7ec30b08b3bd..79b9bb7d4783 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -312,6 +312,14 @@ enum arm_smmu_implementation {
- 	CAVIUM_SMMUV2,
- };
- 
-+/* Until ACPICA headers cover IORT rev. C */
-+#ifndef ACPI_IORT_SMMU_CORELINK_MMU401
-+#define ACPI_IORT_SMMU_CORELINK_MMU401	0x4
-+#endif
-+#ifndef ACPI_IORT_SMMU_CAVIUM_SMMUV2
-+#define ACPI_IORT_SMMU_CAVIUM_SMMUV2	0x5
-+#endif
-+
- struct arm_smmu_s2cr {
- 	struct iommu_group		*group;
- 	int				count;
-@@ -2073,6 +2081,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
- 		smmu->version = ARM_SMMU_V1;
- 		smmu->model = GENERIC_SMMU;
- 		break;
-+	case ACPI_IORT_SMMU_CORELINK_MMU401:
-+		smmu->version = ARM_SMMU_V1_64K;
-+		smmu->model = GENERIC_SMMU;
-+		break;
- 	case ACPI_IORT_SMMU_V2:
- 		smmu->version = ARM_SMMU_V2;
- 		smmu->model = GENERIC_SMMU;
-@@ -2081,6 +2093,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
- 		smmu->version = ARM_SMMU_V2;
- 		smmu->model = ARM_MMU500;
- 		break;
-+	case ACPI_IORT_SMMU_CAVIUM_SMMUV2:
-+		smmu->version = ARM_SMMU_V2;
-+		smmu->model = CAVIUM_SMMUV2;
-+		break;
- 	default:
- 		ret = -ENODEV;
- 	}
--- 
-2.12.2.dirty
-
+-Robert
