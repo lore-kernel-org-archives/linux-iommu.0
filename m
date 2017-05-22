@@ -1,7 +1,7 @@
 From: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v7 1/3] OF/PCI: Export inbound memory interface to PCI RC drivers.
-Date: Mon, 22 May 2017 22:09:40 +0530
-Message-ID: <1495471182-12490-2-git-send-email-oza.oza@broadcom.com>
+Subject: [PATCH v7 2/3] PCI: Add support for PCI inbound windows resources
+Date: Mon, 22 May 2017 22:09:41 +0530
+Message-ID: <1495471182-12490-3-git-send-email-oza.oza@broadcom.com>
 References: <1495471182-12490-1-git-send-email-oza.oza@broadcom.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1495471182-12490-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
@@ -10,151 +10,125 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <r
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The patch exports interface to PCIe RC drivers so that,
-Drivers can get their inbound memory configuration.
+This patch adds support for inbound memory window
+for PCI RC drivers.
 
-It provides basis for IOVA reservations for inbound memory
-holes, if RC is not capable of addressing all the host memory,
-Specifically when IOMMU is enabled and on ARMv8 where 64bit IOVA
-could be allocated.
+It defines new function pci_create_root_bus2 which
+takes inbound resources as an argument and fills in the
+memory resource to PCI internal host bridge structure
+as inbound_windows.
 
-It handles multiple inbound windows, and returns resources,
-and is left to the caller, how it wants to use them.
+Legacy RC driver could continue to use pci_create_root_bus,
+but any RC driver who wants to reseve IOVAS for their
+inbound memory holes, should use new API pci_create_root_bus2.
 
 Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 
-diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
-index c9d4d3a..20cf527 100644
---- a/drivers/of/of_pci.c
-+++ b/drivers/of/of_pci.c
-@@ -283,6 +283,102 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
- 	return err;
- }
- EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
-+
-+/**
-+ * of_pci_get_dma_ranges - Parse PCI host bridge inbound resources from DT
-+ * @np: device node of the host bridge having the dma-ranges property
-+ * @resources: list where the range of resources will be added after DT parsing
-+ *
-+ * It is the caller's job to free the @resources list.
-+ *
-+ * This function will parse the "dma-ranges" property of a
-+ * PCI host bridge device node and setup the resource mapping based
-+ * on its content.
-+ *
-+ * It returns zero if the range parsing has been successful or a standard error
-+ * value if it failed.
-+ */
-+
-+int of_pci_get_dma_ranges(struct device_node *dn, struct list_head *resources)
-+{
-+	struct device_node *node = of_node_get(dn);
-+	int rlen;
-+	int pna = of_n_addr_cells(node);
-+	const int na = 3, ns = 2;
-+	int np = pna + na + ns;
-+	int ret = 0;
-+	struct resource *res;
-+	const u32 *dma_ranges;
-+	struct of_pci_range range;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	while (1) {
-+		dma_ranges = of_get_property(node, "dma-ranges", &rlen);
-+
-+		/* Ignore empty ranges, they imply no translation required. */
-+		if (dma_ranges && rlen > 0)
-+			break;
-+
-+		/* no dma-ranges, they imply no translation required. */
-+		if (!dma_ranges)
-+			break;
-+
-+		node = of_get_next_parent(node);
-+
-+		if (!node)
-+			break;
-+	}
-+
-+	if (!dma_ranges) {
-+		pr_debug("pcie device has no dma-ranges defined for node(%s)\n",
-+			  dn->full_name);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	while ((rlen -= np * 4) >= 0) {
-+		range.pci_space = be32_to_cpup((const __be32 *) &dma_ranges[0]);
-+		range.pci_addr = of_read_number(dma_ranges + 1, ns);
-+		range.cpu_addr = of_translate_dma_address(node,
-+							dma_ranges + na);
-+		range.size = of_read_number(dma_ranges + pna + na, ns);
-+		range.flags = IORESOURCE_MEM;
-+
-+		dma_ranges += np;
-+
-+		/*
-+		 * If we failed translation or got a zero-sized region
-+		 * then skip this range.
-+		 */
-+		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
-+			continue;
-+
-+		res = kzalloc(sizeof(struct resource), GFP_KERNEL);
-+		if (!res) {
-+			ret = -ENOMEM;
-+			goto parse_failed;
-+		}
-+
-+		ret = of_pci_range_to_resource(&range, dn, res);
-+		if (ret) {
-+			kfree(res);
-+			continue;
-+		}
-+
-+		pci_add_resource_offset(resources, res,
-+					res->start - range.pci_addr);
-+	}
-+	return ret;
-+
-+parse_failed:
-+	pci_free_resource_list(resources);
-+out:
-+	of_node_put(node);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
- #endif /* CONFIG_OF_ADDRESS */
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 19c8950..a95b9bb 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -531,6 +531,7 @@ struct pci_host_bridge *pci_alloc_host_bridge(size_t priv)
+ 		return NULL;
  
- /**
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-index 518c8d2..0eafe86 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
- int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
- 			struct list_head *resources, resource_size_t *io_base);
-+int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources);
- #else
- static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
-@@ -83,6 +84,12 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 	INIT_LIST_HEAD(&bridge->windows);
++	INIT_LIST_HEAD(&bridge->inbound_windows);
+ 
+ 	return bridge;
+ }
+@@ -726,6 +727,7 @@ int pci_register_host_bridge(struct pci_host_bridge *bridge)
+ 	struct pci_bus *bus, *b;
+ 	resource_size_t offset;
+ 	LIST_HEAD(resources);
++	LIST_HEAD(inbound_resources);
+ 	struct resource *res;
+ 	char addr[64], *fmt;
+ 	const char *name;
+@@ -739,6 +741,8 @@ int pci_register_host_bridge(struct pci_host_bridge *bridge)
+ 
+ 	/* temporarily move resources off the list */
+ 	list_splice_init(&bridge->windows, &resources);
++	list_splice_init(&bridge->inbound_windows, &inbound_resources);
++
+ 	bus->sysdata = bridge->sysdata;
+ 	bus->msi = bridge->msi;
+ 	bus->ops = bridge->ops;
+@@ -794,6 +798,10 @@ int pci_register_host_bridge(struct pci_host_bridge *bridge)
+ 	else
+ 		pr_info("PCI host bridge to bus %s\n", name);
+ 
++	/* Add inbound mem resource. */
++	resource_list_for_each_entry_safe(window, n, &inbound_resources)
++		list_move_tail(&window->node, &bridge->inbound_windows);
++
+ 	/* Add initial resources to the bus */
+ 	resource_list_for_each_entry_safe(window, n, &resources) {
+ 		list_move_tail(&window->node, &bridge->windows);
+@@ -2300,7 +2308,8 @@ void __weak pcibios_remove_bus(struct pci_bus *bus)
+ 
+ static struct pci_bus *pci_create_root_bus_msi(struct device *parent,
+ 		int bus, struct pci_ops *ops, void *sysdata,
+-		struct list_head *resources, struct msi_controller *msi)
++		struct list_head *resources, struct list_head *in_res,
++		struct msi_controller *msi)
  {
- 	return -EINVAL;
- }
-+
-+static inline int of_pci_get_dma_ranges(struct device_node *np,
-+					struct list_head *resources)
-+{
-+	return -EINVAL;
-+}
- #endif
+ 	int error;
+ 	struct pci_host_bridge *bridge;
+@@ -2313,6 +2322,9 @@ static struct pci_bus *pci_create_root_bus_msi(struct device *parent,
+ 	bridge->dev.release = pci_release_host_bridge_dev;
  
- #endif
+ 	list_splice_init(resources, &bridge->windows);
++	if (in_res)
++		list_splice_init(in_res, &bridge->inbound_windows);
++
+ 	bridge->sysdata = sysdata;
+ 	bridge->busnr = bus;
+ 	bridge->ops = ops;
+@@ -2329,11 +2341,20 @@ static struct pci_bus *pci_create_root_bus_msi(struct device *parent,
+ 	return NULL;
+ }
+ 
++struct pci_bus *pci_create_root_bus2(struct device *parent, int bus,
++		struct pci_ops *ops, void *sysdata, struct list_head *resources,
++		struct list_head *in_res)
++{
++	return pci_create_root_bus_msi(parent, bus, ops, sysdata,
++				       resources, in_res, NULL);
++}
++EXPORT_SYMBOL_GPL(pci_create_root_bus2);
++
+ struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
+ 		struct pci_ops *ops, void *sysdata, struct list_head *resources)
+ {
+-	return pci_create_root_bus_msi(parent, bus, ops, sysdata, resources,
+-				       NULL);
++	return pci_create_root_bus_msi(parent, bus, ops, sysdata,
++				       resources, NULL, NULL);
+ }
+ EXPORT_SYMBOL_GPL(pci_create_root_bus);
+ 
+@@ -2415,7 +2436,8 @@ struct pci_bus *pci_scan_root_bus_msi(struct device *parent, int bus,
+ 			break;
+ 		}
+ 
+-	b = pci_create_root_bus_msi(parent, bus, ops, sysdata, resources, msi);
++	b = pci_create_root_bus_msi(parent, bus, ops, sysdata,
++				    resources, NULL, msi);
+ 	if (!b)
+ 		return NULL;
+ 
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 33c2b0b..d2df107 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -432,6 +432,7 @@ struct pci_host_bridge {
+ 	void *sysdata;
+ 	int busnr;
+ 	struct list_head windows;	/* resource_entry */
++	struct list_head inbound_windows;	/* inbound memory */
+ 	void (*release_fn)(struct pci_host_bridge *);
+ 	void *release_data;
+ 	struct msi_controller *msi;
 -- 
 1.9.1
 
