@@ -1,15 +1,11 @@
-From: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [RFC PATCH kvmtool 00/15] Add virtio-iommu
-Date: Mon, 22 May 2017 08:26:12 +0000
-Message-ID: <AM5PR0401MB2545FADDF2A7649DF0DB68309AF80@AM5PR0401MB2545.eurprd04.prod.outlook.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
-	<20170407192455.26814-1-jean-philippe.brucker@arm.com>
+From: vjitta-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Subject: [PATCH] iommu/arm-smmu: Use context bank TLBSTATUS registers
+Date: Mon, 22 May 2017 14:25:28 +0530
+Message-ID: <1495443328-19646-1-git-send-email-vjitta@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170407192455.26814-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,151 +15,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>
-Cc: "cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guptap-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Vijayanand Jitta <vjitta-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, shashim-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
+From: Vijayanand Jitta <vjitta-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-I am trying to run and review on my side but I see Linux patches are not with latest kernel version.
-Will it be possible for you to share your Linux and kvmtool git repository reference?
+There are TLBSTATUS registers in SMMU global register space as well as
+context bank register space.  Currently we're polling the global
+TLBSTATUS registers after TLB invalidation, even when using the TLB
+invalidation registers from context bank address space.  This violates
+the usage model described in the ARM SMMU spec.  Fix this by polling
+context bank TLBSTATUS registers for context bank TLB operations, and
+global TLBSTATUS registers for global TLB operations.
 
-Thanks
--Bharat
+Signed-off-by: Vijayanand Jitta <vjitta-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-> -----Original Message-----
-> From: virtualization-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> [mailto:virtualization-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Jean-
-> Philippe Brucker
-> Sent: Saturday, April 08, 2017 12:55 AM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org
-> Cc: cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> marc.zyngier-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> robin.murphy-5wv7dgnIgG8@public.gmane.org
-> Subject: [RFC PATCH kvmtool 00/15] Add virtio-iommu
-> 
-> Implement a virtio-iommu device and translate DMA traffic from vfio and
-> virtio devices. Virtio needed some rework to support scatter-gather accesses
-> to vring and buffers at page granularity. Patch 3 implements the actual virtio-
-> iommu device.
-> 
-> Adding --viommu on the command-line now inserts a virtual IOMMU in front
-> of all virtio and vfio devices:
-> 
-> 	$ lkvm run -k Image --console virtio -p console=hvc0 \
-> 	           --viommu --vfio 0 --vfio 4 --irqchip gicv3-its
-> 	...
-> 	[    2.998949] virtio_iommu virtio0: probe successful
-> 	[    3.007739] virtio_iommu virtio1: probe successful
-> 	...
-> 	[    3.165023] iommu: Adding device 0000:00:00.0 to group 0
-> 	[    3.536480] iommu: Adding device 10200.virtio to group 1
-> 	[    3.553643] iommu: Adding device 10600.virtio to group 2
-> 	[    3.570687] iommu: Adding device 10800.virtio to group 3
-> 	[    3.627425] iommu: Adding device 10a00.virtio to group 4
-> 	[    7.823689] iommu: Adding device 0000:00:01.0 to group 5
-> 	...
-> 
-> Patches 13 and 14 add debug facilities. Some statistics are gathered for each
-> address space and can be queried via the debug builtin:
-> 
-> 	$ lkvm debug -n guest-1210 --iommu stats
-> 	iommu 0 "viommu-vfio"
-> 	  kicks                 1255
-> 	  requests              1256
-> 	  ioas 1
-> 	    maps                7
-> 	    unmaps              4
-> 	    resident            2101248
-> 	  ioas 6
-> 	    maps                623
-> 	    unmaps              620
-> 	    resident            16384
-> 	iommu 1 "viommu-virtio"
-> 	  kicks                 11426
-> 	  requests              11431
-> 	  ioas 2
-> 	    maps                2836
-> 	    unmaps              2835
-> 	    resident            8192
-> 	    accesses            2836
-> 	...
-> 
-> This is based on the VFIO patchset[1], itself based on Andre's ITS work.
-> The VFIO bits have only been tested on a software model and are unlikely to
-> work on actual hardware, but I also tested virtio on an ARM Juno.
-> 
-> [1] http://www.spinics.net/lists/kvm/msg147624.html
-> 
-> Jean-Philippe Brucker (15):
->   virtio: synchronize virtio-iommu headers with Linux
->   FDT: (re)introduce a dynamic phandle allocator
->   virtio: add virtio-iommu
->   Add a simple IOMMU
->   iommu: describe IOMMU topology in device-trees
->   irq: register MSI doorbell addresses
->   virtio: factor virtqueue initialization
->   virtio: add vIOMMU instance for virtio devices
->   virtio: access vring and buffers through IOMMU mappings
->   virtio-pci: translate MSIs with the virtual IOMMU
->   virtio: set VIRTIO_F_IOMMU_PLATFORM when necessary
->   vfio: add support for virtual IOMMU
->   virtio-iommu: debug via IPC
->   virtio-iommu: implement basic debug commands
->   virtio: use virtio-iommu when available
-> 
->  Makefile                          |   3 +
->  arm/gic.c                         |   4 +
->  arm/include/arm-common/fdt-arch.h |   2 +-
->  arm/pci.c                         |  49 ++-
->  builtin-debug.c                   |   8 +-
->  builtin-run.c                     |   2 +
->  fdt.c                             |  35 ++
->  include/kvm/builtin-debug.h       |   6 +
->  include/kvm/devices.h             |   4 +
->  include/kvm/fdt.h                 |  20 +
->  include/kvm/iommu.h               | 105 +++++
->  include/kvm/irq.h                 |   3 +
->  include/kvm/kvm-config.h          |   1 +
->  include/kvm/vfio.h                |   2 +
->  include/kvm/virtio-iommu.h        |  15 +
->  include/kvm/virtio-mmio.h         |   1 +
->  include/kvm/virtio-pci.h          |   2 +
->  include/kvm/virtio.h              | 137 +++++-
->  include/linux/virtio_config.h     |  74 ++++
->  include/linux/virtio_ids.h        |   4 +
->  include/linux/virtio_iommu.h      | 142 ++++++
->  iommu.c                           | 240 ++++++++++
->  irq.c                             |  35 ++
->  kvm-ipc.c                         |  43 +-
->  mips/include/kvm/fdt-arch.h       |   2 +-
->  powerpc/include/kvm/fdt-arch.h    |   2 +-
->  vfio.c                            | 281 +++++++++++-
->  virtio/9p.c                       |   7 +-
->  virtio/balloon.c                  |   7 +-
->  virtio/blk.c                      |  10 +-
->  virtio/console.c                  |   7 +-
->  virtio/core.c                     | 240 ++++++++--
->  virtio/iommu.c                    | 902
-> ++++++++++++++++++++++++++++++++++++++
->  virtio/mmio.c                     |  44 +-
->  virtio/net.c                      |   8 +-
->  virtio/pci.c                      |  61 ++-
->  virtio/rng.c                      |   6 +-
->  virtio/scsi.c                     |   6 +-
->  x86/include/kvm/fdt-arch.h        |   2 +-
->  39 files changed, 2389 insertions(+), 133 deletions(-)  create mode 100644
-> fdt.c  create mode 100644 include/kvm/iommu.h  create mode 100644
-> include/kvm/virtio-iommu.h  create mode 100644
-> include/linux/virtio_config.h  create mode 100644
-> include/linux/virtio_iommu.h  create mode 100644 iommu.c  create mode
-> 100644 virtio/iommu.c
-> 
-> --
-> 2.12.1
-> 
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 7cecc37..8dc6da9 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -233,6 +233,9 @@ enum arm_smmu_s2cr_privcfg {
+ #define ARM_SMMU_CB_S1_TLBIVAL		0x620
+ #define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
+ #define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
++#define ARM_SMMU_CB_TLBSYNC		0x7f0
++#define ARM_SMMU_CB_TLBSTATUS		0x7f4
++#define TLBSTATUS_SACTIVE		(1 << 0)
+ #define ARM_SMMU_CB_ATS1PR		0x800
+ #define ARM_SMMU_CB_ATSR		0x8f0
+ 
+@@ -580,6 +583,19 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+ }
+ 
+ /* Wait for any pending TLB invalidations to complete */
++static void arm_smmu_tlb_sync_cb(struct arm_smmu_device *smmu,
++				int cbndx)
++{
++	void __iomem *base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cbndx);
++	u32 val;
++
++	writel_relaxed(0, base + ARM_SMMU_CB_TLBSYNC);
++	if (readl_poll_timeout_atomic(base + ARM_SMMU_CB_TLBSTATUS, val,
++				      !(val & TLBSTATUS_SACTIVE),
++				      0, TLB_LOOP_TIMEOUT))
++		dev_err(smmu->dev, "TLBSYNC timeout!\n");
++}
++
+ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+ {
+ 	int count = 0;
+@@ -601,7 +617,7 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+ static void arm_smmu_tlb_sync(void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+-	__arm_smmu_tlb_sync(smmu_domain->smmu);
++	arm_smmu_tlb_sync_cb(smmu_domain->smmu, smmu_domain->cfg.cbndx);
+ }
+ 
+ static void arm_smmu_tlb_inv_context(void *cookie)
+@@ -616,13 +632,13 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ 		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
+ 			       base + ARM_SMMU_CB_S1_TLBIASID);
++		arm_smmu_tlb_sync_cb(smmu, cfg->cbndx);
+ 	} else {
+ 		base = ARM_SMMU_GR0(smmu);
+ 		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
+ 			       base + ARM_SMMU_GR0_TLBIVMID);
++		__arm_smmu_tlb_sync(smmu);
+ 	}
+-
+-	__arm_smmu_tlb_sync(smmu);
+ }
+ 
+ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+-- 
+1.9.1
