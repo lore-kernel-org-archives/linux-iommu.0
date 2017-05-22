@@ -1,80 +1,82 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 1/2] ACPICA: IORT: Update SMMU models for IORT rev. C
-Date: Mon, 22 May 2017 16:06:37 +0100
-Message-ID: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
+Subject: [PATCH v2 2/2] iommu/arm-smmu: Plumb in new ACPI identifiers
+Date: Mon, 22 May 2017 16:06:38 +0100
+Message-ID: <ac4e7adc7ca636fc71e6a10f0d8ab273b3dfd5dc.1495459319.git.robin.murphy@arm.com>
+References: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
 Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: will.deacon@arm.com, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, rrichter@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, rjw@rjwysocki.net, robert.moore@intel.com, lv.zheng@intel.com
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, rrichter@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-IORT revision C has been published with a number of new SMMU
-implementation identifiers. Since IORT doesn't have any way of falling
-back to a more generic model code, we really need Linux to know about
-these before vendors start updating their firmware tables to use them.
+Revision C of IORT now allows us to identify ARM MMU-401 and the Cavium
+ThunderX implementation. Wire them up so that we can probe these models
+once firmware starts using the new codes, and so that the appropriate
+features and quirks get enabled when we do.
 
-CC: Rafael J. Wysocki <rjw@rjwysocki.net>
-CC: Robert Moore <robert.moore@intel.com>
-CC: Lv Zheng <lv.zheng@intel.com>
+For the sake of backports and mitigating sychronisation problems with
+the ACPICA headers, we'll carry a backup copy of the new definitions
+locally for the short term to make life simpler.
+
+CC: stable@vger.kernel.org # 4.10
 Acked-by: Robert Richter <rrichter@cavium.com>
 Tested-by: Robert Richter <rrichter@cavium.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-v2: Update more comments, add Robert's tags.
+v2: Add local backup definitions
 
-I'm including this here as a kernel patch just for context - once I've
-figured out how we actually submit patches to ACPICA directly, I'll do
-that per the preferred process.
+This is ready to go regardless of patch 1. The stable backport is in likely
+anticipation of machines with updated firmware paired with stable distro
+kernels, which would be unable to recognise and probe the SMMU otherwise.
 
 Robin.
 
- include/acpi/actbl2.h | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index faa9f2c0d5de..f469ea41f2fd 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -663,7 +663,7 @@ struct acpi_ibft_target {
-  * IORT - IO Remapping Table
-  *
-  * Conforms to "IO Remapping Table System Software on ARM Platforms",
-- * Document number: ARM DEN 0049B, October 2015
-+ * Document number: ARM DEN 0049C, May 2017
-  *
-  ******************************************************************************/
- 
-@@ -778,6 +778,8 @@ struct acpi_iort_smmu {
- #define ACPI_IORT_SMMU_V2               0x00000001	/* Generic SMMUv2 */
- #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
- #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
-+#define ACPI_IORT_SMMU_CORELINK_MMU401  0x00000004	/* ARM Corelink MMU-401 */
-+#define ACPI_IORT_SMMU_CAVIUM_SMMUV2    0x00000005	/* Cavium ThunderX SMMUv2 */
- 
- /* Masks for Flags field above */
- 
-@@ -798,13 +800,19 @@ struct acpi_iort_smmu_v3 {
- 	u32 flags;
- 	u32 reserved;
- 	u64 vatos_address;
--	u32 model;		/* O: generic SMMUv3 */
-+	u32 model;
- 	u32 event_gsiv;
- 	u32 pri_gsiv;
- 	u32 gerr_gsiv;
- 	u32 sync_gsiv;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 7ec30b08b3bd..79b9bb7d4783 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -312,6 +312,14 @@ enum arm_smmu_implementation {
+ 	CAVIUM_SMMUV2,
  };
  
-+/* Values for Model field above */
++/* Until ACPICA headers cover IORT rev. C */
++#ifndef ACPI_IORT_SMMU_CORELINK_MMU401
++#define ACPI_IORT_SMMU_CORELINK_MMU401	0x4
++#endif
++#ifndef ACPI_IORT_SMMU_CAVIUM_SMMUV2
++#define ACPI_IORT_SMMU_CAVIUM_SMMUV2	0x5
++#endif
 +
-+#define ACPI_IORT_SMMU_V3               0x00000000	/* Generic SMMUv3 */
-+#define ACPI_IORT_SMMU_HISILICON_HI161X 0x00000001	/* HiSilicon Hi161x SMMUv3 */
-+#define ACPI_IORT_SMMU_CAVIUM_CN99XX    0x00000002	/* Cavium CN99xx SMMUv3 */
-+
- /* Masks for Flags field above */
- 
- #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
+ struct arm_smmu_s2cr {
+ 	struct iommu_group		*group;
+ 	int				count;
+@@ -2073,6 +2081,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
+ 		smmu->version = ARM_SMMU_V1;
+ 		smmu->model = GENERIC_SMMU;
+ 		break;
++	case ACPI_IORT_SMMU_CORELINK_MMU401:
++		smmu->version = ARM_SMMU_V1_64K;
++		smmu->model = GENERIC_SMMU;
++		break;
+ 	case ACPI_IORT_SMMU_V2:
+ 		smmu->version = ARM_SMMU_V2;
+ 		smmu->model = GENERIC_SMMU;
+@@ -2081,6 +2093,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
+ 		smmu->version = ARM_SMMU_V2;
+ 		smmu->model = ARM_MMU500;
+ 		break;
++	case ACPI_IORT_SMMU_CAVIUM_SMMUV2:
++		smmu->version = ARM_SMMU_V2;
++		smmu->model = CAVIUM_SMMUV2;
++		break;
+ 	default:
+ 		ret = -ENODEV;
+ 	}
 -- 
 2.12.2.dirty
 
