@@ -1,179 +1,74 @@
-From: Oza Oza <oza.oza@broadcom.com>
-Subject: Re: [PATCH 2/3] iommu/pci: reserve iova for PCI masters
-Date: Mon, 22 May 2017 22:15:13 +0530
-Message-ID: <CAMSpPPcaM_10FJGjsjwuSSTcsOB2bONJwOYpeHRemWmw9cJttQ@mail.gmail.com>
-References: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
- <1493786795-28153-2-git-send-email-oza.oza@broadcom.com> <0c9a6b09-139c-df49-cf73-6a3935a6aacd@arm.com>
- <CAMSpPPdtfMMkTpi9cWn0QV2qnfBoHayQQg5cGANAswSwFoHX3w@mail.gmail.com> <d063a61c-44f6-11f3-a25b-01cfb5d46172@arm.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
+Date: Mon, 22 May 2017 22:08:57 +0300
+Message-ID: <1495480137.6967.77.camel@linux.intel.com>
+References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <d063a61c-44f6-11f3-a25b-01cfb5d46172@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, linux-pci <linux-pci@vger.kernel.org>, linux-kernel@vger.kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, Oza Pawandeep <oza.pawandeep@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170504092151.88646-1-andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tpmdd-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yisen Zhuang <yisen.zhuang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Amir Goldstein <amir73il-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Rafael J . Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Adrian Hunter <adrian.hunter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jarkko Sakkinen <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Benjamin Tissoires <benjamin.tissoires-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jani Nikula <jani.nikula-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 5, 2017 at 9:21 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 04/05/17 19:52, Oza Oza wrote:
->> On Thu, May 4, 2017 at 11:50 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>> On 03/05/17 05:46, Oza Pawandeep wrote:
->>>> this patch reserves the iova for PCI masters.
->>>> ARM64 based SOCs may have scattered memory banks.
->>>> such as iproc based SOC has
->>>>
->>>> <0x00000000 0x80000000 0x0 0x80000000>, /* 2G @ 2G */
->>>> <0x00000008 0x80000000 0x3 0x80000000>, /* 14G @ 34G */
->>>> <0x00000090 0x00000000 0x4 0x00000000>, /* 16G @ 576G */
->>>> <0x000000a0 0x00000000 0x4 0x00000000>; /* 16G @ 640G */
->>>>
->>>> but incoming PCI transcation addressing capability is limited
->>>> by host bridge, for example if max incoming window capability
->>>> is 512 GB, then 0x00000090 and 0x000000a0 will fall beyond it.
->>>>
->>>> to address this problem, iommu has to avoid allocating iovas which
->>>> are reserved. which inturn does not allocate iova if it falls into hole.
->>>
->>> I don't necessarily disagree with doing this, as we could do with facing
->>> up to the issue of discontiguous DMA ranges in particular (I too have a
->>> platform with this problem), but I'm still not overly keen on pulling DT
->>> specifics into this layer. More than that, though, if we are going to do
->>> it, then we should do it for all devices with a restrictive
->>> "dma-ranges", not just PCI ones.
->>>
->>
->> How do you propose to do it ?
->>
->> my thinking is this:
->> iova_reserve_pci_windows is written specific for PCI, and I am adding there.
->>
->> ideally
->> struct pci_host_bridge should have new member:
->>
->> struct list_head inbound_windows; /* resource_entry */
->>
->> but somehow this resource have to be filled much before
->> iommu_dma_init_domain happens.
->> and use brdge resource directly in iova_reserve_pci_windows as it is
->> already doing it for outbound memory.
->>
->> this will detach the DT specifics from dma-immu layer.
->> let me know how this sounds.
->
-> Please check the state of the code currently queued in Joerg's tree and
-> in linux-next - iommu_dma_get_resv_regions() has room for
-> device-agnostic stuff before the if (!dev_is_pci(dev)) check.
->
-> Furthermore, with the probe-deferral changes we end up with a common
-> dma_configure() routine to abstract the firmware-specifics of
-> of_dma_configure() vs. acpi_dma_configure(), so it would make sense to
-> give drivers etc. a similar interface for interrogating ranges. i.e.
-> some common function that abstracts the difference between parsing DT
-> dma-ranges vs. the ACPI _DMA object, either with a list-based get/put
-> model or perhaps an iterator with a user-provided callback (so users
-> could process in-place or create their own list as necessary). Unless of
-> course we go all the way to making the ranges an inherent part of the
-> device layer like some MIPS platforms currently do.
->
-> Robin.
->
+On Thu, 2017-05-04 at 12:21 +0300, Andy Shevchenko wrote:
+> acpi_evaluate_dsm() and friends take a pointer to a raw buffer of 16
+> bytes. Instead we convert them to use uuid_le type. At the same time
+> we
+> convert current users.
+> 
+> acpi_str_to_uuid() becomes useless after the conversion and it's safe
+> to
+> get rid of it.
+> 
+> The conversion fixes a potential bug in int340x_thermal as well since
+> we have to use memcmp() on binary data.
+> 
+> Cc: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+> Cc: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
+> Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Amir Goldstein <amir73il-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Jarkko Sakkinen <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Jani Nikula <jani.nikula-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Benjamin Tissoires <benjamin.tissoires-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Adrian Hunter <adrian.hunter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Yisen Zhuang <yisen.zhuang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> Cc: Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-Hi Robin,
+Thank you everyone who gave a tag to this.
 
-your above comments are taken care to the best of my understanding.
-Kindly have a look at the PATCH v7.
-the whole patch-set takes care of IOVA reservation for PCI inbound memory.
-now there is no dependency on IOMMU and OF layer.
+I'm going to split and rebase on top of Christoph's branch
+http://git.infradead.org/users/hch/vfs.git/shortlog/refs/heads/uuid-type
+s
 
-Regards,
-Oza.
+followed by changing types and API calls accordingly (without changing a
+logic!).
 
+So, I would like to keep tags in place. If there is any objection, speak
+up now!
+ 
+Thanks!
 
->>>> Bug: SOC-5216
->>>> Change-Id: Icbfc99a045d730be143fef427098c937b9d46353
->>>> Signed-off-by: Oza Pawandeep <oza.oza@broadcom.com>
->>>> Reviewed-on: http://gerrit-ccxsw.broadcom.net/40760
->>>> Reviewed-by: vpx_checkpatch status <vpx_checkpatch@broadcom.com>
->>>> Reviewed-by: CCXSW <ccxswbuild@broadcom.com>
->>>> Tested-by: vpx_autobuild status <vpx_autobuild@broadcom.com>
->>>> Tested-by: vpx_smoketest status <vpx_smoketest@broadcom.com>
->>>> Tested-by: CCXSW <ccxswbuild@broadcom.com>
->>>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
->>>>
->>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>>> index 48d36ce..08764b0 100644
->>>> --- a/drivers/iommu/dma-iommu.c
->>>> +++ b/drivers/iommu/dma-iommu.c
->>>> @@ -27,6 +27,7 @@
->>>>  #include <linux/iova.h>
->>>>  #include <linux/irq.h>
->>>>  #include <linux/mm.h>
->>>> +#include <linux/of_pci.h>
->>>>  #include <linux/pci.h>
->>>>  #include <linux/scatterlist.h>
->>>>  #include <linux/vmalloc.h>
->>>> @@ -171,8 +172,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
->>>>               struct iova_domain *iovad)
->>>>  {
->>>>       struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
->>>> +     struct device_node *np = bridge->dev.parent->of_node;
->>>>       struct resource_entry *window;
->>>>       unsigned long lo, hi;
->>>> +     int ret;
->>>> +     dma_addr_t tmp_dma_addr = 0, dma_addr;
->>>> +     LIST_HEAD(res);
->>>>
->>>>       resource_list_for_each_entry(window, &bridge->windows) {
->>>>               if (resource_type(window->res) != IORESOURCE_MEM &&
->>>> @@ -183,6 +188,36 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
->>>>               hi = iova_pfn(iovad, window->res->end - window->offset);
->>>>               reserve_iova(iovad, lo, hi);
->>>>       }
->>>> +
->>>> +     /* PCI inbound memory reservation. */
->>>> +     ret = of_pci_get_dma_ranges(np, &res);
->>>> +     if (!ret) {
->>>> +             resource_list_for_each_entry(window, &res) {
->>>> +                     struct resource *res_dma = window->res;
->>>> +
->>>> +                     dma_addr = res_dma->start - window->offset;
->>>> +                     if (tmp_dma_addr > dma_addr) {
->>>> +                             pr_warn("PCI: failed to reserve iovas; ranges should be sorted\n");
->>>
->>> I don't see anything in the DT spec about the entries having to be
->>> sorted, and it's not exactly impossible to sort a list if you need it so
->>> (and if I'm being really pedantic, one could still trigger this with a
->>> list that *is* sorted, only by different criteria).
->>>
->>
->> we have to sort it the way we want then. I can make it sort then.
->> thanks for the suggestion.
->>
->>> Robin.
->>>
->>>> +                             return;
->>>> +                     }
->>>> +                     if (tmp_dma_addr != dma_addr) {
->>>> +                             lo = iova_pfn(iovad, tmp_dma_addr);
->>>> +                             hi = iova_pfn(iovad, dma_addr - 1);
->>>> +                             reserve_iova(iovad, lo, hi);
->>>> +                     }
->>>> +                     tmp_dma_addr = window->res->end - window->offset;
->>>> +             }
->>>> +             /*
->>>> +              * the last dma-range should honour based on the
->>>> +              * 32/64-bit dma addresses.
->>>> +              */
->>>> +             if (tmp_dma_addr < DMA_BIT_MASK(sizeof(dma_addr_t) * 8)) {
->>>> +                     lo = iova_pfn(iovad, tmp_dma_addr);
->>>> +                     hi = iova_pfn(iovad,
->>>> +                                   DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1);
->>>> +                     reserve_iova(iovad, lo, hi);
->>>> +             }
->>>> +     }
->>>>  }
->>>>
->>>>  /**
->>>>
->>>
->
+-- 
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Intel Finland Oy
