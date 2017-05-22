@@ -1,99 +1,80 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 05/30] iommu/arm-smmu-v3: Disable tagged pointers when
- ATS is in use
-Date: Mon, 22 May 2017 15:02:45 +0100
-Message-ID: <050392bb-eab9-a80e-f89c-d3c5a0205032@arm.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-6-jean-philippe.brucker@arm.com>
- <592284D7.60002@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <592284D7.60002@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>, LinuxArm <linuxarm@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2 1/2] ACPICA: IORT: Update SMMU models for IORT rev. C
+Date: Mon, 22 May 2017 16:06:37 +0100
+Message-ID: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: will.deacon@arm.com, joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, rrichter@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, rjw@rjwysocki.net, robert.moore@intel.com, lv.zheng@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/05/17 07:27, Leizhen (ThunderTown) wrote:
-> On 2017/2/28 3:54, Jean-Philippe Brucker wrote:
->> The ARM architecture has a "Top Byte Ignore" (TBI) option that makes the
->> MMU mask out bits [63:56] of an address, allowing a userspace application
->> to store data in its pointers.
->>
->> The ATS doesn't have an architected mechanism to enable TBI, and might
->> create ATC entries for addresses that include a tag. Software would then
->> have to send ATC invalidation packets for each 255 possible alias of an
->> address, or just wipe the whole address space. This is not a viable
->> option, so disable TBI when ATS is in use.
->>
->> It is unclear for the moment how this restriction will affect user
->> applications. One example I can imagine (with my complete lack of
->> knowledge about JIT engines and their use of tagged pointers) is a JIT
->> translating a WebCL applications that uses SVM. Since this kind of
->> interpreted language doesn't expose addresses, the interpreter and SVM
->> implementations will be given the opportunity to do the right thing and
->> remove tags before handing pointers to devices.
->>
->> Ideally we should remove TBI only for domains that are susceptible to use
->> ATS. But at the point we're writing the context descriptor of a domain, we
->> are still probing the first device in the group. If that device doesn't
->> have an ATC but the next one does, we would then have to clear the TBI
->> bit, invalidate the ATCs of previous devices, and notify the drivers that
->> their devices cannot use tagged pointers anymore. Such a level of
->> complexity doesn't make any sense here since it is unlikely devices will
->> use tagged pointers at all.
->>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 7 ++++---
->>  1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index e7b940146ae3..06b29d4fcf65 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -987,7 +987,7 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->>  }
->>  
->>  /* Context descriptor manipulation functions */
->> -static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
->> +static u64 arm_smmu_cpu_tcr_to_cd(struct arm_smmu_device *smmu, u64 tcr)
->>  {
->>  	u64 val = 0;
->>  
->> @@ -1000,7 +1000,8 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
->>  	val |= ARM_SMMU_TCR2CD(tcr, EPD0);
->>  	val |= ARM_SMMU_TCR2CD(tcr, EPD1);
->>  	val |= ARM_SMMU_TCR2CD(tcr, IPS);
->> -	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
->> +	if (!(smmu->features & ARM_SMMU_FEAT_ATS))
->> +		val |= ARM_SMMU_TCR2CD(tcr, TBI0);
-> Maybe we should always disable TBI. Otherwise, a device behind a ATS supported or
-> non-supported SMMU should use different strategies.
+IORT revision C has been published with a number of new SMMU
+implementation identifiers. Since IORT doesn't have any way of falling
+back to a more generic model code, we really need Linux to know about
+these before vendors start updating their firmware tables to use them.
 
-I don't have any objection to this. Since ATS state shouldn't be visible
-to userspace, the responsibility of sanitizing tagged pointers for DMA
-already lies on the rare applications that use of them. I haven't thought
-about the stall handling code yet, but I'm sure there are creative ways to
-break it using tagged pointers, and I'd rather not go down that rabbit hole.
+CC: Rafael J. Wysocki <rjw@rjwysocki.net>
+CC: Robert Moore <robert.moore@intel.com>
+CC: Lv Zheng <lv.zheng@intel.com>
+Acked-by: Robert Richter <rrichter@cavium.com>
+Tested-by: Robert Richter <rrichter@cavium.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-I'll update this patch accordingly in next version.
+v2: Update more comments, add Robert's tags.
 
-Thanks,
-Jean
+I'm including this here as a kernel patch just for context - once I've
+figured out how we actually submit patches to ACPICA directly, I'll do
+that per the preferred process.
 
->>  	return val;
->>  }
->> @@ -1014,7 +1015,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
->>  	 * We don't need to issue any invalidation here, as we'll invalidate
->>  	 * the STE when installing the new entry anyway.
->>  	 */
->> -	val = arm_smmu_cpu_tcr_to_cd(cfg->cd.tcr) |
->> +	val = arm_smmu_cpu_tcr_to_cd(smmu, cfg->cd.tcr) |
->>  #ifdef __BIG_ENDIAN
->>  	      CTXDESC_CD_0_ENDI |
->>  #endif
->>
-> 
+Robin.
+
+ include/acpi/actbl2.h | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+index faa9f2c0d5de..f469ea41f2fd 100644
+--- a/include/acpi/actbl2.h
++++ b/include/acpi/actbl2.h
+@@ -663,7 +663,7 @@ struct acpi_ibft_target {
+  * IORT - IO Remapping Table
+  *
+  * Conforms to "IO Remapping Table System Software on ARM Platforms",
+- * Document number: ARM DEN 0049B, October 2015
++ * Document number: ARM DEN 0049C, May 2017
+  *
+  ******************************************************************************/
+ 
+@@ -778,6 +778,8 @@ struct acpi_iort_smmu {
+ #define ACPI_IORT_SMMU_V2               0x00000001	/* Generic SMMUv2 */
+ #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
+ #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
++#define ACPI_IORT_SMMU_CORELINK_MMU401  0x00000004	/* ARM Corelink MMU-401 */
++#define ACPI_IORT_SMMU_CAVIUM_SMMUV2    0x00000005	/* Cavium ThunderX SMMUv2 */
+ 
+ /* Masks for Flags field above */
+ 
+@@ -798,13 +800,19 @@ struct acpi_iort_smmu_v3 {
+ 	u32 flags;
+ 	u32 reserved;
+ 	u64 vatos_address;
+-	u32 model;		/* O: generic SMMUv3 */
++	u32 model;
+ 	u32 event_gsiv;
+ 	u32 pri_gsiv;
+ 	u32 gerr_gsiv;
+ 	u32 sync_gsiv;
+ };
+ 
++/* Values for Model field above */
++
++#define ACPI_IORT_SMMU_V3               0x00000000	/* Generic SMMUv3 */
++#define ACPI_IORT_SMMU_HISILICON_HI161X 0x00000001	/* HiSilicon Hi161x SMMUv3 */
++#define ACPI_IORT_SMMU_CAVIUM_CN99XX    0x00000002	/* Cavium CN99xx SMMUv3 */
++
+ /* Masks for Flags field above */
+ 
+ #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
+-- 
+2.12.2.dirty
+
