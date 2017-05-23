@@ -1,17 +1,18 @@
-From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
-Date: Tue, 23 May 2017 17:25:07 +0100
-Message-ID: <20170523162507.GA1729@n2100.armlinux.org.uk>
+Date: Tue, 23 May 2017 17:55:57 +0100
+Message-ID: <a9debbce-17dc-aeaa-59bd-668aa15b97fe@arm.com>
 References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
 	<1475600632-21289-7-git-send-email-sricharan@codeaurora.org>
 	<a3d4533f-165d-f444-7681-141479617a18@arm.com>
 	<004c01d23003$7230ed90$5692c8b0$@codeaurora.org>
+	<20170523162507.GA1729@n2100.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <004c01d23003$7230ed90$5692c8b0$@codeaurora.org>
+In-Reply-To: <20170523162507.GA1729-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,71 +22,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 27, 2016 at 09:07:23AM +0530, Sricharan wrote:
-> Hi Robin,
+On 23/05/17 17:25, Russell King - ARM Linux wrote:
+> On Thu, Oct 27, 2016 at 09:07:23AM +0530, Sricharan wrote:
+>> Hi Robin,
+>>
+>>> -----Original Message-----
+>>> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+>>> Sent: Wednesday, October 26, 2016 8:37 PM
+>>> To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
+>>> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
+>>> tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org; srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+>>> Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
+>>>
+>>> On 04/10/16 18:03, Sricharan R wrote:
+>>>> The dma_ops for the device is not getting set to NULL in
+>>>> arch_tear_down_dma_ops and this causes an issue when the
+>>>> device's probe gets deferred and retried. So reset the
+>>>> dma_ops to NULL.
+>>>
+>>> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>>
+>>
+>>  Thanks.
+>>
+>>> This seems like it could stand independently from the rest of the series
+>>> - might be worth rewording the commit message to more general terms,
+>>> i.e. arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops()
+>>> thus clearing the ops set by the latter, and sending it to Russell as a
+>>> fix in its own right.
+>>
+>>   Ok, will reword the commit log and push this separately.
 > 
-> >-----Original Message-----
-> >From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> >Sent: Wednesday, October 26, 2016 8:37 PM
-> >To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> >kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
-> >tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org; srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-> >Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
-> >
-> >On 04/10/16 18:03, Sricharan R wrote:
-> >> The dma_ops for the device is not getting set to NULL in
-> >> arch_tear_down_dma_ops and this causes an issue when the
-> >> device's probe gets deferred and retried. So reset the
-> >> dma_ops to NULL.
-> >
-> >Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >
+> So, I've come to apply this patch (since it's finally landed in the patch
+> system), and I'm not convinced that the commit message is really up to
+> scratch.
 > 
->  Thanks.
+> The current commit message looks like this:
 > 
-> >This seems like it could stand independently from the rest of the series
-> >- might be worth rewording the commit message to more general terms,
-> >i.e. arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops()
-> >thus clearing the ops set by the latter, and sending it to Russell as a
-> >fix in its own right.
+> "   ARM: 8674/1: dma-mapping: Reset the device's dma_ops
 > 
->   Ok, will reword the commit log and push this separately.
+>     arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops(),
+>     dma_ops should be cleared in the teardown path. Otherwise this causes
+>     problem when the probe of device is retried after being deferred. The
+>     device's iommu structures are cleared after EPROBEDEFER error, but on
+>     the next try dma_ops will still be set to old value, which is not right."
+> 
+> It is obviously a fix, but a fix for which patch?  Looking at the
+> history, we have "arm: dma-mapping: Don't override dma_ops in
+> arch_setup_dma_ops()" which I would have guessed is the appropriate
+> one, but this post-dates your patch (it's very recent, v4.12-rc
+> recent.)
+> 
+> So, I need more description about the problem you were seeing when
+> you first proposed this patch.
+> 
+> How does leaving the dma_ops in place prior to "arm: dma-mapping:
+> Don't override dma_ops in arch_setup_dma_ops()" cause problems for
+> deferred probing?
+> 
+> What patch is your change trying to fix?  In other words, how far
+> back does this patch need to be backported?
 
-So, I've come to apply this patch (since it's finally landed in the patch
-system), and I'm not convinced that the commit message is really up to
-scratch.
+In effect, it's fixing a latent inconsistency that's been present since
+its introduction in 4bb25789ed28. However, that has clearly not proven
+to be an issue in practice since then. With 09515ef5ddad we start
+actually calling arch_teardown_dma_ops() in a manner that might leave
+things partially initialised if anyone starts removing and reprobing
+drivers, but so far that's still from code inspection[1] rather than
+anyone hitting it.
 
-The current commit message looks like this:
+Given that the changes which tickle it are fresh in -rc1 I'd say there's
+no need to backport this, but at the same time it shouldn't do any
+damage if you really want to.
 
-"   ARM: 8674/1: dma-mapping: Reset the device's dma_ops
+Robin.
 
-    arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops(),
-    dma_ops should be cleared in the teardown path. Otherwise this causes
-    problem when the probe of device is retried after being deferred. The
-    device's iommu structures are cleared after EPROBEDEFER error, but on
-    the next try dma_ops will still be set to old value, which is not right."
-
-It is obviously a fix, but a fix for which patch?  Looking at the
-history, we have "arm: dma-mapping: Don't override dma_ops in
-arch_setup_dma_ops()" which I would have guessed is the appropriate
-one, but this post-dates your patch (it's very recent, v4.12-rc
-recent.)
-
-So, I need more description about the problem you were seeing when
-you first proposed this patch.
-
-How does leaving the dma_ops in place prior to "arm: dma-mapping:
-Don't override dma_ops in arch_setup_dma_ops()" cause problems for
-deferred probing?
-
-What patch is your change trying to fix?  In other words, how far
-back does this patch need to be backported?
-
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+[1]:https://www.mail-archive.com/linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg14301.html
