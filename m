@@ -1,95 +1,120 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Tue, 23 May 2017 12:21:51 +0100
-Message-ID: <09d0c4de-ec01-bcce-9901-5ff36c6c69bd@arm.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-5-jean-philippe.brucker@arm.com>
- <5923F5B1.2080209@huawei.com>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH V11 08/11] drivers: acpi: Handle IOMMU lookup failure with
+	deferred probing or error
+Date: Tue, 23 May 2017 07:27:38 -0400
+Message-ID: <647cbf74-d171-365c-7ef5-9f1e5986716c@codeaurora.org>
+References: <1491823266-1209-1-git-send-email-sricharan@codeaurora.org>
+	<1491823266-1209-9-git-send-email-sricharan@codeaurora.org>
+	<41668eff-271c-1c4c-7665-3bf0faa74669@codeaurora.org>
+	<20170523085241.GA18204@red-moon>
+	<c6d5c033-a8f9-03e3-9963-cd291ae2d7e1@codeaurora.org>
+	<20170523092659.GA19999@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <5923F5B1.2080209@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>, LinuxArm <linuxarm@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170523092659.GA19999@red-moon>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 23/05/17 09:41, Leizhen (ThunderTown) wrote:
-> On 2017/2/28 3:54, Jean-Philippe Brucker wrote:
->> PCIe devices can implement their own TLB, named Address Translation Cache
->> (ATC). Steps involved in the use and maintenance of such caches are:
->>
->> * Device sends an Address Translation Request for a given IOVA to the
->>   IOMMU. If the translation succeeds, the IOMMU returns the corresponding
->>   physical address, which is stored in the device's ATC.
->>
->> * Device can then use the physical address directly in a transaction.
->>   A PCIe device does so by setting the TLP AT field to 0b10 - translated.
->>   The SMMU might check that the device is allowed to send translated
->>   transactions, and let it pass through.
->>
->> * When an address is unmapped, CPU sends a CMD_ATC_INV command to the
->>   SMMU, that is relayed to the device.
->>
->> In theory, this doesn't require a lot of software intervention. The IOMMU
->> driver needs to enable ATS when adding a PCI device, and send an
->> invalidation request when unmapping. Note that this invalidation is
->> allowed to take up to a minute, according to the PCIe spec. In
->> addition, the invalidation queue on the ATC side is fairly small, 32 by
->> default, so we cannot keep many invalidations in flight (see ATS spec
->> section 3.5, Invalidate Flow Control).
->>
->> Handling these constraints properly would require to postpone
->> invalidations, and keep the stale mappings until we're certain that all
->> devices forgot about them. This requires major work in the page table
->> managers, and is therefore not done by this patch.
->>
->>   Range calculation
->>   -----------------
->>
->> The invalidation packet itself is a bit awkward: range must be naturally
->> aligned, which means that the start address is a multiple of the range
->> size. In addition, the size must be a power of two number of 4k pages. We
->> have a few options to enforce this constraint:
->>
->> (1) Find the smallest naturally aligned region that covers the requested
->>     range. This is simple to compute and only takes one ATC_INV, but it
->>     will spill on lots of neighbouring ATC entries.
->>
->> (2) Align the start address to the region size (rounded up to a power of
->>     two), and send a second invalidation for the next range of the same
->>     size. Still not great, but reduces spilling.
->>
->> (3) Cover the range exactly with the smallest number of naturally aligned
->>     regions. This would be interesting to implement but as for (2),
->>     requires multiple ATC_INV.
->>
->> As I suspect ATC invalidation packets will be a very scarce resource,
->> we'll go with option (1) for now, and only send one big invalidation.
->>
->> Note that with io-pgtable, the unmap function is called for each page, so
->> this doesn't matter. The problem shows up when sharing page tables with
->> the MMU.
-> Suppose this is true, I'd like to choose option (2). Because the worst cases of
-> both (1) and (2) will not be happened, but the code of (2) will look clearer.
-> And (2) is technically more acceptable.
+Hi Lorenzo,
 
-I agree that (2) is a bit clearer, but the question is of performance
-rather than readability. I'd like to see some benchmarks or experiment on
-my own before switching to a two-invalidation system.
+On 5/23/2017 5:26 AM, Lorenzo Pieralisi wrote:
+> On Tue, May 23, 2017 at 02:31:17PM +0530, Sricharan R wrote:
+>> Hi Lorenzo,
+>>
+>> On 5/23/2017 2:22 PM, Lorenzo Pieralisi wrote:
+>>> On Tue, May 23, 2017 at 02:26:10AM -0400, Nate Watterson wrote:
+>>>> Hi Sricharan,
+>>>>
+>>>> On 4/10/2017 7:21 AM, Sricharan R wrote:
+>>>>> This is an equivalent to the DT's handling of the iommu master's probe
+>>>>> with deferred probing when the corrsponding iommu is not probed yet.
+>>>>> The lack of a registered IOMMU can be caused by the lack of a driver for
+>>>>> the IOMMU, the IOMMU device probe not having been performed yet, having
+>>>>> been deferred, or having failed.
+>>>>>
+>>>>> The first case occurs when the firmware describes the bus master and
+>>>>> IOMMU topology correctly but no device driver exists for the IOMMU yet
+>>>>> or the device driver has not been compiled in. Return NULL, the caller
+>>>>> will configure the device without an IOMMU.
+>>>>>
+>>>>> The second and third cases are handled by deferring the probe of the bus
+>>>>> master device which will eventually get reprobed after the IOMMU.
+>>>>>
+>>>>> The last case is currently handled by deferring the probe of the bus
+>>>>> master device as well. A mechanism to either configure the bus master
+>>>>> device without an IOMMU or to fail the bus master device probe depending
+>>>>> on whether the IOMMU is optional or mandatory would be a good
+>>>>> enhancement.
+>>>>>
+>>>>> Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>>>> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>>>> [Lorenzo: Added fixes for dma_coherent_mask overflow, acpi_dma_configure
+>>>>>            called multiple times for same device]
+>>>>> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+>>>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>> ---
+>>>>>   drivers/acpi/arm64/iort.c  | 33 ++++++++++++++++++++++++++++++++-
+>>>>>   drivers/acpi/scan.c        | 11 ++++++++---
+>>>>>   drivers/base/dma-mapping.c |  2 +-
+>>>>>   include/acpi/acpi_bus.h    |  2 +-
+>>>>>   include/linux/acpi.h       |  7 +++++--
+>>>>>   5 files changed, 47 insertions(+), 8 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+>>>>> index 3dd9ec3..e323ece 100644
+>>>>> --- a/drivers/acpi/arm64/iort.c
+>>>>> +++ b/drivers/acpi/arm64/iort.c
+>>>>> @@ -543,6 +543,14 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
+>>>>>   	const struct iommu_ops *ops = NULL;
+>>>>>   	int ret = -ENODEV;
+>>>>>   	struct fwnode_handle *iort_fwnode;
+>>>>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * If we already translated the fwspec there
+>>>>> +	 * is nothing left to do, return the iommu_ops.
+>>>>> +	 */
+>>>>> +	if (fwspec && fwspec->ops)
+>>>>> +		return fwspec->ops;
+>>>>
+>>>> Is this logic strictly required? It breaks masters with multiple SIDs
+>>>> as only the first SID is actually added to the master's fwspec.
+>>>
+>>> My bad, that's indeed a silly bug I introduced. Please let me know if the
+>>> patch below fixes it, we will send it upstream shortly.
+>>>
+>>
+>> oops, i think emails crossed. Please let me know if you are ok to add
+>> this to the other fixes.
+> 
+> No worries, yes I am ok thanks but please give Nate some time to report
+> back to make sure the diff I sent actually fixes the problem.
 
-Intuitively one big invalidation will result in more ATC trashing and will
-bring overall device performance down. But then according to the PCI spec,
-ATC invalidations are grossly expensive, they have an upper bound of a
-minute. I agree that this is highly improbable and might depend on the
-range size, but purely from an architectural standpoint, reducing the
-number of ATC invalidation requests is the priority, because this is much
-worse than any performance slow-down incurred by ATC trashing. And for the
-moment I can only base my decisions on the architecture.
+The patch you sent fixes the problem. Thanks for the quick turnaround.
 
-So I'd like to keep (1) for now, and update it to (2) (or even (3)) once
-we have more hardware to experiment with.
+> 
+> Apologies for the breakage.
+> 
+> Lorenzo
+> 
+>>
+>> Regards,
+>>   Sricharan
+>>
 
-Thanks,
-Jean
+-- 
+Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
