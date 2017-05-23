@@ -1,96 +1,107 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
-Date: Tue, 23 May 2017 18:53:19 +0100
-Message-ID: <20170523175319.GA22219@n2100.armlinux.org.uk>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
- <1475600632-21289-7-git-send-email-sricharan@codeaurora.org>
- <a3d4533f-165d-f444-7681-141479617a18@arm.com>
- <004c01d23003$7230ed90$5692c8b0$@codeaurora.org>
- <20170523162507.GA1729@n2100.armlinux.org.uk>
- <a9debbce-17dc-aeaa-59bd-668aa15b97fe@arm.com>
+From: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
+Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
+Date: Tue, 23 May 2017 18:24:57 +0000
+Message-ID: <BN6PR12MB1652B26E8B0C24B988AC3E6DF7F90@BN6PR12MB1652.namprd12.prod.outlook.com>
+References: <20170407102039.GW7266@8bytes.org>
+ <1495439281-24005-1-git-send-email-arindam.nath@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <a9debbce-17dc-aeaa-59bd-668aa15b97fe@arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Sricharan <sricharan@codeaurora.org>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <1495439281-24005-1-git-send-email-arindam.nath-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Nath,
+ Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Suthikulpanit,
+ Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, "Kuehling,
+ Felix" <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, "linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "michel-otUistvHUpPR7s880joybQ@public.gmane.org" <michel-otUistvHUpPR7s880joybQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 23, 2017 at 05:55:57PM +0100, Robin Murphy wrote:
-> On 23/05/17 17:25, Russell King - ARM Linux wrote:
-> > So, I've come to apply this patch (since it's finally landed in the patch
-> > system), and I'm not convinced that the commit message is really up to
-> > scratch.
-> > 
-> > The current commit message looks like this:
-> > 
-> > "   ARM: 8674/1: dma-mapping: Reset the device's dma_ops
-> > 
-> >     arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops(),
-> >     dma_ops should be cleared in the teardown path. Otherwise this causes
-> >     problem when the probe of device is retried after being deferred. The
-> >     device's iommu structures are cleared after EPROBEDEFER error, but on
-> >     the next try dma_ops will still be set to old value, which is not right."
-> > 
-> > It is obviously a fix, but a fix for which patch?  Looking at the
-> > history, we have "arm: dma-mapping: Don't override dma_ops in
-> > arch_setup_dma_ops()" which I would have guessed is the appropriate
-> > one, but this post-dates your patch (it's very recent, v4.12-rc
-> > recent.)
-> > 
-> > So, I need more description about the problem you were seeing when
-> > you first proposed this patch.
-> > 
-> > How does leaving the dma_ops in place prior to "arm: dma-mapping:
-> > Don't override dma_ops in arch_setup_dma_ops()" cause problems for
-> > deferred probing?
-> > 
-> > What patch is your change trying to fix?  In other words, how far
-> > back does this patch need to be backported?
-> 
-> In effect, it's fixing a latent inconsistency that's been present since
-> its introduction in 4bb25789ed28. However, that has clearly not proven
-> to be an issue in practice since then. With 09515ef5ddad we start
-> actually calling arch_teardown_dma_ops() in a manner that might leave
-> things partially initialised if anyone starts removing and reprobing
-> drivers, but so far that's still from code inspection[1] rather than
-> anyone hitting it.
-> 
-> Given that the changes which tickle it are fresh in -rc1 I'd say there's
-> no need to backport this, but at the same time it shouldn't do any
-> damage if you really want to.
-
-Well, looking at this, I'm not convinced that much of it is correct.
-
-1) set_dma_ops() is in arch_setup_dma_ops() but this patch adds
-   the unsetting of the DMA ops inside arm_teardown_iommu_dma_ops()
-   rather than arch_teardown_dma_ops().
-
-   This doesn't strike me as being particularly symmetric.
-   arm_teardown_iommu_dma_ops() is arm_setup_iommu_dma_ops()'s
-   counterpart.
-
-2) arch_setup_dma_ops(), the recent patch to add the existing dma_ops
-   check, and Xen - Xen wants to override the DMA ops if in the
-   initial domain.  It's not clear (at least to me) whether the recent
-   patch adding the dma_ops check took account of this or not.
-
-3) random places seem to fiddle with the dma_ops - notice that
-   arm_iommu_detach_device() sets the dma_ops to NULL.
-
-   In fact, I think moving __arm_iommu_detach_device() into
-   arm_iommu_detach_device(), calling arm_iommu_detach_device(),
-   and getting rid of the explicit set_dma_ops(, NULL) in this
-   path would be a good first step.
-
-4) I think arch_setup_dma_ops() is over-complex.
-
-So, in summary, this code is a mess today, and that means it's not
-obviously correct - which is bad.  This needs sorting.
-
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+IEZyb206IEFyaW5kYW0gTmF0aCBbbWFpbHRv
+OmFuYXRoLmFtZEBnbWFpbC5jb21dIE9uIEJlaGFsZiBPZgo+IGFyaW5kYW0ubmF0aEBhbWQuY29t
+Cj4gU2VudDogTW9uZGF5LCBNYXkgMjIsIDIwMTcgMzo0OCBBTQo+IFRvOiBpb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZwo+IENjOiBhbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZzsg
+Sm9lcmcgUm9lZGVsOyBEZXVjaGVyLCBBbGV4YW5kZXI7Cj4gQnJpZGdtYW4sIEpvaG47IGRyYWtl
+QGVuZGxlc3NtLmNvbTsgU3V0aGlrdWxwYW5pdCwgU3VyYXZlZTsKPiBsaW51eEBlbmRsZXNzbS5j
+b207IENyYWlnIFN0ZWluOyBtaWNoZWxAZGFlbnplci5uZXQ7IEt1ZWhsaW5nLCBGZWxpeDsKPiBz
+dGFibGVAdmdlci5rZXJuZWwub3JnOyBOYXRoLCBBcmluZGFtCj4gU3ViamVjdDogW1BBVENIXSBp
+b21tdS9hbWQ6IGZsdXNoIElPVExCIGZvciBzcGVjaWZpYyBkb21haW5zIG9ubHkgKHYzKQo+IAo+
+IEZyb206IEFyaW5kYW0gTmF0aCA8YXJpbmRhbS5uYXRoQGFtZC5jb20+Cj4gCj4gQ2hhbmdlIEhp
+c3RvcnkKPiAtLS0tLS0tLS0tLS0tLQo+IAo+IHYzOgo+IC0gYWRkIEZpeGVzIGFuZCBDQyB0YWdz
+Cj4gLSBhZGQgbGluayB0byBCdWd6aWxsYQo+IAo+IHYyOiBjaGFuZ2VzIHN1Z2dlc3RlZCBieSBK
+b2VyZwo+IC0gYWRkIGZsdXNoIGZsYWcgdG8gaW1wcm92ZSBlZmZpY2llbmN5IG9mIGZsdXNoIG9w
+ZXJhdGlvbgo+IAo+IHYxOgo+IC0gVGhlIGlkZWEgYmVoaW5kIGZsdXNoIHF1ZXVlcyBpcyB0byBk
+ZWZlciB0aGUgSU9UTEIgZmx1c2hpbmcKPiAgIGZvciBkb21haW5zIGZvciB3aGljaCB0aGUgbWFw
+cGluZ3MgYXJlIG5vIGxvbmdlciB2YWxpZC4gV2UKPiAgIGFkZCBzdWNoIGRvbWFpbnMgaW4gcXVl
+dWVfYWRkKCksIGFuZCB3aGVuIHRoZSBxdWV1ZSBzaXplCj4gICByZWFjaGVzIEZMVVNIX1FVRVVF
+X1NJWkUsIHdlIHBlcmZvcm0gX19xdWV1ZV9mbHVzaCgpLgo+IAo+ICAgU2luY2Ugd2UgaGF2ZSBh
+bHJlYWR5IHRha2VuIGxvY2sgYmVmb3JlIF9fcXVldWVfZmx1c2goKQo+ICAgaXMgY2FsbGVkLCB3
+ZSBuZWVkIHRvIG1ha2Ugc3VyZSB0aGUgSU9UTEIgZmx1c2hpbmcgaXMKPiAgIHBlcmZvcm1lZCBh
+cyBxdWlja2x5IGFzIHBvc3NpYmxlLgo+IAo+ICAgSW4gdGhlIGN1cnJlbnQgaW1wbGVtZW50YXRp
+b24sIHdlIHBlcmZvcm0gSU9UTEIgZmx1c2hpbmcKPiAgIGZvciBhbGwgZG9tYWlucyBpcnJlc3Bl
+Y3RpdmUgb2Ygd2hpY2ggb25lcyB3ZXJlIGFjdHVhbGx5Cj4gICBhZGRlZCBpbiB0aGUgZmx1c2gg
+cXVldWUgaW5pdGlhbGx5LiBUaGlzIGNhbiBiZSBxdWl0ZQo+ICAgZXhwZW5zaXZlIGVzcGVjaWFs
+bHkgZm9yIGRvbWFpbnMgZm9yIHdoaWNoIHVubWFwcGluZyBpcwo+ICAgbm90IHJlcXVpcmVkIGF0
+IHRoaXMgcG9pbnQgb2YgdGltZS4KPiAKPiAgIFRoaXMgcGF0Y2ggbWFrZXMgdXNlIG9mIGRvbWFp
+biBpbmZvcm1hdGlvbiBpbgo+ICAgJ3N0cnVjdCBmbHVzaF9xdWV1ZV9lbnRyeScgdG8gbWFrZSBz
+dXJlIHdlIG9ubHkgZmx1c2gKPiAgIElPVExCcyBmb3IgZG9tYWlucyB3aG8gbmVlZCBpdCwgc2tp
+cHBpbmcgb3RoZXJzLgo+IAo+IEJ1Z3ppbGxhOiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3Jn
+LzEwMTAyOQo+IEZpeGVzOiBiMTUxNmExNDY1N2EgKCJpb21tdS9hbWQ6IEltcGxlbWVudCBmbHVz
+aCBxdWV1ZSIpCj4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcKPiBTdWdnZXN0ZWQtYnk6IEpv
+ZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgo+IFNpZ25lZC1vZmYtYnk6IEFyaW5kYW0gTmF0
+aCA8YXJpbmRhbS5uYXRoQGFtZC5jb20+CgpBY2tlZC1ieTogQWxleCBEZXVjaGVyIDxhbGV4YW5k
+ZXIuZGV1Y2hlckBhbWQuY29tPgoKPiAtLS0KPiAgZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyAg
+ICAgICB8IDI3ICsrKysrKysrKysrKysrKysrKysrLS0tLS0tLQo+ICBkcml2ZXJzL2lvbW11L2Ft
+ZF9pb21tdV90eXBlcy5oIHwgIDIgKysKPiAgMiBmaWxlcyBjaGFuZ2VkLCAyMiBpbnNlcnRpb25z
+KCspLCA3IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9p
+b21tdS5jIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYwo+IGluZGV4IDYzY2FjZjUuLjFlZGVl
+YmVjIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMKPiArKysgYi9kcml2
+ZXJzL2lvbW11L2FtZF9pb21tdS5jCj4gQEAgLTIyMjcsMTUgKzIyMjcsMjYgQEAgc3RhdGljIHN0
+cnVjdCBpb21tdV9ncm91cAo+ICphbWRfaW9tbXVfZGV2aWNlX2dyb3VwKHN0cnVjdCBkZXZpY2Ug
+KmRldikKPiAKPiAgc3RhdGljIHZvaWQgX19xdWV1ZV9mbHVzaChzdHJ1Y3QgZmx1c2hfcXVldWUg
+KnF1ZXVlKQo+ICB7Cj4gLQlzdHJ1Y3QgcHJvdGVjdGlvbl9kb21haW4gKmRvbWFpbjsKPiAtCXVu
+c2lnbmVkIGxvbmcgZmxhZ3M7Cj4gIAlpbnQgaWR4Owo+IAo+IC0JLyogRmlyc3QgZmx1c2ggVExC
+IG9mIGFsbCBrbm93biBkb21haW5zICovCj4gLQlzcGluX2xvY2tfaXJxc2F2ZSgmYW1kX2lvbW11
+X3BkX2xvY2ssIGZsYWdzKTsKPiAtCWxpc3RfZm9yX2VhY2hfZW50cnkoZG9tYWluLCAmYW1kX2lv
+bW11X3BkX2xpc3QsIGxpc3QpCj4gLQkJZG9tYWluX2ZsdXNoX3RsYihkb21haW4pOwo+IC0Jc3Bp
+bl91bmxvY2tfaXJxcmVzdG9yZSgmYW1kX2lvbW11X3BkX2xvY2ssIGZsYWdzKTsKPiArCS8qIEZp
+cnN0IGZsdXNoIFRMQiBvZiBhbGwgZG9tYWlucyB3aGljaCB3ZXJlIGFkZGVkIHRvIGZsdXNoIHF1
+ZXVlICovCj4gKwlmb3IgKGlkeCA9IDA7IGlkeCA8IHF1ZXVlLT5uZXh0OyArK2lkeCkgewo+ICsJ
+CXN0cnVjdCBmbHVzaF9xdWV1ZV9lbnRyeSAqZW50cnk7Cj4gKwo+ICsJCWVudHJ5ID0gcXVldWUt
+PmVudHJpZXMgKyBpZHg7Cj4gKwo+ICsJCS8qCj4gKwkJICogVGhlcmUgbWlnaHQgYmUgY2FzZXMg
+d2hlcmUgbXVsdGlwbGUgSU9WQSBlbnRyaWVzIGZvciB0aGUKPiArCQkgKiBzYW1lIGRvbWFpbiBh
+cmUgcXVldWVkIGluIHRoZSBmbHVzaCBxdWV1ZS4gVG8gYXZvaWQKPiArCQkgKiBmbHVzaGluZyB0
+aGUgc2FtZSBkb21haW4gYWdhaW4sIHdlIGNoZWNrIHdoZXRoZXIgdGhlCj4gKwkJICogZmxhZyBp
+cyBzZXQgb3Igbm90LiBUaGlzIGltcHJvdmVzIHRoZSBlZmZpY2llbmN5IG9mCj4gKwkJICogZmx1
+c2ggb3BlcmF0aW9uLgo+ICsJCSAqLwo+ICsJCWlmICghZW50cnktPmRtYV9kb20tPmRvbWFpbi5h
+bHJlYWR5X2ZsdXNoZWQpIHsKPiArCQkJZW50cnktPmRtYV9kb20tPmRvbWFpbi5hbHJlYWR5X2Zs
+dXNoZWQgPSB0cnVlOwo+ICsJCQlkb21haW5fZmx1c2hfdGxiKCZlbnRyeS0+ZG1hX2RvbS0+ZG9t
+YWluKTsKPiArCQl9Cj4gKwl9Cj4gCj4gIAkvKiBXYWl0IHVudGlsIGZsdXNoZXMgaGF2ZSBjb21w
+bGV0ZWQgKi8KPiAgCWRvbWFpbl9mbHVzaF9jb21wbGV0ZShOVUxMKTsKPiBAQCAtMjI4OSw2ICsy
+MzAwLDggQEAgc3RhdGljIHZvaWQgcXVldWVfYWRkKHN0cnVjdCBkbWFfb3BzX2RvbWFpbgo+ICpk
+bWFfZG9tLAo+ICAJcGFnZXMgICAgID0gX19yb3VuZHVwX3Bvd19vZl90d28ocGFnZXMpOwo+ICAJ
+YWRkcmVzcyA+Pj0gUEFHRV9TSElGVDsKPiAKPiArCWRtYV9kb20tPmRvbWFpbi5hbHJlYWR5X2Zs
+dXNoZWQgPSBmYWxzZTsKPiArCj4gIAlxdWV1ZSA9IGdldF9jcHVfcHRyKCZmbHVzaF9xdWV1ZSk7
+Cj4gIAlzcGluX2xvY2tfaXJxc2F2ZSgmcXVldWUtPmxvY2ssIGZsYWdzKTsKPiAKPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaAo+IGIvZHJpdmVycy9pb21tdS9h
+bWRfaW9tbXVfdHlwZXMuaAo+IGluZGV4IDRkZThmNDEuLjRmNTUxOWQgMTAwNjQ0Cj4gLS0tIGEv
+ZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaAo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1k
+X2lvbW11X3R5cGVzLmgKPiBAQCAtNDU0LDYgKzQ1NCw4IEBAIHN0cnVjdCBwcm90ZWN0aW9uX2Rv
+bWFpbiB7Cj4gIAlib29sIHVwZGF0ZWQ7CQkvKiBjb21wbGV0ZSBkb21haW4gZmx1c2ggcmVxdWly
+ZWQgKi8KPiAgCXVuc2lnbmVkIGRldl9jbnQ7CS8qIGRldmljZXMgYXNzaWduZWQgdG8gdGhpcyBk
+b21haW4gKi8KPiAgCXVuc2lnbmVkIGRldl9pb21tdVtNQVhfSU9NTVVTXTsgLyogcGVyLUlPTU1V
+IHJlZmVyZW5jZQo+IGNvdW50ICovCj4gKwlib29sIGFscmVhZHlfZmx1c2hlZDsJLyogZmxhZyB0
+byBhdm9pZCBmbHVzaGluZyB0aGUgc2FtZSBkb21haW4KPiBhZ2Fpbgo+ICsJCQkJICAgaW4gYSBz
+aW5nbGUgaW52b2NhdGlvbiBvZiBfX3F1ZXVlX2ZsdXNoKCkgKi8KPiAgfTsKPiAKPiAgLyoKPiAt
+LQo+IDIuNy40CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwphbWQtZ2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
+czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2FtZC1nZngK
