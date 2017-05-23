@@ -1,107 +1,254 @@
-From: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
-Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
-Date: Tue, 23 May 2017 18:24:57 +0000
-Message-ID: <BN6PR12MB1652B26E8B0C24B988AC3E6DF7F90@BN6PR12MB1652.namprd12.prod.outlook.com>
-References: <20170407102039.GW7266@8bytes.org>
- <1495439281-24005-1-git-send-email-arindam.nath@amd.com>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] PCI: Save properties required to handle FLR for
+	replay purposes.
+Date: Tue, 23 May 2017 15:33:22 -0500
+Message-ID: <20170523203322.GA15055@bhelgaas-glaptop.roam.corp.google.com>
+References: <1494441543-8216-1-git-send-email-ashok.raj@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <1495439281-24005-1-git-send-email-arindam.nath-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
-List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Nath,
- Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Suthikulpanit,
- Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, "Kuehling,
- Felix" <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, "linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "michel-otUistvHUpPR7s880joybQ@public.gmane.org" <michel-otUistvHUpPR7s880joybQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1494441543-8216-1-git-send-email-ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+IEZyb206IEFyaW5kYW0gTmF0aCBbbWFpbHRv
-OmFuYXRoLmFtZEBnbWFpbC5jb21dIE9uIEJlaGFsZiBPZgo+IGFyaW5kYW0ubmF0aEBhbWQuY29t
-Cj4gU2VudDogTW9uZGF5LCBNYXkgMjIsIDIwMTcgMzo0OCBBTQo+IFRvOiBpb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwo+IENjOiBhbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZzsg
-Sm9lcmcgUm9lZGVsOyBEZXVjaGVyLCBBbGV4YW5kZXI7Cj4gQnJpZGdtYW4sIEpvaG47IGRyYWtl
-QGVuZGxlc3NtLmNvbTsgU3V0aGlrdWxwYW5pdCwgU3VyYXZlZTsKPiBsaW51eEBlbmRsZXNzbS5j
-b207IENyYWlnIFN0ZWluOyBtaWNoZWxAZGFlbnplci5uZXQ7IEt1ZWhsaW5nLCBGZWxpeDsKPiBz
-dGFibGVAdmdlci5rZXJuZWwub3JnOyBOYXRoLCBBcmluZGFtCj4gU3ViamVjdDogW1BBVENIXSBp
-b21tdS9hbWQ6IGZsdXNoIElPVExCIGZvciBzcGVjaWZpYyBkb21haW5zIG9ubHkgKHYzKQo+IAo+
-IEZyb206IEFyaW5kYW0gTmF0aCA8YXJpbmRhbS5uYXRoQGFtZC5jb20+Cj4gCj4gQ2hhbmdlIEhp
-c3RvcnkKPiAtLS0tLS0tLS0tLS0tLQo+IAo+IHYzOgo+IC0gYWRkIEZpeGVzIGFuZCBDQyB0YWdz
-Cj4gLSBhZGQgbGluayB0byBCdWd6aWxsYQo+IAo+IHYyOiBjaGFuZ2VzIHN1Z2dlc3RlZCBieSBK
-b2VyZwo+IC0gYWRkIGZsdXNoIGZsYWcgdG8gaW1wcm92ZSBlZmZpY2llbmN5IG9mIGZsdXNoIG9w
-ZXJhdGlvbgo+IAo+IHYxOgo+IC0gVGhlIGlkZWEgYmVoaW5kIGZsdXNoIHF1ZXVlcyBpcyB0byBk
-ZWZlciB0aGUgSU9UTEIgZmx1c2hpbmcKPiAgIGZvciBkb21haW5zIGZvciB3aGljaCB0aGUgbWFw
-cGluZ3MgYXJlIG5vIGxvbmdlciB2YWxpZC4gV2UKPiAgIGFkZCBzdWNoIGRvbWFpbnMgaW4gcXVl
-dWVfYWRkKCksIGFuZCB3aGVuIHRoZSBxdWV1ZSBzaXplCj4gICByZWFjaGVzIEZMVVNIX1FVRVVF
-X1NJWkUsIHdlIHBlcmZvcm0gX19xdWV1ZV9mbHVzaCgpLgo+IAo+ICAgU2luY2Ugd2UgaGF2ZSBh
-bHJlYWR5IHRha2VuIGxvY2sgYmVmb3JlIF9fcXVldWVfZmx1c2goKQo+ICAgaXMgY2FsbGVkLCB3
-ZSBuZWVkIHRvIG1ha2Ugc3VyZSB0aGUgSU9UTEIgZmx1c2hpbmcgaXMKPiAgIHBlcmZvcm1lZCBh
-cyBxdWlja2x5IGFzIHBvc3NpYmxlLgo+IAo+ICAgSW4gdGhlIGN1cnJlbnQgaW1wbGVtZW50YXRp
-b24sIHdlIHBlcmZvcm0gSU9UTEIgZmx1c2hpbmcKPiAgIGZvciBhbGwgZG9tYWlucyBpcnJlc3Bl
-Y3RpdmUgb2Ygd2hpY2ggb25lcyB3ZXJlIGFjdHVhbGx5Cj4gICBhZGRlZCBpbiB0aGUgZmx1c2gg
-cXVldWUgaW5pdGlhbGx5LiBUaGlzIGNhbiBiZSBxdWl0ZQo+ICAgZXhwZW5zaXZlIGVzcGVjaWFs
-bHkgZm9yIGRvbWFpbnMgZm9yIHdoaWNoIHVubWFwcGluZyBpcwo+ICAgbm90IHJlcXVpcmVkIGF0
-IHRoaXMgcG9pbnQgb2YgdGltZS4KPiAKPiAgIFRoaXMgcGF0Y2ggbWFrZXMgdXNlIG9mIGRvbWFp
-biBpbmZvcm1hdGlvbiBpbgo+ICAgJ3N0cnVjdCBmbHVzaF9xdWV1ZV9lbnRyeScgdG8gbWFrZSBz
-dXJlIHdlIG9ubHkgZmx1c2gKPiAgIElPVExCcyBmb3IgZG9tYWlucyB3aG8gbmVlZCBpdCwgc2tp
-cHBpbmcgb3RoZXJzLgo+IAo+IEJ1Z3ppbGxhOiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3Jn
-LzEwMTAyOQo+IEZpeGVzOiBiMTUxNmExNDY1N2EgKCJpb21tdS9hbWQ6IEltcGxlbWVudCBmbHVz
-aCBxdWV1ZSIpCj4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcKPiBTdWdnZXN0ZWQtYnk6IEpv
-ZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgo+IFNpZ25lZC1vZmYtYnk6IEFyaW5kYW0gTmF0
-aCA8YXJpbmRhbS5uYXRoQGFtZC5jb20+CgpBY2tlZC1ieTogQWxleCBEZXVjaGVyIDxhbGV4YW5k
-ZXIuZGV1Y2hlckBhbWQuY29tPgoKPiAtLS0KPiAgZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyAg
-ICAgICB8IDI3ICsrKysrKysrKysrKysrKysrKysrLS0tLS0tLQo+ICBkcml2ZXJzL2lvbW11L2Ft
-ZF9pb21tdV90eXBlcy5oIHwgIDIgKysKPiAgMiBmaWxlcyBjaGFuZ2VkLCAyMiBpbnNlcnRpb25z
-KCspLCA3IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9p
-b21tdS5jIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYwo+IGluZGV4IDYzY2FjZjUuLjFlZGVl
-YmVjIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMKPiArKysgYi9kcml2
-ZXJzL2lvbW11L2FtZF9pb21tdS5jCj4gQEAgLTIyMjcsMTUgKzIyMjcsMjYgQEAgc3RhdGljIHN0
-cnVjdCBpb21tdV9ncm91cAo+ICphbWRfaW9tbXVfZGV2aWNlX2dyb3VwKHN0cnVjdCBkZXZpY2Ug
-KmRldikKPiAKPiAgc3RhdGljIHZvaWQgX19xdWV1ZV9mbHVzaChzdHJ1Y3QgZmx1c2hfcXVldWUg
-KnF1ZXVlKQo+ICB7Cj4gLQlzdHJ1Y3QgcHJvdGVjdGlvbl9kb21haW4gKmRvbWFpbjsKPiAtCXVu
-c2lnbmVkIGxvbmcgZmxhZ3M7Cj4gIAlpbnQgaWR4Owo+IAo+IC0JLyogRmlyc3QgZmx1c2ggVExC
-IG9mIGFsbCBrbm93biBkb21haW5zICovCj4gLQlzcGluX2xvY2tfaXJxc2F2ZSgmYW1kX2lvbW11
-X3BkX2xvY2ssIGZsYWdzKTsKPiAtCWxpc3RfZm9yX2VhY2hfZW50cnkoZG9tYWluLCAmYW1kX2lv
-bW11X3BkX2xpc3QsIGxpc3QpCj4gLQkJZG9tYWluX2ZsdXNoX3RsYihkb21haW4pOwo+IC0Jc3Bp
-bl91bmxvY2tfaXJxcmVzdG9yZSgmYW1kX2lvbW11X3BkX2xvY2ssIGZsYWdzKTsKPiArCS8qIEZp
-cnN0IGZsdXNoIFRMQiBvZiBhbGwgZG9tYWlucyB3aGljaCB3ZXJlIGFkZGVkIHRvIGZsdXNoIHF1
-ZXVlICovCj4gKwlmb3IgKGlkeCA9IDA7IGlkeCA8IHF1ZXVlLT5uZXh0OyArK2lkeCkgewo+ICsJ
-CXN0cnVjdCBmbHVzaF9xdWV1ZV9lbnRyeSAqZW50cnk7Cj4gKwo+ICsJCWVudHJ5ID0gcXVldWUt
-PmVudHJpZXMgKyBpZHg7Cj4gKwo+ICsJCS8qCj4gKwkJICogVGhlcmUgbWlnaHQgYmUgY2FzZXMg
-d2hlcmUgbXVsdGlwbGUgSU9WQSBlbnRyaWVzIGZvciB0aGUKPiArCQkgKiBzYW1lIGRvbWFpbiBh
-cmUgcXVldWVkIGluIHRoZSBmbHVzaCBxdWV1ZS4gVG8gYXZvaWQKPiArCQkgKiBmbHVzaGluZyB0
-aGUgc2FtZSBkb21haW4gYWdhaW4sIHdlIGNoZWNrIHdoZXRoZXIgdGhlCj4gKwkJICogZmxhZyBp
-cyBzZXQgb3Igbm90LiBUaGlzIGltcHJvdmVzIHRoZSBlZmZpY2llbmN5IG9mCj4gKwkJICogZmx1
-c2ggb3BlcmF0aW9uLgo+ICsJCSAqLwo+ICsJCWlmICghZW50cnktPmRtYV9kb20tPmRvbWFpbi5h
-bHJlYWR5X2ZsdXNoZWQpIHsKPiArCQkJZW50cnktPmRtYV9kb20tPmRvbWFpbi5hbHJlYWR5X2Zs
-dXNoZWQgPSB0cnVlOwo+ICsJCQlkb21haW5fZmx1c2hfdGxiKCZlbnRyeS0+ZG1hX2RvbS0+ZG9t
-YWluKTsKPiArCQl9Cj4gKwl9Cj4gCj4gIAkvKiBXYWl0IHVudGlsIGZsdXNoZXMgaGF2ZSBjb21w
-bGV0ZWQgKi8KPiAgCWRvbWFpbl9mbHVzaF9jb21wbGV0ZShOVUxMKTsKPiBAQCAtMjI4OSw2ICsy
-MzAwLDggQEAgc3RhdGljIHZvaWQgcXVldWVfYWRkKHN0cnVjdCBkbWFfb3BzX2RvbWFpbgo+ICpk
-bWFfZG9tLAo+ICAJcGFnZXMgICAgID0gX19yb3VuZHVwX3Bvd19vZl90d28ocGFnZXMpOwo+ICAJ
-YWRkcmVzcyA+Pj0gUEFHRV9TSElGVDsKPiAKPiArCWRtYV9kb20tPmRvbWFpbi5hbHJlYWR5X2Zs
-dXNoZWQgPSBmYWxzZTsKPiArCj4gIAlxdWV1ZSA9IGdldF9jcHVfcHRyKCZmbHVzaF9xdWV1ZSk7
-Cj4gIAlzcGluX2xvY2tfaXJxc2F2ZSgmcXVldWUtPmxvY2ssIGZsYWdzKTsKPiAKPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaAo+IGIvZHJpdmVycy9pb21tdS9h
-bWRfaW9tbXVfdHlwZXMuaAo+IGluZGV4IDRkZThmNDEuLjRmNTUxOWQgMTAwNjQ0Cj4gLS0tIGEv
-ZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaAo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1k
-X2lvbW11X3R5cGVzLmgKPiBAQCAtNDU0LDYgKzQ1NCw4IEBAIHN0cnVjdCBwcm90ZWN0aW9uX2Rv
-bWFpbiB7Cj4gIAlib29sIHVwZGF0ZWQ7CQkvKiBjb21wbGV0ZSBkb21haW4gZmx1c2ggcmVxdWly
-ZWQgKi8KPiAgCXVuc2lnbmVkIGRldl9jbnQ7CS8qIGRldmljZXMgYXNzaWduZWQgdG8gdGhpcyBk
-b21haW4gKi8KPiAgCXVuc2lnbmVkIGRldl9pb21tdVtNQVhfSU9NTVVTXTsgLyogcGVyLUlPTU1V
-IHJlZmVyZW5jZQo+IGNvdW50ICovCj4gKwlib29sIGFscmVhZHlfZmx1c2hlZDsJLyogZmxhZyB0
-byBhdm9pZCBmbHVzaGluZyB0aGUgc2FtZSBkb21haW4KPiBhZ2Fpbgo+ICsJCQkJICAgaW4gYSBz
-aW5nbGUgaW52b2NhdGlvbiBvZiBfX3F1ZXVlX2ZsdXNoKCkgKi8KPiAgfTsKPiAKPiAgLyoKPiAt
-LQo+IDIuNy40CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwphbWQtZ2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
-czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2FtZC1nZngK
+On Wed, May 10, 2017 at 11:39:02AM -0700, Ashok Raj wrote:
+> From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> 
+> Requires: https://patchwork.kernel.org/patch/9593891
+
+I'm not sure what the status of the patch above is.  I acked it, but it's
+part of a 30-patch IOMMU series, so I expect it to be merged via an IOMMU
+tree.
+
+In any case, it's not in v4.12-rc1, so I can't apply *this* patch yet.
+
+> After a FLR, pci-states need to be restored. This patch saves PASID features
+> and PRI reqs cached.
+> 
+> Cc: Jean-Phillipe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> 
+> Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/pci/ats.c       | 65 +++++++++++++++++++++++++++++++++++++------------
+>  drivers/pci/pci.c       |  3 +++
+>  include/linux/pci-ats.h | 10 ++++++++
+>  include/linux/pci.h     |  6 +++++
+>  4 files changed, 69 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index 2126497..a769955 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -160,17 +160,16 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+>  	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+> -	if ((control & PCI_PRI_CTRL_ENABLE) ||
+> -	    !(status & PCI_PRI_STATUS_STOPPED))
+> +	if (!(status & PCI_PRI_STATUS_STOPPED))
+>  		return -EBUSY;
+>  
+>  	pci_read_config_dword(pdev, pos + PCI_PRI_MAX_REQ, &max_requests);
+>  	reqs = min(max_requests, reqs);
+> +	pdev->pri_reqs_alloc = reqs;
+>  	pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+>  
+> -	control |= PCI_PRI_CTRL_ENABLE;
+> +	control = PCI_PRI_CTRL_ENABLE;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+>  	pdev->pri_enabled = 1;
+> @@ -206,6 +205,29 @@ void pci_disable_pri(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_disable_pri);
+>  
+>  /**
+> + * pci_restore_pri_state - Restore PRI
+> + * @pdev: PCI device structure
+> + *
+> + */
+> +void pci_restore_pri_state(struct pci_dev *pdev)
+> +{
+> +   u16 control = PCI_PRI_CTRL_ENABLE;
+> +   u32 reqs = pdev->pri_reqs_alloc;
+> +   int pos;
+> +
+> +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+> +   if (!pos)
+> +       return;
+> +
+> +   if (!pdev->pri_enabled)
+> +       return;
+> +
+> +   pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+> +   pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_restore_pri_state);
+> +
+> +/**
+>   * pci_reset_pri - Resets device's PRI state
+>   * @pdev: PCI device structure
+>   *
+> @@ -224,12 +246,7 @@ int pci_reset_pri(struct pci_dev *pdev)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+> -	if (control & PCI_PRI_CTRL_ENABLE)
+> -		return -EBUSY;
+> -
+> -	control |= PCI_PRI_CTRL_RESET;
+> -
+> +	control = PCI_PRI_CTRL_RESET;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+>  	return 0;
+> @@ -259,12 +276,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PASID_CTRL, &control);
+>  	pci_read_config_word(pdev, pos + PCI_PASID_CAP, &supported);
+> -
+> -	if (control & PCI_PASID_CTRL_ENABLE)
+> -		return -EINVAL;
+> -
+>  	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
+>  
+>  	/* User wants to enable anything unsupported? */
+> @@ -272,6 +284,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  		return -EINVAL;
+>  
+>  	control = PCI_PASID_CTRL_ENABLE | features;
+> +	pdev->pasid_features = features;
+>  
+>  	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+>  
+> @@ -305,6 +318,28 @@ void pci_disable_pasid(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_disable_pasid);
+>  
+>  /**
+> + * pci_restore_pasid_state - Restore PASID capabilities.
+> + * @pdev: PCI device structure
+> + *
+> + */
+> +void pci_restore_pasid_state(struct pci_dev *pdev)
+> +{
+> +   u16 control;
+> +   int pos;
+> +
+> +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
+> +   if (!pos)
+> +       return;
+> +
+> +   if (!pdev->pasid_enabled)
+> +       return;
+> +
+> +   control = PCI_PASID_CTRL_ENABLE | pdev->pasid_features;
+> +   pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_restore_pasid_state);
+> +
+> +/**
+>   * pci_pasid_features - Check which PASID features are supported
+>   * @pdev: PCI device structure
+>   *
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 7904d02..c9a6510 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pci_hotplug.h>
+>  #include <linux/vmalloc.h>
+> +#include <linux/pci-ats.h>
+>  #include <asm/setup.h>
+>  #include <asm/dma.h>
+>  #include <linux/aer.h>
+> @@ -1171,6 +1172,8 @@ void pci_restore_state(struct pci_dev *dev)
+>  
+>  	/* PCI Express register must be restored first */
+>  	pci_restore_pcie_state(dev);
+> +	pci_restore_pasid_state(dev);
+> +	pci_restore_pri_state(dev);
+>  	pci_restore_ats_state(dev);
+>  	pci_restore_vc_state(dev);
+>  
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index 57e0b82..782fb8e 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -7,6 +7,7 @@
+>  
+>  int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+>  void pci_disable_pri(struct pci_dev *pdev);
+> +void pci_restore_pri_state(struct pci_dev *pdev);
+>  int pci_reset_pri(struct pci_dev *pdev);
+>  
+>  #else /* CONFIG_PCI_PRI */
+> @@ -20,6 +21,10 @@ static inline void pci_disable_pri(struct pci_dev *pdev)
+>  {
+>  }
+>  
+> +static inline void pci_restore_pri_state(struct pci_dev *pdev)
+> +{
+> +}
+> +
+>  static inline int pci_reset_pri(struct pci_dev *pdev)
+>  {
+>  	return -ENODEV;
+> @@ -31,6 +36,7 @@ static inline int pci_reset_pri(struct pci_dev *pdev)
+>  
+>  int pci_enable_pasid(struct pci_dev *pdev, int features);
+>  void pci_disable_pasid(struct pci_dev *pdev);
+> +void pci_restore_pasid_state(struct pci_dev *pdev);
+>  int pci_pasid_features(struct pci_dev *pdev);
+>  int pci_max_pasids(struct pci_dev *pdev);
+>  
+> @@ -45,6 +51,10 @@ static inline void pci_disable_pasid(struct pci_dev *pdev)
+>  {
+>  }
+>  
+> +static inline void pci_restore_pasid_state(struct pci_dev *pdev)
+> +{
+> +}
+> +
+>  static inline int pci_pasid_features(struct pci_dev *pdev)
+>  {
+>  	return -EINVAL;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index bee980e..1ddb8e0 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -395,6 +395,12 @@ struct pci_dev {
+>  	u8		ats_stu;	/* ATS Smallest Translation Unit */
+>  	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
+>  #endif
+> +#ifdef CONFIG_PCI_PRI
+> +	u32		pri_reqs_alloc; /* Number of PRI requests allocated */
+> +#endif
+> +#ifdef CONFIG_PCI_PASID
+> +	u16		pasid_features;
+> +#endif
+>  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+>  	size_t romlen; /* Length of ROM if it's not from the BAR */
+>  	char *driver_override; /* Driver name to force a match */
+> -- 
+> 2.7.4
+> 
