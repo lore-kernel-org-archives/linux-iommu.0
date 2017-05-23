@@ -1,14 +1,17 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v5 5/5] ACPI/IORT: Move the check to get iommu_ops from
-	translated fwspec
-Date: Tue, 23 May 2017 18:31:33 +0530
-Message-ID: <1495544493-14219-5-git-send-email-sricharan@codeaurora.org>
-References: <1495544493-14219-1-git-send-email-sricharan@codeaurora.org>
+From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
+Date: Tue, 23 May 2017 17:25:07 +0100
+Message-ID: <20170523162507.GA1729@n2100.armlinux.org.uk>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+	<1475600632-21289-7-git-send-email-sricharan@codeaurora.org>
+	<a3d4533f-165d-f444-7681-141479617a18@arm.com>
+	<004c01d23003$7230ed90$5692c8b0$@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1495544493-14219-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <004c01d23003$7230ed90$5692c8b0$@codeaurora.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,61 +21,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+On Thu, Oct 27, 2016 at 09:07:23AM +0530, Sricharan wrote:
+> Hi Robin,
+> 
+> >-----Original Message-----
+> >From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> >Sent: Wednesday, October 26, 2016 8:37 PM
+> >To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
+> >kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
+> >tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org; srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+> >Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
+> >
+> >On 04/10/16 18:03, Sricharan R wrote:
+> >> The dma_ops for the device is not getting set to NULL in
+> >> arch_tear_down_dma_ops and this causes an issue when the
+> >> device's probe gets deferred and retried. So reset the
+> >> dma_ops to NULL.
+> >
+> >Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >
+> 
+>  Thanks.
+> 
+> >This seems like it could stand independently from the rest of the series
+> >- might be worth rewording the commit message to more general terms,
+> >i.e. arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops()
+> >thus clearing the ops set by the latter, and sending it to Russell as a
+> >fix in its own right.
+> 
+>   Ok, will reword the commit log and push this separately.
 
-With IOMMU probe deferral, iort_iommu_configure can be called
-multiple times for the same device. Hence we have a check
-to see if the device's fwspec is already translated and return
-the iommu_ops from that directly. But the check is wrongly
-placed in iort_iommu_xlate, which breaks devices with multiple
-sids. Move the check to iort_iommu_configure.
+So, I've come to apply this patch (since it's finally landed in the patch
+system), and I'm not convinced that the commit message is really up to
+scratch.
 
-Fixes: 5a1bb638d567 ("drivers: acpi: Handle IOMMU lookup failure with deferred probing or error")
-Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
----
+The current commit message looks like this:
 
-[v5] new patch
+"   ARM: 8674/1: dma-mapping: Reset the device's dma_ops
 
- drivers/acpi/arm64/iort.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+    arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops(),
+    dma_ops should be cleared in the teardown path. Otherwise this causes
+    problem when the probe of device is retried after being deferred. The
+    device's iommu structures are cleared after EPROBEDEFER error, but on
+    the next try dma_ops will still be set to old value, which is not right."
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 16e101f..797b28d 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -666,14 +666,6 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
- 	int ret = -ENODEV;
- 	struct fwnode_handle *iort_fwnode;
- 
--	/*
--	 * If we already translated the fwspec there
--	 * is nothing left to do, return the iommu_ops.
--	 */
--	ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
--	if (ops)
--		return ops;
--
- 	if (node) {
- 		iort_fwnode = iort_get_fwnode(node);
- 		if (!iort_fwnode)
-@@ -735,6 +727,14 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- 	u32 streamid = 0;
- 	int err;
- 
-+	/*
-+	 * If we already translated the fwspec there
-+	 * is nothing left to do, return the iommu_ops.
-+	 */
-+	ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
-+	if (ops)
-+		return ops;
-+
- 	if (dev_is_pci(dev)) {
- 		struct pci_bus *bus = to_pci_dev(dev)->bus;
- 		u32 rid;
+It is obviously a fix, but a fix for which patch?  Looking at the
+history, we have "arm: dma-mapping: Don't override dma_ops in
+arch_setup_dma_ops()" which I would have guessed is the appropriate
+one, but this post-dates your patch (it's very recent, v4.12-rc
+recent.)
+
+So, I need more description about the problem you were seeing when
+you first proposed this patch.
+
+How does leaving the dma_ops in place prior to "arm: dma-mapping:
+Don't override dma_ops in arch_setup_dma_ops()" cause problems for
+deferred probing?
+
+What patch is your change trying to fix?  In other words, how far
+back does this patch need to be backported?
+
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
