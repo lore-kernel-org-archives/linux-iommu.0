@@ -1,16 +1,19 @@
-From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V11 08/11] drivers: acpi: Handle IOMMU lookup failure with
-	deferred probing or error
-Date: Tue, 23 May 2017 02:26:10 -0400
-Message-ID: <41668eff-271c-1c4c-7665-3bf0faa74669@codeaurora.org>
-References: <1491823266-1209-1-git-send-email-sricharan@codeaurora.org>
-	<1491823266-1209-9-git-send-email-sricharan@codeaurora.org>
+From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Qemu-devel] [RFC PATCH 1/8] iommu: Introduce bind_pasid_table
+	API function
+Date: Tue, 23 May 2017 15:50:49 +0800
+Message-ID: <20170523075049.GA3955@sky-dev>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+	<1493201525-14418-2-git-send-email-yi.l.liu@intel.com>
+	<c042bf90-d48b-4ebf-c01a-fca7c4875277@arm.com>
+	<20170428090458.GB15484@sky-dev>
+	<3adb4e33-db96-4133-0510-412c3bfb24fe@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1491823266-1209-9-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <3adb4e33-db96-4133-0510-412c3bfb24fe-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,194 +23,208 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
+On Fri, Apr 28, 2017 at 01:51:42PM +0100, Jean-Philippe Brucker wrote:
+> On 28/04/17 10:04, Liu, Yi L wrote:
+Hi Jean,
 
-On 4/10/2017 7:21 AM, Sricharan R wrote:
-> This is an equivalent to the DT's handling of the iommu master's probe
-> with deferred probing when the corrsponding iommu is not probed yet.
-> The lack of a registered IOMMU can be caused by the lack of a driver for
-> the IOMMU, the IOMMU device probe not having been performed yet, having
-> been deferred, or having failed.
-> 
-> The first case occurs when the firmware describes the bus master and
-> IOMMU topology correctly but no device driver exists for the IOMMU yet
-> or the device driver has not been compiled in. Return NULL, the caller
-> will configure the device without an IOMMU.
-> 
-> The second and third cases are handled by deferring the probe of the bus
-> master device which will eventually get reprobed after the IOMMU.
-> 
-> The last case is currently handled by deferring the probe of the bus
-> master device as well. A mechanism to either configure the bus master
-> device without an IOMMU or to fail the bus master device probe depending
-> on whether the IOMMU is optional or mandatory would be a good
-> enhancement.
-> 
-> Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> [Lorenzo: Added fixes for dma_coherent_mask overflow, acpi_dma_configure
->            called multiple times for same device]
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->   drivers/acpi/arm64/iort.c  | 33 ++++++++++++++++++++++++++++++++-
->   drivers/acpi/scan.c        | 11 ++++++++---
->   drivers/base/dma-mapping.c |  2 +-
->   include/acpi/acpi_bus.h    |  2 +-
->   include/linux/acpi.h       |  7 +++++--
->   5 files changed, 47 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 3dd9ec3..e323ece 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -543,6 +543,14 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
->   	const struct iommu_ops *ops = NULL;
->   	int ret = -ENODEV;
->   	struct fwnode_handle *iort_fwnode;
-> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> +
-> +	/*
-> +	 * If we already translated the fwspec there
-> +	 * is nothing left to do, return the iommu_ops.
-> +	 */
-> +	if (fwspec && fwspec->ops)
-> +		return fwspec->ops;
+Sorry for the delay response. Still have some follow-up comments on
+per-device or per-group. Pls refer to comments inline.
 
-Is this logic strictly required? It breaks masters with multiple SIDs
-as only the first SID is actually added to the master's fwspec.
-
->   
->   	if (node) {
->   		iort_fwnode = iort_get_fwnode(node);
-> @@ -550,8 +558,17 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
->   			return NULL;
->   
->   		ops = iommu_ops_from_fwnode(iort_fwnode);
-> +		/*
-> +		 * If the ops look-up fails, this means that either
-> +		 * the SMMU drivers have not been probed yet or that
-> +		 * the SMMU drivers are not built in the kernel;
-> +		 * Depending on whether the SMMU drivers are built-in
-> +		 * in the kernel or not, defer the IOMMU configuration
-> +		 * or just abort it.
-> +		 */
->   		if (!ops)
-> -			return NULL;
-> +			return iort_iommu_driver_enabled(node->type) ?
-> +			       ERR_PTR(-EPROBE_DEFER) : NULL;
->   
->   		ret = arm_smmu_iort_xlate(dev, streamid, iort_fwnode, ops);
->   	}
-> @@ -625,12 +642,26 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->   
->   		while (parent) {
->   			ops = iort_iommu_xlate(dev, parent, streamid);
-> +			if (IS_ERR_OR_NULL(ops))
-> +				return ops;
->   
->   			parent = iort_node_get_id(node, &streamid,
->   						  IORT_IOMMU_TYPE, i++);
->   		}
->   	}
->   
-> +	/*
-> +	 * If we have reason to believe the IOMMU driver missed the initial
-> +	 * add_device callback for dev, replay it to get things in order.
-> +	 */
-> +	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
-> +	    dev->bus && !dev->iommu_group) {
-> +		int err = ops->add_device(dev);
-> +
-> +		if (err)
-> +			ops = ERR_PTR(err);
-> +	}
-> +
->   	return ops;
->   }
->   
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index 1926918..2a513cc 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1373,20 +1373,25 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
->    * @dev: The pointer to the device
->    * @attr: device dma attributes
->    */
-> -void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
-> +int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->   {
->   	const struct iommu_ops *iommu;
-> +	u64 size;
->   
->   	iort_set_dma_mask(dev);
->   
->   	iommu = iort_iommu_configure(dev);
-> +	if (IS_ERR(iommu))
-> +		return PTR_ERR(iommu);
->   
-> +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
->   	/*
->   	 * Assume dma valid range starts at 0 and covers the whole
->   	 * coherent_dma_mask.
->   	 */
-> -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
-> -			   attr == DEV_DMA_COHERENT);
-> +	arch_setup_dma_ops(dev, 0, size, iommu, attr == DEV_DMA_COHERENT);
-> +
-> +	return 0;
->   }
->   EXPORT_SYMBOL_GPL(acpi_dma_configure);
->   
-> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-> index 82bd45c..755a2b5 100644
-> --- a/drivers/base/dma-mapping.c
-> +++ b/drivers/base/dma-mapping.c
-> @@ -368,7 +368,7 @@ int dma_configure(struct device *dev)
->   	} else if (has_acpi_companion(dma_dev)) {
->   		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
->   		if (attr != DEV_DMA_NOT_SUPPORTED)
-> -			acpi_dma_configure(dev, attr);
-> +			ret = acpi_dma_configure(dev, attr);
->   	}
->   
->   	if (bridge)
-> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-> index ef0ae8a..2a9a5de 100644
-> --- a/include/acpi/acpi_bus.h
-> +++ b/include/acpi/acpi_bus.h
-> @@ -575,7 +575,7 @@ struct acpi_pci_root {
->   
->   bool acpi_dma_supported(struct acpi_device *adev);
->   enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
-> -void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
-> +int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
->   void acpi_dma_deconfigure(struct device *dev);
->   
->   struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 9b05886..79d06ef6 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -762,8 +762,11 @@ static inline enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
->   	return DEV_DMA_NOT_SUPPORTED;
->   }
->   
-> -static inline void acpi_dma_configure(struct device *dev,
-> -				      enum dev_dma_attr attr) { }
-> +static inline int acpi_dma_configure(struct device *dev,
-> +				     enum dev_dma_attr attr)
-> +{
-> +	return 0;
-> +}
->   
->   static inline void acpi_dma_deconfigure(struct device *dev) { }
->   
+> > On Wed, Apr 26, 2017 at 05:56:45PM +0100, Jean-Philippe Brucker wrote:
+> >> Hi Yi, Jacob,
+> >>
+> >> On 26/04/17 11:11, Liu, Yi L wrote:
+> >>> From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >>>
+> >>> Virtual IOMMU was proposed to support Shared Virtual Memory (SVM) use
+> >>> case in the guest:
+> >>> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
+> >>>
+> >>> As part of the proposed architecture, when a SVM capable PCI
+> >>> device is assigned to a guest, nested mode is turned on. Guest owns the
+> >>> first level page tables (request with PASID) and performs GVA->GPA
+> >>> translation. Second level page tables are owned by the host for GPA->HPA
+> >>> translation for both request with and without PASID.
+> >>>
+> >>> A new IOMMU driver interface is therefore needed to perform tasks as
+> >>> follows:
+> >>> * Enable nested translation and appropriate translation type
+> >>> * Assign guest PASID table pointer (in GPA) and size to host IOMMU
+> >>>
+> >>> This patch introduces new functions called iommu_(un)bind_pasid_table()
+> >>> to IOMMU APIs. Architecture specific IOMMU function can be added later
+> >>> to perform the specific steps for binding pasid table of assigned devices.
+> >>>
+> >>> This patch also adds model definition in iommu.h. It would be used to
+> >>> check if the bind request is from a compatible entity. e.g. a bind
+> >>> request from an intel_iommu emulator may not be supported by an ARM SMMU
+> >>> driver.
+> >>>
+> >>> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >>> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >>> ---
+> >>>  drivers/iommu/iommu.c | 19 +++++++++++++++++++
+> >>>  include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
+> >>>  2 files changed, 50 insertions(+)
+> >>>
+> >>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> >>> index dbe7f65..f2da636 100644
+> >>> --- a/drivers/iommu/iommu.c
+> >>> +++ b/drivers/iommu/iommu.c
+> >>> @@ -1134,6 +1134,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+> >>>  }
+> >>>  EXPORT_SYMBOL_GPL(iommu_attach_device);
+> >>>  
+> >>> +int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
+> >>> +			struct pasid_table_info *pasidt_binfo)
+> >>
+> >> I guess that domain can always be deduced from dev using
+> >> iommu_get_domain_for_dev, and doesn't need to be passed as argument?
+> >>
+> >> For the next version of my SVM series, I was thinking of passing group
+> >> instead of device to iommu_bind. Since all devices in a group are expected
+> >> to share the same mappings (whether they want it or not), users will have
+> > 
+> > Virtual address space is not tied to protection domain as I/O virtual address
+> > space does. Is it really necessary to affect all the devices in this group.
+> > Or it is just for consistence?
 > 
+> It's mostly about consistency, and also avoid hiding implicit behavior in
+> the IOMMU driver. I have the following example, described using group and
+> domain structures from the IOMMU API:
+>                  ____________________
+>                 |IOMMU  ____________ |
+>                 |      |DOM  ______ ||
+>                 |      |    |GRP   |||     bind
+>                 |      |    |    A<-----------------Task 1
+>                 |      |    |    B |||
+>                 |      |    |______|||
+>                 |      |     ______ ||
+>                 |      |    |GRP   |||
+>                 |      |    |    C |||
+>                 |      |    |______|||
+>                 |      |____________||
+>                 |       ____________ |
+>                 |      |DOM  ______ ||
+>                 |      |    |GRP   |||
+>                 |      |    |    D |||
+>                 |      |    |______|||
+>                 |      |____________||
+>                 |____________________|
+> 
+> Let's take PCI functions A, B, C, and D, all with PASID capabilities. Due
+> to some hardware limitation (in the bus, the device or the IOMMU), B can
+> see all DMA transactions issued by A. A and B are therefore in the same
+> IOMMU group. C and D can be isolated by the IOMMU, so they each have their
+> own group.
+> 
+> (As far as I know, in the SVM world at the moment, devices are neatly
+> integrated and there is no need for putting multiple devices in the same
+> IOMMU group, but I don't think we should expect all future SVM systems to
+> be well-behaved.)
+>
+> So when a user binds Task 1 to device A, it is *implicitly* giving device
+> B access to Task 1 as well. Simply because the IOMMU is unable to isolate
+> A from B, PASID or not. B could access the same address space as A, even
+> if you don't call bind again to explicitly attach the PASID table to B.
+> 
+> If the bind is done with device as argument, maybe users will believe that
+> using PASIDs provides an additional level of isolation within a group,
+> when it really doesn't. That's why I'm inclined to have the whole bind API
+> be on groups rather than devices, if only for clarity.
 
--- 
-Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+This may depend on how the user understand the isolation. I think different
+PASID does mean different address space. From this perspective, it does look
+like isolation.
+
+> But I don't know, maybe a comment explaining the above would be sufficient.
+> 
+> To be frank my comment about group versus device is partly to make sure
+> that I grasp the various concepts correctly and that we're on the same
+> page. Doing the bind on groups is less significant in your case, for PASID
+> table binding, because VFIO already takes care of IOMMU group properly. In
+> my case I expect DRM, network, DMA drivers to use the API as well for
+> binding tasks, and I don't want to introduce ambiguity in the API that
+> would lead to security holes later.
+
+For this part, would you provide more detail about why it would be more
+significant to bind on group level in your case? I think we need strong
+reason to support it. Currently, the other map_page APIs are passing
+device as argument. Would it also be recommended to use group as argument?
+
+Thanks,
+Yi L
+
+> >> to do iommu_group_for_each_dev anyway (as you do in patch 6/8). So it
+> >> might be simpler to let the IOMMU core take the group lock and do
+> >> group->domain->ops->bind_task(dev...) for each device. The question also
+> >> holds for iommu_do_invalidate in patch 3/8.
+> > 
+> > In my understanding, it is moving the for_each_dev loop into iommu driver?
+> > Is it?
+> 
+> Yes, that's what I meant
+> 
+> >> This way the prototypes would be:
+> >> int iommu_bind...(struct iommu_group *group, struct ... *info)
+> >> int iommu_unbind...(struct iommu_group *group, struct ...*info)
+> >> int iommu_invalidate...(struct iommu_group *group, struct ...*info)
+> > 
+> > For PASID table binding from guest, I think it'd better to be per-device op
+> > since the bind operation wants to modify the host context entry. But we may
+> > still share the API and do things differently in iommu driver.
+> 
+> Sure, as said above the use cases for PASID table and single PASID binding
+> are different, sharing the API is not strictly necessary.
+> 
+> > For invalidation, I think it'd better to be per-group. Actually, with guest
+> > IOMMU exists, there is only one group in a domain on Intel platform. Do it for
+> > each device is not expected. How about it on ARM?
+> 
+> In ARM systems with the DMA API (IOMMU_DOMAIN_DMA), there is one group per
+> domain. But with VFIO (IOMMU_DOMAIN_UNMANAGED), VFIO will try to attach
+> multiple groups in the same container to the same domain when possible.
+> 
+> >> For PASID table binding it might not matter much, as VFIO will most likely
+> >> be the only user. But task binding will be called by device drivers, which
+> >> by now should be encouraged to do things at iommu_group granularity.
+> >> Alternatively it could be done implicitly like in iommu_attach_device,
+> >> with "iommu_bind_device_x" calling "iommu_bind_group_x".
+> > 
+> > Do you mean the bind task from userspace driver? I guess you're trying to do
+> > different types of binding request in a single svm_bind API?
+> > 
+> >>
+> >> Extending this reasoning, since groups in a domain are also supposed to
+> >> have the same mappings, then similarly to map/unmap,
+> >> bind/unbind/invalidate should really be done with an iommu_domain (and
+> >> nothing else) as target argument. However this requires the IOMMU core to
+> >> keep a group list in each domain, which might complicate things a little
+> >> too much.
+> >>
+> >> But "all devices in a domain share the same PASID table" is the paradigm
+> >> I'm currently using in the guts of arm-smmu-v3. And I wonder if, as with
+> >> iommu_group, it should be made more explicit to users, so they don't
+> >> assume that devices within a domain are isolated from each others with
+> >> regard to PASID DMA.
+> > 
+> > Is the isolation you mentioned means forbidding to do PASID DMA to the same
+> > virtual address space when the device comes from different domain?
+> 
+> In the above example, devices A, B and C are in the same IOMMU domain
+> (because, for instance, user put the two groups in the same VFIO
+> container.) Then in the SMMUv3 driver they would all share the same PASID
+> table. A, B and C can access Task 1 with the PASID obtained during the
+> depicted bind. They don't need to call bind again for device C, though it
+> would be good practice.
+> 
+> But D is in a different domain, so unless you also call bind on Task 1 for
+> device D, there is no way that D can access Task 1.
+> 
+> Thanks,
+> Jean
+> 
