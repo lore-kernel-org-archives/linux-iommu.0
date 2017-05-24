@@ -1,143 +1,103 @@
 From: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Subject: [PATCH 1/2] staging: fsl-dpaa2/eth: Fix address translations
-Date: Wed, 24 May 2017 07:13:27 -0500
-Message-ID: <20170524121328.16984-1-ruxandra.radulescu@nxp.com>
+Subject: [PATCH 2/2] staging: fsl-dpaa2/eth: Map Tx buffers as bidirectional
+Date: Wed, 24 May 2017 07:13:28 -0500
+Message-ID: <20170524121328.16984-2-ruxandra.radulescu@nxp.com>
+References: <20170524121328.16984-1-ruxandra.radulescu@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170524121328.16984-1-ruxandra.radulescu@nxp.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: gregkh@linuxfoundation.org
 Cc: devel@driverdev.osuosl.org, stuyoder@gmail.com, arnd@arndb.de, linux-kernel@vger.kernel.org, agraf@suse.de, iommu@lists.linux-foundation.org, nipun.gupta@nxp.com, bogdan.purcareata@nxp.com, linux-arm-kernel@lists.infradead.org, laurentiu.tudor@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Use the correct mechanisms for translating a DMA-mapped IOVA
-address into a virtual one. Without this fix, once SMMU is
-enabled on Layerscape platforms, the Ethernet driver throws
-IOMMU translation faults.
+WRIOP hardware may need to write to the hardware annotation
+area of Tx buffers (e.g. frame status bits) and also to
+the data area (e.g. L4 checksum in frame header).
+
+Map these buffers as DMA_BIDIRECTIONAL, otherwise the
+write transaction through SMMU will not be allowed.
 
 Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
 Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 ---
- drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.c | 25 +++++++++++++++++++------
- drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.h |  1 +
- 2 files changed, 20 insertions(+), 6 deletions(-)
+ drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.c b/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.c
-index 6f9eed66c64d..3fee0d6f17e0 100644
+index 3fee0d6f17e0..49c435bad706 100644
 --- a/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.c
 +++ b/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.c
-@@ -37,6 +37,7 @@
- #include <linux/interrupt.h>
- #include <linux/msi.h>
- #include <linux/kthread.h>
-+#include <linux/iommu.h>
+@@ -355,7 +355,7 @@ static int build_sg_fd(struct dpaa2_eth_priv *priv,
  
- #include "../../fsl-mc/include/mc.h"
- #include "../../fsl-mc/include/mc-sys.h"
-@@ -54,6 +55,16 @@ MODULE_DESCRIPTION("Freescale DPAA2 Ethernet Driver");
+ 	sg_init_table(scl, nr_frags + 1);
+ 	num_sg = skb_to_sgvec(skb, scl, 0, skb->len);
+-	num_dma_bufs = dma_map_sg(dev, scl, num_sg, DMA_TO_DEVICE);
++	num_dma_bufs = dma_map_sg(dev, scl, num_sg, DMA_BIDIRECTIONAL);
+ 	if (unlikely(!num_dma_bufs)) {
+ 		err = -ENOMEM;
+ 		goto dma_map_sg_failed;
+@@ -406,7 +406,7 @@ static int build_sg_fd(struct dpaa2_eth_priv *priv,
+ 	swa->num_dma_bufs = num_dma_bufs;
  
- const char dpaa2_eth_drv_version[] = "0.1";
+ 	/* Separately map the SGT buffer */
+-	addr = dma_map_single(dev, sgt_buf, sgt_buf_size, DMA_TO_DEVICE);
++	addr = dma_map_single(dev, sgt_buf, sgt_buf_size, DMA_BIDIRECTIONAL);
+ 	if (unlikely(dma_mapping_error(dev, addr))) {
+ 		err = -ENOMEM;
+ 		goto dma_map_single_failed;
+@@ -423,7 +423,7 @@ static int build_sg_fd(struct dpaa2_eth_priv *priv,
+ dma_map_single_failed:
+ 	kfree(sgt_buf);
+ sgt_buf_alloc_failed:
+-	dma_unmap_sg(dev, scl, num_sg, DMA_TO_DEVICE);
++	dma_unmap_sg(dev, scl, num_sg, DMA_BIDIRECTIONAL);
+ dma_map_sg_failed:
+ 	kfree(scl);
+ 	return err;
+@@ -461,7 +461,7 @@ static int build_single_fd(struct dpaa2_eth_priv *priv,
  
-+static void *dpaa2_iova_to_virt(struct iommu_domain *domain,
-+				dma_addr_t iova_addr)
-+{
-+	phys_addr_t phys_addr;
-+
-+	phys_addr = domain ? iommu_iova_to_phys(domain, iova_addr) : iova_addr;
-+
-+	return phys_to_virt(phys_addr);
-+}
-+
- static void validate_rx_csum(struct dpaa2_eth_priv *priv,
- 			     u32 fd_status,
- 			     struct sk_buff *skb)
-@@ -98,12 +109,11 @@ static void free_rx_fd(struct dpaa2_eth_priv *priv,
- 	sgt = vaddr + dpaa2_fd_get_offset(fd);
- 	for (i = 0; i < DPAA2_ETH_MAX_SG_ENTRIES; i++) {
- 		addr = dpaa2_sg_get_addr(&sgt[i]);
-+		sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
- 		dma_unmap_single(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
- 				 DMA_FROM_DEVICE);
+ 	addr = dma_map_single(dev, buffer_start,
+ 			      skb_tail_pointer(skb) - buffer_start,
+-			      DMA_TO_DEVICE);
++			      DMA_BIDIRECTIONAL);
+ 	if (unlikely(dma_mapping_error(dev, addr)))
+ 		return -ENOMEM;
  
--		sg_vaddr = phys_to_virt(addr);
- 		skb_free_frag(sg_vaddr);
--
- 		if (dpaa2_sg_is_final(&sgt[i]))
- 			break;
- 	}
-@@ -159,10 +169,10 @@ static struct sk_buff *build_frag_skb(struct dpaa2_eth_priv *priv,
+@@ -510,7 +510,7 @@ static void free_tx_fd(const struct dpaa2_eth_priv *priv,
+ 		 */
+ 		dma_unmap_single(dev, fd_addr,
+ 				 skb_tail_pointer(skb) - buffer_start,
+-				 DMA_TO_DEVICE);
++				 DMA_BIDIRECTIONAL);
+ 	} else if (fd_format == dpaa2_fd_sg) {
+ 		swa = (struct dpaa2_eth_swa *)skbh;
+ 		skb = swa->skb;
+@@ -519,13 +519,13 @@ static void free_tx_fd(const struct dpaa2_eth_priv *priv,
+ 		num_dma_bufs = swa->num_dma_bufs;
  
- 		/* Get the address and length from the S/G entry */
- 		sg_addr = dpaa2_sg_get_addr(sge);
-+		sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, sg_addr);
- 		dma_unmap_single(dev, sg_addr, DPAA2_ETH_RX_BUF_SIZE,
- 				 DMA_FROM_DEVICE);
+ 		/* Unmap the scatterlist */
+-		dma_unmap_sg(dev, scl, num_sg, DMA_TO_DEVICE);
++		dma_unmap_sg(dev, scl, num_sg, DMA_BIDIRECTIONAL);
+ 		kfree(scl);
  
--		sg_vaddr = phys_to_virt(sg_addr);
- 		sg_length = dpaa2_sg_get_len(sge);
- 
- 		if (i == 0) {
-@@ -222,8 +232,8 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
- 	/* Tracing point */
- 	trace_dpaa2_rx_fd(priv->net_dev, fd);
- 
-+	vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
- 	dma_unmap_single(dev, addr, DPAA2_ETH_RX_BUF_SIZE, DMA_FROM_DEVICE);
--	vaddr = phys_to_virt(addr);
- 
- 	prefetch(vaddr + priv->buf_layout.private_data_size);
- 	prefetch(vaddr + dpaa2_fd_get_offset(fd));
-@@ -490,7 +500,7 @@ static void free_tx_fd(const struct dpaa2_eth_priv *priv,
- 	struct dpaa2_fas *fas;
- 
- 	fd_addr = dpaa2_fd_get_addr(fd);
--	skbh = phys_to_virt(fd_addr);
-+	skbh = dpaa2_iova_to_virt(priv->iommu_domain, fd_addr);
- 
- 	if (fd_format == dpaa2_fd_single) {
- 		skb = *skbh;
-@@ -802,10 +812,11 @@ static void drain_bufs(struct dpaa2_eth_priv *priv, int count)
- 		}
- 		for (i = 0; i < ret; i++) {
- 			/* Same logic as on regular Rx path */
-+			vaddr = dpaa2_iova_to_virt(priv->iommu_domain,
-+						   buf_array[i]);
- 			dma_unmap_single(dev, buf_array[i],
- 					 DPAA2_ETH_RX_BUF_SIZE,
- 					 DMA_FROM_DEVICE);
--			vaddr = phys_to_virt(buf_array[i]);
- 			skb_free_frag(vaddr);
- 		}
- 	} while (ret);
-@@ -2358,6 +2369,8 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
- 	priv = netdev_priv(net_dev);
- 	priv->net_dev = net_dev;
- 
-+	priv->iommu_domain = iommu_get_domain_for_dev(dev);
-+
- 	/* Obtain a MC portal */
- 	err = fsl_mc_portal_allocate(dpni_dev, FSL_MC_IO_ATOMIC_CONTEXT_PORTAL,
- 				     &priv->mc_io);
-diff --git a/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.h b/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.h
-index c67cced55b72..55b47623008c 100644
---- a/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.h
-+++ b/drivers/staging/fsl-dpaa2/ethernet/dpaa2-eth.h
-@@ -301,6 +301,7 @@ struct dpaa2_eth_priv {
- 
- 	struct fsl_mc_device *dpbp_dev;
- 	struct dpbp_attr dpbp_attrs;
-+	struct iommu_domain *iommu_domain;
- 
- 	u16 tx_qdid;
- 	struct fsl_mc_io *mc_io;
+ 		/* Unmap the SGT buffer */
+ 		unmap_size = priv->tx_data_offset +
+ 		       sizeof(struct dpaa2_sg_entry) * (1 + num_dma_bufs);
+-		dma_unmap_single(dev, fd_addr, unmap_size, DMA_TO_DEVICE);
++		dma_unmap_single(dev, fd_addr, unmap_size, DMA_BIDIRECTIONAL);
+ 	} else {
+ 		/* Unsupported format, mark it as errored and give up */
+ 		if (status)
 -- 
 2.11.0
