@@ -1,74 +1,76 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 1/7] PCI: Move ATS declarations outside of CONFIG_PCI
-Date: Wed, 24 May 2017 19:01:37 +0100
-Message-ID: <20170524180143.19855-2-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 2/7] dt-bindings: PCI: Describe ATS property for root complex
+	nodes
+Date: Wed, 24 May 2017 19:01:38 +0100
+Message-ID: <20170524180143.19855-3-jean-philippe.brucker@arm.com>
 References: <20170524180143.19855-1-jean-philippe.brucker@arm.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170524180143.19855-1-jean-philippe.brucker@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-pci@vger.kernel.org, devicetree@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
-Cc: bhelgaas@google.com, robh+dt@kernel.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, okaya@codeaurora.org, sunil.kovvuri@gmail.com, thunder.leizhen@huawei.com, tn@semihalf.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170524180143.19855-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently ATS helpers like pci_enable_ats are only defined when CONFIG_PCI
-is enabled. The ARM SMMU driver might get built with CONFIG_PCI disabled.
-It would thus have to wrap any use of ATS helpers around #ifdef
-CONFIG_PCI, which isn't ideal.
+Address Translation Service (ATS) is an extension to PCIe allowing
+endpoints to manage their own IOTLB, called Address Translation Cache
+(ATC). Instead of having every memory transaction processed by the IOMMU,
+the endpoint can first send an Address Translation Requests for an IOVA,
+obtain the corresponding Physical Address from the IOMMU and store it in
+its ATC. Subsequent transactions to this memory region can be performed on
+the PA, in which case they are marked 'translated' and (partially) bypass
+the IOMMU.
 
-A nicer solution is to always define these helpers. Since CONFIG_PCI_ATS
-is only enabled in association with CONFIG_PCI, move defines outside of
-CONFIG_PCI to prevent build failure when PCI is disabled.
+Since the extension uses fields that were previously reserved in the
+PCIe Translation Layer Packet, it seems ill-advised to enabled it on a
+system that doesn't fully support ATS.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+To "old" root complexes that simply ignored the new AT field, an Address
+Translation Request will look exactly like a Memory Read Request, so the
+root bridge will forward a memory read to the IOMMU instead of a
+translation request. If the access succeeds, the RC will send a Read
+Completion, which looks like a Translation Completion, back to the
+endpoint. As a result the endpoint might end up storing the content of
+memory instead of a physical address in its ATC. In reality, it's more
+likely that the size fields will be invalid and either end will detect the
+error, but in any case, it is undesirable.
+
+Add a way for firmware to tell the OS that ATS is supported by the PCI
+root complex.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- include/linux/pci.h | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ Documentation/devicetree/bindings/pci/pci-iommu.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 33c2b0b77429..775d495ef8d7 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1415,19 +1415,6 @@ int  ht_create_irq(struct pci_dev *dev, int idx);
- void ht_destroy_irq(unsigned int irq);
- #endif /* CONFIG_HT_IRQ */
+diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+index 0def586fdcdf..f21a68ec471a 100644
+--- a/Documentation/devicetree/bindings/pci/pci-iommu.txt
++++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+@@ -44,6 +44,14 @@ Optional properties
+ - iommu-map-mask: A mask to be applied to each Requester ID prior to being
+   mapped to an IOMMU specifier per the iommu-map property.
  
--#ifdef CONFIG_PCI_ATS
--/* Address Translation Service */
--void pci_ats_init(struct pci_dev *dev);
--int pci_enable_ats(struct pci_dev *dev, int ps);
--void pci_disable_ats(struct pci_dev *dev);
--int pci_ats_queue_depth(struct pci_dev *dev);
--#else
--static inline void pci_ats_init(struct pci_dev *d) { }
--static inline int pci_enable_ats(struct pci_dev *d, int ps) { return -ENODEV; }
--static inline void pci_disable_ats(struct pci_dev *d) { }
--static inline int pci_ats_queue_depth(struct pci_dev *d) { return -ENODEV; }
--#endif
--
- #ifdef CONFIG_PCIE_PTM
- int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
- #else
-@@ -1613,6 +1600,19 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
- #define dev_is_pf(d) (false)
- #endif /* CONFIG_PCI */
- 
-+#ifdef CONFIG_PCI_ATS
-+/* Address Translation Service */
-+void pci_ats_init(struct pci_dev *dev);
-+int pci_enable_ats(struct pci_dev *dev, int ps);
-+void pci_disable_ats(struct pci_dev *dev);
-+int pci_ats_queue_depth(struct pci_dev *dev);
-+#else
-+static inline void pci_ats_init(struct pci_dev *d) { }
-+static inline int pci_enable_ats(struct pci_dev *d, int ps) { return -ENODEV; }
-+static inline void pci_disable_ats(struct pci_dev *d) { }
-+static inline int pci_ats_queue_depth(struct pci_dev *d) { return -ENODEV; }
-+#endif
++- ats-supported: if present, the root complex supports the Address
++  Translation Service (ATS). It is able to interpret the AT field in PCIe
++  Transaction Layer Packets, and forward Translation Completions or
++  Invalidation Requests to endpoints.
 +
- /* Include architecture-dependent settings and functions */
++  Device drivers should not enable ATS in endpoints unless this property
++  is present.
++
  
- #include <asm/pci.h>
+ Example (1)
+ ===========
 -- 
 2.12.1
-
