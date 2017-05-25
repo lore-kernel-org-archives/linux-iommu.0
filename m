@@ -1,54 +1,38 @@
-From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
-Date: Thu, 25 May 2017 16:05:41 +0100
-Message-ID: <20170525150540.GJ22219@n2100.armlinux.org.uk>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
-	<20170523224216.GI22219@n2100.armlinux.org.uk>
-	<c4ad7341-fa9f-81b7-a41c-417144c4f842@codeaurora.org>
-	<7413479.FJ3cKQnUFA@avalon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <7413479.FJ3cKQnUFA@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Rob Clark <robdclark@gmail.com>
+Subject: [PATCH 0/4] iommu: add qcom_iommu for early "B" family devices
+Date: Thu, 25 May 2017 13:33:36 -0400
+Message-ID: <20170525173340.26904-1-robdclark@gmail.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, Rob Herring <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Archit Taneja <architt@codeaurora.org>, Rob Clark <robdclark@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 24, 2017 at 02:26:13PM +0300, Laurent Pinchart wrote:
-> Again, the patch I propose is the simplest v4.12-rc fix I can think of, short 
-> of reverting your complete IOMMU probe deferral patch series. Let's focus on 
-> the v4.12-rc fix, and then discuss how to move forward in v4.13 and beyond.
+An iommu driver for Qualcomm "B" family devices which do not completely
+implement the ARM SMMU spec.  These devices have context-bank register
+layout that is similar to ARM SMMU, but no global register space (or at
+least not one that is accessible).
 
-Except, I don't think it fixes the problem that Sricharan is trying to
-fix, namely that of DMA ops that have been setup, torn down, and are
-trying to be re-setup again.  The issue here is that results in a stale
-setup, because the dma_ops are left in-place from the first iommu setup,
-but the iommu mapping has been disposed of.
+A couple more minor changes in 3/4, and dt bindings now have Rob H's r-b.
 
-Your patch only avoids the problem of tearing down someone else's DMA
-ops.  We need a combination of both patches together.
+Rob Clark (3):
+  Docs: dt: document qcom iommu bindings
+  iommu: arm-smmu: split out register defines
+  iommu: add qcom_iommu
 
-What needs to happen for Sricharan's problem to be resolved is:
+Stanimir Varbanov (1):
+  iommu: qcom: initialize secure page table
 
-1. move all of __arm_iommu_detach_device() into arm_iommu_detach_device().
-2. replace the __arm_iommu_detach_device() call in arm_teardown_iommu_dma_ops()
-   with arm_iommu_detach_device().
-
-as I don't see any need to have a different order in
-arm_teardown_iommu_dma_ops().
+ .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++
+ drivers/iommu/Kconfig                              |  10 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/arm-smmu-regs.h                      | 227 +++++
+ drivers/iommu/arm-smmu.c                           | 203 +----
+ drivers/iommu/qcom_iommu.c                         | 942 +++++++++++++++++++++
+ 6 files changed, 1302 insertions(+), 202 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+ create mode 100644 drivers/iommu/arm-smmu-regs.h
+ create mode 100644 drivers/iommu/qcom_iommu.c
 
 -- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+2.9.4
