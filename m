@@ -1,47 +1,64 @@
-From: Xunlei Pang <xpang@redhat.com>
-Subject: Re: [PATCH v5 31/32] x86: Add sysfs support for Secure Memory
- Encryption
-Date: Fri, 26 May 2017 13:04:39 +0800
-Message-ID: <5927B767.3010701@redhat.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418212212.10190.73484.stgit@tlendack-t1.amdoffice.net>
- <20170518170153.eqiyat5s6q3yeejl@pd.tnic>
- <20170526024933.GA3228@dhcp-128-65.nay.redhat.com>
-Reply-To: xlpang@redhat.com
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH V3 6/8] arm: dma-mapping: Reset the device's dma_ops
+Date: Fri, 26 May 2017 10:48:53 +0530
+Message-ID: <5fae044c-fe7a-4252-622d-577b57f4b169@codeaurora.org>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+	<20170523224216.GI22219@n2100.armlinux.org.uk>
+	<c4ad7341-fa9f-81b7-a41c-417144c4f842@codeaurora.org>
+	<7413479.FJ3cKQnUFA@avalon>
+	<20170525150540.GJ22219@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20170526024933.GA3228@dhcp-128-65.nay.redhat.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>, Borislav Petkov <bp@alien8.de>
-Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, x86@kernel.org, linux-mm@kvack.org, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, linux-arch@vger.kernel.org, kvm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, linux-doc@vger.kernel.org, kasan-dev@googlegroups.com, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tom Lendacky <thomas.lendacky@amd.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xlpang@redhat.com, Andy
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170525150540.GJ22219-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/26/2017 at 10:49 AM, Dave Young wrote:
-> Ccing Xunlei he is reading the patches see what need to be done for
-> kdump. There should still be several places to handle to make kdump work.
->
-> On 05/18/17 at 07:01pm, Borislav Petkov wrote:
->> On Tue, Apr 18, 2017 at 04:22:12PM -0500, Tom Lendacky wrote:
->>> Add sysfs support for SME so that user-space utilities (kdump, etc.) can
->>> determine if SME is active.
->> But why do user-space tools need to know that?
->>
->> I mean, when we load the kdump kernel, we do it with the first kernel,
->> with the kexec_load() syscall, AFAICT. And that code does a lot of
->> things during that init, like machine_kexec_prepare()->init_pgtable() to
->> prepare the ident mapping of the second kernel, for example.
->>
->> What I'm aiming at is that the first kernel knows *exactly* whether SME
->> is enabled or not and doesn't need to tell the second one through some
->> sysfs entries - it can do that during loading.
->>
->> So I don't think we need any userspace things at all...
-> If kdump kernel can get the SME status from hardware register then this
-> should be not necessary and this patch can be dropped.
+Hi Russell,
 
-Yes, I also agree with dropping this one.
+On 5/25/2017 8:35 PM, Russell King - ARM Linux wrote:
+> On Wed, May 24, 2017 at 02:26:13PM +0300, Laurent Pinchart wrote:
+>> Again, the patch I propose is the simplest v4.12-rc fix I can think of, short 
+>> of reverting your complete IOMMU probe deferral patch series. Let's focus on 
+>> the v4.12-rc fix, and then discuss how to move forward in v4.13 and beyond.
+> 
+> Except, I don't think it fixes the problem that Sricharan is trying to
+> fix, namely that of DMA ops that have been setup, torn down, and are
+> trying to be re-setup again.  The issue here is that results in a stale
+> setup, because the dma_ops are left in-place from the first iommu setup,
+> but the iommu mapping has been disposed of.
+> 
+> Your patch only avoids the problem of tearing down someone else's DMA
+> ops.  We need a combination of both patches together.
+> 
+> What needs to happen for Sricharan's problem to be resolved is:
+> 
+> 1. move all of __arm_iommu_detach_device() into arm_iommu_detach_device().
+> 2. replace the __arm_iommu_detach_device() call in arm_teardown_iommu_dma_ops()
+>    with arm_iommu_detach_device().
+> 
+> as I don't see any need to have a different order in
+> arm_teardown_iommu_dma_ops().
+> 
+
+Right, both patches are required and i was also thining the same thing about
+using arm_iommu_detach_device from arm_teardown_iommu_dma_ops instead. Will
+repost with this.
 
 Regards,
-Xunlei
+ Sricharan
+
+-- 
+"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
