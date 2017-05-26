@@ -1,11 +1,15 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v2] arm: dma-mapping: Reset the device's dma_ops
-Date: Fri, 26 May 2017 16:13:37 +0530
-Message-ID: <1495795417-15177-1-git-send-email-sricharan@codeaurora.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/4] Docs: dt: document qcom iommu bindings
+Date: Fri, 26 May 2017 12:33:27 +0100
+Message-ID: <be8c6290-7127-ad2b-d3d7-48029379ab3e@arm.com>
+References: <20170525173340.26904-1-robdclark@gmail.com>
+	<20170525173340.26904-2-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170525173340.26904-2-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,80 +19,156 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-arch_teardown_dma_ops() being the inverse of arch_setup_dma_ops()
-,dma_ops should be cleared in the teardown path. Currently, only the
-device's iommu mapping structures are cleared in arch_teardown_dma_ops,
-but not the dma_ops. So on the next reprobe, dma_ops left in place is
-stale from the first IOMMU setup, but iommu mappings has been disposed
-of. This is a problem when the probe of the device is deferred and
-recalled with the IOMMU probe deferral.
+On 25/05/17 18:33, Rob Clark wrote:
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> ---
+>  .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++++++++++++++++++++
+>  1 file changed, 121 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> new file mode 100644
+> index 0000000..0d50f84
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> @@ -0,0 +1,121 @@
+> +* QCOM IOMMU v1 Implementation
+> +
+> +Qualcomm "B" family devices which are not compatible with arm-smmu have
+> +a similar looking IOMMU but without access to the global register space,
+> +and optionally requiring additional configuration to route context irqs
+> +to non-secure vs secure interrupt line.
+> +
+> +** Required properties:
+> +
+> +- compatible       : Should be one of:
+> +
+> +                        "qcom,msm8916-iommu"
+> +
+> +                     Followed by "qcom,msm-iommu-v1".
+> +
+> +- clock-names      : Should be a pair of "iface" (required for IOMMUs
+> +                     register group access) and "bus" (required for
+> +                     the IOMMUs underlying bus access).
+> +
+> +- clocks           : Phandles for respective clocks described by
+> +                     clock-names.
+> +
+> +- #address-cells   : must be 1.
+> +
+> +- #size-cells      : must be 1.
+> +
+> +- #iommu-cells     : Must be 1.
 
-So for fixing this, slightly refactor by moving the code from
-__arm_iommu_detach_device to arm_iommu_detach_device and cleanup
-the former. This takes care of resetting the dma_ops in the teardown
-path.
+You need to document what the value in the cell means for this binding.
+AFAICS it looks to be the hardware context bank index, but I wonder if
+it might be simpler to use the child node index instead.
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Fixes: 09515ef5ddad ("of/acpi: Configure dma operations at probe time for platform/amba/pci bus devices")
----
- arch/arm/mm/dma-mapping.c | 25 ++++++++++---------------
- 1 file changed, 10 insertions(+), 15 deletions(-)
+> +- ranges           : Base address and size of the iommu context banks.
+> +
+> +- qcom,iommu-secure-id  : secure-id.
+> +
+> +- List of sub-nodes, one per translation context bank.  Each sub-node
+> +  has the following required properties:
+> +
+> +  - compatible     : Should be one of:
+> +        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
+> +        - "qcom,msm-iommu-v1-sec" : secure context bank
+> +  - reg            : Base address and size of context bank within the iommu
+> +  - interrupts     : The context fault irq.
+> +
+> +** Optional properties:
+> +
+> +- reg              : Base address and size of the SMMU local base, should
+> +                     be only specified if the iommu requires configuration
+> +                     for routing of context bank irq's to secure vs non-
+> +                     secure lines.  (Ie. if the iommu contains secure
+> +                     context banks)
+> +
+> +
+> +** Examples:
+> +
+> +	apps_iommu: iommu@1e20000 {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		#iommu-cells = <1>;
+> +		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+> +		ranges = <0 0x1e20000 0x40000>;
+> +		reg = <0x1ef0000 0x3000>;
+> +		clocks = <&gcc GCC_SMMU_CFG_CLK>,
+> +			 <&gcc GCC_APSS_TCU_CLK>;
+> +		clock-names = "iface", "bus";
+> +		qcom,iommu-secure-id = <17>;
+> +
+> +		// mdp_0:
+> +		iommu-ctx@4000 {
+> +			compatible = "qcom,msm-iommu-v1-ns";
+> +			reg = <0x4000 0x1000>;
+> +			interrupts = <GIC_SPI 70 0>;
+> +		};
+> +
+> +		// venus_ns:
+> +		iommu-ctx@5000 {
+> +			compatible = "qcom,msm-iommu-v1-sec";
+> +			reg = <0x5000 0x1000>;
+> +			interrupts = <GIC_SPI 70 0>;
+> +		};
+> +	};
+> +
+> +	gpu_iommu: iommu@1f08000 {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		#iommu-cells = <1>;
+> +		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+> +		ranges = <0 0x1f08000 0x10000>;
+> +		clocks = <&gcc GCC_SMMU_CFG_CLK>,
+> +			 <&gcc GCC_GFX_TCU_CLK>;
+> +		clock-names = "iface", "bus";
+> +		qcom,iommu-secure-id = <18>;
+> +
+> +		// gfx3d_user:
+> +		iommu-ctx@1f09000 {
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index c742dfd..6e82e87 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2311,7 +2311,14 @@ int arm_iommu_attach_device(struct device *dev,
- }
- EXPORT_SYMBOL_GPL(arm_iommu_attach_device);
- 
--static void __arm_iommu_detach_device(struct device *dev)
-+/**
-+ * arm_iommu_detach_device
-+ * @dev: valid struct device pointer
-+ *
-+ * Detaches the provided device from a previously attached map.
-+ * This voids the dma operations (dma_map_ops pointer)
-+ */
-+void arm_iommu_detach_device(struct device *dev)
- {
- 	struct dma_iommu_mapping *mapping;
- 
-@@ -2324,22 +2331,10 @@ static void __arm_iommu_detach_device(struct device *dev)
- 	iommu_detach_device(mapping->domain, dev);
- 	kref_put(&mapping->kref, release_iommu_mapping);
- 	to_dma_iommu_mapping(dev) = NULL;
-+	set_dma_ops(dev, NULL);
- 
- 	pr_debug("Detached IOMMU controller from %s device.\n", dev_name(dev));
- }
--
--/**
-- * arm_iommu_detach_device
-- * @dev: valid struct device pointer
-- *
-- * Detaches the provided device from a previously attached map.
-- * This voids the dma operations (dma_map_ops pointer)
-- */
--void arm_iommu_detach_device(struct device *dev)
--{
--	__arm_iommu_detach_device(dev);
--	set_dma_ops(dev, NULL);
--}
- EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
- 
- static const struct dma_map_ops *arm_get_iommu_dma_map_ops(bool coherent)
-@@ -2379,7 +2374,7 @@ static void arm_teardown_iommu_dma_ops(struct device *dev)
- 	if (!mapping)
- 		return;
- 
--	__arm_iommu_detach_device(dev);
-+	arm_iommu_detach_device(dev);
- 	arm_iommu_release_mapping(mapping);
- }
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+@1000?
+
+> +			compatible = "qcom,msm-iommu-v1-ns";
+> +			reg = <0x1000 0x1000>;
+> +			interrupts = <GIC_SPI 241 0>;
+> +		};
+> +
+> +		// gfx3d_priv:
+> +		iommu-ctx@1f0a000 {
+
+@2000?
+
+Robin.
+
+> +			compatible = "qcom,msm-iommu-v1-ns";
+> +			reg = <0x2000 0x1000>;
+> +			interrupts = <GIC_SPI 242 0>;
+> +		};
+> +	};
+> +
+> +	...
+> +
+> +	venus: video-codec@1d00000 {
+> +		...
+> +		iommus = <&apps_iommu 5>;
+> +	};
+> +
+> +	mdp: mdp@1a01000 {
+> +		...
+> +		iommus = <&apps_iommu 4>;
+> +	};
+> +
+> +	gpu@01c00000 {
+> +		...
+> +		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
+> +	};
+> 
