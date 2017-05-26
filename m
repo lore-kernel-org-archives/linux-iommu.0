@@ -1,42 +1,182 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
-	in the clear
-Date: Fri, 26 May 2017 18:35:17 +0200
-Message-ID: <20170526163517.nrweesvse24dszkz@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
-	<20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
-	<20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
-	<20170518195051.GA5651@codeblueprint.co.uk>
-	<4c2ef3ba-2940-3330-d362-5b2b0d812c6f@amd.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH 1/4] Docs: dt: document qcom iommu bindings
+Date: Fri, 26 May 2017 14:22:06 -0400
+Message-ID: <CAF6AEGsZ8BHBS4U7odd90Fq0V1zK0BOVs-3HdPTC1Dg4n-z_og@mail.gmail.com>
+References: <20170525173340.26904-1-robdclark@gmail.com> <20170525173340.26904-2-robdclark@gmail.com>
+ <be8c6290-7127-ad2b-d3d7-48029379ab3e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4c2ef3ba-2940-3330-d362-5b2b0d812c6f-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Ard Biesheuvel <ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9kibMonLAN/Q@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <be8c6290-7127-ad2b-d3d7-48029379ab3e@arm.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Archit Taneja <architt@codeaurora.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 26, 2017 at 11:22:36AM -0500, Tom Lendacky wrote:
-> In addition to the same issue as efi.memmap.phys_map, efi_phys has
-> the __initdata attribute so it will be released/freed which will cause
-> problems in checks performed afterwards.
+On Fri, May 26, 2017 at 7:33 AM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 25/05/17 18:33, Rob Clark wrote:
+>> Cc: devicetree@vger.kernel.org
+>> Signed-off-by: Rob Clark <robdclark@gmail.com>
+>> Reviewed-by: Rob Herring <robh@kernel.org>
+>> ---
+>>  .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++++++++++++++++++++
+>>  1 file changed, 121 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> new file mode 100644
+>> index 0000000..0d50f84
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> @@ -0,0 +1,121 @@
+>> +* QCOM IOMMU v1 Implementation
+>> +
+>> +Qualcomm "B" family devices which are not compatible with arm-smmu have
+>> +a similar looking IOMMU but without access to the global register space,
+>> +and optionally requiring additional configuration to route context irqs
+>> +to non-secure vs secure interrupt line.
+>> +
+>> +** Required properties:
+>> +
+>> +- compatible       : Should be one of:
+>> +
+>> +                        "qcom,msm8916-iommu"
+>> +
+>> +                     Followed by "qcom,msm-iommu-v1".
+>> +
+>> +- clock-names      : Should be a pair of "iface" (required for IOMMUs
+>> +                     register group access) and "bus" (required for
+>> +                     the IOMMUs underlying bus access).
+>> +
+>> +- clocks           : Phandles for respective clocks described by
+>> +                     clock-names.
+>> +
+>> +- #address-cells   : must be 1.
+>> +
+>> +- #size-cells      : must be 1.
+>> +
+>> +- #iommu-cells     : Must be 1.
+>
+> You need to document what the value in the cell means for this binding.
+> AFAICS it looks to be the hardware context bank index, but I wonder if
+> it might be simpler to use the child node index instead.
 
-Sounds to me like we should drop the __initdata attr and prepare them
-much earlier for use by the SME code.
+yeah, it is the ctx bank idx.. I suppose it could work either way.  I
+guess the advantage of ctx bank index is that it wouldn't shift if
+adding child nodes incrementally (which at least might be more likely
+for someone wiring up things incrementally when bringing up a new SoC
+without docs.. and we've had a few cases of that).
 
--- 
-Regards/Gruss,
-    Boris.
+(Ie. I think there were some cases where there are gaps in the context
+banks.. and not really sure if those where just context banks that
+downstream kernel didn't bother using or what.)
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
+>> +- ranges           : Base address and size of the iommu context banks.
+>> +
+>> +- qcom,iommu-secure-id  : secure-id.
+>> +
+>> +- List of sub-nodes, one per translation context bank.  Each sub-node
+>> +  has the following required properties:
+>> +
+>> +  - compatible     : Should be one of:
+>> +        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
+>> +        - "qcom,msm-iommu-v1-sec" : secure context bank
+>> +  - reg            : Base address and size of context bank within the iommu
+>> +  - interrupts     : The context fault irq.
+>> +
+>> +** Optional properties:
+>> +
+>> +- reg              : Base address and size of the SMMU local base, should
+>> +                     be only specified if the iommu requires configuration
+>> +                     for routing of context bank irq's to secure vs non-
+>> +                     secure lines.  (Ie. if the iommu contains secure
+>> +                     context banks)
+>> +
+>> +
+>> +** Examples:
+>> +
+>> +     apps_iommu: iommu@1e20000 {
+>> +             #address-cells = <1>;
+>> +             #size-cells = <1>;
+>> +             #iommu-cells = <1>;
+>> +             compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+>> +             ranges = <0 0x1e20000 0x40000>;
+>> +             reg = <0x1ef0000 0x3000>;
+>> +             clocks = <&gcc GCC_SMMU_CFG_CLK>,
+>> +                      <&gcc GCC_APSS_TCU_CLK>;
+>> +             clock-names = "iface", "bus";
+>> +             qcom,iommu-secure-id = <17>;
+>> +
+>> +             // mdp_0:
+>> +             iommu-ctx@4000 {
+>> +                     compatible = "qcom,msm-iommu-v1-ns";
+>> +                     reg = <0x4000 0x1000>;
+>> +                     interrupts = <GIC_SPI 70 0>;
+>> +             };
+>> +
+>> +             // venus_ns:
+>> +             iommu-ctx@5000 {
+>> +                     compatible = "qcom,msm-iommu-v1-sec";
+>> +                     reg = <0x5000 0x1000>;
+>> +                     interrupts = <GIC_SPI 70 0>;
+>> +             };
+>> +     };
+>> +
+>> +     gpu_iommu: iommu@1f08000 {
+>> +             #address-cells = <1>;
+>> +             #size-cells = <1>;
+>> +             #iommu-cells = <1>;
+>> +             compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+>> +             ranges = <0 0x1f08000 0x10000>;
+>> +             clocks = <&gcc GCC_SMMU_CFG_CLK>,
+>> +                      <&gcc GCC_GFX_TCU_CLK>;
+>> +             clock-names = "iface", "bus";
+>> +             qcom,iommu-secure-id = <18>;
+>> +
+>> +             // gfx3d_user:
+>> +             iommu-ctx@1f09000 {
+>
+> @1000?
+>
+>> +                     compatible = "qcom,msm-iommu-v1-ns";
+>> +                     reg = <0x1000 0x1000>;
+>> +                     interrupts = <GIC_SPI 241 0>;
+>> +             };
+>> +
+>> +             // gfx3d_priv:
+>> +             iommu-ctx@1f0a000 {
+>
+> @2000?
+
+oh, yes, right.. I'll fix that
+
+BR,
+-R
+
+>
+> Robin.
+>
+>> +                     compatible = "qcom,msm-iommu-v1-ns";
+>> +                     reg = <0x2000 0x1000>;
+>> +                     interrupts = <GIC_SPI 242 0>;
+>> +             };
+>> +     };
+>> +
+>> +     ...
+>> +
+>> +     venus: video-codec@1d00000 {
+>> +             ...
+>> +             iommus = <&apps_iommu 5>;
+>> +     };
+>> +
+>> +     mdp: mdp@1a01000 {
+>> +             ...
+>> +             iommus = <&apps_iommu 4>;
+>> +     };
+>> +
+>> +     gpu@01c00000 {
+>> +             ...
+>> +             iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
+>> +     };
+>>
+>
