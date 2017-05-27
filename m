@@ -1,16 +1,13 @@
-From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 28/32] x86/mm, kexec: Allow kexec to be used with SME
-Date: Sat, 27 May 2017 10:17:57 +0800
-Message-ID: <20170527021757.GA3132@dhcp-128-65.nay.redhat.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
-	<20170418212121.10190.94885.stgit@tlendack-t1.amdoffice.net>
-	<5927AC6E.8080209@redhat.com>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v6 2/6] iommu: of: Ignore all errors except EPROBE_DEFER
+Date: Sat, 27 May 2017 19:17:41 +0530
+Message-ID: <1495892865-9506-2-git-send-email-sricharan@codeaurora.org>
+References: <1495892865-9506-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <5927AC6E.8080209-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1495892865-9506-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,41 +17,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEmw@public.gmane.org
+To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, j.neuschaefer-hi6Y0CQ0nG0@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/26/17 at 12:17pm, Xunlei Pang wrote:
-> On 04/19/2017 at 05:21 AM, Tom Lendacky wrote:
-> > Provide support so that kexec can be used to boot a kernel when SME is
-> > enabled.
-> >
-> > Support is needed to allocate pages for kexec without encryption.  This
-> > is needed in order to be able to reboot in the kernel in the same manner
-> > as originally booted.
-> 
-> Hi Tom,
-> 
-> Looks like kdump will break, I didn't see the similar handling for kdump cases, see kernel:
->     kimage_alloc_crash_control_pages(), kimage_load_crash_segment(), etc.
-> 
-> We need to support kdump with SME, kdump kernel/initramfs/purgatory/elfcorehdr/etc
-> are all loaded into the reserved memory(see crashkernel=X) by userspace kexec-tools.
+While deferring the probe of IOMMU masters, xlate and
+add_device callbacks called from of_iommu_configure
+can pass back error values like -ENODEV, which means
+the IOMMU cannot be connected with that master for real
+reasons. Before the IOMMU probe deferral, all such errors
+were ignored. Now all those errors are propagated back,
+killing the master's probe for such errors. Instead ignore
+all the errors except EPROBE_DEFER, which is the only one
+of concern and let the master work without IOMMU, thus
+restoring the old behavior. Also make explicit that
+of_dma_configure handles only -EPROBE_DEFER from
+of_iommu_configure.
 
-For kexec_load, it is loaded by kexec-tools, we have in kernel loader
-syscall kexec_file_load, it is handled in kernel.
+Fixes: 7b07cbefb68d ("iommu: of: Handle IOMMU lookup failure with deferred probing or error")
+Reported-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Tested-by: Magnus Damn <magnus.damn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/of_iommu.c | 6 ++++++
+ drivers/of/device.c      | 4 ++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-> I think a straightforward way would be to mark the whole reserved memory range without
-> encryption before loading all the kexec segments for kdump, I guess we can handle this
-> easily in arch_kexec_unprotect_crashkres().
-> 
-> Moreover, now that "elfcorehdr=X" is left as decrypted, it needs to be remapped to the
-> encrypted data.
-
-Tom, could you have a try on kdump according to suggestion from Xunlei?
-It is just based on theoretical patch understanding, there could be
-other issues when you work on it. Feel free to ask if we can help on
-anything.
-
-Thanks
-Dave
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e6e9bec..19779b8 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -237,6 +237,12 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 			ops = ERR_PTR(err);
+ 	}
+ 
++	/* Ignore all other errors apart from EPROBE_DEFER */
++	if (IS_ERR(ops) && (PTR_ERR(ops) != -EPROBE_DEFER)) {
++		dev_dbg(dev, "Adding to IOMMU failed: %ld\n", PTR_ERR(ops));
++		ops = NULL;
++	}
++
+ 	return ops;
+ }
+ 
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 9416d05..28c38c7 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -144,8 +144,8 @@ int of_dma_configure(struct device *dev, struct device_node *np)
+ 		coherent ? " " : " not ");
+ 
+ 	iommu = of_iommu_configure(dev, np);
+-	if (IS_ERR(iommu))
+-		return PTR_ERR(iommu);
++	if (IS_ERR(iommu) && PTR_ERR(iommu) == -EPROBE_DEFER)
++		return -EPROBE_DEFER;
+ 
+ 	dev_dbg(dev, "device is%sbehind an iommu\n",
+ 		iommu ? " " : " not ");
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
