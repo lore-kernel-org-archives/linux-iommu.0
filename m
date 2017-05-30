@@ -1,89 +1,88 @@
-From: "Nath, Arindam" <Arindam.Nath@amd.com>
-Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
-Date: Tue, 30 May 2017 07:38:29 +0000
-Message-ID: <MWHPR12MB1518926453E8BAF205F3492D9CF00@MWHPR12MB1518.namprd12.prod.outlook.com>
-References: <20170407102039.GW7266@8bytes.org>
- <1495439281-24005-1-git-send-email-arindam.nath@amd.com>
- <20170529143831.GA30388@8bytes.org>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v6 3/6] ACPI/IORT: Ignore all errors except EPROBE_DEFER
+Date: Tue, 30 May 2017 10:06:52 +0100
+Message-ID: <20170530090652.GA1767@red-moon>
+References: <1495892865-9506-1-git-send-email-sricharan@codeaurora.org>
+ <1495892865-9506-3-git-send-email-sricharan@codeaurora.org>
+ <1564836.5iBbgoacpH@aspire.rjw.lan>
+ <68bc9be5-22df-e7af-3fcd-182e935e681c@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20170529143831.GA30388@8bytes.org>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Bridgman, John" <John.Bridgman@amd.com>, "drake@endlessm.com" <drake@endlessm.com>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>, "linux@endlessm.com" <linux@endlessm.com>, Craig Stein <stein12c@gmail.com>, "michel@daenzer.net" <michel@daenzer.net>, "Kuehling, Felix" <Felix.Kuehling@amd.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <68bc9be5-22df-e7af-3fcd-182e935e681c@codeaurora.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org, robh+dt@kernel.org, frowand.list@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, lenb@kernel.org, catalin.marinas@arm.com, arnd@arndb.de, linux-arch@vger.kernel.org, laurent.pinchart@ideasonboard.com, j.neuschaefer@gmx.net, geert@linux-m68k.org, magnus.damm@gmail.com, nwatters@codeaurora.org, linux@armlinux.org.uk
 List-Id: iommu@lists.linux-foundation.org
 
->-----Original Message-----
->From: Joerg Roedel [mailto:joro@8bytes.org]
->Sent: Monday, May 29, 2017 8:09 PM
->To: Nath, Arindam <Arindam.Nath@amd.com>; Lendacky, Thomas
-><Thomas.Lendacky@amd.com>
->Cc: iommu@lists.linux-foundation.org; amd-gfx@lists.freedesktop.org;
->Deucher, Alexander <Alexander.Deucher@amd.com>; Bridgman, John
-><John.Bridgman@amd.com>; drake@endlessm.com; Suthikulpanit, Suravee
-><Suravee.Suthikulpanit@amd.com>; linux@endlessm.com; Craig Stein
-><stein12c@gmail.com>; michel@daenzer.net; Kuehling, Felix
-><Felix.Kuehling@amd.com>; stable@vger.kernel.org
->Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
->
->Hi Arindam,
->
->I met Tom Lendacky last week in Nuremberg last week and he told me he is
->working on the same area of the code that this patch is for. His reason
->for touching this code was to solve some locking problems. Maybe you two
->can work together on a joint approach to improve this?
+On Mon, May 29, 2017 at 10:36:42AM +0530, Sricharan R wrote:
+> Hi Rafael,
+> 
+> On 5/28/2017 12:48 AM, Rafael J. Wysocki wrote:
+> > On Saturday, May 27, 2017 07:17:42 PM Sricharan R wrote:
+> >> While deferring the probe of IOMMU masters, xlate and
+> >> add_device callbacks called from iort_iommu_configure
+> >> can pass back error values like -ENODEV, which means
+> >> the IOMMU cannot be connected with that master for real
+> >> reasons. Before the IOMMU probe deferral, all such errors
+> >> were ignored. Now all those errors are propagated back,
+> >> killing the master's probe for such errors. Instead ignore
+> >> all the errors except EPROBE_DEFER, which is the only one
+> >> of concern and let the master work without IOMMU, thus
+> >> restoring the old behavior. Also make explicit that
+> >> acpi_dma_configure handles only -EPROBE_DEFER from
+> >> iort_iommu_configure.
+> >>
+> >> Fixes: 5a1bb638d567 ("drivers: acpi: Handle IOMMU lookup failure with deferred probing or error")
+> >> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+> >> ---
+> >>  drivers/acpi/arm64/iort.c | 6 ++++++
+> >>  drivers/acpi/scan.c       | 4 ++--
+> >>  2 files changed, 8 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> >> index c5fecf9..16e101f 100644
+> >> --- a/drivers/acpi/arm64/iort.c
+> >> +++ b/drivers/acpi/arm64/iort.c
+> >> @@ -782,6 +782,12 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+> >>  	if (err)
+> >>  		ops = ERR_PTR(err);
+> >>  
+> >> +	/* Ignore all other errors apart from EPROBE_DEFER */
+> >> +	if (IS_ERR(ops) && (PTR_ERR(ops) != -EPROBE_DEFER)) {
+> >> +		dev_dbg(dev, "Adding to IOMMU failed: %ld\n", PTR_ERR(ops));
+> >> +		ops = NULL;
+> >> +	}
+> >> +
+> >>  	return ops;
+> >>  }
+> >>  
+> >> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> >> index e39ec7b..3a10d757 100644
+> >> --- a/drivers/acpi/scan.c
+> >> +++ b/drivers/acpi/scan.c
+> >> @@ -1371,8 +1371,8 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+> >>  	iort_set_dma_mask(dev);
+> >>  
+> >>  	iommu = iort_iommu_configure(dev);
+> >> -	if (IS_ERR(iommu))
+> >> -		return PTR_ERR(iommu);
+> >> +	if (IS_ERR(iommu) && PTR_ERR(iommu) == -EPROBE_DEFER)
+> >> +		return -EPROBE_DEFER;
+> >>  
+> >>  	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+> >>  	/*
+> >>
+> > 
+> > ACK for the scan.c change and I'm assuming this to go in via ARM64.
+> > 
+> 
+> Thanks for the ACK, should go through the IOMMU tree, since this fixes the IOMMU probe deferral
+> that got merged through it.
 
-Sure Joerg, I will work with Tom.
+Yes and it would be good to get them merged for -rc4 given that there
+are bug fixes there, I agree the IOMMU tree is the way they should
+go upstream.
 
-Thanks.
-
->
->On Mon, May 22, 2017 at 01:18:01PM +0530, arindam.nath@amd.com wrote:
->> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->> index 63cacf5..1edeebec 100644
->> --- a/drivers/iommu/amd_iommu.c
->> +++ b/drivers/iommu/amd_iommu.c
->> @@ -2227,15 +2227,26 @@ static struct iommu_group
->*amd_iommu_device_group(struct device *dev)
->>
->>  static void __queue_flush(struct flush_queue *queue)
->>  {
->> -	struct protection_domain *domain;
->> -	unsigned long flags;
->>  	int idx;
->>
->> -	/* First flush TLB of all known domains */
->> -	spin_lock_irqsave(&amd_iommu_pd_lock, flags);
->> -	list_for_each_entry(domain, &amd_iommu_pd_list, list)
->> -		domain_flush_tlb(domain);
->> -	spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
->> +	/* First flush TLB of all domains which were added to flush queue */
->> +	for (idx =3D 0; idx < queue->next; ++idx) {
->> +		struct flush_queue_entry *entry;
->> +
->> +		entry =3D queue->entries + idx;
->> +
->> +		/*
->> +		 * There might be cases where multiple IOVA entries for the
->> +		 * same domain are queued in the flush queue. To avoid
->> +		 * flushing the same domain again, we check whether the
->> +		 * flag is set or not. This improves the efficiency of
->> +		 * flush operation.
->> +		 */
->> +		if (!entry->dma_dom->domain.already_flushed) {
->> +			entry->dma_dom->domain.already_flushed =3D true;
->> +			domain_flush_tlb(&entry->dma_dom->domain);
->> +		}
->> +	}
->
->There is also a race condition here I have to look into. It is not
->introduced by your patch, but needs fixing anyway. I'll look into this
->too.
->
->
->Regards,
->
->	Joerg
+Lorenzo
