@@ -1,20 +1,16 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
-	in the clear
-Date: Tue, 30 May 2017 12:47:30 -0500
-Message-ID: <900ee7c4-221a-f4d6-93c6-81dfc0612dbf@amd.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
-	<20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
-	<20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
-	<20170518195051.GA5651@codeblueprint.co.uk>
-	<4c2ef3ba-2940-3330-d362-5b2b0d812c6f@amd.com>
-	<20170526163517.nrweesvse24dszkz@pd.tnic>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/2] PCI: Save properties required to handle FLR for
+	replay purposes.
+Date: Tue, 30 May 2017 14:50:33 -0500
+Message-ID: <20170530195033.GB4664@bhelgaas-glaptop.roam.corp.google.com>
+References: <1496161549-167468-1-git-send-email-ashok.raj@intel.com>
+	<1496161549-167468-3-git-send-email-ashok.raj@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170526163517.nrweesvse24dszkz-fF5Pk5pvG8Y@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1496161549-167468-3-git-send-email-ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,22 +20,237 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Ard Biesheuvel <ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs//PtFMR13I2A@public.gmane.org
+To: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/26/2017 11:35 AM, Borislav Petkov wrote:
-> On Fri, May 26, 2017 at 11:22:36AM -0500, Tom Lendacky wrote:
->> In addition to the same issue as efi.memmap.phys_map, efi_phys has
->> the __initdata attribute so it will be released/freed which will cause
->> problems in checks performed afterwards.
+On Tue, May 30, 2017 at 09:25:49AM -0700, Ashok Raj wrote:
+> From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > 
-> Sounds to me like we should drop the __initdata attr and prepare them
-> much earlier for use by the SME code.
+> Requires: https://patchwork.kernel.org/patch/9593891
 
-Probably something we can look at for a follow-on patch.
+The above patch (9593891) is not in my tree or Linus' tree, so I can't
+do anything with this yet.
 
-Thanks,
-Tom
-
+> After a FLR, pci-states need to be restored. This patch saves PASID features
+> and PRI reqs cached.
+> 
+> To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: Jean-Phillipe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> 
+> Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/pci/ats.c       | 65 +++++++++++++++++++++++++++++++++++++------------
+>  drivers/pci/pci.c       |  3 +++
+>  include/linux/pci-ats.h | 10 ++++++++
+>  include/linux/pci.h     |  6 +++++
+>  4 files changed, 69 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index 2126497..a769955 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -160,17 +160,16 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+>  	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+> -	if ((control & PCI_PRI_CTRL_ENABLE) ||
+> -	    !(status & PCI_PRI_STATUS_STOPPED))
+> +	if (!(status & PCI_PRI_STATUS_STOPPED))
+>  		return -EBUSY;
+>  
+>  	pci_read_config_dword(pdev, pos + PCI_PRI_MAX_REQ, &max_requests);
+>  	reqs = min(max_requests, reqs);
+> +	pdev->pri_reqs_alloc = reqs;
+>  	pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+>  
+> -	control |= PCI_PRI_CTRL_ENABLE;
+> +	control = PCI_PRI_CTRL_ENABLE;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+>  	pdev->pri_enabled = 1;
+> @@ -206,6 +205,29 @@ void pci_disable_pri(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_disable_pri);
+>  
+>  /**
+> + * pci_restore_pri_state - Restore PRI
+> + * @pdev: PCI device structure
+> + *
+> + */
+> +void pci_restore_pri_state(struct pci_dev *pdev)
+> +{
+> +   u16 control = PCI_PRI_CTRL_ENABLE;
+> +   u32 reqs = pdev->pri_reqs_alloc;
+> +   int pos;
+> +
+> +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+> +   if (!pos)
+> +       return;
+> +
+> +   if (!pdev->pri_enabled)
+> +       return;
+> +
+> +   pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
+> +   pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_restore_pri_state);
+> +
+> +/**
+>   * pci_reset_pri - Resets device's PRI state
+>   * @pdev: PCI device structure
+>   *
+> @@ -224,12 +246,7 @@ int pci_reset_pri(struct pci_dev *pdev)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+> -	if (control & PCI_PRI_CTRL_ENABLE)
+> -		return -EBUSY;
+> -
+> -	control |= PCI_PRI_CTRL_RESET;
+> -
+> +	control = PCI_PRI_CTRL_RESET;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+>  	return 0;
+> @@ -259,12 +276,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  	if (!pos)
+>  		return -EINVAL;
+>  
+> -	pci_read_config_word(pdev, pos + PCI_PASID_CTRL, &control);
+>  	pci_read_config_word(pdev, pos + PCI_PASID_CAP, &supported);
+> -
+> -	if (control & PCI_PASID_CTRL_ENABLE)
+> -		return -EINVAL;
+> -
+>  	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
+>  
+>  	/* User wants to enable anything unsupported? */
+> @@ -272,6 +284,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  		return -EINVAL;
+>  
+>  	control = PCI_PASID_CTRL_ENABLE | features;
+> +	pdev->pasid_features = features;
+>  
+>  	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+>  
+> @@ -305,6 +318,28 @@ void pci_disable_pasid(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_disable_pasid);
+>  
+>  /**
+> + * pci_restore_pasid_state - Restore PASID capabilities.
+> + * @pdev: PCI device structure
+> + *
+> + */
+> +void pci_restore_pasid_state(struct pci_dev *pdev)
+> +{
+> +   u16 control;
+> +   int pos;
+> +
+> +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
+> +   if (!pos)
+> +       return;
+> +
+> +   if (!pdev->pasid_enabled)
+> +       return;
+> +
+> +   control = PCI_PASID_CTRL_ENABLE | pdev->pasid_features;
+> +   pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_restore_pasid_state);
+> +
+> +/**
+>   * pci_pasid_features - Check which PASID features are supported
+>   * @pdev: PCI device structure
+>   *
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 7904d02..c9a6510 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pci_hotplug.h>
+>  #include <linux/vmalloc.h>
+> +#include <linux/pci-ats.h>
+>  #include <asm/setup.h>
+>  #include <asm/dma.h>
+>  #include <linux/aer.h>
+> @@ -1171,6 +1172,8 @@ void pci_restore_state(struct pci_dev *dev)
+>  
+>  	/* PCI Express register must be restored first */
+>  	pci_restore_pcie_state(dev);
+> +	pci_restore_pasid_state(dev);
+> +	pci_restore_pri_state(dev);
+>  	pci_restore_ats_state(dev);
+>  	pci_restore_vc_state(dev);
+>  
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index 57e0b82..782fb8e 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -7,6 +7,7 @@
+>  
+>  int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+>  void pci_disable_pri(struct pci_dev *pdev);
+> +void pci_restore_pri_state(struct pci_dev *pdev);
+>  int pci_reset_pri(struct pci_dev *pdev);
+>  
+>  #else /* CONFIG_PCI_PRI */
+> @@ -20,6 +21,10 @@ static inline void pci_disable_pri(struct pci_dev *pdev)
+>  {
+>  }
+>  
+> +static inline void pci_restore_pri_state(struct pci_dev *pdev)
+> +{
+> +}
+> +
+>  static inline int pci_reset_pri(struct pci_dev *pdev)
+>  {
+>  	return -ENODEV;
+> @@ -31,6 +36,7 @@ static inline int pci_reset_pri(struct pci_dev *pdev)
+>  
+>  int pci_enable_pasid(struct pci_dev *pdev, int features);
+>  void pci_disable_pasid(struct pci_dev *pdev);
+> +void pci_restore_pasid_state(struct pci_dev *pdev);
+>  int pci_pasid_features(struct pci_dev *pdev);
+>  int pci_max_pasids(struct pci_dev *pdev);
+>  
+> @@ -45,6 +51,10 @@ static inline void pci_disable_pasid(struct pci_dev *pdev)
+>  {
+>  }
+>  
+> +static inline void pci_restore_pasid_state(struct pci_dev *pdev)
+> +{
+> +}
+> +
+>  static inline int pci_pasid_features(struct pci_dev *pdev)
+>  {
+>  	return -EINVAL;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index bee980e..1ddb8e0 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -395,6 +395,12 @@ struct pci_dev {
+>  	u8		ats_stu;	/* ATS Smallest Translation Unit */
+>  	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
+>  #endif
+> +#ifdef CONFIG_PCI_PRI
+> +	u32		pri_reqs_alloc; /* Number of PRI requests allocated */
+> +#endif
+> +#ifdef CONFIG_PCI_PASID
+> +	u16		pasid_features;
+> +#endif
+>  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
+>  	size_t romlen; /* Length of ROM if it's not from the BAR */
+>  	char *driver_override; /* Driver name to force a match */
+> -- 
+> 2.7.4
 > 
