@@ -1,74 +1,123 @@
-From: Robert Richter <robert.richter@cavium.com>
-Subject: Re: [PATCH v7 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
-Date: Tue, 30 May 2017 16:11:35 +0200
-Message-ID: <20170530141135.GV16981@rric.localdomain>
-References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v5 32/32] x86/mm: Add support to make use of Secure Memory
+ Encryption
+Date: Tue, 30 May 2017 09:38:36 -0500
+Message-ID: <7c522f65-c5c8-9362-e1eb-d0765e3ea6c9@amd.com>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418212223.10190.85121.stgit@tlendack-t1.amdoffice.net>
+ <20170519112703.voajtn4t7uy6nwa3@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Geetha sowjanya <gakula@caviumnetworks.com>
-Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170519112703.voajtn4t7uy6nwa3@pd.tnic>
+Content-Language: en-US
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 30.05.17 17:33:38, Geetha sowjanya wrote:
-> Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
-> 1. Errata ID #74
->    SMMU register alias Page 1 is not implemented
-> 2. Errata ID #126
->    SMMU doesnt support unique IRQ lines and also MSI for gerror,
->    eventq and cmdq-sync
+On 5/19/2017 6:27 AM, Borislav Petkov wrote:
+> On Tue, Apr 18, 2017 at 04:22:23PM -0500, Tom Lendacky wrote:
+>> Add support to check if SME has been enabled and if memory encryption
+>> should be activated (checking of command line option based on the
+>> configuration of the default state).  If memory encryption is to be
+>> activated, then the encryption mask is set and the kernel is encrypted
+>> "in place."
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>   arch/x86/kernel/head_64.S |    1 +
+>>   arch/x86/mm/mem_encrypt.c |   83 +++++++++++++++++++++++++++++++++++++++++++--
+>>   2 files changed, 80 insertions(+), 4 deletions(-)
 > 
-> The following patchset does software workaround for these two erratas.
+> ...
 > 
-> This series is based on patchset.
-> https://www.spinics.net/lists/arm-kernel/msg578443.html
+>> +unsigned long __init sme_enable(struct boot_params *bp)
+>>   {
+>> +	const char *cmdline_ptr, *cmdline_arg, *cmdline_on, *cmdline_off;
+>> +	unsigned int eax, ebx, ecx, edx;
+>> +	unsigned long me_mask;
+>> +	bool active_by_default;
+>> +	char buffer[16];
+>> +	u64 msr;
+>> +
+>> +	/* Check for the SME support leaf */
+>> +	eax = 0x80000000;
+>> +	ecx = 0;
+>> +	native_cpuid(&eax, &ebx, &ecx, &edx);
+>> +	if (eax < 0x8000001f)
+>> +		goto out;
+>> +
+>> +	/*
+>> +	 * Check for the SME feature:
+>> +	 *   CPUID Fn8000_001F[EAX] - Bit 0
+>> +	 *     Secure Memory Encryption support
+>> +	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
+>> +	 *     Pagetable bit position used to indicate encryption
+>> +	 */
+>> +	eax = 0x8000001f;
+>> +	ecx = 0;
+>> +	native_cpuid(&eax, &ebx, &ecx, &edx);
+>> +	if (!(eax & 1))
+>> +		goto out;
 > 
-> Changes since v6:
->    - Changed device tree compatible string to vendor specific.
->    - Rebased on Robin's latest "Update SMMU models for IORT rev. C" v2 patch.
->      https://www.spinics.net/lists/arm-kernel/msg582809.html
+> <---- newline here.
 > 
-> Changes since v5:
->   - Rebased on Robin's "Update SMMU models for IORT rev. C" patch.
->      https://www.spinics.net/lists/arm-kernel/msg580728.html
->   - Replaced ACPI_IORT_SMMU_V3_CAVIUM_CN99XX macro with ACPI_IORT_SMMU_CAVIUM_CN99XX
+>> +	me_mask = 1UL << (ebx & 0x3f);
+>> +
+>> +	/* Check if SME is enabled */
+>> +	msr = __rdmsr(MSR_K8_SYSCFG);
+>> +	if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
+>> +		goto out;
+>> +
+>> +	/*
+>> +	 * Fixups have not been applied to phys_base yet, so we must obtain
+>> +	 * the address to the SME command line option data in the following
+>> +	 * way.
+>> +	 */
+>> +	asm ("lea sme_cmdline_arg(%%rip), %0"
+>> +	     : "=r" (cmdline_arg)
+>> +	     : "p" (sme_cmdline_arg));
+>> +	asm ("lea sme_cmdline_on(%%rip), %0"
+>> +	     : "=r" (cmdline_on)
+>> +	     : "p" (sme_cmdline_on));
+>> +	asm ("lea sme_cmdline_off(%%rip), %0"
+>> +	     : "=r" (cmdline_off)
+>> +	     : "p" (sme_cmdline_off));
+>> +
+>> +	if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT))
+>> +		active_by_default = true;
+>> +	else
+>> +		active_by_default = false;
+>> +
+>> +	cmdline_ptr = (const char *)((u64)bp->hdr.cmd_line_ptr |
+>> +				     ((u64)bp->ext_cmd_line_ptr << 32));
+>> +
+>> +	cmdline_find_option(cmdline_ptr, cmdline_arg, buffer, sizeof(buffer));
+>> +
+>> +	if (strncmp(buffer, cmdline_on, sizeof(buffer)) == 0)
+>> +		sme_me_mask = me_mask;
 > 
-> Changes since v4:
->  - Replaced all page1 offset macros ARM_SMMU_EVTQ/PRIQ_PROD/CONS with
->     arm_smmu_page1_fixup(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu)
+> Why doesn't simply
 > 
-> Changes since v3:
->  - Merged patches 1, 2 and 4 of Version 3.
->  - Modified the page1_offset_adjust() and get_irq_flags() implementation as
->    suggested by Robin.
+> 	if (!strncmp(buffer, "on", 2))
+> 		...
 > 
-> Changes since v2:
->  - Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with
->    new SMMU option used to enable errata workaround.
-> 
-> Changes since v1:
->  - Since the use of MIDR register is rejected and SMMU_IIDR is broken on this
->    silicon, as suggested by Will Deacon modified the patches to use ThunderX2
->    SMMUv3 IORT model number to enable errata workaround.
-> 
-> Geetha Sowjanya (1):
->   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
-> 
-> Linu Cherian (2):
->   ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
->     model
->   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2      erratum
->     #74
-> 
->  Documentation/arm64/silicon-errata.txt             |    2 +
->  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 ++
->  drivers/acpi/arm64/iort.c                          |   10 ++-
->  drivers/iommu/arm-smmu-v3.c                        |   93 ++++++++++++++++----
->  4 files changed, 91 insertions(+), 20 deletions(-)
+> work?
 
-For the whole series:
+In this case we're running identity mapped and the "on" constant ends up
+as kernel address (0xffffffff81...) which results in a segfault.
 
-Reviewed-by: Robert Richter <rrichter@cavium.com>
+Thanks,
+Tom
+
+> 
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
