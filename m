@@ -1,55 +1,89 @@
-From: Ray Jui <ray.jui@broadcom.com>
-Subject: Device address specific mapping of arm,mmu-500
-Date: Mon, 29 May 2017 18:18:45 -0700
-Message-ID: <1b79efe2-6835-7a7a-f5ad-361391a7b967@broadcom.com>
+From: "Nath, Arindam" <Arindam.Nath@amd.com>
+Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
+Date: Tue, 30 May 2017 07:38:29 +0000
+Message-ID: <MWHPR12MB1518926453E8BAF205F3492D9CF00@MWHPR12MB1518.namprd12.prod.outlook.com>
+References: <20170407102039.GW7266@8bytes.org>
+ <1495439281-24005-1-git-send-email-arindam.nath@amd.com>
+ <20170529143831.GA30388@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20170529143831.GA30388@8bytes.org>
 Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Mark Rutland <mark.rutland@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, ray.jui@broadcom.com
+Sender: stable-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Bridgman, John" <John.Bridgman@amd.com>, "drake@endlessm.com" <drake@endlessm.com>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>, "linux@endlessm.com" <linux@endlessm.com>, Craig Stein <stein12c@gmail.com>, "michel@daenzer.net" <michel@daenzer.net>, "Kuehling, Felix" <Felix.Kuehling@amd.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi All,
+>-----Original Message-----
+>From: Joerg Roedel [mailto:joro@8bytes.org]
+>Sent: Monday, May 29, 2017 8:09 PM
+>To: Nath, Arindam <Arindam.Nath@amd.com>; Lendacky, Thomas
+><Thomas.Lendacky@amd.com>
+>Cc: iommu@lists.linux-foundation.org; amd-gfx@lists.freedesktop.org;
+>Deucher, Alexander <Alexander.Deucher@amd.com>; Bridgman, John
+><John.Bridgman@amd.com>; drake@endlessm.com; Suthikulpanit, Suravee
+><Suravee.Suthikulpanit@amd.com>; linux@endlessm.com; Craig Stein
+><stein12c@gmail.com>; michel@daenzer.net; Kuehling, Felix
+><Felix.Kuehling@amd.com>; stable@vger.kernel.org
+>Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
+>
+>Hi Arindam,
+>
+>I met Tom Lendacky last week in Nuremberg last week and he told me he is
+>working on the same area of the code that this patch is for. His reason
+>for touching this code was to solve some locking problems. Maybe you two
+>can work together on a joint approach to improve this?
 
-I'm writing to check with you to see if the latest arm-smmu.c driver in
-v4.12-rc Linux for smmu-500 can support mapping that is only specific to
-a particular physical address range while leave the rest still to be
-handled by the client device. I believe this can already be supported by
-the device tree binding of the generic IOMMU framework; however, it is
-not clear to me whether or not the arm-smmu.c driver can support it.
+Sure Joerg, I will work with Tom.
 
-To give you some background information:
+Thanks.
 
-We have a SoC that has PCIe root complex that has a build-in logic block
-to forward MSI writes to ARM GICv3 ITS. Unfortunately, this logic block
-has a HW bug that causes the MSI writes not parsed properly and can
-potentially corrupt data in the internal FIFO. A workaround is to have
-ARM MMU-500 takes care of all inbound transactions. I found that is
-working after hooking up our PCIe root complex to MMU-500; however, even
-with this optimized arm-smmu driver in v4.12, I'm still seeing a
-significant Ethernet throughput drop in both the TX and RX directions.
-The throughput drop is very significant at around 50% (but is already
-much improved compared to other prior kernel versions at 70~90%).
-
-One alternative is to only use MMU-500 for MSI writes towards
-GITS_TRANSLATER register in the GICv3, i.e., if I can define a specific
-region of physical address that I want MMU-500 to act on and leave the
-rest of inbound transactions to be handled directly by our PCIe
-controller, it can potentially work around the HW bug we have and at the
-same time achieve optimal throughput.
-
-Any feedback from you is greatly appreciated!
-
-Best regards,
-
-Ray
+>
+>On Mon, May 22, 2017 at 01:18:01PM +0530, arindam.nath@amd.com wrote:
+>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>> index 63cacf5..1edeebec 100644
+>> --- a/drivers/iommu/amd_iommu.c
+>> +++ b/drivers/iommu/amd_iommu.c
+>> @@ -2227,15 +2227,26 @@ static struct iommu_group
+>*amd_iommu_device_group(struct device *dev)
+>>
+>>  static void __queue_flush(struct flush_queue *queue)
+>>  {
+>> -	struct protection_domain *domain;
+>> -	unsigned long flags;
+>>  	int idx;
+>>
+>> -	/* First flush TLB of all known domains */
+>> -	spin_lock_irqsave(&amd_iommu_pd_lock, flags);
+>> -	list_for_each_entry(domain, &amd_iommu_pd_list, list)
+>> -		domain_flush_tlb(domain);
+>> -	spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
+>> +	/* First flush TLB of all domains which were added to flush queue */
+>> +	for (idx =3D 0; idx < queue->next; ++idx) {
+>> +		struct flush_queue_entry *entry;
+>> +
+>> +		entry =3D queue->entries + idx;
+>> +
+>> +		/*
+>> +		 * There might be cases where multiple IOVA entries for the
+>> +		 * same domain are queued in the flush queue. To avoid
+>> +		 * flushing the same domain again, we check whether the
+>> +		 * flag is set or not. This improves the efficiency of
+>> +		 * flush operation.
+>> +		 */
+>> +		if (!entry->dma_dom->domain.already_flushed) {
+>> +			entry->dma_dom->domain.already_flushed =3D true;
+>> +			domain_flush_tlb(&entry->dma_dom->domain);
+>> +		}
+>> +	}
+>
+>There is also a race condition here I have to look into. It is not
+>introduced by your patch, but needs fixing anyway. I'll look into this
+>too.
+>
+>
+>Regards,
+>
+>	Joerg
