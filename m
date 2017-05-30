@@ -1,270 +1,90 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/2] PCI: Save properties required to handle FLR for
-	replay purposes.
-Date: Tue, 30 May 2017 11:53:57 -0700
-Message-ID: <20170530185356.GA167854@otc-nc-03>
-References: <1496161549-167468-1-git-send-email-ashok.raj@intel.com>
-	<1496161549-167468-3-git-send-email-ashok.raj@intel.com>
-	<20170530195033.GB4664@bhelgaas-glaptop.roam.corp.google.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v5 26/32] x86, drm, fbdev: Do not specify encrypted memory
+ for video mappings
+Date: Tue, 30 May 2017 15:07:05 -0500
+Message-ID: <766ddfd1-d1fe-213f-1720-5e10356398f0@amd.com>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418212056.10190.25468.stgit@tlendack-t1.amdoffice.net>
+ <20170516173541.q2rbh5dhkluzsjae@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170530195033.GB4664-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170516173541.q2rbh5dhkluzsjae@pd.tnic>
+Content-Language: en-US
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 30, 2017 at 02:50:33PM -0500, Bjorn Helgaas wrote:
-> On Tue, May 30, 2017 at 09:25:49AM -0700, Ashok Raj wrote:
-> > From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > 
-> > Requires: https://patchwork.kernel.org/patch/9593891
+On 5/16/2017 12:35 PM, Borislav Petkov wrote:
+> On Tue, Apr 18, 2017 at 04:20:56PM -0500, Tom Lendacky wrote:
+>> Since video memory needs to be accessed decrypted, be sure that the
+>> memory encryption mask is not set for the video ranges.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>   arch/x86/include/asm/vga.h       |   13 +++++++++++++
+>>   arch/x86/mm/pageattr.c           |    2 ++
+>>   drivers/gpu/drm/drm_gem.c        |    2 ++
+>>   drivers/gpu/drm/drm_vm.c         |    4 ++++
+>>   drivers/gpu/drm/ttm/ttm_bo_vm.c  |    7 +++++--
+>>   drivers/gpu/drm/udl/udl_fb.c     |    4 ++++
+>>   drivers/video/fbdev/core/fbmem.c |   12 ++++++++++++
+>>   7 files changed, 42 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/x86/include/asm/vga.h b/arch/x86/include/asm/vga.h
+>> index c4b9dc2..5c7567a 100644
+>> --- a/arch/x86/include/asm/vga.h
+>> +++ b/arch/x86/include/asm/vga.h
+>> @@ -7,12 +7,25 @@
+>>   #ifndef _ASM_X86_VGA_H
+>>   #define _ASM_X86_VGA_H
+>>   
+>> +#include <asm/cacheflush.h>
+>> +
+>>   /*
+>>    *	On the PC, we can just recalculate addresses and then
+>>    *	access the videoram directly without any black magic.
+>> + *	To support memory encryption however, we need to access
+>> + *	the videoram as decrypted memory.
+>>    */
+>>   
+>> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+>> +#define VGA_MAP_MEM(x, s)					\
+>> +({								\
+>> +	unsigned long start = (unsigned long)phys_to_virt(x);	\
+>> +	set_memory_decrypted(start, (s) >> PAGE_SHIFT);		\
+>> +	start;							\
+>> +})
+>> +#else
+>>   #define VGA_MAP_MEM(x, s) (unsigned long)phys_to_virt(x)
+>> +#endif
 > 
-> The above patch (9593891) is not in my tree or Linus' tree, so I can't
-> do anything with this yet.
-
-I resent the patch as part of this series.. maybe should have massaged the 
-commit message.. my bad :-(. Its the first patch in this series.
-
-Jean mentioned it might take him a while before the SVM patches stabilize.
-Since this patch is pretty much stand alone, he asked if i could resend it
-along with the one i need.
-
-Sorry for any confusion.
-
-Cheers,
-Ashok
+> Can we push the check in and save us the ifdeffery?
 > 
-> > After a FLR, pci-states need to be restored. This patch saves PASID features
-> > and PRI reqs cached.
-> > 
-> > To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-> > To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> > To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> > Cc: Jean-Phillipe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> > Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > 
-> > Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > ---
-> >  drivers/pci/ats.c       | 65 +++++++++++++++++++++++++++++++++++++------------
-> >  drivers/pci/pci.c       |  3 +++
-> >  include/linux/pci-ats.h | 10 ++++++++
-> >  include/linux/pci.h     |  6 +++++
-> >  4 files changed, 69 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> > index 2126497..a769955 100644
-> > --- a/drivers/pci/ats.c
-> > +++ b/drivers/pci/ats.c
-> > @@ -160,17 +160,16 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
-> >  	if (!pos)
-> >  		return -EINVAL;
-> >  
-> > -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
-> >  	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-> > -	if ((control & PCI_PRI_CTRL_ENABLE) ||
-> > -	    !(status & PCI_PRI_STATUS_STOPPED))
-> > +	if (!(status & PCI_PRI_STATUS_STOPPED))
-> >  		return -EBUSY;
-> >  
-> >  	pci_read_config_dword(pdev, pos + PCI_PRI_MAX_REQ, &max_requests);
-> >  	reqs = min(max_requests, reqs);
-> > +	pdev->pri_reqs_alloc = reqs;
-> >  	pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
-> >  
-> > -	control |= PCI_PRI_CTRL_ENABLE;
-> > +	control = PCI_PRI_CTRL_ENABLE;
-> >  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
-> >  
-> >  	pdev->pri_enabled = 1;
-> > @@ -206,6 +205,29 @@ void pci_disable_pri(struct pci_dev *pdev)
-> >  EXPORT_SYMBOL_GPL(pci_disable_pri);
-> >  
-> >  /**
-> > + * pci_restore_pri_state - Restore PRI
-> > + * @pdev: PCI device structure
-> > + *
-> > + */
-> > +void pci_restore_pri_state(struct pci_dev *pdev)
-> > +{
-> > +   u16 control = PCI_PRI_CTRL_ENABLE;
-> > +   u32 reqs = pdev->pri_reqs_alloc;
-> > +   int pos;
-> > +
-> > +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-> > +   if (!pos)
-> > +       return;
-> > +
-> > +   if (!pdev->pri_enabled)
-> > +       return;
-> > +
-> > +   pci_write_config_dword(pdev, pos + PCI_PRI_ALLOC_REQ, reqs);
-> > +   pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
-> > +}
-> > +EXPORT_SYMBOL_GPL(pci_restore_pri_state);
-> > +
-> > +/**
-> >   * pci_reset_pri - Resets device's PRI state
-> >   * @pdev: PCI device structure
-> >   *
-> > @@ -224,12 +246,7 @@ int pci_reset_pri(struct pci_dev *pdev)
-> >  	if (!pos)
-> >  		return -EINVAL;
-> >  
-> > -	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
-> > -	if (control & PCI_PRI_CTRL_ENABLE)
-> > -		return -EBUSY;
-> > -
-> > -	control |= PCI_PRI_CTRL_RESET;
-> > -
-> > +	control = PCI_PRI_CTRL_RESET;
-> >  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
-> >  
-> >  	return 0;
-> > @@ -259,12 +276,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
-> >  	if (!pos)
-> >  		return -EINVAL;
-> >  
-> > -	pci_read_config_word(pdev, pos + PCI_PASID_CTRL, &control);
-> >  	pci_read_config_word(pdev, pos + PCI_PASID_CAP, &supported);
-> > -
-> > -	if (control & PCI_PASID_CTRL_ENABLE)
-> > -		return -EINVAL;
-> > -
-> >  	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
-> >  
-> >  	/* User wants to enable anything unsupported? */
-> > @@ -272,6 +284,7 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
-> >  		return -EINVAL;
-> >  
-> >  	control = PCI_PASID_CTRL_ENABLE | features;
-> > +	pdev->pasid_features = features;
-> >  
-> >  	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
-> >  
-> > @@ -305,6 +318,28 @@ void pci_disable_pasid(struct pci_dev *pdev)
-> >  EXPORT_SYMBOL_GPL(pci_disable_pasid);
-> >  
-> >  /**
-> > + * pci_restore_pasid_state - Restore PASID capabilities.
-> > + * @pdev: PCI device structure
-> > + *
-> > + */
-> > +void pci_restore_pasid_state(struct pci_dev *pdev)
-> > +{
-> > +   u16 control;
-> > +   int pos;
-> > +
-> > +   pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
-> > +   if (!pos)
-> > +       return;
-> > +
-> > +   if (!pdev->pasid_enabled)
-> > +       return;
-> > +
-> > +   control = PCI_PASID_CTRL_ENABLE | pdev->pasid_features;
-> > +   pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
-> > +}
-> > +EXPORT_SYMBOL_GPL(pci_restore_pasid_state);
-> > +
-> > +/**
-> >   * pci_pasid_features - Check which PASID features are supported
-> >   * @pdev: PCI device structure
-> >   *
-> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > index 7904d02..c9a6510 100644
-> > --- a/drivers/pci/pci.c
-> > +++ b/drivers/pci/pci.c
-> > @@ -28,6 +28,7 @@
-> >  #include <linux/pm_runtime.h>
-> >  #include <linux/pci_hotplug.h>
-> >  #include <linux/vmalloc.h>
-> > +#include <linux/pci-ats.h>
-> >  #include <asm/setup.h>
-> >  #include <asm/dma.h>
-> >  #include <linux/aer.h>
-> > @@ -1171,6 +1172,8 @@ void pci_restore_state(struct pci_dev *dev)
-> >  
-> >  	/* PCI Express register must be restored first */
-> >  	pci_restore_pcie_state(dev);
-> > +	pci_restore_pasid_state(dev);
-> > +	pci_restore_pri_state(dev);
-> >  	pci_restore_ats_state(dev);
-> >  	pci_restore_vc_state(dev);
-> >  
-> > diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> > index 57e0b82..782fb8e 100644
-> > --- a/include/linux/pci-ats.h
-> > +++ b/include/linux/pci-ats.h
-> > @@ -7,6 +7,7 @@
-> >  
-> >  int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
-> >  void pci_disable_pri(struct pci_dev *pdev);
-> > +void pci_restore_pri_state(struct pci_dev *pdev);
-> >  int pci_reset_pri(struct pci_dev *pdev);
-> >  
-> >  #else /* CONFIG_PCI_PRI */
-> > @@ -20,6 +21,10 @@ static inline void pci_disable_pri(struct pci_dev *pdev)
-> >  {
-> >  }
-> >  
-> > +static inline void pci_restore_pri_state(struct pci_dev *pdev)
-> > +{
-> > +}
-> > +
-> >  static inline int pci_reset_pri(struct pci_dev *pdev)
-> >  {
-> >  	return -ENODEV;
-> > @@ -31,6 +36,7 @@ static inline int pci_reset_pri(struct pci_dev *pdev)
-> >  
-> >  int pci_enable_pasid(struct pci_dev *pdev, int features);
-> >  void pci_disable_pasid(struct pci_dev *pdev);
-> > +void pci_restore_pasid_state(struct pci_dev *pdev);
-> >  int pci_pasid_features(struct pci_dev *pdev);
-> >  int pci_max_pasids(struct pci_dev *pdev);
-> >  
-> > @@ -45,6 +51,10 @@ static inline void pci_disable_pasid(struct pci_dev *pdev)
-> >  {
-> >  }
-> >  
-> > +static inline void pci_restore_pasid_state(struct pci_dev *pdev)
-> > +{
-> > +}
-> > +
-> >  static inline int pci_pasid_features(struct pci_dev *pdev)
-> >  {
-> >  	return -EINVAL;
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index bee980e..1ddb8e0 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -395,6 +395,12 @@ struct pci_dev {
-> >  	u8		ats_stu;	/* ATS Smallest Translation Unit */
-> >  	atomic_t	ats_ref_cnt;	/* number of VFs with ATS enabled */
-> >  #endif
-> > +#ifdef CONFIG_PCI_PRI
-> > +	u32		pri_reqs_alloc; /* Number of PRI requests allocated */
-> > +#endif
-> > +#ifdef CONFIG_PCI_PASID
-> > +	u16		pasid_features;
-> > +#endif
-> >  	phys_addr_t rom; /* Physical address of ROM if it's not from the BAR */
-> >  	size_t romlen; /* Length of ROM if it's not from the BAR */
-> >  	char *driver_override; /* Driver name to force a match */
-> > -- 
-> > 2.7.4
-> > 
+> #define VGA_MAP_MEM(x, s)                                       \
+> ({                                                              \
+>          unsigned long start = (unsigned long)phys_to_virt(x);   \
+>                                                                  \
+>          if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT))                 \
+>                  set_memory_decrypted(start, (s) >> PAGE_SHIFT); \
+>                                                                  \
+>          start;                                                  \
+> })
+> 
+> It does build here. :)
+> 
+
+That works for me and it's a lot cleaner.  I'll make the change.
+
+Thanks,
+Tom
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
