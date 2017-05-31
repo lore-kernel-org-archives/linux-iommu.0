@@ -1,45 +1,49 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 17/32] x86/mm: Add support to access boot related data
- in the clear
-Date: Wed, 31 May 2017 13:31:41 +0200
-Message-ID: <20170531113140.fxlxnlo3hod57l53@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211921.10190.1537.stgit@tlendack-t1.amdoffice.net>
- <20170515183517.mb4k2gp2qobbuvtm@pd.tnic>
- <4845df29-bae7-9b78-0428-ff96dbef2128@amd.com>
- <20170518090212.kebstmnjv4h3cjf2@pd.tnic>
- <c0cb8a50-e860-169b-ee0c-7eb4db7c3fda@amd.com>
- <20170521071650.pwwmw4agggaazfrh@pd.tnic>
- <754886ff-b502-3f68-3c32-5355d4176829@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 1/2] ACPICA: IORT: Update SMMU models for IORT rev. C
+Date: Wed, 31 May 2017 13:21:18 +0100
+Message-ID: <c4be5ea8-2ada-e625-6152-3c2751d1ee02@arm.com>
+References: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
+ <20170530091205.GB2764@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <754886ff-b502-3f68-3c32-5355d4176829@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170530091205.GB2764@8bytes.org>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: will.deacon@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, rrichter@cavium.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, rjw@rjwysocki.net, robert.moore@intel.com, lv.zheng@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 30, 2017 at 11:46:52AM -0500, Tom Lendacky wrote:
-> Check if you have CONFIG_DEBUG_SECTION_MISMATCH=y
+On 30/05/17 10:12, Joerg Roedel wrote:
+> On Mon, May 22, 2017 at 04:06:37PM +0100, Robin Murphy wrote:
+>> IORT revision C has been published with a number of new SMMU
+>> implementation identifiers. Since IORT doesn't have any way of falling
+>> back to a more generic model code, we really need Linux to know about
+>> these before vendors start updating their firmware tables to use them.
+>>
+>> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
+>> CC: Robert Moore <robert.moore@intel.com>
+>> CC: Lv Zheng <lv.zheng@intel.com>
+>> Acked-by: Robert Richter <rrichter@cavium.com>
+>> Tested-by: Robert Richter <rrichter@cavium.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v2: Update more comments, add Robert's tags.
+> 
+> I generally prefer 'Fixes'-tags, can you please add them too?
 
-$ grep MISM .config
-CONFIG_DEBUG_SECTION_MISMATCH=y
-CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+This patch isn't a fix, though, it's merely adding some new stuff from a
+new release of the IORT spec.
 
-Still no joy.
+Either way, since I discovered we do actually have approval to
+contribute to ACPICA directly, I now intend to route the header change
+that way per Rafaels' preference[1] - patch 2/2 will take care of itself
+in the meantime.
 
-Can you give me your .config?
+Thanks,
+Robin.
 
--- 
-Regards/Gruss,
-    Boris.
+[1]:https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg17602.html
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
