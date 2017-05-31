@@ -1,23 +1,11 @@
-From: Ray Jui via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: Device address specific mapping of arm,mmu-500
-Date: Wed, 31 May 2017 10:32:21 -0700
-Message-ID: <ee5bffb3-3aca-8214-1445-98f1f2d4ba09@broadcom.com>
-References: <1b79efe2-6835-7a7a-f5ad-361391a7b967@broadcom.com>
-	<20170530151437.GC23067@arm.com>
-	<81637642-22d9-4868-156f-052f64bd042f@broadcom.com>
-	<226bcebc-3902-90d3-24e5-51f2e1f3affb@arm.com>
-	<a85b2e3f-93db-7c4d-cde8-32a57e69bef9@broadcom.com>
-	<16e5fc9d-b014-af7c-dcda-527522ac5cc9@arm.com>
-	<b47a379e-4a1b-42ff-8604-01b5becd685c@broadcom.com>
-	<7bd03bf8-71d5-a974-bea2-a38b4349c547@broadcom.com>
-	<20170531124418.GE9723@arm.com>
-Reply-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/of: Handle PCI aliases properly
+Date: Wed, 31 May 2017 18:52:29 +0100
+Message-ID: <20170531175230.16529-3-robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170531124418.GE9723-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,76 +15,178 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+When a PCI device has DMA quirks, we need to ensure that an upstream
+IOMMU knows about all possible aliases, since the presence of a DMA
+quirk does not preclude the device still also emitting transactions
+(e.g. MSIs) on its 'real' RID. Similarly, the rules for bridge aliasing
+are relatively complex, and some bridges may only take ownership of
+transactions under particular transient circumstances, leading again to
+multiple RIDs potentially being seen at the IOMMU for the given device.
 
-On 5/31/17 5:44 AM, Will Deacon wrote:
-> On Tue, May 30, 2017 at 11:13:36PM -0700, Ray Jui wrote:
->> I did a little more digging myself and I think I now understand what you
->> meant by identity mapping, i.e., configuring the MMU-500 with 1:1 mapping
->> between the DMA address and the IOVA address.
->>
->> I think that should work. In the end, due to this MSI write parsing issue in
->> our PCIe controller, the reason to use IOMMU is to allow the cache
->> attributes (AxCACHE) of the MSI writes towards GICv3 ITS to be modified by
->> the IOMMU to be device type, while leaving the rest of inbound reads/writes
->> from/to DDR with more optimized cache attributes setting, to allow I/O
->> coherency to be still enabled for the PCIe controller. In fact, the PCIe
->> controller itself is fully capable of DMA to/from the full address space of
->> our SoC including both DDR and any device memory.
->>
->> The 1:1 mapping will still pose some translation overhead like you
->> suggested; however, the overhead of allocating page tables and locking will
->> be gone. This sounds like the best possible option I have currently.
-> 
-> It might end up being pretty invasive to work around a hardware bug, so
-> we'll have to see what it looks like. Ideally, we could just use the SMMU
-> for everything as-is and work on clawing back the lost performance (it
-> should be possible to get ~95% of the perf if we sort out the locking, which
-> we *are* working on).
-> 
+Take all this into account in the OF code by translating every RID
+produced by the alias walk, not just whichever one comes out last.
+Happily, this also makes things tidy enough that we can reduce the
+number of both total lines of code, and confusing levels of indirection,
+by pulling the "iommus"/"iommu-map" parsing helpers back in-line again.
 
-If 95% of performance can be achieved by fixing the locking in the
-driver, then that's great news.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-If you have anything that you want me to help test, feel free to send it
-out. I will be more than happy to help testing it and let you know about
-the performance numbers, :)
+This applies on top of the fix currently queued in the IOMMU tree:
+"iommu/of: Ignore all errors except EPROBE_DEFER"
 
->> May I ask, how do I start to try to get this identity mapping to work as an
->> experiment and proof of concept? Any pointer or advise is highly appreciated
->> as you can see I'm not very experienced with this. I found Will recently
->> added the IOMMU_DOMAIN_IDENTITY support to the arm-smmu driver. But I
->> suppose that is to bypass the SMMU completely, instead of still going
->> through the MMU with 1:1 translation. Is my understanding correct?
-> 
-> Yes, I don't think IOMMU_DOMAIN_IDENTITY is what you need because you
-> actally need per-page control of memory attributes.
-> 
-> Robin might have a better idea, but I think you'll have to hack dma-iommu.c
-> so that you can have a version of the DMA ops that:
-> 
->   * Initialises the identity map (I guess as normal WB cacheable?)
->   * Reserves and maps the MSI region appropriately
->   * Just returns the physical address for the dma address for map requests
->     (return error for the MSI region)
->   * Does nothing for unmap requests
-> 
-> But my strong preference would be to fix the locking overhead from the
-> SMMU so that the perf hit is acceptable.
+ drivers/iommu/of_iommu.c | 104 +++++++++++++++++++++--------------------------
+ 1 file changed, 47 insertions(+), 57 deletions(-)
 
-Yes, I agree, we want to be able to use the SMMU the intended way. Do
-you have a timeline on when the locking issue may be fixed (or
-improved)? Depending on the timeline, on our side, we may still need to
-go for identity mapping as a temporary solution until the fix.
-
-> 
-> Will
-> 
-
-Thanks,
-
-Ray
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 19779b88a479..1fbd7a142b30 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -140,75 +140,39 @@ static const struct iommu_ops
+ 	return ops;
+ }
+ 
+-static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+-{
+-	struct of_phandle_args *iommu_spec = data;
++struct of_pci_iommu_alias_info {
++	struct device *dev;
++	struct device_node *np;
++};
+ 
+-	iommu_spec->args[0] = alias;
+-	return iommu_spec->np == pdev->bus->dev.of_node;
+-}
+-
+-static const struct iommu_ops
+-*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
++static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ {
++	struct of_pci_iommu_alias_info *info = data;
+ 	const struct iommu_ops *ops;
+-	struct of_phandle_args iommu_spec;
++	struct of_phandle_args iommu_spec = { .args_count = 1 };
+ 	int err;
+ 
+-	/*
+-	 * Start by tracing the RID alias down the PCI topology as
+-	 * far as the host bridge whose OF node we have...
+-	 * (we're not even attempting to handle multi-alias devices yet)
+-	 */
+-	iommu_spec.args_count = 1;
+-	iommu_spec.np = bridge_np;
+-	pci_for_each_dma_alias(pdev, __get_pci_rid, &iommu_spec);
+-	/*
+-	 * ...then find out what that becomes once it escapes the PCI
+-	 * bus into the system beyond, and which IOMMU it ends up at.
+-	 */
+-	iommu_spec.np = NULL;
+-	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
++	err = of_pci_map_rid(info->np, alias, "iommu-map",
+ 			     "iommu-map-mask", &iommu_spec.np,
+ 			     iommu_spec.args);
+ 	if (err)
+-		return err == -ENODEV ? NULL : ERR_PTR(err);
+-
+-	ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
++		return err == -ENODEV ? 1 : err;
+ 
++	ops = of_iommu_xlate(info->dev, &iommu_spec);
+ 	of_node_put(iommu_spec.np);
+-	return ops;
+-}
+ 
+-static const struct iommu_ops
+-*of_platform_iommu_init(struct device *dev, struct device_node *np)
+-{
+-	struct of_phandle_args iommu_spec;
+-	const struct iommu_ops *ops = NULL;
+-	int idx = 0;
++	if (IS_ERR(ops))
++		return PTR_ERR(ops);
+ 
+-	/*
+-	 * We don't currently walk up the tree looking for a parent IOMMU.
+-	 * See the `Notes:' section of
+-	 * Documentation/devicetree/bindings/iommu/iommu.txt
+-	 */
+-	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
+-					   idx, &iommu_spec)) {
+-		ops = of_iommu_xlate(dev, &iommu_spec);
+-		of_node_put(iommu_spec.np);
+-		idx++;
+-		if (IS_ERR_OR_NULL(ops))
+-			break;
+-	}
+-
+-	return ops;
++	return info->np == pdev->bus->dev.of_node;
+ }
+ 
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					   struct device_node *master_np)
+ {
+-	const struct iommu_ops *ops;
++	const struct iommu_ops *ops = NULL;
+ 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	int err;
+ 
+ 	if (!master_np)
+ 		return NULL;
+@@ -221,18 +185,44 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		iommu_fwspec_free(dev);
+ 	}
+ 
+-	if (dev_is_pci(dev))
+-		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
+-	else
+-		ops = of_platform_iommu_init(dev, master_np);
++	/*
++	 * We don't currently walk up the tree looking for a parent IOMMU.
++	 * See the `Notes:' section of
++	 * Documentation/devicetree/bindings/iommu/iommu.txt
++	 */
++	if (dev_is_pci(dev)) {
++		struct of_pci_iommu_alias_info info = {
++			.dev = dev,
++			.np = master_np,
++		};
++
++		err = pci_for_each_dma_alias(to_pci_dev(dev),
++					     of_pci_iommu_init, &info);
++		if (err) /* err > 0 means the walk stopped, but non-fatally */
++			ops = ERR_PTR(min(err, 0));
++		else /* success implies both fwspec and ops are now valid */
++			ops = dev->iommu_fwspec->ops;
++	} else {
++		struct of_phandle_args iommu_spec;
++		int idx = 0;
++
++		while (!of_parse_phandle_with_args(master_np, "iommus",
++						   "#iommu-cells",
++						   idx, &iommu_spec)) {
++			ops = of_iommu_xlate(dev, &iommu_spec);
++			of_node_put(iommu_spec.np);
++			idx++;
++			if (IS_ERR_OR_NULL(ops))
++				break;
++		}
++	}
+ 	/*
+ 	 * If we have reason to believe the IOMMU driver missed the initial
+ 	 * add_device callback for dev, replay it to get things in order.
+ 	 */
+ 	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
+ 	    dev->bus && !dev->iommu_group) {
+-		int err = ops->add_device(dev);
+-
++		err = ops->add_device(dev);
+ 		if (err)
+ 			ops = ERR_PTR(err);
+ 	}
+-- 
+2.12.2.dirty
