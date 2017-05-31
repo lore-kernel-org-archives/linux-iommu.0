@@ -1,46 +1,64 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 32/32] x86/mm: Add support to make use of Secure
- Memory Encryption
-Date: Wed, 31 May 2017 16:12:01 +0200
-Message-ID: <20170531141201.7srucl6lgsye7qyv@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418212223.10190.85121.stgit@tlendack-t1.amdoffice.net>
- <20170519112703.voajtn4t7uy6nwa3@pd.tnic>
- <7c522f65-c5c8-9362-e1eb-d0765e3ea6c9@amd.com>
- <20170530145459.tyuy6veqxnrqkhgw@pd.tnic>
- <115ca39d-6ae7-f603-a415-ead7c4e8193d@amd.com>
- <20170531084923.mmlpefxfx53f3okp@pd.tnic>
- <706d6ae0-bc4c-5ba7-529c-b0fc5e4ad464@amd.com>
+From: shameer <shameerali.kolothum.thodi@huawei.com>
+Subject: [RFCv2 0/2] iommu/smmu-v3: Workaround for hisilicon 161010801 erratum(reserve HW MSI)
+Date: Wed, 31 May 2017 15:32:11 +0100
+Message-ID: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <706d6ae0-bc4c-5ba7-529c-b0fc5e4ad464@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 31, 2017 at 08:37:50AM -0500, Tom Lendacky wrote:
-> I like keeping the command line option and the values together. It may
-> not look the greatest but I like it more than defining the command line
-> option in head_64.S and passing it in as an argument.
-> 
-> OTOH, I don't think the rip-relative addressing was that bad, I can
-> always go back to that...
+On certain HiSilicon platforms (Hip06/Hip07) the GIC ITS and
+PCIe RC deviates from the standard implementation and this breaks
+PCIe MSI functionality when SMMU is enabled.
 
-Yeah, no nice solution here. Having gone full circle, the rip-relative
-thing doesn't look all that bad, all of a sudden. I'd let you decide
-what to do...
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
+
+This patch implements a ACPI table based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
+
+To implement this quirk, the following changes are incorporated:
+
+1. Added a generic helper function to IORT code to retrieve the
+   associated ITS base address from a device IORT node.
+2. Added quirk to SMMUv3 to retrieve the HW ITS address and replace
+   the default SW MSI reserve address based on the IORT SMMU model.
+
+This is based on the following patches:
+1. https://patchwork.kernel.org/patch/9740733/
+2. https://patchwork.kernel.org/patch/9730491/
+
+Thanks,
+Shameer
+
+RFC v1 ---> v2
+ Based on Robin's review comments,
+        :Removed  the generic erratum framework.
+        :Using IORT/MADT tables to retrieve the ITS base addr instead
+         of vendor specific CSRT table.
+
+shameer (2):
+  acpi:iort: Add new helper function to retrieve ITS base addr from IORT
+    node
+  iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+
+ drivers/acpi/arm64/iort.c        | 47 +++++++++++++++++++++++++++++++++++---
+ drivers/iommu/arm-smmu-v3.c      | 49 +++++++++++++++++++++++++++++++++++++---
+ drivers/irqchip/irq-gic-v3-its.c |  3 ++-
+ include/linux/acpi_iort.h        |  8 ++++++-
+ 4 files changed, 99 insertions(+), 8 deletions(-)
 
 -- 
-Regards/Gruss,
-    Boris.
+1.9.1
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
