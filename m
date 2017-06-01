@@ -1,65 +1,58 @@
-From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-Subject: [PATCH] acpi/iort, numa: Add numa node mapping for smmuv3 devices
-Date: Thu,  1 Jun 2017 19:35:37 +0530
-Message-ID: <1496325937-21113-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+From: Ben Hutchings <ben-/+tVBieCtBitmTQ+vhA3Yw@public.gmane.org>
+Subject: [PATCH 3.2 036/101] x86/pci-calgary: Fix iommu_free() comparison
+	of unsigned expression >= 0
+Date: Thu, 01 Jun 2017 16:40:55 +0100
+Message-ID: <lsq.1496331655.842087418@decadent.org.uk>
+References: <lsq.1496331653.552489284@decadent.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: Will.Deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, joro@8bytes.org, rjw@rjwysocki.net, lenb@kernel.org, jnair@caviumnetworks.com, gpkulkarni@gmail.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <lsq.1496331653.552489284-/+tVBieCtBitmTQ+vhA3Yw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nikola Pajkovsky <npajkovsky-AlSwsSmVLrQ@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-ARM IORT specification has provision to define Proximity domain
-in SMMUv3 IORT table. Adding required code to parse Proximity domain of
-SMMUv3 IORT table. Parsed Proximity domain is used to set numa_node
-of SMMUv3 platform devices.
-
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
----
- drivers/iommu/arm-smmu-v3.c | 6 ++++++
- include/acpi/actbl2.h       | 4 ++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 69d8506..98c2319 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2667,6 +2667,12 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
- 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
- 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
- 
-+	/* set numa proximity domain for smmv3 device */
-+	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_PXM) {
-+		set_dev_node(dev, acpi_map_pxm_to_node(iort_smmu->pxm));
-+		dev_info(dev, "on NUMA node %d\n", dev_to_node(dev));
-+	}
-+
- 	return 0;
- }
- #else
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index 4b306a6..c16ced8 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -805,6 +805,9 @@ struct acpi_iort_smmu_v3 {
- 	u32 pri_gsiv;
- 	u32 gerr_gsiv;
- 	u32 sync_gsiv;
-+	u8 pxm;
-+	u8 reserved1;
-+	u16 reserved2;
- };
- 
- /* Values for Model field above */
-@@ -817,6 +820,7 @@ struct acpi_iort_smmu_v3 {
- 
- #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
- #define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
-+#define ACPI_IORT_SMMU_V3_PXM               (1<<3)
- 
- /*******************************************************************************
-  *
--- 
-1.8.1.4
-
+My4yLjg5LXJjMSByZXZpZXcgcGF0Y2guICBJZiBhbnlvbmUgaGFzIGFueSBvYmplY3Rpb25zLCBw
+bGVhc2UgbGV0IG1lIGtub3cuCgotLS0tLS0tLS0tLS0tLS0tLS0KCkZyb206IE5pa29sYSBQYWpr
+b3Zza3kgPG5wYWprb3Zza3lAc3VzZS5jej4KCmNvbW1pdCA2OGRlZThlMmYyY2FjYzU0ZDAzODM5
+NGU3MGQyMjQxMWRlZTg5ZGEyIHVwc3RyZWFtLgoKY29tbWl0IDhmZDUyNGIzNTVkYSAoIng4Njog
+S2lsbCBiYWRfZG1hX2FkZHJlc3MgdmFyaWFibGUiKSBoYXMga2lsbGVkCmJhZF9kbWFfYWRkcmVz
+cyB2YXJpYWJsZSBhbmQgdXNlZCBpbnN0ZWFkIG9mIG1hY3JvIERNQV9FUlJPUl9DT0RFCndoaWNo
+IGlzIGFsd2F5cyB6ZXJvLiBTaW5jZSBkbWFfYWRkciBpcyB1bnNpZ25lZCwgdGhlIHN0YXRlbWVu
+dAoKICAgZG1hX2FkZHIgPj0gRE1BX0VSUk9SX0NPREUKCmlzIGFsd2F5cyB0cnVlLCBhbmQgbm90
+IG5lZWRlZC4KCmFyY2gveDg2L2tlcm5lbC9wY2ktY2FsZ2FyeV82NC5jOiBJbiBmdW5jdGlvbiDi
+gJhpb21tdV9mcmVl4oCZOgphcmNoL3g4Ni9rZXJuZWwvcGNpLWNhbGdhcnlfNjQuYzoyOTk6Mjog
+d2FybmluZzogY29tcGFyaXNvbiBvZiB1bnNpZ25lZCBleHByZXNzaW9uID49IDAgaXMgYWx3YXlz
+IHRydWUgWy1XdHlwZS1saW1pdHNdCiAgaWYgKHVubGlrZWx5KChkbWFfYWRkciA+PSBETUFfRVJS
+T1JfQ09ERSkgJiYgKGRtYV9hZGRyIDwgYmFkZW5kKSkpIHsKCkZpeGVzOiA4ZmQ1MjRiMzU1ZGEg
+KCJ4ODY6IEtpbGwgYmFkX2RtYV9hZGRyZXNzIHZhcmlhYmxlIikKU2lnbmVkLW9mZi1ieTogTmlr
+b2xhIFBhamtvdnNreSA8bnBhamtvdnNreUBzdXNlLmN6PgpDYzogaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKQ2M6IEpvbiBNYXNvbiA8amRtYXNvbkBrdWR6dS51cz4KQ2M6IE11bGkg
+QmVuLVllaHVkYSA8bXVsaXhAbXVsaXgub3JnPgpMaW5rOiBodHRwOi8vbGttbC5rZXJuZWwub3Jn
+L3IvNzYxMmMwZjlkZDdjMTI5MDQwN2RiZjhlODA5ZGVmOTIyMDA2OTIwYi4xNDc5MTYxMTc3Lmdp
+dC5ucGFqa292c2t5QHN1c2UuY3oKU2lnbmVkLW9mZi1ieTogVGhvbWFzIEdsZWl4bmVyIDx0Z2x4
+QGxpbnV0cm9uaXguZGU+ClNpZ25lZC1vZmYtYnk6IEJlbiBIdXRjaGluZ3MgPGJlbkBkZWNhZGVu
+dC5vcmcudWs+Ci0tLQogYXJjaC94ODYva2VybmVsL3BjaS1jYWxnYXJ5XzY0LmMgfCAyICstCiAx
+IGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCi0tLSBhL2FyY2gv
+eDg2L2tlcm5lbC9wY2ktY2FsZ2FyeV82NC5jCisrKyBiL2FyY2gveDg2L2tlcm5lbC9wY2ktY2Fs
+Z2FyeV82NC5jCkBAIC0yOTUsNyArMjk1LDcgQEAgc3RhdGljIHZvaWQgaW9tbXVfZnJlZShzdHJ1
+Y3QgaW9tbXVfdGFibAogCiAJLyogd2VyZSB3ZSBjYWxsZWQgd2l0aCBiYWRfZG1hX2FkZHJlc3M/
+ICovCiAJYmFkZW5kID0gRE1BX0VSUk9SX0NPREUgKyAoRU1FUkdFTkNZX1BBR0VTICogUEFHRV9T
+SVpFKTsKLQlpZiAodW5saWtlbHkoKGRtYV9hZGRyID49IERNQV9FUlJPUl9DT0RFKSAmJiAoZG1h
+X2FkZHIgPCBiYWRlbmQpKSkgeworCWlmICh1bmxpa2VseShkbWFfYWRkciA8IGJhZGVuZCkpIHsK
+IAkJV0FSTigxLCBLRVJOX0VSUiAiQ2FsZ2FyeTogZHJpdmVyIHRyaWVkIHVubWFwcGluZyBiYWQg
+RE1BICIKIAkJICAgICAgICJhZGRyZXNzIDB4JUx4XG4iLCBkbWFfYWRkcik7CiAJCXJldHVybjsK
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
+aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
+LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
