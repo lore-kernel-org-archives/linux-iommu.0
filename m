@@ -1,192 +1,77 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/of: Handle PCI aliases properly
-Date: Wed, 31 May 2017 18:52:29 +0100
-Message-ID: <20170531175230.16529-3-robin.murphy@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 0/7] Add PCI ATS support to SMMUv3
+Date: Thu, 1 Jun 2017 13:23:41 +0100
+Message-ID: <d95b6094-0c10-3669-00f4-6a365b2697b9@arm.com>
+References: <20170524180143.19855-1-jean-philippe.brucker@arm.com>
+ <2ae88519-7dbb-97ee-1ef9-8a92c31472d5@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <2ae88519-7dbb-97ee-1ef9-8a92c31472d5@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Nate Watterson <nwatters@codeaurora.org>, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
+Cc: mark.rutland@arm.com, will.deacon@arm.com, thunder.leizhen@huawei.com, rjw@rjwysocki.net, okaya@codeaurora.org, robh+dt@kernel.org, sudeep.holla@arm.com, bhelgaas@google.com, tn@semihalf.com, sunil.kovvuri@gmail.com, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-When a PCI device has DMA quirks, we need to ensure that an upstream
-IOMMU knows about all possible aliases, since the presence of a DMA
-quirk does not preclude the device still also emitting transactions
-(e.g. MSIs) on its 'real' RID. Similarly, the rules for bridge aliasing
-are relatively complex, and some bridges may only take ownership of
-transactions under particular transient circumstances, leading again to
-multiple RIDs potentially being seen at the IOMMU for the given device.
+On 31/05/17 16:27, Nate Watterson wrote:
+> Hi Jean-Philippe,
+> 
+> On 5/24/2017 2:01 PM, Jean-Philippe Brucker wrote:
+>> PCIe devices can implement their own TLB, named Address Translation Cache
+>> (ATC). In order to support Address Translation Service (ATS), the
+>> following changes are needed in software:
+>>
+>> * Enable ATS on endpoints when the system supports it. Both PCI root
+>>    complex and associated SMMU must implement the ATS protocol.
+>>
+>> * When unmapping an IOVA, send an ATC invalidate request to the endpoint
+>>    in addition to the usual SMMU IOTLB invalidations.
+>>
+>> I previously sent this as part of a lengthy RFC [1] adding SVM (ATS +
+>> PASID + PRI) support to SMMUv3. The next PASID/PRI version is almost
+>> ready, but isn't likely to get merged because it needs hardware testing,
+>> so I will send it later. PRI depends on ATS, but ATS should be useful on
+>> its own.
+>>
+>> Without PASID and PRI, ATS is used for accelerating transactions. Instead
+>> of having all memory accesses go through SMMU translation, the endpoint
+>> can translate IOVA->PA once, store the result in its ATC, then issue
+>> subsequent transactions using the PA, partially bypassing the SMMU. So in
+>> theory it should be faster while keeping the advantages of an IOMMU,
+>> namely scatter-gather and access control.
+>>
+>> The ATS patches can now be tested on some hardware, even though the lack
+>> of compatible PCI endpoints makes it difficult to assess what performance
+>> optimizations we need. That's why the ATS implementation is a bit rough at
+>> the moment, and we will work on optimizing things like invalidation ranges
+>> later.
+> 
+> Sinan and I have tested this series on a QDF2400 development platform
+> using a PCIe exerciser card as the ATS capable endpoint. We were able
+> to verify that ATS requests complete with a valid translated address
+> and that DMA transactions using the pre-translated address "bypass"
+> the SMMU. Testing ATC invalidations was a bit more difficult as we
+> could not figure out how to get the exerciser card to automatically
+> send the completion message. We ended up having to write a debugger
+> script that would monitor the CMDQ and tell the exerciser to send
+> the completion when a hanging CMD_SYNC following a CMD_ATC_INV was
+> detected. Hopefully we'll get some real ATS capable endpoints to
+> test with soon.
 
-Take all this into account in the OF code by translating every RID
-produced by the alias walk, not just whichever one comes out last.
-Happily, this also makes things tidy enough that we can reduce the
-number of both total lines of code, and confusing levels of indirection,
-by pulling the "iommus"/"iommu-map" parsing helpers back in-line again.
+That's still a big step forward from my software tests, thanks a lot for
+the report. If you get around testing a real endpoint, there are a few
+data points that would be really useful to compare, if only to see whether
+enabling ATS is at all viable, or if we end up getting stuck in
+queue_poll_cons in normal conditions:
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+* ATS enabled/disabled in endpoint
+* ATSCHK enabled/disabled in SMMU
+* Invalidation duration when ATC entry is present/absent, and the range is
+big/small
 
-This applies on top of the fix currently queued in the IOMMU tree:
-"iommu/of: Ignore all errors except EPROBE_DEFER"
+Knowing this would indicate if more work is needed on invalidation sizing,
+batching, postponing or if we can optimize later.
 
- drivers/iommu/of_iommu.c | 104 +++++++++++++++++++++--------------------------
- 1 file changed, 47 insertions(+), 57 deletions(-)
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 19779b88a479..1fbd7a142b30 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -140,75 +140,39 @@ static const struct iommu_ops
- 	return ops;
- }
- 
--static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
--{
--	struct of_phandle_args *iommu_spec = data;
-+struct of_pci_iommu_alias_info {
-+	struct device *dev;
-+	struct device_node *np;
-+};
- 
--	iommu_spec->args[0] = alias;
--	return iommu_spec->np == pdev->bus->dev.of_node;
--}
--
--static const struct iommu_ops
--*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
-+static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
- {
-+	struct of_pci_iommu_alias_info *info = data;
- 	const struct iommu_ops *ops;
--	struct of_phandle_args iommu_spec;
-+	struct of_phandle_args iommu_spec = { .args_count = 1 };
- 	int err;
- 
--	/*
--	 * Start by tracing the RID alias down the PCI topology as
--	 * far as the host bridge whose OF node we have...
--	 * (we're not even attempting to handle multi-alias devices yet)
--	 */
--	iommu_spec.args_count = 1;
--	iommu_spec.np = bridge_np;
--	pci_for_each_dma_alias(pdev, __get_pci_rid, &iommu_spec);
--	/*
--	 * ...then find out what that becomes once it escapes the PCI
--	 * bus into the system beyond, and which IOMMU it ends up at.
--	 */
--	iommu_spec.np = NULL;
--	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
-+	err = of_pci_map_rid(info->np, alias, "iommu-map",
- 			     "iommu-map-mask", &iommu_spec.np,
- 			     iommu_spec.args);
- 	if (err)
--		return err == -ENODEV ? NULL : ERR_PTR(err);
--
--	ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
-+		return err == -ENODEV ? 1 : err;
- 
-+	ops = of_iommu_xlate(info->dev, &iommu_spec);
- 	of_node_put(iommu_spec.np);
--	return ops;
--}
- 
--static const struct iommu_ops
--*of_platform_iommu_init(struct device *dev, struct device_node *np)
--{
--	struct of_phandle_args iommu_spec;
--	const struct iommu_ops *ops = NULL;
--	int idx = 0;
-+	if (IS_ERR(ops))
-+		return PTR_ERR(ops);
- 
--	/*
--	 * We don't currently walk up the tree looking for a parent IOMMU.
--	 * See the `Notes:' section of
--	 * Documentation/devicetree/bindings/iommu/iommu.txt
--	 */
--	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
--					   idx, &iommu_spec)) {
--		ops = of_iommu_xlate(dev, &iommu_spec);
--		of_node_put(iommu_spec.np);
--		idx++;
--		if (IS_ERR_OR_NULL(ops))
--			break;
--	}
--
--	return ops;
-+	return info->np == pdev->bus->dev.of_node;
- }
- 
- const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					   struct device_node *master_np)
- {
--	const struct iommu_ops *ops;
-+	const struct iommu_ops *ops = NULL;
- 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	int err;
- 
- 	if (!master_np)
- 		return NULL;
-@@ -221,18 +185,44 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 		iommu_fwspec_free(dev);
- 	}
- 
--	if (dev_is_pci(dev))
--		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
--	else
--		ops = of_platform_iommu_init(dev, master_np);
-+	/*
-+	 * We don't currently walk up the tree looking for a parent IOMMU.
-+	 * See the `Notes:' section of
-+	 * Documentation/devicetree/bindings/iommu/iommu.txt
-+	 */
-+	if (dev_is_pci(dev)) {
-+		struct of_pci_iommu_alias_info info = {
-+			.dev = dev,
-+			.np = master_np,
-+		};
-+
-+		err = pci_for_each_dma_alias(to_pci_dev(dev),
-+					     of_pci_iommu_init, &info);
-+		if (err) /* err > 0 means the walk stopped, but non-fatally */
-+			ops = ERR_PTR(min(err, 0));
-+		else /* success implies both fwspec and ops are now valid */
-+			ops = dev->iommu_fwspec->ops;
-+	} else {
-+		struct of_phandle_args iommu_spec;
-+		int idx = 0;
-+
-+		while (!of_parse_phandle_with_args(master_np, "iommus",
-+						   "#iommu-cells",
-+						   idx, &iommu_spec)) {
-+			ops = of_iommu_xlate(dev, &iommu_spec);
-+			of_node_put(iommu_spec.np);
-+			idx++;
-+			if (IS_ERR_OR_NULL(ops))
-+				break;
-+		}
-+	}
- 	/*
- 	 * If we have reason to believe the IOMMU driver missed the initial
- 	 * add_device callback for dev, replay it to get things in order.
- 	 */
- 	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
- 	    dev->bus && !dev->iommu_group) {
--		int err = ops->add_device(dev);
--
-+		err = ops->add_device(dev);
- 		if (err)
- 			ops = ERR_PTR(err);
- 	}
--- 
-2.12.2.dirty
+Thanks,
+Jean
