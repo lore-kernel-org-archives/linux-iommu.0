@@ -1,8 +1,7 @@
 From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v1 1/3] iommu/amd: Reduce amount of MMIO when submitting
-	commands
-Date: Mon, 05 Jun 2017 14:52:12 -0500
-Message-ID: <20170605195212.11512.98801.stgit@tlendack-t1.amdoffice.net>
+Subject: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
+Date: Mon, 05 Jun 2017 14:52:35 -0500
+Message-ID: <20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
 References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,129 +21,168 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-As newer, higher speed devices are developed, perf data shows that the
-amount of MMIO that is performed when submitting commands to the IOMMU
-causes performance issues. Currently, the command submission path reads
-the command buffer head and tail pointers and then writes the tail
-pointer once the command is ready.
+After reducing the amount of MMIO performed by the IOMMU during operation,
+perf data shows that flushing the TLB for all protection domains during
+DMA unmapping is a performance issue. It is not necessary to flush the
+TLBs for all protection domains, only the protection domains associated
+with iova's on the flush queue.
 
-The tail pointer is only ever updated by the driver so it can be tracked
-by the driver without having to read it from the hardware.
+Create a separate queue that tracks the protection domains associated with
+the iova's on the flush queue. This new queue optimizes the flushing of
+TLBs to the required protection domains.
 
-The head pointer is updated by the hardware, but can be read
-opportunistically. Reading the head pointer only when it appears that
-there might not be room in the command buffer and then re-checking the
-available space reduces the number of times the head pointer has to be
-read.
-
+Reviewed-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
 Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       |   35 ++++++++++++++++++++++-------------
- drivers/iommu/amd_iommu_init.c  |    2 ++
- drivers/iommu/amd_iommu_types.h |    2 ++
- 3 files changed, 26 insertions(+), 13 deletions(-)
+ drivers/iommu/amd_iommu.c |   56 ++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 50 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 63cacf5..faf0ddf 100644
+index 856103b..a5e77f0 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -848,19 +848,20 @@ static int wait_on_sem(volatile u64 *sem)
- }
+@@ -103,7 +103,18 @@ struct flush_queue {
+ 	struct flush_queue_entry *entries;
+ };
  
- static void copy_cmd_to_buffer(struct amd_iommu *iommu,
--			       struct iommu_cmd *cmd,
--			       u32 tail)
-+			       struct iommu_cmd *cmd)
++struct flush_pd_queue_entry {
++	struct protection_domain *pd;
++};
++
++struct flush_pd_queue {
++	/* No lock needed, protected by flush_queue lock */
++	unsigned next;
++	struct flush_pd_queue_entry *entries;
++};
++
+ static DEFINE_PER_CPU(struct flush_queue, flush_queue);
++static DEFINE_PER_CPU(struct flush_pd_queue, flush_pd_queue);
+ 
+ static atomic_t queue_timer_on;
+ static struct timer_list queue_timer;
+@@ -2227,16 +2238,20 @@ static struct iommu_group *amd_iommu_device_group(struct device *dev)
+  *
+  *****************************************************************************/
+ 
+-static void __queue_flush(struct flush_queue *queue)
++static void __queue_flush(struct flush_queue *queue,
++			  struct flush_pd_queue *pd_queue)
  {
- 	u8 *target;
+-	struct protection_domain *domain;
+ 	unsigned long flags;
+ 	int idx;
  
--	target = iommu->cmd_buf + tail;
--	tail   = (tail + sizeof(*cmd)) % CMD_BUFFER_SIZE;
-+	target = iommu->cmd_buf + iommu->cmd_buf_tail;
+ 	/* First flush TLB of all known domains */
+ 	spin_lock_irqsave(&amd_iommu_pd_lock, flags);
+-	list_for_each_entry(domain, &amd_iommu_pd_list, list)
+-		domain_flush_tlb(domain);
++	for (idx = 0; idx < pd_queue->next; ++idx) {
++		struct flush_pd_queue_entry *entry;
 +
-+	iommu->cmd_buf_tail += sizeof(*cmd);
-+	iommu->cmd_buf_tail %= CMD_BUFFER_SIZE;
++		entry = pd_queue->entries + idx;
++		domain_flush_tlb(entry->pd);
++	}
+ 	spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
  
- 	/* Copy command to buffer */
- 	memcpy(target, cmd, sizeof(*cmd));
- 
- 	/* Tell the IOMMU about it */
--	writel(tail, iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
-+	writel(iommu->cmd_buf_tail, iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
- }
- 
- static void build_completion_wait(struct iommu_cmd *cmd, u64 address)
-@@ -1018,23 +1019,31 @@ static int __iommu_queue_command_sync(struct amd_iommu *iommu,
- 				      struct iommu_cmd *cmd,
- 				      bool sync)
- {
--	u32 left, tail, head, next_tail;
-+	bool read_head = true;
-+	u32 left, next_tail;
- 
-+	next_tail = (iommu->cmd_buf_tail + sizeof(*cmd)) % CMD_BUFFER_SIZE;
- again:
--
--	head      = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
--	tail      = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
--	next_tail = (tail + sizeof(*cmd)) % CMD_BUFFER_SIZE;
--	left      = (head - next_tail) % CMD_BUFFER_SIZE;
-+	left      = (iommu->cmd_buf_head - next_tail) % CMD_BUFFER_SIZE;
- 
- 	if (left <= 0x20) {
- 		struct iommu_cmd sync_cmd;
- 		int ret;
- 
-+		if (read_head) {
-+			/* Update head and recheck remaining space */
-+			iommu->cmd_buf_head = readl(iommu->mmio_base +
-+						    MMIO_CMD_HEAD_OFFSET);
-+			read_head = false;
-+			goto again;
-+		}
-+
-+		read_head = true;
-+
- 		iommu->cmd_sem = 0;
- 
- 		build_completion_wait(&sync_cmd, (u64)&iommu->cmd_sem);
--		copy_cmd_to_buffer(iommu, &sync_cmd, tail);
-+		copy_cmd_to_buffer(iommu, &sync_cmd);
- 
- 		if ((ret = wait_on_sem(&iommu->cmd_sem)) != 0)
- 			return ret;
-@@ -1042,7 +1051,7 @@ static int __iommu_queue_command_sync(struct amd_iommu *iommu,
- 		goto again;
+ 	/* Wait until flushes have completed */
+@@ -2255,6 +2270,7 @@ static void __queue_flush(struct flush_queue *queue)
+ 		entry->dma_dom = NULL;
  	}
  
--	copy_cmd_to_buffer(iommu, cmd, tail);
-+	copy_cmd_to_buffer(iommu, cmd);
- 
- 	/* We need to sync now to make sure all commands are processed */
- 	iommu->need_sync = sync;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5a11328..3fa7e3b 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -588,6 +588,8 @@ void amd_iommu_reset_cmd_buffer(struct amd_iommu *iommu)
- 
- 	writel(0x00, iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
- 	writel(0x00, iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
-+	iommu->cmd_buf_head = 0;
-+	iommu->cmd_buf_tail = 0;
- 
- 	iommu_feature_enable(iommu, CONTROL_CMDBUF_EN);
++	pd_queue->next = 0;
+ 	queue->next = 0;
  }
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 4de8f41..6960d7d 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -516,6 +516,8 @@ struct amd_iommu {
  
- 	/* command buffer virtual address */
- 	u8 *cmd_buf;
-+	u32 cmd_buf_head;
-+	u32 cmd_buf_tail;
+@@ -2263,13 +2279,15 @@ static void queue_flush_all(void)
+ 	int cpu;
  
- 	/* event buffer virtual address */
- 	u8 *evt_buf;
+ 	for_each_possible_cpu(cpu) {
++		struct flush_pd_queue *pd_queue;
+ 		struct flush_queue *queue;
+ 		unsigned long flags;
+ 
+ 		queue = per_cpu_ptr(&flush_queue, cpu);
++		pd_queue = per_cpu_ptr(&flush_pd_queue, cpu);
+ 		spin_lock_irqsave(&queue->lock, flags);
+ 		if (queue->next > 0)
+-			__queue_flush(queue);
++			__queue_flush(queue, pd_queue);
+ 		spin_unlock_irqrestore(&queue->lock, flags);
+ 	}
+ }
+@@ -2283,6 +2301,8 @@ static void queue_flush_timeout(unsigned long unsused)
+ static void queue_add(struct dma_ops_domain *dma_dom,
+ 		      unsigned long address, unsigned long pages)
+ {
++	struct flush_pd_queue_entry *pd_entry;
++	struct flush_pd_queue *pd_queue;
+ 	struct flush_queue_entry *entry;
+ 	struct flush_queue *queue;
+ 	unsigned long flags;
+@@ -2292,10 +2312,22 @@ static void queue_add(struct dma_ops_domain *dma_dom,
+ 	address >>= PAGE_SHIFT;
+ 
+ 	queue = get_cpu_ptr(&flush_queue);
++	pd_queue = get_cpu_ptr(&flush_pd_queue);
+ 	spin_lock_irqsave(&queue->lock, flags);
+ 
+ 	if (queue->next == FLUSH_QUEUE_SIZE)
+-		__queue_flush(queue);
++		__queue_flush(queue, pd_queue);
++
++	for (idx = 0; idx < pd_queue->next; ++idx) {
++		pd_entry = pd_queue->entries + idx;
++		if (pd_entry->pd == &dma_dom->domain)
++			break;
++	}
++	if (idx == pd_queue->next) {
++		/* New protection domain, add it to the list */
++		pd_entry = pd_queue->entries + pd_queue->next++;
++		pd_entry->pd = &dma_dom->domain;
++	}
+ 
+ 	idx   = queue->next++;
+ 	entry = queue->entries + idx;
+@@ -2309,6 +2341,7 @@ static void queue_add(struct dma_ops_domain *dma_dom,
+ 	if (atomic_cmpxchg(&queue_timer_on, 0, 1) == 0)
+ 		mod_timer(&queue_timer, jiffies + msecs_to_jiffies(10));
+ 
++	put_cpu_ptr(&flush_pd_queue);
+ 	put_cpu_ptr(&flush_queue);
+ }
+ 
+@@ -2810,6 +2843,8 @@ int __init amd_iommu_init_api(void)
+ 		return ret;
+ 
+ 	for_each_possible_cpu(cpu) {
++		struct flush_pd_queue *pd_queue = per_cpu_ptr(&flush_pd_queue,
++							      cpu);
+ 		struct flush_queue *queue = per_cpu_ptr(&flush_queue, cpu);
+ 
+ 		queue->entries = kzalloc(FLUSH_QUEUE_SIZE *
+@@ -2819,6 +2854,12 @@ int __init amd_iommu_init_api(void)
+ 			goto out_put_iova;
+ 
+ 		spin_lock_init(&queue->lock);
++
++		pd_queue->entries = kzalloc(FLUSH_QUEUE_SIZE *
++					    sizeof(*pd_queue->entries),
++					    GFP_KERNEL);
++		if (!pd_queue->entries)
++			goto out_put_iova;
+ 	}
+ 
+ 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
+@@ -2836,9 +2877,12 @@ int __init amd_iommu_init_api(void)
+ 
+ out_put_iova:
+ 	for_each_possible_cpu(cpu) {
++		struct flush_pd_queue *pd_queue = per_cpu_ptr(&flush_pd_queue,
++							      cpu);
+ 		struct flush_queue *queue = per_cpu_ptr(&flush_queue, cpu);
+ 
+ 		kfree(queue->entries);
++		kfree(pd_queue->entries);
+ 	}
+ 
+ 	return -ENOMEM;
