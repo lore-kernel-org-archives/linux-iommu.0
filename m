@@ -1,14 +1,15 @@
-From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 2/2] acpi/iort: numa: Add numa node mapping for smmuv3
-	devices
-Date: Tue,  6 Jun 2017 16:17:45 +0530
-Message-ID: <1496746065-11082-3-git-send-email-ganapatrao.kulkarni@cavium.com>
-References: <1496746065-11082-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v7 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
+	ThunderX2 erratum #126
+Date: Tue, 6 Jun 2017 12:03:59 +0100
+Message-ID: <17f9e235-179c-38cf-c76f-c8d2af60965f@huawei.com>
+References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+	<1496145821-3411-4-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1496746065-11082-1-git-send-email-ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1496145821-3411-4-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,55 +19,113 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add code to parse proximity domain in SMMUv3 IORT table to
-set numa node mapping for smmuv3 devices.
+On 30/05/2017 13:03, Geetha sowjanya wrote:
+> From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>
+> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
 
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
- drivers/acpi/arm64/iort.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+separate irq lines
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index bba2b59..b4f328f 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
- 	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
- }
- 
-+/*
-+ * set numa proximity domain for smmv3 device
-+ */
-+static void  __init iort_set_proximity(struct acpi_iort_node *node,
-+		struct device *dev)
-+{
-+	struct acpi_iort_smmu_v3 *smmu;
-+
-+	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
-+		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
-+		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
-+			smmu->base_address,
-+			smmu->pxm);
-+	}
-+}
-+
- static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
- {
- 	struct acpi_iort_smmu *smmu;
-@@ -1002,6 +1019,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
- 	if (!pdev)
- 		return -ENOMEM;
- 
-+	if (node->type == ACPI_IORT_NODE_SMMU_V3)
-+		iort_set_proximity(node, &pdev->dev);
-+
- 	count = ops->iommu_count_resources(node);
- 
- 	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
--- 
-1.8.1.4
+> lines for gerror, eventq and cmdq-sync.
+>
+> This patch addresses the issue by checking if any interrupt sources are
+> using same irq number, then they are registered as shared irqs.
+>
+> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> ---
+>  Documentation/arm64/silicon-errata.txt |    1 +
+>  drivers/iommu/arm-smmu-v3.c            |   29 +++++++++++++++++++++++++----
+>  2 files changed, 26 insertions(+), 4 deletions(-)
+>
+> diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+> index 4693a32..42422f6 100644
+> --- a/Documentation/arm64/silicon-errata.txt
+> +++ b/Documentation/arm64/silicon-errata.txt
+> @@ -63,6 +63,7 @@ stable kernels.
+>  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
+>  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
+>  | Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
+> +| Cavium         | ThunderX2 SMMUv3| #126            | N/A                         |
+>  |                |                 |                 |                             |
+>  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
+>  |                |                 |                 |                             |
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 4e80205..d2db01f 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2232,6 +2232,25 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>  	devm_add_action(dev, arm_smmu_free_msis, dev);
+>  }
+>
+> +static int get_irq_flags(struct arm_smmu_device *smmu, int irq)
+> +{
+> +	int match_count = 0;
+> +
+> +	if (irq == smmu->evtq.q.irq)
+> +		match_count++;
+> +	if (irq == smmu->cmdq.q.irq)
+> +		match_count++;
+> +	if (irq == smmu->gerr_irq)
+> +		match_count++;
+> +	if (irq == smmu->priq.q.irq)
+> +		match_count++;
+> +
+> +	if (match_count > 1)
+> +		return IRQF_SHARED | IRQF_ONESHOT;
+> +
+> +	return IRQF_ONESHOT;
+> +}
+> +
+>  static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  {
+>  	int ret, irq;
+> @@ -2252,7 +2271,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  	if (irq) {
+>  		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+>  						arm_smmu_evtq_thread,
+> -						IRQF_ONESHOT,
+> +						get_irq_flags(smmu, irq),
+>  						"arm-smmu-v3-evtq", smmu);
+>  		if (ret < 0)
+>  			dev_warn(smmu->dev, "failed to enable evtq irq\n");
+> @@ -2261,7 +2280,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  	irq = smmu->cmdq.q.irq;
+>  	if (irq) {
+>  		ret = devm_request_irq(smmu->dev, irq,
+> -				       arm_smmu_cmdq_sync_handler, 0,
+
+If it is indeed ok to change this to having IRQF_ONESHOT set now 
+(right?), then can you add a note to the commit message?
+
+> +				       arm_smmu_cmdq_sync_handler,
+> +					   get_irq_flags(smmu, irq),
+
+indentation looks inconsistent
+
+>  				       "arm-smmu-v3-cmdq-sync", smmu);
+>  		if (ret < 0)
+>  			dev_warn(smmu->dev, "failed to enable cmdq-sync irq\n");
+> @@ -2270,7 +2290,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  	irq = smmu->gerr_irq;
+>  	if (irq) {
+>  		ret = devm_request_irq(smmu->dev, irq, arm_smmu_gerror_handler,
+> -				       0, "arm-smmu-v3-gerror", smmu);
+> +						get_irq_flags(smmu, irq),
+> +						"arm-smmu-v3-gerror", smmu);
+>  		if (ret < 0)
+>  			dev_warn(smmu->dev, "failed to enable gerror irq\n");
+>  	}
+> @@ -2280,7 +2301,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  		if (irq) {
+>  			ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+>  							arm_smmu_priq_thread,
+> -							IRQF_ONESHOT,
+> +							get_irq_flags(smmu, irq),
+>  							"arm-smmu-v3-priq",
+>  							smmu);
+>  			if (ret < 0)
+>
