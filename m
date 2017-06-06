@@ -1,101 +1,99 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v1 2/3] iommu/amd: Reduce delay waiting for command buffer
-	space
-Date: Mon, 05 Jun 2017 14:52:26 -0500
-Message-ID: <20170605195226.11512.1123.stgit@tlendack-t1.amdoffice.net>
-References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
+From: Hanjun Guo <hanjun.guo@linaro.org>
+Subject: Re: [PATCH v2 1/2] ACPICA: IORT: Update SMMU models for IORT rev. C
+Date: Tue, 6 Jun 2017 16:43:32 +0800
+Message-ID: <ec4eeffe-9333-fa89-d471-6c88d8d03435@linaro.org>
+References: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170605195203.11512.20579.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <11ef7d28c535c01d42b7b3c8e632934f0e0f1048.1495459319.git.robin.murphy@arm.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, will.deacon@arm.com, joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, gakula@caviumnetworks.com, linu.cherian@cavium.com, rrichter@cavium.com, lorenzo.pieralisi@arm.com, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, gabriele.paoloni@huawei.com, rjw@rjwysocki.net, robert.moore@intel.com, lv.zheng@intel.comShameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently if there is no room to add a command to the command buffer, the
-driver performs a "completion wait" which only returns when all commands
-on the queue have been processed. There is no need to wait for the entire
-command queue to be executed before adding the next command.
+On 2017/5/22 23:06, Robin Murphy wrote:
+> IORT revision C has been published with a number of new SMMU
+> implementation identifiers. Since IORT doesn't have any way of falling
+> back to a more generic model code, we really need Linux to know about
+> these before vendors start updating their firmware tables to use them.
+> 
+> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
+> CC: Robert Moore <robert.moore@intel.com>
+> CC: Lv Zheng <lv.zheng@intel.com>
+> Acked-by: Robert Richter <rrichter@cavium.com>
+> Tested-by: Robert Richter <rrichter@cavium.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> 
+> v2: Update more comments, add Robert's tags.
+> 
+> I'm including this here as a kernel patch just for context - once I've
+> figured out how we actually submit patches to ACPICA directly, I'll do
+> that per the preferred process.
+> 
+> Robin.
+> 
+>   include/acpi/actbl2.h | 12 ++++++++++--
+>   1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+> index faa9f2c0d5de..f469ea41f2fd 100644
+> --- a/include/acpi/actbl2.h
+> +++ b/include/acpi/actbl2.h
+> @@ -663,7 +663,7 @@ struct acpi_ibft_target {
+>    * IORT - IO Remapping Table
+>    *
+>    * Conforms to "IO Remapping Table System Software on ARM Platforms",
+> - * Document number: ARM DEN 0049B, October 2015
+> + * Document number: ARM DEN 0049C, May 2017
+>    *
+>    ******************************************************************************/
+>   
+> @@ -778,6 +778,8 @@ struct acpi_iort_smmu {
+>   #define ACPI_IORT_SMMU_V2               0x00000001	/* Generic SMMUv2 */
+>   #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
+>   #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
+> +#define ACPI_IORT_SMMU_CORELINK_MMU401  0x00000004	/* ARM Corelink MMU-401 */
+> +#define ACPI_IORT_SMMU_CAVIUM_SMMUV2    0x00000005	/* Cavium ThunderX SMMUv2 */
+>   
+>   /* Masks for Flags field above */
+>   
+> @@ -798,13 +800,19 @@ struct acpi_iort_smmu_v3 {
+>   	u32 flags;
+>   	u32 reserved;
+>   	u64 vatos_address;
+> -	u32 model;		/* O: generic SMMUv3 */
+> +	u32 model;
+>   	u32 event_gsiv;
+>   	u32 pri_gsiv;
+>   	u32 gerr_gsiv;
+>   	u32 sync_gsiv;
+>   };
+>   
+> +/* Values for Model field above */
+> +
+> +#define ACPI_IORT_SMMU_V3               0x00000000	/* Generic SMMUv3 */
+> +#define ACPI_IORT_SMMU_HISILICON_HI161X 0x00000001	/* HiSilicon Hi161x SMMUv3 */
+> +#define ACPI_IORT_SMMU_CAVIUM_CN99XX    0x00000002	/* Cavium CN99xx SMMUv3 */
+> +
+>   /* Masks for Flags field above */
+>   
+>   #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
+> 
 
-Update the driver to perform the same udelay() loop that the "completion
-wait" performs, but instead re-read the head pointer to determine if
-sufficient space is available.  The very first time it is found that there
-is no space available, the udelay() will be skipped to immediately perform
-the opportunistic read of the head pointer. If it is still found that
-there is not sufficient space, then the udelay() will be performed.
+Looks good to me,
 
-Signed-off-by: Leo Duran <leo.duran-5C7GfCeVMHo@public.gmane.org>
-Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu.c |   33 +++++++++++++--------------------
- 1 file changed, 13 insertions(+), 20 deletions(-)
+Reviewed-by: Hanjun Guo <hanjun.guo@linaro.org>
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index faf0ddf..856103b 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1019,7 +1019,7 @@ static int __iommu_queue_command_sync(struct amd_iommu *iommu,
- 				      struct iommu_cmd *cmd,
- 				      bool sync)
- {
--	bool read_head = true;
-+	unsigned int count = 0;
- 	u32 left, next_tail;
- 
- 	next_tail = (iommu->cmd_buf_tail + sizeof(*cmd)) % CMD_BUFFER_SIZE;
-@@ -1027,33 +1027,26 @@ static int __iommu_queue_command_sync(struct amd_iommu *iommu,
- 	left      = (iommu->cmd_buf_head - next_tail) % CMD_BUFFER_SIZE;
- 
- 	if (left <= 0x20) {
--		struct iommu_cmd sync_cmd;
--		int ret;
--
--		if (read_head) {
--			/* Update head and recheck remaining space */
--			iommu->cmd_buf_head = readl(iommu->mmio_base +
--						    MMIO_CMD_HEAD_OFFSET);
--			read_head = false;
--			goto again;
--		}
--
--		read_head = true;
--
--		iommu->cmd_sem = 0;
-+		/* Skip udelay() the first time around */
-+		if (count++) {
-+			if (count == LOOP_TIMEOUT) {
-+				pr_err("AMD-Vi: Command buffer timeout\n");
-+				return -EIO;
-+			}
- 
--		build_completion_wait(&sync_cmd, (u64)&iommu->cmd_sem);
--		copy_cmd_to_buffer(iommu, &sync_cmd);
-+			udelay(1);
-+		}
- 
--		if ((ret = wait_on_sem(&iommu->cmd_sem)) != 0)
--			return ret;
-+		/* Update head and recheck remaining space */
-+		iommu->cmd_buf_head = readl(iommu->mmio_base +
-+					    MMIO_CMD_HEAD_OFFSET);
- 
- 		goto again;
- 	}
- 
- 	copy_cmd_to_buffer(iommu, cmd);
- 
--	/* We need to sync now to make sure all commands are processed */
-+	/* Do we need to make sure all commands are processed? */
- 	iommu->need_sync = sync;
- 
- 	return 0;
+By the way, how will this patch be merged? There are pending patches
+on top of it, Rafael suggested to work with ACPICA upstream first [1],
+Robin, will work on that?
+
+[1]: 
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1394295.html
+
+Thanks
+Hanjun
