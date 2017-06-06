@@ -1,16 +1,16 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-Date: Tue, 6 Jun 2017 08:36:03 -0500
-Message-ID: <85356483-1d5e-251f-57e3-d9f761239100@amd.com>
-References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
-	<20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
-	<20170606120516.GD30388@8bytes.org>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+	erratum 161010801
+Date: Tue, 6 Jun 2017 14:56:23 +0100
+Message-ID: <20170606135623.GB20126@red-moon>
+References: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
+	<20170531143213.82100-3-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170606120516.GD30388-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20170531143213.82100-3-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,54 +20,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/6/2017 7:05 AM, Joerg Roedel wrote:
-> Hey Tom,
+On Wed, May 31, 2017 at 03:32:13PM +0100, shameer wrote:
+> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+> 
+> On these platforms GICv3 ITS translator is presented with the deviceID
+> by extending the MSI payload data to 64 bits to include the deviceID.
+> Hence, the PCIe controller on this platforms has to differentiate the
+> MSI payload against other DMA payload and has to modify the MSI payload.
+> This basically makes it difficult for this platforms to have a SMMU
+> translation for MSI.
+> 
+> This patch implements a ACPI table based quirk to reserve the hw msi
+> regions in the smmu-v3 driver which means these address regions will
+> not be translated and will be excluded from iova allocations.
+> 
+> The HW ITS address region associated with the dev is retrieved
+> using a new helper function added in the IORT code.
 
-Hi Joerg,
+Remove or rephrase last paragraph, it reads as if you are adding an IORT
+helper function in this patch but you actually aren't.
 
+> Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 49 ++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 46 insertions(+), 3 deletions(-)
 > 
-> On Mon, Jun 05, 2017 at 02:52:35PM -0500, Tom Lendacky wrote:
->> After reducing the amount of MMIO performed by the IOMMU during operation,
->> perf data shows that flushing the TLB for all protection domains during
->> DMA unmapping is a performance issue. It is not necessary to flush the
->> TLBs for all protection domains, only the protection domains associated
->> with iova's on the flush queue.
->>
->> Create a separate queue that tracks the protection domains associated with
->> the iova's on the flush queue. This new queue optimizes the flushing of
->> TLBs to the required protection domains.
->>
->> Reviewed-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
->> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
->> ---
->>   drivers/iommu/amd_iommu.c |   56 ++++++++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 50 insertions(+), 6 deletions(-)
-> 
-> I also did a major rewrite of the AMD IOMMU queue handling and flushing
-> code last week. It is functionally complete and I am currently testing,
-> documenting it, and cleaning it up. I pushed the current state of it to
-> 
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git amd-iommu
-> 
-> Its quite intrusive as it implements a per-domain flush-queue, and uses
-> a ring-buffer instead of a real queue. But you see the details in the
-> code.
-> 
-> Can you please have a look and give it a test in your setup?
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index abe4b88..3767526 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -597,6 +597,7 @@ struct arm_smmu_device {
+>  	u32				features;
+>  
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+>  	u32				options;
+>  
+>  	struct arm_smmu_cmdq		cmdq;
+> @@ -1755,6 +1756,38 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+>  
+>  static struct iommu_ops arm_smmu_ops;
+>  
+> +#ifdef CONFIG_ACPI
+> +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct device *dev)
+> +{
+> +	struct iommu_resv_region *region;
+> +	struct	irq_domain *irq_dom;
+> +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +	u64	base;
 
-I'll try and look at this as soon as I can... I'm sharing the test
-setup and I might not be able to get access again for a day or two.
+phys_addr_t
 
-Thanks,
-Tom
+> +	irq_dom = pci_msi_get_device_domain(to_pci_dev(dev));
+> +	if (irq_dom) {
+> +		int	ret;
+> +		u32	rid;
+> +
+> +		rid = pci_msi_domain_get_msi_rid(irq_dom, to_pci_dev(dev));
+> +		ret = iort_dev_find_its_base(dev, rid, 0, &base);
 
+Well, here we use ITS id 0 which is fine as long as code in IORT uses
+the same policy for getting the irq_domain (ie we want to reserve the
+ITS address space that is actually used by the device to send IRQs not a
+a different one) it is just a heads-up because I find this confusing.
+
+> +		if (!ret) {
+> +			dev_info(dev, "SMMUv3:HW MSI resv addr 0x%pa\n", &base);
+> +			region = iommu_alloc_resv_region(base, SZ_128K,
+> +							 prot, IOMMU_RESV_MSI);
+> +			return region;
+> +		}
+> +	}
+> +
+> +	return NULL;
+> +}
+> +#else
+> +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct device *dev)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+>  static int arm_smmu_add_device(struct device *dev)
+>  {
+>  	int i, ret;
+> @@ -1903,11 +1936,20 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>  static void arm_smmu_get_resv_regions(struct device *dev,
+>  				      struct list_head *head)
+>  {
+> -	struct iommu_resv_region *region;
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +	struct iommu_resv_region *region = NULL;
+>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +	struct arm_smmu_device *smmu;
+> +
+> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+>  
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> -					 prot, IOMMU_RESV_SW_MSI);
+> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI) &&
+> +		      dev_is_pci(dev))
+> +		region = arm_smmu_acpi_alloc_hw_msi(dev);
+
+Is it safe to carry on if arm_smmu_acpi_alloc_hw_msi() returns NULL here ?
+
+Lorenzo
+
+> +	if (!region)
+> +		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +						 prot, IOMMU_RESV_SW_MSI);
+>  	if (!region)
+>  		return;
+>  
+> @@ -2611,6 +2653,7 @@ static void parse_driver_acpi_options(struct acpi_iort_smmu_v3 *iort_smmu,
+>  	switch (iort_smmu->model) {
+>  	case ACPI_IORT_SMMU_HISILICON_HI161X:
+>  		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+> +		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
+>  		break;
+>  	default:
+>  		break;
+> -- 
+> 1.9.1
 > 
 > 
-> Thanks,
-> 
-> 	Joerg
-> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
