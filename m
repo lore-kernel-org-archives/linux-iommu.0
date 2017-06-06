@@ -1,16 +1,16 @@
 From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-	erratum 161010801
-Date: Tue, 6 Jun 2017 15:01:36 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA838362082@FRAEML521-MBX.china.huawei.com>
+Subject: RE: [RFCv2 1/2] acpi:iort: Add new helper function to retrieve ITS
+	base addr from dev IORT node
+Date: Tue, 6 Jun 2017 15:17:20 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA838362112@FRAEML521-MBX.china.huawei.com>
 References: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
-	<20170531143213.82100-3-shameerali.kolothum.thodi@huawei.com>
-	<20170606135623.GB20126@red-moon>
+	<20170531143213.82100-2-shameerali.kolothum.thodi@huawei.com>
+	<20170606141019.GC20126@red-moon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170606135623.GB20126@red-moon>
+In-Reply-To: <20170606141019.GC20126@red-moon>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,148 +25,124 @@ To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lorenzo,
+
 
 > -----Original Message-----
 > From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
-> Sent: Tuesday, June 06, 2017 2:56 PM
+> Sent: Tuesday, June 06, 2017 3:10 PM
 > To: Shameerali Kolothum Thodi
 > Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
 > robin.murphy-5wv7dgnIgG8@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Gabriele Paoloni; John
 > Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
 > kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org;
 > Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-> erratum 161010801
+> Subject: Re: [RFCv2 1/2] acpi:iort: Add new helper function to retrieve ITS
+> base addr from dev IORT node
 > 
-> On Wed, May 31, 2017 at 03:32:13PM +0100, shameer wrote:
-> > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> > platforms Hip06/Hip07 to support the SMMU mappings for MSI
-> transactions.
+> On Wed, May 31, 2017 at 03:32:12PM +0100, shameer wrote:
+> > This provides a helper function to find and retrieve the ITS base
+> > address from the ID mappings array reference of a device IORT node(if
+> > any).
 > >
-> > On these platforms GICv3 ITS translator is presented with the deviceID
-> > by extending the MSI payload data to 64 bits to include the deviceID.
-> > Hence, the PCIe controller on this platforms has to differentiate the
-> > MSI payload against other DMA payload and has to modify the MSI
-> payload.
-> > This basically makes it difficult for this platforms to have a SMMU
-> > translation for MSI.
-> >
-> > This patch implements a ACPI table based quirk to reserve the hw msi
-> > regions in the smmu-v3 driver which means these address regions will
-> > not be translated and will be excluded from iova allocations.
-> >
-> > The HW ITS address region associated with the dev is retrieved using a
-> > new helper function added in the IORT code.
+> > This is used in the subsequent patch to retrieve the ITS base address
+> > associated with a pci dev IORT node.
 > 
-> Remove or rephrase last paragraph, it reads as if you are adding an IORT
-> helper function in this patch but you actually aren't.
-
-Thanks for going through this patch series. I will remove this in next version.
-
+> "Add an IORT helper function to retrieve the ITS data through IORT device<-
+> >ITS mappings".
+> 
 > > Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 > > ---
-> >  drivers/iommu/arm-smmu-v3.c | 49
-> > ++++++++++++++++++++++++++++++++++++++++++---
-> >  1 file changed, 46 insertions(+), 3 deletions(-)
+> >  drivers/acpi/arm64/iort.c        | 47
+> +++++++++++++++++++++++++++++++++++++---
+> >  drivers/irqchip/irq-gic-v3-its.c |  3 ++-
+> >  include/linux/acpi_iort.h        |  8 ++++++-
+> >  3 files changed, 53 insertions(+), 5 deletions(-)
 > >
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
-> v3.c
-> > index abe4b88..3767526 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -597,6 +597,7 @@ struct arm_smmu_device {
-> >  	u32				features;
-> >
-> >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
-> >  	u32				options;
-> >
-> >  	struct arm_smmu_cmdq		cmdq;
-> > @@ -1755,6 +1756,38 @@ static bool arm_smmu_sid_in_range(struct
-> > arm_smmu_device *smmu, u32 sid)
-> >
-> >  static struct iommu_ops arm_smmu_ops;
-> >
-> > +#ifdef CONFIG_ACPI
-> > +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct
-> > +device *dev) {
-> > +	struct iommu_resv_region *region;
-> > +	struct	irq_domain *irq_dom;
-> > +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > +	u64	base;
+> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > index c5fecf9..12d7347 100644
+> > --- a/drivers/acpi/arm64/iort.c
+> > +++ b/drivers/acpi/arm64/iort.c
+> > @@ -34,6 +34,7 @@
+> >  struct iort_its_msi_chip {
+> >  	struct list_head	list;
+> >  	struct fwnode_handle	*fw_node;
+> > +	u64			base_addr;
 > 
 > phys_addr_t
-
-Ok.
-
-> > +	irq_dom = pci_msi_get_device_domain(to_pci_dev(dev));
-> > +	if (irq_dom) {
-> > +		int	ret;
-> > +		u32	rid;
-> > +
-> > +		rid = pci_msi_domain_get_msi_rid(irq_dom,
-> to_pci_dev(dev));
-> > +		ret = iort_dev_find_its_base(dev, rid, 0, &base);
 > 
-> Well, here we use ITS id 0 which is fine as long as code in IORT uses the same
-> policy for getting the irq_domain (ie we want to reserve the ITS address
-> space that is actually used by the device to send IRQs not a a different one) it
-> is just a heads-up because I find this confusing.
-
-Ok. Just to make it clear, 0 is the index into the ITS identifier list.
-I noted that iort_get_device_domain() uses index 0 while retrieving the ITS identifier.
-May be use the same approach here as well? ie, remove the index from function call?
-
-I am not sure, how we can get the index info  though theoretically It is possible for
-the ITS group node having multiple ITSs.
- 
-> > +		if (!ret) {
-> > +			dev_info(dev, "SMMUv3:HW MSI resv addr
-> 0x%pa\n", &base);
-> > +			region = iommu_alloc_resv_region(base, SZ_128K,
-> > +							 prot,
-> IOMMU_RESV_MSI);
-> > +			return region;
-> > +		}
-> > +	}
-> > +
-> > +	return NULL;
-> > +}
-> > +#else
-> > +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct
-> > +device *dev) {
-> > +	return NULL;
-> > +}
-> > +#endif
-> > +
-> >  static int arm_smmu_add_device(struct device *dev)  {
-> >  	int i, ret;
-> > @@ -1903,11 +1936,20 @@ static int arm_smmu_of_xlate(struct device
-> > *dev, struct of_phandle_args *args)  static void
-> arm_smmu_get_resv_regions(struct device *dev,
-> >  				      struct list_head *head)
-> >  {
-> > -	struct iommu_resv_region *region;
-> > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > +	struct iommu_resv_region *region = NULL;
-> >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > +	struct arm_smmu_device *smmu;
-> > +
-> > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+> >  	u32			translation_id;
+> >  };
 > >
-> > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
-> MSI_IOVA_LENGTH,
-> > -					 prot, IOMMU_RESV_SW_MSI);
-> > +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
-> &&
-> > +		      dev_is_pci(dev))
-> > +		region = arm_smmu_acpi_alloc_hw_msi(dev);
+> > @@ -132,13 +133,14 @@ typedef acpi_status (*iort_find_node_callback)
+> >
+> >  /**
+> >   * iort_register_domain_token() - register domain token and related
+> > ITS ID
+> > - * to the list from where we can get it back later on.
+> > + * and base address to the list from where we can get it back later on.
+> >   * @trans_id: ITS ID.
 > 
-> Is it safe to carry on if arm_smmu_acpi_alloc_hw_msi() returns NULL here ?
+> Missing something here
+> 
+> >   * @fw_node: Domain token.
+> >   *
+> >   * Returns: 0 on success, -ENOMEM if no memory when allocating list
+> element
+> >   */
+> > -int iort_register_domain_token(int trans_id, struct fwnode_handle
+> > *fw_node)
+> > +int iort_register_domain_token(int trans_id, u64 base,
+> 
+> phys_addr_t
+> 
+> > +			       struct fwnode_handle *fw_node)
+> >  {
+> >  	struct iort_its_msi_chip *its_msi_chip;
+> >
+> > @@ -148,6 +150,7 @@ int iort_register_domain_token(int trans_id,
+> > struct fwnode_handle *fw_node)
+> >
+> >  	its_msi_chip->fw_node = fw_node;
+> >  	its_msi_chip->translation_id = trans_id;
+> > +	its_msi_chip->base_addr = base;
+> >
+> >  	spin_lock(&iort_msi_chip_lock);
+> >  	list_add(&its_msi_chip->list, &iort_msi_chip_list); @@ -370,7 +373,6
+> > @@ static struct acpi_iort_node *iort_node_map_id(struct
+> > acpi_iort_node *node,
+> >
+> >  		if (!node->mapping_offset || !node->mapping_count)
+> >  			goto fail_map;
+> > -
+> 
+> Unrelated change.
+> 
+> >  		map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
+> >  				   node->mapping_offset);
+> >
+> > @@ -491,6 +493,45 @@ int iort_pmsi_get_dev_id(struct device *dev, u32
+> *dev_id)
+> >  	return -ENODEV;
+> >  }
+> >
+> > +int iort_dev_find_its_base(struct device *dev, u32 req_id,
+> > +			   unsigned int idx, u64 *its_base) {
+> > +	struct acpi_iort_its_group *its;
+> > +	struct acpi_iort_node *node;
+> > +	struct iort_its_msi_chip *its_msi_chip;
+> > +	u32  trans_id;
+> > +
+> > +	node = iort_find_dev_node(dev);
+> > +	if (!node)
+> > +		return -ENXIO;
+> 
+> -ENODEV, throughout
 
-It is just that PCIe devices won't be functional on this platforms as the endpoint will 
-be configured with ITS IOVA address. May be I should add some dev_warn() here.
+Ok. The reason for -ENXIO use is that this function is based on the existing
+iort_dev_find_its_id() and it returns -ENXIO for those error cases.
 
-Thanks,
+I will incorporate all the other comments in the next revision.
+
+Many thanks,
 Shameer
+ 
