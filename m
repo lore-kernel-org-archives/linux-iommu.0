@@ -1,16 +1,15 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 1/2] acpi:iort: Add new helper function to retrieve ITS
-	base addr from dev IORT node
-Date: Tue, 6 Jun 2017 15:10:19 +0100
-Message-ID: <20170606141019.GC20126@red-moon>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: =?UTF-8?B?5Zue5aSN77ya?= Alibaba-kernel
+Date: Tue, 6 Jun 2017 07:36:32 -0700
+Message-ID: <20170606073632.535b1b8d@jacob-builder>
 References: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
 	<20170531143213.82100-2-shameerali.kolothum.thodi@huawei.com>
+	<tencent_159A581A4E3E9E7D35F82179@qq.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170531143213.82100-2-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <tencent_159A581A4E3E9E7D35F82179-9uewiaClKEY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,199 +19,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
+To: =?UTF-8?B?6Iul57++?= <eva6688-OlFFNeSka43QT0dZR+AlfA@public.gmane.org>
+Cc: gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 31, 2017 at 03:32:12PM +0100, shameer wrote:
-> This provides a helper function to find and retrieve the ITS
-> base address from the ID mappings array reference of a device
-> IORT node(if any).
-> 
-> This is used in the subsequent patch to retrieve the ITS base 
-> address associated with a pci dev IORT node.
-
-"Add an IORT helper function to retrieve the ITS data through IORT
-device<->ITS mappings".
-
-> Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/acpi/arm64/iort.c        | 47 +++++++++++++++++++++++++++++++++++++---
->  drivers/irqchip/irq-gic-v3-its.c |  3 ++-
->  include/linux/acpi_iort.h        |  8 ++++++-
->  3 files changed, 53 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index c5fecf9..12d7347 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -34,6 +34,7 @@
->  struct iort_its_msi_chip {
->  	struct list_head	list;
->  	struct fwnode_handle	*fw_node;
-> +	u64			base_addr;
-
-phys_addr_t
-
->  	u32			translation_id;
->  };
->  
-> @@ -132,13 +133,14 @@ typedef acpi_status (*iort_find_node_callback)
->  
->  /**
->   * iort_register_domain_token() - register domain token and related ITS ID
-> - * to the list from where we can get it back later on.
-> + * and base address to the list from where we can get it back later on.
->   * @trans_id: ITS ID.
-
-Missing something here
-
->   * @fw_node: Domain token.
->   *
->   * Returns: 0 on success, -ENOMEM if no memory when allocating list element
->   */
-> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
-> +int iort_register_domain_token(int trans_id, u64 base,
-
-phys_addr_t
-
-> +			       struct fwnode_handle *fw_node)
->  {
->  	struct iort_its_msi_chip *its_msi_chip;
->  
-> @@ -148,6 +150,7 @@ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
->  
->  	its_msi_chip->fw_node = fw_node;
->  	its_msi_chip->translation_id = trans_id;
-> +	its_msi_chip->base_addr = base;
->  
->  	spin_lock(&iort_msi_chip_lock);
->  	list_add(&its_msi_chip->list, &iort_msi_chip_list);
-> @@ -370,7 +373,6 @@ static struct acpi_iort_node *iort_node_map_id(struct acpi_iort_node *node,
->  
->  		if (!node->mapping_offset || !node->mapping_count)
->  			goto fail_map;
-> -
-
-Unrelated change.
-
->  		map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
->  				   node->mapping_offset);
->  
-> @@ -491,6 +493,45 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
->  	return -ENODEV;
->  }
->  
-> +int iort_dev_find_its_base(struct device *dev, u32 req_id,
-> +			   unsigned int idx, u64 *its_base)
-> +{
-> +	struct acpi_iort_its_group *its;
-> +	struct acpi_iort_node *node;
-> +	struct iort_its_msi_chip *its_msi_chip;
-> +	u32  trans_id;
-> +
-> +	node = iort_find_dev_node(dev);
-> +	if (!node)
-> +		return -ENXIO;
-
--ENODEV, throughout
-
-> +
-> +	node = iort_node_map_id(node, req_id, NULL, IORT_MSI_TYPE);
-> +	if (!node)
-> +		return -ENXIO;
-> +
-> +	/* Move to ITS specific data */
-> +	its = (struct acpi_iort_its_group *)node->node_data;
-> +	if (idx > its->its_count) {
-> +		dev_err(dev, "requested ITS ID index [%d] is greater than available [%d]\n",
-> +			idx, its->its_count);
-> +		return -ENXIO;
-> +	}
-> +
-> +	trans_id = its->identifiers[idx];
-> +
-> +	spin_lock(&iort_msi_chip_lock);
-> +	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
-> +		if (its_msi_chip->translation_id == trans_id) {
-> +			*its_base = its_msi_chip->base_addr;
-> +			spin_unlock(&iort_msi_chip_lock);
-> +			return 0;
-> +		}
-> +	}
-> +	spin_unlock(&iort_msi_chip_lock);
-> +
-> +	return -ENXIO;
-
-Cosmetics:
-
-	bool match = false;
-
-	[...]
-
-	spin_lock(&iort_msi_chip_lock);
-	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
-		if (its_msi_chip->translation_id == trans_id) {
-			*its_base = its_msi_chip->base_addr;
-			match = true;
-			break;
-		}
-	}
-	spin_unlock(&iort_msi_chip_lock);
-
-	return match ? 0 : -ENODEV;
-
-}
-
->  /**
->   * iort_dev_find_its_id() - Find the ITS identifier for a device
->   * @dev: The device.
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 45ea1933..c45a2ad 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -1854,7 +1854,8 @@ static int __init gic_acpi_parse_madt_its(struct acpi_subtable_header *header,
->  		return -ENOMEM;
->  	}
->  
-> -	err = iort_register_domain_token(its_entry->translation_id, dom_handle);
-> +	err = iort_register_domain_token(its_entry->translation_id, res.start,
-> +					 dom_handle);
->  	if (err) {
->  		pr_err("ITS@%pa: Unable to register GICv3 ITS domain token (ITS ID %d) to IORT\n",
->  		       &res.start, its_entry->translation_id);
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index 3ff9ace..bf7b53d 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -26,7 +26,8 @@
->  #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
->  #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
->  
-> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
-> +int iort_register_domain_token(int trans_id, u64 base,
-> +			       struct fwnode_handle *fw_node);
->  void iort_deregister_domain_token(int trans_id);
->  struct fwnode_handle *iort_find_domain_token(int trans_id);
->  #ifdef CONFIG_ACPI_IORT
-> @@ -36,6 +37,8 @@
->  struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
->  void acpi_configure_pmsi_domain(struct device *dev);
->  int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
-> +int iort_dev_find_its_base(struct device *dev, u32 req_id,
-> +			   unsigned int idx, u64 *its_base);
->  /* IOMMU interface */
->  void iort_set_dma_mask(struct device *dev);
->  const struct iommu_ops *iort_iommu_configure(struct device *dev);
-> @@ -48,6 +51,9 @@ static inline struct irq_domain *iort_get_device_domain(struct device *dev,
->  							u32 req_id)
->  { return NULL; }
->  static inline void acpi_configure_pmsi_domain(struct device *dev) { }
-> +int iort_dev_find_its_base(struct device *dev, u32 req_id,
-> +			   unsigned int idx, u64 *its_base)
-> +{ return -ENOSYS; }
-
--ENODEV
-
-Thanks,
-Lorenzo
+T24gVHVlLCA2IEp1biAyMDE3IDEzOjI1OjAwICswODAwCiLoi6Xnv74iIDxldmE2Njg4QHZpcC5x
+cS5jb20+IHdyb3RlOgoKPiBIae+8jEphY29i77yMCj4gVGhhbmsgeW91IGZvciB5b3VyIHJlcGx5
+77yMCj4gYWxpYmFiYSBpbiAgU2FuIE1hdGVvIO+8jAo+IERvIHlvdSBoYXZlIGEgV2VDaGF0PyBZ
+b3UgY2FuIGFkZCBtZQo+IFdlQ2hhdDE1OTAwNzc5NzA0Cj4gCkkgc2VlLCBJIGFtIG5vdCBwbGFu
+bmluZyB0byByZWxvY2F0ZSBhdCB0aGUgbW9tZW50IGJ1dCBJIHdpbGwga2VlcCBpdAppbiBtaW5k
+LgoKVGhhbmtzLAo+IAo+IAo+IAo+IAo+IC0tLS0tLS0tLS0tLS0tLS0tLQo+IAo+IEV2YSB3YW5n
+ICAKPiDkuK3lm70g5LiK5rW36YOK5Yy6IHwgQkFU6auY56eR5oqA5YWs5Y+46auY56uv5oqA5pyv
+57G75bKX5L2N5oub6IGYCj4g5LqS6IGU572RIHwg5p+Q55+l5ZCN5YWs5Y+4Cj4gCj4gCj4gCj4g
+IAo+IAo+IAo+IAo+IAo+IC0tLS0tLS0tLS0tLS0tLS0tLSDljp/lp4vpgq7ku7YgLS0tLS0tLS0t
+LS0tLS0tLS0tCj4g5Y+R5Lu25Lq6OiAiamFjb2IuanVuLnBhbiI7PGphY29iLmp1bi5wYW5AbGlu
+dXguaW50ZWwuY29tPjsKPiDlj5HpgIHml7bpl7Q6IDIwMTflubQ25pyINuaXpSjmmJ/mnJ/kuowp
+IOS4reWNiDE6MDYKPiDmlLbku7bkuro6ICLoi6Xnv74iPGV2YTY2ODhAdmlwLnFxLmNvbT47IAo+
+IOaKhOmAgTogImphY29iLmp1bi5wYW4iPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPjsg
+Cj4g5Li76aKYOiBSZTogQWxpYmFiYS1rZXJuZWwKPiAKPiAKPiAKPiBPbiBNb24sIDUgSnVuIDIw
+MTcgMTg6MzU6MjcgKzA4MDAKPiAi6Iul57++IiA8ZXZhNjY4OEB2aXAucXEuY29tPiB3cm90ZToK
+PiAKPiA+IOaCqOWlve+8jOaIkeaYr+eMjuWktGV2YeOAggo+ID4gIAo+ID4g5b6I5YaS5pin55qE
+5omT5omw5oKoLOaDs+WSjOaCqOiBiuS4gOS4i+mYv+mHjOeahOacuuS8muOAgiAgCj4gPiAgCj4g
+PiAgCj4gPiAg6Zi/6YeM5be05be06aaW5bit5oqA5pyv5a6Y77yM6KGM55mr5Y+R5Ye66YCa55+l
+77ya6Zi/6YeM5pW05ZCIOeS4quS6i+S4mumDqOWKoOWOn+acieeahOS4remXtOS7tuaKgOacr+mD
+qOe7hOaIkOaWsOeahOWfuuehgOiuvuaWveS6i+S4mue+pO+8jOaQuuaJi+WFseWQjOaJk+mAoOWF
+t+Wkh+WFqOeQg+ernuS6ieWKm+eahOmYv+mHjOW3tOW3tOe7j+a1juS9k+i9r+ehrOS7tuWfuueh
+gOiuvuaWveOAgiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCj4gPiAgIAo+ID4gIOaI
+kOeri+ezu+e7n+i9r+S7tuS6i+S4mumDqAo+ID4gIOeUseW5s+WPsOaetuaehOmDqOWboumYn+OA
+gUFJU+eahEpWTeOAgUtlcm5lbOWboumYn+WFseWQjOe7hOaIkO+8jOWQkeavleeOhOaxh+aKpeOA
+ggo+ID4gICAKPiA+ICDnm67liY3miJHku6zpnIDopoHpq5jnq6/nmoTmioDmnK/nrqHnkIblnots
+ZWFkZXLvvI/mioDmnK/lnovotYTmt7HnoJTlj5HkuJPlrrblkozpq5jnuqfkuJPlrrYvCj4gPiDo
+oYzkuJrnmoTmoIfmnYblkozpooblhpvkurrniakgMe+8ieiZmuaLn+WMlumihuWfn++8muWvuXhl
+bi9LVk0vVm13YXJl54af5oKJ55qE44CCCj4gPiAy77yJT1PlhoXmoLjpoobln5/vvJrnhp/mgolM
+aW51eOWGheaguOacuuWItu+8muWGheWtmOOAgeiwg+W6puOAgeaWh+S7tuezu+e7n+OAgee9kee7
+nOetie+8m+eGn+e7g+S9v+eUqOWkmuenjUxpbnV45YaF5qC46LCD6K+V5YiG5p6Q5bel5YW3KGtn
+ZGIsCj4gPiBjcmFzaOetiSnvvJvmgKfog73liIbmnpDlt6XlhbfvvIhnY292ZXIsIGJsa3RyYWNl
+LCBmdHJhY2XvvInnrYnnu4/pqozvvJsKPiA+IAo+ID4gIAo+ID4gCj4gPiAg5LqL5Lia6YOo5LuL
+57uN77yaCj4gPiAg6Zi/6YeM5be05be05pON5L2c57O757uf56CU5Y+R5Zui6Zif6LSf6LSj5YWo
+6ZuG5Zui55qE5pyN5Yqh5Zmo5pON5L2c57O757uf5Lul5Y+KTGludXjlhoXmoLjnmoTnoJTlj5Hk
+uI7kuqflk4HljJbjgIIKPiA+ICDlm6LpmJ/pkojlr7npmL/ph4zlt7Tlt7TlkITkuJrliqHnmoTp
+nIDmsYLvvIzmlrDmioDmnK/nmoTlj5HlsZXvvIzmlrDnoazku7bnmoTlvJXlhaXvvIzlnKjlhoXm
+oLjkuI7mk43kvZzns7vnu5/nrYnln7rnoYDpoobln5/ov5vooYznoJTnqbbliJvmlrDjgIIKPiA+
+ICDnm67liY3lt7Lnu4/lvaLmiJBhbGlvc+S4jmFsaWtlcm5lbOetieWkmuS4quS6p+WTgeOAguWK
+oOWFpeaIkeS7rO+8jOS9oOWPr+S7pei3n+S8oOivtOS4reeahOWkmumahuWkp+elnuS4gOi1t+W3
+peS9nO+8jOS9oOWPr+S7peS4jeaWreaMkeaImOWfuuehgOi9r+S7tumihuWfn+eahOaWsOaKgOac
+r++8jOS9oOWPr+S7peWQkeekvuWMuuaPkFBhdGNo77yM5L2g55qE5bel5L2c5Y+v5Lul5bqU55So
+5Yiw6Zi/6YeM5be05be055qE5pWw5Y2B5LiH5Y+w5pyN5Yqh5Zmo5LiK44CC6Zi/6YeM5be05be0
+5pON5L2c57O757uf56CU5Y+R5Zui6Zif77yM5pyf5b6F5L2g55qE5Yqg5YWl44CCIAo+ID4gICBU
+ZWFtIEludHJvZHVjdGlvbu+8myAKPiA+ICBUaGUgT3BlcmF0aW9uIFN5c3RlbSBSJkQgVGVhbSBv
+ZiBBbGliYWJhIEdyb3VwIGlzIHJlc3BvbnNpYmxlIGZvcgo+ID4gcmVzZWFyY2ggJiBkZXZlbG9w
+bWVudCBhbmQgcHJvZHVjdGlvbiBvZiB0aGUgc2VydmVyIG9wZXJhdGlvbiBzeXN0ZW0KPiA+IGFu
+ZCBsaW51eCBrZXJuZWwgLiBJZiB5b3UgYXJlIGludGVyZXN0ZWQgaW4gY2hhbGxlbmdpbmcgYW5k
+Cj4gPiBlZGdlLWN1dHRpbmcgdGVjaG5vbG9naWVzIGluIGZvdW5kYXRpb25hbCBzb2Z0d2FyZSBk
+b21haW4sIHBsZWFzZQo+ID4gZG9uJ3QgaGVzaXRhdGUgdG8gam9pbiB1cy4gCj4gPiAgIAo+IEhp
+IEV2YSwKPiAKPiBUaGFua3MgZm9yIHJlYWNoaW5nIG91dCwgc291bmRzIGxpa2UgZ3JlYXQgb3Bw
+b3J0dW5pdHkuIFdoYXQgYXJlIHRoZQo+IFVTIGxvY2F0aW9ucz8gSSBhbSBiYXNlZCBpbiBQb3J0
+bGFuZCBPcmVnb24uCj4gCj4gSmFjb2IKPiA+ICAKPiA+IAo+ID4gIOWcsOeCue+8mue+juWbveOA
+geWMl+S6rOOAgea3seWcs+OAgeadreW3ngo+ID4gCj4gPiAgSkTlj4LogIPku4vnu40KPiA+ICDn
+s7vnu5/ova/ku7bkuovkuJrpg6gtTGludXjlhoXmoLjnoJTlj5HkuJPlrrYKPiA+ICBSZXNwb25z
+aWJpbGl0aWVz77yaIAo+ID4gIDHCt1Jlc3BvbnNpYmxlIGZvciBMaW51eCBrZXJuZWwgZGV2ZWxv
+cG1lbnQgCj4gPiAgMsK3UmVzcG9uc2libGUgZm9yIExpbnV4IGtlcm5lbCByZWxhdGVkIHRvb2xz
+IGRldmVsb3BtZW50IAo+ID4gIDPCt1Jlc3BvbnNpYmxlIGZvciBMaW51eCBrZXJuZWwgc2VjdXJp
+dHkgcGF0Y2hpbmcgCj4gPiAgNMK3TGludXgga2VybmVsIGRlYnVnZ2luZwo+ID4gIOWyl+S9jeim
+geaxggo+ID4gIDHCt0V4cGVydGlzZSBpbiBhdCBsZWFzdCBvbmUga2VybmVsIHN1Yi1zeXN0ZW0s
+IGZvciBleGFtcGxlcywKPiA+IG5ldHdvcmssIGZpbGUgc3lzdGVtIChleHQ0LCB4ZnMpLCBtZW1v
+cnkgbWFuYWdlbWVudCwgcHJvY2Vzcwo+ID4gc2NoZWR1bGVyIDLCt0ZpdmUgeWVhcnMgb3IgbW9y
+ZSBvZiBMaW51eCBrZXJuZWwgZGV2ZWxvcG1lbnQKPiA+IGV4cGVyaWVuY2VzIDPCt0tub3dsZWRn
+ZWFibGUgYWJvdXQgeDg2IG9yIGFybSA0wrdFeHBlcmllbmNlZCB3aXRoCj4gPiBrZXJuZWwgZGVi
+dWdnaW5nIDXCt0tlcm5lbCBjb21tdW5pdHkgY29udHJpYnV0b3IgYXMgYSBwbHVzCj4gPiAKPiA+
+ICBMaW51eOWGheaguOa1i+ivleS4k+Wutgo+ID4gIOWFt+S9k+iBjOi0o++8miAKPiA+ICAxLgo+
+ID4g5qC55o2u5Lia5Yqh6ZyA5rGC5Yi25a6a5rWL6K+V5pa55qGI77yM5rWL6K+V5omn6KGM5ZKM
+57uT5p6c5YiG5p6Q77yM5L+d6K+B5pON5L2c57O757uf55qE6auY6LSo6YeP6YOo572y5Lqk5LuY
+44CCCj4gPiAyLiDotJ/otKNsaW51eOWGheaguOa1i+ivleezu+e7n+OAgea1i+ivleW3peWFt+WS
+jOa1i+ivlembhueahOW8gOWPkeOAgiAzLgo+ID4g5a+55YaF5qC45ZCE5a2Q5qih5Z2X5oCn6IO9
+5pWw5o2u6YeH6ZuG5ZKM6YeP5YyW5YiG5p6Q77yM5Y+R546w5oCn6IO955O26aKI77yM5o+Q5Ye6
+6Kej5Yaz5pa55qGI44CC5bKX5L2N6KaB5rGCCj4gPiAgMS4g5LqU5bm05Lul5LiK6L2v5Lu25byA
+5Y+R5oiW5rWL6K+V6L2v5Lu25byA5Y+R57uP6aqM44CCIAo+ID4gIDIu54af5oKJbGludXjmk43k
+vZzns7vnu5/lkITnu4Tku7bljp/nkIbvvIzkuobop6PlhoXmoLjlvIDlj5Hlt6XlhbflkozosIPo
+r5Xlt6XlhbfnmoTov5DnlKjvvIzmnInlhoXmoLjlvIDlj5HmiJbosIPkvJjnu4/pqoznmoTkvJjl
+hYjjgIIgCj4gPiAgMy4g57K+6YCa6Iez5bCR5LiA5Yiw5Lik56eN6ISa5pys6K+t6KiA5ZKMQ+iv
+reiogOeahOW8gOWPkeOAgiAKPiA+ICA0LiDlhbflpIflpI3mnYLpnIDmsYLlj4rmioDmnK/nmoTn
+oJTnqbbog73lipvvvIzlloTkuo7ov5vooYzku7vliqHliIbop6PvvIzmipPkvY/lhbPplK7ngrnj
+gIIgCj4gPiAgNS4g6Imv5aW955qE5rKf6YCa5Y2P6LCD6IO95Yqb5ZKM5Zui6Zif5ZCI5L2c5oSP
+6K+G77yM6IO95om/5Y+X5aSn55qE5bel5L2c5Y6L5Yqb44CCCj4gPiAgCj4gPiAgCj4gPiAgCj4g
+PiAgIAo+ID4gIEV2YSBXYW5nCj4gPiAgY29uc3VsdGFudCAtIFNoYW5naGFpCj4gPiAgTW9iaWxl
+OjE1OTAwNzc5NzA0Cj4gPiAgV2VpeGluOjE1OTAwNzc5NzA0Cj4gPiAgIAo+ID4gIC0tLS0tLS0t
+LS0tLS0tLS0tLQo+ID4gICAKPiA+IAo+ID4gIEV2YSB3YW5nICAKPiA+ICDkuK3lm70g5LiK5rW3
+6YOK5Yy6IHwgQkFU6auY56uv5oqA5pyv57G75bKX5L2N5oub6IGYCj4gPiAg5LqS6IGU572RIHwg
+55+l5ZCN5LqS6IGU572R5YWs5Y+4ICAKPiBbSmFjb2IgUGFuXQpbSmFjb2IgUGFuXQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
