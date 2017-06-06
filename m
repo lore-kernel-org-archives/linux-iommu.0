@@ -1,38 +1,124 @@
-From: Hanjun Guo <hanjun.guo@linaro.org>
-Subject: Re: [v6 2/3] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
- erratum #74
-Date: Tue, 6 Jun 2017 17:38:37 +0800
-Message-ID: <9ab6fba9-5270-a618-d149-2e4c11d4cbf6@linaro.org>
-References: <1494592866-14076-1-git-send-email-gakula@caviumnetworks.com>
- <1494592866-14076-3-git-send-email-gakula@caviumnetworks.com>
- <5FC3163CFD30C246ABAA99954A238FA838351762@FRAEML521-MBX.china.huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: Device address specific mapping of arm,mmu-500
+Date: Tue, 6 Jun 2017 11:02:10 +0100
+Message-ID: <bc636388-9388-3582-23b0-9f4271cae4b2@arm.com>
+References: <1b79efe2-6835-7a7a-f5ad-361391a7b967@broadcom.com>
+ <20170530151437.GC23067@arm.com>
+ <81637642-22d9-4868-156f-052f64bd042f@broadcom.com>
+ <226bcebc-3902-90d3-24e5-51f2e1f3affb@arm.com>
+ <a85b2e3f-93db-7c4d-cde8-32a57e69bef9@broadcom.com>
+ <16e5fc9d-b014-af7c-dcda-527522ac5cc9@arm.com>
+ <b47a379e-4a1b-42ff-8604-01b5becd685c@broadcom.com>
+ <7bd03bf8-71d5-a974-bea2-a38b4349c547@broadcom.com>
+ <20170531124418.GE9723@arm.com>
+ <ee5bffb3-3aca-8214-1445-98f1f2d4ba09@broadcom.com>
+ <498100e8-e94e-4a65-a9e1-ae59bd59fe2d@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838351762@FRAEML521-MBX.china.huawei.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <498100e8-e94e-4a65-a9e1-ae59bd59fe2d@broadcom.com>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Geetha sowjanya <gakula@caviumnetworks.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "Charles.Garcia-Tobin@arm.com" <Charles.Garcia-Tobin@arm.com>, Geetha Sowjanya <geethasowjanya.akula@cavium.com>, "geethasowjanya.akula@gmail.com" <geethasowjanya.akula@gmail.com>, "jcm@redhat.com" <jcm@redhat.com>, "linu.cherian@cavium.com" <linu.cherian@cavium.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "robert.moore@intel.com" <robert.moore@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "robert.richter@cavium.com" <robert.richter@cavium.com>, "lv.zheng@intel.com" <lv.zheng@intel.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "sgoutham@cavium.com" <sgoutham@cavium.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, devel@acpica.o
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ray Jui <ray.jui@broadcom.com>, Will Deacon <will.deacon@arm.com>
+Cc: Marc Zyngier <marc.zyngier@arm.com>, Mark Rutland <mark.rutland@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017/5/17 18:13, Shameerali Kolothum Thodi wrote:
->>   #ifdef CONFIG_ACPI
->> +static void acpi_smmu_get_options(u32 model, struct arm_smmu_device
->> +*smmu) {
->> +	if (model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
->> +		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
- >
-> HiSIlicon hip06/07 boards have a similar existing option to enable,
-> ARM_SMMU_OPT_SKIP_PREFETCH. I have just sent out a similar patch to enable
-> It-" [PATCH] iommu/arm-smmu-v3: Enable ACPI based HiSilicon CMD_PREFETCH
->   quirk(erratum 161010701)".  May be it can be merged here, if this series goes through.
->   Not sure about the protocol though.
+Hi Ray,
 
-I think you can add a patch on top of Geetha's, and clarify
-the dependency in the change log, then it will be easy for
-maintainer to apply.
+On 05/06/17 19:03, Ray Jui wrote:
+> Hi Will/Robin,
+> 
+> Just want to check with you on this again. Do you have a very rough
+> timeline on when the excessive locking in the IOMMU driver may be fixed
+> (so we can restore expected up to 95% performance)?
 
-Thanks
-Hanjun
+I've currently got some experimental patches pushed out here:
+
+    git://linux-arm.org/linux-rm  iommu/pgtable
+
+So far, there's still one silly bug (which doesn't affect DMA ops usage)
+and an awkward race for non-coherent table walks which will need
+resolving before I have anything to post properly, which I hope will be
+within the next couple of weeks. In the meantime, though, it already
+seems to work well enough in practice, so any feedback is welcome!
+
+Robin.
+
+> 
+> Thanks,
+> 
+> Ray
+> 
+> 
+> On 5/31/17 10:32 AM, Ray Jui wrote:
+>> Hi Will,
+>>
+>> On 5/31/17 5:44 AM, Will Deacon wrote:
+>>> On Tue, May 30, 2017 at 11:13:36PM -0700, Ray Jui wrote:
+>>>> I did a little more digging myself and I think I now understand what you
+>>>> meant by identity mapping, i.e., configuring the MMU-500 with 1:1 mapping
+>>>> between the DMA address and the IOVA address.
+>>>>
+>>>> I think that should work. In the end, due to this MSI write parsing issue in
+>>>> our PCIe controller, the reason to use IOMMU is to allow the cache
+>>>> attributes (AxCACHE) of the MSI writes towards GICv3 ITS to be modified by
+>>>> the IOMMU to be device type, while leaving the rest of inbound reads/writes
+>>>> from/to DDR with more optimized cache attributes setting, to allow I/O
+>>>> coherency to be still enabled for the PCIe controller. In fact, the PCIe
+>>>> controller itself is fully capable of DMA to/from the full address space of
+>>>> our SoC including both DDR and any device memory.
+>>>>
+>>>> The 1:1 mapping will still pose some translation overhead like you
+>>>> suggested; however, the overhead of allocating page tables and locking will
+>>>> be gone. This sounds like the best possible option I have currently.
+>>>
+>>> It might end up being pretty invasive to work around a hardware bug, so
+>>> we'll have to see what it looks like. Ideally, we could just use the SMMU
+>>> for everything as-is and work on clawing back the lost performance (it
+>>> should be possible to get ~95% of the perf if we sort out the locking, which
+>>> we *are* working on).
+>>>
+>>
+>> If 95% of performance can be achieved by fixing the locking in the
+>> driver, then that's great news.
+>>
+>> If you have anything that you want me to help test, feel free to send it
+>> out. I will be more than happy to help testing it and let you know about
+>> the performance numbers, :)
+>>
+>>>> May I ask, how do I start to try to get this identity mapping to work as an
+>>>> experiment and proof of concept? Any pointer or advise is highly appreciated
+>>>> as you can see I'm not very experienced with this. I found Will recently
+>>>> added the IOMMU_DOMAIN_IDENTITY support to the arm-smmu driver. But I
+>>>> suppose that is to bypass the SMMU completely, instead of still going
+>>>> through the MMU with 1:1 translation. Is my understanding correct?
+>>>
+>>> Yes, I don't think IOMMU_DOMAIN_IDENTITY is what you need because you
+>>> actally need per-page control of memory attributes.
+>>>
+>>> Robin might have a better idea, but I think you'll have to hack dma-iommu.c
+>>> so that you can have a version of the DMA ops that:
+>>>
+>>>   * Initialises the identity map (I guess as normal WB cacheable?)
+>>>   * Reserves and maps the MSI region appropriately
+>>>   * Just returns the physical address for the dma address for map requests
+>>>     (return error for the MSI region)
+>>>   * Does nothing for unmap requests
+>>>
+>>> But my strong preference would be to fix the locking overhead from the
+>>> SMMU so that the perf hit is acceptable.
+>>
+>> Yes, I agree, we want to be able to use the SMMU the intended way. Do
+>> you have a timeline on when the locking issue may be fixed (or
+>> improved)? Depending on the timeline, on our side, we may still need to
+>> go for identity mapping as a temporary solution until the fix.
+>>
+>>>
+>>> Will
+>>>
+>>
+>> Thanks,
+>>
+>> Ray
+>>
