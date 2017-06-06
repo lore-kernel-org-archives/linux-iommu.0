@@ -1,131 +1,121 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
-	ThunderX2 erratum #126
-Date: Tue, 6 Jun 2017 12:03:59 +0100
-Message-ID: <17f9e235-179c-38cf-c76f-c8d2af60965f@huawei.com>
-References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
-	<1496145821-3411-4-git-send-email-gakula@caviumnetworks.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 2/7] dt-bindings: PCI: Describe ATS property for root
+ complex nodes
+Date: Tue, 6 Jun 2017 12:11:04 +0100
+Message-ID: <65aea93f-d516-f045-f216-3f56e96bdeb6@arm.com>
+References: <20170524180143.19855-1-jean-philippe.brucker@arm.com>
+ <20170524180143.19855-3-jean-philippe.brucker@arm.com>
+ <20170531172320.3u6bdctv44aqighy@rob-hp-laptop>
+ <cd63a2dc-8259-482d-19e9-9db60be866f7@arm.com>
+ <20170605172025.qgnocl5ytexnklue@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1496145821-3411-4-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170605172025.qgnocl5ytexnklue@rob-hp-laptop>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: linux-pci@vger.kernel.org, devicetree@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, bhelgaas@google.com, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, okaya@codeaurora.org, sunil.kovvuri@gmail.com, thunder.leizhen@huawei.com, tn@semihalf.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/05/2017 13:03, Geetha sowjanya wrote:
-> From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->
-> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
+On 05/06/17 18:20, Rob Herring wrote:
+> On Thu, Jun 01, 2017 at 01:28:01PM +0100, Jean-Philippe Brucker wrote:
+>> On 31/05/17 18:23, Rob Herring wrote:
+>>> On Wed, May 24, 2017 at 07:01:38PM +0100, Jean-Philippe Brucker wrote:
+>>>> Address Translation Service (ATS) is an extension to PCIe allowing
+>>>> endpoints to manage their own IOTLB, called Address Translation Cache
+>>>> (ATC). Instead of having every memory transaction processed by the IOMMU,
+>>>> the endpoint can first send an Address Translation Requests for an IOVA,
+>>>> obtain the corresponding Physical Address from the IOMMU and store it in
+>>>> its ATC. Subsequent transactions to this memory region can be performed on
+>>>> the PA, in which case they are marked 'translated' and (partially) bypass
+>>>> the IOMMU.
+>>>>
+>>>> Since the extension uses fields that were previously reserved in the
+>>>> PCIe Translation Layer Packet, it seems ill-advised to enabled it on a
+>>>> system that doesn't fully support ATS.
+>>>>
+>>>> To "old" root complexes that simply ignored the new AT field, an Address
+>>>> Translation Request will look exactly like a Memory Read Request, so the
+>>>> root bridge will forward a memory read to the IOMMU instead of a
+>>>> translation request. If the access succeeds, the RC will send a Read
+>>>> Completion, which looks like a Translation Completion, back to the
+>>>> endpoint. As a result the endpoint might end up storing the content of
+>>>> memory instead of a physical address in its ATC. In reality, it's more
+>>>> likely that the size fields will be invalid and either end will detect the
+>>>> error, but in any case, it is undesirable.
+>>>>
+>>>> Add a way for firmware to tell the OS that ATS is supported by the PCI
+>>>> root complex.
+>>>
+>>> Can't firmware have already enabled ATS? Often for things like this, not 
+>>> present means "use firmware setting".
+>>
+>> I don't think it's up to firmware to enable ATS in endpoints, because it
+>> depends on IOMMU properties (e.g. configured page size). It must also be
+>> enabled after the PASID capability, which the OS may or may not want to
+>> enable.
+>>
+>> While endpoints have ATS capability and config register, there is no
+>> architected mechanism in root complexes as far as I know. So firmware may
+>> have a mechanism outside the OS scope to toggle ATS in the root complex.
+>> If there is a bug and firmware cannot enable ATS, then the OS must be made
+>> aware of it, so that it doesn't enable ATS in endpoints, or else we might
+>> end up with silent memory corruption as described above. (Lack of ATS may
+>> slow the system down but shouldn't be fatal.)
+>>
+>> If the SMMU supports ATS, then the root complex attached to it will most
+>> likely supports ATS. The switch in this patch simply allows firmware to
+>> confirm that.
+>>
+>>>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>>>> ---
+>>>>  Documentation/devicetree/bindings/pci/pci-iommu.txt | 8 ++++++++
+>>>>  1 file changed, 8 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+>>>> index 0def586fdcdf..f21a68ec471a 100644
+>>>> --- a/Documentation/devicetree/bindings/pci/pci-iommu.txt
+>>>> +++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+>>>> @@ -44,6 +44,14 @@ Optional properties
+>>>>  - iommu-map-mask: A mask to be applied to each Requester ID prior to being
+>>>>    mapped to an IOMMU specifier per the iommu-map property.
+>>>>  
+>>>> +- ats-supported: if present, the root complex supports the Address
+>>>> +  Translation Service (ATS). It is able to interpret the AT field in PCIe
+>>>> +  Transaction Layer Packets, and forward Translation Completions or
+>>>> +  Invalidation Requests to endpoints.
+>>>
+>>> Why can't this be based on the compatible strings?
+>>
+>> Host controllers like the generic ECAM one should be able to advertise
+>> ATS, if for instance the virtual IOMMU in Qemu offers a channel for ATS
+>> invalidation. In that case we would have pci-host-{e,}cam-generic{-ats,}
+>> compatible strings and double the number of compatible strings each time
+>> we add a similar capability.
+> 
+> It would not double the compatibles. A given SoC will either support ATS 
+> or not, right? A given compatible will imply whether ATS is supported or 
+> not.
+> 
+> pci-host-{e,}cam-generic is a special case. I'm okay with having a 
+> property for that I suppose. We should not require this property though 
+> and allow for it to be implied by the SoC specific compatible as well.
 
-separate irq lines
+The property isn't useful for host-generic since a host like Qemu can
+easily disable ATS in the IOMMU. It would only be here for consistency.
+Changing IOMMU registers wouldn't be as simple for a firmware running on
+real hardware.
 
-> lines for gerror, eventq and cmdq-sync.
->
-> This patch addresses the issue by checking if any interrupt sources are
-> using same irq number, then they are registered as shared irqs.
->
-> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> ---
->  Documentation/arm64/silicon-errata.txt |    1 +
->  drivers/iommu/arm-smmu-v3.c            |   29 +++++++++++++++++++++++++----
->  2 files changed, 26 insertions(+), 4 deletions(-)
->
-> diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-> index 4693a32..42422f6 100644
-> --- a/Documentation/arm64/silicon-errata.txt
-> +++ b/Documentation/arm64/silicon-errata.txt
-> @@ -63,6 +63,7 @@ stable kernels.
->  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
->  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
->  | Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
-> +| Cavium         | ThunderX2 SMMUv3| #126            | N/A                         |
->  |                |                 |                 |                             |
->  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
->  |                |                 |                 |                             |
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 4e80205..d2db01f 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2232,6 +2232,25 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->  	devm_add_action(dev, arm_smmu_free_msis, dev);
->  }
->
-> +static int get_irq_flags(struct arm_smmu_device *smmu, int irq)
-> +{
-> +	int match_count = 0;
-> +
-> +	if (irq == smmu->evtq.q.irq)
-> +		match_count++;
-> +	if (irq == smmu->cmdq.q.irq)
-> +		match_count++;
-> +	if (irq == smmu->gerr_irq)
-> +		match_count++;
-> +	if (irq == smmu->priq.q.irq)
-> +		match_count++;
-> +
-> +	if (match_count > 1)
-> +		return IRQF_SHARED | IRQF_ONESHOT;
-> +
-> +	return IRQF_ONESHOT;
-> +}
-> +
->  static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  {
->  	int ret, irq;
-> @@ -2252,7 +2271,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  	if (irq) {
->  		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
->  						arm_smmu_evtq_thread,
-> -						IRQF_ONESHOT,
-> +						get_irq_flags(smmu, irq),
->  						"arm-smmu-v3-evtq", smmu);
->  		if (ret < 0)
->  			dev_warn(smmu->dev, "failed to enable evtq irq\n");
-> @@ -2261,7 +2280,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  	irq = smmu->cmdq.q.irq;
->  	if (irq) {
->  		ret = devm_request_irq(smmu->dev, irq,
-> -				       arm_smmu_cmdq_sync_handler, 0,
+The ats-supported property aimed to provide a mechanism identical to what
+IORT provides in root complex nodes, since I have to add support for that
+in Linux anyway. But it is not clear what their rationale is.
 
-If it is indeed ok to change this to having IRQF_ONESHOT set now 
-(right?), then can you add a note to the commit message?
+I couldn't see any more reason to add it, so I'll gladly drop the patch
+and replace it with something based on compatible, if you think that the
+case I described above (bug in hardware, firmware cannot enable ATS in
+root complex) is superfluous.
 
-> +				       arm_smmu_cmdq_sync_handler,
-> +					   get_irq_flags(smmu, irq),
+Thanks,
+Jean
 
-indentation looks inconsistent
-
->  				       "arm-smmu-v3-cmdq-sync", smmu);
->  		if (ret < 0)
->  			dev_warn(smmu->dev, "failed to enable cmdq-sync irq\n");
-> @@ -2270,7 +2290,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  	irq = smmu->gerr_irq;
->  	if (irq) {
->  		ret = devm_request_irq(smmu->dev, irq, arm_smmu_gerror_handler,
-> -				       0, "arm-smmu-v3-gerror", smmu);
-> +						get_irq_flags(smmu, irq),
-> +						"arm-smmu-v3-gerror", smmu);
->  		if (ret < 0)
->  			dev_warn(smmu->dev, "failed to enable gerror irq\n");
->  	}
-> @@ -2280,7 +2301,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  		if (irq) {
->  			ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
->  							arm_smmu_priq_thread,
-> -							IRQF_ONESHOT,
-> +							get_irq_flags(smmu, irq),
->  							"arm-smmu-v3-priq",
->  							smmu);
->  			if (ret < 0)
->
