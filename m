@@ -1,15 +1,14 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
-Date: Wed, 7 Jun 2017 17:35:13 +0900
-Message-ID: <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com>
+Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
+Date: Wed, 7 Jun 2017 18:47:07 +0900
+Message-ID: <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
 References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
-	<1496695157-19926-3-git-send-email-yong.zhi@intel.com>
-	<CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
+	<1496695157-19926-4-git-send-email-yong.zhi@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1496695157-19926-4-git-send-email-yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,474 +23,316 @@ Cc: "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "o
 	Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Yong, Tuukka,
-
-Continuing from yesterday. Please see comments inline.
-
-> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-[snip]
->> +       ptr = ipu3_mmu_alloc_page_table(mmu_dom, false);
->> +       if (!ptr)
->> +               goto fail_page_table;
->> +
->> +       /*
->> +        * We always map the L1 page table (a single page as well as
->> +        * the L2 page tables).
->> +        */
->> +       mmu_dom->dummy_l2_tbl = virt_to_phys(ptr) >> IPU3_MMU_PAGE_SHIFT;
->> +       mmu_dom->pgtbl = ipu3_mmu_alloc_page_table(mmu_dom, true);
->> +       if (!mmu_dom->pgtbl)
->> +               goto fail_page_table;
->> +
->> +       spin_lock_init(&mmu_dom->lock);
->> +       return &mmu_dom->domain;
->> +
->> +fail_page_table:
->> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
->> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
->> +fail_get_page:
->> +       kfree(mmu_dom);
->> +       return NULL;
->> +}
->> +
->> +static void ipu3_mmu_domain_free(struct iommu_domain *dom)
->> +{
->> +       struct ipu3_mmu_domain *mmu_dom =
->> +               container_of(dom, struct ipu3_mmu_domain, domain);
->> +       uint32_t l1_idx;
->> +
->> +       for (l1_idx = 0; l1_idx < IPU3_MMU_L1PT_PTES; l1_idx++)
->> +               if (mmu_dom->pgtbl[l1_idx] != mmu_dom->dummy_l2_tbl)
->> +                       free_page((unsigned long)
->> +                                 TBL_VIRT_ADDR(mmu_dom->pgtbl[l1_idx]));
->> +
->> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
->> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
-
-I might be overly paranoid, but reading back kernel virtual pointers
-from device accessible memory doesn't seem safe to me. Other drivers
-keep kernel pointers of page tables in a dedicated array (it's only 8K
-of memory, but much better safety).
-
->> +       free_page((unsigned long)mmu_dom->pgtbl);
->> +       kfree(mmu_dom);
->> +}
->> +
->> +/**
->> + * ipu3_mmu_map - mapping iova allocated cache to phy addr
->> + * @domain: iommu domain
->> + * @iova: virtual address
->> + * @paddr: physical address
->> + * @size: size to be mapped
->> + * Allocate L2 pgt if needed and establish the mapping between
->> + * iova address space and pfn
->> + *
->> + * Return: 0 for success
->> + * or negative on failure.
->> + */
->> +static int ipu3_mmu_map(struct iommu_domain *domain, unsigned long iova,
->> +                       phys_addr_t paddr, size_t size, int prot)
->> +{
->> +       struct ipu3_mmu_domain *mmu_dom =
->> +               container_of(domain, struct ipu3_mmu_domain, domain);
-
-Please add a static inline function for this conversion.
-
->> +       uint32_t iova_start = round_down(iova, IPU3_MMU_PAGE_SIZE);
->> +       uint32_t iova_end = ALIGN(iova + size, IPU3_MMU_PAGE_SIZE);
->> +       uint32_t l1_idx = iova >> IPU3_MMU_L1PT_SHIFT;
->> +       uint32_t l1_entry = mmu_dom->pgtbl[l1_idx];
->> +       uint32_t *l2_pt;
->> +       uint32_t l2_idx;
->> +       unsigned long flags;
->> +
->> +       /* map to single PAGE */
->> +       WARN_ON(size != IPU3_MMU_PAGE_SIZE);
-
-If we already check this, we could fail as well, i.e.
-
-        if (WARN_ON(size != IPU3_MMU_PAGE_SIZE))
-                return -EINVAL;
-
->> +
->> +       dev_dbg(mmu_dom->mmu->dev,
->> +               "mapping iova 0x%8.8x--0x%8.8x, size %zu at paddr 0x%pa\n",
->> +               iova_start, iova_end, size, &paddr);
->> +       dev_dbg(mmu_dom->mmu->dev,
->> +               "mapping l2 page table for l1 index %u (iova 0x%8.8lx)\n",
->> +               l1_idx, iova);
->> +
->> +       if (l1_entry == mmu_dom->dummy_l2_tbl) {
->> +               uint32_t *l2_virt = ipu3_mmu_alloc_page_table(mmu_dom, false);
->> +
->> +               if (!l2_virt)
->> +                       return -ENOMEM;
->> +
->> +               l1_entry = virt_to_phys(l2_virt) >> IPU3_MMU_PAGE_SHIFT;
->> +               dev_dbg(mmu_dom->mmu->dev,
->> +                       "allocated page for l1_idx %u\n", l1_idx);
->> +
->> +               spin_lock_irqsave(&mmu_dom->lock, flags);
->> +               if (mmu_dom->pgtbl[l1_idx] == mmu_dom->dummy_l2_tbl) {
->> +                       mmu_dom->pgtbl[l1_idx] = l1_entry;
->> +                       clflush_cache_range(&mmu_dom->pgtbl[l1_idx],
->> +                                           sizeof(mmu_dom->pgtbl[l1_idx]));
->> +               } else {
->> +                       spin_unlock_irqrestore(&mmu_dom->lock, flags);
->> +                       free_page((unsigned long)TBL_VIRT_ADDR(l1_entry));
->> +                       spin_lock_irqsave(&mmu_dom->lock, flags);
->> +               }
->> +       } else {
->> +               spin_lock_irqsave(&mmu_dom->lock, flags);
->> +       }
->> +
->> +       l2_pt = TBL_VIRT_ADDR(mmu_dom->pgtbl[l1_idx]);
->> +
->> +       dev_dbg(mmu_dom->mmu->dev, "l2_pt at %p\n", l2_pt);
->> +
->> +       paddr = ALIGN(paddr, IPU3_MMU_PAGE_SIZE);
->> +
->> +       l2_idx = (iova_start & IPU3_MMU_L2PT_MASK) >> IPU3_MMU_L2PT_SHIFT;
->> +
->> +       dev_dbg(mmu_dom->mmu->dev,
->> +               "l2_idx %u, phys 0x%8.8x\n", l2_idx, l2_pt[l2_idx]);
->> +       if (l2_pt[l2_idx] != mmu_dom->dummy_page) {
->> +               spin_unlock_irqrestore(&mmu_dom->lock, flags);
->> +               return -EBUSY;
->> +       }
->> +
->> +       /* write 27 bit phy addr to L2 pgt*/
->> +       l2_pt[l2_idx] = paddr >> IPU3_MMU_PAGE_SHIFT;
->> +
->> +       spin_unlock_irqrestore(&mmu_dom->lock, flags);
->> +
->> +       clflush_cache_range(&l2_pt[l2_idx], sizeof(l2_pt[l2_idx]));
->> +
->> +       dev_dbg(mmu_dom->mmu->dev,
->> +               "l2 index %u mapped as 0x%8.8x\n", l2_idx, l2_pt[l2_idx]);
->> +
->> +       ipu3_mmu_tlb_invalidate(mmu_dom->mmu->base);
->> +
->> +       return 0;
->> +}
->> +
->> +static size_t ipu3_mmu_unmap(struct iommu_domain *domain, unsigned long iova,
->> +                            size_t size)
->> +{
->> +       struct ipu3_mmu_domain *mmu_dom =
->> +               container_of(domain, struct ipu3_mmu_domain, domain);
->> +       uint32_t l1_idx = iova >> IPU3_MMU_L1PT_SHIFT;
->> +       uint32_t *l2_pt = TBL_VIRT_ADDR(mmu_dom->pgtbl[l1_idx]);
->> +       uint32_t iova_start = iova;
->> +       unsigned int l2_idx;
->> +       size_t unmapped = 0;
->> +
->> +       dev_dbg(mmu_dom->mmu->dev,
->> +               "unmapping l2 page table for l1 index %u (iova 0x%8.8lx)\n",
->> +               l1_idx, iova);
->> +
->> +       if (mmu_dom->pgtbl[l1_idx] == mmu_dom->dummy_l2_tbl)
->> +               return -EINVAL;
->> +
->> +       dev_dbg(mmu_dom->mmu->dev, "l2_pt at %p\n", l2_pt);
->> +
->> +       for (l2_idx = (iova_start & IPU3_MMU_L2PT_MASK) >> IPU3_MMU_L2PT_SHIFT;
->> +            (iova_start & IPU3_MMU_L1PT_MASK) + (l2_idx << IPU3_MMU_PAGE_SHIFT)
->> +                     < iova_start + size && l2_idx < IPU3_MMU_L2PT_PTES;
-
-Could you define macros for these two calculations?
-
->> +             l2_idx++) {
->> +               unsigned long flags;
->> +
->> +               dev_dbg(mmu_dom->mmu->dev,
->> +                       "l2 index %u unmapped, was 0x%10.10lx\n",
->> +                       l2_idx, (unsigned long)TBL_PHYS_ADDR(l2_pt[l2_idx]));
->> +               spin_lock_irqsave(&mmu_dom->lock, flags);
->> +               l2_pt[l2_idx] = mmu_dom->dummy_page;
->> +               spin_unlock_irqrestore(&mmu_dom->lock, flags);
->> +               clflush_cache_range(&l2_pt[l2_idx], sizeof(l2_pt[l2_idx]));
-
-I think it would make more sense from performance point of view to
-flush the whole range outside the loop. However...
-
->> +               unmapped++;
->> +       }
-
-The core iommu_unmap() already splits the unmap operation into biggest
-valid page sizes
-(http://elixir.free-electrons.com/linux/latest/source/drivers/iommu/iommu.c#L1540)
-and this driver only sets 4K as the allowed page size, so this
-function will always be called with size == 4K and the loop above can
-iterate at most once.
-
->> +
->> +       ipu3_mmu_tlb_invalidate(mmu_dom->mmu->base);
->> +
->> +       return unmapped << IPU3_MMU_PAGE_SHIFT;
->> +}
->> +
->> +static phys_addr_t ipu3_mmu_iova_to_phys(struct iommu_domain *domain,
->> +                                        dma_addr_t iova)
->> +{
->> +       struct ipu3_mmu_domain *d =
->> +               container_of(domain, struct ipu3_mmu_domain, domain);
->> +       uint32_t *l2_pt = TBL_VIRT_ADDR(d->pgtbl[iova >> IPU3_MMU_L1PT_SHIFT]);
->> +
->> +       return (phys_addr_t)l2_pt[(iova & IPU3_MMU_L2PT_MASK)
->> +                               >> IPU3_MMU_L2PT_SHIFT] << IPU3_MMU_PAGE_SHIFT;
-
-Could we avoid this TBL_VIRT_ADDR() here too? The memory cost to store
-the page table CPU pointers is really small, but safety seems much
-better. Moreover, it should make it possible to use the VT-d IOMMU to
-further secure the system.
-
->> +}
->> +
->> +static struct iommu_ops ipu3_mmu_ops = {
->> +       .add_device     = ipu3_mmu_add_device,
->> +       .domain_alloc   = ipu3_mmu_domain_alloc,
->> +       .domain_free    = ipu3_mmu_domain_free,
->> +       .map            = ipu3_mmu_map,
->> +       .unmap          = ipu3_mmu_unmap,
->> +       .iova_to_phys   = ipu3_mmu_iova_to_phys,
->> +       .pgsize_bitmap  = SZ_4K,
->> +};
->> +
->> +static int ipu3_mmu_bus_match(struct device *dev, struct device_driver *drv)
->> +{
->> +       return !strcmp(dev_name(dev), drv->name);
->> +}
->> +
->> +static int ipu3_mmu_bus_probe(struct device *dev)
->> +{
->> +       struct ipu3_mmu *mmu = dev_get_drvdata(dev);
->> +       struct ipu3_mmu_domain *mmu_domain;
->> +       int r;
->> +
->> +       r = bus_set_iommu(dev->bus, &ipu3_mmu_ops);
->> +       if (r)
->> +               return r;
->> +
->> +       /* mmu_domain allocated */
->> +       mmu->domain = iommu_domain_alloc(dev->bus);
->> +       if (!mmu->domain)
->> +               return -ENOMEM;
-
-Something is not right here. Normally the IOMMU core allocates a
-default domain for your iommu_group automatically. Then when
-bus_set_iommu() is called, it goes over all the devices on the bus and
-tries to add them to the group, which also means attaching to the
-default domain.
-
->> +
->> +       /* Write page table address */
->> +       mmu_domain = container_of(mmu->domain, struct ipu3_mmu_domain, domain);
->> +       /* Write L1 pgt addr to config reg*/
->> +       mmu_domain->mmu = mmu;
->> +
->> +       writel((phys_addr_t)virt_to_phys(mmu_domain->pgtbl)
->> +               >> IPU3_MMU_PAGE_SHIFT, mmu->base + REG_L1_PHYS);
->> +       ipu3_mmu_tlb_invalidate(mmu->base);
->> +       /* 4K page granularity, start and end pfn */
->> +       init_iova_domain(&mmu->iova_domain, SZ_4K, 1,
->> +                        dma_get_mask(dev) >> PAGE_SHIFT);
-
-This is typically done in .attach_device() callback.
-
->> +
->> +       r = iova_cache_get();
-
-This is normally not necessary and your DMA mapping code should do it
-(or even better, your DMA mapping code should use the generic DMA
-mapping helpers, which already call this).
-
->> +       if (r)
->> +               goto fail_cache;
->> +
->> +       return 0;
->> +
->> +fail_cache:
->> +       put_iova_domain(&mmu->iova_domain);
->> +       iommu_domain_free(mmu->domain);
->> +       return r;
->> +}
->> +
->> +static void ipu3_mmu_release(struct device *dev)
->> +{
->> +}
->> +
->> +static int ipu3_mmu_bus_remove(struct device *dev)
->> +{
->> +       struct ipu3_mmu *mmu = dev_get_drvdata(dev);
->> +
->> +       put_iova_domain(&mmu->iova_domain);
->> +       iova_cache_put();
-
-Don't we need to set the L1 table address to something invalid and
-invalidate the TLB, so that the IOMMU doesn't reference the page freed
-below anymore?
-
->> +       iommu_domain_free(mmu->domain);
->> +
->> +       return 0;
->> +}
->> +
->> +static struct bus_type ipu3_mmu_bus = {
->> +       .name   = IPU3_MMU_BUS_NAME,
->> +       .match  = ipu3_mmu_bus_match,
->> +       .probe  = ipu3_mmu_bus_probe,
->> +       .remove = ipu3_mmu_bus_remove,
->> +};
->> +
->> +static struct device ipu3_mmu_device = {
->> +       .bus     = &ipu3_mmu_bus,
->> +       .release = ipu3_mmu_release,
->> +};
->> +
->> +static struct device_driver ipu3_mmu_driver = {
->> +       .name  = IPU3_MMU_NAME,
->> +       .owner = THIS_MODULE,
->> +       .bus   = &ipu3_mmu_bus,
->> +};
->> +
->> +int ipu3_mmu_init(struct ipu3_mmu *mmu, void __iomem *base, struct device *dev)
->> +{
->> +       struct ipu3_mmu_domain *mmu_dom;
->> +       int r;
->> +
->> +       mmu->base = base;
->> +       mmu->dev  = &ipu3_mmu_device;
->> +
->> +       r = bus_register(&ipu3_mmu_bus);
->> +       if (r)
->> +               goto fail_bus;
->> +
->> +       r = dev_set_name(mmu->dev, IPU3_MMU_NAME);
-
-Hmm, this device is not the MMU, but rather the master behind the MMU,
-which is subject to the memory mapping.
-
-Also I might have forgotten to mentioned before, but this MMU is a
-part of the PCI device and I believe that it might be subject to
-another memory mapping as well (e.g. VT-d IOMMU). So DMA mapping API
-must be used to obtain DMA addresses of the pages that are supposed to
-be accessed by or over this MMU.
-
->> +       if (r)
->> +               goto fail_device;
->> +       if (dev->dma_mask) {
->> +               mmu->dma_mask = DMA_BIT_MASK(IPU3_MMU_ADDRESS_BITS);
->> +               mmu->dev->dma_mask = &mmu->dma_mask;
->> +       }
->> +       mmu->dev->coherent_dma_mask = mmu->dma_mask;
->> +       dev_set_drvdata(mmu->dev, mmu);
->> +       r = device_register(mmu->dev);
->> +       if (r) {
->> +               put_device(mmu->dev);
->> +               goto fail_device;
->> +       }
->> +
->> +       r = driver_register(&ipu3_mmu_driver);
->> +       if (r)
->> +               goto fail_driver;
->> +
->> +       mmu_dom = container_of(mmu->domain, struct ipu3_mmu_domain, domain);
->> +       mmu->pgtbl = virt_to_phys(mmu_dom->pgtbl);
->> +
->> +       return 0;
->> +
->> +fail_driver:
->> +       device_unregister(mmu->dev);
->> +fail_device:
->> +       bus_unregister(&ipu3_mmu_bus);
->> +fail_bus:
->> +       return r;
->> +}
->> +EXPORT_SYMBOL_GPL(ipu3_mmu_init);
->> +
->> +void ipu3_mmu_exit(struct ipu3_mmu *mmu)
->> +{
->> +       driver_unregister(&ipu3_mmu_driver);
->> +       device_unregister(mmu->dev);
->> +       bus_unregister(&ipu3_mmu_bus);
->> +}
->> +EXPORT_SYMBOL_GPL(ipu3_mmu_exit);
->> +
->> +MODULE_AUTHOR("Tuukka Toivonen <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>");
->> +MODULE_AUTHOR("Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>");
->> +MODULE_AUTHOR("Samu Onkalo <samu.onkalo-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>");
->> +MODULE_LICENSE("GPL v2");
->> +MODULE_DESCRIPTION("ipu3 mmu driver");
->> diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.h b/drivers/media/pci/intel/ipu3/ipu3-mmu.h
->> new file mode 100644
->> index 0000000..45ad400
->> --- /dev/null
->> +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.h
->> @@ -0,0 +1,73 @@
->> +/*
->> + * Copyright (c) 2017 Intel Corporation.
->> + *
->> + * This program is free software; you can redistribute it and/or
->> + * modify it under the terms of the GNU General Public License version
->> + * 2 as published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + */
->> +
->> +#ifndef __IPU3_MMU_H
->> +#define __IPU3_MMU_H
->> +
->> +#include <linux/iova.h>
->> +#include <linux/iommu.h>
->> +
->> +#define to_ipu3_mmu(dev)       dev_get_drvdata(dev)
-
-Please use static inline for proper type checks.
-
->> +
->> +#define IPU3_MMU_NAME          "ipu3-mmu"
->> +#define IPU3_MMU_BUS_NAME      "ipu3-bus"
->> +
->> +#define IPU3_MMU_ADDRESS_BITS  32
->> +
->> +#define IPU3_MMU_PAGE_SHIFT    12
->> +#define IPU3_MMU_PAGE_SIZE     (1U << IPU3_MMU_PAGE_SHIFT)
->> +#define IPU3_MMU_PAGE_MASK     (~(IPU3_MMU_PAGE_SIZE - 1))
->> +
->> +#define IPU3_MMU_L1PT_SHIFT    22
->> +#define IPU3_MMU_L1PT_MASK     (~((1U << IPU3_MMU_L1PT_SHIFT) - 1))
->> +#define IPU3_MMU_L1PT_PTES     1024
->> +
->> +#define IPU3_MMU_L2PT_SHIFT    IPU3_MMU_PAGE_SHIFT
->> +#define IPU3_MMU_L2PT_MASK     (~(IPU3_MMU_L1PT_MASK | \
->> +                                (~(IPU3_MMU_PAGE_MASK))))
->> +#define IPU3_MMU_L2PT_PTES     1024
->> +
->> +#define REG_TLB_INVALIDATE     0x0300
->> +#define TLB_INVALIDATE         1
->> +#define IMGU_REG_BASE          0x4000
->> +#define REG_L1_PHYS            (IMGU_REG_BASE + 0x304) /* 27-bit pfn */
->> +
->> +#define TBL_VIRT_ADDR(a)       ((a) ? phys_to_virt(TBL_PHYS_ADDR(a)) : NULL)
->> +#define TBL_PHYS_ADDR(a)       ((phys_addr_t)(a) << \
->> +                                       IPU3_MMU_PAGE_SHIFT)
-
-We should avoid reading back from the device memory, as I mentioned earlier.
-
->> +
->> +struct ipu3_mmu_domain {
->> +       struct ipu3_mmu *mmu;
->> +       struct iommu_domain domain;
->> +       spinlock_t lock;
-
-Please add a comment explaining what is protected by this spinlock.
-
-(Which also raises a question if this patch was checked with checkpatch.)
-
-Best regards,
-Tomasz
+SGkgWW9uZywKCitSb2JpbiwgSm9lcmcsIElPTU1VIE1MCgpQbGVhc2Ugc2VlIG15IGNvbW1lbnRz
+IGlubGluZS4KCk9uIFR1ZSwgSnVuIDYsIDIwMTcgYXQgNTozOSBBTSwgWW9uZyBaaGkgPHlvbmcu
+emhpQGludGVsLmNvbT4gd3JvdGU6Cj4gSVBVMyBtbXUgYmFzZWQgRE1BIG1hcHBpbmcgZHJpdmVy
+Cj4KPiBTaWduZWQtb2ZmLWJ5OiBZb25nIFpoaSA8eW9uZy56aGlAaW50ZWwuY29tPgo+IC0tLQo+
+ICBkcml2ZXJzL21lZGlhL3BjaS9pbnRlbC9pcHUzL0tjb25maWcgICAgICAgfCAgIDYgKwo+ICBk
+cml2ZXJzL21lZGlhL3BjaS9pbnRlbC9pcHUzL01ha2VmaWxlICAgICAgfCAgIDEgKwo+ICBkcml2
+ZXJzL21lZGlhL3BjaS9pbnRlbC9pcHUzL2lwdTMtZG1hbWFwLmMgfCA0MDggKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysKPiAgZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1My9pcHUzLWRt
+YW1hcC5oIHwgIDIwICsrCj4gIDQgZmlsZXMgY2hhbmdlZCwgNDM1IGluc2VydGlvbnMoKykKPiAg
+Y3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbWVkaWEvcGNpL2ludGVsL2lwdTMvaXB1My1kbWFt
+YXAuYwo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1My9p
+cHUzLWRtYW1hcC5oCj4KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1
+My9LY29uZmlnIGIvZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1My9LY29uZmlnCj4gaW5kZXgg
+YWIyZWRjYi4uMjAzMGJlNyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL21lZGlhL3BjaS9pbnRlbC9p
+cHUzL0tjb25maWcKPiArKysgYi9kcml2ZXJzL21lZGlhL3BjaS9pbnRlbC9pcHUzL0tjb25maWcK
+PiBAQCAtMjYsMyArMjYsOSBAQCBjb25maWcgSU5URUxfSVBVM19NTVUKPgo+ICAgICAgICAgICBT
+YXkgWSBoZXJlIGlmIHlvdSBoYXZlIFNreWxha2UvS2FieSBMYWtlIFNvQyB3aXRoIElQVTMuCj4g
+ICAgICAgICAgIFNheSBOIGlmIHVuLXN1cmUuCj4gKwo+ICtjb25maWcgSU5URUxfSVBVM19ETUFN
+QVAKPiArICAgICAgIGJvb2wgIkludGVsIGlwdTMgRE1BIG1hcHBpbmcgZHJpdmVyIgo+ICsgICAg
+ICAgc2VsZWN0IElPTU1VX0lPVkEKPiArICAgICAgIC0tLWhlbHAtLS0KPiArICAgICAgICAgVGhp
+cyBpcyBJUFUzIElPTU1VIGRvbWFpbiBzcGVjaWZpYyBETUEgZHJpdmVyLgo+IGRpZmYgLS1naXQg
+YS9kcml2ZXJzL21lZGlhL3BjaS9pbnRlbC9pcHUzL01ha2VmaWxlIGIvZHJpdmVycy9tZWRpYS9w
+Y2kvaW50ZWwvaXB1My9NYWtlZmlsZQo+IGluZGV4IDJiNjY5ZGYuLjJjMmEwMzUgMTAwNjQ0Cj4g
+LS0tIGEvZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1My9NYWtlZmlsZQo+ICsrKyBiL2RyaXZl
+cnMvbWVkaWEvcGNpL2ludGVsL2lwdTMvTWFrZWZpbGUKPiBAQCAtMSwyICsxLDMgQEAKPiAgb2Jq
+LSQoQ09ORklHX1ZJREVPX0lQVTNfQ0lPMikgKz0gaXB1My1jaW8yLm8KPiAgb2JqLSQoQ09ORklH
+X0lOVEVMX0lQVTNfTU1VKSArPSBpcHUzLW1tdS5vCj4gK29iai0kKENPTkZJR19JTlRFTF9JUFUz
+X0RNQU1BUCkgKz0gaXB1My1kbWFtYXAubwo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL21lZGlhL3Bj
+aS9pbnRlbC9pcHUzL2lwdTMtZG1hbWFwLmMgYi9kcml2ZXJzL21lZGlhL3BjaS9pbnRlbC9pcHUz
+L2lwdTMtZG1hbWFwLmMKPiBuZXcgZmlsZSBtb2RlIDEwMDY0NAo+IGluZGV4IDAwMDAwMDAuLjc0
+NzA0ZDkKPiAtLS0gL2Rldi9udWxsCj4gKysrIGIvZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1
+My9pcHUzLWRtYW1hcC5jCj4gQEAgLTAsMCArMSw0MDggQEAKPiArLyoKPiArICogQ29weXJpZ2h0
+IChjKSAyMDE3IEludGVsIENvcnBvcmF0aW9uLgo+ICsgKgo+ICsgKiBUaGlzIHByb2dyYW0gaXMg
+ZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yCj4gKyAqIG1vZGlm
+eSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZl
+cnNpb24KPiArICogMiBhcyBwdWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlv
+bi4KPiArICoKPiArICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRo
+YXQgaXQgd2lsbCBiZSB1c2VmdWwsCj4gKyAqIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0
+aG91dCBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mCj4gKyAqIE1FUkNIQU5UQUJJTElUWSBv
+ciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUKPiArICogR05VIEdl
+bmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4KPiArICoKPiArICovCj4gKyNp
+bmNsdWRlIDxsaW51eC9oaWdobWVtLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+Cj4gKyNp
+bmNsdWRlIDxsaW51eC92ZXJzaW9uLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC92bWFsbG9jLmg+Cj4g
+KyNpbmNsdWRlICJpcHUzLW1tdS5oIgo+ICsKPiArLyogQmVnaW4gb2YgdGhpbmdzIGFkYXB0ZWQg
+ZnJvbSBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jICovCgpBUk0ncyBETUEgb3BzIGFyZSBub3Qg
+YSBnb29kIGV4YW1wbGUgb2YgdG9kYXkncyBjb2Rpbmcgc3RhbmRhcmRzLgpUaGVyZSBhcmUgYWxy
+ZWFkeSBnZW5lcmljIERNQSBtYXBwaW5nIGhlbHBlcnMgYXZhaWxhYmxlIGluCmRyaXZlcnMvaW9t
+bXUvZG1hLWlvbW11LmMgYW5kIGRyaXZlcnMvYmFzZS9kbWEtKi4gKEhtbSwgSSByZW1lbWJlcgp3
+cml0aW5nIHRoaXMgYWxyZWFkeSwgZMOpasOgIHZ1IG1heWJlLi4uKQoKPiArc3RhdGljIHZvaWQg
+aXB1M19kbWFtYXBfY2xlYXJfYnVmZmVyKHN0cnVjdCBwYWdlICpwYWdlLCBzaXplX3Qgc2l6ZSwK
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyBhdHRy
+cykKPiArewo+ICsgICAgICAgLyoKPiArICAgICAgICAqIEVuc3VyZSB0aGF0IHRoZSBhbGxvY2F0
+ZWQgcGFnZXMgYXJlIHplcm9lZCwgYW5kIHRoYXQgYW55IGRhdGEKPiArICAgICAgICAqIGx1cmtp
+bmcgaW4gdGhlIGtlcm5lbCBkaXJlY3QtbWFwcGVkIHJlZ2lvbiBpcyBpbnZhbGlkYXRlZC4KPiAr
+ICAgICAgICAqLwo+ICsgICAgICAgaWYgKFBhZ2VIaWdoTWVtKHBhZ2UpKSB7Cj4gKyAgICAgICAg
+ICAgICAgIHdoaWxlIChzaXplID4gMCkgewo+ICsgICAgICAgICAgICAgICAgICAgICAgIHZvaWQg
+KnB0ciA9IGttYXBfYXRvbWljKHBhZ2UpOwo+ICsKPiArICAgICAgICAgICAgICAgICAgICAgICBt
+ZW1zZXQocHRyLCAwLCBQQUdFX1NJWkUpOwo+ICsgICAgICAgICAgICAgICAgICAgICAgIGlmICgo
+YXR0cnMgJiBETUFfQVRUUl9TS0lQX0NQVV9TWU5DKSA9PSAwKQo+ICsgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgY2xmbHVzaF9jYWNoZV9yYW5nZShwdHIsIFBBR0VfU0laRSk7Cj4gKyAg
+ICAgICAgICAgICAgICAgICAgICAga3VubWFwX2F0b21pYyhwdHIpOwo+ICsgICAgICAgICAgICAg
+ICAgICAgICAgIHBhZ2UrKzsKPiArICAgICAgICAgICAgICAgICAgICAgICBzaXplIC09IFBBR0Vf
+U0laRTsKPiArICAgICAgICAgICAgICAgfQo+ICsgICAgICAgfSBlbHNlIHsKPiArICAgICAgICAg
+ICAgICAgdm9pZCAqcHRyID0gcGFnZV9hZGRyZXNzKHBhZ2UpOwo+ICsKPiArICAgICAgICAgICAg
+ICAgbWVtc2V0KHB0ciwgMCwgc2l6ZSk7Cj4gKyAgICAgICAgICAgICAgIGlmICgoYXR0cnMgJiBE
+TUFfQVRUUl9TS0lQX0NQVV9TWU5DKSA9PSAwKQo+ICsgICAgICAgICAgICAgICAgICAgICAgIGNs
+Zmx1c2hfY2FjaGVfcmFuZ2UocHRyLCBzaXplKTsKPiArICAgICAgIH0KPiArfQo+ICsKPiArLyoq
+Cj4gKyAqIGlwdTNfZG1hbWFwX2FsbG9jX2J1ZmZlciAtIGFsbG9jYXRlIGJ1ZmZlciBiYXNlZCBv
+biBhdHRyaWJ1dGVzCj4gKyAqIEBkZXY6IHN0cnVjdCBkZXZpY2UgcG9pbnRlcgo+ICsgKiBAc2l6
+ZTogc2l6ZSBvZiBidWZmZXIgaW4gYnl0ZXMKPiArICogQGdmcDogc3BlY2lmeSB0aGUgZnJlZSBw
+YWdlIHR5cGUKPiArICogQGF0dHJzOiBkZWZpbmVkIGluIGxpbnV4L2RtYS1hdHRycy5oCj4gKyAq
+Cj4gKyAqIFRoaXMgaXMgYSBoZWxwZXIgZnVuY3Rpb24gZm9yIHBoeXNpY2FsIHBhZ2UgYWxsb2Nh
+dGlvbgo+ICsgKgo+ICsgKiBSZXR1cm4gYXJyYXkgcmVwcmVzZW50aW5nIGJ1ZmZlciBmcm9tIGFs
+bG9jX3BhZ2VzKCkgb24gc3VjY2Vzcwo+ICsgKiBvciBOVUxMIG9uIGZhaWx1cmUKPiArICoKPiAr
+ICogTXVzdCBiZSBmcmVlZCB3aXRoIGlwdTNfZG1hbWFwX2ZyZWVfYnVmZmVyLgo+ICsgKi8KPiAr
+c3RhdGljIHN0cnVjdCBwYWdlICoqaXB1M19kbWFtYXBfYWxsb2NfYnVmZmVyKHN0cnVjdCBkZXZp
+Y2UgKmRldiwgc2l6ZV90IHNpemUsCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIGdmcF90IGdmcCwgdW5zaWduZWQgbG9uZyBhdHRycykKPiArewo+ICsgICAg
+ICAgc3RydWN0IHBhZ2UgKipwYWdlczsKPiArICAgICAgIGludCBjb3VudCA9IHNpemUgPj4gUEFH
+RV9TSElGVDsKPiArICAgICAgIGludCBhcnJheV9zaXplID0gY291bnQgKiBzaXplb2Yoc3RydWN0
+IHBhZ2UgKik7Cj4gKyAgICAgICBpbnQgaSA9IDA7Cj4gKwo+ICsgICAgICAgLyogQWxsb2NhdGUg
+bWVtIGZvciBhcnJheSBvZiBwYWdlIHB0cnMgKi8KPiArICAgICAgIGlmIChhcnJheV9zaXplIDw9
+IFBBR0VfU0laRSkKPiArICAgICAgICAgICAgICAgcGFnZXMgPSBremFsbG9jKGFycmF5X3NpemUs
+IEdGUF9LRVJORUwpOwo+ICsgICAgICAgZWxzZQo+ICsgICAgICAgICAgICAgICBwYWdlcyA9IHZ6
+YWxsb2MoYXJyYXlfc2l6ZSk7Cj4gKyAgICAgICBpZiAoIXBhZ2VzKQo+ICsgICAgICAgICAgICAg
+ICByZXR1cm4gTlVMTDsKPiArCj4gKyAgICAgICBnZnAgfD0gX19HRlBfTk9XQVJOOwo+ICsKPiAr
+ICAgICAgIHdoaWxlIChjb3VudCkgewo+ICsgICAgICAgICAgICAgICBpbnQgaiwgb3JkZXIgPSBf
+X2Zscyhjb3VudCk7Cj4gKwo+ICsgICAgICAgICAgICAgICBwYWdlc1tpXSA9IGFsbG9jX3BhZ2Vz
+KGdmcCwgb3JkZXIpOwo+ICsgICAgICAgICAgICAgICB3aGlsZSAoIXBhZ2VzW2ldICYmIG9yZGVy
+KQo+ICsgICAgICAgICAgICAgICAgICAgICAgIHBhZ2VzW2ldID0gYWxsb2NfcGFnZXMoZ2ZwLCAt
+LW9yZGVyKTsKPiArICAgICAgICAgICAgICAgaWYgKCFwYWdlc1tpXSkKPiArICAgICAgICAgICAg
+ICAgICAgICAgICBnb3RvIGVycm9yOwo+ICsKPiArICAgICAgICAgICAgICAgaWYgKG9yZGVyKSB7
+Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgc3BsaXRfcGFnZShwYWdlc1tpXSwgb3JkZXIpOwo+
+ICsgICAgICAgICAgICAgICAgICAgICAgIGogPSAxIDw8IG9yZGVyOwo+ICsgICAgICAgICAgICAg
+ICAgICAgICAgIHdoaWxlICgtLWopCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBw
+YWdlc1tpICsgal0gPSBwYWdlc1tpXSArIGo7Cj4gKyAgICAgICAgICAgICAgIH0KPiArICAgICAg
+ICAgICAgICAgLyogWmVybyBhbmQgaW52YWxpZGF0ZSAqLwo+ICsgICAgICAgICAgICAgICBpcHUz
+X2RtYW1hcF9jbGVhcl9idWZmZXIocGFnZXNbaV0sIFBBR0VfU0laRSA8PCBvcmRlciwgYXR0cnMp
+Owo+ICsgICAgICAgICAgICAgICBpICs9IDEgPDwgb3JkZXI7Cj4gKyAgICAgICAgICAgICAgIGNv
+dW50IC09IDEgPDwgb3JkZXI7Cj4gKyAgICAgICB9Cj4gKwo+ICsgICAgICAgcmV0dXJuIHBhZ2Vz
+Owo+ICsKPiArZXJyb3I6Cj4gKyAgICAgICB3aGlsZSAoaS0tKQo+ICsgICAgICAgICAgICAgICBp
+ZiAocGFnZXNbaV0pCj4gKyAgICAgICAgICAgICAgICAgICAgICAgX19mcmVlX3BhZ2VzKHBhZ2Vz
+W2ldLCAwKTsKPiArICAgICAgIGlmIChhcnJheV9zaXplIDw9IFBBR0VfU0laRSkKPiArICAgICAg
+ICAgICAgICAga2ZyZWUocGFnZXMpOwo+ICsgICAgICAgZWxzZQo+ICsgICAgICAgICAgICAgICB2
+ZnJlZShwYWdlcyk7Cj4gKwo+ICsgICAgICAgcmV0dXJuIE5VTEw7Cj4gK30KPiArCj4gKy8qCj4g
+KyAqIEZyZWUgYSBidWZmZXIgYWxsb2NhdGVkIGJ5IGlwdTNfZG1hbWFwX2FsbG9jX2J1ZmZlcigp
+Cj4gKyAqLwo+ICtzdGF0aWMgaW50IGlwdTNfZG1hbWFwX2ZyZWVfYnVmZmVyKHN0cnVjdCBkZXZp
+Y2UgKmRldiwgc3RydWN0IHBhZ2UgKipwYWdlcywKPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHNpemVfdCBzaXplLCB1bnNpZ25lZCBsb25nIGF0dHJzKQo+ICt7Cj4gKyAgICAg
+ICBpbnQgY291bnQgPSBzaXplID4+IFBBR0VfU0hJRlQ7Cj4gKyAgICAgICBpbnQgYXJyYXlfc2l6
+ZSA9IGNvdW50ICogc2l6ZW9mKHN0cnVjdCBwYWdlICopOwo+ICsgICAgICAgaW50IGk7Cj4gKwo+
+ICsgICAgICAgZm9yIChpID0gMDsgaSA8IGNvdW50OyBpKyspIHsKPiArICAgICAgICAgICAgICAg
+aWYgKHBhZ2VzW2ldKSB7Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgaXB1M19kbWFtYXBfY2xl
+YXJfYnVmZmVyKHBhZ2VzW2ldLCBQQUdFX1NJWkUsIGF0dHJzKTsKPiArICAgICAgICAgICAgICAg
+ICAgICAgICBfX2ZyZWVfcGFnZXMocGFnZXNbaV0sIDApOwo+ICsgICAgICAgICAgICAgICB9Cj4g
+KyAgICAgICB9Cj4gKwo+ICsgICAgICAgaWYgKGFycmF5X3NpemUgPD0gUEFHRV9TSVpFKQo+ICsg
+ICAgICAgICAgICAgICBrZnJlZShwYWdlcyk7Cj4gKyAgICAgICBlbHNlCj4gKyAgICAgICAgICAg
+ICAgIHZmcmVlKHBhZ2VzKTsKPiArICAgICAgIHJldHVybiAwOwo+ICt9CgpJIGJlbGlldmUgeW91
+IGRvbid0IG5lZWQgdGhlIDMgZnVuY3Rpb25zIGFib3ZlIGlmIHlvdSB1c2UgdGhlIGhlbHBlcnMK
+SSBtZW50aW9uZWQuCgo+ICsKPiArLyogRW5kIG9mIHRoaW5ncyBhZGFwdGVkIGZyb20gYXJjaC9h
+cm0vbW0vZG1hLW1hcHBpbmcuYyAqLwo+ICtzdGF0aWMgdm9pZCBpcHUzX2RtYW1hcF9zeW5jX3Np
+bmdsZV9mb3JfY3B1KHN0cnVjdCBkZXZpY2UgKmRldiwKPiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIGRtYV9hZGRyX3QgZG1hX2hhbmRsZSwgc2l6ZV90IHNpemUs
+Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBlbnVtIGRtYV9k
+YXRhX2RpcmVjdGlvbiBkaXIpCj4gK3sKPiArICAgICAgIHN0cnVjdCBpcHUzX21tdSAqbW11ID0g
+dG9faXB1M19tbXUoZGV2KTsKPiArICAgICAgIGRtYV9hZGRyX3QgZGFkZHIgPSBpb21tdV9pb3Zh
+X3RvX3BoeXMobW11LT5kb21haW4sIGRtYV9oYW5kbGUpOwo+ICsKPiArICAgICAgIGNsZmx1c2hf
+Y2FjaGVfcmFuZ2UocGh5c190b192aXJ0KGRhZGRyKSwgc2l6ZSk7CgpZb3UgbWlnaHQgbmVlZCB0
+byBjb25zaWRlciBhbm90aGVyIElPTU1VIG9uIHRoZSB3YXkgaGVyZS4gR2VuZXJhbGx5LApnaXZl
+biB0aGF0IGRhZGRyIGlzIHlvdXIgTU1VIERNQSBhZGRyZXNzIChub3QgbmVjZXNzYXJpbHkgQ1BV
+IHBoeXNpY2FsCmFkZHJlc3MpLCB5b3Ugc2hvdWxkIGJlIGFibGUgdG8gY2FsbAoKZG1hX3N5bmNf
+c2luZ2xlX2Zvcl9jcHUoPHlvdXIgcGNpIGRldmljZT4sIGRhZGRyLCBzaXplLCBkaXIpCgo+ICt9
+Cj4gKwo+ICsvKgo+ICsgKiBTeW5jaHJvbml6YXRpb24gZnVuY3Rpb24gdG8gdHJhbnNmZXIgb3du
+ZXJzaGlwIHRvIENQVQo+ICsgKi8KPiArc3RhdGljIHZvaWQgaXB1M19kbWFtYXBfc3luY19zZ19m
+b3JfY3B1KHN0cnVjdCBkZXZpY2UgKmRldiwKPiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgc3RydWN0IHNjYXR0ZXJsaXN0ICpzZ2xpc3QsIGludCBuZW50cywKPiArICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZW51bSBkbWFfZGF0YV9kaXJlY3Rp
+b24gZGlyKQo+ICt7Cj4gKyAgICAgICBzdHJ1Y3QgaXB1M19tbXUgKm1tdSA9IHRvX2lwdTNfbW11
+KGRldik7Cj4gKyAgICAgICBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnOwo+ICsgICAgICAgaW50IGk7
+Cj4gKwo+ICsgICAgICAgZm9yX2VhY2hfc2coc2dsaXN0LCBzZywgbmVudHMsIGkpIHsKPiArICAg
+ICAgICAgICAgICAgY2xmbHVzaF9jYWNoZV9yYW5nZSgKPiArICAgICAgICAgICAgICAgICAgICAg
+ICBwaHlzX3RvX3ZpcnQoaW9tbXVfaW92YV90b19waHlzKG1tdS0+ZG9tYWluLAo+ICsgICAgICAg
+ICAgICAgICAgICAgICAgIHNnX2RtYV9hZGRyZXNzKHNnKSkpLCBzZy0+bGVuZ3RoKTsKPiArICAg
+ICAgIH0KClNpbWlsYXJseSBoZXJlLgoKPiArfQo+ICsKPiArLyoqCj4gKyAqIGlwdTNfZG1hbWFw
+X2FsbG9jIC0gYWxsb2NhdGUgYW5kIG1hcCBhIGJ1ZmZlciBpbnRvIEtWQQo+ICsgKiBAZGV2OiBz
+dHJ1Y3QgZGV2aWNlIHBvaW50ZXIKPiArICogQHNpemU6IHNpemUgb2YgYnVmZmVyIGluIGJ5dGVz
+Cj4gKyAqIEBnZnA6IHNwZWNpZnkgdGhlIGdldCBmcmVlIHBhZ2UgdHlwZQo+ICsgKiBAYXR0cnM6
+IGRlZmluZWQgaW4gbGludXgvZG1hLWF0dHJzLmgKPiArICoKPiArICogUmV0dXJuIEtWQSBvbiBz
+dWNjZXNzIG9yIE5VTEwgb24gZmFpbHVyZQo+ICsgKgo+ICsgKi8KPiArc3RhdGljIHZvaWQgKmlw
+dTNfZG1hbWFwX2FsbG9jKHN0cnVjdCBkZXZpY2UgKmRldiwgc2l6ZV90IHNpemUsCj4gKyAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIGRtYV9hZGRyX3QgKmRtYV9oYW5kbGUsIGdmcF90IGdm
+cCwKPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyBhdHRycykK
+PiArewo+ICsgICAgICAgc3RydWN0IGlwdTNfbW11ICptbXUgPSB0b19pcHUzX21tdShkZXYpOwo+
+ICsgICAgICAgc3RydWN0IHBhZ2UgKipwYWdlczsKPiArICAgICAgIHN0cnVjdCBpb3ZhICppb3Zh
+Owo+ICsgICAgICAgc3RydWN0IHZtX3N0cnVjdCAqYXJlYTsKPiArICAgICAgIGludCBpOwo+ICsg
+ICAgICAgaW50IHJ2YWw7Cj4gKwo+ICsgICAgICAgc2l6ZSA9IFBBR0VfQUxJR04oc2l6ZSk7Cj4g
+Kwo+ICsgICAgICAgaW92YSA9IGFsbG9jX2lvdmEoJm1tdS0+aW92YV9kb21haW4sIHNpemUgPj4g
+UEFHRV9TSElGVCwKPiArICAgICAgICAgICAgICAgICAgICAgICBkbWFfZ2V0X21hc2soZGV2KSA+
+PiBQQUdFX1NISUZULCAwKTsKPiArICAgICAgIGlmICghaW92YSkKPiArICAgICAgICAgICAgICAg
+cmV0dXJuIE5VTEw7Cj4gKwo+ICsgICAgICAgcGFnZXMgPSBpcHUzX2RtYW1hcF9hbGxvY19idWZm
+ZXIoZGV2LCBzaXplLCBnZnAsIGF0dHJzKTsKPiArICAgICAgIGlmICghcGFnZXMpCj4gKyAgICAg
+ICAgICAgICAgIGdvdG8gb3V0X2ZyZWVfaW92YTsKPiArCj4gKyAgICAgICAvKiBDYWxsIElPTU1V
+IGRyaXZlciB0byBzZXR1cCBwZ3QgKi8KPiArICAgICAgIGZvciAoaSA9IDA7IGlvdmEtPnBmbl9s
+byArIGkgPD0gaW92YS0+cGZuX2hpOyBpKyspIHsKPiArICAgICAgICAgICAgICAgcnZhbCA9IGlv
+bW11X21hcChtbXUtPmRvbWFpbiwKPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAo
+aW92YS0+cGZuX2xvICsgaSkgPDwgUEFHRV9TSElGVCwKPiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBwYWdlX3RvX3BoeXMocGFnZXNbaV0pLCBQQUdFX1NJWkUsIDApOwo+ICsgICAg
+ICAgICAgICAgICBpZiAocnZhbCkKPiArICAgICAgICAgICAgICAgICAgICAgICBnb3RvIG91dF91
+bm1hcDsKPiArICAgICAgIH0KCkkgdGhpbmsgbW9zdCBvZiB0aGUgY29kZSBhYm92ZSBpcyBhbHJl
+YWR5IGltcGxlbWVudGVkIGluCmRyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMuCgo+ICsgICAgICAg
+LyogTm93IGdyYWIgYSB2aXJ0dWFsIHJlZ2lvbiAqLwo+ICsgICAgICAgYXJlYSA9IF9fZ2V0X3Zt
+X2FyZWEoc2l6ZSwgMCwgVk1BTExPQ19TVEFSVCwgVk1BTExPQ19FTkQpOwo+ICsgICAgICAgaWYg
+KCFhcmVhKQo+ICsgICAgICAgICAgICAgICBnb3RvIG91dF91bm1hcDsKPiArCj4gKyAgICAgICBh
+cmVhLT5wYWdlcyA9IHBhZ2VzOwo+ICsgICAgICAgLyogQW5kIG1hcCBpdCBpbiBLVkEgKi8KPiAr
+ICAgICAgIGlmIChtYXBfdm1fYXJlYShhcmVhLCBQQUdFX0tFUk5FTCwgcGFnZXMpKQo+ICsgICAg
+ICAgICAgICAgICBnb3RvIG91dF92dW5tYXA7Cj4gKwo+ICsgICAgICAgKmRtYV9oYW5kbGUgPSBp
+b3ZhLT5wZm5fbG8gPDwgUEFHRV9TSElGVDsKPiArCj4gKyAgICAgICByZXR1cm4gYXJlYS0+YWRk
+cjsKPiArCj4gK291dF92dW5tYXA6Cj4gKyAgICAgICB2dW5tYXAoYXJlYS0+YWRkcik7Cj4gKwo+
+ICtvdXRfdW5tYXA6Cj4gKyAgICAgICBpcHUzX2RtYW1hcF9mcmVlX2J1ZmZlcihkZXYsIHBhZ2Vz
+LCBzaXplLCBhdHRycyk7Cj4gKyAgICAgICBmb3IgKGktLTsgaSA+PSAwOyBpLS0pIHsKPiArICAg
+ICAgICAgICAgICAgaW9tbXVfdW5tYXAobW11LT5kb21haW4sIChpb3ZhLT5wZm5fbG8gKyBpKSA8
+PCBQQUdFX1NISUZULAo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICBQQUdFX1NJWkUpOwo+
+ICsgICAgICAgfQo+ICsKPiArb3V0X2ZyZWVfaW92YToKPiArICAgICAgIF9fZnJlZV9pb3ZhKCZt
+bXUtPmlvdmFfZG9tYWluLCBpb3ZhKTsKPiArCj4gKyAgICAgICByZXR1cm4gTlVMTDsKPiArfQo+
+ICsKPiArLyoKPiArICogQ291bnRlcnBhcnQgb2YgaXB1M19kbWFtYXBfYWxsb2MKPiArICovCj4g
+K3N0YXRpYyB2b2lkIGlwdTNfZG1hbWFwX2ZyZWUoc3RydWN0IGRldmljZSAqZGV2LCBzaXplX3Qg
+c2l6ZSwgdm9pZCAqdmFkZHIsCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICBkbWFfYWRk
+cl90IGRtYV9oYW5kbGUsIHVuc2lnbmVkIGxvbmcgYXR0cnMpCj4gK3sKPiArICAgICAgIHN0cnVj
+dCBpcHUzX21tdSAqbW11ID0gdG9faXB1M19tbXUoZGV2KTsKPiArICAgICAgIHN0cnVjdCB2bV9z
+dHJ1Y3QgKmFyZWEgPSBmaW5kX3ZtX2FyZWEodmFkZHIpOwo+ICsgICAgICAgc3RydWN0IGlvdmEg
+KmlvdmEgPSBmaW5kX2lvdmEoJm1tdS0+aW92YV9kb21haW4sCj4gKyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBkbWFfaGFuZGxlID4+IFBBR0VfU0hJRlQpOwo+ICsKPiArICAg
+ICAgIGlmIChXQVJOX09OKCFhcmVhKSB8fCBXQVJOX09OKCFpb3ZhKSkKPiArICAgICAgICAgICAg
+ICAgcmV0dXJuOwo+ICsKPiArICAgICAgIGlmIChXQVJOX09OKCFhcmVhLT5wYWdlcykpCj4gKyAg
+ICAgICAgICAgICAgIHJldHVybjsKPiArCj4gKyAgICAgICBzaXplID0gUEFHRV9BTElHTihzaXpl
+KTsKPiArCj4gKyAgICAgICBpb21tdV91bm1hcChtbXUtPmRvbWFpbiwgaW92YS0+cGZuX2xvIDw8
+IFBBR0VfU0hJRlQsCj4gKyAgICAgICAgICAgICAgIChpb3ZhLT5wZm5faGkgLSBpb3ZhLT5wZm5f
+bG8gKyAxKSA8PCBQQUdFX1NISUZUKTsKPiArCj4gKyAgICAgICBfX2ZyZWVfaW92YSgmbW11LT5p
+b3ZhX2RvbWFpbiwgaW92YSk7Cj4gKwo+ICsgICAgICAgaXB1M19kbWFtYXBfZnJlZV9idWZmZXIo
+ZGV2LCBhcmVhLT5wYWdlcywgc2l6ZSwgYXR0cnMpOwo+ICsKPiArICAgICAgIHZ1bm1hcCh2YWRk
+cik7Cj4gK30KPiArCj4gKy8qCj4gKyAqIEluc2VydCBlYWNoIHBhZ2UgaW50byB1c2VyIFZNQQo+
+ICsgKi8KPiArc3RhdGljIGludCBpcHUzX2RtYW1hcF9tbWFwKHN0cnVjdCBkZXZpY2UgKmRldiwg
+c3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHZvaWQgKmFkZHIsIGRtYV9hZGRyX3QgaW92YSwgc2l6ZV90IHNpemUsCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgYXR0cnMpCj4gK3sKPiArICAgICAgIHN0cnVj
+dCB2bV9zdHJ1Y3QgKmFyZWEgPSBmaW5kX3ZtX2FyZWEoYWRkcik7Cj4gKyAgICAgICBzaXplX3Qg
+Y291bnQgPSBQQUdFX0FMSUdOKHNpemUpID4+IFBBR0VfU0hJRlQ7Cj4gKyAgICAgICBzaXplX3Qg
+aTsKPiArCj4gKyAgICAgICBpZiAoIWFyZWEpCj4gKyAgICAgICAgICAgICAgIHJldHVybiAtRUZB
+VUxUOwo+ICsKPiArICAgICAgIGlmICh2bWEtPnZtX3N0YXJ0ICYgflBBR0VfTUFTSykKPiArICAg
+ICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7Cj4gKwo+ICsgICAgICAgaWYgKHNpemUgPiBhcmVh
+LT5zaXplKQo+ICsgICAgICAgICAgICAgICByZXR1cm4gLUVGQVVMVDsKPiArCj4gKyAgICAgICBm
+b3IgKGkgPSAwOyBpIDwgY291bnQ7IGkrKykKPiArICAgICAgICAgICAgICAgdm1faW5zZXJ0X3Bh
+Z2Uodm1hLCB2bWEtPnZtX3N0YXJ0ICsgKGkgPDwgUEFHRV9TSElGVCksCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBhcmVhLT5wYWdlc1tpXSk7CgpBbHJlYWR5IGltcGxlbWVudGVk
+IGluIGRtYS1pb21tdS5jLgoKR2VuZXJhbGx5IGl0IGxvb2tzIGxpa2UgbW9zdCBvZiB0aGUgY29k
+ZSBpbiB0aGlzIGZpbGUgY2FuIGJlIHJlbW92ZWQKYnkgdXNpbmcgdGhlIGdlbmVyaWMgaGVscGVy
+cy4KCihQcmVzZXJ2aW5nIHJlc3Qgb2YgdGhlIGNvZGUgZm9yIGFkZGVkIHJlY2lwaWVudHMuKQoK
+QmVzdCByZWdhcmRzLApUb21hc3oKCj4gKwo+ICsgICAgICAgcmV0dXJuIDA7Cj4gK30KPiArCj4g
+K3N0YXRpYyB2b2lkIGlwdTNfZG1hbWFwX3VubWFwX3NnKHN0cnVjdCBkZXZpY2UgKmRldiwgc3Ry
+dWN0IHNjYXR0ZXJsaXN0ICpzZ2xpc3QsCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgaW50IG5lbnRzLCBlbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBkaXIsCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyBhdHRycykKPiArewo+ICsgICAgICAg
+c3RydWN0IGlwdTNfbW11ICptbXUgPSB0b19pcHUzX21tdShkZXYpOwo+ICsgICAgICAgc3RydWN0
+IGlvdmEgKmlvdmEgPSBmaW5kX2lvdmEoJm1tdS0+aW92YV9kb21haW4sCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNnX2RtYV9hZGRyZXNzKHNnbGlzdCkgPj4gUEFH
+RV9TSElGVCk7Cj4gKwo+ICsgICAgICAgaWYgKCFuZW50cyB8fCBXQVJOX09OKCFpb3ZhKSkKPiAr
+ICAgICAgICAgICAgICAgcmV0dXJuOwo+ICsKPiArICAgICAgIGlmICgoYXR0cnMgJiBETUFfQVRU
+Ul9TS0lQX0NQVV9TWU5DKSA9PSAwKQo+ICsgICAgICAgICAgICAgICBpcHUzX2RtYW1hcF9zeW5j
+X3NnX2Zvcl9jcHUoZGV2LCBzZ2xpc3QsIG5lbnRzLAo+ICsgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgRE1BX0JJRElSRUNUSU9OQUwpOwo+ICsKPiArICAgICAgIGlv
+bW11X3VubWFwKG1tdS0+ZG9tYWluLCBpb3ZhLT5wZm5fbG8gPDwgUEFHRV9TSElGVCwKPiArICAg
+ICAgICAgICAgICAgICAgICAgICAoaW92YS0+cGZuX2hpIC0gaW92YS0+cGZuX2xvICsgMSkgPDwg
+UEFHRV9TSElGVCk7Cj4gKwo+ICsgICAgICAgX19mcmVlX2lvdmEoJm1tdS0+aW92YV9kb21haW4s
+IGlvdmEpOwo+ICt9Cj4gKwo+ICtzdGF0aWMgaW50IGlwdTNfZG1hbWFwX21hcF9zZyhzdHJ1Y3Qg
+ZGV2aWNlICpkZXYsIHN0cnVjdCBzY2F0dGVybGlzdCAqc2dsaXN0LAo+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGludCBuZW50cywgZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZGlyLAo+
+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgYXR0cnMpCj4gK3sK
+PiArICAgICAgIHN0cnVjdCBpcHUzX21tdSAqbW11ID0gdG9faXB1M19tbXUoZGV2KTsKPiArICAg
+ICAgIHN0cnVjdCBzY2F0dGVybGlzdCAqc2c7Cj4gKyAgICAgICBzdHJ1Y3QgaW92YSAqaW92YTsK
+PiArICAgICAgIHNpemVfdCBzaXplID0gMDsKPiArICAgICAgIHVpbnQzMl90IGlvdmFfYWRkcjsK
+PiArICAgICAgIGludCBpOwo+ICsKPiArICAgICAgIGZvcl9lYWNoX3NnKHNnbGlzdCwgc2csIG5l
+bnRzLCBpKQo+ICsgICAgICAgICAgICAgICBzaXplICs9IFBBR0VfQUxJR04oc2ctPmxlbmd0aCkg
+Pj4gUEFHRV9TSElGVDsKPiArCj4gKyAgICAgICBkZXZfZGJnKGRldiwgImRtYW1hcDogbWFwcGlu
+ZyBzZyAlZCBlbnRyaWVzLCAlenUgcGFnZXNcbiIsIG5lbnRzLCBzaXplKTsKPiArCj4gKyAgICAg
+ICBpb3ZhID0gYWxsb2NfaW92YSgmbW11LT5pb3ZhX2RvbWFpbiwgc2l6ZSwKPiArICAgICAgICAg
+ICAgICAgICAgICAgICAgIGRtYV9nZXRfbWFzayhkZXYpID4+IFBBR0VfU0hJRlQsIDApOwo+ICsg
+ICAgICAgaWYgKCFpb3ZhKQo+ICsgICAgICAgICAgICAgICByZXR1cm4gMDsKPiArCj4gKyAgICAg
+ICBkZXZfZGJnKGRldiwgImRtYW1hcDogaW92YSBsb3cgcGZuICVsdSwgaGlnaCBwZm4gJWx1XG4i
+LCBpb3ZhLT5wZm5fbG8sCj4gKyAgICAgICAgICAgICAgIGlvdmEtPnBmbl9oaSk7Cj4gKwo+ICsg
+ICAgICAgaW92YV9hZGRyID0gaW92YS0+cGZuX2xvOwo+ICsKPiArICAgICAgIGZvcl9lYWNoX3Nn
+KHNnbGlzdCwgc2csIG5lbnRzLCBpKSB7Cj4gKyAgICAgICAgICAgICAgIGludCBydmFsOwo+ICsK
+PiArICAgICAgICAgICAgICAgZGV2X2RiZyhkZXYsCj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+ImRtYW1hcDogZW50cnkgJWQ6IGlvdmEgMHglOC44eCwgcGh5cyAweCUxNi4xNmxseFxuIiwKPiAr
+ICAgICAgICAgICAgICAgICAgICAgICBpLCBpb3ZhX2FkZHIgPDwgUEFHRV9TSElGVCwgcGFnZV90
+b19waHlzKHNnX3BhZ2Uoc2cpKSk7Cj4gKyAgICAgICAgICAgICAgIHJ2YWwgPSBpb21tdV9tYXAo
+bW11LT5kb21haW4sIGlvdmFfYWRkciA8PCBQQUdFX1NISUZULAo+ICsgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIHBhZ2VfdG9fcGh5cyhzZ19wYWdlKHNnKSksCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgUEFHRV9BTElHTihzZy0+bGVuZ3RoKSwgMCk7Cj4gKyAgICAg
+ICAgICAgICAgIGlmIChydmFsKQo+ICsgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gb3V0X2Zh
+aWw7Cj4gKyAgICAgICAgICAgICAgIHNnX2RtYV9hZGRyZXNzKHNnKSA9IGlvdmFfYWRkciA8PCBQ
+QUdFX1NISUZUOwo+ICsjaWZkZWYgQ09ORklHX05FRURfU0dfRE1BX0xFTkdUSAo+ICsgICAgICAg
+ICAgICAgICBzZ19kbWFfbGVuKHNnKSA9IHNnLT5sZW5ndGg7Cj4gKyNlbmRpZiAvKiBDT05GSUdf
+TkVFRF9TR19ETUFfTEVOR1RIICovCj4gKwo+ICsgICAgICAgICAgICAgICBpb3ZhX2FkZHIgKz0g
+UEFHRV9BTElHTihzZy0+bGVuZ3RoKSA+PiBQQUdFX1NISUZUOwo+ICsgICAgICAgfQo+ICsKPiAr
+ICAgICAgIGlmICgoYXR0cnMgJiBETUFfQVRUUl9TS0lQX0NQVV9TWU5DKSA9PSAwKQo+ICsgICAg
+ICAgICAgICAgICBpcHUzX2RtYW1hcF9zeW5jX3NnX2Zvcl9jcHUoZGV2LCBzZ2xpc3QsIG5lbnRz
+LAo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRE1BX0JJRElS
+RUNUSU9OQUwpOwo+ICsKPiArICAgICAgIHJldHVybiBuZW50czsKPiArCj4gK291dF9mYWlsOgo+
+ICsgICAgICAgaXB1M19kbWFtYXBfdW5tYXBfc2coZGV2LCBzZ2xpc3QsIGksIGRpciwgYXR0cnMp
+Owo+ICsKPiArICAgICAgIHJldHVybiAwOwo+ICt9Cj4gKwo+ICsvKgo+ICsgKiBDcmVhdGUgc2Nh
+dHRlci1saXN0IGZvciB0aGUgYWxyZWFkeSBhbGxvY2F0ZWQgRE1BIGJ1ZmZlcgo+ICsgKi8KPiAr
+c3RhdGljIGludCBpcHUzX2RtYW1hcF9nZXRfc2d0YWJsZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0
+cnVjdCBzZ190YWJsZSAqc2d0LAo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+dm9pZCAqY3B1X2FkZHIsIGRtYV9hZGRyX3QgaGFuZGxlLAo+ICsgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgc2l6ZV90IHNpemUsIHVuc2lnbmVkIGxvbmcgYXR0cnMpCj4gK3sKPiAr
+ICAgICAgIHN0cnVjdCB2bV9zdHJ1Y3QgKmFyZWEgPSBmaW5kX3ZtX2FyZWEoY3B1X2FkZHIpOwo+
+ICsgICAgICAgaW50IG5fcGFnZXM7Cj4gKyAgICAgICBpbnQgcmV0Owo+ICsKPiArICAgICAgIGlm
+ICghYXJlYSB8fCAoV0FSTl9PTighYXJlYS0+cGFnZXMpKSkKPiArICAgICAgICAgICAgICAgcmV0
+dXJuIC1FTk9NRU07Cj4gKwo+ICsgICAgICAgbl9wYWdlcyA9IFBBR0VfQUxJR04oc2l6ZSkgPj4g
+UEFHRV9TSElGVDsKPiArCj4gKyAgICAgICByZXQgPSBzZ19hbGxvY190YWJsZV9mcm9tX3BhZ2Vz
+KHNndCwgYXJlYS0+cGFnZXMsIG5fcGFnZXMsIDAsIHNpemUsCj4gKyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIEdGUF9LRVJORUwpOwo+ICsgICAgICAgaWYgKHJldCkKPiAr
+ICAgICAgICAgICAgICAgZGV2X2RiZyhkZXYsICJmYWlsZWQgdG8gZ2V0IHNndCB0YWJsZVxuIik7
+Cj4gKwo+ICsgICAgICAgcmV0dXJuIHJldDsKPiArfQo+ICsKPiArc3RydWN0IGRtYV9tYXBfb3Bz
+IGlwdTNfZG1hbWFwX29wcyA9IHsKPiArICAgICAgIC5hbGxvYyA9IGlwdTNfZG1hbWFwX2FsbG9j
+LAo+ICsgICAgICAgLmZyZWUgPSBpcHUzX2RtYW1hcF9mcmVlLAo+ICsgICAgICAgLm1tYXAgPSBp
+cHUzX2RtYW1hcF9tbWFwLAo+ICsgICAgICAgLm1hcF9zZyA9IGlwdTNfZG1hbWFwX21hcF9zZywK
+PiArICAgICAgIC51bm1hcF9zZyA9IGlwdTNfZG1hbWFwX3VubWFwX3NnLAo+ICsgICAgICAgLnN5
+bmNfc2luZ2xlX2Zvcl9jcHUgPSBpcHUzX2RtYW1hcF9zeW5jX3NpbmdsZV9mb3JfY3B1LAo+ICsg
+ICAgICAgLnN5bmNfc2luZ2xlX2Zvcl9kZXZpY2UgPSBpcHUzX2RtYW1hcF9zeW5jX3NpbmdsZV9m
+b3JfY3B1LAo+ICsgICAgICAgLnN5bmNfc2dfZm9yX2NwdSA9IGlwdTNfZG1hbWFwX3N5bmNfc2df
+Zm9yX2NwdSwKPiArICAgICAgIC5zeW5jX3NnX2Zvcl9kZXZpY2UgPSBpcHUzX2RtYW1hcF9zeW5j
+X3NnX2Zvcl9jcHUsCj4gKyAgICAgICAuZ2V0X3NndGFibGUgPSBpcHUzX2RtYW1hcF9nZXRfc2d0
+YWJsZSwKPiArfTsKPiArRVhQT1JUX1NZTUJPTF9HUEwoaXB1M19kbWFtYXBfb3BzKTsKPiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1My9pcHUzLWRtYW1hcC5oIGIvZHJp
+dmVycy9tZWRpYS9wY2kvaW50ZWwvaXB1My9pcHUzLWRtYW1hcC5oCj4gbmV3IGZpbGUgbW9kZSAx
+MDA2NDQKPiBpbmRleCAwMDAwMDAwLi43MTRiYWMwCj4gLS0tIC9kZXYvbnVsbAo+ICsrKyBiL2Ry
+aXZlcnMvbWVkaWEvcGNpL2ludGVsL2lwdTMvaXB1My1kbWFtYXAuaAo+IEBAIC0wLDAgKzEsMjAg
+QEAKPiArLyoKPiArICogQ29weXJpZ2h0IChjKSAyMDE3IEludGVsIENvcnBvcmF0aW9uLgo+ICsg
+Kgo+ICsgKiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1
+dGUgaXQgYW5kL29yCj4gKyAqIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBH
+ZW5lcmFsIFB1YmxpYyBMaWNlbnNlIHZlcnNpb24KPiArICogMiBhcyBwdWJsaXNoZWQgYnkgdGhl
+IEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4KPiArICoKPiArICogVGhpcyBwcm9ncmFtIGlzIGRp
+c3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsCj4gKyAqIGJ1dCBX
+SVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dCBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9m
+Cj4gKyAqIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9T
+RS4gIFNlZSB0aGUKPiArICogR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0
+YWlscy4KPiArICoKPiArICovCj4gKwo+ICsjaWZuZGVmIF9fSVBVM19ETUFNQVBfSAo+ICsjZGVm
+aW5lIF9fSVBVM19ETUFNQVBfSAo+ICsKPiArZXh0ZXJuIHN0cnVjdCBkbWFfbWFwX29wcyBpcHUz
+X2RtYW1hcF9vcHM7Cj4gKwo+ICsjZW5kaWYKPiAtLQo+IDIuNy40Cj4KX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
