@@ -1,133 +1,78 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 5/7] iommu/amd: Add flush counters to struct dma_ops_domain
-Date: Wed,  7 Jun 2017 16:58:18 +0200
-Message-ID: <1496847500-6781-6-git-send-email-joro@8bytes.org>
-References: <1496847500-6781-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1496847500-6781-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>, Arindam Nath <arindam.nath@amd.com>, Joerg Roedel <jroedel@suse.de>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v2 2/2] acpi/iort: numa: Add numa node mapping for smmuv3
+ devices
+Date: Wed, 7 Jun 2017 17:38:42 +0100
+Message-ID: <20170607163842.GA7937@red-moon>
+References: <1496746065-11082-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <1496746065-11082-3-git-send-email-ganapatrao.kulkarni@cavium.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1496746065-11082-3-git-send-email-ganapatrao.kulkarni@cavium.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will.Deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, lv.zheng@intel.com, joro@8bytes.org, rjw@rjwysocki.net, lenb@kernel.org, jnair@caviumnetworks.com, gpkulkarni@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+On Tue, Jun 06, 2017 at 04:17:45PM +0530, Ganapatrao Kulkarni wrote:
+> Add code to parse proximity domain in SMMUv3 IORT table to
+> set numa node mapping for smmuv3 devices.
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> ---
+>  drivers/acpi/arm64/iort.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index bba2b59..b4f328f 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+>  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+>  }
+>  
+> +/*
+> + * set numa proximity domain for smmv3 device
+> + */
+> +static void  __init iort_set_proximity(struct acpi_iort_node *node,
+> +		struct device *dev)
+> +{
+> +	struct acpi_iort_smmu_v3 *smmu;
+> +
+> +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+> +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+> +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+> +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> +			smmu->base_address,
+> +			smmu->pxm);
+> +	}
+> +}
+> +
+>  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
+>  {
+>  	struct acpi_iort_smmu *smmu;
+> @@ -1002,6 +1019,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
+>  	if (!pdev)
+>  		return -ENOMEM;
+>  
+> +	if (node->type == ACPI_IORT_NODE_SMMU_V3)
+> +		iort_set_proximity(node, &pdev->dev);
 
-The counters are increased every time the TLB for a given
-domain is flushed. We also store the current value of that
-counter into newly added entries of the flush-queue, so that
-we can tell wheter this entry is already flushed.
+Nit: while at it you may add an ops hook to set the proximity
+(NULL for SMMU v2) and call it if present, it is just to make
+the code adding devices more uniform.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/amd_iommu.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+Who is queueing these patches ? I am asking to make sure we sort
+the ACPICA dependency (there are other IORT/ACPICA patches to consider
+too).
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 9aa2735..1ad2866 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -139,6 +139,7 @@ static void detach_device(struct device *dev);
- struct flush_queue_entry {
- 	unsigned long iova_pfn;
- 	unsigned long pages;
-+	u64 counter; /* Flush counter when this entry was added to the queue */
- };
- 
- struct flush_queue {
-@@ -158,6 +159,27 @@ struct dma_ops_domain {
- 	struct iova_domain iovad;
- 
- 	struct flush_queue __percpu *flush_queue;
-+
-+	/*
-+	 * We need two counter here to be race-free wrt. IOTLB flushing and
-+	 * adding entries to the flush queue.
-+	 *
-+	 * The flush_start_cnt is incremented _before_ the IOTLB flush starts.
-+	 * New entries added to the flush ring-buffer get their 'counter' value
-+	 * from here. This way we can make sure that entries added to the queue
-+	 * (or other per-cpu queues of the same domain) while the TLB is about
-+	 * to be flushed are not considered to be flushed already.
-+	 */
-+	atomic64_t flush_start_cnt;
-+
-+	/*
-+	 * The flush_finish_cnt is incremented when an IOTLB flush is complete.
-+	 * This value is always smaller than flush_start_cnt. The queue_add
-+	 * function frees all IOVAs that have a counter value smaller than
-+	 * flush_finish_cnt. This makes sure that we only free IOVAs that are
-+	 * flushed out of the IOTLB of the domain.
-+	 */
-+	atomic64_t flush_finish_cnt;
- };
- 
- static struct iova_domain reserved_iova_ranges;
-@@ -1749,6 +1771,9 @@ static int dma_ops_domain_alloc_flush_queue(struct dma_ops_domain *dom)
- {
- 	int cpu;
- 
-+	atomic64_set(&dom->flush_start_cnt,  0);
-+	atomic64_set(&dom->flush_finish_cnt, 0);
-+
- 	dom->flush_queue = alloc_percpu(struct flush_queue);
- 	if (!dom->flush_queue)
- 		return -ENOMEM;
-@@ -1816,22 +1841,48 @@ static inline unsigned queue_ring_add(struct flush_queue *queue)
- 	return idx;
- }
- 
-+static inline void queue_ring_remove_head(struct flush_queue *queue)
-+{
-+	assert_spin_locked(&queue->lock);
-+	queue->head = (queue->head + 1) % FLUSH_QUEUE_SIZE;
-+}
-+
- static void queue_add(struct dma_ops_domain *dom,
- 		      unsigned long address, unsigned long pages)
- {
- 	struct flush_queue *queue;
- 	unsigned long flags;
-+	u64 counter;
- 	int idx;
- 
- 	pages     = __roundup_pow_of_two(pages);
- 	address >>= PAGE_SHIFT;
- 
-+	counter = atomic64_read(&dom->flush_finish_cnt);
-+
- 	queue = get_cpu_ptr(dom->flush_queue);
- 	spin_lock_irqsave(&queue->lock, flags);
- 
-+	queue_ring_for_each(idx, queue) {
-+		/*
-+		 * This assumes that counter values in the ring-buffer are
-+		 * monotonously rising.
-+		 */
-+		if (queue->entries[idx].counter >= counter)
-+			break;
-+
-+		free_iova_fast(&dom->iovad,
-+			       queue->entries[idx].iova_pfn,
-+			       queue->entries[idx].pages);
-+
-+		queue_ring_remove_head(queue);
-+	}
-+
- 	if (queue_ring_full(queue)) {
-+		atomic64_inc(&dom->flush_start_cnt);
- 		domain_flush_tlb(&dom->domain);
- 		domain_flush_complete(&dom->domain);
-+		atomic64_inc(&dom->flush_finish_cnt);
- 		queue_release(dom, queue);
- 	}
- 
-@@ -1839,6 +1890,7 @@ static void queue_add(struct dma_ops_domain *dom,
- 
- 	queue->entries[idx].iova_pfn = address;
- 	queue->entries[idx].pages    = pages;
-+	queue->entries[idx].counter  = atomic64_read(&dom->flush_start_cnt);
- 
- 	spin_unlock_irqrestore(&queue->lock, flags);
- 	put_cpu_ptr(dom->flush_queue);
--- 
-2.7.4
+Thanks,
+Lorenzo
+
+>  	count = ops->iommu_count_resources(node);
+>  
+>  	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
+> -- 
+> 1.8.1.4
+> 
