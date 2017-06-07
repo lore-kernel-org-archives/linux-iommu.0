@@ -1,182 +1,140 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [PATCH v6 34/34] x86/mm: Add support to make use of Secure Memory
- Encryption
-Date: Wed, 07 Jun 2017 14:19:16 -0500
-Message-ID: <20170607191916.28645.87015.stgit@tlendack-t1.amdoffice.net>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
+From: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
+Date: Thu, 8 Jun 2017 00:59:52 +0300
+Message-ID: <20170607215951.GA21034@kekkonen.localdomain>
+References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
+	<1496695157-19926-3-git-send-email-yong.zhi@intel.com>
+	<CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc: Rik van Riel <riel@redhat.com>, Radim =?utf-8?b?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Dave Young <dyoung@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Mani,
+	Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add support to check if SME has been enabled and if memory encryption
-should be activated (checking of command line option based on the
-configuration of the default state).  If memory encryption is to be
-activated, then the encryption mask is set and the kernel is encrypted
-"in place."
+Hi Tomasz,
 
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
----
- arch/x86/kernel/head_64.S |    1 
- arch/x86/mm/mem_encrypt.c |   93 +++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 89 insertions(+), 5 deletions(-)
+On Tue, Jun 06, 2017 at 07:13:19PM +0900, Tomasz Figa wrote:
+> Hi Yong, Tuukka,
+> 
+> +CC IOMMU ML and Joerg. (Technically you should resend this patch
+> including them.)
 
-diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index 1fe944b..660bf8e 100644
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -97,6 +97,7 @@ startup_64:
- 	 * Save the returned mask in %r12 for later use.
- 	 */
- 	push	%rsi
-+	movq	%rsi, %rdi
- 	call	sme_enable
- 	pop	%rsi
- 	movq	%rax, %r12
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 6129477..d624058 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -12,6 +12,7 @@
- 
- #include <linux/linkage.h>
- #include <linux/init.h>
-+#include <asm/bootparam.h>
- 
- #ifdef CONFIG_AMD_MEM_ENCRYPT
- 
-@@ -22,10 +23,23 @@
- #include <asm/tlbflush.h>
- #include <asm/fixmap.h>
- #include <asm/setup.h>
--#include <asm/bootparam.h>
- #include <asm/set_memory.h>
- #include <asm/cacheflush.h>
- #include <asm/sections.h>
-+#include <asm/mem_encrypt.h>
-+#include <asm/processor-flags.h>
-+#include <asm/msr.h>
-+#include <asm/cmdline.h>
-+
-+static char sme_cmdline_arg[] __initdata = "mem_encrypt";
-+static char sme_cmdline_on[]  __initdata = "on";
-+static char sme_cmdline_off[] __initdata = "off";
-+
-+/*
-+ * Some SME functions run very early causing issues with the stack-protector
-+ * support. Provide a way to turn off this support on a per-function basis.
-+ */
-+#define SME_NOSTACKP __attribute__((__optimize__("no-stack-protector")))
- 
- /*
-  * Since SME related variables are set early in the boot process they must
-@@ -237,6 +251,8 @@ void __init mem_encrypt_init(void)
- 
- 	/* Call into SWIOTLB to update the SWIOTLB DMA buffers */
- 	swiotlb_update_mem_attributes();
-+
-+	pr_info("AMD Secure Memory Encryption (SME) active\n");
- }
- 
- void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
-@@ -564,8 +580,75 @@ void __init sme_encrypt_kernel(void)
- 	native_write_cr3(native_read_cr3());
- }
- 
--unsigned long __init sme_enable(void)
-+unsigned long __init SME_NOSTACKP sme_enable(struct boot_params *bp)
- {
-+	const char *cmdline_ptr, *cmdline_arg, *cmdline_on, *cmdline_off;
-+	unsigned int eax, ebx, ecx, edx;
-+	bool active_by_default;
-+	unsigned long me_mask;
-+	char buffer[16];
-+	u64 msr;
-+
-+	/* Check for the SME support leaf */
-+	eax = 0x80000000;
-+	ecx = 0;
-+	native_cpuid(&eax, &ebx, &ecx, &edx);
-+	if (eax < 0x8000001f)
-+		goto out;
-+
-+	/*
-+	 * Check for the SME feature:
-+	 *   CPUID Fn8000_001F[EAX] - Bit 0
-+	 *     Secure Memory Encryption support
-+	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
-+	 *     Pagetable bit position used to indicate encryption
-+	 */
-+	eax = 0x8000001f;
-+	ecx = 0;
-+	native_cpuid(&eax, &ebx, &ecx, &edx);
-+	if (!(eax & 1))
-+		goto out;
-+
-+	me_mask = 1UL << (ebx & 0x3f);
-+
-+	/* Check if SME is enabled */
-+	msr = __rdmsr(MSR_K8_SYSCFG);
-+	if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
-+		goto out;
-+
-+	/*
-+	 * Fixups have not been applied to phys_base yet and we're running
-+	 * identity mapped, so we must obtain the address to the SME command
-+	 * line argument data using rip-relative addressing.
-+	 */
-+	asm ("lea sme_cmdline_arg(%%rip), %0"
-+	     : "=r" (cmdline_arg)
-+	     : "p" (sme_cmdline_arg));
-+	asm ("lea sme_cmdline_on(%%rip), %0"
-+	     : "=r" (cmdline_on)
-+	     : "p" (sme_cmdline_on));
-+	asm ("lea sme_cmdline_off(%%rip), %0"
-+	     : "=r" (cmdline_off)
-+	     : "p" (sme_cmdline_off));
-+
-+	if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT))
-+		active_by_default = true;
-+	else
-+		active_by_default = false;
-+
-+	cmdline_ptr = (const char *)((u64)bp->hdr.cmd_line_ptr |
-+				     ((u64)bp->ext_cmd_line_ptr << 32));
-+
-+	cmdline_find_option(cmdline_ptr, cmdline_arg, buffer, sizeof(buffer));
-+
-+	if (strncmp(buffer, cmdline_on, sizeof(buffer)) == 0)
-+		sme_me_mask = me_mask;
-+	else if (strncmp(buffer, cmdline_off, sizeof(buffer)) == 0)
-+		sme_me_mask = 0;
-+	else
-+		sme_me_mask = active_by_default ? me_mask : 0;
-+
-+out:
- 	return sme_me_mask;
- }
- 
-@@ -576,9 +659,9 @@ unsigned long sme_get_me_mask(void)
- 
- #else	/* !CONFIG_AMD_MEM_ENCRYPT */
- 
--void __init sme_encrypt_kernel(void)	{ }
--unsigned long __init sme_enable(void)	{ return 0; }
-+void __init sme_encrypt_kernel(void)			{ }
-+unsigned long __init sme_enable(struct boot_params *bp)	{ return 0; }
- 
--unsigned long sme_get_me_mask(void)	{ return 0; }
-+unsigned long sme_get_me_mask(void)			{ return 0; }
- 
- #endif	/* CONFIG_AMD_MEM_ENCRYPT */
+Thanks!
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+> 
+> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+...
+> > diff --git a/drivers/media/pci/intel/ipu3/Kconfig b/drivers/media/pci/intel/ipu3/Kconfig
+> > index 2a895d6..ab2edcb 100644
+> > --- a/drivers/media/pci/intel/ipu3/Kconfig
+> > +++ b/drivers/media/pci/intel/ipu3/Kconfig
+> > @@ -15,3 +15,14 @@ config VIDEO_IPU3_CIO2
+> >         Say Y or M here if you have a Skylake/Kaby Lake SoC with MIPI CSI-2
+> >         connected camera.
+> >         The module will be called ipu3-cio2.
+> > +
+> > +config INTEL_IPU3_MMU
+> > +       tristate "Intel ipu3-mmu driver"
+> > +       select IOMMU_API
+> > +       select IOMMU_IOVA
+> > +       ---help---
+> > +         For IPU3, this option enables its MMU driver to translate its internal
+> > +         virtual address to 39 bits wide physical address for 64GBytes space access.
+> > +
+> > +         Say Y here if you have Skylake/Kaby Lake SoC with IPU3.
+> > +         Say N if un-sure.
+> 
+> Is the MMU optional? I.e. can you still use the IPU3 without the MMU
+> driver? If no, then it doesn't make sense to flood the user with
+> meaningless choice and the driver could simply be selected by other
+> IPU3 drivers.
+
+There are other IPUs that contain the same hardware, so they would
+presumably use the same driver.
+
+> 
+> And the other way around, is the IPU3 MMU driver useful for anything
+> else than IPU3? If no (but yes for the above), then it should depend
+> on some other IPU3 drivers being enabled, as otherwise it would just
+> confuse the user.
+
+Very likely not.
+
+For now I think it'd be fine to have the driver separate from the rest of
+the IPU3 but without a separate Kconfig option.
+
+> 
+> > diff --git a/drivers/media/pci/intel/ipu3/Makefile b/drivers/media/pci/intel/ipu3/Makefile
+> > index 20186e3..2b669df 100644
+> > --- a/drivers/media/pci/intel/ipu3/Makefile
+> > +++ b/drivers/media/pci/intel/ipu3/Makefile
+> > @@ -1 +1,2 @@
+> >  obj-$(CONFIG_VIDEO_IPU3_CIO2) += ipu3-cio2.o
+> > +obj-$(CONFIG_INTEL_IPU3_MMU) += ipu3-mmu.o
+> > diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.c b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
+> > new file mode 100644
+> > index 0000000..a9fb116
+> > --- /dev/null
+> > +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
+
+...
+
+> > +/**
+> > + * ipu3_mmu_alloc_page_table - get page to fill entries with dummy defaults
+> > + * @d: mapping domain to be worked on
+> > + * @l1: True for L1 page table, false for L2 page table.
+> > + *
+> > + * Index of L1 page table points to L2 tbl
+> > + *
+> > + * Return: Pointer to allocated page table
+> > + * or NULL on failure.
+> > + */
+> > +static uint32_t *ipu3_mmu_alloc_page_table(struct ipu3_mmu_domain *d, bool l1)
+> > +{
+> > +       uint32_t *pt = (uint32_t *)__get_free_page(GFP_KERNEL);
+> 
+> Style: I believe u32 is preferred in the kernel.
+
+There are some 30000 users of uint32_t alone in the kernel. I'd say it
+should be fine. (I'm not trying saying it'd be more common than u32
+though.)
+
+> > +               DMA_BIT_MASK(IPU3_MMU_ADDRESS_BITS);
+> > +       mmu_dom->domain.geometry.force_aperture = true;
+> > +
+> > +       ptr = (void *)__get_free_page(GFP_KERNEL);
+> > +       if (!ptr)
+> > +               goto fail_get_page;
+> > +       mmu_dom->dummy_page = virt_to_phys(ptr) >> IPU3_MMU_PAGE_SHIFT;
+> 
+> Is virt_to_phys() correct here? I'm not an expert on x86 systems, but
+> since this is a PCI device, there might be some other memory mapping
+> involved.
+
+In theory yes --- if the IPU3 were behind an IOMMU managed by the Linux
+kernel. That kind of configuration wouldn't make much sense and any
+attempt to use such a configuration would probably fall apart with
+the assumption of single dma_ops, too.
+
+I have to say I'm not certain if anything else than kernel configuration
+would prevent this though.
+
+-- 
+Regards,
+
+Sakari Ailus
+sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
