@@ -1,177 +1,33 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Wed, 7 Jun 2017 18:16:18 +0100
-Message-ID: <20170607171618.GC7937@red-moon>
-References: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
- <20170531143213.82100-3-shameerali.kolothum.thodi@huawei.com>
- <20170606135623.GB20126@red-moon>
- <5FC3163CFD30C246ABAA99954A238FA838362082@FRAEML521-MBX.china.huawei.com>
+From: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
+Date: Wed, 7 Jun 2017 18:45:12 +0100
+Message-ID: <20170607184512.0e627965@lxorguk.ukuu.org.uk>
+References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
+        <1496695157-19926-4-git-send-email-yong.zhi@intel.com>
+        <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838362082@FRAEML521-MBX.china.huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
+Sender: linux-media-owner@vger.kernel.org
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 06, 2017 at 03:01:36PM +0000, Shameerali Kolothum Thodi wrote:
-> Hi Lorenzo,
+> > +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
+> > +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
+> > +
+> > +       clflush_cache_range(phys_to_virt(daddr), size);  
 > 
-> > -----Original Message-----
-> > From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
-> > Sent: Tuesday, June 06, 2017 2:56 PM
-> > To: Shameerali Kolothum Thodi
-> > Cc: marc.zyngier@arm.com; sudeep.holla@arm.com; will.deacon@arm.com;
-> > robin.murphy@arm.com; hanjun.guo@linaro.org; Gabriele Paoloni; John
-> > Garry; iommu@lists.linux-foundation.org; linux-arm-
-> > kernel@lists.infradead.org; linux-acpi@vger.kernel.org; devel@acpica.org;
-> > Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> > Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-> > erratum 161010801
-> > 
-> > On Wed, May 31, 2017 at 03:32:13PM +0100, shameer wrote:
-> > > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> > > platforms Hip06/Hip07 to support the SMMU mappings for MSI
-> > transactions.
-> > >
-> > > On these platforms GICv3 ITS translator is presented with the deviceID
-> > > by extending the MSI payload data to 64 bits to include the deviceID.
-> > > Hence, the PCIe controller on this platforms has to differentiate the
-> > > MSI payload against other DMA payload and has to modify the MSI
-> > payload.
-> > > This basically makes it difficult for this platforms to have a SMMU
-> > > translation for MSI.
-> > >
-> > > This patch implements a ACPI table based quirk to reserve the hw msi
-> > > regions in the smmu-v3 driver which means these address regions will
-> > > not be translated and will be excluded from iova allocations.
-> > >
-> > > The HW ITS address region associated with the dev is retrieved using a
-> > > new helper function added in the IORT code.
-> > 
-> > Remove or rephrase last paragraph, it reads as if you are adding an IORT
-> > helper function in this patch but you actually aren't.
+> You might need to consider another IOMMU on the way here. Generally,
+> given that daddr is your MMU DMA address (not necessarily CPU physical
+> address), you should be able to call
 > 
-> Thanks for going through this patch series. I will remove this in next version.
-> 
-> > > Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
-> > > ---
-> > >  drivers/iommu/arm-smmu-v3.c | 49
-> > > ++++++++++++++++++++++++++++++++++++++++++---
-> > >  1 file changed, 46 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
-> > v3.c
-> > > index abe4b88..3767526 100644
-> > > --- a/drivers/iommu/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm-smmu-v3.c
-> > > @@ -597,6 +597,7 @@ struct arm_smmu_device {
-> > >  	u32				features;
-> > >
-> > >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> > > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
-> > >  	u32				options;
-> > >
-> > >  	struct arm_smmu_cmdq		cmdq;
-> > > @@ -1755,6 +1756,38 @@ static bool arm_smmu_sid_in_range(struct
-> > > arm_smmu_device *smmu, u32 sid)
-> > >
-> > >  static struct iommu_ops arm_smmu_ops;
-> > >
-> > > +#ifdef CONFIG_ACPI
-> > > +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct
-> > > +device *dev) {
-> > > +	struct iommu_resv_region *region;
-> > > +	struct	irq_domain *irq_dom;
-> > > +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > > +	u64	base;
-> > 
-> > phys_addr_t
-> 
-> Ok.
-> 
-> > > +	irq_dom = pci_msi_get_device_domain(to_pci_dev(dev));
-> > > +	if (irq_dom) {
-> > > +		int	ret;
-> > > +		u32	rid;
-> > > +
-> > > +		rid = pci_msi_domain_get_msi_rid(irq_dom,
-> > to_pci_dev(dev));
-> > > +		ret = iort_dev_find_its_base(dev, rid, 0, &base);
-> > 
-> > Well, here we use ITS id 0 which is fine as long as code in IORT uses the same
-> > policy for getting the irq_domain (ie we want to reserve the ITS address
-> > space that is actually used by the device to send IRQs not a a different one) it
-> > is just a heads-up because I find this confusing.
-> 
-> Ok. Just to make it clear, 0 is the index into the ITS identifier list.
-> I noted that iort_get_device_domain() uses index 0 while retrieving the ITS identifier.
-> May be use the same approach here as well? ie, remove the index from function call?
-> 
-> I am not sure, how we can get the index info  though theoretically It is possible for
-> the ITS group node having multiple ITSs.
+> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
 
-Yes, it would be ideal to avoid the look-up through the ITS index and
-just reuse the ITS node associated with the MSI domain because I do not
-want this quirk to force the ITS domain allocation policy (what I mean
-I do not want to be tied to index 0 if for any reason we change
-the allocation in IORT for normal ITS<->device mapping).
-
-I will have a further look to see if we can improve the code to
-this extent.
-
-> > > +		if (!ret) {
-> > > +			dev_info(dev, "SMMUv3:HW MSI resv addr
-> > 0x%pa\n", &base);
-> > > +			region = iommu_alloc_resv_region(base, SZ_128K,
-> > > +							 prot,
-> > IOMMU_RESV_MSI);
-> > > +			return region;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	return NULL;
-> > > +}
-> > > +#else
-> > > +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct
-> > > +device *dev) {
-> > > +	return NULL;
-> > > +}
-> > > +#endif
-> > > +
-> > >  static int arm_smmu_add_device(struct device *dev)  {
-> > >  	int i, ret;
-> > > @@ -1903,11 +1936,20 @@ static int arm_smmu_of_xlate(struct device
-> > > *dev, struct of_phandle_args *args)  static void
-> > arm_smmu_get_resv_regions(struct device *dev,
-> > >  				      struct list_head *head)
-> > >  {
-> > > -	struct iommu_resv_region *region;
-> > > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > > +	struct iommu_resv_region *region = NULL;
-> > >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > > +	struct arm_smmu_device *smmu;
-> > > +
-> > > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-> > >
-> > > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
-> > MSI_IOVA_LENGTH,
-> > > -					 prot, IOMMU_RESV_SW_MSI);
-> > > +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
-> > &&
-> > > +		      dev_is_pci(dev))
-> > > +		region = arm_smmu_acpi_alloc_hw_msi(dev);
-> > 
-> > Is it safe to carry on if arm_smmu_acpi_alloc_hw_msi() returns NULL here ?
-> 
-> It is just that PCIe devices won't be functional on this platforms as the endpoint will 
-> be configured with ITS IOVA address. May be I should add some dev_warn() here.
-
-Well yes and also I am not sure that if arm_smmu_acpi_alloc_hw_msi()
-fails you should allocate the SW_MSI region I am not sure I understand
-the logic, so you should add a warning and just return on failure right ?
-
-Lorenzo
+Te system IOMMU (if enabled) may be cache coherent - and on x86 would be,
+so it doesn't think it needs to do anything for cache synchronization
+and the dma_sync won't actually do any work.
+ 
+Alan
