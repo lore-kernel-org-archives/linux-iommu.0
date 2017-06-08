@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 4/8] iommu/io-pgtable: Introduce explicit coherency
-Date: Thu,  8 Jun 2017 12:52:03 +0100
-Message-ID: <0758c91471723bc45aadbd601f4ac15948906d0c.1496921366.git.robin.murphy@arm.com>
+Subject: [PATCH 8/8] iommu/arm-smmu-v3: Remove io-pgtable spinlock
+Date: Thu,  8 Jun 2017 12:52:07 +0100
+Message-ID: <8e8e747566e6e11dd16ddc7af092d992ef9ee7d5.1496921366.git.robin.murphy@arm.com>
 References: <cover.1496921366.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,202 +21,98 @@ To: will.deacon@arm.com, joro@8bytes.org
 Cc: salil.mehta@huawei.com, sunil.goutham@cavium.com, iommu@lists.linux-foundation.org, ray.jui@broadcom.com, linux-arm-kernel@lists.infradead.org, linu.cherian@cavium.com, nwatters@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-Once we remove the serialising spinlock, a potential race opens up for
-non-coherent IOMMUs whereby a caller of .map() can be sure that cache
-maintenance has been performed on their new PTE, but will have no
-guarantee that such maintenance for table entries above it has actually
-completed (e.g. if another CPU took an interrupt immediately after
-writing the table entry, but before initiating the DMA sync).
-
-Handling this race safely will add some potentially non-trivial overhead
-to installing a table entry, which we would much rather avoid on
-coherent systems where it will be unnecessary, and where we are stirivng
-to minimise latency by removing the locking in the first place.
-
-To that end, let's introduce an explicit notion of cache-coherency to
-io-pgtable, such that we will be able to avoid penalising IOMMUs which
-know enough to know when they are coherent.
+As for SMMUv2, take advantage of io-pgtable's newfound tolerance for
+concurrency. Unfortunately in this case the command queue lock remains a
+point of serialisation for the unmap path, but there may be a little
+more we can do to ameliorate that in future.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c        |  3 +++
- drivers/iommu/arm-smmu.c           |  3 +++
- drivers/iommu/io-pgtable-arm-v7s.c | 17 ++++++++++-------
- drivers/iommu/io-pgtable-arm.c     | 11 ++++++-----
- drivers/iommu/io-pgtable.h         |  6 ++++++
- 5 files changed, 28 insertions(+), 12 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 33 ++++++---------------------------
+ 1 file changed, 6 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 380969aa60d5..b9c4cf4ccca2 100644
+index b9c4cf4ccca2..291da5f918d5 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1555,6 +1555,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 		.iommu_dev	= smmu->dev,
- 	};
+@@ -645,7 +645,6 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
  
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
-+		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
-+
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops)
- 		return -ENOMEM;
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7ec30b08b3bd..1f42f339a284 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1010,6 +1010,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		.iommu_dev	= smmu->dev,
- 	};
+ 	struct io_pgtable_ops		*pgtbl_ops;
+-	spinlock_t			pgtbl_lock;
  
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-+		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
-+
- 	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops) {
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 3ee8e61eeb18..2437f2899661 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -187,7 +187,8 @@ static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl)
- static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 				   struct arm_v7s_io_pgtable *data)
+ 	enum arm_smmu_domain_stage	stage;
+ 	union {
+@@ -1406,7 +1405,6 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	}
+ 
+ 	mutex_init(&smmu_domain->init_mutex);
+-	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 	return &smmu_domain->domain;
+ }
+ 
+@@ -1678,44 +1676,29 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			phys_addr_t paddr, size_t size, int prot)
  {
--	struct device *dev = data->iop.cfg.iommu_dev;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	struct device *dev = cfg->iommu_dev;
- 	dma_addr_t dma;
- 	size_t size = ARM_V7S_TABLE_SIZE(lvl);
- 	void *table = NULL;
-@@ -196,7 +197,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 		table = (void *)__get_dma_pages(__GFP_ZERO, get_order(size));
- 	else if (lvl == 2)
- 		table = kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA);
--	if (table && !selftest_running) {
-+	if (table && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
- 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
- 			goto out_free;
-@@ -225,10 +226,11 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- static void __arm_v7s_free_table(void *table, int lvl,
- 				 struct arm_v7s_io_pgtable *data)
+-	int ret;
+-	unsigned long flags;
+-	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
+ 
+ 	if (!ops)
+ 		return -ENODEV;
+ 
+-	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+-	ret = ops->map(ops, iova, paddr, size, prot);
+-	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+-	return ret;
++	return ops->map(ops, iova, paddr, size, prot);
+ }
+ 
+ static size_t
+ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
  {
--	struct device *dev = data->iop.cfg.iommu_dev;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	struct device *dev = cfg->iommu_dev;
- 	size_t size = ARM_V7S_TABLE_SIZE(lvl);
+-	size_t ret;
+-	unsigned long flags;
+-	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
  
--	if (!selftest_running)
-+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
- 		dma_unmap_single(dev, __arm_v7s_dma_addr(table), size,
- 				 DMA_TO_DEVICE);
- 	if (lvl == 1)
-@@ -240,7 +242,7 @@ static void __arm_v7s_free_table(void *table, int lvl,
- static void __arm_v7s_pte_sync(arm_v7s_iopte *ptep, int num_entries,
- 			       struct io_pgtable_cfg *cfg)
+ 	if (!ops)
+ 		return 0;
+ 
+-	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+-	ret = ops->unmap(ops, iova, size);
+-	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+-	return ret;
++	return ops->unmap(ops, iova, size);
+ }
+ 
+ static phys_addr_t
+ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
  {
--	if (selftest_running)
-+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
- 		return;
+-	phys_addr_t ret;
+-	unsigned long flags;
+-	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
  
- 	dma_sync_single_for_device(cfg->iommu_dev, __arm_v7s_dma_addr(ptep),
-@@ -657,7 +659,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
- 			    IO_PGTABLE_QUIRK_NO_PERMS |
- 			    IO_PGTABLE_QUIRK_TLBI_ON_MAP |
--			    IO_PGTABLE_QUIRK_ARM_MTK_4GB))
-+			    IO_PGTABLE_QUIRK_ARM_MTK_4GB |
-+			    IO_PGTABLE_QUIRK_NO_DMA))
- 		return NULL;
+ 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
+ 		return iova;
+@@ -1723,11 +1706,7 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+ 	if (!ops)
+ 		return 0;
  
- 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
-@@ -774,7 +777,7 @@ static int __init arm_v7s_do_selftests(void)
- 		.tlb = &dummy_tlb_ops,
- 		.oas = 32,
- 		.ias = 32,
--		.quirks = IO_PGTABLE_QUIRK_ARM_NS,
-+		.quirks = IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA,
- 		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	};
- 	unsigned int iova, size, iova_start;
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 97d039952367..bdc954cb98c1 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -217,7 +217,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- 	if (!pages)
- 		return NULL;
+-	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+-	ret = ops->iova_to_phys(ops, iova);
+-	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+-
+-	return ret;
++	return ops->iova_to_phys(ops, iova);
+ }
  
--	if (!selftest_running) {
-+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
- 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
- 			goto out_free;
-@@ -243,7 +243,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- static void __arm_lpae_free_pages(void *pages, size_t size,
- 				  struct io_pgtable_cfg *cfg)
- {
--	if (!selftest_running)
-+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
- 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
- 				 size, DMA_TO_DEVICE);
- 	free_pages_exact(pages, size);
-@@ -254,7 +254,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
- {
- 	*ptep = pte;
- 
--	if (!selftest_running)
-+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
- 		dma_sync_single_for_device(cfg->iommu_dev,
- 					   __arm_lpae_dma_addr(ptep),
- 					   sizeof(pte), DMA_TO_DEVICE);
-@@ -693,7 +693,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	u64 reg;
- 	struct arm_lpae_io_pgtable *data;
- 
--	if (cfg->quirks & ~IO_PGTABLE_QUIRK_ARM_NS)
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -782,7 +782,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
- 
- 	/* The NS quirk doesn't apply at stage 2 */
--	if (cfg->quirks)
-+	if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -1086,6 +1086,7 @@ static int __init arm_lpae_do_selftests(void)
- 	struct io_pgtable_cfg cfg = {
- 		.tlb = &dummy_tlb_ops,
- 		.oas = 48,
-+		.quirks = IO_PGTABLE_QUIRK_NO_DMA,
- 	};
- 
- 	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 969d82cc92ca..524263a7ae6f 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -65,11 +65,17 @@ struct io_pgtable_cfg {
- 	 *	PTEs, for Mediatek IOMMUs which treat it as a 33rd address bit
- 	 *	when the SoC is in "4GB mode" and they can only access the high
- 	 *	remap of DRAM (0x1_00000000 to 0x1_ffffffff).
-+	 *
-+	 * IO_PGTABLE_QUIRK_NO_DMA: Guarantees that the tables will only ever
-+	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
-+	 *	software-emulated IOMMU), such that pagetable updates need not
-+	 *	be treated as explicit DMA data.
- 	 */
- 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
- 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
- 	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
- 	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
-+	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
- 	unsigned long			quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
+ static struct platform_driver arm_smmu_driver;
 -- 
 2.12.2.dirty
