@@ -1,116 +1,48 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
-Date: Thu, 8 Jun 2017 19:07:09 +0100
-Message-ID: <949a467a-e711-d746-859d-fc006bf59773@arm.com>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <1496695157-19926-4-git-send-email-yong.zhi@intel.com>
- <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
- <73992991-65a9-915b-a450-b23aeb3baaed@arm.com>
- <CAAFQd5AWGN_qSXGG32D-eWKZRoRme+XCD9v1r8qJ5bthtS9z9w@mail.gmail.com>
+From: Shaohua Li <shli-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: correctly disable Intel IOMMU force on
+Date: Thu,  8 Jun 2017 11:27:14 -0700
+Message-ID: <f6ee9a01b055762f447159cf40e4c6a4305b4eb4.1496945969.git.shli@fb.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <CAAFQd5AWGN_qSXGG32D-eWKZRoRme+XCD9v1r8qJ5bthtS9z9w@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-media-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, Joerg Roedel <joro@8bytes.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Kernel-team-b10kYP2dOMg@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/06/17 15:35, Tomasz Figa wrote:
-> On Thu, Jun 8, 2017 at 10:22 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->> On 07/06/17 10:47, Tomasz Figa wrote:
->>> Hi Yong,
->>>
->>> +Robin, Joerg, IOMMU ML
->>>
->>> Please see my comments inline.
->>>
->>> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi@intel.com> wrote:
-> [snip]
->>>> +
->>>> +/* End of things adapted from arch/arm/mm/dma-mapping.c */
->>>> +static void ipu3_dmamap_sync_single_for_cpu(struct device *dev,
->>>> +                                           dma_addr_t dma_handle, size_t size,
->>>> +                                           enum dma_data_direction dir)
->>>> +{
->>>> +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
->>>> +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
->>>> +
->>>> +       clflush_cache_range(phys_to_virt(daddr), size);
->>>
->>> You might need to consider another IOMMU on the way here. Generally,
->>> given that daddr is your MMU DMA address (not necessarily CPU physical
->>> address), you should be able to call
->>>
->>> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
->>
->> I'd hope that this IPU complex is some kind of embedded endpoint thing
->> that bypasses the VT-d IOMMU or is always using its own local RAM,
->> because it would be pretty much unworkable otherwise.
-> 
-> It uses system RAM and, as far as my understanding goes, by default it
-> operates without the VT-d IOMMU and that's how it's used right now.
+From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
 
-OK, if it *is* behind a DMAR unit then booting with "iommu=force" (or
-whatever the exact incantation for intel-iommu is) should be fun...
+I made a mistake in commit bfd20f1. We should skip the force on with the
+option enabled instead of vice versa. Not sure why this passed our
+performance test, sorry.
 
-> I'm suggesting VT-d IOMMU as a way to further strengthen the security
-> and error resilience in future (due to the IPU complex being
-> non-coherent and also running a closed source firmware).
+Fix: bfd20f1(x86, iommu/vt-d: Add an option to disable Intel IOMMU force on)
+Signed-off-by: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
+---
+ arch/x86/kernel/tboot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-TBH, doing DMA remapping through *two* IOMMUS will add horrible hardware
-overhead, increase the scope for kernel-side bugs, and not much more. If
-we don't trust this IOMMU to behave, why are we trying to drive it in
-the first place? If we do, then a second IOMMU behind it won't protect
-anything that the first one doesn't already.
-
->> The whole
->> infrastructure isn't really capable of dealing with nested IOMMUs, and
->> nested DMA ops would be an equally horrible idea.
-> 
-> Could you elaborate a bit more on this? I think we should be able to
-> deal with this in a way I suggested before:
-> 
-> a) the PCI device would use the system DMA ops,
-> b) the PCI device would implement a secondary bus for which it would
-> provide its own DMA and IOMMU ops.
-> c) a secondary device would be registered on the secondary bus,
-> d) all memory for the IPU would be managed on behalf of the secondary device.
-> 
-> In fact, the driver already is designed in a way that all the points
-> above are true. If I'm not missing something, the only significant
-> missing point is calling into system DMA ops from IPU DMA ops.
-
-I don't believe x86 has any non-coherent DMA ops, therefore the IPU DMA
-ops would still probably have to do all their own cache maintenance.
-Allocation/mapping, though, would have to be done with the parent DMA
-ops first (in case DMA address != physical address), *then* mapped at
-the IPU MMU, which is the real killer - if the PCI DMA ops are from
-intel-iommu, then there's little need for the IPU MMU mapping to be
-anything other than 1:1, so you may as well not bother. If the PCI DMA
-ops are from SWIOTLB, then the constraints of having to go through that
-first eliminate all the scatter-gather benefit of the IPU MMU.
-
-The IOMMU API ops would have to be handled similarly, by checking for
-ops on the parent bus, calling those first if present, then running the
-intermediate results through the IPU MMU's own functions. Sure, it's not
-impossible, but it's really really grim. Not to mention that all the IPU
-MMU's page tables/control structures/etc. would also have to be
-DMA-allocated/mapped because it may or may not be operating in physical
-address space.
-
-The reasonable option - assuming the topology really is this way - would
-seem to be special-casing the IPU in intel-iommu in a similar manner to
-integrated graphics, to make sure it gets a passthrough domain for DMA
-ops, but still allowing the whole PCI device to be passed through to a
-guest VM via VFIO if desired (which is really the only case where nested
-translation does start to make sense).
-
-Robin.
-
-> 
-> Best regards,
-> Tomasz
-> 
+diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+index 4b17240..a4eb279 100644
+--- a/arch/x86/kernel/tboot.c
++++ b/arch/x86/kernel/tboot.c
+@@ -514,7 +514,7 @@ int tboot_force_iommu(void)
+ 	if (!tboot_enabled())
+ 		return 0;
+ 
+-	if (!intel_iommu_tboot_noforce)
++	if (intel_iommu_tboot_noforce)
+ 		return 1;
+ 
+ 	if (no_iommu || swiotlb || dmar_disabled)
+-- 
+2.9.3
