@@ -1,57 +1,84 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
-Date: Thu, 8 Jun 2017 11:55:18 +0900
-Message-ID: <CAAFQd5BYk6ErzaLgVp+sL2sQg1FzFjDu4tg_b3KBCAM7=39icw@mail.gmail.com>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
-	<1496695157-19926-4-git-send-email-yong.zhi@intel.com>
-	<CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
-	<20170607184512.0e627965@lxorguk.ukuu.org.uk>
+From: Ganapatrao Kulkarni <gpkulkarni@gmail.com>
+Subject: Re: [PATCH v2 2/2] acpi/iort: numa: Add numa node mapping for smmuv3 devices
+Date: Thu, 8 Jun 2017 08:57:02 +0530
+Message-ID: <CAFpQJXUxHuaRC4JYsahLb2_gO_ZY7aR=gBkHm31zv1=A_esb0Q@mail.gmail.com>
+References: <1496746065-11082-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <1496746065-11082-3-git-send-email-ganapatrao.kulkarni@cavium.com> <20170607163842.GA7937@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170607184512.0e627965-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Mani,
-	Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170607163842.GA7937@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will Deacon <Will.Deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, robin.murphy@arm.com, Lv Zheng <lv.zheng@intel.com>, joro@8bytes.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alan,
-
-On Thu, Jun 8, 2017 at 2:45 AM, Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org> wrote:
->> > +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
->> > +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
->> > +
->> > +       clflush_cache_range(phys_to_virt(daddr), size);
+On Wed, Jun 7, 2017 at 10:08 PM, Lorenzo Pieralisi
+<lorenzo.pieralisi@arm.com> wrote:
+> On Tue, Jun 06, 2017 at 04:17:45PM +0530, Ganapatrao Kulkarni wrote:
+>> Add code to parse proximity domain in SMMUv3 IORT table to
+>> set numa node mapping for smmuv3 devices.
 >>
->> You might need to consider another IOMMU on the way here. Generally,
->> given that daddr is your MMU DMA address (not necessarily CPU physical
->> address), you should be able to call
+>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>> ---
+>>  drivers/acpi/arm64/iort.c | 20 ++++++++++++++++++++
+>>  1 file changed, 20 insertions(+)
 >>
->> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
+>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+>> index bba2b59..b4f328f 100644
+>> --- a/drivers/acpi/arm64/iort.c
+>> +++ b/drivers/acpi/arm64/iort.c
+>> @@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+>>       return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+>>  }
+>>
+>> +/*
+>> + * set numa proximity domain for smmv3 device
+>> + */
+>> +static void  __init iort_set_proximity(struct acpi_iort_node *node,
+>> +             struct device *dev)
+>> +{
+>> +     struct acpi_iort_smmu_v3 *smmu;
+>> +
+>> +     smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+>> +     if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+>> +             set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+>> +             pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+>> +                     smmu->base_address,
+>> +                     smmu->pxm);
+>> +     }
+>> +}
+>> +
+>>  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
+>>  {
+>>       struct acpi_iort_smmu *smmu;
+>> @@ -1002,6 +1019,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
+>>       if (!pdev)
+>>               return -ENOMEM;
+>>
+>> +     if (node->type == ACPI_IORT_NODE_SMMU_V3)
+>> +             iort_set_proximity(node, &pdev->dev);
 >
-> Te system IOMMU (if enabled) may be cache coherent - and on x86 would be,
-> so it doesn't think it needs to do anything for cache synchronization
-> and the dma_sync won't actually do any work.
+> Nit: while at it you may add an ops hook to set the proximity
+> (NULL for SMMU v2) and call it if present, it is just to make
+> the code adding devices more uniform.
 
-I'm not very familiar with x86, but typically I found coherency to be
-an attribute of the DMA master (i.e. if it is connected to a coherent
-memory port).
+thanks, will do
 
-Looking at all the IPU3 code, it looks like the whole PCI device is
-non-coherent for some reason (e.g. you can see implicit cache flushes
-for page tables). So I would have expected that a non-coherent variant
-of x86 dma_ops is used for the PCI struct device, which would do cache
-maintenance in its dma_sync_* ops.
+>
+> Who is queueing these patches ? I am asking to make sure we sort
+> the ACPICA dependency (there are other IORT/ACPICA patches to consider
+> too).
+>
+> Thanks,
+> Lorenzo
+>
+>>       count = ops->iommu_count_resources(node);
+>>
+>>       r = kcalloc(count, sizeof(*r), GFP_KERNEL);
+>> --
+>> 1.8.1.4
+>>
 
-Best regards,
-Tomasz
+thanks
+Ganapat
