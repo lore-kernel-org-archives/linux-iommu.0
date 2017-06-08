@@ -1,119 +1,56 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-	erratum 161010801
-Date: Thu, 8 Jun 2017 11:43:59 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA838363EC5@FRAEML521-MBX.china.huawei.com>
-References: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
-	<20170531143213.82100-3-shameerali.kolothum.thodi@huawei.com>
-	<20170606135623.GB20126@red-moon>
-	<5FC3163CFD30C246ABAA99954A238FA838362082@FRAEML521-MBX.china.huawei.com>
-	<20170608084851.GA8607@red-moon>
-	<5FC3163CFD30C246ABAA99954A238FA838363D5D@FRAEML521-MBX.china.huawei.com>
-	<20170608101508.GA8644@red-moon>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH 0/8] io-pgtable lock removal
+Date: Thu,  8 Jun 2017 12:51:59 +0100
+Message-ID: <cover.1496921366.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170608101508.GA8644@red-moon>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: will.deacon@arm.com, joro@8bytes.org
+Cc: salil.mehta@huawei.com, sunil.goutham@cavium.com, iommu@lists.linux-foundation.org, ray.jui@broadcom.com, linux-arm-kernel@lists.infradead.org, linu.cherian@cavium.com, nwatters@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi all,
+
+Here's the cleaned up nominally-final version of the patches everybody's
+keen to see. #1 is just a non-critical thing-I-spotted-in-passing fix,
+#2-#4 do some preparatory work (and bid farewell to everyone's least
+favourite bit of code, hooray!), and #5-#8 do the dirty deed itself.
+
+The branch I've previously shared has been updated too:
+
+  git://linux-arm.org/linux-rm  iommu/pgtable
+
+All feedback welcome, as I'd really like to land this for 4.13.
+
+Robin.
 
 
-> -----Original Message-----
-> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
-> Sent: Thursday, June 08, 2017 11:15 AM
-> To: Shameerali Kolothum Thodi
-> Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> robin.murphy-5wv7dgnIgG8@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Gabriele Paoloni; John
-> Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org;
-> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-> erratum 161010801
-> 
-> On Thu, Jun 08, 2017 at 09:09:28AM +0000, Shameerali Kolothum Thodi
-> wrote:
-> >
-> >
-> > > -----Original Message-----
-> > > From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
-> > > Sent: Thursday, June 08, 2017 9:49 AM
-> > > To: Shameerali Kolothum Thodi
-> > > Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org;
-> will.deacon-5wv7dgnIgG8@public.gmane.org;
-> > > robin.murphy-5wv7dgnIgG8@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Gabriele Paoloni; John
-> > > Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> > > kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org;
-> > > Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> > > Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based
-> HiSilicon
-> > > erratum 161010801
-> > >
-> > > On Tue, Jun 06, 2017 at 03:01:36PM +0000, Shameerali Kolothum Thodi
-> > > wrote:
-> > >
-> > > [...]
-> > >
-> > > > > > +	irq_dom = pci_msi_get_device_domain(to_pci_dev(dev));
-> > > > > > +	if (irq_dom) {
-> > > > > > +		int	ret;
-> > > > > > +		u32	rid;
-> > > > > > +
-> > > > > > +		rid = pci_msi_domain_get_msi_rid(irq_dom,
-> > > > > to_pci_dev(dev));
-> > > > > > +		ret = iort_dev_find_its_base(dev, rid, 0, &base);
-> > > > >
-> > > > > Well, here we use ITS id 0 which is fine as long as code in IORT
-> > > > > uses the same policy for getting the irq_domain (ie we want to
-> > > > > reserve the ITS address space that is actually used by the device to
-> > > > > send IRQs not a a different one) it is just a heads-up because I find
-> this
-> > > confusing.
-> > > >
-> > > > Ok. Just to make it clear, 0 is the index into the ITS identifier
-> > > > list.  I noted that iort_get_device_domain() uses index 0 while
-> > > > retrieving the ITS identifier.  May be use the same approach here as
-> > > > well? ie, remove the index from function call?
-> > > >
-> > > > I am not sure, how we can get the index info  though theoretically It
-> > > > is possible for the ITS group node having multiple ITSs.
-> > >
-> > > Actually I think it would make sense to reserve ALL ITS regions a device
-> may
-> > > be mapped to instead of just index 0 (ie in your case it is equivalent); this
-> > > leaves us some leeway as to choose which ITS the device will be actually
-> > > mapped to and this code does not have to care.
-> >
-> > Ok. That make sense. Just a quick one, is it ok to add another helper
-> function in
-> > iort code to retrieve the its->its_count then?
-> 
-> While at it, given that the pci API code to retrieve domain and rid falls
-> back to IORT anyway, I would add the whole reservation to IORT (mind,
-> it depends on IOMMU_API) as one function instead of fiddling about with
-> indexes.
+Robin Murphy (8):
+  iommu/io-pgtable-arm-v7s: Check table PTEs more precisely
+  iommu/io-pgtable-arm: Improve split_blk_unmap
+  iommu/io-pgtable-arm-v7s: Refactor split_blk_unmap
+  iommu/io-pgtable: Introduce explicit coherency
+  iommu/io-pgtable-arm: Support lockless operation
+  iommu/io-pgtable-arm-v7s: Support lockless operation
+  iommu/arm-smmu: Remove io-pgtable spinlock
+  iommu/arm-smmu-v3: Remove io-pgtable spinlock
 
-Ok. I will take a look at this. 
+ drivers/iommu/arm-smmu-v3.c        |  36 ++-----
+ drivers/iommu/arm-smmu.c           |  48 ++++------
+ drivers/iommu/io-pgtable-arm-v7s.c | 173 +++++++++++++++++++++------------
+ drivers/iommu/io-pgtable-arm.c     | 190 ++++++++++++++++++++++++-------------
+ drivers/iommu/io-pgtable.h         |   6 ++
+ 5 files changed, 268 insertions(+), 185 deletions(-)
 
-> Side note: why Hilisicon dts upstream (eg hip07.dtsi) report ITS size
-> as 256K ? I was just checking whether the ITS reg map size is system
-> dependent and I bumped into them, I suspect there may be some dts
-> patching needed here.
-> 
-
-Thanks for catching this. I will check with the team and update.
-
-Shameer
+-- 
+2.12.2.dirty
