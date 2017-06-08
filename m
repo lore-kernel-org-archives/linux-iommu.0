@@ -1,97 +1,58 @@
 From: Sakari Ailus <sakari.ailus@iki.fi>
-Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
-Date: Thu, 8 Jun 2017 19:43:51 +0300
-Message-ID: <20170608164350.GH1019@valkosipuli.retiisi.org.uk>
+Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
+Date: Thu, 8 Jun 2017 19:47:00 +0300
+Message-ID: <20170608164659.GI1019@valkosipuli.retiisi.org.uk>
 References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <1496695157-19926-3-git-send-email-yong.zhi@intel.com>
- <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
- <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com>
+ <1496695157-19926-4-git-send-email-yong.zhi@intel.com>
+ <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
+ <20170607184512.0e627965@lxorguk.ukuu.org.uk>
+ <CAAFQd5BYk6ErzaLgVp+sL2sQg1FzFjDu4tg_b3KBCAM7=39icw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-media-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com>
+In-Reply-To: <CAAFQd5BYk6ErzaLgVp+sL2sQg1FzFjDu4tg_b3KBCAM7=39icw@mail.gmail.com>
 Sender: linux-media-owner@vger.kernel.org
 To: Tomasz Figa <tfiga@chromium.org>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
+Hi Tomasz and Alan,
 
-On Wed, Jun 07, 2017 at 05:35:13PM +0900, Tomasz Figa wrote:
-> Hi Yong, Tuukka,
+On Thu, Jun 08, 2017 at 11:55:18AM +0900, Tomasz Figa wrote:
+> Hi Alan,
 > 
-> Continuing from yesterday. Please see comments inline.
+> On Thu, Jun 8, 2017 at 2:45 AM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
+> >> > +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
+> >> > +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
+> >> > +
+> >> > +       clflush_cache_range(phys_to_virt(daddr), size);
+> >>
+> >> You might need to consider another IOMMU on the way here. Generally,
+> >> given that daddr is your MMU DMA address (not necessarily CPU physical
+> >> address), you should be able to call
+> >>
+> >> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
+> >
+> > Te system IOMMU (if enabled) may be cache coherent - and on x86 would be,
+> > so it doesn't think it needs to do anything for cache synchronization
+> > and the dma_sync won't actually do any work.
 > 
-> > On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi@intel.com> wrote:
-> [snip]
-> >> +       ptr = ipu3_mmu_alloc_page_table(mmu_dom, false);
-> >> +       if (!ptr)
-> >> +               goto fail_page_table;
-> >> +
-> >> +       /*
-> >> +        * We always map the L1 page table (a single page as well as
-> >> +        * the L2 page tables).
-> >> +        */
-> >> +       mmu_dom->dummy_l2_tbl = virt_to_phys(ptr) >> IPU3_MMU_PAGE_SHIFT;
-> >> +       mmu_dom->pgtbl = ipu3_mmu_alloc_page_table(mmu_dom, true);
-> >> +       if (!mmu_dom->pgtbl)
-> >> +               goto fail_page_table;
-> >> +
-> >> +       spin_lock_init(&mmu_dom->lock);
-> >> +       return &mmu_dom->domain;
-> >> +
-> >> +fail_page_table:
-> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
-> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
-> >> +fail_get_page:
-> >> +       kfree(mmu_dom);
-> >> +       return NULL;
-> >> +}
-> >> +
-> >> +static void ipu3_mmu_domain_free(struct iommu_domain *dom)
-> >> +{
-> >> +       struct ipu3_mmu_domain *mmu_dom =
-> >> +               container_of(dom, struct ipu3_mmu_domain, domain);
-> >> +       uint32_t l1_idx;
-> >> +
-> >> +       for (l1_idx = 0; l1_idx < IPU3_MMU_L1PT_PTES; l1_idx++)
-> >> +               if (mmu_dom->pgtbl[l1_idx] != mmu_dom->dummy_l2_tbl)
-> >> +                       free_page((unsigned long)
-> >> +                                 TBL_VIRT_ADDR(mmu_dom->pgtbl[l1_idx]));
-> >> +
-> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
-> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
+> I'm not very familiar with x86, but typically I found coherency to be
+> an attribute of the DMA master (i.e. if it is connected to a coherent
+> memory port).
 > 
-> I might be overly paranoid, but reading back kernel virtual pointers
-> from device accessible memory doesn't seem safe to me. Other drivers
-> keep kernel pointers of page tables in a dedicated array (it's only 8K
-> of memory, but much better safety).
+> Looking at all the IPU3 code, it looks like the whole PCI device is
+> non-coherent for some reason (e.g. you can see implicit cache flushes
+> for page tables). So I would have expected that a non-coherent variant
+> of x86 dma_ops is used for the PCI struct device, which would do cache
+> maintenance in its dma_sync_* ops.
 
-Do you happen to have an example of that?
+It can actually do both --- in most cases.
 
-All system memory typically is accessible for devices, I think you wanted to
-say that the device is intended to access that memory. Albeit for reading
-only.
-
-...
-
-> >> +static int ipu3_mmu_bus_remove(struct device *dev)
-> >> +{
-> >> +       struct ipu3_mmu *mmu = dev_get_drvdata(dev);
-> >> +
-> >> +       put_iova_domain(&mmu->iova_domain);
-> >> +       iova_cache_put();
-> 
-> Don't we need to set the L1 table address to something invalid and
-> invalidate the TLB, so that the IOMMU doesn't reference the page freed
-> below anymore?
-
-I think the expectation is that if a device gets removed, its memory is
-unmapped by that time. Unmapping that memory will cause explicit TLB flush.
+The MMU page tables are an exception so they will still need an explicit
+flush.
 
 -- 
-Regards,
-
 Sakari Ailus
 e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
