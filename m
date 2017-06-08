@@ -1,57 +1,166 @@
-From: Andy Lutomirski <luto@kernel.org>
-Subject: Re: [PATCH v6 10/34] x86, x86/mm, x86/xen, olpc: Use __va() against
- just the physical address in cr3
-Date: Wed, 7 Jun 2017 23:05:42 -0700
-Message-ID: <CALCETrVVhMf=zkiDNn_-hKDZLGXKFiwxuWkPmD5RJgHa5VUMiQ@mail.gmail.com>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net> <20170607191453.28645.92256.stgit@tlendack-t1.amdoffice.net>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
+Date: Thu, 8 Jun 2017 16:36:42 +0900
+Message-ID: <CAAFQd5C1GQKXcgxMJ8TeGf5Zr+4yHV9Eto3f7KYENnCcdKiPkA@mail.gmail.com>
+References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
+ <1496695157-19926-3-git-send-email-yong.zhi@intel.com> <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
+ <20170607215951.GA21034@kekkonen.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170607191453.28645.92256.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, kexec@lists.infradead.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.>
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <20170607215951.GA21034@kekkonen.localdomain>
+Sender: linux-media-owner@vger.kernel.org
+To: Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 7, 2017 at 12:14 PM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
-> The cr3 register entry can contain the SME encryption bit that indicates
-> the PGD is encrypted.  The encryption bit should not be used when creating
-> a virtual address for the PGD table.
+Hi Sakari,
+
+On Thu, Jun 8, 2017 at 6:59 AM, Sakari Ailus
+<sakari.ailus@linux.intel.com> wrote:
+> Hi Tomasz,
 >
-> Create a new function, read_cr3_pa(), that will extract the physical
-> address from the cr3 register. This function is then used where a virtual
-> address of the PGD needs to be created/used from the cr3 register.
+> On Tue, Jun 06, 2017 at 07:13:19PM +0900, Tomasz Figa wrote:
+>> Hi Yong, Tuukka,
+>>
+>> +CC IOMMU ML and Joerg. (Technically you should resend this patch
+>> including them.)
+>
+> Thanks!
+>
+>>
+>> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi@intel.com> wrote:
+> ...
+>> > diff --git a/drivers/media/pci/intel/ipu3/Kconfig b/drivers/media/pci/intel/ipu3/Kconfig
+>> > index 2a895d6..ab2edcb 100644
+>> > --- a/drivers/media/pci/intel/ipu3/Kconfig
+>> > +++ b/drivers/media/pci/intel/ipu3/Kconfig
+>> > @@ -15,3 +15,14 @@ config VIDEO_IPU3_CIO2
+>> >         Say Y or M here if you have a Skylake/Kaby Lake SoC with MIPI CSI-2
+>> >         connected camera.
+>> >         The module will be called ipu3-cio2.
+>> > +
+>> > +config INTEL_IPU3_MMU
+>> > +       tristate "Intel ipu3-mmu driver"
+>> > +       select IOMMU_API
+>> > +       select IOMMU_IOVA
+>> > +       ---help---
+>> > +         For IPU3, this option enables its MMU driver to translate its internal
+>> > +         virtual address to 39 bits wide physical address for 64GBytes space access.
+>> > +
+>> > +         Say Y here if you have Skylake/Kaby Lake SoC with IPU3.
+>> > +         Say N if un-sure.
+>>
+>> Is the MMU optional? I.e. can you still use the IPU3 without the MMU
+>> driver? If no, then it doesn't make sense to flood the user with
+>> meaningless choice and the driver could simply be selected by other
+>> IPU3 drivers.
+>
+> There are other IPUs that contain the same hardware, so they would
+> presumably use the same driver.
 
-This is going to conflict with:
+My question was slightly different. I was wondering if one can use the
+IPU3 without the MMU, i.e. if the implication "if IPU3 then IPU3_MMU"
+exists.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git/commit/?h=x86/pcid&id=555c81e5d01a62b629ec426a2f50d27e2127c1df
+>
+>>
+>> And the other way around, is the IPU3 MMU driver useful for anything
+>> else than IPU3? If no (but yes for the above), then it should depend
+>> on some other IPU3 drivers being enabled, as otherwise it would just
+>> confuse the user.
+>
+> Very likely not.
+>
+> For now I think it'd be fine to have the driver separate from the rest of
+> the IPU3 but without a separate Kconfig option.
 
-We're both encountering the fact that CR3 munges the page table PA
-with some other stuff, and some readers want to see the actual CR3
-value and other readers just want the PA.  The thing I prefer about my
-patch is that I get rid of read_cr3() entirely, forcing the patch to
-update every single reader, making review and conflict resolution much
-safer.
+Yeah, I'm not questioning the need for this to be a separate driver.
+:) I just want to avoid adding Kconfig option, in case there is no
+practical choice (i.e. IPU3 requires IPU3_MMU and IPU3_MMU is useful
+without IPU3).
 
-I'd be willing to send a patch tomorrow that just does the split into
-__read_cr3() and read_cr3_pa() (I like your name better) and then we
-can both base on top of it.  Would that make sense?
+>
+>>
+>> > diff --git a/drivers/media/pci/intel/ipu3/Makefile b/drivers/media/pci/intel/ipu3/Makefile
+>> > index 20186e3..2b669df 100644
+>> > --- a/drivers/media/pci/intel/ipu3/Makefile
+>> > +++ b/drivers/media/pci/intel/ipu3/Makefile
+>> > @@ -1 +1,2 @@
+>> >  obj-$(CONFIG_VIDEO_IPU3_CIO2) += ipu3-cio2.o
+>> > +obj-$(CONFIG_INTEL_IPU3_MMU) += ipu3-mmu.o
+>> > diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.c b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
+>> > new file mode 100644
+>> > index 0000000..a9fb116
+>> > --- /dev/null
+>> > +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
+>
+> ...
+>
+>> > +/**
+>> > + * ipu3_mmu_alloc_page_table - get page to fill entries with dummy defaults
+>> > + * @d: mapping domain to be worked on
+>> > + * @l1: True for L1 page table, false for L2 page table.
+>> > + *
+>> > + * Index of L1 page table points to L2 tbl
+>> > + *
+>> > + * Return: Pointer to allocated page table
+>> > + * or NULL on failure.
+>> > + */
+>> > +static uint32_t *ipu3_mmu_alloc_page_table(struct ipu3_mmu_domain *d, bool l1)
+>> > +{
+>> > +       uint32_t *pt = (uint32_t *)__get_free_page(GFP_KERNEL);
+>>
+>> Style: I believe u32 is preferred in the kernel.
+>
+> There are some 30000 users of uint32_t alone in the kernel. I'd say it
+> should be fine. (I'm not trying saying it'd be more common than u32
+> though.)
 
-Also:
+Okay, checked the CodingStyle again and they are generally okay,
+except userspace headers, where __u* ones should be used.
 
-> +static inline unsigned long read_cr3_pa(void)
-> +{
-> +       return (read_cr3() & PHYSICAL_PAGE_MASK);
-> +}
+>
+>> > +               DMA_BIT_MASK(IPU3_MMU_ADDRESS_BITS);
+>> > +       mmu_dom->domain.geometry.force_aperture = true;
+>> > +
+>> > +       ptr = (void *)__get_free_page(GFP_KERNEL);
+>> > +       if (!ptr)
+>> > +               goto fail_get_page;
+>> > +       mmu_dom->dummy_page = virt_to_phys(ptr) >> IPU3_MMU_PAGE_SHIFT;
+>>
+>> Is virt_to_phys() correct here? I'm not an expert on x86 systems, but
+>> since this is a PCI device, there might be some other memory mapping
+>> involved.
+>
+> In theory yes --- if the IPU3 were behind an IOMMU managed by the Linux
+> kernel.
 
-Is there any guarantee that the magic encryption bit is masked out in
-PHYSICAL_PAGE_MASK?  The docs make it sound like it could be any bit.
-(But if it's one of the low 12 bits, that would be quite confusing.)
+Doesn't the VT-d IOMMU actually allow such configuration? (Disclaimer:
+I don't know too much about x86 and am reasoning based on few high
+level hardware overviews.)
 
---Andy
+> That kind of configuration wouldn't make much sense
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+It would make sense from security perspective (the main system IOMMU
+is likely more trusted that one of some peripheral device).
+
+It would also make sense from stability perspective. Given that the
+IPU3 PCI device seems to be non-coherent, the system IOMMU (which I
+believe is coherent) would catch any kinds of device memory reads or
+writes due to some device cache management issues, instead of possibly
+overwriting some kernel memory not belonging to the driver anymore.
+
+I agree, though, that it might not be the typical configuration one uses.
+
+> and any
+> attempt to use such a configuration would probably fall apart with
+> the assumption of single dma_ops, too.
+
+There is no such assumption AFAIK. dma_ops is specified per struct
+device. The IPU3 PCI device would have the x86 IOMMU dma_ops, while
+the IPU3 custom-bus device would have the IPU3 MMU dma_ops (just as in
+current code).
+
+Best regards,
+Tomasz
