@@ -1,27 +1,85 @@
-From: Gerald Schaefer <gerald.schaefer@de.ibm.com>
-Subject: Re: [PATCH 19/44] s390: implement ->mapping_error
-Date: Thu, 8 Jun 2017 18:23:11 +0200
-Message-ID: <20170608182311.05cced9e@thinkpad>
-References: <20170608132609.32662-1-hch@lst.de>
-        <20170608132609.32662-20-hch@lst.de>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v7 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Thu, 8 Jun 2017 17:32:13 +0100
+Message-ID: <20170608163213.GA2216@red-moon>
+References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20170608132609.32662-20-hch@lst.de>
-Sender: linux-ia64-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: x86@kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Geetha sowjanya <gakula@caviumnetworks.com>, lv.zheng@intel.com, robin.murphy@arm.com, rjw@rjwysocki.net
+Cc: will.deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu,  8 Jun 2017 15:25:44 +0200
-Christoph Hellwig <hch@lst.de> wrote:
-
-> s390 can also use noop_dma_ops, and while that currently does not return
-> errors it will so in the future.  Implementing the mapping_error method
-> is the proper way to have per-ops error conditions.
+On Tue, May 30, 2017 at 05:33:38PM +0530, Geetha sowjanya wrote:
+> Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+> 1. Errata ID #74
+>    SMMU register alias Page 1 is not implemented
+> 2. Errata ID #126
+>    SMMU doesnt support unique IRQ lines and also MSI for gerror,
+>    eventq and cmdq-sync
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> The following patchset does software workaround for these two erratas.
+> 
+> This series is based on patchset.
+> https://www.spinics.net/lists/arm-kernel/msg578443.html
 
-Acked-by: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Yes so it is not standalone. How are we going to merge these
+ACPI IORT/ACPICA/SMMU patches - inclusive of:
 
+[1] https://www.spinics.net/lists/arm-kernel/msg586458.html
+
+Rafael, do ACPICA patches go upstream via the ACPI tree pull request ?
+
+To remove dependency on ACPICA changes this series needs updating
+anyway and for [1] above I think the only solution is for all the
+patches to go via the ACPI tree (if ACPICA updates go upstream with it).
+
+Thanks,
+Lorenzo
+
+> Changes since v6:
+>    - Changed device tree compatible string to vendor specific.
+>    - Rebased on Robin's latest "Update SMMU models for IORT rev. C" v2 patch.
+>      https://www.spinics.net/lists/arm-kernel/msg582809.html
+> 
+> Changes since v5:
+>   - Rebased on Robin's "Update SMMU models for IORT rev. C" patch.
+>      https://www.spinics.net/lists/arm-kernel/msg580728.html
+>   - Replaced ACPI_IORT_SMMU_V3_CAVIUM_CN99XX macro with ACPI_IORT_SMMU_CAVIUM_CN99XX
+> 
+> Changes since v4:
+>  - Replaced all page1 offset macros ARM_SMMU_EVTQ/PRIQ_PROD/CONS with
+>     arm_smmu_page1_fixup(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu)
+> 
+> Changes since v3:
+>  - Merged patches 1, 2 and 4 of Version 3.
+>  - Modified the page1_offset_adjust() and get_irq_flags() implementation as
+>    suggested by Robin.
+> 
+> Changes since v2:
+>  - Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with
+>    new SMMU option used to enable errata workaround.
+> 
+> Changes since v1:
+>  - Since the use of MIDR register is rejected and SMMU_IIDR is broken on this
+>    silicon, as suggested by Will Deacon modified the patches to use ThunderX2
+>    SMMUv3 IORT model number to enable errata workaround.
+> 
+> Geetha Sowjanya (1):
+>   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
+> 
+> Linu Cherian (2):
+>   ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
+>     model
+>   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2      erratum
+>     #74
+> 
+>  Documentation/arm64/silicon-errata.txt             |    2 +
+>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 ++
+>  drivers/acpi/arm64/iort.c                          |   10 ++-
+>  drivers/iommu/arm-smmu-v3.c                        |   93 ++++++++++++++++----
+>  4 files changed, 91 insertions(+), 20 deletions(-)
+> 
