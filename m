@@ -1,70 +1,106 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 40/44] tile: remove dma_supported and
-	mapping_error methods
-Date: Thu,  8 Jun 2017 15:26:05 +0200
-Message-ID: <20170608132609.32662-41-hch@lst.de>
-References: <20170608132609.32662-1-hch@lst.de>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v6 10/34] x86, x86/mm, x86/xen, olpc: Use __va() against
+	just the physical address in cr3
+Date: Thu, 8 Jun 2017 08:42:51 -0500
+Message-ID: <4a7376fb-abfc-8edd-42b7-38de461ac65e@amd.com>
+References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
+	<20170607191453.28645.92256.stgit@tlendack-t1.amdoffice.net>
+	<b15e8924-4069-b5fa-adb2-86c164b1dd36@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <xen-devel-bounces@lists.xen.org>
-In-Reply-To: <20170608132609.32662-1-hch@lst.de>
-List-Unsubscribe: <https://lists.xen.org/cgi-bin/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xen.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xen.org>
-List-Help: <mailto:xen-devel-request@lists.xen.org?subject=help>
-List-Subscribe: <https://lists.xen.org/cgi-bin/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xen.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xen.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xen.org>
-To: x86@kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <b15e8924-4069-b5fa-adb2-86c164b1dd36-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, xen-devel <xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-VGhlc2UganVzdCBkdXBsaWNhdGUgdGhlIGRlZmF1bHQgYmVoYXZpb3IgaWYgbm8gbWV0aG9kIGlz
-IHByb3ZpZGVkLgoKU2lnbmVkLW9mZi1ieTogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+
-Ci0tLQogYXJjaC90aWxlL2tlcm5lbC9wY2ktZG1hLmMgfCAzMCAtLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAzMCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
-YS9hcmNoL3RpbGUva2VybmVsL3BjaS1kbWEuYyBiL2FyY2gvdGlsZS9rZXJuZWwvcGNpLWRtYS5j
-CmluZGV4IDU2OWJiNmRkMTU0YS4uZjJhYmVkYzhhMDgwIDEwMDY0NAotLS0gYS9hcmNoL3RpbGUv
-a2VybmVsL3BjaS1kbWEuYworKysgYi9hcmNoL3RpbGUva2VybmVsL3BjaS1kbWEuYwpAQCAtMzE3
-LDE4ICszMTcsNiBAQCBzdGF0aWMgdm9pZCB0aWxlX2RtYV9zeW5jX3NnX2Zvcl9kZXZpY2Uoc3Ry
-dWN0IGRldmljZSAqZGV2LAogCX0KIH0KIAotc3RhdGljIGlubGluZSBpbnQKLXRpbGVfZG1hX21h
-cHBpbmdfZXJyb3Ioc3RydWN0IGRldmljZSAqZGV2LCBkbWFfYWRkcl90IGRtYV9hZGRyKQotewot
-CXJldHVybiAwOwotfQotCi1zdGF0aWMgaW5saW5lIGludAotdGlsZV9kbWFfc3VwcG9ydGVkKHN0
-cnVjdCBkZXZpY2UgKmRldiwgdTY0IG1hc2spCi17Ci0JcmV0dXJuIDE7Ci19Ci0KIHN0YXRpYyBj
-b25zdCBzdHJ1Y3QgZG1hX21hcF9vcHMgdGlsZV9kZWZhdWx0X2RtYV9tYXBfb3BzID0gewogCS5h
-bGxvYyA9IHRpbGVfZG1hX2FsbG9jX2NvaGVyZW50LAogCS5mcmVlID0gdGlsZV9kbWFfZnJlZV9j
-b2hlcmVudCwKQEAgLTM0MCw4ICszMjgsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGRtYV9tYXBf
-b3BzIHRpbGVfZGVmYXVsdF9kbWFfbWFwX29wcyA9IHsKIAkuc3luY19zaW5nbGVfZm9yX2Rldmlj
-ZSA9IHRpbGVfZG1hX3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UsCiAJLnN5bmNfc2dfZm9yX2NwdSA9
-IHRpbGVfZG1hX3N5bmNfc2dfZm9yX2NwdSwKIAkuc3luY19zZ19mb3JfZGV2aWNlID0gdGlsZV9k
-bWFfc3luY19zZ19mb3JfZGV2aWNlLAotCS5tYXBwaW5nX2Vycm9yID0gdGlsZV9kbWFfbWFwcGlu
-Z19lcnJvciwKLQkuZG1hX3N1cHBvcnRlZCA9IHRpbGVfZG1hX3N1cHBvcnRlZAogfTsKIAogY29u
-c3Qgc3RydWN0IGRtYV9tYXBfb3BzICp0aWxlX2RtYV9tYXBfb3BzID0gJnRpbGVfZGVmYXVsdF9k
-bWFfbWFwX29wczsKQEAgLTUwNCwxOCArNDkwLDYgQEAgc3RhdGljIHZvaWQgdGlsZV9wY2lfZG1h
-X3N5bmNfc2dfZm9yX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJfQogfQogCi1zdGF0aWMg
-aW5saW5lIGludAotdGlsZV9wY2lfZG1hX21hcHBpbmdfZXJyb3Ioc3RydWN0IGRldmljZSAqZGV2
-LCBkbWFfYWRkcl90IGRtYV9hZGRyKQotewotCXJldHVybiAwOwotfQotCi1zdGF0aWMgaW5saW5l
-IGludAotdGlsZV9wY2lfZG1hX3N1cHBvcnRlZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHU2NCBtYXNr
-KQotewotCXJldHVybiAxOwotfQotCiBzdGF0aWMgY29uc3Qgc3RydWN0IGRtYV9tYXBfb3BzIHRp
-bGVfcGNpX2RlZmF1bHRfZG1hX21hcF9vcHMgPSB7CiAJLmFsbG9jID0gdGlsZV9wY2lfZG1hX2Fs
-bG9jX2NvaGVyZW50LAogCS5mcmVlID0gdGlsZV9wY2lfZG1hX2ZyZWVfY29oZXJlbnQsCkBAIC01
-MjcsOCArNTAxLDYgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyB0aWxlX3BjaV9k
-ZWZhdWx0X2RtYV9tYXBfb3BzID0gewogCS5zeW5jX3NpbmdsZV9mb3JfZGV2aWNlID0gdGlsZV9w
-Y2lfZG1hX3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UsCiAJLnN5bmNfc2dfZm9yX2NwdSA9IHRpbGVf
-cGNpX2RtYV9zeW5jX3NnX2Zvcl9jcHUsCiAJLnN5bmNfc2dfZm9yX2RldmljZSA9IHRpbGVfcGNp
-X2RtYV9zeW5jX3NnX2Zvcl9kZXZpY2UsCi0JLm1hcHBpbmdfZXJyb3IgPSB0aWxlX3BjaV9kbWFf
-bWFwcGluZ19lcnJvciwKLQkuZG1hX3N1cHBvcnRlZCA9IHRpbGVfcGNpX2RtYV9zdXBwb3J0ZWQK
-IH07CiAKIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqZ3hfcGNpX2RtYV9tYXBfb3BzID0gJnRp
-bGVfcGNpX2RlZmF1bHRfZG1hX21hcF9vcHM7CkBAIC01NzgsOCArNTUwLDYgQEAgc3RhdGljIGNv
-bnN0IHN0cnVjdCBkbWFfbWFwX29wcyBwY2lfaHlicmlkX2RtYV9vcHMgPSB7CiAJLnN5bmNfc2lu
-Z2xlX2Zvcl9kZXZpY2UgPSB0aWxlX3BjaV9kbWFfc3luY19zaW5nbGVfZm9yX2RldmljZSwKIAku
-c3luY19zZ19mb3JfY3B1ID0gdGlsZV9wY2lfZG1hX3N5bmNfc2dfZm9yX2NwdSwKIAkuc3luY19z
-Z19mb3JfZGV2aWNlID0gdGlsZV9wY2lfZG1hX3N5bmNfc2dfZm9yX2RldmljZSwKLQkubWFwcGlu
-Z19lcnJvciA9IHRpbGVfcGNpX2RtYV9tYXBwaW5nX2Vycm9yLAotCS5kbWFfc3VwcG9ydGVkID0g
-dGlsZV9wY2lfZG1hX3N1cHBvcnRlZAogfTsKIAogY29uc3Qgc3RydWN0IGRtYV9tYXBfb3BzICpn
-eF9sZWdhY3lfcGNpX2RtYV9tYXBfb3BzID0gJnBjaV9zd2lvdGxiX2RtYV9vcHM7Ci0tIAoyLjEx
-LjAKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpYZW4t
-ZGV2ZWwgbWFpbGluZyBsaXN0Clhlbi1kZXZlbEBsaXN0cy54ZW4ub3JnCmh0dHBzOi8vbGlzdHMu
-eGVuLm9yZy94ZW4tZGV2ZWwK
+On 6/7/2017 5:06 PM, Boris Ostrovsky wrote:
+> On 06/07/2017 03:14 PM, Tom Lendacky wrote:
+>> The cr3 register entry can contain the SME encryption bit that indicates
+>> the PGD is encrypted.  The encryption bit should not be used when creating
+>> a virtual address for the PGD table.
+>>
+>> Create a new function, read_cr3_pa(), that will extract the physical
+>> address from the cr3 register. This function is then used where a virtual
+>> address of the PGD needs to be created/used from the cr3 register.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>   arch/x86/include/asm/special_insns.h |    9 +++++++++
+>>   arch/x86/kernel/head64.c             |    2 +-
+>>   arch/x86/mm/fault.c                  |   10 +++++-----
+>>   arch/x86/mm/ioremap.c                |    2 +-
+>>   arch/x86/platform/olpc/olpc-xo1-pm.c |    2 +-
+>>   arch/x86/power/hibernate_64.c        |    2 +-
+>>   arch/x86/xen/mmu_pv.c                |    6 +++---
+>>   7 files changed, 21 insertions(+), 12 deletions(-)
+>>
+
+...
+
+>> diff --git a/arch/x86/xen/mmu_pv.c b/arch/x86/xen/mmu_pv.c
+>> index 1f386d7..2dc5243 100644
+>> --- a/arch/x86/xen/mmu_pv.c
+>> +++ b/arch/x86/xen/mmu_pv.c
+>> @@ -2022,7 +2022,7 @@ static phys_addr_t __init xen_early_virt_to_phys(unsigned long vaddr)
+>>   	pmd_t pmd;
+>>   	pte_t pte;
+>>   
+>> -	pa = read_cr3();
+>> +	pa = read_cr3_pa();
+>>   	pgd = native_make_pgd(xen_read_phys_ulong(pa + pgd_index(vaddr) *
+>>   						       sizeof(pgd)));
+>>   	if (!pgd_present(pgd))
+>> @@ -2102,7 +2102,7 @@ void __init xen_relocate_p2m(void)
+>>   	pt_phys = pmd_phys + PFN_PHYS(n_pmd);
+>>   	p2m_pfn = PFN_DOWN(pt_phys) + n_pt;
+>>   
+>> -	pgd = __va(read_cr3());
+>> +	pgd = __va(read_cr3_pa());
+>>   	new_p2m = (unsigned long *)(2 * PGDIR_SIZE);
+>>   	idx_p4d = 0;
+>>   	save_pud = n_pud;
+>> @@ -2209,7 +2209,7 @@ static void __init xen_write_cr3_init(unsigned long cr3)
+>>   {
+>>   	unsigned long pfn = PFN_DOWN(__pa(swapper_pg_dir));
+>>   
+>> -	BUG_ON(read_cr3() != __pa(initial_page_table));
+>> +	BUG_ON(read_cr3_pa() != __pa(initial_page_table));
+>>   	BUG_ON(cr3 != __pa(swapper_pg_dir));
+>>   
+>>   	/*
+> 
+> 
+> (Please copy Xen maintainers when modifying xen-related files.)
+
+Sorry about that, missed adding the Xen maintainers when I added this
+change.
+
+> 
+> Given that page tables for Xen PV guests are controlled by the
+> hypervisor I don't think this change (although harmless) is necessary.
+
+I can back this change out if the Xen maintainers think that's best.
+
+> What may be needed is making sure X86_FEATURE_SME is not set for PV guests.
+
+And that may be something that Xen will need to control through either
+CPUID or MSR support for the PV guests.
+
+Thanks,
+Tom
+
+> 
+> -boris
+> 
