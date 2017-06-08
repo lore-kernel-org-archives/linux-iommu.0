@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 5/8] iommu/io-pgtable-arm: Support lockless operation
-Date: Thu,  8 Jun 2017 12:52:04 +0100
-Message-ID: <fbae45568d6210ad6d9ac25e73bde31d85b64b63.1496921366.git.robin.murphy@arm.com>
+Subject: [PATCH 7/8] iommu/arm-smmu: Remove io-pgtable spinlock
+Date: Thu,  8 Jun 2017 12:52:06 +0100
+Message-ID: <b4b616f52091d8e870e52e72484d80374aad67b7.1496921366.git.robin.murphy@arm.com>
 References: <cover.1496921366.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,188 +21,147 @@ To: will.deacon@arm.com, joro@8bytes.org
 Cc: salil.mehta@huawei.com, sunil.goutham@cavium.com, iommu@lists.linux-foundation.org, ray.jui@broadcom.com, linux-arm-kernel@lists.infradead.org, linu.cherian@cavium.com, nwatters@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-For parallel I/O with multiple concurrent threads servicing the same
-device (or devices, if several share a domain), serialising page table
-updates becomes a massive bottleneck. On reflection, though, we don't
-strictly need to do that - for valid IOMMU API usage, there are in fact
-only two races that we need to guard against: multiple map requests for
-different blocks within the same region, when the intermediate-level
-table for that region does not yet exist; and multiple unmaps of
-different parts of the same block entry. Both of those are fairly easily
-solved by using a cmpxchg to install the new table, such that if we then
-find that someone else's table got there first, we can simply free ours
-and continue.
+With the io-pgtable code now robust against (valid) races, we no longer
+need to serialise all operations with a lock. This might make broken
+callers who issue concurrent operations on overlapping addresses go even
+more wrong than before, but hey, they already had little hope of useful
+or deterministic results.
 
-Make the requisite changes such that we can withstand being called
-without the caller maintaining a lock. In theory, this opens up a few
-corners in which wildly misbehaving callers making nonsensical
-overlapping requests might lead to crashes instead of just unpredictable
-results, but correct code really does not deserve to pay a significant
-performance cost for the sake of masking bugs in theoretical broken code.
+We do however still have to keep a lock around to serialise the ATS1*
+translation ops, as parallel iova_to_phys() calls could lead to
+unpredictable hardware behaviour otherwise.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 75 ++++++++++++++++++++++++++++++++----------
- 1 file changed, 58 insertions(+), 17 deletions(-)
+ drivers/iommu/arm-smmu.c | 45 ++++++++++++++-------------------------------
+ 1 file changed, 14 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index bdc954cb98c1..d857961af1d3 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -20,6 +20,7 @@
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 1f42f339a284..b8d069a2b31d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -425,10 +425,10 @@ enum arm_smmu_domain_stage {
+ struct arm_smmu_domain {
+ 	struct arm_smmu_device		*smmu;
+ 	struct io_pgtable_ops		*pgtbl_ops;
+-	spinlock_t			pgtbl_lock;
+ 	struct arm_smmu_cfg		cfg;
+ 	enum arm_smmu_domain_stage	stage;
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
++	spinlock_t			cb_lock; /* Serialises ATS1* ops */
+ 	struct iommu_domain		domain;
+ };
  
- #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
+@@ -1105,7 +1105,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	}
  
-+#include <linux/atomic.h>
- #include <linux/iommu.h>
- #include <linux/kernel.h>
- #include <linux/sizes.h>
-@@ -99,6 +100,8 @@
- #define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
- #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
- 					 ARM_LPAE_PTE_ATTR_HI_MASK)
-+/* Software bit for solving coherency races */
-+#define ARM_LPAE_PTE_SW_SYNC		(((arm_lpae_iopte)1) << 55)
+ 	mutex_init(&smmu_domain->init_mutex);
+-	spin_lock_init(&smmu_domain->pgtbl_lock);
++	spin_lock_init(&smmu_domain->cb_lock);
  
- /* Stage-1 PTE */
- #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
-@@ -249,15 +252,20 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
- 	free_pages_exact(pages, size);
+ 	return &smmu_domain->domain;
+ }
+@@ -1383,35 +1383,23 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			phys_addr_t paddr, size_t size, int prot)
+ {
+-	int ret;
+-	unsigned long flags;
+-	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
+ 
+ 	if (!ops)
+ 		return -ENODEV;
+ 
+-	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+-	ret = ops->map(ops, iova, paddr, size, prot);
+-	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+-	return ret;
++	return ops->map(ops, iova, paddr, size, prot);
  }
  
-+static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
-+				struct io_pgtable_cfg *cfg)
-+{
-+	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
-+				   sizeof(*ptep), DMA_TO_DEVICE);
-+}
-+
- static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
- 			       struct io_pgtable_cfg *cfg)
+ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			     size_t size)
  {
- 	*ptep = pte;
+-	size_t ret;
+-	unsigned long flags;
+-	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
  
- 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
--		dma_sync_single_for_device(cfg->iommu_dev,
--					   __arm_lpae_dma_addr(ptep),
--					   sizeof(pte), DMA_TO_DEVICE);
-+		__arm_lpae_sync_pte(ptep, cfg);
+ 	if (!ops)
+ 		return 0;
+ 
+-	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+-	ret = ops->unmap(ops, iova, size);
+-	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+-	return ret;
++	return ops->unmap(ops, iova, size);
  }
  
- static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-@@ -289,13 +297,13 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 			     arm_lpae_iopte prot, int lvl,
- 			     arm_lpae_iopte *ptep)
+ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+@@ -1425,10 +1413,11 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	void __iomem *cb_base;
+ 	u32 tmp;
+ 	u64 phys;
+-	unsigned long va;
++	unsigned long va, flags;
+ 
+ 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+ 
++	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+ 	/* ATS1 registers can only be written atomically */
+ 	va = iova & ~0xfffUL;
+ 	if (smmu->version == ARM_SMMU_V2)
+@@ -1438,6 +1427,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 
+ 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
+ 				      !(tmp & ATSR_ACTIVE), 5, 50)) {
++		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+ 		dev_err(dev,
+ 			"iova to phys timed out on %pad. Falling back to software table walk.\n",
+ 			&iova);
+@@ -1445,6 +1435,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	}
+ 
+ 	phys = readq_relaxed(cb_base + ARM_SMMU_CB_PAR);
++	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+ 	if (phys & CB_PAR_F) {
+ 		dev_err(dev, "translation fault!\n");
+ 		dev_err(dev, "PAR = 0x%llx\n", phys);
+@@ -1457,10 +1448,8 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+ 					dma_addr_t iova)
  {
--	arm_lpae_iopte pte;
-+	arm_lpae_iopte pte = *ptep;
+-	phys_addr_t ret;
+-	unsigned long flags;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
  
--	if (iopte_leaf(*ptep, lvl)) {
-+	if (iopte_leaf(pte, lvl)) {
- 		/* We require an unmap first */
- 		WARN_ON(!selftest_running);
- 		return -EEXIST;
--	} else if (iopte_type(*ptep, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
-+	} else if (iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
- 		/*
- 		 * We need to unmap and free the old table before
- 		 * overwriting it with a block entry.
-@@ -315,16 +323,30 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
+ 		return iova;
+@@ -1468,17 +1457,11 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+ 	if (!ops)
+ 		return 0;
  
- static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 					     arm_lpae_iopte *ptep,
-+					     arm_lpae_iopte curr,
- 					     struct io_pgtable_cfg *cfg)
- {
--	arm_lpae_iopte new;
-+	arm_lpae_iopte old, new;
- 
- 	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
- 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
- 		new |= ARM_LPAE_PTE_NSTABLE;
- 
--	__arm_lpae_set_pte(ptep, new, cfg);
--	return new;
-+	old = cmpxchg64_relaxed(ptep, curr, new);
-+
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)
-+		return old;
-+
-+	/* Even if it's not ours, there's no point waiting; just kick it */
-+	if (!(old & ARM_LPAE_PTE_SW_SYNC))
-+		__arm_lpae_sync_pte(ptep, cfg);
-+	if (old == curr) {
-+		/* Ensure our sync is finished before we mark it as such */
-+		wmb();
-+		*ptep |= ARM_LPAE_PTE_SW_SYNC;
-+	}
-+
-+	return old;
- }
- 
- static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
-@@ -333,6 +355,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- {
- 	arm_lpae_iopte *cptep, pte;
- 	size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-+	size_t tblsz = ARM_LPAE_GRANULE(data);
- 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
- 
- 	/* Find our entry at the current level */
-@@ -347,20 +370,26 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		return -EINVAL;
- 
- 	/* Grab a pointer to the next level */
--	pte = *ptep;
-+	pte = READ_ONCE(*ptep);
- 	if (!pte) {
--		cptep = __arm_lpae_alloc_pages(ARM_LPAE_GRANULE(data),
--					       GFP_ATOMIC, cfg);
-+		cptep = __arm_lpae_alloc_pages(tblsz, GFP_ATOMIC, cfg);
- 		if (!cptep)
- 			return -ENOMEM;
- 
--		arm_lpae_install_table(cptep, ptep, cfg);
--	} else if (!iopte_leaf(pte, lvl)) {
--		cptep = iopte_deref(pte, data);
+-	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
+ 	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS &&
+-			smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+-		ret = arm_smmu_iova_to_phys_hard(domain, iova);
 -	} else {
-+		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
-+		if (pte)
-+			__arm_lpae_free_pages(cptep, tblsz, cfg);
-+	} else if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) &&
-+		   !(pte & ARM_LPAE_PTE_SW_SYNC)) {
-+		__arm_lpae_sync_pte(ptep, cfg);
-+	}
-+
-+	if (iopte_leaf(pte, lvl)) {
- 		/* We require an unmap first */
- 		WARN_ON(!selftest_running);
- 		return -EEXIST;
-+	} else if (pte) {
-+		cptep = iopte_deref(pte, data);
- 	}
+-		ret = ops->iova_to_phys(ops, iova);
+-	}
++			smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
++		return arm_smmu_iova_to_phys_hard(domain, iova);
  
- 	/* Rinse, repeat */
-@@ -502,7 +531,19 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 		__arm_lpae_set_pte(&tablep[i], pte, cfg);
- 	}
+-	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
+-
+-	return ret;
++	return ops->iova_to_phys(ops, iova);
+ }
  
--	arm_lpae_install_table(tablep, ptep, cfg);
-+	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
-+	if (pte != blk_pte) {
-+		__arm_lpae_free_pages(tablep, tablesz, cfg);
-+		/*
-+		 * We may race against someone unmapping another part of this
-+		 * block, but anything else is invalid. We can't misinterpret
-+		 * a page entry here since we're never at the last level.
-+		 */
-+		if (iopte_type(pte, lvl) != ARM_LPAE_PTE_TYPE_TABLE)
-+			return 0;
-+
-+		tablep = iopte_deref(pte, data);
-+	}
- 
- 	if (unmap_idx < 0)
- 		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+ static bool arm_smmu_capable(enum iommu_cap cap)
 -- 
 2.12.2.dirty
