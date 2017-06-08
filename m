@@ -1,272 +1,38 @@
-From: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
-Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-Date: Thu, 08 Jun 2017 22:33:55 +0200
-Message-ID: <1496954035.4188.1.camel@rutgers.edu>
-References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
-	<20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
-	<MWHPR12MB15181A6A020ACA2F53DF70339CCB0@MWHPR12MB1518.namprd12.prod.outlook.com>
+From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: Re: [PATCH v6 10/34] x86, x86/mm, x86/xen, olpc: Use __va() against
+ just the physical address in cr3
+Date: Thu, 8 Jun 2017 16:51:04 -0400
+Message-ID: <67fe69ac-a213-8de3-db28-0e54bba95127@oracle.com>
+References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
+ <20170607191453.28645.92256.stgit@tlendack-t1.amdoffice.net>
+ <b15e8924-4069-b5fa-adb2-86c164b1dd36@oracle.com>
+ <4a7376fb-abfc-8edd-42b7-38de461ac65e@amd.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0382188961109157126=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <MWHPR12MB15181A6A020ACA2F53DF70339CCB0-Gy0DoCVfaSXKu+HfpMNLNQdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Lendacky, Thomas" <Thomas.Lendacky-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <4a7376fb-abfc-8edd-42b7-38de461ac65e@amd.com>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc: Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Dave Young <dyoung@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@g>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============0382188961109157126==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-xWWvJAn1Z6X8rkU1tDuv"
+>
+>> What may be needed is making sure X86_FEATURE_SME is not set for PV
+>> guests.
+>
+> And that may be something that Xen will need to control through either
+> CPUID or MSR support for the PV guests.
 
 
---=-xWWvJAn1Z6X8rkU1tDuv
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Only on newer versions of Xen. On earlier versions (2-3 years old) leaf
+0x80000007 is passed to the guest unchanged. And so is MSR_K8_SYSCFG.
 
-On Tue, 2017-06-06 at 10:02 +0000, Nath, Arindam wrote:
-> > -----Original Message-----
-> > From: Lendacky, Thomas
-> > Sent: Tuesday, June 06, 2017 1:23 AM
-> > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > Cc: Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>; Joerg Roedel
-> > <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Duran, Leo <leo.duran-5C7GfCeVMHo@public.gmane.org>; Suthikulpanit,
-> > Suravee <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> > Subject: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-> >=20
-> > After reducing the amount of MMIO performed by the IOMMU during
-> > operation,
-> > perf data shows that flushing the TLB for all protection domains during
-> > DMA unmapping is a performance issue. It is not necessary to flush the
-> > TLBs for all protection domains, only the protection domains associated
-> > with iova's on the flush queue.
-> >=20
-> > Create a separate queue that tracks the protection domains associated w=
-ith
-> > the iova's on the flush queue. This new queue optimizes the flushing of
-> > TLBs to the required protection domains.
-> >=20
-> > Reviewed-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
-> > Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-> > ---
-> > drivers/iommu/amd_iommu.c |   56
-> > ++++++++++++++++++++++++++++++++++++++++-----
-> > 1 file changed, 50 insertions(+), 6 deletions(-)
-> >=20
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index 856103b..a5e77f0 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -103,7 +103,18 @@ struct flush_queue {
-> > 	struct flush_queue_entry *entries;
-> > };
-> >=20
-> > +struct flush_pd_queue_entry {
-> > +	struct protection_domain *pd;
-> > +};
-> > +
-> > +struct flush_pd_queue {
-> > +	/* No lock needed, protected by flush_queue lock */
-> > +	unsigned next;
-> > +	struct flush_pd_queue_entry *entries;
-> > +};
-> > +
-> > static DEFINE_PER_CPU(struct flush_queue, flush_queue);
-> > +static DEFINE_PER_CPU(struct flush_pd_queue, flush_pd_queue);
-> >=20
-> > static atomic_t queue_timer_on;
-> > static struct timer_list queue_timer;
-> > @@ -2227,16 +2238,20 @@ static struct iommu_group
-> > *amd_iommu_device_group(struct device *dev)
-> >  *
-> >=20
-> > ***********************************************************
-> > ******************/
-> >=20
-> > -static void __queue_flush(struct flush_queue *queue)
-> > +static void __queue_flush(struct flush_queue *queue,
-> > +			  struct flush_pd_queue *pd_queue)
-> > {
-> > -	struct protection_domain *domain;
-> > 	unsigned long flags;
-> > 	int idx;
-> >=20
-> > 	/* First flush TLB of all known domains */
-> > 	spin_lock_irqsave(&amd_iommu_pd_lock, flags);
-> > -	list_for_each_entry(domain, &amd_iommu_pd_list, list)
-> > -		domain_flush_tlb(domain);
-> > +	for (idx =3D 0; idx < pd_queue->next; ++idx) {
-> > +		struct flush_pd_queue_entry *entry;
-> > +
-> > +		entry =3D pd_queue->entries + idx;
-> > +		domain_flush_tlb(entry->pd);
-> > +	}
-> > 	spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
-> >=20
-> > 	/* Wait until flushes have completed */
-> > @@ -2255,6 +2270,7 @@ static void __queue_flush(struct flush_queue
-> > *queue)
-> > 		entry->dma_dom =3D NULL;
-> > 	}
-> >=20
-> > +	pd_queue->next =3D 0;
-> > 	queue->next =3D 0;
-> > }
-> >=20
-> > @@ -2263,13 +2279,15 @@ static void queue_flush_all(void)
-> > 	int cpu;
-> >=20
-> > 	for_each_possible_cpu(cpu) {
-> > +		struct flush_pd_queue *pd_queue;
-> > 		struct flush_queue *queue;
-> > 		unsigned long flags;
-> >=20
-> > 		queue =3D per_cpu_ptr(&flush_queue, cpu);
-> > +		pd_queue =3D per_cpu_ptr(&flush_pd_queue, cpu);
-> > 		spin_lock_irqsave(&queue->lock, flags);
-> > 		if (queue->next > 0)
-> > -			__queue_flush(queue);
-> > +			__queue_flush(queue, pd_queue);
-> > 		spin_unlock_irqrestore(&queue->lock, flags);
-> > 	}
-> > }
-> > @@ -2283,6 +2301,8 @@ static void queue_flush_timeout(unsigned long
-> > unsused)
-> > static void queue_add(struct dma_ops_domain *dma_dom,
-> > 		      unsigned long address, unsigned long pages)
-> > {
-> > +	struct flush_pd_queue_entry *pd_entry;
-> > +	struct flush_pd_queue *pd_queue;
-> > 	struct flush_queue_entry *entry;
-> > 	struct flush_queue *queue;
-> > 	unsigned long flags;
-> > @@ -2292,10 +2312,22 @@ static void queue_add(struct dma_ops_domain
-> > *dma_dom,
-> > 	address >>=3D PAGE_SHIFT;
-> >=20
-> > 	queue =3D get_cpu_ptr(&flush_queue);
-> > +	pd_queue =3D get_cpu_ptr(&flush_pd_queue);
-> > 	spin_lock_irqsave(&queue->lock, flags);
-> >=20
-> > 	if (queue->next =3D=3D FLUSH_QUEUE_SIZE)
-> > -		__queue_flush(queue);
-> > +		__queue_flush(queue, pd_queue);
-> > +
-> > +	for (idx =3D 0; idx < pd_queue->next; ++idx) {
-> > +		pd_entry =3D pd_queue->entries + idx;
-> > +		if (pd_entry->pd =3D=3D &dma_dom->domain)
-> > +			break;
-> > +	}
-> > +	if (idx =3D=3D pd_queue->next) {
-> > +		/* New protection domain, add it to the list */
-> > +		pd_entry =3D pd_queue->entries + pd_queue->next++;
-> > +		pd_entry->pd =3D &dma_dom->domain;
-> > +	}
-> >=20
-> > 	idx   =3D queue->next++;
-> > 	entry =3D queue->entries + idx;
-> > @@ -2309,6 +2341,7 @@ static void queue_add(struct dma_ops_domain
-> > *dma_dom,
-> > 	if (atomic_cmpxchg(&queue_timer_on, 0, 1) =3D=3D 0)
-> > 		mod_timer(&queue_timer, jiffies + msecs_to_jiffies(10));
-> >=20
-> > +	put_cpu_ptr(&flush_pd_queue);
-> > 	put_cpu_ptr(&flush_queue);
-> > }
-> >=20
-> > @@ -2810,6 +2843,8 @@ int __init amd_iommu_init_api(void)
-> > 		return ret;
-> >=20
-> > 	for_each_possible_cpu(cpu) {
-> > +		struct flush_pd_queue *pd_queue =3D
-> > per_cpu_ptr(&flush_pd_queue,
-> > +							      cpu);
-> > 		struct flush_queue *queue =3D per_cpu_ptr(&flush_queue,
-> > cpu);
-> >=20
-> > 		queue->entries =3D kzalloc(FLUSH_QUEUE_SIZE *
-> > @@ -2819,6 +2854,12 @@ int __init amd_iommu_init_api(void)
-> > 			goto out_put_iova;
-> >=20
-> > 		spin_lock_init(&queue->lock);
-> > +
-> > +		pd_queue->entries =3D kzalloc(FLUSH_QUEUE_SIZE *
-> > +					    sizeof(*pd_queue->entries),
-> > +					    GFP_KERNEL);
-> > +		if (!pd_queue->entries)
-> > +			goto out_put_iova;
-> > 	}
-> >=20
-> > 	err =3D bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
-> > @@ -2836,9 +2877,12 @@ int __init amd_iommu_init_api(void)
-> >=20
-> > out_put_iova:
-> > 	for_each_possible_cpu(cpu) {
-> > +		struct flush_pd_queue *pd_queue =3D
-> > per_cpu_ptr(&flush_pd_queue,
-> > +							      cpu);
-> > 		struct flush_queue *queue =3D per_cpu_ptr(&flush_queue,
-> > cpu);
-> >=20
-> > 		kfree(queue->entries);
-> > +		kfree(pd_queue->entries);
-> > 	}
-> >=20
-> > 	return -ENOMEM;
->=20
-> Craig and Jan, can=C2=A0you please=C2=A0confirm whether this patch fixes =
-the
-> IOMMU timeout errors you encountered before? If it does, then this is
-> a better implementation of the fix I provided few weeks back.
+-boris
 
-I have only remote access to the machine, so I won't be able to test
-until June 22nd.
-
-Jan
-
->=20
-> Thanks,
-> Arindam
-
---=20
-Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
---=-xWWvJAn1Z6X8rkU1tDuv
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEjGgSoFJq63cCYGKvY+M/tz9IsiAFAlk5tLQACgkQY+M/tz9I
-siCiUQ/+IMlosRRQK7dA5J5u9nJ46tPrZiWhzDNTP5vsUU9J7sV4f9ZlhMv5Uggj
-KE3vAB5i50oxqR+mbZKghnjQDnQFZ8NYXvMeNAOOngo4JFx7v0Oqf3CjPI9KfIRr
-g41ZPZGDi8Xd09vHRHwkB2ZzvE52sXmkD9UFXDO7HKfCk5I9EIcSjCNrzLlG5sPm
-C+3uq2SEqKcilo9NiSpL36Szw4aVwHzJjtXBjVNLpqBnE9QCwBgStw5WfFdj5LXx
-BdPXGEO1XYa8oKGQaMX8ukvPJmVtZ+5TasdnapLjjlSum+Kx4hQDxBiCR65qlE37
-wXngzqt0tPb7YuxBqM+7aWkkDcy2Ph1u9EYk5Z0pVZ7XJHaD8yzUArv0mlHq9kpg
-V2MokBiggvffgd7dlOWMn8beaPUP4tEUVsjsJymA8jvvGTNYu2O0eNNz9tUr+lNO
-TrwHeGRgKu1ST2oplEYU935cW6IN684iGSewGglfygrdnHZQacK0RsKLl+Srf0JN
-WKUbY6677dTQP1zuSBghDsI0ZO1Nlz4Xw5VNM8PK6TDv8WlWWMvU+vXivvF6niDg
-MHfP95cZ4tMwDvXaUMNmHW/hMPllEKJadHuPyc9jMr283ez5vXvtQlzCyjOc8xg+
-8TP+qMJjBahL9hm7dCR1TpXM+o+SAo6YDmzlp5pPHveugaQf/P0=
-=hmxQ
------END PGP SIGNATURE-----
-
---=-xWWvJAn1Z6X8rkU1tDuv--
-
-
---===============0382188961109157126==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0382188961109157126==--
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
