@@ -1,102 +1,74 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [RFCv2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Thu, 8 Jun 2017 09:48:51 +0100
-Message-ID: <20170608084851.GA8607@red-moon>
-References: <20170531143213.82100-1-shameerali.kolothum.thodi@huawei.com>
- <20170531143213.82100-3-shameerali.kolothum.thodi@huawei.com>
- <20170606135623.GB20126@red-moon>
- <5FC3163CFD30C246ABAA99954A238FA838362082@FRAEML521-MBX.china.huawei.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v7 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
+	ThunderX2 SMMUv3 model
+Date: Thu, 8 Jun 2017 09:58:58 +0100
+Message-ID: <20170608085857.GB8607@red-moon>
+References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+	<1496145821-3411-2-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838362082@FRAEML521-MBX.china.huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
+In-Reply-To: <1496145821-3411-2-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 06, 2017 at 03:01:36PM +0000, Shameerali Kolothum Thodi wrote:
-
-[...]
-
-> > > +	irq_dom = pci_msi_get_device_domain(to_pci_dev(dev));
-> > > +	if (irq_dom) {
-> > > +		int	ret;
-> > > +		u32	rid;
-> > > +
-> > > +		rid = pci_msi_domain_get_msi_rid(irq_dom,
-> > to_pci_dev(dev));
-> > > +		ret = iort_dev_find_its_base(dev, rid, 0, &base);
-> > 
-> > Well, here we use ITS id 0 which is fine as long as code in IORT uses the same
-> > policy for getting the irq_domain (ie we want to reserve the ITS address
-> > space that is actually used by the device to send IRQs not a a different one) it
-> > is just a heads-up because I find this confusing.
+On Tue, May 30, 2017 at 05:33:39PM +0530, Geetha sowjanya wrote:
+> From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > 
-> Ok. Just to make it clear, 0 is the index into the ITS identifier
-> list.  I noted that iort_get_device_domain() uses index 0 while
-> retrieving the ITS identifier.  May be use the same approach here as
-> well? ie, remove the index from function call?
+> Cavium ThunderX2 implementation doesn't support second page in SMMU
+> register space. Hence, resource size is set as 64k for this model.
 > 
-> I am not sure, how we can get the index info  though theoretically It
-> is possible for the ITS group node having multiple ITSs.
+> Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/acpi/arm64/iort.c |   10 +++++++++-
+>  1 files changed, 9 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index c5fecf9..bba2b59 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -833,12 +833,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
+>  {
+>  	struct acpi_iort_smmu_v3 *smmu;
+>  	int num_res = 0;
+> +	unsigned long size = SZ_128K;
+>  
+>  	/* Retrieve SMMUv3 specific data */
+>  	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+>  
+> +	/*
+> +	 * Override the size, for Cavium ThunderX2 implementation
+> +	 * which doesn't support the page 1 SMMU register space.
+> +	 */
+> +	if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
+> +		size = SZ_64K;
 
-Actually I think it would make sense to reserve ALL ITS regions a device
-may be mapped to instead of just index 0 (ie in your case it is
-equivalent); this leaves us some leeway as to choose which ITS the
-device will be actually mapped to and this code does not have to care.
+Nit: add a function, say arm_smmu_v3_resource_size() with the logic
+above that by default returns SZ_128K, I do not like this switch
+in the middle of this function.
 
 Lorenzo
 
+> +
+>  	res[num_res].start = smmu->base_address;
+> -	res[num_res].end = smmu->base_address + SZ_128K - 1;
+> +	res[num_res].end = smmu->base_address + size - 1;
+>  	res[num_res].flags = IORESOURCE_MEM;
 >  
-> > > +		if (!ret) {
-> > > +			dev_info(dev, "SMMUv3:HW MSI resv addr
-> > 0x%pa\n", &base);
-> > > +			region = iommu_alloc_resv_region(base, SZ_128K,
-> > > +							 prot,
-> > IOMMU_RESV_MSI);
-> > > +			return region;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	return NULL;
-> > > +}
-> > > +#else
-> > > +static struct iommu_resv_region *arm_smmu_acpi_alloc_hw_msi(struct
-> > > +device *dev) {
-> > > +	return NULL;
-> > > +}
-> > > +#endif
-> > > +
-> > >  static int arm_smmu_add_device(struct device *dev)  {
-> > >  	int i, ret;
-> > > @@ -1903,11 +1936,20 @@ static int arm_smmu_of_xlate(struct device
-> > > *dev, struct of_phandle_args *args)  static void
-> > arm_smmu_get_resv_regions(struct device *dev,
-> > >  				      struct list_head *head)
-> > >  {
-> > > -	struct iommu_resv_region *region;
-> > > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > > +	struct iommu_resv_region *region = NULL;
-> > >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > > +	struct arm_smmu_device *smmu;
-> > > +
-> > > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-> > >
-> > > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
-> > MSI_IOVA_LENGTH,
-> > > -					 prot, IOMMU_RESV_SW_MSI);
-> > > +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
-> > &&
-> > > +		      dev_is_pci(dev))
-> > > +		region = arm_smmu_acpi_alloc_hw_msi(dev);
-> > 
-> > Is it safe to carry on if arm_smmu_acpi_alloc_hw_msi() returns NULL here ?
+>  	num_res++;
+> -- 
+> 1.7.1
 > 
-> It is just that PCIe devices won't be functional on this platforms as the endpoint will 
-> be configured with ITS IOVA address. May be I should add some dev_warn() here.
-> 
-> Thanks,
-> Shameer
