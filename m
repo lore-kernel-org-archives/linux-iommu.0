@@ -1,58 +1,59 @@
-From: Sakari Ailus <sakari.ailus@iki.fi>
-Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
-Date: Thu, 8 Jun 2017 19:47:00 +0300
-Message-ID: <20170608164659.GI1019@valkosipuli.retiisi.org.uk>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <1496695157-19926-4-git-send-email-yong.zhi@intel.com>
- <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
- <20170607184512.0e627965@lxorguk.ukuu.org.uk>
- <CAAFQd5BYk6ErzaLgVp+sL2sQg1FzFjDu4tg_b3KBCAM7=39icw@mail.gmail.com>
+From: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Thu, 8 Jun 2017 19:13:24 +0200
+Message-ID: <CAJZ5v0gnjxwBXEQ--u6Sbviks74MXLFWTfN+J90cdDZbO2Q7+w@mail.gmail.com>
+References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+	<20170608163213.GA2216@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-media-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAAFQd5BYk6ErzaLgVp+sL2sQg1FzFjDu4tg_b3KBCAM7=39icw@mail.gmail.com>
-Sender: linux-media-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170608163213.GA2216@red-moon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Lv <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Charles Garcia Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Robert Moore <robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz and Alan,
+On Thu, Jun 8, 2017 at 6:32 PM, Lorenzo Pieralisi
+<lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Tue, May 30, 2017 at 05:33:38PM +0530, Geetha sowjanya wrote:
+>> Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+>> 1. Errata ID #74
+>>    SMMU register alias Page 1 is not implemented
+>> 2. Errata ID #126
+>>    SMMU doesnt support unique IRQ lines and also MSI for gerror,
+>>    eventq and cmdq-sync
+>>
+>> The following patchset does software workaround for these two erratas.
+>>
+>> This series is based on patchset.
+>> https://www.spinics.net/lists/arm-kernel/msg578443.html
+>
+> Yes so it is not standalone. How are we going to merge these
+> ACPI IORT/ACPICA/SMMU patches - inclusive of:
+>
+> [1] https://www.spinics.net/lists/arm-kernel/msg586458.html
+>
+> Rafael, do ACPICA patches go upstream via the ACPI tree pull request ?
 
-On Thu, Jun 08, 2017 at 11:55:18AM +0900, Tomasz Figa wrote:
-> Hi Alan,
-> 
-> On Thu, Jun 8, 2017 at 2:45 AM, Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
-> >> > +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
-> >> > +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
-> >> > +
-> >> > +       clflush_cache_range(phys_to_virt(daddr), size);
-> >>
-> >> You might need to consider another IOMMU on the way here. Generally,
-> >> given that daddr is your MMU DMA address (not necessarily CPU physical
-> >> address), you should be able to call
-> >>
-> >> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
-> >
-> > Te system IOMMU (if enabled) may be cache coherent - and on x86 would be,
-> > so it doesn't think it needs to do anything for cache synchronization
-> > and the dma_sync won't actually do any work.
-> 
-> I'm not very familiar with x86, but typically I found coherency to be
-> an attribute of the DMA master (i.e. if it is connected to a coherent
-> memory port).
-> 
-> Looking at all the IPU3 code, it looks like the whole PCI device is
-> non-coherent for some reason (e.g. you can see implicit cache flushes
-> for page tables). So I would have expected that a non-coherent variant
-> of x86 dma_ops is used for the PCI struct device, which would do cache
-> maintenance in its dma_sync_* ops.
+Not as a rule.
 
-It can actually do both --- in most cases.
+> To remove dependency on ACPICA changes this series needs updating
+> anyway and for [1] above I think the only solution is for all the
+> patches to go via the ACPI tree (if ACPICA updates go upstream with it).
 
-The MMU page tables are an exception so they will still need an explicit
-flush.
+I think we may ask Lv to backport the header changes once they have
+been merged into Linux.
 
--- 
-Sakari Ailus
-e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
+Lv, would that work?
+
+Thanks,
+Rafael
