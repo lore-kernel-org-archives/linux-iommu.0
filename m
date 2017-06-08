@@ -1,83 +1,35 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
-Date: Thu, 8 Jun 2017 23:35:51 +0900
-Message-ID: <CAAFQd5AWGN_qSXGG32D-eWKZRoRme+XCD9v1r8qJ5bthtS9z9w@mail.gmail.com>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
-	<1496695157-19926-4-git-send-email-yong.zhi@intel.com>
-	<CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
-	<73992991-65a9-915b-a450-b23aeb3baaed@arm.com>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: [PATCH 25/44] arm: implement ->mapping_error
+Date: Thu, 8 Jun 2017 15:43:14 +0100
+Message-ID: <20170608144313.GL4902@n2100.armlinux.org.uk>
+References: <20170608132609.32662-1-hch@lst.de>
+ <20170608132609.32662-26-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <73992991-65a9-915b-a450-b23aeb3baaed-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Mani,
-	Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170608132609.32662-26-hch@lst.de>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: x86@kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 8, 2017 at 10:22 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 07/06/17 10:47, Tomasz Figa wrote:
->> Hi Yong,
->>
->> +Robin, Joerg, IOMMU ML
->>
->> Please see my comments inline.
->>
->> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-[snip]
->>> +
->>> +/* End of things adapted from arch/arm/mm/dma-mapping.c */
->>> +static void ipu3_dmamap_sync_single_for_cpu(struct device *dev,
->>> +                                           dma_addr_t dma_handle, size_t size,
->>> +                                           enum dma_data_direction dir)
->>> +{
->>> +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
->>> +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
->>> +
->>> +       clflush_cache_range(phys_to_virt(daddr), size);
->>
->> You might need to consider another IOMMU on the way here. Generally,
->> given that daddr is your MMU DMA address (not necessarily CPU physical
->> address), you should be able to call
->>
->> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
->
-> I'd hope that this IPU complex is some kind of embedded endpoint thing
-> that bypasses the VT-d IOMMU or is always using its own local RAM,
-> because it would be pretty much unworkable otherwise.
+BOn Thu, Jun 08, 2017 at 03:25:50PM +0200, Christoph Hellwig wrote:
+> +static int dmabounce_mapping_error(struct device *dev, dma_addr_t dma_addr)
+> +{
+> +	if (dev->archdata.dmabounce)
+> +		return 0;
 
-It uses system RAM and, as far as my understanding goes, by default it
-operates without the VT-d IOMMU and that's how it's used right now.
-I'm suggesting VT-d IOMMU as a way to further strengthen the security
-and error resilience in future (due to the IPU complex being
-non-coherent and also running a closed source firmware).
+I'm not convinced that we need this check here:
 
-> The whole
-> infrastructure isn't really capable of dealing with nested IOMMUs, and
-> nested DMA ops would be an equally horrible idea.
+        dev->archdata.dmabounce = device_info;
+        set_dma_ops(dev, &dmabounce_ops);
 
-Could you elaborate a bit more on this? I think we should be able to
-deal with this in a way I suggested before:
+There shouldn't be any chance of dev->archdata.dmabounce being NULL if
+the dmabounce_ops has been set as the current device DMA ops.  So I
+think that test can be killed.
 
-a) the PCI device would use the system DMA ops,
-b) the PCI device would implement a secondary bus for which it would
-provide its own DMA and IOMMU ops.
-c) a secondary device would be registered on the secondary bus,
-d) all memory for the IPU would be managed on behalf of the secondary device.
-
-In fact, the driver already is designed in a way that all the points
-above are true. If I'm not missing something, the only significant
-missing point is calling into system DMA ops from IPU DMA ops.
-
-Best regards,
-Tomasz
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
