@@ -1,138 +1,83 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v6 26/34] iommu/amd: Allow the AMD IOMMU to work with
- memory encryption
-Date: Thu, 8 Jun 2017 09:26:38 -0500
-Message-ID: <9ca73103-f202-b5b0-b449-79a4b8a8fd72@amd.com>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
- <20170607191745.28645.81756.stgit@tlendack-t1.amdoffice.net>
- <CAOcCaLZ5QNx+CdnLn4eHtYOJOezJAsmq2whf8mggOdeMQDWOhw@mail.gmail.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
+Date: Thu, 8 Jun 2017 23:35:51 +0900
+Message-ID: <CAAFQd5AWGN_qSXGG32D-eWKZRoRme+XCD9v1r8qJ5bthtS9z9w@mail.gmail.com>
+References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
+	<1496695157-19926-4-git-send-email-yong.zhi@intel.com>
+	<CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
+	<73992991-65a9-915b-a450-b23aeb3baaed@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <CAOcCaLZ5QNx+CdnLn4eHtYOJOezJAsmq2whf8mggOdeMQDWOhw@mail.gmail.com>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Nick Sarnie <commendsarnex@gmail.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Thomas Gleixner <tglx@linutronix.de>, Rik van Riel <riel@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Ingo Molnar <mingo@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Paolo Bonzini <pbonzini@redhat.com>, Alexander Potapenko <glider@google.com>, Dave Young <dyoung@redha>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <73992991-65a9-915b-a450-b23aeb3baaed-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Mani,
+	Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/7/2017 9:38 PM, Nick Sarnie wrote:
-> On Wed, Jun 7, 2017 at 3:17 PM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
->> The IOMMU is programmed with physical addresses for the various tables
->> and buffers that are used to communicate between the device and the
->> driver. When the driver allocates this memory it is encrypted. In order
->> for the IOMMU to access the memory as encrypted the encryption mask needs
->> to be included in these physical addresses during configuration.
+On Thu, Jun 8, 2017 at 10:22 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 07/06/17 10:47, Tomasz Figa wrote:
+>> Hi Yong,
 >>
->> The PTE entries created by the IOMMU should also include the encryption
->> mask so that when the device behind the IOMMU performs a DMA, the DMA
->> will be performed to encrypted memory.
+>> +Robin, Joerg, IOMMU ML
 >>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>   arch/x86/include/asm/mem_encrypt.h |    7 +++++++
->>   arch/x86/mm/mem_encrypt.c          |   30 ++++++++++++++++++++++++++++++
->>   drivers/iommu/amd_iommu.c          |   36 +++++++++++++++++++-----------------
->>   drivers/iommu/amd_iommu_init.c     |   18 ++++++++++++------
->>   drivers/iommu/amd_iommu_proto.h    |   10 ++++++++++
->>   drivers/iommu/amd_iommu_types.h    |    2 +-
->>   include/asm-generic/mem_encrypt.h  |    5 +++++
->>   7 files changed, 84 insertions(+), 24 deletions(-)
+>> Please see my comments inline.
 >>
->> diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
->> index c7a2525..d86e544 100644
->> --- a/arch/x86/include/asm/mem_encrypt.h
->> +++ b/arch/x86/include/asm/mem_encrypt.h
->> @@ -31,6 +31,8 @@ void __init sme_early_decrypt(resource_size_t paddr,
+>> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+[snip]
+>>> +
+>>> +/* End of things adapted from arch/arm/mm/dma-mapping.c */
+>>> +static void ipu3_dmamap_sync_single_for_cpu(struct device *dev,
+>>> +                                           dma_addr_t dma_handle, size_t size,
+>>> +                                           enum dma_data_direction dir)
+>>> +{
+>>> +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
+>>> +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
+>>> +
+>>> +       clflush_cache_range(phys_to_virt(daddr), size);
 >>
->>   void __init sme_early_init(void);
+>> You might need to consider another IOMMU on the way here. Generally,
+>> given that daddr is your MMU DMA address (not necessarily CPU physical
+>> address), you should be able to call
 >>
->> +bool sme_iommu_supported(void);
->> +
->>   /* Architecture __weak replacement functions */
->>   void __init mem_encrypt_init(void);
->>
->> @@ -62,6 +64,11 @@ static inline void __init sme_early_init(void)
->>   {
->>   }
->>
->> +static inline bool sme_iommu_supported(void)
->> +{
->> +       return true;
->> +}
->> +
->>   #endif /* CONFIG_AMD_MEM_ENCRYPT */
->>
->>   static inline bool sme_active(void)
->> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
->> index 5d7c51d..018b58a 100644
->> --- a/arch/x86/mm/mem_encrypt.c
->> +++ b/arch/x86/mm/mem_encrypt.c
->> @@ -197,6 +197,36 @@ void __init sme_early_init(void)
->>                  protection_map[i] = pgprot_encrypted(protection_map[i]);
->>   }
->>
->> +bool sme_iommu_supported(void)
->> +{
->> +       struct cpuinfo_x86 *c = &boot_cpu_data;
->> +
->> +       if (!sme_me_mask || (c->x86 != 0x17))
->> +               return true;
->> +
->> +       /* For Fam17h, a specific level of support is required */
->> +       switch (c->microcode & 0xf000) {
->> +       case 0x0000:
->> +               return false;
->> +       case 0x1000:
->> +               switch (c->microcode & 0x0f00) {
->> +               case 0x0000:
->> +                       return false;
->> +               case 0x0100:
->> +                       if ((c->microcode & 0xff) < 0x26)
->> +                               return false;
->> +                       break;
->> +               case 0x0200:
->> +                       if ((c->microcode & 0xff) < 0x05)
->> +                               return false;
->> +                       break;
->> +               }
->> +               break;
->> +       }
->> +
->> +       return true;
->> +}
->> +
->>   /* Architecture __weak replacement functions */
->>   void __init mem_encrypt_init(void)
->>   {
-> 
+>> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
+>
+> I'd hope that this IPU complex is some kind of embedded endpoint thing
+> that bypasses the VT-d IOMMU or is always using its own local RAM,
+> because it would be pretty much unworkable otherwise.
 
-...
+It uses system RAM and, as far as my understanding goes, by default it
+operates without the VT-d IOMMU and that's how it's used right now.
+I'm suggesting VT-d IOMMU as a way to further strengthen the security
+and error resilience in future (due to the IPU complex being
+non-coherent and also running a closed source firmware).
 
-> 
-> Hi Tom,
-> 
-> This sounds like a cool feature. I'm trying to test it on my Ryzen
-> system, but c->microcode & 0xf000 is evaluating as 0, so IOMMU is not
-> being enabled on my system. I'm using the latest microcode for AGESA
-> 1.0.0.6, 0x08001126. Is this work reliant on a future microcode
-> update, or is there some other issue?
+> The whole
+> infrastructure isn't really capable of dealing with nested IOMMUs, and
+> nested DMA ops would be an equally horrible idea.
 
-This is my mistake. I moved the check and didn't re-test. At this point
-the c->microcode field hasn't been filled in so I'll need to read
-MSR_AMD64_PATCH_LEVEL directly in the sme_iommu_supported() function.
+Could you elaborate a bit more on this? I think we should be able to
+deal with this in a way I suggested before:
 
-Thanks,
-Tom
+a) the PCI device would use the system DMA ops,
+b) the PCI device would implement a secondary bus for which it would
+provide its own DMA and IOMMU ops.
+c) a secondary device would be registered on the secondary bus,
+d) all memory for the IPU would be managed on behalf of the secondary device.
 
-> 
-> Thanks,
-> Sarnex
-> 
+In fact, the driver already is designed in a way that all the points
+above are true. If I'm not missing something, the only significant
+missing point is calling into system DMA ops from IPU DMA ops.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Best regards,
+Tomasz
