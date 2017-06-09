@@ -1,19 +1,10 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v6 10/34] x86, x86/mm, x86/xen, olpc: Use __va() against
-	just the physical address in cr3
-Date: Fri, 9 Jun 2017 16:20:35 -0500
-Message-ID: <601d5972-72b0-6556-0054-7275cb763816@amd.com>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
-	<20170607191453.28645.92256.stgit@tlendack-t1.amdoffice.net>
-	<CALCETrVVhMf=zkiDNn_-hKDZLGXKFiwxuWkPmD5RJgHa5VUMiQ@mail.gmail.com>
-	<85355c4c-2cc1-daac-d8fe-ac6965b34606@amd.com>
-	<CALCETrVyHbgJxk6hTRuM0CCpWTvFSX0MxuUQjKOf=7hYCt-yEg@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.12-rc4
+Date: Sat, 10 Jun 2017 00:38:10 +0200
+Message-ID: <20170609223804.GA26113@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7299605323810097411=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CALCETrVyHbgJxk6hTRuM0CCpWTvFSX0MxuUQjKOf=7hYCt-yEg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,85 +14,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, X86 ML <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kasan-dev <kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov@goo>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/9/2017 1:46 PM, Andy Lutomirski wrote:
-> On Thu, Jun 8, 2017 at 3:38 PM, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org> wrote:
->> On 6/8/2017 1:05 AM, Andy Lutomirski wrote:
->>>
->>> On Wed, Jun 7, 2017 at 12:14 PM, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
->>> wrote:
->>>>
->>>> The cr3 register entry can contain the SME encryption bit that indicates
->>>> the PGD is encrypted.  The encryption bit should not be used when
->>>> creating
->>>> a virtual address for the PGD table.
->>>>
->>>> Create a new function, read_cr3_pa(), that will extract the physical
->>>> address from the cr3 register. This function is then used where a virtual
->>>> address of the PGD needs to be created/used from the cr3 register.
->>>
->>>
->>> This is going to conflict with:
->>>
->>>
->>> https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git/commit/?h=x86/pcid&id=555c81e5d01a62b629ec426a2f50d27e2127c1df
->>>
->>> We're both encountering the fact that CR3 munges the page table PA
->>> with some other stuff, and some readers want to see the actual CR3
->>> value and other readers just want the PA.  The thing I prefer about my
->>> patch is that I get rid of read_cr3() entirely, forcing the patch to
->>> update every single reader, making review and conflict resolution much
->>> safer.
->>>
->>> I'd be willing to send a patch tomorrow that just does the split into
->>> __read_cr3() and read_cr3_pa() (I like your name better) and then we
->>> can both base on top of it.  Would that make sense?
->>
->>
->> That makes sense to me.
-> 
-> Draft patch:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git/commit/?h=x86/read_cr3&id=9adebbc1071f066421a27b4f6e040190f1049624
 
-Looks good to me. I'll look at how to best mask off the encryption bit
-in CR3_ADDR_MASK for SME support.  I should be able to just do an
-__sme_clr() against it.
+--===============7299605323810097411==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
+Content-Disposition: inline
 
-> 
->>
->>>
->>> Also:
->>>
->>>> +static inline unsigned long read_cr3_pa(void)
->>>> +{
->>>> +       return (read_cr3() & PHYSICAL_PAGE_MASK);
->>>> +}
->>>
->>>
->>> Is there any guarantee that the magic encryption bit is masked out in
->>> PHYSICAL_PAGE_MASK?  The docs make it sound like it could be any bit.
->>> (But if it's one of the low 12 bits, that would be quite confusing.)
->>
->>
->> Right now it's bit 47 and we're steering away from any of the currently
->> reserved bits so we should be safe.
-> 
-> Should the SME init code check that it's a usable bit (i.e. outside
-> our physical address mask and not one of the bottom twelve bits)?  If
-> some future CPU daftly picks, say, bit 12, we'll regret it if we
-> enable SME.
 
-I think I can safely say that it will never be any of the lower 12 bits,
-but let me talk to some of the hardware folks and see about the other
-end of the range.
+--3V7upXqbjpZ4EhLz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 5ed02dbb497422bf225783f46e6eadd237d23d6b:
+
+  Linux 4.12-rc3 (2017-05-28 17:20:53 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.12-rc4
+
+for you to fetch changes up to d3e01c51598b2639a4830549058500e5f2ace86f:
+
+  arm: dma-mapping: Reset the device's dma_ops (2017-05-30 11:31:34 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.12-rc4
+
+Including:
+
+	* Another compile-fix for my header cleanup
+
+	* A couple of fixes for the recently merged IOMMU probe
+	  deferal code
+
+	* Includes fixes for ACPI/IORT code necessary with
+	  IOMMU probe deferal
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      iommu/dma: Fix function declaration
+
+Laurent Pinchart (1):
+      ARM: dma-mapping: Don't tear down third-party mappings
+
+Lorenzo Pieralisi (1):
+      ACPI/IORT: Move the check to get iommu_ops from translated fwspec
+
+Sricharan R (4):
+      iommu/of: Fix check for returning EPROBE_DEFER
+      iommu/of: Ignore all errors except EPROBE_DEFER
+      ACPI/IORT: Ignore all errors except EPROBE_DEFER
+      arm: dma-mapping: Reset the device's dma_ops
+
+ arch/arm/include/asm/device.h |  3 ++-
+ arch/arm/mm/dma-mapping.c     | 29 ++++++++++++++---------------
+ drivers/acpi/arm64/iort.c     | 22 ++++++++++++++--------
+ drivers/acpi/scan.c           |  4 ++--
+ drivers/iommu/of_iommu.c      |  7 +++++++
+ drivers/of/device.c           |  4 ++--
+ include/linux/dma-iommu.h     |  1 +
+ 7 files changed, 42 insertions(+), 28 deletions(-)
+
+Please pull.
 
 Thanks,
-Tom
 
-> 
-> --Andy
-> 
+	Joerg
+
+--3V7upXqbjpZ4EhLz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZOyNMAAoJECvwRC2XARrjBv4P/AkHWbUWZBdPdlpVFUCUmIm7
+UvpHGPOiv5FAi4UW+x2leNNx4GQ2/h9OS9t9cu5xPE49Bw/gvXGFJBUXh4YpJXoc
+yFD8FIxlUSoXMCYBBrgl5BiB8vqCkdsj1O9cVIFHc1QazCUAPLJvdsizHfnULQrw
+WAFNlPekkEPAWYUus0pFEGF6YjuyZf24Y/qTlIXYolQH2gDOfn7/hNdVv8X/HRV+
+un5vnIfoGNV1eg2zL2j/ILtafMrAEDExO0lXe0+s+nRUX/14RD3zuUZSTWcFy5dz
+8vAu18nQq9vxgRqUBJ3xecWDCVlOtCGhzef0PIuAqlUA3o3r+shsAmoNxFiudl4K
+NxVOb3nDG4XjmDMELf8GQDFpxltGipcz4+pYtr9DJ1YprMPEyszZf6TYXF+K2Dk9
+ttfNO2SRc/7E3MRze16LwyuJqj5mAyaTBWWbyQYATtP+WjEKosztpuKB65c1U+eF
+81/+Y2Q8p+jsOl307m3fyqVF50qti5Yo5bEYGpvd3PvcKBjHZ7lWpT6WuSP/OVIE
+SygJIVufIHNRJBF+avuC2QDzaxvjjynEUKCqnGwtKEPxIyubUucHSOevY9CLyCxo
+xN+JxTPAnUqqOpzg0cVVpQloTVAm9ur2QKa6XLO5mGH7YyFH+WF9ZVu65iPt3c1f
+IWywKI4Nk8YMfsxyYwui
+=p+Wd
+-----END PGP SIGNATURE-----
+
+--3V7upXqbjpZ4EhLz--
+
+--===============7299605323810097411==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7299605323810097411==--
