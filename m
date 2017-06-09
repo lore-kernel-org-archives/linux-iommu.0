@@ -1,98 +1,86 @@
 From: Tomasz Figa <tfiga@chromium.org>
 Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
-Date: Fri, 9 Jun 2017 21:09:04 +0900
-Message-ID: <CAAFQd5BsS1CyP=Yk2jgLixDoMRtxSuQrrCp7_ne9=vcU0AuyuA@mail.gmail.com>
+Date: Fri, 9 Jun 2017 21:10:52 +0900
+Message-ID: <CAAFQd5Aw1DuhGK0d-uK5jr6_6np10pO8X6ArrymeF1MnwTG4qQ@mail.gmail.com>
 References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <1496695157-19926-3-git-send-email-yong.zhi@intel.com> <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
- <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com>
- <20170608164350.GH1019@valkosipuli.retiisi.org.uk> <CAAFQd5DdeRV_N6apPDUoDW1CrOmOtgvyq-5BvCRzh2pM6vKx9w@mail.gmail.com>
- <20170609111607.GQ1019@valkosipuli.retiisi.org.uk>
+ <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
+ <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com> <2207008.so7vZvfgDl@ttoivone-desk1>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <20170609111607.GQ1019@valkosipuli.retiisi.org.uk>
+In-Reply-To: <2207008.so7vZvfgDl@ttoivone-desk1>
 Sender: linux-media-owner@vger.kernel.org
-To: Sakari Ailus <sakari.ailus@iki.fi>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
+To: Tuukka Toivonen <tuukka.toivonen@intel.com>
+Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 9, 2017 at 8:16 PM, Sakari Ailus <sakari.ailus@iki.fi> wrote:
+On Fri, Jun 9, 2017 at 5:26 PM, Tuukka Toivonen
+<tuukka.toivonen@intel.com> wrote:
 > Hi Tomasz,
 >
-> On Fri, Jun 09, 2017 at 02:59:10PM +0900, Tomasz Figa wrote:
->> On Fri, Jun 9, 2017 at 1:43 AM, Sakari Ailus <sakari.ailus@iki.fi> wrote:
->> >> >> +static void ipu3_mmu_domain_free(struct iommu_domain *dom)
->> >> >> +{
->> >> >> +       struct ipu3_mmu_domain *mmu_dom =
->> >> >> +               container_of(dom, struct ipu3_mmu_domain, domain);
->> >> >> +       uint32_t l1_idx;
->> >> >> +
->> >> >> +       for (l1_idx = 0; l1_idx < IPU3_MMU_L1PT_PTES; l1_idx++)
->> >> >> +               if (mmu_dom->pgtbl[l1_idx] != mmu_dom->dummy_l2_tbl)
->> >> >> +                       free_page((unsigned long)
->> >> >> +                                 TBL_VIRT_ADDR(mmu_dom->pgtbl[l1_idx]));
->> >> >> +
->> >> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
->> >> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
->> >>
->> >> I might be overly paranoid, but reading back kernel virtual pointers
->> >> from device accessible memory doesn't seem safe to me. Other drivers
->> >> keep kernel pointers of page tables in a dedicated array (it's only 8K
->> >> of memory, but much better safety).
->> >
->> > Do you happen to have an example of that?
->>
->> Hmm, looks like I misread rockchip-iommu code. Let me quietly back off
->> from this claim, sorry.
->>
->> >
->> > All system memory typically is accessible for devices, I think you wanted to
->> > say that the device is intended to access that memory. Albeit for reading
->> > only.
->>
->> Unless you activate DMAR and make only the memory you want to be
->> accessible to your devices. I know DMAR is a device too, but there is
->> a difference between a system level fixed function IOMMU and a PCI
->> device running a closed source firmware. Still, given Robin's reply,
->> current DMA and IOMMU frameworks might not be able to handle this
->> easily, so let's temporarily forget about this setup. We might revisit
->> it later, with incremental patches, anyway.
+> Couple of small comments below.
 >
-> I don't think it's needed because
+> On Wednesday, June 07, 2017 17:35:13 Tomasz Figa wrote:
+>> >> +static void ipu3_mmu_domain_free(struct iommu_domain *dom)
+>> >> +{
+>> >> +       struct ipu3_mmu_domain *mmu_dom =
+>> >> +               container_of(dom, struct ipu3_mmu_domain, domain);
+>> >> +       uint32_t l1_idx;
+>> >> +
+>> >> +       for (l1_idx = 0; l1_idx < IPU3_MMU_L1PT_PTES; l1_idx++)
+>> >> +               if (mmu_dom->pgtbl[l1_idx] != mmu_dom-
+>>dummy_l2_tbl)
+>> >> +                       free_page((unsigned long)
+>> >> +                                 TBL_VIRT_ADDR(mmu_dom-
+>>pgtbl[l1_idx]));
+>> >> +
+>> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom-
+>>dummy_page));
+>> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom-
+>>dummy_l2_tbl));
+>>
+>> I might be overly paranoid, but reading back kernel virtual pointers
+>> from device accessible memory doesn't seem safe to me. Other drivers
+>> keep kernel pointers of page tables in a dedicated array (it's only 8K
+>> of memory, but much better safety).
 >
-> 1) The firmware running on the device only has access to memory mapped to it
-> by the MMU and
->
-> 2) the MMU L1 page table base address is not writable to the firmware.
+> They are accessible only to the IPU3 IOMMU, which can access whole
+> system memory anyway and always does a read-only access to the MMU
+> tables. So, I wouldn't worry too much, although extra copy for safety
+> wouldn't necessarily harm too much.
 
-If that's the case, then I guess it's fine indeed.
+Fair enough. Thanks for explanation.
 
->> >> >> +static int ipu3_mmu_bus_remove(struct device *dev)
->> >> >> +{
->> >> >> +       struct ipu3_mmu *mmu = dev_get_drvdata(dev);
->> >> >> +
->> >> >> +       put_iova_domain(&mmu->iova_domain);
->> >> >> +       iova_cache_put();
->> >>
->> >> Don't we need to set the L1 table address to something invalid and
->> >> invalidate the TLB, so that the IOMMU doesn't reference the page freed
->> >> below anymore?
->> >
->> > I think the expectation is that if a device gets removed, its memory is
->> > unmapped by that time. Unmapping that memory will cause explicit TLB flush.
+>
+> <...>
+>
+>> >> +       ipu3_mmu_tlb_invalidate(mmu_dom->mmu->base);
+>> >> +
+>> >> +       return unmapped << IPU3_MMU_PAGE_SHIFT;
+>> >> +}
+>> >> +
+>> >> +static phys_addr_t ipu3_mmu_iova_to_phys(struct iommu_domain
+> *domain,
+>> >> +                                        dma_addr_t iova)
+>> >> +{
+>> >> +       struct ipu3_mmu_domain *d =
+>> >> +               container_of(domain, struct ipu3_mmu_domain,
+> domain);
+>> >> +       uint32_t *l2_pt = TBL_VIRT_ADDR(d->pgtbl[iova >>
+> IPU3_MMU_L1PT_SHIFT]);
+>> >> +
+>> >> +       return (phys_addr_t)l2_pt[(iova & IPU3_MMU_L2PT_MASK)
+>> >> +                               >> IPU3_MMU_L2PT_SHIFT] <<
+> IPU3_MMU_PAGE_SHIFT;
 >>
->> Right, but that will only mark the L2 entries as invalid. The L1 table
->> will still point to the L2 tables installed earlier and the MMU page
->> directory register will still point to the L1 table, despite the call
->> below freeing all the associated memory.
+>> Could we avoid this TBL_VIRT_ADDR() here too? The memory cost to store
+>> the page table CPU pointers is really small, but safety seems much
+>> better. Moreover, it should make it possible to use the VT-d IOMMU to
+>> further secure the system.
 >
-> Ah. I think I misunderstood what I read the previous time.
->
-> An alternative would be not to release the L1 page table and the dummy pages
-> --- the MMU does not have a concept of an invalid page. Now that the domain
-> is gone, you can't really use the MMU anyway, can you?
+> IPU3 doesn't support VT-d and can't be enabled while VT-d is on.
 
-Yes, given the hardware design, that would make sense indeed.
+Got it. Thanks.
 
 Best regards,
 Tomasz
