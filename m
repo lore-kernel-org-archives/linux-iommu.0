@@ -1,108 +1,69 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [Xen-devel] [PATCH v6 10/34] x86, x86/mm, x86/xen, olpc: Use
- __va() against just the physical address in cr3
-Date: Fri, 9 Jun 2017 13:59:21 -0500
-Message-ID: <33f20df0-bf71-bd9d-7a7e-4fb5e8793400@amd.com>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
- <20170607191453.28645.92256.stgit@tlendack-t1.amdoffice.net>
- <b15e8924-4069-b5fa-adb2-86c164b1dd36@oracle.com>
- <4a7376fb-abfc-8edd-42b7-38de461ac65e@amd.com>
- <67fe69ac-a213-8de3-db28-0e54bba95127@oracle.com>
- <fcb196c8-f1eb-a38c-336c-7bd3929b029e@amd.com>
- <12c7e511-996d-cf60-3a3b-0be7b41bd85b@oracle.com>
- <d37917b1-8e49-e8a8-b9ac-59491331640f@citrix.com>
- <9725c503-2e33-2365-87f5-f017e1cbe9b6@amd.com>
- <8e8eac45-95be-f1b5-6f44-f131d275f7bc@oracle.com>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 0/8] io-pgtable lock removal
+Date: Fri, 9 Jun 2017 15:28:46 -0400
+Message-ID: <458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
+References: <cover.1496921366.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <8e8eac45-95be-f1b5-6f44-f131d275f7bc@oracle.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1496921366.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>, Andrew Cooper <andrew.cooper3@citrix.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc: Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>, Juergen Gross <jgross@suse.com>, xen-devel <xen-devel@lists.xen.org>, Paolo Bonzini <pbonzini@redhat.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/9/2017 1:43 PM, Boris Ostrovsky wrote:
-> On 06/09/2017 02:36 PM, Tom Lendacky wrote:
->> On 6/8/2017 5:01 PM, Andrew Cooper wrote:
->>> On 08/06/2017 22:17, Boris Ostrovsky wrote:
->>>> On 06/08/2017 05:02 PM, Tom Lendacky wrote:
->>>>> On 6/8/2017 3:51 PM, Boris Ostrovsky wrote:
->>>>>>>> What may be needed is making sure X86_FEATURE_SME is not set for PV
->>>>>>>> guests.
->>>>>>> And that may be something that Xen will need to control through
->>>>>>> either
->>>>>>> CPUID or MSR support for the PV guests.
->>>>>>
->>>>>> Only on newer versions of Xen. On earlier versions (2-3 years old)
->>>>>> leaf
->>>>>> 0x80000007 is passed to the guest unchanged. And so is MSR_K8_SYSCFG.
->>>>> The SME feature is in leaf 0x8000001f, is that leaf passed to the
->>>>> guest
->>>>> unchanged?
->>>> Oh, I misread the patch where X86_FEATURE_SME is defined. Then all
->>>> versions, including the current one, pass it unchanged.
->>>>
->>>> All that's needed is setup_clear_cpu_cap(X86_FEATURE_SME) in
->>>> xen_init_capabilities().
->>>
->>> AMD processors still don't support CPUID Faulting (or at least, I
->>> couldn't find any reference to it in the latest docs), so we cannot
->>> actually hide SME from a guest which goes looking at native CPUID.
->>> Furthermore, I'm not aware of any CPUID masking support covering that
->>> leaf.
->>>
->>> However, if Linux is using the paravirtual cpuid hook, things are
->>> slightly better.
->>>
->>> On Xen 4.9 and later, no guests will see the feature.  On earlier
->>> versions of Xen (before I fixed the logic), plain domUs will not see the
->>> feature, while dom0 will.
->>>
->>> For safely, I'd recommend unilaterally clobbering the feature as Boris
->>> suggested.  There is no way SME will be supportable on a per-PV guest
->>
->> That may be too late. Early boot support in head_64.S will make calls to
->> check for the feature (through CPUID and MSR), set the sme_me_mask and
->> encrypt the kernel in place. Is there another way to approach this?
+Hi Robin,
+
+On 6/8/2017 7:51 AM, Robin Murphy wrote:
+> Hi all,
+> 
+> Here's the cleaned up nominally-final version of the patches everybody's
+> keen to see. #1 is just a non-critical thing-I-spotted-in-passing fix,
+> #2-#4 do some preparatory work (and bid farewell to everyone's least
+> favourite bit of code, hooray!), and #5-#8 do the dirty deed itself.
+> 
+> The branch I've previously shared has been updated too:
+> 
+>    git://linux-arm.org/linux-rm  iommu/pgtable
+> 
+> All feedback welcome, as I'd really like to land this for 4.13.
+>
+
+I tested the series on a QDF2400 development platform and see notable
+performance improvements particularly in workloads that make concurrent
+accesses to a single iommu_domain.
+
+> Robin.
 > 
 > 
-> PV guests don't go through Linux x86 early boot code. They start at
-> xen_start_kernel() (well, xen-head.S:startup_xen(), really) and  merge
-> with baremetal path at x86_64_start_reservations() (for 64-bit).
+> Robin Murphy (8):
+>    iommu/io-pgtable-arm-v7s: Check table PTEs more precisely
+>    iommu/io-pgtable-arm: Improve split_blk_unmap
+>    iommu/io-pgtable-arm-v7s: Refactor split_blk_unmap
+>    iommu/io-pgtable: Introduce explicit coherency
+>    iommu/io-pgtable-arm: Support lockless operation
+>    iommu/io-pgtable-arm-v7s: Support lockless operation
+>    iommu/arm-smmu: Remove io-pgtable spinlock
+>    iommu/arm-smmu-v3: Remove io-pgtable spinlock
+> 
+>   drivers/iommu/arm-smmu-v3.c        |  36 ++-----
+>   drivers/iommu/arm-smmu.c           |  48 ++++------
+>   drivers/iommu/io-pgtable-arm-v7s.c | 173 +++++++++++++++++++++------------
+>   drivers/iommu/io-pgtable-arm.c     | 190 ++++++++++++++++++++++++-------------
+>   drivers/iommu/io-pgtable.h         |   6 ++
+>   5 files changed, 268 insertions(+), 185 deletions(-)
 > 
 
-Ok, I don't think anything needs to be done then. The sme_me_mask is set
-in sme_enable() which is only called from head_64.S. If the sme_me_mask
-isn't set then SME won't be active. The feature will just report the
-capability of the processor, but that doesn't mean it is active. If you
-still want the feature to be clobbered we can do that, though.
-
-Thanks,
-Tom
-
-> 
-> -boris
-> 
->>
->>> basis, although (as far as I am aware) Xen as a whole would be able to
->>> encompass itself and all of its PV guests inside one single SME
->>> instance.
->>
->> Yes, that is correct.
->>
->> Thanks,
->> Tom
->>
->>>
->>> ~Andrew
->>>
-> 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+-- 
+Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
