@@ -1,86 +1,38 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
-Date: Fri, 9 Jun 2017 21:10:52 +0900
-Message-ID: <CAAFQd5Aw1DuhGK0d-uK5jr6_6np10pO8X6ArrymeF1MnwTG4qQ@mail.gmail.com>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
- <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com> <2207008.so7vZvfgDl@ttoivone-desk1>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 33/44] openrisc: remove arch-specific dma_supported implementation
+Date: Fri, 9 Jun 2017 14:20:42 +0200
+Message-ID: <CAMuHMdUPeFJJtz8eJkQEAR-2w9oHt-fXeGHvvKFLfU2A4YyviQ@mail.gmail.com>
+References: <20170608132609.32662-1-hch@lst.de> <20170608132609.32662-34-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <2207008.so7vZvfgDl@ttoivone-desk1>
-Sender: linux-media-owner@vger.kernel.org
-To: Tuukka Toivonen <tuukka.toivonen@intel.com>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+In-Reply-To: <20170608132609.32662-34-hch@lst.de>
+Sender: linux-hexagon-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: the arch/x86 maintainers <x86@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, openrisc@lists.librecores.org, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, linux-s390 <linux-s390@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, DRI Development <dri-devel@lists.freedesktop.org>, linux-samsung-soc@vg
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 9, 2017 at 5:26 PM, Tuukka Toivonen
-<tuukka.toivonen@intel.com> wrote:
-> Hi Tomasz,
->
-> Couple of small comments below.
->
-> On Wednesday, June 07, 2017 17:35:13 Tomasz Figa wrote:
->> >> +static void ipu3_mmu_domain_free(struct iommu_domain *dom)
->> >> +{
->> >> +       struct ipu3_mmu_domain *mmu_dom =
->> >> +               container_of(dom, struct ipu3_mmu_domain, domain);
->> >> +       uint32_t l1_idx;
->> >> +
->> >> +       for (l1_idx = 0; l1_idx < IPU3_MMU_L1PT_PTES; l1_idx++)
->> >> +               if (mmu_dom->pgtbl[l1_idx] != mmu_dom-
->>dummy_l2_tbl)
->> >> +                       free_page((unsigned long)
->> >> +                                 TBL_VIRT_ADDR(mmu_dom-
->>pgtbl[l1_idx]));
->> >> +
->> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom-
->>dummy_page));
->> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom-
->>dummy_l2_tbl));
->>
->> I might be overly paranoid, but reading back kernel virtual pointers
->> from device accessible memory doesn't seem safe to me. Other drivers
->> keep kernel pointers of page tables in a dedicated array (it's only 8K
->> of memory, but much better safety).
->
-> They are accessible only to the IPU3 IOMMU, which can access whole
-> system memory anyway and always does a read-only access to the MMU
-> tables. So, I wouldn't worry too much, although extra copy for safety
-> wouldn't necessarily harm too much.
+Hi Christoph,
 
-Fair enough. Thanks for explanation.
+On Thu, Jun 8, 2017 at 3:25 PM, Christoph Hellwig <hch@lst.de> wrote:
+> This implementation is simply bogus - hexagon only has a simple
 
->
-> <...>
->
->> >> +       ipu3_mmu_tlb_invalidate(mmu_dom->mmu->base);
->> >> +
->> >> +       return unmapped << IPU3_MMU_PAGE_SHIFT;
->> >> +}
->> >> +
->> >> +static phys_addr_t ipu3_mmu_iova_to_phys(struct iommu_domain
-> *domain,
->> >> +                                        dma_addr_t iova)
->> >> +{
->> >> +       struct ipu3_mmu_domain *d =
->> >> +               container_of(domain, struct ipu3_mmu_domain,
-> domain);
->> >> +       uint32_t *l2_pt = TBL_VIRT_ADDR(d->pgtbl[iova >>
-> IPU3_MMU_L1PT_SHIFT]);
->> >> +
->> >> +       return (phys_addr_t)l2_pt[(iova & IPU3_MMU_L2PT_MASK)
->> >> +                               >> IPU3_MMU_L2PT_SHIFT] <<
-> IPU3_MMU_PAGE_SHIFT;
->>
->> Could we avoid this TBL_VIRT_ADDR() here too? The memory cost to store
->> the page table CPU pointers is really small, but safety seems much
->> better. Moreover, it should make it possible to use the VT-d IOMMU to
->> further secure the system.
->
-> IPU3 doesn't support VT-d and can't be enabled while VT-d is on.
+openrisc?
 
-Got it. Thanks.
+> direct mapped DMA implementation and thus doesn't care about the
+> address.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/openrisc/include/asm/dma-mapping.h | 7 -------
 
-Best regards,
-Tomasz
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
