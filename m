@@ -1,111 +1,82 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH 02/12] intel-ipu3: mmu: implement driver
-Date: Fri, 9 Jun 2017 14:59:10 +0900
-Message-ID: <CAAFQd5DdeRV_N6apPDUoDW1CrOmOtgvyq-5BvCRzh2pM6vKx9w@mail.gmail.com>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <1496695157-19926-3-git-send-email-yong.zhi@intel.com> <CAAFQd5BZGVBdbN-8L+pvAf4AkBkB9UFy7_mmMpusFUMxDugQDw@mail.gmail.com>
- <CAAFQd5CdV4ZfAYHH7DBBfOY=c4_Lwnuf8COs=JUKRSjp1VTn7Q@mail.gmail.com> <20170608164350.GH1019@valkosipuli.retiisi.org.uk>
+From: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v7 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
+	ThunderX2 SMMUv3 model
+Date: Fri, 9 Jun 2017 11:30:53 +0530
+Message-ID: <CANHdaib+mNgVS7g=vft-5ZtabSKkeyXO7Jp1EQhL3jduhu5F7g@mail.gmail.com>
+References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+	<1496145821-3411-2-git-send-email-gakula@caviumnetworks.com>
+	<20170608085857.GB8607@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <20170608164350.GH1019@valkosipuli.retiisi.org.uk>
-Sender: linux-media-owner@vger.kernel.org
-To: Sakari Ailus <sakari.ailus@iki.fi>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170608085857.GB8607@red-moon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, Charles Garcia-Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robert Moore <robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Lv Zheng <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 9, 2017 at 1:43 AM, Sakari Ailus <sakari.ailus@iki.fi> wrote:
-> Hi Tomasz,
->
-> On Wed, Jun 07, 2017 at 05:35:13PM +0900, Tomasz Figa wrote:
->> Hi Yong, Tuukka,
+On Thu, Jun 8, 2017 at 2:28 PM, Lorenzo Pieralisi
+<lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Tue, May 30, 2017 at 05:33:39PM +0530, Geetha sowjanya wrote:
+>> From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 >>
->> Continuing from yesterday. Please see comments inline.
+>> Cavium ThunderX2 implementation doesn't support second page in SMMU
+>> register space. Hence, resource size is set as 64k for this model.
 >>
->> > On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi@intel.com> wrote:
->> [snip]
->> >> +       ptr = ipu3_mmu_alloc_page_table(mmu_dom, false);
->> >> +       if (!ptr)
->> >> +               goto fail_page_table;
->> >> +
->> >> +       /*
->> >> +        * We always map the L1 page table (a single page as well as
->> >> +        * the L2 page tables).
->> >> +        */
->> >> +       mmu_dom->dummy_l2_tbl = virt_to_phys(ptr) >> IPU3_MMU_PAGE_SHIFT;
->> >> +       mmu_dom->pgtbl = ipu3_mmu_alloc_page_table(mmu_dom, true);
->> >> +       if (!mmu_dom->pgtbl)
->> >> +               goto fail_page_table;
->> >> +
->> >> +       spin_lock_init(&mmu_dom->lock);
->> >> +       return &mmu_dom->domain;
->> >> +
->> >> +fail_page_table:
->> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
->> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
->> >> +fail_get_page:
->> >> +       kfree(mmu_dom);
->> >> +       return NULL;
->> >> +}
->> >> +
->> >> +static void ipu3_mmu_domain_free(struct iommu_domain *dom)
->> >> +{
->> >> +       struct ipu3_mmu_domain *mmu_dom =
->> >> +               container_of(dom, struct ipu3_mmu_domain, domain);
->> >> +       uint32_t l1_idx;
->> >> +
->> >> +       for (l1_idx = 0; l1_idx < IPU3_MMU_L1PT_PTES; l1_idx++)
->> >> +               if (mmu_dom->pgtbl[l1_idx] != mmu_dom->dummy_l2_tbl)
->> >> +                       free_page((unsigned long)
->> >> +                                 TBL_VIRT_ADDR(mmu_dom->pgtbl[l1_idx]));
->> >> +
->> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_page));
->> >> +       free_page((unsigned long)TBL_VIRT_ADDR(mmu_dom->dummy_l2_tbl));
+>> Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/acpi/arm64/iort.c |   10 +++++++++-
+>>  1 files changed, 9 insertions(+), 1 deletions(-)
 >>
->> I might be overly paranoid, but reading back kernel virtual pointers
->> from device accessible memory doesn't seem safe to me. Other drivers
->> keep kernel pointers of page tables in a dedicated array (it's only 8K
->> of memory, but much better safety).
->
-> Do you happen to have an example of that?
-
-Hmm, looks like I misread rockchip-iommu code. Let me quietly back off
-from this claim, sorry.
-
->
-> All system memory typically is accessible for devices, I think you wanted to
-> say that the device is intended to access that memory. Albeit for reading
-> only.
-
-Unless you activate DMAR and make only the memory you want to be
-accessible to your devices. I know DMAR is a device too, but there is
-a difference between a system level fixed function IOMMU and a PCI
-device running a closed source firmware. Still, given Robin's reply,
-current DMA and IOMMU frameworks might not be able to handle this
-easily, so let's temporarily forget about this setup. We might revisit
-it later, with incremental patches, anyway.
-
->
-> ...
->
->> >> +static int ipu3_mmu_bus_remove(struct device *dev)
->> >> +{
->> >> +       struct ipu3_mmu *mmu = dev_get_drvdata(dev);
->> >> +
->> >> +       put_iova_domain(&mmu->iova_domain);
->> >> +       iova_cache_put();
+>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+>> index c5fecf9..bba2b59 100644
+>> --- a/drivers/acpi/arm64/iort.c
+>> +++ b/drivers/acpi/arm64/iort.c
+>> @@ -833,12 +833,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
+>>  {
+>>       struct acpi_iort_smmu_v3 *smmu;
+>>       int num_res = 0;
+>> +     unsigned long size = SZ_128K;
 >>
->> Don't we need to set the L1 table address to something invalid and
->> invalidate the TLB, so that the IOMMU doesn't reference the page freed
->> below anymore?
+>>       /* Retrieve SMMUv3 specific data */
+>>       smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+>>
+>> +     /*
+>> +      * Override the size, for Cavium ThunderX2 implementation
+>> +      * which doesn't support the page 1 SMMU register space.
+>> +      */
+>> +     if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
+>> +             size = SZ_64K;
 >
-> I think the expectation is that if a device gets removed, its memory is
-> unmapped by that time. Unmapping that memory will cause explicit TLB flush.
+> Nit: add a function, say arm_smmu_v3_resource_size() with the logic
+> above that by default returns SZ_128K, I do not like this switch
+> in the middle of this function.
 
-Right, but that will only mark the L2 entries as invalid. The L1 table
-will still point to the L2 tables installed earlier and the MMU page
-directory register will still point to the L1 table, despite the call
-below freeing all the associated memory.
+I will resubmit the patch with suggested changes.
 
-Best regards,
-Tomasz
+
+Thanks,
+Geetha.
+>
+> Lorenzo
+>
+>> +
+>>       res[num_res].start = smmu->base_address;
+>> -     res[num_res].end = smmu->base_address + SZ_128K - 1;
+>> +     res[num_res].end = smmu->base_address + size - 1;
+>>       res[num_res].flags = IORESOURCE_MEM;
+>>
+>>       num_res++;
+>> --
+>> 1.7.1
+>>
