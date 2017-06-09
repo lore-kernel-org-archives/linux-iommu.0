@@ -1,198 +1,337 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 03/12] intel-ipu3: Add DMA API implementation
-Date: Fri, 9 Jun 2017 14:05:51 +0100
-Message-ID: <c5bc8a22-22cd-6453-2597-f25ed736d5b6@arm.com>
-References: <1496695157-19926-1-git-send-email-yong.zhi@intel.com>
- <1496695157-19926-4-git-send-email-yong.zhi@intel.com>
- <CAAFQd5CLXUsDv6H1C22tc4qjG9e7tm5jtxwYBjV5gx9qrDw50A@mail.gmail.com>
- <73992991-65a9-915b-a450-b23aeb3baaed@arm.com>
- <CAAFQd5AWGN_qSXGG32D-eWKZRoRme+XCD9v1r8qJ5bthtS9z9w@mail.gmail.com>
- <949a467a-e711-d746-859d-fc006bf59773@arm.com>
- <CAAFQd5A=PLHXCA60Rv1T1A=kKQRg4AC3hd-NC798dkqQBJZj3Q@mail.gmail.com>
+Subject: Re: Fwd: [PATCH v7 2/3] iommu/arm-smmu-v3: Add workaround for Cavium
+ ThunderX2 erratum #74
+Date: Fri, 9 Jun 2017 16:43:07 +0100
+Message-ID: <ee0fb6c3-1c5c-f6d1-b063-ead8102d0c67@arm.com>
+References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
+ <1496145821-3411-3-git-send-email-gakula@caviumnetworks.com>
+ <9263562d-03a3-d02e-6b7e-01613a4bd296@arm.com>
+ <CA+7sy7C_44dTy0-nAE=b5BCXmc8ACQx2O6A1jCOCsemZDD5j4w@mail.gmail.com>
+ <20170609113832.GB106079@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <CAAFQd5A=PLHXCA60Rv1T1A=kKQRg4AC3hd-NC798dkqQBJZj3Q@mail.gmail.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170609113832.GB106079@localhost>
 Content-Language: en-US
-Sender: linux-media-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, Sakari Ailus <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, Joerg Roedel <joro@8bytes.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Jayachandran C <jnair@caviumnetworks.com>
+Cc: Geetha sowjanya <gakula@caviumnetworks.com>, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robh@kernel.org, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>, geethasowjanya.akula@gmail.com, jcm@redhat.com, linu.cherian@cavium.com, rjw@rjwysocki.net, robert.moore@intel.com, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, robert.richter@cavium.com, lv.zheng@intel.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, devel@acpica.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/06/17 07:20, Tomasz Figa wrote:
-> On Fri, Jun 9, 2017 at 3:07 AM, Robin Murphy <robin.murphy@arm.com> wrote:
->> On 08/06/17 15:35, Tomasz Figa wrote:
->>> On Thu, Jun 8, 2017 at 10:22 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>>> On 07/06/17 10:47, Tomasz Figa wrote:
->>>>> Hi Yong,
->>>>>
->>>>> +Robin, Joerg, IOMMU ML
->>>>>
->>>>> Please see my comments inline.
->>>>>
->>>>> On Tue, Jun 6, 2017 at 5:39 AM, Yong Zhi <yong.zhi@intel.com> wrote:
->>> [snip]
->>>>>> +
->>>>>> +/* End of things adapted from arch/arm/mm/dma-mapping.c */
->>>>>> +static void ipu3_dmamap_sync_single_for_cpu(struct device *dev,
->>>>>> +                                           dma_addr_t dma_handle, size_t size,
->>>>>> +                                           enum dma_data_direction dir)
->>>>>> +{
->>>>>> +       struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
->>>>>> +       dma_addr_t daddr = iommu_iova_to_phys(mmu->domain, dma_handle);
->>>>>> +
->>>>>> +       clflush_cache_range(phys_to_virt(daddr), size);
->>>>>
->>>>> You might need to consider another IOMMU on the way here. Generally,
->>>>> given that daddr is your MMU DMA address (not necessarily CPU physical
->>>>> address), you should be able to call
->>>>>
->>>>> dma_sync_single_for_cpu(<your pci device>, daddr, size, dir)
->>>>
->>>> I'd hope that this IPU complex is some kind of embedded endpoint thing
->>>> that bypasses the VT-d IOMMU or is always using its own local RAM,
->>>> because it would be pretty much unworkable otherwise.
+On 09/06/17 12:38, Jayachandran C wrote:
+> On Fri, Jun 09, 2017 Robin Murphy wrote:
+>>
+>> On 30/05/17 13:03, Geetha sowjanya wrote:
+>>> From: Linu Cherian <linu.cherian@cavium.com>
 >>>
->>> It uses system RAM and, as far as my understanding goes, by default it
->>> operates without the VT-d IOMMU and that's how it's used right now.
->>
->> OK, if it *is* behind a DMAR unit then booting with "iommu=force" (or
->> whatever the exact incantation for intel-iommu is) should be fun...
->>
->>> I'm suggesting VT-d IOMMU as a way to further strengthen the security
->>> and error resilience in future (due to the IPU complex being
->>> non-coherent and also running a closed source firmware).
->>
->> TBH, doing DMA remapping through *two* IOMMUS will add horrible hardware
->> overhead,
-> 
-> Not necessarily, if done right and with right hardware (I lack the
-> details about Intel hardware unfortunately). One can for example
-> notice the fact that the IOVA ranges from the parent IOMMU are going
-> to be contiguous for the child IOMMU, so one could use huge pages in
-> the child IOMMU and essentially make a selective 1:1 mapping.
-
-Note that many IOMMUs don't actually implement TLBs for larger page
-sizes, even if they support them. And that still doesn't really help the
-main issue of the way in which nested table walks blow up exponentially:
-For a n-level pagetable at the first level and an m-level table at the
-second level, a single access by the device can become m * (n + 1)
-memory accesses (and that's generously ignoring additional things like
-source-ID-to-context lookups).
-
->> increase the scope for kernel-side bugs, and not much more. If
->> we don't trust this IOMMU to behave, why are we trying to drive it in
->> the first place? If we do, then a second IOMMU behind it won't protect
->> anything that the first one doesn't already.
-> 
-> That's a valid point, right. But on the other hand, I lack the
-> hardware details on whether we can just disable the internal IOMMU and
-> use DMAR alone instead.
-> 
->>
->>>> The whole
->>>> infrastructure isn't really capable of dealing with nested IOMMUs, and
->>>> nested DMA ops would be an equally horrible idea.
+>>> Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
+>>> and PAGE0_REGS_ONLY option is enabled as an errata workaround.
+>>> This option when turned on, replaces all page 1 offsets used for
+>>> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
 >>>
->>> Could you elaborate a bit more on this? I think we should be able to
->>> deal with this in a way I suggested before:
+>>> SMMU resource size checks are now based on SMMU option PAGE0_REGS_ONLY,
+>>> since resource size can be either 64k/128k.
+>>> For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
+>>> platform_get_resource call, so that SMMU options are set beforehand.
 >>>
->>> a) the PCI device would use the system DMA ops,
->>> b) the PCI device would implement a secondary bus for which it would
->>> provide its own DMA and IOMMU ops.
->>> c) a secondary device would be registered on the secondary bus,
->>> d) all memory for the IPU would be managed on behalf of the secondary device.
+>>> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+>>> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+>>> ---
+>>>  Documentation/arm64/silicon-errata.txt             |    1 +
+>>>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 ++
+>>>  drivers/iommu/arm-smmu-v3.c                        |   64 +++++++++++++++-----
+>>>  3 files changed, 56 insertions(+), 15 deletions(-)
 >>>
->>> In fact, the driver already is designed in a way that all the points
->>> above are true. If I'm not missing something, the only significant
->>> missing point is calling into system DMA ops from IPU DMA ops.
+>>> diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+>>> index 10f2ddd..4693a32 100644
+>>> --- a/Documentation/arm64/silicon-errata.txt
+>>> +++ b/Documentation/arm64/silicon-errata.txt
+>>> @@ -62,6 +62,7 @@ stable kernels.
+>>>  | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154        |
+>>>  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
+>>>  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
+>>> +| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
+>>>  |                |                 |                 |                             |
+>>>  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
+>>>  |                |                 |                 |                             |
+>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>>> index be57550..607e270 100644
+>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>>> @@ -49,6 +49,12 @@ the PCIe specification.
+>>>  - hisilicon,broken-prefetch-cmd
+>>>                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
+>>>
+>>> +- cavium,cn9900-broken-page1-regspace
+>>> +                    : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
+>>> +                                             PRIQ_PROD/CONS register access with page 0 offsets.
+>>> +                                             Set for Caviun ThunderX2 silicon that doesn't support
+>>> +                                             SMMU page1 register space.
 >>
->> I don't believe x86 has any non-coherent DMA ops, therefore the IPU DMA
->> ops would still probably have to do all their own cache maintenance.
-> 
-> I'd argue that it means that we need to add non-coherent DMA ops on
-> x86, as we have on other archs, which can have both coherent and
-> non-coherent devices in the same system.
-
-I'd argue that that's what this patch *is* doing - x86 already has DMA
-ops all over the place for special cases, and this is really just
-another special case. I think trying to introduce some notion of
-non-coherent devices to the arch code, plus some generic way to identify
-them, plus some way to make sure everywhere else that overrides DMA ops
-still does the right thing, would be a lot more work for very little gain.
-
->> Allocation/mapping, though, would have to be done with the parent DMA
->> ops first (in case DMA address != physical address), *then* mapped at
->> the IPU MMU, which is the real killer - if the PCI DMA ops are from
->> intel-iommu, then there's little need for the IPU MMU mapping to be
->> anything other than 1:1, so you may as well not bother.
-> 
-> Okay, I think I can agree with you on this. It indeed makes little
-> sense to use both MMUs at the same time, if there is a way to disable
-> one of them.
-> 
-> Let's just keep this unaware of DMAR at this point of time, as a
-> starter, and get back to it later whenever someone wants to use DMAR
-> instead. I guess the way to proceed then would be either disabling the
-> internal MMU, if possible, or making it use a 1:1 (huge page, if
-> possible) mapping, if not.
-
-Generally, when you have a device-specific IOMMU like this, that's the
-one you'd want to keep using because it'll be optimised for the device's
-workload (e.g. the fact that it's non-coherent here is very likely the
-appropriate performance choice).
-
->> If the PCI DMA
->> ops are from SWIOTLB, then the constraints of having to go through that
->> first eliminate all the scatter-gather benefit of the IPU MMU.
-> 
-> Does the SWIOTLB give you a physically contiguous memory? If not, you
-> still need the IPU MMU to actually be able to access the memory.
-
-The SWIOTLB itself is really only for streaming mappings - coherent
-allocations come from CMA (although it may fall back to allocating
-directly out of its bounce buffers in certain circumstances). Either
-way, yes, everything's physically contiguous, because it's designed for
-when there is no hardware IOMMU available. I can well imagine video/ISP
-workloads being able to exhaust CMA at the drop of a hat too, which
-makes the idea all the worse.
-
+>> The indentation's a bit funky here - the rest of this file is actually
+>> indented with spaces, but either way it's clear your editor isn't set to
+>> 8-space tabs ;)
 >>
->> The IOMMU API ops would have to be handled similarly, by checking for
->> ops on the parent bus, calling those first if present, then running the
->> intermediate results through the IPU MMU's own functions. Sure, it's not
->> impossible, but it's really really grim. Not to mention that all the IPU
->> MMU's page tables/control structures/etc. would also have to be
->> DMA-allocated/mapped because it may or may not be operating in physical
->> address space.
+>>> +
+>>>  ** Example
+>>>
+>>>          smmu@2b400000 {
+>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>>> index 380969a..4e80205 100644
+>>> --- a/drivers/iommu/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm-smmu-v3.c
+>>> @@ -412,6 +412,9 @@
+>>>  #define MSI_IOVA_BASE                        0x8000000
+>>>  #define MSI_IOVA_LENGTH                      0x100000
+>>>
+>>> +#define ARM_SMMU_PAGE0_REGS_ONLY(smmu)               \
+>>> +     ((smmu)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
+>>
+>> At the two places we use this macro, frankly I think it would be clearer
+>> to just reference smmu->options directly, as we currently do for
+>> SKIP_PREFETCH. The abstraction also adds more lines than it saves...
+>>
+>>> +
+>>>  static bool disable_bypass;
+>>>  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+>>>  MODULE_PARM_DESC(disable_bypass,
+>>> @@ -597,6 +600,7 @@ struct arm_smmu_device {
+>>>       u32                             features;
+>>>
+>>>  #define ARM_SMMU_OPT_SKIP_PREFETCH   (1 << 0)
+>>> +#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
+>>
+>> Whitespace again, although this time it's spaces where there should be a
+>> tab.
+>>
+>>>       u32                             options;
+>>>
+>>>       struct arm_smmu_cmdq            cmdq;
+>>> @@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
+>>>
+>>>  static struct arm_smmu_option_prop arm_smmu_options[] = {
+>>>       { ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+>>> +     { ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
+>>>       { 0, NULL},
+>>>  };
+>>>
+>>> +static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+>>> +                                              struct arm_smmu_device *smmu)
+>>> +{
+>>> +     if (offset > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+>>> +             offset -= SZ_64K;
+>>> +
+>>> +     return smmu->base + offset;
+>>> +}
+>>> +
+>>>  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>>>  {
+>>>       return container_of(dom, struct arm_smmu_domain, domain);
+>>> @@ -1961,8 +1975,8 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+>>>               return -ENOMEM;
+>>>       }
+>>>
+>>> -     q->prod_reg     = smmu->base + prod_off;
+>>> -     q->cons_reg     = smmu->base + cons_off;
+>>> +     q->prod_reg     = arm_smmu_page1_fixup(prod_off, smmu);
+>>> +     q->cons_reg     = arm_smmu_page1_fixup(cons_off, smmu);
+>>>       q->ent_dwords   = dwords;
+>>>
+>>>       q->q_base  = Q_BASE_RWA;
+>>> @@ -2363,8 +2377,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>>>
+>>>       /* Event queue */
+>>>       writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+>>> -     writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
+>>> -     writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
+>>> +     writel_relaxed(smmu->evtq.q.prod,
+>>> +                    arm_smmu_page1_fixup(ARM_SMMU_EVTQ_PROD, smmu));
+>>> +     writel_relaxed(smmu->evtq.q.cons,
+>>> +                    arm_smmu_page1_fixup(ARM_SMMU_EVTQ_CONS, smmu));
 > 
-> DMA-allocation isn't really good for this use case, but is a DMA
-> mapping operation really such a bad thing?
+> This sequence and the arm_smmu_page1_fixup() call is repeated in quite a few
+> places. I think this errata code is messy because the original driver does not
+> make the alias page usage explicit.
 
-Not really, although it's still a bit of extra complication. We do it in
-io-pgtable for the sake of coherency, but we enforce that DMA == phys so
-that we don't have to double the memory overhead to keep track of the
-kernel VAs as well. I think the Tegra IOMMU driver is one that does go
-the whole way. Coming back to the earlier point, though, if you'd end up
-back in your driver's own DMA ops anyway then there seems very little
-justification for going the long way round.
+It *is* explicit - the architecture says the event queue and PRI queue
+pointers exist only on page 1, and that is the offset we define for
+them. The architecture also says "The equivalent Page 0 offsets of
+registers that are defined on Page 1 are Reserved and ARM recommends
+that they are not accessed. Access to these offsets is CONSTRAINED
+UNPREDICTABLE..."
 
->> The reasonable option - assuming the topology really is this way - would
->> seem to be special-casing the IPU in intel-iommu in a similar manner to
->> integrated graphics, to make sure it gets a passthrough domain for DMA
->> ops, but still allowing the whole PCI device to be passed through to a
->> guest VM via VFIO if desired (which is really the only case where nested
->> translation does start to make sense).
-> 
-> Yeah, given that we need some start, it sounds sane to me. We can then
-> revisit different options later. Thanks a lot for your input.
-
-Thankfully, it seems like this will remain a theoretical problem. Phew!
+This workaround is a bodge dependent on a specific implementation always
+having a specific CONSTRAINED UNPREDICTABLE behaviour, and I see no
+point in trying to dress it up as anything else. Yes, it could be
+considered a little bit messy, but messy is what you get when you step
+outside the spec. The fixup is invoked a grand total of 6 times, over 3
+locations, and there's no way of factoring it out further that doesn't
+just add significantly more code and complexity than it would save.
 
 Robin.
 
+> A patch like the one below (no functional changes) would clean up the original
+> driver and make the errata change much simpler - any comments?
 > 
-> Best regards,
-> Tomasz
+> -- >8 --
 > 
+> Date: Tue, 30 May 2017 15:43:29 +0000
+> Subject: [PATCH] iommu: arm-smmu-v3: make alias page usage explicit
+> 
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 76 +++++++++++++++++++++++++++------------------
+>  1 file changed, 46 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 380969a..11fdb4f 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -171,20 +171,19 @@
+>  #define STRTAB_BASE_CFG_FMT_LINEAR	(0 << STRTAB_BASE_CFG_FMT_SHIFT)
+>  #define STRTAB_BASE_CFG_FMT_2LVL	(1 << STRTAB_BASE_CFG_FMT_SHIFT)
+>  
+> +#define ARM_SMMU_Q_PROD(qbase)		((qbase) + 0x8)
+> +#define ARM_SMMU_Q_PROD_PAGE1(qbase)	((qbase) + 0x10008)
+> +#define ARM_SMMU_Q_CONS(qbase)		((qbase) + 0xc)
+> +#define ARM_SMMU_Q_CONS_PAGE1(qbase)	((qbase) + 0x1000c)
+> +
+>  #define ARM_SMMU_CMDQ_BASE		0x90
+> -#define ARM_SMMU_CMDQ_PROD		0x98
+> -#define ARM_SMMU_CMDQ_CONS		0x9c
+>  
+>  #define ARM_SMMU_EVTQ_BASE		0xa0
+> -#define ARM_SMMU_EVTQ_PROD		0x100a8
+> -#define ARM_SMMU_EVTQ_CONS		0x100ac
+>  #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
+>  #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
+>  #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
+>  
+>  #define ARM_SMMU_PRIQ_BASE		0xc0
+> -#define ARM_SMMU_PRIQ_PROD		0x100c8
+> -#define ARM_SMMU_PRIQ_CONS		0x100cc
+>  #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
+>  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
+>  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+> @@ -1946,11 +1945,30 @@ static struct iommu_ops arm_smmu_ops = {
+>  };
+>  
+>  /* Probing and initialisation functions */
+> +static int arm_smmu_reset_one_queue(struct arm_smmu_device *smmu,
+> +				    struct arm_smmu_queue *q,
+> +				    unsigned long qoffset,
+> +				    int page_to_use)
+> +{
+> +	unsigned long prod, cons;
+> +
+> +	writeq_relaxed(q->q_base, smmu->base + qoffset);
+> +	if (page_to_use == 1) {
+> +		prod = ARM_SMMU_Q_PROD_PAGE1(qoffset);
+> +		cons = ARM_SMMU_Q_CONS_PAGE1(qoffset);
+> +	} else {
+> +		prod = ARM_SMMU_Q_PROD(qoffset);
+> +		cons = ARM_SMMU_Q_CONS(qoffset);
+> +	}
+> +	writeq_relaxed(q->prod, smmu->base + prod);
+> +	writeq_relaxed(q->cons, smmu->base + cons);
+> +}
+> +
+>  static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+>  				   struct arm_smmu_queue *q,
+> -				   unsigned long prod_off,
+> -				   unsigned long cons_off,
+> -				   size_t dwords)
+> +				   unsigned long qoffset,
+> +				   size_t dwords,
+> +				   int page_to_use)
+>  {
+>  	size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
+>  
+> @@ -1961,8 +1979,13 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+>  		return -ENOMEM;
+>  	}
+>  
+> -	q->prod_reg	= smmu->base + prod_off;
+> -	q->cons_reg	= smmu->base + cons_off;
+> +	if (page_to_use == 1) {
+> +		q->prod_reg	= smmu->base + ARM_SMMU_Q_PROD_PAGE1(qoffset);
+> +		q->cons_reg	= smmu->base + ARM_SMMU_Q_CONS_PAGE1(qoffset);
+> +	} else {
+> +		q->prod_reg	= smmu->base + ARM_SMMU_Q_PROD(qoffset);
+> +		q->cons_reg	= smmu->base + ARM_SMMU_Q_CONS(qoffset);
+> +	}
+>  	q->ent_dwords	= dwords;
+>  
+>  	q->q_base  = Q_BASE_RWA;
+> @@ -1980,14 +2003,14 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+>  
+>  	/* cmdq */
+>  	spin_lock_init(&smmu->cmdq.lock);
+> -	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
+> -				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS);
+> +	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_BASE,
+> +				      CMDQ_ENT_DWORDS, 0);
+>  	if (ret)
+>  		return ret;
+>  
+>  	/* evtq */
+> -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
+> -				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
+> +	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_BASE,
+> +				      EVTQ_ENT_DWORDS, USE_PAGE1);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -1995,8 +2018,8 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+>  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+>  		return 0;
+>  
+> -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
+> -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
+> +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_BASE,
+> +				       PRIQ_ENT_DWORDS, 1);
+>  }
+>  
+>  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+> @@ -2332,9 +2355,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  		       smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
+>  
+>  	/* Command queue */
+> -	writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
+> -	writel_relaxed(smmu->cmdq.q.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
+> -	writel_relaxed(smmu->cmdq.q.cons, smmu->base + ARM_SMMU_CMDQ_CONS);
+> +	arm_smmu_reset_one_queue(smmu, &smmu->evtq.q,
+> +				 ARM_SMMU_CMDQ_BASE, 0);
+>  
+>  	enables = CR0_CMDQEN;
+>  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> @@ -2362,9 +2384,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+>  
+>  	/* Event queue */
+> -	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+> -	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
+> -	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
+> +	arm_smmu_reset_one_queue(smmu, &smmu->evtq.q,
+> +				 ARM_SMMU_EVTQ_BASE, 1);
+>  
+>  	enables |= CR0_EVTQEN;
+>  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> @@ -2376,13 +2397,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  
+>  	/* PRI queue */
+>  	if (smmu->features & ARM_SMMU_FEAT_PRI) {
+> -		writeq_relaxed(smmu->priq.q.q_base,
+> -			       smmu->base + ARM_SMMU_PRIQ_BASE);
+> -		writel_relaxed(smmu->priq.q.prod,
+> -			       smmu->base + ARM_SMMU_PRIQ_PROD);
+> -		writel_relaxed(smmu->priq.q.cons,
+> -			       smmu->base + ARM_SMMU_PRIQ_CONS);
+> -
+> +		arm_smmu_reset_one_queue(smmu, &smmu->priq.q,
+> +					 ARM_SMMU_PRIQ_BASE, 1);
+>  		enables |= CR0_PRIQEN;
+>  		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+>  					      ARM_SMMU_CR0ACK);
+> 
+
