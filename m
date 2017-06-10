@@ -1,125 +1,151 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v6 14/34] x86/mm: Insure that boot memory areas are
- mapped properly
-Date: Sat, 10 Jun 2017 18:01:19 +0200
-Message-ID: <20170610160119.bnx5ir5dj3i27igx@pd.tnic>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
- <20170607191539.28645.70161.stgit@tlendack-t1.amdoffice.net>
+From: "Wuzongyong (Cordius Wu, Euler Dept)" <wuzongyong1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: What differences and relations between SVM, HSA, HMM and Unified
+	Memory?
+Date: Sat, 10 Jun 2017 04:06:28 +0000
+Message-ID: <9BD73EA91F8E404F851CF3F519B14AA8CE753F@SZXEMI503-MBS.china.huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170607191539.28645.70161.stgit@tlendack-t1.amdoffice.net>
-Sender: linux-doc-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
+Content-Type: multipart/mixed; boundary="===============7613027119385003390=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: zh-CN
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "Wanzongshun (Vincent)" <wanzongshun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "oded.gabbay-5C7GfCeVMHo@public.gmane.org" <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 07, 2017 at 02:15:39PM -0500, Tom Lendacky wrote:
-> The boot data and command line data are present in memory in a decrypted
-> state and are copied early in the boot process.  The early page fault
-> support will map these areas as encrypted, so before attempting to copy
-> them, add decrypted mappings so the data is accessed properly when copied.
-> 
-> For the initrd, encrypt this data in place. Since the future mapping of the
-> initrd area will be mapped as encrypted the data will be accessed properly.
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/mem_encrypt.h |   11 +++++
->  arch/x86/include/asm/pgtable.h     |    3 +
->  arch/x86/kernel/head64.c           |   30 ++++++++++++--
->  arch/x86/kernel/setup.c            |    9 ++++
->  arch/x86/mm/mem_encrypt.c          |   77 ++++++++++++++++++++++++++++++++++++
->  5 files changed, 126 insertions(+), 4 deletions(-)
+--===============7613027119385003390==
+Content-Language: zh-CN
+Content-Type: multipart/alternative;
+	boundary="_000_9BD73EA91F8E404F851CF3F519B14AA8CE753FSZXEMI503MBSchina_"
 
-Some cleanups ontop in case you get to send v7:
+--_000_9BD73EA91F8E404F851CF3F519B14AA8CE753FSZXEMI503MBSchina_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-index 61a704945294..5959a42dd4d5 100644
---- a/arch/x86/include/asm/mem_encrypt.h
-+++ b/arch/x86/include/asm/mem_encrypt.h
-@@ -45,13 +45,8 @@ static inline void __init sme_early_decrypt(resource_size_t paddr,
- {
- }
- 
--static inline void __init sme_map_bootdata(char *real_mode_data)
--{
--}
--
--static inline void __init sme_unmap_bootdata(char *real_mode_data)
--{
--}
-+static inline void __init sme_map_bootdata(char *real_mode_data)	{ }
-+static inline void __init sme_unmap_bootdata(char *real_mode_data)	{ }
- 
- static inline void __init sme_early_init(void)
- {
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 2321f05045e5..32ebbe0ab04d 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -132,6 +132,10 @@ static void __init __sme_map_unmap_bootdata(char *real_mode_data, bool map)
- 	struct boot_params *boot_data;
- 	unsigned long cmdline_paddr;
- 
-+	/* If SME is not active, the bootdata is in the correct state */
-+	if (!sme_active())
-+		return;
-+
- 	__sme_early_map_unmap_mem(real_mode_data, sizeof(boot_params), map);
- 	boot_data = (struct boot_params *)real_mode_data;
- 
-@@ -142,40 +146,22 @@ static void __init __sme_map_unmap_bootdata(char *real_mode_data, bool map)
- 	cmdline_paddr = boot_data->hdr.cmd_line_ptr |
- 			((u64)boot_data->ext_cmd_line_ptr << 32);
- 
--	if (cmdline_paddr)
--		__sme_early_map_unmap_mem(__va(cmdline_paddr),
--					  COMMAND_LINE_SIZE, map);
-+	if (!cmdline_paddr)
-+		return;
-+
-+	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, map);
-+
-+	sme_early_pgtable_flush();
- }
- 
- void __init sme_unmap_bootdata(char *real_mode_data)
- {
--	/* If SME is not active, the bootdata is in the correct state */
--	if (!sme_active())
--		return;
--
--	/*
--	 * The bootdata and command line aren't needed anymore so clear
--	 * any mapping of them.
--	 */
- 	__sme_map_unmap_bootdata(real_mode_data, false);
--
--	sme_early_pgtable_flush();
- }
- 
- void __init sme_map_bootdata(char *real_mode_data)
- {
--	/* If SME is not active, the bootdata is in the correct state */
--	if (!sme_active())
--		return;
--
--	/*
--	 * The bootdata and command line will not be encrypted, so they
--	 * need to be mapped as decrypted memory so they can be copied
--	 * properly.
--	 */
- 	__sme_map_unmap_bootdata(real_mode_data, true);
--
--	sme_early_pgtable_flush();
- }
- 
- void __init sme_early_init(void)
+Hi,
 
--- 
-Regards/Gruss,
-    Boris.
+Could someone explain differences and relations between the SVM(Shared Virt=
+ual Memory, by Intel), HSA(Heterogeneous System Architecture, by AMD), HMM(=
+Heterogeneous Memory Management, by Glisse) and UM(Unified Memory, by NVIDI=
+A) ? Are these in the substitutional relation?
+As I understand it, these aim to solve the same thing, sharing pointers bet=
+ween CPU and GPU(implement with ATS/PASID/PRI/IOMMU support). So far, SVM a=
+nd HSA can only be used by integrated gpu. And, Intel declare that the root=
+ ports doesn't not have the required TLP prefix support, resulting  that SV=
+M can't be used by discrete devices. So could someone tell me the required =
+TLP prefix means what specifically?
+With HMM, we can use allocator like malloc to manage host and device memory=
+. Does this mean that there is no need to use SVM and HSA with HMM, or HMM =
+is the basis of SVM and HAS to implement Fine-Grained system SVM defined in=
+ the opencl spec?
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
+Thanks,
+Zongyong Wu
+
+
+--_000_9BD73EA91F8E404F851CF3F519B14AA8CE753FSZXEMI503MBSchina_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">Hi, <o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Could someone explain differences and relations betw=
+een the SVM(Shared Virtual Memory, by Intel), HSA(Heterogeneous System Arch=
+itecture, by AMD), HMM(Heterogeneous Memory Management, by Glisse) and UM(U=
+nified Memory, by NVIDIA) ? Are these
+ in the substitutional relation?<o:p></o:p></p>
+<p class=3D"MsoNormal">As I understand it, these aim to solve the same thin=
+g, sharing pointers between CPU and GPU(implement with ATS/PASID/PRI/IOMMU =
+support). So far, SVM and HSA can only be used by integrated gpu. And, Inte=
+l declare that the root ports doesn&#8217;t
+ not have the required TLP prefix support, resulting &nbsp;that SVM can&#82=
+17;t be used by discrete devices. So could someone tell me the required TLP=
+ prefix means what specifically?<o:p></o:p></p>
+<p class=3D"MsoNormal">With HMM, we can use allocator like malloc to manage=
+ host and device memory. Does this mean that there is no need to use SVM an=
+d HSA with HMM, or HMM is the basis of SVM and HAS to implement Fine-Graine=
+d system SVM defined in the opencl
+ spec?<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Thanks,<o:p></o:p></p>
+<p class=3D"MsoNormal">Zongyong Wu<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
+
+--_000_9BD73EA91F8E404F851CF3F519B14AA8CE753FSZXEMI503MBSchina_--
+
+
+--===============7613027119385003390==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7613027119385003390==--
