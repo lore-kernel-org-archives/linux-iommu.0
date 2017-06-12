@@ -1,356 +1,89 @@
-From: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: Fwd: [PATCH v7 2/3] iommu/arm-smmu-v3: Add workaround for Cavium
-	ThunderX2 erratum #74
-Date: Mon, 12 Jun 2017 08:12:00 +0000
-Message-ID: <20170612081158.GA2435@localhost>
-References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
-	<1496145821-3411-3-git-send-email-gakula@caviumnetworks.com>
-	<9263562d-03a3-d02e-6b7e-01613a4bd296@arm.com>
-	<CA+7sy7C_44dTy0-nAE=b5BCXmc8ACQx2O6A1jCOCsemZDD5j4w@mail.gmail.com>
-	<20170609113832.GB106079@localhost>
-	<ee0fb6c3-1c5c-f6d1-b063-ead8102d0c67@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: What differences and relations between SVM, HSA, HMM and Unified
+ Memory?
+Date: Mon, 12 Jun 2017 12:37:00 +0100
+Message-ID: <20c9cdd5-5118-f916-d8ad-70b7c1434d73@arm.com>
+References: <9BD73EA91F8E404F851CF3F519B14AA8CE753F@SZXEMI503-MBS.china.huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <ee0fb6c3-1c5c-f6d1-b063-ead8102d0c67-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9BD73EA91F8E404F851CF3F519B14AA8CE753F@SZXEMI503-MBS.china.huawei.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Wuzongyong (Cordius Wu, Euler Dept)" <wuzongyong1@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "Wanzongshun (Vincent)" <wanzongshun@huawei.com>, "oded.gabbay@amd.com" <oded.gabbay@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 09, 2017 at 04:43:07PM +0100, Robin Murphy wrote:
-> On 09/06/17 12:38, Jayachandran C wrote:
-> > On Fri, Jun 09, 2017 Robin Murphy wrote:
-> >>
-> >> On 30/05/17 13:03, Geetha sowjanya wrote:
-> >>> From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >>>
-> >>> Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
-> >>> and PAGE0_REGS_ONLY option is enabled as an errata workaround.
-> >>> This option when turned on, replaces all page 1 offsets used for
-> >>> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
-> >>>
-> >>> SMMU resource size checks are now based on SMMU option PAGE0_REGS_ONLY,
-> >>> since resource size can be either 64k/128k.
-> >>> For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
-> >>> platform_get_resource call, so that SMMU options are set beforehand.
-> >>>
-> >>> Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >>> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >>> ---
-> >>>  Documentation/arm64/silicon-errata.txt             |    1 +
-> >>>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 ++
-> >>>  drivers/iommu/arm-smmu-v3.c                        |   64 +++++++++++++++-----
-> >>>  3 files changed, 56 insertions(+), 15 deletions(-)
-> >>>
-> >>> diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-> >>> index 10f2ddd..4693a32 100644
-> >>> --- a/Documentation/arm64/silicon-errata.txt
-> >>> +++ b/Documentation/arm64/silicon-errata.txt
-> >>> @@ -62,6 +62,7 @@ stable kernels.
-> >>>  | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154        |
-> >>>  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
-> >>>  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
-> >>> +| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
-> >>>  |                |                 |                 |                             |
-> >>>  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
-> >>>  |                |                 |                 |                             |
-> >>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >>> index be57550..607e270 100644
-> >>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >>> @@ -49,6 +49,12 @@ the PCIe specification.
-> >>>  - hisilicon,broken-prefetch-cmd
-> >>>                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
-> >>>
-> >>> +- cavium,cn9900-broken-page1-regspace
-> >>> +                    : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
-> >>> +                                             PRIQ_PROD/CONS register access with page 0 offsets.
-> >>> +                                             Set for Caviun ThunderX2 silicon that doesn't support
-> >>> +                                             SMMU page1 register space.
-> >>
-> >> The indentation's a bit funky here - the rest of this file is actually
-> >> indented with spaces, but either way it's clear your editor isn't set to
-> >> 8-space tabs ;)
-> >>
-> >>> +
-> >>>  ** Example
-> >>>
-> >>>          smmu@2b400000 {
-> >>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> >>> index 380969a..4e80205 100644
-> >>> --- a/drivers/iommu/arm-smmu-v3.c
-> >>> +++ b/drivers/iommu/arm-smmu-v3.c
-> >>> @@ -412,6 +412,9 @@
-> >>>  #define MSI_IOVA_BASE                        0x8000000
-> >>>  #define MSI_IOVA_LENGTH                      0x100000
-> >>>
-> >>> +#define ARM_SMMU_PAGE0_REGS_ONLY(smmu)               \
-> >>> +     ((smmu)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
-> >>
-> >> At the two places we use this macro, frankly I think it would be clearer
-> >> to just reference smmu->options directly, as we currently do for
-> >> SKIP_PREFETCH. The abstraction also adds more lines than it saves...
-> >>
-> >>> +
-> >>>  static bool disable_bypass;
-> >>>  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
-> >>>  MODULE_PARM_DESC(disable_bypass,
-> >>> @@ -597,6 +600,7 @@ struct arm_smmu_device {
-> >>>       u32                             features;
-> >>>
-> >>>  #define ARM_SMMU_OPT_SKIP_PREFETCH   (1 << 0)
-> >>> +#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
-> >>
-> >> Whitespace again, although this time it's spaces where there should be a
-> >> tab.
-> >>
-> >>>       u32                             options;
-> >>>
-> >>>       struct arm_smmu_cmdq            cmdq;
-> >>> @@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
-> >>>
-> >>>  static struct arm_smmu_option_prop arm_smmu_options[] = {
-> >>>       { ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
-> >>> +     { ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-> >>>       { 0, NULL},
-> >>>  };
-> >>>
-> >>> +static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
-> >>> +                                              struct arm_smmu_device *smmu)
-> >>> +{
-> >>> +     if (offset > SZ_64K && ARM_SMMU_PAGE0_REGS_ONLY(smmu))
-> >>> +             offset -= SZ_64K;
-> >>> +
-> >>> +     return smmu->base + offset;
-> >>> +}
-> >>> +
-> >>>  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> >>>  {
-> >>>       return container_of(dom, struct arm_smmu_domain, domain);
-> >>> @@ -1961,8 +1975,8 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
-> >>>               return -ENOMEM;
-> >>>       }
-> >>>
-> >>> -     q->prod_reg     = smmu->base + prod_off;
-> >>> -     q->cons_reg     = smmu->base + cons_off;
-> >>> +     q->prod_reg     = arm_smmu_page1_fixup(prod_off, smmu);
-> >>> +     q->cons_reg     = arm_smmu_page1_fixup(cons_off, smmu);
-> >>>       q->ent_dwords   = dwords;
-> >>>
-> >>>       q->q_base  = Q_BASE_RWA;
-> >>> @@ -2363,8 +2377,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-> >>>
-> >>>       /* Event queue */
-> >>>       writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> >>> -     writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
-> >>> -     writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
-> >>> +     writel_relaxed(smmu->evtq.q.prod,
-> >>> +                    arm_smmu_page1_fixup(ARM_SMMU_EVTQ_PROD, smmu));
-> >>> +     writel_relaxed(smmu->evtq.q.cons,
-> >>> +                    arm_smmu_page1_fixup(ARM_SMMU_EVTQ_CONS, smmu));
-> > 
-> > This sequence and the arm_smmu_page1_fixup() call is repeated in quite a few
-> > places. I think this errata code is messy because the original driver does not
-> > make the alias page usage explicit.
-> 
-> It *is* explicit - the architecture says the event queue and PRI queue
-> pointers exist only on page 1, and that is the offset we define for
-> them. The architecture also says "The equivalent Page 0 offsets of
-> registers that are defined on Page 1 are Reserved and ARM recommends
-> that they are not accessed. Access to these offsets is CONSTRAINED
-> UNPREDICTABLE..."
- 
-Ok. The patch makes the page used for producer/consumer queue registers
-explicit fo cmdq (page 0) and the eventq/priq(page1). There is no suggestion
-here to use page 0 address for eventq/priq.
+Hello,
 
-> This workaround is a bodge dependent on a specific implementation always
-> having a specific CONSTRAINED UNPREDICTABLE behaviour, and I see no
-> point in trying to dress it up as anything else. Yes, it could be
-> considered a little bit messy, but messy is what you get when you step
-> outside the spec. The fixup is invoked a grand total of 6 times, over 3
-> locations, and there's no way of factoring it out further that doesn't
-> just add significantly more code and complexity than it would save.
- 
-With the changes below, the fixup are simpler and will be needed only in
-2 places - and it gets the hardware init repeated 3 times in the driver
-into a single place. That bikeshed will look real nice :)
-
-JC.
-
+On 10/06/17 05:06, Wuzongyong (Cordius Wu, Euler Dept) wrote:
+> Hi,
 > 
-> > A patch like the one below (no functional changes) would clean up the original
-> > driver and make the errata change much simpler - any comments?
-> > 
-> > -- >8 --
-> > 
-> > Date: Tue, 30 May 2017 15:43:29 +0000
-> > Subject: [PATCH] iommu: arm-smmu-v3: make alias page usage explicit
-> > 
-> > ---
-> >  drivers/iommu/arm-smmu-v3.c | 76 +++++++++++++++++++++++++++------------------
-> >  1 file changed, 46 insertions(+), 30 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> > index 380969a..11fdb4f 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -171,20 +171,19 @@
-> >  #define STRTAB_BASE_CFG_FMT_LINEAR	(0 << STRTAB_BASE_CFG_FMT_SHIFT)
-> >  #define STRTAB_BASE_CFG_FMT_2LVL	(1 << STRTAB_BASE_CFG_FMT_SHIFT)
-> >  
-> > +#define ARM_SMMU_Q_PROD(qbase)		((qbase) + 0x8)
-> > +#define ARM_SMMU_Q_PROD_PAGE1(qbase)	((qbase) + 0x10008)
-> > +#define ARM_SMMU_Q_CONS(qbase)		((qbase) + 0xc)
-> > +#define ARM_SMMU_Q_CONS_PAGE1(qbase)	((qbase) + 0x1000c)
-> > +
-> >  #define ARM_SMMU_CMDQ_BASE		0x90
-> > -#define ARM_SMMU_CMDQ_PROD		0x98
-> > -#define ARM_SMMU_CMDQ_CONS		0x9c
-> >  
-> >  #define ARM_SMMU_EVTQ_BASE		0xa0
-> > -#define ARM_SMMU_EVTQ_PROD		0x100a8
-> > -#define ARM_SMMU_EVTQ_CONS		0x100ac
-> >  #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
-> >  #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
-> >  #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
-> >  
-> >  #define ARM_SMMU_PRIQ_BASE		0xc0
-> > -#define ARM_SMMU_PRIQ_PROD		0x100c8
-> > -#define ARM_SMMU_PRIQ_CONS		0x100cc
-> >  #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
-> >  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
-> >  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
-> > @@ -1946,11 +1945,30 @@ static struct iommu_ops arm_smmu_ops = {
-> >  };
-> >  
-> >  /* Probing and initialisation functions */
-> > +static int arm_smmu_reset_one_queue(struct arm_smmu_device *smmu,
-> > +				    struct arm_smmu_queue *q,
-> > +				    unsigned long qoffset,
-> > +				    int page_to_use)
-> > +{
-> > +	unsigned long prod, cons;
-> > +
-> > +	writeq_relaxed(q->q_base, smmu->base + qoffset);
-> > +	if (page_to_use == 1) {
-> > +		prod = ARM_SMMU_Q_PROD_PAGE1(qoffset);
-> > +		cons = ARM_SMMU_Q_CONS_PAGE1(qoffset);
-> > +	} else {
-> > +		prod = ARM_SMMU_Q_PROD(qoffset);
-> > +		cons = ARM_SMMU_Q_CONS(qoffset);
-> > +	}
-> > +	writeq_relaxed(q->prod, smmu->base + prod);
-> > +	writeq_relaxed(q->cons, smmu->base + cons);
-> > +}
-> > +
-> >  static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
-> >  				   struct arm_smmu_queue *q,
-> > -				   unsigned long prod_off,
-> > -				   unsigned long cons_off,
-> > -				   size_t dwords)
-> > +				   unsigned long qoffset,
-> > +				   size_t dwords,
-> > +				   int page_to_use)
-> >  {
-> >  	size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
-> >  
-> > @@ -1961,8 +1979,13 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
-> >  		return -ENOMEM;
-> >  	}
-> >  
-> > -	q->prod_reg	= smmu->base + prod_off;
-> > -	q->cons_reg	= smmu->base + cons_off;
-> > +	if (page_to_use == 1) {
-> > +		q->prod_reg	= smmu->base + ARM_SMMU_Q_PROD_PAGE1(qoffset);
-> > +		q->cons_reg	= smmu->base + ARM_SMMU_Q_CONS_PAGE1(qoffset);
-> > +	} else {
-> > +		q->prod_reg	= smmu->base + ARM_SMMU_Q_PROD(qoffset);
-> > +		q->cons_reg	= smmu->base + ARM_SMMU_Q_CONS(qoffset);
-> > +	}
-> >  	q->ent_dwords	= dwords;
-> >  
-> >  	q->q_base  = Q_BASE_RWA;
-> > @@ -1980,14 +2003,14 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
-> >  
-> >  	/* cmdq */
-> >  	spin_lock_init(&smmu->cmdq.lock);
-> > -	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_PROD,
-> > -				      ARM_SMMU_CMDQ_CONS, CMDQ_ENT_DWORDS);
-> > +	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, ARM_SMMU_CMDQ_BASE,
-> > +				      CMDQ_ENT_DWORDS, 0);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> >  	/* evtq */
-> > -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
-> > -				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
-> > +	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_BASE,
-> > +				      EVTQ_ENT_DWORDS, USE_PAGE1);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > @@ -1995,8 +2018,8 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
-> >  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
-> >  		return 0;
-> >  
-> > -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
-> > -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
-> > +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_BASE,
-> > +				       PRIQ_ENT_DWORDS, 1);
-> >  }
-> >  
-> >  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
-> > @@ -2332,9 +2355,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-> >  		       smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
-> >  
-> >  	/* Command queue */
-> > -	writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
-> > -	writel_relaxed(smmu->cmdq.q.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
-> > -	writel_relaxed(smmu->cmdq.q.cons, smmu->base + ARM_SMMU_CMDQ_CONS);
-> > +	arm_smmu_reset_one_queue(smmu, &smmu->evtq.q,
-> > +				 ARM_SMMU_CMDQ_BASE, 0);
-> >  
-> >  	enables = CR0_CMDQEN;
-> >  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> > @@ -2362,9 +2384,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-> >  	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> >  
-> >  	/* Event queue */
-> > -	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> > -	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
-> > -	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
-> > +	arm_smmu_reset_one_queue(smmu, &smmu->evtq.q,
-> > +				 ARM_SMMU_EVTQ_BASE, 1);
-> >  
-> >  	enables |= CR0_EVTQEN;
-> >  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> > @@ -2376,13 +2397,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-> >  
-> >  	/* PRI queue */
-> >  	if (smmu->features & ARM_SMMU_FEAT_PRI) {
-> > -		writeq_relaxed(smmu->priq.q.q_base,
-> > -			       smmu->base + ARM_SMMU_PRIQ_BASE);
-> > -		writel_relaxed(smmu->priq.q.prod,
-> > -			       smmu->base + ARM_SMMU_PRIQ_PROD);
-> > -		writel_relaxed(smmu->priq.q.cons,
-> > -			       smmu->base + ARM_SMMU_PRIQ_CONS);
-> > -
-> > +		arm_smmu_reset_one_queue(smmu, &smmu->priq.q,
-> > +					 ARM_SMMU_PRIQ_BASE, 1);
-> >  		enables |= CR0_PRIQEN;
-> >  		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> >  					      ARM_SMMU_CR0ACK);
-> > 
+> Could someone explain differences and relations between the SVM(Shared
+> Virtual Memory, by Intel), HSA(Heterogeneous System Architecture, by AMD),
+> HMM(Heterogeneous Memory Management, by Glisse) and UM(Unified Memory, by
+> NVIDIA) ? Are these in the substitutional relation?
 > 
+> As I understand it, these aim to solve the same thing, sharing pointers
+> between CPU and GPU(implement with ATS/PASID/PRI/IOMMU support). So far,
+> SVM and HSA can only be used by integrated gpu. And, Intel declare that
+> the root ports doesn’t not have the required TLP prefix support, resulting
+>  that SVM can’t be used by discrete devices. So could someone tell me the
+> required TLP prefix means what specifically?>
+> With HMM, we can use allocator like malloc to manage host and device
+> memory. Does this mean that there is no need to use SVM and HSA with HMM,
+> or HMM is the basis of SVM and HAS to implement Fine-Grained system SVM
+> defined in the opencl spec?
+
+I can't provide an exhaustive answer, but I have done some work on SVM.
+Take it with a grain of salt though, I am not an expert.
+
+* HSA is an architecture that provides a common programming model for CPUs
+and accelerators (GPGPUs etc). It does have SVM requirement (I/O page
+faults, PASID and compatible address spaces), though it's only a small
+part of it.
+
+* Similarly, OpenCL provides an API for dealing with accelerators. OpenCL
+2.0 introduced the concept of Fine-Grained System SVM, which allows to
+pass userspace pointers to devices. It is just one flavor of SVM, they
+also have coarse-grained and non-system. But they might have coined the
+name, and I believe that in the context of Linux IOMMU, when we talk about
+"SVM" it is OpenCL's fine-grained system SVM.
+
+* Nvidia Cuda has a feature similar to fine-grained system SVM, called
+Unified Virtual Adressing. I'm not sure whether it maps exactly to
+OpenCL's system SVM. Nividia's Unified Memory seems to be more in line
+with HMM, because in addition to unifying the virtual address space, they
+also unify system and device memory.
+
+
+So SVM is about userspace API, the ability to perform DMA on a process
+address space instead of using a separate DMA address space. One possible
+implementation, for PCIe endpoints, uses ATS+PRI+PASID.
+
+* The PASID extension adds a prefix to the PCI TLP (characterized by
+bits[31:29] = 0b100) that specifies which address space is affected by the
+transaction. The IOMMU uses (RequesterID, PASID, Virt Addr) to derive a
+Phys Addr, where it previously only needed (RID, IOVA).
+
+* The PRI extension allows to handle page faults from endpoints, which are
+bound to happen if they attempt to access process memory.
+
+* PRI requires ATS. PRI adds two new TLPs, but ATS makes use of the AT
+field [11:10] in PCIe TLPs, which was previously reserved.
+
+So PCI switches, endpoints, root complexes and IOMMUs all have to be aware
+of these three extensions in order to use SVM with discrete endpoints.
+
+
+While SVM is only about virtual address space, HMM deals with physical
+storage. If I understand correctly, HMM allows to transparently use device
+RAM from userspace applications. So upon an I/O page fault, the mm
+subsystem will migrate data from system memory into device RAM. It would
+differ from "pure" SVM in that you would use different page directories on
+IOMMU and MMU sides, and synchronize them using MMU notifiers. But please
+don't take this at face value, I haven't had time to look into HMM yet.
+
+Thanks,
+Jean
