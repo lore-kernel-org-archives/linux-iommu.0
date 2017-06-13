@@ -1,75 +1,92 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
-Date: Tue, 13 Jun 2017 12:51:10 +0100
-Message-ID: <20170613115110.GA2868@red-moon>
-References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
-	<20170608163213.GA2216@red-moon>
-	<CAJZ5v0gnjxwBXEQ--u6Sbviks74MXLFWTfN+J90cdDZbO2Q7+w@mail.gmail.com>
+From: shameer <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+Date: Tue, 13 Jun 2017 12:48:29 +0100
+Message-ID: <20170613114829.188036-3-shameerali.kolothum.thodi@huawei.com>
+References: <20170613114829.188036-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0gnjxwBXEQ--u6Sbviks74MXLFWTfN+J90cdDZbO2Q7+w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>, Charles Garcia Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Robert Moore <robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Lv <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170613114829.188036-1-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rafael, Lv,
+The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
 
-On Thu, Jun 08, 2017 at 07:13:24PM +0200, Rafael J. Wysocki wrote:
-> On Thu, Jun 8, 2017 at 6:32 PM, Lorenzo Pieralisi
-> <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Tue, May 30, 2017 at 05:33:38PM +0530, Geetha sowjanya wrote:
-> >> Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
-> >> 1. Errata ID #74
-> >>    SMMU register alias Page 1 is not implemented
-> >> 2. Errata ID #126
-> >>    SMMU doesnt support unique IRQ lines and also MSI for gerror,
-> >>    eventq and cmdq-sync
-> >>
-> >> The following patchset does software workaround for these two erratas.
-> >>
-> >> This series is based on patchset.
-> >> https://www.spinics.net/lists/arm-kernel/msg578443.html
-> >
-> > Yes so it is not standalone. How are we going to merge these
-> > ACPI IORT/ACPICA/SMMU patches - inclusive of:
-> >
-> > [1] https://www.spinics.net/lists/arm-kernel/msg586458.html
-> >
-> > Rafael, do ACPICA patches go upstream via the ACPI tree pull request ?
-> 
-> Not as a rule.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-So I take it as the can they go in as separate pull (standalone ACPICA
-updates) ?
+This patch implements a ACPI table based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
 
-> > To remove dependency on ACPICA changes this series needs updating
-> > anyway and for [1] above I think the only solution is for all the
-> > patches to go via the ACPI tree (if ACPICA updates go upstream with it).
-> 
-> I think we may ask Lv to backport the header changes once they have
-> been merged into Linux.
-> 
-> Lv, would that work?
+Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
 
-I was asking to understand how to queue some patches for the upcoming
-merge window that have an ACPICA dependency, how are we supposed to
-handle that ? I would like to avoid cross tree dependencies, that's why
-I asked about the ACPI pull request, so that IORT patches could go via
-ACPI tree too this time along with ACPICA changes just trying to make
-it simple.
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index abe4b88..2636c85 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -597,6 +597,7 @@ struct arm_smmu_device {
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
++#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -1904,14 +1905,29 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 				      struct list_head *head)
+ {
+ 	struct iommu_resv_region *region;
++	struct arm_smmu_device *smmu;
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 
+-	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+-					 prot, IOMMU_RESV_SW_MSI);
+-	if (!region)
+-		return;
++	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+ 
+-	list_add_tail(&region->list, head);
++	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI) &&
++		      dev_is_pci(dev)) {
++		int ret;
++
++		ret = iort_iommu_its_get_resv_regions(dev, head);
++		if (ret) {
++			dev_warn(dev, "HW MSI region reserve failed\n");
++			return;
++		}
++	} else {
++		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++						 prot, IOMMU_RESV_SW_MSI);
++		if (!region)
++			return;
++
++		list_add_tail(&region->list, head);
++	}
+ 
+ 	iommu_dma_get_resv_regions(dev, head);
+ }
+@@ -2611,6 +2627,7 @@ static void parse_driver_acpi_options(struct acpi_iort_smmu_v3 *iort_smmu,
+ 	switch (iort_smmu->model) {
+ 	case ACPI_IORT_SMMU_HISILICON_HI161X:
+ 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
++		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
+ 		break;
+ 	default:
+ 		break;
+-- 
+1.9.1
 
-Please let us know, thanks a lot.
 
-Lorenzo
