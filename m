@@ -1,13 +1,16 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 01/44] firmware/ivc: use dma_mapping_error
-Date: Tue, 13 Jun 2017 14:35:38 +0200
-Message-ID: <20170613123538.GB16758@ulmo.fritz.box>
-References: <20170608132609.32662-1-hch@lst.de>
-	<20170608132609.32662-2-hch@lst.de>
+From: "Wuzongyong (Cordius Wu, Euler Dept)" <wuzongyong1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: =?utf-8?B?562U5aSNOiBXaGF0IGRpZmZlcmVuY2VzIGFuZCByZWxhdGlvbnMgYmV0d2Vl?=
+	=?utf-8?Q?n_SVM,_HSA,_HMM_and_Unified_Memory=3F?=
+Date: Tue, 13 Jun 2017 12:36:16 +0000
+Message-ID: <9BD73EA91F8E404F851CF3F519B14AA8CE7BDD@SZXEMI503-MBS.china.huawei.com>
+References: <9BD73EA91F8E404F851CF3F519B14AA8CE753F@SZXEMI503-MBS.china.huawei.com>
+	<20170612184413.GA5924@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3027311718705588637=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170608132609.32662-2-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20170612184413.GA5924-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: zh-CN
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,59 +20,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "Wanzongshun (Vincent)" <wanzongshun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "oded.gabbay-5C7GfCeVMHo@public.gmane.org" <oded.gabbay-5C7GfCeVMHo@public.gmane.org>, "Lifei (Louis)" <louis.lifei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============3027311718705588637==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="2B/JsCI69OhZNC5r"
-Content-Disposition: inline
-
-
---2B/JsCI69OhZNC5r
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Jun 08, 2017 at 03:25:26PM +0200, Christoph Hellwig wrote:
-> DMA_ERROR_CODE is not supposed to be used by drivers.
->=20
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  drivers/firmware/tegra/ivc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-
-Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-
---2B/JsCI69OhZNC5r
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlk/3BoACgkQ3SOs138+
-s6HPehAAsPH3WCVEat0HG8XtDXXMKUx9atqqkjijlfz3wzr3Yu8oeWJkmauxBI2J
-xWvBLcQSO632cLKWDXp9sfnjUN9McgOQi4LbbEnJZ3Wzovtn86aaPUXEtbrUImTw
-P57+RXkSbiFiGp8LlUECzxlshCYZHbzvOmqvdxpBqOTjQfv7fehxm+SVPJgkRflE
-EUuCItQsdBhnqBOtq743sf7Ck4QJ3Kz4pLGgntIDINnwiPxWjpMpI06SeVnvK2st
-d5lq46pyBdS3dliCsRcn6jukf79HzS/jStxG8r5YCEkRfCPvw0au5ds8iywvCZrZ
-hJYP0tumPW9j/x0ZC35a6j4dIbotmuhqCE2mYJUjG2mKDtAtdqZKVBvwKUmxzGok
-H7YKQDZN54UOBVg4Rzsbu80eyYc2jFZEWIhICrQUYVM534Psw7LGnA6hMiv5X8aS
-J4T7cOnL+71/iwE9Ey5EdvTbV22/mcx711OcyPbZ7q5Dv4AZE9HdJrPTF1rf1TeA
-WDqgA3BbY6JNflUayq5in0OxeyN8/qKbJr9ozhXgCNKNUUH5nihjT4LZxENEWV2p
-pRCppkKHw9Wmze/9cDuINms2Ef1DlEzxJ9BqE5mtiFFsCq1mn9EUxgMt4vbbfMqC
-Ynk0gIB134Hm0HIXoJcwdQ/27Ltko3nyeRm+28ka/gS8GVgYtec=
-=jGwQ
------END PGP SIGNATURE-----
-
---2B/JsCI69OhZNC5r--
-
---===============3027311718705588637==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3027311718705588637==--
+VGhhdCdzIHRoZSB0aGluZyBJIHdhbm5hIGtub3chIFRoYW5rcyBmb3IgeW91ciBleHBsYW5hdGlv
+bi4NCg0KVGhhbmtzLA0KWm9uZ3lvbmcgV3UNCg0KDQotLS0tLemCruS7tuWOn+S7ti0tLS0tDQrl
+j5Hku7bkuro6IEplcm9tZSBHbGlzc2UgW21haWx0bzpqLmdsaXNzZUBnbWFpbC5jb21dIA0K5Y+R
+6YCB5pe26Ze0OiAyMDE35bm0NuaciDEz5pelIDI6NDQNCuaUtuS7tuS6ujogV3V6b25neW9uZyAo
+Q29yZGl1cyBXdSwgRXVsZXIgRGVwdCkgPHd1em9uZ3lvbmcxQGh1YXdlaS5jb20+DQrmioTpgIE6
+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJu
+ZWwub3JnOyBvZGVkLmdhYmJheUBhbWQuY29tOyBXYW56b25nc2h1biAoVmluY2VudCkgPHdhbnpv
+bmdzaHVuQGh1YXdlaS5jb20+DQrkuLvpopg6IFJlOiBXaGF0IGRpZmZlcmVuY2VzIGFuZCByZWxh
+dGlvbnMgYmV0d2VlbiBTVk0sIEhTQSwgSE1NIGFuZCBVbmlmaWVkIE1lbW9yeT8NCg0KT24gU2F0
+LCBKdW4gMTAsIDIwMTcgYXQgMDQ6MDY6MjhBTSArMDAwMCwgV3V6b25neW9uZyAoQ29yZGl1cyBX
+dSwgRXVsZXIgRGVwdCkgd3JvdGU6DQo+IEhpLA0KPiANCj4gQ291bGQgc29tZW9uZSBleHBsYWlu
+IGRpZmZlcmVuY2VzIGFuZCByZWxhdGlvbnMgYmV0d2VlbiB0aGUgU1ZNIA0KPiAoU2hhcmVkIFZp
+cnR1YWwgTWVtb3J5LCBieSBJbnRlbCksIEhTQShIZXRlcm9nZW5lb3VzIFN5c3RlbSANCj4gQXJj
+aGl0ZWN0dXJlLCBieSBBTUQpLCBITU0oSGV0ZXJvZ2VuZW91cyBNZW1vcnkgTWFuYWdlbWVudCwg
+YnkgR2xpc3NlKSANCj4gYW5kIFVNKFVuaWZpZWQgTWVtb3J5LCBieSBOVklESUEpID8gQXJlIHRo
+ZXNlIGluIHRoZSBzdWJzdGl0dXRpb25hbCANCj4gcmVsYXRpb24/DQo+DQo+IEFzIEkgdW5kZXJz
+dGFuZCBpdCwgdGhlc2UgYWltIHRvIHNvbHZlIHRoZSBzYW1lIHRoaW5nLCBzaGFyaW5nIA0KPiBw
+b2ludGVycyBiZXR3ZWVuIENQVSBhbmQgR1BVKGltcGxlbWVudCB3aXRoIEFUUy9QQVNJRC9QUkkv
+SU9NTVUgDQo+IHN1cHBvcnQpLiBTbyBmYXIsIFNWTSBhbmQgSFNBIGNhbiBvbmx5IGJlIHVzZWQg
+YnkgaW50ZWdyYXRlZCBncHUuDQo+IEFuZCwgSW50ZWwgZGVjbGFyZSB0aGF0IHRoZSByb290IHBv
+cnRzIGRvZXNuJ3Qgbm90IGhhdmUgdGhlIHJlcXVpcmVkIA0KPiBUTFAgcHJlZml4IHN1cHBvcnQs
+IHJlc3VsdGluZyAgdGhhdCBTVk0gY2FuJ3QgYmUgdXNlZCBieSBkaXNjcmV0ZSANCj4gZGV2aWNl
+cy4gU28gY291bGQgc29tZW9uZSB0ZWxsIG1lIHRoZSByZXF1aXJlZCBUTFAgcHJlZml4IG1lYW5z
+IHdoYXQgDQo+IHNwZWNpZmljYWxseT8NCj4NCj4gV2l0aCBITU0sIHdlIGNhbiB1c2UgYWxsb2Nh
+dG9yIGxpa2UgbWFsbG9jIHRvIG1hbmFnZSBob3N0IGFuZCBkZXZpY2UgDQo+IG1lbW9yeS4gRG9l
+cyB0aGlzIG1lYW4gdGhhdCB0aGVyZSBpcyBubyBuZWVkIHRvIHVzZSBTVk0gYW5kIEhTQSB3aXRo
+IA0KPiBITU0sIG9yIEhNTSBpcyB0aGUgYmFzaXMgb2YgU1ZNIGFuZCBIQVMgdG8gaW1wbGVtZW50
+IEZpbmUtR3JhaW5lZCANCj4gc3lzdGVtIFNWTSBkZWZpbmVkIGluIHRoZSBvcGVuY2wgc3BlYz8N
+Cg0KU28gYWltIG9mIGFsbCB0ZWNobm9sb2d5IGlzIHRvIHNoYXJlIGFkZHJlc3Mgc3BhY2UgYmV0
+d2VlbiBhIGRldmljZSBhbmQgQ1BVLiBOb3cgdGhleSBhcmUgMyB3YXkgdG8gZG8gaXQ6DQoNCiAg
+QSkgYWxsIGluIGhhcmR3YXJlIGxpa2UgQ0FQSSBvciBDQ0lYIHdoZXJlIGRldmljZSBtZW1vcnkg
+aXMgY2FjaGUNCiAgICAgY29oZXJlbnQgZnJvbSBDUFUgYWNjZXNzIHBvaW50IG9mIHZpZXcgYW5k
+IHN5c3RlbSBtZW1vcnkgaXMgYWxzbw0KICAgICBhY2Nlc3NpYmxlIGJ5IGRldmljZSBpbiBjYWNo
+ZSBjb2hlcmVudCB3YXkgd2l0aCBDUFUuIFNvIGl0IGlzDQogICAgIGNhY2hlIGNvaGVyZW5jeSBn
+b2luZyBib3RoIHdheSBmcm9tIENQVSB0byBkZXZpY2UgbWVtb3J5IGFuZCBmcm9tDQogICAgIGRl
+dmljZSB0byBzeXN0ZW0gbWVtb3J5DQoNCg0KICBCKSBwYXJ0aWFsbHkgaW4gaGFyZHdhcmUgQVRT
+L1BBU0lEICh3aGljaCBhcmUgdGhlIHNhbWUgdGVjaG5vbG9neQ0KICAgICBiZWhpbmQgYm90aCBI
+U0EgYW5kIFNWTSkuIEhlcmUgaXQgaXMgb25seSBzaW5nbGUgd2F5IHNvbHV0aW9uDQogICAgIHdo
+ZXJlIHlvdSBoYXZlIGNhY2hlIGNvaGVyZW50IGFjY2VzcyBmcm9tIGRldmljZSB0byBzeXN0ZW0g
+bWVtb3J5DQogICAgIGJ1dCBub3QgdGhlIG90aGVyIHdheSBhcm91bmQuIE1vcmVvdmVyIHlvdSBz
+aGFyZSB0aGUgQ1BVIHBhZ2UNCiAgICAgdGFibGUgd2l0aCB0aGUgZGV2aWNlIHNvIHlvdSBkbyBu
+b3QgbmVlZCB0byBwcm9ncmFtIHRoZSBJT01NVS4NCg0KICAgIEhlcmUgeW91IGNhbiBub3QgdXNl
+IHRoZSBkZXZpY2UgbWVtb3J5IHRyYW5zcGFyZW50bHkuIEF0IGxlYXN0DQogICAgbm90IHdpdGhv
+dXQgc29mdHdhcmUgaGVscCBsaWtlIEhNTS4NCg0KDQogIEMpIGFsbCBpbiBzb2Z0d2FyZS4gSGVy
+ZSBkZXZpY2UgY2FuIGFjY2VzcyBzeXN0ZW0gbWVtb3J5IHdpdGggY2FjaGUNCiAgICAgY29oZXJl
+bmN5IGJ1dCBpdCBkb2VzIG5vdCBzaGFyZSB0aGUgc2FtZSBDUFUgcGFnZSB0YWJsZS4gRWFjaA0K
+ICAgICBkZXZpY2UgaGF2ZSB0aGVpciBvd24gcGFnZSB0YWJsZSBhbmQgdGh1cyB5b3UgbmVlZCB0
+byBzeW5jaHJvbml6ZQ0KICAgICB0aGVtLg0KDQpITU0gcHJvdmlkZXMgaGVscGVyIHRoYXQgYWRk
+cmVzcyBhbGwgb2YgdGhlIDMgc29sdXRpb25zLg0KICBBKSBmb3IgYWxsIGhhcmR3YXJlIHNvbHV0
+aW9uIEhNTSBwcm92aWRlcyBuZXcgaGVscGVycyB0byBoZWxwDQogICAgIHdpdGggbWlncmF0aW9u
+IG9mIHByb2Nlc3MgbWVtb3J5IHRvIGRldmljZSBtZW1vcnkNCiAgQikgZm9yIHBhcnRpYWwgaGFy
+ZHdhcmUgc29sdXRpb24geW91IGNhbiBtaXggd2l0aCBITU0gdG8gYWdhaW4NCiAgICAgcHJvdmlk
+ZSBoZWxwZXJzIGZvciBtaWdyYXRpb24gdG8gZGV2aWNlIG1lbW9yeS4gVGhpcyBhc3N1bWUNCiAg
+ICAgeW91IGRldmljZSBjYW4gbWl4IGFuZCBtYXRjaCBsb2NhbCBkZXZpY2UgcGFnZSB0YWJsZSB3
+aXRoDQogICAgIEFUUy9QQVNJRCByZWdpb24NCiAgQykgZnVsbCBzb2Z0d2FyZSBzb2x1dGlvbiB1
+c2luZyBhbGwgdGhlIGZlYXR1cmUgb2YgSE1NIHdoZXJlIGl0DQogICAgIGlzIGFsbCBkb25lIGlu
+IHNvZnR3YXJlIGFuZCBITU0gaXMganVzdCBkb2luZyB0aGUgaGVhdnkgbGlmdGluZw0KICAgICBv
+biBiZWhhbGYgb2YgZGV2aWNlIGRyaXZlcg0KDQpJbiBhbGwgb2YgdGhlIGFib3ZlIHdlIGFyZSB0
+YWxraW5nIGZpbmUtZ3JhaW5lZCBzeXN0ZW0gU1ZNIGFzIGluIHRoZSBPcGVuQ0wgc3BlY2lmaWNp
+YXRpb24uIFNvIHlvdSBjYW4gbWFsbG9jKCkgbWVtb3J5IGFuZCB1c2UgaXQgZGlyZWN0bHkgZnJv
+bSB0aGUgR1BVLg0KDQpIb3BlIHRoaXMgY2xhcmlmeSB0aGluZy4NCg0KQ2hlZXJzLA0KSsOpcsO0
+bWUNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
+IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
+c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
