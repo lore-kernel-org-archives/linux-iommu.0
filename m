@@ -1,38 +1,38 @@
 From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH] iommu/vt-d: constify intel_dma_ops.
-Date: Tue, 13 Jun 2017 15:48:34 +0530
-Message-ID: <b1e3c53042ae405bf5bf86b0c06a4ee4f74c3fc3.1497349024.git.arvind.yadav.cs@gmail.com>
+Subject: [PATCH] iommu/io-pgtable-arm-v7s: constify dummy_tlb_ops.
+Date: Tue, 13 Jun 2017 15:58:30 +0530
+Message-ID: <897ee913564b40242149e464c1f3d7d8df393056.1497349602.git.arvind.yadav.cs@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: dwmw2@infradead.org, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 File size before:
    text	   data	    bss	    dec	    hex	filename
-  32765	    758	   1824	  35347	   8a13	drivers/iommu/intel-iommu.o
+   6146	     56	      9	   6211	   1843	drivers/iommu/io-pgtable-arm-v7s.o
 
 File size After adding 'const':
    text	   data	    bss	    dec	    hex	filename
-  32925	    598	   1824	  35347	   8a13	drivers/iommu/intel-iommu.o
+   6170	     24	      9	   6203	   183b	drivers/iommu/io-pgtable-arm-v7s.o
 
 Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/iommu/intel-iommu.c | 2 +-
+ drivers/iommu/io-pgtable-arm-v7s.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 90ab011..de0df48 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3970,7 +3970,7 @@ static int intel_mapping_error(struct device *dev, dma_addr_t dma_addr)
- 	return !dma_addr;
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 8d6ca28..f886995 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -749,7 +749,7 @@ static void dummy_tlb_sync(void *cookie)
+ 	WARN_ON(cookie != cfg_cookie);
  }
  
--struct dma_map_ops intel_dma_ops = {
-+const struct dma_map_ops intel_dma_ops = {
- 	.alloc = intel_alloc_coherent,
- 	.free = intel_free_coherent,
- 	.map_sg = intel_map_sg,
+-static struct iommu_gather_ops dummy_tlb_ops = {
++static const struct iommu_gather_ops dummy_tlb_ops = {
+ 	.tlb_flush_all	= dummy_tlb_flush_all,
+ 	.tlb_add_flush	= dummy_tlb_add_flush,
+ 	.tlb_sync	= dummy_tlb_sync,
 -- 
 1.9.1
