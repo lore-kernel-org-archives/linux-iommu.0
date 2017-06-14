@@ -1,139 +1,132 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC 8/9] iommu/intel-svm: notify page request to guest
-Date: Wed, 14 Jun 2017 15:23:02 -0700
-Message-ID: <1497478983-77580-9-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [RFC 9/9] iommu/intel-svm: replace dev ops with generic fault notifier
+Date: Wed, 14 Jun 2017 15:23:03 -0700
+Message-ID: <1497478983-77580-10-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1497478983-77580-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-If the source device of a page request has its PASID table pointer
-bond to a guest, the first level page tables are owned by the guest.
-In this case, we shall let guest OS to manage page fault.
+Intel SVM devices register callbacks when bind task and PASID. These fault
+callbacks are optional which can be replaced by the generic IOMMU fault
+notifier APIs.
 
-This patch uses the IOMMU fault notification API to send notifications,
-possibly via VFIO, to the guest OS. Once guest pages are fault in, guest
-will issue page response which will be passed down via the invalidation
-passdown APIs.
+Currently, there is no main line kernel user of these callback functions.
+Fault event data delivered by the IOMMU notification API is both generic
+and contains raw data for architectural specific uses.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/intel-svm.c | 81 ++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 80 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c | 13 ++-----------
+ include/linux/intel-svm.h | 20 +++-----------------
+ 2 files changed, 5 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 23c4276..d1d2d23 100644
+index d1d2d23..112ec558 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -525,6 +525,80 @@ static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
- 	return (requested & ~vma->vm_flags) != 0;
- }
+@@ -291,7 +291,7 @@ static const struct mmu_notifier_ops intel_mmuops = {
  
-+static int prq_to_iommu_prot(struct page_req_dsc *req)
-+{
-+	int prot = 0;
-+
-+	if (req->rd_req)
-+		prot |= IOMMU_READ;
-+	if (req->wr_req)
-+		prot |= IOMMU_WRITE;
-+	if (req->exe_req)
-+		prot |= IOMMU_EXEC;
-+	if (req->priv_req)
-+		prot |= IOMMU_PRIV;
-+
-+	return prot;
-+}
-+
-+static int intel_svm_prq_notify(struct device *dev, struct page_req_dsc *desc)
-+{
-+	int ret = 0;
-+	struct iommu_fault_event *event;
-+	struct pci_dev *pdev;
-+	struct device_domain_info *info;
-+	unsigned long buf_offset;
-+
-+	/**
-+	 * If caller does not provide struct device, this is the case where
-+	 * guest PASID table is bond to the device. So we need to retrieve
-+	 * struct device from the page request deescriptor then proceed.
-+	 */
-+	if (!dev) {
-+		pdev = pci_get_bus_and_slot(desc->bus, desc->devfn);
-+		if (!pdev) {
-+			pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
-+				desc->bus, PCI_SLOT(desc->devfn),
-+				PCI_FUNC(desc->devfn));
-+			return -ENODEV;
-+		}
-+		/**
-+		 * Make sure PASID table pointer is bond to guest, if yes notify
-+		 * handler in the guest, e.g. via VFIO.
-+		 */
-+		info = pdev->dev.archdata.iommu;
-+		if (!info || !info->pasid_tbl_bond) {
-+			pr_debug("PRQ device pasid table not bond.\n");
-+			return -EINVAL;
-+		}
-+		dev = &pdev->dev;
-+	}
-+
-+	pr_debug("Notify PRQ device [%02x:%02x.%d]\n",
-+		desc->bus, PCI_SLOT(desc->devfn),
-+		PCI_FUNC(desc->devfn));
-+	event = kzalloc(sizeof(*event) + sizeof(*desc), GFP_KERNEL);
-+	if (!event)
-+		return -ENOMEM;
-+
-+	get_device(dev);
-+	/* Fill in event data for device specific processing */
-+	event->dev = dev;
-+	buf_offset = offsetofend(struct iommu_fault_event, length);
-+	memcpy(buf_offset + event, desc, sizeof(*desc));
-+	event->addr = desc->addr;
-+	event->pasid = desc->pasid;
-+	event->prot = prq_to_iommu_prot(desc);
-+	event->length = sizeof(*desc);
-+	event->flags = IOMMU_FAULT_PAGE_REQ;
-+
-+	ret = iommu_fault_notifier_call_chain(event);
-+	put_device(dev);
-+	kfree(event);
-+
-+	return ret;
-+}
-+
- static irqreturn_t prq_event_thread(int irq, void *d)
+ static DEFINE_MUTEX(pasid_mutex);
+ 
+-int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
++int intel_svm_bind_mm(struct device *dev, int *pasid, int flags)
  {
- 	struct intel_iommu *iommu = d;
-@@ -548,7 +622,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		handled = 1;
+ 	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+ 	struct intel_svm_dev *sdev;
+@@ -337,10 +337,6 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
  
- 		req = &iommu->prq[head / sizeof(*req)];
+ 			list_for_each_entry(sdev, &svm->devs, list) {
+ 				if (dev == sdev->dev) {
+-					if (sdev->ops != ops) {
+-						ret = -EBUSY;
+-						goto out;
+-					}
+ 					sdev->users++;
+ 					goto success;
+ 				}
+@@ -366,7 +362,6 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 	}
+ 	/* Finish the setup now we know we're keeping it */
+ 	sdev->users = 1;
+-	sdev->ops = ops;
+ 	init_rcu_head(&sdev->rcu);
+ 
+ 	if (!svm) {
+@@ -693,11 +688,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		if (WARN_ON(&sdev->list == &svm->devs))
+ 			sdev = NULL;
+ 
+-		if (sdev && sdev->ops && sdev->ops->fault_cb) {
+-			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
+-				(req->exe_req << 1) | (req->priv_req);
+-			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
+-		}
++		intel_svm_prq_notify(sdev->dev, req);
+ 		/* We get here in the error case where the PASID lookup failed,
+ 		   and these can be NULL. Do not use them below this point! */
+ 		sdev = NULL;
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 3c25794..67e056d3 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -18,18 +18,6 @@
+ 
+ struct device;
+ 
+-struct svm_dev_ops {
+-	void (*fault_cb)(struct device *dev, int pasid, u64 address,
+-			 u32 private, int rwxp, int response);
+-};
 -
-+		/**
-+		 * If prq is to be handled outside iommu driver via receiver of
-+		 * the fault notifiers, we skip the page response here.
-+		 */
-+		if (!intel_svm_prq_notify(NULL, req))
-+			continue;
- 		result = QI_RESP_FAILURE;
- 		address = (u64)req->addr << VTD_PAGE_SHIFT;
- 		if (!req->pasid_present) {
+-/* Values for rxwp in fault_cb callback */
+-#define SVM_REQ_READ	(1<<3)
+-#define SVM_REQ_WRITE	(1<<2)
+-#define SVM_REQ_EXEC	(1<<1)
+-#define SVM_REQ_PRIV	(1<<0)
+-
+-
+ /*
+  * The SVM_FLAG_PRIVATE_PASID flag requests a PASID which is *not* the "main"
+  * PASID for the current process. Even if a PASID already exists, a new one
+@@ -60,7 +48,6 @@ struct svm_dev_ops {
+  * @dev:	Device to be granted acccess
+  * @pasid:	Address for allocated PASID
+  * @flags:	Flags. Later for requesting supervisor mode, etc.
+- * @ops:	Callbacks to device driver
+  *
+  * This function attempts to enable PASID support for the given device.
+  * If the @pasid argument is non-%NULL, a PASID is allocated for access
+@@ -82,8 +69,7 @@ struct svm_dev_ops {
+  * Multiple calls from the same process may result in the same PASID
+  * being re-used. A reference count is kept.
+  */
+-extern int intel_svm_bind_mm(struct device *dev, int *pasid, int flags,
+-			     struct svm_dev_ops *ops);
++extern int intel_svm_bind_mm(struct device *dev, int *pasid, int flags);
+ 
+ /**
+  * intel_svm_unbind_mm() - Unbind a specified PASID
+@@ -105,7 +91,7 @@ extern int intel_svm_unbind_mm(struct device *dev, int pasid);
+ #else /* CONFIG_INTEL_IOMMU_SVM */
+ 
+ static inline int intel_svm_bind_mm(struct device *dev, int *pasid,
+-				    int flags, struct svm_dev_ops *ops)
++				int flags)
+ {
+ 	return -ENOSYS;
+ }
+@@ -116,6 +102,6 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
+ }
+ #endif /* CONFIG_INTEL_IOMMU_SVM */
+ 
+-#define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL, 0, NULL))
++#define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL, 0))
+ 
+ #endif /* __INTEL_SVM_H__ */
 -- 
 2.7.4
