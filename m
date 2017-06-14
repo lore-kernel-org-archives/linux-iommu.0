@@ -1,66 +1,61 @@
-From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
-Subject: Re: [PATCH 21/44] powerpc: implement ->mapping_error
-Date: Wed, 14 Jun 2017 19:17:27 +1000
-Message-ID: <87vanz2ajc.fsf@concordia.ellerman.id.au>
-References: <20170608132609.32662-1-hch@lst.de>
-	<20170608132609.32662-22-hch@lst.de>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v6 20/34] x86, mpparse: Use memremap to map the mpf and
+ mpc data
+Date: Wed, 14 Jun 2017 18:07:54 +0200
+Message-ID: <20170614160754.c4ywbf5ktqwgc4ij@pd.tnic>
+References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
+ <20170607191643.28645.91679.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170608132609.32662-22-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alistair Popple <apopple-8fk3Idey6ehBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20170607191643.28645.91679.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
 List-Id: iommu@lists.linux-foundation.org
 
-Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> writes:
-
-> DMA_ERROR_CODE is going to go away, so don't rely on it.  Instead
-> define a ->mapping_error method for all IOMMU based dma operation
-> instances.  The direct ops don't ever return an error and don't
-> need a ->mapping_error method.
->
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+On Wed, Jun 07, 2017 at 02:16:43PM -0500, Tom Lendacky wrote:
+> The SMP MP-table is built by UEFI and placed in memory in a decrypted
+> state. These tables are accessed using a mix of early_memremap(),
+> early_memunmap(), phys_to_virt() and virt_to_phys(). Change all accesses
+> to use early_memremap()/early_memunmap(). This allows for proper setting
+> of the encryption mask so that the data can be successfully accessed when
+> SME is active.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 > ---
->  arch/powerpc/include/asm/dma-mapping.h |  4 ----
->  arch/powerpc/include/asm/iommu.h       |  4 ++++
->  arch/powerpc/kernel/dma-iommu.c        |  6 ++++++
->  arch/powerpc/kernel/iommu.c            | 28 ++++++++++++++--------------
->  arch/powerpc/platforms/cell/iommu.c    |  1 +
->  arch/powerpc/platforms/pseries/vio.c   |  3 ++-
->  6 files changed, 27 insertions(+), 19 deletions(-)
+>  arch/x86/kernel/mpparse.c |   98 ++++++++++++++++++++++++++++++++-------------
+>  1 file changed, 70 insertions(+), 28 deletions(-)
 
-I also see:
+...
 
-  arch/powerpc/kernel/dma.c:const struct dma_map_ops dma_direct_ops = {
+> @@ -515,6 +516,12 @@ void __init default_get_smp_config(unsigned int early)
+>  	if (acpi_lapic && acpi_ioapic)
+>  		return;
+>  
+> +	mpf = early_memremap(mpf_base, sizeof(*mpf));
+> +	if (!mpf) {
+> +		pr_err("MPTABLE: mpf early_memremap() failed\n");
 
-Which you mentioned can't fail.
+If you're going to introduce new prefixes then add:
 
-  arch/powerpc/platforms/pseries/ibmebus.c:static const struct dma_map_ops ibmebus_dma_ops = {
+#undef pr_fmt
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-Which can't fail.
+at the beginning of the file so that they all say "mpparse:" instead.
 
-And:
+And pls make that message more user-friendly: "Error mapping MP table"
+or so.
 
-  arch/powerpc/platforms/powernv/npu-dma.c:static const struct dma_map_ops dma_npu_ops = {
-  arch/powerpc/platforms/ps3/system-bus.c:static const struct dma_map_ops ps3_sb_dma_ops = {
-  arch/powerpc/platforms/ps3/system-bus.c:static const struct dma_map_ops ps3_ioc0_dma_ops = {
+-- 
+Regards/Gruss,
+    Boris.
 
-All of which look like they definitely can fail, but return 0 on error
-and don't implement ->mapping_error.
+Good mailing practices for 400: avoid top-posting and trim the reply.
 
-So I guess I'm acking this and adding a TODO to fix up the NPU code at
-least, the ps3 code is probably better left alone these days.
-
-Acked-by: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
-
-cheers
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
