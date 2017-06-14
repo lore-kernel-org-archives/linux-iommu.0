@@ -1,122 +1,130 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC 3/9] iommu: Introduce iommu do invalidate API function
-Date: Wed, 14 Jun 2017 15:22:57 -0700
-Message-ID: <1497478983-77580-4-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [RFC 4/9] iommu/vt-d: Add iommu do invalidate function
+Date: Wed, 14 Jun 2017 15:22:58 -0700
+Message-ID: <1497478983-77580-5-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1497478983-77580-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org, Yi L <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+This patch adds Intel VT-d specific function to implement
+iommu_do_invalidate API.
 
-When a SVM capable device is assigned to a guest, the first level page
-tables are owned by the guest and the guest PASID table pointer is
-linked to the device context entry of the physical IOMMU.
+The use case is for supporting caching structure invalidation
+of assigned SVM capable devices. Emulated IOMMU exposes queue
+invalidation capability and passes down all descriptors from the guest
+to the physical IOMMU.
 
-Host IOMMU driver has no knowledge of caching structure updates unless
-the guest invalidation activities are passed down to the host. The
-primary usage is derived from emulated IOMMU in the guest, where QEMU
-can trap invalidation activities before pass them down the
-host/physical IOMMU. There are IOMMU architectural specific actions
-need to be taken which requires the generic APIs introduced in this
-patch to have opaque data in the tlb_invalidate_info argument.
+The assumption is that guest to host device ID mapping should be
+resolved prior to calling IOMMU driver. Based on the device handle,
+host IOMMU driver can replace certain fields before submit to the
+invalidation queue.
 
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/iommu.c      | 13 +++++++++++++
- include/linux/iommu.h      | 11 +++++++++++
- include/uapi/linux/iommu.h |  4 ++++
- 3 files changed, 28 insertions(+)
+ drivers/iommu/intel-iommu.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h | 11 ++++++++++-
+ 2 files changed, 51 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 494309b..c786370 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1347,6 +1347,19 @@ int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 1d5d9ab9..6b8e997 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5127,6 +5127,46 @@ static void intel_iommu_detach_device(struct iommu_domain *domain,
+ 	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
  }
- EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
  
-+int iommu_do_invalidate(struct iommu_domain *domain,
++static int intel_iommu_do_invalidate(struct iommu_domain *domain,
 +		struct device *dev, struct tlb_invalidate_info *inv_info)
 +{
-+	int ret = 0;
++	struct intel_iommu *iommu;
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct intel_invalidate_data *inv_data;
++	struct qi_desc *qi;
++	u16 did;
++	u8 bus, devfn;
 +
-+	if (unlikely(domain->ops->do_invalidate == NULL))
++	if (!inv_info || !dmar_domain || (inv_info->model != INTEL_IOMMU))
++		return -EINVAL;
++
++	iommu = device_to_iommu(dev, &bus, &devfn);
++	if (!iommu)
 +		return -ENODEV;
 +
-+	ret = domain->ops->do_invalidate(domain, dev, inv_info);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_do_invalidate);
++	inv_data = (struct intel_invalidate_data *)&inv_info->opaque;
 +
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7122add..2cdbaa3 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -232,6 +232,8 @@ struct iommu_ops {
- 				struct pasid_table_info *pasidt_binfo);
- 	int (*unbind_pasid_table)(struct iommu_domain *domain,
- 				struct device *dev);
-+	int (*do_invalidate)(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info);
- 
- 	unsigned long pgsize_bitmap;
- };
-@@ -293,6 +295,9 @@ extern int iommu_bind_pasid_table(struct iommu_domain *domain,
- 		struct device *dev, struct pasid_table_info *pasidt_binfo);
- extern int iommu_unbind_pasid_table(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_do_invalidate(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info);
++	/* check SID */
++	if (PCI_DEVID(bus, devfn) != inv_data->sid)
++		return 0;
 +
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
-@@ -660,6 +665,12 @@ int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
- 	return -EINVAL;
- }
- 
-+static inline int iommu_do_invalidate(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info)
-+{
-+	return -EINVAL;
++	qi = &inv_data->inv_desc;
++
++	switch (qi->low & QI_TYPE_MASK) {
++	case QI_DIOTLB_TYPE:
++	case QI_DEIOTLB_TYPE:
++		/* for device IOTLB, we just let it pass through */
++		break;
++	default:
++		did = dmar_domain->iommu_did[iommu->seq_id];
++		qi->low &= ~QI_DID_MASK;
++		qi->low |= QI_DID(did);
++		break;
++	}
++
++	return qi_submit_sync(qi, iommu);
 +}
 +
- #endif /* CONFIG_IOMMU_API */
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot)
+@@ -5546,6 +5586,7 @@ const struct iommu_ops intel_iommu_ops = {
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	.bind_pasid_table	= intel_iommu_bind_pasid_table,
+ 	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
++	.do_invalidate		= intel_iommu_do_invalidate,
+ #endif
+ 	.map			= intel_iommu_map,
+ 	.unmap			= intel_iommu_unmap,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 485a5b4..8df6c91 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -31,7 +31,6 @@
+ #include <linux/list.h>
+ #include <linux/iommu.h>
+ #include <linux/io-64-nonatomic-lo-hi.h>
+-
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
  
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 5ef0e7c..fcee18f 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -29,5 +29,9 @@ struct pasid_table_info {
- 	__u8	opaque[];
- };
+@@ -258,6 +257,10 @@ enum {
+ #define QI_PGRP_RESP_TYPE	0x9
+ #define QI_PSTRM_RESP_TYPE	0xa
  
-+struct tlb_invalidate_info {
-+	__u32	model;
-+	__u8	opaque[];
++#define QI_DID(did)		(((u64)did & 0xffff) << 16)
++#define QI_DID_MASK		GENMASK(31, 16)
++#define QI_TYPE_MASK		GENMASK(3, 0)
++
+ #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+ #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+ #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
+@@ -489,6 +492,12 @@ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_
+ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+ #endif
+ 
++struct intel_invalidate_data {
++	u16 sid;
++	u32 pasid;
++	struct qi_desc inv_desc;
 +};
++
+ extern const struct attribute_group *intel_iommu_groups[];
  
- #endif /* _UAPI_IOMMU_H */
+ #endif
 -- 
 2.7.4
