@@ -1,7 +1,8 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 03/04] iommu/ipmmu-vmsa: Use fwspec on both 32 and 64-bit ARM
-Date: Thu, 15 Jun 2017 19:29:38 +0900
-Message-ID: <149752257829.21887.15003130821809174947.sendpatchset@little-apple>
+Subject: [PATCH 04/04] iommu/ipmmu-vmsa: Replace local utlb code with fwspec
+	ids
+Date: Thu, 15 Jun 2017 19:29:49 +0900
+Message-ID: <149752258917.21887.4347773581840409774.sendpatchset@little-apple>
 References: <149752254550.21887.15183665699230243235.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,69 +22,192 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Consolidate the 32-bit and 64-bit code to make use of fwspec instead
-of archdata for the 32-bit ARM case.
+Now when both 32-bit and 64-bit code inside the driver is using
+fwspec it is possible to replace the utlb handling with fwspec ids
+that get populated from ->of_xlate().
 
-This is a simplified version of the fwspec handling code from Robin
-posted as [PATCH] iommu/ipmmu-vmsa: Convert to iommu_fwspec
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   21 +++------------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |  104 ++++++++------------------------------------
+ 1 file changed, 19 insertions(+), 85 deletions(-)
 
---- 0010/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-06-15 17:29:00.290607110 +0900
-@@ -73,22 +73,9 @@ static struct ipmmu_vmsa_domain *to_vmsa
- 	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
- }
+--- 0013/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-06-15 18:32:27.580607110 +0900
+@@ -19,6 +19,7 @@
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+@@ -59,8 +60,6 @@ struct ipmmu_vmsa_domain {
  
--
- static struct ipmmu_vmsa_iommu_priv *to_priv(struct device *dev)
+ struct ipmmu_vmsa_iommu_priv {
+ 	struct ipmmu_vmsa_device *mmu;
+-	unsigned int *utlbs;
+-	unsigned int num_utlbs;
+ 	struct device *dev;
+ 	struct list_head list;
+ };
+@@ -550,13 +549,14 @@ static int ipmmu_attach_device(struct io
+ 			       struct device *dev)
  {
--#if defined(CONFIG_ARM)
--	return dev->archdata.iommu;
--#else
--	return dev->iommu_fwspec->iommu_priv;
--#endif
--}
--static void set_priv(struct device *dev, struct ipmmu_vmsa_iommu_priv *p)
--{
--#if defined(CONFIG_ARM)
--	dev->archdata.iommu = p;
--#else
--	dev->iommu_fwspec->iommu_priv = p;
--#endif
-+	return dev->iommu_fwspec ? dev->iommu_fwspec->iommu_priv : NULL;
- }
+ 	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 	struct ipmmu_vmsa_device *mmu = priv->mmu;
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 	unsigned long flags;
+ 	unsigned int i;
+ 	int ret = 0;
  
- #define TLB_LOOP_TIMEOUT		100	/* 100us */
-@@ -730,7 +717,7 @@ static int ipmmu_init_platform_device(st
- 	priv->utlbs = utlbs;
- 	priv->num_utlbs = num_utlbs;
- 	priv->dev = dev;
--	set_priv(dev, priv);
-+	dev->iommu_fwspec->iommu_priv = priv;
+-	if (!mmu) {
++	if (!priv || !priv->mmu) {
+ 		dev_err(dev, "Cannot attach to IPMMU\n");
+ 		return -ENXIO;
+ 	}
+@@ -583,8 +583,8 @@ static int ipmmu_attach_device(struct io
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	for (i = 0; i < priv->num_utlbs; ++i)
+-		ipmmu_utlb_enable(domain, priv->utlbs[i]);
++	for (i = 0; i < fwspec->num_ids; ++i)
++		ipmmu_utlb_enable(domain, fwspec->ids[i]);
+ 
  	return 0;
- 
- error:
-@@ -887,14 +874,12 @@ static void ipmmu_domain_free_dma(struct
- 
- static int ipmmu_add_device_dma(struct device *dev)
+ }
+@@ -592,12 +592,12 @@ static int ipmmu_attach_device(struct io
+ static void ipmmu_detach_device(struct iommu_domain *io_domain,
+ 				struct device *dev)
  {
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
- 	struct iommu_group *group;
+-	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < priv->num_utlbs; ++i)
+-		ipmmu_utlb_disable(domain, priv->utlbs[i]);
++	for (i = 0; i < fwspec->num_ids; ++i)
++		ipmmu_utlb_disable(domain, fwspec->ids[i]);
  
  	/*
- 	 * Only let through devices that have been verified in xlate()
--	 * We may get called with dev->iommu_fwspec set to NULL.
- 	 */
--	if (!fwspec || !fwspec->iommu_priv)
-+	if (!to_priv(dev))
+ 	 * TODO: Optimize by disabling the context when no device is attached.
+@@ -633,102 +633,36 @@ static phys_addr_t ipmmu_iova_to_phys(st
+ 	return domain->iop->iova_to_phys(domain->iop, iova);
+ }
+ 
+-static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device *dev,
+-			    unsigned int *utlbs, unsigned int num_utlbs)
+-{
+-	unsigned int i;
+-
+-	for (i = 0; i < num_utlbs; ++i) {
+-		struct of_phandle_args args;
+-		int ret;
+-
+-		ret = of_parse_phandle_with_args(dev->of_node, "iommus",
+-						 "#iommu-cells", i, &args);
+-		if (ret < 0)
+-			return ret;
+-
+-		of_node_put(args.np);
+-
+-		if (args.np != mmu->dev->of_node || args.args_count != 1)
+-			return -EINVAL;
+-
+-		utlbs[i] = args.args[0];
+-	}
+-
+-	return 0;
+-}
+-
+-static int ipmmu_init_platform_device(struct device *dev)
++static int ipmmu_init_platform_device(struct device *dev,
++				      struct of_phandle_args *args)
+ {
++	struct platform_device *ipmmu_pdev;
+ 	struct ipmmu_vmsa_iommu_priv *priv;
+-	struct ipmmu_vmsa_device *mmu;
+-	unsigned int *utlbs;
+-	unsigned int i;
+-	int num_utlbs;
+-	int ret = -ENODEV;
+ 
+ 	/* Initialize once - xlate() will call multiple times */
+ 	if (to_priv(dev))
+ 		return 0;
+ 
+-	/* Find the master corresponding to the device. */
+-
+-	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
+-					       "#iommu-cells");
+-	if (num_utlbs < 0)
++	ipmmu_pdev = of_find_device_by_node(args->np);
++	if (!ipmmu_pdev)
  		return -ENODEV;
  
- 	group = iommu_group_get_for_dev(dev);
+-	utlbs = kcalloc(num_utlbs, sizeof(*utlbs), GFP_KERNEL);
+-	if (!utlbs)
+-		return -ENOMEM;
+-
+-	spin_lock(&ipmmu_devices_lock);
+-
+-	list_for_each_entry(mmu, &ipmmu_devices, list) {
+-		ret = ipmmu_find_utlbs(mmu, dev, utlbs, num_utlbs);
+-		if (!ret) {
+-			/*
+-			 * TODO Take a reference to the MMU to protect
+-			 * against device removal.
+-			 */
+-			break;
+-		}
+-	}
+-
+-	spin_unlock(&ipmmu_devices_lock);
+-
+-	if (ret < 0)
+-		goto error;
+-
+-	for (i = 0; i < num_utlbs; ++i) {
+-		if (utlbs[i] >= mmu->num_utlbs) {
+-			ret = -EINVAL;
+-			goto error;
+-		}
+-	}
+-
+ 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+-	if (!priv) {
+-		ret = -ENOMEM;
+-		goto error;
+-	}
++	if (!priv)
++		return -ENOMEM;
+ 
+-	priv->mmu = mmu;
+-	priv->utlbs = utlbs;
+-	priv->num_utlbs = num_utlbs;
++	priv->mmu = platform_get_drvdata(ipmmu_pdev);
+ 	priv->dev = dev;
+ 	dev->iommu_fwspec->iommu_priv = priv;
+ 	return 0;
+-
+-error:
+-	kfree(utlbs);
+-	return ret;
+ }
+ 
+ static int ipmmu_of_xlate(struct device *dev,
+ 			  struct of_phandle_args *spec)
+ {
+-	return ipmmu_init_platform_device(dev);
++	iommu_fwspec_add_ids(dev, spec->args, 1);
++
++	return ipmmu_init_platform_device(dev, spec);
+ }
+ 
+ #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
