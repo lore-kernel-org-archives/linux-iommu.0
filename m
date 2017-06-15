@@ -1,44 +1,102 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v6 25/34] swiotlb: Add warnings for use of bounce buffers
- with SME
-Date: Thu, 15 Jun 2017 08:23:17 -0500
-Message-ID: <a6fb0334-42e4-a08f-ac95-f33c48b0711f@amd.com>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
- <20170607191732.28645.42876.stgit@tlendack-t1.amdoffice.net>
- <20170614165052.fyn5t4gkq5leczcc@pd.tnic>
- <33d1debc-c684-cba1-7d95-493678f086d0@amd.com>
- <20170615090832.ncmq2kgom32cchhw@pd.tnic>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v3 2/2] acpi/iort: numa: Add numa node mapping for smmuv3
+ devices
+Date: Thu, 15 Jun 2017 14:46:03 +0100
+Message-ID: <20170615134603.GA16292@red-moon>
+References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <1496897059-8272-3-git-send-email-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170615090832.ncmq2kgom32cchhw@pd.tnic>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1496897059-8272-3-git-send-email-ganapatrao.kulkarni@cavium.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, lv.zheng@intel.com, rjw@rjwysocki.net
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will.Deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, joro@8bytes.org, lenb@kernel.org, jnair@caviumnetworks.com, gpkulkarni@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/15/2017 4:08 AM, Borislav Petkov wrote:
-> On Wed, Jun 14, 2017 at 02:49:02PM -0500, Tom Lendacky wrote:
->> I guess I don't need the sme_active() check since the second part of the
->> if statement can only ever be true if SME is active (since mask is
->> unsigned).
-> 
-> ... and you can define sme_me_mask as an u64 directly (it is that already,
-> practically, as we don't do SME on 32-bit) and then get rid of the cast.
+Hi,
 
-Let me look into that. There are so many places that are expecting an
-unsigned long I'll have to see how that all works out from a build
-perspective.
+On Thu, Jun 08, 2017 at 10:14:19AM +0530, Ganapatrao Kulkarni wrote:
+> Add code to parse proximity domain in SMMUv3 IORT table to
+> set numa node mapping for smmuv3 devices.
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> ---
+>  drivers/acpi/arm64/iort.c | 28 ++++++++++++++++++++++++++--
+>  1 file changed, 26 insertions(+), 2 deletions(-)
+
+I am happy to take this but I want to know what we shall do with
+patch 1 and related ACPICA changes first.
 
 Thanks,
-Tom
+Lorenzo
 
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index bba2b59..e804386 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+>  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+>  }
+>  
+> +/*
+> + * set numa proximity domain for smmuv3 device
+> + */
+> +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
+> +		struct device *dev)
+> +{
+> +	struct acpi_iort_smmu_v3 *smmu;
+> +
+> +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+> +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+> +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+> +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> +			smmu->base_address,
+> +			smmu->pxm);
+> +	}
+> +}
+> +
+>  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
+>  {
+>  	struct acpi_iort_smmu *smmu;
+> @@ -951,20 +968,24 @@ struct iort_iommu_config {
+>  	int (*iommu_count_resources)(struct acpi_iort_node *node);
+>  	void (*iommu_init_resources)(struct resource *res,
+>  				     struct acpi_iort_node *node);
+> +	void (*iommu_set_proximity)(struct acpi_iort_node *node,
+> +				     struct device *dev);
+>  };
+>  
+>  static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
+>  	.name = "arm-smmu-v3",
+>  	.iommu_is_coherent = arm_smmu_v3_is_coherent,
+>  	.iommu_count_resources = arm_smmu_v3_count_resources,
+> -	.iommu_init_resources = arm_smmu_v3_init_resources
+> +	.iommu_init_resources = arm_smmu_v3_init_resources,
+> +	.iommu_set_proximity = arm_smmu_v3_set_proximity
+>  };
+>  
+>  static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
+>  	.name = "arm-smmu",
+>  	.iommu_is_coherent = arm_smmu_is_coherent,
+>  	.iommu_count_resources = arm_smmu_count_resources,
+> -	.iommu_init_resources = arm_smmu_init_resources
+> +	.iommu_init_resources = arm_smmu_init_resources,
+> +	.iommu_set_proximity = NULL
+>  };
+>  
+>  static __init
+> @@ -1002,6 +1023,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
+>  	if (!pdev)
+>  		return -ENOMEM;
+>  
+> +	if (ops->iommu_set_proximity)
+> +		ops->iommu_set_proximity(node, &pdev->dev);
+> +
+>  	count = ops->iommu_count_resources(node);
+>  
+>  	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
+> -- 
+> 1.8.1.4
 > 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
