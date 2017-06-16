@@ -1,67 +1,102 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/7] iommu/amd: Add new init-state IOMMU_CMDLINE_DISABLED
-Date: Fri, 16 Jun 2017 16:09:56 +0200
-Message-ID: <1497622200-18188-4-git-send-email-joro@8bytes.org>
-References: <1497622200-18188-1-git-send-email-joro@8bytes.org>
+From: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Subject: Re: [PATCH 1/2] iommu/s390: Use iommu_group_get_for_dev() in
+ s390_iommu_add_device()
+Date: Fri, 16 Jun 2017 19:33:01 +0200
+Message-ID: <20170616193301.17cebd11@thinkpad>
+References: <1497532312-30470-1-git-send-email-joro@8bytes.org>
+        <1497532312-30470-2-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1497622200-18188-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497532312-30470-2-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Sebastian Ott <sebott@linux.vnet.ibm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Thu, 15 Jun 2017 15:11:51 +0200
+Joerg Roedel <joro@8bytes.org> wrote:
 
-This will be used when during initialization we detect that
-the iommu should be disabled.
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> The iommu_group_get_for_dev() function also attaches the
+> device to its group, so this code doesn't need to be in the
+> iommu driver.
+> 
+> Further by using this function the driver can make use of
+> default domains in the future.
+> 
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Seems pretty straightforward, so
+Reviewed-by: Gerald Schaefer <gerald.schaefer@de.ibm.com>
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 28bf39c..c40adc8 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -237,6 +237,7 @@ enum iommu_init_state {
- 	IOMMU_INITIALIZED,
- 	IOMMU_NOT_FOUND,
- 	IOMMU_INIT_ERROR,
-+	IOMMU_CMDLINE_DISABLED,
- };
- 
- /* Early ioapic and hpet maps from kernel command line */
-@@ -2450,6 +2451,7 @@ static int __init state_next(void)
- 		break;
- 	case IOMMU_NOT_FOUND:
- 	case IOMMU_INIT_ERROR:
-+	case IOMMU_CMDLINE_DISABLED:
- 		/* Error states => do nothing */
- 		ret = -EINVAL;
- 		break;
-@@ -2467,8 +2469,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
- 
- 	while (init_state != state) {
- 		ret = state_next();
--		if (init_state == IOMMU_NOT_FOUND ||
--		    init_state == IOMMU_INIT_ERROR)
-+		if (init_state == IOMMU_NOT_FOUND         ||
-+		    init_state == IOMMU_INIT_ERROR        ||
-+		    init_state == IOMMU_CMDLINE_DISABLED)
- 			break;
- 	}
- 
--- 
-2.7.4
+However, looking at iommu_group_get_for_dev(), I wonder if the
+generic_device_group() always returns the right thing, but that
+would be independent from this patch.
+
+With generic_device_group() returning NULL in case the allocation failed,
+this part of iommu_group_get_for_dev() would then happily dereference the
+NULL pointer, because IS_ERR(group) would be false:
+
+        if (ops && ops->device_group)
+                group = ops->device_group(dev);
+
+        if (IS_ERR(group))
+                return group;
+
+        /*
+         * Try to allocate a default domain - needs support from the
+         * IOMMU driver.
+         */
+        if (!group->default_domain) {
+
+The same is true for pci_device_group(), which also returns NULL in case
+of allocation failure. I guess both functions should just return the
+group pointer from iommu_group_alloc() directly, which already would
+contain an appropriate ERR_PTR, but never NULL.
+
+What do you think?
+
+> ---
+>  drivers/iommu/s390-iommu.c | 15 +++++----------
+>  1 file changed, 5 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 179e636..8788640 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -165,20 +165,14 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
+> 
+>  static int s390_iommu_add_device(struct device *dev)
+>  {
+> -	struct iommu_group *group;
+> -	int rc;
+> +	struct iommu_group *group = iommu_group_get_for_dev(dev);
+> 
+> -	group = iommu_group_get(dev);
+> -	if (!group) {
+> -		group = iommu_group_alloc();
+> -		if (IS_ERR(group))
+> -			return PTR_ERR(group);
+> -	}
+> +	if (IS_ERR(group))
+> +		return PTR_ERR(group);
+> 
+> -	rc = iommu_group_add_device(group, dev);
+>  	iommu_group_put(group);
+> 
+> -	return rc;
+> +	return 0;
+>  }
+> 
+>  static void s390_iommu_remove_device(struct device *dev)
+> @@ -344,6 +338,7 @@ static struct iommu_ops s390_iommu_ops = {
+>  	.iova_to_phys = s390_iommu_iova_to_phys,
+>  	.add_device = s390_iommu_add_device,
+>  	.remove_device = s390_iommu_remove_device,
+> +	.device_group = generic_device_group,
+>  	.pgsize_bitmap = S390_IOMMU_PGSIZES,
+>  };
+> 
