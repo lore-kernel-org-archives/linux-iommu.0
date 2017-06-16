@@ -1,78 +1,43 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel
-Date: Fri, 16 Jun 2017 10:15:01 +0200
-Message-ID: <1497600901-8993-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 06/44] iommu/dma: don't rely on DMA_ERROR_CODE
+Date: Fri, 16 Jun 2017 10:37:00 +0200
+Message-ID: <20170616083700.GA10582@lst.de>
+References: <20170608132609.32662-1-hch@lst.de>
+	<20170608132609.32662-7-hch@lst.de>
+	<0bfb0841-f054-78de-628d-a0955336bcb4@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <0bfb0841-f054-78de-628d-a0955336bcb4-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+On Thu, Jun 08, 2017 at 02:59:07PM +0100, Robin Murphy wrote:
+> Hi Christoph,
+> 
+> On 08/06/17 14:25, Christoph Hellwig wrote:
+> > DMA_ERROR_CODE is not a public API and will go away soon.  dma dma-iommu
+> > driver already implements a proper ->mapping_error method, so it's only
+> > using the value internally.  Add a new local define using the value
+> > that arm64 which is the only current user of dma-iommu.
+> 
+> It would be fine to just use 0, since dma-iommu already makes sure that
+> that will never be allocated for a valid DMA address.
 
-When booting into a kdump kernel, suppress IO_PAGE_FAULTs by
-default for all devices. But allow the faults again when a
-domain is assigned to a device.
+I'll change it to 0.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/amd_iommu.c       | 3 ++-
- drivers/iommu/amd_iommu_init.c  | 9 +++++++++
- drivers/iommu/amd_iommu_types.h | 1 +
- 3 files changed, 12 insertions(+), 1 deletion(-)
+> Otherwise, looks good!
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 80efa72..623ab53 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2050,7 +2050,8 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- 		flags    |= tmp;
- 	}
- 
--	flags &= ~(0xffffUL);
-+
-+	flags &= ~(DTE_FLAG_SA | 0xffffULL);
- 	flags |= domain->id;
- 
- 	amd_iommu_dev_table[devid].data[1]  = flags;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5a11328..d9f5ddd 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -29,6 +29,7 @@
- #include <linux/export.h>
- #include <linux/iommu.h>
- #include <linux/kmemleak.h>
-+#include <linux/crash_dump.h>
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
- #include <asm/gart.h>
-@@ -1898,6 +1899,14 @@ static void init_device_table_dma(void)
- 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
- 		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
- 		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
-+		/*
-+		 * In kdump kernels in-flight DMA from the old kernel might
-+		 * cause IO_PAGE_FAULTs. There are no reports that a kdump
-+		 * actually failed because of that, so just disable fault
-+		 * reporting in the hardware to get rid of the messages
-+		 */
-+		if (is_kdump_kernel())
-+			set_dev_entry_bit(devid, DEV_ENTRY_NO_PAGE_FAULT);
- 	}
- }
- 
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 4de8f41..4cad9b3 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -322,6 +322,7 @@
- #define IOMMU_PTE_IW (1ULL << 62)
- 
- #define DTE_FLAG_IOTLB	(1ULL << 32)
-+#define DTE_FLAG_SA	(1ULL << 34)
- #define DTE_FLAG_GV	(1ULL << 55)
- #define DTE_FLAG_MASK	(0x3ffULL << 32)
- #define DTE_GLX_SHIFT	(56)
--- 
-2.7.4
+Can you give me a formal ACK or Reviewed-by: ?
