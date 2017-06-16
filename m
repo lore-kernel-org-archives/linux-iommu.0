@@ -1,80 +1,158 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [virtio-dev] [RFC PATCH linux] iommu: Add virtio-iommu driver
-Date: Fri, 16 Jun 2017 12:36:53 +0100
-Message-ID: <c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
- <20170407192314.26720-1-jean-philippe.brucker@arm.com>
- <AM5PR0401MB25450471C7161CC6386FC8CE9AC10@AM5PR0401MB2545.eurprd04.prod.outlook.com>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [PATCH 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Fri, 16 Jun 2017 11:31:06 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA83836B2DC@FRAEML521-MBX.china.huawei.com>
+References: <20170613114829.188036-1-shameerali.kolothum.thodi@huawei.com>
+ <20170613114829.188036-3-shameerali.kolothum.thodi@huawei.com>
+ <20170613131317.GB2868@red-moon>
+ <5FC3163CFD30C246ABAA99954A238FA838368BC6@FRAEML521-MBX.china.huawei.com>
+ <5FC3163CFD30C246ABAA99954A238FA83836B212@FRAEML521-MBX.china.huawei.com>
+ <20170616111729.GB22323@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <AM5PR0401MB25450471C7161CC6386FC8CE9AC10@AM5PR0401MB2545.eurprd04.prod.outlook.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170616111729.GB22323@red-moon>
 Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Bharat Bhushan <bharat.bhushan@nxp.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 16/06/17 09:48, Bharat Bhushan wrote:
-> Hi Jean
->> +static int viommu_map(struct iommu_domain *domain, unsigned long iova,
->> +		      phys_addr_t paddr, size_t size, int prot) {
->> +	int ret;
->> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
->> +	struct virtio_iommu_req_map req = {
->> +		.head.type	= VIRTIO_IOMMU_T_MAP,
->> +		.address_space	= cpu_to_le32(vdomain->id),
->> +		.virt_addr	= cpu_to_le64(iova),
->> +		.phys_addr	= cpu_to_le64(paddr),
->> +		.size		= cpu_to_le64(size),
->> +	};
->> +
->> +	pr_debug("map %llu 0x%lx -> 0x%llx (%zu)\n", vdomain->id, iova,
->> +		 paddr, size);
+
+
+> -----Original Message-----
+> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
+> Sent: Friday, June 16, 2017 12:17 PM
+> To: Shameerali Kolothum Thodi
+> Cc: marc.zyngier@arm.com; will.deacon@arm.com; Linuxarm; linux-
+> acpi@vger.kernel.org; iommu@lists.linux-foundation.org;
+> hanjun.guo@linaro.org; sudeep.holla@arm.com; robin.murphy@arm.com;
+> linux-arm-kernel@lists.infradead.org; devel@acpica.org
+> Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+> erratum 161010801
 > 
-> A query, when I am tracing above prints I see same physical address is mapped with two different virtual address, do you know why kernel does this?
+> On Fri, Jun 16, 2017 at 09:43:52AM +0000, Shameerali Kolothum Thodi wrote:
+> > Hi Lorenzo,
+> >
+> > > -----Original Message-----
+> > > From: linuxarm-bounces@huawei.com [mailto:linuxarm-
+> > > bounces@huawei.com] On Behalf Of Shameerali Kolothum Thodi
+> > > Sent: Tuesday, June 13, 2017 3:53 PM
+> > > To: Lorenzo Pieralisi
+> > > Cc: marc.zyngier@arm.com; will.deacon@arm.com; Linuxarm; linux-
+> > > acpi@vger.kernel.org; iommu@lists.linux-foundation.org;
+> > > hanjun.guo@linaro.org; sudeep.holla@arm.com;
+> robin.murphy@arm.com;
+> > > linux-arm-kernel@lists.infradead.org; devel@acpica.org
+> > > Subject: RE: [PATCH 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> HiSilicon
+> > > erratum 161010801
+> >
+> > [...]
+> >  > > > ---
+> > > > >  drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++----
+> -
+> > > > >  1 file changed, 22 insertions(+), 5 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-
+> smmu-
+> > > > v3.c
+> > > > > index abe4b88..2636c85 100644
+> > > > > --- a/drivers/iommu/arm-smmu-v3.c
+> > > > > +++ b/drivers/iommu/arm-smmu-v3.c
+> > > > > @@ -597,6 +597,7 @@ struct arm_smmu_device {
+> > > > >  	u32				features;
+> > > > >
+> > > > >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> > > > > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+> > > > >  	u32				options;
+> > > > >
+> > > > >  	struct arm_smmu_cmdq		cmdq;
+> > > > > @@ -1904,14 +1905,29 @@ static void
+> > > arm_smmu_get_resv_regions(struct
+> > > > device *dev,
+> > > > >  				      struct list_head *head)
+> > > > >  {
+> > > > >  	struct iommu_resv_region *region;
+> > > > > +	struct arm_smmu_device *smmu;
+> > > > > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> > > > >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC |
+> IOMMU_MMIO;
+> > > > >
+> > > > > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
+> > > > MSI_IOVA_LENGTH,
+> > > > > -					 prot,
+> IOMMU_RESV_SW_MSI);
+> > > > > -	if (!region)
+> > > > > -		return;
+> > > > > +	smmu = arm_smmu_get_by_fwnode(fwspec-
+> >iommu_fwnode);
+> > > > >
+> > > > > -	list_add_tail(&region->list, head);
+> > > > > +	if (smmu && (smmu->options &
+> ARM_SMMU_OPT_RESV_HW_MSI)
+> > > > &&
+> > > > > +		      dev_is_pci(dev)) {
+> > > > > +		int ret;
+> > > > > +
+> > > > > +		ret = iort_iommu_its_get_resv_regions(dev, head);
+> > > >
+> > > > This should be made fwnode dependent, it makes precious little sense
+> to
+> > > call
+> > > > IORT to reserve regions on a DT based platforms (I know the
+> > > > ARM_SMMU_OPT_RESV_HW_MSI option is only selected in ACPI (?)
+> but
+> > > > comment applies regardless - have you prototyped a DT version too ?).
+> > >
+> > > Ok. I will add a check here.
+> >
+> > This is what I have in mind. Please take a look and let me know. I will send
+> out
+> > a v2 of this series soon.
+> > ....
+> > if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI) &&
+> > 			dev_is_pci(dev)) {
+> > 	int ret = -EINVAL;
+> >
+> > 	if (!is_of_node(smmu->dev->fwnode))
+> > 		ret = iort_iommu_its_get_resv_regions(dev, head);
+> >
+> > 	if (ret) {
+> > 		dev_warn(dev, "HW MSI region resv failed: %d\n", ret);
+> > 		return;
+> > 	}
+> > } else {
+> 
+> The fwnode handling is fine, I do not like much the:
+> 
+> dev_is_pci()
+> 
+> check because it relies on implicit knowledge of the platform and
+> the quirks you need (ie you know that it is _just_ a PCI RC quirk
+> implicitly), the logic behind reserving the regions is a bit
+> convoluted and not easy to understand at all.
+> 
+> Let me try to rephrase it: you know, through an SMMU model number,
+> that your PCI RC handles MSI in a specific way, but by reading the
+> code above this is not clear at all, at least to me. This is a PCI
+> RC quirk but it does not depend on any PCI RC specific firmware binding
+> whatsoever, that's what is a bit hard to understand.
 
-That really depends which driver is calling into viommu. iommu_map is
-called from the DMA API, which can be used by any device drivers. Within
-an address space, multiple IOVAs pointing to the same PA isn't forbidden.
-
-For example, looking at MAP requests for a virtio-net device, I get the
-following trace:
-
-ioas[1] map   0xfffffff3000 -> 0x8faa0000 (4096)
-ioas[1] map   0xfffffff2000 -> 0x8faa0000 (4096)
-ioas[1] map   0xfffffff1000 -> 0x8faa0000 (4096)
-ioas[1] map   0xfffffff0000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffef000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffee000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffed000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffec000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffeb000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffea000 -> 0x8faa0000 (4096)
-ioas[1] map   0xffffffe8000 -> 0x8faa0000 (8192)
-...
-
-During initialization, the virtio-net driver primes the rx queue with
-receive buffers, that the host will then fill with network packets. It
-calls virtqueue_add_inbuf_ctx to create descriptors on the rx virtqueue
-for each buffer. Each buffer is 0x180 bytes here, so one 4k page can
-contain around 10 (actually 11, with the last one crossing page boundary).
-
-I guess the call trace goes like this:
- virtnet_open
- try_fill_recv
- add_recvbuf_mergeable
- virtqueue_add_inbuf_ctx
- vring_map_one_sg
- dma_map_page
- __iommu_dma_map
-
-But the IOMMU cannot map fragments of pages, since the granule is 0x1000.
-Therefore when virtqueue_add_inbuf_ctx maps the buffer, __iommu_dma_map
-aligns address and size on full pages. Someone motivated could probably
-optimize this by caching mapped pages and reusing IOVAs, but currently
-that's how it goes.
+Right.  I had a thought of limiting the iort_iommu_its_get_resv_regions
+to pci devices only. Just like the way iommu_dma_get_resv_regions()
+does now. But not sure there will ever be a platform which requires this
+for non-pci devices as well.
 
 Thanks,
-Jean
+Shameer
