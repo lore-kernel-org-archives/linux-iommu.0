@@ -1,39 +1,58 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/7] iommu/amd: Disable IOMMUs at boot if they are enabled
-Date: Fri, 16 Jun 2017 16:09:54 +0200
-Message-ID: <1497622200-18188-2-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/7] iommu/amd: Rename free_on_init_error()
+Date: Fri, 16 Jun 2017 16:09:55 +0200
+Message-ID: <1497622200-18188-3-git-send-email-joro@8bytes.org>
 References: <1497622200-18188-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1497622200-18188-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1497622200-18188-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-When booting, make sure the IOMMUs are disabled. They could
-be previously enabled if we boot into a kexec or kdump
-kernel. So make sure they are off.
+The function will also be used to free iommu resources when
+amd_iommu=off was specified on the kernel command line. So
+rename the function to reflect that.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index d9f5ddd..fb7035f 100644
+index fb7035f..28bf39c 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2316,6 +2316,9 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
+@@ -2106,7 +2106,7 @@ static struct syscore_ops amd_iommu_syscore_ops = {
+ 	.resume = amd_iommu_resume,
+ };
  
-+	/* Disable any previously enabled IOMMUs */
-+	disable_iommus();
-+
- 	if (amd_iommu_irq_remap)
- 		amd_iommu_irq_remap = check_ioapic_information();
+-static void __init free_on_init_error(void)
++static void __init free_iommu_resources(void)
+ {
+ 	kmemleak_free(irq_lookup_table);
+ 	free_pages((unsigned long)irq_lookup_table,
+@@ -2534,7 +2534,7 @@ static int __init amd_iommu_init(void)
+ 		free_dma_resources();
+ 		if (!irq_remapping_enabled) {
+ 			disable_iommus();
+-			free_on_init_error();
++			free_iommu_resources();
+ 		} else {
+ 			struct amd_iommu *iommu;
  
 -- 
 2.7.4
