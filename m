@@ -1,57 +1,39 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/7] iommu/amd: Check for error states first in
-	iommu_go_to_state()
-Date: Fri, 16 Jun 2017 16:09:57 +0200
-Message-ID: <1497622200-18188-5-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/7] iommu/amd: Disable IOMMUs at boot if they are enabled
+Date: Fri, 16 Jun 2017 16:09:54 +0200
+Message-ID: <1497622200-18188-2-git-send-email-joro@8bytes.org>
 References: <1497622200-18188-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1497622200-18188-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497622200-18188-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-Check if we are in an error state already before calling
-into state_next().
+When booting, make sure the IOMMUs are disabled. They could
+be previously enabled if we boot into a kexec or kdump
+kernel. So make sure they are off.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index c40adc8..a31f375 100644
+index d9f5ddd..fb7035f 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2465,14 +2465,14 @@ static int __init state_next(void)
+@@ -2316,6 +2316,9 @@ static int __init early_amd_iommu_init(void)
+ 	if (ret)
+ 		goto out;
  
- static int __init iommu_go_to_state(enum iommu_init_state state)
- {
--	int ret = 0;
-+	int ret = -EINVAL;
++	/* Disable any previously enabled IOMMUs */
++	disable_iommus();
++
+ 	if (amd_iommu_irq_remap)
+ 		amd_iommu_irq_remap = check_ioapic_information();
  
- 	while (init_state != state) {
--		ret = state_next();
- 		if (init_state == IOMMU_NOT_FOUND         ||
- 		    init_state == IOMMU_INIT_ERROR        ||
- 		    init_state == IOMMU_CMDLINE_DISABLED)
- 			break;
-+		ret = state_next();
- 	}
- 
- 	return ret;
 -- 
 2.7.4
