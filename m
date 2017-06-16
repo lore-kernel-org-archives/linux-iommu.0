@@ -1,35 +1,70 @@
-From: Richard Kuo <rkuo@codeaurora.org>
-Subject: Re: [PATCH 31/44] hexagon: remove arch-specific dma_supported
- implementation
-Date: Thu, 15 Jun 2017 19:20:16 -0500
-Message-ID: <20170616002016.GB7343@codeaurora.org>
-References: <20170608132609.32662-1-hch@lst.de>
- <20170608132609.32662-32-hch@lst.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 02/04] iommu/ipmmu-vmsa: Consistent ->of_xlate() handling
+Date: Fri, 16 Jun 2017 09:16:56 +0200
+Message-ID: <CAMuHMdU6WmnMFXvdBgFnc91NH2JVET=D9r8Wip07U7KrCwwoig@mail.gmail.com>
+References: <149752254550.21887.15183665699230243235.sendpatchset@little-apple>
+ <149752256764.21887.17904093211691192196.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170608132609.32662-32-hch@lst.de>
-Sender: linux-hexagon-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: x86@kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <149752256764.21887.17904093211691192196.sendpatchset@little-apple>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Sricharan R <sricharan@codeaurora.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, iommu@lists.linux-foundation.org, Simon Horman <horms+renesas@verge.net.au>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 08, 2017 at 03:25:56PM +0200, Christoph Hellwig wrote:
-> This implementation is simply bogus - hexagon only has a simple
-> direct mapped DMA implementation and thus doesn't care about the
-> address.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Hi Magnus,
+
+On Thu, Jun 15, 2017 at 12:29 PM, Magnus Damm <magnus.damm@gmail.com> wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
+>
+> The 32-bit ARM code gets updated to make use of ->of_xlate() and the
+> code is shared between 64-bit and 32-bit ARM. The of_device_is_available()
+> check gets dropped since it is included in of_iommu_xlate().
+>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 > ---
->  arch/hexagon/include/asm/dma-mapping.h | 2 --
->  arch/hexagon/kernel/dma.c              | 9 ---------
->  2 files changed, 11 deletions(-)
-> 
+>
+>  drivers/iommu/ipmmu-vmsa.c |   51 ++++++++++++++------------------------------
+>  1 file changed, 17 insertions(+), 34 deletions(-)
+>
+> --- 0009/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c     2017-06-15 17:22:27.460607110 +0900
+> @@ -680,6 +680,10 @@ static int ipmmu_init_platform_device(st
+>         int num_utlbs;
+>         int ret = -ENODEV;
+>
+> +       /* Initialize once - xlate() will call multiple times */
+> +       if (to_priv(dev))
+> +               return 0;
 
-Acked-by: Richard Kuo <rkuo@codeaurora.org>
+I think this is more clear if you move this check to ...
 
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, 
-a Linux Foundation Collaborative Project
+> +
+>         /* Find the master corresponding to the device. */
+>
+>         num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
+> @@ -734,6 +738,12 @@ error:
+>         return ret;
+>  }
+>
+> +static int ipmmu_of_xlate(struct device *dev,
+> +                         struct of_phandle_args *spec)
+> +{
+
+... here
+
+> +       return ipmmu_init_platform_device(dev);
+> +}
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
