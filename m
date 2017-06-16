@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/7] iommu/amd: Rename free_on_init_error()
-Date: Fri, 16 Jun 2017 16:09:55 +0200
-Message-ID: <1497622200-18188-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 5/7] iommu/amd: Set global pointers to NULL after freeing them
+Date: Fri, 16 Jun 2017 16:09:58 +0200
+Message-ID: <1497622200-18188-6-git-send-email-joro@8bytes.org>
 References: <1497622200-18188-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,36 +23,47 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The function will also be used to free iommu resources when
-amd_iommu=off was specified on the kernel command line. So
-rename the function to reflect that.
+Avoid any tries to double-free these pointers.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index fb7035f..28bf39c 100644
+index a31f375..d04898c 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2106,7 +2106,7 @@ static struct syscore_ops amd_iommu_syscore_ops = {
- 	.resume = amd_iommu_resume,
- };
- 
--static void __init free_on_init_error(void)
-+static void __init free_iommu_resources(void)
- {
+@@ -2112,18 +2112,22 @@ static void __init free_iommu_resources(void)
  	kmemleak_free(irq_lookup_table);
  	free_pages((unsigned long)irq_lookup_table,
-@@ -2534,7 +2534,7 @@ static int __init amd_iommu_init(void)
- 		free_dma_resources();
- 		if (!irq_remapping_enabled) {
- 			disable_iommus();
--			free_on_init_error();
-+			free_iommu_resources();
- 		} else {
- 			struct amd_iommu *iommu;
+ 		   get_order(rlookup_table_size));
++	irq_lookup_table = NULL;
  
+ 	kmem_cache_destroy(amd_iommu_irq_cache);
+ 	amd_iommu_irq_cache = NULL;
+ 
+ 	free_pages((unsigned long)amd_iommu_rlookup_table,
+ 		   get_order(rlookup_table_size));
++	amd_iommu_rlookup_table = NULL;
+ 
+ 	free_pages((unsigned long)amd_iommu_alias_table,
+ 		   get_order(alias_table_size));
++	amd_iommu_alias_table = NULL;
+ 
+ 	free_pages((unsigned long)amd_iommu_dev_table,
+ 		   get_order(dev_table_size));
++	amd_iommu_dev_table = NULL;
+ 
+ 	free_iommu_all();
+ 
+@@ -2193,6 +2197,7 @@ static void __init free_dma_resources(void)
+ {
+ 	free_pages((unsigned long)amd_iommu_pd_alloc_bitmap,
+ 		   get_order(MAX_DOMAIN_ID/8));
++	amd_iommu_pd_alloc_bitmap = NULL;
+ 
+ 	free_unity_maps();
+ }
 -- 
 2.7.4
