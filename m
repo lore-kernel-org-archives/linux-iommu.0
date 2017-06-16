@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 6/7] iommu/amd: Free IOMMU resources when disabled on command
-	line
-Date: Fri, 16 Jun 2017 16:09:59 +0200
-Message-ID: <1497622200-18188-7-git-send-email-joro@8bytes.org>
+Subject: [PATCH 3/7] iommu/amd: Add new init-state IOMMU_CMDLINE_DISABLED
+Date: Fri, 16 Jun 2017 16:09:56 +0200
+Message-ID: <1497622200-18188-4-git-send-email-joro@8bytes.org>
 References: <1497622200-18188-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,32 +23,45 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-After we made sure that all IOMMUs have been disabled we
-need to make sure that all resources we allocated are
-released again.
+This will be used when during initialization we detect that
+the iommu should be disabled.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index d04898c..eedd3d3 100644
+index 28bf39c..c40adc8 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -2428,6 +2428,13 @@ static int __init state_next(void)
- 	case IOMMU_IVRS_DETECTED:
- 		ret = early_amd_iommu_init();
- 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
-+		if (init_state == IOMMU_ACPI_FINISHED && amd_iommu_disabled) {
-+			pr_info("AMD-Vi: AMD IOMMU disabled on kernel command-line\n");
-+			free_dma_resources();
-+			free_iommu_resources();
-+			init_state = IOMMU_CMDLINE_DISABLED;
-+			ret = -EINVAL;
-+		}
+@@ -237,6 +237,7 @@ enum iommu_init_state {
+ 	IOMMU_INITIALIZED,
+ 	IOMMU_NOT_FOUND,
+ 	IOMMU_INIT_ERROR,
++	IOMMU_CMDLINE_DISABLED,
+ };
+ 
+ /* Early ioapic and hpet maps from kernel command line */
+@@ -2450,6 +2451,7 @@ static int __init state_next(void)
  		break;
- 	case IOMMU_ACPI_FINISHED:
- 		early_enable_iommus();
+ 	case IOMMU_NOT_FOUND:
+ 	case IOMMU_INIT_ERROR:
++	case IOMMU_CMDLINE_DISABLED:
+ 		/* Error states => do nothing */
+ 		ret = -EINVAL;
+ 		break;
+@@ -2467,8 +2469,9 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
+ 
+ 	while (init_state != state) {
+ 		ret = state_next();
+-		if (init_state == IOMMU_NOT_FOUND ||
+-		    init_state == IOMMU_INIT_ERROR)
++		if (init_state == IOMMU_NOT_FOUND         ||
++		    init_state == IOMMU_INIT_ERROR        ||
++		    init_state == IOMMU_CMDLINE_DISABLED)
+ 			break;
+ 	}
+ 
 -- 
 2.7.4
