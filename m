@@ -1,95 +1,47 @@
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH 03/44] dmaengine: ioat: don't use DMA_ERROR_CODE
-Date: Fri, 16 Jun 2017 13:40:24 -0700
-Message-ID: <CAKgT0UdxrimWrxNVsLMQ9G6ABBJZwfWHTcP18qqd4rT0Fa-KWg@mail.gmail.com>
-References: <20170616181059.19206-1-hch@lst.de> <20170616181059.19206-4-hch@lst.de>
+From: Juergen Gross <jgross@suse.com>
+Subject: Re: [PATCH v7 32/36] xen/x86: Remove SME feature in PV guests
+Date: Sat, 17 Jun 2017 12:40:17 +0200
+Message-ID: <8dac5656-3d54-8b14-46ca-50072b507be3@suse.com>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+ <20170616185554.18967.82909.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-In-Reply-To: <20170616181059.19206-4-hch@lst.de>
-Sender: linux-hexagon-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: the arch/x86 maintainers <x86@kernel.org>, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Netdev <netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20170616185554.18967.82909.stgit@tlendack-t1.amdoffice.net>
+Content-Language: de-DE
+Sender: linux-doc-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc: Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Dmitry Vyukov <dvyukov@google.c>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 16, 2017 at 11:10 AM, Christoph Hellwig <hch@lst.de> wrote:
-> DMA_ERROR_CODE is not a public API and will go away.  Instead properly
-> unwind based on the loop counter.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Acked-by: Dave Jiang <dave.jiang@intel.com>
-> Acked-By: Vinod Koul <vinod.koul@intel.com>
+On 16/06/17 20:55, Tom Lendacky wrote:
+> Xen does not currently support SME for PV guests. Clear the SME cpu
+> capability in order to avoid any ambiguity.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+
+Reviewed-by: Juergen Gross <jgross@suse.com>
+
+
+Juergen
+
 > ---
->  drivers/dma/ioat/init.c | 24 +++++++-----------------
->  1 file changed, 7 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/dma/ioat/init.c b/drivers/dma/ioat/init.c
-> index 6ad4384b3fa8..ed8ed1192775 100644
-> --- a/drivers/dma/ioat/init.c
-> +++ b/drivers/dma/ioat/init.c
-> @@ -839,8 +839,6 @@ static int ioat_xor_val_self_test(struct ioatdma_device *ioat_dma)
->                 goto free_resources;
->         }
->
-> -       for (i = 0; i < IOAT_NUM_SRC_TEST; i++)
-> -               dma_srcs[i] = DMA_ERROR_CODE;
->         for (i = 0; i < IOAT_NUM_SRC_TEST; i++) {
->                 dma_srcs[i] = dma_map_page(dev, xor_srcs[i], 0, PAGE_SIZE,
->                                            DMA_TO_DEVICE);
-> @@ -910,8 +908,6 @@ static int ioat_xor_val_self_test(struct ioatdma_device *ioat_dma)
->
->         xor_val_result = 1;
->
-> -       for (i = 0; i < IOAT_NUM_SRC_TEST + 1; i++)
-> -               dma_srcs[i] = DMA_ERROR_CODE;
->         for (i = 0; i < IOAT_NUM_SRC_TEST + 1; i++) {
->                 dma_srcs[i] = dma_map_page(dev, xor_val_srcs[i], 0, PAGE_SIZE,
->                                            DMA_TO_DEVICE);
-> @@ -965,8 +961,6 @@ static int ioat_xor_val_self_test(struct ioatdma_device *ioat_dma)
->         op = IOAT_OP_XOR_VAL;
->
->         xor_val_result = 0;
-> -       for (i = 0; i < IOAT_NUM_SRC_TEST + 1; i++)
-> -               dma_srcs[i] = DMA_ERROR_CODE;
->         for (i = 0; i < IOAT_NUM_SRC_TEST + 1; i++) {
->                 dma_srcs[i] = dma_map_page(dev, xor_val_srcs[i], 0, PAGE_SIZE,
->                                            DMA_TO_DEVICE);
-> @@ -1017,18 +1011,14 @@ static int ioat_xor_val_self_test(struct ioatdma_device *ioat_dma)
->         goto free_resources;
->  dma_unmap:
->         if (op == IOAT_OP_XOR) {
-> -               if (dest_dma != DMA_ERROR_CODE)
-> -                       dma_unmap_page(dev, dest_dma, PAGE_SIZE,
-> -                                      DMA_FROM_DEVICE);
-> -               for (i = 0; i < IOAT_NUM_SRC_TEST; i++)
-> -                       if (dma_srcs[i] != DMA_ERROR_CODE)
-> -                               dma_unmap_page(dev, dma_srcs[i], PAGE_SIZE,
-> -                                              DMA_TO_DEVICE);
-> +               while (--i >= 0)
-> +                       dma_unmap_page(dev, dma_srcs[i], PAGE_SIZE,
-> +                                      DMA_TO_DEVICE);
-> +               dma_unmap_page(dev, dest_dma, PAGE_SIZE, DMA_FROM_DEVICE);
->         } else if (op == IOAT_OP_XOR_VAL) {
-> -               for (i = 0; i < IOAT_NUM_SRC_TEST + 1; i++)
-> -                       if (dma_srcs[i] != DMA_ERROR_CODE)
-> -                               dma_unmap_page(dev, dma_srcs[i], PAGE_SIZE,
-> -                                              DMA_TO_DEVICE);
-> +               while (--i >= 0)
-> +                       dma_unmap_page(dev, dma_srcs[i], PAGE_SIZE,
-> +                                      DMA_TO_DEVICE);
+>  arch/x86/xen/enlighten_pv.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
+> index f33eef4..e6ecf42 100644
+> --- a/arch/x86/xen/enlighten_pv.c
+> +++ b/arch/x86/xen/enlighten_pv.c
+> @@ -294,6 +294,7 @@ static void __init xen_init_capabilities(void)
+>  	setup_clear_cpu_cap(X86_FEATURE_MTRR);
+>  	setup_clear_cpu_cap(X86_FEATURE_ACC);
+>  	setup_clear_cpu_cap(X86_FEATURE_X2APIC);
+> +	setup_clear_cpu_cap(X86_FEATURE_SME);
+>  
+>  	if (!xen_initial_domain())
+>  		setup_clear_cpu_cap(X86_FEATURE_ACPI);
+> 
+> 
 
-Wouldn't it make more sense to pull out the while loop and just call
-dma_unmap_page on dest_dma if "op == IOAT_OP_XOR"? Odds are it is what
-the compiler is already generating and will save a few lines of code
-so what you end up with is something like:
-    while (--i >= 0)
-        dma_unmap_page(dev, dma_srcs[i], PAGE_SIZE, DMA_TO_DEVICE);
-    if (op == IOAT_OP_XOR)
-        dma_unmap_page(dev, dest_dma, PAGE_SIZE, DMA_FROM_DEVICE);
-
->         }
->  free_resources:
->         dma->device_free_chan_resources(dma_chan);
-> --
-> 2.11.0
->
