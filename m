@@ -1,172 +1,81 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
-Date: Mon, 19 Jun 2017 17:23:20 +0100
-Message-ID: <96ccaaf2-0fca-fb15-7f1b-86e69ba995fb@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 01/04] iommu/ipmmu-vmsa: Use
+	iommu_device_register()/unregister()
+Date: Mon, 19 Jun 2017 17:27:26 +0100
+Message-ID: <365cb763-e94e-b7d1-9616-52c24ed02465@arm.com>
 References: <149752254550.21887.15183665699230243235.sendpatchset@little-apple>
+	<149752255681.21887.9984138893493295897.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <149752254550.21887.15183665699230243235.sendpatchset@little-apple>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <149752255681.21887.9984138893493295897.sendpatchset@little-apple>
 Content-Language: en-US
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>, joro@8bytes.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, sricharan@codeaurora.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, m.szyprowski@samsung.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
-
 On 15/06/17 11:29, Magnus Damm wrote:
-> iommu/ipmmu-vmsa: 32-bit ARM update
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 > 
-> [PATCH 01/04] iommu/ipmmu-vmsa: Use iommu_device_register()/unregister()
-> [PATCH 02/04] iommu/ipmmu-vmsa: Consistent ->of_xlate() handling
-> [PATCH 03/04] iommu/ipmmu-vmsa: Use fwspec on both 32 and 64-bit ARM
-> [PATCH 04/04] iommu/ipmmu-vmsa: Replace local utlb code with fwspec ids
+> Extend the driver to make use of iommu_device_register()/unregister()
+> functions together with iommu_device_set_ops() and iommu_set_fwnode().
 > 
-> This series updates the IPMMU driver to make use of recent IOMMU framework
-> changes and also improves code sharing in the driver between the 32-bit and
-> 64-bit dma-mapping architecture glue code.
-
-Nice! I did try rebasing my original patch myself but it quickly got
-very messy. I also had the below beforehand as preliminary cleanup for
-getting rid of the ipmmu_vmsa_iommu_priv structure altogether (i.e. so
-fwspec->priv can just hold the ipmmu_vmsa_device pointer directly) - if
-it does actually work as intended, feel free to take it ;)
-
-Thanks,
-Robin.
-
-> Suggested-by: Robin Murphy <robin.murphy@arm.com> (Patch 2 and 4)
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com> (Patch 3)
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> These used to be part of the earlier posted 64-bit ARM (r8a7795) series but
+> it turns out that these days they are required on 32-bit ARM as well.
+> 
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 > ---
 > 
->  Developed on renesas-drivers-2017-06-13-v4.12-rc5 and rebased to next-20170614
+>  drivers/iommu/ipmmu-vmsa.c |   10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
->  drivers/iommu/ipmmu-vmsa.c |  186 +++++++++++---------------------------------
->  1 file changed, 49 insertions(+), 137 deletions(-)
+> --- 0001/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c	2017-06-15 16:57:21.890607110 +0900
+> @@ -35,6 +35,7 @@
+>  struct ipmmu_vmsa_device {
+>  	struct device *dev;
+>  	void __iomem *base;
+> +	struct iommu_device iommu;
+>  	struct list_head list;
+>  
+>  	unsigned int num_utlbs;
+> @@ -1054,6 +1055,13 @@ static int ipmmu_probe(struct platform_d
+>  
+>  	ipmmu_device_reset(mmu);
+>  
+> +	ret = iommu_device_register(&mmu->iommu);
+> +	if (ret)
+> +		return ret;
+> +
+> +	iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
+> +	iommu_device_set_fwnode(&mmu->iommu, &pdev->dev.of_node->fwnode);
+
+Nit: I guess it works out OK in practice, but it does look rather weird
+to be initialising the iommu_device's members *after* registering it.
+
+Robin.
+
+> +
+>  	/*
+>  	 * We can't create the ARM mapping here as it requires the bus to have
+>  	 * an IOMMU, which only happens when bus_set_iommu() is called in
+> @@ -1077,6 +1085,8 @@ static int ipmmu_remove(struct platform_
+>  	list_del(&mmu->list);
+>  	spin_unlock(&ipmmu_devices_lock);
+>  
+> +	iommu_device_unregister(&mmu->iommu);
+> +
+>  #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+>  	arm_iommu_release_mapping(mmu->mapping);
+>  #endif
 > 
-
----->8-----
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH] iommu/ipmmu-vmsa: Clean up group allocation
-
-With the new IOMMU group support, we go through quite the merry dance
-in order to find masters behind the same IPMMU instance, so that we can
-ensure they are grouped together. None of which is really necessary,
-since the master's private data already points to the particular IPMMU
-it is associated with, and that IPMMU instance data is the perfect place
-to keep track of a per-instance group.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/ipmmu-vmsa.c | 53
-+++++++---------------------------------------
- 1 file changed, 8 insertions(+), 45 deletions(-)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 2a38aa15be17..9d75d7553e20 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -43,6 +43,7 @@ struct ipmmu_vmsa_device {
- 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
-
- 	struct dma_iommu_mapping *mapping;
-+	struct iommu_group *group;
- };
-
- struct ipmmu_vmsa_domain {
-@@ -60,8 +61,6 @@ struct ipmmu_vmsa_iommu_priv {
- 	struct ipmmu_vmsa_device *mmu;
- 	unsigned int *utlbs;
- 	unsigned int num_utlbs;
--	struct device *dev;
--	struct list_head list;
- };
-
- static DEFINE_SPINLOCK(ipmmu_devices_lock);
-@@ -724,7 +723,6 @@ static int ipmmu_init_platform_device(struct device
-*dev)
- 	priv->mmu = mmu;
- 	priv->utlbs = utlbs;
- 	priv->num_utlbs = num_utlbs;
--	priv->dev = dev;
- 	set_priv(dev, priv);
- 	return 0;
-
-@@ -854,9 +852,6 @@ static const struct iommu_ops ipmmu_ops = {
-
- #ifdef CONFIG_IOMMU_DMA
-
--static DEFINE_SPINLOCK(ipmmu_slave_devices_lock);
--static LIST_HEAD(ipmmu_slave_devices);
--
- static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
- {
- 	struct iommu_domain *io_domain = NULL;
-@@ -904,57 +899,25 @@ static int ipmmu_add_device_dma(struct device *dev)
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
-
--	spin_lock(&ipmmu_slave_devices_lock);
--	list_add(&to_priv(dev)->list, &ipmmu_slave_devices);
--	spin_unlock(&ipmmu_slave_devices_lock);
- 	return 0;
- }
-
- static void ipmmu_remove_device_dma(struct device *dev)
- {
--	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
--
--	spin_lock(&ipmmu_slave_devices_lock);
--	list_del(&priv->list);
--	spin_unlock(&ipmmu_slave_devices_lock);
--
- 	iommu_group_remove_device(dev);
- }
-
--static struct device *ipmmu_find_sibling_device(struct device *dev)
--{
--	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
--	struct ipmmu_vmsa_iommu_priv *sibling_priv = NULL;
--	bool found = false;
--
--	spin_lock(&ipmmu_slave_devices_lock);
--
--	list_for_each_entry(sibling_priv, &ipmmu_slave_devices, list) {
--		if (priv == sibling_priv)
--			continue;
--		if (sibling_priv->mmu == priv->mmu) {
--			found = true;
--			break;
--		}
--	}
--
--	spin_unlock(&ipmmu_slave_devices_lock);
--
--	return found ? sibling_priv->dev : NULL;
--}
--
- static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
- {
--	struct iommu_group *group;
--	struct device *sibling;
-+	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
-+	struct ipmmu_vmsa_device *mmu = priv->mmu;
-
--	sibling = ipmmu_find_sibling_device(dev);
--	if (sibling)
--		group = iommu_group_get(sibling);
--	if (!sibling || IS_ERR(group))
--		group = generic_device_group(dev);
-+	if (mmu->group)
-+		return iommu_group_ref_get(mmu->group);
-
--	return group;
-+	mmu->group = generic_device_group(dev);
-+
-+	return mmu->group;
- }
-
- static int ipmmu_of_xlate_dma(struct device *dev,
