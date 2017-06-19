@@ -1,85 +1,75 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3] iommu/arm-smmu: Plumb in new ACPI identifiers
-Date: Mon, 19 Jun 2017 16:41:56 +0100
-Message-ID: <063a50cff2942c96dc6f24d4f8c8a854a4a6cc30.1497886335.git.robin.murphy@arm.com>
+From: shameer <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v2 0/2] iommu/smmu-v3: Workaround for hisilicon 161010801 erratum(reserve HW MSI)
+Date: Mon, 19 Jun 2017 16:44:58 +0100
+Message-ID: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Revision C of IORT now allows us to identify ARM MMU-401 and the Cavium
-ThunderX implementation. Wire them up so that we can probe these models
-once firmware starts using the new codes in place of generic ones, and
-so that the appropriate features and quirks get enabled when we do.
+On certain HiSilicon platforms (Hip06/Hip07) the GIC ITS and
+PCIe RC deviates from the standard implementation and this breaks
+PCIe MSI functionality when SMMU is enabled.
 
-For the sake of backports and mitigating sychronisation problems with
-the ACPICA headers, we'll carry a backup copy of the new definitions
-locally for the short term to make life simpler.
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-CC: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # 4.10
-Acked-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Tested-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+This patch implements a ACPI table based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
 
-v3: The patch that actually landed in ACPICA was slightly tweaked for
-    self-consistency, so s/CAVIUM_SMMUV2/CAVIUM_THUNDERX/ to match.
+To implement this quirk, the following changes are incorporated:
 
- drivers/iommu/arm-smmu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+1. Added a generic helper function to IORT code to retrieve and
+   reserve the HW ITS address regions.
+2. Added quirk to SMMUv3 to reserve HW ITS address regions based
+   on IORT SMMUv3 model.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7ec30b08b3bd..7ecd1a0b8419 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -312,6 +312,14 @@ enum arm_smmu_implementation {
- 	CAVIUM_SMMUV2,
- };
- 
-+/* Until ACPICA headers cover IORT rev. C */
-+#ifndef ACPI_IORT_SMMU_CORELINK_MMU401
-+#define ACPI_IORT_SMMU_CORELINK_MMU401	0x4
-+#endif
-+#ifndef ACPI_IORT_SMMU_CAVIUM_THUNDERX
-+#define ACPI_IORT_SMMU_CAVIUM_THUNDERX	0x5
-+#endif
-+
- struct arm_smmu_s2cr {
- 	struct iommu_group		*group;
- 	int				count;
-@@ -2073,6 +2081,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
- 		smmu->version = ARM_SMMU_V1;
- 		smmu->model = GENERIC_SMMU;
- 		break;
-+	case ACPI_IORT_SMMU_CORELINK_MMU401:
-+		smmu->version = ARM_SMMU_V1_64K;
-+		smmu->model = GENERIC_SMMU;
-+		break;
- 	case ACPI_IORT_SMMU_V2:
- 		smmu->version = ARM_SMMU_V2;
- 		smmu->model = GENERIC_SMMU;
-@@ -2081,6 +2093,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
- 		smmu->version = ARM_SMMU_V2;
- 		smmu->model = ARM_MMU500;
- 		break;
-+	case ACPI_IORT_SMMU_CAVIUM_THUNDERX:
-+		smmu->version = ARM_SMMU_V2;
-+		smmu->model = CAVIUM_SMMUV2;
-+		break;
- 	default:
- 		ret = -ENODEV;
- 	}
+This is based on the following patches:
+1. https://patchwork.kernel.org/patch/9740733/
+2. https://patchwork.kernel.org/patch/9730491/
+
+Thanks,
+Shameer
+
+Changelog:
+
+v1 --> v2
+
+-patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+
+RFCv2 -->PATCH
+
+-Incorporated Lorenzo's review comments.
+
+RFC v1 --> RFC v2
+
+Based on Robin's review comments,
+-Removed  the generic erratum framework.
+-Using IORT/MADT tables to retrieve the ITS base addr instead
+ of vendor specific CSRT table.
+
+shameer (2):
+  acpi:iort: Add an IORT helper function to reserve HW ITS address
+    regions for IOMMU drivers
+  iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+
+ drivers/acpi/arm64/iort.c        | 91 ++++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/arm-smmu-v3.c      | 29 ++++++++++---
+ drivers/irqchip/irq-gic-v3-its.c |  3 +-
+ include/linux/acpi_iort.h        |  7 +++-
+ 4 files changed, 120 insertions(+), 10 deletions(-)
+
 -- 
-2.12.2.dirty
+1.9.1
+
+
