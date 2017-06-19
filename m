@@ -1,52 +1,57 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH v4 0/3] iommu/ipmmu-vmsa: r8a7796 support V4
-Date: Mon, 19 Jun 2017 20:04:16 +0900
-Message-ID: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+Date: Mon, 19 Jun 2017 20:04:27 +0900
+Message-ID: <149787026702.32495.3796530652829112860.sendpatchset@little-apple>
+References: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/ipmmu-vmsa: r8a7796 support V4
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-[PATCH v4 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
-[PATCH v4 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-[PATCH v4 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+Update the IPMMU DT binding documentation to include the r8a7796 compat
+string for R-Car M3-W.
 
-This series adds r8a7796 support to the IPMMU driver. The DT binding
-gets updated, maximum number of micro-TLBs are increased and the
-driver is adjusted to match on the new DT binding.
-
-Changes since V3:
- - Rebased on top of [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
- - Patch 3/3 updated with Reviewed-by - thanks Geert!
-
-Changes since V2:
- - Patch 2/3 updated with an outer set of () - thanks Ramesh!
- - Patch 2/3 updated with Reviewed-by - thanks Geert!
- - Patch 3/3 updated to include white list support
-
-Changes since V1:
- - Patch 1/3 updated with more Acked-by tags
- - Patch 2/3 updated with high I/O register range support
-
-Patch 1/3 is ready for upstream merge and includes the following tags:
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Patch 2/3 and 3/3 are quite trivial but have no acked-by so far.
-
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Acked-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
 
- Developed on top of next-20170614 with the following series applied
- [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
- [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
+ Changes since V3:
+ - None
 
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 
- drivers/iommu/ipmmu-vmsa.c                                     |   24 +++++++---
- 2 files changed, 18 insertions(+), 7 deletions(-)
+ Changes since V2:
+ - None
+
+ Changes since V1:
+ - Included in series, added Acked-by from Geert - thanks!
+
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2017-06-19 19:51:13.990607110 +0900
+@@ -16,6 +16,7 @@ Required Properties:
+     - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+     - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
++    - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+ 
+   - reg: Base address and size of the IPMMU registers.
