@@ -1,15 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 06/44] iommu/dma: don't rely on DMA_ERROR_CODE
-Date: Mon, 19 Jun 2017 16:12:32 +0100
-Message-ID: <18ff1d49-4a13-3dea-8a4d-fb778aec37dc@arm.com>
-References: <20170616181059.19206-1-hch@lst.de>
-	<20170616181059.19206-7-hch@lst.de>
+Subject: [PATCH v3] iommu/arm-smmu: Plumb in new ACPI identifiers
+Date: Mon, 19 Jun 2017 16:41:56 +0100
+Message-ID: <063a50cff2942c96dc6f24d4f8c8a854a4a6cc30.1497886335.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170616181059.19206-7-hch-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,107 +15,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 16/06/17 19:10, Christoph Hellwig wrote:
-> DMA_ERROR_CODE is not a public API and will go away soon.  dma dma-iommu
-> driver already implements a proper ->mapping_error method, so it's only
-> using the value internally.  Add a new local define using the value
-> that arm64 which is the only current user of dma-iommu.
+Revision C of IORT now allows us to identify ARM MMU-401 and the Cavium
+ThunderX implementation. Wire them up so that we can probe these models
+once firmware starts using the new codes in place of generic ones, and
+so that the appropriate features and quirks get enabled when we do.
 
-I was angling at just open-coding 0/!dma_addr/etc. for simplicity rather
-than having anything #defined at all - nothing except the 4th and final
-hunks actually have any relevance to  dma_mapping_error(), and I reckon
-it's plenty clear enough in context. The rest is just proactively
-blatting address arguments with "arbitrary definitely-invalid value",
-which is more paranoia than anything else (and arguably unnecessary).
+For the sake of backports and mitigating sychronisation problems with
+the ACPICA headers, we'll carry a backup copy of the new definitions
+locally for the short term to make life simpler.
 
-It's not the biggest deal, though, so either way:
+CC: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # 4.10
+Acked-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Tested-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+v3: The patch that actually landed in ACPICA was slightly tweaked for
+    self-consistency, so s/CAVIUM_SMMUV2/CAVIUM_THUNDERX/ to match.
 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  drivers/iommu/dma-iommu.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 62618e77bedc..9403336f1fa6 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -31,6 +31,8 @@
->  #include <linux/scatterlist.h>
->  #include <linux/vmalloc.h>
->  
-> +#define IOMMU_MAPPING_ERROR	0
-> +
->  struct iommu_dma_msi_page {
->  	struct list_head	list;
->  	dma_addr_t		iova;
-> @@ -500,7 +502,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
->  {
->  	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), *handle, size);
->  	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
-> -	*handle = DMA_ERROR_CODE;
-> +	*handle = IOMMU_MAPPING_ERROR;
->  }
->  
->  /**
-> @@ -533,7 +535,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->  	dma_addr_t iova;
->  	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
->  
-> -	*handle = DMA_ERROR_CODE;
-> +	*handle = IOMMU_MAPPING_ERROR;
->  
->  	min_size = alloc_sizes & -alloc_sizes;
->  	if (min_size < PAGE_SIZE) {
-> @@ -627,11 +629,11 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->  
->  	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
->  	if (!iova)
-> -		return DMA_ERROR_CODE;
-> +		return IOMMU_MAPPING_ERROR;
->  
->  	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
->  		iommu_dma_free_iova(cookie, iova, size);
-> -		return DMA_ERROR_CODE;
-> +		return IOMMU_MAPPING_ERROR;
->  	}
->  	return iova + iova_off;
->  }
-> @@ -671,7 +673,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
->  
->  		s->offset += s_iova_off;
->  		s->length = s_length;
-> -		sg_dma_address(s) = DMA_ERROR_CODE;
-> +		sg_dma_address(s) = IOMMU_MAPPING_ERROR;
->  		sg_dma_len(s) = 0;
->  
->  		/*
-> @@ -714,11 +716,11 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
->  	int i;
->  
->  	for_each_sg(sg, s, nents, i) {
-> -		if (sg_dma_address(s) != DMA_ERROR_CODE)
-> +		if (sg_dma_address(s) != IOMMU_MAPPING_ERROR)
->  			s->offset += sg_dma_address(s);
->  		if (sg_dma_len(s))
->  			s->length = sg_dma_len(s);
-> -		sg_dma_address(s) = DMA_ERROR_CODE;
-> +		sg_dma_address(s) = IOMMU_MAPPING_ERROR;
->  		sg_dma_len(s) = 0;
->  	}
->  }
-> @@ -836,7 +838,7 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
->  
->  int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
->  {
-> -	return dma_addr == DMA_ERROR_CODE;
-> +	return dma_addr == IOMMU_MAPPING_ERROR;
->  }
->  
->  static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
-> 
+ drivers/iommu/arm-smmu.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 7ec30b08b3bd..7ecd1a0b8419 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -312,6 +312,14 @@ enum arm_smmu_implementation {
+ 	CAVIUM_SMMUV2,
+ };
+ 
++/* Until ACPICA headers cover IORT rev. C */
++#ifndef ACPI_IORT_SMMU_CORELINK_MMU401
++#define ACPI_IORT_SMMU_CORELINK_MMU401	0x4
++#endif
++#ifndef ACPI_IORT_SMMU_CAVIUM_THUNDERX
++#define ACPI_IORT_SMMU_CAVIUM_THUNDERX	0x5
++#endif
++
+ struct arm_smmu_s2cr {
+ 	struct iommu_group		*group;
+ 	int				count;
+@@ -2073,6 +2081,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
+ 		smmu->version = ARM_SMMU_V1;
+ 		smmu->model = GENERIC_SMMU;
+ 		break;
++	case ACPI_IORT_SMMU_CORELINK_MMU401:
++		smmu->version = ARM_SMMU_V1_64K;
++		smmu->model = GENERIC_SMMU;
++		break;
+ 	case ACPI_IORT_SMMU_V2:
+ 		smmu->version = ARM_SMMU_V2;
+ 		smmu->model = GENERIC_SMMU;
+@@ -2081,6 +2093,10 @@ static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
+ 		smmu->version = ARM_SMMU_V2;
+ 		smmu->model = ARM_MMU500;
+ 		break;
++	case ACPI_IORT_SMMU_CAVIUM_THUNDERX:
++		smmu->version = ARM_SMMU_V2;
++		smmu->model = CAVIUM_SMMUV2;
++		break;
+ 	default:
+ 		ret = -ENODEV;
+ 	}
+-- 
+2.12.2.dirty
