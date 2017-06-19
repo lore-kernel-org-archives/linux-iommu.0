@@ -1,94 +1,172 @@
-From: shameer <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
-Date: Mon, 19 Jun 2017 16:45:00 +0100
-Message-ID: <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
-References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
+Date: Mon, 19 Jun 2017 17:23:20 +0100
+Message-ID: <96ccaaf2-0fca-fb15-7f1b-86e69ba995fb@arm.com>
+References: <149752254550.21887.15183665699230243235.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <149752254550.21887.15183665699230243235.sendpatchset@little-apple>
+Content-Language: en-US
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>, joro@8bytes.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, sricharan@codeaurora.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+Hi Magnus,
 
-On these platforms GICv3 ITS translator is presented with the deviceID
-by extending the MSI payload data to 64 bits to include the deviceID.
-Hence, the PCIe controller on this platforms has to differentiate the
-MSI payload against other DMA payload and has to modify the MSI payload.
-This basically makes it difficult for this platforms to have a SMMU
-translation for MSI.
+On 15/06/17 11:29, Magnus Damm wrote:
+> iommu/ipmmu-vmsa: 32-bit ARM update
+> 
+> [PATCH 01/04] iommu/ipmmu-vmsa: Use iommu_device_register()/unregister()
+> [PATCH 02/04] iommu/ipmmu-vmsa: Consistent ->of_xlate() handling
+> [PATCH 03/04] iommu/ipmmu-vmsa: Use fwspec on both 32 and 64-bit ARM
+> [PATCH 04/04] iommu/ipmmu-vmsa: Replace local utlb code with fwspec ids
+> 
+> This series updates the IPMMU driver to make use of recent IOMMU framework
+> changes and also improves code sharing in the driver between the 32-bit and
+> 64-bit dma-mapping architecture glue code.
 
-This patch implements a ACPI table based quirk to reserve the hw msi
-regions in the smmu-v3 driver which means these address regions will
-not be translated and will be excluded from iova allocations.
+Nice! I did try rebasing my original patch myself but it quickly got
+very messy. I also had the below beforehand as preliminary cleanup for
+getting rid of the ipmmu_vmsa_iommu_priv structure altogether (i.e. so
+fwspec->priv can just hold the ipmmu_vmsa_device pointer directly) - if
+it does actually work as intended, feel free to take it ;)
 
-Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+Thanks,
+Robin.
+
+> Suggested-by: Robin Murphy <robin.murphy@arm.com> (Patch 2 and 4)
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com> (Patch 3)
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> ---
+> 
+>  Developed on renesas-drivers-2017-06-13-v4.12-rc5 and rebased to next-20170614
+> 
+>  drivers/iommu/ipmmu-vmsa.c |  186 +++++++++++---------------------------------
+>  1 file changed, 49 insertions(+), 137 deletions(-)
+> 
+
+---->8-----
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] iommu/ipmmu-vmsa: Clean up group allocation
+
+With the new IOMMU group support, we go through quite the merry dance
+in order to find masters behind the same IPMMU instance, so that we can
+ensure they are grouped together. None of which is really necessary,
+since the master's private data already points to the particular IPMMU
+it is associated with, and that IPMMU instance data is the perfect place
+to keep track of a per-instance group.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
- 1 file changed, 24 insertions(+), 5 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 53
++++++++---------------------------------------
+ 1 file changed, 8 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index abe4b88..f03c63b 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -597,6 +597,7 @@ struct arm_smmu_device {
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-+#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
- 	u32				options;
- 
- 	struct arm_smmu_cmdq		cmdq;
-@@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 				      struct list_head *head)
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 2a38aa15be17..9d75d7553e20 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -43,6 +43,7 @@ struct ipmmu_vmsa_device {
+ 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
+
+ 	struct dma_iommu_mapping *mapping;
++	struct iommu_group *group;
+ };
+
+ struct ipmmu_vmsa_domain {
+@@ -60,8 +61,6 @@ struct ipmmu_vmsa_iommu_priv {
+ 	struct ipmmu_vmsa_device *mmu;
+ 	unsigned int *utlbs;
+ 	unsigned int num_utlbs;
+-	struct device *dev;
+-	struct list_head list;
+ };
+
+ static DEFINE_SPINLOCK(ipmmu_devices_lock);
+@@ -724,7 +723,6 @@ static int ipmmu_init_platform_device(struct device
+*dev)
+ 	priv->mmu = mmu;
+ 	priv->utlbs = utlbs;
+ 	priv->num_utlbs = num_utlbs;
+-	priv->dev = dev;
+ 	set_priv(dev, priv);
+ 	return 0;
+
+@@ -854,9 +852,6 @@ static const struct iommu_ops ipmmu_ops = {
+
+ #ifdef CONFIG_IOMMU_DMA
+
+-static DEFINE_SPINLOCK(ipmmu_slave_devices_lock);
+-static LIST_HEAD(ipmmu_slave_devices);
+-
+ static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
  {
- 	struct iommu_resv_region *region;
-+	struct arm_smmu_device *smmu;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
- 
--	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_SW_MSI);
--	if (!region)
--		return;
-+	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-+
-+	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI) &&
-+		      dev_is_pci(dev)) {
-+		int ret = -EINVAL;
-+
-+		if (!is_of_node(smmu->dev->fwnode))
-+			ret = iort_iommu_its_get_resv_regions(dev, head);
- 
--	list_add_tail(&region->list, head);
-+		if (ret) {
-+			dev_warn(dev, "HW MSI region resv failed: %d\n", ret);
-+			return;
-+		}
-+	} else {
-+		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+						 prot, IOMMU_RESV_SW_MSI);
-+		if (!region)
-+			return;
-+
-+		list_add_tail(&region->list, head);
-+	}
- 
- 	iommu_dma_get_resv_regions(dev, head);
+ 	struct iommu_domain *io_domain = NULL;
+@@ -904,57 +899,25 @@ static int ipmmu_add_device_dma(struct device *dev)
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+
+-	spin_lock(&ipmmu_slave_devices_lock);
+-	list_add(&to_priv(dev)->list, &ipmmu_slave_devices);
+-	spin_unlock(&ipmmu_slave_devices_lock);
+ 	return 0;
  }
-@@ -2611,6 +2629,7 @@ static void parse_driver_acpi_options(struct acpi_iort_smmu_v3 *iort_smmu,
- 	switch (iort_smmu->model) {
- 	case ACPI_IORT_SMMU_HISILICON_HI161X:
- 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-+		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
- 		break;
- 	default:
- 		break;
--- 
-1.9.1
 
+ static void ipmmu_remove_device_dma(struct device *dev)
+ {
+-	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
+-
+-	spin_lock(&ipmmu_slave_devices_lock);
+-	list_del(&priv->list);
+-	spin_unlock(&ipmmu_slave_devices_lock);
+-
+ 	iommu_group_remove_device(dev);
+ }
 
+-static struct device *ipmmu_find_sibling_device(struct device *dev)
+-{
+-	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
+-	struct ipmmu_vmsa_iommu_priv *sibling_priv = NULL;
+-	bool found = false;
+-
+-	spin_lock(&ipmmu_slave_devices_lock);
+-
+-	list_for_each_entry(sibling_priv, &ipmmu_slave_devices, list) {
+-		if (priv == sibling_priv)
+-			continue;
+-		if (sibling_priv->mmu == priv->mmu) {
+-			found = true;
+-			break;
+-		}
+-	}
+-
+-	spin_unlock(&ipmmu_slave_devices_lock);
+-
+-	return found ? sibling_priv->dev : NULL;
+-}
+-
+ static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
+ {
+-	struct iommu_group *group;
+-	struct device *sibling;
++	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
++	struct ipmmu_vmsa_device *mmu = priv->mmu;
+
+-	sibling = ipmmu_find_sibling_device(dev);
+-	if (sibling)
+-		group = iommu_group_get(sibling);
+-	if (!sibling || IS_ERR(group))
+-		group = generic_device_group(dev);
++	if (mmu->group)
++		return iommu_group_ref_get(mmu->group);
+
+-	return group;
++	mmu->group = generic_device_group(dev);
++
++	return mmu->group;
+ }
+
+ static int ipmmu_of_xlate_dma(struct device *dev,
