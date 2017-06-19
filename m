@@ -1,14 +1,15 @@
-From: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/s390: Add support for iommu_device handling
-Date: Mon, 19 Jun 2017 17:02:19 +0200
-Message-ID: <20170619170219.0a8626b6@thinkpad>
-References: <1497532312-30470-1-git-send-email-joro@8bytes.org>
-	<1497532312-30470-3-git-send-email-joro@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 06/44] iommu/dma: don't rely on DMA_ERROR_CODE
+Date: Mon, 19 Jun 2017 16:12:32 +0100
+Message-ID: <18ff1d49-4a13-3dea-8a4d-fb778aec37dc@arm.com>
+References: <20170616181059.19206-1-hch@lst.de>
+	<20170616181059.19206-7-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1497532312-30470-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170616181059.19206-7-hch-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,164 +19,107 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 15 Jun 2017 15:11:52 +0200
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+On 16/06/17 19:10, Christoph Hellwig wrote:
+> DMA_ERROR_CODE is not a public API and will go away soon.  dma dma-iommu
+> driver already implements a proper ->mapping_error method, so it's only
+> using the value internally.  Add a new local define using the value
+> that arm64 which is the only current user of dma-iommu.
 
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> Add support for the iommu_device_register interface to make
-> the s390 hardware iommus visible to the iommu core and in
-> sysfs.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+I was angling at just open-coding 0/!dma_addr/etc. for simplicity rather
+than having anything #defined at all - nothing except the 4th and final
+hunks actually have any relevance to  dma_mapping_error(), and I reckon
+it's plenty clear enough in context. The rest is just proactively
+blatting address arguments with "arbitrary definitely-invalid value",
+which is more paranoia than anything else (and arguably unnecessary).
+
+It's not the biggest deal, though, so either way:
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 > ---
->  arch/s390/include/asm/pci.h |  7 +++++++
->  arch/s390/pci/pci.c         |  5 +++++
->  drivers/iommu/s390-iommu.c  | 35 +++++++++++++++++++++++++++++++++++
->  3 files changed, 47 insertions(+)
+>  drivers/iommu/dma-iommu.c | 18 ++++++++++--------
+>  1 file changed, 10 insertions(+), 8 deletions(-)
 > 
-> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-> index 4e31866..a3f697e 100644
-> --- a/arch/s390/include/asm/pci.h
-> +++ b/arch/s390/include/asm/pci.h
-> @@ -8,6 +8,7 @@
-> 
->  #include <linux/pci.h>
->  #include <linux/mutex.h>
-> +#include <linux/iommu.h>
->  #include <asm-generic/pci.h>
->  #include <asm/pci_clp.h>
->  #include <asm/pci_debug.h>
-> @@ -123,6 +124,8 @@ struct zpci_dev {
->  	unsigned long	iommu_pages;
->  	unsigned int	next_bit;
-> 
-> +	struct iommu_device iommu_dev;  /* IOMMU core handle */
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 62618e77bedc..9403336f1fa6 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -31,6 +31,8 @@
+>  #include <linux/scatterlist.h>
+>  #include <linux/vmalloc.h>
+>  
+> +#define IOMMU_MAPPING_ERROR	0
 > +
->  	char res_name[16];
->  	struct zpci_bar_struct bars[PCI_BAR_COUNT];
-> 
-> @@ -173,6 +176,10 @@ int clp_add_pci_device(u32, u32, int);
->  int clp_enable_fh(struct zpci_dev *, u8);
->  int clp_disable_fh(struct zpci_dev *);
-> 
-> +/* IOMMU Interface */
-> +int zpci_init_iommu(struct zpci_dev *zdev);
-> +void zpci_destroy_iommu(struct zpci_dev *zdev);
-> +
->  #ifdef CONFIG_PCI
->  /* Error handling and recovery */
->  void zpci_event_error(void *);
-> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-> index 8051df1..4c13da6 100644
-> --- a/arch/s390/pci/pci.c
-> +++ b/arch/s390/pci/pci.c
-> @@ -749,6 +749,7 @@ void pcibios_remove_bus(struct pci_bus *bus)
-> 
->  	zpci_exit_slot(zdev);
->  	zpci_cleanup_bus_resources(zdev);
-> +	zpci_destroy_iommu(zdev);
->  	zpci_free_domain(zdev);
-> 
->  	spin_lock(&zpci_list_lock);
-> @@ -820,6 +821,10 @@ int zpci_create_device(struct zpci_dev *zdev)
->  	if (rc)
->  		goto out;
-> 
-> +	rc = zpci_init_iommu(zdev);
-> +	if (rc)
-> +		goto out_free;
-> +
-
-After this point, there are two options for failure (zpci_enable_device +
-zpci_scan_bus), but missing error handling with an appropriate call to
-zpci_destroy_iommu().
-
-I must admit that I do not understand what these sysfs attributes are
-used for, and by whom and when. Is it really necessary/correct to register
-them (including the s390_iommu_ops) _before_ the zpci_dev is registered
-to the bus (zpci_scan_bus -> pci_scan_root_bus/pci_bus_add_devices)?
-
-What is the expected life cycle for the attributes, and are they already
-needed when a device is still under DMA API access, or even before it is
-added to the PCI bus?
-
->  	mutex_init(&zdev->lock);
->  	if (zdev->state == ZPCI_FN_STATE_CONFIGURED) {
->  		rc = zpci_enable_device(zdev);
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 8788640..85f3bc5 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -18,6 +18,8 @@
->   */
->  #define S390_IOMMU_PGSIZES	(~0xFFFUL)
-> 
-> +static struct iommu_ops s390_iommu_ops;
-> +
->  struct s390_domain {
->  	struct iommu_domain	domain;
->  	struct list_head	devices;
-> @@ -166,11 +168,13 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
->  static int s390_iommu_add_device(struct device *dev)
+>  struct iommu_dma_msi_page {
+>  	struct list_head	list;
+>  	dma_addr_t		iova;
+> @@ -500,7 +502,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
 >  {
->  	struct iommu_group *group = iommu_group_get_for_dev(dev);
-> +	struct zpci_dev *zdev = to_pci_dev(dev)->sysdata;
-> 
->  	if (IS_ERR(group))
->  		return PTR_ERR(group);
-> 
->  	iommu_group_put(group);
-> +	iommu_device_link(&zdev->iommu_dev, dev);
-> 
->  	return 0;
+>  	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), *handle, size);
+>  	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
+> -	*handle = DMA_ERROR_CODE;
+> +	*handle = IOMMU_MAPPING_ERROR;
 >  }
-> @@ -197,6 +201,7 @@ static void s390_iommu_remove_device(struct device *dev)
->  			s390_iommu_detach_device(domain, dev);
+>  
+>  /**
+> @@ -533,7 +535,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+>  	dma_addr_t iova;
+>  	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
+>  
+> -	*handle = DMA_ERROR_CODE;
+> +	*handle = IOMMU_MAPPING_ERROR;
+>  
+>  	min_size = alloc_sizes & -alloc_sizes;
+>  	if (min_size < PAGE_SIZE) {
+> @@ -627,11 +629,11 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>  
+>  	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+>  	if (!iova)
+> -		return DMA_ERROR_CODE;
+> +		return IOMMU_MAPPING_ERROR;
+>  
+>  	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
+>  		iommu_dma_free_iova(cookie, iova, size);
+> -		return DMA_ERROR_CODE;
+> +		return IOMMU_MAPPING_ERROR;
 >  	}
-> 
-> +	iommu_device_unlink(&zdev->iommu_dev, dev);
->  	iommu_group_remove_device(dev);
+>  	return iova + iova_off;
 >  }
-> 
-> @@ -327,6 +332,36 @@ static size_t s390_iommu_unmap(struct iommu_domain *domain,
->  	return size;
+> @@ -671,7 +673,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+>  
+>  		s->offset += s_iova_off;
+>  		s->length = s_length;
+> -		sg_dma_address(s) = DMA_ERROR_CODE;
+> +		sg_dma_address(s) = IOMMU_MAPPING_ERROR;
+>  		sg_dma_len(s) = 0;
+>  
+>  		/*
+> @@ -714,11 +716,11 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
+>  	int i;
+>  
+>  	for_each_sg(sg, s, nents, i) {
+> -		if (sg_dma_address(s) != DMA_ERROR_CODE)
+> +		if (sg_dma_address(s) != IOMMU_MAPPING_ERROR)
+>  			s->offset += sg_dma_address(s);
+>  		if (sg_dma_len(s))
+>  			s->length = sg_dma_len(s);
+> -		sg_dma_address(s) = DMA_ERROR_CODE;
+> +		sg_dma_address(s) = IOMMU_MAPPING_ERROR;
+>  		sg_dma_len(s) = 0;
+>  	}
 >  }
+> @@ -836,7 +838,7 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+>  
+>  int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+>  {
+> -	return dma_addr == DMA_ERROR_CODE;
+> +	return dma_addr == IOMMU_MAPPING_ERROR;
+>  }
+>  
+>  static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
 > 
-> +int zpci_init_iommu(struct zpci_dev *zdev)
-> +{
-> +	int rc = 0;
-> +
-> +	rc = iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
-> +				    "s390-iommu.%08x", zdev->fid);
-> +	if (rc)
-> +		goto out_err;
-> +
-> +	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
-> +
-> +	rc = iommu_device_register(&zdev->iommu_dev);
-> +	if (rc)
-> +		goto out_sysfs;
-> +
-> +	return 0;
-> +
-> +out_sysfs:
-> +	iommu_device_sysfs_remove(&zdev->iommu_dev);
-> +
-> +out_err:
-> +	return rc;
-> +}
-> +
-> +void zpci_destroy_iommu(struct zpci_dev *zdev)
-> +{
-> +	iommu_device_unregister(&zdev->iommu_dev);
-> +	iommu_device_sysfs_remove(&zdev->iommu_dev);
-> +}
-> +
->  static struct iommu_ops s390_iommu_ops = {
->  	.capable = s390_iommu_capable,
->  	.domain_alloc = s390_domain_alloc,
