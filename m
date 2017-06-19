@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-Date: Mon, 19 Jun 2017 20:04:37 +0900
-Message-ID: <149787027730.32495.785135660592328553.sendpatchset@little-apple>
+Subject: [PATCH v4 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+Date: Mon, 19 Jun 2017 20:04:47 +0900
+Message-ID: <149787028779.32495.1462495100153656335.sendpatchset@little-apple>
 References: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,70 +23,75 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Bump up the maximum numbers of micro-TLBS to 48.
-
-Each IPMMU device instance get micro-TLB assignment via
-the "iommus" property in DT. Older SoCs tend to use a
-maximum number of 32 micro-TLBs per IPMMU instance however
-newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
-
-At this point no SoC specific handling is done to validate
-the maximum number of micro-TLBs, and because of that the
-DT information is assumed to be within correct range for
-each particular SoC.
-
-If needed in the future SoC specific feature flags can be
-added to handle the maximum number of micro-TLBs without
-requiring DT changes, however at this point this does not
-seem necessary.
+Support the r8a7796 IPMMU by sharing feature flags between
+r8a7795 and r8a7796. Also update IOMMU_OF_DECLARE to hook
+up the updated compat string.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
 
  Changes since V3:
- - None
-
- Changes since V2:
- - Added outer set of () to IMUASID() and IMUCTR() - thanks Ramesh!
  - Added Reviewed-by from Geert - thanks!
 
+ Changes since V2:
+ - Updated to include white list suppport
+
  Changes since V1:
- - Added support for the second I/O range at 0x600.
+ - None
 
- drivers/iommu/ipmmu-vmsa.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- 0015/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-06-19 19:47:28.950607110 +0900
-@@ -199,7 +199,9 @@ static struct ipmmu_vmsa_iommu_priv *to_
- #define IMPMBA(n)			(0x0280 + ((n) * 4))
- #define IMPMBD(n)			(0x02c0 + ((n) * 4))
+--- 0016/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-06-19 19:48:27.430607110 +0900
+@@ -755,8 +755,9 @@ static bool ipmmu_slave_whitelist(struct
+ 	return false;
+ }
  
--#define IMUCTR(n)			(0x0300 + ((n) * 16))
-+#define IMUCTR(n)			((n) < 32 ? IMUCTR0(n) : IMUCTR32(n))
-+#define IMUCTR0(n)			(0x0300 + ((n) * 16))
-+#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))
- #define IMUCTR_FIXADDEN			(1 << 31)
- #define IMUCTR_FIXADD_MASK		(0xff << 16)
- #define IMUCTR_FIXADD_SHIFT		16
-@@ -209,7 +211,9 @@ static struct ipmmu_vmsa_iommu_priv *to_
- #define IMUCTR_FLUSH			(1 << 1)
- #define IMUCTR_MMUEN			(1 << 0)
+-static const struct soc_device_attribute soc_r8a7795[] = {
++static const struct soc_device_attribute soc_rcar_gen3[] = {
+ 	{ .soc_id = "r8a7795", },
++	{ .soc_id = "r8a7796", },
+ 	{ /* sentinel */ }
+ };
  
--#define IMUASID(n)			(0x0308 + ((n) * 16))
-+#define IMUASID(n)			((n) < 32 ? IMUASID0(n) : IMUASID32(n))
-+#define IMUASID0(n)			(0x0308 + ((n) * 16))
-+#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))
- #define IMUASID_ASID8_MASK		(0xff << 8)
- #define IMUASID_ASID8_SHIFT		8
- #define IMUASID_ASID0_MASK		(0xff << 0)
-@@ -1066,7 +1070,7 @@ static int ipmmu_probe(struct platform_d
+@@ -772,7 +773,7 @@ static int ipmmu_of_xlate(struct device
  	}
  
- 	mmu->dev = &pdev->dev;
--	mmu->num_utlbs = 32;
-+	mmu->num_utlbs = 48;
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
- 	mmu->features = of_device_get_match_data(&pdev->dev);
+ 	/* For R-Car Gen3 use a white list to opt-in slave devices */
+-	if (soc_device_match(soc_r8a7795) && !ipmmu_slave_whitelist(dev))
++	if (soc_device_match(soc_rcar_gen3) && !ipmmu_slave_whitelist(dev))
+ 		return -ENODEV;
+ 
+ 	iommu_fwspec_add_ids(dev, spec->args, 1);
+@@ -1034,7 +1035,7 @@ static const struct ipmmu_features ipmmu
+ 	.twobit_imttbcr_sl0 = false,
+ };
+ 
+-static const struct ipmmu_features ipmmu_features_r8a7795 = {
++static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
+ 	.use_ns_alias_offset = false,
+ 	.has_cache_leaf_nodes = true,
+ 	.number_of_contexts = 8,
+@@ -1048,7 +1049,10 @@ static const struct of_device_id ipmmu_o
+ 		.data = &ipmmu_features_default,
+ 	}, {
+ 		.compatible = "renesas,ipmmu-r8a7795",
+-		.data = &ipmmu_features_r8a7795,
++		.data = &ipmmu_features_rcar_gen3,
++	}, {
++		.compatible = "renesas,ipmmu-r8a7796",
++		.data = &ipmmu_features_rcar_gen3,
+ 	}, {
+ 		/* Terminator */
+ 	},
+@@ -1229,6 +1233,8 @@ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "r
+ 		 ipmmu_vmsa_iommu_of_setup);
+ IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
+ 		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796",
++		 ipmmu_vmsa_iommu_of_setup);
+ #endif
+ 
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
