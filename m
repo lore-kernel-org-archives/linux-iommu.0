@@ -1,105 +1,81 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Mon, 19 Jun 2017 18:41:49 +0100
-Message-ID: <311de3aa-aec9-f403-d9a8-48b3e3de54c3@arm.com>
-References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
- <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 1/2] acpica: iort: Update SMMUv3 header for proximity
+	domain mapping
+Date: Mon, 19 Jun 2017 18:54:52 +0100
+Message-ID: <0d0d6cb6-7674-5751-d780-af5114ddd569@arm.com>
+References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+	<1496897059-8272-2-git-send-email-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1496897059-8272-2-git-send-email-ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: shameer <shameerali.kolothum.thodi@huawei.com>, lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/06/17 16:45, shameer wrote:
-> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+On 08/06/17 05:44, Ganapatrao Kulkarni wrote:
+> ARM IORT specification (rev. C) has added two new fields to define
+> proximity domain for the SMMUv3 node in the IORT table.
 > 
-> On these platforms GICv3 ITS translator is presented with the deviceID
-> by extending the MSI payload data to 64 bits to include the deviceID.
-> Hence, the PCIe controller on this platforms has to differentiate the
-> MSI payload against other DMA payload and has to modify the MSI payload.
-> This basically makes it difficult for this platforms to have a SMMU
-> translation for MSI.
+> Proximity Domain Valid:
+> 	Set to 1 if the value provided in the Proximity Domain field is
+> 	valid. Set to 0 otherwise.
 > 
-> This patch implements a ACPI table based quirk to reserve the hw msi
-> regions in the smmu-v3 driver which means these address regions will
-> not be translated and will be excluded from iova allocations.
+> Proximity domain:
+> 	If the Proximity Domain Valid flag is set to 1, this entry
+> 	provides the proximity domain to which this SMMU
+> 	instance belongs.
 > 
-> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> Update header file to reflect this.
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
->  1 file changed, 24 insertions(+), 5 deletions(-)
+>  include/acpi/actbl2.h | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index abe4b88..f03c63b 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -597,6 +597,7 @@ struct arm_smmu_device {
->  	u32				features;
->  
->  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
->  	u32				options;
->  
->  	struct arm_smmu_cmdq		cmdq;
-> @@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct device *dev,
->  				      struct list_head *head)
->  {
->  	struct iommu_resv_region *region;
-> +	struct arm_smmu_device *smmu;
-> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
->  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
->  
-> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-> -					 prot, IOMMU_RESV_SW_MSI);
-> -	if (!region)
-> -		return;
-> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-> +
-> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI) &&
+> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+> index 4b306a6..389e91f 100644
+> --- a/include/acpi/actbl2.h
+> +++ b/include/acpi/actbl2.h
+> @@ -805,6 +805,9 @@ struct acpi_iort_smmu_v3 {
+>  	u32 pri_gsiv;
+>  	u32 gerr_gsiv;
+>  	u32 sync_gsiv;
+> +	u8 pxm;
+> +	u8 reserved1;
+> +	u16 reserved2;
 
-AFAICS, iommu_get_resv_regions is only ever called on devices which are
-at least already part of an iommu_group, so smmu should never
-legitimately be NULL. I'd say if you really want to be robust against
-flagrant API misuse, at least WARN_ON and bail out immediately.
+Why add the padding if you're not also adding the following field that
+it aligns? (side note: could it not just be a u8[3]?)
+
+If the actual structure definition is changing, do there not need to be
+corresponding IASL changes too?
+
+>  };
+>  
+>  /* Values for Model field above */
+> @@ -817,6 +820,7 @@ struct acpi_iort_smmu_v3 {
+>  
+>  #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
+>  #define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
+> +#define ACPI_IORT_SMMU_V3_PXM_VALID         (1<<3)
+
+Maybe it's just me, but "PXM" seems incredibly cryptic.
 
 Robin.
 
-> +		      dev_is_pci(dev)) {
-> +		int ret = -EINVAL;
-> +
-> +		if (!is_of_node(smmu->dev->fwnode))
-> +			ret = iort_iommu_its_get_resv_regions(dev, head);
 >  
-> -	list_add_tail(&region->list, head);
-> +		if (ret) {
-> +			dev_warn(dev, "HW MSI region resv failed: %d\n", ret);
-> +			return;
-> +		}
-> +	} else {
-> +		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-> +						 prot, IOMMU_RESV_SW_MSI);
-> +		if (!region)
-> +			return;
-> +
-> +		list_add_tail(&region->list, head);
-> +	}
->  
->  	iommu_dma_get_resv_regions(dev, head);
->  }
-> @@ -2611,6 +2629,7 @@ static void parse_driver_acpi_options(struct acpi_iort_smmu_v3 *iort_smmu,
->  	switch (iort_smmu->model) {
->  	case ACPI_IORT_SMMU_HISILICON_HI161X:
->  		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-> +		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
->  		break;
->  	default:
->  		break;
+>  /*******************************************************************************
+>   *
 > 
-
