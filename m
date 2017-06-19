@@ -1,287 +1,105 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 02/09] iommu/ipmmu-vmsa: Add optional root device
- feature
-Date: Mon, 19 Jun 2017 18:19:09 +0100
-Message-ID: <8ba73c68-1e82-e7d3-3764-398fa4f2f706@arm.com>
-References: <149786362527.14868.2143461703972595839.sendpatchset@little-apple>
- <149786364660.14868.13384595731879361399.sendpatchset@little-apple>
+Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Mon, 19 Jun 2017 18:41:49 +0100
+Message-ID: <311de3aa-aec9-f403-d9a8-48b3e3de54c3@arm.com>
+References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
+ <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <149786364660.14868.13384595731879361399.sendpatchset@little-apple>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
 Content-Language: en-US
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>, joro@8bytes.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, m.szyprowski@samsung.com
+Sender: linux-acpi-owner@vger.kernel.org
+To: shameer <shameerali.kolothum.thodi@huawei.com>, lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/06/17 10:14, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
+On 19/06/17 16:45, shameer wrote:
+> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
 > 
-> Add root device handling to the IPMMU driver by allowing certain
-> DT compat strings to enable has_cache_leaf_nodes that in turn will
-> support both root devices with interrupts and leaf devices that
-> face the actual IPMMU consumer devices.
+> On these platforms GICv3 ITS translator is presented with the deviceID
+> by extending the MSI payload data to 64 bits to include the deviceID.
+> Hence, the PCIe controller on this platforms has to differentiate the
+> MSI payload against other DMA payload and has to modify the MSI payload.
+> This basically makes it difficult for this platforms to have a SMMU
+> translation for MSI.
 > 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> This patch implements a ACPI table based quirk to reserve the hw msi
+> regions in the smmu-v3 driver which means these address regions will
+> not be translated and will be excluded from iova allocations.
+> 
+> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
 > ---
+>  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
+>  1 file changed, 24 insertions(+), 5 deletions(-)
 > 
->  Changes since V3:
->  - Reworked root finding code to make it easier to follow, thanks Geert!
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index abe4b88..f03c63b 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -597,6 +597,7 @@ struct arm_smmu_device {
+>  	u32				features;
 >  
->  Changes since V2:
->  - Fixed a bug in ipmmu_find_root() when only leaf devices are present
->  - Broke out __ipmmu_find_root() to allow ->xlate() check for root devices
-> 
->  Changes since V1:
->  - Moved patch to earlier in the series
->  - Updated code to work with recent changes in:
->    [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
-> 
->  drivers/iommu/ipmmu-vmsa.c |   95 ++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 78 insertions(+), 17 deletions(-)
-> 
-> --- 0015/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c	2017-06-19 13:59:41.050607110 +0900
-> @@ -36,6 +36,7 @@
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+>  	u32				options;
 >  
->  struct ipmmu_features {
->  	bool use_ns_alias_offset;
-> +	bool has_cache_leaf_nodes;
->  };
->  
->  struct ipmmu_vmsa_device {
-> @@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
->  	struct iommu_device iommu;
->  	struct list_head list;
->  	const struct ipmmu_features *features;
-> +	bool is_leaf;
->  	unsigned int num_utlbs;
->  	spinlock_t lock;			/* Protects ctx and domains[] */
->  	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-> @@ -54,6 +56,7 @@ struct ipmmu_vmsa_device {
->  
->  struct ipmmu_vmsa_domain {
->  	struct ipmmu_vmsa_device *mmu;
-> +	struct ipmmu_vmsa_device *root;
-
-Would it not make more sense for this to be a property of the
-ipmmu_device itself, rather than per ipmmu_domain? I may of course have
-got the wrong idea of the topology here, but it seems as if mmu->is_leaf
-could be expressed as mmu->root == mmu vs. mmu->root == some_other_mmu,
-at which point there's one less thing to worry about in the domain.
-
->  	struct iommu_domain io_domain;
->  
->  	struct io_pgtable_cfg cfg;
-> @@ -203,6 +206,44 @@ static struct ipmmu_vmsa_iommu_priv *to_
->  #define IMUASID_ASID0_SHIFT		0
->  
->  /* -----------------------------------------------------------------------------
-> + * Root device handling
-> + */
-> +
-> +static bool ipmmu_is_root(struct ipmmu_vmsa_device *mmu)
-> +{
-> +	if (mmu->features->has_cache_leaf_nodes)
-> +		return mmu->is_leaf ? false : true> +	else
-> +		return true; /* older IPMMU hardware treated as single root */
-> +}
-> +
-> +static struct ipmmu_vmsa_device *__ipmmu_find_root(void)
-> +{
-> +	struct ipmmu_vmsa_device *mmu;
-> +	struct ipmmu_vmsa_device *root = NULL;
-> +
-> +	spin_lock(&ipmmu_devices_lock);
-> +
-> +	list_for_each_entry(mmu, &ipmmu_devices, list) {
-> +		if (ipmmu_is_root(mmu)) {
-> +			root = mmu;
-> +			break;
-> +		}
-> +	}
-> +
-> +	spin_unlock(&ipmmu_devices_lock);
-> +	return root;
-> +}
-
-I wonder if it might be tidier to use driver_for_each_device() for this,
-and remove the local list at the same time as its previous user.
-
-Either way, what happens if things end up hapening in this order:
-
-1: probe leaf IPMMU B
-2: probe device X behind IPMMU B
-3: create and attach default domain for device X
-4: probe root IPMMU A
-
-We know X will defer if B isn't ready, but it doesn't seem (at a glance,
-admittedly) that there's anything to enforce the expected probe ordering
-between A and B. This seems like another argument for moving the
-root/leaf association up to the device level, such that B can look up A
-once in its own probe routine, and defer itself if necessary.
-
-> +
-> +static struct ipmmu_vmsa_device *ipmmu_find_root(struct ipmmu_vmsa_device *leaf)
-> +{
-> +	if (ipmmu_is_root(leaf))
-> +		return leaf;
-> +	else
-> +		return __ipmmu_find_root();
-
-Well actually, looking at that, I think what we have here is a very
-long-winded way of implementing this:
-
-static ipmmu_vmsa_device *root;
-
-Yuck.
-
-> +}
-> +
-> +/* -----------------------------------------------------------------------------
->   * Read/Write Access
->   */
->  
-> @@ -219,13 +260,13 @@ static void ipmmu_write(struct ipmmu_vms
->  
->  static u32 ipmmu_ctx_read(struct ipmmu_vmsa_domain *domain, unsigned int reg)
+>  	struct arm_smmu_cmdq		cmdq;
+> @@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+>  				      struct list_head *head)
 >  {
-> -	return ipmmu_read(domain->mmu, domain->context_id * IM_CTX_SIZE + reg);
-> +	return ipmmu_read(domain->root, domain->context_id * IM_CTX_SIZE + reg);
->  }
+>  	struct iommu_resv_region *region;
+> +	struct arm_smmu_device *smmu;
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
 >  
->  static void ipmmu_ctx_write(struct ipmmu_vmsa_domain *domain, unsigned int reg,
->  			    u32 data)
->  {
-> -	ipmmu_write(domain->mmu, domain->context_id * IM_CTX_SIZE + reg, data);
-> +	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
->  }
->  
->  /* -----------------------------------------------------------------------------
-> @@ -360,7 +401,7 @@ static int ipmmu_domain_init_context(str
->  	 * TODO: Add support for coherent walk through CCI with DVM and remove
->  	 * cache handling. For now, delegate it to the io-pgtable code.
->  	 */
-> -	domain->cfg.iommu_dev = domain->mmu->dev;
-> +	domain->cfg.iommu_dev = domain->root->dev;
->  
->  	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
->  					   domain);
-> @@ -370,7 +411,7 @@ static int ipmmu_domain_init_context(str
->  	/*
->  	 * Find an unused context.
->  	 */
-> -	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
-> +	ret = ipmmu_domain_allocate_context(domain->root, domain);
->  	if (ret == IPMMU_CTX_MAX) {
->  		free_io_pgtable_ops(domain->iop);
->  		return -EBUSY;
-> @@ -441,7 +482,7 @@ static void ipmmu_domain_destroy_context
->  	 */
->  	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
->  	ipmmu_tlb_sync(domain);
-> -	ipmmu_domain_free_context(domain->mmu, domain->context_id);
-> +	ipmmu_domain_free_context(domain->root, domain->context_id);
->  }
->  
->  /* -----------------------------------------------------------------------------
-> @@ -555,7 +596,7 @@ static int ipmmu_attach_device(struct io
->  {
->  	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
->  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> -	struct ipmmu_vmsa_device *mmu = priv->mmu;
-> +	struct ipmmu_vmsa_device *root, *mmu = priv->mmu;
->  	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
->  	unsigned long flags;
->  	unsigned int i;
-> @@ -566,11 +607,18 @@ static int ipmmu_attach_device(struct io
->  		return -ENXIO;
->  	}
->  
-> +	root = ipmmu_find_root(priv->mmu);
-> +	if (!root) {
-> +		dev_err(dev, "Unable to locate root IPMMU\n");
-> +		return -EAGAIN;
-> +	}
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> -					 prot, IOMMU_RESV_SW_MSI);
+> -	if (!region)
+> -		return;
+> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
 > +
->  	spin_lock_irqsave(&domain->lock, flags);
->  
->  	if (!domain->mmu) {
->  		/* The domain hasn't been used yet, initialize it. */
->  		domain->mmu = mmu;
-> +		domain->root = root;
->  		ret = ipmmu_domain_init_context(domain);
->  	} else if (domain->mmu != mmu) {
->  		/*
-> @@ -911,6 +959,7 @@ static void ipmmu_device_reset(struct ip
->  
->  static const struct ipmmu_features ipmmu_features_default = {
->  	.use_ns_alias_offset = true,
-> +	.has_cache_leaf_nodes = false,
->  };
->  
->  static const struct of_device_id ipmmu_of_ids[] = {
-> @@ -965,19 +1014,31 @@ static int ipmmu_probe(struct platform_d
->  		mmu->base += IM_NS_ALIAS_OFFSET;
->  
->  	irq = platform_get_irq(pdev, 0);
-> -	if (irq < 0) {
-> -		dev_err(&pdev->dev, "no IRQ found\n");
-> -		return irq;
-> -	}
->  
-> -	ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
-> -			       dev_name(&pdev->dev), mmu);
-> -	if (ret < 0) {
-> -		dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
-> -		return ret;
-> -	}
-> +	/*
-> +	 * Determine if this IPMMU instance is a leaf device by checking
-> +	 * if the renesas,ipmmu-main property exists or not.
-> +	 */
-> +	if (mmu->features->has_cache_leaf_nodes &&
-> +	    of_find_property(pdev->dev.of_node, "renesas,ipmmu-main", NULL))
-> +		mmu->is_leaf = true;
+> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI) &&
 
-Given my previous comments:
-
-	if (mmu->features->has_cache_leaf_nodes) {
-		root_np = of_parse_phandle(pdev->dev.of_node,
-					"renesas,ipmmu-main", 0)
-		if (root_np) {
-			root_pdev = of_find_device_by_phandle(root_np);
-			mmu->root = platform_get_drvdata(root_pdev);
-		} else {
-			mmu->root = mmu;
-		}
-	}
-
-or something along those lines?
+AFAICS, iommu_get_resv_regions is only ever called on devices which are
+at least already part of an iommu_group, so smmu should never
+legitimately be NULL. I'd say if you really want to be robust against
+flagrant API misuse, at least WARN_ON and bail out immediately.
 
 Robin.
 
+> +		      dev_is_pci(dev)) {
+> +		int ret = -EINVAL;
 > +
-> +	/* Root devices have mandatory IRQs */
-> +	if (ipmmu_is_root(mmu)) {
-> +		if (irq < 0) {
-> +			dev_err(&pdev->dev, "no IRQ found\n");
-> +			return irq;
-> +		}
+> +		if (!is_of_node(smmu->dev->fwnode))
+> +			ret = iort_iommu_its_get_resv_regions(dev, head);
 >  
-> -	ipmmu_device_reset(mmu);
-> +		ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
-> +				       dev_name(&pdev->dev), mmu);
-> +		if (ret < 0) {
-> +			dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
-> +			return ret;
+> -	list_add_tail(&region->list, head);
+> +		if (ret) {
+> +			dev_warn(dev, "HW MSI region resv failed: %d\n", ret);
+> +			return;
 > +		}
+> +	} else {
+> +		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +						 prot, IOMMU_RESV_SW_MSI);
+> +		if (!region)
+> +			return;
 > +
-> +		ipmmu_device_reset(mmu);
+> +		list_add_tail(&region->list, head);
 > +	}
 >  
->  	ret = iommu_device_register(&mmu->iommu);
->  	if (ret)
+>  	iommu_dma_get_resv_regions(dev, head);
+>  }
+> @@ -2611,6 +2629,7 @@ static void parse_driver_acpi_options(struct acpi_iort_smmu_v3 *iort_smmu,
+>  	switch (iort_smmu->model) {
+>  	case ACPI_IORT_SMMU_HISILICON_HI161X:
+>  		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+> +		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
+>  		break;
+>  	default:
+>  		break;
 > 
+
