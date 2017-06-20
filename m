@@ -1,155 +1,187 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Tue, 20 Jun 2017 17:27:23 +0100
-Message-ID: <20170620162723.GE11351@red-moon>
-References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
- <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
- <20170620102906.GA26908@red-moon>
- <5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
- <d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA8383866C7@FRAEML521-MBS.china.huawei.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v8 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
+ ThunderX2 erratum #126
+Date: Tue, 20 Jun 2017 19:00:39 +0100
+Message-ID: <20170620180038.GC28035@arm.com>
+References: <1497968259-16390-1-git-send-email-gakula@caviumnetworks.com>
+ <1497968259-16390-4-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA8383866C7@FRAEML521-MBS.china.huawei.com>
+In-Reply-To: <1497968259-16390-4-git-send-email-gakula@caviumnetworks.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
+To: Geetha sowjanya <gakula@caviumnetworks.com>
+Cc: robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 20, 2017 at 03:39:30PM +0000, Shameerali Kolothum Thodi wrote:
+On Tue, Jun 20, 2017 at 07:47:39PM +0530, Geetha sowjanya wrote:
+> From: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 > 
+> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
+> lines for gerror, eventq and cmdq-sync.
 > 
-> > -----Original Message-----
-> > From: Robin Murphy [mailto:robin.murphy@arm.com]
-> > Sent: Tuesday, June 20, 2017 4:16 PM
-> > To: Shameerali Kolothum Thodi; Lorenzo Pieralisi
-> > Cc: marc.zyngier@arm.com; sudeep.holla@arm.com; will.deacon@arm.com;
-> > hanjun.guo@linaro.org; Gabriele Paoloni; John Garry; iommu@lists.linux-
-> > foundation.org; linux-arm-kernel@lists.infradead.org; linux-
-> > acpi@vger.kernel.org; devel@acpica.org; Linuxarm; Wangzhou (B);
-> > Guohanjun (Hanjun Guo)
-> > Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
-> > HiSilicon erratum 161010801
-> > 
-> > On 20/06/17 15:07, Shameerali Kolothum Thodi wrote:
-> > >
-> > >
-> > >> -----Original Message-----
-> > >> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
-> > >> Sent: Tuesday, June 20, 2017 11:29 AM
-> > >> To: Shameerali Kolothum Thodi
-> > >> Cc: marc.zyngier@arm.com; sudeep.holla@arm.com;
-> > will.deacon@arm.com;
-> > >> robin.murphy@arm.com; hanjun.guo@linaro.org; Gabriele Paoloni; John
-> > >> Garry; iommu@lists.linux-foundation.org; linux-arm-
-> > >> kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> > devel@acpica.org;
-> > >> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> > >> Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
-> > >> HiSilicon erratum 161010801
-> > >>
-> > >> Hi Shameer,
-> > >>
-> > >> On Mon, Jun 19, 2017 at 04:45:00PM +0100, shameer wrote:
-> > >>> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> > >>> platforms Hip06/Hip07 to support the SMMU mappings for MSI
-> > >> transactions.
-> > >>>
-> > >>> On these platforms GICv3 ITS translator is presented with the deviceID
-> > >>> by extending the MSI payload data to 64 bits to include the deviceID.
-> > >>> Hence, the PCIe controller on this platforms has to differentiate the
-> > >>> MSI payload against other DMA payload and has to modify the MSI
-> > >> payload.
-> > >>> This basically makes it difficult for this platforms to have a SMMU
-> > >>> translation for MSI.
-> > >>>
-> > >>> This patch implements a ACPI table based quirk to reserve the hw msi
-> > >>> regions in the smmu-v3 driver which means these address regions will
-> > >>> not be translated and will be excluded from iova allocations.
-> > >>>
-> > >>> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
-> > >>> ---
-> > >>>  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
-> > >>>  1 file changed, 24 insertions(+), 5 deletions(-)
-> > >>>
-> > >>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-
-> > smmu-
-> > >> v3.c
-> > >>> index abe4b88..f03c63b 100644
-> > >>> --- a/drivers/iommu/arm-smmu-v3.c
-> > >>> +++ b/drivers/iommu/arm-smmu-v3.c
-> > >>> @@ -597,6 +597,7 @@ struct arm_smmu_device {
-> > >>>  	u32				features;
-> > >>>
-> > >>>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> > >>> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
-> > >>>  	u32				options;
-> > >>>
-> > >>>  	struct arm_smmu_cmdq		cmdq;
-> > >>> @@ -1904,14 +1905,31 @@ static void
-> > arm_smmu_get_resv_regions(struct
-> > >> device *dev,
-> > >>>  				      struct list_head *head)
-> > >>>  {
-> > >>>  	struct iommu_resv_region *region;
-> > >>> +	struct arm_smmu_device *smmu;
-> > >>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > >>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > >>>
-> > >>> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
-> > >> MSI_IOVA_LENGTH,
-> > >>> -					 prot, IOMMU_RESV_SW_MSI);
-> > >>> -	if (!region)
-> > >>> -		return;
-> > >>> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-> > >>> +
-> > >>> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
-> > >> &&
-> > >>> +		      dev_is_pci(dev)) {
-> > >>
-> > >> IORT changes are fine to me, I am still no big fan of this supposedly
-> > >> generic option that is _really_ platform specific (in particular as I
-> > >> said before the quirk depends on the PCI host bridge but in this
-> > >> patchset I see no such dependency. In short - the quirk is hooked off
-> > >> the SMMUv3 model which implicitly implies a PCI host bridge
-> > >> configuration IIUC). It is Will and Robin decision though, I am not sure
-> > >> you can make it any tidier (given that on ACPI you may not even have
-> > >> a PCI host bridge specific _HID to base your check above on).
-> > >
-> > > Thanks Lorenzo. I understand your point. As far as our platform is
-> > > concerned, I think It is ok to remove the dev_is_pci() check and make
-> > > it generic, if that helps.  I don't think it will harm us other than couple of
-> > >  "HW MSI region resv failed: " logs  for our platform devices.
-> > 
-> > I think the answer there is that iort_iommu_its_get_resv_regions()
-> > really should distinguish between "this device just doesn't have an ITS
-> > mapping" and "something actually went wrong", such that you don't treat
-> > the former as an error. That's almost certainly cleaner than e.g. trying
-> > to check if dev has an associated MSI domain here before calling it.
+> SHARED_IRQ option is set as a errata workaround, which allows to share the irq
+> line by register single irq handler for all the interrupts.
 > 
-> If I understood that correctly, the suggestion is to treat cases where device
-> doesn’t have any ITS node associated with it as "success".
+> Signed-off-by: Geetha sowjanya <gakula@caviumnetworks.com>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    5 ++
+>  drivers/iommu/arm-smmu-v3.c                        |   73 ++++++++++++++++----
+>  2 files changed, 64 insertions(+), 14 deletions(-)
 > 
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> index 6ecc48c..44b40e0 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> @@ -55,6 +55,11 @@ the PCIe specification.
+>  		      Set for Caviun ThunderX2 silicon that doesn't support
+>  		      SMMU page1 register space.
+>  
+> +- cavium,cn9900-broken-unique-irqline
+> +                    : Use single irq line for all the SMMUv3 interrupts.
+> +		      Set for Caviun ThunderX2 silicon that doesn't support
+> +		      MSI and also doesn't have unique irq lines for gerror,
+> +		      eventq and cmdq-sync.
+
+I think we're better off just supporting a new (optional) named interrupt
+as "combined", and then allowing that to be used instead of the others.
+
+>  ** Example
+>  
+>          smmu@2b400000 {
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 2dea4a9..6c0c632 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -598,6 +598,7 @@ struct arm_smmu_device {
+>  
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+>  #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
+> +#define ARM_SMMU_OPT_SHARED_IRQ	(1 << 2)
+
+Please call this COMBINED instead of SHARED (similarly elsewhere). That
+said, not sure we need this.
+
+>  	u32				options;
+>  
+>  	struct arm_smmu_cmdq		cmdq;
+> @@ -665,6 +666,7 @@ struct arm_smmu_option_prop {
+>  static struct arm_smmu_option_prop arm_smmu_options[] = {
+>  	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+>  	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
+> +	{ ARM_SMMU_OPT_SHARED_IRQ, "cavium,cn9900-broken-unique-irqline"},
+>  	{ 0, NULL},
+>  };
+>  
+> @@ -1313,6 +1315,21 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
+>  	writel(gerror, smmu->base + ARM_SMMU_GERRORN);
+>  	return IRQ_HANDLED;
+>  }
+> +/* Shared irq handler*/
+> +static irqreturn_t arm_smmu_shared_irq_thread(int irq, void *dev)
 > +{
-> [....]
-> +	if (!its_node)
-> +		return -ENODEV;
-> 
-> ie, return success above from patch 1/2.
-> 
-> Lorenzo, 
-> 
-> Please let me know if that’s a correct thing to do as I am not sure
-> about all the error scenarios here.
+> +	struct arm_smmu_device *smmu = dev;
+> +	irqreturn_t ret;
+> +
+> +	ret = arm_smmu_gerror_handler(irq, dev);
+> +	if (ret == IRQ_NONE) {
+> +		arm_smmu_evtq_thread(irq, dev);
+> +		arm_smmu_cmdq_sync_handler(irq, dev);
+> +		if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +			arm_smmu_priq_thread(irq, dev);
+> +	}
+> +	return IRQ_HANDLED;
+> +}
 
-Yes it is, you need to add specific return values that you can then
-handle in the SMMU callback accordingly (reverting to SW_MSI in case the
-device does not map to an ITS).
+This isn't quite right, because you're now running low-level handlers (like
+the gerror handler) in threaded context. You're better off registering a
+low-level handler too (see below) which can kick gerror and cmdq_sync
+before unconditionally returning IRQ_WAKE_THREAD.
 
-Thanks,
-Lorenzo
+>  
+>  /* IO_PGTABLE API */
+>  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+> @@ -2230,18 +2247,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>  	devm_add_action(dev, arm_smmu_free_msis, dev);
+>  }
+>  
+> -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+>  {
+> -	int ret, irq;
+> -	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> -
+> -	/* Disable IRQs first */
+> -	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> -				      ARM_SMMU_IRQ_CTRLACK);
+> -	if (ret) {
+> -		dev_err(smmu->dev, "failed to disable irqs\n");
+> -		return ret;
+> -	}
+> +	int irq, ret;
+>  
+>  	arm_smmu_setup_msis(smmu);
+>  
+> @@ -2284,10 +2292,46 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  			if (ret < 0)
+>  				dev_warn(smmu->dev,
+>  					 "failed to enable priq irq\n");
+> -			else
+> -				irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+>  		}
+>  	}
+> +}
+> +
+> +static void arm_smmu_setup_shared_irqs(struct arm_smmu_device *smmu)
+> +{
+> +	int ret, irq;
+> +
+> +	/* Single irq is used for all queues, request single interrupt lines */
+> +	irq = smmu->evtq.q.irq;
+> +	if (irq) {
+> +		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+
+As above, stick your low-level handler in instead of NULL here.
+
+> +					arm_smmu_shared_irq_thread,
+> +					IRQF_ONESHOT | IRQF_SHARED,
+
+Why do you need IRQF_SHARED here?
+
+> +					"arm-smmu-v3-shared_irq", smmu);
+
+Call this "combined" instead of shared, to avoid confusion with the IRQ
+flags.
+
+> +		if (ret < 0)
+> +			dev_warn(smmu->dev, "failed to enable shared irq\n");
+> +	}
+> +}
+> +
+> +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +{
+> +	int ret;
+> +	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> +
+> +	/* Disable IRQs first */
+> +	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> +				      ARM_SMMU_IRQ_CTRLACK);
+> +	if (ret) {
+> +		dev_err(smmu->dev, "failed to disable irqs\n");
+> +		return ret;
+> +	}
+> +
+> +	if (smmu->options & ARM_SMMU_OPT_SHARED_IRQ)
+> +		arm_smmu_setup_shared_irqs(smmu);
+> +	else
+> +		arm_smmu_setup_unique_irqs(smmu);
+
+I'd rather just have something like:
+
+  irq = platform_get_irq_byname(pdev, "combined");
+
+in the arm_smmu_device_probe function. If we find it's there, we use that
+in preference to the other interrupts.
+
+Will
