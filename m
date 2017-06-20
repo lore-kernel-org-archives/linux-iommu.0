@@ -1,56 +1,56 @@
-From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
-	ThunderX2 SMMUv3 model
-Date: Tue, 20 Jun 2017 10:51:23 +0200
-Message-ID: <20170620085123.GF16981@rric.localdomain>
-References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
-	<1496145821-3411-2-git-send-email-gakula@caviumnetworks.com>
-	<20170620081943.GT658@rric.localdomain>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: clean up and modularize arch dma_mapping interface
+Date: Tue, 20 Jun 2017 11:19:02 +0200
+Message-ID: <20170620091902.2dldmf43vhazq6yh@phenom.ffwll.local>
+References: <20170608132609.32662-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20170620081943.GT658-vWBEXY7mpu582hYKe6nXyg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
-Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+In-Reply-To: <20170608132609.32662-1-hch@lst.de>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-mips@linux-mips.org, linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, openrisc@lists.librecores.org, netdev@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20.06.17 10:19:43, Robert Richter wrote:
-> On 30.05.17 17:33:39, Geetha sowjanya wrote:
-> > From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-
-> > +	/*
-> > +	 * Override the size, for Cavium ThunderX2 implementation
-> > +	 * which doesn't support the page 1 SMMU register space.
-> > +	 */
-> > +	if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
-> 
-> Geetha,
-> 
-> please resubmit the series since the macro changed to
-> ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
-> 
->  https://github.com/acpica/acpica/commit/d00a4eb86e64bb4fa70f57ab5e5ca0a4ca2ad8ef#diff-a572aac2ccc26fe4a901616d7fdba859R1053
-
-Rafael, Bob,
-
-btw, I haven't seen
-
- https://github.com/acpica/acpica/commit/d00a4eb86e64
-
-yet in linux-pm:linux-next. We would like to see this in 4.13 also. Is
-it on the way already?
-
-Thanks,
-
--Robert
+T24gVGh1LCBKdW4gMDgsIDIwMTcgYXQgMDM6MjU6MjVQTSArMDIwMCwgQ2hyaXN0b3BoIEhlbGx3
+aWcgd3JvdGU6Cj4gSGkgYWxsLAo+IAo+IGZvciBhIHdoaWxlIHdlIGhhdmUgYSBnZW5lcmljIGlt
+cGxlbWVudGF0aW9uIG9mIHRoZSBkbWEgbWFwcGluZyByb3V0aW5lcwo+IHRoYXQgY2FsbCBpbnRv
+IHBlci1hcmNoIG9yIHBlci1kZXZpY2Ugb3BlcmF0aW9ucy4gIEJ1dCByaWdodCBub3cgdGhlcmUK
+PiBzdGlsbCBhcmUgdmFyaW91cyBiaXRzIGluIHRoZSBpbnRlcmZhY2VzIHdoZXJlIGRvbid0IGNs
+ZWFybHkgb3BlcmF0ZQo+IG9uIHRoZXNlIG9wcy4gIFRoaXMgc2VyaWVzIHRyaWVzIHRvIGNsZWFu
+IHVwIGEgbG90IG9mIHRob3NlIChidXQgbm90IGFsbAo+IHlldCwgYnV0IHRoZSBzZXJpZXMgaXMg
+YmlnIGVub3VnaCkuICBJdCBnZXRzIHJpZCBvZiB0aGUgRE1BX0VSUk9SX0NPREUKPiB3YXkgb2Yg
+c2lnbmFsaW5nIGZhaWx1cmVzIG9mIHRoZSBtYXBwaW5nIHJvdXRpbmVzIGZyb20gdGhlCj4gaW1w
+bGVtZW50YXRpb25zIHRvIHRoZSBnZW5lcmljIGNvZGUgKGFuZCBjbGVhbnMgdXAgdmFyaW91cyBk
+cml2ZXJzIHRoYXQKPiB3ZXJlIGluY29ycmVjdGx5IHVzaW5nIGl0KSwgYW5kIGdldHMgcmlkIG9m
+IHRoZSAtPnNldF9kbWFfbWFzayByb3V0aW5lCj4gaW4gZmF2b3Igb2YgcmVseWluZyBvbiB0aGUg
+LT5kbWFfY2FwYWJsZSBtZXRob2QgdGhhdCBjYW4gYmUgdXNlZCBpbgo+IHRoZSBzYW1lIHdheSwg
+YnV0IHdoaWNoIHJlcXVpcmVzIGxlc3MgY29kZSBkdXBsaWNhdGlvbi4KPiAKPiBCdHcsIHdlIGRv
+bid0IHNlZW0gdG8gaGF2ZSBhIHRyZWUgZXZlcnktZ3Jvd2luZyBhbW91bnQgb2YgY29tbW9uIGRt
+YQo+IG1hcHBpbmcgY29kZSwgYW5kIGdpdmVuIHRoYXQgSSBoYXZlIGEgZmFpciBhbW91bnQgb2Yg
+YWxsIG92ZXIgdGhlIHRyZWUKPiB3b3JrIGluIHRoYXQgYXJlYSBpbiBteSBwbGF0ZSBJJ2QgbGlr
+ZSB0byBzdGFydCBvbmUuICBBbnkgZ29vZCByZWFzb24KPiB0byB0aGF0PyAgQW55b25lIHdpbGxp
+bmcgdG8gdm9sdW50ZWVyIGFzIGNvIG1haW50YWluZXI/Cj4gCj4gVGhlIHdob2xlIHNlcmllcyBp
+cyBhbHNvIGF2YWlsYWJsZSBpbiBnaXQ6Cj4gCj4gICAgIGdpdDovL2dpdC5pbmZyYWRlYWQub3Jn
+L3VzZXJzL2hjaC9taXNjLmdpdCBkbWEtbWFwCgpBY2sgZm9yIHRoZSAyIGRybSBwYXRjaGVzLCBi
+dXQgSSBjYW4gYWxzbyBwaWNrIHRoZW0gdXAgdGhyb3VnaCBkcm0tbWlzYyBpZgp5b3UgcHJlZmVy
+IHRoYXQgKGJ1dCB0aGVuIGl0J2xsIGJlIDQuMTQpLgotRGFuaWVsCgo+IAo+IEdpdHdlYjoKPiAK
+PiAgICAgaHR0cDovL2dpdC5pbmZyYWRlYWQub3JnL3VzZXJzL2hjaC9taXNjLmdpdC9zaG9ydGxv
+Zy9yZWZzL2hlYWRzL2RtYS1tYXAKPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwo+IGRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKPiBkcmktZGV2ZWxAbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9kcmktZGV2ZWwKCi0tIApEYW5pZWwgVmV0dGVyClNvZnR3YXJlIEVuZ2luZWVyLCBJ
+bnRlbCBDb3Jwb3JhdGlvbgpodHRwOi8vYmxvZy5mZndsbC5jaApfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1k
+ZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
