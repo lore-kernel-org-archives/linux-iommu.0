@@ -1,149 +1,125 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v7 14/36] x86/mm: Insure that boot memory areas are
- mapped properly
-Date: Tue, 20 Jun 2017 17:30:56 +0200
-Message-ID: <20170620153056.bz2kvgvshnat6345@pd.tnic>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185232.18967.61753.stgit@tlendack-t1.amdoffice.net>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+	erratum 161010801
+Date: Tue, 20 Jun 2017 15:39:30 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA8383866C7@FRAEML521-MBS.china.huawei.com>
+References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
+	<20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
+	<20170620102906.GA26908@red-moon>
+	<5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
+	<d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170616185232.18967.61753.stgit@tlendack-t1.amdoffice.net>
-Sender: linux-doc-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dy>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <d6e824b0-17bd-dd41-2d11-0491d8f66759-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 16, 2017 at 01:52:32PM -0500, Tom Lendacky wrote:
-> The boot data and command line data are present in memory in a decrypted
-> state and are copied early in the boot process.  The early page fault
-> support will map these areas as encrypted, so before attempting to copy
-> them, add decrypted mappings so the data is accessed properly when copied.
-> 
-> For the initrd, encrypt this data in place. Since the future mapping of
-> the initrd area will be mapped as encrypted the data will be accessed
-> properly.
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/mem_encrypt.h |    6 +++
->  arch/x86/include/asm/pgtable.h     |    3 ++
->  arch/x86/kernel/head64.c           |   30 +++++++++++++--
->  arch/x86/kernel/setup.c            |    9 +++++
->  arch/x86/mm/kasan_init_64.c        |    2 +
->  arch/x86/mm/mem_encrypt.c          |   70 ++++++++++++++++++++++++++++++++++++
->  6 files changed, 115 insertions(+), 5 deletions(-)
-
-...
-
-> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-> index b7671b9..ea5e3a6 100644
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -19,6 +19,8 @@
->  
->  #include <asm/tlbflush.h>
->  #include <asm/fixmap.h>
-> +#include <asm/setup.h>
-> +#include <asm/bootparam.h>
->  
->  /*
->   * Since SME related variables are set early in the boot process they must
-> @@ -101,6 +103,74 @@ void __init sme_early_decrypt(resource_size_t paddr, unsigned long size)
->  	__sme_early_enc_dec(paddr, size, false);
->  }
->  
-> +static void __init __sme_early_map_unmap_mem(void *vaddr, unsigned long size,
-> +					     bool map)
-> +{
-> +	unsigned long paddr = (unsigned long)vaddr - __PAGE_OFFSET;
-> +	pmdval_t pmd_flags, pmd;
-> +
-> +	/* Use early_pmd_flags but remove the encryption mask */
-> +	pmd_flags = __sme_clr(early_pmd_flags);
-> +
-> +	do {
-> +		pmd = map ? (paddr & PMD_MASK) + pmd_flags : 0;
-> +		__early_make_pgtable((unsigned long)vaddr, pmd);
-> +
-> +		vaddr += PMD_SIZE;
-> +		paddr += PMD_SIZE;
-> +		size = (size <= PMD_SIZE) ? 0 : size - PMD_SIZE;
-> +	} while (size);
-> +
-> +	write_cr3(__read_cr3());
-
-local_flush_tlb() or __native_flush_tlb(). Probably the native variant
-since this is early fun.
-
-> +}
-> +
-> +static void __init __sme_map_unmap_bootdata(char *real_mode_data, bool map)
-> +{
-> +	struct boot_params *boot_data;
-> +	unsigned long cmdline_paddr;
-> +
-> +	/* If SME is not active, the bootdata is in the correct state */
-> +	if (!sme_active())
-> +		return;
-> +
-> +	if (!map) {
-> +		/*
-> +		 * If unmapping, get the command line address before
-> +		 * unmapping the real_mode_data.
-> +		 */
-> +		boot_data = (struct boot_params *)real_mode_data;
-> +		cmdline_paddr = boot_data->hdr.cmd_line_ptr |
-> +				((u64)boot_data->ext_cmd_line_ptr << 32);
-
-Let it stick out:
-
-	cmdline_paddr = bd->hdr.cmd_line_ptr | ((u64)bd->ext_cmd_line_ptr << 32);
-
-> +	}
-> +
-> +	__sme_early_map_unmap_mem(real_mode_data, sizeof(boot_params), map);
-> +
-> +	if (map) {
-> +		/*
-> +		 * If mapping, get the command line address after mapping
-> +		 * the real_mode_data.
-> +		 */
-> +		boot_data = (struct boot_params *)real_mode_data;
-> +		cmdline_paddr = boot_data->hdr.cmd_line_ptr |
-> +				((u64)boot_data->ext_cmd_line_ptr << 32);
-> +	}
-> +
-> +	if (!cmdline_paddr)
-> +		return;
-> +
-> +	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, map);
-
-Ok, so from looking at this function now - it does different things
-depending on whether we map or not. So it doesn't look like a worker
-function anymore and you can move the stuff back to the original callers
-below. Should make the whole flow more readable.
-
-> +}
-> +
-> +void __init sme_unmap_bootdata(char *real_mode_data)
-> +{
-> +	__sme_map_unmap_bootdata(real_mode_data, false);
-> +}
-> +
-> +void __init sme_map_bootdata(char *real_mode_data)
-> +{
-> +	__sme_map_unmap_bootdata(real_mode_data, true);
-> +}
-> +
->  void __init sme_early_init(void)
->  {
->  	unsigned int i;
-> 
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4gTXVycGh5IFtt
+YWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+IFNlbnQ6IFR1ZXNkYXksIEp1bmUgMjAsIDIw
+MTcgNDoxNiBQTQ0KPiBUbzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaTsgTG9yZW56byBQaWVy
+YWxpc2kNCj4gQ2M6IG1hcmMuenluZ2llckBhcm0uY29tOyBzdWRlZXAuaG9sbGFAYXJtLmNvbTsg
+d2lsbC5kZWFjb25AYXJtLmNvbTsNCj4gaGFuanVuLmd1b0BsaW5hcm8ub3JnOyBHYWJyaWVsZSBQ
+YW9sb25pOyBKb2huIEdhcnJ5OyBpb21tdUBsaXN0cy5saW51eC0NCj4gZm91bmRhdGlvbi5vcmc7
+IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgtDQo+IGFjcGlAdmdl
+ci5rZXJuZWwub3JnOyBkZXZlbEBhY3BpY2Eub3JnOyBMaW51eGFybTsgV2FuZ3pob3UgKEIpOw0K
+PiBHdW9oYW5qdW4gKEhhbmp1biBHdW8pDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMi8yXSBp
+b21tdS9hcm0tc21tdS12MzpFbmFibGUgQUNQSSBiYXNlZA0KPiBIaVNpbGljb24gZXJyYXR1bSAx
+NjEwMTA4MDENCj4gDQo+IE9uIDIwLzA2LzE3IDE1OjA3LCBTaGFtZWVyYWxpIEtvbG90aHVtIFRo
+b2RpIHdyb3RlOg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4g
+Pj4gRnJvbTogTG9yZW56byBQaWVyYWxpc2kgW21haWx0bzpsb3JlbnpvLnBpZXJhbGlzaUBhcm0u
+Y29tXQ0KPiA+PiBTZW50OiBUdWVzZGF5LCBKdW5lIDIwLCAyMDE3IDExOjI5IEFNDQo+ID4+IFRv
+OiBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2RpDQo+ID4+IENjOiBtYXJjLnp5bmdpZXJAYXJtLmNv
+bTsgc3VkZWVwLmhvbGxhQGFybS5jb207DQo+IHdpbGwuZGVhY29uQGFybS5jb207DQo+ID4+IHJv
+YmluLm11cnBoeUBhcm0uY29tOyBoYW5qdW4uZ3VvQGxpbmFyby5vcmc7IEdhYnJpZWxlIFBhb2xv
+bmk7IEpvaG4NCj4gPj4gR2Fycnk7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBs
+aW51eC1hcm0tDQo+ID4+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1hY3BpQHZn
+ZXIua2VybmVsLm9yZzsNCj4gZGV2ZWxAYWNwaWNhLm9yZzsNCj4gPj4gTGludXhhcm07IFdhbmd6
+aG91IChCKTsgR3VvaGFuanVuIChIYW5qdW4gR3VvKQ0KPiA+PiBTdWJqZWN0OiBSZTogW1BBVENI
+IHYyIDIvMl0gaW9tbXUvYXJtLXNtbXUtdjM6RW5hYmxlIEFDUEkgYmFzZWQNCj4gPj4gSGlTaWxp
+Y29uIGVycmF0dW0gMTYxMDEwODAxDQo+ID4+DQo+ID4+IEhpIFNoYW1lZXIsDQo+ID4+DQo+ID4+
+IE9uIE1vbiwgSnVuIDE5LCAyMDE3IGF0IDA0OjQ1OjAwUE0gKzAxMDAsIHNoYW1lZXIgd3JvdGU6
+DQo+ID4+PiBUaGUgSGlTaWxpY29uIGVycmF0dW0gMTYxMDEwODAxIGRlc2NyaWJlcyB0aGUgbGlt
+aXRhdGlvbiBvZiBIaVNpbGljb24NCj4gPj4+IHBsYXRmb3JtcyBIaXAwNi9IaXAwNyB0byBzdXBw
+b3J0IHRoZSBTTU1VIG1hcHBpbmdzIGZvciBNU0kNCj4gPj4gdHJhbnNhY3Rpb25zLg0KPiA+Pj4N
+Cj4gPj4+IE9uIHRoZXNlIHBsYXRmb3JtcyBHSUN2MyBJVFMgdHJhbnNsYXRvciBpcyBwcmVzZW50
+ZWQgd2l0aCB0aGUgZGV2aWNlSUQNCj4gPj4+IGJ5IGV4dGVuZGluZyB0aGUgTVNJIHBheWxvYWQg
+ZGF0YSB0byA2NCBiaXRzIHRvIGluY2x1ZGUgdGhlIGRldmljZUlELg0KPiA+Pj4gSGVuY2UsIHRo
+ZSBQQ0llIGNvbnRyb2xsZXIgb24gdGhpcyBwbGF0Zm9ybXMgaGFzIHRvIGRpZmZlcmVudGlhdGUg
+dGhlDQo+ID4+PiBNU0kgcGF5bG9hZCBhZ2FpbnN0IG90aGVyIERNQSBwYXlsb2FkIGFuZCBoYXMg
+dG8gbW9kaWZ5IHRoZSBNU0kNCj4gPj4gcGF5bG9hZC4NCj4gPj4+IFRoaXMgYmFzaWNhbGx5IG1h
+a2VzIGl0IGRpZmZpY3VsdCBmb3IgdGhpcyBwbGF0Zm9ybXMgdG8gaGF2ZSBhIFNNTVUNCj4gPj4+
+IHRyYW5zbGF0aW9uIGZvciBNU0kuDQo+ID4+Pg0KPiA+Pj4gVGhpcyBwYXRjaCBpbXBsZW1lbnRz
+IGEgQUNQSSB0YWJsZSBiYXNlZCBxdWlyayB0byByZXNlcnZlIHRoZSBodyBtc2kNCj4gPj4+IHJl
+Z2lvbnMgaW4gdGhlIHNtbXUtdjMgZHJpdmVyIHdoaWNoIG1lYW5zIHRoZXNlIGFkZHJlc3MgcmVn
+aW9ucyB3aWxsDQo+ID4+PiBub3QgYmUgdHJhbnNsYXRlZCBhbmQgd2lsbCBiZSBleGNsdWRlZCBm
+cm9tIGlvdmEgYWxsb2NhdGlvbnMuDQo+ID4+Pg0KPiA+Pj4gU2lnbmVkLW9mZi1ieTogc2hhbWVl
+ciA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPg0KPiA+Pj4gLS0tDQo+ID4+
+PiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jIHwgMjkgKysrKysrKysrKysrKysrKysrKysr
+KysrLS0tLS0NCj4gPj4+ICAxIGZpbGUgY2hhbmdlZCwgMjQgaW5zZXJ0aW9ucygrKSwgNSBkZWxl
+dGlvbnMoLSkNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21t
+dS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0tDQo+IHNtbXUtDQo+ID4+IHYzLmMNCj4gPj4+IGlu
+ZGV4IGFiZTRiODguLmYwM2M2M2IgMTAwNjQ0DQo+ID4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2Fy
+bS1zbW11LXYzLmMNCj4gPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYw0KPiA+
+Pj4gQEAgLTU5Nyw2ICs1OTcsNyBAQCBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlIHsNCj4gPj4+ICAJ
+dTMyCQkJCWZlYXR1cmVzOw0KPiA+Pj4NCj4gPj4+ICAjZGVmaW5lIEFSTV9TTU1VX09QVF9TS0lQ
+X1BSRUZFVENICSgxIDw8IDApDQo+ID4+PiArI2RlZmluZSBBUk1fU01NVV9PUFRfUkVTVl9IV19N
+U0kJKDEgPDwgMSkNCj4gPj4+ICAJdTMyCQkJCW9wdGlvbnM7DQo+ID4+Pg0KPiA+Pj4gIAlzdHJ1
+Y3QgYXJtX3NtbXVfY21kcQkJY21kcTsNCj4gPj4+IEBAIC0xOTA0LDE0ICsxOTA1LDMxIEBAIHN0
+YXRpYyB2b2lkDQo+IGFybV9zbW11X2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0DQo+ID4+IGRldmlj
+ZSAqZGV2LA0KPiA+Pj4gIAkJCQkgICAgICBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQ0KPiA+Pj4g
+IHsNCj4gPj4+ICAJc3RydWN0IGlvbW11X3Jlc3ZfcmVnaW9uICpyZWdpb247DQo+ID4+PiArCXN0
+cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXU7DQo+ID4+PiArCXN0cnVjdCBpb21tdV9md3NwZWMg
+KmZ3c3BlYyA9IGRldi0+aW9tbXVfZndzcGVjOw0KPiA+Pj4gIAlpbnQgcHJvdCA9IElPTU1VX1dS
+SVRFIHwgSU9NTVVfTk9FWEVDIHwgSU9NTVVfTU1JTzsNCj4gPj4+DQo+ID4+PiAtCXJlZ2lvbiA9
+IGlvbW11X2FsbG9jX3Jlc3ZfcmVnaW9uKE1TSV9JT1ZBX0JBU0UsDQo+ID4+IE1TSV9JT1ZBX0xF
+TkdUSCwNCj4gPj4+IC0JCQkJCSBwcm90LCBJT01NVV9SRVNWX1NXX01TSSk7DQo+ID4+PiAtCWlm
+ICghcmVnaW9uKQ0KPiA+Pj4gLQkJcmV0dXJuOw0KPiA+Pj4gKwlzbW11ID0gYXJtX3NtbXVfZ2V0
+X2J5X2Z3bm9kZShmd3NwZWMtPmlvbW11X2Z3bm9kZSk7DQo+ID4+PiArDQo+ID4+PiArCWlmIChz
+bW11ICYmIChzbW11LT5vcHRpb25zICYgQVJNX1NNTVVfT1BUX1JFU1ZfSFdfTVNJKQ0KPiA+PiAm
+Jg0KPiA+Pj4gKwkJICAgICAgZGV2X2lzX3BjaShkZXYpKSB7DQo+ID4+DQo+ID4+IElPUlQgY2hh
+bmdlcyBhcmUgZmluZSB0byBtZSwgSSBhbSBzdGlsbCBubyBiaWcgZmFuIG9mIHRoaXMgc3VwcG9z
+ZWRseQ0KPiA+PiBnZW5lcmljIG9wdGlvbiB0aGF0IGlzIF9yZWFsbHlfIHBsYXRmb3JtIHNwZWNp
+ZmljIChpbiBwYXJ0aWN1bGFyIGFzIEkNCj4gPj4gc2FpZCBiZWZvcmUgdGhlIHF1aXJrIGRlcGVu
+ZHMgb24gdGhlIFBDSSBob3N0IGJyaWRnZSBidXQgaW4gdGhpcw0KPiA+PiBwYXRjaHNldCBJIHNl
+ZSBubyBzdWNoIGRlcGVuZGVuY3kuIEluIHNob3J0IC0gdGhlIHF1aXJrIGlzIGhvb2tlZCBvZmYN
+Cj4gPj4gdGhlIFNNTVV2MyBtb2RlbCB3aGljaCBpbXBsaWNpdGx5IGltcGxpZXMgYSBQQ0kgaG9z
+dCBicmlkZ2UNCj4gPj4gY29uZmlndXJhdGlvbiBJSVVDKS4gSXQgaXMgV2lsbCBhbmQgUm9iaW4g
+ZGVjaXNpb24gdGhvdWdoLCBJIGFtIG5vdCBzdXJlDQo+ID4+IHlvdSBjYW4gbWFrZSBpdCBhbnkg
+dGlkaWVyIChnaXZlbiB0aGF0IG9uIEFDUEkgeW91IG1heSBub3QgZXZlbiBoYXZlDQo+ID4+IGEg
+UENJIGhvc3QgYnJpZGdlIHNwZWNpZmljIF9ISUQgdG8gYmFzZSB5b3VyIGNoZWNrIGFib3ZlIG9u
+KS4NCj4gPg0KPiA+IFRoYW5rcyBMb3JlbnpvLiBJIHVuZGVyc3RhbmQgeW91ciBwb2ludC4gQXMg
+ZmFyIGFzIG91ciBwbGF0Zm9ybSBpcw0KPiA+IGNvbmNlcm5lZCwgSSB0aGluayBJdCBpcyBvayB0
+byByZW1vdmUgdGhlIGRldl9pc19wY2koKSBjaGVjayBhbmQgbWFrZQ0KPiA+IGl0IGdlbmVyaWMs
+IGlmIHRoYXQgaGVscHMuICBJIGRvbid0IHRoaW5rIGl0IHdpbGwgaGFybSB1cyBvdGhlciB0aGFu
+IGNvdXBsZSBvZg0KPiA+ICAiSFcgTVNJIHJlZ2lvbiByZXN2IGZhaWxlZDogIiBsb2dzICBmb3Ig
+b3VyIHBsYXRmb3JtIGRldmljZXMuDQo+IA0KPiBJIHRoaW5rIHRoZSBhbnN3ZXIgdGhlcmUgaXMg
+dGhhdCBpb3J0X2lvbW11X2l0c19nZXRfcmVzdl9yZWdpb25zKCkNCj4gcmVhbGx5IHNob3VsZCBk
+aXN0aW5ndWlzaCBiZXR3ZWVuICJ0aGlzIGRldmljZSBqdXN0IGRvZXNuJ3QgaGF2ZSBhbiBJVFMN
+Cj4gbWFwcGluZyIgYW5kICJzb21ldGhpbmcgYWN0dWFsbHkgd2VudCB3cm9uZyIsIHN1Y2ggdGhh
+dCB5b3UgZG9uJ3QgdHJlYXQNCj4gdGhlIGZvcm1lciBhcyBhbiBlcnJvci4gVGhhdCdzIGFsbW9z
+dCBjZXJ0YWlubHkgY2xlYW5lciB0aGFuIGUuZy4gdHJ5aW5nDQo+IHRvIGNoZWNrIGlmIGRldiBo
+YXMgYW4gYXNzb2NpYXRlZCBNU0kgZG9tYWluIGhlcmUgYmVmb3JlIGNhbGxpbmcgaXQuDQoNCklm
+IEkgdW5kZXJzdG9vZCB0aGF0IGNvcnJlY3RseSwgdGhlIHN1Z2dlc3Rpb24gaXMgdG8gdHJlYXQg
+Y2FzZXMgd2hlcmUgZGV2aWNlDQpkb2VzbuKAmXQgaGF2ZSBhbnkgSVRTIG5vZGUgYXNzb2NpYXRl
+ZCB3aXRoIGl0IGFzICJzdWNjZXNzIi4NCg0KK2ludCBpb3J0X2lvbW11X2l0c19nZXRfcmVzdl9y
+ZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkNCit7DQpb
+Li4uLl0NCisJaWYgKCFpdHNfbm9kZSkNCisJCXJldHVybiAtRU5PREVWOw0KDQppZSwgcmV0dXJu
+IHN1Y2Nlc3MgYWJvdmUgZnJvbSBwYXRjaCAxLzIuDQoNCkxvcmVuem8sIA0KDQpQbGVhc2UgbGV0
+IG1lIGtub3cgaWYgdGhhdOKAmXMgYSBjb3JyZWN0IHRoaW5nIHRvIGRvIGFzIEkgYW0gbm90IHN1
+cmUgYWJvdXQgYWxsIHRoZSBlcnJvcg0Kc2NlbmFyaW9zIGhlcmUuDQoNClRoYW5rcywNClNoYW1l
+ZXINCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
