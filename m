@@ -1,70 +1,105 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: new dma-mapping tree, was Re: clean up and modularize arch
- dma_mapping interface V2
-Date: Tue, 20 Jun 2017 23:04:00 +1000
-Message-ID: <20170620230400.1a5ae889@canb.auug.org.au>
-References: <20170616181059.19206-1-hch@lst.de>
-        <20170620124140.GA27163@lst.de>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+	erratum 161010801
+Date: Tue, 20 Jun 2017 13:11:28 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA838385EC5@FRAEML521-MBS.china.huawei.com>
+References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
+	<20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
+	<311de3aa-aec9-f403-d9a8-48b3e3de54c3@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20170620124140.GA27163@lst.de>
-Sender: netdev-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, x86@kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, dmaengine@vger.kernel.org, linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <311de3aa-aec9-f403-d9a8-48b3e3de54c3-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "Guohanjun
+	(Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
 
-On Tue, 20 Jun 2017 14:41:40 +0200 Christoph Hellwig <hch@lst.de> wrote:
->
-> On Fri, Jun 16, 2017 at 08:10:15PM +0200, Christoph Hellwig wrote:
-> > I plan to create a new dma-mapping tree to collect all this work.
-> > Any volunteers for co-maintainers, especially from the iommu gang?  
+
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> Sent: Monday, June 19, 2017 6:42 PM
+> To: Shameerali Kolothum Thodi; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org;
+> marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
+> hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+> Cc: Gabriele Paoloni; John Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org; Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
+> Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> HiSilicon erratum 161010801
 > 
-> Ok, I've created the new tree:
+> On 19/06/17 16:45, shameer wrote:
+> > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> > platforms Hip06/Hip07 to support the SMMU mappings for MSI
+> transactions.
+> >
+> > On these platforms GICv3 ITS translator is presented with the deviceID
+> > by extending the MSI payload data to 64 bits to include the deviceID.
+> > Hence, the PCIe controller on this platforms has to differentiate the
+> > MSI payload against other DMA payload and has to modify the MSI
+> payload.
+> > This basically makes it difficult for this platforms to have a SMMU
+> > translation for MSI.
+> >
+> > This patch implements a ACPI table based quirk to reserve the hw msi
+> > regions in the smmu-v3 driver which means these address regions will
+> > not be translated and will be excluded from iova allocations.
+> >
+> > Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
+> >  1 file changed, 24 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
+> v3.c
+> > index abe4b88..f03c63b 100644
+> > --- a/drivers/iommu/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm-smmu-v3.c
+> > @@ -597,6 +597,7 @@ struct arm_smmu_device {
+> >  	u32				features;
+> >
+> >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+> >  	u32				options;
+> >
+> >  	struct arm_smmu_cmdq		cmdq;
+> > @@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct
+> device *dev,
+> >  				      struct list_head *head)
+> >  {
+> >  	struct iommu_resv_region *region;
+> > +	struct arm_smmu_device *smmu;
+> > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> >
+> > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
+> MSI_IOVA_LENGTH,
+> > -					 prot, IOMMU_RESV_SW_MSI);
+> > -	if (!region)
+> > -		return;
+> > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+> > +
+> > +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
+> &&
 > 
->    git://git.infradead.org/users/hch/dma-mapping.git for-next
-> 
-> Gitweb:
-> 
->    http://git.infradead.org/users/hch/dma-mapping.git/shortlog/refs/heads/for-next
-> 
-> And below is the patch to add the MAINTAINERS entry, additions welcome.
-> 
-> Stephen, can you add this to linux-next?
+> AFAICS, iommu_get_resv_regions is only ever called on devices which are
+> at least already part of an iommu_group, so smmu should never
+> legitimately be NULL. I'd say if you really want to be robust against
+> flagrant API misuse, at least WARN_ON and bail out immediately.
 
-Added from tomorrow.
+Ok.  I will address this in next revision.
 
-I have another tree called dma-mapping:
-
-git://git.linaro.org/people/mszyprowski/linux-dma-mapping.git#dma-mapping-next
-
-Contacts: Marek Szyprowski and Kyungmin Park (cc'd)
-
-I have called your tree dma-mapping-hch for now.  The other tree has
-not been updated since 4.9-rc1 and I am not sure how general it is.
-Marek, Kyungmin, any comments?
-
-Thanks for adding your subsystem tree as a participant of linux-next.  As
-you may know, this is not a judgement of your code.  The purpose of
-linux-next is for integration testing and to lower the impact of
-conflicts between subsystems in the next merge window. 
-
-You will need to ensure that the patches/commits in your tree/series have
-been:
-     * submitted under GPL v2 (or later) and include the Contributor's
-        Signed-off-by,
-     * posted to the relevant mailing list,
-     * reviewed by you (or another maintainer of your subsystem tree),
-     * successfully unit tested, and 
-     * destined for the current or next Linux merge window.
-
-Basically, this should be just what you would send to Linus (or ask him
-to fetch).  It is allowed to be rebased if you deem it necessary.
-
--- 
-Cheers,
-Stephen Rothwell 
-sfr@canb.auug.org.au
+Thanks,
+Shameer
