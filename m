@@ -1,117 +1,74 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-	erratum 161010801
-Date: Tue, 20 Jun 2017 14:07:18 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
-References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
-	<20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
-	<20170620102906.GA26908@red-moon>
+From: Geetha sowjanya <gakula@caviumnetworks.com>
+Subject: [PATCH v8 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Tue, 20 Jun 2017 19:47:36 +0530
+Message-ID: <1497968259-16390-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170620102906.GA26908@red-moon>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org
+Cc: robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org, Geetha sowjanya <gakula@caviumnetworks.com>
 List-Id: iommu@lists.linux-foundation.org
 
+Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+1. Errata ID #74
+   SMMU register alias Page 1 is not implemented
+2. Errata ID #126
+   SMMU doesnt support unique IRQ lines and also MSI for gerror,
+   eventq and cmdq-sync
 
+The following patchset does software workaround for these two erratas.
 
-> -----Original Message-----
-> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
-> Sent: Tuesday, June 20, 2017 11:29 AM
-> To: Shameerali Kolothum Thodi
-> Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> robin.murphy-5wv7dgnIgG8@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Gabriele Paoloni; John
-> Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org;
-> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
-> HiSilicon erratum 161010801
-> 
-> Hi Shameer,
-> 
-> On Mon, Jun 19, 2017 at 04:45:00PM +0100, shameer wrote:
-> > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> > platforms Hip06/Hip07 to support the SMMU mappings for MSI
-> transactions.
-> >
-> > On these platforms GICv3 ITS translator is presented with the deviceID
-> > by extending the MSI payload data to 64 bits to include the deviceID.
-> > Hence, the PCIe controller on this platforms has to differentiate the
-> > MSI payload against other DMA payload and has to modify the MSI
-> payload.
-> > This basically makes it difficult for this platforms to have a SMMU
-> > translation for MSI.
-> >
-> > This patch implements a ACPI table based quirk to reserve the hw msi
-> > regions in the smmu-v3 driver which means these address regions will
-> > not be translated and will be excluded from iova allocations.
-> >
-> > Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
-> >  1 file changed, 24 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
-> v3.c
-> > index abe4b88..f03c63b 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -597,6 +597,7 @@ struct arm_smmu_device {
-> >  	u32				features;
-> >
-> >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
-> >  	u32				options;
-> >
-> >  	struct arm_smmu_cmdq		cmdq;
-> > @@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct
-> device *dev,
-> >  				      struct list_head *head)
-> >  {
-> >  	struct iommu_resv_region *region;
-> > +	struct arm_smmu_device *smmu;
-> > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> >
-> > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
-> MSI_IOVA_LENGTH,
-> > -					 prot, IOMMU_RESV_SW_MSI);
-> > -	if (!region)
-> > -		return;
-> > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-> > +
-> > +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
-> &&
-> > +		      dev_is_pci(dev)) {
-> 
-> IORT changes are fine to me, I am still no big fan of this supposedly
-> generic option that is _really_ platform specific (in particular as I
-> said before the quirk depends on the PCI host bridge but in this
-> patchset I see no such dependency. In short - the quirk is hooked off
-> the SMMUv3 model which implicitly implies a PCI host bridge
-> configuration IIUC). It is Will and Robin decision though, I am not sure
-> you can make it any tidier (given that on ACPI you may not even have
-> a PCI host bridge specific _HID to base your check above on).
+This series is based on patchset.
+https://www.spinics.net/lists/arm-kernel/msg578443.html
 
-Thanks Lorenzo. I understand your point. As far as our platform is 
-concerned, I think It is ok to remove the dev_is_pci() check and make
-it generic, if that helps.  I don't think it will harm us other than couple of
- "HW MSI region resv failed: " logs  for our platform devices.
+Changes since v7:
+    - Added new function "arm_smmu_v3_resource_size" in iort.c to get resource
+      size.
+    - Added new SMMU option "SHARED_IRQ" to enable errata #126 workaround.
+    - Coding style issues fixed.
+    - Suggested changes in arm_smmu_device_probe addressed.
+    - Replaced ACPI_IORT_SMMU_CAVIUM_CN99XX macro with ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
+   
+Changes since v6:
+   - Changed device tree compatible string to vendor specific.
+   - Rebased on Robin's latest "Update SMMU models for IORT rev. C" v2 patch.
+     https://www.spinics.net/lists/arm-kernel/msg582809.html
 
-Hi Will/Robin,
-Please let me know your thoughts.
+Changes since v5:
+  - Rebased on Robin's "Update SMMU models for IORT rev. C" patch.
+     https://www.spinics.net/lists/arm-kernel/msg580728.html
+  - Replaced ACPI_IORT_SMMU_V3_CAVIUM_CN99XX macro with ACPI_IORT_SMMU_CAVIUM_CN99XX
 
-Thanks,
-Shameer
+Changes since v4:
+ - Replaced all page1 offset macros ARM_SMMU_EVTQ/PRIQ_PROD/CONS with
+    arm_smmu_page1_fixup(ARM_SMMU_EVTQ/PRIQ_PROD/CONS, smmu)
+
+Changes since v3:
+ - Merged patches 1, 2 and 4 of Version 3.
+ - Modified the page1_offset_adjust() and get_irq_flags() implementation as
+   suggested by Robin.
+
+Changes since v2:
+ - Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with
+   new SMMU option used to enable errata workaround.
+
+Changes since v1:
+ - Since the use of MIDR register is rejected and SMMU_IIDR is broken on this
+   silicon, as suggested by Will Deacon modified the patches to use ThunderX2
+   SMMUv3 IORT model number to enable errata workaround.
+
+Geetha Sowjanya (1):
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
+
+Linu Cherian (2):
+  ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
+    model
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #74
+
+ Documentation/arm64/silicon-errata.txt             |    2 +
+ .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 ++
+ drivers/acpi/arm64/iort.c                          |   14 +++-
+ drivers/iommu/arm-smmu-v3.c                        |   93 ++++++++++++++++----
+ 4 files changed, 95 insertions(+), 20 deletions(-)
+
