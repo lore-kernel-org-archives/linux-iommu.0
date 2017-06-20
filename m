@@ -1,67 +1,155 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v7 11/36] x86/mm: Add SME support for read_cr3_pa()
-Date: Tue, 20 Jun 2017 11:23:03 -0500
-Message-ID: <9a1c0df8-ca12-eebc-5565-ced847989169@amd.com>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185154.18967.71073.stgit@tlendack-t1.amdoffice.net>
- <CALCETrVkyj=wfcgNMVG_BU+xGb3yBNhxrDdSTxJLx7UYraVcUA@mail.gmail.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Tue, 20 Jun 2017 17:27:23 +0100
+Message-ID: <20170620162723.GE11351@red-moon>
+References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
+ <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
+ <20170620102906.GA26908@red-moon>
+ <5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
+ <d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA8383866C7@FRAEML521-MBS.china.huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <CALCETrVkyj=wfcgNMVG_BU+xGb3yBNhxrDdSTxJLx7UYraVcUA@mail.gmail.com>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Andy Lutomirski <luto@kernel.org>
-Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, kexec@lists.infradead.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, xen-devel <xen-devel@lists.xen.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andr
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA8383866C7@FRAEML521-MBS.china.huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/20/2017 11:17 AM, Andy Lutomirski wrote:
-> On Fri, Jun 16, 2017 at 11:51 AM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
->> The cr3 register entry can contain the SME encryption mask that indicates
->> the PGD is encrypted.  The encryption mask should not be used when
->> creating a virtual address from the cr3 register, so remove the SME
->> encryption mask in the read_cr3_pa() function.
->>
->> During early boot SME will need to use a native version of read_cr3_pa(),
->> so create native_read_cr3_pa().
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>   arch/x86/include/asm/processor-flags.h |    3 ++-
->>   arch/x86/include/asm/processor.h       |    5 +++++
->>   2 files changed, 7 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/include/asm/processor-flags.h b/arch/x86/include/asm/processor-flags.h
->> index 79aa2f9..cb6999c 100644
->> --- a/arch/x86/include/asm/processor-flags.h
->> +++ b/arch/x86/include/asm/processor-flags.h
->> @@ -2,6 +2,7 @@
->>   #define _ASM_X86_PROCESSOR_FLAGS_H
->>
->>   #include <uapi/asm/processor-flags.h>
->> +#include <linux/mem_encrypt.h>
->>
->>   #ifdef CONFIG_VM86
->>   #define X86_VM_MASK    X86_EFLAGS_VM
->> @@ -33,7 +34,7 @@
->>    */
->>   #ifdef CONFIG_X86_64
->>   /* Mask off the address space ID bits. */
->> -#define CR3_ADDR_MASK 0x7FFFFFFFFFFFF000ull
->> +#define CR3_ADDR_MASK __sme_clr(0x7FFFFFFFFFFFF000ull)
+On Tue, Jun 20, 2017 at 03:39:30PM +0000, Shameerali Kolothum Thodi wrote:
 > 
-> Can you update the comment one line above, too?
+> 
+> > -----Original Message-----
+> > From: Robin Murphy [mailto:robin.murphy@arm.com]
+> > Sent: Tuesday, June 20, 2017 4:16 PM
+> > To: Shameerali Kolothum Thodi; Lorenzo Pieralisi
+> > Cc: marc.zyngier@arm.com; sudeep.holla@arm.com; will.deacon@arm.com;
+> > hanjun.guo@linaro.org; Gabriele Paoloni; John Garry; iommu@lists.linux-
+> > foundation.org; linux-arm-kernel@lists.infradead.org; linux-
+> > acpi@vger.kernel.org; devel@acpica.org; Linuxarm; Wangzhou (B);
+> > Guohanjun (Hanjun Guo)
+> > Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> > HiSilicon erratum 161010801
+> > 
+> > On 20/06/17 15:07, Shameerali Kolothum Thodi wrote:
+> > >
+> > >
+> > >> -----Original Message-----
+> > >> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
+> > >> Sent: Tuesday, June 20, 2017 11:29 AM
+> > >> To: Shameerali Kolothum Thodi
+> > >> Cc: marc.zyngier@arm.com; sudeep.holla@arm.com;
+> > will.deacon@arm.com;
+> > >> robin.murphy@arm.com; hanjun.guo@linaro.org; Gabriele Paoloni; John
+> > >> Garry; iommu@lists.linux-foundation.org; linux-arm-
+> > >> kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> > devel@acpica.org;
+> > >> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
+> > >> Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> > >> HiSilicon erratum 161010801
+> > >>
+> > >> Hi Shameer,
+> > >>
+> > >> On Mon, Jun 19, 2017 at 04:45:00PM +0100, shameer wrote:
+> > >>> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> > >>> platforms Hip06/Hip07 to support the SMMU mappings for MSI
+> > >> transactions.
+> > >>>
+> > >>> On these platforms GICv3 ITS translator is presented with the deviceID
+> > >>> by extending the MSI payload data to 64 bits to include the deviceID.
+> > >>> Hence, the PCIe controller on this platforms has to differentiate the
+> > >>> MSI payload against other DMA payload and has to modify the MSI
+> > >> payload.
+> > >>> This basically makes it difficult for this platforms to have a SMMU
+> > >>> translation for MSI.
+> > >>>
+> > >>> This patch implements a ACPI table based quirk to reserve the hw msi
+> > >>> regions in the smmu-v3 driver which means these address regions will
+> > >>> not be translated and will be excluded from iova allocations.
+> > >>>
+> > >>> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> > >>> ---
+> > >>>  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
+> > >>>  1 file changed, 24 insertions(+), 5 deletions(-)
+> > >>>
+> > >>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-
+> > smmu-
+> > >> v3.c
+> > >>> index abe4b88..f03c63b 100644
+> > >>> --- a/drivers/iommu/arm-smmu-v3.c
+> > >>> +++ b/drivers/iommu/arm-smmu-v3.c
+> > >>> @@ -597,6 +597,7 @@ struct arm_smmu_device {
+> > >>>  	u32				features;
+> > >>>
+> > >>>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> > >>> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+> > >>>  	u32				options;
+> > >>>
+> > >>>  	struct arm_smmu_cmdq		cmdq;
+> > >>> @@ -1904,14 +1905,31 @@ static void
+> > arm_smmu_get_resv_regions(struct
+> > >> device *dev,
+> > >>>  				      struct list_head *head)
+> > >>>  {
+> > >>>  	struct iommu_resv_region *region;
+> > >>> +	struct arm_smmu_device *smmu;
+> > >>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> > >>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> > >>>
+> > >>> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
+> > >> MSI_IOVA_LENGTH,
+> > >>> -					 prot, IOMMU_RESV_SW_MSI);
+> > >>> -	if (!region)
+> > >>> -		return;
+> > >>> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+> > >>> +
+> > >>> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
+> > >> &&
+> > >>> +		      dev_is_pci(dev)) {
+> > >>
+> > >> IORT changes are fine to me, I am still no big fan of this supposedly
+> > >> generic option that is _really_ platform specific (in particular as I
+> > >> said before the quirk depends on the PCI host bridge but in this
+> > >> patchset I see no such dependency. In short - the quirk is hooked off
+> > >> the SMMUv3 model which implicitly implies a PCI host bridge
+> > >> configuration IIUC). It is Will and Robin decision though, I am not sure
+> > >> you can make it any tidier (given that on ACPI you may not even have
+> > >> a PCI host bridge specific _HID to base your check above on).
+> > >
+> > > Thanks Lorenzo. I understand your point. As far as our platform is
+> > > concerned, I think It is ok to remove the dev_is_pci() check and make
+> > > it generic, if that helps.  I don't think it will harm us other than couple of
+> > >  "HW MSI region resv failed: " logs  for our platform devices.
+> > 
+> > I think the answer there is that iort_iommu_its_get_resv_regions()
+> > really should distinguish between "this device just doesn't have an ITS
+> > mapping" and "something actually went wrong", such that you don't treat
+> > the former as an error. That's almost certainly cleaner than e.g. trying
+> > to check if dev has an associated MSI domain here before calling it.
+> 
+> If I understood that correctly, the suggestion is to treat cases where device
+> doesn’t have any ITS node associated with it as "success".
+> 
+> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> [....]
+> +	if (!its_node)
+> +		return -ENODEV;
+> 
+> ie, return success above from patch 1/2.
+> 
+> Lorenzo, 
+> 
+> Please let me know if that’s a correct thing to do as I am not sure
+> about all the error scenarios here.
 
-Yup, will do.
+Yes it is, you need to add specific return values that you can then
+handle in the SMMU callback accordingly (reverting to SW_MSI in case the
+device does not map to an ITS).
 
 Thanks,
-Tom
-
-> 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Lorenzo
