@@ -1,66 +1,76 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v8 2/3] iommu/arm-smmu-v3: Add workaround for Cavium
- ThunderX2 erratum #74
-Date: Tue, 20 Jun 2017 19:06:19 +0100
-Message-ID: <20170620180618.GE28035@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v8 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
+	ThunderX2 SMMUv3 model
+Date: Tue, 20 Jun 2017 20:27:47 +0100
+Message-ID: <20170620192747.GA30990@red-moon>
 References: <1497968259-16390-1-git-send-email-gakula@caviumnetworks.com>
- <1497968259-16390-3-git-send-email-gakula@caviumnetworks.com>
+	<1497968259-16390-2-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1497968259-16390-3-git-send-email-gakula@caviumnetworks.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Geetha sowjanya <gakula@caviumnetworks.com>
-Cc: robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+In-Reply-To: <1497968259-16390-2-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 20, 2017 at 07:47:38PM +0530, Geetha sowjanya wrote:
-> From: Linu Cherian <linu.cherian@cavium.com>
+On Tue, Jun 20, 2017 at 07:47:37PM +0530, Geetha sowjanya wrote:
+> From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > 
-> Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
-> and PAGE0_REGS_ONLY option is enabled as an errata workaround.
-> This option when turned on, replaces all page 1 offsets used for
-> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
+> Cavium ThunderX2 implementation doesn't support second page in SMMU
+> register space. Hence, resource size is set as 64k for this model.
 > 
-> SMMU resource size checks are now based on SMMU option PAGE0_REGS_ONLY,
-> since resource size can be either 64k/128k.
-> For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
-> platform_get_resource call, so that SMMU options are set beforehand.
-> 
-> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
-> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > ---
->  Documentation/arm64/silicon-errata.txt             |    1 +
->  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 ++
->  drivers/iommu/arm-smmu-v3.c                        |   68 ++++++++++++++-----
->  3 files changed, 57 insertions(+), 18 deletions(-)
-> 
-> diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-> index 10f2ddd..4693a32 100644
-> --- a/Documentation/arm64/silicon-errata.txt
-> +++ b/Documentation/arm64/silicon-errata.txt
-> @@ -62,6 +62,7 @@ stable kernels.
->  | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154        |
->  | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
->  | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
-> +| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
->  |                |                 |                 |                             |
->  | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
->  |                |                 |                 |                             |
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> index be57550..6ecc48c 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> @@ -49,6 +49,12 @@ the PCIe specification.
->  - hisilicon,broken-prefetch-cmd
->                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
+>  drivers/acpi/arm64/iort.c |   15 ++++++++++++++-
+>  1 files changed, 14 insertions(+), 1 deletions(-)
+
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index c5fecf9..c166f3e 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -828,6 +828,18 @@ static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
+>  	return num_res;
+>  }
 >  
-> +- cavium,cn9900-broken-page1-regspace
-> +                    : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
-> +		      PRIQ_PROD/CONS register access with page 0 offsets.
-> +		      Set for Caviun ThunderX2 silicon that doesn't support
-
-s/Caviun/Cavium/
-
-Will
+> +static unsigned long arm_smmu_v3_resource_size(struct acpi_iort_smmu_v3 *smmu)
+> +{
+> +	/*
+> +	 * Override the size, for Cavium ThunderX2 implementation
+> +	 * which doesn't support the page 1 SMMU register space.
+> +	 */
+> +	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
+> +		return SZ_64K;
+> +
+> +	return SZ_128K;
+> +}
+> +
+>  static void __init arm_smmu_v3_init_resources(struct resource *res,
+>  					      struct acpi_iort_node *node)
+>  {
+> @@ -838,7 +850,8 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
+>  	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+>  
+>  	res[num_res].start = smmu->base_address;
+> -	res[num_res].end = smmu->base_address + SZ_128K - 1;
+> +	res[num_res].end = smmu->base_address +
+> +				arm_smmu_v3_resource_size(smmu) - 1;
+>  	res[num_res].flags = IORESOURCE_MEM;
+>  
+>  	num_res++;
+> -- 
+> 1.7.1
+> 
