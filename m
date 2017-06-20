@@ -1,74 +1,87 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [patch 10/55] x86/msi: Provide new iommu irqdomain interface
-Date: Tue, 20 Jun 2017 01:37:10 +0200
-Message-ID: <20170619235443.986661206@linutronix.de>
-References: <20170619233700.547167146@linutronix.de>
+From: Ganapatrao Kulkarni <gpkulkarni@gmail.com>
+Subject: Re: [PATCH v3 1/2] acpica: iort: Update SMMUv3 header for proximity
+ domain mapping
+Date: Tue, 20 Jun 2017 07:57:09 +0530
+Message-ID: <CAFpQJXVE8pfmbn5b+5ngiJ01OVLH-pLn7zhpzWX2+62SR1L_qA@mail.gmail.com>
+References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <1496897059-8272-2-git-send-email-ganapatrao.kulkarni@cavium.com> <0d0d6cb6-7674-5751-d780-af5114ddd569@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline;
-	filename=x86-msi--Provide-new-iommu-irqdomain-interface.patch
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <0d0d6cb6-7674-5751-d780-af5114ddd569@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, Lv Zheng <lv.zheng@intel.com>, joro@8bytes.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Provide a new interface for creating the iommu remapping domains, so that
-the caller can supply a name and a id in order to create named irqdomains.
+On Mon, Jun 19, 2017 at 11:24 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 08/06/17 05:44, Ganapatrao Kulkarni wrote:
+>> ARM IORT specification (rev. C) has added two new fields to define
+>> proximity domain for the SMMUv3 node in the IORT table.
+>>
+>> Proximity Domain Valid:
+>>       Set to 1 if the value provided in the Proximity Domain field is
+>>       valid. Set to 0 otherwise.
+>>
+>> Proximity domain:
+>>       If the Proximity Domain Valid flag is set to 1, this entry
+>>       provides the proximity domain to which this SMMU
+>>       instance belongs.
+>>
+>> Update header file to reflect this.
+>>
+>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>> ---
+>>  include/acpi/actbl2.h | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+>> index 4b306a6..389e91f 100644
+>> --- a/include/acpi/actbl2.h
+>> +++ b/include/acpi/actbl2.h
+>> @@ -805,6 +805,9 @@ struct acpi_iort_smmu_v3 {
+>>       u32 pri_gsiv;
+>>       u32 gerr_gsiv;
+>>       u32 sync_gsiv;
+>> +     u8 pxm;
+>> +     u8 reserved1;
+>> +     u16 reserved2;
+>
+> Why add the padding if you're not also adding the following field that
+> it aligns? (side note: could it not just be a u8[3]?)
 
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
----
- arch/x86/include/asm/irq_remapping.h |    2 ++
- arch/x86/kernel/apic/msi.c           |   15 +++++++++++++++
- 2 files changed, 17 insertions(+)
+added to align as well to comply with  the spec.
 
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -56,6 +56,8 @@ irq_remapping_get_irq_domain(struct irq_
- 
- /* Create PCI MSI/MSIx irqdomain, use @parent as the parent irqdomain. */
- extern struct irq_domain *arch_create_msi_irq_domain(struct irq_domain *parent);
-+extern struct irq_domain *
-+arch_create_remap_msi_irq_domain(struct irq_domain *par, const char *n, int id);
- 
- /* Get parent irqdomain for interrupt remapping irqdomain */
- static inline struct irq_domain *arch_get_ir_parent_domain(void)
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -167,10 +167,25 @@ static struct msi_domain_info pci_msi_ir
- 	.handler_name	= "edge",
- };
- 
-+struct irq_domain *arch_create_remap_msi_irq_domain(struct irq_domain *parent,
-+						    const char *name, int id)
-+{
-+	struct fwnode_handle *fn;
-+	struct irq_domain *d;
-+
-+	fn = irq_domain_alloc_named_id_fwnode(name, id);
-+	if (!fn)
-+		return NULL;
-+	d = pci_msi_create_irq_domain(fn, &pci_msi_ir_domain_info, parent);
-+	kfree(fn);
-+	return d;
-+}
-+
- struct irq_domain *arch_create_msi_irq_domain(struct irq_domain *parent)
- {
- 	return pci_msi_create_irq_domain(NULL, &pci_msi_ir_domain_info, parent);
- }
-+
- #endif
- 
- #ifdef CONFIG_DMAR_TABLE
+>
+> If the actual structure definition is changing, do there not need to be
+> corresponding IASL changes too?
+
+yes, it is been added and sent to acpica devel ML.
+https://lists.acpica.org/pipermail/devel/2017-June/001243.html
+
+>
+>>  };
+>>
+>>  /* Values for Model field above */
+>> @@ -817,6 +820,7 @@ struct acpi_iort_smmu_v3 {
+>>
+>>  #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
+>>  #define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
+>> +#define ACPI_IORT_SMMU_V3_PXM_VALID         (1<<3)
+>
+> Maybe it's just me, but "PXM" seems incredibly cryptic.
+
+PXM stands for proximity(refer ACPI spec)
+it is widely used in spec and also in Linux kernel.
+
+>
+> Robin.
+>
+>>
+>>  /*******************************************************************************
+>>   *
+>>
+>
+
+thanks
+Ganapat
