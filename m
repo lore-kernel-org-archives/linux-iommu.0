@@ -1,52 +1,37 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v7 1/3] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
- ThunderX2 SMMUv3 model
-Date: Tue, 20 Jun 2017 11:31:46 +0100
-Message-ID: <20170620103146.GB26908@red-moon>
-References: <1496145821-3411-1-git-send-email-gakula@caviumnetworks.com>
- <1496145821-3411-2-git-send-email-gakula@caviumnetworks.com>
- <20170620081943.GT658@rric.localdomain>
- <20170620085123.GF16981@rric.localdomain>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH 1/1] iommu/arm-smmu-v3: replace writel with writel_relaxed in queue_inc_prod
+Date: Tue, 20 Jun 2017 19:04:54 +0800
+Message-ID: <1497956694-11784-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170620085123.GF16981@rric.localdomain>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robert Richter <robert.richter@cavium.com>
-Cc: Geetha sowjanya <gakula@caviumnetworks.com>, rjw@rjwysocki.net, robert.moore@intel.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, lv.zheng@intel.com, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 20, 2017 at 10:51:23AM +0200, Robert Richter wrote:
-> On 20.06.17 10:19:43, Robert Richter wrote:
-> > On 30.05.17 17:33:39, Geetha sowjanya wrote:
-> > > From: Linu Cherian <linu.cherian@cavium.com>
-> 
-> > > +	/*
-> > > +	 * Override the size, for Cavium ThunderX2 implementation
-> > > +	 * which doesn't support the page 1 SMMU register space.
-> > > +	 */
-> > > +	if (smmu->model == ACPI_IORT_SMMU_CAVIUM_CN99XX)
-> > 
-> > Geetha,
-> > 
-> > please resubmit the series since the macro changed to
-> > ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
-> > 
-> >  https://github.com/acpica/acpica/commit/d00a4eb86e64bb4fa70f57ab5e5ca0a4ca2ad8ef#diff-a572aac2ccc26fe4a901616d7fdba859R1053
-> 
-> Rafael, Bob,
-> 
-> btw, I haven't seen
-> 
->  https://github.com/acpica/acpica/commit/d00a4eb86e64
-> 
-> yet in linux-pm:linux-next. We would like to see this in 4.13 also. Is
-> it on the way already?
+This function is protected by spinlock, and the latter will do memory
+barrier implicitly. So that we can safely use writel_relaxed. In fact, the
+dmb operation will lengthen the time protected by lock, which indirectly
+increase the locking confliction in the stress scene.
 
-Yes it would be great to understand how we can make sure IORT and
-related ACPICA changes can be kept in sync for this merge window, it
-is -rc6 already so it is getting a bit late in the cycle.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Lorenzo
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 380969a..d2fbee3 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -728,7 +728,7 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+ 	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + 1;
+
+ 	q->prod = Q_OVF(q, q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
+-	writel(q->prod, q->prod_reg);
++	writel_relaxed(q->prod, q->prod_reg);
+ }
+
+ /*
+--
+2.5.0
