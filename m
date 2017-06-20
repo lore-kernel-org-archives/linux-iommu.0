@@ -1,87 +1,55 @@
-From: Ganapatrao Kulkarni <gpkulkarni@gmail.com>
-Subject: Re: [PATCH v3 1/2] acpica: iort: Update SMMUv3 header for proximity
- domain mapping
-Date: Tue, 20 Jun 2017 07:57:09 +0530
-Message-ID: <CAFpQJXVE8pfmbn5b+5ngiJ01OVLH-pLn7zhpzWX2+62SR1L_qA@mail.gmail.com>
-References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
- <1496897059-8272-2-git-send-email-ganapatrao.kulkarni@cavium.com> <0d0d6cb6-7674-5751-d780-af5114ddd569@arm.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v7 03/36] x86, mpparse, x86/acpi, x86/PCI, x86/dmi, SFI:
+	Use memremap for RAM mappings
+Date: Tue, 20 Jun 2017 09:21:25 +0200
+Message-ID: <20170620072124.p6wztvxw5fj25a6m@pd.tnic>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+	<20170616185023.18967.72831.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <0d0d6cb6-7674-5751-d780-af5114ddd569@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, Lv Zheng <lv.zheng@intel.com>, joro@8bytes.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170616185023.18967.72831.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kerne
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 19, 2017 at 11:24 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 08/06/17 05:44, Ganapatrao Kulkarni wrote:
->> ARM IORT specification (rev. C) has added two new fields to define
->> proximity domain for the SMMUv3 node in the IORT table.
->>
->> Proximity Domain Valid:
->>       Set to 1 if the value provided in the Proximity Domain field is
->>       valid. Set to 0 otherwise.
->>
->> Proximity domain:
->>       If the Proximity Domain Valid flag is set to 1, this entry
->>       provides the proximity domain to which this SMMU
->>       instance belongs.
->>
->> Update header file to reflect this.
->>
->> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
->> ---
->>  include/acpi/actbl2.h | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
->> index 4b306a6..389e91f 100644
->> --- a/include/acpi/actbl2.h
->> +++ b/include/acpi/actbl2.h
->> @@ -805,6 +805,9 @@ struct acpi_iort_smmu_v3 {
->>       u32 pri_gsiv;
->>       u32 gerr_gsiv;
->>       u32 sync_gsiv;
->> +     u8 pxm;
->> +     u8 reserved1;
->> +     u16 reserved2;
->
-> Why add the padding if you're not also adding the following field that
-> it aligns? (side note: could it not just be a u8[3]?)
+On Fri, Jun 16, 2017 at 01:50:23PM -0500, Tom Lendacky wrote:
+> The ioremap() function is intended for mapping MMIO. For RAM, the
+> memremap() function should be used. Convert calls from ioremap() to
+> memremap() when re-mapping RAM.
+> 
+> This will be used later by SME to control how the encryption mask is
+> applied to memory mappings, with certain memory locations being mapped
+> decrypted vs encrypted.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  arch/x86/include/asm/dmi.h   |    8 ++++----
+>  arch/x86/kernel/acpi/boot.c  |    6 +++---
+>  arch/x86/kernel/kdebugfs.c   |   34 +++++++++++-----------------------
+>  arch/x86/kernel/ksysfs.c     |   28 ++++++++++++++--------------
+>  arch/x86/kernel/mpparse.c    |   10 +++++-----
+>  arch/x86/pci/common.c        |    4 ++--
+>  drivers/firmware/dmi-sysfs.c |    5 +++--
+>  drivers/firmware/pcdp.c      |    4 ++--
+>  drivers/sfi/sfi_core.c       |   22 +++++++++++-----------
+>  9 files changed, 55 insertions(+), 66 deletions(-)
 
-added to align as well to comply with  the spec.
+Reviewed-by: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
 
->
-> If the actual structure definition is changing, do there not need to be
-> corresponding IASL changes too?
+-- 
+Regards/Gruss,
+    Boris.
 
-yes, it is been added and sent to acpica devel ML.
-https://lists.acpica.org/pipermail/devel/2017-June/001243.html
-
->
->>  };
->>
->>  /* Values for Model field above */
->> @@ -817,6 +820,7 @@ struct acpi_iort_smmu_v3 {
->>
->>  #define ACPI_IORT_SMMU_V3_COHACC_OVERRIDE   (1)
->>  #define ACPI_IORT_SMMU_V3_HTTU_OVERRIDE     (1<<1)
->> +#define ACPI_IORT_SMMU_V3_PXM_VALID         (1<<3)
->
-> Maybe it's just me, but "PXM" seems incredibly cryptic.
-
-PXM stands for proximity(refer ACPI spec)
-it is widely used in spec and also in Linux kernel.
-
->
-> Robin.
->
->>
->>  /*******************************************************************************
->>   *
->>
->
-
-thanks
-Ganapat
+Good mailing practices for 400: avoid top-posting and trim the reply.
