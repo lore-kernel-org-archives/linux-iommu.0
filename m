@@ -1,125 +1,122 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-	erratum 161010801
-Date: Tue, 20 Jun 2017 15:39:30 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA8383866C7@FRAEML521-MBS.china.huawei.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Tue, 20 Jun 2017 16:51:05 +0100
+Message-ID: <20170620155105.GD11351@red-moon>
 References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
-	<20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
-	<20170620102906.GA26908@red-moon>
-	<5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
-	<d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
+ <20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
+ <20170620102906.GA26908@red-moon>
+ <5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
+ <d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <d6e824b0-17bd-dd41-2d11-0491d8f66759-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4gTXVycGh5IFtt
-YWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+IFNlbnQ6IFR1ZXNkYXksIEp1bmUgMjAsIDIw
-MTcgNDoxNiBQTQ0KPiBUbzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaTsgTG9yZW56byBQaWVy
-YWxpc2kNCj4gQ2M6IG1hcmMuenluZ2llckBhcm0uY29tOyBzdWRlZXAuaG9sbGFAYXJtLmNvbTsg
-d2lsbC5kZWFjb25AYXJtLmNvbTsNCj4gaGFuanVuLmd1b0BsaW5hcm8ub3JnOyBHYWJyaWVsZSBQ
-YW9sb25pOyBKb2huIEdhcnJ5OyBpb21tdUBsaXN0cy5saW51eC0NCj4gZm91bmRhdGlvbi5vcmc7
-IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgtDQo+IGFjcGlAdmdl
-ci5rZXJuZWwub3JnOyBkZXZlbEBhY3BpY2Eub3JnOyBMaW51eGFybTsgV2FuZ3pob3UgKEIpOw0K
-PiBHdW9oYW5qdW4gKEhhbmp1biBHdW8pDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMi8yXSBp
-b21tdS9hcm0tc21tdS12MzpFbmFibGUgQUNQSSBiYXNlZA0KPiBIaVNpbGljb24gZXJyYXR1bSAx
-NjEwMTA4MDENCj4gDQo+IE9uIDIwLzA2LzE3IDE1OjA3LCBTaGFtZWVyYWxpIEtvbG90aHVtIFRo
-b2RpIHdyb3RlOg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4g
-Pj4gRnJvbTogTG9yZW56byBQaWVyYWxpc2kgW21haWx0bzpsb3JlbnpvLnBpZXJhbGlzaUBhcm0u
-Y29tXQ0KPiA+PiBTZW50OiBUdWVzZGF5LCBKdW5lIDIwLCAyMDE3IDExOjI5IEFNDQo+ID4+IFRv
-OiBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2RpDQo+ID4+IENjOiBtYXJjLnp5bmdpZXJAYXJtLmNv
-bTsgc3VkZWVwLmhvbGxhQGFybS5jb207DQo+IHdpbGwuZGVhY29uQGFybS5jb207DQo+ID4+IHJv
-YmluLm11cnBoeUBhcm0uY29tOyBoYW5qdW4uZ3VvQGxpbmFyby5vcmc7IEdhYnJpZWxlIFBhb2xv
-bmk7IEpvaG4NCj4gPj4gR2Fycnk7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBs
-aW51eC1hcm0tDQo+ID4+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1hY3BpQHZn
-ZXIua2VybmVsLm9yZzsNCj4gZGV2ZWxAYWNwaWNhLm9yZzsNCj4gPj4gTGludXhhcm07IFdhbmd6
-aG91IChCKTsgR3VvaGFuanVuIChIYW5qdW4gR3VvKQ0KPiA+PiBTdWJqZWN0OiBSZTogW1BBVENI
-IHYyIDIvMl0gaW9tbXUvYXJtLXNtbXUtdjM6RW5hYmxlIEFDUEkgYmFzZWQNCj4gPj4gSGlTaWxp
-Y29uIGVycmF0dW0gMTYxMDEwODAxDQo+ID4+DQo+ID4+IEhpIFNoYW1lZXIsDQo+ID4+DQo+ID4+
-IE9uIE1vbiwgSnVuIDE5LCAyMDE3IGF0IDA0OjQ1OjAwUE0gKzAxMDAsIHNoYW1lZXIgd3JvdGU6
-DQo+ID4+PiBUaGUgSGlTaWxpY29uIGVycmF0dW0gMTYxMDEwODAxIGRlc2NyaWJlcyB0aGUgbGlt
-aXRhdGlvbiBvZiBIaVNpbGljb24NCj4gPj4+IHBsYXRmb3JtcyBIaXAwNi9IaXAwNyB0byBzdXBw
-b3J0IHRoZSBTTU1VIG1hcHBpbmdzIGZvciBNU0kNCj4gPj4gdHJhbnNhY3Rpb25zLg0KPiA+Pj4N
-Cj4gPj4+IE9uIHRoZXNlIHBsYXRmb3JtcyBHSUN2MyBJVFMgdHJhbnNsYXRvciBpcyBwcmVzZW50
-ZWQgd2l0aCB0aGUgZGV2aWNlSUQNCj4gPj4+IGJ5IGV4dGVuZGluZyB0aGUgTVNJIHBheWxvYWQg
-ZGF0YSB0byA2NCBiaXRzIHRvIGluY2x1ZGUgdGhlIGRldmljZUlELg0KPiA+Pj4gSGVuY2UsIHRo
-ZSBQQ0llIGNvbnRyb2xsZXIgb24gdGhpcyBwbGF0Zm9ybXMgaGFzIHRvIGRpZmZlcmVudGlhdGUg
-dGhlDQo+ID4+PiBNU0kgcGF5bG9hZCBhZ2FpbnN0IG90aGVyIERNQSBwYXlsb2FkIGFuZCBoYXMg
-dG8gbW9kaWZ5IHRoZSBNU0kNCj4gPj4gcGF5bG9hZC4NCj4gPj4+IFRoaXMgYmFzaWNhbGx5IG1h
-a2VzIGl0IGRpZmZpY3VsdCBmb3IgdGhpcyBwbGF0Zm9ybXMgdG8gaGF2ZSBhIFNNTVUNCj4gPj4+
-IHRyYW5zbGF0aW9uIGZvciBNU0kuDQo+ID4+Pg0KPiA+Pj4gVGhpcyBwYXRjaCBpbXBsZW1lbnRz
-IGEgQUNQSSB0YWJsZSBiYXNlZCBxdWlyayB0byByZXNlcnZlIHRoZSBodyBtc2kNCj4gPj4+IHJl
-Z2lvbnMgaW4gdGhlIHNtbXUtdjMgZHJpdmVyIHdoaWNoIG1lYW5zIHRoZXNlIGFkZHJlc3MgcmVn
-aW9ucyB3aWxsDQo+ID4+PiBub3QgYmUgdHJhbnNsYXRlZCBhbmQgd2lsbCBiZSBleGNsdWRlZCBm
-cm9tIGlvdmEgYWxsb2NhdGlvbnMuDQo+ID4+Pg0KPiA+Pj4gU2lnbmVkLW9mZi1ieTogc2hhbWVl
-ciA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPg0KPiA+Pj4gLS0tDQo+ID4+
-PiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jIHwgMjkgKysrKysrKysrKysrKysrKysrKysr
-KysrLS0tLS0NCj4gPj4+ICAxIGZpbGUgY2hhbmdlZCwgMjQgaW5zZXJ0aW9ucygrKSwgNSBkZWxl
-dGlvbnMoLSkNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21t
-dS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0tDQo+IHNtbXUtDQo+ID4+IHYzLmMNCj4gPj4+IGlu
-ZGV4IGFiZTRiODguLmYwM2M2M2IgMTAwNjQ0DQo+ID4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2Fy
-bS1zbW11LXYzLmMNCj4gPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYw0KPiA+
-Pj4gQEAgLTU5Nyw2ICs1OTcsNyBAQCBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlIHsNCj4gPj4+ICAJ
-dTMyCQkJCWZlYXR1cmVzOw0KPiA+Pj4NCj4gPj4+ICAjZGVmaW5lIEFSTV9TTU1VX09QVF9TS0lQ
-X1BSRUZFVENICSgxIDw8IDApDQo+ID4+PiArI2RlZmluZSBBUk1fU01NVV9PUFRfUkVTVl9IV19N
-U0kJKDEgPDwgMSkNCj4gPj4+ICAJdTMyCQkJCW9wdGlvbnM7DQo+ID4+Pg0KPiA+Pj4gIAlzdHJ1
-Y3QgYXJtX3NtbXVfY21kcQkJY21kcTsNCj4gPj4+IEBAIC0xOTA0LDE0ICsxOTA1LDMxIEBAIHN0
-YXRpYyB2b2lkDQo+IGFybV9zbW11X2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0DQo+ID4+IGRldmlj
-ZSAqZGV2LA0KPiA+Pj4gIAkJCQkgICAgICBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQ0KPiA+Pj4g
-IHsNCj4gPj4+ICAJc3RydWN0IGlvbW11X3Jlc3ZfcmVnaW9uICpyZWdpb247DQo+ID4+PiArCXN0
-cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXU7DQo+ID4+PiArCXN0cnVjdCBpb21tdV9md3NwZWMg
-KmZ3c3BlYyA9IGRldi0+aW9tbXVfZndzcGVjOw0KPiA+Pj4gIAlpbnQgcHJvdCA9IElPTU1VX1dS
-SVRFIHwgSU9NTVVfTk9FWEVDIHwgSU9NTVVfTU1JTzsNCj4gPj4+DQo+ID4+PiAtCXJlZ2lvbiA9
-IGlvbW11X2FsbG9jX3Jlc3ZfcmVnaW9uKE1TSV9JT1ZBX0JBU0UsDQo+ID4+IE1TSV9JT1ZBX0xF
-TkdUSCwNCj4gPj4+IC0JCQkJCSBwcm90LCBJT01NVV9SRVNWX1NXX01TSSk7DQo+ID4+PiAtCWlm
-ICghcmVnaW9uKQ0KPiA+Pj4gLQkJcmV0dXJuOw0KPiA+Pj4gKwlzbW11ID0gYXJtX3NtbXVfZ2V0
-X2J5X2Z3bm9kZShmd3NwZWMtPmlvbW11X2Z3bm9kZSk7DQo+ID4+PiArDQo+ID4+PiArCWlmIChz
-bW11ICYmIChzbW11LT5vcHRpb25zICYgQVJNX1NNTVVfT1BUX1JFU1ZfSFdfTVNJKQ0KPiA+PiAm
-Jg0KPiA+Pj4gKwkJICAgICAgZGV2X2lzX3BjaShkZXYpKSB7DQo+ID4+DQo+ID4+IElPUlQgY2hh
-bmdlcyBhcmUgZmluZSB0byBtZSwgSSBhbSBzdGlsbCBubyBiaWcgZmFuIG9mIHRoaXMgc3VwcG9z
-ZWRseQ0KPiA+PiBnZW5lcmljIG9wdGlvbiB0aGF0IGlzIF9yZWFsbHlfIHBsYXRmb3JtIHNwZWNp
-ZmljIChpbiBwYXJ0aWN1bGFyIGFzIEkNCj4gPj4gc2FpZCBiZWZvcmUgdGhlIHF1aXJrIGRlcGVu
-ZHMgb24gdGhlIFBDSSBob3N0IGJyaWRnZSBidXQgaW4gdGhpcw0KPiA+PiBwYXRjaHNldCBJIHNl
-ZSBubyBzdWNoIGRlcGVuZGVuY3kuIEluIHNob3J0IC0gdGhlIHF1aXJrIGlzIGhvb2tlZCBvZmYN
-Cj4gPj4gdGhlIFNNTVV2MyBtb2RlbCB3aGljaCBpbXBsaWNpdGx5IGltcGxpZXMgYSBQQ0kgaG9z
-dCBicmlkZ2UNCj4gPj4gY29uZmlndXJhdGlvbiBJSVVDKS4gSXQgaXMgV2lsbCBhbmQgUm9iaW4g
-ZGVjaXNpb24gdGhvdWdoLCBJIGFtIG5vdCBzdXJlDQo+ID4+IHlvdSBjYW4gbWFrZSBpdCBhbnkg
-dGlkaWVyIChnaXZlbiB0aGF0IG9uIEFDUEkgeW91IG1heSBub3QgZXZlbiBoYXZlDQo+ID4+IGEg
-UENJIGhvc3QgYnJpZGdlIHNwZWNpZmljIF9ISUQgdG8gYmFzZSB5b3VyIGNoZWNrIGFib3ZlIG9u
-KS4NCj4gPg0KPiA+IFRoYW5rcyBMb3JlbnpvLiBJIHVuZGVyc3RhbmQgeW91ciBwb2ludC4gQXMg
-ZmFyIGFzIG91ciBwbGF0Zm9ybSBpcw0KPiA+IGNvbmNlcm5lZCwgSSB0aGluayBJdCBpcyBvayB0
-byByZW1vdmUgdGhlIGRldl9pc19wY2koKSBjaGVjayBhbmQgbWFrZQ0KPiA+IGl0IGdlbmVyaWMs
-IGlmIHRoYXQgaGVscHMuICBJIGRvbid0IHRoaW5rIGl0IHdpbGwgaGFybSB1cyBvdGhlciB0aGFu
-IGNvdXBsZSBvZg0KPiA+ICAiSFcgTVNJIHJlZ2lvbiByZXN2IGZhaWxlZDogIiBsb2dzICBmb3Ig
-b3VyIHBsYXRmb3JtIGRldmljZXMuDQo+IA0KPiBJIHRoaW5rIHRoZSBhbnN3ZXIgdGhlcmUgaXMg
-dGhhdCBpb3J0X2lvbW11X2l0c19nZXRfcmVzdl9yZWdpb25zKCkNCj4gcmVhbGx5IHNob3VsZCBk
-aXN0aW5ndWlzaCBiZXR3ZWVuICJ0aGlzIGRldmljZSBqdXN0IGRvZXNuJ3QgaGF2ZSBhbiBJVFMN
-Cj4gbWFwcGluZyIgYW5kICJzb21ldGhpbmcgYWN0dWFsbHkgd2VudCB3cm9uZyIsIHN1Y2ggdGhh
-dCB5b3UgZG9uJ3QgdHJlYXQNCj4gdGhlIGZvcm1lciBhcyBhbiBlcnJvci4gVGhhdCdzIGFsbW9z
-dCBjZXJ0YWlubHkgY2xlYW5lciB0aGFuIGUuZy4gdHJ5aW5nDQo+IHRvIGNoZWNrIGlmIGRldiBo
-YXMgYW4gYXNzb2NpYXRlZCBNU0kgZG9tYWluIGhlcmUgYmVmb3JlIGNhbGxpbmcgaXQuDQoNCklm
-IEkgdW5kZXJzdG9vZCB0aGF0IGNvcnJlY3RseSwgdGhlIHN1Z2dlc3Rpb24gaXMgdG8gdHJlYXQg
-Y2FzZXMgd2hlcmUgZGV2aWNlDQpkb2VzbuKAmXQgaGF2ZSBhbnkgSVRTIG5vZGUgYXNzb2NpYXRl
-ZCB3aXRoIGl0IGFzICJzdWNjZXNzIi4NCg0KK2ludCBpb3J0X2lvbW11X2l0c19nZXRfcmVzdl9y
-ZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkNCit7DQpb
-Li4uLl0NCisJaWYgKCFpdHNfbm9kZSkNCisJCXJldHVybiAtRU5PREVWOw0KDQppZSwgcmV0dXJu
-IHN1Y2Nlc3MgYWJvdmUgZnJvbSBwYXRjaCAxLzIuDQoNCkxvcmVuem8sIA0KDQpQbGVhc2UgbGV0
-IG1lIGtub3cgaWYgdGhhdOKAmXMgYSBjb3JyZWN0IHRoaW5nIHRvIGRvIGFzIEkgYW0gbm90IHN1
-cmUgYWJvdXQgYWxsIHRoZSBlcnJvcg0Kc2NlbmFyaW9zIGhlcmUuDQoNClRoYW5rcywNClNoYW1l
-ZXINCg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Tue, Jun 20, 2017 at 04:16:18PM +0100, Robin Murphy wrote:
+> On 20/06/17 15:07, Shameerali Kolothum Thodi wrote:
+> > 
+> > 
+> >> -----Original Message-----
+> >> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
+> >> Sent: Tuesday, June 20, 2017 11:29 AM
+> >> To: Shameerali Kolothum Thodi
+> >> Cc: marc.zyngier@arm.com; sudeep.holla@arm.com; will.deacon@arm.com;
+> >> robin.murphy@arm.com; hanjun.guo@linaro.org; Gabriele Paoloni; John
+> >> Garry; iommu@lists.linux-foundation.org; linux-arm-
+> >> kernel@lists.infradead.org; linux-acpi@vger.kernel.org; devel@acpica.org;
+> >> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
+> >> Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> >> HiSilicon erratum 161010801
+> >>
+> >> Hi Shameer,
+> >>
+> >> On Mon, Jun 19, 2017 at 04:45:00PM +0100, shameer wrote:
+> >>> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> >>> platforms Hip06/Hip07 to support the SMMU mappings for MSI
+> >> transactions.
+> >>>
+> >>> On these platforms GICv3 ITS translator is presented with the deviceID
+> >>> by extending the MSI payload data to 64 bits to include the deviceID.
+> >>> Hence, the PCIe controller on this platforms has to differentiate the
+> >>> MSI payload against other DMA payload and has to modify the MSI
+> >> payload.
+> >>> This basically makes it difficult for this platforms to have a SMMU
+> >>> translation for MSI.
+> >>>
+> >>> This patch implements a ACPI table based quirk to reserve the hw msi
+> >>> regions in the smmu-v3 driver which means these address regions will
+> >>> not be translated and will be excluded from iova allocations.
+> >>>
+> >>> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> >>> ---
+> >>>  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
+> >>>  1 file changed, 24 insertions(+), 5 deletions(-)
+> >>>
+> >>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
+> >> v3.c
+> >>> index abe4b88..f03c63b 100644
+> >>> --- a/drivers/iommu/arm-smmu-v3.c
+> >>> +++ b/drivers/iommu/arm-smmu-v3.c
+> >>> @@ -597,6 +597,7 @@ struct arm_smmu_device {
+> >>>  	u32				features;
+> >>>
+> >>>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> >>> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+> >>>  	u32				options;
+> >>>
+> >>>  	struct arm_smmu_cmdq		cmdq;
+> >>> @@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct
+> >> device *dev,
+> >>>  				      struct list_head *head)
+> >>>  {
+> >>>  	struct iommu_resv_region *region;
+> >>> +	struct arm_smmu_device *smmu;
+> >>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> >>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> >>>
+> >>> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
+> >> MSI_IOVA_LENGTH,
+> >>> -					 prot, IOMMU_RESV_SW_MSI);
+> >>> -	if (!region)
+> >>> -		return;
+> >>> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+> >>> +
+> >>> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
+> >> &&
+> >>> +		      dev_is_pci(dev)) {
+> >>
+> >> IORT changes are fine to me, I am still no big fan of this supposedly
+> >> generic option that is _really_ platform specific (in particular as I
+> >> said before the quirk depends on the PCI host bridge but in this
+> >> patchset I see no such dependency. In short - the quirk is hooked off
+> >> the SMMUv3 model which implicitly implies a PCI host bridge
+> >> configuration IIUC). It is Will and Robin decision though, I am not sure
+> >> you can make it any tidier (given that on ACPI you may not even have
+> >> a PCI host bridge specific _HID to base your check above on).
+> > 
+> > Thanks Lorenzo. I understand your point. As far as our platform is 
+> > concerned, I think It is ok to remove the dev_is_pci() check and make
+> > it generic, if that helps.  I don't think it will harm us other than couple of
+> >  "HW MSI region resv failed: " logs  for our platform devices.
+> 
+> I think the answer there is that iort_iommu_its_get_resv_regions()
+> really should distinguish between "this device just doesn't have an ITS
+> mapping" and "something actually went wrong", such that you don't treat
+> the former as an error. That's almost certainly cleaner than e.g. trying
+> to check if dev has an associated MSI domain here before calling it.
+
+I would agree, even though this way we would end up reserving the ITS
+address regions for all devices mapping to an ITS even though they may
+or may not be affected by the quirk (because IIUC that's just a PCI
+bridge problem), which is what my point is all about.
+
+It does not seem to be clean-cut, however we slice it.
+
+Thanks,
+Lorenzo
