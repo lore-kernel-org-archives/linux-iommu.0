@@ -1,130 +1,149 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
-	erratum 161010801
-Date: Tue, 20 Jun 2017 16:16:18 +0100
-Message-ID: <d6e824b0-17bd-dd41-2d11-0491d8f66759@arm.com>
-References: <20170619154500.92336-1-shameerali.kolothum.thodi@huawei.com>
-	<20170619154500.92336-3-shameerali.kolothum.thodi@huawei.com>
-	<20170620102906.GA26908@red-moon>
-	<5FC3163CFD30C246ABAA99954A238FA83838617D@FRAEML521-MBS.china.huawei.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v7 14/36] x86/mm: Insure that boot memory areas are
+ mapped properly
+Date: Tue, 20 Jun 2017 17:30:56 +0200
+Message-ID: <20170620153056.bz2kvgvshnat6345@pd.tnic>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+ <20170616185232.18967.61753.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA83838617D-WFPaWmAhWqvVoO+7gWNeMAK1hpo4iccwjNknBlVQO8k@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170616185232.18967.61753.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-doc-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dy>
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/06/17 15:07, Shameerali Kolothum Thodi wrote:
+On Fri, Jun 16, 2017 at 01:52:32PM -0500, Tom Lendacky wrote:
+> The boot data and command line data are present in memory in a decrypted
+> state and are copied early in the boot process.  The early page fault
+> support will map these areas as encrypted, so before attempting to copy
+> them, add decrypted mappings so the data is accessed properly when copied.
 > 
+> For the initrd, encrypt this data in place. Since the future mapping of
+> the initrd area will be mapped as encrypted the data will be accessed
+> properly.
 > 
->> -----Original Message-----
->> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
->> Sent: Tuesday, June 20, 2017 11:29 AM
->> To: Shameerali Kolothum Thodi
->> Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
->> robin.murphy-5wv7dgnIgG8@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Gabriele Paoloni; John
->> Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
->> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org;
->> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
->> Subject: Re: [PATCH v2 2/2] iommu/arm-smmu-v3:Enable ACPI based
->> HiSilicon erratum 161010801
->>
->> Hi Shameer,
->>
->> On Mon, Jun 19, 2017 at 04:45:00PM +0100, shameer wrote:
->>> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
->>> platforms Hip06/Hip07 to support the SMMU mappings for MSI
->> transactions.
->>>
->>> On these platforms GICv3 ITS translator is presented with the deviceID
->>> by extending the MSI payload data to 64 bits to include the deviceID.
->>> Hence, the PCIe controller on this platforms has to differentiate the
->>> MSI payload against other DMA payload and has to modify the MSI
->> payload.
->>> This basically makes it difficult for this platforms to have a SMMU
->>> translation for MSI.
->>>
->>> This patch implements a ACPI table based quirk to reserve the hw msi
->>> regions in the smmu-v3 driver which means these address regions will
->>> not be translated and will be excluded from iova allocations.
->>>
->>> Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>> ---
->>>  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++++++-----
->>>  1 file changed, 24 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
->> v3.c
->>> index abe4b88..f03c63b 100644
->>> --- a/drivers/iommu/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm-smmu-v3.c
->>> @@ -597,6 +597,7 @@ struct arm_smmu_device {
->>>  	u32				features;
->>>
->>>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
->>> +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
->>>  	u32				options;
->>>
->>>  	struct arm_smmu_cmdq		cmdq;
->>> @@ -1904,14 +1905,31 @@ static void arm_smmu_get_resv_regions(struct
->> device *dev,
->>>  				      struct list_head *head)
->>>  {
->>>  	struct iommu_resv_region *region;
->>> +	struct arm_smmu_device *smmu;
->>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
->>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
->>>
->>> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
->> MSI_IOVA_LENGTH,
->>> -					 prot, IOMMU_RESV_SW_MSI);
->>> -	if (!region)
->>> -		return;
->>> +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
->>> +
->>> +	if (smmu && (smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)
->> &&
->>> +		      dev_is_pci(dev)) {
->>
->> IORT changes are fine to me, I am still no big fan of this supposedly
->> generic option that is _really_ platform specific (in particular as I
->> said before the quirk depends on the PCI host bridge but in this
->> patchset I see no such dependency. In short - the quirk is hooked off
->> the SMMUv3 model which implicitly implies a PCI host bridge
->> configuration IIUC). It is Will and Robin decision though, I am not sure
->> you can make it any tidier (given that on ACPI you may not even have
->> a PCI host bridge specific _HID to base your check above on).
-> 
-> Thanks Lorenzo. I understand your point. As far as our platform is 
-> concerned, I think It is ok to remove the dev_is_pci() check and make
-> it generic, if that helps.  I don't think it will harm us other than couple of
->  "HW MSI region resv failed: " logs  for our platform devices.
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/include/asm/mem_encrypt.h |    6 +++
+>  arch/x86/include/asm/pgtable.h     |    3 ++
+>  arch/x86/kernel/head64.c           |   30 +++++++++++++--
+>  arch/x86/kernel/setup.c            |    9 +++++
+>  arch/x86/mm/kasan_init_64.c        |    2 +
+>  arch/x86/mm/mem_encrypt.c          |   70 ++++++++++++++++++++++++++++++++++++
+>  6 files changed, 115 insertions(+), 5 deletions(-)
 
-I think the answer there is that iort_iommu_its_get_resv_regions()
-really should distinguish between "this device just doesn't have an ITS
-mapping" and "something actually went wrong", such that you don't treat
-the former as an error. That's almost certainly cleaner than e.g. trying
-to check if dev has an associated MSI domain here before calling it.
+...
 
-Robin.
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index b7671b9..ea5e3a6 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -19,6 +19,8 @@
+>  
+>  #include <asm/tlbflush.h>
+>  #include <asm/fixmap.h>
+> +#include <asm/setup.h>
+> +#include <asm/bootparam.h>
+>  
+>  /*
+>   * Since SME related variables are set early in the boot process they must
+> @@ -101,6 +103,74 @@ void __init sme_early_decrypt(resource_size_t paddr, unsigned long size)
+>  	__sme_early_enc_dec(paddr, size, false);
+>  }
+>  
+> +static void __init __sme_early_map_unmap_mem(void *vaddr, unsigned long size,
+> +					     bool map)
+> +{
+> +	unsigned long paddr = (unsigned long)vaddr - __PAGE_OFFSET;
+> +	pmdval_t pmd_flags, pmd;
+> +
+> +	/* Use early_pmd_flags but remove the encryption mask */
+> +	pmd_flags = __sme_clr(early_pmd_flags);
+> +
+> +	do {
+> +		pmd = map ? (paddr & PMD_MASK) + pmd_flags : 0;
+> +		__early_make_pgtable((unsigned long)vaddr, pmd);
+> +
+> +		vaddr += PMD_SIZE;
+> +		paddr += PMD_SIZE;
+> +		size = (size <= PMD_SIZE) ? 0 : size - PMD_SIZE;
+> +	} while (size);
+> +
+> +	write_cr3(__read_cr3());
 
+local_flush_tlb() or __native_flush_tlb(). Probably the native variant
+since this is early fun.
+
+> +}
+> +
+> +static void __init __sme_map_unmap_bootdata(char *real_mode_data, bool map)
+> +{
+> +	struct boot_params *boot_data;
+> +	unsigned long cmdline_paddr;
+> +
+> +	/* If SME is not active, the bootdata is in the correct state */
+> +	if (!sme_active())
+> +		return;
+> +
+> +	if (!map) {
+> +		/*
+> +		 * If unmapping, get the command line address before
+> +		 * unmapping the real_mode_data.
+> +		 */
+> +		boot_data = (struct boot_params *)real_mode_data;
+> +		cmdline_paddr = boot_data->hdr.cmd_line_ptr |
+> +				((u64)boot_data->ext_cmd_line_ptr << 32);
+
+Let it stick out:
+
+	cmdline_paddr = bd->hdr.cmd_line_ptr | ((u64)bd->ext_cmd_line_ptr << 32);
+
+> +	}
+> +
+> +	__sme_early_map_unmap_mem(real_mode_data, sizeof(boot_params), map);
+> +
+> +	if (map) {
+> +		/*
+> +		 * If mapping, get the command line address after mapping
+> +		 * the real_mode_data.
+> +		 */
+> +		boot_data = (struct boot_params *)real_mode_data;
+> +		cmdline_paddr = boot_data->hdr.cmd_line_ptr |
+> +				((u64)boot_data->ext_cmd_line_ptr << 32);
+> +	}
+> +
+> +	if (!cmdline_paddr)
+> +		return;
+> +
+> +	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, map);
+
+Ok, so from looking at this function now - it does different things
+depending on whether we map or not. So it doesn't look like a worker
+function anymore and you can move the stuff back to the original callers
+below. Should make the whole flow more readable.
+
+> +}
+> +
+> +void __init sme_unmap_bootdata(char *real_mode_data)
+> +{
+> +	__sme_map_unmap_bootdata(real_mode_data, false);
+> +}
+> +
+> +void __init sme_map_bootdata(char *real_mode_data)
+> +{
+> +	__sme_map_unmap_bootdata(real_mode_data, true);
+> +}
+> +
+>  void __init sme_early_init(void)
+>  {
+>  	unsigned int i;
 > 
-> Hi Will/Robin,
-> Please let me know your thoughts.
-> 
-> Thanks,
-> Shameer
-> 
-> 
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
