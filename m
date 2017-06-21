@@ -1,63 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v6 26/34] iommu/amd: Allow the AMD IOMMU to work with
- memory encryption
-Date: Wed, 21 Jun 2017 17:37:22 +0200
-Message-ID: <20170621153721.GP30388@8bytes.org>
-References: <20170607191309.28645.15241.stgit@tlendack-t1.amdoffice.net>
- <20170607191745.28645.81756.stgit@tlendack-t1.amdoffice.net>
- <20170614174208.p2yr5exs4b6pjxhf@pd.tnic>
- <0611d01a-19f8-d6ae-2682-932789855518@amd.com>
- <20170615094111.wga334kg2bhxqib3@pd.tnic>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/8] io-pgtable lock removal
+Date: Wed, 21 Jun 2017 17:47:26 +0200
+Message-ID: <20170621154726.GQ30388@8bytes.org>
+References: <cover.1496921366.git.robin.murphy@arm.com>
+	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
+	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170615094111.wga334kg2bhxqib3@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexand
+In-Reply-To: <b7830be1-9a78-e29f-a29c-4798aaa28c0a-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 15, 2017 at 11:41:12AM +0200, Borislav Petkov wrote:
-> On Wed, Jun 14, 2017 at 03:40:28PM -0500, Tom Lendacky wrote:
-> > > WARNING: Use of volatile is usually wrong: see Documentation/process/volatile-considered-harmful.rst
-> > > #134: FILE: drivers/iommu/amd_iommu.c:866:
-> > > +static void build_completion_wait(struct iommu_cmd *cmd, volatile u64 *sem)
-> > > 
-> > 
-> > The semaphore area is written to by the device so the use of volatile is
-> > appropriate in this case.
+On Wed, Jun 14, 2017 at 05:40:30PM -0700, Ray Jui wrote:
+> With the NVMf target test with 4 SSDs, fio based test, random read, 4k,
+> 8 jobs:
 > 
-> Do you mean this is like the last exception case in that document above:
+> Without IOMMU:
 > 
-> "
->   - Pointers to data structures in coherent memory which might be modified
->     by I/O devices can, sometimes, legitimately be volatile.  A ring buffer
->     used by a network adapter, where that adapter changes pointers to
->     indicate which descriptors have been processed, is an example of this
->     type of situation."
+> IOPS = 1080K
 > 
-> ?
+> With IOMMU, but without your latest patch:
+> 
+> IOPS = 520K
+> 
+> With IOMMU and your latest patch:
+> 
+> IOPS = 500K ~ 850K (a lot of variation observed during the same test run)
 
-So currently (without this patch) the build_completion_wait function
-does not take a volatile parameter, only wait_on_sem() does.
+That variation might come from the RB-Tree used in the IOVA allocator.
+For block-device workloads the allocation size of iova ranges might be
+bigger than what is cached in the magazines, so that the fall-back to
+the old (locked) allocator is used.
 
-Wait_on_sem() needs it because its purpose is to poll a memory location
-which is changed by the iommu-hardware when its done with command
-processing.
-
-But the 'volatile' in build_completion_wait() looks unnecessary, because
-the function does not poll the memory location. It only uses the
-pointer, converts it to a physical address and writes it to the command
-to be queued.
-
-
-Regards,
 
 	Joerg
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
