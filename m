@@ -1,49 +1,61 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: new dma-mapping tree,
- was Re: clean up and modularize arch dma_mapping interface V2
-Date: Wed, 21 Jun 2017 15:32:39 +0200
-Message-ID: <5425587c-73e8-e24a-86a3-8a65a7791dcb@samsung.com>
-References: <20170616181059.19206-1-hch@lst.de> <20170620124140.GA27163@lst.de>
- <20170620230400.1a5ae889@canb.auug.org.au>
- <CGME20170620131628epcas1p4f21d821bd414cba7e2d49abcbe414365@epcas1p4.samsung.com>
- <20170620131623.GB30769@lst.de>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v7 07/36] x86/mm: Don't use phys_to_virt in ioremap() if
+	SME is active
+Date: Wed, 21 Jun 2017 08:52:53 -0500
+Message-ID: <c1072435-e3ad-21ea-b36f-505ff80ed599@amd.com>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+	<20170616185104.18967.7867.stgit@tlendack-t1.amdoffice.net>
+	<alpine.DEB.2.20.1706202251110.2157@nanos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-reply-to: <20170620131623.GB30769@lst.de>
-Content-language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Christoph Hellwig <hch@lst.de>, Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, dri-devel@lists.freedesktop.org, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org, openrisc@lists.librecores.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>, dmaengine@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.20.1706202251110.2157@nanos>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, kexe
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQ2hyaXN0b3BoLAoKT24gMjAxNy0wNi0yMCAxNToxNiwgQ2hyaXN0b3BoIEhlbGx3aWcgd3Jv
-dGU6Cj4gT24gVHVlLCBKdW4gMjAsIDIwMTcgYXQgMTE6MDQ6MDBQTSArMTAwMCwgU3RlcGhlbiBS
-b3Rod2VsbCB3cm90ZToKPj4gZ2l0Oi8vZ2l0LmxpbmFyby5vcmcvcGVvcGxlL21zenlwcm93c2tp
-L2xpbnV4LWRtYS1tYXBwaW5nLmdpdCNkbWEtbWFwcGluZy1uZXh0Cj4+Cj4+IENvbnRhY3RzOiBN
-YXJlayBTenlwcm93c2tpIGFuZCBLeXVuZ21pbiBQYXJrIChjYydkKQo+Pgo+PiBJIGhhdmUgY2Fs
-bGVkIHlvdXIgdHJlZSBkbWEtbWFwcGluZy1oY2ggZm9yIG5vdy4gIFRoZSBvdGhlciB0cmVlIGhh
-cwo+PiBub3QgYmVlbiB1cGRhdGVkIHNpbmNlIDQuOS1yYzEgYW5kIEkgYW0gbm90IHN1cmUgaG93
-IGdlbmVyYWwgaXQgaXMuCj4+IE1hcmVrLCBLeXVuZ21pbiwgYW55IGNvbW1lbnRzPwo+IEknZCBi
-ZSBoYXBweSB0byBqb2luIGVmZm9ydHMgLSBjby1tYWludGFpbmVycyBhbmQgcmV2aWVycyBhcmUg
-YWx3YXlzCj4gd2VsY29tZS4KCkkgZGlkIHNvbWUgZG1hLW1hcHBpbmcgdW5pZmljYXRpb24gd29y
-a3MgaW4gdGhlIHBhc3QgYW5kIG15IHRyZWUgaW4gCmxpbnV4LW5leHQKd2FzIGEgc2lkZSBlZmZl
-Y3Qgb2YgdGhhdC4gSSB0aGluayB0aGF0IGZvciBub3cgaXQgY2FuIGJlIGRyb3BwZWQgaW4gCmZh
-dm9yIG9mCkNocmlzdG9waCdzIHRyZWUuIEkgY2FuIGFsc28gZG8gc29tZSByZXZpZXcgYW5kIGhl
-bHAgaW4gbWFpbnRhaW5lcnMgd29yayBpZgpuZWVkZWQsIGFsdGhvdWdoIEkgd2FzIHJlY2VudGx5
-IGJ1c3kgd2l0aCBvdGhlciBzdHVmZi4KCkNocmlzdG9waDogQ291bGQgeW91IGFkZCBtZSB0byB5
-b3VyIE1BSU5UQUlORVJTIHBhdGNoLCBzbyBmdXJ0aGVyIApkbWEtbWFwcGluZwpyZWxhdGVkIHBh
-dGNoZXMgaG9wZWZ1bGx5IHdpbGwgYmUgYWxzbyBDQzogdG8gbWU/CgpCZXN0IHJlZ2FyZHMKLS0g
-Ck1hcmVrIFN6eXByb3dza2ksIFBoRApTYW1zdW5nIFImRCBJbnN0aXR1dGUgUG9sYW5kCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFp
-bGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
-cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On 6/20/2017 3:55 PM, Thomas Gleixner wrote:
+> On Fri, 16 Jun 2017, Tom Lendacky wrote:
+> 
+>> Currently there is a check if the address being mapped is in the ISA
+>> range (is_ISA_range()), and if it is then phys_to_virt() is used to
+>> perform the mapping.  When SME is active, however, this will result
+>> in the mapping having the encryption bit set when it is expected that
+>> an ioremap() should not have the encryption bit set. So only use the
+>> phys_to_virt() function if SME is not active
+> 
+> This does not make sense to me. What the heck has phys_to_virt() to do with
+> the encryption bit. Especially why would the encryption bit be set on that
+> mapping in the first place?
+
+The default is that all entries that get added to the pagetables have
+the encryption bit set unless specifically overridden.  Any __va() or
+phys_to_virt() calls will result in a pagetable mapping that has the
+encryption bit set.  For ioremap, the PAGE_KERNEL_IO protection is used
+which will not/does not have the encryption bit set.
+
+> 
+> I'm probably missing something, but this want's some coherent explanation
+> understandable by mere mortals both in the changelog and the code comment.
+
+I'll add some additional info to the changelog and code.
+
+Thanks,
+Tom
+
+> 
+> Thanks,
+> 
+> 	tglx
+> 
