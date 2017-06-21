@@ -1,93 +1,45 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH v8 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
- ThunderX2 erratum #126
-Date: Wed, 21 Jun 2017 10:30:39 +0100
-Message-ID: <2e334fe2-864e-d2b9-1699-20aee5d26007@arm.com>
-References: <1497968259-16390-1-git-send-email-gakula@caviumnetworks.com>
- <1497968259-16390-4-git-send-email-gakula@caviumnetworks.com>
- <20170620180038.GC28035@arm.com>
- <CANHdaiYb8gG5+OjiSBkSGfyNnt4=WDze08qW1JXA9-F66HE9ZA@mail.gmail.com>
- <20170621090835.GD3768@arm.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v7 23/36] x86, realmode: Decrypt trampoline area if
+ memory encryption is active
+Date: Wed, 21 Jun 2017 11:43:24 +0200
+Message-ID: <20170621094324.n3dukli4gq6g5ftn@pd.tnic>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+ <20170616185412.18967.91559.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170621090835.GD3768@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Geetha Akula <geethasowjanya.akula@gmail.com>
-Cc: Geetha sowjanya <gakula@caviumnetworks.com>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Robert Moore <robert.moore@intel.com>, Lv Zheng <lv.zheng@intel.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, jcm@redhat.com, linux-kernel@vger.kernel.org, Robert Richter <robert.richter@cavium.com>, Catalin Marinas <catalin.marinas@arm.com>, Sunil Goutham <sgoutham@cavium.com>, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, Linu Cherian <linu.cherian@cavium.com>, Charles Garcia-Tobin <Charles.Garcia-Tobin@arm.com>, Rob Herring <robh@kernel.org>, Geetha Sowjanya <geet>
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20170616185412.18967.91559.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@or>
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/06/17 10:08, Will Deacon wrote:
-> Hi Geetha,
+On Fri, Jun 16, 2017 at 01:54:12PM -0500, Tom Lendacky wrote:
+> When Secure Memory Encryption is enabled, the trampoline area must not
+> be encrypted. A CPU running in real mode will not be able to decrypt
+> memory that has been encrypted because it will not be able to use addresses
+> with the memory encryption mask.
 > 
-> On Wed, Jun 21, 2017 at 12:09:45PM +0530, Geetha Akula wrote:
->> On Tue, Jun 20, 2017 at 11:30 PM, Will Deacon <will.deacon@arm.com> wrote:
->>> On Tue, Jun 20, 2017 at 07:47:39PM +0530, Geetha sowjanya wrote:
->>>> From: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
->>>>
->>>> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
->>>> lines for gerror, eventq and cmdq-sync.
->>>>
->>>> SHARED_IRQ option is set as a errata workaround, which allows to share the irq
->>>> line by register single irq handler for all the interrupts.
->>>>
->>>> Signed-off-by: Geetha sowjanya <gakula@caviumnetworks.com>
->>>> ---
->>>>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    5 ++
->>>>  drivers/iommu/arm-smmu-v3.c                        |   73 ++++++++++++++++----
->>>>  2 files changed, 64 insertions(+), 14 deletions(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
->>>> index 6ecc48c..44b40e0 100644
->>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
->>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
->>>> @@ -55,6 +55,11 @@ the PCIe specification.
->>>>                     Set for Caviun ThunderX2 silicon that doesn't support
->>>>                     SMMU page1 register space.
->>>>
->>>> +- cavium,cn9900-broken-unique-irqline
->>>> +                    : Use single irq line for all the SMMUv3 interrupts.
->>>> +                   Set for Caviun ThunderX2 silicon that doesn't support
->>>> +                   MSI and also doesn't have unique irq lines for gerror,
->>>> +                   eventq and cmdq-sync.
->>>
->>> I think we're better off just supporting a new (optional) named interrupt
->>> as "combined", and then allowing that to be used instead of the others.
->>
->> Are you suggesting to have new name irq "combined" like gerror ?
->> If yes, then this won't be possible with apci. We need to update iort spec to
->> add new name irq.
-> 
-> I'm mainly talking about the DT binding here, but I don't see why you
-> can't hack drivers/acpi/arm64/iort.c like you did for the other erratum and
-> have it register a single interrupt called "combined" based on the model
-> number.
-> 
->>>> +                                     arm_smmu_shared_irq_thread,
->>>> +                                     IRQF_ONESHOT | IRQF_SHARED,
->>>
->>> Why do you need IRQF_SHARED here?
->>
->>
->> +devm_request_threaded_irq(smmu->dev, irq,
->> +                                       arm_smmu_combined_irq_handler,
->> +                                       arm_smmu_combined_irq_thread,
->> +                                       IRQF_SHARED,
->> +                                       "arm-smmu-v3-combined-irq", smmu);
->>
->> On multi-node system, node1 SMMU's share irq lines with node0 SMMU's.
-> 
-> How does that work? Are these really MSIs under the hood? If so, why didn't
-> you just build them as... MSIs?
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/realmode/init.c |    8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-More specifically, I suspect that they are made out of message-signalled
-SPIs, targeting the GIC distributor directly... That's the only way I
-can imagine it has been built... If I'm right, we probably have the
-firmware programming the same SPI number in both nodes.
+Subject: x86/realmode: ...
 
-But of course, that's pure speculation.
+other than that:
 
-	M.
+Reviewed-by: Borislav Petkov <bp@suse.de>
+
 -- 
-Jazz is not dead. It just smells funny...
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
