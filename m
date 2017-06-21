@@ -1,18 +1,16 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-Date: Wed, 21 Jun 2017 12:01:09 -0500
-Message-ID: <bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
-References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
-	<20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
-	<MWHPR12MB15181A6A020ACA2F53DF70339CCB0@MWHPR12MB1518.namprd12.prod.outlook.com>
-	<1496954035.4188.1.camel@rutgers.edu>
-	<1498062018.17007.6.camel@rutgers.edu>
+From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
+	ThunderX2 erratum #126
+Date: Wed, 21 Jun 2017 20:19:47 +0200
+Message-ID: <20170621181947.GH16981@rric.localdomain>
+References: <1497968259-16390-1-git-send-email-gakula@caviumnetworks.com>
+	<1497968259-16390-4-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498062018.17007.6.camel-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1497968259-16390-4-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,225 +20,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>, "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/21/2017 11:20 AM, Jan Vesely wrote:
-> Hi Arindam,
+On 20.06.17 19:47:39, Geetha sowjanya wrote:
+> From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > 
-> has this patch been replaced by Joerg's "[PATCH 0/7] iommu/amd:
-> Optimize iova queue flushing" series?
+> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
+> lines for gerror, eventq and cmdq-sync.
+> 
+> SHARED_IRQ option is set as a errata workaround, which allows to share the irq
+> line by register single irq handler for all the interrupts.
 
-Yes, Joerg's patches replaced this patch.  He applied just the first two
-patches of this series.
+I found the entry in silicon-errata.txt missing, is that on purpose?
 
-Thanks,
-Tom
+-Robert
 
 > 
-> Jan
-> 
-> On Thu, 2017-06-08 at 22:33 +0200, Jan Vesely wrote:
->> On Tue, 2017-06-06 at 10:02 +0000, Nath, Arindam wrote:
->>>> -----Original Message-----
->>>> From: Lendacky, Thomas
->>>> Sent: Tuesday, June 06, 2017 1:23 AM
->>>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>>> Cc: Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>; Joerg Roedel
->>>> <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Duran, Leo <leo.duran-5C7GfCeVMHo@public.gmane.org>; Suthikulpanit,
->>>> Suravee <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>>> Subject: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
->>>>
->>>> After reducing the amount of MMIO performed by the IOMMU during
->>>> operation,
->>>> perf data shows that flushing the TLB for all protection domains during
->>>> DMA unmapping is a performance issue. It is not necessary to flush the
->>>> TLBs for all protection domains, only the protection domains associated
->>>> with iova's on the flush queue.
->>>>
->>>> Create a separate queue that tracks the protection domains associated with
->>>> the iova's on the flush queue. This new queue optimizes the flushing of
->>>> TLBs to the required protection domains.
->>>>
->>>> Reviewed-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
->>>> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
->>>> ---
->>>> drivers/iommu/amd_iommu.c |   56
->>>> ++++++++++++++++++++++++++++++++++++++++-----
->>>> 1 file changed, 50 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->>>> index 856103b..a5e77f0 100644
->>>> --- a/drivers/iommu/amd_iommu.c
->>>> +++ b/drivers/iommu/amd_iommu.c
->>>> @@ -103,7 +103,18 @@ struct flush_queue {
->>>> 	struct flush_queue_entry *entries;
->>>> };
->>>>
->>>> +struct flush_pd_queue_entry {
->>>> +	struct protection_domain *pd;
->>>> +};
->>>> +
->>>> +struct flush_pd_queue {
->>>> +	/* No lock needed, protected by flush_queue lock */
->>>> +	unsigned next;
->>>> +	struct flush_pd_queue_entry *entries;
->>>> +};
->>>> +
->>>> static DEFINE_PER_CPU(struct flush_queue, flush_queue);
->>>> +static DEFINE_PER_CPU(struct flush_pd_queue, flush_pd_queue);
->>>>
->>>> static atomic_t queue_timer_on;
->>>> static struct timer_list queue_timer;
->>>> @@ -2227,16 +2238,20 @@ static struct iommu_group
->>>> *amd_iommu_device_group(struct device *dev)
->>>>   *
->>>>
->>>> ***********************************************************
->>>> ******************/
->>>>
->>>> -static void __queue_flush(struct flush_queue *queue)
->>>> +static void __queue_flush(struct flush_queue *queue,
->>>> +			  struct flush_pd_queue *pd_queue)
->>>> {
->>>> -	struct protection_domain *domain;
->>>> 	unsigned long flags;
->>>> 	int idx;
->>>>
->>>> 	/* First flush TLB of all known domains */
->>>> 	spin_lock_irqsave(&amd_iommu_pd_lock, flags);
->>>> -	list_for_each_entry(domain, &amd_iommu_pd_list, list)
->>>> -		domain_flush_tlb(domain);
->>>> +	for (idx = 0; idx < pd_queue->next; ++idx) {
->>>> +		struct flush_pd_queue_entry *entry;
->>>> +
->>>> +		entry = pd_queue->entries + idx;
->>>> +		domain_flush_tlb(entry->pd);
->>>> +	}
->>>> 	spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
->>>>
->>>> 	/* Wait until flushes have completed */
->>>> @@ -2255,6 +2270,7 @@ static void __queue_flush(struct flush_queue
->>>> *queue)
->>>> 		entry->dma_dom = NULL;
->>>> 	}
->>>>
->>>> +	pd_queue->next = 0;
->>>> 	queue->next = 0;
->>>> }
->>>>
->>>> @@ -2263,13 +2279,15 @@ static void queue_flush_all(void)
->>>> 	int cpu;
->>>>
->>>> 	for_each_possible_cpu(cpu) {
->>>> +		struct flush_pd_queue *pd_queue;
->>>> 		struct flush_queue *queue;
->>>> 		unsigned long flags;
->>>>
->>>> 		queue = per_cpu_ptr(&flush_queue, cpu);
->>>> +		pd_queue = per_cpu_ptr(&flush_pd_queue, cpu);
->>>> 		spin_lock_irqsave(&queue->lock, flags);
->>>> 		if (queue->next > 0)
->>>> -			__queue_flush(queue);
->>>> +			__queue_flush(queue, pd_queue);
->>>> 		spin_unlock_irqrestore(&queue->lock, flags);
->>>> 	}
->>>> }
->>>> @@ -2283,6 +2301,8 @@ static void queue_flush_timeout(unsigned long
->>>> unsused)
->>>> static void queue_add(struct dma_ops_domain *dma_dom,
->>>> 		      unsigned long address, unsigned long pages)
->>>> {
->>>> +	struct flush_pd_queue_entry *pd_entry;
->>>> +	struct flush_pd_queue *pd_queue;
->>>> 	struct flush_queue_entry *entry;
->>>> 	struct flush_queue *queue;
->>>> 	unsigned long flags;
->>>> @@ -2292,10 +2312,22 @@ static void queue_add(struct dma_ops_domain
->>>> *dma_dom,
->>>> 	address >>= PAGE_SHIFT;
->>>>
->>>> 	queue = get_cpu_ptr(&flush_queue);
->>>> +	pd_queue = get_cpu_ptr(&flush_pd_queue);
->>>> 	spin_lock_irqsave(&queue->lock, flags);
->>>>
->>>> 	if (queue->next == FLUSH_QUEUE_SIZE)
->>>> -		__queue_flush(queue);
->>>> +		__queue_flush(queue, pd_queue);
->>>> +
->>>> +	for (idx = 0; idx < pd_queue->next; ++idx) {
->>>> +		pd_entry = pd_queue->entries + idx;
->>>> +		if (pd_entry->pd == &dma_dom->domain)
->>>> +			break;
->>>> +	}
->>>> +	if (idx == pd_queue->next) {
->>>> +		/* New protection domain, add it to the list */
->>>> +		pd_entry = pd_queue->entries + pd_queue->next++;
->>>> +		pd_entry->pd = &dma_dom->domain;
->>>> +	}
->>>>
->>>> 	idx   = queue->next++;
->>>> 	entry = queue->entries + idx;
->>>> @@ -2309,6 +2341,7 @@ static void queue_add(struct dma_ops_domain
->>>> *dma_dom,
->>>> 	if (atomic_cmpxchg(&queue_timer_on, 0, 1) == 0)
->>>> 		mod_timer(&queue_timer, jiffies + msecs_to_jiffies(10));
->>>>
->>>> +	put_cpu_ptr(&flush_pd_queue);
->>>> 	put_cpu_ptr(&flush_queue);
->>>> }
->>>>
->>>> @@ -2810,6 +2843,8 @@ int __init amd_iommu_init_api(void)
->>>> 		return ret;
->>>>
->>>> 	for_each_possible_cpu(cpu) {
->>>> +		struct flush_pd_queue *pd_queue =
->>>> per_cpu_ptr(&flush_pd_queue,
->>>> +							      cpu);
->>>> 		struct flush_queue *queue = per_cpu_ptr(&flush_queue,
->>>> cpu);
->>>>
->>>> 		queue->entries = kzalloc(FLUSH_QUEUE_SIZE *
->>>> @@ -2819,6 +2854,12 @@ int __init amd_iommu_init_api(void)
->>>> 			goto out_put_iova;
->>>>
->>>> 		spin_lock_init(&queue->lock);
->>>> +
->>>> +		pd_queue->entries = kzalloc(FLUSH_QUEUE_SIZE *
->>>> +					    sizeof(*pd_queue->entries),
->>>> +					    GFP_KERNEL);
->>>> +		if (!pd_queue->entries)
->>>> +			goto out_put_iova;
->>>> 	}
->>>>
->>>> 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
->>>> @@ -2836,9 +2877,12 @@ int __init amd_iommu_init_api(void)
->>>>
->>>> out_put_iova:
->>>> 	for_each_possible_cpu(cpu) {
->>>> +		struct flush_pd_queue *pd_queue =
->>>> per_cpu_ptr(&flush_pd_queue,
->>>> +							      cpu);
->>>> 		struct flush_queue *queue = per_cpu_ptr(&flush_queue,
->>>> cpu);
->>>>
->>>> 		kfree(queue->entries);
->>>> +		kfree(pd_queue->entries);
->>>> 	}
->>>>
->>>> 	return -ENOMEM;
->>>
->>> Craig and Jan, can you please confirm whether this patch fixes the
->>> IOMMU timeout errors you encountered before? If it does, then this is
->>> a better implementation of the fix I provided few weeks back.
->>
->> I have only remote access to the machine, so I won't be able to test
->> until June 22nd.
->>
->> Jan
->>
->>>
->>> Thanks,
->>> Arindam
->>
->>
+> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    5 ++
+>  drivers/iommu/arm-smmu-v3.c                        |   73 ++++++++++++++++----
+>  2 files changed, 64 insertions(+), 14 deletions(-)
