@@ -1,45 +1,32 @@
-From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu: arm-smmu-v3: make of_device_ids const
-Date: Thu, 22 Jun 2017 12:51:00 +0530
-Message-ID: <52ec478cd35247ef219b448b174bcfcae87da005.1498115942.git.arvind.yadav.cs@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Subject: [PATCH] iommu: arm-smmu: Handle return of iommu_device_register.
+Date: Thu, 22 Jun 2017 12:57:42 +0530
+Message-ID: <e7d7a3939197315309e1fd3549d1db90315cc8bf.1498116422.git.arvind.yadav.cs@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-of_device_ids are not supposed to change at runtime. All functions
-working with of_device_ids provided by <linux/of.h> work with const
-of_device_ids. So mark the non-const structs as const.
+iommu_device_register can fail here and we must check its return value.
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 380969a..7d3f08a 100644
+index 7d3f08a..182eb38 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2768,7 +2768,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	return 0;
- }
+@@ -2736,6 +2736,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
  
--static struct of_device_id arm_smmu_of_match[] = {
-+static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v3", },
- 	{ },
- };
+ 	ret = iommu_device_register(&smmu->iommu);
++	if (ret)
++		return ret;
+ 
+ #ifdef CONFIG_PCI
+ 	if (pci_bus_type.iommu_ops != &arm_smmu_ops) {
 -- 
 1.9.1
