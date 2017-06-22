@@ -1,7 +1,8 @@
 From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu: amd_iommu_init: constify amd_iommu_group.
-Date: Thu, 22 Jun 2017 13:26:08 +0530
-Message-ID: <27ffc54ef2739d5a125ade7ab26342ba63ad95ba.1498117578.git.arvind.yadav.cs@gmail.com>
+Subject: [PATCH] iommu/amd_iommu_init: Handle return of
+	iommu_device_register/iommu_device_sysfs_add
+Date: Thu, 22 Jun 2017 13:50:19 +0530
+Message-ID: <b30120510267556ae2bc353108d92633213de806.1498119505.git.arvind.yadav.cs@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,31 +20,35 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-File size before:
-   text	   data	    bss	    dec	    hex	filename
-  14323	   1840	    353	  16516	   4084	drivers/iommu/amd_iommu_init.o
-
-File size After adding 'const':
-   text	   data	    bss	    dec	    hex	filename
-  14379	   1776	    353	  16508	   407c	drivers/iommu/amd_iommu_init.o
+iommu_device_register and iommu_device_sysfs_add can fail here and
+we must check its return value.
 
 Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd_iommu_init.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5a11328..41a66ae 100644
+index 41a66ae..c420a68 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1532,7 +1532,7 @@ static ssize_t amd_iommu_show_features(struct device *dev,
- 	NULL,
- };
+@@ -1642,10 +1642,15 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	amd_iommu_erratum_746_workaround(iommu);
+ 	amd_iommu_ats_write_check_workaround(iommu);
  
--static struct attribute_group amd_iommu_group = {
-+static const struct attribute_group amd_iommu_group = {
- 	.name = "amd-iommu",
- 	.attrs = amd_iommu_attrs,
- };
+-	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
++	ret = iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
+ 			       amd_iommu_groups, "ivhd%d", iommu->index);
++	if (ret)
++		return ret;
++
+ 	iommu_device_set_ops(&iommu->iommu, &amd_iommu_ops);
+-	iommu_device_register(&iommu->iommu);
++	ret = iommu_device_register(&iommu->iommu);
++	if (ret)
++		return ret;
+ 
+ 	return pci_enable_device(iommu->dev);
+ }
 -- 
 1.9.1
