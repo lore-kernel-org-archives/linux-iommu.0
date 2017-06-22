@@ -1,14 +1,15 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC 7/9] iommu/dmar: notify unrecoverable faults
-Date: Thu, 22 Jun 2017 16:54:16 -0600
-Message-ID: <20170622165416.6ea718f1@w520.home>
+Subject: Re: [RFC 6/9] iommu/vt-d: track device with pasid table bond to a
+	guest
+Date: Thu, 22 Jun 2017 16:54:35 -0600
+Message-ID: <20170622165435.1e9efbce@w520.home>
 References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1497478983-77580-8-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1497478983-77580-7-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1497478983-77580-8-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1497478983-77580-7-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,88 +24,93 @@ Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian,
 	Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 14 Jun 2017 15:23:01 -0700
+On Wed, 14 Jun 2017 15:23:00 -0700
 Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
-> Currently, when device DMA faults are detected by IOMMU the fault
-> reasons are printed but the offending device is not notified.
-> This patch allows device drivers to be optionally notified for fault
-> conditions when device specific handling is needed for more subtle
-> processing, e.g. request with PASID transactions.
+> When PASID table pointer of an assigned device is bond to a guest,
+
+s/bond/bound/
+
+> the first level page tables are managed by the guest. However, only
+> host/physical IOMMU can detect fault events, e.g. page requests.
+> Therefore, we need to keep track of which device has its PASID table
+> pointer bond to a guest such that page request and other events can
+
+same and throughout...
+
+> be propagated to the guest as needed.
 > 
 > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/iommu/dmar.c | 37 ++++++++++++++++++++++++++++++++++++-
->  1 file changed, 36 insertions(+), 1 deletion(-)
+>  drivers/iommu/intel-iommu.c | 19 +------------------
+>  include/linux/intel-iommu.h | 19 +++++++++++++++++++
+>  2 files changed, 20 insertions(+), 18 deletions(-)
 > 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index cbf7763..2c0b80d464 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1587,11 +1587,43 @@ void dmar_msi_read(int irq, struct msi_msg *msg)
->  	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
->  }
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6b8e997..9765277 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -416,24 +416,6 @@ struct dmar_domain {
+>  					   iommu core */
+>  };
 >  
-> +static int dmar_unrecov_fault_notify(u8 fault_reason, u16 source_id,
-> +			unsigned long long addr)
-> +{
-> +	int ret;
-> +	struct pci_dev *pdev;
-> +	struct iommu_fault_event *event;
+> -/* PCI domain-device relationship */
+> -struct device_domain_info {
+> -	struct list_head link;	/* link to domain siblings */
+> -	struct list_head global; /* link to global list */
+> -	u8 bus;			/* PCI bus number */
+> -	u8 devfn;		/* PCI devfn number */
+> -	u8 pasid_supported:3;
+> -	u8 pasid_enabled:1;
+> -	u8 pri_supported:1;
+> -	u8 pri_enabled:1;
+> -	u8 ats_supported:1;
+> -	u8 ats_enabled:1;
+> -	u8 ats_qdep;
+> -	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+> -	struct intel_iommu *iommu; /* IOMMU used by this device */
+> -	struct dmar_domain *domain; /* pointer to domain */
+> -};
+> -
+>  struct dmar_rmrr_unit {
+>  	struct list_head list;		/* list of rmrr units	*/
+>  	struct acpi_dmar_header *hdr;	/* ACPI header		*/
+> @@ -5547,6 +5529,7 @@ static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
+>  				DMA_CCMD_MASK_NOBIT,
+>  				DMA_CCMD_DEVICE_INVL);
+>  	iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
+> +	info->pasid_tbl_bond = 1;
+>  	spin_unlock_irqrestore(&iommu->lock, flags);
+>  
+>  
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 8df6c91..ed39c56 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -434,6 +434,25 @@ struct intel_iommu {
+>  	u32		flags;      /* Software defined flags */
+>  };
+>  
+> +/* PCI domain-device relationship */
+> +struct device_domain_info {
+> +	struct list_head link;	/* link to domain siblings */
+> +	struct list_head global; /* link to global list */
+> +	u8 bus;			/* PCI bus number */
+> +	u8 devfn;		/* PCI devfn number */
+> +	u8 pasid_supported:3;
+> +	u8 pasid_enabled:1;
+> +	u8 pasid_tbl_bond:1;	/* bond to guest PASID table */
+> +	u8 pri_supported:1;
+> +	u8 pri_enabled:1;
+> +	u8 ats_supported:1;
+> +	u8 ats_enabled:1;
+> +	u8 ats_qdep;
+> +	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+> +	struct intel_iommu *iommu; /* IOMMU used by this device */
+> +	struct dmar_domain *domain; /* pointer to domain */
+> +};
 > +
-> +	pdev = pci_get_bus_and_slot(source_id >> 8, source_id & 0xFF);
-> +	if (!pdev)
-> +		return -ENODEV;
-> +	pr_debug("Notify PCI device fault [%02x:%02x.%d]\n",
-> +		source_id >> 8, PCI_SLOT(source_id & 0xff),
-> +		PCI_FUNC(source_id & 0xff));
-> +	event = kzalloc(sizeof(*event) + sizeof(fault_reason), GFP_KERNEL);
-> +	if (!event)
-> +		return -ENOMEM;
-
-Leaks pdev reference.
-
-> +
-> +	pci_dev_get(pdev);
-> +	event->dev = &pdev->dev;
-> +	event->buf[0] = fault_reason;
-> +	event->addr = addr;
-> +	event->length = sizeof(fault_reason);
-> +	event->flags = IOMMU_FAULT_UNRECOV;
-> +	ret = iommu_fault_notifier_call_chain(event);
-> +
-> +	pci_dev_put(pdev);
-> +	kfree(event);
-> +
-> +	return ret;
-> +}
-> +
->  static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
->  		u8 fault_reason, u16 source_id, unsigned long long addr)
+>  static inline void __iommu_flush_cache(
+>  	struct intel_iommu *iommu, void *addr, int size)
 >  {
->  	const char *reason;
->  	int fault_type;
-> +	int ret = 0;
->  
->  	reason = dmar_get_fault_reason(fault_reason, &fault_type);
->  
-> @@ -1600,11 +1632,14 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
->  			source_id >> 8, PCI_SLOT(source_id & 0xFF),
->  			PCI_FUNC(source_id & 0xFF), addr >> 48,
->  			fault_reason, reason);
-> -	else
-> +	else {
->  		pr_err("[%s] Request device [%02x:%02x.%d] fault addr %llx [fault reason %02d] %s\n",
->  		       type ? "DMA Read" : "DMA Write",
->  		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
->  		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
-> +		ret = dmar_unrecov_fault_notify(fault_reason, source_id, addr);
-
-For what purpose are we recording this return code?
-
-> +	}
-> +
->  	return 0;
->  }
->  
