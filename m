@@ -1,73 +1,34 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-Date: Thu, 22 Jun 2017 11:20:53 +0200
-Message-ID: <20170622092053.GV30388@8bytes.org>
-References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
-	<20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
-	<MWHPR12MB15181A6A020ACA2F53DF70339CCB0@MWHPR12MB1518.namprd12.prod.outlook.com>
-	<1496954035.4188.1.camel@rutgers.edu>
-	<1498062018.17007.6.camel@rutgers.edu>
-	<bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
-	<1498079371.17007.18.camel@rutgers.edu>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v7 26/36] x86/CPU/AMD: Make the microcode level available
+ earlier in the boot
+Date: Thu, 22 Jun 2017 11:40:33 +0200
+Message-ID: <20170622094033.gaqsujzi7ocpemko@pd.tnic>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+ <20170616185447.18967.8792.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-arch-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1498079371.17007.18.camel-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, "Nath,
-	Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170616185447.18967.8792.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-arch-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dy>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 21, 2017 at 05:09:31PM -0400, Jan Vesely wrote:
-> On Wed, 2017-06-21 at 12:01 -0500, Tom Lendacky wrote:
-> > On 6/21/2017 11:20 AM, Jan Vesely wrote:
-> > > Hi Arindam,
-> > > 
-> > > has this patch been replaced by Joerg's "[PATCH 0/7] iommu/amd:
-> > > Optimize iova queue flushing" series?
-> > 
-> > Yes, Joerg's patches replaced this patch.  He applied just the first two
-> > patches of this series.
+On Fri, Jun 16, 2017 at 01:54:47PM -0500, Tom Lendacky wrote:
+> Move the setting of the cpuinfo_x86.microcode field from amd_init() to
+> early_amd_init() so that it is available earlier in the boot process. This
+> avoids having to read MSR_AMD64_PATCH_LEVEL directly during early boot.
 > 
-> Joerg's patches applied on top of 4.10.17 do not solve my issue (do I
-> need the first two patches of this series?). the machine still hangs on
-> boot with a flood of IOMMU wait loop timed out messages.
-> 
-> on the other hand patch 3/3 v1 applied on top of 4.10.17 fixes the
-> problem and the machine boots successfully
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/kernel/cpu/amd.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
-Interesting. I did some measurements on the IOTLB flush-rate with my
-network load-test. This test is designed to heavily excerise the IOMMU
-map/unmap path and thus cause many IOTLB invalidations too.
+Reviewed-by: Borislav Petkov <bp@suse.de>
 
-Results are:
+-- 
+Regards/Gruss,
+    Boris.
 
-	Current upstream v4.12-rc6:	~147000 flushes/s
-	With Toms patches:		  ~5900 flushes/s
-	With my patches:		  ~1200 flushes/s
-
-So while Toms patches also get the flush-rate down significantly, it is
-even lower with my patches. This indicates that the problem is
-triggerable even with low flush rates.
-
-But I have no idea why it still triggers with my patches, but not with
-Toms. The approaches follow the same idea of only flushing domains that
-have map/unmap operations on them.
-
-I really think we need the patch to blacklist ATS on these GPUs
-upstream.
-
-Regards,
-
-	Joerg
+Good mailing practices for 400: avoid top-posting and trim the reply.
