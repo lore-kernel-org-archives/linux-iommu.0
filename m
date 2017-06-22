@@ -1,14 +1,19 @@
-From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
-	erratum #126
-Date: Thu, 22 Jun 2017 17:35:38 +0530
-Message-ID: <1498133138-20244-4-git-send-email-gakula@caviumnetworks.com>
-References: <1498133138-20244-1-git-send-email-gakula@caviumnetworks.com>
+From: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
+Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
+Date: Thu, 22 Jun 2017 11:13:09 -0400
+Message-ID: <1498144389.17007.25.camel@rutgers.edu>
+References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
+	<20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
+	<MWHPR12MB15181A6A020ACA2F53DF70339CCB0@MWHPR12MB1518.namprd12.prod.outlook.com>
+	<1496954035.4188.1.camel@rutgers.edu>
+	<1498062018.17007.6.camel@rutgers.edu>
+	<bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
+	<1498079371.17007.18.camel@rutgers.edu>
+	<20170622092053.GV30388@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4791361862103854488=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498133138-20244-1-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <20170622092053.GV30388-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,269 +23,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, "Nath,
+	Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
-lines for gerror, eventq and cmdq-sync.
+--===============4791361862103854488==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-2FWM5+fm6eMoP8UA51Tb"
 
-New named irq "combined" is set as a errata workaround, which allows to
-share the irq line by register single irq handler for all the interrupts.
 
-Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
----
- Documentation/arm64/silicon-errata.txt             |    1 +
- .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    1 +
- drivers/acpi/arm64/iort.c                          |   54 +++++++----
- drivers/iommu/arm-smmu-v3.c                        |  105 +++++++++++++++-----
- 4 files changed, 116 insertions(+), 45 deletions(-)
+--=-2FWM5+fm6eMoP8UA51Tb
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-index 4693a32..42422f6 100644
---- a/Documentation/arm64/silicon-errata.txt
-+++ b/Documentation/arm64/silicon-errata.txt
-@@ -63,6 +63,7 @@ stable kernels.
- | Cavium         | ThunderX Core   | #27456          | CAVIUM_ERRATUM_27456        |
- | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
- | Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
-+| Cavium         | ThunderX2 SMMUv3| #126            | N/A                         |
- |                |                 |                 |                             |
- | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
- |                |                 |                 |                             |
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-index 6ecc48c..a5a1ca4 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-@@ -26,6 +26,7 @@ the PCIe specification.
-                       * "priq"      - PRI Queue not empty
-                       * "cmdq-sync" - CMD_SYNC complete
-                       * "gerror"    - Global Error activated
-+                      * "combined"  - Handles above all 4 interrupts.
- 
- - #iommu-cells      : See the generic IOMMU binding described in
-                         devicetree/bindings/pci/pci-iommu.txt
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index c166f3e..43e1f13 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -828,6 +828,18 @@ static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
- 	return num_res;
- }
- 
-+static bool arm_smmu_v3_is_combined_irq(struct acpi_iort_smmu_v3 *smmu)
-+{
-+	/*
-+	 * Cavium ThunderX2 implementation doesn't not support unique
-+	 * irq line. Use single irq line for all the SMMUv3 interrupts.
-+	 */
-+	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
-+		return true;
-+
-+	return false;
-+}
-+
- static unsigned long arm_smmu_v3_resource_size(struct acpi_iort_smmu_v3 *smmu)
- {
- 	/*
-@@ -855,26 +867,32 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
- 	res[num_res].flags = IORESOURCE_MEM;
- 
- 	num_res++;
--
--	if (smmu->event_gsiv)
--		acpi_iort_register_irq(smmu->event_gsiv, "eventq",
--				       ACPI_EDGE_SENSITIVE,
--				       &res[num_res++]);
--
--	if (smmu->pri_gsiv)
--		acpi_iort_register_irq(smmu->pri_gsiv, "priq",
--				       ACPI_EDGE_SENSITIVE,
--				       &res[num_res++]);
--
--	if (smmu->gerr_gsiv)
--		acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
--				       ACPI_EDGE_SENSITIVE,
--				       &res[num_res++]);
--
--	if (smmu->sync_gsiv)
--		acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
-+	if (arm_smmu_v3_is_combined_irq(smmu))
-+		acpi_iort_register_irq(smmu->event_gsiv, "combined",
- 				       ACPI_EDGE_SENSITIVE,
- 				       &res[num_res++]);
-+	else {
-+
-+		if (smmu->event_gsiv)
-+			acpi_iort_register_irq(smmu->event_gsiv, "eventq",
-+					       ACPI_EDGE_SENSITIVE,
-+					       &res[num_res++]);
-+
-+		if (smmu->pri_gsiv)
-+			acpi_iort_register_irq(smmu->pri_gsiv, "priq",
-+					       ACPI_EDGE_SENSITIVE,
-+					       &res[num_res++]);
-+
-+		if (smmu->gerr_gsiv)
-+			acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
-+					       ACPI_EDGE_SENSITIVE,
-+					       &res[num_res++]);
-+
-+		if (smmu->sync_gsiv)
-+			acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
-+					       ACPI_EDGE_SENSITIVE,
-+					       &res[num_res++]);
-+	}
- }
- 
- static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 2dea4a9..0f83f7d 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -605,6 +605,7 @@ struct arm_smmu_device {
- 	struct arm_smmu_priq		priq;
- 
- 	int				gerr_irq;
-+	int				combined_irq;
- 
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
-@@ -1314,6 +1315,29 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
-+{
-+	struct arm_smmu_device *smmu = dev;
-+
-+	arm_smmu_evtq_thread(irq, dev);
-+	if (smmu->features & ARM_SMMU_FEAT_PRI)
-+		arm_smmu_priq_thread(irq, dev);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
-+{
-+	irqreturn_t ret;
-+
-+	ret = arm_smmu_gerror_handler(irq, dev);
-+	if (ret == IRQ_NONE) {
-+		arm_smmu_cmdq_sync_handler(irq, dev);
-+		return IRQ_WAKE_THREAD;
-+	}
-+	return ret;
-+}
-+
- /* IO_PGTABLE API */
- static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
- {
-@@ -2230,18 +2254,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
- 	devm_add_action(dev, arm_smmu_free_msis, dev);
- }
- 
--static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-+static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
- {
--	int ret, irq;
--	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
--
--	/* Disable IRQs first */
--	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
--				      ARM_SMMU_IRQ_CTRLACK);
--	if (ret) {
--		dev_err(smmu->dev, "failed to disable irqs\n");
--		return ret;
--	}
-+	int irq, ret;
- 
- 	arm_smmu_setup_msis(smmu);
- 
-@@ -2284,10 +2299,41 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 			if (ret < 0)
- 				dev_warn(smmu->dev,
- 					 "failed to enable priq irq\n");
--			else
--				irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
- 		}
- 	}
-+}
-+
-+static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-+{
-+	int ret, irq;
-+	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-+
-+	/* Disable IRQs first */
-+	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
-+				      ARM_SMMU_IRQ_CTRLACK);
-+	if (ret) {
-+		dev_err(smmu->dev, "failed to disable irqs\n");
-+		return ret;
-+	}
-+
-+	irq = smmu->combined_irq;
-+	if (irq) {
-+		/*
-+		 * Cavium ThunderX2 implementation doesn't not support unique
-+		 * irq lines. Use single irq line for all the SMMUv3 interrupts.
-+		 */
-+		ret = devm_request_threaded_irq(smmu->dev, irq,
-+					arm_smmu_combined_irq_handler,
-+					arm_smmu_combined_irq_thread,
-+					IRQF_ONESHOT,
-+					"arm-smmu-v3-combined-irq", smmu);
-+		if (ret < 0)
-+			dev_warn(smmu->dev, "failed to enable combined irq\n");
-+	} else
-+		arm_smmu_setup_unique_irqs(smmu);
-+
-+	if (smmu->features & ARM_SMMU_FEAT_PRI)
-+		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
- 
- 	/* Enable interrupt generation on the SMMU */
- 	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
-@@ -2724,22 +2770,27 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return PTR_ERR(smmu->base);
- 
- 	/* Interrupt lines */
--	irq = platform_get_irq_byname(pdev, "eventq");
--	if (irq > 0)
--		smmu->evtq.q.irq = irq;
- 
--	irq = platform_get_irq_byname(pdev, "priq");
-+	irq = platform_get_irq_byname(pdev, "combined");
- 	if (irq > 0)
--		smmu->priq.q.irq = irq;
-+		smmu->combined_irq = irq;
-+	else {
-+		irq = platform_get_irq_byname(pdev, "eventq");
-+		if (irq > 0)
-+			smmu->evtq.q.irq = irq;
- 
--	irq = platform_get_irq_byname(pdev, "cmdq-sync");
--	if (irq > 0)
--		smmu->cmdq.q.irq = irq;
-+		irq = platform_get_irq_byname(pdev, "priq");
-+		if (irq > 0)
-+			smmu->priq.q.irq = irq;
- 
--	irq = platform_get_irq_byname(pdev, "gerror");
--	if (irq > 0)
--		smmu->gerr_irq = irq;
-+		irq = platform_get_irq_byname(pdev, "cmdq-sync");
-+		if (irq > 0)
-+			smmu->cmdq.q.irq = irq;
- 
-+		irq = platform_get_irq_byname(pdev, "gerror");
-+		if (irq > 0)
-+			smmu->gerr_irq = irq;
-+	}
- 	/* Probe the h/w */
- 	ret = arm_smmu_device_hw_probe(smmu);
- 	if (ret)
--- 
-1.7.1
+On Thu, 2017-06-22 at 11:20 +0200, Joerg Roedel wrote:
+> On Wed, Jun 21, 2017 at 05:09:31PM -0400, Jan Vesely wrote:
+> > On Wed, 2017-06-21 at 12:01 -0500, Tom Lendacky wrote:
+> > > On 6/21/2017 11:20 AM, Jan Vesely wrote:
+> > > > Hi Arindam,
+> > > >=20
+> > > > has this patch been replaced by Joerg's "[PATCH 0/7] iommu/amd:
+> > > > Optimize iova queue flushing" series?
+> > >=20
+> > > Yes, Joerg's patches replaced this patch.  He applied just the first =
+two
+> > > patches of this series.
+> >=20
+> > Joerg's patches applied on top of 4.10.17 do not solve my issue (do I
+> > need the first two patches of this series?). the machine still hangs on
+> > boot with a flood of IOMMU wait loop timed out messages.
+> >=20
+> > on the other hand patch 3/3 v1 applied on top of 4.10.17 fixes the
+> > problem and the machine boots successfully
+>=20
+> Interesting. I did some measurements on the IOTLB flush-rate with my
+> network load-test. This test is designed to heavily excerise the IOMMU
+> map/unmap path and thus cause many IOTLB invalidations too.
+
+It looks like I tested different patches.
+linux-4.10.17 with both
+"iommu/amd: Optimize iova queue flushing"
+and
+"iommu/amd: Disable previously enabled IOMMUs at boot"
+(I haven't tested the series independently)
+
+works OK. The machine booted successfully and I was able to test clover
+based OpenCL and simple OpenGL on both iGPU(carrizo) and dGPU(iceland).
+
+thanks and sorry for the confusion,
+Jan
+
+>=20
+> Results are:
+>=20
+> 	Current upstream v4.12-rc6:	~147000 flushes/s
+> 	With Toms patches:		  ~5900 flushes/s
+> 	With my patches:		  ~1200 flushes/s
+>=20
+> So while Toms patches also get the flush-rate down significantly, it is
+> even lower with my patches. This indicates that the problem is
+> triggerable even with low flush rates.
+>=20
+> But I have no idea why it still triggers with my patches, but not with
+> Toms. The approaches follow the same idea of only flushing domains that
+> have map/unmap operations on them.
+>=20
+> I really think we need the patch to blacklist ATS on these GPUs
+> upstream.
+>=20
+> Regards,
+>=20
+> 	Joerg
+>=20
+
+--=-2FWM5+fm6eMoP8UA51Tb
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJZS96FAAoJEGPjP7c/SLIg5FIQAJRU5MA7pge4FO6Q/RrAdqSk
+GOh3uNDBhrmuwCN6R0eQASpaG0MOT3toNzdgl+qFlK8Om1wcOzW9ww7oqjDhXYEr
+FdffzComoswplrM2n04Ca6FTZ/yp217cAypGWd+C0RbPw+mqqLdsi4QhxrEZEbKa
+tXc/8YbfUyu5qNIzwn9fyGn9ztARIBUKyKncfrWxFG/XE91WNIKl1dOfZxiKZaQg
+ihs1IKnQlhelKFasv5RqgGGQoXTZJknt0ciQ8a7zQc15/g+fR1YSkxG0UzHalOVm
+pXiTu3OuuVTZbshrnELViNW8SJSlpd7MOtLSc8/Zx5ZLIpK1WjMlO5oW6iQ8YnO4
+Ejb/3TrpHktJxyl2TlsNi2j9p/SIWP+fKpo+Bqn3cC4qNsPbNKiA6gKJV81EXObe
+5/iEKqTPO6vBp7nOBPFonL8jXogF1F0kKpmloW+19XCofoDsFamr2K//OyWtzPYG
+4JtGLjGZU2FLL35e0lK2av1hlAJ4QzfjBUChi0uaMk5PAQKIGcs+HAuAAf3NWY4A
+kxyNvqxKoCzsjGk8CBgIooN+LP9MrmaBF/6ug5NU2JfVk83W09TRejaz4hrCMgx3
+l5pgQYMbNazLe9kcw3IlcwhNQDQ9e8FsYmFEbycyCaUMI3yZ07BEDxtsN8ZxH2iO
+M8xYjYy0WBlTYlnHp9FX
+=jK7x
+-----END PGP SIGNATURE-----
+
+--=-2FWM5+fm6eMoP8UA51Tb--
+
+
+--===============4791361862103854488==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4791361862103854488==--
