@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 7/8] iommu/arm-smmu: Remove io-pgtable spinlock
-Date: Thu, 22 Jun 2017 16:53:56 +0100
-Message-ID: <22c22437921aafcaa462ca01fcd0354a45116973.1498145008.git.robin.murphy@arm.com>
+Subject: [PATCH v2 8/8] iommu/arm-smmu-v3: Remove io-pgtable spinlock
+Date: Thu, 22 Jun 2017 16:53:57 +0100
+Message-ID: <c2ae3690bd8add6c47c7616bc50ee83972bdd19f.1498145008.git.robin.murphy@arm.com>
 References: <cover.1498145008.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,57 +21,47 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public
 Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the io-pgtable code now robust against (valid) races, we no longer
-need to serialise all operations with a lock. This might make broken
-callers who issue concurrent operations on overlapping addresses go even
-more wrong than before, but hey, they already had little hope of useful
-or deterministic results.
-
-We do however still have to keep a lock around to serialise the ATS1*
-translation ops, as parallel iova_to_phys() calls could lead to
-unpredictable hardware behaviour otherwise.
+As for SMMUv2, take advantage of io-pgtable's newfound tolerance for
+concurrency. Unfortunately in this case the command queue lock remains a
+point of serialisation for the unmap path, but there may be a little
+more we can do to ameliorate that in future.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
 v2: No change
 
- drivers/iommu/arm-smmu.c | 45 ++++++++++++++-------------------------------
- 1 file changed, 14 insertions(+), 31 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 33 ++++++---------------------------
+ 1 file changed, 6 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 1f42f339a284..b8d069a2b31d 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -425,10 +425,10 @@ enum arm_smmu_domain_stage {
- struct arm_smmu_domain {
- 	struct arm_smmu_device		*smmu;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index b9c4cf4ccca2..291da5f918d5 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -645,7 +645,6 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 
  	struct io_pgtable_ops		*pgtbl_ops;
 -	spinlock_t			pgtbl_lock;
- 	struct arm_smmu_cfg		cfg;
- 	enum arm_smmu_domain_stage	stage;
- 	struct mutex			init_mutex; /* Protects smmu pointer */
-+	spinlock_t			cb_lock; /* Serialises ATS1* ops */
- 	struct iommu_domain		domain;
- };
  
-@@ -1105,7 +1105,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	enum arm_smmu_domain_stage	stage;
+ 	union {
+@@ -1406,7 +1405,6 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
  	}
  
  	mutex_init(&smmu_domain->init_mutex);
 -	spin_lock_init(&smmu_domain->pgtbl_lock);
-+	spin_lock_init(&smmu_domain->cb_lock);
- 
  	return &smmu_domain->domain;
  }
-@@ -1383,35 +1383,23 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+@@ -1678,44 +1676,29 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
  			phys_addr_t paddr, size_t size, int prot)
  {
 -	int ret;
 -	unsigned long flags;
 -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
+-	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
  
  	if (!ops)
@@ -84,13 +74,13 @@ index 1f42f339a284..b8d069a2b31d 100644
 +	return ops->map(ops, iova, paddr, size, prot);
  }
  
- static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			     size_t size)
+ static size_t
+ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
  {
 -	size_t ret;
 -	unsigned long flags;
 -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
+-	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
  
  	if (!ops)
@@ -103,68 +93,29 @@ index 1f42f339a284..b8d069a2b31d 100644
 +	return ops->unmap(ops, iova, size);
  }
  
- static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
-@@ -1425,10 +1413,11 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	void __iomem *cb_base;
- 	u32 tmp;
- 	u64 phys;
--	unsigned long va;
-+	unsigned long va, flags;
- 
- 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
- 
-+	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
- 	/* ATS1 registers can only be written atomically */
- 	va = iova & ~0xfffUL;
- 	if (smmu->version == ARM_SMMU_V2)
-@@ -1438,6 +1427,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 
- 	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
- 				      !(tmp & ATSR_ACTIVE), 5, 50)) {
-+		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
- 		dev_err(dev,
- 			"iova to phys timed out on %pad. Falling back to software table walk.\n",
- 			&iova);
-@@ -1445,6 +1435,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	}
- 
- 	phys = readq_relaxed(cb_base + ARM_SMMU_CB_PAR);
-+	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
- 	if (phys & CB_PAR_F) {
- 		dev_err(dev, "translation fault!\n");
- 		dev_err(dev, "PAR = 0x%llx\n", phys);
-@@ -1457,10 +1448,8 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 					dma_addr_t iova)
+ static phys_addr_t
+ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
  {
 -	phys_addr_t ret;
 -	unsigned long flags;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
+-	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+-	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
++	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
  
  	if (domain->type == IOMMU_DOMAIN_IDENTITY)
  		return iova;
-@@ -1468,17 +1457,11 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+@@ -1723,11 +1706,7 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
  	if (!ops)
  		return 0;
  
 -	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
- 	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS &&
--			smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
--		ret = arm_smmu_iova_to_phys_hard(domain, iova);
--	} else {
--		ret = ops->iova_to_phys(ops, iova);
--	}
-+			smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
-+		return arm_smmu_iova_to_phys_hard(domain, iova);
- 
+-	ret = ops->iova_to_phys(ops, iova);
 -	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
 -
 -	return ret;
 +	return ops->iova_to_phys(ops, iova);
  }
  
- static bool arm_smmu_capable(enum iommu_cap cap)
+ static struct platform_driver arm_smmu_driver;
 -- 
 2.12.2.dirty
