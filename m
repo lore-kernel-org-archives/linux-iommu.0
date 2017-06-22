@@ -1,13 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 8/8] iommu/arm-smmu-v3: Remove io-pgtable spinlock
-Date: Thu, 22 Jun 2017 16:53:57 +0100
-Message-ID: <c2ae3690bd8add6c47c7616bc50ee83972bdd19f.1498145008.git.robin.murphy@arm.com>
-References: <cover.1498145008.git.robin.murphy@arm.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v7 27/36] iommu/amd: Allow the AMD IOMMU to work with
+	memory encryption
+Date: Thu, 22 Jun 2017 11:48:46 -0500
+Message-ID: <379702e6-31f1-2df1-8889-3498241aea49@amd.com>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+	<20170616185459.18967.72790.stgit@tlendack-t1.amdoffice.net>
+	<20170622105637.g7twdaae2v5eaown@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1498145008.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170622105637.g7twdaae2v5eaown-fF5Pk5pvG8Y@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,105 +21,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ker
 List-Id: iommu@lists.linux-foundation.org
 
-As for SMMUv2, take advantage of io-pgtable's newfound tolerance for
-concurrency. Unfortunately in this case the command queue lock remains a
-point of serialisation for the unmap path, but there may be a little
-more we can do to ameliorate that in future.
+On 6/22/2017 5:56 AM, Borislav Petkov wrote:
+> On Fri, Jun 16, 2017 at 01:54:59PM -0500, Tom Lendacky wrote:
+>> The IOMMU is programmed with physical addresses for the various tables
+>> and buffers that are used to communicate between the device and the
+>> driver. When the driver allocates this memory it is encrypted. In order
+>> for the IOMMU to access the memory as encrypted the encryption mask needs
+>> to be included in these physical addresses during configuration.
+>>
+>> The PTE entries created by the IOMMU should also include the encryption
+>> mask so that when the device behind the IOMMU performs a DMA, the DMA
+>> will be performed to encrypted memory.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>   drivers/iommu/amd_iommu.c       |   30 ++++++++++++++++--------------
+>>   drivers/iommu/amd_iommu_init.c  |   34 ++++++++++++++++++++++++++++------
+>>   drivers/iommu/amd_iommu_proto.h |   10 ++++++++++
+>>   drivers/iommu/amd_iommu_types.h |    2 +-
+>>   4 files changed, 55 insertions(+), 21 deletions(-)
+> 
+> Reviewed-by: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
+> 
+> Btw, I'm assuming the virt_to_phys() difference on SME systems is only
+> needed in a handful of places. Otherwise, I'd suggest changing the
+> virt_to_phys() function/macro directly. But I guess most of the places
+> need the real physical address without the enc bit.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+Correct.
 
-v2: No change
+Thanks,
+Tom
 
- drivers/iommu/arm-smmu-v3.c | 33 ++++++---------------------------
- 1 file changed, 6 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index b9c4cf4ccca2..291da5f918d5 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -645,7 +645,6 @@ struct arm_smmu_domain {
- 	struct mutex			init_mutex; /* Protects smmu pointer */
- 
- 	struct io_pgtable_ops		*pgtbl_ops;
--	spinlock_t			pgtbl_lock;
- 
- 	enum arm_smmu_domain_stage	stage;
- 	union {
-@@ -1406,7 +1405,6 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	}
- 
- 	mutex_init(&smmu_domain->init_mutex);
--	spin_lock_init(&smmu_domain->pgtbl_lock);
- 	return &smmu_domain->domain;
- }
- 
-@@ -1678,44 +1676,29 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 			phys_addr_t paddr, size_t size, int prot)
- {
--	int ret;
--	unsigned long flags;
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
- 
- 	if (!ops)
- 		return -ENODEV;
- 
--	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
--	ret = ops->map(ops, iova, paddr, size, prot);
--	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
--	return ret;
-+	return ops->map(ops, iova, paddr, size, prot);
- }
- 
- static size_t
- arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- {
--	size_t ret;
--	unsigned long flags;
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
- 
- 	if (!ops)
- 		return 0;
- 
--	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
--	ret = ops->unmap(ops, iova, size);
--	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
--	return ret;
-+	return ops->unmap(ops, iova, size);
- }
- 
- static phys_addr_t
- arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
--	phys_addr_t ret;
--	unsigned long flags;
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
- 
- 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
- 		return iova;
-@@ -1723,11 +1706,7 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- 	if (!ops)
- 		return 0;
- 
--	spin_lock_irqsave(&smmu_domain->pgtbl_lock, flags);
--	ret = ops->iova_to_phys(ops, iova);
--	spin_unlock_irqrestore(&smmu_domain->pgtbl_lock, flags);
--
--	return ret;
-+	return ops->iova_to_phys(ops, iova);
- }
- 
- static struct platform_driver arm_smmu_driver;
--- 
-2.12.2.dirty
+> 
