@@ -1,32 +1,49 @@
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH] iommu: arm-smmu: Handle return of iommu_device_register.
-Date: Thu, 22 Jun 2017 12:57:42 +0530
-Message-ID: <e7d7a3939197315309e1fd3549d1db90315cc8bf.1498116422.git.arvind.yadav.cs@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu: amd_iommu_init: constify amd_iommu_group.
+Date: Thu, 22 Jun 2017 13:26:08 +0530
+Message-ID: <27ffc54ef2739d5a125ade7ab26342ba63ad95ba.1498117578.git.arvind.yadav.cs@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_device_register can fail here and we must check its return value.
+File size before:
+   text	   data	    bss	    dec	    hex	filename
+  14323	   1840	    353	  16516	   4084	drivers/iommu/amd_iommu_init.o
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+File size After adding 'const':
+   text	   data	    bss	    dec	    hex	filename
+  14379	   1776	    353	  16508	   407c	drivers/iommu/amd_iommu_init.o
+
+Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 7d3f08a..182eb38 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2736,6 +2736,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 5a11328..41a66ae 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1532,7 +1532,7 @@ static ssize_t amd_iommu_show_features(struct device *dev,
+ 	NULL,
+ };
  
- 	ret = iommu_device_register(&smmu->iommu);
-+	if (ret)
-+		return ret;
- 
- #ifdef CONFIG_PCI
- 	if (pci_bus_type.iommu_ops != &arm_smmu_ops) {
+-static struct attribute_group amd_iommu_group = {
++static const struct attribute_group amd_iommu_group = {
+ 	.name = "amd-iommu",
+ 	.attrs = amd_iommu_attrs,
+ };
 -- 
 1.9.1
