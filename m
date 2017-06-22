@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 2/8] iommu/io-pgtable-arm: Improve split_blk_unmap
-Date: Thu, 22 Jun 2017 16:53:51 +0100
-Message-ID: <7771c71e014213c16a94d6b376add069fdbed7f0.1498145008.git.robin.murphy@arm.com>
+Subject: [PATCH v2 3/8] iommu/io-pgtable-arm-v7s: Refactor split_blk_unmap
+Date: Thu, 22 Jun 2017 16:53:52 +0100
+Message-ID: <5e102f868fc8d291f05cb9f33f24bb9e6be79485.1498145008.git.robin.murphy@arm.com>
 References: <cover.1498145008.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,225 +21,164 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public
 Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The current split_blk_unmap implementation suffers from some inscrutable
-pointer trickery for creating the tables to replace the block entry, but
-more than that it also suffers from hideous inefficiency. For example,
-the most pathological case of unmapping a level 3 page from a level 1
-block will allocate 513 lower-level tables to remap the entire block at
-page granularity, when only 2 are actually needed (the rest can be
-covered by level 2 block entries).
-
-Also, we would like to be able to relax the spinlock requirement in
-future, for which the roll-back-and-try-again logic for race resolution
-would be pretty hideous under the current paradigm.
-
-Both issues can be resolved most neatly by turning things sideways:
-instead of repeatedly recursing into __arm_lpae_map() map to build up an
-entire new sub-table depth-first, we can directly replace the block
-entry with a next-level table of block/page entries, then repeat by
-unmapping at the next level if necessary. With a little refactoring of
-some helper functions, the code ends up not much bigger than before, but
-considerably easier to follow and to adapt in future.
+Whilst the short-descriptor format's split_blk_unmap implementation has
+no need to be recursive, it followed the pattern of the LPAE version
+anyway for the sake of consistency. With the latter now reworked for
+both efficiency and future scalability improvements, tweak the former
+similarly, not least to make it less obtuse.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
-v2: Make the address increment in the loop nicer, which also allows the
-    factoring of the init_pte helpers to be a little cleaner too
+v2: One trivial cosmetic tweak to the loop increment
 
- drivers/iommu/io-pgtable-arm.c | 118 ++++++++++++++++++++++++-----------------
- 1 file changed, 69 insertions(+), 49 deletions(-)
+ drivers/iommu/io-pgtable-arm-v7s.c | 85 ++++++++++++++++++++------------------
+ 1 file changed, 45 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 6e5df5e0a3bd..dd7477010291 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -264,19 +264,38 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			    unsigned long iova, size_t size, int lvl,
- 			    arm_lpae_iopte *ptep);
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index a490db032c51..692621f1022a 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -281,6 +281,13 @@ static arm_v7s_iopte arm_v7s_prot_to_pte(int prot, int lvl,
+ 	else if (prot & IOMMU_CACHE)
+ 		pte |= ARM_V7S_ATTR_B | ARM_V7S_ATTR_C;
  
-+static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
-+				phys_addr_t paddr, arm_lpae_iopte prot,
-+				int lvl, arm_lpae_iopte *ptep)
-+{
-+	arm_lpae_iopte pte = prot;
++	pte |= ARM_V7S_PTE_TYPE_PAGE;
++	if (lvl == 1 && (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS))
++		pte |= ARM_V7S_ATTR_NS_SECTION;
 +
-+	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+		pte |= ARM_LPAE_PTE_NS;
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)
++		pte |= ARM_V7S_ATTR_MTK_4GB;
 +
-+	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
-+		pte |= ARM_LPAE_PTE_TYPE_PAGE;
-+	else
-+		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
-+
-+	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
-+	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
-+
-+	__arm_lpae_set_pte(ptep, pte, &data->iop.cfg);
-+}
-+
- static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 			     unsigned long iova, phys_addr_t paddr,
- 			     arm_lpae_iopte prot, int lvl,
- 			     arm_lpae_iopte *ptep)
+ 	return pte;
+ }
+ 
+@@ -353,7 +360,7 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+ 			    int lvl, int num_entries, arm_v7s_iopte *ptep)
  {
--	arm_lpae_iopte pte = prot;
--	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	arm_lpae_iopte pte = *ptep;
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+-	arm_v7s_iopte pte = arm_v7s_prot_to_pte(prot, lvl, cfg);
++	arm_v7s_iopte pte;
+ 	int i;
  
--	if (iopte_leaf(*ptep, lvl)) {
-+	if (iopte_leaf(pte, lvl)) {
- 		/* We require an unmap first */
- 		WARN_ON(!selftest_running);
- 		return -EEXIST;
--	} else if (iopte_type(*ptep, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
-+	} else if (iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
- 		/*
- 		 * We need to unmap and free the old table before
- 		 * overwriting it with a block entry.
-@@ -289,21 +308,24 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 			return -EINVAL;
- 	}
+ 	for (i = 0; i < num_entries; i++)
+@@ -375,13 +382,7 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+ 			return -EEXIST;
+ 		}
  
--	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
--		pte |= ARM_LPAE_PTE_NS;
+-	pte |= ARM_V7S_PTE_TYPE_PAGE;
+-	if (lvl == 1 && (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS))
+-		pte |= ARM_V7S_ATTR_NS_SECTION;
 -
--	if (lvl == ARM_LPAE_MAX_LEVELS - 1)
--		pte |= ARM_LPAE_PTE_TYPE_PAGE;
--	else
--		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
+-	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)
+-		pte |= ARM_V7S_ATTR_MTK_4GB;
 -
--	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
--	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
--
--	__arm_lpae_set_pte(ptep, pte, cfg);
-+	__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++	pte = arm_v7s_prot_to_pte(prot, lvl, cfg);
+ 	if (num_entries > 1)
+ 		pte = arm_v7s_pte_to_cont(pte, lvl);
+ 
+@@ -391,6 +392,20 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
  	return 0;
  }
  
-+static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
-+					     arm_lpae_iopte *ptep,
-+					     struct io_pgtable_cfg *cfg)
++static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
++					   arm_v7s_iopte *ptep,
++					   struct io_pgtable_cfg *cfg)
 +{
-+	arm_lpae_iopte new;
++	arm_v7s_iopte new;
 +
-+	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
++	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
 +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
-+		new |= ARM_LPAE_PTE_NSTABLE;
++		new |= ARM_V7S_ATTR_NS_TABLE;
 +
-+	__arm_lpae_set_pte(ptep, new, cfg);
++	__arm_v7s_set_pte(ptep, new, 1, cfg);
 +	return new;
 +}
 +
- static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 			  phys_addr_t paddr, size_t size, arm_lpae_iopte prot,
- 			  int lvl, arm_lpae_iopte *ptep)
-@@ -331,10 +353,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ static int __arm_v7s_map(struct arm_v7s_io_pgtable *data, unsigned long iova,
+ 			 phys_addr_t paddr, size_t size, int prot,
+ 			 int lvl, arm_v7s_iopte *ptep)
+@@ -418,11 +433,7 @@ static int __arm_v7s_map(struct arm_v7s_io_pgtable *data, unsigned long iova,
  		if (!cptep)
  			return -ENOMEM;
  
--		pte = __pa(cptep) | ARM_LPAE_PTE_TYPE_TABLE;
+-		pte = virt_to_phys(cptep) | ARM_V7S_PTE_TYPE_TABLE;
 -		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
--			pte |= ARM_LPAE_PTE_NSTABLE;
--		__arm_lpae_set_pte(ptep, pte, cfg);
-+		arm_lpae_install_table(cptep, ptep, cfg);
- 	} else if (!iopte_leaf(pte, lvl)) {
- 		cptep = iopte_deref(pte, data);
+-			pte |= ARM_V7S_ATTR_NS_TABLE;
+-
+-		__arm_v7s_set_pte(ptep, pte, 1, cfg);
++		arm_v7s_install_table(cptep, ptep, cfg);
+ 	} else if (ARM_V7S_PTE_IS_TABLE(pte, lvl)) {
+ 		cptep = iopte_deref(pte, lvl);
  	} else {
-@@ -452,40 +471,43 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+@@ -503,41 +514,35 @@ static void arm_v7s_split_cont(struct arm_v7s_io_pgtable *data,
  
- static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 				    unsigned long iova, size_t size,
--				    arm_lpae_iopte prot, int lvl,
--				    arm_lpae_iopte *ptep, size_t blk_size)
-+				    arm_lpae_iopte blk_pte, int lvl,
-+				    arm_lpae_iopte *ptep)
+ static int arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
+ 				   unsigned long iova, size_t size,
+-				   arm_v7s_iopte *ptep)
++				   arm_v7s_iopte blk_pte, arm_v7s_iopte *ptep)
  {
--	unsigned long blk_start, blk_end;
+-	unsigned long blk_start, blk_end, blk_size;
+-	phys_addr_t blk_paddr;
+-	arm_v7s_iopte table = 0;
+-	int prot = arm_v7s_pte_to_prot(*ptep, 1);
 +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	arm_lpae_iopte pte, *tablep;
- 	phys_addr_t blk_paddr;
--	arm_lpae_iopte table = 0;
-+	size_t tablesz = ARM_LPAE_GRANULE(data);
-+	size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
-+	int i, unmap_idx = -1;
++	arm_v7s_iopte pte, *tablep;
++	int i, unmap_idx, num_entries, num_ptes;
  
--	blk_start = iova & ~(blk_size - 1);
--	blk_end = blk_start + blk_size;
--	blk_paddr = iopte_to_pfn(*ptep, data) << data->pg_shift;
-+	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-+		return 0;
- 
--	for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
--		arm_lpae_iopte *tablep;
-+	tablep = __arm_lpae_alloc_pages(tablesz, GFP_ATOMIC, cfg);
+-	blk_size = ARM_V7S_BLOCK_SIZE(1);
+-	blk_start = iova & ARM_V7S_LVL_MASK(1);
+-	blk_end = blk_start + ARM_V7S_BLOCK_SIZE(1);
+-	blk_paddr = *ptep & ARM_V7S_LVL_MASK(1);
++	tablep = __arm_v7s_alloc_table(2, GFP_ATOMIC, data);
 +	if (!tablep)
 +		return 0; /* Bytes unmapped */
  
-+	if (size == split_sz)
-+		unmap_idx = ARM_LPAE_LVL_IDX(iova, lvl, data);
+-	for (; blk_start < blk_end; blk_start += size, blk_paddr += size) {
+-		arm_v7s_iopte *tablep;
++	num_ptes = ARM_V7S_PTES_PER_LVL(2);
++	num_entries = size >> ARM_V7S_LVL_SHIFT(2);
++	unmap_idx = ARM_V7S_LVL_IDX(iova, 2);
+ 
++	pte = arm_v7s_prot_to_pte(arm_v7s_pte_to_prot(blk_pte, 1), 2, cfg);
++	if (num_entries > 1)
++		pte = arm_v7s_pte_to_cont(pte, 2);
 +
-+	blk_paddr = iopte_to_pfn(blk_pte, data) << data->pg_shift;
-+	pte = iopte_prot(blk_pte);
-+
-+	for (i = 0; i < tablesz / sizeof(pte); i++, blk_paddr += split_sz) {
++	for (i = 0; i < num_ptes; i += num_entries, pte += size) {
  		/* Unmap! */
 -		if (blk_start == iova)
 +		if (i == unmap_idx)
  			continue;
  
--		/* __arm_lpae_map expects a pointer to the start of the table */
--		tablep = &table - ARM_LPAE_LVL_IDX(blk_start, lvl, data);
--		if (__arm_lpae_map(data, blk_start, blk_paddr, size, prot, lvl,
--				   tablep) < 0) {
+-		/* __arm_v7s_map expects a pointer to the start of the table */
+-		tablep = &table - ARM_V7S_LVL_IDX(blk_start, 1);
+-		if (__arm_v7s_map(data, blk_start, blk_paddr, size, prot, 1,
+-				  tablep) < 0) {
 -			if (table) {
 -				/* Free the table we allocated */
--				tablep = iopte_deref(table, data);
--				__arm_lpae_free_pgtable(data, lvl + 1, tablep);
+-				tablep = iopte_deref(table, 1);
+-				__arm_v7s_free_table(tablep, 2, data);
 -			}
 -			return 0; /* Bytes unmapped */
 -		}
-+		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i]);
++		__arm_v7s_set_pte(&tablep[i], pte, num_entries, cfg);
  	}
  
--	__arm_lpae_set_pte(ptep, table, &data->iop.cfg);
+-	__arm_v7s_set_pte(ptep, table, 1, &data->iop.cfg);
 -	iova &= ~(blk_size - 1);
 -	io_pgtable_tlb_add_flush(&data->iop, iova, blk_size, blk_size, true);
-+	arm_lpae_install_table(tablep, ptep, cfg);
-+
-+	if (unmap_idx < 0)
-+		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
++	arm_v7s_install_table(tablep, ptep, cfg);
 +
 +	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
  	return size;
  }
  
-@@ -495,7 +517,6 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- {
- 	arm_lpae_iopte pte;
- 	struct io_pgtable *iop = &data->iop;
--	size_t blk_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
- 
- 	/* Something went horribly wrong and we ran out of page table */
- 	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-@@ -507,7 +528,7 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 		return 0;
- 
- 	/* If the size matches this level, we're in the right place */
--	if (size == blk_size) {
-+	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
- 		__arm_lpae_set_pte(ptep, 0, &iop->cfg);
- 
- 		if (!iopte_leaf(pte, lvl)) {
-@@ -527,9 +548,8 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+@@ -594,7 +599,7 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
  		 * Insert a table at the next level to map the old region,
  		 * minus the part we want to unmap
  		 */
--		return arm_lpae_split_blk_unmap(data, iova, size,
--						iopte_prot(pte), lvl, ptep,
--						blk_size);
-+		return arm_lpae_split_blk_unmap(data, iova, size, pte,
-+						lvl + 1, ptep);
+-		return arm_v7s_split_blk_unmap(data, iova, size, ptep);
++		return arm_v7s_split_blk_unmap(data, iova, size, pte[0], ptep);
  	}
  
  	/* Keep on walkin' */
