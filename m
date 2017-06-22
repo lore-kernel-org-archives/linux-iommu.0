@@ -1,12 +1,20 @@
-From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu: intel-iommu: constify intel_dma_ops and
-	intel_iommu_group
-Date: Thu, 22 Jun 2017 14:09:10 +0530
-Message-ID: <ad3d2fb37103d75c18366a7b62e1bb55dca74e0b.1498120583.git.arvind.yadav.cs@gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
+Date: Thu, 22 Jun 2017 11:20:53 +0200
+Message-ID: <20170622092053.GV30388@8bytes.org>
+References: <20170605195203.11512.20579.stgit@tlendack-t1.amdoffice.net>
+	<20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
+	<MWHPR12MB15181A6A020ACA2F53DF70339CCB0@MWHPR12MB1518.namprd12.prod.outlook.com>
+	<1496954035.4188.1.camel@rutgers.edu>
+	<1498062018.17007.6.camel@rutgers.edu>
+	<bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
+	<1498079371.17007.18.camel@rutgers.edu>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1498079371.17007.18.camel-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,44 +24,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, "Nath,
+	Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-File size before:
-   text	   data	    bss	    dec	    hex	filename
-  32765	    758	   1824	  35347	   8a13	drivers/iommu/intel-iommu.o
+On Wed, Jun 21, 2017 at 05:09:31PM -0400, Jan Vesely wrote:
+> On Wed, 2017-06-21 at 12:01 -0500, Tom Lendacky wrote:
+> > On 6/21/2017 11:20 AM, Jan Vesely wrote:
+> > > Hi Arindam,
+> > > 
+> > > has this patch been replaced by Joerg's "[PATCH 0/7] iommu/amd:
+> > > Optimize iova queue flushing" series?
+> > 
+> > Yes, Joerg's patches replaced this patch.  He applied just the first two
+> > patches of this series.
+> 
+> Joerg's patches applied on top of 4.10.17 do not solve my issue (do I
+> need the first two patches of this series?). the machine still hangs on
+> boot with a flood of IOMMU wait loop timed out messages.
+> 
+> on the other hand patch 3/3 v1 applied on top of 4.10.17 fixes the
+> problem and the machine boots successfully
 
-File size After adding 'const':
-   text	   data	    bss	    dec	    hex	filename
-  32989	    534	   1824	  35347	   8a13	drivers/iommu/intel-iommu.o
+Interesting. I did some measurements on the IOTLB flush-rate with my
+network load-test. This test is designed to heavily excerise the IOMMU
+map/unmap path and thus cause many IOTLB invalidations too.
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Results are:
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 90ab011..9e35ad6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3970,7 +3970,7 @@ static int intel_mapping_error(struct device *dev, dma_addr_t dma_addr)
- 	return !dma_addr;
- }
- 
--struct dma_map_ops intel_dma_ops = {
-+const struct dma_map_ops intel_dma_ops = {
- 	.alloc = intel_alloc_coherent,
- 	.free = intel_free_coherent,
- 	.map_sg = intel_map_sg,
-@@ -4816,7 +4816,7 @@ static ssize_t intel_iommu_show_ndoms_used(struct device *dev,
- 	NULL,
- };
- 
--static struct attribute_group intel_iommu_group = {
-+static const struct attribute_group intel_iommu_group = {
- 	.name = "intel-iommu",
- 	.attrs = intel_iommu_attrs,
- };
--- 
-1.9.1
+	Current upstream v4.12-rc6:	~147000 flushes/s
+	With Toms patches:		  ~5900 flushes/s
+	With my patches:		  ~1200 flushes/s
+
+So while Toms patches also get the flush-rate down significantly, it is
+even lower with my patches. This indicates that the problem is
+triggerable even with low flush rates.
+
+But I have no idea why it still triggers with my patches, but not with
+Toms. The approaches follow the same idea of only flushing domains that
+have map/unmap operations on them.
+
+I really think we need the patch to blacklist ATS on these GPUs
+upstream.
+
+Regards,
+
+	Joerg
