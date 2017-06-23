@@ -1,239 +1,145 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v3 1/2] acpi:iort: Add an IORT helper function to reserve
- HW ITS address regions for IOMMU drivers
-Date: Fri, 23 Jun 2017 17:54:06 +0100
-Message-ID: <20170623165406.GA6412@red-moon>
-References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
- <20170623145801.325244-2-shameerali.kolothum.thodi@huawei.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v7 36/36] x86/mm: Add support to make use of Secure
+ Memory Encryption
+Date: Fri, 23 Jun 2017 19:39:37 +0200
+Message-ID: <20170623173937.erotfiemyidyvarn@pd.tnic>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+ <20170616185639.18967.41488.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
 Content-Disposition: inline
-In-Reply-To: <20170623145801.325244-2-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: shameer <shameerali.kolothum.thodi@huawei.com>
-Cc: marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org, gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
+In-Reply-To: <20170616185639.18967.41488.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@or>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 23, 2017 at 03:58:00PM +0100, shameer wrote:
-> The helper function retrieves ITS address regions through IORT
-> device <-> ITS mappings and reserves it so that these regions
-> will not be translated by IOMMU and will be excluded from IOVA
-> allocations. IOMMU drivers can use this to implement their
-> .get_resv_regions callback.
+On Fri, Jun 16, 2017 at 01:56:39PM -0500, Tom Lendacky wrote:
+> Add support to check if SME has been enabled and if memory encryption
+> should be activated (checking of command line option based on the
+> configuration of the default state).  If memory encryption is to be
+> activated, then the encryption mask is set and the kernel is encrypted
+> "in place."
 > 
-> Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 > ---
->  drivers/acpi/arm64/iort.c        | 91 ++++++++++++++++++++++++++++++++++++++--
->  drivers/irqchip/irq-gic-v3-its.c |  3 +-
->  include/linux/acpi_iort.h        |  7 +++-
->  3 files changed, 96 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index c5fecf9..cf0a6b8 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -34,6 +34,7 @@
->  struct iort_its_msi_chip {
->  	struct list_head	list;
->  	struct fwnode_handle	*fw_node;
-> +	phys_addr_t		base_addr;
->  	u32			translation_id;
->  };
->  
-> @@ -131,14 +132,16 @@ typedef acpi_status (*iort_find_node_callback)
->  static DEFINE_SPINLOCK(iort_msi_chip_lock);
->  
->  /**
-> - * iort_register_domain_token() - register domain token and related ITS ID
-> - * to the list from where we can get it back later on.
-> + * iort_register_domain_token() - register domain token along with related
-> + * ITS ID and base address to the list from where we can get it back later on.
->   * @trans_id: ITS ID.
-> + * @base: ITS base address.
->   * @fw_node: Domain token.
->   *
->   * Returns: 0 on success, -ENOMEM if no memory when allocating list element
->   */
-> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
-> +int iort_register_domain_token(int trans_id, phys_addr_t base,
-> +			       struct fwnode_handle *fw_node)
->  {
->  	struct iort_its_msi_chip *its_msi_chip;
->  
-> @@ -148,6 +151,7 @@ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
->  
->  	its_msi_chip->fw_node = fw_node;
->  	its_msi_chip->translation_id = trans_id;
-> +	its_msi_chip->base_addr = base;
->  
->  	spin_lock(&iort_msi_chip_lock);
->  	list_add(&its_msi_chip->list, &iort_msi_chip_list);
-> @@ -491,6 +495,24 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
->  	return -ENODEV;
->  }
->  
-> +static int iort_find_its_base(u32 its_id, phys_addr_t *base)
-> +{
-> +	struct iort_its_msi_chip *its_msi_chip;
-> +	bool match = false;
-> +
-> +	spin_lock(&iort_msi_chip_lock);
-> +	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
-> +		if (its_msi_chip->translation_id == its_id) {
-> +			*base = its_msi_chip->base_addr;
-> +			match = true;
-> +			break;
-> +		}
-> +	}
-> +	spin_unlock(&iort_msi_chip_lock);
-> +
-> +	return match ? 0 : -ENODEV;
-> +}
-> +
->  /**
->   * iort_dev_find_its_id() - Find the ITS identifier for a device
->   * @dev: The device.
-> @@ -649,6 +671,67 @@ int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
->  
->  	return err;
->  }
-> +
-> +/**
-> + * iort_iommu_its_get_resv_regions - Reserved region driver helper
-> + * @dev: Device from iommu_get_resv_regions()
-> + * @list: Reserved region list from iommu_get_resv_regions()
-> + *
-> + * Returns: Number of reserved regions on success(0 if no associated ITS),
-> + *          appropriate error value otherwise.
-> + *
-> + * IOMMU drivers can use this to implement their .get_resv_regions callback
-> + * for reserving the HW ITS address regions.
+>  arch/x86/include/asm/mem_encrypt.h |    6 ++-
+>  arch/x86/kernel/head64.c           |    4 +-
+>  arch/x86/mm/mem_encrypt.c          |   86 +++++++++++++++++++++++++++++++++++-
+>  3 files changed, 90 insertions(+), 6 deletions(-)
+
+...
+
+> +/*
+> + * Some SME functions run very early causing issues with the stack-protector
+> + * support. Provide a way to turn off this support on a per-function basis.
 > + */
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
-> +{
-> +	int i;
-> +	struct acpi_iort_its_group *its;
-> +	struct acpi_iort_node *node, *its_node = NULL;
-> +	int resv = 0;
-> +
-> +	node = iort_find_dev_node(dev);
-> +	if (!node)
-> +		return -ENODEV;
-> +
-> +	if (dev_is_pci(dev)) {
-> +		u32 rid;
-> +
-> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid, &rid);
-> +		its_node = iort_node_map_id(node, rid, NULL, IORT_MSI_TYPE);
-> +	} else {
-> +		for (i = 0; i < node->mapping_count; i++) {
-> +			its_node = iort_node_map_platform_id(node, NULL,
-> +							 IORT_MSI_TYPE, i);
-> +			if (its_node)
-> +				break;
-> +		}
-> +	}
-> +
-> +	if (!its_node)
-> +		return 0;
-> +
-> +	/* Move to ITS specific data */
-> +	its = (struct acpi_iort_its_group *)its_node->node_data;
-> +
-> +	for (i = 0; i < its->its_count; i++) {
-> +		phys_addr_t base;
-> +
-> +		if (!iort_find_its_base(its->identifiers[i], &base)) {
-> +			int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> +			struct iommu_resv_region *region;
-> +
-> +			region = iommu_alloc_resv_region(base, SZ_128K, prot,
-> +							 IOMMU_RESV_MSI);
-> +			if (region) {
-> +				list_add_tail(&region->list, head);
-> +				resv++;
-> +			}
-> +		}
-> +	}
-> +
-> +	return resv ? : -ENODEV;
+> +#define SME_NOSTACKP __attribute__((__optimize__("no-stack-protector")))
 
-IIUC I think this is not right (ie resv < its_count should count as a
-failure).
+__nostackp
 
-This should be easy to fix-up but I am not sure there is still time for
-these patches to be merged for this merge window, I take the blame since
-I am the cause of the delay but I thought the logic in the SMMU driver
-should have been clarified and this version does it IMO.
+just like the others in include/linux/compiler-gcc.h.
 
-Thanks and apologies,
-Lorenzo
+> +
+> +static char sme_cmdline_arg[] __initdata = "mem_encrypt";
+> +static char sme_cmdline_on[]  __initdata = "on";
+> +static char sme_cmdline_off[] __initdata = "off";
+>  
+>  /*
+>   * Since SME related variables are set early in the boot process they must
+> @@ -200,6 +215,8 @@ void __init mem_encrypt_init(void)
+>  
+>  	/* Call into SWIOTLB to update the SWIOTLB DMA buffers */
+>  	swiotlb_update_mem_attributes();
+> +
+> +	pr_info("AMD Secure Memory Encryption (SME) active\n");
+>  }
+>  
+>  void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
+> @@ -527,8 +544,73 @@ void __init sme_encrypt_kernel(void)
+>  	native_write_cr3(__native_read_cr3());
+>  }
+>  
+> -void __init sme_enable(void)
+> +void __init SME_NOSTACKP sme_enable(struct boot_params *bp)
+>  {
+> +	const char *cmdline_ptr, *cmdline_arg, *cmdline_on, *cmdline_off;
+> +	unsigned int eax, ebx, ecx, edx;
+> +	bool active_by_default;
+> +	unsigned long me_mask;
+> +	char buffer[16];
+> +	u64 msr;
+> +
+> +	/* Check for the SME support leaf */
+> +	eax = 0x80000000;
+> +	ecx = 0;
+> +	native_cpuid(&eax, &ebx, &ecx, &edx);
+> +	if (eax < 0x8000001f)
+> +		return;
+> +
+> +	/*
+> +	 * Check for the SME feature:
+> +	 *   CPUID Fn8000_001F[EAX] - Bit 0
+> +	 *     Secure Memory Encryption support
+> +	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
+> +	 *     Pagetable bit position used to indicate encryption
+> +	 */
+> +	eax = 0x8000001f;
+> +	ecx = 0;
+> +	native_cpuid(&eax, &ebx, &ecx, &edx);
+> +	if (!(eax & 1))
+> +		return;
+> +
+> +	me_mask = 1UL << (ebx & 0x3f);
+> +
+> +	/* Check if SME is enabled */
+> +	msr = __rdmsr(MSR_K8_SYSCFG);
+> +	if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
+> +		return;
+> +
+> +	/*
+> +	 * Fixups have not been applied to phys_base yet and we're running
+> +	 * identity mapped, so we must obtain the address to the SME command
+> +	 * line argument data using rip-relative addressing.
+> +	 */
+> +	asm ("lea sme_cmdline_arg(%%rip), %0"
+> +	     : "=r" (cmdline_arg)
+> +	     : "p" (sme_cmdline_arg));
+> +	asm ("lea sme_cmdline_on(%%rip), %0"
+> +	     : "=r" (cmdline_on)
+> +	     : "p" (sme_cmdline_on));
+> +	asm ("lea sme_cmdline_off(%%rip), %0"
+> +	     : "=r" (cmdline_off)
+> +	     : "p" (sme_cmdline_off));
+> +
+> +	if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT))
+> +		active_by_default = true;
+> +	else
+> +		active_by_default = false;
+> +
+> +	cmdline_ptr = (const char *)((u64)bp->hdr.cmd_line_ptr |
+> +				     ((u64)bp->ext_cmd_line_ptr << 32));
+> +
+> +	cmdline_find_option(cmdline_ptr, cmdline_arg, buffer, sizeof(buffer));
+> +
+> +	if (strncmp(buffer, cmdline_on, sizeof(buffer)) == 0)
 
-> +}
->  #else
->  static inline
->  const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
-> @@ -656,6 +739,8 @@ const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
->  static inline
->  int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
->  { return 0; }
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
-> +{ return -ENODEV; }
->  #endif
->  
->  static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 45ea1933..c45a2ad 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -1854,7 +1854,8 @@ static int __init gic_acpi_parse_madt_its(struct acpi_subtable_header *header,
->  		return -ENOMEM;
->  	}
->  
-> -	err = iort_register_domain_token(its_entry->translation_id, dom_handle);
-> +	err = iort_register_domain_token(its_entry->translation_id, res.start,
-> +					 dom_handle);
->  	if (err) {
->  		pr_err("ITS@%pa: Unable to register GICv3 ITS domain token (ITS ID %d) to IORT\n",
->  		       &res.start, its_entry->translation_id);
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index 3ff9ace..35cf45c 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -26,7 +26,8 @@
->  #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
->  #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
->  
-> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
-> +int iort_register_domain_token(int trans_id, phys_addr_t base,
-> +			       struct fwnode_handle *fw_node);
->  void iort_deregister_domain_token(int trans_id);
->  struct fwnode_handle *iort_find_domain_token(int trans_id);
->  #ifdef CONFIG_ACPI_IORT
-> @@ -39,6 +40,7 @@
->  /* IOMMU interface */
->  void iort_set_dma_mask(struct device *dev);
->  const struct iommu_ops *iort_iommu_configure(struct device *dev);
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head);
->  #else
->  static inline void acpi_iort_init(void) { }
->  static inline bool iort_node_match(u8 type) { return false; }
-> @@ -53,6 +55,9 @@ static inline void iort_set_dma_mask(struct device *dev) { }
->  static inline
->  const struct iommu_ops *iort_iommu_configure(struct device *dev)
->  { return NULL; }
-> +static inline
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
-> +{ return -ENODEV; }
->  #endif
->  
->  #endif /* __ACPI_IORT_H__ */
-> -- 
-> 1.9.1
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	if (!strncmp(...
+
+> +		sme_me_mask = me_mask;
+> +	else if (strncmp(buffer, cmdline_off, sizeof(buffer)) == 0)
+
+	else if (!strncmp(...
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
