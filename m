@@ -1,46 +1,78 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v7 33/36] x86/mm: Use proper encryption attributes with
- /dev/mem
-Date: Fri, 23 Jun 2017 11:32:36 +0200
-Message-ID: <20170623093236.ei7z2zmc6vjq5lod@pd.tnic>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185607.18967.51412.stgit@tlendack-t1.amdoffice.net>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/8] io-pgtable lock removal
+Date: Fri, 23 Jun 2017 10:58:38 +0100
+Message-ID: <f694a247-9006-3a3c-8a77-209b158eabf3@arm.com>
+References: <cover.1498145008.git.robin.murphy@arm.com>
+	<61b7b953-5bf4-eb45-c3e8-b4491e8fdca7@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170616185607.18967.51412.stgit@tlendack-t1.amdoffice.net>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dy>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <61b7b953-5bf4-eb45-c3e8-b4491e8fdca7-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 16, 2017 at 01:56:07PM -0500, Tom Lendacky wrote:
-> When accessing memory using /dev/mem (or /dev/kmem) use the proper
-> encryption attributes when mapping the memory.
+On 23/06/17 09:47, John Garry wrote:
+> On 22/06/2017 16:53, Robin Murphy wrote:
+>> The feedback has been promising, so v2 is just a final update to cover
+>> a handful of memory ordering and cosmetic tweaks that came up when Will
+>> and I went through this offline.
+>>
+>> Thanks,
+>> Robin.
 > 
-> To insure the proper attributes are applied when reading or writing
-> /dev/mem, update the xlate_dev_mem_ptr() function to use memremap()
-> which will essentially perform the same steps of applying __va for
-> RAM or using ioremap() for if not RAM.
+> Hi Robin,
 > 
-> To insure the proper attributes are applied when mmapping /dev/mem,
-> update the phys_mem_access_prot() to call phys_mem_access_encrypted(),
-> a new function which will check if the memory should be mapped encrypted
-> or not. If it is not to be mapped encrypted then the VMA protection
-> value is updated to remove the encryption bit.
+> Is it worth us retesting this patchset?
 > 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/io.h |    3 +++
->  arch/x86/mm/ioremap.c     |   18 +++++++++---------
->  arch/x86/mm/pat.c         |    3 +++
->  3 files changed, 15 insertions(+), 9 deletions(-)
+> If yes, as for a branch (for convenience), does this one now match v2:
+> git://linux-arm.org/linux-rm  iommu/pgtable
+> 
+> I saw it was rewritten recently.
 
-Reviewed-by: Borislav Petkov <bp@suse.de>
+Indeed, I pushed the branch out before posting. Functionally it ought to
+be identical to v1, so this was more just a heads-up - feel free to
+double-check I've not broken anything, but I wouldn't say you need to
+throw the full test lab at it again.
 
--- 
-Regards/Gruss,
-    Boris.
+Thanks,
+Robin.
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
+> 
+> Thanks,
+> John
+> 
+>>
+>>
+>> Robin Murphy (8):
+>>   iommu/io-pgtable-arm-v7s: Check table PTEs more precisely
+>>   iommu/io-pgtable-arm: Improve split_blk_unmap
+>>   iommu/io-pgtable-arm-v7s: Refactor split_blk_unmap
+>>   iommu/io-pgtable: Introduce explicit coherency
+>>   iommu/io-pgtable-arm: Support lockless operation
+>>   iommu/io-pgtable-arm-v7s: Support lockless operation
+>>   iommu/arm-smmu: Remove io-pgtable spinlock
+>>   iommu/arm-smmu-v3: Remove io-pgtable spinlock
+>>
+>>  drivers/iommu/arm-smmu-v3.c        |  36 ++-----
+>>  drivers/iommu/arm-smmu.c           |  48 ++++------
+>>  drivers/iommu/io-pgtable-arm-v7s.c | 179
+>> +++++++++++++++++++++-------------
+>>  drivers/iommu/io-pgtable-arm.c     | 191
+>> ++++++++++++++++++++++++-------------
+>>  drivers/iommu/io-pgtable.h         |   6 ++
+>>  5 files changed, 274 insertions(+), 186 deletions(-)
+>>
+> 
+> 
