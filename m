@@ -1,16 +1,14 @@
-From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 5/8] iommu/io-pgtable-arm: Support lockless operation
-Date: Fri, 23 Jun 2017 14:26:08 +0530
-Message-ID: <20170623085607.GC3718@virtx40>
-References: <cover.1498145008.git.robin.murphy@arm.com>
-	<af61929e3984a31588cab08ed84a237602b5263e.1498145008.git.robin.murphy@arm.com>
-	<20170623055326.GA2949@virtx40>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel
+Date: Fri, 23 Jun 2017 16:57:19 +0800
+Message-ID: <20170623085719.GD20618@x1>
+References: <1497600901-8993-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170623055326.GA2949@virtx40>
+In-Reply-To: <1497600901-8993-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,159 +18,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri Jun 23, 2017 at 11:23:26AM +0530, Linu Cherian wrote:
-> 
-> Robin,
-> Was trying to understand the new changes. Had few questions on 
-> arm_lpae_install_table. 
-> 
-> On Thu Jun 22, 2017 at 04:53:54PM +0100, Robin Murphy wrote:
-> > For parallel I/O with multiple concurrent threads servicing the same
-> > device (or devices, if several share a domain), serialising page table
-> > updates becomes a massive bottleneck. On reflection, though, we don't
-> > strictly need to do that - for valid IOMMU API usage, there are in fact
-> > only two races that we need to guard against: multiple map requests for
-> > different blocks within the same region, when the intermediate-level
-> > table for that region does not yet exist; and multiple unmaps of
-> > different parts of the same block entry. Both of those are fairly easily
-> > solved by using a cmpxchg to install the new table, such that if we then
-> > find that someone else's table got there first, we can simply free ours
-> > and continue.
-> > 
-> > Make the requisite changes such that we can withstand being called
-> > without the caller maintaining a lock. In theory, this opens up a few
-> > corners in which wildly misbehaving callers making nonsensical
-> > overlapping requests might lead to crashes instead of just unpredictable
-> > results, but correct code really does not deserve to pay a significant
-> > performance cost for the sake of masking bugs in theoretical broken code.
-> > 
-> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > ---
-> > 
-> > v2:
-> >  - Fix barriers in install_table
-> >  - Make a few more PTE accesses with {READ,WRITE}_ONCE() just in case
-> >  - Minor cosmetics
-> > 
-> >  drivers/iommu/io-pgtable-arm.c | 72 +++++++++++++++++++++++++++++++++---------
-> >  1 file changed, 57 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > index 6334f51912ea..52700fa958c2 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -20,6 +20,7 @@
-> >  
-> >  #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
-> >  
-> > +#include <linux/atomic.h>
-> >  #include <linux/iommu.h>
-> >  #include <linux/kernel.h>
-> >  #include <linux/sizes.h>
-> > @@ -99,6 +100,8 @@
-> >  #define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
-> >  #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
-> >  					 ARM_LPAE_PTE_ATTR_HI_MASK)
-> > +/* Software bit for solving coherency races */
-> > +#define ARM_LPAE_PTE_SW_SYNC		(((arm_lpae_iopte)1) << 55)
-> >  
-> >  /* Stage-1 PTE */
-> >  #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
-> > @@ -249,15 +252,20 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
-> >  	free_pages_exact(pages, size);
-> >  }
-> >  
-> > +static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
-> > +				struct io_pgtable_cfg *cfg)
-> > +{
-> > +	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
-> > +				   sizeof(*ptep), DMA_TO_DEVICE);
-> > +}
-> > +
-> >  static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
-> >  			       struct io_pgtable_cfg *cfg)
-> >  {
-> >  	*ptep = pte;
-> >  
-> >  	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
-> > -		dma_sync_single_for_device(cfg->iommu_dev,
-> > -					   __arm_lpae_dma_addr(ptep),
-> > -					   sizeof(pte), DMA_TO_DEVICE);
-> > +		__arm_lpae_sync_pte(ptep, cfg);
-> >  }
-> >  
-> >  static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> > @@ -314,16 +322,30 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
-> >  
-> >  static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
-> >  					     arm_lpae_iopte *ptep,
-> > +					     arm_lpae_iopte curr,
-> >  					     struct io_pgtable_cfg *cfg)
-> >  {
-> > -	arm_lpae_iopte new;
-> > +	arm_lpae_iopte old, new;
-> >  
-> >  	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
-> >  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
-> >  		new |= ARM_LPAE_PTE_NSTABLE;
-> >  
-> > -	__arm_lpae_set_pte(ptep, new, cfg);
-> > -	return new;
-> > +	/* Ensure the table itself is visible before its PTE can be */
-> > +	wmb();
-> 
-> Could you please give more hints on why this is required.
-> 
-> 
-> > +
-> > +	old = cmpxchg64_relaxed(ptep, curr, new);
-> > +
-> > +	if ((cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) ||
-> > +	    (old & ARM_LPAE_PTE_SW_SYNC))
-> > +		return old;
-> > +
-> > +	/* Even if it's not ours, there's no point waiting; just kick it */
-> > +	__arm_lpae_sync_pte(ptep, cfg);
-> > +	if (old == curr)
-> > +		WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
-> 
-> How is it ensured that the cache operations are completed before we flag them with
-> 	ARM_LPAE_PTE_SW_SYNC. The previous version had a wmb() after the sync operation.
-> 
-> 
-> > +
-> > +	return old;
-> >  }
-> >
-> 
+Hi dear Joerg,
 
+On 06/16/17 at 10:15am, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> When booting into a kdump kernel, suppress IO_PAGE_FAULTs by
+> default for all devices. But allow the faults again when a
+> domain is assigned to a device.
 
-Observed a performance drop of close to 1G, 
-while testing on the 10G network interface with this patch series compared to v1.
-Moving the wmb() as in v1 restores it back.
+I have two bugs at hand reported by customer, saying their system hang
+with amd iommu on. I remember I borrowed the system and found it hang very
+early so that no one knew what's happened. One time it printed several lines
+of boot message and I found it's amd iommu system, adding amd_iommu=off
+to make the system boot normally.
 
-@@ -332,7 +332,6 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
-                new |= ARM_LPAE_PTE_NSTABLE;
- 
-        /* Ensure the table itself is visible before its PTE can be */
--       wmb();
- 
-        old = cmpxchg64_relaxed(ptep, curr, new);
- 
-@@ -342,6 +341,7 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 
-        /* Even if it's not ours, there's no point waiting; just kick it */
-        __arm_lpae_sync_pte(ptep, cfg);
-+       wmb();
-        if (old == curr)
-                WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
- 
+And with the kdump fix of amd iommu patchset applied, kdump kernel boots
+well. So maybe suppressing the fault message is not enough.
 
+Thanks
+Baoquan
 
-
--- 
-Linu cherian
+> 
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu.c       | 3 ++-
+>  drivers/iommu/amd_iommu_init.c  | 9 +++++++++
+>  drivers/iommu/amd_iommu_types.h | 1 +
+>  3 files changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 80efa72..623ab53 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -2050,7 +2050,8 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+>  		flags    |= tmp;
+>  	}
+>  
+> -	flags &= ~(0xffffUL);
+> +
+> +	flags &= ~(DTE_FLAG_SA | 0xffffULL);
+>  	flags |= domain->id;
+>  
+>  	amd_iommu_dev_table[devid].data[1]  = flags;
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 5a11328..d9f5ddd 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/export.h>
+>  #include <linux/iommu.h>
+>  #include <linux/kmemleak.h>
+> +#include <linux/crash_dump.h>
+>  #include <asm/pci-direct.h>
+>  #include <asm/iommu.h>
+>  #include <asm/gart.h>
+> @@ -1898,6 +1899,14 @@ static void init_device_table_dma(void)
+>  	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
+>  		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
+>  		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
+> +		/*
+> +		 * In kdump kernels in-flight DMA from the old kernel might
+> +		 * cause IO_PAGE_FAULTs. There are no reports that a kdump
+> +		 * actually failed because of that, so just disable fault
+> +		 * reporting in the hardware to get rid of the messages
+> +		 */
+> +		if (is_kdump_kernel())
+> +			set_dev_entry_bit(devid, DEV_ENTRY_NO_PAGE_FAULT);
+>  	}
+>  }
+>  
+> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+> index 4de8f41..4cad9b3 100644
+> --- a/drivers/iommu/amd_iommu_types.h
+> +++ b/drivers/iommu/amd_iommu_types.h
+> @@ -322,6 +322,7 @@
+>  #define IOMMU_PTE_IW (1ULL << 62)
+>  
+>  #define DTE_FLAG_IOTLB	(1ULL << 32)
+> +#define DTE_FLAG_SA	(1ULL << 34)
+>  #define DTE_FLAG_GV	(1ULL << 55)
+>  #define DTE_FLAG_MASK	(0x3ffULL << 32)
+>  #define DTE_GLX_SHIFT	(56)
+> -- 
+> 2.7.4
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
