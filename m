@@ -1,197 +1,249 @@
-From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 5/8] iommu/io-pgtable-arm: Support lockless operation
-Date: Fri, 23 Jun 2017 17:04:05 +0530
-Message-ID: <20170623113405.GA5221@virtx40>
-References: <cover.1498145008.git.robin.murphy@arm.com>
-	<af61929e3984a31588cab08ed84a237602b5263e.1498145008.git.robin.murphy@arm.com>
-	<20170623055326.GA2949@virtx40> <20170623085607.GC3718@virtx40>
-	<7a8da378-19e2-2f35-877a-cc6ce389301a@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
+ ThunderX2 erratum #126
+Date: Fri, 23 Jun 2017 12:39:30 +0100
+Message-ID: <20170623113930.GC28331@red-moon>
+References: <1498197485-32008-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <7a8da378-19e2-2f35-877a-cc6ce389301a-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+In-Reply-To: <1498197485-32008-1-git-send-email-gakula@caviumnetworks.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Geetha sowjanya <gakula@caviumnetworks.com>
+Cc: will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri Jun 23, 2017 at 11:35:25AM +0100, Robin Murphy wrote:
-> On 23/06/17 09:56, Linu Cherian wrote:
-> > On Fri Jun 23, 2017 at 11:23:26AM +0530, Linu Cherian wrote:
-> >>
-> >> Robin,
-> >> Was trying to understand the new changes. Had few questions on 
-> >> arm_lpae_install_table. 
-> >>
-> >> On Thu Jun 22, 2017 at 04:53:54PM +0100, Robin Murphy wrote:
-> >>> For parallel I/O with multiple concurrent threads servicing the same
-> >>> device (or devices, if several share a domain), serialising page table
-> >>> updates becomes a massive bottleneck. On reflection, though, we don't
-> >>> strictly need to do that - for valid IOMMU API usage, there are in fact
-> >>> only two races that we need to guard against: multiple map requests for
-> >>> different blocks within the same region, when the intermediate-level
-> >>> table for that region does not yet exist; and multiple unmaps of
-> >>> different parts of the same block entry. Both of those are fairly easily
-> >>> solved by using a cmpxchg to install the new table, such that if we then
-> >>> find that someone else's table got there first, we can simply free ours
-> >>> and continue.
-> >>>
-> >>> Make the requisite changes such that we can withstand being called
-> >>> without the caller maintaining a lock. In theory, this opens up a few
-> >>> corners in which wildly misbehaving callers making nonsensical
-> >>> overlapping requests might lead to crashes instead of just unpredictable
-> >>> results, but correct code really does not deserve to pay a significant
-> >>> performance cost for the sake of masking bugs in theoretical broken code.
-> >>>
-> >>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >>> ---
-> >>>
-> >>> v2:
-> >>>  - Fix barriers in install_table
-> >>>  - Make a few more PTE accesses with {READ,WRITE}_ONCE() just in case
-> >>>  - Minor cosmetics
-> >>>
-> >>>  drivers/iommu/io-pgtable-arm.c | 72 +++++++++++++++++++++++++++++++++---------
-> >>>  1 file changed, 57 insertions(+), 15 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> >>> index 6334f51912ea..52700fa958c2 100644
-> >>> --- a/drivers/iommu/io-pgtable-arm.c
-> >>> +++ b/drivers/iommu/io-pgtable-arm.c
-> >>> @@ -20,6 +20,7 @@
-> >>>  
-> >>>  #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
-> >>>  
-> >>> +#include <linux/atomic.h>
-> >>>  #include <linux/iommu.h>
-> >>>  #include <linux/kernel.h>
-> >>>  #include <linux/sizes.h>
-> >>> @@ -99,6 +100,8 @@
-> >>>  #define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
-> >>>  #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
-> >>>  					 ARM_LPAE_PTE_ATTR_HI_MASK)
-> >>> +/* Software bit for solving coherency races */
-> >>> +#define ARM_LPAE_PTE_SW_SYNC		(((arm_lpae_iopte)1) << 55)
-> >>>  
-> >>>  /* Stage-1 PTE */
-> >>>  #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
-> >>> @@ -249,15 +252,20 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
-> >>>  	free_pages_exact(pages, size);
-> >>>  }
-> >>>  
-> >>> +static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
-> >>> +				struct io_pgtable_cfg *cfg)
-> >>> +{
-> >>> +	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
-> >>> +				   sizeof(*ptep), DMA_TO_DEVICE);
-> >>> +}
-> >>> +
-> >>>  static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
-> >>>  			       struct io_pgtable_cfg *cfg)
-> >>>  {
-> >>>  	*ptep = pte;
-> >>>  
-> >>>  	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
-> >>> -		dma_sync_single_for_device(cfg->iommu_dev,
-> >>> -					   __arm_lpae_dma_addr(ptep),
-> >>> -					   sizeof(pte), DMA_TO_DEVICE);
-> >>> +		__arm_lpae_sync_pte(ptep, cfg);
-> >>>  }
-> >>>  
-> >>>  static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
-> >>> @@ -314,16 +322,30 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
-> >>>  
-> >>>  static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
-> >>>  					     arm_lpae_iopte *ptep,
-> >>> +					     arm_lpae_iopte curr,
-> >>>  					     struct io_pgtable_cfg *cfg)
-> >>>  {
-> >>> -	arm_lpae_iopte new;
-> >>> +	arm_lpae_iopte old, new;
-> >>>  
-> >>>  	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
-> >>>  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
-> >>>  		new |= ARM_LPAE_PTE_NSTABLE;
-> >>>  
-> >>> -	__arm_lpae_set_pte(ptep, new, cfg);
-> >>> -	return new;
-> >>> +	/* Ensure the table itself is visible before its PTE can be */
-> >>> +	wmb();
-> >>
-> >> Could you please give more hints on why this is required.
-> 
-> In theory it's possible for the write to ptep to become visible before
-> the previous writes filling out the PTEs in table - if the IOMMU
-> happened to speculatively walk ptep while parts of table were still sat
-> in a write buffer somewhere, it could see the old contents of that page
-> and potentially allocate bogus TLB entries if the stale data happened to
-> look like valid PTEs. In the non-coherent case the DMA cache maintenance
-> is sufficient, but otherwise we need a barrier to order writing the
-> next-level PTEs strictly before writing the table PTE pointing to them,
-> such that the IOMMU cannot at any point see a partially-initialised table.
+On Fri, Jun 23, 2017 at 11:28:05AM +0530, Geetha sowjanya wrote:
 
-Got it. Thanks a lot for explainig that.
+[...]
 
-> 
-> >>> +
-> >>> +	old = cmpxchg64_relaxed(ptep, curr, new);
-> >>> +
-> >>> +	if ((cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) ||
-> >>> +	    (old & ARM_LPAE_PTE_SW_SYNC))
-> >>> +		return old;
-> >>> +
-> >>> +	/* Even if it's not ours, there's no point waiting; just kick it */
-> >>> +	__arm_lpae_sync_pte(ptep, cfg);
-> >>> +	if (old == curr)
-> >>> +		WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
-> >>
-> >> How is it ensured that the cache operations are completed before we flag them with
-> >> 	ARM_LPAE_PTE_SW_SYNC. The previous version had a wmb() after the sync operation.
-> 
-> The wmb() here was a silly oversight on my part - as Will reminded me,
-> dma_sync_*() already has its own barrier to ensure completion, which is
-> pretty obvious in retrospect because the entire streaming DMA would be
-> totally broken otherwise.
-> 
-> >>> +
-> >>> +	return old;
-> >>>  }
-> >>>
-> >>
-> > 
-> > 
-> > Observed a performance drop of close to 1G, 
-> > while testing on the 10G network interface with this patch series compared to v1.
-> 
-> Is that consistent over multiple runs? I wouldn't expect many workloads
-> to be thrashing table and hugepage mappings in the same IOVA region, so
-> after a point we should tend to reach a fairly steady state where we're
-> only changing leaf PTEs.
-> 
-> > Moving the wmb() as in v1 restores it back.
-> 
-> Note that on a coherent platform like ThunderX that's as good as just
-> deleting it, because you'll never execute the case below. However, on
-> reflection I think it can at least safely be downgraded to dma_wmb()
-> (i.e. DMB) rather than a full DSB - would you be able to test what
-> difference that makes?
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -828,6 +828,18 @@ static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
+>  	return num_res;
+>  }
+>  
+> +static bool arm_smmu_v3_is_combined_irq(struct acpi_iort_smmu_v3 *smmu)
+> +{
+> +	/*
+> +	 * Cavium ThunderX2 implementation doesn't not support unique
+> +	 * irq line. Use single irq line for all the SMMUv3 interrupts.
+> +	 */
+> +	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+>  static unsigned long arm_smmu_v3_resource_size(struct acpi_iort_smmu_v3 *smmu)
+>  {
+>  	/*
+> @@ -855,26 +867,32 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
+>  	res[num_res].flags = IORESOURCE_MEM;
+>  
+>  	num_res++;
+> -
+> -	if (smmu->event_gsiv)
+> -		acpi_iort_register_irq(smmu->event_gsiv, "eventq",
+> -				       ACPI_EDGE_SENSITIVE,
+> -				       &res[num_res++]);
+> -
+> -	if (smmu->pri_gsiv)
+> -		acpi_iort_register_irq(smmu->pri_gsiv, "priq",
+> -				       ACPI_EDGE_SENSITIVE,
+> -				       &res[num_res++]);
+> -
+> -	if (smmu->gerr_gsiv)
+> -		acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
+> -				       ACPI_EDGE_SENSITIVE,
+> -				       &res[num_res++]);
+> -
+> -	if (smmu->sync_gsiv)
+> -		acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
+> +	if (arm_smmu_v3_is_combined_irq(smmu))
+> +		acpi_iort_register_irq(smmu->event_gsiv, "combined",
+>  				       ACPI_EDGE_SENSITIVE,
+>  				       &res[num_res++]);
 
-The testing was done on Thunderx 1, which has a non coherent page table walk.
-Yes, downgrading to dma_wmb() helps. With this change, performance is back to v1.
+I think you should add a check to make sure ALL gsiv are the same
+in the IORT table, if they are not the combined IRQ must not be
+registered.
 
+Ideally we should add a patch that adds a return value to the
+iommu_init_resource callback (ie so that we can prevent allocating
+the platform device on error return value) but we are late -rc6
+and I won't be able to read mailing lists next week so it is a bit
+tight, adding the check above should be quick to do.
 
+Lorenzo
 
-Thanks.
-
--- 
-Linu cherian
+> +	else {
+> +
+> +		if (smmu->event_gsiv)
+> +			acpi_iort_register_irq(smmu->event_gsiv, "eventq",
+> +					       ACPI_EDGE_SENSITIVE,
+> +					       &res[num_res++]);
+> +
+> +		if (smmu->pri_gsiv)
+> +			acpi_iort_register_irq(smmu->pri_gsiv, "priq",
+> +					       ACPI_EDGE_SENSITIVE,
+> +					       &res[num_res++]);
+> +
+> +		if (smmu->gerr_gsiv)
+> +			acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
+> +					       ACPI_EDGE_SENSITIVE,
+> +					       &res[num_res++]);
+> +
+> +		if (smmu->sync_gsiv)
+> +			acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
+> +					       ACPI_EDGE_SENSITIVE,
+> +					       &res[num_res++]);
+> +	}
+>  }
+>  
+>  static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 2dea4a9..fd5a48c 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -605,6 +605,7 @@ struct arm_smmu_device {
+>  	struct arm_smmu_priq		priq;
+>  
+>  	int				gerr_irq;
+> +	int				combined_irq;
+>  
+>  	unsigned long			ias; /* IPA */
+>  	unsigned long			oas; /* PA */
+> @@ -1314,6 +1315,24 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> +static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
+> +{
+> +	struct arm_smmu_device *smmu = dev;
+> +
+> +	arm_smmu_evtq_thread(irq, dev);
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +		arm_smmu_priq_thread(irq, dev);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
+> +{
+> +	arm_smmu_gerror_handler(irq, dev);
+> +	arm_smmu_cmdq_sync_handler(irq, dev);
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+>  /* IO_PGTABLE API */
+>  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>  {
+> @@ -2230,18 +2249,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>  	devm_add_action(dev, arm_smmu_free_msis, dev);
+>  }
+>  
+> -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+>  {
+> -	int ret, irq;
+> -	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> -
+> -	/* Disable IRQs first */
+> -	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> -				      ARM_SMMU_IRQ_CTRLACK);
+> -	if (ret) {
+> -		dev_err(smmu->dev, "failed to disable irqs\n");
+> -		return ret;
+> -	}
+> +	int irq, ret;
+>  
+>  	arm_smmu_setup_msis(smmu);
+>  
+> @@ -2284,10 +2294,41 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+>  			if (ret < 0)
+>  				dev_warn(smmu->dev,
+>  					 "failed to enable priq irq\n");
+> -			else
+> -				irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+>  		}
+>  	}
+> +}
+> +
+> +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +{
+> +	int ret, irq;
+> +	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> +
+> +	/* Disable IRQs first */
+> +	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> +				      ARM_SMMU_IRQ_CTRLACK);
+> +	if (ret) {
+> +		dev_err(smmu->dev, "failed to disable irqs\n");
+> +		return ret;
+> +	}
+> +
+> +	irq = smmu->combined_irq;
+> +	if (irq) {
+> +		/*
+> +		 * Cavium ThunderX2 implementation doesn't not support unique
+> +		 * irq lines. Use single irq line for all the SMMUv3 interrupts.
+> +		 */
+> +		ret = devm_request_threaded_irq(smmu->dev, irq,
+> +					arm_smmu_combined_irq_handler,
+> +					arm_smmu_combined_irq_thread,
+> +					IRQF_ONESHOT,
+> +					"arm-smmu-v3-combined-irq", smmu);
+> +		if (ret < 0)
+> +			dev_warn(smmu->dev, "failed to enable combined irq\n");
+> +	} else
+> +		arm_smmu_setup_unique_irqs(smmu);
+> +
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+>  
+>  	/* Enable interrupt generation on the SMMU */
+>  	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
+> @@ -2724,22 +2765,27 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  		return PTR_ERR(smmu->base);
+>  
+>  	/* Interrupt lines */
+> -	irq = platform_get_irq_byname(pdev, "eventq");
+> -	if (irq > 0)
+> -		smmu->evtq.q.irq = irq;
+>  
+> -	irq = platform_get_irq_byname(pdev, "priq");
+> +	irq = platform_get_irq_byname(pdev, "combined");
+>  	if (irq > 0)
+> -		smmu->priq.q.irq = irq;
+> +		smmu->combined_irq = irq;
+> +	else {
+> +		irq = platform_get_irq_byname(pdev, "eventq");
+> +		if (irq > 0)
+> +			smmu->evtq.q.irq = irq;
+>  
+> -	irq = platform_get_irq_byname(pdev, "cmdq-sync");
+> -	if (irq > 0)
+> -		smmu->cmdq.q.irq = irq;
+> +		irq = platform_get_irq_byname(pdev, "priq");
+> +		if (irq > 0)
+> +			smmu->priq.q.irq = irq;
+>  
+> -	irq = platform_get_irq_byname(pdev, "gerror");
+> -	if (irq > 0)
+> -		smmu->gerr_irq = irq;
+> +		irq = platform_get_irq_byname(pdev, "cmdq-sync");
+> +		if (irq > 0)
+> +			smmu->cmdq.q.irq = irq;
+>  
+> +		irq = platform_get_irq_byname(pdev, "gerror");
+> +		if (irq > 0)
+> +			smmu->gerr_irq = irq;
+> +	}
+>  	/* Probe the h/w */
+>  	ret = arm_smmu_device_hw_probe(smmu);
+>  	if (ret)
+> -- 
+> 1.7.1
+> 
