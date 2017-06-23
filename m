@@ -1,249 +1,126 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround for Cavium
- ThunderX2 erratum #126
-Date: Fri, 23 Jun 2017 12:39:30 +0100
-Message-ID: <20170623113930.GC28331@red-moon>
-References: <1498197485-32008-1-git-send-email-gakula@caviumnetworks.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel
+Date: Fri, 23 Jun 2017 19:43:10 +0800
+Message-ID: <20170623114310.GE20618@x1>
+References: <1497600901-8993-1-git-send-email-joro@8bytes.org>
+	<20170623085719.GD20618@x1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1498197485-32008-1-git-send-email-gakula@caviumnetworks.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Geetha sowjanya <gakula@caviumnetworks.com>
-Cc: will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robert.moore@intel.com, lv.zheng@intel.com, rjw@rjwysocki.net, jcm@redhat.com, linux-kernel@vger.kernel.org, robert.richter@cavium.com, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, devel@acpica.org, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, robh@kernel.org, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+In-Reply-To: <20170623085719.GD20618@x1>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 23, 2017 at 11:28:05AM +0530, Geetha sowjanya wrote:
+Hi Joerg,
 
-[...]
-
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -828,6 +828,18 @@ static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
->  	return num_res;
->  }
->  
-> +static bool arm_smmu_v3_is_combined_irq(struct acpi_iort_smmu_v3 *smmu)
-> +{
-> +	/*
-> +	 * Cavium ThunderX2 implementation doesn't not support unique
-> +	 * irq line. Use single irq line for all the SMMUv3 interrupts.
-> +	 */
-> +	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
->  static unsigned long arm_smmu_v3_resource_size(struct acpi_iort_smmu_v3 *smmu)
->  {
->  	/*
-> @@ -855,26 +867,32 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
->  	res[num_res].flags = IORESOURCE_MEM;
->  
->  	num_res++;
-> -
-> -	if (smmu->event_gsiv)
-> -		acpi_iort_register_irq(smmu->event_gsiv, "eventq",
-> -				       ACPI_EDGE_SENSITIVE,
-> -				       &res[num_res++]);
-> -
-> -	if (smmu->pri_gsiv)
-> -		acpi_iort_register_irq(smmu->pri_gsiv, "priq",
-> -				       ACPI_EDGE_SENSITIVE,
-> -				       &res[num_res++]);
-> -
-> -	if (smmu->gerr_gsiv)
-> -		acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
-> -				       ACPI_EDGE_SENSITIVE,
-> -				       &res[num_res++]);
-> -
-> -	if (smmu->sync_gsiv)
-> -		acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
-> +	if (arm_smmu_v3_is_combined_irq(smmu))
-> +		acpi_iort_register_irq(smmu->event_gsiv, "combined",
->  				       ACPI_EDGE_SENSITIVE,
->  				       &res[num_res++]);
-
-I think you should add a check to make sure ALL gsiv are the same
-in the IORT table, if they are not the combined IRQ must not be
-registered.
-
-Ideally we should add a patch that adds a return value to the
-iommu_init_resource callback (ie so that we can prevent allocating
-the platform device on error return value) but we are late -rc6
-and I won't be able to read mailing lists next week so it is a bit
-tight, adding the check above should be quick to do.
-
-Lorenzo
-
-> +	else {
-> +
-> +		if (smmu->event_gsiv)
-> +			acpi_iort_register_irq(smmu->event_gsiv, "eventq",
-> +					       ACPI_EDGE_SENSITIVE,
-> +					       &res[num_res++]);
-> +
-> +		if (smmu->pri_gsiv)
-> +			acpi_iort_register_irq(smmu->pri_gsiv, "priq",
-> +					       ACPI_EDGE_SENSITIVE,
-> +					       &res[num_res++]);
-> +
-> +		if (smmu->gerr_gsiv)
-> +			acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
-> +					       ACPI_EDGE_SENSITIVE,
-> +					       &res[num_res++]);
-> +
-> +		if (smmu->sync_gsiv)
-> +			acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
-> +					       ACPI_EDGE_SENSITIVE,
-> +					       &res[num_res++]);
-> +	}
->  }
->  
->  static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 2dea4a9..fd5a48c 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -605,6 +605,7 @@ struct arm_smmu_device {
->  	struct arm_smmu_priq		priq;
->  
->  	int				gerr_irq;
-> +	int				combined_irq;
->  
->  	unsigned long			ias; /* IPA */
->  	unsigned long			oas; /* PA */
-> @@ -1314,6 +1315,24 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
->  	return IRQ_HANDLED;
->  }
->  
-> +static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
-> +{
-> +	struct arm_smmu_device *smmu = dev;
-> +
-> +	arm_smmu_evtq_thread(irq, dev);
-> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
-> +		arm_smmu_priq_thread(irq, dev);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
-> +{
-> +	arm_smmu_gerror_handler(irq, dev);
-> +	arm_smmu_cmdq_sync_handler(irq, dev);
-> +	return IRQ_WAKE_THREAD;
-> +}
-> +
->  /* IO_PGTABLE API */
->  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
->  {
-> @@ -2230,18 +2249,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->  	devm_add_action(dev, arm_smmu_free_msis, dev);
->  }
->  
-> -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> +static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
->  {
-> -	int ret, irq;
-> -	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-> -
-> -	/* Disable IRQs first */
-> -	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
-> -				      ARM_SMMU_IRQ_CTRLACK);
-> -	if (ret) {
-> -		dev_err(smmu->dev, "failed to disable irqs\n");
-> -		return ret;
-> -	}
-> +	int irq, ret;
->  
->  	arm_smmu_setup_msis(smmu);
->  
-> @@ -2284,10 +2294,41 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  			if (ret < 0)
->  				dev_warn(smmu->dev,
->  					 "failed to enable priq irq\n");
-> -			else
-> -				irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
->  		}
->  	}
-> +}
-> +
-> +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> +{
-> +	int ret, irq;
-> +	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-> +
-> +	/* Disable IRQs first */
-> +	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
-> +				      ARM_SMMU_IRQ_CTRLACK);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "failed to disable irqs\n");
-> +		return ret;
-> +	}
-> +
-> +	irq = smmu->combined_irq;
-> +	if (irq) {
-> +		/*
-> +		 * Cavium ThunderX2 implementation doesn't not support unique
-> +		 * irq lines. Use single irq line for all the SMMUv3 interrupts.
-> +		 */
-> +		ret = devm_request_threaded_irq(smmu->dev, irq,
-> +					arm_smmu_combined_irq_handler,
-> +					arm_smmu_combined_irq_thread,
-> +					IRQF_ONESHOT,
-> +					"arm-smmu-v3-combined-irq", smmu);
-> +		if (ret < 0)
-> +			dev_warn(smmu->dev, "failed to enable combined irq\n");
-> +	} else
-> +		arm_smmu_setup_unique_irqs(smmu);
-> +
-> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
-> +		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
->  
->  	/* Enable interrupt generation on the SMMU */
->  	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
-> @@ -2724,22 +2765,27 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  		return PTR_ERR(smmu->base);
->  
->  	/* Interrupt lines */
-> -	irq = platform_get_irq_byname(pdev, "eventq");
-> -	if (irq > 0)
-> -		smmu->evtq.q.irq = irq;
->  
-> -	irq = platform_get_irq_byname(pdev, "priq");
-> +	irq = platform_get_irq_byname(pdev, "combined");
->  	if (irq > 0)
-> -		smmu->priq.q.irq = irq;
-> +		smmu->combined_irq = irq;
-> +	else {
-> +		irq = platform_get_irq_byname(pdev, "eventq");
-> +		if (irq > 0)
-> +			smmu->evtq.q.irq = irq;
->  
-> -	irq = platform_get_irq_byname(pdev, "cmdq-sync");
-> -	if (irq > 0)
-> -		smmu->cmdq.q.irq = irq;
-> +		irq = platform_get_irq_byname(pdev, "priq");
-> +		if (irq > 0)
-> +			smmu->priq.q.irq = irq;
->  
-> -	irq = platform_get_irq_byname(pdev, "gerror");
-> -	if (irq > 0)
-> -		smmu->gerr_irq = irq;
-> +		irq = platform_get_irq_byname(pdev, "cmdq-sync");
-> +		if (irq > 0)
-> +			smmu->cmdq.q.irq = irq;
->  
-> +		irq = platform_get_irq_byname(pdev, "gerror");
-> +		if (irq > 0)
-> +			smmu->gerr_irq = irq;
-> +	}
->  	/* Probe the h/w */
->  	ret = arm_smmu_device_hw_probe(smmu);
->  	if (ret)
-> -- 
-> 1.7.1
+On 06/23/17 at 04:57pm, Baoquan He wrote:
+> Hi dear Joerg,
 > 
+> On 06/16/17 at 10:15am, Joerg Roedel wrote:
+> > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> > 
+> > When booting into a kdump kernel, suppress IO_PAGE_FAULTs by
+> > default for all devices. But allow the faults again when a
+> > domain is assigned to a device.
+> 
+> I have two bugs at hand reported by customer, saying their system hang
+> with amd iommu on. I remember I borrowed the system and found it hang very
+> early so that no one knew what's happened. One time it printed several lines
+> of boot message and I found it's amd iommu system, adding amd_iommu=off
+> to make the system boot normally.
+> 
+> And with the kdump fix of amd iommu patchset applied, kdump kernel boots
+> well. So maybe suppressing the fault message is not enough.
+
+Do you think whether it's necessary to continue my kdump fix of amd iommu
+patchset? Seems my last post was in Jan this year. I know you are very
+busy on fixing bugs and reviewing tons of patches. Without your
+guidance and reviewing, I absolutely can't make it. So I would like to
+hear your suggestions and idea.
+
+I focused on kaslr issues recently, now most of them have been
+fixed. My boss discussed with me about the next plan. If you have other
+plan, I can sync it to our team about the status of upstream.
+
+Thanks
+Baoquan
+
+
+> > ---
+> >  drivers/iommu/amd_iommu.c       | 3 ++-
+> >  drivers/iommu/amd_iommu_init.c  | 9 +++++++++
+> >  drivers/iommu/amd_iommu_types.h | 1 +
+> >  3 files changed, 12 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > index 80efa72..623ab53 100644
+> > --- a/drivers/iommu/amd_iommu.c
+> > +++ b/drivers/iommu/amd_iommu.c
+> > @@ -2050,7 +2050,8 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+> >  		flags    |= tmp;
+> >  	}
+> >  
+> > -	flags &= ~(0xffffUL);
+> > +
+> > +	flags &= ~(DTE_FLAG_SA | 0xffffULL);
+> >  	flags |= domain->id;
+> >  
+> >  	amd_iommu_dev_table[devid].data[1]  = flags;
+> > diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> > index 5a11328..d9f5ddd 100644
+> > --- a/drivers/iommu/amd_iommu_init.c
+> > +++ b/drivers/iommu/amd_iommu_init.c
+> > @@ -29,6 +29,7 @@
+> >  #include <linux/export.h>
+> >  #include <linux/iommu.h>
+> >  #include <linux/kmemleak.h>
+> > +#include <linux/crash_dump.h>
+> >  #include <asm/pci-direct.h>
+> >  #include <asm/iommu.h>
+> >  #include <asm/gart.h>
+> > @@ -1898,6 +1899,14 @@ static void init_device_table_dma(void)
+> >  	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
+> >  		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
+> >  		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
+> > +		/*
+> > +		 * In kdump kernels in-flight DMA from the old kernel might
+> > +		 * cause IO_PAGE_FAULTs. There are no reports that a kdump
+> > +		 * actually failed because of that, so just disable fault
+> > +		 * reporting in the hardware to get rid of the messages
+> > +		 */
+> > +		if (is_kdump_kernel())
+> > +			set_dev_entry_bit(devid, DEV_ENTRY_NO_PAGE_FAULT);
+> >  	}
+> >  }
+> >  
+> > diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+> > index 4de8f41..4cad9b3 100644
+> > --- a/drivers/iommu/amd_iommu_types.h
+> > +++ b/drivers/iommu/amd_iommu_types.h
+> > @@ -322,6 +322,7 @@
+> >  #define IOMMU_PTE_IW (1ULL << 62)
+> >  
+> >  #define DTE_FLAG_IOTLB	(1ULL << 32)
+> > +#define DTE_FLAG_SA	(1ULL << 34)
+> >  #define DTE_FLAG_GV	(1ULL << 55)
+> >  #define DTE_FLAG_MASK	(0x3ffULL << 32)
+> >  #define DTE_GLX_SHIFT	(56)
+> > -- 
+> > 2.7.4
+> > 
+> > _______________________________________________
+> > iommu mailing list
+> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
