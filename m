@@ -1,82 +1,178 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v7 31/36] x86/mm, kexec: Allow kexec to be used with SME
-Date: Fri, 23 Jun 2017 10:56:07 +0200
-Message-ID: <20170623085606.ett5nuiow2ye7p3a@pd.tnic>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185545.18967.90815.stgit@tlendack-t1.amdoffice.net>
+From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 5/8] iommu/io-pgtable-arm: Support lockless operation
+Date: Fri, 23 Jun 2017 14:26:08 +0530
+Message-ID: <20170623085607.GC3718@virtx40>
+References: <cover.1498145008.git.robin.murphy@arm.com>
+	<af61929e3984a31588cab08ed84a237602b5263e.1498145008.git.robin.murphy@arm.com>
+	<20170623055326.GA2949@virtx40>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170616185545.18967.90815.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@or>
+In-Reply-To: <20170623055326.GA2949@virtx40>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 16, 2017 at 01:55:45PM -0500, Tom Lendacky wrote:
-> Provide support so that kexec can be used to boot a kernel when SME is
-> enabled.
+On Fri Jun 23, 2017 at 11:23:26AM +0530, Linu Cherian wrote:
 > 
-> Support is needed to allocate pages for kexec without encryption.  This
-> is needed in order to be able to reboot in the kernel in the same manner
-> as originally booted.
+> Robin,
+> Was trying to understand the new changes. Had few questions on 
+> arm_lpae_install_table. 
 > 
-> Additionally, when shutting down all of the CPUs we need to be sure to
-> flush the caches and then halt. This is needed when booting from a state
-> where SME was not active into a state where SME is active (or vice-versa).
-> Without these steps, it is possible for cache lines to exist for the same
-> physical location but tagged both with and without the encryption bit. This
-> can cause random memory corruption when caches are flushed depending on
-> which cacheline is written last.
+> On Thu Jun 22, 2017 at 04:53:54PM +0100, Robin Murphy wrote:
+> > For parallel I/O with multiple concurrent threads servicing the same
+> > device (or devices, if several share a domain), serialising page table
+> > updates becomes a massive bottleneck. On reflection, though, we don't
+> > strictly need to do that - for valid IOMMU API usage, there are in fact
+> > only two races that we need to guard against: multiple map requests for
+> > different blocks within the same region, when the intermediate-level
+> > table for that region does not yet exist; and multiple unmaps of
+> > different parts of the same block entry. Both of those are fairly easily
+> > solved by using a cmpxchg to install the new table, such that if we then
+> > find that someone else's table got there first, we can simply free ours
+> > and continue.
+> > 
+> > Make the requisite changes such that we can withstand being called
+> > without the caller maintaining a lock. In theory, this opens up a few
+> > corners in which wildly misbehaving callers making nonsensical
+> > overlapping requests might lead to crashes instead of just unpredictable
+> > results, but correct code really does not deserve to pay a significant
+> > performance cost for the sake of masking bugs in theoretical broken code.
+> > 
+> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > ---
+> > 
+> > v2:
+> >  - Fix barriers in install_table
+> >  - Make a few more PTE accesses with {READ,WRITE}_ONCE() just in case
+> >  - Minor cosmetics
+> > 
+> >  drivers/iommu/io-pgtable-arm.c | 72 +++++++++++++++++++++++++++++++++---------
+> >  1 file changed, 57 insertions(+), 15 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index 6334f51912ea..52700fa958c2 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -20,6 +20,7 @@
+> >  
+> >  #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
+> >  
+> > +#include <linux/atomic.h>
+> >  #include <linux/iommu.h>
+> >  #include <linux/kernel.h>
+> >  #include <linux/sizes.h>
+> > @@ -99,6 +100,8 @@
+> >  #define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
+> >  #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
+> >  					 ARM_LPAE_PTE_ATTR_HI_MASK)
+> > +/* Software bit for solving coherency races */
+> > +#define ARM_LPAE_PTE_SW_SYNC		(((arm_lpae_iopte)1) << 55)
+> >  
+> >  /* Stage-1 PTE */
+> >  #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
+> > @@ -249,15 +252,20 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
+> >  	free_pages_exact(pages, size);
+> >  }
+> >  
+> > +static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
+> > +				struct io_pgtable_cfg *cfg)
+> > +{
+> > +	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
+> > +				   sizeof(*ptep), DMA_TO_DEVICE);
+> > +}
+> > +
+> >  static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+> >  			       struct io_pgtable_cfg *cfg)
+> >  {
+> >  	*ptep = pte;
+> >  
+> >  	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
+> > -		dma_sync_single_for_device(cfg->iommu_dev,
+> > -					   __arm_lpae_dma_addr(ptep),
+> > -					   sizeof(pte), DMA_TO_DEVICE);
+> > +		__arm_lpae_sync_pte(ptep, cfg);
+> >  }
+> >  
+> >  static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> > @@ -314,16 +322,30 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+> >  
+> >  static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+> >  					     arm_lpae_iopte *ptep,
+> > +					     arm_lpae_iopte curr,
+> >  					     struct io_pgtable_cfg *cfg)
+> >  {
+> > -	arm_lpae_iopte new;
+> > +	arm_lpae_iopte old, new;
+> >  
+> >  	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
+> >  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+> >  		new |= ARM_LPAE_PTE_NSTABLE;
+> >  
+> > -	__arm_lpae_set_pte(ptep, new, cfg);
+> > -	return new;
+> > +	/* Ensure the table itself is visible before its PTE can be */
+> > +	wmb();
 > 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/init.h          |    1 +
->  arch/x86/include/asm/kexec.h         |    8 ++++++++
->  arch/x86/include/asm/pgtable_types.h |    1 +
->  arch/x86/kernel/machine_kexec_64.c   |   22 +++++++++++++++++++++-
->  arch/x86/kernel/process.c            |   17 +++++++++++++++--
->  arch/x86/mm/ident_map.c              |   12 ++++++++----
->  include/linux/kexec.h                |   14 ++++++++++++++
->  kernel/kexec_core.c                  |   12 +++++++++++-
->  8 files changed, 79 insertions(+), 8 deletions(-)
+> Could you please give more hints on why this is required.
+> 
+> 
+> > +
+> > +	old = cmpxchg64_relaxed(ptep, curr, new);
+> > +
+> > +	if ((cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) ||
+> > +	    (old & ARM_LPAE_PTE_SW_SYNC))
+> > +		return old;
+> > +
+> > +	/* Even if it's not ours, there's no point waiting; just kick it */
+> > +	__arm_lpae_sync_pte(ptep, cfg);
+> > +	if (old == curr)
+> > +		WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
+> 
+> How is it ensured that the cache operations are completed before we flag them with
+> 	ARM_LPAE_PTE_SW_SYNC. The previous version had a wmb() after the sync operation.
+> 
+> 
+> > +
+> > +	return old;
+> >  }
+> >
+> 
 
-...
 
-> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-> index c9481eb..5d17fd6 100644
-> --- a/include/linux/kexec.h
-> +++ b/include/linux/kexec.h
-> @@ -334,6 +334,20 @@ static inline void *boot_phys_to_virt(unsigned long entry)
->  	return phys_to_virt(boot_phys_to_phys(entry));
->  }
->  
-> +#ifndef arch_kexec_post_alloc_pages
-> +static inline int arch_kexec_post_alloc_pages(void *vaddr, unsigned int pages,
-> +					      gfp_t gfp)
-> +{
-> +	return 0;
-> +}
-> +#endif
+Observed a performance drop of close to 1G, 
+while testing on the 10G network interface with this patch series compared to v1.
+Moving the wmb() as in v1 restores it back.
 
-Just a nitpick:
+@@ -332,7 +332,6 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+                new |= ARM_LPAE_PTE_NSTABLE;
+ 
+        /* Ensure the table itself is visible before its PTE can be */
+-       wmb();
+ 
+        old = cmpxchg64_relaxed(ptep, curr, new);
+ 
+@@ -342,6 +341,7 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+ 
+        /* Even if it's not ours, there's no point waiting; just kick it */
+        __arm_lpae_sync_pte(ptep, cfg);
++       wmb();
+        if (old == curr)
+                WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
+ 
 
-static inline int arch_kexec_post_alloc_pages(void *vaddr, unsigned int pages, gfp_t gfp) { return 0; }
-static inline void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages) { }
 
-Other than that:
-
-Reviewed-by: Borislav Petkov <bp@suse.de>
 
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Linu cherian
