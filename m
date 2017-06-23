@@ -1,96 +1,57 @@
-From: shameer <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
-Date: Fri, 23 Jun 2017 15:58:01 +0100
-Message-ID: <20170623145801.325244-3-shameerali.kolothum.thodi@huawei.com>
-References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC,20/30] iommu/arm-smmu-v3: Enable PCI PASID in masters
+Date: Fri, 23 Jun 2017 16:15:10 +0100
+Message-ID: <f47b89f9-2fee-22d4-9cac-476a20f8e93b@arm.com>
+References: <20170227195441.5170-21-jean-philippe.brucker@arm.com>
+ <f18163da-30a6-a7d4-0a2c-bca4fc1b0fff@codeaurora.org>
+ <fad6510f-922a-550b-0429-bc59f857c307@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <fad6510f-922a-550b-0429-bc59f857c307@codeaurora.org>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: Sinan Kaya <okaya@codeaurora.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+On 06/23/2017 03:39 PM, Sinan Kaya wrote:
+> Hi Jean-Philippe,
+>  
+>> On 2/27/2017 2:54 PM, Jean-Philippe Brucker wrote:
+>> Enable PASID for PCI devices that support it.
+>>
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> ---
+>>  drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++++++++---
+>>  1 file changed, 63 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 499dc1cd07eb..37fd061405e9 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -730,6 +730,8 @@ struct arm_smmu_master_data {
+>>  
+>>  	struct arm_smmu_stream		*streams;
+>>  	struct rb_root			contexts;
+>> +
+>> +	u32				avail_contexts;
+>>  };
+>>  
+> 
+> According to the PASID ECN here (https://pcisig.com/sites/default/files/specification_documents/ECN-PASID-ATS-2011-03-31.pdf),
+> PASID should be enabled only if all switches between the root port and
+> a device support TLP prefix. 
+>  
+> I'm only seeing a call to pci_enable_pasid() in this patch but I don't
+> see anybody checking for TLP prefix support on the hierarchy.
+> 
+> This could potentially be an addition to the PCI core code.
 
-On these platforms GICv3 ITS translator is presented with the deviceID
-by extending the MSI payload data to 64 bits to include the deviceID.
-Hence, the PCIe controller on this platforms has to differentiate the
-MSI payload against other DMA payload and has to modify the MSI payload.
-This basically makes it difficult for this platforms to have a SMMU
-translation for MSI.
+Good point, I think we should inspect bit "End-End TLP Prefix Supported"
+in the PCI_EXP_DEVCAP2 capability of all bridges between the endpoint
+and the IOMMU. And it should probably be done inside pci_enable_pasid().
 
-This patch implements a ACPI table based quirk to reserve the hw msi
-regions in the smmu-v3 driver which means these address regions will
-not be translated and will be excluded from iova allocations.
-
-Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c | 30 ++++++++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index abe4b88..c9346f2 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -597,6 +597,7 @@ struct arm_smmu_device {
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-+#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
- 	u32				options;
- 
- 	struct arm_smmu_cmdq		cmdq;
-@@ -1904,14 +1905,34 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 				      struct list_head *head)
- {
- 	struct iommu_resv_region *region;
-+	struct arm_smmu_device *smmu;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+	int resv = 0;
- 
--	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_SW_MSI);
--	if (!region)
-+	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-+	if (WARN_ON(!smmu))
- 		return;
- 
--	list_add_tail(&region->list, head);
-+	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
-+
-+		if (!is_of_node(smmu->dev->fwnode))
-+			resv = iort_iommu_its_get_resv_regions(dev, head);
-+
-+		if (resv < 0) {
-+			dev_warn(dev, "HW MSI region resv failed: %d\n", resv);
-+			return;
-+		}
-+	}
-+
-+	if (!resv) {
-+		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+						 prot, IOMMU_RESV_SW_MSI);
-+		if (!region)
-+			return;
-+
-+		list_add_tail(&region->list, head);
-+	}
- 
- 	iommu_dma_get_resv_regions(dev, head);
- }
-@@ -2611,6 +2632,7 @@ static void parse_driver_acpi_options(struct acpi_iort_smmu_v3 *iort_smmu,
- 	switch (iort_smmu->model) {
- 	case ACPI_IORT_SMMU_HISILICON_HI161X:
- 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-+		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
- 		break;
- 	default:
- 		break;
--- 
-1.9.1
-
-
+Thanks,
+Jean
