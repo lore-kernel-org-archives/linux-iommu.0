@@ -1,67 +1,189 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [RFC 2/9] iommu/vt-d: add bind_pasid_table function
-Date: Fri, 23 Jun 2017 13:21:51 -0700
-Message-ID: <20170623132151.6d623c48@jacob-builder>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [RFC 8/9] iommu/intel-svm: notify page request to guest
+Date: Fri, 23 Jun 2017 14:34:34 -0600
+Message-ID: <20170623143434.2473215b@w520.home>
 References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1497478983-77580-3-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20170622165215.5989e02c@w520.home>
-        <20170623111952.09915a6d@jacob-builder>
-        <20170623125900.61091315@w520.home>
+        <1497478983-77580-9-git-send-email-jacob.jun.pan@linux.intel.com>
+        <20170622165358.70cfe33b@w520.home>
+        <20170623131629.485750b6@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170623125900.61091315@w520.home>
+In-Reply-To: <20170623131629.485750b6@jacob-builder>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Yi L <yi.l.liu@linux.intel.com>, jacob.jun.pan@linux.intel.com
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 23 Jun 2017 12:59:00 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+On Fri, 23 Jun 2017 13:16:29 -0700
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 
-> On Fri, 23 Jun 2017 11:19:52 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> On Thu, 22 Jun 2017 16:53:58 -0600
+> Alex Williamson <alex.williamson@redhat.com> wrote:
 > 
-> > On Thu, 22 Jun 2017 16:52:15 -0600
-> > Alex Williamson <alex.williamson@redhat.com> wrote:
+> > On Wed, 14 Jun 2017 15:23:02 -0700
+> > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 > >   
-> > > On Wed, 14 Jun 2017 15:22:56 -0700
-> > > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:  
-> > > > +static int intel_iommu_unbind_pasid_table(struct iommu_domain
-> > > > *domain,
-> > > > +					struct device *dev)
-> > > > +{
-> > > > +	struct intel_iommu *iommu;
-> > > > +	struct dmar_domain *dmar_domain =
-> > > > to_dmar_domain(domain);
-> > > > +	u8 bus, devfn;
-> > > > +
-> > > > +	iommu = device_to_iommu(dev, &bus, &devfn);
-> > > > +	if (!iommu)
-> > > > +		return -ENODEV;
-> > > > +	/*
-> > > > +	 * REVISIT: we might want to clear the PASID table
-> > > > pointer
-> > > > +	 * as part of context clear operation. Currently, it
-> > > > leaves
-> > > > +	 * stale data but should be ignored by hardware since
-> > > > PASIDE
-> > > > +	 * is clear.
-> > > > +	 */
-> > > > +	/* ATS will be reenabled when remapping is restored */
-> > > > +	pci_disable_ats(to_pci_dev(dev));      
+> > > If the source device of a page request has its PASID table pointer
+> > > bond to a guest, the first level page tables are owned by the guest.
+> > > In this case, we shall let guest OS to manage page fault.
 > > > 
-> > > dev_is_pci()?
-> > >     
-> > good to check, even thought intel iommu supports PCI only.  
+> > > This patch uses the IOMMU fault notification API to send
+> > > notifications, possibly via VFIO, to the guest OS. Once guest pages
+> > > are fault in, guest will issue page response which will be passed
+> > > down via the invalidation passdown APIs.
+> > > 
+> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > > ---
+> > >  drivers/iommu/intel-svm.c | 81
+> > > ++++++++++++++++++++++++++++++++++++++++++++++- 1 file changed, 80
+> > > insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> > > index 23c4276..d1d2d23 100644
+> > > --- a/drivers/iommu/intel-svm.c
+> > > +++ b/drivers/iommu/intel-svm.c
+> > > @@ -525,6 +525,80 @@ static bool access_error(struct vm_area_struct
+> > > *vma, struct page_req_dsc *req) return (requested &
+> > > ~vma->vm_flags) != 0; }
+> > >  
+> > > +static int prq_to_iommu_prot(struct page_req_dsc *req)
+> > > +{
+> > > +	int prot = 0;
+> > > +
+> > > +	if (req->rd_req)
+> > > +		prot |= IOMMU_READ;
+> > > +	if (req->wr_req)
+> > > +		prot |= IOMMU_WRITE;
+> > > +	if (req->exe_req)
+> > > +		prot |= IOMMU_EXEC;
+> > > +	if (req->priv_req)
+> > > +		prot |= IOMMU_PRIV;
+> > > +
+> > > +	return prot;
+> > > +}
+> > > +
+> > > +static int intel_svm_prq_notify(struct device *dev, struct
+> > > page_req_dsc *desc) +{
+> > > +	int ret = 0;
+> > > +	struct iommu_fault_event *event;
+> > > +	struct pci_dev *pdev;
+> > > +	struct device_domain_info *info;
+> > > +	unsigned long buf_offset;
+> > > +
+> > > +	/**
+> > > +	 * If caller does not provide struct device, this is the
+> > > case where
+> > > +	 * guest PASID table is bond to the device. So we need to
+> > > retrieve
+> > > +	 * struct device from the page request deescriptor then
+> > > proceed.
+> > > +	 */
+> > > +	if (!dev) {
+> > > +		pdev = pci_get_bus_and_slot(desc->bus,
+> > > desc->devfn);
+> > > +		if (!pdev) {
+> > > +			pr_err("No PCI device found for PRQ
+> > > [%02x:%02x.%d]\n",
+> > > +				desc->bus, PCI_SLOT(desc->devfn),
+> > > +				PCI_FUNC(desc->devfn));
+> > > +			return -ENODEV;
+> > > +		}
+> > > +		/**
+> > > +		 * Make sure PASID table pointer is bond to guest,
+> > > if yes notify
+> > > +		 * handler in the guest, e.g. via VFIO.
+> > > +		 */
+> > > +		info = pdev->dev.archdata.iommu;
+> > > +		if (!info || !info->pasid_tbl_bond) {
+> > > +			pr_debug("PRQ device pasid table not
+> > > bond.\n");    
+> > 
+> > I can "bond" two things together, they are then "bound".
+> >   
+> will fix that :)
+> > > +			return -EINVAL;
+> > > +		}
+> > > +		dev = &pdev->dev;    
+> > 
+> > Leaks pdev reference.  Both normal and error path.
+> >   
+> I guess you are referring to ref count in pci_get_bus_and_slot()? I did
+> look at the code, it does not seem to do the count increment. Perhaps
+> the comment is stale?
 > 
-> That's not true, intel-iommu supports non-PCI devices defined in ACPI
-> as well.  Thanks,
+>  * pointer to its data structure.  The caller must decrement the
+>  * reference count by calling pci_dev_put().  If no device is found,
+>  * %NULL is returned.
+>  */
+> struct pci_dev *pci_get_domain_bus_and_slot(int domain, unsigned int bus,
+> 					    unsigned int devfn)
+> {
+> 	struct pci_dev *dev = NULL;
 > 
-For non-pci device, there is still a pci BDF allocated for it (shown in
-ACPI) such that it can have its own IOMMU context, right? e.g. HPET
+> 	for_each_pci_dev(dev) {
+        ^^^^^^^^^^^^^^^^ <-- look in here, it's trickier than it appears
 
-> Alex
 
-[Jacob Pan]
+> 		if (pci_domain_nr(dev->bus) == domain &&
+> 		    (dev->bus->number == bus && dev->devfn == devfn))
+> 			return dev;
+> 	}
+> 	return NULL;
+> }
+> EXPORT_SYMBOL(pci_get_domain_bus_and_slot);
+> 
+> 
+> 
+> > > +	}
+> > > +
+> > > +	pr_debug("Notify PRQ device [%02x:%02x.%d]\n",
+> > > +		desc->bus, PCI_SLOT(desc->devfn),
+> > > +		PCI_FUNC(desc->devfn));
+> > > +	event = kzalloc(sizeof(*event) + sizeof(*desc),
+> > > GFP_KERNEL);
+> > > +	if (!event)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	get_device(dev);
+> > > +	/* Fill in event data for device specific processing */
+> > > +	event->dev = dev;
+> > > +	buf_offset = offsetofend(struct iommu_fault_event, length);
+> > > +	memcpy(buf_offset + event, desc, sizeof(*desc));
+> > > +	event->addr = desc->addr;
+> > > +	event->pasid = desc->pasid;
+> > > +	event->prot = prq_to_iommu_prot(desc);
+> > > +	event->length = sizeof(*desc);
+> > > +	event->flags = IOMMU_FAULT_PAGE_REQ;
+> > > +
+> > > +	ret = iommu_fault_notifier_call_chain(event);
+> > > +	put_device(dev);
+> > > +	kfree(event);
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > >  static irqreturn_t prq_event_thread(int irq, void *d)
+> > >  {
+> > >  	struct intel_iommu *iommu = d;
+> > > @@ -548,7 +622,12 @@ static irqreturn_t prq_event_thread(int irq,
+> > > void *d) handled = 1;
+> > >  
+> > >  		req = &iommu->prq[head / sizeof(*req)];
+> > > -
+> > > +		/**
+> > > +		 * If prq is to be handled outside iommu driver
+> > > via receiver of
+> > > +		 * the fault notifiers, we skip the page response
+> > > here.
+> > > +		 */
+> > > +		if (!intel_svm_prq_notify(NULL, req))
+> > > +			continue;
+> > >  		result = QI_RESP_FAILURE;
+> > >  		address = (u64)req->addr << VTD_PAGE_SHIFT;
+> > >  		if (!req->pasid_present) {    
+> >   
+> 
+> [Jacob Pan]
