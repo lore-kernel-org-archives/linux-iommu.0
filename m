@@ -1,179 +1,236 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v7 34/36] x86/mm: Add support to encrypt the kernel
- in-place
-Date: Fri, 23 Jun 2017 12:44:46 -0500
-Message-ID: <af9a50f7-17ea-a840-6456-b6479e5d7e82@amd.com>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185619.18967.38945.stgit@tlendack-t1.amdoffice.net>
- <20170623100013.upd4or6esjvulmvg@pd.tnic>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC 2/9] iommu/vt-d: add bind_pasid_table function
+Date: Fri, 23 Jun 2017 11:19:52 -0700
+Message-ID: <20170623111952.09915a6d@jacob-builder>
+References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1497478983-77580-3-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20170622165215.5989e02c@w520.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170623100013.upd4or6esjvulmvg@pd.tnic>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracl>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170622165215.5989e02c-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian,
+	Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/23/2017 5:00 AM, Borislav Petkov wrote:
-> On Fri, Jun 16, 2017 at 01:56:19PM -0500, Tom Lendacky wrote:
->> Add the support to encrypt the kernel in-place. This is done by creating
->> new page mappings for the kernel - a decrypted write-protected mapping
->> and an encrypted mapping. The kernel is encrypted by copying it through
->> a temporary buffer.
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>   arch/x86/include/asm/mem_encrypt.h |    6 +
->>   arch/x86/mm/Makefile               |    2
->>   arch/x86/mm/mem_encrypt.c          |  314 ++++++++++++++++++++++++++++++++++++
->>   arch/x86/mm/mem_encrypt_boot.S     |  150 +++++++++++++++++
->>   4 files changed, 472 insertions(+)
->>   create mode 100644 arch/x86/mm/mem_encrypt_boot.S
->>
->> diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
->> index af835cf..7da6de3 100644
->> --- a/arch/x86/include/asm/mem_encrypt.h
->> +++ b/arch/x86/include/asm/mem_encrypt.h
->> @@ -21,6 +21,12 @@
->>   
->>   extern unsigned long sme_me_mask;
->>   
->> +void sme_encrypt_execute(unsigned long encrypted_kernel_vaddr,
->> +			 unsigned long decrypted_kernel_vaddr,
->> +			 unsigned long kernel_len,
->> +			 unsigned long encryption_wa,
->> +			 unsigned long encryption_pgd);
->> +
->>   void __init sme_early_encrypt(resource_size_t paddr,
->>   			      unsigned long size);
->>   void __init sme_early_decrypt(resource_size_t paddr,
->> diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
->> index 9e13841..0633142 100644
->> --- a/arch/x86/mm/Makefile
->> +++ b/arch/x86/mm/Makefile
->> @@ -38,3 +38,5 @@ obj-$(CONFIG_NUMA_EMU)		+= numa_emulation.o
->>   obj-$(CONFIG_X86_INTEL_MPX)	+= mpx.o
->>   obj-$(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS) += pkeys.o
->>   obj-$(CONFIG_RANDOMIZE_MEMORY) += kaslr.o
->> +
->> +obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_boot.o
->> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
->> index 842c8a6..6e87662 100644
->> --- a/arch/x86/mm/mem_encrypt.c
->> +++ b/arch/x86/mm/mem_encrypt.c
->> @@ -24,6 +24,8 @@
->>   #include <asm/setup.h>
->>   #include <asm/bootparam.h>
->>   #include <asm/set_memory.h>
->> +#include <asm/cacheflush.h>
->> +#include <asm/sections.h>
->>   
->>   /*
->>    * Since SME related variables are set early in the boot process they must
->> @@ -209,8 +211,320 @@ void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
->>   	set_memory_decrypted((unsigned long)vaddr, size >> PAGE_SHIFT);
->>   }
->>   
->> +static void __init sme_clear_pgd(pgd_t *pgd_base, unsigned long start,
->> +				 unsigned long end)
->> +{
->> +	unsigned long pgd_start, pgd_end, pgd_size;
->> +	pgd_t *pgd_p;
->> +
->> +	pgd_start = start & PGDIR_MASK;
->> +	pgd_end = end & PGDIR_MASK;
->> +
->> +	pgd_size = (((pgd_end - pgd_start) / PGDIR_SIZE) + 1);
->> +	pgd_size *= sizeof(pgd_t);
->> +
->> +	pgd_p = pgd_base + pgd_index(start);
->> +
->> +	memset(pgd_p, 0, pgd_size);
->> +}
->> +
->> +#ifndef CONFIG_X86_5LEVEL
->> +#define native_make_p4d(_x)	(p4d_t) { .pgd = native_make_pgd(_x) }
->> +#endif
+On Thu, 22 Jun 2017 16:52:15 -0600
+Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+
+> On Wed, 14 Jun 2017 15:22:56 -0700
+> Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 > 
-> Huh, why isn't this in arch/x86/include/asm/pgtable_types.h in the #else
-> branch of #if CONFIG_PGTABLE_LEVELS > 4 ?
-
-Normally the __p4d() macro would be used and that would be ok whether
-CONFIG_X86_5LEVEL is defined or not. But since __p4d() is part of the
-paravirt ops path I have to use native_make_p4d(). I'd be the only user
-of the function and thought it would be best to localize it this way.
-
+> > Add Intel VT-d ops to the generic iommu_bind_pasid_table API
+> > functions.
+> > 
+> > The primary use case is for direct assignment of SVM capable
+> > device. Originated from emulated IOMMU in the guest, the request
+> > goes through many layers (e.g. VFIO). Upon calling host IOMMU
+> > driver, caller passes guest PASID table pointer (GPA) and size.
+> > 
+> > Device context table entry is modified by Intel IOMMU specific
+> > bind_pasid_table function. This will turn on nesting mode and
+> > matching translation type.
+> > 
+> > The unbind operation restores default context mapping.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  drivers/iommu/intel-iommu.c   | 109
+> > ++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/dma_remapping.h |   1 + 2 files changed, 110
+> > insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index fc2765c..1d5d9ab9 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -5430,6 +5430,111 @@ struct intel_iommu
+> > *intel_svm_device_to_iommu(struct device *dev) 
+> >  	return iommu;
+> >  }
+> > +
+> > +static int intel_iommu_bind_pasid_table(struct iommu_domain
+> > *domain,
+> > +		struct device *dev, struct pasid_table_info
+> > *pasidt_binfo) +{
+> > +	struct intel_iommu *iommu;
+> > +	struct context_entry *context;
+> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> > +	struct device_domain_info *info;
+> > +	struct pci_dev *pdev;
+> > +	u8 bus, devfn;
+> > +	u16 did, *sid;
+> > +	int ret = 0;
+> > +	unsigned long flags;
+> > +	u64 ctx_lo;
+> > +
+> > +	if (pasidt_binfo == NULL || pasidt_binfo->model !=
+> > INTEL_IOMMU) {  
 > 
-> Also
+> Clearly model cannot be used as a bit field so it would appear wrong
+> to limit ourselves to 32 possible models by using it that way.
 > 
-> ERROR: Macros with complex values should be enclosed in parentheses
-> #105: FILE: arch/x86/mm/mem_encrypt.c:232:
-> +#define native_make_p4d(_x)    (p4d_t) { .pgd = native_make_pgd(_x) }
+agreed.
+> > +		pr_warn("%s: Invalid bind request!\n", __func__);  
 > 
-> so why isn't it a function?
-
-I can define it as an inline function.
-
+> Let the callers deal with error reporting.
 > 
->> +
->> +#define PGD_FLAGS	_KERNPG_TABLE_NOENC
->> +#define P4D_FLAGS	_KERNPG_TABLE_NOENC
->> +#define PUD_FLAGS	_KERNPG_TABLE_NOENC
->> +#define PMD_FLAGS	(__PAGE_KERNEL_LARGE_EXEC & ~_PAGE_GLOBAL)
->> +
->> +static void __init *sme_populate_pgd(pgd_t *pgd_base, void *pgtable_area,
->> +				     unsigned long vaddr, pmdval_t pmd_val)
->> +{
->> +	pgd_t *pgd_p;
->> +	p4d_t *p4d_p;
->> +	pud_t *pud_p;
->> +	pmd_t *pmd_p;
->> +
->> +	pgd_p = pgd_base + pgd_index(vaddr);
->> +	if (native_pgd_val(*pgd_p)) {
->> +		if (IS_ENABLED(CONFIG_X86_5LEVEL))
+ditto.
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	iommu = device_to_iommu(dev, &bus, &devfn);
+> > +	if (!iommu)
+> > +		return -ENODEV;
+> > +
+> > +	sid = (u16 *)&pasidt_binfo->opaque;  
 > 
-> Err, I don't understand: so this is a Kconfig symbol and when it is
-> enabled at build time, you do a 5level pagetable.
+> Failed to check length.
 > 
-> But you can't stick a 5level pagetable to a hardware which doesn't know
-> about it.
-
-True, 5-level will only be turned on for specific hardware which is why
-I originally had this as only 4-level pagetables. But in a comment from
-you back on the v5 version you said it needed to support 5-level. I
-guess we should have discussed this more, but I also thought that should
-our hardware ever support 5-level paging in the future then this would
-be good to go.
-
+ditto.
 > 
-> Or do you mean that p4d layer folding at runtime to happen? (I admit, I
-> haven't looked at that in detail.) But then I'd hope that the generic
-> macros/functions would give you the ability to not care whether we have
-> a p4d or not and not add a whole bunch of ifdeffery to this code.
-
-The macros work great if you are not running identity mapped. You could
-use p*d_offset() to move easily through the tables, but those functions
-use __va() to generate table virtual addresses. I've seen where
-boot/compressed/pagetable.c #defines __va() to work with identity mapped
-pages but that would only work if I create a separate file just for this
-function.
-
-Given when this occurs it's very similar to what __startup_64() does in
-regards to the IS_ENABLED(CONFIG_X86_5LEVEL) checks.
-
-Thanks,
-Tom
-
+> > +	/*
+> > +	 * check SID, if it is not correct, return success to
+> > allow looping
+> > +	 * through all devices within a group
+> > +	 */
+> > +	if (PCI_DEVID(bus, devfn) != *sid)
+> > +		return 0;
+> > +
+> > +	pdev = to_pci_dev(dev);  
 > 
-> Hmmm.
+> Better test dev_is_pci() first!
 > 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+good point.
+> > +	info = dev->archdata.iommu;
+> > +	if (!info || !info->pasid_supported) {
+> > +		pr_err("PCI %04x:%02x:%02x.%d: has no PASID
+> > support\n",
+> > +			       pci_domain_nr(pdev->bus), bus,
+> > PCI_SLOT(devfn),
+> > +			       PCI_FUNC(devfn));
+> > +		ret = -EINVAL;
+> > +		goto out;
+> > +	}
+> > +
+> > +	if (pasidt_binfo->size > intel_iommu_get_pts(iommu)) {
+> > +		pr_err("Invalid gPASID table size %llu, host size
+> > %lu\n",
+> > +			pasidt_binfo->size,
+> > +			intel_iommu_get_pts(iommu));
+> > +		ret = -EINVAL;
+> > +		goto out;
+> > +	}  
+> 
+> Different errnos here would be more useful to code that handles the
+> return than these pr_err()s.
+> 
+OK.
+> > +	spin_lock_irqsave(&iommu->lock, flags);
+> > +	context = iommu_context_addr(iommu, bus, devfn, 0);
+> > +	if (!context || !context_present(context)) {
+> > +		pr_warn("%s: ctx not present for bus devfn
+> > %x:%x\n",
+> > +			__func__, bus, devfn);
+> > +		spin_unlock_irqrestore(&iommu->lock, flags);
+> > +		goto out;  
+> 
+> Return success?!
+> 
+good catch, should fail.
+> > +	}
+> > +	/* Anticipate guest to use SVM and owns the first level */
+> > +	ctx_lo = context[0].lo;
+> > +	ctx_lo |= CONTEXT_NESTE;
+> > +	ctx_lo |= CONTEXT_PRS;
+> > +	ctx_lo |= CONTEXT_PASIDE;
+> > +	ctx_lo &= ~CONTEXT_TT_MASK;
+> > +	ctx_lo |= CONTEXT_TT_DEV_IOTLB << 2;
+> > +	context[0].lo = ctx_lo;
+> > +
+> > +	/* Assign guest PASID table pointer and size */
+> > +	ctx_lo = (pasidt_binfo->ptr & VTD_PAGE_MASK) |
+> > pasidt_binfo->size;
+> > +	context[1].lo = ctx_lo;
+> > +	/* make sure context entry is updated before flushing */
+> > +	wmb();
+> > +	did = dmar_domain->iommu_did[iommu->seq_id];
+> > +	iommu->flush.flush_context(iommu, did,
+> > +				(((u16)bus) << 8) | devfn,
+> > +				DMA_CCMD_MASK_NOBIT,
+> > +				DMA_CCMD_DEVICE_INVL);
+> > +	iommu->flush.flush_iotlb(iommu, did, 0, 0,
+> > DMA_TLB_DSI_FLUSH);
+> > +	spin_unlock_irqrestore(&iommu->lock, flags);
+> > +
+> > +
+> > +out:
+> > +	return ret;
+> > +}
+> > +
+> > +static int intel_iommu_unbind_pasid_table(struct iommu_domain
+> > *domain,
+> > +					struct device *dev)
+> > +{
+> > +	struct intel_iommu *iommu;
+> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> > +	u8 bus, devfn;
+> > +
+> > +	iommu = device_to_iommu(dev, &bus, &devfn);
+> > +	if (!iommu)
+> > +		return -ENODEV;
+> > +	/*
+> > +	 * REVISIT: we might want to clear the PASID table pointer
+> > +	 * as part of context clear operation. Currently, it leaves
+> > +	 * stale data but should be ignored by hardware since
+> > PASIDE
+> > +	 * is clear.
+> > +	 */
+> > +	/* ATS will be reenabled when remapping is restored */
+> > +	pci_disable_ats(to_pci_dev(dev));  
+> 
+> dev_is_pci()?
+> 
+good to check, even thought intel iommu supports PCI only.
+> > +	domain_context_clear(iommu, dev);
+> > +	return domain_context_mapping_one(dmar_domain, iommu, bus,
+> > devfn); +}
+> >  #endif /* CONFIG_INTEL_IOMMU_SVM */
+> >  
+> >  const struct iommu_ops intel_iommu_ops = {
+> > @@ -5438,6 +5543,10 @@ const struct iommu_ops intel_iommu_ops = {
+> >  	.domain_free		= intel_iommu_domain_free,
+> >  	.attach_dev		= intel_iommu_attach_device,
+> >  	.detach_dev		= intel_iommu_detach_device,
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +	.bind_pasid_table	= intel_iommu_bind_pasid_table,
+> > +	.unbind_pasid_table	=
+> > intel_iommu_unbind_pasid_table, +#endif
+> >  	.map			= intel_iommu_map,
+> >  	.unmap			= intel_iommu_unmap,
+> >  	.map_sg			= default_iommu_map_sg,
+> > diff --git a/include/linux/dma_remapping.h
+> > b/include/linux/dma_remapping.h index 9088407..85367b7 100644
+> > --- a/include/linux/dma_remapping.h
+> > +++ b/include/linux/dma_remapping.h
+> > @@ -27,6 +27,7 @@
+> >  
+> >  #define CONTEXT_DINVE		(1ULL << 8)
+> >  #define CONTEXT_PRS		(1ULL << 9)
+> > +#define CONTEXT_NESTE		(1ULL << 10)
+> >  #define CONTEXT_PASIDE		(1ULL << 11)
+> >  
+> >  struct intel_iommu;  
