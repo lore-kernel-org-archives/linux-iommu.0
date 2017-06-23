@@ -1,116 +1,144 @@
-From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Devel] [PATCH v9 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
-Date: Fri, 23 Jun 2017 06:55:41 +0200
-Message-ID: <20170623045541.GQ16981@rric.localdomain>
+From: Robert Richter <robert.richter@cavium.com>
+Subject: [PATCH] iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3 IORT
+ model number definitions
+Date: Fri, 23 Jun 2017 06:59:33 +0200
+Message-ID: <20170623045933.GR16981@rric.localdomain>
 References: <1498133138-20244-1-git-send-email-gakula@caviumnetworks.com>
-	<20170622182257.GI15336@arm.com> <20170622185822.GK15336@arm.com>
-	<20170622193535.GA10237@rric.localdomain>
-	<20170622210437.GA27861@red-moon>
+ <20170622182257.GI15336@arm.com>
+ <20170622185822.GK15336@arm.com>
+ <20170622193535.GA10237@rric.localdomain>
+ <20170622210437.GA27861@red-moon>
+ <20170623045541.GQ16981@rric.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170622210437.GA27861@red-moon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Robert Richter <rric-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
+In-Reply-To: <20170623045541.GQ16981@rric.localdomain>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, Geetha sowjanya <gakula@caviumnetworks.com>, linux-arm-kernel@lists.infradead.org, robh@kernel.org, devel@acpica.org, catalin.marinas@arm.com, Charles.Garcia-Tobin@arm.com, geethasowjanya.akula@gmail.com, jcm@redhat.com, linu.cherian@cavium.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, sgoutham@cavium.com, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjIuMDYuMTcgMjI6MDQ6MzcsIExvcmVuem8gUGllcmFsaXNpIHdyb3RlOgo+IE9uIFRodSwg
-SnVuIDIyLCAyMDE3IGF0IDA5OjM1OjM1UE0gKzAyMDAsIFJvYmVydCBSaWNodGVyIHdyb3RlOgo+
-ID4gT24gMjIuMDYuMTcgMTk6NTg6MjIsIFdpbGwgRGVhY29uIHdyb3RlOgo+ID4gPiBPbiBUaHUs
-IEp1biAyMiwgMjAxNyBhdCAwNzoyMjo1N1BNICswMTAwLCBXaWxsIERlYWNvbiB3cm90ZToKPiA+
-ID4gPiBPbiBUaHUsIEp1biAyMiwgMjAxNyBhdCAwNTozNTozNVBNICswNTMwLCBHZWV0aGEgc293
-amFueWEgd3JvdGU6Cj4gPiA+ID4gPiBDYXZpdW0gVGh1bmRlclgyIFNNTVV2MyBpbXBsZW1lbnRh
-dGlvbiBoYXMgdHdvIFNpbGljb24gRXJyYXRhcy4KPiA+ID4gPiA+IDEuIEVycmF0YSBJRCAjNzQK
-PiA+ID4gPiA+ICAgIFNNTVUgcmVnaXN0ZXIgYWxpYXMgUGFnZSAxIGlzIG5vdCBpbXBsZW1lbnRl
-ZAo+ID4gPiA+ID4gMi4gRXJyYXRhIElEICMxMjYKPiA+ID4gPiA+ICAgIFNNTVUgZG9lc250IHN1
-cHBvcnQgdW5pcXVlIElSUSBsaW5lcyBhbmQgYWxzbyBNU0kgZm9yIGdlcnJvciwKPiA+ID4gPiA+
-ICAgIGV2ZW50cSBhbmQgY21kcS1zeW5jCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFRoZSBmb2xsb3dp
-bmcgcGF0Y2hzZXQgZG9lcyBzb2Z0d2FyZSB3b3JrYXJvdW5kIGZvciB0aGVzZSB0d28gZXJyYXRh
-cy4KPiA+ID4gPiAKPiA+ID4gPiBJJ3ZlIHBpY2tlZCB1cCB0aGUgZmlyc3QgdHdvIHBhdGNoZXMs
-IGFuZCBsZWZ0IGNvbW1lbnRzIG9uIHRoZSBmaW5hbCBwYXRjaC4KPiA+ID4gCj4gPiA+IC4uLiBl
-eGNlcHQgdGhhdCBpdCBkb2Vzbid0IGJ1aWxkOgo+ID4gPiAKPiA+ID4gCj4gPiA+IGRyaXZlcnMv
-YWNwaS9hcm02NC9pb3J0LmM6IEluIGZ1bmN0aW9uIOKAmGFybV9zbW11X3YzX3Jlc291cmNlX3Np
-emXigJk6Cj4gPiA+IGRyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmM6ODM3OjIxOiBlcnJvcjog4oCY
-QUNQSV9JT1JUX1NNTVVfVjNfQ0FWSVVNX0NOOTlYWOKAmSB1bmRlY2xhcmVkIChmaXJzdCB1c2Ug
-aW4gdGhpcyBmdW5jdGlvbikKPiA+ID4gICBpZiAoc21tdS0+bW9kZWwgPT0gQUNQSV9JT1JUX1NN
-TVVfVjNfQ0FWSVVNX0NOOTlYWCkKPiA+ID4gICAgICAgICAgICAgICAgICAgICAgXgo+ID4gPiBk
-cml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jOjgzNzoyMTogbm90ZTogZWFjaCB1bmRlY2xhcmVkIGlk
-ZW50aWZpZXIgaXMgcmVwb3J0ZWQgb25seSBvbmNlIGZvciBlYWNoIGZ1bmN0aW9uIGl0IGFwcGVh
-cnMgaW4KPiA+ID4gbWFrZVs0XTogKioqIFtkcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5vXSBFcnJv
-ciAxCj4gPiA+IAo+ID4gPiAKPiA+ID4gSSBkb24ndCBzZWUgQUNQSV9JT1JUX1NNTVVfVjNfQ0FW
-SVVNX0NOOTlYWCBkZWZpbmVkLCBldmVuIGluIGxpbnV4LW5leHQuCj4gPiA+IAo+ID4gPiBXaGF0
-J3MgdGhlIHBsYW4gaGVyZT8KPiA+IAo+ID4gSXQgaXMgZGVmaW5lZCBhbHJlYWR5IGluIGFjcGlj
-YSBhbmQgd2UgYWN0dWFsbHkgd2FpdGluZyBmb3IgdGhlIGFjcGkKPiA+IG1haW50YWluZXJzIHRv
-IGluY2x1ZGUgaXQ6Cj4gPiAKPiA+ICBodHRwczovL2dpdGh1Yi5jb20vYWNwaWNhL2FjcGljYS9j
-b21taXQvZDAwYTRlYjg2ZTY0Cj4gPiAKPiA+IFdlIGNvdWxkIGFkZAo+ID4gCj4gPiAvKiBVbnRp
-bCBBQ1BJQ0EgaGVhZGVycyBjb3ZlciBJT1JUIHJldi4gQyAqLwo+ID4gI2lmbmRlZiBBQ1BJX0lP
-UlRfU01NVV9WM19DQVZJVU1fQ045OVhYCj4gPiAjZGVmaW5lIEFDUElfSU9SVF9TTU1VX1YzX0NB
-VklVTV9DTjk5WFgJCTB4Mgo+ID4gI2VuZGlmCj4gPiAKPiA+IHRvIGJvdGggZmlsZXM6Cj4gPiAK
-PiA+ICBkcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jCj4gPiAgZHJpdmVycy9pb21tdS9hcm0tc21t
-dS12My5jCj4gPiAKPiAKPiBJIHRob3VnaHQgaXQgd2FzIGEgc29sdmVkIHByb2JsZW0gKGFuZCB0
-aGF0IHRoZSBJT1JUIHBhdGNoIHdhcyBiYXNlZAo+IG9uIFJvYmluJ3Mgd29ya2Fyb3VuZCkgYnV0
-IEkgd2FzIGNsZWFybHkgd3JvbmcgYW5kIEkgYXBvbG9naXNlIHRvCj4gV2lsbCBhYm91dCB0aGlz
-Lgo+IAo+IEZXSVcsIHlvdSBjb3VsZCBhZGQgdGhlIGRlZmluZSBpbiBpbmNsdWRlL2xpbnV4L2Fj
-cGlfaW9ydC5oIGFuZCBJIHdpbGwKPiByZW1vdmUgaXQgd2hlbmV2ZXIgQUNQSUNBIGNoYW5nZXMg
-bWFrZSBpdCBpbnRvIHRoZSBrZXJuZWwuCgpBZGRpbmcgaXQgdGhlcmUgd2lsbCBzdGlsbCBsZXQg
-ZGVwZW5kIHVzIG9uIGFjcGkgbWFpbnRhaW5lcnMsIHdoaWxlIEkKdGhpbmsgdGhlIG92ZXIgMiBm
-aWxlcyBtaWdodCBnbyB0aHJvdWdoIGFybTY0IHRyZWUgc21vb3RobHkuIEEgY2hhbmdlCmluIGFj
-cGlfaW9ydC5oIGFsc28gYWRkcyB0aGUgZGVmaW5pdGlvbiB0byBvdGhlciBhcmNocyBhbmQgSSBk
-b24ndAp0aGluayB0aGF0IGFkZGluZyBhcmNoICNpZmRlZnMgdG8gYXZvaWQgdGhhdCBhcmUgd2Vs
-Y29tZSBpbiB0aGF0CmhlYWRlciBmaWxlIHRvby4KCkkgYW0gZ29pbmcgdG8gcmVzZW5kIG15IHBh
-dGNoIGJlbG93IHdpdGggYW4gaW1wcm92ZWQgd29yZGluZy4KClRoYW5rcywKCi1Sb2JlcnQKCj4g
-Cj4gVGhhbmtzLAo+IExvcmVuem8KPiAKPiA+IFRoaXMgaXMgc2ltaWxhciB0byB3aGF0IFJvYmlu
-IGRpZC4KPiA+IAo+ID4gKEkgY2hlY2tlZCBhcm02NCBpbmNsdWRlIGZpbGVzIGFuZCB0aGUgY2xv
-c2VzdCB3YXMKPiA+IGFyY2gvYXJtNjQvaW5jbHVkZS9hc20vYWNwaS5oLCBidWcgdGhpcyBzZWVt
-cyBub3QgcmVhbGx5IHN1aXRhYmxlIHRvCj4gPiBtZS4pCj4gPiAKPiA+IEkgaGF2ZSBjcmVhdGVk
-IGEgc2VwYXJhdGUgcGF0Y2ggdG8gYmUgYXBwbGllZCBhdCBmaXJzdCBiZWxvdy4gV2UgY2FuCj4g
-PiByZXZlcnQgaXQgYWZ0ZXIgYWNwaWNhIHdhcyB1cGRhdGVkLgo+ID4gCj4gPiAtUm9iZXJ0Cj4g
-PiAKPiA+IAo+ID4gCj4gPiAKPiA+IEZyb20gYWQ3ZjAxMTJhMmE3MTA1OWMzMmJkMzE1ODM1YzMz
-Y2M3YmM2NjBiOCBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKPiA+IEZyb206IFJvYmVydCBSaWNo
-dGVyIDxycmljaHRlckBjYXZpdW0uY29tPgo+ID4gRGF0ZTogVGh1LCAyMiBKdW4gMjAxNyAyMToy
-MDo1NCArMDIwMAo+ID4gU3ViamVjdDogW1BBVENIXSBpb21tdS9hcm0tc21tdS12MzogQWRkIHRl
-bXBvcmFyeSBDYXZpdW0gU01NVS1WMyBtb2RlbCBudWJlcgo+ID4gIGRlZmluaXRpb25zCj4gPiAK
-PiA+IFRoZSBtb2RlbCBudW1iZXIgaXMgYWxyZWFkeSBkZWZpbmVkIGluIGFjcGljYSBhbmQgd2Ug
-YWN0dWFsbHkgd2FpdGluZwo+ID4gZm9yIHRoZSBhY3BpIG1haW50YWluZXJzIHRvIGluY2x1ZGUg
-aXQ6Cj4gPiAKPiA+ICBodHRwczovL2dpdGh1Yi5jb20vYWNwaWNhL2FjcGljYS9jb21taXQvZDAw
-YTRlYjg2ZTY0Cj4gPiAKPiA+IEFkZGluZyB0aG9zZSB0ZW1wb3JhcnkgZGVmaW5pdGlvbnMgdW50
-aWwgdGhlIGNoYW5nZSBtYWtlcyBpdCBpbnRvCj4gPiBpbmNsdWRlL2FjcGkvYWN0YmwyLmguCj4g
-PiAKPiA+IFNpZ25lZC1vZmYtYnk6IFJvYmVydCBSaWNodGVyIDxycmljaHRlckBjYXZpdW0uY29t
-Pgo+ID4gLS0tCj4gPiAgZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYyAgIHwgNSArKysrKwo+ID4g
-IGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDUgKysrKysKPiA+ICAyIGZpbGVzIGNoYW5n
-ZWQsIDEwIGluc2VydGlvbnMoKykKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYWNwaS9h
-cm02NC9pb3J0LmMgYi9kcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jCj4gPiBpbmRleCA3OTdiMjhk
-YzdiMzQuLjE1NDkxMjM3YTY1NyAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvYWNwaS9hcm02NC9p
-b3J0LmMKPiA+ICsrKyBiL2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMKPiA+IEBAIC0zMSw2ICsz
-MSwxMSBAQAo+ID4gICNkZWZpbmUgSU9SVF9JT01NVV9UWVBFCQkoKDEgPDwgQUNQSV9JT1JUX05P
-REVfU01NVSkgfAlcCj4gPiAgCQkJCSgxIDw8IEFDUElfSU9SVF9OT0RFX1NNTVVfVjMpKQo+ID4g
-IAo+ID4gKy8qIFVudGlsIEFDUElDQSBoZWFkZXJzIGNvdmVyIElPUlQgcmV2LiBDICovCj4gPiAr
-I2lmbmRlZiBBQ1BJX0lPUlRfU01NVV9WM19DQVZJVU1fQ045OVhYCj4gPiArI2RlZmluZSBBQ1BJ
-X0lPUlRfU01NVV9WM19DQVZJVU1fQ045OVhYCQkweDIKPiA+ICsjZW5kaWYKPiA+ICsKPiA+ICBz
-dHJ1Y3QgaW9ydF9pdHNfbXNpX2NoaXAgewo+ID4gIAlzdHJ1Y3QgbGlzdF9oZWFkCWxpc3Q7Cj4g
-PiAgCXN0cnVjdCBmd25vZGVfaGFuZGxlCSpmd19ub2RlOwo+ID4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+ID4g
-aW5kZXggMzgwOTY5YWE2MGQ1Li5jNzU5ZGZhNzQ0MmQgMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJz
-L2lvbW11L2FybS1zbW11LXYzLmMKPiA+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMu
-Ywo+ID4gQEAgLTQxMiw2ICs0MTIsMTEgQEAKPiA+ICAjZGVmaW5lIE1TSV9JT1ZBX0JBU0UJCQkw
-eDgwMDAwMDAKPiA+ICAjZGVmaW5lIE1TSV9JT1ZBX0xFTkdUSAkJCTB4MTAwMDAwCj4gPiAgCj4g
-PiArLyogVW50aWwgQUNQSUNBIGhlYWRlcnMgY292ZXIgSU9SVCByZXYuIEMgKi8KPiA+ICsjaWZu
-ZGVmIEFDUElfSU9SVF9TTU1VX1YzX0NBVklVTV9DTjk5WFgKPiA+ICsjZGVmaW5lIEFDUElfSU9S
-VF9TTU1VX1YzX0NBVklVTV9DTjk5WFgJCTB4Mgo+ID4gKyNlbmRpZgo+ID4gKwo+ID4gIHN0YXRp
-YyBib29sIGRpc2FibGVfYnlwYXNzOwo+ID4gIG1vZHVsZV9wYXJhbV9uYW1lZChkaXNhYmxlX2J5
-cGFzcywgZGlzYWJsZV9ieXBhc3MsIGJvb2wsIFNfSVJVR08pOwo+ID4gIE1PRFVMRV9QQVJNX0RF
-U0MoZGlzYWJsZV9ieXBhc3MsCj4gPiAtLSAKPiA+IDIuMTEuMAo+ID4gCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 23.06.17 06:55:41, Robert Richter wrote:
+> On 22.06.17 22:04:37, Lorenzo Pieralisi wrote:
+> > On Thu, Jun 22, 2017 at 09:35:35PM +0200, Robert Richter wrote:
+> > > On 22.06.17 19:58:22, Will Deacon wrote:
+> > > > On Thu, Jun 22, 2017 at 07:22:57PM +0100, Will Deacon wrote:
+> > > > > On Thu, Jun 22, 2017 at 05:35:35PM +0530, Geetha sowjanya wrote:
+> > > > > > Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+> > > > > > 1. Errata ID #74
+> > > > > >    SMMU register alias Page 1 is not implemented
+> > > > > > 2. Errata ID #126
+> > > > > >    SMMU doesnt support unique IRQ lines and also MSI for gerror,
+> > > > > >    eventq and cmdq-sync
+> > > > > > 
+> > > > > > The following patchset does software workaround for these two erratas.
+> > > > > 
+> > > > > I've picked up the first two patches, and left comments on the final patch.
+> > > > 
+> > > > ... except that it doesn't build:
+> > > > 
+> > > > 
+> > > > drivers/acpi/arm64/iort.c: In function ‘arm_smmu_v3_resource_size’:
+> > > > drivers/acpi/arm64/iort.c:837:21: error: ‘ACPI_IORT_SMMU_V3_CAVIUM_CN99XX’ undeclared (first use in this function)
+> > > >   if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
+> > > >                      ^
+> > > > drivers/acpi/arm64/iort.c:837:21: note: each undeclared identifier is reported only once for each function it appears in
+> > > > make[4]: *** [drivers/acpi/arm64/iort.o] Error 1
+> > > > 
+> > > > 
+> > > > I don't see ACPI_IORT_SMMU_V3_CAVIUM_CN99XX defined, even in linux-next.
+> > > > 
+> > > > What's the plan here?
+> > > 
+> > > It is defined already in acpica and we actually waiting for the acpi
+> > > maintainers to include it:
+> > > 
+> > >  https://github.com/acpica/acpica/commit/d00a4eb86e64
+> > > 
+> > > We could add
+> > > 
+> > > /* Until ACPICA headers cover IORT rev. C */
+> > > #ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
+> > > #define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
+> > > #endif
+> > > 
+> > > to both files:
+> > > 
+> > >  drivers/acpi/arm64/iort.c
+> > >  drivers/iommu/arm-smmu-v3.c
+> > > 
+> > 
+> > I thought it was a solved problem (and that the IORT patch was based
+> > on Robin's workaround) but I was clearly wrong and I apologise to
+> > Will about this.
+> > 
+> > FWIW, you could add the define in include/linux/acpi_iort.h and I will
+> > remove it whenever ACPICA changes make it into the kernel.
+> 
+> Adding it there will still let depend us on acpi maintainers, while I
+> think the over 2 files might go through arm64 tree smoothly. A change
+> in acpi_iort.h also adds the definition to other archs and I don't
+> think that adding arch #ifdefs to avoid that are welcome in that
+> header file too.
+> 
+> I am going to resend my patch below with an improved wording.
+
+Here it comes:
+
+>From d210b4c540bc4adcebd51d5a87437d2049649e94 Mon Sep 17 00:00:00 2001
+From: Robert Richter <rrichter@cavium.com>
+Date: Thu, 22 Jun 2017 21:20:54 +0200
+Subject: [PATCH] iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3 IORT
+ model number definitions
+
+The model number is already defined in acpica and we are actually
+waiting for the acpi maintainers to include it:
+
+ https://github.com/acpica/acpica/commit/d00a4eb86e64
+
+Adding those temporary definitions until the change makes it into
+include/acpi/actbl2.h. Once that is done this patch can be reverted.
+
+Signed-off-by: Robert Richter <rrichter@cavium.com>
+---
+ drivers/acpi/arm64/iort.c   | 5 +++++
+ drivers/iommu/arm-smmu-v3.c | 5 +++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 797b28dc7b34..15491237a657 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -31,6 +31,11 @@
+ #define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
+ 				(1 << ACPI_IORT_NODE_SMMU_V3))
+ 
++/* Until ACPICA headers cover IORT rev. C */
++#ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
++#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
++#endif
++
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+ 	struct fwnode_handle	*fw_node;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 380969aa60d5..c759dfa7442d 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -412,6 +412,11 @@
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
++/* Until ACPICA headers cover IORT rev. C */
++#ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
++#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
++#endif
++
+ static bool disable_bypass;
+ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+-- 
+2.11.0
+
