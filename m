@@ -1,149 +1,203 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3
- IORT model number definitions
-Date: Fri, 23 Jun 2017 11:11:19 +0100
-Message-ID: <20170623101119.GB28331@red-moon>
-References: <1498133138-20244-1-git-send-email-gakula@caviumnetworks.com>
- <20170622182257.GI15336@arm.com>
- <20170622185822.GK15336@arm.com>
- <20170622193535.GA10237@rric.localdomain>
- <20170622210437.GA27861@red-moon>
- <20170623045541.GQ16981@rric.localdomain>
- <20170623045933.GR16981@rric.localdomain>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 5/8] iommu/io-pgtable-arm: Support lockless operation
+Date: Fri, 23 Jun 2017 11:35:25 +0100
+Message-ID: <7a8da378-19e2-2f35-877a-cc6ce389301a@arm.com>
+References: <cover.1498145008.git.robin.murphy@arm.com>
+	<af61929e3984a31588cab08ed84a237602b5263e.1498145008.git.robin.murphy@arm.com>
+	<20170623055326.GA2949@virtx40> <20170623085607.GC3718@virtx40>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170623045933.GR16981@rric.localdomain>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robert Richter <robert.richter@cavium.com>
-Cc: Will Deacon <will.deacon@arm.com>, Geetha sowjanya <gakula@caviumnetworks.com>, linux-arm-kernel@lists.infradead.org, robh@kernel.org, devel@acpica.org, catalin.marinas@arm.com, Charles.Garcia-Tobin@arm.com, geethasowjanya.akula@gmail.com, jcm@redhat.com, linu.cherian@cavium.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, sgoutham@cavium.com, robin.murphy@arm.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170623085607.GC3718@virtx40>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 23, 2017 at 06:59:33AM +0200, Robert Richter wrote:
-> On 23.06.17 06:55:41, Robert Richter wrote:
-> > On 22.06.17 22:04:37, Lorenzo Pieralisi wrote:
-> > > On Thu, Jun 22, 2017 at 09:35:35PM +0200, Robert Richter wrote:
-> > > > On 22.06.17 19:58:22, Will Deacon wrote:
-> > > > > On Thu, Jun 22, 2017 at 07:22:57PM +0100, Will Deacon wrote:
-> > > > > > On Thu, Jun 22, 2017 at 05:35:35PM +0530, Geetha sowjanya wrote:
-> > > > > > > Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
-> > > > > > > 1. Errata ID #74
-> > > > > > >    SMMU register alias Page 1 is not implemented
-> > > > > > > 2. Errata ID #126
-> > > > > > >    SMMU doesnt support unique IRQ lines and also MSI for gerror,
-> > > > > > >    eventq and cmdq-sync
-> > > > > > > 
-> > > > > > > The following patchset does software workaround for these two erratas.
-> > > > > > 
-> > > > > > I've picked up the first two patches, and left comments on the final patch.
-> > > > > 
-> > > > > ... except that it doesn't build:
-> > > > > 
-> > > > > 
-> > > > > drivers/acpi/arm64/iort.c: In function ‘arm_smmu_v3_resource_size’:
-> > > > > drivers/acpi/arm64/iort.c:837:21: error: ‘ACPI_IORT_SMMU_V3_CAVIUM_CN99XX’ undeclared (first use in this function)
-> > > > >   if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
-> > > > >                      ^
-> > > > > drivers/acpi/arm64/iort.c:837:21: note: each undeclared identifier is reported only once for each function it appears in
-> > > > > make[4]: *** [drivers/acpi/arm64/iort.o] Error 1
-> > > > > 
-> > > > > 
-> > > > > I don't see ACPI_IORT_SMMU_V3_CAVIUM_CN99XX defined, even in linux-next.
-> > > > > 
-> > > > > What's the plan here?
-> > > > 
-> > > > It is defined already in acpica and we actually waiting for the acpi
-> > > > maintainers to include it:
-> > > > 
-> > > >  https://github.com/acpica/acpica/commit/d00a4eb86e64
-> > > > 
-> > > > We could add
-> > > > 
-> > > > /* Until ACPICA headers cover IORT rev. C */
-> > > > #ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
-> > > > #define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
-> > > > #endif
-> > > > 
-> > > > to both files:
-> > > > 
-> > > >  drivers/acpi/arm64/iort.c
-> > > >  drivers/iommu/arm-smmu-v3.c
-> > > > 
-> > > 
-> > > I thought it was a solved problem (and that the IORT patch was based
-> > > on Robin's workaround) but I was clearly wrong and I apologise to
-> > > Will about this.
-> > > 
-> > > FWIW, you could add the define in include/linux/acpi_iort.h and I will
-> > > remove it whenever ACPICA changes make it into the kernel.
-> > 
-> > Adding it there will still let depend us on acpi maintainers, while I
-> > think the over 2 files might go through arm64 tree smoothly. A change
-> > in acpi_iort.h also adds the definition to other archs and I don't
-> > think that adding arch #ifdefs to avoid that are welcome in that
-> > header file too.
-> > 
-> > I am going to resend my patch below with an improved wording.
-> 
-> Here it comes:
-> 
-> From d210b4c540bc4adcebd51d5a87437d2049649e94 Mon Sep 17 00:00:00 2001
-> From: Robert Richter <rrichter@cavium.com>
-> Date: Thu, 22 Jun 2017 21:20:54 +0200
-> Subject: [PATCH] iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3 IORT
->  model number definitions
-> 
-> The model number is already defined in acpica and we are actually
-> waiting for the acpi maintainers to include it:
-> 
->  https://github.com/acpica/acpica/commit/d00a4eb86e64
-> 
-> Adding those temporary definitions until the change makes it into
-> include/acpi/actbl2.h. Once that is done this patch can be reverted.
-> 
-> Signed-off-by: Robert Richter <rrichter@cavium.com>
-> ---
->  drivers/acpi/arm64/iort.c   | 5 +++++
+On 23/06/17 09:56, Linu Cherian wrote:
+> On Fri Jun 23, 2017 at 11:23:26AM +0530, Linu Cherian wrote:
+>>
+>> Robin,
+>> Was trying to understand the new changes. Had few questions on 
+>> arm_lpae_install_table. 
+>>
+>> On Thu Jun 22, 2017 at 04:53:54PM +0100, Robin Murphy wrote:
+>>> For parallel I/O with multiple concurrent threads servicing the same
+>>> device (or devices, if several share a domain), serialising page table
+>>> updates becomes a massive bottleneck. On reflection, though, we don't
+>>> strictly need to do that - for valid IOMMU API usage, there are in fact
+>>> only two races that we need to guard against: multiple map requests for
+>>> different blocks within the same region, when the intermediate-level
+>>> table for that region does not yet exist; and multiple unmaps of
+>>> different parts of the same block entry. Both of those are fairly easily
+>>> solved by using a cmpxchg to install the new table, such that if we then
+>>> find that someone else's table got there first, we can simply free ours
+>>> and continue.
+>>>
+>>> Make the requisite changes such that we can withstand being called
+>>> without the caller maintaining a lock. In theory, this opens up a few
+>>> corners in which wildly misbehaving callers making nonsensical
+>>> overlapping requests might lead to crashes instead of just unpredictable
+>>> results, but correct code really does not deserve to pay a significant
+>>> performance cost for the sake of masking bugs in theoretical broken code.
+>>>
+>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>> ---
+>>>
+>>> v2:
+>>>  - Fix barriers in install_table
+>>>  - Make a few more PTE accesses with {READ,WRITE}_ONCE() just in case
+>>>  - Minor cosmetics
+>>>
+>>>  drivers/iommu/io-pgtable-arm.c | 72 +++++++++++++++++++++++++++++++++---------
+>>>  1 file changed, 57 insertions(+), 15 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+>>> index 6334f51912ea..52700fa958c2 100644
+>>> --- a/drivers/iommu/io-pgtable-arm.c
+>>> +++ b/drivers/iommu/io-pgtable-arm.c
+>>> @@ -20,6 +20,7 @@
+>>>  
+>>>  #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
+>>>  
+>>> +#include <linux/atomic.h>
+>>>  #include <linux/iommu.h>
+>>>  #include <linux/kernel.h>
+>>>  #include <linux/sizes.h>
+>>> @@ -99,6 +100,8 @@
+>>>  #define ARM_LPAE_PTE_ATTR_HI_MASK	(((arm_lpae_iopte)6) << 52)
+>>>  #define ARM_LPAE_PTE_ATTR_MASK		(ARM_LPAE_PTE_ATTR_LO_MASK |	\
+>>>  					 ARM_LPAE_PTE_ATTR_HI_MASK)
+>>> +/* Software bit for solving coherency races */
+>>> +#define ARM_LPAE_PTE_SW_SYNC		(((arm_lpae_iopte)1) << 55)
+>>>  
+>>>  /* Stage-1 PTE */
+>>>  #define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
+>>> @@ -249,15 +252,20 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
+>>>  	free_pages_exact(pages, size);
+>>>  }
+>>>  
+>>> +static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
+>>> +				struct io_pgtable_cfg *cfg)
+>>> +{
+>>> +	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
+>>> +				   sizeof(*ptep), DMA_TO_DEVICE);
+>>> +}
+>>> +
+>>>  static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+>>>  			       struct io_pgtable_cfg *cfg)
+>>>  {
+>>>  	*ptep = pte;
+>>>  
+>>>  	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
+>>> -		dma_sync_single_for_device(cfg->iommu_dev,
+>>> -					   __arm_lpae_dma_addr(ptep),
+>>> -					   sizeof(pte), DMA_TO_DEVICE);
+>>> +		__arm_lpae_sync_pte(ptep, cfg);
+>>>  }
+>>>  
+>>>  static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>> @@ -314,16 +322,30 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>>  
+>>>  static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+>>>  					     arm_lpae_iopte *ptep,
+>>> +					     arm_lpae_iopte curr,
+>>>  					     struct io_pgtable_cfg *cfg)
+>>>  {
+>>> -	arm_lpae_iopte new;
+>>> +	arm_lpae_iopte old, new;
+>>>  
+>>>  	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
+>>>  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+>>>  		new |= ARM_LPAE_PTE_NSTABLE;
+>>>  
+>>> -	__arm_lpae_set_pte(ptep, new, cfg);
+>>> -	return new;
+>>> +	/* Ensure the table itself is visible before its PTE can be */
+>>> +	wmb();
+>>
+>> Could you please give more hints on why this is required.
 
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+In theory it's possible for the write to ptep to become visible before
+the previous writes filling out the PTEs in table - if the IOMMU
+happened to speculatively walk ptep while parts of table were still sat
+in a write buffer somewhere, it could see the old contents of that page
+and potentially allocate bogus TLB entries if the stale data happened to
+look like valid PTEs. In the non-coherent case the DMA cache maintenance
+is sufficient, but otherwise we need a barrier to order writing the
+next-level PTEs strictly before writing the table PTE pointing to them,
+such that the IOMMU cannot at any point see a partially-initialised table.
 
->  drivers/iommu/arm-smmu-v3.c | 5 +++++
->  2 files changed, 10 insertions(+)
+>>> +
+>>> +	old = cmpxchg64_relaxed(ptep, curr, new);
+>>> +
+>>> +	if ((cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) ||
+>>> +	    (old & ARM_LPAE_PTE_SW_SYNC))
+>>> +		return old;
+>>> +
+>>> +	/* Even if it's not ours, there's no point waiting; just kick it */
+>>> +	__arm_lpae_sync_pte(ptep, cfg);
+>>> +	if (old == curr)
+>>> +		WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
+>>
+>> How is it ensured that the cache operations are completed before we flag them with
+>> 	ARM_LPAE_PTE_SW_SYNC. The previous version had a wmb() after the sync operation.
+
+The wmb() here was a silly oversight on my part - as Will reminded me,
+dma_sync_*() already has its own barrier to ensure completion, which is
+pretty obvious in retrospect because the entire streaming DMA would be
+totally broken otherwise.
+
+>>> +
+>>> +	return old;
+>>>  }
+>>>
+>>
 > 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 797b28dc7b34..15491237a657 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -31,6 +31,11 @@
->  #define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
->  				(1 << ACPI_IORT_NODE_SMMU_V3))
+> 
+> Observed a performance drop of close to 1G, 
+> while testing on the 10G network interface with this patch series compared to v1.
+
+Is that consistent over multiple runs? I wouldn't expect many workloads
+to be thrashing table and hugepage mappings in the same IOVA region, so
+after a point we should tend to reach a fairly steady state where we're
+only changing leaf PTEs.
+
+> Moving the wmb() as in v1 restores it back.
+
+Note that on a coherent platform like ThunderX that's as good as just
+deleting it, because you'll never execute the case below. However, on
+reflection I think it can at least safely be downgraded to dma_wmb()
+(i.e. DMB) rather than a full DSB - would you be able to test what
+difference that makes?
+
+Robin.
+
+> @@ -332,7 +332,6 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+>                 new |= ARM_LPAE_PTE_NSTABLE;
 >  
-> +/* Until ACPICA headers cover IORT rev. C */
-> +#ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
-> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
-> +#endif
-> +
->  struct iort_its_msi_chip {
->  	struct list_head	list;
->  	struct fwnode_handle	*fw_node;
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 380969aa60d5..c759dfa7442d 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -412,6 +412,11 @@
->  #define MSI_IOVA_BASE			0x8000000
->  #define MSI_IOVA_LENGTH			0x100000
+>         /* Ensure the table itself is visible before its PTE can be */
+> -       wmb()>
+>         old = cmpxchg64_relaxed(ptep, curr, new);
 >  
-> +/* Until ACPICA headers cover IORT rev. C */
-> +#ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
-> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
-> +#endif
-> +
->  static bool disable_bypass;
->  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
->  MODULE_PARM_DESC(disable_bypass,
-> -- 
-> 2.11.0
+> @@ -342,6 +341,7 @@ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+>  
+>         /* Even if it's not ours, there's no point waiting; just kick it */
+>         __arm_lpae_sync_pte(ptep, cfg);
+> +       wmb();
+>         if (old == curr)
+>                 WRITE_ONCE(*ptep, new | ARM_LPAE_PTE_SW_SYNC);
+>  
+> 
+> 
 > 
