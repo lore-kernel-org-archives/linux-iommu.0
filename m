@@ -1,150 +1,149 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v7 34/36] x86/mm: Add support to encrypt the kernel
- in-place
-Date: Fri, 23 Jun 2017 12:00:13 +0200
-Message-ID: <20170623100013.upd4or6esjvulmvg@pd.tnic>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185619.18967.38945.stgit@tlendack-t1.amdoffice.net>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3
+ IORT model number definitions
+Date: Fri, 23 Jun 2017 11:11:19 +0100
+Message-ID: <20170623101119.GB28331@red-moon>
+References: <1498133138-20244-1-git-send-email-gakula@caviumnetworks.com>
+ <20170622182257.GI15336@arm.com>
+ <20170622185822.GK15336@arm.com>
+ <20170622193535.GA10237@rric.localdomain>
+ <20170622210437.GA27861@red-moon>
+ <20170623045541.GQ16981@rric.localdomain>
+ <20170623045933.GR16981@rric.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170616185619.18967.38945.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@or>
+In-Reply-To: <20170623045933.GR16981@rric.localdomain>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robert Richter <robert.richter@cavium.com>
+Cc: Will Deacon <will.deacon@arm.com>, Geetha sowjanya <gakula@caviumnetworks.com>, linux-arm-kernel@lists.infradead.org, robh@kernel.org, devel@acpica.org, catalin.marinas@arm.com, Charles.Garcia-Tobin@arm.com, geethasowjanya.akula@gmail.com, jcm@redhat.com, linu.cherian@cavium.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, sgoutham@cavium.com, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 16, 2017 at 01:56:19PM -0500, Tom Lendacky wrote:
-> Add the support to encrypt the kernel in-place. This is done by creating
-> new page mappings for the kernel - a decrypted write-protected mapping
-> and an encrypted mapping. The kernel is encrypted by copying it through
-> a temporary buffer.
+On Fri, Jun 23, 2017 at 06:59:33AM +0200, Robert Richter wrote:
+> On 23.06.17 06:55:41, Robert Richter wrote:
+> > On 22.06.17 22:04:37, Lorenzo Pieralisi wrote:
+> > > On Thu, Jun 22, 2017 at 09:35:35PM +0200, Robert Richter wrote:
+> > > > On 22.06.17 19:58:22, Will Deacon wrote:
+> > > > > On Thu, Jun 22, 2017 at 07:22:57PM +0100, Will Deacon wrote:
+> > > > > > On Thu, Jun 22, 2017 at 05:35:35PM +0530, Geetha sowjanya wrote:
+> > > > > > > Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
+> > > > > > > 1. Errata ID #74
+> > > > > > >    SMMU register alias Page 1 is not implemented
+> > > > > > > 2. Errata ID #126
+> > > > > > >    SMMU doesnt support unique IRQ lines and also MSI for gerror,
+> > > > > > >    eventq and cmdq-sync
+> > > > > > > 
+> > > > > > > The following patchset does software workaround for these two erratas.
+> > > > > > 
+> > > > > > I've picked up the first two patches, and left comments on the final patch.
+> > > > > 
+> > > > > ... except that it doesn't build:
+> > > > > 
+> > > > > 
+> > > > > drivers/acpi/arm64/iort.c: In function ‘arm_smmu_v3_resource_size’:
+> > > > > drivers/acpi/arm64/iort.c:837:21: error: ‘ACPI_IORT_SMMU_V3_CAVIUM_CN99XX’ undeclared (first use in this function)
+> > > > >   if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
+> > > > >                      ^
+> > > > > drivers/acpi/arm64/iort.c:837:21: note: each undeclared identifier is reported only once for each function it appears in
+> > > > > make[4]: *** [drivers/acpi/arm64/iort.o] Error 1
+> > > > > 
+> > > > > 
+> > > > > I don't see ACPI_IORT_SMMU_V3_CAVIUM_CN99XX defined, even in linux-next.
+> > > > > 
+> > > > > What's the plan here?
+> > > > 
+> > > > It is defined already in acpica and we actually waiting for the acpi
+> > > > maintainers to include it:
+> > > > 
+> > > >  https://github.com/acpica/acpica/commit/d00a4eb86e64
+> > > > 
+> > > > We could add
+> > > > 
+> > > > /* Until ACPICA headers cover IORT rev. C */
+> > > > #ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
+> > > > #define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
+> > > > #endif
+> > > > 
+> > > > to both files:
+> > > > 
+> > > >  drivers/acpi/arm64/iort.c
+> > > >  drivers/iommu/arm-smmu-v3.c
+> > > > 
+> > > 
+> > > I thought it was a solved problem (and that the IORT patch was based
+> > > on Robin's workaround) but I was clearly wrong and I apologise to
+> > > Will about this.
+> > > 
+> > > FWIW, you could add the define in include/linux/acpi_iort.h and I will
+> > > remove it whenever ACPICA changes make it into the kernel.
+> > 
+> > Adding it there will still let depend us on acpi maintainers, while I
+> > think the over 2 files might go through arm64 tree smoothly. A change
+> > in acpi_iort.h also adds the definition to other archs and I don't
+> > think that adding arch #ifdefs to avoid that are welcome in that
+> > header file too.
+> > 
+> > I am going to resend my patch below with an improved wording.
 > 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> Here it comes:
+> 
+> From d210b4c540bc4adcebd51d5a87437d2049649e94 Mon Sep 17 00:00:00 2001
+> From: Robert Richter <rrichter@cavium.com>
+> Date: Thu, 22 Jun 2017 21:20:54 +0200
+> Subject: [PATCH] iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3 IORT
+>  model number definitions
+> 
+> The model number is already defined in acpica and we are actually
+> waiting for the acpi maintainers to include it:
+> 
+>  https://github.com/acpica/acpica/commit/d00a4eb86e64
+> 
+> Adding those temporary definitions until the change makes it into
+> include/acpi/actbl2.h. Once that is done this patch can be reverted.
+> 
+> Signed-off-by: Robert Richter <rrichter@cavium.com>
 > ---
->  arch/x86/include/asm/mem_encrypt.h |    6 +
->  arch/x86/mm/Makefile               |    2 
->  arch/x86/mm/mem_encrypt.c          |  314 ++++++++++++++++++++++++++++++++++++
->  arch/x86/mm/mem_encrypt_boot.S     |  150 +++++++++++++++++
->  4 files changed, 472 insertions(+)
->  create mode 100644 arch/x86/mm/mem_encrypt_boot.S
+>  drivers/acpi/arm64/iort.c   | 5 +++++
+
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+
+>  drivers/iommu/arm-smmu-v3.c | 5 +++++
+>  2 files changed, 10 insertions(+)
 > 
-> diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-> index af835cf..7da6de3 100644
-> --- a/arch/x86/include/asm/mem_encrypt.h
-> +++ b/arch/x86/include/asm/mem_encrypt.h
-> @@ -21,6 +21,12 @@
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 797b28dc7b34..15491237a657 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -31,6 +31,11 @@
+>  #define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
+>  				(1 << ACPI_IORT_NODE_SMMU_V3))
 >  
->  extern unsigned long sme_me_mask;
->  
-> +void sme_encrypt_execute(unsigned long encrypted_kernel_vaddr,
-> +			 unsigned long decrypted_kernel_vaddr,
-> +			 unsigned long kernel_len,
-> +			 unsigned long encryption_wa,
-> +			 unsigned long encryption_pgd);
-> +
->  void __init sme_early_encrypt(resource_size_t paddr,
->  			      unsigned long size);
->  void __init sme_early_decrypt(resource_size_t paddr,
-> diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
-> index 9e13841..0633142 100644
-> --- a/arch/x86/mm/Makefile
-> +++ b/arch/x86/mm/Makefile
-> @@ -38,3 +38,5 @@ obj-$(CONFIG_NUMA_EMU)		+= numa_emulation.o
->  obj-$(CONFIG_X86_INTEL_MPX)	+= mpx.o
->  obj-$(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS) += pkeys.o
->  obj-$(CONFIG_RANDOMIZE_MEMORY) += kaslr.o
-> +
-> +obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_boot.o
-> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-> index 842c8a6..6e87662 100644
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -24,6 +24,8 @@
->  #include <asm/setup.h>
->  #include <asm/bootparam.h>
->  #include <asm/set_memory.h>
-> +#include <asm/cacheflush.h>
-> +#include <asm/sections.h>
->  
->  /*
->   * Since SME related variables are set early in the boot process they must
-> @@ -209,8 +211,320 @@ void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
->  	set_memory_decrypted((unsigned long)vaddr, size >> PAGE_SHIFT);
->  }
->  
-> +static void __init sme_clear_pgd(pgd_t *pgd_base, unsigned long start,
-> +				 unsigned long end)
-> +{
-> +	unsigned long pgd_start, pgd_end, pgd_size;
-> +	pgd_t *pgd_p;
-> +
-> +	pgd_start = start & PGDIR_MASK;
-> +	pgd_end = end & PGDIR_MASK;
-> +
-> +	pgd_size = (((pgd_end - pgd_start) / PGDIR_SIZE) + 1);
-> +	pgd_size *= sizeof(pgd_t);
-> +
-> +	pgd_p = pgd_base + pgd_index(start);
-> +
-> +	memset(pgd_p, 0, pgd_size);
-> +}
-> +
-> +#ifndef CONFIG_X86_5LEVEL
-> +#define native_make_p4d(_x)	(p4d_t) { .pgd = native_make_pgd(_x) }
+> +/* Until ACPICA headers cover IORT rev. C */
+> +#ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
+> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
 > +#endif
-
-Huh, why isn't this in arch/x86/include/asm/pgtable_types.h in the #else
-branch of #if CONFIG_PGTABLE_LEVELS > 4 ?
-
-Also
-
-ERROR: Macros with complex values should be enclosed in parentheses
-#105: FILE: arch/x86/mm/mem_encrypt.c:232:
-+#define native_make_p4d(_x)    (p4d_t) { .pgd = native_make_pgd(_x) }
-
-so why isn't it a function?
-
 > +
-> +#define PGD_FLAGS	_KERNPG_TABLE_NOENC
-> +#define P4D_FLAGS	_KERNPG_TABLE_NOENC
-> +#define PUD_FLAGS	_KERNPG_TABLE_NOENC
-> +#define PMD_FLAGS	(__PAGE_KERNEL_LARGE_EXEC & ~_PAGE_GLOBAL)
+>  struct iort_its_msi_chip {
+>  	struct list_head	list;
+>  	struct fwnode_handle	*fw_node;
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 380969aa60d5..c759dfa7442d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -412,6 +412,11 @@
+>  #define MSI_IOVA_BASE			0x8000000
+>  #define MSI_IOVA_LENGTH			0x100000
+>  
+> +/* Until ACPICA headers cover IORT rev. C */
+> +#ifndef ACPI_IORT_SMMU_V3_CAVIUM_CN99XX
+> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
+> +#endif
 > +
-> +static void __init *sme_populate_pgd(pgd_t *pgd_base, void *pgtable_area,
-> +				     unsigned long vaddr, pmdval_t pmd_val)
-> +{
-> +	pgd_t *pgd_p;
-> +	p4d_t *p4d_p;
-> +	pud_t *pud_p;
-> +	pmd_t *pmd_p;
-> +
-> +	pgd_p = pgd_base + pgd_index(vaddr);
-> +	if (native_pgd_val(*pgd_p)) {
-> +		if (IS_ENABLED(CONFIG_X86_5LEVEL))
-
-Err, I don't understand: so this is a Kconfig symbol and when it is
-enabled at build time, you do a 5level pagetable.
-
-But you can't stick a 5level pagetable to a hardware which doesn't know
-about it.
-
-Or do you mean that p4d layer folding at runtime to happen? (I admit, I
-haven't looked at that in detail.) But then I'd hope that the generic
-macros/functions would give you the ability to not care whether we have
-a p4d or not and not add a whole bunch of ifdeffery to this code.
-
-Hmmm.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+>  static bool disable_bypass;
+>  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+>  MODULE_PARM_DESC(disable_bypass,
+> -- 
+> 2.11.0
+> 
