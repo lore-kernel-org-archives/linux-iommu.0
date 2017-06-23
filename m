@@ -1,55 +1,78 @@
-From: Sinan Kaya <okaya@codeaurora.org>
-Subject: Re: [RFC,20/30] iommu/arm-smmu-v3: Enable PCI PASID in masters
-Date: Fri, 23 Jun 2017 10:39:06 -0400
-Message-ID: <fad6510f-922a-550b-0429-bc59f857c307@codeaurora.org>
-References: <20170227195441.5170-21-jean-philippe.brucker@arm.com>
- <f18163da-30a6-a7d4-0a2c-bca4fc1b0fff@codeaurora.org>
+From: shameer <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v3 0/2] iommu/smmu-v3: Workaround for hisilicon 161010801 erratum(reserve HW MSI)
+Date: Fri, 23 Jun 2017 15:57:59 +0100
+Message-ID: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <f18163da-30a6-a7d4-0a2c-bca4fc1b0fff@codeaurora.org>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <Jean-Philippe.Brucker@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, shameer <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
- 
-> On 2/27/2017 2:54 PM, Jean-Philippe Brucker wrote:
-> Enable PASID for PCI devices that support it.
->
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 63 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 499dc1cd07eb..37fd061405e9 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -730,6 +730,8 @@ struct arm_smmu_master_data {
->  
->  	struct arm_smmu_stream		*streams;
->  	struct rb_root			contexts;
-> +
-> +	u32				avail_contexts;
->  };
->  
+On certain HiSilicon platforms (Hip06/Hip07) the GIC ITS and
+PCIe RC deviates from the standard implementation and this breaks
+PCIe MSI functionality when SMMU is enabled.
 
-According to the PASID ECN here (https://pcisig.com/sites/default/files/specification_documents/ECN-PASID-ATS-2011-03-31.pdf),
-PASID should be enabled only if all switches between the root port and
-a device support TLP prefix. 
- 
-I'm only seeing a call to pci_enable_pasid() in this patch but I don't
-see anybody checking for TLP prefix support on the hierarchy.
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-This could potentially be an addition to the PCI core code.
+This patch implements a ACPI table based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
 
-Sinan
+To implement this quirk, the following changes are incorporated:
+
+1. Added a generic helper function to IORT code to retrieve and
+   reserve the HW ITS address regions.
+2. Added quirk to SMMUv3 to reserve HW ITS address regions based
+   on IORT SMMUv3 model.
+
+This is based on the following patches:
+1. https://patchwork.kernel.org/patch/9740733/
+2. https://patchwork.kernel.org/patch/9730491/
+
+Thanks,
+Shameer
+
+Changelog:
+
+v2 --> v3
+Addressed comments from Lorenzo and Robin:
+-Removed dev_is_pci() check in smmuV3 driver.
+-Don't treat device not having an ITS mapping as an error in
+ iort helper function.
+
+v1 --> v2
+-patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+
+RFCv2 -->PATCH
+-Incorporated Lorenzo's review comments.
+
+RFC v1 --> RFC v2
+Based on Robin's review comments,
+-Removed  the generic erratum framework.
+-Using IORT/MADT tables to retrieve the ITS base addr instead
+ of vendor specific CSRT table.
+
+shameer (2):
+  acpi:iort: Add an IORT helper function to reserve HW ITS address
+    regions for IOMMU drivers
+  iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+
+ drivers/acpi/arm64/iort.c        | 91 ++++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/arm-smmu-v3.c      | 30 +++++++++++--
+ drivers/irqchip/irq-gic-v3-its.c |  3 +-
+ include/linux/acpi_iort.h        |  7 +++-
+ 4 files changed, 122 insertions(+), 9 deletions(-)
 
 -- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+1.9.1
+
+
