@@ -1,165 +1,69 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 4/5] iommu/arm-smmu: add support for unmap a memory range with
-	only one tlb sync
-Date: Mon, 26 Jun 2017 21:38:49 +0800
-Message-ID: <1498484330-10840-5-git-send-email-thunder.leizhen@huawei.com>
-References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: replace writel with writel_relaxed
+ in queue_inc_prod
+Date: Mon, 26 Jun 2017 21:41:47 +0800
+Message-ID: <59510F1B.60304@huawei.com>
+References: <1497956694-11784-1-git-send-email-thunder.leizhen@huawei.com>
+ <acafb87c-4ba9-4a44-f868-c8f882717ab1@arm.com> <5949CBB7.1030908@huawei.com>
+ <20170621090803.GB3768@arm.com> <59510C20.6000300@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498484330-10840-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <59510C20.6000300@huawei.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Hanjun Guo <guohanjun@huawei.com>, linux-kernel <linux-kernel@vger.kernel.org>, Xinwei Hu <huxinwei@huawei.com>, iommu <iommu@lists.linux-foundation.org>, Zefan Li <lizefan@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-1. remove tlb_sync operation in "unmap"
-2. make sure each "unmap" will always be followed by tlb sync operation
 
-The resultant effect is as below:
-	unmap memory page-1
-	tlb invalidate page-1
-	...
-	unmap memory page-n
-	tlb invalidate page-n
-	tlb sync
 
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu.c           | 10 ++++++++++
- drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++++++++-----------
- 2 files changed, 31 insertions(+), 11 deletions(-)
+On 2017/6/26 21:29, Leizhen (ThunderTown) wrote:
+> 
+> 
+> On 2017/6/21 17:08, Will Deacon wrote:
+>> On Wed, Jun 21, 2017 at 09:28:23AM +0800, Leizhen (ThunderTown) wrote:
+>>> On 2017/6/20 19:35, Robin Murphy wrote:
+>>>> On 20/06/17 12:04, Zhen Lei wrote:
+>>>>> This function is protected by spinlock, and the latter will do memory
+>>>>> barrier implicitly. So that we can safely use writel_relaxed. In fact, the
+>>>>> dmb operation will lengthen the time protected by lock, which indirectly
+>>>>> increase the locking confliction in the stress scene.
+>>>>
+>>>> If you remove the DSB between writing the commands (to Normal memory)
+>>>> and writing the pointer (to Device memory), how can you guarantee that
+>>>> the complete command is visible to the SMMU and it isn't going to try to
+>>>> consume stale memory contents? The spinlock is irrelevant since it's
+>>>> taken *before* the command is written.
+>>> OK, I see, thanks. Let's me see if there are any other methods. And I think
+>>> that this may should be done well by hardware.
+>>
+>> FWIW, I did use the _relaxed variants wherever I could when I wrote the
+>> driver. There might, of course, be bugs, but it's not like the normal case
+>> for drivers where the author didn't consider the _relaxed accessors
+>> initially.
+> A good news. I got a new idea and I will post v2 later.
+[PATCH 0/5] arm-smmu: performance optimization
+[PATCH 1/5] iommu/arm-smmu-v3: put off the execution of TLBI* to reduce lock confliction
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index b8d069a..74ca6eb 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1402,6 +1402,15 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return ops->unmap(ops, iova, size);
- }
- 
-+static void arm_smmu_unmap_tlb_sync(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
-+
-+	if (ops && ops->unmap_tlb_sync)
-+		ops->unmap_tlb_sync(ops);
-+}
-+
- static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 					      dma_addr_t iova)
- {
-@@ -1698,6 +1707,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.attach_dev		= arm_smmu_attach_dev,
- 	.map			= arm_smmu_map,
- 	.unmap			= arm_smmu_unmap,
-+	.unmap_tlb_sync		= arm_smmu_unmap_tlb_sync,
- 	.map_sg			= default_iommu_map_sg,
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index a55fd38..325c1c6 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -370,6 +370,8 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
- 
- 	for (i = 0; i < num_entries; i++)
- 		if (ARM_V7S_PTE_IS_TABLE(ptep[i], lvl)) {
-+			size_t unmapped;
-+
- 			/*
- 			 * We need to unmap and free the old table before
- 			 * overwriting it with a block entry.
-@@ -378,8 +380,10 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
- 			size_t sz = ARM_V7S_BLOCK_SIZE(lvl);
- 
- 			tblp = ptep - ARM_V7S_LVL_IDX(iova, lvl);
--			if (WARN_ON(__arm_v7s_unmap(data, iova + i * sz,
--						    sz, lvl, tblp) != sz))
-+			unmapped = __arm_v7s_unmap(data, iova + i * sz,
-+						    sz, lvl, tblp);
-+			io_pgtable_tlb_sync(&data->iop);
-+			if (WARN_ON(unmapped != sz))
- 				return -EINVAL;
- 		} else if (ptep[i]) {
- 			/* We require an unmap first */
-@@ -626,7 +630,6 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
- 				/* Also flush any partial walks */
- 				io_pgtable_tlb_add_flush(iop, iova, blk_size,
- 					ARM_V7S_BLOCK_SIZE(lvl + 1), false);
--				io_pgtable_tlb_sync(iop);
- 				ptep = iopte_deref(pte[i], lvl);
- 				__arm_v7s_free_table(ptep, lvl + 1, data);
- 			} else {
-@@ -653,13 +656,15 @@ static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 			 size_t size)
- {
- 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
--	size_t unmapped;
- 
--	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
--	if (unmapped)
--		io_pgtable_tlb_sync(&data->iop);
-+	return __arm_v7s_unmap(data, iova, size, 1, data->pgd);
-+}
-+
-+static void arm_v7s_unmap_tlb_sync(struct io_pgtable_ops *ops)
-+{
-+	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 
--	return unmapped;
-+	io_pgtable_tlb_sync(&data->iop);
- }
- 
- static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
-@@ -724,6 +729,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 	data->iop.ops = (struct io_pgtable_ops) {
- 		.map		= arm_v7s_map,
- 		.unmap		= arm_v7s_unmap,
-+		.unmap_tlb_sync	= arm_v7s_unmap_tlb_sync,
- 		.iova_to_phys	= arm_v7s_iova_to_phys,
- 	};
- 
-@@ -822,7 +828,7 @@ static int __init arm_v7s_do_selftests(void)
- 		.quirks = IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA,
- 		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	};
--	unsigned int iova, size, iova_start;
-+	unsigned int iova, size, unmapped, iova_start;
- 	unsigned int i, loopnr = 0;
- 
- 	selftest_running = true;
-@@ -877,7 +883,9 @@ static int __init arm_v7s_do_selftests(void)
- 	size = 1UL << __ffs(cfg.pgsize_bitmap);
- 	while (i < loopnr) {
- 		iova_start = i * SZ_16M;
--		if (ops->unmap(ops, iova_start + size, size) != size)
-+		unmapped = ops->unmap(ops, iova_start + size, size);
-+		ops->unmap_tlb_sync(ops);
-+		if (unmapped != size)
- 			return __FAIL(ops);
- 
- 		/* Remap of partial unmap */
-@@ -896,7 +904,9 @@ static int __init arm_v7s_do_selftests(void)
- 	while (i != BITS_PER_LONG) {
- 		size = 1UL << i;
- 
--		if (ops->unmap(ops, iova, size) != size)
-+		unmapped = ops->unmap(ops, iova, size);
-+		ops->unmap_tlb_sync(ops);
-+		if (unmapped != size)
- 			return __FAIL(ops);
- 
- 		if (ops->iova_to_phys(ops, iova + 42))
+I just sent.
+
+> 
+>>
+>> Will
+>>
+>> .
+>>
+> 
+
 -- 
-2.5.0
+Thanks!
+BestRegards
