@@ -1,11 +1,14 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 0/5] arm-smmu: performance optimization
-Date: Mon, 26 Jun 2017 21:38:45 +0800
-Message-ID: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH 5/5] iommu/io-pgtable: delete member tlb_sync_pending of
+	struct io_pgtable
+Date: Mon, 26 Jun 2017 21:38:50 +0800
+Message-ID: <1498484330-10840-6-git-send-email-thunder.leizhen@huawei.com>
+References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1498484330-10840-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,33 +22,51 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-z
 Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-I described the optimization more detail in patch 1 and 2, and patch 3-5 are
-the implementation on arm-smmu/arm-smmu-v3 of patch 2.
+This member is unused now, because the previous patches ensured that each
+unmap will always be followed by tlb sync operation.
 
-Patch 1 is v2. In v1, I directly replaced writel with writel_relaxed in
-queue_inc_prod. But Robin figured that it may lead SMMU consume stale
-memory contents. I thought more than 3 whole days and got this one.
+By the way, ->tlb_flush_all executes tlb_sync by itself.
 
-This patchset is based on Robin Murphy's [PATCH v2 0/8] io-pgtable lock removal.
+Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/io-pgtable.h | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-Zhen Lei (5):
-  iommu/arm-smmu-v3: put off the execution of TLBI* to reduce lock
-    confliction
-  iommu: add a new member unmap_tlb_sync into struct iommu_ops
-  iommu/arm-smmu-v3: add support for unmap an iova range with only one
-    tlb sync
-  iommu/arm-smmu: add support for unmap a memory range with only one tlb
-    sync
-  iommu/io-pgtable: delete member tlb_sync_pending of struct io_pgtable
-
- drivers/iommu/arm-smmu-v3.c        | 52 ++++++++++++++++++++++++++++++++++----
- drivers/iommu/arm-smmu.c           | 10 ++++++++
- drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++--------
- drivers/iommu/io-pgtable-arm.c     | 30 ++++++++++++++--------
- drivers/iommu/io-pgtable.h         |  9 ++-----
- drivers/iommu/iommu.c              |  3 +++
- include/linux/iommu.h              |  1 +
- 7 files changed, 104 insertions(+), 33 deletions(-)
-
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index 7b3fc04..43ddf1f 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -166,7 +166,6 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+ struct io_pgtable {
+ 	enum io_pgtable_fmt	fmt;
+ 	void			*cookie;
+-	bool			tlb_sync_pending;
+ 	struct io_pgtable_cfg	cfg;
+ 	struct io_pgtable_ops	ops;
+ };
+@@ -176,22 +175,17 @@ struct io_pgtable {
+ static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
+ {
+ 	iop->cfg.tlb->tlb_flush_all(iop->cookie);
+-	iop->tlb_sync_pending = true;
+ }
+ 
+ static inline void io_pgtable_tlb_add_flush(struct io_pgtable *iop,
+ 		unsigned long iova, size_t size, size_t granule, bool leaf)
+ {
+ 	iop->cfg.tlb->tlb_add_flush(iova, size, granule, leaf, iop->cookie);
+-	iop->tlb_sync_pending = true;
+ }
+ 
+ static inline void io_pgtable_tlb_sync(struct io_pgtable *iop)
+ {
+-	if (iop->tlb_sync_pending) {
+-		iop->cfg.tlb->tlb_sync(iop->cookie);
+-		iop->tlb_sync_pending = false;
+-	}
++	iop->cfg.tlb->tlb_sync(iop->cookie);
+ }
+ 
+ /**
 -- 
 2.5.0
