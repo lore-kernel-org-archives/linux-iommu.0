@@ -1,68 +1,56 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 0/8] io-pgtable lock removal
-Date: Mon, 26 Jun 2017 21:19:40 +0800
-Message-ID: <595109EC.5000201@huawei.com>
-References: <cover.1498145008.git.robin.murphy@arm.com>
-	<61b7b953-5bf4-eb45-c3e8-b4491e8fdca7@huawei.com>
-	<f694a247-9006-3a3c-8a77-209b158eabf3@arm.com>
-	<9bbf18c7-34ba-6e94-53bd-3f75059c1bb2@huawei.com>
-	<a75e4c19-e393-f030-6927-debae27957eb@arm.com>
-	<15e7ce0a-bf4b-cc77-3600-c37ed865a4d7@huawei.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: replace writel with writel_relaxed
+ in queue_inc_prod
+Date: Mon, 26 Jun 2017 21:29:04 +0800
+Message-ID: <59510C20.6000300@huawei.com>
+References: <1497956694-11784-1-git-send-email-thunder.leizhen@huawei.com>
+ <acafb87c-4ba9-4a44-f868-c8f882717ab1@arm.com> <5949CBB7.1030908@huawei.com>
+ <20170621090803.GB3768@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <15e7ce0a-bf4b-cc77-3600-c37ed865a4d7-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170621090803.GB3768@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Hanjun Guo <guohanjun@huawei.com>, linux-kernel <linux-kernel@vger.kernel.org>, Xinwei Hu <huxinwei@huawei.com>, iommu <iommu@lists.linux-foundation.org>, Zefan Li <lizefan@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 2017/6/26 21:12, John Garry wrote:
-> 
+On 2017/6/21 17:08, Will Deacon wrote:
+> On Wed, Jun 21, 2017 at 09:28:23AM +0800, Leizhen (ThunderTown) wrote:
+>> On 2017/6/20 19:35, Robin Murphy wrote:
+>>> On 20/06/17 12:04, Zhen Lei wrote:
+>>>> This function is protected by spinlock, and the latter will do memory
+>>>> barrier implicitly. So that we can safely use writel_relaxed. In fact, the
+>>>> dmb operation will lengthen the time protected by lock, which indirectly
+>>>> increase the locking confliction in the stress scene.
 >>>
->>> I saw Will has already sent the pull request. But, FWIW, we are seeing
->>> roughly the same performance as v1 patchset. For PCI NIC, Zhou again
->>> found performance drop goes from ~15->8% with SMMU enabled, and for
->>> integrated storage controller [platform device], we still see a drop of
->>> about 50%, depending on datarates (Leizhen has been working on fixing
->>> this).
->>
->> Thanks for confirming. Following Joerg's suggestion that the storage
->> workloads may still depend on rbtree performance - it had slipped my
->> mind that even with small block sizes those could well be grouped into
->> scatterlists large enough to trigger a >64-page IOVA allocation - I've
->> taken the liberty of cooking up a simplified version of Leizhen's rbtree
->> optimisation series in the iommu/iova branch of my tree. I'll follow up
->> on that after the merge window, but if anyone wants to play with it in
->> the meantime feel free.
-The main problem is lock confliction of cmd queue. I have prepared my patchset,
-I will send it later.
+>>> If you remove the DSB between writing the commands (to Normal memory)
+>>> and writing the pointer (to Device memory), how can you guarantee that
+>>> the complete command is visible to the SMMU and it isn't going to try to
+>>> consume stale memory contents? The spinlock is irrelevant since it's
+>>> taken *before* the command is written.
+>> OK, I see, thanks. Let's me see if there are any other methods. And I think
+>> that this may should be done well by hardware.
+> 
+> FWIW, I did use the _relaxed variants wherever I could when I wrote the
+> driver. There might, of course, be bugs, but it's not like the normal case
+> for drivers where the author didn't consider the _relaxed accessors
+> initially.
+A good news. I got a new idea and I will post v2 later.
 
 > 
-> Just a reminder that we did also see poor performance with our integrated NIC on your v1 patchset also (I can push for v2 patchset testing, but expect the same).
-> 
-> We might be able to now include a LSI 3108 PCI SAS card in our testing also to give a broader set of results.
-> 
-> John
-> 
->>
->> Robin.
->>
->> .
->>
-> 
-> 
+> Will
 > 
 > .
 > 
