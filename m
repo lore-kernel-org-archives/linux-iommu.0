@@ -1,65 +1,71 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: DMA_ATTR_WEAK_ORDERING defintion, was Re: [PATCH] nvme: set
- DMA_ATTR_WEAK_ORDERING attribute on dma buffers
-Date: Mon, 26 Jun 2017 11:15:43 +0200
-Message-ID: <CAK8P3a0itukwNkPk-Yui6juJXt5QiQT6+FYxP12or2wt5jDhLw@mail.gmail.com>
-References: <1497645290-31041-1-git-send-email-alan.adamson@oracle.com>
- <20170617115703.GA13002@lst.de> <6a32f30b-433a-9857-164f-1717405a6082@oracle.com>
- <20170624073539.GE14580@lst.de>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH v2] iommu/amd: Fix interrupt remapping when disable guest_mode
+Date: Mon, 26 Jun 2017 04:28:04 -0500
+Message-ID: <1498469284-85652-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170624073539.GE14580@lst.de>
-Sender: linux-pci-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Alan Adamson <alan.adamson@oracle.com>, Keith Busch <keith.busch@intel.com>, Jens Axboe <axboe@fb.com>, linux-nvme@lists.infradead.org, Sagi Grimberg <sagi@grimberg.me>, linux-pci <linux-pci@vger.kernel.org>, Mark Nelson <markn@au1.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Jun 24, 2017 at 9:35 AM, Christoph Hellwig <hch@lst.de> wrote:
-> I always assumed that our streaming mappings are relaxed order for
-> TLP anyway.  And at very least Documentation/DMA-attributes.txt seems
-> to imply something different:
->
->
->   DMA_ATTR_WEAK_ORDERING
->   ----------------------
->
->   DMA_ATTR_WEAK_ORDERING specifies that reads and writes to the mapping
->   may be weakly ordered, that is that reads and writes may pass each other.
->
-> Which to me suggest host reads, which also makes me wonder why these
-> would even apply to our streaming mappings.
->
-> Adding the powerpc folks that added the DMA_ATTR_WEAK_ORDERING flag
-> originally back in 2008, but not actual users as far as I can tell -
-> those are all new and from the sparc gang, except for the noveau
-> driver, which is a bit older but only uses for dma_alloc_attrs, where
-> the original description makes sense to me.
+Pass-through devices to VM guest can get updated IRQ affinity
+information via irq_set_affinity() when not running in guest mode.
+Currently, AMD IOMMU driver in GA mode ignores the updated information
+if the pass-through device is setup to use vAPIC regardless of guest_mode.
+This could cause invalid interrupt remapping.
 
-I suspect people have applied the same name for different things over time.
+Also, the guest_mode bit should be set and cleared only when
+SVM updates posted-interrupt interrupt remapping information.
 
-When we added it in 2008, there was one specific use case, improving
-throughput on infiniband, iirc using the mthca device driver. In the Cell
-IOMMU, this attribute causes concurrent DMA transfers on PCIe
-devices to disregard the stricter PCI ordering rules: multiple transfers
-could be initiated together and complete in an arbitrary order depending
-on e.g. I/O page faults in the IOMMU. Using the dma attributes, this
-could be controlled to apply only to certain transfers, so a completion
-queue DMA would still be ordered with regard to other transfers, as it would
-not come with that attribute.
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+Changes in v2:
+  * Fix compiler warning of unused variable 'dev_data' in
+    irte_ga_prepare().
 
-There are two things that I don't remember unfortunately.
+ drivers/iommu/amd_iommu.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-a) why this patch seems to have never made it into the mainline kernel:
-http://lists.openfabrics.org/pipermail/general/2008-October/055006.html
-We probably had it added to both OFED and the supported distros at
-the time (RHEL, Fedora, SLES, all in versions I don't remember any
-more)
-
-b) How this relates to the PCIe relaxed ordering flag on DMA transfers.
-It's possible that the hardware later learned to correctly set the
-flag on the actual transfer to have the same effect, or it's possible
-that we had to add the dma_alloc_attr() interface specifically because
-the hardware could not do this for some but not other transfers.
-
-      Arnd
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index b17536d6..3f25d88 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3879,11 +3879,9 @@ static void irte_ga_prepare(void *entry,
+ 			    u8 vector, u32 dest_apicid, int devid)
+ {
+ 	struct irte_ga *irte = (struct irte_ga *) entry;
+-	struct iommu_dev_data *dev_data = search_dev_data(devid);
+ 
+ 	irte->lo.val                      = 0;
+ 	irte->hi.val                      = 0;
+-	irte->lo.fields_remap.guest_mode  = dev_data ? dev_data->use_vapic : 0;
+ 	irte->lo.fields_remap.int_type    = delivery_mode;
+ 	irte->lo.fields_remap.dm          = dest_mode;
+ 	irte->hi.fields.vector            = vector;
+@@ -3939,10 +3937,10 @@ static void irte_ga_set_affinity(void *entry, u16 devid, u16 index,
+ 	struct irte_ga *irte = (struct irte_ga *) entry;
+ 	struct iommu_dev_data *dev_data = search_dev_data(devid);
+ 
+-	if (!dev_data || !dev_data->use_vapic) {
++	if (!dev_data || !dev_data->use_vapic ||
++	    !irte->lo.fields_remap.guest_mode) {
+ 		irte->hi.fields.vector = vector;
+ 		irte->lo.fields_remap.destination = dest_apicid;
+-		irte->lo.fields_remap.guest_mode = 0;
+ 		modify_irte_ga(devid, index, irte, NULL);
+ 	}
+ }
+-- 
+1.8.3.1
