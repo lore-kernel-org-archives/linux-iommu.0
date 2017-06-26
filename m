@@ -1,79 +1,51 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 2/5] iommu: add a new member unmap_tlb_sync into struct iommu_ops
-Date: Mon, 26 Jun 2017 21:38:47 +0800
-Message-ID: <1498484330-10840-3-git-send-email-thunder.leizhen@huawei.com>
-References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 0/5] arm-smmu: performance optimization
+Date: Mon, 26 Jun 2017 21:38:45 +0800
+Message-ID: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>, John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-An iova range may contain many pages/blocks, especially for the case of
-unmap_sg. Currently, for each page/block unmapping, a tlb invalidation
-operation will be followed and wait(called tlb_sync) until the operation's
-over. But actually we only need one tlb_sync in the last stage. Look at
-the loop in function iommu_unmap:
-	while (unmapped < size) {
-		...
-		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
-		...
-	}
-It's not a good idea to add the tlb_sync in domain->ops->unmap.
+I described the optimization more detail in patch 1 and 2, and patch 3-5 are
+the implementation on arm-smmu/arm-smmu-v3 of patch 2.
 
-There are many profits, below actions can be reduced:
-1. iommu hardware is a shared resource for cpus, for the tlb_sync operation,
-   lock protection is needed.
-2. iommu hardware is not inside CPU, to start tlb_sync and check it finished
-   may take a lot of time.
+Patch 1 is v2. In v1, I directly replaced writel with writel_relaxed in
+queue_inc_prod. But Robin figured that it may lead SMMU consume stale
+memory contents. I thought more than 3 whole days and got this one.
 
-Some people might ask: Is it safe to do so? The answer is yes. The standard
-processing flow is:
-	alloc iova
-	map
-	process data
-	unmap
-	tlb invalidation and sync
-	free iova
+This patchset is based on Robin Murphy's [PATCH v2 0/8] io-pgtable lock removal.
 
-What should be guaranteed is: "free iova" action is behind "unmap" and "tlbi
-operation" action, that is what we are doing right now. This ensures that:
-all TLBs of an iova-range have been invalidated before the iova reallocated.
+Zhen Lei (5):
+  iommu/arm-smmu-v3: put off the execution of TLBI* to reduce lock
+    confliction
+  iommu: add a new member unmap_tlb_sync into struct iommu_ops
+  iommu/arm-smmu-v3: add support for unmap an iova range with only one
+    tlb sync
+  iommu/arm-smmu: add support for unmap a memory range with only one tlb
+    sync
+  iommu/io-pgtable: delete member tlb_sync_pending of struct io_pgtable
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/iommu.c | 3 +++
- include/linux/iommu.h | 1 +
- 2 files changed, 4 insertions(+)
+ drivers/iommu/arm-smmu-v3.c        | 52 ++++++++++++++++++++++++++++++++++----
+ drivers/iommu/arm-smmu.c           | 10 ++++++++
+ drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++--------
+ drivers/iommu/io-pgtable-arm.c     | 30 ++++++++++++++--------
+ drivers/iommu/io-pgtable.h         |  9 ++-----
+ drivers/iommu/iommu.c              |  3 +++
+ include/linux/iommu.h              |  1 +
+ 7 files changed, 104 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cf7ca7e..01e91a8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1610,6 +1610,9 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 		unmapped += unmapped_page;
- 	}
- 
-+	if (domain->ops->unmap_tlb_sync)
-+		domain->ops->unmap_tlb_sync(domain);
-+
- 	trace_unmap(orig_iova, size, unmapped);
- 	return unmapped;
- }
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2cb54ad..5964121 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -197,6 +197,7 @@ struct iommu_ops {
- 		   phys_addr_t paddr, size_t size, int prot);
- 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
- 		     size_t size);
-+	void (*unmap_tlb_sync)(struct iommu_domain *domain);
- 	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
- 			 struct scatterlist *sg, unsigned int nents, int prot);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
 -- 
 2.5.0
