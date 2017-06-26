@@ -1,10 +1,17 @@
-From: Christian Kauhaus <kc-4ImjS3E6Ur3YxmODkEiZ1Q@public.gmane.org>
-Subject: Kernel crashes in iommu_flush_iotlb_psi()
-Date: Mon, 26 Jun 2017 17:15:05 +0200
-Message-ID: <349d94bb-d51c-f2dc-da4a-779ae85b50e0@flyingcircus.io>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC 5/9] iommu: Introduce fault notifier API
+Date: Mon, 26 Jun 2017 08:27:52 -0700
+Message-ID: <20170626082752.464c278d@jacob-builder>
+References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1497478983-77580-6-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20170622165317.20f3ebde@w520.home>
+	<20170623115928.13aa8858@jacob-builder>
+	<20170623131551.6aeb9af7@w520.home>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0431657711748704034=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170623131551.6aeb9af7-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,176 +21,283 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian,
+	Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============0431657711748704034==
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="uwHL4H3x40uTmxoHJAuqPWA71P4oDmLJK"
+On Fri, 23 Jun 2017 13:15:51 -0600
+Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---uwHL4H3x40uTmxoHJAuqPWA71P4oDmLJK
-Content-Type: multipart/mixed; boundary="EIXHpNdASimFAhS73qM8e65D2k3RucqbU";
- protected-headers="v1"
-From: Christian Kauhaus <kc-4ImjS3E6Ur3YxmODkEiZ1Q@public.gmane.org>
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Message-ID: <349d94bb-d51c-f2dc-da4a-779ae85b50e0-4ImjS3E6Ur3YxmODkEiZ1Q@public.gmane.org>
-Subject: Kernel crashes in iommu_flush_iotlb_psi()
+> On Fri, 23 Jun 2017 11:59:28 -0700
+> Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> 
+> > On Thu, 22 Jun 2017 16:53:17 -0600
+> > Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> >   
+> > > On Wed, 14 Jun 2017 15:22:59 -0700
+> > > Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> > >     
+> > > > Traditionally, device specific faults are detected and handled
+> > > > within their own device drivers. When IOMMU is enabled, faults
+> > > > such as DMA related transactions are detected by IOMMU. There
+> > > > is no generic reporting mechanism to report faults back to the
+> > > > in-kernel device driver or the guest OS in case of assigned
+> > > > devices.
+> > > > 
+> > > > Faults detected by IOMMU is based on the transaction's source ID
+> > > > which can be reported at per device basis, regardless of the
+> > > > device type is a PCI device or not.
+> > > > 
+> > > > The fault types includes recoverable (e.g. page request) and
+> > > > unrecoverable faults(e.g. invalid context). In most cases,
+> > > > faults can be handled by IOMMU drivers. However, there are use
+> > > > cases that require fault processing outside IOMMU driver, e.g.
+> > > > 
+> > > > 1. page request fault originated from an SVM capable device
+> > > > that is assigned to guest via vIOMMU. In this case, the first
+> > > > level page tables are owned by the guest. Page request must be
+> > > > propagated to the guest to let guest OS fault in the pages then
+> > > > send page response. In this mechanism, the direct receiver of
+> > > > IOMMU fault notification is VFIO, which can relay notification
+> > > > events to QEMU or other user space software.
+> > > > 
+> > > > 2. faults need more subtle handling by device drivers. Other
+> > > > than simply invoke reset function, there are needs to let
+> > > > device driver handle the fault with a smaller impact.
+> > > > 
+> > > > This patchset is intended to create a generic fault notification
+> > > > API such that it can scale as follows:
+> > > > - all IOMMU types
+> > > > - PCI and non-PCI devices
+> > > > - recoverable and unrecoverable faults
+> > > > - VFIO and other other in kernel users
+> > > > - DMA & IRQ remapping (TBD)
+> > > > 
+> > > > The event data contains both generic and raw architectural data
+> > > > such that performance is not compromised as the data
+> > > > propagation may involve many layers.
+> > > > 
+> > > > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > > > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > > > ---
+> > > >  drivers/iommu/iommu.c | 63
+> > > > +++++++++++++++++++++++++++++++++++++++++++++++++++
+> > > > include/linux/iommu.h | 54
+> > > > +++++++++++++++++++++++++++++++++++++++++++ 2 files changed, 117
+> > > > insertions(+)
+> > > > 
+> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > > > index c786370..04c73f3 100644
+> > > > --- a/drivers/iommu/iommu.c
+> > > > +++ b/drivers/iommu/iommu.c
+> > > > @@ -48,6 +48,7 @@ struct iommu_group {
+> > > >  	struct list_head devices;
+> > > >  	struct mutex mutex;
+> > > >  	struct blocking_notifier_head notifier;
+> > > > +	struct blocking_notifier_head fault_notifier;
+> > > >  	void *iommu_data;
+> > > >  	void (*iommu_data_release)(void *iommu_data);
+> > > >  	char *name;
+> > > > @@ -345,6 +346,7 @@ struct iommu_group *iommu_group_alloc(void)
+> > > >  	mutex_init(&group->mutex);
+> > > >  	INIT_LIST_HEAD(&group->devices);
+> > > >  	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
+> > > > +	BLOCKING_INIT_NOTIFIER_HEAD(&group->fault_notifier);
+> > > >  
+> > > >  	ret = ida_simple_get(&iommu_group_ida, 0, 0,
+> > > > GFP_KERNEL); if (ret < 0) {
+> > > > @@ -790,6 +792,67 @@ int iommu_group_unregister_notifier(struct
+> > > > iommu_group *group,
+> > > > EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier); 
+> > > >  /**
+> > > > + * iommu_register_fault_notifier - Register a notifier for
+> > > > fault reporting
+> > > > + * @dev: device to notify fault events
+> > > > + * @nb: notifier block to signal
+> > > > + *
+> > > > + */
+> > > > +int iommu_register_fault_notifier(struct device *dev,
+> > > > +				struct notifier_block *nb)
+> > > > +{
+> > > > +	int ret;
+> > > > +	struct iommu_group *group = iommu_group_get(dev);
+> > > > +
+> > > > +	if (!group)
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	ret =
+> > > > blocking_notifier_chain_register(&group->fault_notifier, nb);
+> > > > +	iommu_group_put(group);
+> > > > +
+> > > > +	return ret;
+> > > > +
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(iommu_register_fault_notifier);
+> > > > +
+> > > > +/**
+> > > > + * iommu_unregister_fault_notifier - Unregister a notifier for
+> > > > fault reporting
+> > > > + * @domain: the domain to watch
+> > > > + * @nb: notifier block to signal
+> > > > + *
+> > > > + */
+> > > > +int iommu_unregister_fault_notifier(struct device *dev,
+> > > > +				  struct notifier_block *nb)
+> > > > +{
+> > > > +	int ret;
+> > > > +	struct iommu_group *group = iommu_group_get(dev);
+> > > > +
+> > > > +	if (!group)
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	ret =
+> > > > blocking_notifier_chain_unregister(&group->fault_notifier, nb);
+> > > > +	iommu_group_put(group);
+> > > > +
+> > > > +	return ret;
+> > > > +}
+> > > > +EXPORT_SYMBOL_GPL(iommu_unregister_fault_notifier);      
+> > > 
+> > > 
+> > > If the call chains are on the group, why do we register with a
+> > > device? If I registered with a group, I'd know that I only need
+> > > to register once per group, that's not clear here and may lead to
+> > > callers of this getting multiple notifications, one for each
+> > > device in a group. 
+> > My thought was that since iommu_group is already part of struct
+> > device, it is more efficient to share group level notifier than
+> > introducing per device fault callbacks or notifiers.  
+> 
+> That's fine, but the interface should reflect the same.
+>  
+> > So you do need to register per device not just once for the group.
+> > In most cases device with SVM has ACS, it will be 1:1 between
+> > device and group.  
+> 
+> ACS at the endpoint is only one factor in determining grouping, we
+> need only look at Intel Core processors to find root ports lacking
+> ACS which will result in multiple devices per group as a very common
+> case. 
+> > When the fault event occurs, IOMMU can identify the offending device
+> > and struct device is embedded in the event data sent to the device
+> > driver or VFIO, so the receiver can filter out unwanted events.  
+> 
+> I think this is a poor design choice.  If the notification list is on
+> the group then make the registration be on the group.  Otherwise the
+> number of notifies seen by the caller is automatically multiplied by
+> the number of devices they're using in the group.  The caller not only
+> needs to disregard unintended devices, but they need to make sure they
+> only act on a notification for the device on the correct notifier.
+> This is designing in unnecessary complexity and overhead.
+> 
+If the design is for high frequency events, I would totally agree with
+you that having notifier on the group does not scale. But since this is
+for fault notification, which implies infrequent use, is it still
+worthwhile to tax strict device to have a per device notifier?
+Even with recoverable fault, i.e. page request, a properly configured
+use case would pre-fault pages to minimize PRQ.
 
---EIXHpNdASimFAhS73qM8e65D2k3RucqbU
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+I was referring to this previous discussion by David for the need of
+per device fault handler(https://lwn.net/Articles/608914/). Perhaps I
+misinterpreted your suggestion for an alternative solution.
 
-Hi everyone,
+Thanks,
 
-after updating our storage servers to kernel 4.9.33 we experience repeate=
-d crashes on some machines.
+Jacob
 
-A typical kernel stacktrace looks like this:
+> > > > +
+> > > > +int iommu_fault_notifier_call_chain(struct iommu_fault_event
+> > > > *event) +{
+> > > > +	int ret;
+> > > > +	struct iommu_group *group =
+> > > > iommu_group_get(event->dev); +
+> > > > +	if (!group)
+> > > > +		return -EINVAL;
+> > > > +	/* caller provide generic data related to the event,
+> > > > TBD */
+> > > > +	ret =
+> > > > (blocking_notifier_call_chain(&group->fault_notifier, 0, (void
+> > > > *)event)
+> > > > +		== NOTIFY_BAD) ? -EINVAL : 0;
+> > > > +	iommu_group_put(group);
+> > > > +
+> > > > +	return ret;
+> > > > +}
+> > > > +EXPORT_SYMBOL(iommu_fault_notifier_call_chain);
+> > > > +
+> > > > +/**
+> > > >   * iommu_group_id - Return ID for a group
+> > > >   * @group: the group to ID
+> > > >   *
+> > > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > > > index 2cdbaa3..fe89e88 100644
+> > > > --- a/include/linux/iommu.h
+> > > > +++ b/include/linux/iommu.h
+> > > > @@ -42,6 +42,7 @@
+> > > >   * if the IOMMU page table format is equivalent.
+> > > >   */
+> > > >  #define IOMMU_PRIV	(1 << 5)
+> > > > +#define IOMMU_EXEC	(1 << 6)      
+> > > 
+> > > Irrelevant change?
+> > >     
+> > yes, it should be separate. used later in svm patch.  
+> > > >  
+> > > >  struct iommu_ops;
+> > > >  struct iommu_group;
+> > > > @@ -97,6 +98,36 @@ struct iommu_domain {
+> > > >  	void *iova_cookie;
+> > > >  };
+> > > >  
+> > > > +/*
+> > > > + * Generic fault event notification data, used by all IOMMU
+> > > > architectures.
+> > > > + *
+> > > > + * - PCI and non-PCI devices
+> > > > + * - Recoverable faults (e.g. page request) & un-recoverable
+> > > > faults
+> > > > + * - DMA remapping and IRQ remapping faults
+> > > > + *
+> > > > + * @dev The device which faults are reported by IOMMU
+> > > > + * @addr tells the offending address
+> > > > + * @pasid contains process address space ID, used in shared
+> > > > virtual memory (SVM)
+> > > > + * @prot page access protection flag, e.g. IOMMU_READ,
+> > > > IOMMU_WRITE
+> > > > + * @flags contains fault type, etc.
+> > > > + * @length tells the size of the buf
+> > > > + * @buf contains any raw or arch specific data
+> > > > + *
+> > > > + */
+> > > > +struct iommu_fault_event {
+> > > > +	struct device *dev;
+> > > > +	__u64 addr;
+> > > > +	__u32 pasid;
+> > > > +	__u32 prot;
+> > > > +	__u32 flags;
+> > > > +#define IOMMU_FAULT_PAGE_REQ	BIT(0)
+> > > > +#define IOMMU_FAULT_UNRECOV	BIT(1)
+> > > > +#define IOMMU_FAULT_IRQ_REMAP	BIT(2)
+> > > > +#define IOMMU_FAULT_INVAL	BIT(3)      
+> > > 
+> > > Details of each of these are defined where?
+> > >     
+> > good point, will add description.  
+> > > > +	__u32 length;
+> > > > +	__u8  buf[];
+> > > > +};      
+> > > 
+> > > This is not UAPI, so I'll be curious how vfio is supposed to
+> > > expose this to userspace.
+> > >     
+> > But this also has other in-kernel users.  
+> 
+> 
+> Any point where you expect vfio to pass through one of these model
+> specific data structures needs to be fully specified in a uapi header.
+> No magic opaque data please.  Thanks,
+> 
+> Alex
 
-BUG: unable to handle kernel NULL pointer dereference at 0000000000000304=
-
-[136234.369489] IP: [<ffffffff814f1717>] flush_unmaps_timeout+0xa7/0x1c0
-[136234.382388] PGD 0 [136234.386238]
-[136234.389393] Oops: 0000 [#1] SMP
-[136234.395844] Modules linked in: rbd libceph deadline_iosched nf_log_ip=
-v4 iptable_nat nf_conntrack_ipv4 nf_defrag_ipv4 nf_nat_ipv4 nf_nat nf_log=
-_ipv6 nf_log_common xt_LOG xt_limit nf_conntrack_ipv6 nf_defrag_ipv6 xt_c=
-onntrack x86_pkg_temp_thermal kvm_intel kvm irqbypass crc32c_intel acpi_c=
-pufreq nf_conntrack_ftp nf_conntrack dm_zero dm_thin_pool dm_persistent_d=
-ata dm_bio_prison dm_round_robin dm_multipath xts aesni_intel glue_helper=
- lrw ablk_helper cryptd aes_x86_64 fuse dm_snapshot dm_bufio dm_crypt dm_=
-mirror dm_region_hash dm_log
-[136234.491272] CPU: 6 PID: 40 Comm: ksoftirqd/6 Not tainted 4.9.33 #1
-[136234.503785] Hardware name: Thomas-Krenn.AG X9DR3-F/X9DR3-F, BIOS 3.0a=
- 07/31/2013
-[136234.518733] task: ffff88105b86b900 task.stack: ffffc90006518000
-[136234.530735] RIP: 0010:[<ffffffff814f1717>]  [<ffffffff814f1717>] flus=
-h_unmaps_timeout+0xa7/0x1c0
-[136234.548498] RSP: 0018:ffffc9000651bd18  EFLAGS: 00010006
-[136234.559283] RAX: ffff880858a01f48 RBX: 0000000000000000 RCX: ffff8808=
-5c246000
-[136234.573708] RDX: 000000000000003f RSI: 0000000000000086 RDI: ffff8808=
-5d12c5c0
-[136234.588133] RBP: ffffc9000651bd68 R08: 0000000000000000 R09: ffff8808=
-5d12c5c0
-[136234.602558] R10: 0000000000000001 R11: 0000000000000000 R12: ffff8808=
-4f8e8a80
-[136234.616986] R13: ffff880858a01f48 R14: ffff88085c25a3c0 R15: 00000000=
-000fddc9
-[136234.631410] FS:  0000000000000000(0000) GS:ffff88107fa00000(0000) knl=
-GS:0000000000000000
-[136234.647743] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[136234.659393] CR2: 0000000000000304 CR3: 000000073a8a1000 CR4: 00000000=
-000406e0
-[136234.673815] Stack:
-[136234.678013]  0000000000000286 ffff88107fa137c0 000000018108f5c4 ffffc=
-9000651bd88
-[136234.693095]  ffffffff8108ed23 0000000000000001 ffff88107fa137c8 00000=
-00000000100
-[136234.708178]  ffffffff814f1670 0000000000000006 ffffc9000651bda0 fffff=
-fff810c0915
-[136234.723263] Call Trace:
-[136234.728337]  [<ffffffff8108ed23>] ? put_prev_entity+0x83/0x850
-[136234.740197]  [<ffffffff814f1670>] ? iommu_flush_iotlb_psi+0x120/0x120=
-
-[136234.753243]  [<ffffffff810c0915>] call_timer_fn+0x35/0x120
-[136234.764378]  [<ffffffff810c189e>] run_timer_softirq+0x1fe/0x460
-[136234.776397]  [<ffffffff818865d7>] __do_softirq+0xe7/0x256
-[136234.787369]  [<ffffffff8107ec80>] ? sort_range+0x30/0x30
-[136234.798152]  [<ffffffff810635bc>] run_ksoftirqd+0x1c/0x30
-[136234.809111]  [<ffffffff8107ed8a>] smpboot_thread_fn+0x10a/0x160
-[136234.821117]  [<ffffffff8107b377>] kthread+0xd7/0xf0
-[136234.831044]  [<ffffffff8107b2a0>] ? kthread_park+0x60/0x60
-[136234.842183]  [<ffffffff81884112>] ret_from_fork+0x22/0x30
-[136234.853141] Code: 8b 45 00 85 c0 0f 84 d3 00 00 00 41 f6 46 18 80 0f =
-84 02 01 00 00 85 c0 0f 8e b8 00 00 00 31 db eb 3b ba ff ff ff ff 49 0f b=
-d d4 <41> 80 bb 04 03 00 00 00 75 7d 49 8d bb 18 03 00 00 4c 89 e2 4c
-[136234.893223] RIP  [<ffffffff814f1717>] flush_unmaps_timeout+0xa7/0x1c0=
-
-[136234.906296]  RSP <ffffc9000651bd18>
-[136234.913446] CR2: 0000000000000304
-[136234.920624] ---[ end trace c3bd71ceb3b717b2 ]---
-[136234.930021] Kernel panic - not syncing: Fatal exception in interrupt
-
-As far as I can see, this bug occurs only on machines with a Xeon E5-2620=
-=2E
-
-$ lscpu
-Architecture:          x86_64
-CPU op-mode(s):        32-bit, 64-bit
-Byte Order:            Little Endian
-CPU(s):                24
-On-line CPU(s) list:   0-23
-Thread(s) per core:    2
-Core(s) per socket:    6
-Socket(s):             2
-NUMA node(s):          2
-Vendor ID:             GenuineIntel
-CPU family:            6
-Model:                 45
-Model name:            Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
-Stepping:              7
-CPU MHz:               1200.000
-CPU max MHz:           2001.0000
-CPU min MHz:           1200.0000
-BogoMIPS:              4007.87
-Virtualization:        VT-x
-L1d cache:             32K
-L1i cache:             32K
-L2 cache:              256K
-L3 cache:              15360K
-NUMA node0 CPU(s):     0-5,12-17
-NUMA node1 CPU(s):     6-11,18-23
-
-Has anyone an idea how to work around this problem? The crashes are frequ=
-ent enough to affect production in our data centers.
-
-Many thanks in advance!
-
-Best regards
-
-Christian
-
---=20
-Dipl-Inf. Christian Kauhaus <>< =C2=B7 kc-4ImjS3E6Ur3YxmODkEiZ1Q@public.gmane.org =C2=B7 +49 345 =
-219401-0
-Flying Circus Internet Operations GmbH =C2=B7 http://flyingcircus.io
-Forsterstra=C3=9Fe 29 =C2=B7 06112 Halle (Saale) =C2=B7 Deutschland
-HR Stendal 21169 =C2=B7 Gesch=C3=A4ftsf=C3=BChrer: Christian Theune, Chri=
-stian Zagrodnick
-
-
---EIXHpNdASimFAhS73qM8e65D2k3RucqbU--
-
---uwHL4H3x40uTmxoHJAuqPWA71P4oDmLJK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCgAGBQJZUST5AAoJEDxNM5Hh8d3of/MH/16r1L0qw0m1iD6JSGd9JOr3
-OoUEHc0tlwHUkTL0JIRG4ThU4buYuW+Ok4dknZw7RApe2+1yN/rc4VQqFpf2nXJv
-OLgRWUMyK6gniWPYbbr+bo7A6rIsXpTfX9Mply1bhPT+czUhWFo67GdmDnRvWnTL
-HTKmafFm6D0HjscKXiYaXDjuYIm1yX4jBxseyk/Kut0ocyDbCOPAhhZv8R2ynqGE
-Ld4P2HKMF/1wNomLYSQOUfjmwwsmJs+B7fB1xpp71bz2bLXQb0qCr0TXqyjTdv1q
-aSfPc7RDh3GvvYuY0pwLl62FF4BWosjYmyQqtUBsuLVHEnCBgPnHdXJq8rIg/Qo=
-=ftBs
------END PGP SIGNATURE-----
-
---uwHL4H3x40uTmxoHJAuqPWA71P4oDmLJK--
-
---===============0431657711748704034==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0431657711748704034==--
+[Jacob Pan]
