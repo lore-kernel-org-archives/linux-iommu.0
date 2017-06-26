@@ -1,74 +1,70 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v7 34/36] x86/mm: Add support to encrypt the kernel
- in-place
-Date: Mon, 26 Jun 2017 11:34:49 -0500
-Message-ID: <aed44ee3-dd6c-e6e1-4de5-5629bf61e688@amd.com>
-References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
- <20170616185619.18967.38945.stgit@tlendack-t1.amdoffice.net>
- <20170623100013.upd4or6esjvulmvg@pd.tnic>
- <af9a50f7-17ea-a840-6456-b6479e5d7e82@amd.com>
- <20170626154543.fsuxfhxidytgo2ia@pd.tnic>
+From: tndave <tushar.n.dave-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: clean up and modularize arch dma_mapping interface V2
+Date: Mon, 26 Jun 2017 15:06:25 -0700
+Message-ID: <91360640-546b-edab-9f4a-952c7a1d0061@oracle.com>
+References: <20170616181059.19206-1-hch@lst.de>
+	<162d7932-5766-4c29-5471-07d1b699190a@oracle.com>
+	<20170624071855.GD14580@lst.de>
+	<1498318616.31581.87.camel@kernel.crashing.org>
+	<20170626094739.GB13981@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170626154543.fsuxfhxidytgo2ia@pd.tnic>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170626094739.GB13981-jcswGhMUV9g@public.gmane.org>
 Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracl>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/26/2017 10:45 AM, Borislav Petkov wrote:
-> On Fri, Jun 23, 2017 at 12:44:46PM -0500, Tom Lendacky wrote:
->> Normally the __p4d() macro would be used and that would be ok whether
->> CONFIG_X86_5LEVEL is defined or not. But since __p4d() is part of the
->> paravirt ops path I have to use native_make_p4d().
-> 
-> So __p4d is in !CONFIG_PARAVIRT path.
-> 
-> Regardless, we use the native_* variants in generic code to mean, not
-> paravirt. Just define it in a separate patch like the rest of the p4*
-> machinery and use it in your code. Sooner or later someone else will
-> need it.
 
-Ok, will do.
 
+On 06/26/2017 02:47 AM, Christoph Hellwig wrote:
+> On Sat, Jun 24, 2017 at 10:36:56AM -0500, Benjamin Herrenschmidt wrote:
+>> I think we still need to do it. For example we have a bunch new "funky"
+>> cases.
 > 
->> True, 5-level will only be turned on for specific hardware which is why
->> I originally had this as only 4-level pagetables. But in a comment from
->> you back on the v5 version you said it needed to support 5-level. I
->> guess we should have discussed this more,
-> 
-> AFAIR, I said something along the lines of "what about 5-level page
-> tables?" and whether we care.
+> I have no plan to do away with the selection - I just want a better
+> interface than the current one.
+I agree we need better interface than the current one.
+Like Benjamin mentioned cases for powerpc , sparc also need some special
+treatment for ATU IOMMU depending on device's DMA mask.
 
-My bad, I took the meaning of that question the wrong way then.
+For sparc, I am in process of enabling one or more dedicated IOTSB (I/O
+Translation Storage Buffer) per PCI BDF (contrary to current design
+where all PCI device under root complex share a 32bit and/or 64bit IOTSB
+depending on 32bit and/or 64bit DMA). I am planning to use DMA set mask
+APIs as hook where based on device's dma mask values (dma_mask and
+coherent_dma_mask) one or more IOTSB resource will be allocated (and
+released [1]).
 
-Thanks,
-Tom
+Without set_dma_mask ops, I can still rely on HAVE_ARCH_DMA_SET_MASK and
+dma_supported() that allows me to distinguish if device is setting
+its streaming dma_mask and coherent_dma_mask respectively.
 
-> 
->> but I also thought that should our hardware ever support 5-level
->> paging in the future then this would be good to go.
-> 
-> There it is :-)
-> 
->> The macros work great if you are not running identity mapped. You could
->> use p*d_offset() to move easily through the tables, but those functions
->> use __va() to generate table virtual addresses. I've seen where
->> boot/compressed/pagetable.c #defines __va() to work with identity mapped
->> pages but that would only work if I create a separate file just for this
->> function.
->>
->> Given when this occurs it's very similar to what __startup_64() does in
->> regards to the IS_ENABLED(CONFIG_X86_5LEVEL) checks.
-> 
-> Ok.
-> 
+-Tushar
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+[1] By default, every PCI BDF will have one dedicated 32bit IOTSB. This
+is to support default case where some device drivers even don't bother
+to set DMA mask but instead are fine with default 32bit mask.
+A 64bit IOTSB will be allocated when device request 64bit dma_mask.
+However if device wants 64bit dma mask for both coherent and
+non-coherent, a default 32bit IOTSB will be released as well. Wasting an
+IOTSB is not a good idea because there is a hard limit on max number of
+IOTSB per guest domain per root complex.
+
+
+> --
+> To unsubscribe from this list: send the line "unsubscribe sparclinux" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
