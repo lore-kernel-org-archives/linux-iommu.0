@@ -1,41 +1,65 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: new dma-mapping tree, was Re: clean up and modularize arch
- dma_mapping interface V2
-Date: Mon, 26 Jun 2017 09:03:50 +0200
-Message-ID: <20170626070350.GB10544@lst.de>
-References: <20170616181059.19206-1-hch@lst.de>
- <20170620124140.GA27163@lst.de> <20170620230400.1a5ae889@canb.auug.org.au>
- <CGME20170620131628epcas1p4f21d821bd414cba7e2d49abcbe414365@epcas1p4.samsung.com>
- <20170620131623.GB30769@lst.de>
- <5425587c-73e8-e24a-86a3-8a65a7791dcb@samsung.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: DMA_ATTR_WEAK_ORDERING defintion, was Re: [PATCH] nvme: set
+ DMA_ATTR_WEAK_ORDERING attribute on dma buffers
+Date: Mon, 26 Jun 2017 11:15:43 +0200
+Message-ID: <CAK8P3a0itukwNkPk-Yui6juJXt5QiQT6+FYxP12or2wt5jDhLw@mail.gmail.com>
+References: <1497645290-31041-1-git-send-email-alan.adamson@oracle.com>
+ <20170617115703.GA13002@lst.de> <6a32f30b-433a-9857-164f-1717405a6082@oracle.com>
+ <20170624073539.GE14580@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <5425587c-73e8-e24a-86a3-8a65a7791dcb@samsung.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, dri-devel@lists.freedesktop.org, sparclinux@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-samsung-soc@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, Kyungmin Park <kyungmin.park@samsung.com>, Linus Torvalds <torvalds@linux-foundation.org>, xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org, linux-s390@vger.kernel.org, openrisc@lists.librecores.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20170624073539.GE14580@lst.de>
+Sender: linux-pci-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Alan Adamson <alan.adamson@oracle.com>, Keith Busch <keith.busch@intel.com>, Jens Axboe <axboe@fb.com>, linux-nvme@lists.infradead.org, Sagi Grimberg <sagi@grimberg.me>, linux-pci <linux-pci@vger.kernel.org>, Mark Nelson <markn@au1.ibm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBKdW4gMjEsIDIwMTcgYXQgMDM6MzI6MzlQTSArMDIwMCwgTWFyZWsgU3p5cHJvd3Nr
-aSB3cm90ZToKPiBsaW51eC1uZXh0Cj4gd2FzIGEgc2lkZSBlZmZlY3Qgb2YgdGhhdC4gSSB0aGlu
-ayB0aGF0IGZvciBub3cgaXQgY2FuIGJlIGRyb3BwZWQgaW4gZmF2b3IgCj4gb2YKPiBDaHJpc3Rv
-cGgncyB0cmVlLiBJIGNhbiBhbHNvIGRvIHNvbWUgcmV2aWV3IGFuZCBoZWxwIGluIG1haW50YWlu
-ZXJzIHdvcmsgaWYKPiBuZWVkZWQsIGFsdGhvdWdoIEkgd2FzIHJlY2VudGx5IGJ1c3kgd2l0aCBv
-dGhlciBzdHVmZi4KPgo+IENocmlzdG9waDogQ291bGQgeW91IGFkZCBtZSB0byB5b3VyIE1BSU5U
-QUlORVJTIHBhdGNoLCBzbyBmdXJ0aGVyIAo+IGRtYS1tYXBwaW5nCj4gcmVsYXRlZCBwYXRjaGVz
-IGhvcGVmdWxseSB3aWxsIGJlIGFsc28gQ0M6IHRvIG1lPwoKSSd2ZSBhZGRlZCB5b3UgYXMgYSBj
-by1tYWludGFpbmVyLCB0aGFua3MhCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVk
-ZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2RyaS1kZXZlbAo=
+On Sat, Jun 24, 2017 at 9:35 AM, Christoph Hellwig <hch@lst.de> wrote:
+> I always assumed that our streaming mappings are relaxed order for
+> TLP anyway.  And at very least Documentation/DMA-attributes.txt seems
+> to imply something different:
+>
+>
+>   DMA_ATTR_WEAK_ORDERING
+>   ----------------------
+>
+>   DMA_ATTR_WEAK_ORDERING specifies that reads and writes to the mapping
+>   may be weakly ordered, that is that reads and writes may pass each other.
+>
+> Which to me suggest host reads, which also makes me wonder why these
+> would even apply to our streaming mappings.
+>
+> Adding the powerpc folks that added the DMA_ATTR_WEAK_ORDERING flag
+> originally back in 2008, but not actual users as far as I can tell -
+> those are all new and from the sparc gang, except for the noveau
+> driver, which is a bit older but only uses for dma_alloc_attrs, where
+> the original description makes sense to me.
+
+I suspect people have applied the same name for different things over time.
+
+When we added it in 2008, there was one specific use case, improving
+throughput on infiniband, iirc using the mthca device driver. In the Cell
+IOMMU, this attribute causes concurrent DMA transfers on PCIe
+devices to disregard the stricter PCI ordering rules: multiple transfers
+could be initiated together and complete in an arbitrary order depending
+on e.g. I/O page faults in the IOMMU. Using the dma attributes, this
+could be controlled to apply only to certain transfers, so a completion
+queue DMA would still be ordered with regard to other transfers, as it would
+not come with that attribute.
+
+There are two things that I don't remember unfortunately.
+
+a) why this patch seems to have never made it into the mainline kernel:
+http://lists.openfabrics.org/pipermail/general/2008-October/055006.html
+We probably had it added to both OFED and the supported distros at
+the time (RHEL, Fedora, SLES, all in versions I don't remember any
+more)
+
+b) How this relates to the PCIe relaxed ordering flag on DMA transfers.
+It's possible that the hardware later learned to correctly set the
+flag on the actual transfer to have the same effect, or it's possible
+that we had to add the dma_alloc_attr() interface specifically because
+the hardware could not do this for some but not other transfers.
+
+      Arnd
