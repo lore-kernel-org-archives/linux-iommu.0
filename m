@@ -1,310 +1,61 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC 5/9] iommu: Introduce fault notifier API
-Date: Mon, 26 Jun 2017 09:32:24 -0600
-Message-ID: <20170626093224.46c096a0@w520.home>
-References: <1497478983-77580-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1497478983-77580-6-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20170622165317.20f3ebde@w520.home>
-	<20170623115928.13aa8858@jacob-builder>
-	<20170623131551.6aeb9af7@w520.home>
-	<20170626082752.464c278d@jacob-builder>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v7 34/36] x86/mm: Add support to encrypt the kernel
+ in-place
+Date: Mon, 26 Jun 2017 17:45:43 +0200
+Message-ID: <20170626154543.fsuxfhxidytgo2ia@pd.tnic>
+References: <20170616184947.18967.84890.stgit@tlendack-t1.amdoffice.net>
+ <20170616185619.18967.38945.stgit@tlendack-t1.amdoffice.net>
+ <20170623100013.upd4or6esjvulmvg@pd.tnic>
+ <af9a50f7-17ea-a840-6456-b6479e5d7e82@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170626082752.464c278d@jacob-builder>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian,
-	Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <af9a50f7-17ea-a840-6456-b6479e5d7e82-5C7GfCeVMHo@public.gmane.org>
+Sender: linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dy>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 26 Jun 2017 08:27:52 -0700
-Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+On Fri, Jun 23, 2017 at 12:44:46PM -0500, Tom Lendacky wrote:
+> Normally the __p4d() macro would be used and that would be ok whether
+> CONFIG_X86_5LEVEL is defined or not. But since __p4d() is part of the
+> paravirt ops path I have to use native_make_p4d().
 
-> On Fri, 23 Jun 2017 13:15:51 -0600
-> Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+So __p4d is in !CONFIG_PARAVIRT path.
+
+Regardless, we use the native_* variants in generic code to mean, not
+paravirt. Just define it in a separate patch like the rest of the p4*
+machinery and use it in your code. Sooner or later someone else will
+need it.
+
+> True, 5-level will only be turned on for specific hardware which is why
+> I originally had this as only 4-level pagetables. But in a comment from
+> you back on the v5 version you said it needed to support 5-level. I
+> guess we should have discussed this more,
+
+AFAIR, I said something along the lines of "what about 5-level page
+tables?" and whether we care.
+
+> but I also thought that should our hardware ever support 5-level
+> paging in the future then this would be good to go.
+
+There it is :-)
+
+> The macros work great if you are not running identity mapped. You could
+> use p*d_offset() to move easily through the tables, but those functions
+> use __va() to generate table virtual addresses. I've seen where
+> boot/compressed/pagetable.c #defines __va() to work with identity mapped
+> pages but that would only work if I create a separate file just for this
+> function.
 > 
-> > On Fri, 23 Jun 2017 11:59:28 -0700
-> > Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-> >   
-> > > On Thu, 22 Jun 2017 16:53:17 -0600
-> > > Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > >     
-> > > > On Wed, 14 Jun 2017 15:22:59 -0700
-> > > > Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-> > > >       
-> > > > > Traditionally, device specific faults are detected and handled
-> > > > > within their own device drivers. When IOMMU is enabled, faults
-> > > > > such as DMA related transactions are detected by IOMMU. There
-> > > > > is no generic reporting mechanism to report faults back to the
-> > > > > in-kernel device driver or the guest OS in case of assigned
-> > > > > devices.
-> > > > > 
-> > > > > Faults detected by IOMMU is based on the transaction's source ID
-> > > > > which can be reported at per device basis, regardless of the
-> > > > > device type is a PCI device or not.
-> > > > > 
-> > > > > The fault types includes recoverable (e.g. page request) and
-> > > > > unrecoverable faults(e.g. invalid context). In most cases,
-> > > > > faults can be handled by IOMMU drivers. However, there are use
-> > > > > cases that require fault processing outside IOMMU driver, e.g.
-> > > > > 
-> > > > > 1. page request fault originated from an SVM capable device
-> > > > > that is assigned to guest via vIOMMU. In this case, the first
-> > > > > level page tables are owned by the guest. Page request must be
-> > > > > propagated to the guest to let guest OS fault in the pages then
-> > > > > send page response. In this mechanism, the direct receiver of
-> > > > > IOMMU fault notification is VFIO, which can relay notification
-> > > > > events to QEMU or other user space software.
-> > > > > 
-> > > > > 2. faults need more subtle handling by device drivers. Other
-> > > > > than simply invoke reset function, there are needs to let
-> > > > > device driver handle the fault with a smaller impact.
-> > > > > 
-> > > > > This patchset is intended to create a generic fault notification
-> > > > > API such that it can scale as follows:
-> > > > > - all IOMMU types
-> > > > > - PCI and non-PCI devices
-> > > > > - recoverable and unrecoverable faults
-> > > > > - VFIO and other other in kernel users
-> > > > > - DMA & IRQ remapping (TBD)
-> > > > > 
-> > > > > The event data contains both generic and raw architectural data
-> > > > > such that performance is not compromised as the data
-> > > > > propagation may involve many layers.
-> > > > > 
-> > > > > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > > > > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > > > ---
-> > > > >  drivers/iommu/iommu.c | 63
-> > > > > +++++++++++++++++++++++++++++++++++++++++++++++++++
-> > > > > include/linux/iommu.h | 54
-> > > > > +++++++++++++++++++++++++++++++++++++++++++ 2 files changed, 117
-> > > > > insertions(+)
-> > > > > 
-> > > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > > index c786370..04c73f3 100644
-> > > > > --- a/drivers/iommu/iommu.c
-> > > > > +++ b/drivers/iommu/iommu.c
-> > > > > @@ -48,6 +48,7 @@ struct iommu_group {
-> > > > >  	struct list_head devices;
-> > > > >  	struct mutex mutex;
-> > > > >  	struct blocking_notifier_head notifier;
-> > > > > +	struct blocking_notifier_head fault_notifier;
-> > > > >  	void *iommu_data;
-> > > > >  	void (*iommu_data_release)(void *iommu_data);
-> > > > >  	char *name;
-> > > > > @@ -345,6 +346,7 @@ struct iommu_group *iommu_group_alloc(void)
-> > > > >  	mutex_init(&group->mutex);
-> > > > >  	INIT_LIST_HEAD(&group->devices);
-> > > > >  	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
-> > > > > +	BLOCKING_INIT_NOTIFIER_HEAD(&group->fault_notifier);
-> > > > >  
-> > > > >  	ret = ida_simple_get(&iommu_group_ida, 0, 0,
-> > > > > GFP_KERNEL); if (ret < 0) {
-> > > > > @@ -790,6 +792,67 @@ int iommu_group_unregister_notifier(struct
-> > > > > iommu_group *group,
-> > > > > EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier); 
-> > > > >  /**
-> > > > > + * iommu_register_fault_notifier - Register a notifier for
-> > > > > fault reporting
-> > > > > + * @dev: device to notify fault events
-> > > > > + * @nb: notifier block to signal
-> > > > > + *
-> > > > > + */
-> > > > > +int iommu_register_fault_notifier(struct device *dev,
-> > > > > +				struct notifier_block *nb)
-> > > > > +{
-> > > > > +	int ret;
-> > > > > +	struct iommu_group *group = iommu_group_get(dev);
-> > > > > +
-> > > > > +	if (!group)
-> > > > > +		return -EINVAL;
-> > > > > +
-> > > > > +	ret =
-> > > > > blocking_notifier_chain_register(&group->fault_notifier, nb);
-> > > > > +	iommu_group_put(group);
-> > > > > +
-> > > > > +	return ret;
-> > > > > +
-> > > > > +}
-> > > > > +EXPORT_SYMBOL_GPL(iommu_register_fault_notifier);
-> > > > > +
-> > > > > +/**
-> > > > > + * iommu_unregister_fault_notifier - Unregister a notifier for
-> > > > > fault reporting
-> > > > > + * @domain: the domain to watch
-> > > > > + * @nb: notifier block to signal
-> > > > > + *
-> > > > > + */
-> > > > > +int iommu_unregister_fault_notifier(struct device *dev,
-> > > > > +				  struct notifier_block *nb)
-> > > > > +{
-> > > > > +	int ret;
-> > > > > +	struct iommu_group *group = iommu_group_get(dev);
-> > > > > +
-> > > > > +	if (!group)
-> > > > > +		return -EINVAL;
-> > > > > +
-> > > > > +	ret =
-> > > > > blocking_notifier_chain_unregister(&group->fault_notifier, nb);
-> > > > > +	iommu_group_put(group);
-> > > > > +
-> > > > > +	return ret;
-> > > > > +}
-> > > > > +EXPORT_SYMBOL_GPL(iommu_unregister_fault_notifier);        
-> > > > 
-> > > > 
-> > > > If the call chains are on the group, why do we register with a
-> > > > device? If I registered with a group, I'd know that I only need
-> > > > to register once per group, that's not clear here and may lead to
-> > > > callers of this getting multiple notifications, one for each
-> > > > device in a group.   
-> > > My thought was that since iommu_group is already part of struct
-> > > device, it is more efficient to share group level notifier than
-> > > introducing per device fault callbacks or notifiers.    
-> > 
-> > That's fine, but the interface should reflect the same.
-> >    
-> > > So you do need to register per device not just once for the group.
-> > > In most cases device with SVM has ACS, it will be 1:1 between
-> > > device and group.    
-> > 
-> > ACS at the endpoint is only one factor in determining grouping, we
-> > need only look at Intel Core processors to find root ports lacking
-> > ACS which will result in multiple devices per group as a very common
-> > case.   
-> > > When the fault event occurs, IOMMU can identify the offending device
-> > > and struct device is embedded in the event data sent to the device
-> > > driver or VFIO, so the receiver can filter out unwanted events.    
-> > 
-> > I think this is a poor design choice.  If the notification list is on
-> > the group then make the registration be on the group.  Otherwise the
-> > number of notifies seen by the caller is automatically multiplied by
-> > the number of devices they're using in the group.  The caller not only
-> > needs to disregard unintended devices, but they need to make sure they
-> > only act on a notification for the device on the correct notifier.
-> > This is designing in unnecessary complexity and overhead.
-> >   
-> If the design is for high frequency events, I would totally agree with
-> you that having notifier on the group does not scale. But since this is
-> for fault notification, which implies infrequent use, is it still
-> worthwhile to tax strict device to have a per device notifier?
-> Even with recoverable fault, i.e. page request, a properly configured
-> use case would pre-fault pages to minimize PRQ.
-> 
-> I was referring to this previous discussion by David for the need of
-> per device fault handler(https://lwn.net/Articles/608914/). Perhaps I
-> misinterpreted your suggestion for an alternative solution.
+> Given when this occurs it's very similar to what __startup_64() does in
+> regards to the IS_ENABLED(CONFIG_X86_5LEVEL) checks.
 
-I'm not suggesting per device notifiers, I'm suggesting that if the
-notifier is per group then make the registration on the group, not the
-device.  The interface is too complicated to use with too many
-apparently duplicate notifications otherwise.  Thanks,
+Ok.
 
-Alex
+-- 
+Regards/Gruss,
+    Boris.
 
-> > > > > +
-> > > > > +int iommu_fault_notifier_call_chain(struct iommu_fault_event
-> > > > > *event) +{
-> > > > > +	int ret;
-> > > > > +	struct iommu_group *group =
-> > > > > iommu_group_get(event->dev); +
-> > > > > +	if (!group)
-> > > > > +		return -EINVAL;
-> > > > > +	/* caller provide generic data related to the event,
-> > > > > TBD */
-> > > > > +	ret =
-> > > > > (blocking_notifier_call_chain(&group->fault_notifier, 0, (void
-> > > > > *)event)
-> > > > > +		== NOTIFY_BAD) ? -EINVAL : 0;
-> > > > > +	iommu_group_put(group);
-> > > > > +
-> > > > > +	return ret;
-> > > > > +}
-> > > > > +EXPORT_SYMBOL(iommu_fault_notifier_call_chain);
-> > > > > +
-> > > > > +/**
-> > > > >   * iommu_group_id - Return ID for a group
-> > > > >   * @group: the group to ID
-> > > > >   *
-> > > > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > > > > index 2cdbaa3..fe89e88 100644
-> > > > > --- a/include/linux/iommu.h
-> > > > > +++ b/include/linux/iommu.h
-> > > > > @@ -42,6 +42,7 @@
-> > > > >   * if the IOMMU page table format is equivalent.
-> > > > >   */
-> > > > >  #define IOMMU_PRIV	(1 << 5)
-> > > > > +#define IOMMU_EXEC	(1 << 6)        
-> > > > 
-> > > > Irrelevant change?
-> > > >       
-> > > yes, it should be separate. used later in svm patch.    
-> > > > >  
-> > > > >  struct iommu_ops;
-> > > > >  struct iommu_group;
-> > > > > @@ -97,6 +98,36 @@ struct iommu_domain {
-> > > > >  	void *iova_cookie;
-> > > > >  };
-> > > > >  
-> > > > > +/*
-> > > > > + * Generic fault event notification data, used by all IOMMU
-> > > > > architectures.
-> > > > > + *
-> > > > > + * - PCI and non-PCI devices
-> > > > > + * - Recoverable faults (e.g. page request) & un-recoverable
-> > > > > faults
-> > > > > + * - DMA remapping and IRQ remapping faults
-> > > > > + *
-> > > > > + * @dev The device which faults are reported by IOMMU
-> > > > > + * @addr tells the offending address
-> > > > > + * @pasid contains process address space ID, used in shared
-> > > > > virtual memory (SVM)
-> > > > > + * @prot page access protection flag, e.g. IOMMU_READ,
-> > > > > IOMMU_WRITE
-> > > > > + * @flags contains fault type, etc.
-> > > > > + * @length tells the size of the buf
-> > > > > + * @buf contains any raw or arch specific data
-> > > > > + *
-> > > > > + */
-> > > > > +struct iommu_fault_event {
-> > > > > +	struct device *dev;
-> > > > > +	__u64 addr;
-> > > > > +	__u32 pasid;
-> > > > > +	__u32 prot;
-> > > > > +	__u32 flags;
-> > > > > +#define IOMMU_FAULT_PAGE_REQ	BIT(0)
-> > > > > +#define IOMMU_FAULT_UNRECOV	BIT(1)
-> > > > > +#define IOMMU_FAULT_IRQ_REMAP	BIT(2)
-> > > > > +#define IOMMU_FAULT_INVAL	BIT(3)        
-> > > > 
-> > > > Details of each of these are defined where?
-> > > >       
-> > > good point, will add description.    
-> > > > > +	__u32 length;
-> > > > > +	__u8  buf[];
-> > > > > +};        
-> > > > 
-> > > > This is not UAPI, so I'll be curious how vfio is supposed to
-> > > > expose this to userspace.
-> > > >       
-> > > But this also has other in-kernel users.    
-> > 
-> > 
-> > Any point where you expect vfio to pass through one of these model
-> > specific data structures needs to be fully specified in a uapi header.
-> > No magic opaque data please.  Thanks,
-> > 
-> > Alex  
-> 
-> [Jacob Pan]
+Good mailing practices for 400: avoid top-posting and trim the reply.
