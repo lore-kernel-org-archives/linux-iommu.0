@@ -1,83 +1,41 @@
-From: Nick Sarnie <commendsarnex-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: AMD Ryzen KVM/NPT/IOMMU issue
-Date: Sun, 25 Jun 2017 01:55:53 -0400
-Message-ID: <CAOcCaLbAS0FkRrG8YZNM5rYUtCFeUGkdgdy=4o16Njufdy8Gag@mail.gmail.com>
-References: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1@markju.com>
-	<CAOcCaLbdi9KZoXiV5htjShc_mYvZ5jK2B3Ot7NeM=3v_ZA39aA@mail.gmail.com>
-	<20170505112706.7785948c@t450s.home>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: new dma-mapping tree, was Re: clean up and modularize arch
+ dma_mapping interface V2
+Date: Mon, 26 Jun 2017 09:03:50 +0200
+Message-ID: <20170626070350.GB10544@lst.de>
+References: <20170616181059.19206-1-hch@lst.de>
+ <20170620124140.GA27163@lst.de> <20170620230400.1a5ae889@canb.auug.org.au>
+ <CGME20170620131628epcas1p4f21d821bd414cba7e2d49abcbe414365@epcas1p4.samsung.com>
+ <20170620131623.GB30769@lst.de>
+ <5425587c-73e8-e24a-86a3-8a65a7791dcb@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170505112706.7785948c-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, John.Bridgman-5C7GfCeVMHo@public.gmane.org, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <5425587c-73e8-e24a-86a3-8a65a7791dcb@samsung.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, dri-devel@lists.freedesktop.org, sparclinux@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-samsung-soc@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, Kyungmin Park <kyungmin.park@samsung.com>, Linus Torvalds <torvalds@linux-foundation.org>, xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org, linux-s390@vger.kernel.org, openrisc@lists.librecores.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 5, 2017 at 1:27 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Wed, 3 May 2017 12:28:35 -0400
-> Nick Sarnie <commendsarnex-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->
->> On Wed, May 3, 2017 at 10:37 AM, Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org> wrote:
->> > Hi,
->> >
->> > There are a lot of messages/threads out there about bad performance while
->> > using AMDs Ryzen with KVM GPU passthrough. It revolves all on
->> > enabling/disabling npt, while enabled overall VM performance is nice but the
->> > GPU performance gives me about 20% (and a lot of drops to zero GPU usage,
->> > while CPU/Disk/Ram also doing nothing) compared to npt disabled. But while
->> > npt is disabled overall VM performance is like beeing on 4x86 with floppy
->> > disk as only storage. (Ex. it takes 2 seconds just to open startmenu while
->> > host and vm are in idle, and neither CPU pinning, changing CPU model,
->> > changing storage device nor using hugepages changed anything).
->> >
->> > So everything I read pointed to a bug in the npt implementation? Anything I
->> > could do to get closer to the "thing" issuing this?
->> >
->> > Best Regards
->> >
->> > efeu
->> > _______________________________________________
->> > iommu mailing list
->> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>
->> I heard from Joerg that it might be related to a lower intercept rate
->> being used when NPT is enabled, but we haven't been able to find a way
->> to trace that to confirm.
->
-> Joerg/Paolo, any ideas how we might debug this?  Anyone from AMD
-> watching?  Thanks,
->
-> Alex
-
-
-Hi all,
-
-A somewhat major update.
-
-I managed to install Xen with my GPU passthrough config and test the
-performance with NPT enabled.
-
-There is no performance drop with NPT on Xen, it matches the GPU
-performance of KVM with NPT disabled. The CPU performance is also
-great.
-
-John Bridgman (ccd) from AMD says he's going to ask around AMD about
-this next week, but it would be even better if some AMD guys that read
-this ML shared their ideas or took a look.
-
-Let me know if you need any more information.
-
-Thanks,
-Sarnex
+T24gV2VkLCBKdW4gMjEsIDIwMTcgYXQgMDM6MzI6MzlQTSArMDIwMCwgTWFyZWsgU3p5cHJvd3Nr
+aSB3cm90ZToKPiBsaW51eC1uZXh0Cj4gd2FzIGEgc2lkZSBlZmZlY3Qgb2YgdGhhdC4gSSB0aGlu
+ayB0aGF0IGZvciBub3cgaXQgY2FuIGJlIGRyb3BwZWQgaW4gZmF2b3IgCj4gb2YKPiBDaHJpc3Rv
+cGgncyB0cmVlLiBJIGNhbiBhbHNvIGRvIHNvbWUgcmV2aWV3IGFuZCBoZWxwIGluIG1haW50YWlu
+ZXJzIHdvcmsgaWYKPiBuZWVkZWQsIGFsdGhvdWdoIEkgd2FzIHJlY2VudGx5IGJ1c3kgd2l0aCBv
+dGhlciBzdHVmZi4KPgo+IENocmlzdG9waDogQ291bGQgeW91IGFkZCBtZSB0byB5b3VyIE1BSU5U
+QUlORVJTIHBhdGNoLCBzbyBmdXJ0aGVyIAo+IGRtYS1tYXBwaW5nCj4gcmVsYXRlZCBwYXRjaGVz
+IGhvcGVmdWxseSB3aWxsIGJlIGFsc28gQ0M6IHRvIG1lPwoKSSd2ZSBhZGRlZCB5b3UgYXMgYSBj
+by1tYWludGFpbmVyLCB0aGFua3MhCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVk
+ZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2RyaS1kZXZlbAo=
