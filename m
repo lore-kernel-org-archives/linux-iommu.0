@@ -1,14 +1,18 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH 2/2] iommu/dma: use __GFP_NOWARN only for high-order
-	allocations
-Date: Tue, 27 Jun 2017 16:28:12 +0900
-Message-ID: <20170627072812.15316-2-tfiga@chromium.org>
-References: <20170627072812.15316-1-tfiga@chromium.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 5/8] iommu/io-pgtable-arm: Support lockless operation
+Date: Tue, 27 Jun 2017 09:39:13 +0100
+Message-ID: <20170627083912.GA5759@arm.com>
+References: <cover.1498145008.git.robin.murphy@arm.com>
+	<af61929e3984a31588cab08ed84a237602b5263e.1498145008.git.robin.murphy@arm.com>
+	<20170623055326.GA2949@virtx40> <20170623085607.GC3718@virtx40>
+	<7a8da378-19e2-2f35-877a-cc6ce389301a@arm.com>
+	<20170623113405.GA5221@virtx40> <20170627051155.GA9525@virtx40>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170627072812.15316-1-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170627051155.GA9525@virtx40>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,52 +22,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Memory allocation routines are expected to report allocation errors to
-kernel log. However, current implementation of __iommu_dma_alloc_pages()
-adds __GFP_NOWARN for all calls to alloc_pages(), which completely
-disables any logging.
+On Tue, Jun 27, 2017 at 10:41:55AM +0530, Linu Cherian wrote:
+> On Fri Jun 23, 2017 at 05:04:05PM +0530, Linu Cherian wrote:
+> > On Fri Jun 23, 2017 at 11:35:25AM +0100, Robin Murphy wrote:
+> > > Note that on a coherent platform like ThunderX that's as good as just
+> > > deleting it, because you'll never execute the case below. However, on
+> > > reflection I think it can at least safely be downgraded to dma_wmb()
+> > > (i.e. DMB) rather than a full DSB - would you be able to test what
+> > > difference that makes?
+> > 
+> > The testing was done on Thunderx 1, which has a non coherent page table walk.
+> > Yes, downgrading to dma_wmb() helps. With this change, performance is back to v1.
+> > 
+> 
+> Should i send a patch for this ?
 
-Fix it by adding __GFP_NOWARN only to high order allocation attempts,
-which are not critical.
+I already did it:
 
-Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
----
- drivers/iommu/dma-iommu.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/commit/?h=for-joerg/arm-smmu/updates&id=77f3445866c39d8866b31d8d9fa47c7c20938e05
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 29965a092a69..8507987eed90 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -433,6 +433,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
- {
- 	struct page **pages;
- 	unsigned int i = 0, array_size = count * sizeof(*pages);
-+	const gfp_t high_order_gfp = __GFP_NOWARN | __GFP_NORETRY;
- 
- 	order_mask &= (2U << MAX_ORDER) - 1;
- 	if (!order_mask)
-@@ -452,8 +453,6 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
- 	if (!(gfp & (__GFP_DMA | __GFP_DMA32)))
- 		gfp |= __GFP_HIGHMEM;
- 
--	gfp |= __GFP_NOWARN;
--
- 	while (count) {
- 		struct page *page = NULL;
- 		unsigned int order_size;
-@@ -469,7 +468,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
- 
- 			order_size = 1U << order;
- 			page = alloc_pages((order_mask - order_size) ?
--					   gfp | __GFP_NORETRY : gfp, order);
-+					   gfp | high_order_gfp : gfp, order);
- 			if (!page)
- 				continue;
- 			if (!order)
--- 
-2.13.1.611.g7e3b11ae1-goog
+Will
