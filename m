@@ -1,72 +1,102 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/s390: Add support for iommu_device handling
-Date: Tue, 27 Jun 2017 17:28:06 +0200
-Message-ID: <20170627152806.GZ30388@8bytes.org>
-References: <1497532312-30470-1-git-send-email-joro@8bytes.org>
-	<1497532312-30470-3-git-send-email-joro@8bytes.org>
-	<20170619170219.0a8626b6@thinkpad>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 2/3] iommu/iova: don't disable preempt around this_cpu_ptr()
+Date: Tue, 27 Jun 2017 18:16:47 +0200
+Message-ID: <20170627161648.30302-2-bigeasy@linutronix.de>
+References: <20170627161648.30302-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170619170219.0a8626b6@thinkpad>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170627161648.30302-1-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: tglx@linutronix.de
+Cc: linux-kernel@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 19, 2017 at 05:02:19PM +0200, Gerald Schaefer wrote:
-> On Thu, 15 Jun 2017 15:11:52 +0200
-> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> > +	rc = zpci_init_iommu(zdev);
-> > +	if (rc)
-> > +		goto out_free;
-> > +
-> 
-> After this point, there are two options for failure (zpci_enable_device +
-> zpci_scan_bus), but missing error handling with an appropriate call to
-> zpci_destroy_iommu().
+Commit 583248e6620a ("iommu/iova: Disable preemption around use of
+this_cpu_ptr()") disables preemption while accessing a per-CPU variable.
+This does keep lockdep quiet. However I don't see the point why it is
+bad if we get migrated after its access to another CPU.
+__iova_rcache_insert() and __iova_rcache_get() immediately locks the
+variable after obtaining it - before accessing its members.
+_If_ we get migrated away after retrieving the address of cpu_rcache
+before taking the lock then the *other* task on the same CPU will
+retrieve the same address of cpu_rcache and will spin on the lock.
 
-Right, I'll fix that in the next version.
+alloc_iova_fast() disables preemption while invoking
+free_cpu_cached_iovas() on each CPU. The function itself uses
+per_cpu_ptr() which does not trigger a warning (like this_cpu_ptr()
+does). It _could_ make sense to use get_online_cpus() instead but the we
+have a hotplug notifier for CPU down (and none for up) so we are good.
 
-> I must admit that I do not understand what these sysfs attributes are
-> used for, and by whom and when. Is it really necessary/correct to register
-> them (including the s390_iommu_ops) _before_ the zpci_dev is registered
-> to the bus (zpci_scan_bus -> pci_scan_root_bus/pci_bus_add_devices)?
-> 
-> What is the expected life cycle for the attributes, and are they already
-> needed when a device is still under DMA API access, or even before it is
-> added to the PCI bus?
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iommu/iova.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-The sysfs attributes are used by user-space for topology detection. A
-user-space program using VFIO needs to know which PCI-devices it needs
-to assign to the VFIO driver in order to gain access.
-
-On s390 this probably doesn't matter much, as the real PCI topology is
-not exposed, but it matters on other architectures. The purpose of this
-patch is not so much the sysfs attributes. Its a step to convert all
-IOMMU drivers to use the iommu_device_register() interface. Goal is that
-the iommu core code knows about individual hardware iommus and the
-devices behind it.
-
-When this is implemented in all iommu drivers, we can start moving more
-code out of the drivers into the iommu core. This also probably doesn't
-matter much for s390, but all iommu drivers need to use this interface
-before we can move on. The sysfs-stuff is just a by-product of that.
-
-So to move on with that, it would be good to get an Acked-by on this
-patch from you guys once you think I fixed everything :)
-
-
-Regards,
-
-	Joerg
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 5c88ba70e4e0..f0ff0aa04081 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -22,6 +22,7 @@
+ #include <linux/slab.h>
+ #include <linux/smp.h>
+ #include <linux/bitops.h>
++#include <linux/cpu.h>
+=20
+ static bool iova_rcache_insert(struct iova_domain *iovad,
+ 			       unsigned long pfn,
+@@ -398,10 +399,8 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned lo=
+ng size,
+=20
+ 		/* Try replenishing IOVAs by flushing rcache. */
+ 		flushed_rcache =3D true;
+-		preempt_disable();
+ 		for_each_online_cpu(cpu)
+ 			free_cpu_cached_iovas(cpu, iovad);
+-		preempt_enable();
+ 		goto retry;
+ 	}
+=20
+@@ -729,7 +728,7 @@ static bool __iova_rcache_insert(struct iova_domain *io=
+vad,
+ 	bool can_insert =3D false;
+ 	unsigned long flags;
+=20
+-	cpu_rcache =3D get_cpu_ptr(rcache->cpu_rcaches);
++	cpu_rcache =3D raw_cpu_ptr(rcache->cpu_rcaches);
+ 	spin_lock_irqsave(&cpu_rcache->lock, flags);
+=20
+ 	if (!iova_magazine_full(cpu_rcache->loaded)) {
+@@ -759,7 +758,6 @@ static bool __iova_rcache_insert(struct iova_domain *io=
+vad,
+ 		iova_magazine_push(cpu_rcache->loaded, iova_pfn);
+=20
+ 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+-	put_cpu_ptr(rcache->cpu_rcaches);
+=20
+ 	if (mag_to_free) {
+ 		iova_magazine_free_pfns(mag_to_free, iovad);
+@@ -793,7 +791,7 @@ static unsigned long __iova_rcache_get(struct iova_rcac=
+he *rcache,
+ 	bool has_pfn =3D false;
+ 	unsigned long flags;
+=20
+-	cpu_rcache =3D get_cpu_ptr(rcache->cpu_rcaches);
++	cpu_rcache =3D raw_cpu_ptr(rcache->cpu_rcaches);
+ 	spin_lock_irqsave(&cpu_rcache->lock, flags);
+=20
+ 	if (!iova_magazine_empty(cpu_rcache->loaded)) {
+@@ -815,7 +813,6 @@ static unsigned long __iova_rcache_get(struct iova_rcac=
+he *rcache,
+ 		iova_pfn =3D iova_magazine_pop(cpu_rcache->loaded, limit_pfn);
+=20
+ 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+-	put_cpu_ptr(rcache->cpu_rcaches);
+=20
+ 	return iova_pfn;
+ }
+--=20
+2.13.1
