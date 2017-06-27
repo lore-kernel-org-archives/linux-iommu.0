@@ -1,90 +1,75 @@
-From: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Devel] [RESEND PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround
-	for Cavium ThunderX2 erratum #126
-Date: Tue, 27 Jun 2017 20:28:14 +0530
-Message-ID: <CANHdaibSGtbdQfZ2kv1E9t4eE+JY2wtsDP7=rEw-mj059yhyHA@mail.gmail.com>
-References: <1498224876-5200-1-git-send-email-gakula@caviumnetworks.com>
-	<20170627135610.GX658@rric.localdomain>
-	<20170627140559.GK14041@arm.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: [PATCH v8 11/38] x86/mm: Add SME support for read_cr3_pa()
+Date: Tue, 27 Jun 2017 09:58:12 -0500
+Message-ID: <20170627145812.15908.39913.stgit@tlendack-t1.amdoffice.net>
+References: <20170627145607.15908.26571.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170627140559.GK14041-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles Garcia-Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170627145607.15908.26571.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc: Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?b?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Dmitry Vyukov <dvyukov@google.com>, Juergen Gross <jgross@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Paolo Bonzini <pbonzini@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 27, 2017 at 7:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Tue, Jun 27, 2017 at 03:56:10PM +0200, Robert Richter wrote:
->> On 23.06.17 19:04:36, Geetha sowjanya wrote:
->> > From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->> >
->> > Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
->> > lines for gerror, eventq and cmdq-sync.
->> >
->> > New named irq "combined" is set as a errata workaround, which allows to
->> > share the irq line by register single irq handler for all the interrupts.
->> >
->> > Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
->> > ---
->> >  Documentation/arm64/silicon-errata.txt             |    1 +
->> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 +
->> >  drivers/acpi/arm64/iort.c                          |   57 ++++++++---
->> >  drivers/iommu/arm-smmu-v3.c                        |  100 ++++++++++++++-----
->> >  4 files changed, 121 insertions(+), 43 deletions(-)
->>
->> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->> > +{
->> > +   int ret, irq;
->> > +   u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
->> > +
->> > +   /* Disable IRQs first */
->> > +   ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
->> > +                                 ARM_SMMU_IRQ_CTRLACK);
->> > +   if (ret) {
->> > +           dev_err(smmu->dev, "failed to disable irqs\n");
->> > +           return ret;
->> > +   }
->> > +
->> > +   irq = smmu->combined_irq;
->> > +   if (irq) {
->> > +           /*
->> > +            * Cavium ThunderX2 implementation doesn't not support unique
->> > +            * irq lines. Use single irq line for all the SMMUv3 interrupts.
->> > +            */
->> > +           ret = devm_request_threaded_irq(smmu->dev, irq,
->> > +                                   arm_smmu_combined_irq_handler,
->> > +                                   arm_smmu_combined_irq_thread,
->> > +                                   IRQF_ONESHOT,
->>
->> Without the IRQF_SHARED flag set I see the following on a dual node
->> system now:
-Node1 SMMU interrupts are programmed wrong in the firmware.
-Node 0 and Node1 SMMU do not share interrupts.
-I have verified the patch on dual node with correct interrupt numbers
-programmed in firmware.
+The cr3 register entry can contain the SME encryption mask that indicates
+the PGD is encrypted.  The encryption mask should not be used when
+creating a virtual address from the cr3 register, so remove the SME
+encryption mask in the read_cr3_pa() function.
 
+During early boot SME will need to use a native version of read_cr3_pa(),
+so create native_read_cr3_pa().
 
-Thanks,
-Geetha.
->
-> We asked about that before:
->
-> https://marc.info/?l=linux-arm-kernel&m=149803613513068&w=2
-> https://marc.info/?l=linux-acpi&m=149803744713475&w=2
->
-> and Geetha didn't reply, but the next version of the patch dropped the flag.
-> Is it just that firmware is misprogramming something here, or something
-> more fundamental?
->
-> Will
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+---
+ arch/x86/include/asm/processor-flags.h |    5 +++--
+ arch/x86/include/asm/processor.h       |    5 +++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/processor-flags.h b/arch/x86/include/asm/processor-flags.h
+index 79aa2f9..f5d3e50 100644
+--- a/arch/x86/include/asm/processor-flags.h
++++ b/arch/x86/include/asm/processor-flags.h
+@@ -2,6 +2,7 @@
+ #define _ASM_X86_PROCESSOR_FLAGS_H
+ 
+ #include <uapi/asm/processor-flags.h>
++#include <linux/mem_encrypt.h>
+ 
+ #ifdef CONFIG_VM86
+ #define X86_VM_MASK	X86_EFLAGS_VM
+@@ -32,8 +33,8 @@
+  * CR3_ADDR_MASK is the mask used by read_cr3_pa().
+  */
+ #ifdef CONFIG_X86_64
+-/* Mask off the address space ID bits. */
+-#define CR3_ADDR_MASK 0x7FFFFFFFFFFFF000ull
++/* Mask off the address space ID and SME encryption bits. */
++#define CR3_ADDR_MASK __sme_clr(0x7FFFFFFFFFFFF000ull)
+ #define CR3_PCID_MASK 0xFFFull
+ #else
+ /*
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 8010c97..ab878bd 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -240,6 +240,11 @@ static inline unsigned long read_cr3_pa(void)
+ 	return __read_cr3() & CR3_ADDR_MASK;
+ }
+ 
++static inline unsigned long native_read_cr3_pa(void)
++{
++	return __native_read_cr3() & CR3_ADDR_MASK;
++}
++
+ static inline void load_cr3(pgd_t *pgdir)
+ {
+ 	write_cr3(__sme_pa(pgdir));
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
