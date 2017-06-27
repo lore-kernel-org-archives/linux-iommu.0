@@ -1,60 +1,67 @@
-From: Linu Cherian <linuc.decode@gmail.com>
-Subject: Re: [PATCH v2 5/8] iommu/io-pgtable-arm: Support lockless operation
-Date: Tue, 27 Jun 2017 14:38:24 +0530
-Message-ID: <20170627090824.GA2758@virtx40>
-References: <cover.1498145008.git.robin.murphy@arm.com>
- <af61929e3984a31588cab08ed84a237602b5263e.1498145008.git.robin.murphy@arm.com>
- <20170623055326.GA2949@virtx40> <20170623085607.GC3718@virtx40>
- <7a8da378-19e2-2f35-877a-cc6ce389301a@arm.com>
- <20170623113405.GA5221@virtx40> <20170627051155.GA9525@virtx40>
- <20170627083912.GA5759@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/dma: Respect __GFP_DMA and __GFP_DMA32 in
+	incoming GFP flags
+Date: Tue, 27 Jun 2017 12:01:21 +0100
+Message-ID: <ca273ece-b501-e853-aa84-bd1153086fe9@arm.com>
+References: <20170627072812.15316-1-tfiga@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20170627083912.GA5759@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: salil.mehta@huawei.com, sunil.goutham@cavium.com, thunder.leizhen@huawei.com, joro@8bytes.org, john.garry@huawei.com, iommu@lists.linux-foundation.org, wangzhou1@hisilicon.com, ray.jui@broadcom.com, nwatters@codeaurora.org, Linu Cherian <linu.cherian@cavium.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170627072812.15316-1-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue Jun 27, 2017 at 09:39:13AM +0100, Will Deacon wrote:
-> On Tue, Jun 27, 2017 at 10:41:55AM +0530, Linu Cherian wrote:
-> > On Fri Jun 23, 2017 at 05:04:05PM +0530, Linu Cherian wrote:
-> > > On Fri Jun 23, 2017 at 11:35:25AM +0100, Robin Murphy wrote:
-> > > > Note that on a coherent platform like ThunderX that's as good as just
-> > > > deleting it, because you'll never execute the case below. However, on
-> > > > reflection I think it can at least safely be downgraded to dma_wmb()
-> > > > (i.e. DMB) rather than a full DSB - would you be able to test what
-> > > > difference that makes?
-> > > 
-> > > The testing was done on Thunderx 1, which has a non coherent page table walk.
-> > > Yes, downgrading to dma_wmb() helps. With this change, performance is back to v1.
-> > > 
-> > 
-> > Should i send a patch for this ?
+On 27/06/17 08:28, Tomasz Figa wrote:
+> Current implementation of __iommu_dma_alloc_pages() keeps adding
+> __GFP_HIGHMEM to GFP flags regardless of whether other zone flags are
+> already included in the incoming flags. If __GFP_DMA or __GFP_DMA32 is
+> set at the same time as __GFP_HIGHMEM, the allocation fails due to
+> invalid zone flag combination.
 > 
-> I already did it:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/commit/?h=for-joerg/arm-smmu/updates&id=77f3445866c39d8866b31d8d9fa47c7c20938e05
-> 
-> Will
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> Fix this by checking for __GFP_DMA and __GFP_DMA32 in incoming GFP flags
+> and adding __GFP_HIGHMEM only if they are not present.
 
-Thanks Will.
+Wouldn't it make more sense to strip off the ZONE_DMA* related flags,
+since the whole point here is that we don't care where the pages come from?
 
--- 
-Linu cherian
+Robin.
+
+> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 9d1cebe7f6cb..29965a092a69 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -445,8 +445,14 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
+>  	if (!pages)
+>  		return NULL;
+>  
+> -	/* IOMMU can map any pages, so himem can also be used here */
+> -	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+> +	/*
+> +	 * IOMMU can map any pages, so himem can also be used here,
+> +	 * unless another DMA zone is explicitly requested.
+> +	 */
+> +	if (!(gfp & (__GFP_DMA | __GFP_DMA32)))
+> +		gfp |= __GFP_HIGHMEM;
+> +
+> +	gfp |= __GFP_NOWARN;
+>  
+>  	while (count) {
+>  		struct page *page = NULL;
+> 
