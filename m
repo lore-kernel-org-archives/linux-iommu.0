@@ -1,79 +1,95 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC 0/9] IOMMU driver support for shared virtual memory
-	virtualization
-Date: Tue, 27 Jun 2017 12:47:54 -0700
-Message-ID: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 6/9] iommu/vt-d: track device with pasid table bond to a guest
+Date: Tue, 27 Jun 2017 12:48:00 -0700
+Message-ID: <1498592883-56224-7-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Shared virtual memory (SVM) space between devices and applications can
-reduce programming complexity and enhance security. To enable SVM in
-the guest, i.e. share guest application address space with physical
-device DMA address, IOMMU driver must provide some new functionalities.
+When PASID table pointer of an assigned device is bond to a guest,
+the first level page tables are managed by the guest. However, only
+host/physical IOMMU can detect fault events, e.g. page requests.
+Therefore, we need to keep track of which device has its PASID table
+pointer bond to a guest such that page request and other events can
+be propagated to the guest as needed.
 
-The complete guest SVM support also involves changes in QEMU and VFIO,
-which has been posted earlier.
-https://www.spinics.net/lists/kvm/msg148798.html
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+---
+ drivers/iommu/intel-iommu.c | 19 +------------------
+ include/linux/intel-iommu.h | 19 +++++++++++++++++++
+ 2 files changed, 20 insertions(+), 18 deletions(-)
 
-This is the IOMMU portion follow up of the more complete series of the
-kernel changes to support SVM. Please refer to the link below for more
-details. https://www.spinics.net/lists/kvm/msg148819.html
-
-Generic APIs are introduced in addition to Intel VT-d specific changes,
-the goal is to have common interfaces across IOMMU and device types for
-both VFIO and other in-kernel users.
-
-At the top level, three new IOMMU interfaces are introduced:
- - bind PASID table
- - passdown invalidation
- - per device IOMMU fault notification
-
-The additional patches are Intel VT-d specific, which either implements or
-replaces existing private interfaces with the generic ones.
-
-Thanks,
-
-Jacob
-
-
-Jacob Pan (8):
-  iommu: Introduce bind_pasid_table API function
-  iommu/vt-d: add bind_pasid_table function
-  iommu/vt-d: Add iommu do invalidate function
-  iommu: Introduce fault notifier API
-  iommu/vt-d: track device with pasid table bond to a guest
-  iommu/dmar: notify unrecoverable faults
-  iommu/intel-svm: notify page request to guest
-  iommu/intel-svm: replace dev ops with generic fault notifier
-
-Liu, Yi L (1):
-  iommu: Introduce iommu do invalidate API function
-
- drivers/iommu/dmar.c          |  38 ++++++++-
- drivers/iommu/intel-iommu.c   | 177 +++++++++++++++++++++++++++++++++++++-----
- drivers/iommu/intel-svm.c     | 102 +++++++++++++++++++++---
- drivers/iommu/iommu.c         |  77 ++++++++++++++++++
- include/linux/dma_remapping.h |   1 +
- include/linux/intel-iommu.h   |  30 ++++++-
- include/linux/intel-svm.h     |  20 +----
- include/linux/iommu.h         |  59 ++++++++++++++
- include/uapi/linux/iommu.h    |  85 ++++++++++++++++++++
- 9 files changed, 540 insertions(+), 49 deletions(-)
- create mode 100644 include/uapi/linux/iommu.h
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 242bb8c..d911d47 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -416,24 +416,6 @@ struct dmar_domain {
+ 					   iommu core */
+ };
+ 
+-/* PCI domain-device relationship */
+-struct device_domain_info {
+-	struct list_head link;	/* link to domain siblings */
+-	struct list_head global; /* link to global list */
+-	u8 bus;			/* PCI bus number */
+-	u8 devfn;		/* PCI devfn number */
+-	u8 pasid_supported:3;
+-	u8 pasid_enabled:1;
+-	u8 pri_supported:1;
+-	u8 pri_enabled:1;
+-	u8 ats_supported:1;
+-	u8 ats_enabled:1;
+-	u8 ats_qdep;
+-	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+-	struct intel_iommu *iommu; /* IOMMU used by this device */
+-	struct dmar_domain *domain; /* pointer to domain */
+-};
+-
+ struct dmar_rmrr_unit {
+ 	struct list_head list;		/* list of rmrr units	*/
+ 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
+@@ -5555,6 +5537,7 @@ static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
+ 				DMA_CCMD_MASK_NOBIT,
+ 				DMA_CCMD_DEVICE_INVL);
+ 	iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
++	info->pasid_tbl_bound = 1;
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 
+ 
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 8df6c91..61f81ab 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -434,6 +434,25 @@ struct intel_iommu {
+ 	u32		flags;      /* Software defined flags */
+ };
+ 
++/* PCI domain-device relationship */
++struct device_domain_info {
++	struct list_head link;	/* link to domain siblings */
++	struct list_head global; /* link to global list */
++	u8 bus;			/* PCI bus number */
++	u8 devfn;		/* PCI devfn number */
++	u8 pasid_supported:3;
++	u8 pasid_enabled:1;
++	u8 pasid_tbl_bound:1;	/* bound to guest PASID table */
++	u8 pri_supported:1;
++	u8 pri_enabled:1;
++	u8 ats_supported:1;
++	u8 ats_enabled:1;
++	u8 ats_qdep;
++	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
++	struct intel_iommu *iommu; /* IOMMU used by this device */
++	struct dmar_domain *domain; /* pointer to domain */
++};
++
+ static inline void __iommu_flush_cache(
+ 	struct intel_iommu *iommu, void *addr, int size)
+ {
 -- 
 2.7.4
