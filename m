@@ -1,18 +1,16 @@
-From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [Devel] [RESEND PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround
-	for Cavium ThunderX2 erratum #126
-Date: Tue, 27 Jun 2017 17:18:01 +0200
-Message-ID: <20170627151801.GT31368@rric.localdomain>
-References: <1498224876-5200-1-git-send-email-gakula@caviumnetworks.com>
-	<20170627135610.GX658@rric.localdomain>
-	<20170627140559.GK14041@arm.com>
-	<CANHdaibSGtbdQfZ2kv1E9t4eE+JY2wtsDP7=rEw-mj059yhyHA@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/s390: Add support for iommu_device handling
+Date: Tue, 27 Jun 2017 17:28:06 +0200
+Message-ID: <20170627152806.GZ30388@8bytes.org>
+References: <1497532312-30470-1-git-send-email-joro@8bytes.org>
+	<1497532312-30470-3-git-send-email-joro@8bytes.org>
+	<20170619170219.0a8626b6@thinkpad>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CANHdaibSGtbdQfZ2kv1E9t4eE+JY2wtsDP7=rEw-mj059yhyHA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20170619170219.0a8626b6@thinkpad>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,63 +20,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles Garcia-Tobin <Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org>
+To: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 27.06.17 20:28:14, Geetha Akula wrote:
-> On Tue, Jun 27, 2017 at 7:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Tue, Jun 27, 2017 at 03:56:10PM +0200, Robert Richter wrote:
-> >> On 23.06.17 19:04:36, Geetha sowjanya wrote:
-> >> > From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >> >
-> >> > Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
-> >> > lines for gerror, eventq and cmdq-sync.
-> >> >
-> >> > New named irq "combined" is set as a errata workaround, which allows to
-> >> > share the irq line by register single irq handler for all the interrupts.
-> >> >
-> >> > Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> >> > ---
-> >> >  Documentation/arm64/silicon-errata.txt             |    1 +
-> >> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 +
-> >> >  drivers/acpi/arm64/iort.c                          |   57 ++++++++---
-> >> >  drivers/iommu/arm-smmu-v3.c                        |  100 ++++++++++++++-----
-> >> >  4 files changed, 121 insertions(+), 43 deletions(-)
-> >>
-> >> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> >> > +{
-> >> > +   int ret, irq;
-> >> > +   u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-> >> > +
-> >> > +   /* Disable IRQs first */
-> >> > +   ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
-> >> > +                                 ARM_SMMU_IRQ_CTRLACK);
-> >> > +   if (ret) {
-> >> > +           dev_err(smmu->dev, "failed to disable irqs\n");
-> >> > +           return ret;
-> >> > +   }
-> >> > +
-> >> > +   irq = smmu->combined_irq;
-> >> > +   if (irq) {
-> >> > +           /*
-> >> > +            * Cavium ThunderX2 implementation doesn't not support unique
-> >> > +            * irq lines. Use single irq line for all the SMMUv3 interrupts.
-> >> > +            */
-> >> > +           ret = devm_request_threaded_irq(smmu->dev, irq,
-> >> > +                                   arm_smmu_combined_irq_handler,
-> >> > +                                   arm_smmu_combined_irq_thread,
-> >> > +                                   IRQF_ONESHOT,
-> >>
-> >> Without the IRQF_SHARED flag set I see the following on a dual node
-> >> system now:
-> Node1 SMMU interrupts are programmed wrong in the firmware.
-> Node 0 and Node1 SMMU do not share interrupts.
-> I have verified the patch on dual node with correct interrupt numbers
-> programmed in firmware.
+On Mon, Jun 19, 2017 at 05:02:19PM +0200, Gerald Schaefer wrote:
+> On Thu, 15 Jun 2017 15:11:52 +0200
+> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> > +	rc = zpci_init_iommu(zdev);
+> > +	if (rc)
+> > +		goto out_free;
+> > +
+> 
+> After this point, there are two options for failure (zpci_enable_device +
+> zpci_scan_bus), but missing error handling with an appropriate call to
+> zpci_destroy_iommu().
 
-Ah, ok, will update to latest fw.
+Right, I'll fix that in the next version.
 
-Thanks,
+> I must admit that I do not understand what these sysfs attributes are
+> used for, and by whom and when. Is it really necessary/correct to register
+> them (including the s390_iommu_ops) _before_ the zpci_dev is registered
+> to the bus (zpci_scan_bus -> pci_scan_root_bus/pci_bus_add_devices)?
+> 
+> What is the expected life cycle for the attributes, and are they already
+> needed when a device is still under DMA API access, or even before it is
+> added to the PCI bus?
 
--Robert
+The sysfs attributes are used by user-space for topology detection. A
+user-space program using VFIO needs to know which PCI-devices it needs
+to assign to the VFIO driver in order to gain access.
+
+On s390 this probably doesn't matter much, as the real PCI topology is
+not exposed, but it matters on other architectures. The purpose of this
+patch is not so much the sysfs attributes. Its a step to convert all
+IOMMU drivers to use the iommu_device_register() interface. Goal is that
+the iommu core code knows about individual hardware iommus and the
+devices behind it.
+
+When this is implemented in all iommu drivers, we can start moving more
+code out of the drivers into the iommu core. This also probably doesn't
+matter much for s390, but all iommu drivers need to use this interface
+before we can move on. The sysfs-stuff is just a by-product of that.
+
+So to move on with that, it would be good to get an Acked-by on this
+patch from you guys once you think I fixed everything :)
+
+
+Regards,
+
+	Joerg
