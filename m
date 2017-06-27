@@ -1,214 +1,130 @@
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 5/9] iommu: Introduce fault notifier API
-Date: Tue, 27 Jun 2017 12:47:59 -0700
-Message-ID: <1498592883-56224-6-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 4/9] iommu/vt-d: Add iommu do invalidate function
+Date: Tue, 27 Jun 2017 12:47:58 -0700
+Message-ID: <1498592883-56224-5-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org, Yi L <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Traditionally, device specific faults are detected and handled within
-their own device drivers. When IOMMU is enabled, faults such as DMA
-related transactions are detected by IOMMU. There is no generic
-reporting mechanism to report faults back to the in-kernel device
-driver or the guest OS in case of assigned devices.
+This patch adds Intel VT-d specific function to implement
+iommu_do_invalidate API.
 
-Faults detected by IOMMU is based on the transaction's source ID which
-can be reported at per device basis, regardless of the device type is a
-PCI device or not.
+The use case is for supporting caching structure invalidation
+of assigned SVM capable devices. Emulated IOMMU exposes queue
+invalidation capability and passes down all descriptors from the guest
+to the physical IOMMU.
 
-The fault types includes recoverable (e.g. page request) and
-unrecoverable faults(e.g. invalid context). In most cases, faults can be
-handled by IOMMU drivers. However, there are use cases that require
-fault processing outside IOMMU driver, e.g.
+The assumption is that guest to host device ID mapping should be
+resolved prior to calling IOMMU driver. Based on the device handle,
+host IOMMU driver can replace certain fields before submit to the
+invalidation queue.
 
-1. page request fault originated from an SVM capable device that is
-assigned to guest via vIOMMU. In this case, the first level page tables
-are owned by the guest. Page request must be propagated to the guest to
-let guest OS fault in the pages then send page response. In this
-mechanism, the direct receiver of IOMMU fault notification is VFIO,
-which can relay notification events to QEMU or other user space
-software.
-
-2. faults need more subtle handling by device drivers. Other than
-simply invoke reset function, there are needs to let device driver
-handle the fault with a smaller impact.
-
-This patchset is intended to create a generic fault notification API such
-that it can scale as follows:
-- all IOMMU types
-- PCI and non-PCI devices
-- recoverable and unrecoverable faults
-- VFIO and other other in kernel users
-- DMA & IRQ remapping (TBD)
-
-The event data contains both generic and raw architectural data
-such that performance is not compromised as the data propagation may
-involve many layers.
-
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/iommu.c      | 44 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/iommu.h      | 23 +++++++++++++++++++++++
- include/uapi/linux/iommu.h | 34 ++++++++++++++++++++++++++++++++++
- 3 files changed, 101 insertions(+)
+ drivers/iommu/intel-iommu.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h | 11 ++++++++++-
+ 2 files changed, 51 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d973555..07cfd92 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -48,6 +48,7 @@ struct iommu_group {
- 	struct list_head devices;
- 	struct mutex mutex;
- 	struct blocking_notifier_head notifier;
-+	struct blocking_notifier_head fault_notifier;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
- 	char *name;
-@@ -345,6 +346,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
-+	BLOCKING_INIT_NOTIFIER_HEAD(&group->fault_notifier);
- 
- 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -790,6 +792,48 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
- EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
- 
- /**
-+ * iommu_register_fault_notifier - Register a notifier for fault reporting
-+ * @group: device's iommu group to notify fault events
-+ * @nb: notifier block to signal
-+ *
-+ */
-+int iommu_register_fault_notifier(struct iommu_group *group,
-+				struct notifier_block *nb)
-+{
-+	return blocking_notifier_chain_register(&group->fault_notifier, nb);
-+}
-+EXPORT_SYMBOL_GPL(iommu_register_fault_notifier);
-+
-+/**
-+ * iommu_unregister_fault_notifier - Unregister a notifier for fault reporting
-+ * @domain: the domain to watch
-+ * @nb: notifier block to signal
-+ *
-+ */
-+int iommu_unregister_fault_notifier(struct iommu_group *group,
-+				  struct notifier_block *nb)
-+{
-+	return blocking_notifier_chain_unregister(&group->fault_notifier, nb);
-+}
-+EXPORT_SYMBOL_GPL(iommu_unregister_fault_notifier);
-+
-+int iommu_fault_notifier_call_chain(struct iommu_fault_event *event)
-+{
-+	int ret;
-+	struct iommu_group *group = iommu_group_get(event->dev);
-+
-+	if (!group)
-+		return -EINVAL;
-+	/* caller provide generic data related to the event, TBD */
-+	ret = (blocking_notifier_call_chain(&group->fault_notifier, 0, (void *)event)
-+		== NOTIFY_BAD) ? -EINVAL : 0;
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iommu_fault_notifier_call_chain);
-+
-+/**
-  * iommu_group_id - Return ID for a group
-  * @group: the group to ID
-  *
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index fbc08ae..ed2f804 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -342,6 +342,12 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
- 					 struct notifier_block *nb);
- extern int iommu_group_unregister_notifier(struct iommu_group *group,
- 					   struct notifier_block *nb);
-+extern int iommu_register_fault_notifier(struct iommu_group *group,
-+					 struct notifier_block *nb);
-+extern int iommu_unregister_fault_notifier(struct iommu_group *group,
-+					 struct notifier_block *nb);
-+extern int iommu_fault_notifier_call_chain(struct iommu_fault_event *event);
-+
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
-@@ -574,6 +580,23 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
- 	return 0;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index ef05b59..242bb8c 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5127,6 +5127,46 @@ static void intel_iommu_detach_device(struct iommu_domain *domain,
+ 	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
  }
  
-+static inline int iommu_register_fault_notifier(struct device *dev,
-+						  struct notifier_block *nb)
++static int intel_iommu_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct tlb_invalidate_info *inv_info)
 +{
-+	return 0;
++	struct intel_iommu *iommu;
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct intel_invalidate_data *inv_data;
++	struct qi_desc *qi;
++	u16 did;
++	u8 bus, devfn;
++
++	if (!inv_info || !dmar_domain || (inv_info->model != IOMMU_MODEL_INTEL_VTD))
++		return -EINVAL;
++
++	iommu = device_to_iommu(dev, &bus, &devfn);
++	if (!iommu)
++		return -ENODEV;
++
++	inv_data = (struct intel_invalidate_data *)&inv_info->opaque;
++
++	/* check SID */
++	if (PCI_DEVID(bus, devfn) != inv_data->sid)
++		return 0;
++
++	qi = &inv_data->inv_desc;
++
++	switch (qi->low & QI_TYPE_MASK) {
++	case QI_DIOTLB_TYPE:
++	case QI_DEIOTLB_TYPE:
++		/* for device IOTLB, we just let it pass through */
++		break;
++	default:
++		did = dmar_domain->iommu_did[iommu->seq_id];
++		qi->low &= ~QI_DID_MASK;
++		qi->low |= QI_DID(did);
++		break;
++	}
++
++	return qi_submit_sync(qi, iommu);
 +}
 +
-+static inline int iommu_unregister_fault_notifier(struct device *dev,
-+						  struct notifier_block *nb)
-+{
-+	return 0;
-+}
-+
-+static inline int iommu_fault_notifier_call_chain(struct iommu_fault_event *event)
-+{
-+	return 0;
-+}
-+
- static inline int iommu_group_id(struct iommu_group *group)
- {
- 	return -ENODEV;
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index f077353..a8e3d7f 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -48,4 +48,38 @@ struct tlb_invalidate_info {
- 	__u8	opaque[];
- };
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot)
+@@ -5554,6 +5594,7 @@ const struct iommu_ops intel_iommu_ops = {
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	.bind_pasid_table	= intel_iommu_bind_pasid_table,
+ 	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
++	.invalidate		= intel_iommu_invalidate,
+ #endif
+ 	.map			= intel_iommu_map,
+ 	.unmap			= intel_iommu_unmap,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 485a5b4..8df6c91 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -31,7 +31,6 @@
+ #include <linux/list.h>
+ #include <linux/iommu.h>
+ #include <linux/io-64-nonatomic-lo-hi.h>
+-
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
  
-+/*
-+ * Generic fault event notification data, used by all IOMMU models
-+ *
-+ * - PCI and non-PCI devices
-+ * - Recoverable faults (e.g. page request) & un-recoverable faults
-+ * - DMA remapping and IRQ remapping faults
-+ *
-+ * @dev The device which faults are reported by IOMMU
-+ * @addr tells the offending address
-+ * @pasid contains process address space ID, used in shared virtual memory (SVM)
-+ * @prot page access protection flag, e.g. IOMMU_READ, IOMMU_WRITE
-+ * @flags contains fault type, etc.
-+ * @length tells the size of the buf in bytes
-+ * @buf contains any raw or arch specific data
-+ *
-+ */
-+struct iommu_fault_event {
-+	struct device *dev;
-+	__u64 addr;
-+	__u32 pasid;
-+	__u32 prot;
-+	__u32 flags;
-+/* page request as result of recoverable translation fault */
-+#define IOMMU_FAULT_PAGE_REQ	BIT(0)
-+/* unrecoverable fault, e.g. invalid device context  */
-+#define IOMMU_FAULT_UNRECOV	BIT(1)
-+/* unrecoverable fault related to interrupt remapping */
-+#define IOMMU_FAULT_IRQ_REMAP	BIT(2)
-+/* unrecoverable fault on invalidation of translation caches */
-+#define IOMMU_FAULT_INVAL	BIT(3)
-+	__u32 length;
-+	__u8  buf[];
+@@ -258,6 +257,10 @@ enum {
+ #define QI_PGRP_RESP_TYPE	0x9
+ #define QI_PSTRM_RESP_TYPE	0xa
+ 
++#define QI_DID(did)		(((u64)did & 0xffff) << 16)
++#define QI_DID_MASK		GENMASK(31, 16)
++#define QI_TYPE_MASK		GENMASK(3, 0)
++
+ #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+ #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+ #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
+@@ -489,6 +492,12 @@ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_
+ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+ #endif
+ 
++struct intel_invalidate_data {
++	u16 sid;
++	u32 pasid;
++	struct qi_desc inv_desc;
 +};
 +
- #endif /* _UAPI_IOMMU_H */
+ extern const struct attribute_group *intel_iommu_groups[];
+ 
+ #endif
 -- 
 2.7.4
