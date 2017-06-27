@@ -1,72 +1,140 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [Devel] [RESEND PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround
- for Cavium ThunderX2 erratum #126
-Date: Tue, 27 Jun 2017 15:06:00 +0100
-Message-ID: <20170627140559.GK14041@arm.com>
-References: <1498224876-5200-1-git-send-email-gakula@caviumnetworks.com>
- <20170627135610.GX658@rric.localdomain>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/dma: Respect __GFP_DMA and __GFP_DMA32 in
+	incoming GFP flags
+Date: Tue, 27 Jun 2017 15:52:55 +0100
+Message-ID: <f902669c-00d9-a311-8554-93e16be3ceb5@arm.com>
+References: <20170627072812.15316-1-tfiga@chromium.org>
+	<ca273ece-b501-e853-aa84-bd1153086fe9@arm.com>
+	<CAAFQd5DUXtNpQ82TDE16Tzxhd0iNMQoPKMnWUoabAKOOSGrTWQ@mail.gmail.com>
+	<0a6dceb1-ffe6-b213-eb98-fd897b62febd@arm.com>
+	<CAAFQd5Bw-+hOsCgQ67yyCK70Vr9gTVyw59YOsTmGwgTDS+pWSg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170627135610.GX658@rric.localdomain>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robert Richter <robert.richter@cavium.com>
-Cc: Geetha sowjanya <gakula@caviumnetworks.com>, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, robh@kernel.org, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>, geethasowjanya.akula@gmail.com, jcm@redhat.com, linu.cherian@cavium.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, devel@acpica.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAAFQd5Bw-+hOsCgQ67yyCK70Vr9gTVyw59YOsTmGwgTDS+pWSg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 27, 2017 at 03:56:10PM +0200, Robert Richter wrote:
-> On 23.06.17 19:04:36, Geetha sowjanya wrote:
-> > From: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
-> > 
-> > Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
-> > lines for gerror, eventq and cmdq-sync.
-> > 
-> > New named irq "combined" is set as a errata workaround, which allows to
-> > share the irq line by register single irq handler for all the interrupts.
-> > 
-> > Signed-off-by: Geetha sowjanya <gakula@caviumnetworks.com>
-> > ---
-> >  Documentation/arm64/silicon-errata.txt             |    1 +
-> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 +
-> >  drivers/acpi/arm64/iort.c                          |   57 ++++++++---
-> >  drivers/iommu/arm-smmu-v3.c                        |  100 ++++++++++++++-----
-> >  4 files changed, 121 insertions(+), 43 deletions(-)
+On 27/06/17 13:44, Tomasz Figa wrote:
+> On Tue, Jun 27, 2017 at 9:26 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 27/06/17 12:17, Tomasz Figa wrote:
+>>> On Tue, Jun 27, 2017 at 8:01 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>>>> On 27/06/17 08:28, Tomasz Figa wrote:
+>>>>> Current implementation of __iommu_dma_alloc_pages() keeps adding
+>>>>> __GFP_HIGHMEM to GFP flags regardless of whether other zone flags are
+>>>>> already included in the incoming flags. If __GFP_DMA or __GFP_DMA32 is
+>>>>> set at the same time as __GFP_HIGHMEM, the allocation fails due to
+>>>>> invalid zone flag combination.
+>>>>>
+>>>>> Fix this by checking for __GFP_DMA and __GFP_DMA32 in incoming GFP flags
+>>>>> and adding __GFP_HIGHMEM only if they are not present.
+>>>>
+>>>> Wouldn't it make more sense to strip off the ZONE_DMA* related flags,
+>>>> since the whole point here is that we don't care where the pages come from?
+>>>
+>>> I guess for my use case it wouldn't break things, as I strip them in
+>>> my DMA mapping implementation right now (+/- one minor detail below).
+>>>
+>>> However I recall existing IOMMUs that could only use pages from within
+>>> the 32-bit address space (e.g. Tegra X1).
+>>
+>> In general, iommu-dma can't really support IOMMUs which can't reach the
+>> entirety of kernel memory - there's no easy way to determine what such a
+>> limit is if it exists, nor necessarily enforce it, and either way the
+>> streaming API callbacks are pretty much dead in the water.
 > 
-> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> > +{
-> > +	int ret, irq;
-> > +	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-> > +
-> > +	/* Disable IRQs first */
-> > +	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
-> > +				      ARM_SMMU_IRQ_CTRLACK);
-> > +	if (ret) {
-> > +		dev_err(smmu->dev, "failed to disable irqs\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	irq = smmu->combined_irq;
-> > +	if (irq) {
-> > +		/*
-> > +		 * Cavium ThunderX2 implementation doesn't not support unique
-> > +		 * irq lines. Use single irq line for all the SMMUv3 interrupts.
-> > +		 */
-> > +		ret = devm_request_threaded_irq(smmu->dev, irq,
-> > +					arm_smmu_combined_irq_handler,
-> > +					arm_smmu_combined_irq_thread,
-> > +					IRQF_ONESHOT,
+> Right. Especially with various user pointer sources it doesn't sound
+> very realistic to enforce that all memory comes from __GFP_DMA(32)
+> zone.
 > 
-> Without the IRQF_SHARED flag set I see the following on a dual node
-> system now:
+> On the other hand, support for user pointer is optional in subsystems
+> such as V4L2 and drivers for such disabled hardware could opt out.
+> Then at least dma_alloc can be made working, giving some level of
+> usability, IMHO higher than no IOMMU and contiguous memory allocated
+> from CMA.
+> 
+>>
+>>> Also the IOMMU I'm working
+>>> on is a part of a PCI device and it might actually prefer 32-bit
+>>> addressable memory as well (to avoid DAC addressing; I still need to
+>>> evaluate this). With this said, maybe it could actually make sense to
+>>> leave the choice to the DMA mapping implementation?
+>>
+>> I think you're right - we're just not in a position to make any decision
+>> at this level, so we probably do have to do this for robustness. I would
+>> like to fix the longstanding dodgy comment, though, to clarify that
+>> "IOMMU can map any pages" is only an assumption, and particularly one
+>> which is invalidated by the presence of GFP_DMA flags.
+> 
+> Just to make sure, should I resent with the commit updated? If so,
+> what would be your preference on the wording?
 
-We asked about that before:
+Yes please; how about this?
 
-https://marc.info/?l=linux-arm-kernel&m=149803613513068&w=2
-https://marc.info/?l=linux-acpi&m=149803744713475&w=2
+	/*
+	 * Unless we have some addressing limitation implied by GFP_DMA flags,
+	 * assume the IOMMU can map all of RAM and we can allocate anywhere.
+	 */
+	if (!(gfp & (__GFP_DMA | __GFP_DMA32)))
+		...
 
-and Geetha didn't reply, but the next version of the patch dropped the flag.
-Is it just that firmware is misprogramming something here, or something
-more fundamental?
+Feel free to reword it if you like, but those are the general lines I
+was thinking along.
 
-Will
+Robin.
+
+> 
+> Best regards,
+> Tomasz
+> 
+>>
+>> Robin.
+>>
+>>>
+>>> Best regards,
+>>> Tomasz
+>>>
+>>>>
+>>>> Robin.
+>>>>
+>>>>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>>>> ---
+>>>>>  drivers/iommu/dma-iommu.c | 10 ++++++++--
+>>>>>  1 file changed, 8 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>>>> index 9d1cebe7f6cb..29965a092a69 100644
+>>>>> --- a/drivers/iommu/dma-iommu.c
+>>>>> +++ b/drivers/iommu/dma-iommu.c
+>>>>> @@ -445,8 +445,14 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
+>>>>>       if (!pages)
+>>>>>               return NULL;
+>>>>>
+>>>>> -     /* IOMMU can map any pages, so himem can also be used here */
+>>>>> -     gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+>>>>> +     /*
+>>>>> +      * IOMMU can map any pages, so himem can also be used here,
+>>>>> +      * unless another DMA zone is explicitly requested.
+>>>>> +      */
+>>>>> +     if (!(gfp & (__GFP_DMA | __GFP_DMA32)))
+>>>>> +             gfp |= __GFP_HIGHMEM;
+>>>>> +
+>>>>> +     gfp |= __GFP_NOWARN;
+>>>>>
+>>>>>       while (count) {
+>>>>>               struct page *page = NULL;
+>>>>>
+>>>>
+>>
