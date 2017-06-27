@@ -1,129 +1,79 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 3/9] iommu: Introduce iommu do invalidate API function
-Date: Tue, 27 Jun 2017 12:47:57 -0700
-Message-ID: <1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, Liu@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [RFC 0/9] IOMMU driver support for shared virtual memory
+	virtualization
+Date: Tue, 27 Jun 2017 12:47:54 -0700
+Message-ID: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Shared virtual memory (SVM) space between devices and applications can
+reduce programming complexity and enhance security. To enable SVM in
+the guest, i.e. share guest application address space with physical
+device DMA address, IOMMU driver must provide some new functionalities.
 
-When a SVM capable device is assigned to a guest, the first level page
-tables are owned by the guest and the guest PASID table pointer is
-linked to the device context entry of the physical IOMMU.
+The complete guest SVM support also involves changes in QEMU and VFIO,
+which has been posted earlier.
+https://www.spinics.net/lists/kvm/msg148798.html
 
-Host IOMMU driver has no knowledge of caching structure updates unless
-the guest invalidation activities are passed down to the host. The
-primary usage is derived from emulated IOMMU in the guest, where QEMU
-can trap invalidation activities before pass them down the
-host/physical IOMMU. There are IOMMU architectural specific actions
-need to be taken which requires the generic APIs introduced in this
-patch to have opaque data in the tlb_invalidate_info argument.
+This is the IOMMU portion follow up of the more complete series of the
+kernel changes to support SVM. Please refer to the link below for more
+details. https://www.spinics.net/lists/kvm/msg148819.html
 
-Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
----
- drivers/iommu/iommu.c      | 14 ++++++++++++++
- include/linux/iommu.h      | 12 ++++++++++++
- include/uapi/linux/iommu.h | 13 +++++++++++++
- 3 files changed, 39 insertions(+)
+Generic APIs are introduced in addition to Intel VT-d specific changes,
+the goal is to have common interfaces across IOMMU and device types for
+both VFIO and other in-kernel users.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 494309b..d973555 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1347,6 +1347,20 @@ int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
- 
-+int iommu_invalidate(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info)
-+{
-+	int ret = 0;
-+
-+	if (unlikely(!domain->ops->invalidate))
-+		return -ENODEV;
-+
-+	ret = domain->ops->invalidate(domain, dev, inv_info);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_invalidate);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7122add..fbc08ae 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -186,6 +186,7 @@ struct iommu_resv_region {
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  * @bind_pasid_table: bind pasid table pointer for guest SVM
-  * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-+ * @invalidate: invalidate translation caches
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -232,6 +233,8 @@ struct iommu_ops {
- 				struct pasid_table_info *pasidt_binfo);
- 	int (*unbind_pasid_table)(struct iommu_domain *domain,
- 				struct device *dev);
-+	int (*invalidate)(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info);
- 
- 	unsigned long pgsize_bitmap;
- };
-@@ -293,6 +296,9 @@ extern int iommu_bind_pasid_table(struct iommu_domain *domain,
- 		struct device *dev, struct pasid_table_info *pasidt_binfo);
- extern int iommu_unbind_pasid_table(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_do_invalidate(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info);
-+
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
-@@ -660,6 +666,12 @@ int iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
- 	return -EINVAL;
- }
- 
-+static inline int iommu_do_invalidate(struct iommu_domain *domain,
-+		struct device *dev, struct tlb_invalidate_info *inv_info)
-+{
-+	return -EINVAL;
-+}
-+
- #endif /* CONFIG_IOMMU_API */
- 
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 9089a30..f077353 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -34,5 +34,18 @@ struct pasid_table_info {
- 	__u8	opaque[];
- };
- 
-+/*
-+ * Translation cache invalidation information, contains IOMMU model specific
-+ * data which can be parsed based on model ID by model specific drivers.
-+ *
-+ * @model	iommu_model number
-+ * @length	length of the opaque data in bytes
-+ * @opaque	model specific IOMMU data
-+ */
-+struct tlb_invalidate_info {
-+	__u32	model;
-+	__u32	length;
-+	__u8	opaque[];
-+};
- 
- #endif /* _UAPI_IOMMU_H */
+At the top level, three new IOMMU interfaces are introduced:
+ - bind PASID table
+ - passdown invalidation
+ - per device IOMMU fault notification
+
+The additional patches are Intel VT-d specific, which either implements or
+replaces existing private interfaces with the generic ones.
+
+Thanks,
+
+Jacob
+
+
+Jacob Pan (8):
+  iommu: Introduce bind_pasid_table API function
+  iommu/vt-d: add bind_pasid_table function
+  iommu/vt-d: Add iommu do invalidate function
+  iommu: Introduce fault notifier API
+  iommu/vt-d: track device with pasid table bond to a guest
+  iommu/dmar: notify unrecoverable faults
+  iommu/intel-svm: notify page request to guest
+  iommu/intel-svm: replace dev ops with generic fault notifier
+
+Liu, Yi L (1):
+  iommu: Introduce iommu do invalidate API function
+
+ drivers/iommu/dmar.c          |  38 ++++++++-
+ drivers/iommu/intel-iommu.c   | 177 +++++++++++++++++++++++++++++++++++++-----
+ drivers/iommu/intel-svm.c     | 102 +++++++++++++++++++++---
+ drivers/iommu/iommu.c         |  77 ++++++++++++++++++
+ include/linux/dma_remapping.h |   1 +
+ include/linux/intel-iommu.h   |  30 ++++++-
+ include/linux/intel-svm.h     |  20 +----
+ include/linux/iommu.h         |  59 ++++++++++++++
+ include/uapi/linux/iommu.h    |  85 ++++++++++++++++++++
+ 9 files changed, 540 insertions(+), 49 deletions(-)
+ create mode 100644 include/uapi/linux/iommu.h
+
 -- 
 2.7.4
