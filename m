@@ -1,194 +1,214 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH 2/9] iommu/vt-d: add bind_pasid_table function
-Date: Tue, 27 Jun 2017 12:47:56 -0700
-Message-ID: <1498592883-56224-3-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 5/9] iommu: Introduce fault notifier API
+Date: Tue, 27 Jun 2017 12:47:59 -0700
+Message-ID: <1498592883-56224-6-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498592883-56224-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian,  Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add Intel VT-d ops to the generic iommu_bind_pasid_table API
-functions.
+Traditionally, device specific faults are detected and handled within
+their own device drivers. When IOMMU is enabled, faults such as DMA
+related transactions are detected by IOMMU. There is no generic
+reporting mechanism to report faults back to the in-kernel device
+driver or the guest OS in case of assigned devices.
 
-The primary use case is for direct assignment of SVM capable
-device. Originated from emulated IOMMU in the guest, the request goes
-through many layers (e.g. VFIO). Upon calling host IOMMU driver, caller
-passes guest PASID table pointer (GPA) and size.
+Faults detected by IOMMU is based on the transaction's source ID which
+can be reported at per device basis, regardless of the device type is a
+PCI device or not.
 
-Device context table entry is modified by Intel IOMMU specific
-bind_pasid_table function. This will turn on nesting mode and matching
-translation type.
+The fault types includes recoverable (e.g. page request) and
+unrecoverable faults(e.g. invalid context). In most cases, faults can be
+handled by IOMMU drivers. However, there are use cases that require
+fault processing outside IOMMU driver, e.g.
 
-The unbind operation restores default context mapping.
+1. page request fault originated from an SVM capable device that is
+assigned to guest via vIOMMU. In this case, the first level page tables
+are owned by the guest. Page request must be propagated to the guest to
+let guest OS fault in the pages then send page response. In this
+mechanism, the direct receiver of IOMMU fault notification is VFIO,
+which can relay notification events to QEMU or other user space
+software.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+2. faults need more subtle handling by device drivers. Other than
+simply invoke reset function, there are needs to let device driver
+handle the fault with a smaller impact.
+
+This patchset is intended to create a generic fault notification API such
+that it can scale as follows:
+- all IOMMU types
+- PCI and non-PCI devices
+- recoverable and unrecoverable faults
+- VFIO and other other in kernel users
+- DMA & IRQ remapping (TBD)
+
+The event data contains both generic and raw architectural data
+such that performance is not compromised as the data propagation may
+involve many layers.
+
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/intel-iommu.c   | 117 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/dma_remapping.h |   1 +
- 2 files changed, 118 insertions(+)
+ drivers/iommu/iommu.c      | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h      | 23 +++++++++++++++++++++++
+ include/uapi/linux/iommu.h | 34 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 101 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8274ce3..ef05b59 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5430,6 +5430,119 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d973555..07cfd92 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -48,6 +48,7 @@ struct iommu_group {
+ 	struct list_head devices;
+ 	struct mutex mutex;
+ 	struct blocking_notifier_head notifier;
++	struct blocking_notifier_head fault_notifier;
+ 	void *iommu_data;
+ 	void (*iommu_data_release)(void *iommu_data);
+ 	char *name;
+@@ -345,6 +346,7 @@ struct iommu_group *iommu_group_alloc(void)
+ 	mutex_init(&group->mutex);
+ 	INIT_LIST_HEAD(&group->devices);
+ 	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
++	BLOCKING_INIT_NOTIFIER_HEAD(&group->fault_notifier);
  
- 	return iommu;
- }
-+
-+static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
-+		struct device *dev, struct pasid_table_info *pasidt_binfo)
+ 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
+ 	if (ret < 0) {
+@@ -790,6 +792,48 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
+ EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+ 
+ /**
++ * iommu_register_fault_notifier - Register a notifier for fault reporting
++ * @group: device's iommu group to notify fault events
++ * @nb: notifier block to signal
++ *
++ */
++int iommu_register_fault_notifier(struct iommu_group *group,
++				struct notifier_block *nb)
 +{
-+	struct intel_iommu *iommu;
-+	struct context_entry *context;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct device_domain_info *info;
-+	struct pci_dev *pdev;
-+	u8 bus, devfn;
-+	u16 did, *sid;
-+	int ret = 0;
-+	unsigned long flags;
-+	u64 ctx_lo;
++	return blocking_notifier_chain_register(&group->fault_notifier, nb);
++}
++EXPORT_SYMBOL_GPL(iommu_register_fault_notifier);
 +
-+	if (pasidt_binfo == NULL || pasidt_binfo->model != IOMMU_MODEL_INTEL_VTD) {
-+		pr_warn("%s: Invalid bind request!\n", __func__);
++/**
++ * iommu_unregister_fault_notifier - Unregister a notifier for fault reporting
++ * @domain: the domain to watch
++ * @nb: notifier block to signal
++ *
++ */
++int iommu_unregister_fault_notifier(struct iommu_group *group,
++				  struct notifier_block *nb)
++{
++	return blocking_notifier_chain_unregister(&group->fault_notifier, nb);
++}
++EXPORT_SYMBOL_GPL(iommu_unregister_fault_notifier);
++
++int iommu_fault_notifier_call_chain(struct iommu_fault_event *event)
++{
++	int ret;
++	struct iommu_group *group = iommu_group_get(event->dev);
++
++	if (!group)
 +		return -EINVAL;
-+	}
++	/* caller provide generic data related to the event, TBD */
++	ret = (blocking_notifier_call_chain(&group->fault_notifier, 0, (void *)event)
++		== NOTIFY_BAD) ? -EINVAL : 0;
++	iommu_group_put(group);
 +
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	if (!iommu)
-+		return -ENODEV;
-+
-+	sid = (u16 *)&pasidt_binfo->opaque;
-+	/*
-+	 * check SID, if it is not correct, return success to allow looping
-+	 * through all devices within a group
-+	 */
-+	if (PCI_DEVID(bus, devfn) != *sid)
-+		return 0;
-+
-+	if (!dev || !dev_is_pci(dev))
-+		return -ENODEV;
-+
-+	pdev = to_pci_dev(dev);
-+	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI))
-+		return -EINVAL;
-+
-+	info = dev->archdata.iommu;
-+	if (!info || !info->pasid_supported ||
-+		!pci_enable_pasid(pdev, info->pasid_supported & ~1)) {
-+		pr_err("PCI %04x:%02x:%02x.%d: has no PASID support\n",
-+			       pci_domain_nr(pdev->bus), bus, PCI_SLOT(devfn),
-+			       PCI_FUNC(devfn));
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (pasidt_binfo->size > intel_iommu_get_pts(iommu)) {
-+		pr_err("Invalid gPASID table size %llu, host size %lu\n",
-+			pasidt_binfo->size,
-+			intel_iommu_get_pts(iommu));
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+	spin_lock_irqsave(&iommu->lock, flags);
-+	context = iommu_context_addr(iommu, bus, devfn, 0);
-+	if (!context || !context_present(context)) {
-+		pr_warn("%s: ctx not present for bus devfn %x:%x\n",
-+			__func__, bus, devfn);
-+		spin_unlock_irqrestore(&iommu->lock, flags);
-+		goto out;
-+	}
-+
-+	/* Anticipate guest to use SVM and owns the first level */
-+	ctx_lo = context[0].lo;
-+	ctx_lo |= CONTEXT_NESTE;
-+	ctx_lo |= CONTEXT_PRS;
-+	ctx_lo |= CONTEXT_PASIDE;
-+	ctx_lo &= ~CONTEXT_TT_MASK;
-+	ctx_lo |= CONTEXT_TT_DEV_IOTLB << 2;
-+	context[0].lo = ctx_lo;
-+
-+	/* Assign guest PASID table pointer and size */
-+	ctx_lo = (pasidt_binfo->ptr & VTD_PAGE_MASK) | pasidt_binfo->size;
-+	context[1].lo = ctx_lo;
-+	/* make sure context entry is updated before flushing */
-+	wmb();
-+	did = dmar_domain->iommu_did[iommu->seq_id];
-+	iommu->flush.flush_context(iommu, did,
-+				(((u16)bus) << 8) | devfn,
-+				DMA_CCMD_MASK_NOBIT,
-+				DMA_CCMD_DEVICE_INVL);
-+	iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-+	spin_unlock_irqrestore(&iommu->lock, flags);
-+
-+
-+out:
 +	return ret;
 +}
++EXPORT_SYMBOL(iommu_fault_notifier_call_chain);
 +
-+static int intel_iommu_unbind_pasid_table(struct iommu_domain *domain,
-+					struct device *dev)
++/**
+  * iommu_group_id - Return ID for a group
+  * @group: the group to ID
+  *
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index fbc08ae..ed2f804 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -342,6 +342,12 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
+ 					 struct notifier_block *nb);
+ extern int iommu_group_unregister_notifier(struct iommu_group *group,
+ 					   struct notifier_block *nb);
++extern int iommu_register_fault_notifier(struct iommu_group *group,
++					 struct notifier_block *nb);
++extern int iommu_unregister_fault_notifier(struct iommu_group *group,
++					 struct notifier_block *nb);
++extern int iommu_fault_notifier_call_chain(struct iommu_fault_event *event);
++
+ extern int iommu_group_id(struct iommu_group *group);
+ extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+@@ -574,6 +580,23 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
+ 	return 0;
+ }
+ 
++static inline int iommu_register_fault_notifier(struct device *dev,
++						  struct notifier_block *nb)
 +{
-+	struct intel_iommu *iommu;
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	u8 bus, devfn;
-+
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	if (!iommu)
-+		return -ENODEV;
-+	/*
-+	 * REVISIT: we might want to clear the PASID table pointer
-+	 * as part of context clear operation. Currently, it leaves
-+	 * stale data but should be ignored by hardware since PASIDE
-+	 * is clear.
-+	 */
-+	/* ATS will be reenabled when remapping is restored */
-+	pci_disable_ats(to_pci_dev(dev));
-+	domain_context_clear(iommu, dev);
-+	return domain_context_mapping_one(dmar_domain, iommu, bus, devfn);
++	return 0;
 +}
- #endif /* CONFIG_INTEL_IOMMU_SVM */
++
++static inline int iommu_unregister_fault_notifier(struct device *dev,
++						  struct notifier_block *nb)
++{
++	return 0;
++}
++
++static inline int iommu_fault_notifier_call_chain(struct iommu_fault_event *event)
++{
++	return 0;
++}
++
+ static inline int iommu_group_id(struct iommu_group *group)
+ {
+ 	return -ENODEV;
+diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+index f077353..a8e3d7f 100644
+--- a/include/uapi/linux/iommu.h
++++ b/include/uapi/linux/iommu.h
+@@ -48,4 +48,38 @@ struct tlb_invalidate_info {
+ 	__u8	opaque[];
+ };
  
- const struct iommu_ops intel_iommu_ops = {
-@@ -5438,6 +5551,10 @@ const struct iommu_ops intel_iommu_ops = {
- 	.domain_free		= intel_iommu_domain_free,
- 	.attach_dev		= intel_iommu_attach_device,
- 	.detach_dev		= intel_iommu_detach_device,
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	.bind_pasid_table	= intel_iommu_bind_pasid_table,
-+	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
-+#endif
- 	.map			= intel_iommu_map,
- 	.unmap			= intel_iommu_unmap,
- 	.map_sg			= default_iommu_map_sg,
-diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
-index 9088407..85367b7 100644
---- a/include/linux/dma_remapping.h
-+++ b/include/linux/dma_remapping.h
-@@ -27,6 +27,7 @@
- 
- #define CONTEXT_DINVE		(1ULL << 8)
- #define CONTEXT_PRS		(1ULL << 9)
-+#define CONTEXT_NESTE		(1ULL << 10)
- #define CONTEXT_PASIDE		(1ULL << 11)
- 
- struct intel_iommu;
++/*
++ * Generic fault event notification data, used by all IOMMU models
++ *
++ * - PCI and non-PCI devices
++ * - Recoverable faults (e.g. page request) & un-recoverable faults
++ * - DMA remapping and IRQ remapping faults
++ *
++ * @dev The device which faults are reported by IOMMU
++ * @addr tells the offending address
++ * @pasid contains process address space ID, used in shared virtual memory (SVM)
++ * @prot page access protection flag, e.g. IOMMU_READ, IOMMU_WRITE
++ * @flags contains fault type, etc.
++ * @length tells the size of the buf in bytes
++ * @buf contains any raw or arch specific data
++ *
++ */
++struct iommu_fault_event {
++	struct device *dev;
++	__u64 addr;
++	__u32 pasid;
++	__u32 prot;
++	__u32 flags;
++/* page request as result of recoverable translation fault */
++#define IOMMU_FAULT_PAGE_REQ	BIT(0)
++/* unrecoverable fault, e.g. invalid device context  */
++#define IOMMU_FAULT_UNRECOV	BIT(1)
++/* unrecoverable fault related to interrupt remapping */
++#define IOMMU_FAULT_IRQ_REMAP	BIT(2)
++/* unrecoverable fault on invalidation of translation caches */
++#define IOMMU_FAULT_INVAL	BIT(3)
++	__u32 length;
++	__u8  buf[];
++};
++
+ #endif /* _UAPI_IOMMU_H */
 -- 
 2.7.4
