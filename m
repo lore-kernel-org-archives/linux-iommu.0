@@ -1,17 +1,15 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/dma: Respect __GFP_DMA and __GFP_DMA32 in
-	incoming GFP flags
-Date: Tue, 27 Jun 2017 21:44:20 +0900
-Message-ID: <CAAFQd5Bw-+hOsCgQ67yyCK70Vr9gTVyw59YOsTmGwgTDS+pWSg@mail.gmail.com>
-References: <20170627072812.15316-1-tfiga@chromium.org>
-	<ca273ece-b501-e853-aa84-bd1153086fe9@arm.com>
-	<CAAFQd5DUXtNpQ82TDE16Tzxhd0iNMQoPKMnWUoabAKOOSGrTWQ@mail.gmail.com>
-	<0a6dceb1-ffe6-b213-eb98-fd897b62febd@arm.com>
+From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Devel] [RESEND PATCH v9 3/3] iommu/arm-smmu-v3: Add workaround
+	for Cavium ThunderX2 erratum #126
+Date: Tue, 27 Jun 2017 15:56:10 +0200
+Message-ID: <20170627135610.GX658@rric.localdomain>
+References: <1498224876-5200-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0a6dceb1-ffe6-b213-eb98-fd897b62febd-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1498224876-5200-1-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,102 +19,86 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 27, 2017 at 9:26 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 27/06/17 12:17, Tomasz Figa wrote:
->> On Tue, Jun 27, 2017 at 8:01 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->>> On 27/06/17 08:28, Tomasz Figa wrote:
->>>> Current implementation of __iommu_dma_alloc_pages() keeps adding
->>>> __GFP_HIGHMEM to GFP flags regardless of whether other zone flags are
->>>> already included in the incoming flags. If __GFP_DMA or __GFP_DMA32 is
->>>> set at the same time as __GFP_HIGHMEM, the allocation fails due to
->>>> invalid zone flag combination.
->>>>
->>>> Fix this by checking for __GFP_DMA and __GFP_DMA32 in incoming GFP flags
->>>> and adding __GFP_HIGHMEM only if they are not present.
->>>
->>> Wouldn't it make more sense to strip off the ZONE_DMA* related flags,
->>> since the whole point here is that we don't care where the pages come from?
->>
->> I guess for my use case it wouldn't break things, as I strip them in
->> my DMA mapping implementation right now (+/- one minor detail below).
->>
->> However I recall existing IOMMUs that could only use pages from within
->> the 32-bit address space (e.g. Tegra X1).
->
-> In general, iommu-dma can't really support IOMMUs which can't reach the
-> entirety of kernel memory - there's no easy way to determine what such a
-> limit is if it exists, nor necessarily enforce it, and either way the
-> streaming API callbacks are pretty much dead in the water.
+On 23.06.17 19:04:36, Geetha sowjanya wrote:
+> From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> 
+> Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
+> lines for gerror, eventq and cmdq-sync.
+> 
+> New named irq "combined" is set as a errata workaround, which allows to
+> share the irq line by register single irq handler for all the interrupts.
+> 
+> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> ---
+>  Documentation/arm64/silicon-errata.txt             |    1 +
+>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    6 +
+>  drivers/acpi/arm64/iort.c                          |   57 ++++++++---
+>  drivers/iommu/arm-smmu-v3.c                        |  100 ++++++++++++++-----
+>  4 files changed, 121 insertions(+), 43 deletions(-)
 
-Right. Especially with various user pointer sources it doesn't sound
-very realistic to enforce that all memory comes from __GFP_DMA(32)
-zone.
+> +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> +{
+> +	int ret, irq;
+> +	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> +
+> +	/* Disable IRQs first */
+> +	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> +				      ARM_SMMU_IRQ_CTRLACK);
+> +	if (ret) {
+> +		dev_err(smmu->dev, "failed to disable irqs\n");
+> +		return ret;
+> +	}
+> +
+> +	irq = smmu->combined_irq;
+> +	if (irq) {
+> +		/*
+> +		 * Cavium ThunderX2 implementation doesn't not support unique
+> +		 * irq lines. Use single irq line for all the SMMUv3 interrupts.
+> +		 */
+> +		ret = devm_request_threaded_irq(smmu->dev, irq,
+> +					arm_smmu_combined_irq_handler,
+> +					arm_smmu_combined_irq_thread,
+> +					IRQF_ONESHOT,
 
-On the other hand, support for user pointer is optional in subsystems
-such as V4L2 and drivers for such disabled hardware could opt out.
-Then at least dma_alloc can be made working, giving some level of
-usability, IMHO higher than no IOMMU and contiguous memory allocated
-from CMA.
+Without the IRQF_SHARED flag set I see the following on a dual node
+system now:
 
->
->> Also the IOMMU I'm working
->> on is a part of a PCI device and it might actually prefer 32-bit
->> addressable memory as well (to avoid DAC addressing; I still need to
->> evaluate this). With this said, maybe it could actually make sense to
->> leave the choice to the DMA mapping implementation?
->
-> I think you're right - we're just not in a position to make any decision
-> at this level, so we probably do have to do this for robustness. I would
-> like to fix the longstanding dodgy comment, though, to clarify that
-> "IOMMU can map any pages" is only an assumption, and particularly one
-> which is invalidated by the presence of GFP_DMA flags.
+[   17.403260] arm-smmu-v3 arm-smmu-v3.0.auto: option mask 0x2
+[   17.408853] arm-smmu-v3 arm-smmu-v3.0.auto: ias 44-bit, oas 44-bit (features 0x0000172d)
+[   17.417259] arm-smmu-v3 arm-smmu-v3.1.auto: option mask 0x2
+[   17.422856] arm-smmu-v3 arm-smmu-v3.1.auto: ias 44-bit, oas 44-bit (features 0x0000172d)
+[   17.431193] arm-smmu-v3 arm-smmu-v3.2.auto: option mask 0x2
+[   17.436787] arm-smmu-v3 arm-smmu-v3.2.auto: ias 44-bit, oas 44-bit (features 0x0000172d)
+[   17.445123] arm-smmu-v3 arm-smmu-v3.3.auto: option mask 0x2
+[   17.450697] arm-smmu-v3 arm-smmu-v3.3.auto: ias 44-bit, oas 44-bit (features 0x0000172d)
+[   17.458984] genirq: Flags mismatch irq 5. 00002001 (arm-smmu-v3-combined-irq) vs. 00002001 (arm-smmu-v3-combined-irq)
+[   17.610636] arm-smmu-v3 arm-smmu-v3.3.auto: failed to enable combined irq
+[   17.617491] arm-smmu-v3 arm-smmu-v3.4.auto: option mask 0x2
+[   17.623073] arm-smmu-v3 arm-smmu-v3.4.auto: ias 44-bit, oas 44-bit (features 0x0000172d)
+[   17.631339] genirq: Flags mismatch irq 6. 00002001 (arm-smmu-v3-combined-irq) vs. 00002001 (arm-smmu-v3-combined-irq)
+[   17.782944] arm-smmu-v3 arm-smmu-v3.4.auto: failed to enable combined irq
+[   17.789780] arm-smmu-v3 arm-smmu-v3.5.auto: option mask 0x2
+[   17.795367] arm-smmu-v3 arm-smmu-v3.5.auto: ias 44-bit, oas 44-bit (features 0x0000172d)
+[   17.803640] genirq: Flags mismatch irq 7. 00002001 (arm-smmu-v3-combined-irq) vs. 00002001 (arm-smmu-v3-combined-irq)
+[   17.955248] arm-smmu-v3 arm-smmu-v3.5.auto: failed to enable combined irq
 
-Just to make sure, should I resent with the commit updated? If so,
-what would be your preference on the wording?
+In __setup_irq() in kernel/irq/manage.c there is a check if that flag
+is set which causes the error is shown.
 
-Best regards,
-Tomasz
+-Robert
 
->
-> Robin.
->
->>
->> Best regards,
->> Tomasz
->>
->>>
->>> Robin.
->>>
->>>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->>>> ---
->>>>  drivers/iommu/dma-iommu.c | 10 ++++++++--
->>>>  1 file changed, 8 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>>> index 9d1cebe7f6cb..29965a092a69 100644
->>>> --- a/drivers/iommu/dma-iommu.c
->>>> +++ b/drivers/iommu/dma-iommu.c
->>>> @@ -445,8 +445,14 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
->>>>       if (!pages)
->>>>               return NULL;
->>>>
->>>> -     /* IOMMU can map any pages, so himem can also be used here */
->>>> -     gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
->>>> +     /*
->>>> +      * IOMMU can map any pages, so himem can also be used here,
->>>> +      * unless another DMA zone is explicitly requested.
->>>> +      */
->>>> +     if (!(gfp & (__GFP_DMA | __GFP_DMA32)))
->>>> +             gfp |= __GFP_HIGHMEM;
->>>> +
->>>> +     gfp |= __GFP_NOWARN;
->>>>
->>>>       while (count) {
->>>>               struct page *page = NULL;
->>>>
->>>
->
+> +					"arm-smmu-v3-combined-irq", smmu);
+> +		if (ret < 0)
+> +			dev_warn(smmu->dev, "failed to enable combined irq\n");
+> +	} else
+> +		arm_smmu_setup_unique_irqs(smmu);
+> +
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> +		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+>  
+>  	/* Enable interrupt generation on the SMMU */
+>  	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
