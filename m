@@ -1,22 +1,18 @@
-From: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
-Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-Date: Tue, 27 Jun 2017 12:24:35 -0400
-Message-ID: <1498580675.10525.3.camel@rutgers.edu>
-References: <20170605195235.11512.52995.stgit@tlendack-t1.amdoffice.net>
-	<MWHPR12MB15181A6A020ACA2F53DF70339CCB0@MWHPR12MB1518.namprd12.prod.outlook.com>
-	<1496954035.4188.1.camel@rutgers.edu>
-	<1498062018.17007.6.camel@rutgers.edu>
-	<bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
-	<1498079371.17007.18.camel@rutgers.edu>
-	<20170622092053.GV30388@8bytes.org>
-	<1498144389.17007.25.camel@rutgers.edu>
-	<20170622215735.GW30388@8bytes.org>
-	<1498227647.17007.31.camel@rutgers.edu>
-	<20170626121430.GX30388@8bytes.org>
+From: Ray Jui via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH 0/8] io-pgtable lock removal
+Date: Tue, 27 Jun 2017 09:43:19 -0700
+Message-ID: <e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
+References: <cover.1496921366.git.robin.murphy@arm.com>
+	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
+	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
+	<cdc1799b-f142-09ed-a7e5-d7fd2e70268f@arm.com>
+Reply-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1074234701124820523=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170626121430.GX30388-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <cdc1799b-f142-09ed-a7e5-d7fd2e70268f-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,92 +22,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, "Nath,
-	Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Robin,
 
---===============1074234701124820523==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-B8qlcI9DE6O6OYFI+CyF"
+On 6/20/17 6:37 AM, Robin Murphy wrote:
+> On 15/06/17 01:40, Ray Jui wrote:
+>> Hi Robin,
+>>
+>> I have applied this patch series on top of v4.12-rc4, and ran various
+>> Ethernet and NVMf target throughput tests on it.
+>>
+>> To give you some background of my setup:
+>>
+>> The system is a ARMv8 based system with 8 cores. It has various PCIe
+>> root complexes that can be used to connect to PCIe endpoint devices
+>> including NIC cards and NVMe SSDs.
+>>
+>> I'm particularly interested in the performance of the PCIe root complex
+>> that connects to the NIC card, and during my test, IOMMU is
+>> enabled/disabled against that particular PCIe root complex. The root
+>> complexes connected to NVMe SSDs remain unchanged (i.e., without IOMMU).
+>>
+>> For the Ethernet throughput out of 50G link:
+>>
+>> Note during the multiple TCP session test, each session will be spread
+>> to different CPU cores for optimized performance
+>>
+>> Without IOMMU:
+>>
+>> TX TCP x1 - 29.7 Gbps
+>> TX TCP x4 - 30.5 Gbps
+>> TX TCP x8 - 28 Gbps
+>>
+>> RX TCP x1 - 15 Gbps
+>> RX TCP x4 - 33.7 Gbps
+>> RX TCP x8 - 36 Gbps
+>>
+>> With IOMMU, but without your latest patch:
+>>
+>> TX TCP x1 - 15.2 Gbps
+>> TX TCP x4 - 14.3 Gbps
+>> TX TCP x8 - 13 Gbps
+>>
+>> RX TCP x1 - 7.88 Gbps
+>> RX TCP x4 - 13.2 Gbps
+>> RX TCP x8 - 12.6 Gbps
+>>
+>> With IOMMU and your latest patch:
+>>
+>> TX TCP x1 - 21.4 Gbps
+>> TX TCP x4 - 30.5 Gbps
+>> TX TCP x8 - 21.3 Gbps
+>>
+>> RX TCP x1 - 7.7 Gbps
+>> RX TCP x4 - 20.1 Gbps
+>> RX TCP x8 - 27.1 Gbps
+> 
+> Cool, those seem more or less in line with expectations. Nate's
+> currently cooking a patch to further reduce the overhead when unmapping
+> multi-page buffers, which we believe should make up most of the rest of
+> the difference.
+> 
 
+That's great to hear!
 
---=-B8qlcI9DE6O6OYFI+CyF
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+>> With the NVMf target test with 4 SSDs, fio based test, random read, 4k,
+>> 8 jobs:
+>>
+>> Without IOMMU:
+>>
+>> IOPS = 1080K
+>>
+>> With IOMMU, but without your latest patch:
+>>
+>> IOPS = 520K
+>>
+>> With IOMMU and your latest patch:
+>>
+>> IOPS = 500K ~ 850K (a lot of variation observed during the same test run)
+> 
+> That does seem a bit off - are you able to try some perf profiling to
+> get a better idea of where the overhead appears to be?
+> 
 
-On Mon, 2017-06-26 at 14:14 +0200, Joerg Roedel wrote:
-> On Fri, Jun 23, 2017 at 10:20:47AM -0400, Jan Vesely wrote:
-> > I was able to trigger "Completion-Wait loop timed out" messages in the
-> > following situation:
-> > Hung OpenCL task running on dGPU.
-> > dGPU goes to sleep.
-> > sigterm to hung task.
-> > it seems to recover OK after the dGPU is powered back on
->=20
-> How does that 'dGPU goes to sleep' work? Do you put it to sleep manually
-> via sysfs or something? Or is that something that amdgpu does on its
-> own?
+I haven't had any time to look into this closer. But when I have a
+chance, I will take a look (but that will not be anytime soon).
 
-AMD folks should be able to provide more details. afaik, the driver
-uses ACPI methods to power on/off the device. Driver routines wake the
-device up before accessing it and there is a timeout to turn it off
-after few seconds of inactivity.
+>> As you can see, performance has improved significantly with this patch
+>> series! That is very impressive!
+>>
+>> However, it is still off, compared to the test runs without the IOMMU.
+>> I'm wondering if more improvement is expected.
+>>
+>> In addition, a much larger throughput variation is observed in the tests
+>> with these latest patches, when multiple CPUs are involved. I'm
+>> wondering if that is caused by some remaining lock in the driver?
+> 
+> Assuming this is the platform with MMU-500, there shouldn't be any locks
+> left, since that shouldn't have the hardware ATOS registers for
+> iova_to_phys().
+> 
 
->=20
-> It looks like the GPU just switches the ATS unit off when it goes to
-> sleep and doesn't answer the invalidation anymore, which explains the
-> completion-wait timeouts.
+Yes, this is with MMU-500.
 
-Both MMIO regs and PCIe config regs are turned off so it would not
-surprise me if all PCIe requests were ignored by the device in off
-state. it should be possible to request device wake up before
-invalidating the relevant IOMMU domain. I'll leave to more
-knowledgeable ppl to judge whether it's a good idea (we can also
-postpone such invalidations until the device is woken by other means)
+>> Also, in a few occasions, I observed the following message during the
+>> test, when multiple cores are involved:
+>>
+>> arm-smmu 64000000.mmu: TLB sync timed out -- SMMU may be deadlocked
+> 
+> That's particularly worrying, because it means we spent over a second
+> waiting for something that normally shouldn't take more than a few
+> hundred cycles. The only time I've ever actually seen that happen is if
+> TLBSYNC is issued while a context fault is pending - on MMU-500 it seems
+> that the sync just doesn't proceed until the fault is cleared - but that
+> stemmed from interrupts not being wired up correctly (on FPGAs) such
+> that we never saw the fault reported in the first place :/
+> 
+> Robin.
+> 
 
+Okay, note the above error is reproduced only when we have a lot of TCP
+sessions spread across all 8 CPU cores. It's fairly easy to reproduce in
+our system. But I haven't had any time to take a closer look.
 
-Jan
+I also saw that patchset v2 is out. Based on your reply to other people,
+I assume I do not need to test v2 explicitly. If you think there's a
+need for me to help test v2, don't hesitate to let me know.
 
->=20
->=20
->=20
-> 	Joerg
->=20
+Thanks,
 
---=20
-Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
---=-B8qlcI9DE6O6OYFI+CyF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEjGgSoFJq63cCYGKvY+M/tz9IsiAFAllShsMACgkQY+M/tz9I
-siDNVBAAqajBq45f4/vFEfgdxxiKV76MwJp81abW0QujNduq7vHd5zt2o9AXWug6
-YWpwbnmKvzoFJ7HNilDCUVOmO/aJ0CsFhKSplsigC2IvDnjKirBOV126Ov6IGeI4
-ZglwJQi0DbvPxtRTSaYXezIox3MX9bEnSZrWoVexV5EtaLUqnwsM09HtNGPLqNHD
-Gf+k3qCQsxASFdPhqU5L7yK+/Ri2VnchvRiGSBapR0SuWxG6GrXfmWyRDl4DM819
-o61h6SjqshxF8XVqmdWd8oKdtib8W3IK9NdTGKC0nxpf8FLaX6LEwcOsTPt6rw85
-6jNcGkAQDj35qnnlFUaDtRJJzf8QycoByBBWRBoEaZ9kdROVKNKUhpkbxoo6BGP/
-lGTJ2Ld/IVRlwvQ17iz127BzxQsBxlUUc3lFkmT8ElB5UtJ0EQH4acewH3VuuChK
-D5275YJivkX7sGcZ8/E45Gw/0kMw+ppE1v6vB99z1cadEujl3sLQbD5Ukt2lKYsj
-UbpIwfmKI0U8bEIHqZD/8hhSR4RftEyaYZow0PLOzIz6oYW96TqByy4aFSLiW6my
-erUBBnWKNn0GxajZ5AQojA4kjVXVHLq5DyJD4x9YKfAA9sOJRDwv2wjDZFvYhkTs
-k/BUob4oee4gXh9xyQE99bzTmrXak2COwMBGccdoCJHq1nFsLmE=
-=YWu5
------END PGP SIGNATURE-----
-
---=-B8qlcI9DE6O6OYFI+CyF--
-
-
---===============1074234701124820523==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1074234701124820523==--
+Ray
