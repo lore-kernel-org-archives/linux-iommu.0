@@ -1,102 +1,85 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 2/3] iommu/iova: don't disable preempt around this_cpu_ptr()
-Date: Tue, 27 Jun 2017 18:16:47 +0200
-Message-ID: <20170627161648.30302-2-bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: [PATCH 3/3] iommu/vt-d: don't disable preemption while accessing
+	deferred_flush()
+Date: Tue, 27 Jun 2017 18:16:48 +0200
+Message-ID: <20170627161648.30302-3-bigeasy@linutronix.de>
 References: <20170627161648.30302-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170627161648.30302-1-bigeasy@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: tglx@linutronix.de
-Cc: linux-kernel@vger.kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170627161648.30302-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
+Cc: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Commit 583248e6620a ("iommu/iova: Disable preemption around use of
-this_cpu_ptr()") disables preemption while accessing a per-CPU variable.
-This does keep lockdep quiet. However I don't see the point why it is
-bad if we get migrated after its access to another CPU.
-__iova_rcache_insert() and __iova_rcache_get() immediately locks the
-variable after obtaining it - before accessing its members.
-_If_ we get migrated away after retrieving the address of cpu_rcache
-before taking the lock then the *other* task on the same CPU will
-retrieve the same address of cpu_rcache and will spin on the lock.
+get_cpu() disables preemption and returns the current CPU number. The
+CPU number is only used once while retrieving the address of the local's
+CPU deferred_flush pointer.
+We can instead use raw_cpu_ptr() while we remain preemptible. The worst
+thing that can happen is that flush_unmaps_timeout() is invoked multiple
+times: once by taskA after seeing HIGH_WATER_MARK and then preempted to
+another CPU and then by taskB which saw HIGH_WATER_MARK on the same CPU
+as taskA. It is also likely that ->size got from HIGH_WATER_MARK to 0
+right after its read because another CPU invoked flush_unmaps_timeout()
+for this CPU.
+The access to flush_data is protected by a spinlock so even if we get
+migrated to another CPU or preempted - the data structure is protected.
 
-alloc_iova_fast() disables preemption while invoking
-free_cpu_cached_iovas() on each CPU. The function itself uses
-per_cpu_ptr() which does not trigger a warning (like this_cpu_ptr()
-does). It _could_ make sense to use get_online_cpus() instead but the we
-have a hotplug notifier for CPU down (and none for up) so we are good.
+While at it, I marked deferred_flush static since I can't find a
+reference to it outside of this file.
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/iova.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/iommu/intel-iommu.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 5c88ba70e4e0..f0ff0aa04081 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -22,6 +22,7 @@
- #include <linux/slab.h>
- #include <linux/smp.h>
- #include <linux/bitops.h>
-+#include <linux/cpu.h>
-=20
- static bool iova_rcache_insert(struct iova_domain *iovad,
- 			       unsigned long pfn,
-@@ -398,10 +399,8 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned lo=
-ng size,
-=20
- 		/* Try replenishing IOVAs by flushing rcache. */
- 		flushed_rcache =3D true;
--		preempt_disable();
- 		for_each_online_cpu(cpu)
- 			free_cpu_cached_iovas(cpu, iovad);
--		preempt_enable();
- 		goto retry;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 8500deda9175..1c7118d1525e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -481,7 +481,7 @@ struct deferred_flush_data {
+ 	struct deferred_flush_table *tables;
+ };
+ 
+-DEFINE_PER_CPU(struct deferred_flush_data, deferred_flush);
++static DEFINE_PER_CPU(struct deferred_flush_data, deferred_flush);
+ 
+ /* bitmap for indexing intel_iommus */
+ static int g_num_of_iommus;
+@@ -3725,10 +3725,8 @@ static void add_unmap(struct dmar_domain *dom, unsigned long iova_pfn,
+ 	struct intel_iommu *iommu;
+ 	struct deferred_flush_entry *entry;
+ 	struct deferred_flush_data *flush_data;
+-	unsigned int cpuid;
+ 
+-	cpuid = get_cpu();
+-	flush_data = per_cpu_ptr(&deferred_flush, cpuid);
++	flush_data = raw_cpu_ptr(&deferred_flush);
+ 
+ 	/* Flush all CPUs' entries to avoid deferring too much.  If
+ 	 * this becomes a bottleneck, can just flush us, and rely on
+@@ -3761,8 +3759,6 @@ static void add_unmap(struct dmar_domain *dom, unsigned long iova_pfn,
  	}
-=20
-@@ -729,7 +728,7 @@ static bool __iova_rcache_insert(struct iova_domain *io=
-vad,
- 	bool can_insert =3D false;
- 	unsigned long flags;
-=20
--	cpu_rcache =3D get_cpu_ptr(rcache->cpu_rcaches);
-+	cpu_rcache =3D raw_cpu_ptr(rcache->cpu_rcaches);
- 	spin_lock_irqsave(&cpu_rcache->lock, flags);
-=20
- 	if (!iova_magazine_full(cpu_rcache->loaded)) {
-@@ -759,7 +758,6 @@ static bool __iova_rcache_insert(struct iova_domain *io=
-vad,
- 		iova_magazine_push(cpu_rcache->loaded, iova_pfn);
-=20
- 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
--	put_cpu_ptr(rcache->cpu_rcaches);
-=20
- 	if (mag_to_free) {
- 		iova_magazine_free_pfns(mag_to_free, iovad);
-@@ -793,7 +791,7 @@ static unsigned long __iova_rcache_get(struct iova_rcac=
-he *rcache,
- 	bool has_pfn =3D false;
- 	unsigned long flags;
-=20
--	cpu_rcache =3D get_cpu_ptr(rcache->cpu_rcaches);
-+	cpu_rcache =3D raw_cpu_ptr(rcache->cpu_rcaches);
- 	spin_lock_irqsave(&cpu_rcache->lock, flags);
-=20
- 	if (!iova_magazine_empty(cpu_rcache->loaded)) {
-@@ -815,7 +813,6 @@ static unsigned long __iova_rcache_get(struct iova_rcac=
-he *rcache,
- 		iova_pfn =3D iova_magazine_pop(cpu_rcache->loaded, limit_pfn);
-=20
- 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
--	put_cpu_ptr(rcache->cpu_rcaches);
-=20
- 	return iova_pfn;
+ 	flush_data->size++;
+ 	spin_unlock_irqrestore(&flush_data->lock, flags);
+-
+-	put_cpu();
  }
---=20
+ 
+ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
+-- 
 2.13.1
