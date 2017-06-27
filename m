@@ -1,157 +1,149 @@
-From: Ray Jui via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 0/8] io-pgtable lock removal
-Date: Tue, 27 Jun 2017 09:43:19 -0700
-Message-ID: <e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
-References: <cover.1496921366.git.robin.murphy@arm.com>
-	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
-	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
-	<cdc1799b-f142-09ed-a7e5-d7fd2e70268f@arm.com>
-Reply-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cdc1799b-f142-09ed-a7e5-d7fd2e70268f-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 8/9] iommu/intel-svm: notify page request to guest
+Date: Tue, 27 Jun 2017 12:48:02 -0700
+Message-ID: <1498592883-56224-9-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+If the source device of a page request has its PASID table pointer
+bond to a guest, the first level page tables are owned by the guest.
+In this case, we shall let guest OS to manage page fault.
 
-On 6/20/17 6:37 AM, Robin Murphy wrote:
-> On 15/06/17 01:40, Ray Jui wrote:
->> Hi Robin,
->>
->> I have applied this patch series on top of v4.12-rc4, and ran various
->> Ethernet and NVMf target throughput tests on it.
->>
->> To give you some background of my setup:
->>
->> The system is a ARMv8 based system with 8 cores. It has various PCIe
->> root complexes that can be used to connect to PCIe endpoint devices
->> including NIC cards and NVMe SSDs.
->>
->> I'm particularly interested in the performance of the PCIe root complex
->> that connects to the NIC card, and during my test, IOMMU is
->> enabled/disabled against that particular PCIe root complex. The root
->> complexes connected to NVMe SSDs remain unchanged (i.e., without IOMMU).
->>
->> For the Ethernet throughput out of 50G link:
->>
->> Note during the multiple TCP session test, each session will be spread
->> to different CPU cores for optimized performance
->>
->> Without IOMMU:
->>
->> TX TCP x1 - 29.7 Gbps
->> TX TCP x4 - 30.5 Gbps
->> TX TCP x8 - 28 Gbps
->>
->> RX TCP x1 - 15 Gbps
->> RX TCP x4 - 33.7 Gbps
->> RX TCP x8 - 36 Gbps
->>
->> With IOMMU, but without your latest patch:
->>
->> TX TCP x1 - 15.2 Gbps
->> TX TCP x4 - 14.3 Gbps
->> TX TCP x8 - 13 Gbps
->>
->> RX TCP x1 - 7.88 Gbps
->> RX TCP x4 - 13.2 Gbps
->> RX TCP x8 - 12.6 Gbps
->>
->> With IOMMU and your latest patch:
->>
->> TX TCP x1 - 21.4 Gbps
->> TX TCP x4 - 30.5 Gbps
->> TX TCP x8 - 21.3 Gbps
->>
->> RX TCP x1 - 7.7 Gbps
->> RX TCP x4 - 20.1 Gbps
->> RX TCP x8 - 27.1 Gbps
-> 
-> Cool, those seem more or less in line with expectations. Nate's
-> currently cooking a patch to further reduce the overhead when unmapping
-> multi-page buffers, which we believe should make up most of the rest of
-> the difference.
-> 
+This patch uses the IOMMU fault notification API to send notifications,
+possibly via VFIO, to the guest OS. Once guest pages are fault in, guest
+will issue page response which will be passed down via the invalidation
+passdown APIs.
 
-That's great to hear!
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+---
+ drivers/iommu/intel-svm.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/iommu.h     |  1 +
+ 2 files changed, 89 insertions(+), 1 deletion(-)
 
->> With the NVMf target test with 4 SSDs, fio based test, random read, 4k,
->> 8 jobs:
->>
->> Without IOMMU:
->>
->> IOPS = 1080K
->>
->> With IOMMU, but without your latest patch:
->>
->> IOPS = 520K
->>
->> With IOMMU and your latest patch:
->>
->> IOPS = 500K ~ 850K (a lot of variation observed during the same test run)
-> 
-> That does seem a bit off - are you able to try some perf profiling to
-> get a better idea of where the overhead appears to be?
-> 
-
-I haven't had any time to look into this closer. But when I have a
-chance, I will take a look (but that will not be anytime soon).
-
->> As you can see, performance has improved significantly with this patch
->> series! That is very impressive!
->>
->> However, it is still off, compared to the test runs without the IOMMU.
->> I'm wondering if more improvement is expected.
->>
->> In addition, a much larger throughput variation is observed in the tests
->> with these latest patches, when multiple CPUs are involved. I'm
->> wondering if that is caused by some remaining lock in the driver?
-> 
-> Assuming this is the platform with MMU-500, there shouldn't be any locks
-> left, since that shouldn't have the hardware ATOS registers for
-> iova_to_phys().
-> 
-
-Yes, this is with MMU-500.
-
->> Also, in a few occasions, I observed the following message during the
->> test, when multiple cores are involved:
->>
->> arm-smmu 64000000.mmu: TLB sync timed out -- SMMU may be deadlocked
-> 
-> That's particularly worrying, because it means we spent over a second
-> waiting for something that normally shouldn't take more than a few
-> hundred cycles. The only time I've ever actually seen that happen is if
-> TLBSYNC is issued while a context fault is pending - on MMU-500 it seems
-> that the sync just doesn't proceed until the fault is cleared - but that
-> stemmed from interrupts not being wired up correctly (on FPGAs) such
-> that we never saw the fault reported in the first place :/
-> 
-> Robin.
-> 
-
-Okay, note the above error is reproduced only when we have a lot of TCP
-sessions spread across all 8 CPU cores. It's fairly easy to reproduce in
-our system. But I haven't had any time to take a closer look.
-
-I also saw that patchset v2 is out. Based on your reply to other people,
-I assume I do not need to test v2 explicitly. If you think there's a
-need for me to help test v2, don't hesitate to let me know.
-
-Thanks,
-
-Ray
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 23c4276..98fca35 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -525,6 +525,88 @@ static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
+ 	return (requested & ~vma->vm_flags) != 0;
+ }
+ 
++static int prq_to_iommu_prot(struct page_req_dsc *req)
++{
++	int prot = 0;
++
++	if (req->rd_req)
++		prot |= IOMMU_READ;
++	if (req->wr_req)
++		prot |= IOMMU_WRITE;
++	if (req->exe_req)
++		prot |= IOMMU_EXEC;
++	if (req->priv_req)
++		prot |= IOMMU_PRIV;
++
++	return prot;
++}
++
++static int intel_svm_prq_notify(struct device *dev, struct page_req_dsc *desc)
++{
++	int ret = 0;
++	struct iommu_fault_event *event;
++	struct pci_dev *pdev;
++	struct device_domain_info *info;
++	unsigned long buf_offset;
++
++	/**
++	 * If caller does not provide struct device, this is the case where
++	 * guest PASID table is bound to the device. So we need to retrieve
++	 * struct device from the page request descriptor then proceed.
++	 */
++	if (!dev) {
++		pdev = pci_get_bus_and_slot(desc->bus, desc->devfn);
++		if (!pdev) {
++			pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
++				desc->bus, PCI_SLOT(desc->devfn),
++				PCI_FUNC(desc->devfn));
++			return -ENODEV;
++		}
++		/**
++		 * Make sure PASID table pointer is bound to guest, if yes notify
++		 * handler in the guest, e.g. via VFIO.
++		 */
++		info = pdev->dev.archdata.iommu;
++		if (!info || !info->pasid_tbl_bound) {
++			pr_debug("PRQ device pasid table not bound.\n");
++			ret = -EINVAL;
++			goto exit_put_dev;
++		}
++		dev = &pdev->dev;
++	} else if (dev_is_pci(dev)) {
++		pdev = to_pci_dev(dev);
++		pci_dev_get(pdev);
++	} else
++		return -ENODEV;
++
++	pr_debug("Notify PRQ device [%02x:%02x.%d]\n",
++		desc->bus, PCI_SLOT(desc->devfn),
++		PCI_FUNC(desc->devfn));
++	event = kzalloc(sizeof(*event) + sizeof(*desc), GFP_KERNEL);
++	if (!event) {
++		ret = -ENOMEM;
++		goto exit_put_dev;
++	}
++
++	/* Fill in event data for device specific processing */
++	event->dev = dev;
++	buf_offset = offsetofend(struct iommu_fault_event, length);
++	memcpy(buf_offset + event, desc, sizeof(*desc));
++	event->addr = desc->addr;
++	event->pasid = desc->pasid;
++	event->prot = prq_to_iommu_prot(desc);
++	event->length = sizeof(*desc);
++	event->flags = IOMMU_FAULT_PAGE_REQ;
++
++	ret = iommu_fault_notifier_call_chain(event);
++	kfree(event);
++
++exit_put_dev:
++	pci_dev_put(pdev);
++
++	return ret;
++}
++
+ static irqreturn_t prq_event_thread(int irq, void *d)
+ {
+ 	struct intel_iommu *iommu = d;
+@@ -548,7 +630,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		handled = 1;
+ 
+ 		req = &iommu->prq[head / sizeof(*req)];
+-
++		/**
++		 * If prq is to be handled outside iommu driver via receiver of
++		 * the fault notifiers, we skip the page response here.
++		 */
++		if (!intel_svm_prq_notify(NULL, req))
++			continue;
+ 		result = QI_RESP_FAILURE;
+ 		address = (u64)req->addr << VTD_PAGE_SHIFT;
+ 		if (!req->pasid_present) {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ed2f804..d0f28cd 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -42,6 +42,7 @@
+  * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
++#define IOMMU_EXEC	(1 << 6)
+ 
+ struct iommu_ops;
+ struct iommu_group;
+-- 
+2.7.4
