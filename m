@@ -1,19 +1,16 @@
-From: Ray Jui via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 0/8] io-pgtable lock removal
-Date: Wed, 28 Jun 2017 10:02:35 -0700
-Message-ID: <87d53115-3d80-5a3d-6632-c31986cb7018@broadcom.com>
-References: <cover.1496921366.git.robin.murphy@arm.com>
-	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
-	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
-	<cdc1799b-f142-09ed-a7e5-d7fd2e70268f@arm.com>
-	<e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
-	<20170628114609.GD11053@arm.com>
-Reply-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/9] iommu: Introduce iommu do invalidate API function
+Date: Wed, 28 Jun 2017 18:07:32 +0100
+Message-ID: <00a5fe10-98bb-f018-06b6-29af22d014eb@arm.com>
+References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20170628100823.GG14532@8bytes.org>
+	<20170628090952.0bebd2b3@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170628114609.GD11053-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170628090952.0bebd2b3@jacob-builder>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,106 +21,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will/Robin,
+On 28/06/17 17:09, Jacob Pan wrote:
+> On Wed, 28 Jun 2017 12:08:23 +0200
+> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> 
+>> On Tue, Jun 27, 2017 at 12:47:57PM -0700, Jacob Pan wrote:
+>>> From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>>>
+>>> When a SVM capable device is assigned to a guest, the first level
+>>> page tables are owned by the guest and the guest PASID table
+>>> pointer is linked to the device context entry of the physical IOMMU.
+>>>
+>>> Host IOMMU driver has no knowledge of caching structure updates
+>>> unless the guest invalidation activities are passed down to the
+>>> host. The primary usage is derived from emulated IOMMU in the
+>>> guest, where QEMU can trap invalidation activities before pass them
+>>> down the host/physical IOMMU. There are IOMMU architectural
+>>> specific actions need to be taken which requires the generic APIs
+>>> introduced in this patch to have opaque data in the
+>>> tlb_invalidate_info argument.  
+>>
+>> Which "IOMMU architectural specific actions" are you thinking of?
+>>
+> construction of queued invalidation descriptors, then submit them to
+> the IOMMU QI interface.
+>>> +int iommu_invalidate(struct iommu_domain *domain,
+>>> +		struct device *dev, struct tlb_invalidate_info
+>>> *inv_info) +{
+>>> +	int ret = 0;
+>>> +
+>>> +	if (unlikely(!domain->ops->invalidate))
+>>> +		return -ENODEV;
+>>> +
+>>> +	ret = domain->ops->invalidate(domain, dev, inv_info);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(iommu_invalidate);  
+>>
+>> [...]
+>>
+>>> +struct tlb_invalidate_info {
+>>> +	__u32	model;
+>>> +	__u32	length;
+>>> +	__u8	opaque[];
+>>> +};  
+>>
+>> This interface is aweful. It requires the user of a generic api to
+>> know details about the implementation behind to do anything useful.
+>>
+>> Please explain in more detail why this is needed. My feeling is that
+>> we can make this more generic with a small set of invalidation
+>> functions in the iommu-api.
+>>
+> My thinking was that via configuration control, there will be unlikely
+> any mixed IOMMU models between pIOMMU and vIOMMU. We could have just
+> model specific data pass through layers of SW (QEMU, VFIO) for
+> performance reasons. We do have an earlier hybrid version that has
+> generic data and opaque raw data. Would the below work for all IOMMU
+> models?
 
-On 6/28/17 4:46 AM, Will Deacon wrote:
-> Hi Ray,
-> 
-> Robin and I have been bashing our heads against the tlb_sync_pending flag
-> this morning, and we reckon it could have something to do with your timeouts
-> on MMU-500.
-> 
-> On Tue, Jun 27, 2017 at 09:43:19AM -0700, Ray Jui wrote:
->>>> Also, in a few occasions, I observed the following message during the
->>>> test, when multiple cores are involved:
->>>>
->>>> arm-smmu 64000000.mmu: TLB sync timed out -- SMMU may be deadlocked
-> 
-> The tlb_sync_pending logic was written under the assumption of a global
-> page-table lock, so it assumes that it only has to care about syncing
-> flushes from the current CPU/context. That's not true anymore, and the
-> current code can accidentally skip syncs and (what I think is happening in
-> your case) allow concurrent syncs, which will potentially lead to timeouts
-> if a CPU is unlucky enough to keep missing the Ack.
-> 
-> Please can you try the diff below and see if it fixes things for you?
-> This applies on top of my for-joerg/arm-smmu/updates branch, but note
-> that I've only shown it to the compiler. Not tested at all.
-> 
-> Will
-> 
+For reference, this was also discussed in the initial posting of the series:
+https://lists.gnu.org/archive/html/qemu-devel/2017-05/msg03452.html
 
-Thanks for looking into this. I'm a bit busy at work but will certainly
-find time to test the diff below. I hopefully will get to it later this
-week.
+At least for ARM SMMUv2 and v3, I think the invalidation format you
+propose should be sufficient, although "device_selective" should probably
+be "domain_selective". And maybe a flag field could contain relatively
+generic hints such as "only invalidate leaf table when page_selective".
 
 Thanks,
+Jean
 
-Ray
-
-> --->8
+> https://www.spinics.net/lists/kvm/msg148798.html
 > 
-> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-> index 127558d83667..cd8d7aaec161 100644
-> --- a/drivers/iommu/io-pgtable.c
-> +++ b/drivers/iommu/io-pgtable.c
-> @@ -59,6 +59,7 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
->  	iop->cookie	= cookie;
->  	iop->cfg	= *cfg;
->  
-> +	atomic_set(&iop->tlb_sync_pending, 0);
->  	return &iop->ops;
->  }
->  
-> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> index 524263a7ae6f..b64580c9d03d 100644
-> --- a/drivers/iommu/io-pgtable.h
-> +++ b/drivers/iommu/io-pgtable.h
-> @@ -1,5 +1,7 @@
->  #ifndef __IO_PGTABLE_H
->  #define __IO_PGTABLE_H
-> +
-> +#include <linux/atomic.h>
->  #include <linux/bitops.h>
->  
->  /*
-> @@ -165,7 +167,7 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
->  struct io_pgtable {
->  	enum io_pgtable_fmt	fmt;
->  	void			*cookie;
-> -	bool			tlb_sync_pending;
-> +	atomic_t		tlb_sync_pending;
->  	struct io_pgtable_cfg	cfg;
->  	struct io_pgtable_ops	ops;
->  };
-> @@ -175,22 +177,20 @@ struct io_pgtable {
->  static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
->  {
->  	iop->cfg.tlb->tlb_flush_all(iop->cookie);
-> -	iop->tlb_sync_pending = true;
-> +	atomic_set_release(&iop->tlb_sync_pending, 1);
->  }
->  
->  static inline void io_pgtable_tlb_add_flush(struct io_pgtable *iop,
->  		unsigned long iova, size_t size, size_t granule, bool leaf)
->  {
->  	iop->cfg.tlb->tlb_add_flush(iova, size, granule, leaf, iop->cookie);
-> -	iop->tlb_sync_pending = true;
-> +	atomic_set_release(&iop->tlb_sync_pending, 1);
->  }
->  
->  static inline void io_pgtable_tlb_sync(struct io_pgtable *iop)
->  {
-> -	if (iop->tlb_sync_pending) {
-> +	if (atomic_xchg_relaxed(&iop->tlb_sync_pending, 0))
->  		iop->cfg.tlb->tlb_sync(iop->cookie);
-> -		iop->tlb_sync_pending = false;
-> -	}
->  }
->  
->  /**
+> struct tlb_invalidate_info
+> {
+>         __u32   model;  /* Vendor number */
+>         __u8 granularity
+> #define DEVICE_SELECTVIE_INV    (1 << 0)
+> #define PAGE_SELECTIVE_INV      (1 << 0)
+> #define PASID_SELECTIVE_INV     (1 << 1)
+>         __u32 pasid;
+>         __u64 addr;
+>         __u64 size;
+> 
+>         /* Since IOMMU format has already been validated for this table,
+>            the IOMMU driver knows that the following structure is in a
+>            format it knows */
+>         __u8 opaque[];
+> };
+> 
+>>
+>>
+>> 	Joerg
+>>
+> 
+> [Jacob Pan]
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 > 
