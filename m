@@ -1,15 +1,19 @@
-From: Suman Anna via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/omap: Return ERR_PTR in device_group call-back
-Date: Wed, 28 Jun 2017 11:32:02 -0500
-Message-ID: <345ed003-6a6e-a876-fa91-cdc9fcc1cd89@ti.com>
-References: <1498651258-23700-1-git-send-email-joro@8bytes.org>
-	<1498651258-23700-2-git-send-email-joro@8bytes.org>
-Reply-To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+From: Ray Jui via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH 0/8] io-pgtable lock removal
+Date: Wed, 28 Jun 2017 10:02:35 -0700
+Message-ID: <87d53115-3d80-5a3d-6632-c31986cb7018@broadcom.com>
+References: <cover.1496921366.git.robin.murphy@arm.com>
+	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
+	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
+	<cdc1799b-f142-09ed-a7e5-d7fd2e70268f@arm.com>
+	<e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
+	<20170628114609.GD11053@arm.com>
+Reply-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498651258-23700-2-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170628114609.GD11053-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,39 +24,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/28/2017 07:00 AM, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> Make sure that the device_group callback returns an ERR_PTR
-> instead of NULL.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Will/Robin,
 
-Thanks for the patch,
-Acked-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-
-regards
-Suman
-
-> ---
->  drivers/iommu/omap-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On 6/28/17 4:46 AM, Will Deacon wrote:
+> Hi Ray,
 > 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 95dfca3..641e035 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1309,7 +1309,7 @@ static void omap_iommu_remove_device(struct device *dev)
->  static struct iommu_group *omap_iommu_device_group(struct device *dev)
->  {
->  	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
-> -	struct iommu_group *group = NULL;
-> +	struct iommu_group *group = ERR_PTR(-EINVAL);
+> Robin and I have been bashing our heads against the tlb_sync_pending flag
+> this morning, and we reckon it could have something to do with your timeouts
+> on MMU-500.
+> 
+> On Tue, Jun 27, 2017 at 09:43:19AM -0700, Ray Jui wrote:
+>>>> Also, in a few occasions, I observed the following message during the
+>>>> test, when multiple cores are involved:
+>>>>
+>>>> arm-smmu 64000000.mmu: TLB sync timed out -- SMMU may be deadlocked
+> 
+> The tlb_sync_pending logic was written under the assumption of a global
+> page-table lock, so it assumes that it only has to care about syncing
+> flushes from the current CPU/context. That's not true anymore, and the
+> current code can accidentally skip syncs and (what I think is happening in
+> your case) allow concurrent syncs, which will potentially lead to timeouts
+> if a CPU is unlucky enough to keep missing the Ack.
+> 
+> Please can you try the diff below and see if it fixes things for you?
+> This applies on top of my for-joerg/arm-smmu/updates branch, but note
+> that I've only shown it to the compiler. Not tested at all.
+> 
+> Will
+> 
+
+Thanks for looking into this. I'm a bit busy at work but will certainly
+find time to test the diff below. I hopefully will get to it later this
+week.
+
+Thanks,
+
+Ray
+
+> --->8
+> 
+> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+> index 127558d83667..cd8d7aaec161 100644
+> --- a/drivers/iommu/io-pgtable.c
+> +++ b/drivers/iommu/io-pgtable.c
+> @@ -59,6 +59,7 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+>  	iop->cookie	= cookie;
+>  	iop->cfg	= *cfg;
 >  
->  	if (arch_data->iommu_dev)
->  		group = arch_data->iommu_dev->group;
+> +	atomic_set(&iop->tlb_sync_pending, 0);
+>  	return &iop->ops;
+>  }
+>  
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index 524263a7ae6f..b64580c9d03d 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -1,5 +1,7 @@
+>  #ifndef __IO_PGTABLE_H
+>  #define __IO_PGTABLE_H
+> +
+> +#include <linux/atomic.h>
+>  #include <linux/bitops.h>
+>  
+>  /*
+> @@ -165,7 +167,7 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+>  struct io_pgtable {
+>  	enum io_pgtable_fmt	fmt;
+>  	void			*cookie;
+> -	bool			tlb_sync_pending;
+> +	atomic_t		tlb_sync_pending;
+>  	struct io_pgtable_cfg	cfg;
+>  	struct io_pgtable_ops	ops;
+>  };
+> @@ -175,22 +177,20 @@ struct io_pgtable {
+>  static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
+>  {
+>  	iop->cfg.tlb->tlb_flush_all(iop->cookie);
+> -	iop->tlb_sync_pending = true;
+> +	atomic_set_release(&iop->tlb_sync_pending, 1);
+>  }
+>  
+>  static inline void io_pgtable_tlb_add_flush(struct io_pgtable *iop,
+>  		unsigned long iova, size_t size, size_t granule, bool leaf)
+>  {
+>  	iop->cfg.tlb->tlb_add_flush(iova, size, granule, leaf, iop->cookie);
+> -	iop->tlb_sync_pending = true;
+> +	atomic_set_release(&iop->tlb_sync_pending, 1);
+>  }
+>  
+>  static inline void io_pgtable_tlb_sync(struct io_pgtable *iop)
+>  {
+> -	if (iop->tlb_sync_pending) {
+> +	if (atomic_xchg_relaxed(&iop->tlb_sync_pending, 0))
+>  		iop->cfg.tlb->tlb_sync(iop->cookie);
+> -		iop->tlb_sync_pending = false;
+> -	}
+>  }
+>  
+>  /**
 > 
