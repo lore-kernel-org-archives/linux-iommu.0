@@ -1,18 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/iova: don't disable preempt around
-	this_cpu_ptr()
-Date: Wed, 28 Jun 2017 12:26:25 +0200
-Message-ID: <20170628102625.GJ14532@8bytes.org>
-References: <20170627161648.30302-1-bigeasy@linutronix.de>
-	<20170627161648.30302-2-bigeasy@linutronix.de>
-	<20170628092205.GB30388@8bytes.org>
-	<20170628093154.ncrcvwretfcoizx3@linutronix.de>
+From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2] iommu/vt-d: constify intel_dma_ops
+Date: Wed, 28 Jun 2017 16:39:32 +0530
+Message-ID: <dabcc02772ea7a1793e8e41a08960bd1101160a1.1498647947.git.arvind.yadav.cs@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170628093154.ncrcvwretfcoizx3-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,22 +15,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 28, 2017 at 11:31:55AM +0200, Sebastian Andrzej Siewior wrote:
-> It really does. The spin_lock() does disable preemption but this is not
-> the problem. The thing is that the preempt_disable() is superfluous and
-> it hurts Preempt-RT (and this is how I noticed it). Also the
-> get_cpu_ptr() is not requited and was only added to keep lockdep quiet
-> (according to the history).
-> Everything else here can stay as-is, I am just asking for the removal of
-> the redundant preempt_disable() where it is not required.
+Most dma_map_ops structures are never modified. Constify these
+structures such that these can be write-protected.
 
-Okay, makes sense, I applied both patches.
+Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+Changes in v2:
+              Added description.
 
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-	Joerg
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 90ab011..de0df48 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3970,7 +3970,7 @@ static int intel_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ 	return !dma_addr;
+ }
+ 
+-struct dma_map_ops intel_dma_ops = {
++const struct dma_map_ops intel_dma_ops = {
+ 	.alloc = intel_alloc_coherent,
+ 	.free = intel_free_coherent,
+ 	.map_sg = intel_map_sg,
+-- 
+1.9.1
