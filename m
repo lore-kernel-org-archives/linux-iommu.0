@@ -1,19 +1,10 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: AMD Ryzen KVM/NPT/IOMMU issue
-Date: Wed, 28 Jun 2017 13:08:55 -0600
-Message-ID: <20170628130855.76c2b700@w520.home>
-References: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1@markju.com>
-	<CAOcCaLbdi9KZoXiV5htjShc_mYvZ5jK2B3Ot7NeM=3v_ZA39aA@mail.gmail.com>
-	<20170505112706.7785948c@t450s.home>
-	<CAOcCaLbAS0FkRrG8YZNM5rYUtCFeUGkdgdy=4o16Njufdy8Gag@mail.gmail.com>
-	<545f19a3-4923-cdec-4ce9-2a4155a04f6a@amd.com>
-	<CAK8d-aJ+XHi+5sr6bHj3D2BaG94v6Lyk1C_ZuA4erDVhEyp-uQ@mail.gmail.com>
-	<5d2ea709-8f90-bfaa-975d-48aed39e75ad@amd.com>
+From: Graham Neville <grahamneville-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: AMD Ryzen KVM/NPT/IOMMU issue
+Date: Wed, 28 Jun 2017 19:17:48 +0000
+Message-ID: <CAEk7i18UpswR4F3u_39DQdpNdkSR8jQFDLeQa8A9KmP=Ho3ROQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2037566087674925982=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5d2ea709-8f90-bfaa-975d-48aed39e75ad-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,63 +14,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org>, John.Bridgman-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 29 Jun 2017 01:53:57 +0700
-Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org> wrote:
+--===============2037566087674925982==
+Content-Type: multipart/alternative; boundary="001a113d255023ed0a05530a0a11"
 
-> On 6/29/17 00:26, Steven Walter wrote:
-> >> So, I'm trying to reproduce this issue on the Ryzen system w/ the following
-> >> setup:
-> >>
-> >>   * Host kernel v4.11 (with this patch https://lkml.org/lkml/2017/6/23/295)
-> >>
-> >>   * guest VM RHEL7.3
-> >>
-> >>   * guest graphic driver = radeon
-> >>
-> >>   * qemu-system-x86_64 --version
-> >>     QEMU emulator version 2.9.50 (v2.9.0-1659-g577caa2-dirty)
-> >>
-> >>   * kvm-amd npt=1
-> >>
-> >>   * dGPU is 08:00.0 VGA compatible controller: Advanced Micro Devices, Inc.
-> >> [AMD/ATI] Tobago PRO [Radeon R7 360 / R9 360 OEM] (rev 81)
-> >>
-> >>   * qemu-system-x86_64 -smp 4 -enable-kvm -M q35 -m 4096 -cpu host -bios
-> >> /usr/share/qemu/bios.bin -device
-> >> ioh3420,bus=pcie.0,addr=1c.0,multifunction=on,port=1,chassis=1,id=root.1
-> >> -drive file=/sandbox/vm-images/rhel7.3.qcow2,if=virtio,id=disk0 -net none
-> >> -vga none -nodefaults -device
-> >> vfio-pci,host=08:00.0,x-vga=on,addr=0.0,multifunction=on,bus=root.1,romfile=/sandbox/vm-images/vbios.rom
-> >> -usb -device usb-host,hostbus=3,hostport=1 -device
-> >> usb-host,hostbus=3,hostport=3 -device vfio-pci,host=0000:08:00.1 -device
-> >> vfio-pci,host=0000:09:00.0
-> >>
-> >> With this setup, I am able to pass-through the dGPU and run the following
-> >> test:
-> >>   * Starting up the guest w/ full GNOME GUI on the attached monitor.
-> >>   * glxgears (running @ 60 FPS)
-> >>   * Playing 1080p HD video on Youtube
-> >>
-> >> I am not noticing issues here. What kind of test are you running in the
-> >> guest VM?  
-> > Try running the open source game "torcs" inside the VM.  I think
-> > you'll find that there's a very noticeable performance different
-> > between npt=1 and npt=0  
-> 
-> Hm.. actually torcs seems to be running fine w/ npt=1 setup. Although I think my 
-> driving skill is ~20% worse :(
+--001a113d255023ed0a05530a0a11
+Content-Type: text/plain; charset="UTF-8"
 
-A clarification on the issue, it's not that these games/benchmarks
-don't work or aren't playable, it's that they run slower (as measured by
-framerate) with npt=1 vs npt=0.  A virtualized guest on AMD hardware is
-hindered either by lower graphics performance (npt=1) or higher CPU
-virtualization overhead (npt=0) for high intensity games or graphics
-workloads.  Intel's equivalent ept feature does not have this issue.  I
-would encourage looking at the framerate for one mode vs the other
-before drawing any conclusions on whether it's working well.  Thanks,
+Although not related to graphics card performance, there is definitely
+another issue with regards to running KVM nested L2 guests when npt=1.
 
-Alex
+Thought I'd mention this in case it helps with identifying performance
+issues with NPT.
+
+I'm unable to start any L2 guests with KVM acceleration (--enable-kvm). As
+soon as it attempts to bring up the L2 guest the L1 host crashes, L0 host
+remains online. Nothing is printed in either L1 or L0's dmesg.
+
+My L0 is running Arch with 4.11.0-rc6, with qemu 2.8.0. I've tried
+different L1 hosts (Ubuntu,Arch) and different kernels right to 4.12-rc5
+kernel, along with different qemu versions.
+
+This used to work fine with my Intel i7-4770s setup.
+
+With npt=0, L2 guests can start but performance is dier.
+
+--001a113d255023ed0a05530a0a11
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Although not related to graphics card performance, th=
+ere is definitely another issue with regards to running KVM nested L2=C2=A0=
+guests when npt=3D1.</div><div><br></div><div>Thought I&#39;d mention this =
+in case it helps with identifying performance issues with NPT.</div><div><b=
+r></div><div>I&#39;m unable to start any L2 guests with KVM acceleration (-=
+-enable-kvm). As soon as=C2=A0it attempts to bring up the L2 guest the L1 h=
+ost crashes, L0 host remains online. Nothing is printed in either L1 or L0&=
+#39;s dmesg.</div><div><br></div><div>My L0 is running Arch with 4.11.0-rc6=
+, with qemu 2.8.0.=C2=A0I&#39;ve tried different L1 hosts (Ubuntu,Arch) and=
+ different kernels right to 4.12-rc5 kernel, along with different qemu vers=
+ions.</div><div><br></div><div>This used to work fine with my Intel i7-4770=
+s setup.</div><div><br></div><div>With npt=3D0, L2 guests can start but per=
+formance is dier.</div></div>
+
+--001a113d255023ed0a05530a0a11--
+
+--===============2037566087674925982==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2037566087674925982==--
