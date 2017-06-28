@@ -1,14 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: constify intel_dma_ops.
-Date: Wed, 28 Jun 2017 10:53:19 +0200
-Message-ID: <20170628085318.GB14532@8bytes.org>
-References: <b1e3c53042ae405bf5bf86b0c06a4ee4f74c3fc3.1497349024.git.arvind.yadav.cs@gmail.com>
+Subject: Re: [PATCH v2] iommu/amd: Fix interrupt remapping when disable
+	guest_mode
+Date: Wed, 28 Jun 2017 11:07:13 +0200
+Message-ID: <20170628090713.GC14532@8bytes.org>
+References: <1498469284-85652-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <b1e3c53042ae405bf5bf86b0c06a4ee4f74c3fc3.1497349024.git.arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1498469284-85652-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,23 +19,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 13, 2017 at 03:48:34PM +0530, Arvind Yadav wrote:
-> File size before:
->    text	   data	    bss	    dec	    hex	filename
->   32765	    758	   1824	  35347	   8a13	drivers/iommu/intel-iommu.o
+Hi Suravee,
+
+On Mon, Jun 26, 2017 at 04:28:04AM -0500, Suravee Suthikulpanit wrote:
+> Pass-through devices to VM guest can get updated IRQ affinity
+> information via irq_set_affinity() when not running in guest mode.
+> Currently, AMD IOMMU driver in GA mode ignores the updated information
+> if the pass-through device is setup to use vAPIC regardless of guest_mode.
+> This could cause invalid interrupt remapping.
 > 
-> File size After adding 'const':
->    text	   data	    bss	    dec	    hex	filename
->   32925	    598	   1824	  35347	   8a13	drivers/iommu/intel-iommu.o
+> Also, the guest_mode bit should be set and cleared only when
+> SVM updates posted-interrupt interrupt remapping information.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-What is the point of those commit-messages? They just show that the
-struct moved from data to the text segment. The overall size doesn't
-change much.
+Can you please provide a 'Fixes:' tag too? No need to resend the whole
+patch, just reply with the tag and I'll add it when applying this patch.
 
 
+Thanks,
 
 	Joerg
