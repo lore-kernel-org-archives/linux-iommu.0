@@ -1,64 +1,47 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 3/9] iommu: Introduce iommu do invalidate API function
-Date: Wed, 28 Jun 2017 12:08:23 +0200
-Message-ID: <20170628100823.GG14532@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 5/9] iommu: Introduce fault notifier API
+Date: Wed, 28 Jun 2017 12:16:03 +0200
+Message-ID: <20170628101603.GH14532@8bytes.org>
 References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1498592883-56224-6-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, "Liu, Yi L" <yi.l.liu@linux.intel.com>
+In-Reply-To: <1498592883-56224-6-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 27, 2017 at 12:47:57PM -0700, Jacob Pan wrote:
-> From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-> 
-> When a SVM capable device is assigned to a guest, the first level page
-> tables are owned by the guest and the guest PASID table pointer is
-> linked to the device context entry of the physical IOMMU.
-> 
-> Host IOMMU driver has no knowledge of caching structure updates unless
-> the guest invalidation activities are passed down to the host. The
-> primary usage is derived from emulated IOMMU in the guest, where QEMU
-> can trap invalidation activities before pass them down the
-> host/physical IOMMU. There are IOMMU architectural specific actions
-> need to be taken which requires the generic APIs introduced in this
-> patch to have opaque data in the tlb_invalidate_info argument.
+On Tue, Jun 27, 2017 at 12:47:59PM -0700, Jacob Pan wrote:
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index d973555..07cfd92 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -48,6 +48,7 @@ struct iommu_group {
+>  	struct list_head devices;
+>  	struct mutex mutex;
+>  	struct blocking_notifier_head notifier;
+> +	struct blocking_notifier_head fault_notifier;
 
-Which "IOMMU architectural specific actions" are you thinking of?
+Do you really need a notifier chain here? Will there ever be more than
+one callback registered to it?
 
-> +int iommu_invalidate(struct iommu_domain *domain,
-> +		struct device *dev, struct tlb_invalidate_info *inv_info)
-> +{
-> +	int ret = 0;
-> +
-> +	if (unlikely(!domain->ops->invalidate))
-> +		return -ENODEV;
-> +
-> +	ret = domain->ops->invalidate(domain, dev, inv_info);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_invalidate);
+> +struct iommu_fault_event {
+> +	struct device *dev;
 
-[...]
-
-> +struct tlb_invalidate_info {
-> +	__u32	model;
-> +	__u32	length;
-> +	__u8	opaque[];
-> +};
-
-This interface is aweful. It requires the user of a generic api to know
-details about the implementation behind to do anything useful.
-
-Please explain in more detail why this is needed. My feeling is that we
-can make this more generic with a small set of invalidation functions in
-the iommu-api.
+Putting a 'struct device *' member in a uapi struct looks fundamentally
+wrong.
 
 
 
