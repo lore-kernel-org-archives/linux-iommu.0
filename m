@@ -1,17 +1,16 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/9] iommu: Introduce iommu do invalidate API function
-Date: Wed, 28 Jun 2017 18:07:32 +0100
-Message-ID: <00a5fe10-98bb-f018-06b6-29af22d014eb@arm.com>
-References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20170628100823.GG14532@8bytes.org>
-	<20170628090952.0bebd2b3@jacob-builder>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: AMD Ryzen KVM/NPT/IOMMU issue
+Date: Thu, 29 Jun 2017 00:23:20 +0700
+Message-ID: <545f19a3-4923-cdec-4ce9-2a4155a04f6a@amd.com>
+References: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1@markju.com>
+	<CAOcCaLbdi9KZoXiV5htjShc_mYvZ5jK2B3Ot7NeM=3v_ZA39aA@mail.gmail.com>
+	<20170505112706.7785948c@t450s.home>
+	<CAOcCaLbAS0FkRrG8YZNM5rYUtCFeUGkdgdy=4o16Njufdy8Gag@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170628090952.0bebd2b3@jacob-builder>
-Content-Language: en-US
+In-Reply-To: <CAOcCaLbAS0FkRrG8YZNM5rYUtCFeUGkdgdy=4o16Njufdy8Gag-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,108 +20,108 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Nick Sarnie <commendsarnex-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John.Bridgman-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/06/17 17:09, Jacob Pan wrote:
-> On Wed, 28 Jun 2017 12:08:23 +0200
-> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> 
->> On Tue, Jun 27, 2017 at 12:47:57PM -0700, Jacob Pan wrote:
->>> From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+
+
+On 6/25/17 12:55, Nick Sarnie wrote:
+> On Fri, May 5, 2017 at 1:27 PM, Alex Williamson
+> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>> On Wed, 3 May 2017 12:28:35 -0400
+>> Nick Sarnie <commendsarnex-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>>
+>>> On Wed, May 3, 2017 at 10:37 AM, Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org> wrote:
+>>>> Hi,
+>>>>
+>>>> There are a lot of messages/threads out there about bad performance while
+>>>> using AMDs Ryzen with KVM GPU passthrough. It revolves all on
+>>>> enabling/disabling npt, while enabled overall VM performance is nice but the
+>>>> GPU performance gives me about 20% (and a lot of drops to zero GPU usage,
+>>>> while CPU/Disk/Ram also doing nothing) compared to npt disabled. But while
+>>>> npt is disabled overall VM performance is like beeing on 4x86 with floppy
+>>>> disk as only storage. (Ex. it takes 2 seconds just to open startmenu while
+>>>> host and vm are in idle, and neither CPU pinning, changing CPU model,
+>>>> changing storage device nor using hugepages changed anything).
+>>>>
+>>>> So everything I read pointed to a bug in the npt implementation? Anything I
+>>>> could do to get closer to the "thing" issuing this?
+>>>>
+>>>> Best Regards
+>>>>
+>>>> efeu
+>>>> _______________________________________________
+>>>> iommu mailing list
+>>>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>>>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 >>>
->>> When a SVM capable device is assigned to a guest, the first level
->>> page tables are owned by the guest and the guest PASID table
->>> pointer is linked to the device context entry of the physical IOMMU.
->>>
->>> Host IOMMU driver has no knowledge of caching structure updates
->>> unless the guest invalidation activities are passed down to the
->>> host. The primary usage is derived from emulated IOMMU in the
->>> guest, where QEMU can trap invalidation activities before pass them
->>> down the host/physical IOMMU. There are IOMMU architectural
->>> specific actions need to be taken which requires the generic APIs
->>> introduced in this patch to have opaque data in the
->>> tlb_invalidate_info argument.  
+>>> I heard from Joerg that it might be related to a lower intercept rate
+>>> being used when NPT is enabled, but we haven't been able to find a way
+>>> to trace that to confirm.
 >>
->> Which "IOMMU architectural specific actions" are you thinking of?
+>> Joerg/Paolo, any ideas how we might debug this?  Anyone from AMD
+>> watching?  Thanks,
 >>
-> construction of queued invalidation descriptors, then submit them to
-> the IOMMU QI interface.
->>> +int iommu_invalidate(struct iommu_domain *domain,
->>> +		struct device *dev, struct tlb_invalidate_info
->>> *inv_info) +{
->>> +	int ret = 0;
->>> +
->>> +	if (unlikely(!domain->ops->invalidate))
->>> +		return -ENODEV;
->>> +
->>> +	ret = domain->ops->invalidate(domain, dev, inv_info);
->>> +
->>> +	return ret;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iommu_invalidate);  
->>
->> [...]
->>
->>> +struct tlb_invalidate_info {
->>> +	__u32	model;
->>> +	__u32	length;
->>> +	__u8	opaque[];
->>> +};  
->>
->> This interface is aweful. It requires the user of a generic api to
->> know details about the implementation behind to do anything useful.
->>
->> Please explain in more detail why this is needed. My feeling is that
->> we can make this more generic with a small set of invalidation
->> functions in the iommu-api.
->>
-> My thinking was that via configuration control, there will be unlikely
-> any mixed IOMMU models between pIOMMU and vIOMMU. We could have just
-> model specific data pass through layers of SW (QEMU, VFIO) for
-> performance reasons. We do have an earlier hybrid version that has
-> generic data and opaque raw data. Would the below work for all IOMMU
-> models?
-
-For reference, this was also discussed in the initial posting of the series:
-https://lists.gnu.org/archive/html/qemu-devel/2017-05/msg03452.html
-
-At least for ARM SMMUv2 and v3, I think the invalidation format you
-propose should be sufficient, although "device_selective" should probably
-be "domain_selective". And maybe a flag field could contain relatively
-generic hints such as "only invalidate leaf table when page_selective".
-
-Thanks,
-Jean
-
-> https://www.spinics.net/lists/kvm/msg148798.html
-> 
-> struct tlb_invalidate_info
-> {
->         __u32   model;  /* Vendor number */
->         __u8 granularity
-> #define DEVICE_SELECTVIE_INV    (1 << 0)
-> #define PAGE_SELECTIVE_INV      (1 << 0)
-> #define PASID_SELECTIVE_INV     (1 << 1)
->         __u32 pasid;
->         __u64 addr;
->         __u64 size;
-> 
->         /* Since IOMMU format has already been validated for this table,
->            the IOMMU driver knows that the following structure is in a
->            format it knows */
->         __u8 opaque[];
-> };
-> 
->>
->>
->> 	Joerg
->>
-> 
-> [Jacob Pan]
+>> Alex
+>
+>
+> Hi all,
+>
+> A somewhat major update.
+>
+> I managed to install Xen with my GPU passthrough config and test the
+> performance with NPT enabled.
+>
+> There is no performance drop with NPT on Xen, it matches the GPU
+> performance of KVM with NPT disabled. The CPU performance is also
+> great.
+>
+> John Bridgman (ccd) from AMD says he's going to ask around AMD about
+> this next week, but it would be even better if some AMD guys that read
+> this ML shared their ideas or took a look.
+>
+> Let me know if you need any more information.
+>
+> Thanks,
+> Sarnex
 > _______________________________________________
 > iommu mailing list
 > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 > https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+>
+
+So, I'm trying to reproduce this issue on the Ryzen system w/ the following setup:
+
+   * Host kernel v4.11 (with this patch https://lkml.org/lkml/2017/6/23/295)
+
+   * guest VM RHEL7.3
+
+   * guest graphic driver = radeon
+
+   * qemu-system-x86_64 --version
+     QEMU emulator version 2.9.50 (v2.9.0-1659-g577caa2-dirty)
+
+   * kvm-amd npt=1
+
+   * dGPU is 08:00.0 VGA compatible controller: Advanced Micro Devices, Inc. 
+[AMD/ATI] Tobago PRO [Radeon R7 360 / R9 360 OEM] (rev 81)
+
+   * qemu-system-x86_64 -smp 4 -enable-kvm -M q35 -m 4096 -cpu host -bios 
+/usr/share/qemu/bios.bin -device 
+ioh3420,bus=pcie.0,addr=1c.0,multifunction=on,port=1,chassis=1,id=root.1 -drive 
+file=/sandbox/vm-images/rhel7.3.qcow2,if=virtio,id=disk0 -net none -vga none 
+-nodefaults -device 
+vfio-pci,host=08:00.0,x-vga=on,addr=0.0,multifunction=on,bus=root.1,romfile=/sandbox/vm-images/vbios.rom 
+-usb -device usb-host,hostbus=3,hostport=1 -device usb-host,hostbus=3,hostport=3 
+-device vfio-pci,host=0000:08:00.1 -device vfio-pci,host=0000:09:00.0
+
+With this setup, I am able to pass-through the dGPU and run the following test:
+   * Starting up the guest w/ full GNOME GUI on the attached monitor.
+   * glxgears (running @ 60 FPS)
+   * Playing 1080p HD video on Youtube
+
+I am not noticing issues here. What kind of test are you running in the guest VM?
+
+Thanks,
+Suravee
