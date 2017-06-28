@@ -1,14 +1,15 @@
-From: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/3] iommu: Return ERR_PTR() values from device_group
-	call-backs
-Date: Wed, 28 Jun 2017 17:48:08 +0200
-Message-ID: <20170628174808.09a85fc6@thinkpad>
-References: <1498651258-23700-1-git-send-email-joro@8bytes.org>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 3/9] iommu: Introduce iommu do invalidate API function
+Date: Wed, 28 Jun 2017 09:09:52 -0700
+Message-ID: <20170628090952.0bebd2b3@jacob-builder>
+References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20170628100823.GG14532@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498651258-23700-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170628100823.GG14532-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,58 +20,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu, Yi
+	L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 28 Jun 2017 14:00:56 +0200
+On Wed, 28 Jun 2017 12:08:23 +0200
 Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> On Tue, Jun 27, 2017 at 12:47:57PM -0700, Jacob Pan wrote:
+> > From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > 
+> > When a SVM capable device is assigned to a guest, the first level
+> > page tables are owned by the guest and the guest PASID table
+> > pointer is linked to the device context entry of the physical IOMMU.
+> > 
+> > Host IOMMU driver has no knowledge of caching structure updates
+> > unless the guest invalidation activities are passed down to the
+> > host. The primary usage is derived from emulated IOMMU in the
+> > guest, where QEMU can trap invalidation activities before pass them
+> > down the host/physical IOMMU. There are IOMMU architectural
+> > specific actions need to be taken which requires the generic APIs
+> > introduced in this patch to have opaque data in the
+> > tlb_invalidate_info argument.  
 > 
-> The generic device_group call-backs in iommu.c return NULL
-> in case of error. Since they are getting ERR_PTR values from
-> iommu_group_alloc(), just pass them up instead.
+> Which "IOMMU architectural specific actions" are you thinking of?
 > 
-> Reported-by: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
+construction of queued invalidation descriptors, then submit them to
+the IOMMU QI interface.
+> > +int iommu_invalidate(struct iommu_domain *domain,
+> > +		struct device *dev, struct tlb_invalidate_info
+> > *inv_info) +{
+> > +	int ret = 0;
+> > +
+> > +	if (unlikely(!domain->ops->invalidate))
+> > +		return -ENODEV;
+> > +
+> > +	ret = domain->ops->invalidate(domain, dev, inv_info);
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_invalidate);  
+> 
+> [...]
+> 
+> > +struct tlb_invalidate_info {
+> > +	__u32	model;
+> > +	__u32	length;
+> > +	__u8	opaque[];
+> > +};  
+> 
+> This interface is aweful. It requires the user of a generic api to
+> know details about the implementation behind to do anything useful.
+> 
+> Please explain in more detail why this is needed. My feeling is that
+> we can make this more generic with a small set of invalidation
+> functions in the iommu-api.
+> 
+My thinking was that via configuration control, there will be unlikely
+any mixed IOMMU models between pIOMMU and vIOMMU. We could have just
+model specific data pass through layers of SW (QEMU, VFIO) for
+performance reasons. We do have an earlier hybrid version that has
+generic data and opaque raw data. Would the below work for all IOMMU
+models?
 
-Looks good,
-Reviewed-by: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+https://www.spinics.net/lists/kvm/msg148798.html
 
+struct tlb_invalidate_info
+{
+        __u32   model;  /* Vendor number */
+        __u8 granularity
+#define DEVICE_SELECTVIE_INV    (1 << 0)
+#define PAGE_SELECTIVE_INV      (1 << 0)
+#define PASID_SELECTIVE_INV     (1 << 1)
+        __u32 pasid;
+        __u64 addr;
+        __u64 size;
 
->  drivers/iommu/iommu.c | 14 ++------------
->  1 file changed, 2 insertions(+), 12 deletions(-)
+        /* Since IOMMU format has already been validated for this table,
+           the IOMMU driver knows that the following structure is in a
+           format it knows */
+        __u8 opaque[];
+};
+
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index cf7ca7e..de09e1e 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -915,13 +915,7 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
->   */
->  struct iommu_group *generic_device_group(struct device *dev)
->  {
-> -	struct iommu_group *group;
-> -
-> -	group = iommu_group_alloc();
-> -	if (IS_ERR(group))
-> -		return NULL;
-> -
-> -	return group;
-> +	return iommu_group_alloc();
->  }
 > 
->  /*
-> @@ -988,11 +982,7 @@ struct iommu_group *pci_device_group(struct device *dev)
->  		return group;
+> 	Joerg
 > 
->  	/* No shared group found, allocate new */
-> -	group = iommu_group_alloc();
-> -	if (IS_ERR(group))
-> -		return NULL;
-> -
-> -	return group;
-> +	return iommu_group_alloc();
->  }
-> 
->  /**
+
+[Jacob Pan]
