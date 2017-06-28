@@ -1,48 +1,75 @@
-From: chris hyser <chris.hyser@oracle.com>
-Subject: Re: DMA_ATTR_WEAK_ORDERING defintion, was Re: [PATCH] nvme: set
- DMA_ATTR_WEAK_ORDERING attribute on dma buffers
-Date: Tue, 27 Jun 2017 16:46:31 -0400
-Message-ID: <f485b21a-0cf7-d2f0-c957-03d234447561@oracle.com>
-References: <1497645290-31041-1-git-send-email-alan.adamson@oracle.com>
- <20170617115703.GA13002@lst.de>
- <6a32f30b-433a-9857-164f-1717405a6082@oracle.com>
- <20170624073539.GE14580@lst.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
+Date: Wed, 28 Jun 2017 10:36:59 +0200
+Message-ID: <20170628083659.GA30388@8bytes.org>
+References: <1496954035.4188.1.camel@rutgers.edu>
+	<1498062018.17007.6.camel@rutgers.edu>
+	<bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
+	<1498079371.17007.18.camel@rutgers.edu>
+	<20170622092053.GV30388@8bytes.org>
+	<1498144389.17007.25.camel@rutgers.edu>
+	<20170622215735.GW30388@8bytes.org>
+	<1498227647.17007.31.camel@rutgers.edu>
+	<20170626121430.GX30388@8bytes.org>
+	<1498580675.10525.3.camel@rutgers.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170624073539.GE14580@lst.de>
-Sender: linux-pci-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Alan Adamson <alan.adamson@oracle.com>
-Cc: keith.busch@intel.com, axboe@fb.com, linux-nvme@lists.infradead.org, sagi@grimberg.me, linux-pci@vger.kernel.org, Mark Nelson <markn@au1.ibm.com>, Arnd Bergmann <arnd@arndb.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1498580675.10525.3.camel-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>, Alexander.Deucher-5C7GfCeVMHo@public.gmane.org
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, "Nath,
+	Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 6/24/2017 3:35 AM, Christoph Hellwig wrote:
-> I always assumed that our streaming mappings are relaxed order for
-> TLP anyway.  And at very least Documentation/DMA-attributes.txt seems
-> to imply something different:
->
->
->   DMA_ATTR_WEAK_ORDERING
->   ----------------------
->
->   DMA_ATTR_WEAK_ORDERING specifies that reads and writes to the mapping
->   may be weakly ordered, that is that reads and writes may pass each other.
->
-> Which to me suggest host reads, which also makes me wonder why these
-> would even apply to our streaming mappings.
->
-> Adding the powerpc folks that added the DMA_ATTR_WEAK_ORDERING flag
-> originally back in 2008, but not actual users as far as I can tell -
-> those are all new and from the sparc gang, except for the noveau
-> driver, which is a bit older but only uses for dma_alloc_attrs, where
-> the original description makes sense to me.
+[Adding Alex Deucher]
 
-I put this in for SPARC. In our case the host bridge/RC itself follows very strict ordering unless the relaxed order bit 
-is set in the TLP. This works great for devices that actually allow the driver to enable it. We however also have to 
-support an infiniband card that does not support enabling this in the HW and thus in the TLP but is actually fine with 
-relaxed order for the data buffers (ie the streaming I/O vs the coherent control buffers). In fact w/o relaxed order the 
-performance is absolutely atrocious ... w/ exceeds x86. This flag enables the driver to signal to us when we map the 
-buffer in the IOMMU to enable the relaxed order attribute for our HW.
+Hey Alex,
 
--chrish
+On Tue, Jun 27, 2017 at 12:24:35PM -0400, Jan Vesely wrote:
+> On Mon, 2017-06-26 at 14:14 +0200, Joerg Roedel wrote:
+
+> > How does that 'dGPU goes to sleep' work? Do you put it to sleep manually
+> > via sysfs or something? Or is that something that amdgpu does on its
+> > own?
+> 
+> AMD folks should be able to provide more details. afaik, the driver
+> uses ACPI methods to power on/off the device. Driver routines wake the
+> device up before accessing it and there is a timeout to turn it off
+> after few seconds of inactivity.
+> 
+> > 
+> > It looks like the GPU just switches the ATS unit off when it goes to
+> > sleep and doesn't answer the invalidation anymore, which explains the
+> > completion-wait timeouts.
+> 
+> Both MMIO regs and PCIe config regs are turned off so it would not
+> surprise me if all PCIe requests were ignored by the device in off
+> state. it should be possible to request device wake up before
+> invalidating the relevant IOMMU domain. I'll leave to more
+> knowledgeable ppl to judge whether it's a good idea (we can also
+> postpone such invalidations until the device is woken by other means)
+
+Can you maybe sched some light on how the sleep-mode of the GPUs work?
+Is it initiated by the GPU driver or from somewhere else? In the case
+discussed here it looks like the ATS unit of the GPU is switched of,
+causing IOTLB invalidation timeouts on the IOMMU side.
+
+If that is the case we might need some sort of dma-api extension so that
+the GPU driver can tell the iommu driver that the device is going to be
+quiet.
+
+
+Thanks,
+
+       Joerg
