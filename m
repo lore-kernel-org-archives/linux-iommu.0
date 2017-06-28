@@ -1,37 +1,32 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/vt-d: constify intel_dma_ops
-Date: Wed, 28 Jun 2017 14:17:46 +0200
-Message-ID: <20170628121745.GA27918@8bytes.org>
-References: <dabcc02772ea7a1793e8e41a08960bd1101160a1.1498647947.git.arvind.yadav.cs@gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v2] iommu/amd: Fix interrupt remapping when disable
+ guest_mode
+Date: Wed, 28 Jun 2017 14:44:48 +0200
+Message-ID: <20170628124447.GA28603@8bytes.org>
+References: <1498469284-85652-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <dabcc02772ea7a1793e8e41a08960bd1101160a1.1498647947.git.arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1498469284-85652-1-git-send-email-suravee.suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 28, 2017 at 04:39:32PM +0530, Arvind Yadav wrote:
-> Most dma_map_ops structures are never modified. Constify these
-> structures such that these can be write-protected.
+On Mon, Jun 26, 2017 at 04:28:04AM -0500, Suravee Suthikulpanit wrote:
+> Pass-through devices to VM guest can get updated IRQ affinity
+> information via irq_set_affinity() when not running in guest mode.
+> Currently, AMD IOMMU driver in GA mode ignores the updated information
+> if the pass-through device is setup to use vAPIC regardless of guest_mode.
+> This could cause invalid interrupt remapping.
 > 
-> Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
-> Changes in v2:
->               Added description.
+> Also, the guest_mode bit should be set and cleared only when
+> SVM updates posted-interrupt interrupt remapping information.
 > 
->  drivers/iommu/intel-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Cc: Joerg Roedel <jroedel@suse.de>
 
-Applied, thanks.
+Nervermind, I added this fixes line and applied the patch:
+
+	Fixes: d98de49a53e48 ('iommu/amd: Enable vAPIC interrupt remapping mode by default'
