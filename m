@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 2/3] iommu/omap: Return ERR_PTR in device_group call-back
-Date: Wed, 28 Jun 2017 14:00:57 +0200
-Message-ID: <1498651258-23700-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 3/3] iommu: Warn once when device_group callback returns NULL
+Date: Wed, 28 Jun 2017 14:00:58 +0200
+Message-ID: <1498651258-23700-3-git-send-email-joro@8bytes.org>
 References: <1498651258-23700-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,26 +23,27 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Make sure that the device_group callback returns an ERR_PTR
-instead of NULL.
+This callback should never return NULL. Print a warning if
+that happens so that we notice and can fix it.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/omap-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 95dfca3..641e035 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1309,7 +1309,7 @@ static void omap_iommu_remove_device(struct device *dev)
- static struct iommu_group *omap_iommu_device_group(struct device *dev)
- {
- 	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
--	struct iommu_group *group = NULL;
-+	struct iommu_group *group = ERR_PTR(-EINVAL);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index de09e1e..3f6ea16 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1010,6 +1010,9 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 	if (ops && ops->device_group)
+ 		group = ops->device_group(dev);
  
- 	if (arch_data->iommu_dev)
- 		group = arch_data->iommu_dev->group;
++	if (WARN_ON_ONCE(group == NULL))
++		return ERR_PTR(-EINVAL);
++
+ 	if (IS_ERR(group))
+ 		return group;
+ 
 -- 
 2.7.4
