@@ -1,15 +1,16 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/amd: Fix interrupt remapping when disable
-	guest_mode
-Date: Thu, 29 Jun 2017 10:27:35 +0700
-Message-ID: <a32b28fb-da5b-9b61-c26f-809fed23085f@amd.com>
-References: <1498469284-85652-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20170628124447.GA28603@8bytes.org>
+From: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/s390: Add support for iommu_device handling
+Date: Thu, 29 Jun 2017 15:27:16 +0200
+Message-ID: <20170629152716.1c888f20@thinkpad>
+References: <1497532312-30470-1-git-send-email-joro@8bytes.org>
+	<1497532312-30470-3-git-send-email-joro@8bytes.org>
+	<20170619170219.0a8626b6@thinkpad>
+	<20170627152806.GZ30388@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170628124447.GA28603-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170627152806.GZ30388-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,30 +21,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, 27 Jun 2017 17:28:06 +0200
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
+> On Mon, Jun 19, 2017 at 05:02:19PM +0200, Gerald Schaefer wrote:
+> > On Thu, 15 Jun 2017 15:11:52 +0200
+> > Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> > > +	rc = zpci_init_iommu(zdev);
+> > > +	if (rc)
+> > > +		goto out_free;
+> > > +
+> > 
+> > After this point, there are two options for failure (zpci_enable_device +
+> > zpci_scan_bus), but missing error handling with an appropriate call to
+> > zpci_destroy_iommu().
+> 
+> Right, I'll fix that in the next version.
+> 
+> > I must admit that I do not understand what these sysfs attributes are
+> > used for, and by whom and when. Is it really necessary/correct to register
+> > them (including the s390_iommu_ops) _before_ the zpci_dev is registered
+> > to the bus (zpci_scan_bus -> pci_scan_root_bus/pci_bus_add_devices)?
+> > 
+> > What is the expected life cycle for the attributes, and are they already
+> > needed when a device is still under DMA API access, or even before it is
+> > added to the PCI bus?
+> 
+> The sysfs attributes are used by user-space for topology detection. A
+> user-space program using VFIO needs to know which PCI-devices it needs
+> to assign to the VFIO driver in order to gain access.
+> 
+> On s390 this probably doesn't matter much, as the real PCI topology is
+> not exposed, but it matters on other architectures. The purpose of this
+> patch is not so much the sysfs attributes. Its a step to convert all
+> IOMMU drivers to use the iommu_device_register() interface. Goal is that
+> the iommu core code knows about individual hardware iommus and the
+> devices behind it.
+> 
+> When this is implemented in all iommu drivers, we can start moving more
+> code out of the drivers into the iommu core. This also probably doesn't
+> matter much for s390, but all iommu drivers need to use this interface
+> before we can move on. The sysfs-stuff is just a by-product of that.
+> 
+> So to move on with that, it would be good to get an Acked-by on this
+> patch from you guys once you think I fixed everything :)
 
-On 6/28/17 19:44, Joerg Roedel wrote:
-> On Mon, Jun 26, 2017 at 04:28:04AM -0500, Suravee Suthikulpanit wrote:
->> Pass-through devices to VM guest can get updated IRQ affinity
->> information via irq_set_affinity() when not running in guest mode.
->> Currently, AMD IOMMU driver in GA mode ignores the updated information
->> if the pass-through device is setup to use vAPIC regardless of guest_mode.
->> This could cause invalid interrupt remapping.
->>
->> Also, the guest_mode bit should be set and cleared only when
->> SVM updates posted-interrupt interrupt remapping information.
->>
->> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->> Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->
-> Nervermind, I added this fixes line and applied the patch:
->
-> 	Fixes: d98de49a53e48 ('iommu/amd: Enable vAPIC interrupt remapping mode by default'
->
+Ok, thanks for the explanation. So it should not be a problem if the
+attributes are registered in zpci_create_device() before the device is
+registered to the bus, especially since they do not provide any manipulation
+function but only topology information.
 
-Thanks,
+BTW, I get the following new attributes with this patch:
+/sys/devices/pci0000:00/0000:00:00.0/iommu
+/sys/devices/virtual/iommu
+/sys/devices/virtual/iommu/s390-iommu.00000012
+/sys/class/iommu/s390-iommu.00000012
 
-Suravee
+Regards,
+Gerald
