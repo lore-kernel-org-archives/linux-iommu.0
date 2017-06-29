@@ -1,16 +1,11 @@
-From: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/s390: Add support for iommu_device handling
-Date: Thu, 29 Jun 2017 15:27:16 +0200
-Message-ID: <20170629152716.1c888f20@thinkpad>
-References: <1497532312-30470-1-git-send-email-joro@8bytes.org>
-	<1497532312-30470-3-git-send-email-joro@8bytes.org>
-	<20170619170219.0a8626b6@thinkpad>
-	<20170627152806.GZ30388@8bytes.org>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Implement shutdown method
+Date: Thu, 29 Jun 2017 13:40:15 -0400
+Message-ID: <1498758015-7072-1-git-send-email-nwatters@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170627152806.GZ30388-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,65 +15,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 27 Jun 2017 17:28:06 +0200
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+The shutdown method disables the SMMU and its interrupts to avoid
+potentially corrupting a new kernel started with kexec.
 
-> On Mon, Jun 19, 2017 at 05:02:19PM +0200, Gerald Schaefer wrote:
-> > On Thu, 15 Jun 2017 15:11:52 +0200
-> > Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> > > +	rc = zpci_init_iommu(zdev);
-> > > +	if (rc)
-> > > +		goto out_free;
-> > > +
-> > 
-> > After this point, there are two options for failure (zpci_enable_device +
-> > zpci_scan_bus), but missing error handling with an appropriate call to
-> > zpci_destroy_iommu().
-> 
-> Right, I'll fix that in the next version.
-> 
-> > I must admit that I do not understand what these sysfs attributes are
-> > used for, and by whom and when. Is it really necessary/correct to register
-> > them (including the s390_iommu_ops) _before_ the zpci_dev is registered
-> > to the bus (zpci_scan_bus -> pci_scan_root_bus/pci_bus_add_devices)?
-> > 
-> > What is the expected life cycle for the attributes, and are they already
-> > needed when a device is still under DMA API access, or even before it is
-> > added to the PCI bus?
-> 
-> The sysfs attributes are used by user-space for topology detection. A
-> user-space program using VFIO needs to know which PCI-devices it needs
-> to assign to the VFIO driver in order to gain access.
-> 
-> On s390 this probably doesn't matter much, as the real PCI topology is
-> not exposed, but it matters on other architectures. The purpose of this
-> patch is not so much the sysfs attributes. Its a step to convert all
-> IOMMU drivers to use the iommu_device_register() interface. Goal is that
-> the iommu core code knows about individual hardware iommus and the
-> devices behind it.
-> 
-> When this is implemented in all iommu drivers, we can start moving more
-> code out of the drivers into the iommu core. This also probably doesn't
-> matter much for s390, but all iommu drivers need to use this interface
-> before we can move on. The sysfs-stuff is just a by-product of that.
-> 
-> So to move on with that, it would be good to get an Acked-by on this
-> patch from you guys once you think I fixed everything :)
+Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Ok, thanks for the explanation. So it should not be a problem if the
-attributes are registered in zpci_create_device() before the device is
-registered to the bus, especially since they do not provide any manipulation
-function but only topology information.
-
-BTW, I get the following new attributes with this patch:
-/sys/devices/pci0000:00/0000:00:00.0/iommu
-/sys/devices/virtual/iommu
-/sys/devices/virtual/iommu/s390-iommu.00000012
-/sys/class/iommu/s390-iommu.00000012
-
-Regards,
-Gerald
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 380969a..907d576 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2765,9 +2765,19 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
+ 	arm_smmu_device_disable(smmu);
++
++	/* Disable IRQs */
++	arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
++				ARM_SMMU_IRQ_CTRLACK);
++
+ 	return 0;
+ }
+ 
++static void arm_smmu_device_shutdown(struct platform_device *pdev)
++{
++	arm_smmu_device_remove(pdev);
++}
++
+ static struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,smmu-v3", },
+ 	{ },
+@@ -2781,6 +2791,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	},
+ 	.probe	= arm_smmu_device_probe,
+ 	.remove	= arm_smmu_device_remove,
++	.shutdown = arm_smmu_device_shutdown,
+ };
+ module_platform_driver(arm_smmu_driver);
+ 
+-- 
+Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux
+Foundation Collaborative Project.
