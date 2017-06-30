@@ -1,10 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.12-rc7
-Date: Fri, 30 Jun 2017 18:56:03 +0200
-Message-ID: <20170630165557.GA22586@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Implement shutdown method
+Date: Fri, 30 Jun 2017 18:11:03 +0100
+Message-ID: <20170630171103.GA15682@arm.com>
+References: <1498758015-7072-1-git-send-email-nwatters@codeaurora.org>
+	<20170629183438.GF5592@arm.com>
+	<5f655f54-a843-af16-e9e3-0e0d84565994@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6163472328199287549=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5f655f54-a843-af16-e9e3-0e0d84565994-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,92 +20,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Jun 29, 2017 at 06:20:00PM -0400, Nate Watterson wrote:
+> On 6/29/2017 2:34 PM, Will Deacon wrote:
+> >On Thu, Jun 29, 2017 at 01:40:15PM -0400, Nate Watterson wrote:
+> >>The shutdown method disables the SMMU and its interrupts to avoid
+> >>potentially corrupting a new kernel started with kexec.
+> >>
+> >>Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> >>---
+> >>  drivers/iommu/arm-smmu-v3.c | 11 +++++++++++
+> >>  1 file changed, 11 insertions(+)
+> >
+> >We should update arm-smmu.c as well.
+> >
+> >>diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> >>index 380969a..907d576 100644
+> >>--- a/drivers/iommu/arm-smmu-v3.c
+> >>+++ b/drivers/iommu/arm-smmu-v3.c
+> >>@@ -2765,9 +2765,19 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+> >>  	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+> >>  	arm_smmu_device_disable(smmu);
+> >>+
+> >>+	/* Disable IRQs */
+> >>+	arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+> >>+				ARM_SMMU_IRQ_CTRLACK);
+> >>+
+> >
+> >Can you justify the need for this? If we actually need to disable
+> >interrupts, then I'd like to understand why so that we can make sure we
+> >get the ordering right with respect to disabling the device. Also, do we
+> >need to clear the MSI registers too?
+> 
+> I have no justification. Based on the number of drivers that take care
+> to prevent their HW from generating an interrupt, I thought it would be
+> required, but I can't find any such requirement explicitly laid out in
+> the documentation.
+> 
+> When you mention the MSI registers do you mean, for instance,
+> SMMU_GERROR_IRQ_CFG0? It looks like those are always cleared while
+> initializing the SMMU so the case where an SMMU transitions from using
+> MSIs to using wired interrupts between kernels will be handled properly.
 
---===============6163472328199287549==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NzB8fVQJ5HfG6fxh"
-Content-Disposition: inline
+Sure, but if it's only the re-init path you're concerned about, then I
+don't think we have a problem for wired interrupts either. They're masked
+at the GIC until we do request_irq, and our handler can tolerate a spurious
+IRQ anyway.
 
+I assumed the race you were trying to close was an IRQ firing after we've
+disabled the device, but actually, I think the GIC is the right place to
+handle that too because propagation delay can cause late IRQs anyway.
 
---NzB8fVQJ5HfG6fxh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+So unless there's a case I'm missing, let's not confuse the code by
+disabling IRQs for the sake of it.
 
-Hi Linus,
-
-The following changes since commit 32c1431eea4881a6b17bd7c639315010aeefa452:
-
-  Linux 4.12-rc5 (2017-06-11 16:48:20 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.12-rc7
-
-for you to fetch changes up to 84a21dbdef0b96d773599c33c2afbb002198d303:
-
-  iommu/amd: Fix interrupt remapping when disable guest_mode (2017-06-28 14:44:56 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux 4.12-rc7
-
-	Two fixes:
-
-		* A fix for AMD IOMMU interrupt remapping code when
-		  IRQs are forwarded directly to KVM guests
-
-		* Fixed check in the recently merged code to allow
-		  tboot with Intel VT-d disabled
-
-----------------------------------------------------------------
-Shaohua Li (1):
-      iommu/vt-d: Correctly disable Intel IOMMU force on
-
-Suravee Suthikulpanit (1):
-      iommu/amd: Fix interrupt remapping when disable guest_mode
-
- arch/x86/kernel/tboot.c   | 2 +-
- drivers/iommu/amd_iommu.c | 6 ++----
- 2 files changed, 3 insertions(+), 5 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---NzB8fVQJ5HfG6fxh
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJZVoKdAAoJECvwRC2XARrjIYQQANkEFXVmHS+qJLv2KbabuCM6
-4yVWV503hV9Cmfg3yw4ExiD9GMGse5mLdv3aBKPNcUBDe6OnmJQ2jj+M6yFWwoDS
-TqGGBsFaPKBJ6CoBS94n+fSDGNsZ5w37B2MFH9IrcqxVcxn5BHd9k7oObRZnEUxz
-Xx21W1mKM7RCNWYC3ICBeU1Yg6TAw5VzUa034pKjN5L0voovnjUiEi7IITzhd/PZ
-iz/BZ1T2vibISqFIuBJ7+kjguMsXOFaajrxCc2UY5loSYOh9Yztwyr2trrtzda4U
-fsdIliv3Bc2mrT9Ww1/llG5azVWu+Z3V5f1HJiZbw2WNsQfELl8nCKf/tHO6zXbI
-QuqBIcFtCe+O1h3zFUqPLWwPNf5DBjbzFh7w+kqgpj/CpHz9mZoeiArxuzc3iQ/t
-q0VZs8JO743qMdVKBA+7NtSexNOUAQdV49NqXYF77DJHSGjcqy3rUVRy25B1V2WU
-cF5gpPWoJx0vUcG+9KXZmO7q0KgvOD8Mp9EbrkUC43YReM1h1NGUnp75klhp5V/0
-iahLigEJDw/qxUcAghQBVCynbkMvj5AsfRrcV5VsaZKIUr/b2GI/XW90gn3oTzLX
-IyuvsyPltu7fR1by0qHlUWX3wvYNKG+RZwXJE7bTp7k/xOmXouyRbceJrpY/d/bo
-6Kh7Mx8QbMixsZY1s7PY
-=SPpF
------END PGP SIGNATURE-----
-
---NzB8fVQJ5HfG6fxh--
-
---===============6163472328199287549==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6163472328199287549==--
+Will
