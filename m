@@ -1,17 +1,17 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v3 1/2] acpi:iort: Add an IORT helper function to
-	reserve HW ITS address regions for IOMMU drivers
-Date: Mon, 3 Jul 2017 08:18:45 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA838399F10@FRAEML521-MBX.china.huawei.com>
-References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
-	<20170623145801.325244-2-shameerali.kolothum.thodi@huawei.com>
-	<20170623165406.GA6412@red-moon>
+From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
+	invalidate propagation
+Date: Sun, 2 Jul 2017 18:06:59 +0800
+Message-ID: <20170702100659.GA22053@gmail.com>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+	<1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
+	<cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170623165406.GA6412@red-moon>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <cc330a8f-e087-9b6f-2a40-38b58688d300-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,191 +21,172 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, May 12, 2017 at 01:11:02PM +0100, Jean-Philippe Brucker wrote:
 
+Hi Jean,
 
-> -----Original Message-----
-> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
-> Sent: Friday, June 23, 2017 5:54 PM
-> To: Shameerali Kolothum Thodi
-> Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> robin.murphy-5wv7dgnIgG8@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Gabriele Paoloni; John
-> Garry; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org;
-> Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
-> Subject: Re: [PATCH v3 1/2] acpi:iort: Add an IORT helper function to reserve
-> HW ITS address regions for IOMMU drivers
+As we've got a few discussions on it. I'd like to have a conclusion and
+make it as a reference for future discussion.
+
+Currently, we are inclined to have a hybrid format for the iommu tlb
+invalidation from userspace(vIOMMU or userspace driver).
+
+Based on the previous discussion, may the below work?
+
+1. Add a IOCTL for iommu tlb invalidation.
+
+VFIO_IOMMU_TLB_INVALIDATE
+
+struct vfio_iommu_tlb_invalidate {
+   __u32   argsz;
+   __u32   length;
+   __u8    data[];
+};
+
+comments from Alex William: is it more suitable to add a new flag bit on
+vfio_device_svm(a structure defined in patch 5 of this patchset), the data
+structure is so similar.
+
+Personally, I'm ok with it. Pls let me know your thoughts. However, the
+precondition is we accept the whole definition in this email. If not, the
+vfio_iommu_tlb_invalidate would be defined differently.
+
+2. Define a structure in include/uapi/linux/iommu.h(newly added header file)
+
+struct iommu_tlb_invalidate {
+	__u32	scope;
+/* pasid-selective invalidation described by @pasid */
+#define IOMMU_INVALIDATE_PASID	(1 << 0)
+/* address-selevtive invalidation described by (@vaddr, @size) */
+#define IOMMU_INVALIDATE_VADDR	(1 << 1)
+	__u32	flags;
+/*  targets non-pasid mappings, @pasid is not valid */
+#define IOMMU_INVALIDATE_NO_PASID	(1 << 0)
+/* indicating that the pIOMMU doesn't need to invalidate
+   all intermediate tables cached as part of the PTE for
+   vaddr, only the last-level entry (pte). This is a hint. */
+#define IOMMU_INVALIDATE_VADDR_LEAF	(1 << 1)
+	__u32	pasid;
+	__u64	vaddr;
+	__u64	size;
+	__u8	data[];
+};
+
+For this part, the scope and flags are basically aligned with your previous
+email. I renamed the prefix to be "IOMMU_". In my opinion, the scope and flags
+would be filled by vIOMMU emulator and be parsed by underlying iommu driver,
+it is much more suitable to be defined in a uapi header file.
+
+Besides the reason above, I don't want VFIO engae too much on the data parsing.
+If we move the scope,flags,pasid,vaddr,size fields to vfio_iommu_tlb_invalidate,
+then both kernel space vfio and user space vfio needs to do much parsing. So I
+may prefer the way above.
+
+If you've got any other idea, pls feel free to post it. It's welcomed.
+
+Thanks,
+Yi L
+
+> Hi Yi,
 > 
-> On Fri, Jun 23, 2017 at 03:58:00PM +0100, shameer wrote:
-> > The helper function retrieves ITS address regions through IORT device
-> > <-> ITS mappings and reserves it so that these regions will not be
-> > translated by IOMMU and will be excluded from IOVA allocations. IOMMU
-> > drivers can use this to implement their .get_resv_regions callback.
-> >
-> > Signed-off-by: shameer <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> On 26/04/17 11:12, Liu, Yi L wrote:
+> > From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > 
+> > This patch adds VFIO_IOMMU_TLB_INVALIDATE to propagate IOMMU TLB
+> > invalidate request from guest to host.
+> > 
+> > In the case of SVM virtualization on VT-d, host IOMMU driver has
+> > no knowledge of caching structure updates unless the guest
+> > invalidation activities are passed down to the host. So a new
+> > IOCTL is needed to propagate the guest cache invalidation through
+> > VFIO.
+> > 
+> > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > > ---
-> >  drivers/acpi/arm64/iort.c        | 91
-> ++++++++++++++++++++++++++++++++++++++--
-> >  drivers/irqchip/irq-gic-v3-its.c |  3 +-
-> >  include/linux/acpi_iort.h        |  7 +++-
-> >  3 files changed, 96 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index c5fecf9..cf0a6b8 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -34,6 +34,7 @@
-> >  struct iort_its_msi_chip {
-> >  	struct list_head	list;
-> >  	struct fwnode_handle	*fw_node;
-> > +	phys_addr_t		base_addr;
-> >  	u32			translation_id;
-> >  };
-> >
-> > @@ -131,14 +132,16 @@ typedef acpi_status (*iort_find_node_callback)
-> > static DEFINE_SPINLOCK(iort_msi_chip_lock);
-> >
-> >  /**
-> > - * iort_register_domain_token() - register domain token and related
-> > ITS ID
-> > - * to the list from where we can get it back later on.
-> > + * iort_register_domain_token() - register domain token along with
-> > + related
-> > + * ITS ID and base address to the list from where we can get it back later
-> on.
-> >   * @trans_id: ITS ID.
-> > + * @base: ITS base address.
-> >   * @fw_node: Domain token.
-> >   *
-> >   * Returns: 0 on success, -ENOMEM if no memory when allocating list
-> element
-> >   */
-> > -int iort_register_domain_token(int trans_id, struct fwnode_handle
-> > *fw_node)
-> > +int iort_register_domain_token(int trans_id, phys_addr_t base,
-> > +			       struct fwnode_handle *fw_node)
-> >  {
-> >  	struct iort_its_msi_chip *its_msi_chip;
-> >
-> > @@ -148,6 +151,7 @@ int iort_register_domain_token(int trans_id,
-> > struct fwnode_handle *fw_node)
-> >
-> >  	its_msi_chip->fw_node = fw_node;
-> >  	its_msi_chip->translation_id = trans_id;
-> > +	its_msi_chip->base_addr = base;
-> >
-> >  	spin_lock(&iort_msi_chip_lock);
-> >  	list_add(&its_msi_chip->list, &iort_msi_chip_list); @@ -491,6
-> > +495,24 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
-> >  	return -ENODEV;
-> >  }
-> >
-> > +static int iort_find_its_base(u32 its_id, phys_addr_t *base) {
-> > +	struct iort_its_msi_chip *its_msi_chip;
-> > +	bool match = false;
-> > +
-> > +	spin_lock(&iort_msi_chip_lock);
-> > +	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
-> > +		if (its_msi_chip->translation_id == its_id) {
-> > +			*base = its_msi_chip->base_addr;
-> > +			match = true;
-> > +			break;
-> > +		}
-> > +	}
-> > +	spin_unlock(&iort_msi_chip_lock);
-> > +
-> > +	return match ? 0 : -ENODEV;
-> > +}
-> > +
-> >  /**
-> >   * iort_dev_find_its_id() - Find the ITS identifier for a device
-> >   * @dev: The device.
-> > @@ -649,6 +671,67 @@ int iort_add_device_replay(const struct
-> iommu_ops
-> > *ops, struct device *dev)
-> >
-> >  	return err;
-> >  }
-> > +
-> > +/**
-> > + * iort_iommu_its_get_resv_regions - Reserved region driver helper
-> > + * @dev: Device from iommu_get_resv_regions()
-> > + * @list: Reserved region list from iommu_get_resv_regions()
-> > + *
-> > + * Returns: Number of reserved regions on success(0 if no associated ITS),
-> > + *          appropriate error value otherwise.
-> > + *
-> > + * IOMMU drivers can use this to implement their .get_resv_regions
-> > +callback
-> > + * for reserving the HW ITS address regions.
-> > + */
-> > +int iort_iommu_its_get_resv_regions(struct device *dev, struct
-> > +list_head *head) {
-> > +	int i;
-> > +	struct acpi_iort_its_group *its;
-> > +	struct acpi_iort_node *node, *its_node = NULL;
-> > +	int resv = 0;
-> > +
-> > +	node = iort_find_dev_node(dev);
-> > +	if (!node)
-> > +		return -ENODEV;
-> > +
-> > +	if (dev_is_pci(dev)) {
-> > +		u32 rid;
-> > +
-> > +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-> &rid);
-> > +		its_node = iort_node_map_id(node, rid, NULL,
-> IORT_MSI_TYPE);
-> > +	} else {
-> > +		for (i = 0; i < node->mapping_count; i++) {
-> > +			its_node = iort_node_map_platform_id(node, NULL,
-> > +							 IORT_MSI_TYPE, i);
-> > +			if (its_node)
-> > +				break;
-> > +		}
-> > +	}
-> > +
-> > +	if (!its_node)
-> > +		return 0;
-> > +
-> > +	/* Move to ITS specific data */
-> > +	its = (struct acpi_iort_its_group *)its_node->node_data;
-> > +
-> > +	for (i = 0; i < its->its_count; i++) {
-> > +		phys_addr_t base;
-> > +
-> > +		if (!iort_find_its_base(its->identifiers[i], &base)) {
-> > +			int prot = IOMMU_WRITE | IOMMU_NOEXEC |
-> IOMMU_MMIO;
-> > +			struct iommu_resv_region *region;
-> > +
-> > +			region = iommu_alloc_resv_region(base, SZ_128K,
-> prot,
-> > +							 IOMMU_RESV_MSI);
-> > +			if (region) {
-> > +				list_add_tail(&region->list, head);
-> > +				resv++;
-> > +			}
-> > +		}
-> > +	}
-> > +
-> > +	return resv ? : -ENODEV;
+> >  include/uapi/linux/vfio.h | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> > 
+> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> > index 6b97987..50c51f8 100644
+> > --- a/include/uapi/linux/vfio.h
+> > +++ b/include/uapi/linux/vfio.h
+> > @@ -564,6 +564,15 @@ struct vfio_device_svm {
+> >  
+> >  #define VFIO_IOMMU_SVM_BIND_TASK	_IO(VFIO_TYPE, VFIO_BASE + 22)
+> >  
+> > +/* For IOMMU TLB Invalidation Propagation */
+> > +struct vfio_iommu_tlb_invalidate {
+> > +	__u32	argsz;
+> > +	__u32	length;
+> > +	__u8	data[];
+> > +};
 > 
-> IIUC I think this is not right (ie resv < its_count should count as a failure).
-
-Yes, that is a valid error.
-
-> This should be easy to fix-up but I am not sure there is still time for these
-> patches to be merged for this merge window, I take the blame since I am the
-> cause of the delay but I thought the logic in the SMMU driver should have
-> been clarified and this version does it IMO.
-
-No problem and thanks for your support. I could rebase this on  rc1 and send
-the next version. Please let me know.
-
-Shameer
- 
+> We initially discussed something a little more generic than this, with
+> most info explicitly described and only pIOMMU-specific quirks and hints
+> in an opaque structure. Out of curiosity, why the change? I'm not against
+> a fully opaque structure, but there seem to be a large overlap between TLB
+> invalidations across architectures.
+> 
+> 
+> For what it's worth, when prototyping the paravirtualized IOMMU I came up
+> with the following.
+> 
+> (From the paravirtualized POV, the SMMU also has to swizzle endianess
+> after unpacking an opaque structure, since userspace doesn't know what's
+> in it and guest might use a different endianess. So we need to force all
+> opaque data to be e.g. little-endian.)
+> 
+> struct vfio_iommu_tlb_invalidate {
+> 	__u32	argsz;
+> 	__u32	scope;
+> 	__u32	flags;
+> 	__u32	pasid;
+> 	__u64	vaddr;
+> 	__u64	size;
+> 	__u8	data[];
+> };
+> 
+> Scope is a bitfields restricting the invalidation scope. By default
+> invalidate the whole container (all PASIDs and all VAs). @pasid, @vaddr
+> and @size are unused.
+> 
+> Adding VFIO_IOMMU_INVALIDATE_PASID (1 << 0) restricts the invalidation
+> scope to the pasid described by @pasid.
+> Adding VFIO_IOMMU_INVALIDATE_VADDR (1 << 1) restricts the invalidation
+> scope to the address range described by (@vaddr, @size).
+> 
+> So setting scope = VFIO_IOMMU_INVALIDATE_VADDR would invalidate the VA
+> range for *all* pasids (as well as no_pasid). Setting scope =
+> (VFIO_IOMMU_INVALIDATE_VADDR|VFIO_IOMMU_INVALIDATE_PASID) would invalidate
+> the VA range only for @pasid.
+> 
+> Flags depend on the selected scope:
+> 
+> VFIO_IOMMU_INVALIDATE_NO_PASID, indicating that invalidation (either
+> without scope or with INVALIDATE_VADDR) targets non-pasid mappings
+> exclusively (some architectures, e.g. SMMU, allow this)
+> 
+> VFIO_IOMMU_INVALIDATE_VADDR_LEAF, indicating that the pIOMMU doesn't need
+> to invalidate all intermediate tables cached as part of the PTW for vaddr,
+> only the last-level entry (pte). This is a hint.
+> 
+> I guess what's missing for Intel IOMMU and would go in @data is the
+> "global" hint (which we don't have in SMMU invalidations). Do you see
+> anything else, that the pIOMMU cannot deduce from this structure?
+> 
+> Thanks,
+> Jean
+> 
+> 
+> > +#define VFIO_IOMMU_TLB_INVALIDATE	_IO(VFIO_TYPE, VFIO_BASE + 23)
+> > +
+> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+> >  
+> >  /*
+> > 
+> 
+> 
