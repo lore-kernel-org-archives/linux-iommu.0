@@ -1,23 +1,20 @@
-From: Craig Stein <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-Date: Tue, 4 Jul 2017 10:29:27 -0600
-Message-ID: <CAEm5wMnjd5Vex9+qCJwrJUqLYMme_CJH-sA2wMvyc1vj6n6=0w@mail.gmail.com>
-References: <1496954035.4188.1.camel@rutgers.edu>
-	<1498062018.17007.6.camel@rutgers.edu>
-	<bf685f44-019c-4c21-25d4-6a6ea647b7cc@amd.com>
-	<1498079371.17007.18.camel@rutgers.edu>
-	<20170622092053.GV30388@8bytes.org>
-	<1498144389.17007.25.camel@rutgers.edu>
-	<20170622215735.GW30388@8bytes.org>
-	<1498227647.17007.31.camel@rutgers.edu>
-	<20170626121430.GX30388@8bytes.org>
-	<1498580675.10525.3.camel@rutgers.edu>
-	<20170628083659.GA30388@8bytes.org>
-	<BN6PR12MB16525D2E89F4AB61DC36EFBEF7DD0@BN6PR12MB1652.namprd12.prod.outlook.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/8] io-pgtable lock removal
+Date: Tue, 4 Jul 2017 18:31:56 +0100
+Message-ID: <20170704173155.GN22175@arm.com>
+References: <cover.1496921366.git.robin.murphy@arm.com>
+	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
+	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
+	<cdc1799b-f142-09ed-a7e5-d7fd2e70268f@arm.com>
+	<e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
+	<20170628114609.GD11053@arm.com>
+	<87d53115-3d80-5a3d-6632-c31986cb7018@broadcom.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8787983354925682365=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <BN6PR12MB16525D2E89F4AB61DC36EFBEF7DD0-/b2+HYfkarQqUD6E6FAiowdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <87d53115-3d80-5a3d-6632-c31986cb7018-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,179 +24,147 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
-Cc: "Lendacky, Thomas" <Thomas.Lendacky-5C7GfCeVMHo@public.gmane.org>, Jan Vesely <jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>, "Nath,
-	Arindam" <arindam.nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============8787983354925682365==
-Content-Type: multipart/alternative; boundary="001a113fec6e28cf520553806306"
+Ray,
 
---001a113fec6e28cf520553806306
-Content-Type: text/plain; charset="UTF-8"
+On Wed, Jun 28, 2017 at 10:02:35AM -0700, Ray Jui wrote:
+> On 6/28/17 4:46 AM, Will Deacon wrote:
+> > Robin and I have been bashing our heads against the tlb_sync_pending flag
+> > this morning, and we reckon it could have something to do with your timeouts
+> > on MMU-500.
+> > 
+> > On Tue, Jun 27, 2017 at 09:43:19AM -0700, Ray Jui wrote:
+> >>>> Also, in a few occasions, I observed the following message during the
+> >>>> test, when multiple cores are involved:
+> >>>>
+> >>>> arm-smmu 64000000.mmu: TLB sync timed out -- SMMU may be deadlocked
+> > 
+> > The tlb_sync_pending logic was written under the assumption of a global
+> > page-table lock, so it assumes that it only has to care about syncing
+> > flushes from the current CPU/context. That's not true anymore, and the
+> > current code can accidentally skip syncs and (what I think is happening in
+> > your case) allow concurrent syncs, which will potentially lead to timeouts
+> > if a CPU is unlucky enough to keep missing the Ack.
+> > 
+> > Please can you try the diff below and see if it fixes things for you?
+> > This applies on top of my for-joerg/arm-smmu/updates branch, but note
+> > that I've only shown it to the compiler. Not tested at all.
+> > 
+> > Will
+> > 
+> 
+> Thanks for looking into this. I'm a bit busy at work but will certainly
+> find time to test the diff below. I hopefully will get to it later this
+> week.
 
-Just to be clear which patch should I test and would you provide me with
-the link of its location?
+It would be really handy if you could test this, since I think it could
+cause some nasty problems if we don't get it fixed. Updated patch (with
+commit message) below.
 
-Thanks,
-Craig
+Will
 
-On Jun 28, 2017 16:14, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
-wrote:
+--->8
 
-> > -----Original Message-----
-> > From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> > Sent: Wednesday, June 28, 2017 4:37 AM
-> > To: Jan Vesely; Deucher, Alexander
-> > Cc: Lendacky, Thomas; Nath, Arindam; Craig Stein; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > foundation.org; Duran, Leo; Suthikulpanit, Suravee
-> > Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush
-> >
-> > [Adding Alex Deucher]
-> >
-> > Hey Alex,
-> >
-> > On Tue, Jun 27, 2017 at 12:24:35PM -0400, Jan Vesely wrote:
-> > > On Mon, 2017-06-26 at 14:14 +0200, Joerg Roedel wrote:
-> >
-> > > > How does that 'dGPU goes to sleep' work? Do you put it to sleep
-> > manually
-> > > > via sysfs or something? Or is that something that amdgpu does on its
-> > > > own?
-> > >
-> > > AMD folks should be able to provide more details. afaik, the driver
-> > > uses ACPI methods to power on/off the device. Driver routines wake the
-> > > device up before accessing it and there is a timeout to turn it off
-> > > after few seconds of inactivity.
-> > >
-> > > >
-> > > > It looks like the GPU just switches the ATS unit off when it goes to
-> > > > sleep and doesn't answer the invalidation anymore, which explains the
-> > > > completion-wait timeouts.
-> > >
-> > > Both MMIO regs and PCIe config regs are turned off so it would not
-> > > surprise me if all PCIe requests were ignored by the device in off
-> > > state. it should be possible to request device wake up before
-> > > invalidating the relevant IOMMU domain. I'll leave to more
-> > > knowledgeable ppl to judge whether it's a good idea (we can also
-> > > postpone such invalidations until the device is woken by other means)
-> >
-> > Can you maybe sched some light on how the sleep-mode of the GPUs work?
-> > Is it initiated by the GPU driver or from somewhere else? In the case
-> > discussed here it looks like the ATS unit of the GPU is switched of,
-> > causing IOTLB invalidation timeouts on the IOMMU side.
-> >
-> > If that is the case we might need some sort of dma-api extension so that
-> > the GPU driver can tell the iommu driver that the device is going to be
-> > quiet.
->
-> I assume you are talking about Hybrid/PowerXpress laptops where the dGPU
-> can be powered down dynamically?  That is done via the runtime pm subsystem
-> in the kernel.  We register several callbacks with that, and then it takes
-> care of the power down auto timers and such.  The actual mechanism to power
-> down the GPU varies for platform to platform (platform specific ACPI
-> methods on early systems, D3cold on newer ones).
->
-> Alex
->
->
+>From eeb11dab63fcdd698b671a3a8c63516005caa9ec Mon Sep 17 00:00:00 2001
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Date: Thu, 29 Jun 2017 15:08:09 +0100
+Subject: [PATCH] iommu/io-pgtable: Fix tlb_sync_pending flag access from
+ concurrent CPUs
 
---001a113fec6e28cf520553806306
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The tlb_sync_pending flag is used to elide back-to-back TLB sync operations
+for two reasons:
 
-<div dir=3D"auto">Just to be clear which patch should I test and would you =
-provide me with the link of its location?<div dir=3D"auto"><br></div><div d=
-ir=3D"auto">Thanks,=C2=A0</div><div dir=3D"auto">Craig</div></div><div clas=
-s=3D"gmail_extra"><br><div class=3D"gmail_quote">On Jun 28, 2017 16:14, &qu=
-ot;Deucher, Alexander&quot; &lt;<a href=3D"mailto:Alexander.Deucher-5C7GfCeVMHo@public.gmane.org=
-">Alexander.Deucher-5C7GfCeVMHo@public.gmane.org</a>&gt; wrote:<br type=3D"attribution"><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc s=
-olid;padding-left:1ex">&gt; -----Original Message-----<br>
-&gt; From: Joerg Roedel [mailto:<a href=3D"mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org">joro@8by=
-tes.org</a>]<br>
-&gt; Sent: Wednesday, June 28, 2017 4:37 AM<br>
-&gt; To: Jan Vesely; Deucher, Alexander<br>
-&gt; Cc: Lendacky, Thomas; Nath, Arindam; Craig Stein; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org<b=
-r>
-&gt; <a href=3D"http://foundation.org" rel=3D"noreferrer" target=3D"_blank"=
->foundation.org</a>; Duran, Leo; Suthikulpanit, Suravee<br>
-&gt; Subject: Re: [PATCH v1 3/3] iommu/amd: Optimize the IOMMU queue flush<=
-br>
-&gt;<br>
-&gt; [Adding Alex Deucher]<br>
-&gt;<br>
-&gt; Hey Alex,<br>
-&gt;<br>
-&gt; On Tue, Jun 27, 2017 at 12:24:35PM -0400, Jan Vesely wrote:<br>
-&gt; &gt; On Mon, 2017-06-26 at 14:14 +0200, Joerg Roedel wrote:<br>
-&gt;<br>
-&gt; &gt; &gt; How does that &#39;dGPU goes to sleep&#39; work? Do you put =
-it to sleep<br>
-&gt; manually<br>
-&gt; &gt; &gt; via sysfs or something? Or is that something that amdgpu doe=
-s on its<br>
-&gt; &gt; &gt; own?<br>
-&gt; &gt;<br>
-&gt; &gt; AMD folks should be able to provide more details. afaik, the driv=
-er<br>
-&gt; &gt; uses ACPI methods to power on/off the device. Driver routines wak=
-e the<br>
-&gt; &gt; device up before accessing it and there is a timeout to turn it o=
-ff<br>
-&gt; &gt; after few seconds of inactivity.<br>
-&gt; &gt;<br>
-&gt; &gt; &gt;<br>
-&gt; &gt; &gt; It looks like the GPU just switches the ATS unit off when it=
- goes to<br>
-&gt; &gt; &gt; sleep and doesn&#39;t answer the invalidation anymore, which=
- explains the<br>
-&gt; &gt; &gt; completion-wait timeouts.<br>
-&gt; &gt;<br>
-&gt; &gt; Both MMIO regs and PCIe config regs are turned off so it would no=
-t<br>
-&gt; &gt; surprise me if all PCIe requests were ignored by the device in of=
-f<br>
-&gt; &gt; state. it should be possible to request device wake up before<br>
-&gt; &gt; invalidating the relevant IOMMU domain. I&#39;ll leave to more<br=
->
-&gt; &gt; knowledgeable ppl to judge whether it&#39;s a good idea (we can a=
-lso<br>
-&gt; &gt; postpone such invalidations until the device is woken by other me=
-ans)<br>
-&gt;<br>
-&gt; Can you maybe sched some light on how the sleep-mode of the GPUs work?=
-<br>
-&gt; Is it initiated by the GPU driver or from somewhere else? In the case<=
-br>
-&gt; discussed here it looks like the ATS unit of the GPU is switched of,<b=
-r>
-&gt; causing IOTLB invalidation timeouts on the IOMMU side.<br>
-&gt;<br>
-&gt; If that is the case we might need some sort of dma-api extension so th=
-at<br>
-&gt; the GPU driver can tell the iommu driver that the device is going to b=
-e<br>
-&gt; quiet.<br>
-<br>
-I assume you are talking about Hybrid/PowerXpress laptops where the dGPU ca=
-n be powered down dynamically?=C2=A0 That is done via the runtime pm subsys=
-tem in the kernel.=C2=A0 We register several callbacks with that, and then =
-it takes care of the power down auto timers and such.=C2=A0 The actual mech=
-anism to power down the GPU varies for platform to platform (platform speci=
-fic ACPI methods on early systems, D3cold on newer ones).<br>
-<br>
-Alex<br>
-<br>
-</blockquote></div></div>
+  1. TLB sync operations can be expensive, and so avoiding them where we
+     can is a good idea.
 
---001a113fec6e28cf520553806306--
+  2. Some hardware (mtk_iommu) locks up if it sees a TLB sync without an
+     unsync'd TLB flush preceding it
 
---===============8787983354925682365==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+The flag is set on an ->add_flush callback and cleared on a ->sync callback,
+which worked nicely when all map/unmap operations where protected by a
+global lock.
 
+Unfortunately, moving to a lockless implementation means that we suddenly
+have races on the flag: updates can go missing and we can end up with
+back-to-back syncs once again.
 
---===============8787983354925682365==--
+This patch resolves the problem by making the tlb_sync_pending flag an
+atomic_t and sorts out the ordering with respect to TLB callbacks.
+Now, the flag is set with release semantics after adding a flush and
+checked with an xchg operation (and subsequent control dependency) when
+performing the sync. We could consider using a cmpxchg here, but we'll
+likely just hit our local update to the flag anyway.
+
+Cc: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Fixes: 2c3d273eabe8 ("iommu/io-pgtable-arm: Support lockless operation")
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/io-pgtable.c |  1 +
+ drivers/iommu/io-pgtable.h | 12 ++++++------
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+index 127558d83667..cd8d7aaec161 100644
+--- a/drivers/iommu/io-pgtable.c
++++ b/drivers/iommu/io-pgtable.c
+@@ -59,6 +59,7 @@ struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
+ 	iop->cookie	= cookie;
+ 	iop->cfg	= *cfg;
+ 
++	atomic_set(&iop->tlb_sync_pending, 0);
+ 	return &iop->ops;
+ }
+ 
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index 524263a7ae6f..b64580c9d03d 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -1,5 +1,7 @@
+ #ifndef __IO_PGTABLE_H
+ #define __IO_PGTABLE_H
++
++#include <linux/atomic.h>
+ #include <linux/bitops.h>
+ 
+ /*
+@@ -165,7 +167,7 @@ void free_io_pgtable_ops(struct io_pgtable_ops *ops);
+ struct io_pgtable {
+ 	enum io_pgtable_fmt	fmt;
+ 	void			*cookie;
+-	bool			tlb_sync_pending;
++	atomic_t		tlb_sync_pending;
+ 	struct io_pgtable_cfg	cfg;
+ 	struct io_pgtable_ops	ops;
+ };
+@@ -175,22 +177,20 @@ struct io_pgtable {
+ static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
+ {
+ 	iop->cfg.tlb->tlb_flush_all(iop->cookie);
+-	iop->tlb_sync_pending = true;
++	atomic_set_release(&iop->tlb_sync_pending, 1);
+ }
+ 
+ static inline void io_pgtable_tlb_add_flush(struct io_pgtable *iop,
+ 		unsigned long iova, size_t size, size_t granule, bool leaf)
+ {
+ 	iop->cfg.tlb->tlb_add_flush(iova, size, granule, leaf, iop->cookie);
+-	iop->tlb_sync_pending = true;
++	atomic_set_release(&iop->tlb_sync_pending, 1);
+ }
+ 
+ static inline void io_pgtable_tlb_sync(struct io_pgtable *iop)
+ {
+-	if (iop->tlb_sync_pending) {
++	if (atomic_xchg_relaxed(&iop->tlb_sync_pending, 0))
+ 		iop->cfg.tlb->tlb_sync(iop->cookie);
+-		iop->tlb_sync_pending = false;
+-	}
+ }
+ 
+ /**
+-- 
+2.1.4
