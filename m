@@ -1,86 +1,139 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/io-pgtable: Sanitise map/unmap addresses
-Date: Mon,  3 Jul 2017 14:52:24 +0100
-Message-ID: <6ba078ad1dfbdb6e74256d533c0feaf4f56e8cf4.1499089895.git.robin.murphy@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v3 2/2] acpi/iort: numa: Add numa node mapping for smmuv3
+ devices
+Date: Tue, 4 Jul 2017 11:07:59 +0100
+Message-ID: <20170704100759.GA17491@red-moon>
+References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <1496897059-8272-3-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <20170615134603.GA16292@red-moon>
+ <20170628174750.GY658@rric.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170628174750.GY658@rric.localdomain>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robert Richter <robert.richter@cavium.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, lv.zheng@intel.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will.Deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, joro@8bytes.org, lenb@kernel.org, jnair@caviumnetworks.com, gpkulkarni@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-It may be an egregious error to attempt to use addresses outside the
-range of the pagetable format, but that still doesn't mean we should
-merrily wreak havoc by silently mapping/unmapping whatever truncated
-portions of them might happen to correspond to real addresses.
+Hi Robert,
 
-Add some up-front checks to sanitise our inputs so that buggy callers
-don't invite potential memory corruption.
+On Wed, Jun 28, 2017 at 07:47:50PM +0200, Robert Richter wrote:
+> On 15.06.17 14:46:03, Lorenzo Pieralisi wrote:
+> > On Thu, Jun 08, 2017 at 10:14:19AM +0530, Ganapatrao Kulkarni wrote:
+> > > Add code to parse proximity domain in SMMUv3 IORT table to
+> > > set numa node mapping for smmuv3 devices.
+> > > 
+> > > Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> > > ---
+> > >  drivers/acpi/arm64/iort.c | 28 ++++++++++++++++++++++++++--
+> > >  1 file changed, 26 insertions(+), 2 deletions(-)
+> > 
+> > I am happy to take this but I want to know what we shall do with
+> > patch 1 and related ACPICA changes first.
+> 
+> The change is now in acpica:
+> 
+>  https://github.com/acpica/acpica/commit/8cadc4fb500e2aa52241e367c87a0f95d9760c58
+> 
+> So we could guard the code with an #ifdef until that patch is pulled
+> in via acpica tree:
+> 
+> > > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > > index bba2b59..e804386 100644
+> > > --- a/drivers/acpi/arm64/iort.c
+> > > +++ b/drivers/acpi/arm64/iort.c
+> > > @@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+> > >  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+> > >  }
+> > >  
+> > > +/*
+> > > + * set numa proximity domain for smmuv3 device
+> > > + */
+> > > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
+> > > +		struct device *dev)
+> > > +{
+> 
+> #ifdef ACPI_IORT_SMMU_V3_PXM_VALID
+> 
+> > > +	struct acpi_iort_smmu_v3 *smmu;
+> > > +
+> > > +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+> > > +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+> > > +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+> > > +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> > > +			smmu->base_address,
+> > > +			smmu->pxm);
+> > > +	}
+> 
+> #endif
+> 
+> > > +}
+> > > +
+> 
+> Could the patch be applied with this change?
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/io-pgtable-arm-v7s.c | 6 ++++++
- drivers/iommu/io-pgtable-arm.c     | 7 +++++++
- 2 files changed, 13 insertions(+)
+Sorry I was away (and the ARM64 tree was not accepting any new code last
+week anyway), I will send the patch upstream for 4.14 (with your change
+above - or whatever ACPICA guard make it safe - since we will depend on
+ACPICA changes merge timing anyway - they won't be merged this cycle).
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 7753b33d041d..e0bfe8ba4c9d 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -475,6 +475,9 @@ static int arm_v7s_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
- 		return 0;
- 
-+	if (WARN_ON(upper_32_bits(iova) || upper_32_bits(paddr)))
-+		return -ERANGE;
-+
- 	ret = __arm_v7s_map(data, iova, paddr, size, prot, 1, data->pgd);
- 	/*
- 	 * Synchronise all PTE updates for the new mapping before there's
-@@ -655,6 +658,9 @@ static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 	size_t unmapped;
- 
-+	if (WARN_ON(upper_32_bits(iova)))
-+		return 0;
-+
- 	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
- 	if (unmapped)
- 		io_pgtable_tlb_sync(&data->iop);
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f73120f2cfbc..ebf9152c2422 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -448,6 +448,10 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
- 		return 0;
- 
-+	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
-+		    paddr >= (1ULL << data->iop.cfg.oas)))
-+		return -ERANGE;
-+
- 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
- 	ret = __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
- 	/*
-@@ -606,6 +610,9 @@ static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int lvl = ARM_LPAE_START_LVL(data);
- 
-+	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
-+		return 0;
-+
- 	unmapped = __arm_lpae_unmap(data, iova, size, lvl, ptep);
- 	if (unmapped)
- 		io_pgtable_tlb_sync(&data->iop);
--- 
-2.12.2.dirty
+Bad timing, apologies, I hope it is not a burden to carry it for one
+cycle.
+
+Thanks,
+Lorenzo
+
+> 
+> Thanks,
+> 
+> -Robert
+> 
+> > >  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
+> > >  {
+> > >  	struct acpi_iort_smmu *smmu;
+> > > @@ -951,20 +968,24 @@ struct iort_iommu_config {
+> > >  	int (*iommu_count_resources)(struct acpi_iort_node *node);
+> > >  	void (*iommu_init_resources)(struct resource *res,
+> > >  				     struct acpi_iort_node *node);
+> > > +	void (*iommu_set_proximity)(struct acpi_iort_node *node,
+> > > +				     struct device *dev);
+> > >  };
+> > >  
+> > >  static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
+> > >  	.name = "arm-smmu-v3",
+> > >  	.iommu_is_coherent = arm_smmu_v3_is_coherent,
+> > >  	.iommu_count_resources = arm_smmu_v3_count_resources,
+> > > -	.iommu_init_resources = arm_smmu_v3_init_resources
+> > > +	.iommu_init_resources = arm_smmu_v3_init_resources,
+> > > +	.iommu_set_proximity = arm_smmu_v3_set_proximity
+> > >  };
+> > >  
+> > >  static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
+> > >  	.name = "arm-smmu",
+> > >  	.iommu_is_coherent = arm_smmu_is_coherent,
+> > >  	.iommu_count_resources = arm_smmu_count_resources,
+> > > -	.iommu_init_resources = arm_smmu_init_resources
+> > > +	.iommu_init_resources = arm_smmu_init_resources,
+> > > +	.iommu_set_proximity = NULL
+> > >  };
+> > >  
+> > >  static __init
+> > > @@ -1002,6 +1023,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
+> > >  	if (!pdev)
+> > >  		return -ENOMEM;
+> > >  
+> > > +	if (ops->iommu_set_proximity)
+> > > +		ops->iommu_set_proximity(node, &pdev->dev);
+> > > +
+> > >  	count = ops->iommu_count_resources(node);
+> > >  
+> > >  	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
+> > > -- 
+> > > 1.8.1.4
+> > > 
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
