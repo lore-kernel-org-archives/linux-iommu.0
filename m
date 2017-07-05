@@ -1,49 +1,122 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/8] io-pgtable lock removal
-Date: Wed, 5 Jul 2017 09:41:43 +0100
-Message-ID: <20170705084143.GA9378@arm.com>
-References: <cover.1496921366.git.robin.murphy@arm.com>
-	<458ad41d-6679-eeca-3c0f-13ccb6c933b6@codeaurora.org>
-	<b7830be1-9a78-e29f-a29c-4798aaa28c0a@broadcom.com>
-	<cdc1799b-f142-09ed-a7e5-d7fd2e70268f@arm.com>
-	<e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
-	<20170628114609.GD11053@arm.com>
-	<87d53115-3d80-5a3d-6632-c31986cb7018@broadcom.com>
-	<20170704173155.GN22175@arm.com>
-	<6814b246-22f0-bfaa-5002-a269b2735116@broadcom.com>
-	<2d5f5ef3-32b1-76c6-6869-ff980557f8e8@broadcom.com>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Wed, 5 Jul 2017 09:48:53 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA83839DB59@FRAEML521-MBX.china.huawei.com>
+References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
+ <20170623145801.325244-3-shameerali.kolothum.thodi@huawei.com>
+ <20170704173820.GO22175@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <2d5f5ef3-32b1-76c6-6869-ff980557f8e8-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170704173820.GO22175@arm.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 04, 2017 at 06:45:17PM -0700, Ray Jui wrote:
-> Hi Will/Robin,
-> 
-> Has anything functionally changed between PATCH v2 and v1? I'm seeing a
-> very different L2 throughput with v2 (in general a lot worse with v2 vs.
-> v1); however, I'm currently unable to reproduce the TLB sync timed out
-> issue with v2 (without the patch from Will's email).
-> 
-> It could also be something else that has changed in my setup, but so far
-> I have not yet been able to spot anything wrong in the setup.
 
-There were fixes, and that initially involved a DSB that was found to be
-expensive. The patches queued in -next should have that addressed, so please
-use those (or my for-joerg/arm-smmu/updates branch).
 
-Will
+> -----Original Message-----
+> From: Will Deacon [mailto:will.deacon@arm.com]
+> Sent: Tuesday, July 04, 2017 6:38 PM
+> To: Shameerali Kolothum Thodi
+> Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
+> sudeep.holla@arm.com; robin.murphy@arm.com; hanjun.guo@linaro.org;
+> Gabriele Paoloni; John Garry; Linuxarm; linux-acpi@vger.kernel.org;
+> iommu@lists.linux-foundation.org; Wangzhou (B); Guohanjun (Hanjun Guo);
+> linux-arm-kernel@lists.infradead.org; devel@acpica.org
+> Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> HiSilicon erratum 161010801
+> 
+> On Fri, Jun 23, 2017 at 03:58:01PM +0100, shameer wrote:
+> > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> > platforms Hip06/Hip07 to support the SMMU mappings for MSI
+> transactions.
+> >
+> > On these platforms GICv3 ITS translator is presented with the deviceID
+> > by extending the MSI payload data to 64 bits to include the deviceID.
+> > Hence, the PCIe controller on this platforms has to differentiate the
+> > MSI payload against other DMA payload and has to modify the MSI
+> payload.
+> > This basically makes it difficult for this platforms to have a SMMU
+> > translation for MSI.
+> >
+> > This patch implements a ACPI table based quirk to reserve the hw msi
+> > regions in the smmu-v3 driver which means these address regions will
+> > not be translated and will be excluded from iova allocations.
+> >
+> > Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
+> > ---
+> >  drivers/iommu/arm-smmu-v3.c | 30 ++++++++++++++++++++++++++----
+> >  1 file changed, 26 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
+> v3.c
+> > index abe4b88..c9346f2 100644
+> > --- a/drivers/iommu/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm-smmu-v3.c
+> > @@ -597,6 +597,7 @@ struct arm_smmu_device {
+> >  	u32				features;
+> >
+> >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
+> >  	u32				options;
+> >
+> >  	struct arm_smmu_cmdq		cmdq;
+> > @@ -1904,14 +1905,34 @@ static void arm_smmu_get_resv_regions(struct
+> device *dev,
+> >  				      struct list_head *head)
+> >  {
+> >  	struct iommu_resv_region *region;
+> > +	struct arm_smmu_device *smmu;
+> > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> > +	int resv = 0;
+> >
+> > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
+> MSI_IOVA_LENGTH,
+> > -					 prot, IOMMU_RESV_SW_MSI);
+> > -	if (!region)
+> > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+> 
+> Does this callback actually get called without a prior ->add_device callback
+> for the master in question? If not, then we can already claw the structure
+> out via the iommu_priv field in the fwspec.
+
+Thanks Will for going through this.
+
+Yes, from the logs I have, it looks like _resv callback is always called after
+ ->add_device. I will double check this with vfio bind case as well.
+
+And I guess, this is what you are proposing to retrieve the smmu,
+
+master = dev->iommu_fwspec->iommu_priv;
+smmu = master->smmu;
+
+> > +	if (WARN_ON(!smmu))
+>
+> Again, how does this trigger?
+> >  		return;
+> >
+> > -	list_add_tail(&region->list, head);
+> > +	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
+> > +
+> > +		if (!is_of_node(smmu->dev->fwnode))
+> > +			resv = iort_iommu_its_get_resv_regions(dev, head);
+> 
+> How does this work when we're not using ACPI? Shouldn't of vs ACPI be
+> abstracted from the driver?
+
+At present ARM_SMMU_OPT_RESV_HW_MSI is only set for ACPI and  DT support for
+this is a low priority for us at the moment. Is the suggestion is to have a common function
+outside the smmu driver for _iommu_its_get_resv_regions() ? I am not sure what
+is the best way here. 
+
+Thanks,
+Shameer
+
+
+
