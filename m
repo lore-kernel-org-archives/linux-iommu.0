@@ -1,52 +1,67 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: [RFC PATCH 0/5] Fixes for loadable modules implementing DMA/IOMMU APIs
-Date: Wed,  5 Jul 2017 16:12:10 +0900
-Message-ID: <20170705071215.17603-1-tfiga@chromium.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Vineet Gupta <vgupta@synopsys.com>, Hans-Christian Noren Egtvedt <egtvedt@samfundet.no>, Mitchel Humpherys <mitchelh@codeaurora.org>, Krzysztof Kozlowski <krzk@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Tomasz Figa <tfiga@chromium.org>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [RFC PATCH 1/5] base: dma-mapping: Export commonly used symbols
+Date: Wed,  5 Jul 2017 16:12:11 +0900
+Message-ID: <20170705071215.17603-2-tfiga@chromium.org>
+References: <20170705071215.17603-1-tfiga@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170705071215.17603-1-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This series attempts to prepare the common DMA mapping helpers, IOMMU
-subsystem and IOMMU DMA helpers to be used from within loadable modules.
+There is nothing wrong in having a loadable module implementing DMA API,
+for example to be used for sub-devices registered by the module.
+However, most of the functions from dma-mapping do not have their
+symbols exported, making it impossible to use them from loadable modules.
 
-It does not introduce any functional changes to the code itself. The
-only things done are:
- - exporting related non-static functions,
- - adding a common DMA mapping helper that removes the need for the
-   module to import find_vm_area() and rely on implementation detail
-   of other DMA mapping helpers,
- - adding missing cleanup function in IOMMU DMA framework.
+Export the remaining non-static functions in the file, so that loadable
+modules can benefit from them. Use EXPORT_SYMBOL() for consistency with
+other exports in the file.
 
-Obviously there is no mainline user that could benefit from the above,
-as for now, but there is a work in progress on mainlining the Intel IPU3
-camera subsystem driver, which requires its own DMA mapping code and
-IOMMU driver. It can be found on ChromiumOS gerrit at
+Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ drivers/base/dma-mapping.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-    https://chromium-review.googlesource.com/c/548626/4
-
-or checked out directly with git with following commands
-
-    git fetch https://chromium.googlesource.com/chromiumos/third_party/kernel refs/changes/26/548626/4
-    git checkout FETCH_HEAD
-
-The above is based on ChromeOS 4.4 kernel branch and has been used for
-testing this series with code using it on real devices.
-
-Tomasz Figa (5):
-  base: dma-mapping: Export commonly used symbols
-  base: dma-mapping: Provide a function to look up remapped pages
-  iommu: Export non-static functions to use in modules
-  iommu/dma: Export non-static functions to use in modules
-  iommu/dma: Add iommu_dma_cleanup()
-
- drivers/base/dma-mapping.c  | 18 ++++++++++++++++++
- drivers/iommu/dma-iommu.c   | 19 +++++++++++++++++++
- drivers/iommu/iommu.c       | 12 ++++++++++++
- include/linux/dma-iommu.h   |  6 ++++++
- include/linux/dma-mapping.h |  2 ++
- 5 files changed, 57 insertions(+)
-
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index 5096755d185e..1fda8df3d849 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -287,6 +287,7 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
+ 
+ 	return area->addr;
+ }
++EXPORT_SYMBOL(dma_common_pages_remap);
+ 
+ /*
+  * remaps an allocated contiguous region into another vm_area.
+@@ -316,6 +317,7 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
+ 		return NULL;
+ 	return area->addr;
+ }
++EXPORT_SYMBOL(dma_common_contiguous_remap);
+ 
+ /*
+  * unmaps a range previously mapped by dma_common_*_remap
+@@ -332,6 +334,7 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
+ 	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
+ 	vunmap(cpu_addr);
+ }
++EXPORT_SYMBOL(dma_common_free_remap);
+ #endif
+ 
+ /*
 -- 
 2.13.2.725.g09c95d1e9-goog
