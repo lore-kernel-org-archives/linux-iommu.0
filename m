@@ -1,8 +1,7 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [RFC PATCH 2/5] base: dma-mapping: Provide a function to look up
-	remapped pages
-Date: Wed,  5 Jul 2017 16:12:12 +0900
-Message-ID: <20170705071215.17603-3-tfiga@chromium.org>
+Subject: [RFC PATCH 5/5] iommu/dma: Add iommu_dma_cleanup()
+Date: Wed,  5 Jul 2017 16:12:15 +0900
+Message-ID: <20170705071215.17603-6-tfiga@chromium.org>
 References: <20170705071215.17603-1-tfiga@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,63 +21,58 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DMA API implementations, which use the dma_common_*() helpers, typically
-use them in pair with other helpers, such as iommu_dma_*(). For example,
-a typical .free() callback needs to retrieve the pages remapped earlier
-by dma_common_remap() and call iommu_dma_unmap() on them. Currently it
-is done by calling find_vm_area() manually, however it relies on
-implementation details of dma_common_remap() and is also difficult to
-expose to loadable modules, due to find_vm_area() being quite a low
-level function without its symbol exported.
-
-Improve this by providing a function to look-up the pages previously
-remapped. It hides implementation details, can do more sanity checks
-than find_vm_area() and can be exported for use in loadable modules.
+In case of loadable modules using dma-iommu helpers, it makes sense to
+drop the reference to the iova cache on module exit. Add a helper called
+iommu_dma_cleanup() that undoes the effects of iommu_dma_init(), so that
+modules can be unloaded cleanly.
 
 Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
- drivers/base/dma-mapping.c  | 15 +++++++++++++++
- include/linux/dma-mapping.h |  2 ++
- 2 files changed, 17 insertions(+)
+ drivers/iommu/dma-iommu.c | 6 ++++++
+ include/linux/dma-iommu.h | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index 1fda8df3d849..9add50dd7a08 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -335,6 +335,21 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
- 	vunmap(cpu_addr);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 7cdeaf930106..51afa18a5de1 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -82,6 +82,12 @@ int iommu_dma_init(void)
  }
- EXPORT_SYMBOL(dma_common_free_remap);
-+
-+struct page **dma_common_get_mapped_pages(void *cpu_addr,
-+					  unsigned long vm_flags)
+ EXPORT_SYMBOL(iommu_dma_init);
+ 
++void iommu_dma_cleanup(void)
 +{
-+	struct vm_struct *area = find_vm_area(cpu_addr);
-+
-+	if (!area || (area->flags & vm_flags) != vm_flags) {
-+		WARN(1, "trying to get pages for invalid coherent area: %p\n",
-+		     cpu_addr);
-+		return NULL;
-+	}
-+
-+	return area->pages;
++	iova_cache_put();
 +}
-+EXPORT_SYMBOL(dma_common_get_mapped_pages);
- #endif
- 
- /*
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 843ab866e0f4..bd20435dac16 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -422,6 +422,8 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
- 			unsigned long vm_flags, pgprot_t prot,
- 			const void *caller);
- void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags);
-+struct page **dma_common_get_mapped_pages(void *cpu_addr,
-+					  unsigned long vm_flags);
- 
++EXPORT_SYMBOL(iommu_dma_cleanup);
++
  /**
-  * dma_mmap_attrs - map a coherent DMA allocation into user space
+  * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
+  * @domain: IOMMU domain to prepare for DMA-API usage
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 92f20832fd28..b12d9207a87a 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -24,7 +24,9 @@
+ #include <linux/iommu.h>
+ #include <linux/msi.h>
+ 
++/* Framework initialization - reference counted */
+ int iommu_dma_init(void);
++void iommu_dma_cleanup(void);
+ 
+ /* Domain management interface for IOMMU drivers */
+ int iommu_get_dma_cookie(struct iommu_domain *domain);
+@@ -85,6 +87,10 @@ static inline int iommu_dma_init(void)
+ 	return 0;
+ }
+ 
++static inline void iommu_dma_cleanup(void)
++{
++}
++
+ static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
+ {
+ 	return -ENODEV;
 -- 
 2.13.2.725.g09c95d1e9-goog
