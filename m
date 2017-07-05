@@ -1,14 +1,17 @@
 From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 2/9] iommu/vt-d: add bind_pasid_table function
-Date: Wed, 5 Jul 2017 07:38:07 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D25C29@SHSMSX101.ccr.corp.intel.com>
+Subject: RE: [PATCH 3/9] iommu: Introduce iommu do invalidate API function
+Date: Wed, 5 Jul 2017 07:57:57 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D25CCB@SHSMSX101.ccr.corp.intel.com>
 References: <1498592883-56224-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1498592883-56224-3-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1498592883-56224-4-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20170628100823.GG14532@8bytes.org>
+	<20170628090952.0bebd2b3@jacob-builder>
+	<00a5fe10-98bb-f018-06b6-29af22d014eb@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1498592883-56224-3-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <00a5fe10-98bb-f018-06b6-29af22d014eb-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -19,191 +22,139 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David
-	Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu,
+	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jacob Pan [mailto:jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> Sent: Wednesday, June 28, 2017 3:48 AM
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, June 29, 2017 1:08 AM
 > 
-> Add Intel VT-d ops to the generic iommu_bind_pasid_table API
-> functions.
-> 
-> The primary use case is for direct assignment of SVM capable
-> device. Originated from emulated IOMMU in the guest, the request goes
-> through many layers (e.g. VFIO). Upon calling host IOMMU driver, caller
-> passes guest PASID table pointer (GPA) and size.
-> 
-> Device context table entry is modified by Intel IOMMU specific
-> bind_pasid_table function. This will turn on nesting mode and matching
-> translation type.
-> 
-> The unbind operation restores default context mapping.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c   | 117
-> ++++++++++++++++++++++++++++++++++++++++++
->  include/linux/dma_remapping.h |   1 +
->  2 files changed, 118 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 8274ce3..ef05b59 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5430,6 +5430,119 @@ struct intel_iommu
-> *intel_svm_device_to_iommu(struct device *dev)
-> 
->  	return iommu;
->  }
-> +
-> +static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
-> +		struct device *dev, struct pasid_table_info *pasidt_binfo)
-> +{
-> +	struct intel_iommu *iommu;
-> +	struct context_entry *context;
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct device_domain_info *info;
-> +	struct pci_dev *pdev;
-> +	u8 bus, devfn;
-> +	u16 did, *sid;
-> +	int ret = 0;
-> +	unsigned long flags;
-> +	u64 ctx_lo;
-> +
-> +	if (pasidt_binfo == NULL || pasidt_binfo->model !=
-> IOMMU_MODEL_INTEL_VTD) {
-> +		pr_warn("%s: Invalid bind request!\n", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +
-> +	sid = (u16 *)&pasidt_binfo->opaque;
-> +	/*
-> +	 * check SID, if it is not correct, return success to allow looping
-> +	 * through all devices within a group
-> +	 */
+> On 28/06/17 17:09, Jacob Pan wrote:
+> > On Wed, 28 Jun 2017 12:08:23 +0200
+> > Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> >
+> >> On Tue, Jun 27, 2017 at 12:47:57PM -0700, Jacob Pan wrote:
+> >>> From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >>>
+> >>> When a SVM capable device is assigned to a guest, the first level
+> >>> page tables are owned by the guest and the guest PASID table
+> >>> pointer is linked to the device context entry of the physical IOMMU.
+> >>>
+> >>> Host IOMMU driver has no knowledge of caching structure updates
+> >>> unless the guest invalidation activities are passed down to the
+> >>> host. The primary usage is derived from emulated IOMMU in the
+> >>> guest, where QEMU can trap invalidation activities before pass them
+> >>> down the host/physical IOMMU. There are IOMMU architectural
+> >>> specific actions need to be taken which requires the generic APIs
+> >>> introduced in this patch to have opaque data in the
+> >>> tlb_invalidate_info argument.
+> >>
+> >> Which "IOMMU architectural specific actions" are you thinking of?
+> >>
+> > construction of queued invalidation descriptors, then submit them to
+> > the IOMMU QI interface.
+> >>> +int iommu_invalidate(struct iommu_domain *domain,
+> >>> +		struct device *dev, struct tlb_invalidate_info
+> >>> *inv_info) +{
+> >>> +	int ret = 0;
+> >>> +
+> >>> +	if (unlikely(!domain->ops->invalidate))
+> >>> +		return -ENODEV;
+> >>> +
+> >>> +	ret = domain->ops->invalidate(domain, dev, inv_info);
+> >>> +
+> >>> +	return ret;
+> >>> +}
+> >>> +EXPORT_SYMBOL_GPL(iommu_invalidate);
+> >>
+> >> [...]
+> >>
+> >>> +struct tlb_invalidate_info {
+> >>> +	__u32	model;
+> >>> +	__u32	length;
+> >>> +	__u8	opaque[];
+> >>> +};
+> >>
+> >> This interface is aweful. It requires the user of a generic api to
+> >> know details about the implementation behind to do anything useful.
+> >>
+> >> Please explain in more detail why this is needed. My feeling is that
+> >> we can make this more generic with a small set of invalidation
+> >> functions in the iommu-api.
 
-Can you elaborate this comment since it's related to caller behavior?
-Also better move to earlier as the comment for whole function...
+A curious question here. Joreg, which part based on below information
+could be generalized in your mind? Previously I also preferred to defining
+a common structure. However later I realized there is little code logic
+which can be further abstracted to use that structure, since the main
+task here is just to construct vendor specific invalidation descriptor upon 
+the request...
 
-> +	if (PCI_DEVID(bus, devfn) != *sid)
-> +		return 0;
-> +
-> +	if (!dev || !dev_is_pci(dev))
-> +		return -ENODEV;
-> +
-> +	pdev = to_pci_dev(dev);
-> +	if (!pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI))
-> +		return -EINVAL;
-> +
-> +	info = dev->archdata.iommu;
-> +	if (!info || !info->pasid_supported ||
-> +		!pci_enable_pasid(pdev, info->pasid_supported & ~1)) {
-> +		pr_err("PCI %04x:%02x:%02x.%d: has no PASID support\n",
-> +			       pci_domain_nr(pdev->bus), bus, PCI_SLOT(devfn),
-> +			       PCI_FUNC(devfn));
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	if (pasidt_binfo->size > intel_iommu_get_pts(iommu)) {
-> +		pr_err("Invalid gPASID table size %llu, host size %lu\n",
-> +			pasidt_binfo->size,
-> +			intel_iommu_get_pts(iommu));
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +	spin_lock_irqsave(&iommu->lock, flags);
-> +	context = iommu_context_addr(iommu, bus, devfn, 0);
-> +	if (!context || !context_present(context)) {
-> +		pr_warn("%s: ctx not present for bus devfn %x:%x\n",
-> +			__func__, bus, devfn);
-> +		spin_unlock_irqrestore(&iommu->lock, flags);
-> +		goto out;
-> +	}
-> +
-> +	/* Anticipate guest to use SVM and owns the first level */
-> +	ctx_lo = context[0].lo;
-> +	ctx_lo |= CONTEXT_NESTE;
-> +	ctx_lo |= CONTEXT_PRS;
-> +	ctx_lo |= CONTEXT_PASIDE;
-> +	ctx_lo &= ~CONTEXT_TT_MASK;
-> +	ctx_lo |= CONTEXT_TT_DEV_IOTLB << 2;
-> +	context[0].lo = ctx_lo;
-> +
-> +	/* Assign guest PASID table pointer and size */
-> +	ctx_lo = (pasidt_binfo->ptr & VTD_PAGE_MASK) | pasidt_binfo->size;
-> +	context[1].lo = ctx_lo;
-> +	/* make sure context entry is updated before flushing */
-> +	wmb();
-> +	did = dmar_domain->iommu_did[iommu->seq_id];
-> +	iommu->flush.flush_context(iommu, did,
-> +				(((u16)bus) << 8) | devfn,
-> +				DMA_CCMD_MASK_NOBIT,
-> +				DMA_CCMD_DEVICE_INVL);
-> +	iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-> +	spin_unlock_irqrestore(&iommu->lock, flags);
-> +
-> +
-> +out:
-> +	return ret;
-> +}
-> +
-> +static int intel_iommu_unbind_pasid_table(struct iommu_domain *domain,
-> +					struct device *dev)
-> +{
-> +	struct intel_iommu *iommu;
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	u8 bus, devfn;
-> +
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +	/*
-> +	 * REVISIT: we might want to clear the PASID table pointer
-> +	 * as part of context clear operation. Currently, it leaves
-> +	 * stale data but should be ignored by hardware since PASIDE
-> +	 * is clear.
-> +	 */
-> +	/* ATS will be reenabled when remapping is restored */
-> +	pci_disable_ats(to_pci_dev(dev));
-> +	domain_context_clear(iommu, dev);
-> +	return domain_context_mapping_one(dmar_domain, iommu, bus,
-> devfn);
-> +}
->  #endif /* CONFIG_INTEL_IOMMU_SVM */
+> >>
+> > My thinking was that via configuration control, there will be unlikely
+> > any mixed IOMMU models between pIOMMU and vIOMMU. We could
+> have just
+> > model specific data pass through layers of SW (QEMU, VFIO) for
+> > performance reasons. We do have an earlier hybrid version that has
+> > generic data and opaque raw data. Would the below work for all IOMMU
+> > models?
 > 
->  const struct iommu_ops intel_iommu_ops = {
-> @@ -5438,6 +5551,10 @@ const struct iommu_ops intel_iommu_ops = {
->  	.domain_free		= intel_iommu_domain_free,
->  	.attach_dev		= intel_iommu_attach_device,
->  	.detach_dev		= intel_iommu_detach_device,
-> +#ifdef CONFIG_INTEL_IOMMU_SVM
-> +	.bind_pasid_table	= intel_iommu_bind_pasid_table,
-> +	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
-> +#endif
->  	.map			= intel_iommu_map,
->  	.unmap			= intel_iommu_unmap,
->  	.map_sg			= default_iommu_map_sg,
-> diff --git a/include/linux/dma_remapping.h
-> b/include/linux/dma_remapping.h
-> index 9088407..85367b7 100644
-> --- a/include/linux/dma_remapping.h
-> +++ b/include/linux/dma_remapping.h
-> @@ -27,6 +27,7 @@
+> For reference, this was also discussed in the initial posting of the series:
+> https://lists.gnu.org/archive/html/qemu-devel/2017-05/msg03452.html
 > 
->  #define CONTEXT_DINVE		(1ULL << 8)
->  #define CONTEXT_PRS		(1ULL << 9)
-> +#define CONTEXT_NESTE		(1ULL << 10)
->  #define CONTEXT_PASIDE		(1ULL << 11)
+> At least for ARM SMMUv2 and v3, I think the invalidation format you
+> propose should be sufficient, although "device_selective" should probably
+> be "domain_selective". And maybe a flag field could contain relatively
+> generic hints such as "only invalidate leaf table when page_selective".
 > 
->  struct intel_iommu;
-> --
-> 2.7.4
+> Thanks,
+> Jean
+> 
+> > https://www.spinics.net/lists/kvm/msg148798.html
+> >
+> > struct tlb_invalidate_info
+> > {
+> >         __u32   model;  /* Vendor number */
+> >         __u8 granularity
+> > #define DEVICE_SELECTVIE_INV    (1 << 0)
+> > #define PAGE_SELECTIVE_INV      (1 << 0)
+> > #define PASID_SELECTIVE_INV     (1 << 1)
+> >         __u32 pasid;
+> >         __u64 addr;
+> >         __u64 size;
+> >
+> >         /* Since IOMMU format has already been validated for this table,
+> >            the IOMMU driver knows that the following structure is in a
+> >            format it knows */
+> >         __u8 opaque[];
+> > };
+> >
+
+I just gave some information in another thread:
+
+https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg00853.html
+
+Below summarizes all the invalidation capabilities supported by Intel VTd:
+
+Scope: All PASIDs, single PASID
+for each PASID:
+        all mappings, or page-selective mappings (addr, size)
+invalidation target:
+        IOTLB entries (leaf)
+        paging structure cache (non-leaf)
+        PASID cache (pasid->cr3)
+invalidation hint:
+        whether global pages are included
+        drain reads/writes
+
+(Jean, you may add ARM specific capabilities here)
+
+If we want to define a common structure, go with defining a superset 
+of all possible capabilities from all vendors (no opaque then) or only 
+including a subset used by some common IOMMU abstraction?
+The latter depends on what exactly need to be generalized which needs
+to be solved first, otherwise it's difficult to judge why proposed format
+is necessary and enough...
+
+Thanks
+Kevin
