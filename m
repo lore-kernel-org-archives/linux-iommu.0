@@ -1,16 +1,19 @@
 From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB invalidate
-	propagation
-Date: Wed, 5 Jul 2017 05:32:24 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D257F9@SHSMSX101.ccr.corp.intel.com>
+Subject: RE: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
+	invalidate propagation
+Date: Wed, 5 Jul 2017 06:45:38 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D25919@SHSMSX101.ccr.corp.intel.com>
 References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
 	<1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
-	<20170512155843.5abeb4bd@t450s.home> <20170514105507.GB22110@gmail.com>
+	<cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
+	<20170702100659.GA22053@gmail.com>
+	<0e4f2dd4-d553-b1b7-7bec-fe0ff5242c54@arm.com>
+	<20170703103115.GB22053@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170514105507.GB22110-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170703103115.GB22053-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -21,77 +24,88 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Liu, Yi L [mailto:yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> Sent: Sunday, May 14, 2017 6:55 PM
+> From: Liu, Yi L
+> Sent: Monday, July 3, 2017 6:31 PM
 > 
-> On Fri, May 12, 2017 at 03:58:43PM -0600, Alex Williamson wrote:
-> > On Wed, 26 Apr 2017 18:12:04 +0800
-> > "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> Hi Jean,
+> 
+> 
 > >
-> > > From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > > 2. Define a structure in include/uapi/linux/iommu.h(newly added header
+> file)
 > > >
-> > > This patch adds VFIO_IOMMU_TLB_INVALIDATE to propagate IOMMU
-> TLB
-> > > invalidate request from guest to host.
-> > >
-> > > In the case of SVM virtualization on VT-d, host IOMMU driver has
-> > > no knowledge of caching structure updates unless the guest
-> > > invalidation activities are passed down to the host. So a new
-> > > IOCTL is needed to propagate the guest cache invalidation through
-> > > VFIO.
-> > >
-> > > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > > ---
-> > >  include/uapi/linux/vfio.h | 9 +++++++++
-> > >  1 file changed, 9 insertions(+)
-> > >
-> > > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > > index 6b97987..50c51f8 100644
-> > > --- a/include/uapi/linux/vfio.h
-> > > +++ b/include/uapi/linux/vfio.h
-> > > @@ -564,6 +564,15 @@ struct vfio_device_svm {
-> > >
-> > >  #define VFIO_IOMMU_SVM_BIND_TASK	_IO(VFIO_TYPE, VFIO_BASE +
-> 22)
-> > >
-> > > +/* For IOMMU TLB Invalidation Propagation */
-> > > +struct vfio_iommu_tlb_invalidate {
-> > > +	__u32	argsz;
-> > > +	__u32	length;
-> > > +	__u8	data[];
-> > > +};
-> > > +
-> > > +#define VFIO_IOMMU_TLB_INVALIDATE	_IO(VFIO_TYPE, VFIO_BASE +
-> 23)
-> >
-> > I'm kind of wondering why this isn't just a new flag bit on
-> > vfio_device_svm, the data structure is so similar.  Of course data
-> > needs to be fully specified in uapi.
-> 
-> Hi Alex,
-> 
-> For this part, it depends on using opaque structure or not. The following
-> link mentioned it in [Open] session.
-> 
-> http://www.spinics.net/lists/kvm/msg148798.html
-> 
-> If we pick the full opaque solution for iommu tlb invalidate propagation.
-> Then I may add a flag bit on vfio_device_svm and also add definition in
-> uapi as you suggested.
-> 
+> > > struct iommu_tlb_invalidate {
+> > > 	__u32	scope;
+> > > /* pasid-selective invalidation described by @pasid */
+> > > #define IOMMU_INVALIDATE_PASID	(1 << 0)
+> > > /* address-selevtive invalidation described by (@vaddr, @size) */
+> > > #define IOMMU_INVALIDATE_VADDR	(1 << 1)
 
-there is another benefit to keep it as a separate command. For now
-we only need to invalidate 1st level translation (GVA->GPA) for SVM,
-since 1st level page table is provided by guest while directly walked
-by IOMMU. It's possible some vendor may also choose to implement
-a nested 2nd level translation (e.g. GIOVA->GPA->HPA) then hardware
-can directly walk guest GIOVA page table thus explicit invalidation is
-also required. We'd better not to limit invalidation interface with 
-svm structure.
+For VT-d above two flags are related. There is no method of flushing
+(@vaddr, @size) for all pasids, which doesn't make sense. address-
+selective invalidation is valid only for a given pasid. So it's not appropriate
+to put them in same level of scope definition at least for VT-d.
+
+> > > 	__u32	flags;
+> > > /*  targets non-pasid mappings, @pasid is not valid */
+> > > #define IOMMU_INVALIDATE_NO_PASID	(1 << 0)
+> >
+> > Although it was my proposal, I don't like this flag. In ARM SMMU, we're
+> > using a special mode where PASID 0 is reserved and any traffic without
+> > PASID uses entry 0 of the PASID table. So I proposed the "NO_PASID" flag
+> > to invalidate that special context explicitly. But this means that
+> > invalidation packet targeted at that context will have "scope = PASID" and
+> > "flags = NO_PASID", which is utterly confusing.
+> >
+> > I now think that we should get rid of the IOMMU_INVALIDATE_NO_PASID
+> flag
+> > and just use PASID 0 to invalidate this context on ARM. I don't think
+> > other architectures would use the NO_PASID flag anyway, but might be
+> mistaken.
+> 
+> I may suggest to keep it so far. On VT-d, we may pass some data in opaque,
+> so
+> we may work without it. But if other vendor want to issue non-PASID tagged
+> cache, then may encounter problem.
+
+I'm worried about what's the criteria which attribute should be abstracted
+in common structure and which can be left to opaque. It doesn't make
+much sense to do such abstraction purely because different vendor formats
+have some common fields. Usually we do such abstraction because 
+vendor-agnostic code need to do some common handling before going to
+vendor specific code. However in this case VFIO is not expected to do anything
+with those IOMMU specific attributes. Then the structure is directly forwarded
+to IOMMU driver, which simply translates the structure into vendor specific
+opaque data again. Then why bothering to do double translations in Qemu
+and IOMMU driver side?
+
+Take VT-d for example. Below is a summary of all possible selections around
+invalidation of 1st level structure for svm:
+
+Scope: All PASIDs, single PASID
+for each PASID:
+	all mappings, or page-selective mappings (addr, size)
+invalidation target:
+	IOTLB entries (leaf)
+	paging structure cache (non-leaf)
+	PASID cache (pasid->cr3)
+invalidation hint:
+	whether global pages are included
+	drain reads/writes
+
+Above are pretty architectural attributes if just looking at functional
+purpose. Then if we really consider defining a common structure, it
+might be more natural to define a superset of all vendors' capabilities
+and remove the opaque field at all. But as said earlier the purpose of
+doing such abstraction is not clear if there is no vendor-agnostic
+user actually digesting those fields. Then should we reconsider the
+full opaque approach?
+
+Welcome comments since I may overlook something here. :-)
 
 Thanks
 Kevin
