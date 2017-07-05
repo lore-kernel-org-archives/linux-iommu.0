@@ -1,40 +1,43 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [RFC PATCH 1/5] base: dma-mapping: Export commonly used symbols
-Date: Wed, 5 Jul 2017 19:20:19 +0200
-Message-ID: <20170705172019.GB5246@lst.de>
-References: <20170705071215.17603-1-tfiga@chromium.org>
-	<20170705071215.17603-2-tfiga@chromium.org>
-	<20170705151728.GA2479@lst.de>
-	<CAAFQd5DijKbNJ-8wHh=+2Z2y1nSF-LC8R+d+NktTRF4iQqPsrA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAAFQd5DijKbNJ-8wHh=+2Z2y1nSF-LC8R+d+NktTRF4iQqPsrA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH] iommu: Correct iommu_map / iommu_unmap prototypes
+Date: Wed,  5 Jul 2017 20:27:53 +0300
+Message-ID: <20170705172753.24701-1-digetx@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 06, 2017 at 12:22:35AM +0900, Tomasz Figa wrote:
-> Generally the user is a work in progress that should be posted in a
-> very near future. You can find a reference to our downstream tree at
-> chromium.org in the cover letter. Obviously I don't mind including
-> patches from this series in the driver series later and that's one of
-> the reasons for this series being RFC.
+Commit 7d3002cc8c16 ("iommu/core: split mapping to page sizes as supported
+by the hardware") replaced 'int gfp_order' with a 'size_t size' of
+iommu_map / iommu_unmap function arguments, but missed the function
+prototypes for the disabled CONFIG_IOMMU_API case, let's correct them
+for consistency.
 
-Please post and explain them here.  In general I think moving dma
-ops and iommu implementations into modules is a bad idea, but I
-don't want to reject the idea before seeing the code.  Or maybe
-by looking at the user we can come up with an even better idea
-to solve the original issue you're trying to solve, so please also
-explain your rationale.
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+---
+ include/linux/iommu.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2cb54adc4a33..f1ce8e517d8d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -425,13 +425,13 @@ static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+ }
+ 
+ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
+-			    phys_addr_t paddr, int gfp_order, int prot)
++			    phys_addr_t paddr, size_t size, int prot)
+ {
+ 	return -ENODEV;
+ }
+ 
+ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			      int gfp_order)
++			      size_t size)
+ {
+ 	return -ENODEV;
+ }
+-- 
+2.13.2
