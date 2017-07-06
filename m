@@ -1,7 +1,7 @@
 From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [RFC PATCH 1/5] base: dma-mapping: Export commonly used symbols
-Date: Thu, 6 Jul 2017 15:56:26 +0200
-Message-ID: <CAK8P3a2HS4O9fr2iWK6SjuZ7eiUL37y4SegsLGrf=z6DHtUb2w@mail.gmail.com>
+Date: Thu, 6 Jul 2017 16:02:05 +0200
+Message-ID: <CAK8P3a0xVjgD-w-uVDc54Mx0s6b1Bd3tRYt9rpetjNoMwDXvCA@mail.gmail.com>
 References: <20170705071215.17603-1-tfiga@chromium.org>
 	<20170705071215.17603-2-tfiga@chromium.org>
 	<20170705151728.GA2479@lst.de>
@@ -13,11 +13,12 @@ References: <20170705071215.17603-1-tfiga@chromium.org>
 	<CAAFQd5BFLvWS5n8owm053GNC5VniMq-8Gh0BHo43B-TYShpsnA@mail.gmail.com>
 	<CAK8P3a2JyQ-qLgh+ig4yWMJvB0AGjspMu8P8fNrPHgm3NMCGNw@mail.gmail.com>
 	<CAAFQd5DS1NxKh4OJ52T2AJNTHg6K2fnuDm5-GHzmUk-kjowf2w@mail.gmail.com>
+	<CAAFQd5Axz2yMnOo4rtP3jgEBJxUVOW0RLmFEGFejBHkYjq0s5A@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5DS1NxKh4OJ52T2AJNTHg6K2fnuDm5-GHzmUk-kjowf2w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAAFQd5Axz2yMnOo4rtP3jgEBJxUVOW0RLmFEGFejBHkYjq0s5A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -31,34 +32,27 @@ To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Cc: Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hans Verkuil <hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sakari Ailus <sakari.ailus-X3B1VOXEql0@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Pawel Osciak <posciak-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 6, 2017 at 3:31 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
-> On Thu, Jul 6, 2017 at 9:23 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
->> On Thu, Jul 6, 2017 at 10:36 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>> On Thu, Jul 6, 2017 at 5:34 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>>
->>> Sorry, I intended to mean:
->>>
->>> IMHO re-implementing the code that's already there in videobuf2 again
->>> in the driver, only because, for no good reason mentioned as for now,
->>> having a loadable module providing DMA ops was disliked, would make no
->>> sense.
->>
->> Why would we need to duplicate that code? I would expect that the videobuf2
->> core can simply call the regular dma_mapping interfaces, and you handle the
->> IOPTE generation at the point when the buffer is handed off from the core
->> code to the device driver. Am I missing something?
->
-> Well, for example, the iommu-dma helpers already implement all the
-> IOVA management, SG iterations, IOMMU API calls, sanity checks and so
-> on. There is a significant amount of common code.
->
-> On the other hand, if it's strictly about base/dma-mapping, we might
-> not need it indeed. The driver could call iommu-dma helpers directly,
-> without the need to provide its own DMA ops.
+On Thu, Jul 6, 2017 at 3:49 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
+> On Thu, Jul 6, 2017 at 10:31 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
 
-Yes, that's what I meant: if using the IOMMU interface helps, I don't
-see anything wrong with that, but using the iommu based
-dma_map_ops seems like it may introduce more problems than
-it solves.
+>> On the other hand, if it's strictly about base/dma-mapping, we might
+>> not need it indeed. The driver could call iommu-dma helpers directly,
+>> without the need to provide its own DMA ops. One caveat, though, we
+>> are not able to obtain coherent (i.e. uncached) memory with this
+>> approach, which might have some performance effects and complicates
+>> the code, that would now need to flush caches even for some small
+>> internal buffers.
+>
+> I think I should add a bit of explanation here:
+>  1) the device is non-coherent with CPU caches, even on x86,
+>  2) it looks like x86 does not have non-coherent DMA ops, (but it
+> might be something that could be fixed)
 
-        Arnd
+I don't understand what this means here. The PCI on x86 is always
+cache-coherent, so why is the device not?
+
+Do you mean that the device has its own caches that may need
+flushing to make the device cache coherent with the CPU cache,
+rather than flushing the CPU caches?
+
+          Arnd
