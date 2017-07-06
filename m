@@ -1,130 +1,89 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 4/5] iommu/dma: Export non-static functions to use in
-	modules
-Date: Thu, 6 Jul 2017 12:09:45 +0100
-Message-ID: <f66b6ebc-9977-8783-4e6a-10dcfcadf60d@arm.com>
-References: <20170705071215.17603-1-tfiga@chromium.org>
-	<20170705071215.17603-5-tfiga@chromium.org>
-	<d02d47f2-8e89-ddba-54d9-1d1f52ae394a@arm.com>
-	<CAAFQd5C3P7Rpohq=5xoBs1mUtbQ63FbQ80-Rm08JEY-iDyipYA@mail.gmail.com>
+From: Robert Richter <robert.richter@cavium.com>
+Subject: Re: [PATCH v3 2/2] acpi/iort: numa: Add numa node mapping for smmuv3
+ devices
+Date: Thu, 6 Jul 2017 13:20:17 +0200
+Message-ID: <20170706112017.GA16981@rric.localdomain>
+References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <1496897059-8272-3-git-send-email-ganapatrao.kulkarni@cavium.com>
+ <20170615134603.GA16292@red-moon>
+ <20170628174750.GY658@rric.localdomain>
+ <20170704100759.GA17491@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5C3P7Rpohq=5xoBs1mUtbQ63FbQ80-Rm08JEY-iDyipYA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170704100759.GA17491@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, lv.zheng@intel.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will.Deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, joro@8bytes.org, lenb@kernel.org, jnair@caviumnetworks.com, gpkulkarni@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/07/17 03:25, Tomasz Figa wrote:
-> On Thu, Jul 6, 2017 at 1:22 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 05/07/17 08:12, Tomasz Figa wrote:
->>> There is nothing wrong in having a loadable module implementing DMA API,
->>> for example to be used for sub-devices registered by the module. However,
->>> most of the functions from dma-iommu do not have their symbols exported,
->>> making it impossible to use them from loadable modules.
->>>
->>> Export all the non-static functions in the file, so that loadable modules
->>> can benefit from them. Use EXPORT_SYMBOL() for consistency with other
->>> exports in the file.
->>
->> To echo what Christoph said, everything not already exported here
->> shouldn't in any way be considered a driver-facing API in the general
->> sense, it's horrible glue code to sit behind an arch-specific DMA
->> mapping implementation (and frankly I'd consider even the current
->> exports more of an unfortunate abstraction leakage).
+On 04.07.17 11:07:59, Lorenzo Pieralisi wrote:
+> On Wed, Jun 28, 2017 at 07:47:50PM +0200, Robert Richter wrote:
+> > On 15.06.17 14:46:03, Lorenzo Pieralisi wrote:
+> > > On Thu, Jun 08, 2017 at 10:14:19AM +0530, Ganapatrao Kulkarni wrote:
+> > > > Add code to parse proximity domain in SMMUv3 IORT table to
+> > > > set numa node mapping for smmuv3 devices.
+> > > > 
+> > > > Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> > > > ---
+> > > >  drivers/acpi/arm64/iort.c | 28 ++++++++++++++++++++++++++--
+> > > >  1 file changed, 26 insertions(+), 2 deletions(-)
+> > > 
+> > > I am happy to take this but I want to know what we shall do with
+> > > patch 1 and related ACPICA changes first.
+> > 
+> > The change is now in acpica:
+> > 
+> >  https://github.com/acpica/acpica/commit/8cadc4fb500e2aa52241e367c87a0f95d9760c58
+> > 
+> > So we could guard the code with an #ifdef until that patch is pulled
+> > in via acpica tree:
+> > 
+> > > > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > > > index bba2b59..e804386 100644
+> > > > --- a/drivers/acpi/arm64/iort.c
+> > > > +++ b/drivers/acpi/arm64/iort.c
+> > > > @@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+> > > >  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+> > > >  }
+> > > >  
+> > > > +/*
+> > > > + * set numa proximity domain for smmuv3 device
+> > > > + */
+> > > > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
+> > > > +		struct device *dev)
+> > > > +{
+> > 
+> > #ifdef ACPI_IORT_SMMU_V3_PXM_VALID
+> > 
+> > > > +	struct acpi_iort_smmu_v3 *smmu;
+> > > > +
+> > > > +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+> > > > +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+> > > > +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+> > > > +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> > > > +			smmu->base_address,
+> > > > +			smmu->pxm);
+> > > > +	}
+> > 
+> > #endif
+> > 
+> > > > +}
+> > > > +
+> > 
+> > Could the patch be applied with this change?
 > 
-> Well, if I remember correctly, we agreed that the IPU3 driver would
-> benefit from using all the iommu_dma_*() helpers in its DMA ops,
-> similarly to ARM64. This is IMHO much better than re-implementing them
-> again internally just for this driver. However almost none of
-> necessary helpers are currently exported...
+> Sorry I was away (and the ARM64 tree was not accepting any new code last
+> week anyway), I will send the patch upstream for 4.14 (with your change
+> above - or whatever ACPICA guard make it safe - since we will depend on
+> ACPICA changes merge timing anyway - they won't be merged this cycle).
+> 
+> Bad timing, apologies, I hope it is not a burden to carry it for one
+> cycle.
 
-Oh, for sure - I don't personally have much objection to arch code being
-modular (even as part of a driver subsystem), I just don't want anyone
-to get the impression that this layer is something that any old driver
-can dip into as it fancies.
+No problem. Good to hear this is accepted for 4.14.
 
->>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->>> ---
->>
->> [...]
->>
->>> @@ -829,17 +838,20 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
->>>       return __iommu_dma_map(dev, phys, size,
->>>                       dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
->>>  }
->>> +EXPORT_SYMBOL(iommu_dma_map_resource);
->>>
->>>  void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
->>>               size_t size, enum dma_data_direction dir, unsigned long attrs)
->>>  {
->>>       __iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle, size);
->>>  }
->>> +EXPORT_SYMBOL(iommu_dma_unmap_resource);
->>
->> Do you need these two? Unless your custom DMA ops really have to support
->> slave DMA or other peer-to-peer traffic through their IOMMU, I'd be more
->> inclined to implement dma_map_resource as "return 0;" and ignore
->> dma_unmap_resource.
-> 
-> I don't need them. Getting an idea what is desirable to export and
-> what not is actually one of the goals of this RFC.
-> 
->>
->>> @@ -913,3 +925,4 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
->>>               msg->address_lo += lower_32_bits(msi_page->iova);
->>>       }
->>>  }
->>> +EXPORT_SYMBOL(iommu_dma_map_msi_msg);
->>
->> Given the nature of the kind of irqchip drivers this exists for, the
->> chances of one ever being modular seem vanishingly small.
-> 
-> Agreed. The IPU3 driver does not need it either.
-> 
-> Let me list the (not yet exported) helpers it requires:
-> 
-> dma-iommu.c
->  - iommu_dma_init,
->  - dma_info_to_prot,
->  - iommu_dma_free,
->  - iommu_dma_alloc,
->  - iommu_dma_mmap,
->  - iommu_dma_map_page,
->  - iommu_dma_unmap_page,
->  - iommu_dma_map_sg,
->  - iommu_dma_unmap_sg,
->  - iommu_dma_mapping_error,
-> (added by my patch) iommu_dma_cleanup,
-> 
-> iommu.c
->  - iommu_group_get_for_dev,
-> 
-> base/dma-mapping.c
->  - dma_common_pages_remap,
->  - dma_common_free_remap,
-> (added by my patch) dma_common_get_mapped_pages (OR find_vm_area),
+Thanks,
 
-I suppose another option is to just make the IOMMU and DMA ops a
-self-contained non-modular driver mirroring the VT-d/AMD-Vi IOMMUs -
-AFAICS it shouldn't have to be all that tightly coupled to the IPU bus
-code, the latter more or less just needs to create the appropriate IOMMU
-device for the driver to find.
-
-Robin.
-
-> 
-> Best regards,
-> Tomasz
-> 
+-Robert
