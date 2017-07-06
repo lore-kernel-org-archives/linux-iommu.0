@@ -1,60 +1,39 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [RFC PATCH 1/5] base: dma-mapping: Export commonly used symbols
-Date: Thu, 6 Jul 2017 23:06:56 +0900
-Message-ID: <CAAFQd5BgVRaEym9fXt3sMSafFPK1cXwTdMgSiB87w8QVeXzzVw@mail.gmail.com>
-References: <20170705071215.17603-1-tfiga@chromium.org> <20170705071215.17603-2-tfiga@chromium.org>
- <20170705151728.GA2479@lst.de> <CAAFQd5DijKbNJ-8wHh=+2Z2y1nSF-LC8R+d+NktTRF4iQqPsrA@mail.gmail.com>
- <20170705172019.GB5246@lst.de> <CAAFQd5CkVYd6uyoFP_15N8ZaZp8jivJ-4S=CAvrTynRU2ShFYg@mail.gmail.com>
- <CAK8P3a2htZ7q=npfwJVW7Lr90O78Ey+OR5e0ivaR7GwV4YBs=A@mail.gmail.com>
- <CAAFQd5BMorNa8CD+cEap2=boD2-=jr+DFF9cXTNXzSSfe7FnLg@mail.gmail.com>
- <CAAFQd5BFLvWS5n8owm053GNC5VniMq-8Gh0BHo43B-TYShpsnA@mail.gmail.com>
- <CAK8P3a2JyQ-qLgh+ig4yWMJvB0AGjspMu8P8fNrPHgm3NMCGNw@mail.gmail.com>
- <CAAFQd5DS1NxKh4OJ52T2AJNTHg6K2fnuDm5-GHzmUk-kjowf2w@mail.gmail.com>
- <CAAFQd5Axz2yMnOo4rtP3jgEBJxUVOW0RLmFEGFejBHkYjq0s5A@mail.gmail.com> <CAK8P3a0xVjgD-w-uVDc54Mx0s6b1Bd3tRYt9rpetjNoMwDXvCA@mail.gmail.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [RFC PATCH 4/5] iommu/dma: Export non-static functions to use
+	in modules
+Date: Thu, 6 Jul 2017 16:10:45 +0200
+Message-ID: <20170706141045.GA577@lst.de>
+References: <20170705071215.17603-1-tfiga@chromium.org>
+	<20170705071215.17603-5-tfiga@chromium.org>
+	<d02d47f2-8e89-ddba-54d9-1d1f52ae394a@arm.com>
+	<CAAFQd5C3P7Rpohq=5xoBs1mUtbQ63FbQ80-Rm08JEY-iDyipYA@mail.gmail.com>
+	<f66b6ebc-9977-8783-4e6a-10dcfcadf60d@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a0xVjgD-w-uVDc54Mx0s6b1Bd3tRYt9rpetjNoMwDXvCA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Sakari Ailus <sakari.ailus@iki.fi>
-Cc: Christoph Hellwig <hch@lst.de>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Vineet Gupta <vgupta@synopsys.com>, Hans-Christian Noren Egtvedt <egtvedt@samfundet.no>, Mitchel Humpherys <mitchelh@codeaurora.org>, Krzysztof Kozlowski <krzk@kernel.org>, Hans Verkuil <hverkuil@xs4all.nl>, Pawel Osciak <posciak@chromium.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Linux Media Mailing List <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <f66b6ebc-9977-8783-4e6a-10dcfcadf60d-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 6, 2017 at 11:02 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Thu, Jul 6, 2017 at 3:49 PM, Tomasz Figa <tfiga@chromium.org> wrote:
->> On Thu, Jul 6, 2017 at 10:31 PM, Tomasz Figa <tfiga@chromium.org> wrote:
->
->>> On the other hand, if it's strictly about base/dma-mapping, we might
->>> not need it indeed. The driver could call iommu-dma helpers directly,
->>> without the need to provide its own DMA ops. One caveat, though, we
->>> are not able to obtain coherent (i.e. uncached) memory with this
->>> approach, which might have some performance effects and complicates
->>> the code, that would now need to flush caches even for some small
->>> internal buffers.
->>
->> I think I should add a bit of explanation here:
->>  1) the device is non-coherent with CPU caches, even on x86,
->>  2) it looks like x86 does not have non-coherent DMA ops, (but it
->> might be something that could be fixed)
->
-> I don't understand what this means here. The PCI on x86 is always
-> cache-coherent, so why is the device not?
->
-> Do you mean that the device has its own caches that may need
-> flushing to make the device cache coherent with the CPU cache,
-> rather than flushing the CPU caches?
+On Thu, Jul 06, 2017 at 12:09:45PM +0100, Robin Murphy wrote:
+> I suppose another option is to just make the IOMMU and DMA ops a
+> self-contained non-modular driver mirroring the VT-d/AMD-Vi IOMMUs -
+> AFAICS it shouldn't have to be all that tightly coupled to the IPU bus
+> code, the latter more or less just needs to create the appropriate IOMMU
+> device for the driver to find.
 
-Sakari might be able to explain this with more technical details, but
-generally the device is not a standard PCI device one might find on
-existing x86 systems.
-
-It is some kind of embedded subsystem that behaves mostly like a PCI
-device, with certain exceptions, one being the lack of coherency with
-CPU caches, at least for certain parts of the subsystem. The reference
-vendor code disables the coherency completely, for reasons not known
-to me, but AFAICT this is the preferred operating mode, possibly due
-to performance effects (this is a memory-heavy image processing
-subsystem).
-
-Best regards,
-Tomasz
+I still haven't seen the driver code, but this seems to be best
+solution so far.  Given that it's not a plug in device but part of
+an SOC that seems perfectly acceptable to me.
