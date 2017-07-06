@@ -1,114 +1,130 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V4 6/6] iommu/arm-smmu: Add support for qcom,msm8996-smmu-v2 clocks
-Date: Thu,  6 Jul 2017 15:07:05 +0530
-Message-ID: <1499333825-7658-7-git-send-email-vivek.gautam@codeaurora.org>
-References: <1499333825-7658-1-git-send-email-vivek.gautam@codeaurora.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1499333825-7658-1-git-send-email-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 4/5] iommu/dma: Export non-static functions to use in
+	modules
+Date: Thu, 6 Jul 2017 12:09:45 +0100
+Message-ID: <f66b6ebc-9977-8783-4e6a-10dcfcadf60d@arm.com>
+References: <20170705071215.17603-1-tfiga@chromium.org>
+	<20170705071215.17603-5-tfiga@chromium.org>
+	<d02d47f2-8e89-ddba-54d9-1d1f52ae394a@arm.com>
+	<CAAFQd5C3P7Rpohq=5xoBs1mUtbQ63FbQ80-Rm08JEY-iDyipYA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAAFQd5C3P7Rpohq=5xoBs1mUtbQ63FbQ80-Rm08JEY-iDyipYA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Hans-Christian Noren Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-qcom,msm8996-smmu-v2 is an arm,smmu-v2 implementation with
-specific clock and power requirements. This smmu core is used
-with multiple masters on msm8996, viz. mdss, video, etc.
-Add bindings for the same.
+On 06/07/17 03:25, Tomasz Figa wrote:
+> On Thu, Jul 6, 2017 at 1:22 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 05/07/17 08:12, Tomasz Figa wrote:
+>>> There is nothing wrong in having a loadable module implementing DMA API,
+>>> for example to be used for sub-devices registered by the module. However,
+>>> most of the functions from dma-iommu do not have their symbols exported,
+>>> making it impossible to use them from loadable modules.
+>>>
+>>> Export all the non-static functions in the file, so that loadable modules
+>>> can benefit from them. Use EXPORT_SYMBOL() for consistency with other
+>>> exports in the file.
+>>
+>> To echo what Christoph said, everything not already exported here
+>> shouldn't in any way be considered a driver-facing API in the general
+>> sense, it's horrible glue code to sit behind an arch-specific DMA
+>> mapping implementation (and frankly I'd consider even the current
+>> exports more of an unfortunate abstraction leakage).
+> 
+> Well, if I remember correctly, we agreed that the IPU3 driver would
+> benefit from using all the iommu_dma_*() helpers in its DMA ops,
+> similarly to ARM64. This is IMHO much better than re-implementing them
+> again internally just for this driver. However almost none of
+> necessary helpers are currently exported...
 
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- Documentation/devicetree/bindings/iommu/arm,smmu.txt | 18 ++++++++++++++++++
- drivers/iommu/arm-smmu.c                             | 13 +++++++++++++
- 2 files changed, 31 insertions(+)
+Oh, for sure - I don't personally have much objection to arch code being
+modular (even as part of a driver subsystem), I just don't want anyone
+to get the impression that this layer is something that any old driver
+can dip into as it fancies.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index 00331752d355..5d8e79775fae 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -17,6 +17,7 @@ conditions.
-                         "arm,mmu-401"
-                         "arm,mmu-500"
-                         "cavium,smmu-v2"
-+                        "qcom,msm8996-smmu-v2"
- 
-                   depending on the particular implementation and/or the
-                   version of the architecture implemented.
-@@ -74,11 +75,16 @@ conditions.
- - clock-names:    Should be "tcu" and "iface" for "arm,mmu-400",
-                   "arm,mmu-401" and "arm,mmu-500"
- 
-+                  Should be "bus", and "iface" for "qcom,msm8996-smmu-v2"
-+                  implementation.
-+
-                   "tcu" clock is required for smmu's register access using the
-                   programming interface and ptw for downstream bus access. This
-                   clock is also used for access to the TBU connected to the
-                   master locally. Sometimes however, TBU is clocked along with
-                   the master.
-+                  "bus" clock for "qcom,msm8996-smmu-v2" is requierd for downstream
-+                  bus access and for the smmu ptw.
- 
-                   "iface" clock is required to access the TCU's programming
-                   interface, apart from the "tcu" clock.
-@@ -161,3 +167,15 @@ conditions.
-                 iommu-map = <0 &smmu3 0 0x400>;
-                 ...
-         };
-+
-+	/* Qcom's arm,smmu-v2 implementation for msm8996 */
-+	smmu4: iommu {
-+		compatible = "qcom,msm8996-smmu-v2";
-+		...
-+		#iommu-cells = <1>;
-+		power-domains = <&mmcc MDSS_GDSC>;
-+
-+		clocks = <&mmcc SMMU_MDP_AXI_CLK>,
-+			 <&mmcc SMMU_MDP_AHB_CLK>;
-+		clock-names = "bus", "iface";
-+	};
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7bb09280fa11..fe8e7fd61282 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -110,6 +110,7 @@ enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
- 	CAVIUM_SMMUV2,
-+	QCOM_MSM8996_SMMUV2,
- };
- 
- /* Until ACPICA headers cover IORT rev. C */
-@@ -1960,6 +1961,17 @@ struct arm_smmu_match_data {
- 	.num_clks = ARRAY_SIZE(arm_mmu500_clks),
- };
- 
-+static const char * const qcom_msm8996_smmuv2_clks[] = {
-+	"bus", "iface",
-+};
-+
-+static const struct arm_smmu_match_data qcom_msm8996_smmuv2 = {
-+	.version = ARM_SMMU_V2,
-+	.model = QCOM_MSM8996_SMMUV2,
-+	.clks = qcom_msm8996_smmuv2_clks,
-+	.num_clks = ARRAY_SIZE(qcom_msm8996_smmuv2_clks),
-+};
-+
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
- 	{ .compatible = "arm,smmu-v2", .data = &smmu_generic_v2 },
-@@ -1967,6 +1979,7 @@ struct arm_smmu_match_data {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "qcom,msm8996-smmu-v2", .data = &qcom_msm8996_smmuv2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+>>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>> ---
+>>
+>> [...]
+>>
+>>> @@ -829,17 +838,20 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+>>>       return __iommu_dma_map(dev, phys, size,
+>>>                       dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
+>>>  }
+>>> +EXPORT_SYMBOL(iommu_dma_map_resource);
+>>>
+>>>  void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+>>>               size_t size, enum dma_data_direction dir, unsigned long attrs)
+>>>  {
+>>>       __iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle, size);
+>>>  }
+>>> +EXPORT_SYMBOL(iommu_dma_unmap_resource);
+>>
+>> Do you need these two? Unless your custom DMA ops really have to support
+>> slave DMA or other peer-to-peer traffic through their IOMMU, I'd be more
+>> inclined to implement dma_map_resource as "return 0;" and ignore
+>> dma_unmap_resource.
+> 
+> I don't need them. Getting an idea what is desirable to export and
+> what not is actually one of the goals of this RFC.
+> 
+>>
+>>> @@ -913,3 +925,4 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+>>>               msg->address_lo += lower_32_bits(msi_page->iova);
+>>>       }
+>>>  }
+>>> +EXPORT_SYMBOL(iommu_dma_map_msi_msg);
+>>
+>> Given the nature of the kind of irqchip drivers this exists for, the
+>> chances of one ever being modular seem vanishingly small.
+> 
+> Agreed. The IPU3 driver does not need it either.
+> 
+> Let me list the (not yet exported) helpers it requires:
+> 
+> dma-iommu.c
+>  - iommu_dma_init,
+>  - dma_info_to_prot,
+>  - iommu_dma_free,
+>  - iommu_dma_alloc,
+>  - iommu_dma_mmap,
+>  - iommu_dma_map_page,
+>  - iommu_dma_unmap_page,
+>  - iommu_dma_map_sg,
+>  - iommu_dma_unmap_sg,
+>  - iommu_dma_mapping_error,
+> (added by my patch) iommu_dma_cleanup,
+> 
+> iommu.c
+>  - iommu_group_get_for_dev,
+> 
+> base/dma-mapping.c
+>  - dma_common_pages_remap,
+>  - dma_common_free_remap,
+> (added by my patch) dma_common_get_mapped_pages (OR find_vm_area),
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I suppose another option is to just make the IOMMU and DMA ops a
+self-contained non-modular driver mirroring the VT-d/AMD-Vi IOMMUs -
+AFAICS it shouldn't have to be all that tightly coupled to the IPU bus
+code, the latter more or less just needs to create the appropriate IOMMU
+device for the driver to find.
+
+Robin.
+
+> 
+> Best regards,
+> Tomasz
+> 
