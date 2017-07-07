@@ -1,197 +1,169 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [PATCH v9 38/38] x86/mm: Add support to make use of Secure Memory
- Encryption
-Date: Fri, 07 Jul 2017 08:45:13 -0500
-Message-ID: <20170707134513.29711.90550.stgit@tlendack-t1.amdoffice.net>
-References: <20170707133804.29711.1616.stgit@tlendack-t1.amdoffice.net>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 1/2] dt-bindings: pci: Add drop mask property for MSI
+	and IOMMU
+Date: Fri, 7 Jul 2017 15:55:44 +0100
+Message-ID: <89f871d1-fc28-aa0b-2460-cf834e7e99f6@arm.com>
+References: <1499411399-25103-1-git-send-email-srinath.mannam@broadcom.com>
+	<1499411399-25103-2-git-send-email-srinath.mannam@broadcom.com>
+	<20170707133052.GB3425@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170707133804.29711.1616.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, xen-devel@lists.xen.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc: Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Radim =?utf-8?b?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Matt Fleming <matt@codeblueprint.co.uk>, Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>, Larry Woodman <lwoodman@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, "Michael S. Tsirkin" <mst@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Dave Young <dyoung@redhat.com>, Rik van Riel <riel@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Dmitry Vyukov <dvyukov@google.com>, Juergen Gross <jgross@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Paolo Bonzini <pbonzini@redhat.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170707133052.GB3425@leverpostej>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add support to check if SME has been enabled and if memory encryption
-should be activated (checking of command line option based on the
-configuration of the default state).  If memory encryption is to be
-activated, then the encryption mask is set and the kernel is encrypted
-"in place."
+On 07/07/17 14:30, Mark Rutland wrote:
+> On Fri, Jul 07, 2017 at 12:39:58PM +0530, Srinath Mannam wrote:
+>> This patch adds info about optional DT properties
+>> iommu-map-drop-mask and msi-map-drop-mask.
+>>
+>> A drop mask represents the bits which will be
+>> removed/dropped by system from Requester ID before
+>> mapping it to msi ID or stream ID.
+>>
+>> Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Signed-off-by: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> ---
+>>  .../devicetree/bindings/pci/pci-iommu.txt          | 31 ++++++++++++++++++++
+>>  Documentation/devicetree/bindings/pci/pci-msi.txt  | 33 ++++++++++++++++++++++
+>>  2 files changed, 64 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+>> index 0def586..499cb27 100644
+>> --- a/Documentation/devicetree/bindings/pci/pci-iommu.txt
+>> +++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+>> @@ -44,6 +44,9 @@ Optional properties
+>>  - iommu-map-mask: A mask to be applied to each Requester ID prior to being
+>>    mapped to an IOMMU specifier per the iommu-map property.
+>>  
+>> +- iommu-map-drop-mask: A drop mask represents the bits which will be
+>> +  removed/dropped by system from Requester ID before mapping it to
+>> +  stream ID.
+> 
+> As mentioned in my reply to the cover letter, you're expecting this to
+> be handled as more than a mask, so this description is inadequate.
+> 
+> [...]
+> 
+>> +/ {
+>> +	#address-cells = <1>;
+>> +	#size-cells = <1>;
+>> +
+>> +	iommu: iommu@a {
+>> +		reg = <0xa 0x1>;
+>> +		compatible = "vendor,some-iommu";
+>> +		#iommu-cells = <1>;
+>> +	};
+>> +
+>> +	pci: pci@f {
+>> +		reg = <0xf 0x1>;
+>> +		compatible = "vendor,pcie-root-complex";
+>> +		device_type = "pci";
+>> +
+>> +		/*
+>> +		 * The sideband data provided to the IOMMU is a 10bit
+>> +		 * data derived from the RID by dropping 4 MSBs
+>> +		 * of device number and 2 MSBs of function number.
+>> +		 */
+>> +		iommu-map = <0x0 &iommu 0x0 0x1024>;
+>> +		iommu-map-drop-mask = <0xff09>;
+>> +	};
+>> +};
+> 
+> ... as this this example.
+> 
+> Assuming this was truly a mask of bits to drop, you'd have:
+> 
+> 	RID	->	SID
+> 	0xffff	->	0x00f6
+> 
+> ... whereas from your cover letter it seems you want:
+> 
+> 	RID	->	SID
+> 	0xffff	->	0x3f
+> 
+> ... and I've just realsied you have non-coniguous masks, so this is even
+> worse.
+> 
+>> diff --git a/Documentation/devicetree/bindings/pci/pci-msi.txt b/Documentation/devicetree/bindings/pci/pci-msi.txt
+>> index 9b3cc81..1de3f39 100644
+>> --- a/Documentation/devicetree/bindings/pci/pci-msi.txt
+>> +++ b/Documentation/devicetree/bindings/pci/pci-msi.txt
+>> @@ -49,6 +49,10 @@ Optional properties
+>>  - msi-map-mask: A mask to be applied to each Requester ID prior to being mapped
+>>    to an msi-specifier per the msi-map property.
+>>  
+>> +- msi-map-drop-mask: A drop mask represents the bits which will be
+>> +  removed/dropped by system from Requester ID before mapping it to
+>> +  msi ID.
+>> +
+>>  - msi-parent: Describes the MSI parent of the root complex itself. Where
+>>    the root complex and MSI controller do not pass sideband data with MSI
+>>    writes, this property may be used to describe the MSI controller(s)
+>> @@ -218,3 +222,32 @@ Example (5)
+>>  			  <0x0000 &msi_b 0x0000 0x10000>;
+>>  	};
+>>  };
+>> +
+>> +Example (6)
+>> +===========
+>> +
+>> +/ {
+>> +	#address-cells = <1>;
+>> +	#size-cells = <1>;
+>> +
+>> +	msi: msi-controller@a {
+>> +		reg = <0xa 0x1>;
+>> +		compatible = "vendor,some-controller";
+>> +		msi-controller;
+>> +		#msi-cells = <1>;
+>> +	};
+>> +
+>> +	pci: pci@f {
+>> +		reg = <0xf 0x1>;
+>> +		compatible = "vendor,pcie-root-complex";
+>> +		device_type = "pci";
+>> +
+>> +		/*
+>> +		 * The sideband data provided to the  MSI controller is
+>> +		 * a 10bit data derived from the RID by dropping
+>> +		 * 4 MSBs of device number and 2 MSBs of function number.
+>> +		 */
+>> +		msi-map = <0x0 &msi_a 0x0 0x100>,
+>> +		msi-map-drop-mask = <0xff09>
+>> +	};
+>> +};
+> 
+> ... likewise on all counts.
+> 
+> Your mapping can be expressed today using a number of msi-map entries,
+> which you can easily generate programmatically with a trivial perl
+> script, without requiring a new binding or any new kernel code.
+> 
+> Please do that instead.
 
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
----
- arch/x86/include/asm/mem_encrypt.h |    6 ++-
- arch/x86/kernel/head64.c           |    5 +-
- arch/x86/mm/mem_encrypt.c          |   77 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 83 insertions(+), 5 deletions(-)
+Indeed. The systems I'm aware of which need to express non-trivial RID
+to SID mappings tend to have the bootloader probe PCI and dynamically
+generate map entries per discovered RID, but even if you wanted to
+statically generate the whole lot for the worst-case bus range that's
+still only 512 entries, which is not unmanageable. Notably, it's also
+what would have to be done (in equivalent) for IORT, although I assume
+this is an embedded platform for which nobody cares about ACPI.
 
-diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-index 7122c36..8e618fc 100644
---- a/arch/x86/include/asm/mem_encrypt.h
-+++ b/arch/x86/include/asm/mem_encrypt.h
-@@ -17,6 +17,8 @@
- 
- #include <linux/init.h>
- 
-+#include <asm/bootparam.h>
-+
- #ifdef CONFIG_AMD_MEM_ENCRYPT
- 
- extern unsigned long sme_me_mask;
-@@ -38,7 +40,7 @@ void __init sme_early_decrypt(resource_size_t paddr,
- void __init sme_early_init(void);
- 
- void __init sme_encrypt_kernel(void);
--void __init sme_enable(void);
-+void __init sme_enable(struct boot_params *bp);
- 
- /* Architecture __weak replacement functions */
- void __init mem_encrypt_init(void);
-@@ -60,7 +62,7 @@ static inline void __init sme_unmap_bootdata(char *real_mode_data) { }
- static inline void __init sme_early_init(void) { }
- 
- static inline void __init sme_encrypt_kernel(void) { }
--static inline void __init sme_enable(void) { }
-+static inline void __init sme_enable(struct boot_params *bp) { }
- 
- #endif	/* CONFIG_AMD_MEM_ENCRYPT */
- 
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 0cdb53b..925b292 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -45,7 +45,8 @@ static void __head *fixup_pointer(void *ptr, unsigned long physaddr)
- 	return ptr - (void *)_text + (void *)physaddr;
- }
- 
--unsigned long __head __startup_64(unsigned long physaddr)
-+unsigned long __head __startup_64(unsigned long physaddr,
-+				  struct boot_params *bp)
- {
- 	unsigned long load_delta, *p;
- 	unsigned long pgtable_flags;
-@@ -70,7 +71,7 @@ unsigned long __head __startup_64(unsigned long physaddr)
- 		for (;;);
- 
- 	/* Activate Secure Memory Encryption (SME) if supported and enabled */
--	sme_enable();
-+	sme_enable(bp);
- 
- 	/* Include the SME encryption mask in the fixup value */
- 	load_delta += sme_get_me_mask();
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index e5d5439..053d540 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -15,6 +15,7 @@
- #include <linux/mm.h>
- #include <linux/dma-mapping.h>
- #include <linux/swiotlb.h>
-+#include <linux/mem_encrypt.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/fixmap.h>
-@@ -23,6 +24,13 @@
- #include <asm/set_memory.h>
- #include <asm/cacheflush.h>
- #include <asm/sections.h>
-+#include <asm/processor-flags.h>
-+#include <asm/msr.h>
-+#include <asm/cmdline.h>
-+
-+static char sme_cmdline_arg[] __initdata = "mem_encrypt";
-+static char sme_cmdline_on[]  __initdata = "on";
-+static char sme_cmdline_off[] __initdata = "off";
- 
- /*
-  * Since SME related variables are set early in the boot process they must
-@@ -190,6 +198,8 @@ void __init mem_encrypt_init(void)
- 
- 	/* Call into SWIOTLB to update the SWIOTLB DMA buffers */
- 	swiotlb_update_mem_attributes();
-+
-+	pr_info("AMD Secure Memory Encryption (SME) active\n");
- }
- 
- void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
-@@ -513,6 +523,71 @@ void __init sme_encrypt_kernel(void)
- 	native_write_cr3(__native_read_cr3());
- }
- 
--void __init sme_enable(void)
-+void __init __nostackp sme_enable(struct boot_params *bp)
- {
-+	const char *cmdline_ptr, *cmdline_arg, *cmdline_on, *cmdline_off;
-+	unsigned int eax, ebx, ecx, edx;
-+	bool active_by_default;
-+	unsigned long me_mask;
-+	char buffer[16];
-+	u64 msr;
-+
-+	/* Check for the SME support leaf */
-+	eax = 0x80000000;
-+	ecx = 0;
-+	native_cpuid(&eax, &ebx, &ecx, &edx);
-+	if (eax < 0x8000001f)
-+		return;
-+
-+	/*
-+	 * Check for the SME feature:
-+	 *   CPUID Fn8000_001F[EAX] - Bit 0
-+	 *     Secure Memory Encryption support
-+	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
-+	 *     Pagetable bit position used to indicate encryption
-+	 */
-+	eax = 0x8000001f;
-+	ecx = 0;
-+	native_cpuid(&eax, &ebx, &ecx, &edx);
-+	if (!(eax & 1))
-+		return;
-+
-+	me_mask = 1UL << (ebx & 0x3f);
-+
-+	/* Check if SME is enabled */
-+	msr = __rdmsr(MSR_K8_SYSCFG);
-+	if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
-+		return;
-+
-+	/*
-+	 * Fixups have not been applied to phys_base yet and we're running
-+	 * identity mapped, so we must obtain the address to the SME command
-+	 * line argument data using rip-relative addressing.
-+	 */
-+	asm ("lea sme_cmdline_arg(%%rip), %0"
-+	     : "=r" (cmdline_arg)
-+	     : "p" (sme_cmdline_arg));
-+	asm ("lea sme_cmdline_on(%%rip), %0"
-+	     : "=r" (cmdline_on)
-+	     : "p" (sme_cmdline_on));
-+	asm ("lea sme_cmdline_off(%%rip), %0"
-+	     : "=r" (cmdline_off)
-+	     : "p" (sme_cmdline_off));
-+
-+	if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT))
-+		active_by_default = true;
-+	else
-+		active_by_default = false;
-+
-+	cmdline_ptr = (const char *)((u64)bp->hdr.cmd_line_ptr |
-+				     ((u64)bp->ext_cmd_line_ptr << 32));
-+
-+	cmdline_find_option(cmdline_ptr, cmdline_arg, buffer, sizeof(buffer));
-+
-+	if (!strncmp(buffer, cmdline_on, sizeof(buffer)))
-+		sme_me_mask = me_mask;
-+	else if (!strncmp(buffer, cmdline_off, sizeof(buffer)))
-+		sme_me_mask = 0;
-+	else
-+		sme_me_mask = active_by_default ? me_mask : 0;
- }
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Robin.
