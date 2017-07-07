@@ -1,23 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/8] io-pgtable lock removal
-Date: Fri, 7 Jul 2017 13:46:49 +0100
-Message-ID: <20170707124648.GH6735@arm.com>
-References: <e43ba1fe-696e-fabb-a800-52fadaa2fa93@broadcom.com>
-	<20170628114609.GD11053@arm.com>
-	<87d53115-3d80-5a3d-6632-c31986cb7018@broadcom.com>
-	<20170704173155.GN22175@arm.com>
-	<6814b246-22f0-bfaa-5002-a269b2735116@broadcom.com>
-	<2d5f5ef3-32b1-76c6-6869-ff980557f8e8@broadcom.com>
-	<20170705084143.GA9378@arm.com>
-	<5149280b-a214-249c-c5e2-3712b1f941d2@broadcom.com>
-	<20170706150838.GB15574@arm.com>
-	<94ba5d4a-0dae-9394-79ef-90da86e49c86@broadcom.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/2] Add sideband data extraction
+Date: Fri, 7 Jul 2017 14:21:31 +0100
+Message-ID: <20170707132131.GA3425@leverpostej>
+References: <1499411399-25103-1-git-send-email-srinath.mannam@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <94ba5d4a-0dae-9394-79ef-90da86e49c86-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <1499411399-25103-1-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,41 +18,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 06, 2017 at 11:14:00AM -0700, Ray Jui wrote:
-> On 7/6/17 8:08 AM, Will Deacon wrote:
-> > On Wed, Jul 05, 2017 at 04:24:22PM -0700, Ray Jui wrote:
-> >> However, with the fix patch, I can still see the deadlock message when I
-> >> have > 32 iperf TX threads active in the system:
-> > 
-> > Damn. We've been going over this today and the only plausible theory seems
-> > to be that concurrent TLB syncs are causing the completion to be pushed out,
-> > resulting in timeouts.
-> > 
-> > Can you try this patch below, instead of the one I sent before, please?
-> > 
-> > Thanks,
-> > 
-> > Will
-> > 
-> > --->8
+On Fri, Jul 07, 2017 at 12:39:57PM +0530, Srinath Mannam wrote:
+> These patches implements optional DT properties to generate
+> smaller sideband data from RID which can be further mapped
+> to MSI Device ID or Stream ID
 > 
-> Good news! I can confirm that with the new patch below, the error log of
-> "TLB sync timed out" is now gone. I ran 20 iterations of the iperf
-> client test with 64 threads spread across 8 CPUs. The error message used
-> to coming out very quickly with just one iteration. But now it's
-> completely gone.
+> On some of the systems, sideband data is smaller than RID
+> (16bits). For such system, sideband data has to be generated
+> by dropping some of the RID bits
+> 
+> the process of sideband data extracted from RID can be expressed
+> using optional DT property {iommu/msi}-map-drop-mask.
+> 
+> Example: If drop-mask is 0xFF09 then sideband data is
+> 8 bits bus number followed by 1 bit of device number and
+> 1 bit function number. This means drop-mask=0xFF09 will
+> convert RID=0x1a10 (16bits) to sideband data 0x6a (10bits).
 
-Good, I'll queue this is as a fix then. Thanks for testing!
+So IIUC, here's you're using this not only to mask bits out, but also to
+determine a *shift* to apply to the value, implicitly provided by the
+(contiguous) low bits of the mask.
 
-> At the same time, I do seem to observe a slight impact on performance
-> when multiple threads are used, but I guess that is expected, given that
-> a spin lock is added to protect the TLB sync.
+That's really not obvious from the name.
 
-Hopefully that performance will pick up again once we defer the sync
-to the end of iommu_unmap.
+Mark.
 
-Will
+> 
+> Srinath Mannam (2):
+>   dt-bindings: pci: Add drop mask property for MSI and IOMMU
+>   pcie: sideband data by dropping RID bits
+> 
+>  .../devicetree/bindings/pci/pci-iommu.txt          | 31 ++++++++++++++
+>  Documentation/devicetree/bindings/pci/pci-msi.txt  | 33 +++++++++++++++
+>  drivers/iommu/of_iommu.c                           |  4 +-
+>  drivers/of/irq.c                                   |  3 +-
+>  drivers/of/of_pci.c                                | 48 ++++++++++++++++++++--
+>  include/linux/of_pci.h                             |  6 ++-
+>  6 files changed, 117 insertions(+), 8 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
