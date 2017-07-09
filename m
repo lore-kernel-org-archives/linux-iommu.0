@@ -1,37 +1,52 @@
-From: valmiki <valmikibow@gmail.com>
-Subject: Re: Support SVM without PASID
-Date: Sun, 9 Jul 2017 08:45:57 +0530
-Message-ID: <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: Support SVM without PASID
+Date: Sun, 9 Jul 2017 09:29:21 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C2574390A3432@shsmsx102.ccr.corp.intel.com>
 References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
- <20170708140257.2de02d63@w520.home>
+        <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170708140257.2de02d63@w520.home>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-pci@vger.kernel.org, jean-Philippe Brucker <jean-philippe.brucker@arm.com>, tianyu.lan@intel.com, kevin.tian@intel.com, jacob.jun.pan@intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: "Lan, Tianyu" <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
->> Hi,
->>
->> In SMMUv3 architecture document i see "PASIDs are optional,
->> configurable, and of a size determined by the minimum
->> of the endpoint".
->>
->> So if PASID's are optional and not supported by PCIe end point, how SVM
->> can be achieved ?
->
-> It cannot be inferred from that statement that PASID support is not
-> required for SVM.  AIUI, SVM is a software feature enabled by numerous
-> "optional" hardware features, including PASID.  Features that are
-> optional per the hardware specification may be required for specific
-> software features.  Thanks,
->
-Thanks for the information Alex. Suppose if an End point doesn't support
-PASID, is it still possible to achieve SVM ?
-Are there any such features in SMMUv3 with which we can achieve it ?
+> -----Original Message-----
+> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
+> bounces@lists.linux-foundation.org] On Behalf Of valmiki
+> Sent: Sunday, July 9, 2017 11:16 AM
+> To: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Lan, Tianyu <tianyu.lan@intel.com>; Tian, Kevin <kevin.tian@intel.com>;
+> kvm@vger.kernel.org; linux-pci@vger.kernel.org; iommu@lists.linux-foundation.org;
+> Pan, Jacob jun <jacob.jun.pan@intel.com>
+> Subject: Re: Support SVM without PASID
+> 
+> >> Hi,
+> >>
+> >> In SMMUv3 architecture document i see "PASIDs are optional,
+> >> configurable, and of a size determined by the minimum of the
+> >> endpoint".
+> >>
+> >> So if PASID's are optional and not supported by PCIe end point, how
+> >> SVM can be achieved ?
+> >
+> > It cannot be inferred from that statement that PASID support is not
+> > required for SVM.  AIUI, SVM is a software feature enabled by numerous
+> > "optional" hardware features, including PASID.  Features that are
+> > optional per the hardware specification may be required for specific
+> > software features.  Thanks,
+> >
+> Thanks for the information Alex. Suppose if an End point doesn't support PASID, is it
+> still possible to achieve SVM ?
+> Are there any such features in SMMUv3 with which we can achieve it ?
+
+If endpoint has no PASID support, I don't think it is SVM capable. For SMMU, maybe
+you can get more info from Jean.
 
 Regards,
-valmki
+Yi L
