@@ -1,52 +1,49 @@
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: Support SVM without PASID
-Date: Sun, 9 Jul 2017 09:29:21 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C2574390A3432@shsmsx102.ccr.corp.intel.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
-        <20170708140257.2de02d63@w520.home>
- <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC 0/2] arm-smmu-v3 tlbi-on-map option
+Date: Sun,  9 Jul 2017 17:15:01 +0200
+Message-ID: <1499613303-30173-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: "Lan, Tianyu" <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org
+Cc: Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> bounces@lists.linux-foundation.org] On Behalf Of valmiki
-> Sent: Sunday, July 9, 2017 11:16 AM
-> To: Alex Williamson <alex.williamson@redhat.com>
-> Cc: Lan, Tianyu <tianyu.lan@intel.com>; Tian, Kevin <kevin.tian@intel.com>;
-> kvm@vger.kernel.org; linux-pci@vger.kernel.org; iommu@lists.linux-foundation.org;
-> Pan, Jacob jun <jacob.jun.pan@intel.com>
-> Subject: Re: Support SVM without PASID
-> 
-> >> Hi,
-> >>
-> >> In SMMUv3 architecture document i see "PASIDs are optional,
-> >> configurable, and of a size determined by the minimum of the
-> >> endpoint".
-> >>
-> >> So if PASID's are optional and not supported by PCIe end point, how
-> >> SVM can be achieved ?
-> >
-> > It cannot be inferred from that statement that PASID support is not
-> > required for SVM.  AIUI, SVM is a software feature enabled by numerous
-> > "optional" hardware features, including PASID.  Features that are
-> > optional per the hardware specification may be required for specific
-> > software features.  Thanks,
-> >
-> Thanks for the information Alex. Suppose if an End point doesn't support PASID, is it
-> still possible to achieve SVM ?
-> Are there any such features in SMMUv3 with which we can achieve it ?
+This series adds a new tlbi-on-map option to the smmuv3 driver.
+When set, the IO_PGTABLE_QUIRK_TLBI_ON_MAP quirk is applied for 
+LPAE tables and the smmuv3 driver sends TLB invalidations on map.
 
-If endpoint has no PASID support, I don't think it is SVM capable. For SMMU, maybe
-you can get more info from Jean.
+This mode is useful when running the driver on a guest as it allows
+the virtualizer to trap any change to the translation structures.
+This is similar to the Intel vtd caching mode (CM).
 
-Regards,
-Yi L
+This is especially needed for VFIO integration integration where
+guest mappings must be applied to the physical IOMMU.
+
+At the moment the option only is available for DT probing.
+
+Best Regards
+
+Eric
+
+Eric Auger (2):
+  iommu/io-pgtable-arm: flush TLBs when IO_PGTABLE_QUIRK_TLBI_ON_MAP
+  arm-smmu-v3: Add tlbi_on_map option
+
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt |  4 ++++
+ drivers/iommu/arm-smmu-v3.c                             |  5 +++++
+ drivers/iommu/io-pgtable-arm.c                          | 13 +++++++++++--
+ 3 files changed, 20 insertions(+), 2 deletions(-)
+
+-- 
+2.5.5
