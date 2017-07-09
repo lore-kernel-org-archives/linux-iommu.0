@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 1/2] iommu/io-pgtable-arm: flush TLBs when
-	IO_PGTABLE_QUIRK_TLBI_ON_MAP
-Date: Sun,  9 Jul 2017 17:15:02 +0200
-Message-ID: <1499613303-30173-2-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 2/2] arm-smmu-v3: Add tlbi_on_map option
+Date: Sun,  9 Jul 2017 17:15:03 +0200
+Message-ID: <1499613303-30173-3-git-send-email-eric.auger@redhat.com>
 References: <1499613303-30173-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,58 +21,63 @@ To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7
 Cc: Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch implements the IO_PGTABLE_QUIRK_TLBI_ON_MAP quirk for
-LPAE page tables. It forces TLB invalidations on map.
+When running a virtual SMMU on a guest we sometimes need to trap
+all changes to the translation structures. This is especially useful
+to integrate with VFIO. This patch adds a new option that forces
+the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
+
+TLBI commands then can be trapped.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
+ drivers/iommu/arm-smmu-v3.c                             | 5 +++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 6e5df5e..0ad10fc 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -395,6 +395,8 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int ret, lvl = ARM_LPAE_START_LVL(data);
- 	arm_lpae_iopte prot;
-+	struct io_pgtable *iop = &data->iop;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+index be57550..a25337a 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+@@ -46,6 +46,10 @@ the PCIe specification.
+                         devicetree/bindings/interrupt-controller/msi.txt
+                       for a description of the msi-parent property.
  
- 	/* If no access, then nothing to do */
- 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
-@@ -402,6 +404,12 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 
- 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
- 	ret = __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
++- tlbi-on-map       : invalidate caches whenever there is an update of
++                      any remapping structure (updates to not-present or
++                      present entries).
 +
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
-+		io_pgtable_tlb_add_flush(iop, iova, size,
-+					 ARM_LPAE_GRANULE(data), false);
-+		io_pgtable_tlb_sync(iop);
-+	}
- 	/*
- 	 * Synchronise all PTE updates for the new mapping before there's
- 	 * a chance for anything to kick off a table walk for the new iova.
-@@ -673,7 +681,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	u64 reg;
- 	struct arm_lpae_io_pgtable *data;
+ - hisilicon,broken-prefetch-cmd
+                     : Avoid sending CMD_PREFETCH_* commands to the SMMU.
  
--	if (cfg->quirks & ~IO_PGTABLE_QUIRK_ARM_NS)
-+	if (cfg->quirks &
-+		~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_TLBI_ON_MAP))
- 		return NULL;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 380969a..5003ff7 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -597,6 +597,7 @@ struct arm_smmu_device {
+ 	u32				features;
  
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -762,7 +771,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
++#define ARM_SMMU_OPT_TLBI_ON_MAP	(1 << 1)
+ 	u32				options;
  
- 	/* The NS quirk doesn't apply at stage 2 */
--	if (cfg->quirks)
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_TLBI_ON_MAP))
- 		return NULL;
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -663,6 +664,7 @@ struct arm_smmu_option_prop {
  
- 	data = arm_lpae_alloc_pgtable(cfg);
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
++	{ ARM_SMMU_OPT_TLBI_ON_MAP, "tlbi-on-map" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -1555,6 +1557,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 		.iommu_dev	= smmu->dev,
+ 	};
+ 
++	if (smmu->options & ARM_SMMU_OPT_TLBI_ON_MAP)
++		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_TLBI_ON_MAP;
++
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
 -- 
 2.5.5
