@@ -1,17 +1,17 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v9 07/38] x86/mm: Remove phys_to_virt() usage in ioremap()
-Date: Tue, 11 Jul 2017 10:35:17 +0200
-Message-ID: <CAK8P3a3oBgE8ggAjVX6mtWKWwBmw3gYzgTqF3fh9KsQyEgL31g@mail.gmail.com>
-References: <20170707133804.29711.1616.stgit@tlendack-t1.amdoffice.net>
-	<20170707133925.29711.39301.stgit@tlendack-t1.amdoffice.net>
-	<CAMzpN2h=AAF6OVfeGJnf5va2Msmd_BPU5BrVENvs0zGQtRMdzQ@mail.gmail.com>
-	<ca43df91-163e-82ce-1d40-c17cfc90e957@amd.com>
-	<CAMzpN2gq0TZbgy-3PUixwvL+6ECX5bOdE0XZsLtGFXA+-Embeg@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH kernel v4 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu
+	driver initialization
+Date: Tue, 11 Jul 2017 11:39:27 +0100
+Message-ID: <2391df16-2095-315b-e091-3e3eb69bb668@arm.com>
+References: <20170630052436.15212-1-aik@ozlabs.ru>
+	<20170630052436.15212-5-aik@ozlabs.ru>
+	<CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAMzpN2gq0TZbgy-3PUixwvL+6ECX5bOdE0XZsLtGFXA+-Embeg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,39 +21,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Brian Gerst <brgerst-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, the arch/x86 maintainers <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kasan-dev <kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Juer
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Cc: Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 11, 2017 at 6:58 AM, Brian Gerst <brgerst-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> On Mon, Jul 10, 2017 at 3:50 PM, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org> wrote:
->> On 7/8/2017 7:57 AM, Brian Gerst wrote:
->>> On Fri, Jul 7, 2017 at 9:39 AM, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+On 10/07/17 20:23, Bjorn Helgaas via iommu wrote:
+> [+cc Joerg, iommu]
+> 
+> On Fri, Jun 30, 2017 at 12:24 AM, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org> wrote:
+>> From: Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 >>
->> I originally had a check for SME here in a previous version of the
->> patch.  Thomas Gleixner recommended removing the check so that the code
->> path was always exercised regardless of the state of SME in order to
->> better detect issues:
+>> Some iommu drivers would be initialized after PCI device
+>> enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
+>> when probing PCI devices although IOMMU enables capability
+>> of IRQ remapping. This patch tests this capability and
+>> set the flag when iommu driver is initialized.
 >>
->> http://marc.info/?l=linux-kernel&m=149803067811436&w=2
->
-> Looking a bit closer, this shortcut doesn't set the caching
-> attributes.  So it's probably best to get rid of it anyways.  Also
-> note, there is a corresponding check in iounmap().
+>> Signed-off-by: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+>> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+>> ---
+>>  drivers/iommu/iommu.c | 8 ++++++++
+>>  drivers/pci/probe.c   | 1 +
+>>  2 files changed, 9 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index cf7ca7e70777..0b5881ddca09 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1063,6 +1063,14 @@ static int add_iommu_group(struct device *dev, void *data)
+>>         const struct iommu_ops *ops = cb->ops;
+>>         int ret;
+>>
+>> +       /*
+>> +        * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
+>> +        * have capability of IRQ remapping.
+>> +        */
+>> +       if (dev_is_pci(dev) && ops->capable &&
+>> +                       ops->capable(IOMMU_CAP_INTR_REMAP))
+>> +               to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+> 
+> This isn't my area, but this addition is really ugly.  It doesn't look
+> anything like the rest of the code in add_iommu_group(), so it just
+> feels like a wart.
 
-Could that cause regressions if a driver relies on (write-through)
-cacheable access to the VGA frame buffer RAM or an read-only
-cached access to an option ROM but now gets uncached access?
+I have no idea what the context is here, but this flag looks wrong
+generally. IRQ remapping is a property of the irqchip and has nothing to
+do with PCI, so pretending it's a property of PCI buses looks like a
+massive hack around... something.
 
-I also tried to find out whether we can stop mapping the ISA MMIO
-area into the linear mapping, but at least the VGA code uses
-VGA_MAP_MEM() to get access to the same pointers. I'm pretty
-sure this got copied incorrectly into most other architectures, but
-it is definitely still used on x86 with vga16fb/vgacon/mdacon.
+Also, iommu_capable() is a fundamentally broken and unworkable interface
+anyway. The existing IRQ remapping code really wants updating to
+advertise IRQ_DOMAIN_FLAG_MSI_REMAP on the relevant MSI domains so that
+IOMMU_CAP_INTR_REMAP can go away for good. That way, all consumers who
+actually care about whether IRQ remapping is implemented (see e.g. VFIO)
+can use irq_domain_check_msi_remap() or check specific devices in a sane
+and scalable manner.
 
-On the plus side, I see that removing this code path will end up
-restoring MMIOTRACE support for the ISA MMIO range that was
-apparently removed by accident in commit d61fc44853f4
-("x86: mmiotrace, preview 2") in linux-2.6.27.
+Robin.
 
-      Arnd
+>>         if (!ops->add_device)
+>>                 return 0;
+>>
+>> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+>> index f2393b7d7ebf..14aac9df3d17 100644
+>> --- a/drivers/pci/probe.c
+>> +++ b/drivers/pci/probe.c
+>> @@ -17,6 +17,7 @@
+>>  #include <linux/acpi.h>
+>>  #include <linux/irqdomain.h>
+>>  #include <linux/pm_runtime.h>
+>> +#include <linux/iommu.h>
+> 
+> This obviously belongs in another patch, as the compile error showed.
+> 
+>>  #include "pci.h"
+>>
+>>  #define CARDBUS_LATENCY_TIMER  176     /* secondary latency timer */
+>> --
+>> 2.11.0
+>>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
