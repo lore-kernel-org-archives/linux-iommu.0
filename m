@@ -1,17 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH kernel v4 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu
-	driver initialization
-Date: Tue, 11 Jul 2017 11:39:27 +0100
-Message-ID: <2391df16-2095-315b-e091-3e3eb69bb668@arm.com>
-References: <20170630052436.15212-1-aik@ozlabs.ru>
-	<20170630052436.15212-5-aik@ozlabs.ru>
-	<CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Support SVM without PASID
+Date: Tue, 11 Jul 2017 11:56:16 +0100
+Message-ID: <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+	<20170708140257.2de02d63@w520.home>
+	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <73619426-6fcc-21ce-cfd4-8c66bde63f9a-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,87 +20,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Cc: Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+To: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/07/17 20:23, Bjorn Helgaas via iommu wrote:
-> [+cc Joerg, iommu]
-> 
-> On Fri, Jun 30, 2017 at 12:24 AM, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org> wrote:
->> From: Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>
->> Some iommu drivers would be initialized after PCI device
->> enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
->> when probing PCI devices although IOMMU enables capability
->> of IRQ remapping. This patch tests this capability and
->> set the flag when iommu driver is initialized.
->>
->> Signed-off-by: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
->> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
->> ---
->>  drivers/iommu/iommu.c | 8 ++++++++
->>  drivers/pci/probe.c   | 1 +
->>  2 files changed, 9 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index cf7ca7e70777..0b5881ddca09 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1063,6 +1063,14 @@ static int add_iommu_group(struct device *dev, void *data)
->>         const struct iommu_ops *ops = cb->ops;
->>         int ret;
->>
->> +       /*
->> +        * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
->> +        * have capability of IRQ remapping.
->> +        */
->> +       if (dev_is_pci(dev) && ops->capable &&
->> +                       ops->capable(IOMMU_CAP_INTR_REMAP))
->> +               to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-> 
-> This isn't my area, but this addition is really ugly.  It doesn't look
-> anything like the rest of the code in add_iommu_group(), so it just
-> feels like a wart.
+Hi Valmiki,
 
-I have no idea what the context is here, but this flag looks wrong
-generally. IRQ remapping is a property of the irqchip and has nothing to
-do with PCI, so pretending it's a property of PCI buses looks like a
-massive hack around... something.
-
-Also, iommu_capable() is a fundamentally broken and unworkable interface
-anyway. The existing IRQ remapping code really wants updating to
-advertise IRQ_DOMAIN_FLAG_MSI_REMAP on the relevant MSI domains so that
-IOMMU_CAP_INTR_REMAP can go away for good. That way, all consumers who
-actually care about whether IRQ remapping is implemented (see e.g. VFIO)
-can use irq_domain_check_msi_remap() or check specific devices in a sane
-and scalable manner.
-
-Robin.
-
->>         if (!ops->add_device)
->>                 return 0;
+On 09/07/17 04:15, valmiki wrote:
+>>> Hi,
+>>>
+>>> In SMMUv3 architecture document i see "PASIDs are optional,
+>>> configurable, and of a size determined by the minimum
+>>> of the endpoint".
+>>>
+>>> So if PASID's are optional and not supported by PCIe end point, how SVM
+>>> can be achieved ?
 >>
->> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index f2393b7d7ebf..14aac9df3d17 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -17,6 +17,7 @@
->>  #include <linux/acpi.h>
->>  #include <linux/irqdomain.h>
->>  #include <linux/pm_runtime.h>
->> +#include <linux/iommu.h>
-> 
-> This obviously belongs in another patch, as the compile error showed.
-> 
->>  #include "pci.h"
+>> It cannot be inferred from that statement that PASID support is not
+>> required for SVM.  AIUI, SVM is a software feature enabled by numerous
+>> "optional" hardware features, including PASID.  Features that are
+>> optional per the hardware specification may be required for specific
+>> software features.  Thanks,
 >>
->>  #define CARDBUS_LATENCY_TIMER  176     /* secondary latency timer */
->> --
->> 2.11.0
->>
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+> Thanks for the information Alex. Suppose if an End point doesn't support
+> PASID, is it still possible to achieve SVM ?
+> Are there any such features in SMMUv3 with which we can achieve it ?
+
+Not really, we don't plan to share the non-PASID context with a process.
+
+In theory you could achieve something resembling SVM by assigning the
+entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
+with a bind ioctl. If your device can do SR-IOV, then you can bind one
+process per virtual function.
+
+Unless we end up seeing lots of endpoints that implement PRI but not
+PASID, I don't plan to add this to VFIO or SMMUv3.
+
+For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
+enabled. In addition, the SMMU should support DVM (broadcast TLB
+maintenance) and must be compatible with the MMU (page sizes, output
+address size, ASID bits...)
+
+Thanks,
+Jean
