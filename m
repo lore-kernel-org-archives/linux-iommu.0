@@ -1,16 +1,16 @@
 From: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: Support SVM without PASID
-Date: Wed, 12 Jul 2017 21:53:25 +0530
-Message-ID: <2eef6af5-0285-fade-6c17-fad38586f4f0@gmail.com>
+Date: Wed, 12 Jul 2017 21:57:21 +0530
+Message-ID: <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
 References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
 	<20170708140257.2de02d63@w520.home>
 	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
-	<20170710193141.GA3813@gmail.com>
+	<eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170710193141.GA3813-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <eb132dfa-6708-5898-c2ce-ce7ab08809b1-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,12 +20,14 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 7/11/2017 1:01 AM, Jerome Glisse wrote:
-> On Sun, Jul 09, 2017 at 08:45:57AM +0530, valmiki wrote:
+On 7/11/2017 4:26 PM, Jean-Philippe Brucker wrote:
+> Hi Valmiki,
+>
+> On 09/07/17 04:15, valmiki wrote:
 >>>> Hi,
 >>>>
 >>>> In SMMUv3 architecture document i see "PASIDs are optional,
@@ -45,17 +47,29 @@ On 7/11/2017 1:01 AM, Jerome Glisse wrote:
 >> PASID, is it still possible to achieve SVM ?
 >> Are there any such features in SMMUv3 with which we can achieve it ?
 >
-> You can achieve SVM in software, this is what HMM is for. But the hardware
-> must have an mmu with similar features as you get on CPU mmu. Device like
-> GPU do have such MMU.
+> Not really, we don't plan to share the non-PASID context with a process.
 >
-> You can also mix HMM with PASID/ATS to leverage device memory. HMM allows
-> you to use device memory inside process address space for device threads
-> (ie device memory is still consider as un-accessible from CPU, only device
-> can access it). Again very useful for GPU.
+> In theory you could achieve something resembling SVM by assigning the
+> entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
+> with a bind ioctl. If your device can do SR-IOV, then you can bind one
+> process per virtual function.
 >
-Thanks Jerome, this is interesting and great work. Will try to explore 
-more on this option.
+> Unless we end up seeing lots of endpoints that implement PRI but not
+> PASID, I don't plan to add this to VFIO or SMMUv3.
+>
+> For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
+> enabled. In addition, the SMMU should support DVM (broadcast TLB
+> maintenance) and must be compatible with the MMU (page sizes, output
+> address size, ASID bits...)
+>
+Thanks Jean.
+In SMMU document it was quoted as follows
+"When STE.S1DSS==0b10, a transaction without a SubstreamID is accepted 
+and uses the CD of Substream 0. Under this configuration, transactions 
+that arrive with SubstreamID 0 are aborted and an event recorded."
+
+Is this mode supported in your previous series of SMMUv3 patches ?
+If it is supported is it achieved through VFIO ?
 
 Regards,
 Valmiki
