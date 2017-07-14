@@ -1,122 +1,154 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Fri, 14 Jul 2017 20:33:23 +0100
-Message-ID: <20170714193322.GH26488@arm.com>
-References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
- <20170623145801.325244-3-shameerali.kolothum.thodi@huawei.com>
- <20170704173820.GO22175@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA83839DB59@FRAEML521-MBX.china.huawei.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH V4 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
+	add/remove device
+Date: Fri, 14 Jul 2017 15:34:42 -0400
+Message-ID: <CAF6AEGsjPQa_CviY4w-uEvH95rC6VkR+u7s7knVxTDW_8V-t_Q@mail.gmail.com>
+References: <20170712225459.GZ22780@codeaurora.org>
+	<5ee0bacd-e557-a6c4-a897-844fb12ea6ae@codeaurora.org>
+	<4dbc938c-ac88-9bd4-cf00-458008ae24c1@codeaurora.org>
+	<CAF6AEGsFOtsOjt1sLNPSFLEcu-7d1zxCOhTeC+P8e0TDbb1dSA@mail.gmail.com>
+	<60a56ae6-ed9d-57cd-130f-5bd9d32d4d58@codeaurora.org>
+	<CAF6AEGvDpRChNQAzqgRFwaQcH=4JCwfKcvj2GQGgQOnO2_A1sg@mail.gmail.com>
+	<20170714170743.GA26488@arm.com>
+	<CAF6AEGtMiVJvSrPXmQppM2NwS3fsXM8Vep3g0PwQK7SH4N=3xQ@mail.gmail.com>
+	<20170714180615.GC26488@arm.com>
+	<CAF6AEGubgNiq5fJ9LaBULvW3450iY4-u0ecpp_a6xyMvRx9kug@mail.gmail.com>
+	<20170714190113.GE26488@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA83839DB59@FRAEML521-MBX.china.huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170714190113.GE26488-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-clk <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 05, 2017 at 09:48:53AM +0000, Shameerali Kolothum Thodi wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Will Deacon [mailto:will.deacon@arm.com]
-> > Sent: Tuesday, July 04, 2017 6:38 PM
-> > To: Shameerali Kolothum Thodi
-> > Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
-> > sudeep.holla@arm.com; robin.murphy@arm.com; hanjun.guo@linaro.org;
-> > Gabriele Paoloni; John Garry; Linuxarm; linux-acpi@vger.kernel.org;
-> > iommu@lists.linux-foundation.org; Wangzhou (B); Guohanjun (Hanjun Guo);
-> > linux-arm-kernel@lists.infradead.org; devel@acpica.org
-> > Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based
-> > HiSilicon erratum 161010801
-> > 
-> > On Fri, Jun 23, 2017 at 03:58:01PM +0100, shameer wrote:
-> > > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> > > platforms Hip06/Hip07 to support the SMMU mappings for MSI
-> > transactions.
-> > >
-> > > On these platforms GICv3 ITS translator is presented with the deviceID
-> > > by extending the MSI payload data to 64 bits to include the deviceID.
-> > > Hence, the PCIe controller on this platforms has to differentiate the
-> > > MSI payload against other DMA payload and has to modify the MSI
-> > payload.
-> > > This basically makes it difficult for this platforms to have a SMMU
-> > > translation for MSI.
-> > >
-> > > This patch implements a ACPI table based quirk to reserve the hw msi
-> > > regions in the smmu-v3 driver which means these address regions will
-> > > not be translated and will be excluded from iova allocations.
-> > >
-> > > Signed-off-by: shameer <shameerali.kolothum.thodi@huawei.com>
-> > > ---
-> > >  drivers/iommu/arm-smmu-v3.c | 30 ++++++++++++++++++++++++++----
-> > >  1 file changed, 26 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-
-> > v3.c
-> > > index abe4b88..c9346f2 100644
-> > > --- a/drivers/iommu/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm-smmu-v3.c
-> > > @@ -597,6 +597,7 @@ struct arm_smmu_device {
-> > >  	u32				features;
-> > >
-> > >  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> > > +#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 1)
-> > >  	u32				options;
-> > >
-> > >  	struct arm_smmu_cmdq		cmdq;
-> > > @@ -1904,14 +1905,34 @@ static void arm_smmu_get_resv_regions(struct
-> > device *dev,
-> > >  				      struct list_head *head)
-> > >  {
-> > >  	struct iommu_resv_region *region;
-> > > +	struct arm_smmu_device *smmu;
-> > > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > >  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > > +	int resv = 0;
-> > >
-> > > -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
-> > MSI_IOVA_LENGTH,
-> > > -					 prot, IOMMU_RESV_SW_MSI);
-> > > -	if (!region)
-> > > +	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-> > 
-> > Does this callback actually get called without a prior ->add_device callback
-> > for the master in question? If not, then we can already claw the structure
-> > out via the iommu_priv field in the fwspec.
-> 
-> Thanks Will for going through this.
-> 
-> Yes, from the logs I have, it looks like _resv callback is always called after
->  ->add_device. I will double check this with vfio bind case as well.
-> 
-> And I guess, this is what you are proposing to retrieve the smmu,
-> 
-> master = dev->iommu_fwspec->iommu_priv;
-> smmu = master->smmu;
-> 
-> > > +	if (WARN_ON(!smmu))
-> >
-> > Again, how does this trigger?
-> > >  		return;
-> > >
-> > > -	list_add_tail(&region->list, head);
-> > > +	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
-> > > +
-> > > +		if (!is_of_node(smmu->dev->fwnode))
-> > > +			resv = iort_iommu_its_get_resv_regions(dev, head);
-> > 
-> > How does this work when we're not using ACPI? Shouldn't of vs ACPI be
-> > abstracted from the driver?
-> 
-> At present ARM_SMMU_OPT_RESV_HW_MSI is only set for ACPI and  DT support for
-> this is a low priority for us at the moment. Is the suggestion is to have a common function
-> outside the smmu driver for _iommu_its_get_resv_regions() ? I am not sure what
-> is the best way here. 
+On Fri, Jul 14, 2017 at 3:01 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Fri, Jul 14, 2017 at 02:25:45PM -0400, Rob Clark wrote:
+>> On Fri, Jul 14, 2017 at 2:06 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Fri, Jul 14, 2017 at 01:42:13PM -0400, Rob Clark wrote:
+>> >> On Fri, Jul 14, 2017 at 1:07 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> >> > On Thu, Jul 13, 2017 at 10:55:10AM -0400, Rob Clark wrote:
+>> >> >> On Thu, Jul 13, 2017 at 9:53 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>> >> >> > Hi,
+>> >> >> >
+>> >> >> > On 7/13/2017 5:20 PM, Rob Clark wrote:
+>> >> >> >> On Thu, Jul 13, 2017 at 1:35 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>> >> >> >>> Hi Vivek,
+>> >> >> >>>
+>> >> >> >>> On 7/13/2017 10:43 AM, Vivek Gautam wrote:
+>> >> >> >>>> Hi Stephen,
+>> >> >> >>>>
+>> >> >> >>>>
+>> >> >> >>>> On 07/13/2017 04:24 AM, Stephen Boyd wrote:
+>> >> >> >>>>> On 07/06, Vivek Gautam wrote:
+>> >> >> >>>>>> @@ -1231,12 +1237,18 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+>> >> >> >>>>>>   static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+>> >> >> >>>>>>                    size_t size)
+>> >> >> >>>>>>   {
+>> >> >> >>>>>> -    struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
+>> >> >> >>>>>> +    struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>> >> >> >>>>>> +    struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
+>> >> >> >>>>>> +    size_t ret;
+>> >> >> >>>>>>         if (!ops)
+>> >> >> >>>>>>           return 0;
+>> >> >> >>>>>>   -    return ops->unmap(ops, iova, size);
+>> >> >> >>>>>> +    pm_runtime_get_sync(smmu_domain->smmu->dev);
+>> >> >> >>>>> Can these map/unmap ops be called from an atomic context? I seem
+>> >> >> >>>>> to recall that being a problem before.
+>> >> >> >>>>
+>> >> >> >>>> That's something which was dropped in the following patch merged in master:
+>> >> >> >>>> 523d7423e21b iommu/arm-smmu: Remove io-pgtable spinlock
+>> >> >> >>>>
+>> >> >> >>>> Looks like we don't  need locks here anymore?
+>> >> >> >>>
+>> >> >> >>>  Apart from the locking, wonder why a explicit pm_runtime is needed
+>> >> >> >>>  from unmap. Somehow looks like some path in the master using that
+>> >> >> >>>  should have enabled the pm ?
+>> >> >> >>>
+>> >> >> >>
+>> >> >> >> Yes, there are a bunch of scenarios where unmap can happen with
+>> >> >> >> disabled master (but not in atomic context).  On the gpu side we
+>> >> >> >> opportunistically keep a buffer mapping until the buffer is freed
+>> >> >> >> (which can happen after gpu is disabled).  Likewise, v4l2 won't unmap
+>> >> >> >> an exported dmabuf while some other driver holds a reference to it
+>> >> >> >> (which can be dropped when the v4l2 device is suspended).
+>> >> >> >>
+>> >> >> >> Since unmap triggers tbl flush which touches iommu regs, the iommu
+>> >> >> >> driver *definitely* needs a pm_runtime_get_sync().
+>> >> >> >
+>> >> >> >  Ok, with that being the case, there are two things here,
+>> >> >> >
+>> >> >> >  1) If the device links are still intact at these places where unmap is called,
+>> >> >> >     then pm_runtime from the master would setup the all the clocks. That would
+>> >> >> >     avoid reintroducing the locking indirectly here.
+>> >> >> >
+>> >> >> >  2) If not, then doing it here is the only way. But for both cases, since
+>> >> >> >     the unmap can be called from atomic context, resume handler here should
+>> >> >> >     avoid doing clk_prepare_enable , instead move the clk_prepare to the init.
+>> >> >> >
+>> >> >>
+>> >> >> I do kinda like the approach Marek suggested.. of deferring the tlb
+>> >> >> flush until resume.  I'm wondering if we could combine that with
+>> >> >> putting the mmu in a stalled state when we suspend (and not resume the
+>> >> >> mmu until after the pending tlb flush)?
+>> >> >
+>> >> > I'm not sure that a stalled state is what we're after here, because we need
+>> >> > to take care to prevent any table walks if we've freed the underlying pages.
+>> >> > What we could try to do is disable the SMMU (put into global bypass) and
+>> >> > invalidate the TLB when performing a suspend operation, then we just ignore
+>> >> > invalidation whilst the clocks are stopped and, on resume, enable the SMMU
+>> >> > again.
+>> >>
+>> >> wouldn't stalled just block any memory transactions by device(s) using
+>> >> the context bank?  Putting it in bypass isn't really a good thing if
+>> >> there is any chance the device can sneak in a memory access before
+>> >> we've taking it back out of bypass (ie. makes gpu a giant userspace
+>> >> controlled root hole).
+>> >
+>> > If it doesn't deadlock, then yes, it will stall transactions. However, that
+>> > doesn't mean it necessarily prevents page table walks.
+>>
+>> btw, I guess the concern about pagetable walk is that the unmap could
+>> have removed some sub-level of the pt that the tlb walk would hit?
+>> Would deferring freeing those pages help?
+>
+> Could do, but it sounds like a lot of complication that I think we can fix
+> by making the suspend operation put the SMMU into a "clean" state.
+>
+>> > Instead of bypass, we
+>> > could configure all the streams to terminate, but this race still worries me
+>> > somewhat. I thought that the SMMU would only be suspended if all of its
+>> > masters were suspended, so if the GPU wants to come out of suspend then the
+>> > SMMU should be resumed first.
+>>
+>> I believe this should be true.. on the gpu side, I'm mostly trying to
+>> avoid having to power the gpu back on to free buffers.  (On the v4l2
+>> side, somewhere in the core videobuf code would also need to be made
+>> to wrap it's dma_unmap_sg() with pm_runtime_get/put()..)
+>
+> Right, and we shouldn't have to resume it if we suspend it in a clean state,
+> with the TLBs invalidated.
+>
 
-Right, something like that. The driver shouldn't need to care whether or not
-it's using ACPI or DT when setting these options.
+I guess if the device_link() stuff ensured the attached device
+(gpu/etc) was suspended before suspending the iommu, then I guess I
+can't see how temporarily putting the iommu in bypass would be a
+problem.  I haven't looked at the device_link() stuff too closely, but
+iommu being resumed first and suspended last seems like the only thing
+that would make sense.  I'm mostly just nervous about iommu in bypass
+vs gpu since userspace has so much control over what address gpu
+writes to / reads from, so getting it wrong w/ the iommu would be a
+rather bad thing ;-)
 
-Will
+BR,
+-R
