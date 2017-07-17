@@ -1,7 +1,8 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 02/05] iommu/ipmmu-vmsa: Consistent ->of_xlate() handling
-Date: Mon, 17 Jul 2017 22:05:20 +0900
-Message-ID: <150029672099.22030.9705035062184016120.sendpatchset@little-apple>
+Subject: [PATCH v2 03/05] iommu/ipmmu-vmsa: Use fwspec on both 32 and 64-bit
+	ARM
+Date: Mon, 17 Jul 2017 22:05:31 +0900
+Message-ID: <150029673120.22030.6013637834677159530.sendpatchset@little-apple>
 References: <150029669967.22030.8059216113725566341.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,128 +22,72 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-The 32-bit ARM code gets updated to make use of ->of_xlate() and the
-code is shared between 64-bit and 32-bit ARM. The of_device_is_available()
-check gets dropped since it is included in of_iommu_xlate().
+Consolidate the 32-bit and 64-bit code to make use of fwspec instead
+of archdata for the 32-bit ARM case.
 
-Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+This is a simplified version of the fwspec handling code from Robin
+posted as [PATCH] iommu/ipmmu-vmsa: Convert to iommu_fwspec
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V1:
- - Moved "Initialize once" check to ipmmu_of_xlate() - thanks Geert!
+ - Rebased to apply on top of earlier changes in series
 
- drivers/iommu/ipmmu-vmsa.c |   51 ++++++++++++++------------------------------
- 1 file changed, 17 insertions(+), 34 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   21 +++------------------
+ 1 file changed, 3 insertions(+), 18 deletions(-)
 
---- 0002/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-07-17 21:03:38.340607110 +0900
-@@ -734,6 +734,16 @@ error:
- 	return ret;
+--- 0004/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-07-17 21:04:54.850607110 +0900
+@@ -73,22 +73,9 @@ static struct ipmmu_vmsa_domain *to_vmsa
+ 	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
  }
  
-+static int ipmmu_of_xlate(struct device *dev,
-+			  struct of_phandle_args *spec)
-+{
-+	/* Initialize once - xlate() will call multiple times */
-+	if (to_priv(dev))
-+		return 0;
-+
-+	return ipmmu_init_platform_device(dev);
-+}
-+
- #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- 
- static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
-@@ -750,11 +760,11 @@ static int ipmmu_add_device(struct devic
- 	struct iommu_group *group;
- 	int ret;
- 
--	if (to_priv(dev)) {
--		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
--			 dev_name(dev));
--		return -EINVAL;
--	}
-+	/*
-+	 * Only let through devices that have been verified in xlate()
-+	 */
-+	if (!to_priv(dev))
-+		return -ENODEV;
- 
- 	/* Create a device group and add the device to it. */
- 	group = iommu_group_alloc();
-@@ -773,10 +783,6 @@ static int ipmmu_add_device(struct devic
- 		goto error;
- 	}
- 
--	ret = ipmmu_init_platform_device(dev);
--	if (ret < 0)
--		goto error;
 -
- 	/*
- 	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
- 	 * VAs. This will allocate a corresponding IOMMU domain.
-@@ -817,24 +823,13 @@ error:
- 	if (!IS_ERR_OR_NULL(group))
- 		iommu_group_remove_device(dev);
- 
--	kfree(to_priv(dev)->utlbs);
--	kfree(to_priv(dev));
--	set_priv(dev, NULL);
--
- 	return ret;
- }
- 
- static void ipmmu_remove_device(struct device *dev)
+ static struct ipmmu_vmsa_iommu_priv *to_priv(struct device *dev)
  {
--	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
--
- 	arm_iommu_detach_device(dev);
- 	iommu_group_remove_device(dev);
--
--	kfree(priv->utlbs);
--	kfree(priv);
--
--	set_priv(dev, NULL);
- }
- 
- static const struct iommu_ops ipmmu_ops = {
-@@ -849,6 +844,7 @@ static const struct iommu_ops ipmmu_ops
- 	.add_device = ipmmu_add_device,
- 	.remove_device = ipmmu_remove_device,
- 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
-+	.of_xlate = ipmmu_of_xlate,
- };
- 
- #endif /* !CONFIG_ARM && CONFIG_IOMMU_DMA */
-@@ -958,19 +954,6 @@ static struct iommu_group *ipmmu_find_gr
- 	return group;
- }
- 
--static int ipmmu_of_xlate_dma(struct device *dev,
--			      struct of_phandle_args *spec)
--{
--	/* If the IPMMU device is disabled in DT then return error
--	 * to make sure the of_iommu code does not install ops
--	 * even though the iommu device is disabled
--	 */
--	if (!of_device_is_available(spec->np))
--		return -ENODEV;
--
--	return ipmmu_init_platform_device(dev);
+-#if defined(CONFIG_ARM)
+-	return dev->archdata.iommu;
+-#else
+-	return dev->iommu_fwspec->iommu_priv;
+-#endif
 -}
--
- static const struct iommu_ops ipmmu_ops = {
- 	.domain_alloc = ipmmu_domain_alloc_dma,
- 	.domain_free = ipmmu_domain_free_dma,
-@@ -984,7 +967,7 @@ static const struct iommu_ops ipmmu_ops
- 	.remove_device = ipmmu_remove_device_dma,
- 	.device_group = ipmmu_find_group_dma,
- 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
--	.of_xlate = ipmmu_of_xlate_dma,
-+	.of_xlate = ipmmu_of_xlate,
- };
+-static void set_priv(struct device *dev, struct ipmmu_vmsa_iommu_priv *p)
+-{
+-#if defined(CONFIG_ARM)
+-	dev->archdata.iommu = p;
+-#else
+-	dev->iommu_fwspec->iommu_priv = p;
+-#endif
++	return dev->iommu_fwspec ? dev->iommu_fwspec->iommu_priv : NULL;
+ }
  
- #endif /* CONFIG_IOMMU_DMA */
+ #define TLB_LOOP_TIMEOUT		100	/* 100us */
+@@ -726,7 +713,7 @@ static int ipmmu_init_platform_device(st
+ 	priv->utlbs = utlbs;
+ 	priv->num_utlbs = num_utlbs;
+ 	priv->dev = dev;
+-	set_priv(dev, priv);
++	dev->iommu_fwspec->iommu_priv = priv;
+ 	return 0;
+ 
+ error:
+@@ -887,14 +874,12 @@ static void ipmmu_domain_free_dma(struct
+ 
+ static int ipmmu_add_device_dma(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 	struct iommu_group *group;
+ 
+ 	/*
+ 	 * Only let through devices that have been verified in xlate()
+-	 * We may get called with dev->iommu_fwspec set to NULL.
+ 	 */
+-	if (!fwspec || !fwspec->iommu_priv)
++	if (!to_priv(dev))
+ 		return -ENODEV;
+ 
+ 	group = iommu_group_get_for_dev(dev);
