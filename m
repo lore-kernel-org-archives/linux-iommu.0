@@ -1,185 +1,100 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V4 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
- add/remove device
-Date: Mon, 17 Jul 2017 17:58:31 +0530
-Message-ID: <7984ef64-fb6d-52f6-26bf-00a685a3efc5@codeaurora.org>
-References: <4dbc938c-ac88-9bd4-cf00-458008ae24c1@codeaurora.org>
- <CAF6AEGsFOtsOjt1sLNPSFLEcu-7d1zxCOhTeC+P8e0TDbb1dSA@mail.gmail.com>
- <60a56ae6-ed9d-57cd-130f-5bd9d32d4d58@codeaurora.org>
- <CAF6AEGvDpRChNQAzqgRFwaQcH=4JCwfKcvj2GQGgQOnO2_A1sg@mail.gmail.com>
- <20170714170743.GA26488@arm.com>
- <CAF6AEGtMiVJvSrPXmQppM2NwS3fsXM8Vep3g0PwQK7SH4N=3xQ@mail.gmail.com>
- <20170714180615.GC26488@arm.com>
- <CAF6AEGubgNiq5fJ9LaBULvW3450iY4-u0ecpp_a6xyMvRx9kug@mail.gmail.com>
- <20170714190113.GE26488@arm.com>
- <CAF6AEGsjPQa_CviY4w-uEvH95rC6VkR+u7s7knVxTDW_8V-t_Q@mail.gmail.com>
- <20170714193637.GI26488@arm.com>
- <CAF6AEGtw-bgK6hfFOHRtO0z6o2zxpvjERTX4i=HzioE69G8kAw@mail.gmail.com>
- <6cd287bb-25c0-a7bd-8d3c-a63b9da0fd25@codeaurora.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: What differences and relations between SVM, HSA, HMM and Unified
+ Memory?
+Date: Mon, 17 Jul 2017 13:52:46 +0100
+Message-ID: <84d5df57-f89c-6c5e-d6b2-26d6943c2217@arm.com>
+References: <9BD73EA91F8E404F851CF3F519B14AA8CE753F@SZXEMI503-MBS.china.huawei.com>
+ <20c9cdd5-5118-f916-d8ad-70b7c1434d73@arm.com>
+ <1c4f4fb0-7201-ed4c-aa88-4d7e2369238e@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <6cd287bb-25c0-a7bd-8d3c-a63b9da0fd25-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1c4f4fb0-7201-ed4c-aa88-4d7e2369238e@huawei.com>
 Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-clk <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yisheng Xie <xieyisheng1@huawei.com>, "Wuzongyong (Cordius Wu, Euler Dept)" <wuzongyong1@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "Wanzongshun (Vincent)" <wanzongshun@huawei.com>, "oded.gabbay@amd.com" <oded.gabbay@amd.com>, liubo95@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On 7/17/2017 5:16 PM, Sricharan R wrote:
-> Hi,
+On 17/07/17 12:57, Yisheng Xie wrote:
+> Hi Jean-Philippe，
 > 
-> On 7/15/2017 1:09 AM, Rob Clark wrote:
->> On Fri, Jul 14, 2017 at 3:36 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->>> On Fri, Jul 14, 2017 at 03:34:42PM -0400, Rob Clark wrote:
->>>> On Fri, Jul 14, 2017 at 3:01 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->>>>> On Fri, Jul 14, 2017 at 02:25:45PM -0400, Rob Clark wrote:
->>>>>> On Fri, Jul 14, 2017 at 2:06 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->>>>>>> On Fri, Jul 14, 2017 at 01:42:13PM -0400, Rob Clark wrote:
->>>>>>>> On Fri, Jul 14, 2017 at 1:07 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->>>>>>>>> On Thu, Jul 13, 2017 at 10:55:10AM -0400, Rob Clark wrote:
->>>>>>>>>> On Thu, Jul 13, 2017 at 9:53 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>>>>>>>>> Hi,
->>>>>>>>>>>
->>>>>>>>>>> On 7/13/2017 5:20 PM, Rob Clark wrote:
->>>>>>>>>>>> On Thu, Jul 13, 2017 at 1:35 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>>>>>>>>>>> Hi Vivek,
->>>>>>>>>>>>>
->>>>>>>>>>>>> On 7/13/2017 10:43 AM, Vivek Gautam wrote:
->>>>>>>>>>>>>> Hi Stephen,
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> On 07/13/2017 04:24 AM, Stephen Boyd wrote:
->>>>>>>>>>>>>>> On 07/06, Vivek Gautam wrote:
->>>>>>>>>>>>>>>> @@ -1231,12 +1237,18 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
->>>>>>>>>>>>>>>>   static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
->>>>>>>>>>>>>>>>                    size_t size)
->>>>>>>>>>>>>>>>   {
->>>>>>>>>>>>>>>> -    struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
->>>>>>>>>>>>>>>> +    struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>>>>>>>>>>>>>>> +    struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
->>>>>>>>>>>>>>>> +    size_t ret;
->>>>>>>>>>>>>>>>         if (!ops)
->>>>>>>>>>>>>>>>           return 0;
->>>>>>>>>>>>>>>>   -    return ops->unmap(ops, iova, size);
->>>>>>>>>>>>>>>> +    pm_runtime_get_sync(smmu_domain->smmu->dev);
->>>>>>>>>>>>>>> Can these map/unmap ops be called from an atomic context? I seem
->>>>>>>>>>>>>>> to recall that being a problem before.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> That's something which was dropped in the following patch merged in master:
->>>>>>>>>>>>>> 523d7423e21b iommu/arm-smmu: Remove io-pgtable spinlock
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Looks like we don't  need locks here anymore?
->>>>>>>>>>>>>
->>>>>>>>>>>>>  Apart from the locking, wonder why a explicit pm_runtime is needed
->>>>>>>>>>>>>  from unmap. Somehow looks like some path in the master using that
->>>>>>>>>>>>>  should have enabled the pm ?
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> Yes, there are a bunch of scenarios where unmap can happen with
->>>>>>>>>>>> disabled master (but not in atomic context).  On the gpu side we
->>>>>>>>>>>> opportunistically keep a buffer mapping until the buffer is freed
->>>>>>>>>>>> (which can happen after gpu is disabled).  Likewise, v4l2 won't unmap
->>>>>>>>>>>> an exported dmabuf while some other driver holds a reference to it
->>>>>>>>>>>> (which can be dropped when the v4l2 device is suspended).
->>>>>>>>>>>>
->>>>>>>>>>>> Since unmap triggers tbl flush which touches iommu regs, the iommu
->>>>>>>>>>>> driver *definitely* needs a pm_runtime_get_sync().
->>>>>>>>>>>
->>>>>>>>>>>  Ok, with that being the case, there are two things here,
->>>>>>>>>>>
->>>>>>>>>>>  1) If the device links are still intact at these places where unmap is called,
->>>>>>>>>>>     then pm_runtime from the master would setup the all the clocks. That would
->>>>>>>>>>>     avoid reintroducing the locking indirectly here.
->>>>>>>>>>>
->>>>>>>>>>>  2) If not, then doing it here is the only way. But for both cases, since
->>>>>>>>>>>     the unmap can be called from atomic context, resume handler here should
->>>>>>>>>>>     avoid doing clk_prepare_enable , instead move the clk_prepare to the init.
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> I do kinda like the approach Marek suggested.. of deferring the tlb
->>>>>>>>>> flush until resume.  I'm wondering if we could combine that with
->>>>>>>>>> putting the mmu in a stalled state when we suspend (and not resume the
->>>>>>>>>> mmu until after the pending tlb flush)?
->>>>>>>>>
->>>>>>>>> I'm not sure that a stalled state is what we're after here, because we need
->>>>>>>>> to take care to prevent any table walks if we've freed the underlying pages.
->>>>>>>>> What we could try to do is disable the SMMU (put into global bypass) and
->>>>>>>>> invalidate the TLB when performing a suspend operation, then we just ignore
->>>>>>>>> invalidation whilst the clocks are stopped and, on resume, enable the SMMU
->>>>>>>>> again.
->>>>>>>>
->>>>>>>> wouldn't stalled just block any memory transactions by device(s) using
->>>>>>>> the context bank?  Putting it in bypass isn't really a good thing if
->>>>>>>> there is any chance the device can sneak in a memory access before
->>>>>>>> we've taking it back out of bypass (ie. makes gpu a giant userspace
->>>>>>>> controlled root hole).
->>>>>>>
->>>>>>> If it doesn't deadlock, then yes, it will stall transactions. However, that
->>>>>>> doesn't mean it necessarily prevents page table walks.
->>>>>>
->>>>>> btw, I guess the concern about pagetable walk is that the unmap could
->>>>>> have removed some sub-level of the pt that the tlb walk would hit?
->>>>>> Would deferring freeing those pages help?
->>>>>
->>>>> Could do, but it sounds like a lot of complication that I think we can fix
->>>>> by making the suspend operation put the SMMU into a "clean" state.
->>>>>
->>>>>>> Instead of bypass, we
->>>>>>> could configure all the streams to terminate, but this race still worries me
->>>>>>> somewhat. I thought that the SMMU would only be suspended if all of its
->>>>>>> masters were suspended, so if the GPU wants to come out of suspend then the
->>>>>>> SMMU should be resumed first.
->>>>>>
->>>>>> I believe this should be true.. on the gpu side, I'm mostly trying to
->>>>>> avoid having to power the gpu back on to free buffers.  (On the v4l2
->>>>>> side, somewhere in the core videobuf code would also need to be made
->>>>>> to wrap it's dma_unmap_sg() with pm_runtime_get/put()..)
->>>>>
->>>>> Right, and we shouldn't have to resume it if we suspend it in a clean state,
->>>>> with the TLBs invalidated.
->>>>>
->>>>
->>>> I guess if the device_link() stuff ensured the attached device
->>>> (gpu/etc) was suspended before suspending the iommu, then I guess I
->>>> can't see how temporarily putting the iommu in bypass would be a
->>>> problem.  I haven't looked at the device_link() stuff too closely, but
->>>> iommu being resumed first and suspended last seems like the only thing
->>>> that would make sense.  I'm mostly just nervous about iommu in bypass
->>>> vs gpu since userspace has so much control over what address gpu
->>>> writes to / reads from, so getting it wrong w/ the iommu would be a
->>>> rather bad thing ;-)
+> On 2017/6/12 19:37, Jean-Philippe Brucker wrote:
+>> Hello,
+>>
+>> On 10/06/17 05:06, Wuzongyong (Cordius Wu, Euler Dept) wrote:
+>>> Hi,
 >>>
->>> Right, but we can also configure it to terminate if you don't want bypass.
+>>> Could someone explain differences and relations between the SVM(Shared
+>>> Virtual Memory, by Intel), HSA(Heterogeneous System Architecture, by AMD),
+>>> HMM(Heterogeneous Memory Management, by Glisse) and UM(Unified Memory, by
+>>> NVIDIA) ? Are these in the substitutional relation?
 >>>
+>>> As I understand it, these aim to solve the same thing, sharing pointers
+>>> between CPU and GPU(implement with ATS/PASID/PRI/IOMMU support). So far,
+>>> SVM and HSA can only be used by integrated gpu. And, Intel declare that
+>>> the root ports doesn’t not have the required TLP prefix support, resulting
+>>>  that SVM can’t be used by discrete devices. So could someone tell me the
+>>> required TLP prefix means what specifically?>
+>>> With HMM, we can use allocator like malloc to manage host and device
+>>> memory. Does this mean that there is no need to use SVM and HSA with HMM,
+>>> or HMM is the basis of SVM and HAS to implement Fine-Grained system SVM
+>>> defined in the opencl spec?
+>>
+>> I can't provide an exhaustive answer, but I have done some work on SVM.
+>> Take it with a grain of salt though, I am not an expert.
+>>
+>> * HSA is an architecture that provides a common programming model for CPUs
+>> and accelerators (GPGPUs etc). It does have SVM requirement (I/O page
+>> faults, PASID and compatible address spaces), though it's only a small
+>> part of it.
+>>
+>> * Similarly, OpenCL provides an API for dealing with accelerators. OpenCL
+>> 2.0 introduced the concept of Fine-Grained System SVM, which allows to
+>> pass userspace pointers to devices. It is just one flavor of SVM, they
+>> also have coarse-grained and non-system. But they might have coined the
+>> name, and I believe that in the context of Linux IOMMU, when we talk about
+>> "SVM" it is OpenCL's fine-grained system SVM.
+>> [...]
+>>
+>> While SVM is only about virtual address space,
+> As you mentioned, SVM is only about virtual address space, I'd like to know how to
+> manage the physical address especially about device's RAM, before HMM?
+> 
+> When OpenCL alloc a SVM pointer like:
+>     void* p = clSVMAlloc (
+>         context, // an OpenCL context where this buffer is available
+>         CL_MEM_READ_WRITE | CL_MEM_SVM_FINE_GRAIN_BUFFER,
+>         size, // amount of memory to allocate (in bytes)
+>         0 // alignment in bytes (0 means default)
+>     );
+> 
+> where this RAM come from， device RAM or host RAM?
+
+Sorry, I'm not familiar with OpenCL/GPU drivers. It is up to them to
+decide where to allocate memory for clSVMAlloc. My SMMU work would deal
+with fine-grained *system* SVM, the kind that can be obtained from malloc
+and doesn't require a call to clSVMAlloc. Hopefully others on this list or
+linux-mm might be able to help you.
+
+Thanks,
+Jean
+
+> Thanks
+> Yisheng Xie
+> 
+>> HMM deals with physical
+>> storage. If I understand correctly, HMM allows to transparently use device
+>> RAM from userspace applications. So upon an I/O page fault, the mm
+>> subsystem will migrate data from system memory into device RAM. It would
+>> differ from "pure" SVM in that you would use different page directories on
+>> IOMMU and MMU sides, and synchronize them using MMU notifiers. But please
+>> don't take this at face value, I haven't had time to look into HMM yet.
+>>
+>> Thanks,
+>> Jean
+>>
+>> .
 >>
 > 
->  But one thing here is, with devicelinks in picture, iommu suspend/resume
->  is called along with the master. That means, we can end up cleaning even
->  active entries on the suspend path ?, if suspend is going to
->  put the smmu in to a clean state every time. So if the master's are following
->  the pm_runtime sequence before a dma_map/unmap operation, that seems better.
-> 
-
- Also, for the usecase of unmap being done from master's like GPU while it is already
- suspended, then following the Marek's approach of checking for the smmu state while
- in unmap and defer the TLB flush till resume seems correct way. All of the above
- true if we want to use device_link.
-
-Regards,
- Sricharan
-
--- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
-
----
-This email has been checked for viruses by Avast antivirus software.
-https://www.avast.com/antivirus
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
