@@ -1,294 +1,250 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v10 27/38] iommu/amd: Allow the AMD IOMMU to work with memory
-	encryption
-Date: Mon, 17 Jul 2017 16:10:24 -0500
-Message-ID: <3053631ea25ba8b1601c351cb7c541c496f6d9bc.1500319216.git.thomas.lendacky@amd.com>
-References: <cover.1500319216.git.thomas.lendacky@amd.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
+ invalidate propagation
+Date: Mon, 17 Jul 2017 16:45:15 -0600
+Message-ID: <20170717164515.2491b3bf@w520.home>
+References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
+        <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
+        <cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
+        <20170702100659.GA22053@gmail.com>
+        <0e4f2dd4-d553-b1b7-7bec-fe0ff5242c54@arm.com>
+        <20170703103115.GB22053@gmail.com>
+        <AADFC41AFE54684AB9EE6CBC0274A5D190D25919@SHSMSX101.ccr.corp.intel.com>
+        <1d63c1ae-ca10-0f9d-91de-0d9c9823c104@arm.com>
+        <20170705112816.56554f65@w520.home>
+        <A2975661238FB949B60364EF0F2C2574390A7C4F@shsmsx102.ccr.corp.intel.com>
+        <20170714121555.7e64d849@w520.home>
+        <A2975661238FB949B60364EF0F2C2574390A906A@shsmsx102.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1500319216.git.thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Cc: Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C2574390A906A@shsmsx102.ccr.corp.intel.com>
+Sender: kvm-owner@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Will Deacon <Will.Deacon@arm.com>, "peterx@redhat.com" <peterx@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The IOMMU is programmed with physical addresses for the various tables
-and buffers that are used to communicate between the device and the
-driver. When the driver allocates this memory it is encrypted. In order
-for the IOMMU to access the memory as encrypted the encryption mask needs
-to be included in these physical addresses during configuration.
+On Mon, 17 Jul 2017 10:58:41 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
 
-The PTE entries created by the IOMMU should also include the encryption
-mask so that when the device behind the IOMMU performs a DMA, the DMA
-will be performed to encrypted memory.
+> Hi Alex,
+> 
+> Pls refer to the response inline.
+> 
+> > -----Original Message-----
+> > From: kvm-owner@vger.kernel.org [mailto:kvm-owner@vger.kernel.org] On Behalf
+> > Of Alex Williamson
+> > Sent: Saturday, July 15, 2017 2:16 AM
+> > To: Liu, Yi L <yi.l.liu@intel.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>; Tian, Kevin
+> > <kevin.tian@intel.com>; Liu, Yi L <yi.l.liu@linux.intel.com>; Lan, Tianyu
+> > <tianyu.lan@intel.com>; Raj, Ashok <ashok.raj@intel.com>; kvm@vger.kernel.org;
+> > jasowang@redhat.com; Will Deacon <Will.Deacon@arm.com>; peterx@redhat.com;
+> > qemu-devel@nongnu.org; iommu@lists.linux-foundation.org; Pan, Jacob jun
+> > <jacob.jun.pan@intel.com>; Joerg Roedel <joro@8bytes.org>
+> > Subject: Re: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
+> > invalidate propagation
+> > 
+> > On Fri, 14 Jul 2017 08:58:02 +0000
+> > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> >   
+> > > Hi Alex,
+> > >
+> > > Against to the opaque open, I'd like to propose the following
+> > > definition based on the existing comments. Pls note that I've merged
+> > > the pasid table binding and iommu tlb invalidation into a single IOCTL
+> > > and make different flags to indicate the iommu operations. Per Kevin's
+> > > comments, there may be iommu invalidation for guest IOVA tlb, so I
+> > > renamed the IOCTL and data structure to be non-svm specific. Pls
+> > > kindly have a review, so that we can make the opaque open closed and
+> > > move forward. Surely, comments and ideas are welcomed. And for the
+> > > scope and flags definition in struct iommu_tlb_invalidate, it's also welcomed to  
+> > give your ideas on it.  
+> > >
+> > > 1. Add a VFIO IOCTL for iommu operations from user-space
+> > >
+> > > #define VFIO_IOMMU_OP_IOCTL _IO(VFIO_TYPE, VFIO_BASE + 24)
+> > >
+> > > Corresponding data structure:
+> > > struct vfio_iommu_operation_info {
+> > > 	__u32	argsz;
+> > > #define VFIO_IOMMU_BIND_PASIDTBL	(1 << 0) /* Bind PASID Table */
+> > > #define VFIO_IOMMU_BIND_PASID	(1 << 1) /* Bind PASID from userspace  
+> > driver*/  
+> > > #define VFIO_IOMMU_BIND_PGTABLE	(1 << 2) /* Bind guest mmu page table */
+> > > #define VFIO_IOMMU_INVAL_IOTLB	(1 << 3) /* Invalidate iommu tlb */
+> > > 	__u32	flag;
+> > > 	__u32	length; // length of the data[] part in byte
+> > > 	__u8	data[]; // stores the data for iommu op indicated by flag field
+> > > };  
+> > 
+> > If we're doing a generic "Ops" ioctl, then we should have an "op" field which is
+> > defined by an enum.  It doesn't make sense to use flags for this, for example can we
+> > set multiple flag bits?  If not then it's not a good use for a bit field.  I'm also not sure I
+> > understand the value of the "length" field, can't it always be calculated from argsz?  
+> 
+> Agreed, enum would be better. "length" field could be calculated from argsz. I used
+> it just to avoid offset calculations. May remove it.
+>  
+> > > For iommu tlb invalidation from userspace, the "__u8 data[]" stores
+> > > data which would be parsed by the "struct iommu_tlb_invalidate"
+> > > defined below.
+> > >
+> > > 2. Definitions in include/uapi/linux/iommu.h(newly added header file)
+> > >
+> > > /* IOMMU model definition for iommu operations from userspace */ enum
+> > > iommu_model {
+> > > 	INTLE_IOMMU,
+> > > 	ARM_SMMU,
+> > > 	AMD_IOMMU,
+> > > 	SPAPR_IOMMU,
+> > > 	S390_IOMMU,
+> > > };
+> > >
+> > > struct iommu_tlb_invalidate {
+> > > 	__u32	scope;
+> > > /* pasid-selective invalidation described by @pasid */
+> > > #define IOMMU_INVALIDATE_PASID	(1 << 0)
+> > > /* address-selevtive invalidation described by (@vaddr, @size) */
+> > > #define IOMMU_INVALIDATE_VADDR	(1 << 1)  
+> > 
+> > Again, is a bit field appropriate here, can a user set both bits?  
+> 
+> yes, user may set both bits. It would be invalidate address range
+> which is tagged with a PASID value.
+> 
+> >   
+> > > 	__u32	flags;
+> > > /*  targets non-pasid mappings, @pasid is not valid */
+> > > #define IOMMU_INVALIDATE_NO_PASID	(1 << 0)
+> > > /* indicating that the pIOMMU doesn't need to invalidate
+> > > 	all intermediate tables cached as part of the PTE for
+> > > 	vaddr, only the last-level entry (pte). This is a hint. */
+> > > #define IOMMU_INVALIDATE_VADDR_LEAF	(1 << 1)  
+> > 
+> > Are we venturing into vendor specific attributes here?  
+> 
+> These two attributes are still in discussion. Jean and me synced
+> several rounds. But lack of comments from other vendors.
+> 
+> Personally, I think both should be generic.
+> IOMMU_INVALIDATE_NO_PASID is to indicate no PASID used
+> for the invalidation. IOMMU_INVALIDATE_VADDR_LEAF indicates
+> only invalidate leaf mappings. 
+> I would see if other vendor is object on it. If yes, I'm fine to move
+> it to vendor specific part.
+>  
+> >   
+> > > 	__u32	pasid;
+> > > 	__u64	vaddr;
+> > > 	__u64	size;
+> > > 	enum iommu_model model;  
+> > 
+> > How does a user learn which model(s) are supported by the interface?
+> > How do they learn which ops are supported?  Perhaps a good use for one of those
+> > flag bits in the outer data structure is "probe".  
+> 
+> My initial plan to user fills it, if the underlying HW doesn't support the
+> model, it refuses to service it. User should get a failure and stop to use
+> it. But your suggestion to have a probe or kinds of query makes sense.
+> How about we add one more operation for such purpose? Besides the
+> supported model query, I'd like to add more. E.g the HW IOMMU capabilities.
 
-Cc: <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Reviewed-by: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
-Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu.c       | 30 ++++++++++++++++--------------
- drivers/iommu/amd_iommu_init.c  | 34 ++++++++++++++++++++++++++++------
- drivers/iommu/amd_iommu_proto.h | 10 ++++++++++
- drivers/iommu/amd_iommu_types.h |  2 +-
- 4 files changed, 55 insertions(+), 21 deletions(-)
+We also have VFIO_IOMMU_GET_INFO where the structure can be extended
+for missing capabilities.  Depending on the capability you want to
+describe, this might be a better, existing interface for it.
+ 
+> > > 	/*
+> > > 	 Vendor may have different HW version and thus the
+> > > 	 data part of this structure differs, use sub_version
+> > > 	 to indicate such difference.
+> > > 	 */
+> > > 	__u322 sub_version;  
+> > 
+> > Not sure I see the value of this vs creating an INTEL_IOMMUv2 entry in the model
+> > enum.  
+> 
+> Both are fine to me. Just see the opinions from other guys.
+> 
+> > > 	__u64 length; // length of the data[] part in byte  
+> > 
+> > Questionably useful vs calculating from argsz again , but it certainly doesn't need to
+> > be a qword :-o  
+> 
+> Thx for the remind. 32bits would be enough. It is surely to get it from argsz. However,
+> I would like to leave it here. Reason is:
+> argsz is in vfio layer, the "length" here is actually used in vendor-specific iommu driver
+> layer. So would require vfio to pass argsz or the size of " struct iommu_tlb_invalidate"
+> to vendor-specific iommu driver layer by means of parameter or so. Personally, I prefer
+> to pass it in the structure. If it's better to pass it as a parameter, I would do it.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 688e775..abc6ca6 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -575,7 +575,7 @@ static void dump_dte_entry(u16 devid)
+Ok, then the layer that does the copy_from_user will need to validate
+that length is fully contained within the copied data structure, we
+can't let the user trick the kernel into using kernel memory for this.
+
+> > > 	__u8	data[];
+> > > };
+> > >
+> > > For Intel, the data structue is:
+> > > struct intel_iommu_invalidate_data {
+> > > 	__u64 low;
+> > > 	__u64 high;
+> > > }  
+> > 
+> > high/low what?  This is a pretty weak uapi definition.  Thanks,  
+> 
+> For this part, for Intel platform, we plan to pass a 128 bit data for the invalidation.
+> The structure varies from invalidation type to type. Here is my thought on it. Define
+> an 128 bits union. List the invalidation data details for each invalidation type. What's
+> your opinion on it? So far, we have 7 types for invalidation. The prq response is not
+> included.
+
+I want this interface to be fully defined, but at the same time I don't
+necessarily want to create useless data structures.  I believe the
+intention here is to pass these directly through to a QI entry, where
+we must match a hardware definition.  I'm tempted to suggest
+referencing the hardware specification, but see below...
+
+A concern for this model is that hardware may trust the iommu driver
+not to create QI entries that don't set reserved bits or set invalid
+field data.  If it does those kinds of things, it's a kernel driver
+bug.  Once exposed to the user, we cannot guarantee that.  Does Intel
+have confidence that a user cannot maliciously interfere with other
+contexts or the general operation of the invalidation queue if a user is
+effectively given direct access?  Will the invalidation data be
+sanitized by the iommu driver?
  
- static void dump_command(unsigned long phys_addr)
- {
--	struct iommu_cmd *cmd = phys_to_virt(phys_addr);
-+	struct iommu_cmd *cmd = iommu_phys_to_virt(phys_addr);
- 	int i;
- 
- 	for (i = 0; i < 4; ++i)
-@@ -919,11 +919,13 @@ static void copy_cmd_to_buffer(struct amd_iommu *iommu,
- 
- static void build_completion_wait(struct iommu_cmd *cmd, u64 address)
- {
-+	u64 paddr = iommu_virt_to_phys((void *)address);
-+
- 	WARN_ON(address & 0x7ULL);
- 
- 	memset(cmd, 0, sizeof(*cmd));
--	cmd->data[0] = lower_32_bits(__pa(address)) | CMD_COMPL_WAIT_STORE_MASK;
--	cmd->data[1] = upper_32_bits(__pa(address));
-+	cmd->data[0] = lower_32_bits(paddr) | CMD_COMPL_WAIT_STORE_MASK;
-+	cmd->data[1] = upper_32_bits(paddr);
- 	cmd->data[2] = 1;
- 	CMD_SET_TYPE(cmd, CMD_COMPL_WAIT);
- }
-@@ -1383,7 +1385,7 @@ static bool increase_address_space(struct protection_domain *domain,
- 		return false;
- 
- 	*pte             = PM_LEVEL_PDE(domain->mode,
--					virt_to_phys(domain->pt_root));
-+					iommu_virt_to_phys(domain->pt_root));
- 	domain->pt_root  = pte;
- 	domain->mode    += 1;
- 	domain->updated  = true;
-@@ -1420,7 +1422,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
- 			if (!page)
- 				return NULL;
- 
--			__npte = PM_LEVEL_PDE(level, virt_to_phys(page));
-+			__npte = PM_LEVEL_PDE(level, iommu_virt_to_phys(page));
- 
- 			/* pte could have been changed somewhere. */
- 			if (cmpxchg64(pte, __pte, __npte) != __pte) {
-@@ -1536,10 +1538,10 @@ static int iommu_map_page(struct protection_domain *dom,
- 			return -EBUSY;
- 
- 	if (count > 1) {
--		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
-+		__pte = PAGE_SIZE_PTE(__sme_set(phys_addr), page_size);
- 		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
- 	} else
--		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte = __sme_set(phys_addr) | IOMMU_PTE_P | IOMMU_PTE_FC;
- 
- 	if (prot & IOMMU_PROT_IR)
- 		__pte |= IOMMU_PTE_IR;
-@@ -1755,7 +1757,7 @@ static void free_gcr3_tbl_level1(u64 *tbl)
- 		if (!(tbl[i] & GCR3_VALID))
- 			continue;
- 
--		ptr = __va(tbl[i] & PAGE_MASK);
-+		ptr = iommu_phys_to_virt(tbl[i] & PAGE_MASK);
- 
- 		free_page((unsigned long)ptr);
- 	}
-@@ -1770,7 +1772,7 @@ static void free_gcr3_tbl_level2(u64 *tbl)
- 		if (!(tbl[i] & GCR3_VALID))
- 			continue;
- 
--		ptr = __va(tbl[i] & PAGE_MASK);
-+		ptr = iommu_phys_to_virt(tbl[i] & PAGE_MASK);
- 
- 		free_gcr3_tbl_level1(ptr);
- 	}
-@@ -2049,7 +2051,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- 	u64 flags = 0;
- 
- 	if (domain->mode != PAGE_MODE_NONE)
--		pte_root = virt_to_phys(domain->pt_root);
-+		pte_root = iommu_virt_to_phys(domain->pt_root);
- 
- 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
-@@ -2061,7 +2063,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- 		flags |= DTE_FLAG_IOTLB;
- 
- 	if (domain->flags & PD_IOMMUV2_MASK) {
--		u64 gcr3 = __pa(domain->gcr3_tbl);
-+		u64 gcr3 = iommu_virt_to_phys(domain->gcr3_tbl);
- 		u64 glx  = domain->glx;
- 		u64 tmp;
- 
-@@ -3606,10 +3608,10 @@ static u64 *__get_gcr3_pte(u64 *root, int level, int pasid, bool alloc)
- 			if (root == NULL)
- 				return NULL;
- 
--			*pte = __pa(root) | GCR3_VALID;
-+			*pte = iommu_virt_to_phys(root) | GCR3_VALID;
- 		}
- 
--		root = __va(*pte & PAGE_MASK);
-+		root = iommu_phys_to_virt(*pte & PAGE_MASK);
- 
- 		level -= 1;
- 	}
-@@ -3788,7 +3790,7 @@ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
- 
- 	dte	= amd_iommu_dev_table[devid].data[2];
- 	dte	&= ~DTE_IRQ_PHYS_ADDR_MASK;
--	dte	|= virt_to_phys(table->table);
-+	dte	|= iommu_virt_to_phys(table->table);
- 	dte	|= DTE_IRQ_REMAP_INTCTL;
- 	dte	|= DTE_IRQ_TABLE_LEN;
- 	dte	|= DTE_IRQ_REMAP_ENABLE;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5cc597b..42ff9a8 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -30,6 +30,7 @@
- #include <linux/iommu.h>
- #include <linux/kmemleak.h>
- #include <linux/crash_dump.h>
-+#include <linux/mem_encrypt.h>
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
- #include <asm/gart.h>
-@@ -348,7 +349,7 @@ static void iommu_set_device_table(struct amd_iommu *iommu)
- 
- 	BUG_ON(iommu->mmio_base == NULL);
- 
--	entry = virt_to_phys(amd_iommu_dev_table);
-+	entry = iommu_virt_to_phys(amd_iommu_dev_table);
- 	entry |= (dev_table_size >> 12) - 1;
- 	memcpy_toio(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET,
- 			&entry, sizeof(entry));
-@@ -606,7 +607,7 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
- 
- 	BUG_ON(iommu->cmd_buf == NULL);
- 
--	entry = (u64)virt_to_phys(iommu->cmd_buf);
-+	entry = iommu_virt_to_phys(iommu->cmd_buf);
- 	entry |= MMIO_CMD_SIZE_512;
- 
- 	memcpy_toio(iommu->mmio_base + MMIO_CMD_BUF_OFFSET,
-@@ -635,7 +636,7 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
- 
- 	BUG_ON(iommu->evt_buf == NULL);
- 
--	entry = (u64)virt_to_phys(iommu->evt_buf) | EVT_LEN_MASK;
-+	entry = iommu_virt_to_phys(iommu->evt_buf) | EVT_LEN_MASK;
- 
- 	memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
- 		    &entry, sizeof(entry));
-@@ -668,7 +669,7 @@ static void iommu_enable_ppr_log(struct amd_iommu *iommu)
- 	if (iommu->ppr_log == NULL)
- 		return;
- 
--	entry = (u64)virt_to_phys(iommu->ppr_log) | PPR_LOG_SIZE_512;
-+	entry = iommu_virt_to_phys(iommu->ppr_log) | PPR_LOG_SIZE_512;
- 
- 	memcpy_toio(iommu->mmio_base + MMIO_PPR_LOG_OFFSET,
- 		    &entry, sizeof(entry));
-@@ -748,10 +749,10 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
- 	if (!iommu->ga_log_tail)
- 		goto err_out;
- 
--	entry = (u64)virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
-+	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
- 	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
- 		    &entry, sizeof(entry));
--	entry = ((u64)virt_to_phys(iommu->ga_log) & 0xFFFFFFFFFFFFFULL) & ~7ULL;
-+	entry = (iommu_virt_to_phys(iommu->ga_log) & 0xFFFFFFFFFFFFFULL) & ~7ULL;
- 	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
- 		    &entry, sizeof(entry));
- 	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
-@@ -2564,6 +2565,24 @@ static int __init amd_iommu_init(void)
- 	return ret;
- }
- 
-+static bool amd_iommu_sme_check(void)
-+{
-+	if (!sme_active() || (boot_cpu_data.x86 != 0x17))
-+		return true;
-+
-+	/* For Fam17h, a specific level of support is required */
-+	if (boot_cpu_data.microcode >= 0x08001205)
-+		return true;
-+
-+	if ((boot_cpu_data.microcode >= 0x08001126) &&
-+	    (boot_cpu_data.microcode <= 0x080011ff))
-+		return true;
-+
-+	pr_notice("AMD-Vi: IOMMU not currently supported when SME is active\n");
-+
-+	return false;
-+}
-+
- /****************************************************************************
-  *
-  * Early detect code. This code runs at IOMMU detection time in the DMA
-@@ -2578,6 +2597,9 @@ int __init amd_iommu_detect(void)
- 	if (no_iommu || (iommu_detected && !gart_iommu_aperture))
- 		return -ENODEV;
- 
-+	if (!amd_iommu_sme_check())
-+		return -ENODEV;
-+
- 	ret = iommu_go_to_state(IOMMU_IVRS_DETECTED);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 466260f..3f12fb2 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -87,4 +87,14 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- 	return !!(iommu->features & f);
- }
- 
-+static inline u64 iommu_virt_to_phys(void *vaddr)
-+{
-+	return (u64)__sme_set(virt_to_phys(vaddr));
-+}
-+
-+static inline void *iommu_phys_to_virt(unsigned long paddr)
-+{
-+	return phys_to_virt(__sme_clr(paddr));
-+}
-+
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 294a409..8591f43 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -344,7 +344,7 @@
- 
- #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
- #define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
--#define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
-+#define IOMMU_PTE_PAGE(pte) (iommu_phys_to_virt((pte) & IOMMU_PAGE_MASK))
- #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
- 
- #define IOMMU_PROT_MASK 0x03
--- 
-1.9.1
+> union intel_iommu_invalidate_data {
+>  	struct {
+> 		__u64 low;
+>  		__u64 high;
+> 	} invalidate_data;
+> 
+> 	struct {
+> 		__u64 type: 4;
+> 		__u64 gran: 2;
+> 		__u64 rsv1: 10;
+> 		__u64 did: 16;
+> 		__u64 sid: 16;
+> 		__u64 func_mask: 2;
+> 		__u64 rsv2: 14;
+> 		__64 rsv3: 64;
+> 	} context_cache_inv;
+> 	....
+
+Here's part of the issue with not fully defining these, we have did,
+sid, and func_mask.  I think we're claiming that the benefit of passing
+through the hardware data structure is performance, but the user needs
+to replace these IDs to match the physical device rather than the
+virtual device, perhaps even entirely recreating it because there's not
+necessarily a 1:1 mapping of things like func_mask between virtual and
+physical hardware topologies (assuming I'm interpreting these fields
+correctly).  Doesn't the kernel also need to validate any such field to
+prevent the user spoofing entries for other devices?  Is there any
+actual performance benefit remaining vs defining a generic interface
+after multiple levels have manipulated, recreated, and sanitized
+these structures?  We can't evaluate these sorts of risks if we don't
+define what we're passing through.  Thanks,
+
+Alex
