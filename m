@@ -1,32 +1,19 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH] iommu/exynos: Replace non-existing big-endian Kconfig option
-Date: Mon, 17 Jul 2017 07:47:02 +0200
-Message-ID: <1500270422-4805-1-git-send-email-krzk@kernel.org>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Christoph Hellwig <hch@lst.de>
+Subject: mailing list for the dma mapping code
+Date: Mon, 17 Jul 2017 08:45:26 +0200
+Message-ID: <20170717064526.GA15839@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Wrong Kconfig option was used when adding warning for untested
-big-endian capabilities. There is no CONFIG_BIG_ENDIAN option.
+Hi all,
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- drivers/iommu/exynos-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 2395478dde75..b7aebaf28b82 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -54,7 +54,7 @@ typedef u32 sysmmu_pte_t;
- #define lv2ent_small(pent) ((*(pent) & 2) == 2)
- #define lv2ent_large(pent) ((*(pent) & 3) == 1)
- 
--#ifdef CONFIG_BIG_ENDIAN
-+#ifdef CONFIG_CPU_BIG_ENDIAN
- #warning "revisit driver if we can enable big-endian ptes"
- #endif
- 
--- 
-2.7.4
+currently the dma-mapping code doesn't have a dedicated mailing list,
+and thus posts get lots on linux-kernel.  I wonder if we should add
+a new separate list for it, or if it makes sense to reuse the existing
+iommu list given that there is a fair amount of overlap.
