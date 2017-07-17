@@ -1,19 +1,11 @@
-From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/arm-smmu-v3: put off the execution of TLBI* to
-	reduce lock confliction
-Date: Mon, 17 Jul 2017 13:28:47 -0400
-Message-ID: <3cec10c5-82ca-2c54-dfdb-ac73b16e5bc6@codeaurora.org>
-References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
-	<1498484330-10840-2-git-send-email-thunder.leizhen@huawei.com>
-	<20170628093207.GB11053@arm.com> <5954610F.9020807@huawei.com>
-	<cd5b8ec5-f884-450c-df61-45d70bf40b10@huawei.com>
-	<20170717222337.0000508f@huawei.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH v10 00/38] x86: Secure Memory Encryption (AMD)
+Date: Mon, 17 Jul 2017 16:09:57 -0500
+Message-ID: <cover.1500319216.git.thomas.lendacky@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170717222337.0000508f-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,287 +15,325 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, zhouyoujun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Cc: Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jonathan,
+This patch series provides support for AMD's new Secure Memory Encryption (SME)
+feature.
 
-On 7/17/2017 10:23 AM, Jonathan Cameron wrote:
-> On Mon, 17 Jul 2017 14:06:42 +0100
-> John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
-> 
->> +
->>
->> On 29/06/2017 03:08, Leizhen (ThunderTown) wrote:
->>>
->>>
->>> On 2017/6/28 17:32, Will Deacon wrote:
->>>> Hi Zhen Lei,
->>>>
->>>> Nate (CC'd), Robin and I have been working on something very similar to
->>>> this series, but this patch is different to what we had planned. More below.
->>>>
->>>> On Mon, Jun 26, 2017 at 09:38:46PM +0800, Zhen Lei wrote:
->>>>> Because all TLBI commands should be followed by a SYNC command, to make
->>>>> sure that it has been completely finished. So we can just add the TLBI
->>>>> commands into the queue, and put off the execution until meet SYNC or
->>>>> other commands. To prevent the followed SYNC command waiting for a long
->>>>> time because of too many commands have been delayed, restrict the max
->>>>> delayed number.
->>>>>
->>>>> According to my test, I got the same performance data as I replaced writel
->>>>> with writel_relaxed in queue_inc_prod.
->>>>>
->>>>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>>>> ---
->>>>>   drivers/iommu/arm-smmu-v3.c | 42 +++++++++++++++++++++++++++++++++++++-----
->>>>>   1 file changed, 37 insertions(+), 5 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>>>> index 291da5f..4481123 100644
->>>>> --- a/drivers/iommu/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm-smmu-v3.c
->>>>> @@ -337,6 +337,7 @@
->>>>>   /* Command queue */
->>>>>   #define CMDQ_ENT_DWORDS			2
->>>>>   #define CMDQ_MAX_SZ_SHIFT		8
->>>>> +#define CMDQ_MAX_DELAYED		32
->>>>>
->>>>>   #define CMDQ_ERR_SHIFT			24
->>>>>   #define CMDQ_ERR_MASK			0x7f
->>>>> @@ -472,6 +473,7 @@ struct arm_smmu_cmdq_ent {
->>>>>   			};
->>>>>   		} cfgi;
->>>>>
->>>>> +		#define CMDQ_OP_TLBI_NH_ALL	0x10
->>>>>   		#define CMDQ_OP_TLBI_NH_ASID	0x11
->>>>>   		#define CMDQ_OP_TLBI_NH_VA	0x12
->>>>>   		#define CMDQ_OP_TLBI_EL2_ALL	0x20
->>>>> @@ -499,6 +501,7 @@ struct arm_smmu_cmdq_ent {
->>>>>
->>>>>   struct arm_smmu_queue {
->>>>>   	int				irq; /* Wired interrupt */
->>>>> +	u32				nr_delay;
->>>>>
->>>>>   	__le64				*base;
->>>>>   	dma_addr_t			base_dma;
->>>>> @@ -722,11 +725,16 @@ static int queue_sync_prod(struct arm_smmu_queue *q)
->>>>>   	return ret;
->>>>>   }
->>>>>
->>>>> -static void queue_inc_prod(struct arm_smmu_queue *q)
->>>>> +static void queue_inc_swprod(struct arm_smmu_queue *q)
->>>>>   {
->>>>> -	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + 1;
->>>>> +	u32 prod = q->prod + 1;
->>>>>
->>>>>   	q->prod = Q_OVF(q, q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
->>>>> +}
->>>>> +
->>>>> +static void queue_inc_prod(struct arm_smmu_queue *q)
->>>>> +{
->>>>> +	queue_inc_swprod(q);
->>>>>   	writel(q->prod, q->prod_reg);
->>>>>   }
->>>>>
->>>>> @@ -761,13 +769,24 @@ static void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
->>>>>   		*dst++ = cpu_to_le64(*src++);
->>>>>   }
->>>>>
->>>>> -static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent)
->>>>> +static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent, int optimize)
->>>>>   {
->>>>>   	if (queue_full(q))
->>>>>   		return -ENOSPC;
->>>>>
->>>>>   	queue_write(Q_ENT(q, q->prod), ent, q->ent_dwords);
->>>>> -	queue_inc_prod(q);
->>>>> +
->>>>> +	/*
->>>>> +	 * We don't want too many commands to be delayed, this may lead the
->>>>> +	 * followed sync command to wait for a long time.
->>>>> +	 */
->>>>> +	if (optimize && (++q->nr_delay < CMDQ_MAX_DELAYED)) {
->>>>> +		queue_inc_swprod(q);
->>>>> +	} else {
->>>>> +		queue_inc_prod(q);
->>>>> +		q->nr_delay = 0;
->>>>> +	}
->>>>> +
->>>>
->>>> So here, you're effectively putting invalidation commands into the command
->>>> queue without updating PROD. Do you actually see a performance advantage
->>>> from doing so? Another side of the argument would be that we should be
->>> Yes, my sas ssd performance test showed that it can improve about 100-150K/s(the same to I directly replace
->>> writel with writel_relaxed). And the average execution time of iommu_unmap(which called by iommu_dma_unmap_sg)
->>> dropped from 10us to 5us.
->>>   
->>>> moving PROD as soon as we can, so that the SMMU can process invalidation
->>>> commands in the background and reduce the cost of the final SYNC operation
->>>> when the high-level unmap operation is complete.
->>> There maybe that __iowmb() is more expensive than wait for tlbi complete. Except the time of __iowmb()
->>> itself, it also protected by spinlock, lock confliction will rise rapidly in the stress scene. __iowmb()
->>> average cost 300-500ns(Sorry, I forget the exact value).
->>>
->>> In addition, after applied this patcheset and Robin's v2, and my earlier dma64 iova optimization patchset.
->>> Our net performance test got the same data to global bypass. But sas ssd still have more than 20% dropped.
->>> Maybe we should still focus at map/unamp, because the average execution time of iova alloc/free is only
->>> about 400ns.
->>>
->>> By the way, patch2-5 is more effective than this one, it can improve more than 350K/s. And with it, we can
->>> got about 100-150K/s improvement of Robin's v2. Otherwise, I saw non effective of Robin's v2. Sorry, I have
->>> not tested how about this patch without patch2-5. Further more, I got the same performance data to global
->>> bypass for the traditional mechanical hard disk with only patch2-5(without this patch and Robin's).
->>>   
-> Hi All,
-> 
-> I'm a bit of late entry to this discussion.  Just been running some more
-> detailed tests on our d05 boards and wanted to bring some more numbers to
-> the discussion.
-> 
-> All tests against 4.12 with the following additions:
-> * Robin's series removing the io-pgtable spinlock (and a few recent fixes)
-> * Cherry picked updates to the sas driver, merged prior to 4.13-rc1
-> * An additional HNS (network card) bug fix that will be upstreamed shortly.
-> 
-> I've broken the results down into this patch and this patch + the remainder
-> of the set. As leizhen mentioned we got a nice little performance
-> bump from Robin's series so that was applied first (as it's in mainline now)
-> 
-> SAS tests were fio with noop scheduler, 4k block size and various io depths
-> 1 process per disk.  Note this is probably a different setup to leizhen's
-> original numbers.
-> 
-> Precentages are off the performance seen with the smmu disabled.
-> SAS
-> 4.12 - none of this series.
-> SMMU disabled
-> read io-depth 32 -   384K IOPS (100%)
-> read io-depth 2048 - 950K IOPS (100%)
-> rw io-depth 32 -     166K IOPS (100%)
-> rw io-depth 2048 -   340K IOPS (100%)
-> 
-> SMMU enabled
-> read io-depth 32 -   201K IOPS (52%)
-> read io-depth 2048 - 306K IOPS (32%)
-> rw io-depth 32 -     99K  IOPS (60%)
-> rw io-depth 2048 -   150K IOPS (44%)
-> 
-> Robin's recent series with fixes as seen on list (now merged)
-> SMMU enabled.
-> read io-depth 32 -   208K IOPS (54%)
-> read io-depth 2048 - 335K IOPS (35%)
-> rw io-depth 32 -     105K IOPS (63%)
-> rw io-depth 2048 -   165K IOPS (49%)
-> 
-> 4.12 + Robin's series + just this patch SMMU enabled
-> 
-> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
-> 
-> read io-depth 32 -   225K IOPS (59%)
-> read io-depth 2048 - 365K IOPS (38%)
-> rw io-depth 32 -     110K IOPS (66%)
-> rw io-depth 2048 -   179K IOPS (53%)
-> 
-> 4.12 + Robin's series + Second part of this series
-> 
-> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
-> (iommu: add a new member unmap_tlb_sync into struct iommu_ops)
-> (iommu/arm-smmu-v3: add supprot for unmap an iova range with only on tlb sync)
-> (iommu/arm-smmu: add support for unmap of a memory range with only one tlb sync)
-> 
-> read io-depth 32 -    225K IOPS (59%)
-> read io-depth 2048 -  833K IOPS (88%)
-> rw io-depth 32 -      112K IOPS (67%)
-> rw io-depth 2048 -    220K IOPS (65%)
-> 
-> Robin's series gave us small gains across the board (3-5% recovered)
-> relative to the no smmu performance (which we are taking as the ideal case)
-> 
-> This first patch gets us back another 2-5% of the no smmu performance
-> 
-> The next few patches get us very little advantage on the small io-depths
-> but make a large difference to the larger io-depths - in particular the
-> read IOPS which is over twice as fast as without the series.
-> 
-> For HNS it seems that we are less dependent on the SMMU performance and
-> can reach the non SMMU speed.
-> 
-> Tests with
-> iperf -t 30 -i 10 -c IPADDRESS -P 3 last 10 seconds taken to avoid any
-> initial variability.
-> 
-> The server end of the link was always running with smmu v3 disabled
-> so as to act as a fast sink of the data. Some variation seen across
-> repeat runs.
-> 
-> Mainline v4.12 + network card fix
-> NO SMMU
-> 9.42 GBits/sec
-> 
-> SMMU
-> 4.36 GBits/sec (46%)
-> 
-> Robin's io-pgtable spinlock series
-> 
-> 6.68 to 7.34 (71% - 78% variation across runs)
-> 
-> Just this patch SMMU enabled
-> 
-> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
-> 
-> 7.96-8.8 GBits/sec (85% - 94%  some variation across runs)
-> 
-> Full series
-> 
-> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
-> (iommu: add a new member unmap_tlb_sync into struct iommu_ops)
-> (iommu/arm-smmu-v3: add supprot for unmap an iova range with only on tlb sync)
-> (iommu/arm-smmu: add support for unmap of a memory range with only one tlb sync)
-> 
-> 9.42 GBits/Sec (100%)
-> 
-> So HNS test shows a greater boost from Robin's series and this first patch.
-> This is most likely because the HNS test is not putting as high a load on
-> the SMMU and associated code as the SAS test.
-> 
-> In both cases however, this shows that both parts of this patch
-> series are beneficial.
-> 
-> So on to the questions ;)
-> 
-> Will, you mentioned that along with Robin and Nate you were working on
-> a somewhat related strategy to improve the performance.  Any ETA on that?
+SME can be used to mark individual pages of memory as encrypted through the
+page tables. A page of memory that is marked encrypted will be automatically
+decrypted when read from DRAM and will be automatically encrypted when
+written to DRAM. Details on SME can found in the links below.
 
-The strategy I was working on is basically equivalent to the second
-part of the series. I will test your patches out sometime this week, and
-I'll also try to have our performance team run it through their whole
-suite.
+The SME feature is identified through a CPUID function and enabled through
+the SYSCFG MSR. Once enabled, page table entries will determine how the
+memory is accessed. If a page table entry has the memory encryption mask set,
+then that memory will be accessed as encrypted memory. The memory encryption
+mask (as well as other related information) is determined from settings
+returned through the same CPUID function that identifies the presence of the
+feature.
 
-> 
-> As you might imagine, with the above numbers we are very keen to try and
-> move forward with this as quickly as possible.
-> 
-> If you want additional testing we would be happy to help.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> 
->>>>
->>>> Will
->>>>
->>>> .
->>>>   
->>>   
->>
->>
-> 
-> 
+The approach that this patch series takes is to encrypt everything possible
+starting early in the boot where the kernel is encrypted. Using the page
+table macros the encryption mask can be incorporated into all page table
+entries and page allocations. By updating the protection map, userspace
+allocations are also marked encrypted. Certain data must be accounted for
+as having been placed in memory before SME was enabled (EFI, initrd, etc.)
+and accessed accordingly.
+
+This patch series is a pre-cursor to another AMD processor feature called
+Secure Encrypted Virtualization (SEV). The support for SEV will build upon
+the SME support and will be submitted later. Details on SEV can be found
+in the links below.
+
+The following links provide additional detail:
+
+AMD Memory Encryption whitepaper:
+   http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf
+
+AMD64 Architecture Programmer's Manual:
+   http://support.amd.com/TechDocs/24593.pdf
+   SME is section 7.10
+   SEV is section 15.34
+
+---
+
+This patch series is based off of the master branch of tip:
+  https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+
+  Commit 5fcfb42b132c ("Merge branch 'linus'")
+
+Source code is also available at https://github.com/codomania/tip/tree/sme-v10
+
+Cc: <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: <xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org>
+Cc: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>
+
+Still to do:
+- Kdump support, including using memremap() instead of ioremap_cache()
+
+Changes since v9:
+- Cleared SME feature capability for 32-bit builds
+- Added a WARNing to the iounmap() path for ISA ranges to catch callers
+  which did not use ioremap()
+
+Changes since v8:
+- Changed AMD IOMMU SME-related function name
+- Updated the sme_encrypt_kernel() entry/exit code to address new warnings
+  issued by objtool
+
+Changes since v7:
+- Fixed kbuild test robot failure related to pgprot_decrypted() macro
+  usage for some non-x86 archs
+- Moved calls to encrypt the kernel and retrieve the encryption mask
+  from assembler (head_64.S) into C (head64.c)
+- Removed use of phys_to_virt() in __ioremap_caller() when address is in
+  the ISA range. Now regular ioremap() processing occurs.
+- Two new, small patches:
+  - Introduced a native_make_p4d() for use when CONFIG_PGTABLE_LEVELS is
+    not greater than 4
+  - Introduced __nostackp GCC option to turn off stack protection on a
+    per function basis
+- General code cleanup based on feedback
+
+Changes since v6:
+- Fixed the asm include file issue that caused build errors on other archs
+- Rebased the CR3 register changes on top of Andy Lutomirski's patch
+- Added a patch to clear the SME cpu feature if running as a PV guest under
+  Xen
+- Added a patch to obtain the AMD microcode level earlier in the boot
+  instead of directly reading the MSR
+- Refactor patch #8 ("x86/mm: Add support to enable SME in early boot
+  processing") because the 5-level paging support moved the code into the
+  new C-function __startup_64()
+- Removed need to decrypt trampoline area in-place (set memory attributes
+  before copying the trampoline code)
+- General code cleanup based on feedback
+
+Changes since v5:
+- Added support for 5-level paging
+- Added IOMMU support
+- Created a generic asm/mem_encrypt.h in order to remove a bunch of
+  #ifndef/#define entries
+- Removed changes to the __va() macro and defined a function to return
+  the true physical address in cr3
+- Removed sysfs support as it was determined not to be needed
+- General code cleanup based on feedback
+- General cleanup of patch subjects and descriptions
+
+Changes since v4:
+- Re-worked mapping of setup data to not use a fixed list. Rather, check
+  dynamically whether the requested early_memremap()/memremap() call
+  needs to be mapped decrypted.
+- Moved SME cpu feature into scattered features
+- Moved some declarations into header files
+- Cleared the encryption mask from the __PHYSICAL_MASK so that users
+  of macros such as pmd_pfn_mask() don't have to worry/know about the
+  encryption mask
+- Updated some return types and values related to EFI and e820 functions
+  so that an error could be returned
+- During cpu shutdown, removed cache disabling and added a check for kexec
+  in progress to use wbinvd followed immediately by halt in order to avoid
+  any memory corruption
+- Update how persistent memory is identified
+- Added a function to find command line arguments and their values
+- Added sysfs support
+- General code cleanup based on feedback
+- General cleanup of patch subjects and descriptions
+
+
+Changes since v3:
+- Broke out some of the patches into smaller individual patches
+- Updated Documentation
+- Added a message to indicate why the IOMMU was disabled
+- Updated CPU feature support for SME by taking into account whether
+  BIOS has enabled SME
+- Eliminated redundant functions
+- Added some warning messages for DMA usage of bounce buffers when SME
+  is active
+- Added support for persistent memory
+- Added support to determine when setup data is being mapped and be sure
+  to map it un-encrypted
+- Added CONFIG support to set the default action of whether to activate
+  SME if it is supported/enabled
+- Added support for (re)booting with kexec
+
+Changes since v2:
+- Updated Documentation
+- Make the encryption mask available outside of arch/x86 through a
+  standard include file
+- Conversion of assembler routines to C where possible (not everything
+  could be converted, e.g. the routine that does the actual encryption
+  needs to be copied into a safe location and it is difficult to
+  determine the actual length of the function in order to copy it)
+- Fix SME feature use of scattered CPUID feature
+- Creation of SME specific functions for things like encrypting
+  the setup data, ramdisk, etc.
+- New take on early_memremap / memremap encryption support
+- Additional support for accessing video buffers (fbdev/gpu) as
+  un-encrypted
+- Disable IOMMU for now - need to investigate further in relation to
+  how it needs to be programmed relative to accessing physical memory
+
+Changes since v1:
+- Added Documentation.
+- Removed AMD vendor check for setting the PAT write protect mode
+- Updated naming of trampoline flag for SME as well as moving of the
+  SME check to before paging is enabled.
+- Change to early_memremap to identify the data being mapped as either
+  boot data or kernel data.  The idea being that boot data will have
+  been placed in memory as un-encrypted data and would need to be accessed
+  as such.
+- Updated debugfs support for the bootparams to access the data properly.
+- Do not set the SYSCFG[MEME] bit, only check it.  The setting of the
+  MemEncryptionModeEn bit results in a reduction of physical address size
+  of the processor.  It is possible that BIOS could have configured resources
+  resources into a range that will now not be addressable.  To prevent this,
+  rely on BIOS to set the SYSCFG[MEME] bit and only then enable memory
+  encryption support in the kernel.
+
+Tom Lendacky (38):
+  x86: Document AMD Secure Memory Encryption (SME)
+  x86/mm/pat: Set write-protect cache mode for full PAT support
+  x86, mpparse, x86/acpi, x86/PCI, x86/dmi, SFI: Use memremap for RAM
+    mappings
+  x86/CPU/AMD: Add the Secure Memory Encryption CPU feature
+  x86/CPU/AMD: Handle SME reduction in physical address size
+  x86/mm: Add Secure Memory Encryption (SME) support
+  x86/mm: Remove phys_to_virt() usage in ioremap()
+  x86/mm: Add support to enable SME in early boot processing
+  x86/mm: Simplify p[g4um]d_page() macros
+  x86/mm: Provide general kernel support for memory encryption
+  x86/mm: Add SME support for read_cr3_pa()
+  x86/mm: Extend early_memremap() support with additional attrs
+  x86/mm: Add support for early encrypt/decrypt of memory
+  x86/mm: Insure that boot memory areas are mapped properly
+  x86/boot/e820: Add support to determine the E820 type of an address
+  efi: Add an EFI table address match function
+  efi: Update efi_mem_type() to return an error rather than 0
+  x86/efi: Update EFI pagetable creation to work with SME
+  x86/mm: Add support to access boot related data in the clear
+  x86, mpparse: Use memremap to map the mpf and mpc data
+  x86/mm: Add support to access persistent memory in the clear
+  x86/mm: Add support for changing the memory encryption attribute
+  x86/realmode: Decrypt trampoline area if memory encryption is active
+  x86, swiotlb: Add memory encryption support
+  swiotlb: Add warnings for use of bounce buffers with SME
+  x86/CPU/AMD: Make the microcode level available earlier in the boot
+  iommu/amd: Allow the AMD IOMMU to work with memory encryption
+  x86, realmode: Check for memory encryption on the APs
+  x86, drm, fbdev: Do not specify encrypted memory for video mappings
+  kvm: x86: svm: Support Secure Memory Encryption within KVM
+  x86/mm, kexec: Allow kexec to be used with SME
+  xen/x86: Remove SME feature in PV guests
+  x86/mm: Use proper encryption attributes with /dev/mem
+  x86/mm: Create native_make_p4d() for PGTABLE_LEVELS <= 4
+  x86/mm: Add support to encrypt the kernel in-place
+  x86/boot: Add early cmdline parsing for options with arguments
+  compiler-gcc.h: Introduce __nostackp function attribute
+  x86/mm: Add support to make use of Secure Memory Encryption
+
+ Documentation/admin-guide/kernel-parameters.txt |  11 +
+ Documentation/x86/amd-memory-encryption.txt     |  68 +++
+ arch/ia64/kernel/efi.c                          |   4 +-
+ arch/x86/Kconfig                                |  29 ++
+ arch/x86/boot/compressed/pagetable.c            |   7 +
+ arch/x86/include/asm/cmdline.h                  |   2 +
+ arch/x86/include/asm/cpufeatures.h              |   1 +
+ arch/x86/include/asm/dma-mapping.h              |   5 +-
+ arch/x86/include/asm/dmi.h                      |   8 +-
+ arch/x86/include/asm/e820/api.h                 |   2 +
+ arch/x86/include/asm/fixmap.h                   |  20 +
+ arch/x86/include/asm/init.h                     |   1 +
+ arch/x86/include/asm/io.h                       |   8 +
+ arch/x86/include/asm/kexec.h                    |   8 +
+ arch/x86/include/asm/kvm_host.h                 |   2 +-
+ arch/x86/include/asm/mem_encrypt.h              |  80 ++++
+ arch/x86/include/asm/msr-index.h                |   2 +
+ arch/x86/include/asm/page_types.h               |   3 +-
+ arch/x86/include/asm/pgtable.h                  |  28 +-
+ arch/x86/include/asm/pgtable_types.h            |  57 ++-
+ arch/x86/include/asm/processor-flags.h          |   5 +-
+ arch/x86/include/asm/processor.h                |   8 +-
+ arch/x86/include/asm/realmode.h                 |  12 +
+ arch/x86/include/asm/set_memory.h               |   3 +
+ arch/x86/include/asm/vga.h                      |  14 +-
+ arch/x86/kernel/acpi/boot.c                     |   6 +-
+ arch/x86/kernel/cpu/amd.c                       |  29 +-
+ arch/x86/kernel/cpu/scattered.c                 |   1 +
+ arch/x86/kernel/e820.c                          |  26 +-
+ arch/x86/kernel/espfix_64.c                     |   2 +-
+ arch/x86/kernel/head64.c                        |  93 +++-
+ arch/x86/kernel/head_64.S                       |  40 +-
+ arch/x86/kernel/kdebugfs.c                      |  34 +-
+ arch/x86/kernel/ksysfs.c                        |  28 +-
+ arch/x86/kernel/machine_kexec_64.c              |  22 +-
+ arch/x86/kernel/mpparse.c                       | 108 +++--
+ arch/x86/kernel/pci-dma.c                       |  11 +-
+ arch/x86/kernel/pci-nommu.c                     |   2 +-
+ arch/x86/kernel/pci-swiotlb.c                   |  15 +-
+ arch/x86/kernel/process.c                       |  17 +-
+ arch/x86/kernel/setup.c                         |   9 +
+ arch/x86/kvm/mmu.c                              |  11 +-
+ arch/x86/kvm/mmu.h                              |   2 +-
+ arch/x86/kvm/svm.c                              |  35 +-
+ arch/x86/kvm/vmx.c                              |   2 +-
+ arch/x86/kvm/x86.c                              |   3 +-
+ arch/x86/lib/cmdline.c                          | 105 +++++
+ arch/x86/mm/Makefile                            |   2 +
+ arch/x86/mm/ident_map.c                         |  12 +-
+ arch/x86/mm/ioremap.c                           | 287 +++++++++++-
+ arch/x86/mm/kasan_init_64.c                     |   6 +-
+ arch/x86/mm/mem_encrypt.c                       | 593 ++++++++++++++++++++++++
+ arch/x86/mm/mem_encrypt_boot.S                  | 149 ++++++
+ arch/x86/mm/pageattr.c                          |  67 +++
+ arch/x86/mm/pat.c                               |   9 +-
+ arch/x86/mm/tlb.c                               |   4 +-
+ arch/x86/pci/common.c                           |   4 +-
+ arch/x86/platform/efi/efi.c                     |   6 +-
+ arch/x86/platform/efi/efi_64.c                  |  15 +-
+ arch/x86/realmode/init.c                        |  12 +
+ arch/x86/realmode/rm/trampoline_64.S            |  24 +
+ arch/x86/xen/enlighten_pv.c                     |   1 +
+ drivers/firmware/dmi-sysfs.c                    |   5 +-
+ drivers/firmware/efi/efi.c                      |  33 ++
+ drivers/firmware/pcdp.c                         |   4 +-
+ drivers/gpu/drm/drm_gem.c                       |   2 +
+ drivers/gpu/drm/drm_vm.c                        |   4 +
+ drivers/gpu/drm/ttm/ttm_bo_vm.c                 |   7 +-
+ drivers/gpu/drm/udl/udl_fb.c                    |   4 +
+ drivers/iommu/amd_iommu.c                       |  30 +-
+ drivers/iommu/amd_iommu_init.c                  |  34 +-
+ drivers/iommu/amd_iommu_proto.h                 |  10 +
+ drivers/iommu/amd_iommu_types.h                 |   2 +-
+ drivers/sfi/sfi_core.c                          |  22 +-
+ drivers/video/fbdev/core/fbmem.c                |  12 +
+ include/asm-generic/early_ioremap.h             |   2 +
+ include/asm-generic/pgtable.h                   |  12 +
+ include/linux/compiler-gcc.h                    |   2 +
+ include/linux/compiler.h                        |   4 +
+ include/linux/dma-mapping.h                     |  13 +
+ include/linux/efi.h                             |   9 +-
+ include/linux/io.h                              |   2 +
+ include/linux/kexec.h                           |   8 +
+ include/linux/mem_encrypt.h                     |  48 ++
+ include/linux/swiotlb.h                         |   1 +
+ init/main.c                                     |  10 +
+ kernel/kexec_core.c                             |  12 +-
+ kernel/memremap.c                               |  20 +-
+ lib/swiotlb.c                                   |  57 ++-
+ mm/early_ioremap.c                              |  28 +-
+ 90 files changed, 2304 insertions(+), 273 deletions(-)
+ create mode 100644 Documentation/x86/amd-memory-encryption.txt
+ create mode 100644 arch/x86/include/asm/mem_encrypt.h
+ create mode 100644 arch/x86/mm/mem_encrypt.c
+ create mode 100644 arch/x86/mm/mem_encrypt_boot.S
+ create mode 100644 include/linux/mem_encrypt.h
 
 -- 
-Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+1.9.1
