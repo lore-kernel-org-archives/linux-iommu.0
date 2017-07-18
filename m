@@ -1,87 +1,62 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
- invalidate propagation
-Date: Tue, 18 Jul 2017 16:03:15 +0100
-Message-ID: <c049a793-9d0e-8c2e-6c2b-f8d1625cfef9@arm.com>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
- <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
- <cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
- <20170702100659.GA22053@gmail.com>
- <0e4f2dd4-d553-b1b7-7bec-fe0ff5242c54@arm.com>
- <20170703103115.GB22053@gmail.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D25919@SHSMSX101.ccr.corp.intel.com>
- <1d63c1ae-ca10-0f9d-91de-0d9c9823c104@arm.com>
- <20170705112816.56554f65@w520.home>
- <A2975661238FB949B60364EF0F2C2574390A7C4F@shsmsx102.ccr.corp.intel.com>
- <20170714121555.7e64d849@w520.home>
- <A2975661238FB949B60364EF0F2C2574390A906A@shsmsx102.ccr.corp.intel.com>
- <20170717164515.2491b3bf@w520.home>
- <d0abeefc-adcf-85c3-f5d9-8c90a18f8011@arm.com>
- <20170718082907.69893dda@w520.home>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 0/4] Optimise 64-bit IOVA allocations
+Date: Tue, 18 Jul 2017 17:57:18 +0100
+Message-ID: <cover.1500396007.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20170718082907.69893dda@w520.home>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Will Deacon <Will.Deacon@arm.com>, "peterx@redhat.com" <peterx@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Joerg Roedel <joro@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/07/17 15:29, Alex Williamson wrote:
-> On Tue, 18 Jul 2017 10:38:40 +0100
-> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-> 
->> On 17/07/17 23:45, Alex Williamson wrote:
->> [..]
->>>>>
->>>>> How does a user learn which model(s) are supported by the interface?
->>>>> How do they learn which ops are supported?  Perhaps a good use for one of those
->>>>> flag bits in the outer data structure is "probe".    
->>>>
->>>> My initial plan to user fills it, if the underlying HW doesn't support the
->>>> model, it refuses to service it. User should get a failure and stop to use
->>>> it. But your suggestion to have a probe or kinds of query makes sense.
->>>> How about we add one more operation for such purpose? Besides the
->>>> supported model query, I'd like to add more. E.g the HW IOMMU capabilities.  
->>>
->>> We also have VFIO_IOMMU_GET_INFO where the structure can be extended
->>> for missing capabilities.  Depending on the capability you want to
->>> describe, this might be a better, existing interface for it.  
->>
->> It might become hairy when physical IOMMUs start supporting multiple
->> formats, or when we want to describe multiple page table formats in
->> addition to PASID tables. I was wondering if sysfs iommu_group would be
->> better suited for this kind of hardware description with variable-length
->> properties, but a new ioctl-based probing mechanism would work as well.
-> 
-> Would different groups have different properties?  Perhaps it's related
-> to the iommu hardware unit supporting the device, which could host one
-> or more groups.  Each device already has a link to its iommu where we
-> could add info (/sys/class/iommu/).
+Hi all,
 
-Yes, /sys/class/iommu might be better than iommu_group for PASID and page
-table formats.
+In the wake of the ARM SMMU optimisation efforts, it seems that certain
+workloads (e.g. storage I/O with large scatterlists) probably remain quite
+heavily influenced by IOVA allocation performance. Separately, Ard also
+reported massive performance drops for a graphical desktop on AMD Seattle
+when enabling SMMUs via IORT, which we traced to dma_32bit_pfn in the DMA
+ops domain getting initialised differently for ACPI vs. DT, and exposing
+the overhead of the rbtree slow path. Whilst we could go around trying to
+close up all the little gaps that lead to hitting the slowest case, it
+seems a much better idea to simply make said slowest case a lot less slow.
 
->> Other things that we'll want to describe are fault reporting capability
->> and PASID range, which would fit better in vfio_device_info.
-> 
-> Why?  The per device PASID info is in a PCI capability, so wouldn't
-> this be iommu info?  Isn't the fault reporting also via the iommu?
+I had a go at rebasing Leizhen's last IOVA series[1], but ended up finding
+the changes rather too hard to follow, so I've taken the liberty here of
+picking the whole thing up and reimplementing the main part in a rather
+less invasive manner.
 
-Ah yes, I missed that. If userspace can read the PASID and PRI
-capabilities it should be enough.
+Robin.
 
-Inspecting individual device capability might help userspace decide how to
-combine multiple devices in a container. For example, if it puts
-PASID-capable and non-PASID-capable device in the same container, the
-container probably wouldn't support PASID (but would still support MAP/UNMAP).
+[1] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg17753.html
 
-I'm not sure how it will work for platform devices though, some integrated
-devices on ARM will support features resembling PASID and PRI. I suspect
-these will need ACPI/DT description anyway, that userspace would access
-via sysfs.
+Robin Murphy (1):
+  iommu/iova: Extend rbtree node caching
 
-Thanks,
-Jean
+Zhen Lei (3):
+  iommu/iova: Optimise rbtree searching
+  iommu/iova: Optimise the padding calculation
+  iommu/iova: Make dma_32bit_pfn implicit
+
+ drivers/gpu/drm/tegra/drm.c      |   3 +-
+ drivers/gpu/host1x/dev.c         |   3 +-
+ drivers/iommu/amd_iommu.c        |   7 +--
+ drivers/iommu/dma-iommu.c        |  18 +------
+ drivers/iommu/intel-iommu.c      |  11 ++--
+ drivers/iommu/iova.c             | 112 ++++++++++++++++-----------------------
+ drivers/misc/mic/scif/scif_rma.c |   3 +-
+ include/linux/iova.h             |   8 +--
+ 8 files changed, 60 insertions(+), 105 deletions(-)
+
+-- 
+2.12.2.dirty
