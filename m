@@ -1,13 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/4] iommu/iova: Make dma_32bit_pfn implicit
-Date: Tue, 18 Jul 2017 17:57:22 +0100
-Message-ID: <a994de98adbd37e0755cce1184f06186e67db67b.1500396007.git.robin.murphy@arm.com>
-References: <cover.1500396007.git.robin.murphy@arm.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu: Convert to using %pOF instead of full_name
+Date: Tue, 18 Jul 2017 16:43:09 -0500
+Message-ID: <20170718214339.7774-29-robh@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1500396007.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,239 +15,171 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Now that we have a custom printf format specifier, convert users of
+full_name to use %pOF instead. This is preparation to remove storing
+of the full path string for each node.
 
-Now that the cached node optimisation can apply to all allocations, the
-couple of users which were playing tricks with dma_32bit_pfn in order to
-benefit from it can stop doing so. Conversely, there is also no need for
-all the other users to explicitly calculate a 'real' 32-bit PFN, when
-init_iova_domain() can happily do that itself from the page granularity.
-
-CC: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-CC: Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-CC: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>
-CC: Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-CC: Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-[rm: use iova_pfn(), rewrote commit message]
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 ---
- drivers/gpu/drm/tegra/drm.c      |  3 +--
- drivers/gpu/host1x/dev.c         |  3 +--
- drivers/iommu/amd_iommu.c        |  7 ++-----
- drivers/iommu/dma-iommu.c        | 18 +-----------------
- drivers/iommu/intel-iommu.c      | 11 +++--------
- drivers/iommu/iova.c             |  4 ++--
- drivers/misc/mic/scif/scif_rma.c |  3 +--
- include/linux/iova.h             |  5 ++---
- 8 files changed, 13 insertions(+), 41 deletions(-)
+ drivers/iommu/fsl_pamu.c        | 20 ++++++++------------
+ drivers/iommu/fsl_pamu_domain.c | 10 ++++------
+ drivers/iommu/of_iommu.c        |  3 +--
+ drivers/iommu/rockchip-iommu.c  | 10 +++++-----
+ 4 files changed, 18 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-index 518f4b69ea53..81e9ae1ee90b 100644
---- a/drivers/gpu/drm/tegra/drm.c
-+++ b/drivers/gpu/drm/tegra/drm.c
-@@ -150,8 +150,7 @@ static int tegra_drm_load(struct drm_device *drm, unsigned long flags)
- 
- 		order = __ffs(tegra->domain->pgsize_bitmap);
- 		init_iova_domain(&tegra->carveout.domain, 1UL << order,
--				 carveout_start >> order,
--				 carveout_end >> order);
-+				 carveout_start >> order);
- 
- 		tegra->carveout.shift = iova_shift(&tegra->carveout.domain);
- 		tegra->carveout.limit = carveout_end >> tegra->carveout.shift;
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index 2c58a390123a..57c8eed0ed71 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -193,8 +193,7 @@ static int host1x_probe(struct platform_device *pdev)
- 
- 		order = __ffs(host->domain->pgsize_bitmap);
- 		init_iova_domain(&host->iova, 1UL << order,
--				 geometry->aperture_start >> order,
--				 geometry->aperture_end >> order);
-+				 geometry->aperture_start >> order);
- 		host->iova_end = geometry->aperture_end;
- 	}
- 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 688e77576e5a..a12e3e12014a 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -63,7 +63,6 @@
- /* IO virtual address start page frame number */
- #define IOVA_START_PFN		(1)
- #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
--#define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
- 
- /* Reserved IOVA ranges */
- #define MSI_RANGE_START		(0xfee00000)
-@@ -2010,8 +2009,7 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
- 	if (!dma_dom->domain.pt_root)
- 		goto free_dma_dom;
- 
--	init_iova_domain(&dma_dom->iovad, PAGE_SIZE,
--			 IOVA_START_PFN, DMA_32BIT_PFN);
-+	init_iova_domain(&dma_dom->iovad, PAGE_SIZE, IOVA_START_PFN);
- 
- 	/* Initialize reserved ranges */
- 	copy_reserved_iova(&reserved_iova_ranges, &dma_dom->iovad);
-@@ -2912,8 +2910,7 @@ static int init_reserved_iova_ranges(void)
- 	struct pci_dev *pdev = NULL;
- 	struct iova *val;
- 
--	init_iova_domain(&reserved_iova_ranges, PAGE_SIZE,
--			 IOVA_START_PFN, DMA_32BIT_PFN);
-+	init_iova_domain(&reserved_iova_ranges, PAGE_SIZE, IOVA_START_PFN);
- 
- 	lockdep_set_class(&reserved_iova_ranges.iova_rbtree_lock,
- 			  &reserved_rbtree_key);
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9d1cebe7f6cb..191be9c80a8a 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -292,18 +292,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		/* ...then finally give it a kicking to make sure it fits */
- 		base_pfn = max_t(unsigned long, base_pfn,
- 				domain->geometry.aperture_start >> order);
--		end_pfn = min_t(unsigned long, end_pfn,
--				domain->geometry.aperture_end >> order);
- 	}
--	/*
--	 * PCI devices may have larger DMA masks, but still prefer allocating
--	 * within a 32-bit mask to avoid DAC addressing. Such limitations don't
--	 * apply to the typical platform device, so for those we may as well
--	 * leave the cache limit at the top of their range to save an rb_last()
--	 * traversal on every allocation.
--	 */
--	if (dev && dev_is_pci(dev))
--		end_pfn &= DMA_BIT_MASK(32) >> order;
- 
- 	/* start_pfn is always nonzero for an already-initialised domain */
- 	if (iovad->start_pfn) {
-@@ -312,16 +301,11 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 			pr_warn("Incompatible range for DMA domain\n");
- 			return -EFAULT;
+diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+index a34355fca37a..919ad9045ac4 100644
+--- a/drivers/iommu/fsl_pamu.c
++++ b/drivers/iommu/fsl_pamu.c
+@@ -530,8 +530,8 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
+ 		if (node) {
+ 			prop = of_get_property(node, "cache-stash-id", NULL);
+ 			if (!prop) {
+-				pr_debug("missing cache-stash-id at %s\n",
+-					 node->full_name);
++				pr_debug("missing cache-stash-id at %pOF\n",
++					 node);
+ 				of_node_put(node);
+ 				return ~(u32)0;
+ 			}
+@@ -557,8 +557,8 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
+ 		if (stash_dest_hint == cache_level) {
+ 			prop = of_get_property(node, "cache-stash-id", NULL);
+ 			if (!prop) {
+-				pr_debug("missing cache-stash-id at %s\n",
+-					 node->full_name);
++				pr_debug("missing cache-stash-id at %pOF\n",
++					 node);
+ 				of_node_put(node);
+ 				return ~(u32)0;
+ 			}
+@@ -568,8 +568,7 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
+
+ 		prop = of_get_property(node, "next-level-cache", NULL);
+ 		if (!prop) {
+-			pr_debug("can't find next-level-cache at %s\n",
+-				 node->full_name);
++			pr_debug("can't find next-level-cache at %pOF\n", node);
+ 			of_node_put(node);
+ 			return ~(u32)0;  /* can't traverse any further */
  		}
--		/*
--		 * If we have devices with different DMA masks, move the free
--		 * area cache limit down for the benefit of the smaller one.
--		 */
--		iovad->dma_32bit_pfn = min(end_pfn + 1, iovad->dma_32bit_pfn);
- 
- 		return 0;
+@@ -1063,8 +1062,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
+
+ 	guts_node = of_find_matching_node(NULL, guts_device_ids);
+ 	if (!guts_node) {
+-		dev_err(dev, "could not find GUTS node %s\n",
+-			dev->of_node->full_name);
++		dev_err(dev, "could not find GUTS node %pOF\n", dev->of_node);
+ 		ret = -ENODEV;
+ 		goto error;
  	}
- 
--	init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
-+	init_iova_domain(iovad, 1UL << order, base_pfn);
- 	if (!dev)
- 		return 0;
- 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 687f18f65cea..afa3b4e765e7 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -82,8 +82,6 @@
- #define IOVA_START_PFN		(1)
- 
- #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
--#define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
--#define DMA_64BIT_PFN		IOVA_PFN(DMA_BIT_MASK(64))
- 
- /* page table handling */
- #define LEVEL_STRIDE		(9)
-@@ -1874,8 +1872,7 @@ static int dmar_init_reserved_ranges(void)
- 	struct iova *iova;
- 	int i;
- 
--	init_iova_domain(&reserved_iova_list, VTD_PAGE_SIZE, IOVA_START_PFN,
--			DMA_32BIT_PFN);
-+	init_iova_domain(&reserved_iova_list, VTD_PAGE_SIZE, IOVA_START_PFN);
- 
- 	lockdep_set_class(&reserved_iova_list.iova_rbtree_lock,
- 		&reserved_rbtree_key);
-@@ -1933,8 +1930,7 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
- 	int adjust_width, agaw;
- 	unsigned long sagaw;
- 
--	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN,
--			DMA_32BIT_PFN);
-+	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
- 	domain_reserve_special_ranges(domain);
- 
- 	/* calculate AGAW */
-@@ -4989,8 +4985,7 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- {
- 	int adjust_width;
- 
--	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN,
--			DMA_32BIT_PFN);
-+	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
- 	domain_reserve_special_ranges(domain);
- 
- 	/* calculate AGAW */
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index f5809a2ee6c2..a8ba101ffdfc 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -35,7 +35,7 @@ static void free_iova_rcaches(struct iova_domain *iovad);
- 
- void
- init_iova_domain(struct iova_domain *iovad, unsigned long granule,
--	unsigned long start_pfn, unsigned long pfn_32bit)
-+	unsigned long start_pfn)
- {
- 	/*
- 	 * IOVA granularity will normally be equal to the smallest
-@@ -50,7 +50,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->cached32_node = NULL;
- 	iovad->granule = granule;
- 	iovad->start_pfn = start_pfn;
--	iovad->dma_32bit_pfn = pfn_32bit + 1;
-+	iovad->dma_32bit_pfn = iova_pfn(iovad, 1ULL << 32);
- 	init_iova_rcaches(iovad);
+@@ -1246,8 +1244,7 @@ static __init int fsl_pamu_init(void)
+
+ 	pdev = platform_device_alloc("fsl-of-pamu", 0);
+ 	if (!pdev) {
+-		pr_err("could not allocate device %s\n",
+-		       np->full_name);
++		pr_err("could not allocate device %pOF\n", np);
+ 		ret = -ENOMEM;
+ 		goto error_device_alloc;
+ 	}
+@@ -1259,8 +1256,7 @@ static __init int fsl_pamu_init(void)
+
+ 	ret = platform_device_add(pdev);
+ 	if (ret) {
+-		pr_err("could not add device %s (err=%i)\n",
+-		       np->full_name, ret);
++		pr_err("could not add device %pOF (err=%i)\n", np, ret);
+ 		goto error_device_add;
+ 	}
+
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index da0e1e30ef37..01c73479345d 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -619,8 +619,8 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
+ 	for (i = 0; i < num; i++) {
+ 		/* Ensure that LIODN value is valid */
+ 		if (liodn[i] >= PAACE_NUMBER_ENTRIES) {
+-			pr_debug("Invalid liodn %d, attach device failed for %s\n",
+-				 liodn[i], dev->of_node->full_name);
++			pr_debug("Invalid liodn %d, attach device failed for %pOF\n",
++				 liodn[i], dev->of_node);
+ 			ret = -EINVAL;
+ 			break;
+ 		}
+@@ -684,8 +684,7 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
+ 		liodn_cnt = len / sizeof(u32);
+ 		ret = handle_attach_device(dma_domain, dev, liodn, liodn_cnt);
+ 	} else {
+-		pr_debug("missing fsl,liodn property at %s\n",
+-			 dev->of_node->full_name);
++		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
+ 		ret = -EINVAL;
+ 	}
+
+@@ -720,8 +719,7 @@ static void fsl_pamu_detach_device(struct iommu_domain *domain,
+ 	if (prop)
+ 		detach_device(dev, dma_domain);
+ 	else
+-		pr_debug("missing fsl,liodn property at %s\n",
+-			 dev->of_node->full_name);
++		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
  }
- EXPORT_SYMBOL_GPL(init_iova_domain);
-diff --git a/drivers/misc/mic/scif/scif_rma.c b/drivers/misc/mic/scif/scif_rma.c
-index 329727e00e97..c824329f7012 100644
---- a/drivers/misc/mic/scif/scif_rma.c
-+++ b/drivers/misc/mic/scif/scif_rma.c
-@@ -39,8 +39,7 @@ void scif_rma_ep_init(struct scif_endpt *ep)
- 	struct scif_endpt_rma_info *rma = &ep->rma_info;
- 
- 	mutex_init(&rma->rma_lock);
--	init_iova_domain(&rma->iovad, PAGE_SIZE, SCIF_IOVA_START_PFN,
--			 SCIF_DMA_64BIT_PFN);
-+	init_iova_domain(&rma->iovad, PAGE_SIZE, SCIF_IOVA_START_PFN);
- 	spin_lock_init(&rma->tc_lock);
- 	mutex_init(&rma->mmn_lock);
- 	INIT_LIST_HEAD(&rma->reg_list);
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 0bb8df43b393..58c2a365c45f 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -102,7 +102,7 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
- 	unsigned long pfn_hi);
- void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
- void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
--	unsigned long start_pfn, unsigned long pfn_32bit);
-+	unsigned long start_pfn);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
- struct iova *split_and_remove_iova(struct iova_domain *iovad,
-@@ -170,8 +170,7 @@ static inline void copy_reserved_iova(struct iova_domain *from,
- 
- static inline void init_iova_domain(struct iova_domain *iovad,
- 				    unsigned long granule,
--				    unsigned long start_pfn,
--				    unsigned long pfn_32bit)
-+				    unsigned long start_pfn)
- {
- }
- 
--- 
-2.12.2.dirty
+
+ static  int configure_domain_geometry(struct iommu_domain *domain, void *data)
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 8cb60829a7a1..fe91b35ddf7f 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -255,8 +255,7 @@ static int __init of_iommu_init(void)
+ 		const of_iommu_init_fn init_fn = match->data;
+
+ 		if (init_fn && init_fn(np))
+-			pr_err("Failed to initialise IOMMU %s\n",
+-				of_node_full_name(np));
++			pr_err("Failed to initialise IOMMU %pOF\n", np);
+ 	}
+
+ 	return 0;
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 4ba48a26b389..1b8155dada26 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1008,20 +1008,20 @@ static int rk_iommu_group_set_iommudata(struct iommu_group *group,
+ 	ret = of_parse_phandle_with_args(np, "iommus", "#iommu-cells", 0,
+ 					 &args);
+ 	if (ret) {
+-		dev_err(dev, "of_parse_phandle_with_args(%s) => %d\n",
+-			np->full_name, ret);
++		dev_err(dev, "of_parse_phandle_with_args(%pOF) => %d\n",
++			np, ret);
+ 		return ret;
+ 	}
+ 	if (args.args_count != 0) {
+-		dev_err(dev, "incorrect number of iommu params found for %s (found %d, expected 0)\n",
+-			args.np->full_name, args.args_count);
++		dev_err(dev, "incorrect number of iommu params found for %pOF (found %d, expected 0)\n",
++			args.np, args.args_count);
+ 		return -EINVAL;
+ 	}
+
+ 	pd = of_find_device_by_node(args.np);
+ 	of_node_put(args.np);
+ 	if (!pd) {
+-		dev_err(dev, "iommu %s not found\n", args.np->full_name);
++		dev_err(dev, "iommu %pOF not found\n", args.np);
+ 		return -EPROBE_DEFER;
+ 	}
+
+--
+2.11.0
