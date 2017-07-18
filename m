@@ -1,54 +1,301 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v10 00/38] x86: Secure Memory Encryption (AMD)
-Date: Tue, 18 Jul 2017 14:03:53 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1707181402340.1945@nanos>
-References: <cover.1500319216.git.thomas.lendacky@amd.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 1/2] iommu/arm-smmu: Track context bank state
+Date: Tue, 18 Jul 2017 13:44:41 +0100
+Message-ID: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <cover.1500319216.git.thomas.lendacky@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, linux-doc@vger.kernel.org, linux-mm@kvack.org, kvm@vger.kernel.org, kasan-dev@googlegroups.com, =?ISO-8859-2?Q?Radim_Kr=E8m=E1=F8?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Paolo Bonzini <pbonzini@redhat.com>, Alexander Potapenko <glider@google.com>, Dmitry Vyukov <dvyukov@google.com>, Rik van Riel <riel@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Dave Young <dyoung@redhat.com>, Toshimitsu Kani <toshi.kani@hpe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 17 Jul 2017, Tom Lendacky wrote:
-> This patch series provides support for AMD's new Secure Memory Encryption (SME)
-> feature.
-> 
-> SME can be used to mark individual pages of memory as encrypted through the
-> page tables. A page of memory that is marked encrypted will be automatically
-> decrypted when read from DRAM and will be automatically encrypted when
-> written to DRAM. Details on SME can found in the links below.
-> 
-> The SME feature is identified through a CPUID function and enabled through
-> the SYSCFG MSR. Once enabled, page table entries will determine how the
-> memory is accessed. If a page table entry has the memory encryption mask set,
-> then that memory will be accessed as encrypted memory. The memory encryption
-> mask (as well as other related information) is determined from settings
-> returned through the same CPUID function that identifies the presence of the
-> feature.
-> 
-> The approach that this patch series takes is to encrypt everything possible
-> starting early in the boot where the kernel is encrypted. Using the page
-> table macros the encryption mask can be incorporated into all page table
-> entries and page allocations. By updating the protection map, userspace
-> allocations are also marked encrypted. Certain data must be accounted for
-> as having been placed in memory before SME was enabled (EFI, initrd, etc.)
-> and accessed accordingly.
-> 
-> This patch series is a pre-cursor to another AMD processor feature called
-> Secure Encrypted Virtualization (SEV). The support for SEV will build upon
-> the SME support and will be submitted later. Details on SEV can be found
-> in the links below.
+Echoing what we do for Stream Map Entries, maintain a software shadow
+state for context bank configuration. With this in place, we are mere
+moments away from blissfully easy suspend/resume support.
 
-Well done series. Thanks to all people involved, especially Tom and Boris!
-It was a pleasure to review that.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Since the runtime PM discussion has come back again, I figured it was
+probably about time to finish off my plan for system PM. Lightly tested
+on Juno (MMU-401) with hibernation.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Robin.
+
+ drivers/iommu/arm-smmu.c | 159 +++++++++++++++++++++++++++++------------------
+ 1 file changed, 97 insertions(+), 62 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index bc89b4d6c043..86897b7b81d8 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -338,6 +338,13 @@ struct arm_smmu_smr {
+ 	bool				valid;
+ };
+ 
++struct arm_smmu_cb {
++	u64				ttbr[2];
++	u32				tcr[2];
++	u32				mair[2];
++	struct arm_smmu_cfg		*cfg;
++};
++
+ struct arm_smmu_master_cfg {
+ 	struct arm_smmu_device		*smmu;
+ 	s16				smendx[];
+@@ -380,6 +387,7 @@ struct arm_smmu_device {
+ 	u32				num_context_banks;
+ 	u32				num_s2_context_banks;
+ 	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
++	struct arm_smmu_cb		*cbs;
+ 	atomic_t			irptndx;
+ 
+ 	u32				num_mapping_groups;
+@@ -768,17 +776,69 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
+ {
+-	u32 reg, reg2;
+-	u64 reg64;
+-	bool stage1;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+-	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
++	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
++
++	cb->cfg = cfg;
++
++	/* TTBCR */
++	if (stage1) {
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
++		} else {
++			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
++			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
++			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
++			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
++				cb->tcr[1] |= TTBCR2_AS;
++		}
++	} else {
++		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
++	}
++
++	/* TTBRs */
++	if (stage1) {
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
++			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
++		} else {
++			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
++			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
++		}
++	} else {
++		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
++	}
++
++	/* MAIRs (stage-1 only) */
++	if (stage1) {
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
++			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
++		} else {
++			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
++			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
++		}
++	}
++}
++
++static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
++{
++	u32 reg;
++	bool stage1;
++	struct arm_smmu_cb *cb = &smmu->cbs[idx];
++	struct arm_smmu_cfg *cfg = cb->cfg;
++	struct arm_smmu_cfg default_cfg = {0};
+ 	void __iomem *cb_base, *gr1_base;
+ 
++	if (!cfg)
++		cfg = &default_cfg;
++
+ 	gr1_base = ARM_SMMU_GR1(smmu);
+ 	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+-	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
++	cb_base = ARM_SMMU_CB(smmu, idx);
+ 
++	/* CBA2R */
+ 	if (smmu->version > ARM_SMMU_V1) {
+ 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+ 			reg = CBA2R_RW64_64BIT;
+@@ -788,7 +848,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+ 			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
+ 
+-		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
++		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
+ 	}
+ 
+ 	/* CBAR */
+@@ -807,72 +867,43 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 		/* 8-bit VMIDs live in CBAR */
+ 		reg |= cfg->vmid << CBAR_VMID_SHIFT;
+ 	}
+-	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
++	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
+ 
+ 	/*
+ 	 * TTBCR
+ 	 * We must write this before the TTBRs, since it determines the
+ 	 * access behaviour of some fields (in particular, ASID[15:8]).
+ 	 */
+-	if (stage1) {
+-		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+-			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
+-			reg2 = 0;
+-		} else {
+-			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+-			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+-			reg2 |= TTBCR2_SEP_UPSTREAM;
+-			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+-				reg2 |= TTBCR2_AS;
+-		}
+-		if (smmu->version > ARM_SMMU_V1)
+-			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+-	} else {
+-		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+-	}
+-	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
++	if (stage1 && smmu->version > ARM_SMMU_V1)
++		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
++	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
+ 
+ 	/* TTBRs */
+-	if (stage1) {
+-		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+-			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+-			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
+-			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+-			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
+-			writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
+-		} else {
+-			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+-			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
+-			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+-			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+-			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
+-			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+-		}
++	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
++		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
++		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+ 	} else {
+-		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+-		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
++		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
++		writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+ 	}
+ 
+ 	/* MAIRs (stage-1 only) */
+ 	if (stage1) {
+-		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+-			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
+-			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
+-		} else {
+-			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
+-			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
+-		}
+-		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
+-		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
++		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
++		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
+ 	}
+ 
+ 	/* SCTLR */
+-	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+-	if (stage1)
+-		reg |= SCTLR_S1_ASIDPNE;
+-#ifdef __BIG_ENDIAN
+-	reg |= SCTLR_E;
+-#endif
++	if (!cb->cfg) {
++		reg = 0;
++	} else {
++		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
++		if (stage1)
++			reg |= SCTLR_S1_ASIDPNE;
++		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
++			reg |= SCTLR_E;
++	}
+ 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
+ }
+ 
+@@ -1035,6 +1066,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 
+ 	/* Initialise the context bank with our page table cfg */
+ 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
++	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+ 
+ 	/*
+ 	 * Request context fault interrupt. Do this last to avoid the
+@@ -1067,7 +1099,6 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+-	void __iomem *cb_base;
+ 	int irq;
+ 
+ 	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+@@ -1077,8 +1108,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	 * Disable the context bank and free the page tables before freeing
+ 	 * it.
+ 	 */
+-	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+-	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
++	smmu->cbs[cfg->cbndx] = (struct arm_smmu_cb){0};
++	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+ 
+ 	if (cfg->irptndx != INVALID_IRPTNDX) {
+ 		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+@@ -1722,7 +1753,6 @@ static struct iommu_ops arm_smmu_ops = {
+ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ {
+ 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+-	void __iomem *cb_base;
+ 	int i;
+ 	u32 reg, major;
+ 
+@@ -1758,8 +1788,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 
+ 	/* Make sure all context banks are disabled and clear CB_FSR  */
+ 	for (i = 0; i < smmu->num_context_banks; ++i) {
+-		cb_base = ARM_SMMU_CB(smmu, i);
+-		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
++		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
++
++		arm_smmu_write_context_bank(smmu, i);
+ 		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
+ 		/*
+ 		 * Disable MMU-500's not-particularly-beneficial next-page
+@@ -1964,6 +1995,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 		smmu->cavium_id_base -= smmu->num_context_banks;
+ 		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
+ 	}
++	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
++				 sizeof(*smmu->cbs), GFP_KERNEL);
++	if (!smmu->cbs)
++		return -ENOMEM;
+ 
+ 	/* ID2 */
+ 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
+-- 
+2.12.2.dirty
