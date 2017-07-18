@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/4] iommu/iova: Optimise rbtree searching
-Date: Tue, 18 Jul 2017 17:57:19 +0100
-Message-ID: <d633f522f2d4c6707b1dd7a331ff5de4b17110bb.1500396007.git.robin.murphy@arm.com>
+Subject: [PATCH 2/4] iommu/iova: Optimise the padding calculation
+Date: Tue, 18 Jul 2017 17:57:20 +0100
+Message-ID: <eb5f8875f6429dd5826996576b7b506213ffb959.1500396007.git.robin.murphy@arm.com>
 References: <cover.1500396007.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,42 +23,97 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 
-Checking the IOVA bounds separately before deciding which direction to
-continue the search (if necessary) results in redundantly comparing both
-pfns twice each. GCC can already determine that the final comparison op
-is redundant and optimise it down to 3 in total, but we can go one
-further with a little tweak of the ordering (which makes the intent of
-the code that much cleaner as a bonus).
+The mask for calculating the padding size doesn't change, so there's no
+need to recalculate it every loop iteration. Furthermore, Once we've
+done that, it becomes clear that we don't actually need to calculate a
+padding size at all - by flipping the arithmetic around, we can just
+combine the upper limit, size, and mask directly to check against the
+lower limit.
+
+For an arm64 build, this alone knocks 16% off the size of the entire
+alloc_iova() function!
 
 Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-[rm: rewrote commit message to clarify]
+[rm: simplified more of the arithmetic, rewrote commit message]
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iova.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/iommu/iova.c | 40 ++++++++++++++--------------------------
+ 1 file changed, 14 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 246f14c83944..8f7552dc4e04 100644
+index 8f7552dc4e04..d094d1ca8f23 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -289,15 +289,12 @@ private_find_iova(struct iova_domain *iovad, unsigned long pfn)
- 	while (node) {
- 		struct iova *iova = rb_entry(node, struct iova, node);
+@@ -129,16 +129,6 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
+ 	rb_insert_color(&iova->node, root);
+ }
  
--		/* If pfn falls within iova's range, return iova */
--		if ((pfn >= iova->pfn_lo) && (pfn <= iova->pfn_hi)) {
--			return iova;
--		}
+-/*
+- * Computes the padding size required, to make the start address
+- * naturally aligned on the power-of-two order of its size
+- */
+-static unsigned int
+-iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
+-{
+-	return (limit_pfn - size) & (__roundup_pow_of_two(size) - 1);
+-}
 -
- 		if (pfn < iova->pfn_lo)
- 			node = node->rb_left;
--		else if (pfn > iova->pfn_lo)
-+		else if (pfn > iova->pfn_hi)
- 			node = node->rb_right;
-+		else
-+			return iova;	/* pfn falls within iova's range */
+ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 		unsigned long size, unsigned long limit_pfn,
+ 			struct iova *new, bool size_aligned)
+@@ -146,7 +136,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	struct rb_node *prev, *curr = NULL;
+ 	unsigned long flags;
+ 	unsigned long saved_pfn;
+-	unsigned int pad_size = 0;
++	unsigned long align_mask = ~0UL;
++
++	if (size_aligned)
++		align_mask <<= __fls(size);
+ 
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+@@ -156,31 +149,26 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	while (curr) {
+ 		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+ 
+-		if (limit_pfn <= curr_iova->pfn_lo) {
++		if (limit_pfn <= curr_iova->pfn_lo)
+ 			goto move_left;
+-		} else if (limit_pfn > curr_iova->pfn_hi) {
+-			if (size_aligned)
+-				pad_size = iova_get_pad_size(size, limit_pfn);
+-			if ((curr_iova->pfn_hi + size + pad_size) < limit_pfn)
+-				break;	/* found a free slot */
+-		}
++
++		if (((limit_pfn - size) & align_mask) > curr_iova->pfn_hi)
++			break;	/* found a free slot */
++
+ 		limit_pfn = curr_iova->pfn_lo;
+ move_left:
+ 		prev = curr;
+ 		curr = rb_prev(curr);
  	}
  
- 	return NULL;
+-	if (!curr) {
+-		if (size_aligned)
+-			pad_size = iova_get_pad_size(size, limit_pfn);
+-		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
+-			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+-			return -ENOMEM;
+-		}
++	if (limit_pfn < size ||
++	    (!curr && ((limit_pfn - size) & align_mask) < iovad->start_pfn)) {
++		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
++		return -ENOMEM;
+ 	}
+ 
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+-	new->pfn_lo = limit_pfn - (size + pad_size);
++	new->pfn_lo = (limit_pfn - size) & align_mask;
+ 	new->pfn_hi = new->pfn_lo + size - 1;
+ 
+ 	/* If we have 'prev', it's a valid place to start the insertion. */
 -- 
 2.12.2.dirty
