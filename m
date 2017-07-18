@@ -1,250 +1,97 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
- invalidate propagation
-Date: Mon, 17 Jul 2017 16:45:15 -0600
-Message-ID: <20170717164515.2491b3bf@w520.home>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
-        <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
-        <cc330a8f-e087-9b6f-2a40-38b58688d300@arm.com>
-        <20170702100659.GA22053@gmail.com>
-        <0e4f2dd4-d553-b1b7-7bec-fe0ff5242c54@arm.com>
-        <20170703103115.GB22053@gmail.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D190D25919@SHSMSX101.ccr.corp.intel.com>
-        <1d63c1ae-ca10-0f9d-91de-0d9c9823c104@arm.com>
-        <20170705112816.56554f65@w520.home>
-        <A2975661238FB949B60364EF0F2C2574390A7C4F@shsmsx102.ccr.corp.intel.com>
-        <20170714121555.7e64d849@w520.home>
-        <A2975661238FB949B60364EF0F2C2574390A906A@shsmsx102.ccr.corp.intel.com>
+From: Yisheng Xie <xieyisheng1@huawei.com>
+Subject: Re: What differences and relations between SVM, HSA, HMM and Unified
+ Memory?
+Date: Tue, 18 Jul 2017 08:15:39 +0800
+Message-ID: <b83c3d3c-1bcd-3ecc-bf61-b9e0b52e6786@huawei.com>
+References: <9BD73EA91F8E404F851CF3F519B14AA8CE753F@SZXEMI503-MBS.china.huawei.com>
+ <20c9cdd5-5118-f916-d8ad-70b7c1434d73@arm.com>
+ <1c4f4fb0-7201-ed4c-aa88-4d7e2369238e@huawei.com>
+ <20170717142743.GA9420@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <A2975661238FB949B60364EF0F2C2574390A906A@shsmsx102.ccr.corp.intel.com>
-Sender: kvm-owner@vger.kernel.org
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "jasowang@redhat.com" <jasowang@redhat.com>, Will Deacon <Will.Deacon@arm.com>, "peterx@redhat.com" <peterx@redhat.com>, "qemu-devel@nongnu.org" <qemu-devel@nongnu.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170717142743.GA9420@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Glisse <j.glisse@gmail.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Wuzongyong (Cordius Wu, Euler Dept)" <wuzongyong1@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Wanzongshun (Vincent)" <wanzongshun@huawei.com>, "oded.gabbay@amd.com" <oded.gabbay@amd.com>, liubo95@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 17 Jul 2017 10:58:41 +0000
-"Liu, Yi L" <yi.l.liu@intel.com> wrote:
+Hi Jérôme and Jean-Philippe ,
 
-> Hi Alex,
-> 
-> Pls refer to the response inline.
-> 
-> > -----Original Message-----
-> > From: kvm-owner@vger.kernel.org [mailto:kvm-owner@vger.kernel.org] On Behalf
-> > Of Alex Williamson
-> > Sent: Saturday, July 15, 2017 2:16 AM
-> > To: Liu, Yi L <yi.l.liu@intel.com>
-> > Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>; Tian, Kevin
-> > <kevin.tian@intel.com>; Liu, Yi L <yi.l.liu@linux.intel.com>; Lan, Tianyu
-> > <tianyu.lan@intel.com>; Raj, Ashok <ashok.raj@intel.com>; kvm@vger.kernel.org;
-> > jasowang@redhat.com; Will Deacon <Will.Deacon@arm.com>; peterx@redhat.com;
-> > qemu-devel@nongnu.org; iommu@lists.linux-foundation.org; Pan, Jacob jun
-> > <jacob.jun.pan@intel.com>; Joerg Roedel <joro@8bytes.org>
-> > Subject: Re: [Qemu-devel] [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB
-> > invalidate propagation
-> > 
-> > On Fri, 14 Jul 2017 08:58:02 +0000
-> > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
-> >   
-> > > Hi Alex,
-> > >
-> > > Against to the opaque open, I'd like to propose the following
-> > > definition based on the existing comments. Pls note that I've merged
-> > > the pasid table binding and iommu tlb invalidation into a single IOCTL
-> > > and make different flags to indicate the iommu operations. Per Kevin's
-> > > comments, there may be iommu invalidation for guest IOVA tlb, so I
-> > > renamed the IOCTL and data structure to be non-svm specific. Pls
-> > > kindly have a review, so that we can make the opaque open closed and
-> > > move forward. Surely, comments and ideas are welcomed. And for the
-> > > scope and flags definition in struct iommu_tlb_invalidate, it's also welcomed to  
-> > give your ideas on it.  
-> > >
-> > > 1. Add a VFIO IOCTL for iommu operations from user-space
-> > >
-> > > #define VFIO_IOMMU_OP_IOCTL _IO(VFIO_TYPE, VFIO_BASE + 24)
-> > >
-> > > Corresponding data structure:
-> > > struct vfio_iommu_operation_info {
-> > > 	__u32	argsz;
-> > > #define VFIO_IOMMU_BIND_PASIDTBL	(1 << 0) /* Bind PASID Table */
-> > > #define VFIO_IOMMU_BIND_PASID	(1 << 1) /* Bind PASID from userspace  
-> > driver*/  
-> > > #define VFIO_IOMMU_BIND_PGTABLE	(1 << 2) /* Bind guest mmu page table */
-> > > #define VFIO_IOMMU_INVAL_IOTLB	(1 << 3) /* Invalidate iommu tlb */
-> > > 	__u32	flag;
-> > > 	__u32	length; // length of the data[] part in byte
-> > > 	__u8	data[]; // stores the data for iommu op indicated by flag field
-> > > };  
-> > 
-> > If we're doing a generic "Ops" ioctl, then we should have an "op" field which is
-> > defined by an enum.  It doesn't make sense to use flags for this, for example can we
-> > set multiple flag bits?  If not then it's not a good use for a bit field.  I'm also not sure I
-> > understand the value of the "length" field, can't it always be calculated from argsz?  
-> 
-> Agreed, enum would be better. "length" field could be calculated from argsz. I used
-> it just to avoid offset calculations. May remove it.
->  
-> > > For iommu tlb invalidation from userspace, the "__u8 data[]" stores
-> > > data which would be parsed by the "struct iommu_tlb_invalidate"
-> > > defined below.
-> > >
-> > > 2. Definitions in include/uapi/linux/iommu.h(newly added header file)
-> > >
-> > > /* IOMMU model definition for iommu operations from userspace */ enum
-> > > iommu_model {
-> > > 	INTLE_IOMMU,
-> > > 	ARM_SMMU,
-> > > 	AMD_IOMMU,
-> > > 	SPAPR_IOMMU,
-> > > 	S390_IOMMU,
-> > > };
-> > >
-> > > struct iommu_tlb_invalidate {
-> > > 	__u32	scope;
-> > > /* pasid-selective invalidation described by @pasid */
-> > > #define IOMMU_INVALIDATE_PASID	(1 << 0)
-> > > /* address-selevtive invalidation described by (@vaddr, @size) */
-> > > #define IOMMU_INVALIDATE_VADDR	(1 << 1)  
-> > 
-> > Again, is a bit field appropriate here, can a user set both bits?  
-> 
-> yes, user may set both bits. It would be invalidate address range
-> which is tagged with a PASID value.
-> 
-> >   
-> > > 	__u32	flags;
-> > > /*  targets non-pasid mappings, @pasid is not valid */
-> > > #define IOMMU_INVALIDATE_NO_PASID	(1 << 0)
-> > > /* indicating that the pIOMMU doesn't need to invalidate
-> > > 	all intermediate tables cached as part of the PTE for
-> > > 	vaddr, only the last-level entry (pte). This is a hint. */
-> > > #define IOMMU_INVALIDATE_VADDR_LEAF	(1 << 1)  
-> > 
-> > Are we venturing into vendor specific attributes here?  
-> 
-> These two attributes are still in discussion. Jean and me synced
-> several rounds. But lack of comments from other vendors.
-> 
-> Personally, I think both should be generic.
-> IOMMU_INVALIDATE_NO_PASID is to indicate no PASID used
-> for the invalidation. IOMMU_INVALIDATE_VADDR_LEAF indicates
-> only invalidate leaf mappings. 
-> I would see if other vendor is object on it. If yes, I'm fine to move
-> it to vendor specific part.
->  
-> >   
-> > > 	__u32	pasid;
-> > > 	__u64	vaddr;
-> > > 	__u64	size;
-> > > 	enum iommu_model model;  
-> > 
-> > How does a user learn which model(s) are supported by the interface?
-> > How do they learn which ops are supported?  Perhaps a good use for one of those
-> > flag bits in the outer data structure is "probe".  
-> 
-> My initial plan to user fills it, if the underlying HW doesn't support the
-> model, it refuses to service it. User should get a failure and stop to use
-> it. But your suggestion to have a probe or kinds of query makes sense.
-> How about we add one more operation for such purpose? Besides the
-> supported model query, I'd like to add more. E.g the HW IOMMU capabilities.
+Get it, thanks for all of your detail explain.
 
-We also have VFIO_IOMMU_GET_INFO where the structure can be extended
-for missing capabilities.  Depending on the capability you want to
-describe, this might be a better, existing interface for it.
- 
-> > > 	/*
-> > > 	 Vendor may have different HW version and thus the
-> > > 	 data part of this structure differs, use sub_version
-> > > 	 to indicate such difference.
-> > > 	 */
-> > > 	__u322 sub_version;  
-> > 
-> > Not sure I see the value of this vs creating an INTEL_IOMMUv2 entry in the model
-> > enum.  
+Thanks
+Yisheng Xie
+
+On 2017/7/17 22:27, Jerome Glisse wrote:
+> On Mon, Jul 17, 2017 at 07:57:23PM +0800, Yisheng Xie wrote:
+>> Hi Jean-Philippe，
+>>
+>> On 2017/6/12 19:37, Jean-Philippe Brucker wrote:
+>>> Hello,
+>>>
+>>> On 10/06/17 05:06, Wuzongyong (Cordius Wu, Euler Dept) wrote:
+>>>> Hi,
+>>>>
+>>>> Could someone explain differences and relations between the SVM(Shared
+>>>> Virtual Memory, by Intel), HSA(Heterogeneous System Architecture, by AMD),
+>>>> HMM(Heterogeneous Memory Management, by Glisse) and UM(Unified Memory, by
+>>>> NVIDIA) ? Are these in the substitutional relation?
+>>>>
+>>>> As I understand it, these aim to solve the same thing, sharing pointers
+>>>> between CPU and GPU(implement with ATS/PASID/PRI/IOMMU support). So far,
+>>>> SVM and HSA can only be used by integrated gpu. And, Intel declare that
+>>>> the root ports doesn’t not have the required TLP prefix support, resulting
+>>>>  that SVM can’t be used by discrete devices. So could someone tell me the
+>>>> required TLP prefix means what specifically?>
+>>>> With HMM, we can use allocator like malloc to manage host and device
+>>>> memory. Does this mean that there is no need to use SVM and HSA with HMM,
+>>>> or HMM is the basis of SVM and HAS to implement Fine-Grained system SVM
+>>>> defined in the opencl spec?
+>>>
+>>> I can't provide an exhaustive answer, but I have done some work on SVM.
+>>> Take it with a grain of salt though, I am not an expert.
+>>>
+>>> * HSA is an architecture that provides a common programming model for CPUs
+>>> and accelerators (GPGPUs etc). It does have SVM requirement (I/O page
+>>> faults, PASID and compatible address spaces), though it's only a small
+>>> part of it.
+>>>
+>>> * Similarly, OpenCL provides an API for dealing with accelerators. OpenCL
+>>> 2.0 introduced the concept of Fine-Grained System SVM, which allows to
+>>> pass userspace pointers to devices. It is just one flavor of SVM, they
+>>> also have coarse-grained and non-system. But they might have coined the
+>>> name, and I believe that in the context of Linux IOMMU, when we talk about
+>>> "SVM" it is OpenCL's fine-grained system SVM.
+>>> [...]
+>>>
+>>> While SVM is only about virtual address space,
+>> As you mentioned, SVM is only about virtual address space, I'd like to know how to
+>> manage the physical address especially about device's RAM, before HMM?
+>>
+>> When OpenCL alloc a SVM pointer like:
+>>     void* p = clSVMAlloc (
+>>         context, // an OpenCL context where this buffer is available
+>>         CL_MEM_READ_WRITE | CL_MEM_SVM_FINE_GRAIN_BUFFER,
+>>         size, // amount of memory to allocate (in bytes)
+>>         0 // alignment in bytes (0 means default)
+>>     );
+>>
+>> where this RAM come from， device RAM or host RAM?
+>>
 > 
-> Both are fine to me. Just see the opinions from other guys.
+> For SVM using ATS/PASID with FINE_GRAIN your allocation can only
+> be inside the system memory (host RAM). You need a special system
+> bus like CAPI or CCIX which both are step further than ATS/PASID
+> to be able to allow fine grain to use device memory.
 > 
-> > > 	__u64 length; // length of the data[] part in byte  
-> > 
-> > Questionably useful vs calculating from argsz again , but it certainly doesn't need to
-> > be a qword :-o  
+> However that is where HMM can be usefull as HMM is a software
+> solution to this problem. So with HMM and a device that can work
+> with HMM, you can get fine grain allocation to also use device
+> memory however any CPU access will happen in host RAM.
 > 
-> Thx for the remind. 32bits would be enough. It is surely to get it from argsz. However,
-> I would like to leave it here. Reason is:
-> argsz is in vfio layer, the "length" here is actually used in vendor-specific iommu driver
-> layer. So would require vfio to pass argsz or the size of " struct iommu_tlb_invalidate"
-> to vendor-specific iommu driver layer by means of parameter or so. Personally, I prefer
-> to pass it in the structure. If it's better to pass it as a parameter, I would do it.
-
-Ok, then the layer that does the copy_from_user will need to validate
-that length is fully contained within the copied data structure, we
-can't let the user trick the kernel into using kernel memory for this.
-
-> > > 	__u8	data[];
-> > > };
-> > >
-> > > For Intel, the data structue is:
-> > > struct intel_iommu_invalidate_data {
-> > > 	__u64 low;
-> > > 	__u64 high;
-> > > }  
-> > 
-> > high/low what?  This is a pretty weak uapi definition.  Thanks,  
+> Jérôme
 > 
-> For this part, for Intel platform, we plan to pass a 128 bit data for the invalidation.
-> The structure varies from invalidation type to type. Here is my thought on it. Define
-> an 128 bits union. List the invalidation data details for each invalidation type. What's
-> your opinion on it? So far, we have 7 types for invalidation. The prq response is not
-> included.
-
-I want this interface to be fully defined, but at the same time I don't
-necessarily want to create useless data structures.  I believe the
-intention here is to pass these directly through to a QI entry, where
-we must match a hardware definition.  I'm tempted to suggest
-referencing the hardware specification, but see below...
-
-A concern for this model is that hardware may trust the iommu driver
-not to create QI entries that don't set reserved bits or set invalid
-field data.  If it does those kinds of things, it's a kernel driver
-bug.  Once exposed to the user, we cannot guarantee that.  Does Intel
-have confidence that a user cannot maliciously interfere with other
-contexts or the general operation of the invalidation queue if a user is
-effectively given direct access?  Will the invalidation data be
-sanitized by the iommu driver?
- 
-> union intel_iommu_invalidate_data {
->  	struct {
-> 		__u64 low;
->  		__u64 high;
-> 	} invalidate_data;
+> .
 > 
-> 	struct {
-> 		__u64 type: 4;
-> 		__u64 gran: 2;
-> 		__u64 rsv1: 10;
-> 		__u64 did: 16;
-> 		__u64 sid: 16;
-> 		__u64 func_mask: 2;
-> 		__u64 rsv2: 14;
-> 		__64 rsv3: 64;
-> 	} context_cache_inv;
-> 	....
-
-Here's part of the issue with not fully defining these, we have did,
-sid, and func_mask.  I think we're claiming that the benefit of passing
-through the hardware data structure is performance, but the user needs
-to replace these IDs to match the physical device rather than the
-virtual device, perhaps even entirely recreating it because there's not
-necessarily a 1:1 mapping of things like func_mask between virtual and
-physical hardware topologies (assuming I'm interpreting these fields
-correctly).  Doesn't the kernel also need to validate any such field to
-prevent the user spoofing entries for other devices?  Is there any
-actual performance benefit remaining vs defining a generic interface
-after multiple levels have manipulated, recreated, and sanitized
-these structures?  We can't evaluate these sorts of risks if we don't
-define what we're passing through.  Thanks,
-
-Alex
