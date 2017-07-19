@@ -1,20 +1,20 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu/arm-smmu-v3: add IOMMU_CAP_BYPASS to the ARM
-	SMMUv3 driver
-Date: Wed, 19 Jul 2017 12:33:25 +0100
-Message-ID: <20170719113325.GI13642@arm.com>
+From: Anup Patel via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH 1/5] iommu: Add capability IOMMU_CAP_BYPASS
+Date: Wed, 19 Jul 2017 17:03:39 +0530
+Message-ID: <CAALAos-a6VfgwOE8GYZtgsoDUZYYY6kbHpoUYP4t9D4TVhVodQ@mail.gmail.com>
 References: <1500456838-18405-1-git-send-email-anup.patel@broadcom.com>
-	<1500456838-18405-4-git-send-email-anup.patel@broadcom.com>
-	<ace28bd1-2dd3-482c-d11b-539c055ee9b7@arm.com>
-	<CAALAos8y0kLGrbwgz3u=ZVyteSicuPyQZ3Yp=LPZohXzVaE5NQ@mail.gmail.com>
-	<20170719112524.GF13642@arm.com>
-	<CAALAos_xGCt7U1Oz5uCf9Q4hP6fdn4fcymFNQP5xO_UBduSY3g@mail.gmail.com>
+	<1500456838-18405-2-git-send-email-anup.patel@broadcom.com>
+	<675744d3-b070-1245-6ebc-579c4b5f4a75@arm.com>
+	<CAALAos_o25mtphxcVE0rr9dE8YAm-os2C_HD9oDnt41ZMDP8pA@mail.gmail.com>
+	<20170719112315.GE13642@arm.com>
+	<CAALAos8nf-d5i74J7-sAJb2o9eFj2PVDeLLVd=wun+gW1ihXSA@mail.gmail.com>
+	<20170719113017.GH13642@arm.com>
+Reply-To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAALAos_xGCt7U1Oz5uCf9Q4hP6fdn4fcymFNQP5xO_UBduSY3g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20170719113017.GH13642-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,61 +24,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 19, 2017 at 05:01:11PM +0530, Anup Patel wrote:
-> On Wed, Jul 19, 2017 at 4:55 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Wed, Jul 19, 2017 at 04:53:04PM +0530, Anup Patel wrote:
-> >> On Wed, Jul 19, 2017 at 4:30 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> >> > On 19/07/17 10:33, Anup Patel wrote:
-> >> >> The ARM SMMUv3 support bypassing transactions for which domain
-> >> >> is not configured. The patch adds corresponding IOMMU capability
-> >> >> to advertise this fact.
-> >> >>
-> >> >> Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> >> >> ---
-> >> >>  drivers/iommu/arm-smmu-v3.c | 2 ++
-> >> >>  1 file changed, 2 insertions(+)
-> >> >>
-> >> >> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> >> >> index 568c400..a6c7f66 100644
-> >> >> --- a/drivers/iommu/arm-smmu-v3.c
-> >> >> +++ b/drivers/iommu/arm-smmu-v3.c
-> >> >> @@ -1423,6 +1423,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
-> >> >>               return true;
-> >> >>       case IOMMU_CAP_NOEXEC:
-> >> >>               return true;
-> >> >> +     case IOMMU_CAP_BYPASS:
-> >> >> +             return true;
-> >> >
-> >> > And this is never true. If Linux knows a device masters through the
-> >> > SMMU, it will always have a default domain of some sort (either identity
-> >> > or DMA ops). If Linux doesn't know, then it won't have been able to
-> >> > initialise the stream table for the relevant stream IDs, thus any
-> >> > 'bypass' DMA is going to raise C_BAD_STE. SMMUv3 can effectively only
-> >> > bypass unknown stream IDs if disabled entirely.
-> >>
-> >> What if we don't want to use IOMMU for certain device and
-> >> due to this we never provide "iommus" DT attribute in the
-> >> device DT node. Further, we want to access device without
-> >> "iommus" DT attribute from user-space using VFIO no-IOMMU.
-> >
-> > Wait, you want to pass a device through to userspace but you don't want to
-> > use the IOMMU? Why not?
-> >
-> > If you describe the SMMU in firmware with only a partial topology
-> > description, then you will run into problems with unknown masters trying to
-> > perform DMA. That's the IOMMU doing its job!
-> 
-> We are keeping disable_bypass = false. In other words, we
-> are using bypass mode for unmatched streams. The real
-> reason is limited number of SMRs due to which we choose
-> not to provide "iommus" DT attribute for certain devices.
+On Wed, Jul 19, 2017 at 5:00 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Wed, Jul 19, 2017 at 04:56:38PM +0530, Anup Patel wrote:
+>> On Wed, Jul 19, 2017 at 4:53 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Wed, Jul 19, 2017 at 04:49:00PM +0530, Anup Patel wrote:
+>> >> On Wed, Jul 19, 2017 at 4:28 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> >> > On 19/07/17 10:33, Anup Patel wrote:
+>> >> >> Some of the IOMMUs (such as ARM SMMU) are capable of bypassing
+>> >> >> transactions for which no IOMMU domain is configured.
+>> >> >>
+>> >> >> This patch adds IOMMU_CAP_BYPASS which can be used by IOMMU
+>> >> >> drivers to advertise transation bypass capability of an IOMMU.
+>> >> >
+>> >> > Whatever the intended semantics of this are, I can't help thinking it
+>> >> > would be better served by allowing callers to explicitly allocate their
+>> >> > own IOMMU_DOMAIN_IDENTITY domains. That would also be useful for the
+>> >> > problem we have with legacy virtio devices behind real IOMMUs.
+>> >>
+>> >> We want to use VFIO no-IOMMU mode for FlexRM device but
+>> >> currently it does not allow on our SOC because IOMMU ops are
+>> >> registered for platform bus.
+>> >
+>> > Why do you want to use no-IOMMU mode if you have an IOMMU, and why you do
+>> > think the individual IOMMU drivers are the place to implement this?
+>> >
+>> > NAK to the SMMU patches, for the reasons outlined by Robin.
+>>
+>> We have limited number of SMRs on our SOC.
+>>
+>> There are lot of devices for which we can potentially
+>> configure SMMU but then due to limited number of
+>> SMRs so we use SMMU only for certain devices.
+>>
+>> For FlexRM device on our SOC, we don't intend to
+>> use SMMU hence we need VFIO no-IOMMU mode
+>> working for FlexRM device on our SOC.
+>>
+>> Please re-consider your NAK.
+>
+> I'm afraid it still stands for the current implementation. If you can't
+> solve the SMR restriction by grouping things appropriately (which would be
+> my strong preference), then I think you'll have to follow-up on Robin's
+> suggestion of implementing support for IDENTITY domains in VFIO for no-IOMMU
+> mode to be used even when an IOMMU is present.
+>
 
-Understood, but that's not robust for SMMUv3 and we *really* shouldn't have
-a user ABI that changes behaviour based on a cmdline option. VFIO should be
-requesting its own identity mappings, if that's what you need.
+Yes, we have considered making stream-id space for
+devices to be continuguous but this cannot be fixed
+in our current SOC. We will have to live with this
+limitation for our current SOC and it will be only
+fixed in future.
 
-Will
+Regards,
+Anup
