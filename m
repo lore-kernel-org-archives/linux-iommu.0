@@ -1,114 +1,333 @@
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: Re: [PATCH kernel v4 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu
- driver initialization
-Date: Wed, 19 Jul 2017 20:02:04 +1000
-Message-ID: <b444851a-3240-f98f-04b9-0223649ea856@ozlabs.ru>
-References: <20170630052436.15212-1-aik@ozlabs.ru>
- <20170630052436.15212-5-aik@ozlabs.ru>
- <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Track context bank state
+Date: Wed, 19 Jul 2017 11:17:57 +0100
+Message-ID: <b9db6ee3-3e50-61ee-46f1-3783ea5f3a0c@arm.com>
+References: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy@arm.com>
+	<22b7eea9-d194-d768-a10f-fc3c6fec9e4c@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
-Content-Language: en-AU
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, David Gibson <david@gibson.dropbear.id.au>, Alex Williamson <alex.williamson@redhat.com>, Yongji Xie <elohimes@gmail.com>, Eric Auger <eric.auger@redhat.com>, Yongji Xie <xyjxie@linux.vnet.ibm.com>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Jike Song <jike.song@intel.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linux-pci <linux-pci@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <22b7eea9-d194-d768-a10f-fc3c6fec9e4c-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/07/17 05:23, Bjorn Helgaas wrote:
-> [+cc Joerg, iommu]
+On 19/07/17 03:40, Sricharan R wrote:
+> Hi Robin,
 > 
-> On Fri, Jun 30, 2017 at 12:24 AM, Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
->> From: Yongji Xie <elohimes@gmail.com>
+> On 7/18/2017 6:14 PM, Robin Murphy wrote:
+>> Echoing what we do for Stream Map Entries, maintain a software shadow
+>> state for context bank configuration. With this in place, we are mere
+>> moments away from blissfully easy suspend/resume support.
 >>
->> Some iommu drivers would be initialized after PCI device
->> enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
->> when probing PCI devices although IOMMU enables capability
->> of IRQ remapping. This patch tests this capability and
->> set the flag when iommu driver is initialized.
->>
->> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
->> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 >> ---
->>  drivers/iommu/iommu.c | 8 ++++++++
->>  drivers/pci/probe.c   | 1 +
->>  2 files changed, 9 insertions(+)
 >>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index cf7ca7e70777..0b5881ddca09 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1063,6 +1063,14 @@ static int add_iommu_group(struct device *dev, void *data)
->>         const struct iommu_ops *ops = cb->ops;
->>         int ret;
+>> Since the runtime PM discussion has come back again, I figured it was
+>> probably about time to finish off my plan for system PM. Lightly tested
+>> on Juno (MMU-401) with hibernation.
 >>
->> +       /*
->> +        * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
->> +        * have capability of IRQ remapping.
->> +        */
->> +       if (dev_is_pci(dev) && ops->capable &&
->> +                       ops->capable(IOMMU_CAP_INTR_REMAP))
->> +               to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+>> Robin.
+>>
+>>  drivers/iommu/arm-smmu.c | 159 +++++++++++++++++++++++++++++------------------
+>>  1 file changed, 97 insertions(+), 62 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index bc89b4d6c043..86897b7b81d8 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -338,6 +338,13 @@ struct arm_smmu_smr {
+>>  	bool				valid;
+>>  };
+>>  
+>> +struct arm_smmu_cb {
+>> +	u64				ttbr[2];
+>> +	u32				tcr[2];
+>> +	u32				mair[2];
+>> +	struct arm_smmu_cfg		*cfg;
+>> +};
+>> +
 > 
-> This isn't my area, but this addition is really ugly.  It doesn't look
-> anything like the rest of the code in add_iommu_group(), so it just
-> feels like a wart.
+>  When i was trying this sometime back [1], was
+>  saving and using the pgtbl->cfg and domain->cfg for
+>  restoring the context. But this looks correct to make
+>  a actual shadow once and use it later all the time.
 
+Yeah, I did have a go at using the io_pgtable_cfg, but given the
+variable format of the registers involved it turned out simpler to
+shadow the raw register state directly.
 
-It does look like a wart, however it did not cause immediate rejection
-after first couple of revisions of this before I took it over...
-
-So. Here is the problem - deliver an MSIX isolation flag from IOMMU to
-VFIO-PCI driver. The options are:
-
-1. PCI_BUS_FLAGS_MSI_REMAP on a PCI bus - MSIX isolation is not really a
-PCI bus property and it is "like a wart".
-
-2. Introduce "flags" in iommu_group and define IOMMU_GROUP_MSIX_ISOLATED
-and set it when an IOMMU group is created; VFIO-PCI has ways to get to the
-group and read the flag.
-
-3. Create IOMMU_DOMAIN_UNMANAGED IOMMU domains for PPC64/powernv IOMMU
-groups and only define capable() hook to report IOMMU_CAP_INTR_REMAP;
-others already use these IOMMU domains. VFIO-PCI's mmap() hook could then
-check the capability via iommu_capable(bus). The problems is as Robin said:
-"iommu_capable() is a fundamentally broken and unworkable interface
-anyway"; however it is still not clear to me why it is unworkable in this
-particular case of isolation checking.
-
-I am missing knowledge about ARM, is there a good overview of these MSIX
-domains vs. IOMMU on ARM (as MSIX remapping seems not to be an IOMMU property)?
-
-
-Which one to pick? Thanks.
-
-
-
+>  Will also try some testing today.
 > 
->>         if (!ops->add_device)
->>                 return 0;
->>
->> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index f2393b7d7ebf..14aac9df3d17 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -17,6 +17,7 @@
->>  #include <linux/acpi.h>
->>  #include <linux/irqdomain.h>
->>  #include <linux/pm_runtime.h>
->> +#include <linux/iommu.h>
-> 
-> This obviously belongs in another patch, as the compile error showed.
-> 
->>  #include "pci.h"
->>
->>  #define CARDBUS_LATENCY_TIMER  176     /* secondary latency timer */
->> --
->> 2.11.0
->>
+>  Reviewed-by: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 
+Thanks!
 
--- 
-Alexey
+Robin.
+
+> [1] https://patchwork.kernel.org/patch/9389717/
+> 
+> Regards,
+>  Sricharan
+> 
+> 
+>>  struct arm_smmu_master_cfg {
+>>  	struct arm_smmu_device		*smmu;
+>>  	s16				smendx[];
+>> @@ -380,6 +387,7 @@ struct arm_smmu_device {
+>>  	u32				num_context_banks;
+>>  	u32				num_s2_context_banks;
+>>  	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
+>> +	struct arm_smmu_cb		*cbs;
+>>  	atomic_t			irptndx;
+>>  
+>>  	u32				num_mapping_groups;
+>> @@ -768,17 +776,69 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>>  static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>  				       struct io_pgtable_cfg *pgtbl_cfg)
+>>  {
+>> -	u32 reg, reg2;
+>> -	u64 reg64;
+>> -	bool stage1;
+>>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
+>> +	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+>> +
+>> +	cb->cfg = cfg;
+>> +
+>> +	/* TTBCR */
+>> +	if (stage1) {
+>> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> +			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
+>> +		} else {
+>> +			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+>> +			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+>> +			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
+>> +			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+>> +				cb->tcr[1] |= TTBCR2_AS;
+>> +		}
+>> +	} else {
+>> +		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+>> +	}
+>> +
+>> +	/* TTBRs */
+>> +	if (stage1) {
+>> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> +			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+>> +			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+>> +		} else {
+>> +			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>> +			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+>> +		}
+>> +	} else {
+>> +		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+>> +	}
+>> +
+>> +	/* MAIRs (stage-1 only) */
+>> +	if (stage1) {
+>> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> +			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
+>> +			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
+>> +		} else {
+>> +			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
+>> +			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
+>> +		}
+>> +	}
+>> +}
+>> +
+>> +static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+>> +{
+>> +	u32 reg;
+>> +	bool stage1;
+>> +	struct arm_smmu_cb *cb = &smmu->cbs[idx];
+>> +	struct arm_smmu_cfg *cfg = cb->cfg;
+>> +	struct arm_smmu_cfg default_cfg = {0};
+>>  	void __iomem *cb_base, *gr1_base;
+>>  
+>> +	if (!cfg)
+>> +		cfg = &default_cfg;
+>> +
+>>  	gr1_base = ARM_SMMU_GR1(smmu);
+>>  	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+>> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+>> +	cb_base = ARM_SMMU_CB(smmu, idx);
+>>  
+>> +	/* CBA2R */
+>>  	if (smmu->version > ARM_SMMU_V1) {
+>>  		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+>>  			reg = CBA2R_RW64_64BIT;
+>> @@ -788,7 +848,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>  		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+>>  			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
+>>  
+>> -		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
+>> +		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
+>>  	}
+>>  
+>>  	/* CBAR */
+>> @@ -807,72 +867,43 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>  		/* 8-bit VMIDs live in CBAR */
+>>  		reg |= cfg->vmid << CBAR_VMID_SHIFT;
+>>  	}
+>> -	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+>> +	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
+>>  
+>>  	/*
+>>  	 * TTBCR
+>>  	 * We must write this before the TTBRs, since it determines the
+>>  	 * access behaviour of some fields (in particular, ASID[15:8]).
+>>  	 */
+>> -	if (stage1) {
+>> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> -			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
+>> -			reg2 = 0;
+>> -		} else {
+>> -			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+>> -			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+>> -			reg2 |= TTBCR2_SEP_UPSTREAM;
+>> -			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+>> -				reg2 |= TTBCR2_AS;
+>> -		}
+>> -		if (smmu->version > ARM_SMMU_V1)
+>> -			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+>> -	} else {
+>> -		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+>> -	}
+>> -	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+>> +	if (stage1 && smmu->version > ARM_SMMU_V1)
+>> +		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
+>> +	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
+>>  
+>>  	/* TTBRs */
+>> -	if (stage1) {
+>> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> -			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+>> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
+>> -			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+>> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
+>> -			writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
+>> -		} else {
+>> -			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>> -			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
+>> -			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+>> -			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+>> -			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
+>> -			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+>> -		}
+>> +	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> +		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
+>> +		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
+>> +		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+>>  	} else {
+>> -		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+>> -		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+>> +		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
+>> +		writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+>>  	}
+>>  
+>>  	/* MAIRs (stage-1 only) */
+>>  	if (stage1) {
+>> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+>> -			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
+>> -			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
+>> -		} else {
+>> -			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
+>> -			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
+>> -		}
+>> -		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
+>> -		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
+>> +		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
+>> +		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
+>>  	}
+>>  
+>>  	/* SCTLR */
+>> -	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+>> -	if (stage1)
+>> -		reg |= SCTLR_S1_ASIDPNE;
+>> -#ifdef __BIG_ENDIAN
+>> -	reg |= SCTLR_E;
+>> -#endif
+>> +	if (!cb->cfg) {
+>> +		reg = 0;
+>> +	} else {
+>> +		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+>> +		if (stage1)
+>> +			reg |= SCTLR_S1_ASIDPNE;
+>> +		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+>> +			reg |= SCTLR_E;
+>> +	}
+>>  	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
+>>  }
+>>  
+>> @@ -1035,6 +1066,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>>  
+>>  	/* Initialise the context bank with our page table cfg */
+>>  	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+>> +	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+>>  
+>>  	/*
+>>  	 * Request context fault interrupt. Do this last to avoid the
+>> @@ -1067,7 +1099,6 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>> -	void __iomem *cb_base;
+>>  	int irq;
+>>  
+>>  	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+>> @@ -1077,8 +1108,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>>  	 * Disable the context bank and free the page tables before freeing
+>>  	 * it.
+>>  	 */
+>> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+>> -	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
+>> +	smmu->cbs[cfg->cbndx] = (struct arm_smmu_cb){0};
+>> +	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+>>  
+>>  	if (cfg->irptndx != INVALID_IRPTNDX) {
+>>  		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+>> @@ -1722,7 +1753,6 @@ static struct iommu_ops arm_smmu_ops = {
+>>  static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>>  {
+>>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>> -	void __iomem *cb_base;
+>>  	int i;
+>>  	u32 reg, major;
+>>  
+>> @@ -1758,8 +1788,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>>  
+>>  	/* Make sure all context banks are disabled and clear CB_FSR  */
+>>  	for (i = 0; i < smmu->num_context_banks; ++i) {
+>> -		cb_base = ARM_SMMU_CB(smmu, i);
+>> -		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
+>> +		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
+>> +
+>> +		arm_smmu_write_context_bank(smmu, i);
+>>  		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
+>>  		/*
+>>  		 * Disable MMU-500's not-particularly-beneficial next-page
+>> @@ -1964,6 +1995,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>>  		smmu->cavium_id_base -= smmu->num_context_banks;
+>>  		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
+>>  	}
+>> +	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
+>> +				 sizeof(*smmu->cbs), GFP_KERNEL);
+>> +	if (!smmu->cbs)
+>> +		return -ENOMEM;
+>>  
+>>  	/* ID2 */
+>>  	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
+>>
+> 
