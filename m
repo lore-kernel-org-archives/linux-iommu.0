@@ -1,169 +1,114 @@
-From: Anup Patel via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH 5/5] vfio: platform: reset: Add Broadcom FlexRM reset module
-Date: Wed, 19 Jul 2017 15:03:58 +0530
-Message-ID: <1500456838-18405-6-git-send-email-anup.patel@broadcom.com>
-References: <1500456838-18405-1-git-send-email-anup.patel@broadcom.com>
-Reply-To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: [PATCH kernel v4 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu
+ driver initialization
+Date: Wed, 19 Jul 2017 20:02:04 +1000
+Message-ID: <b444851a-3240-f98f-04b9-0223649ea856@ozlabs.ru>
+References: <20170630052436.15212-1-aik@ozlabs.ru>
+ <20170630052436.15212-5-aik@ozlabs.ru>
+ <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=koi8-r
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1500456838-18405-1-git-send-email-anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
+Content-Language: en-AU
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, David Gibson <david@gibson.dropbear.id.au>, Alex Williamson <alex.williamson@redhat.com>, Yongji Xie <elohimes@gmail.com>, Eric Auger <eric.auger@redhat.com>, Yongji Xie <xyjxie@linux.vnet.ibm.com>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Jike Song <jike.song@intel.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linux-pci <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds low-level reset for Broadcom FlexRM to
-VFIO platform.
+On 11/07/17 05:23, Bjorn Helgaas wrote:
+> [+cc Joerg, iommu]
+> 
+> On Fri, Jun 30, 2017 at 12:24 AM, Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+>> From: Yongji Xie <elohimes@gmail.com>
+>>
+>> Some iommu drivers would be initialized after PCI device
+>> enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
+>> when probing PCI devices although IOMMU enables capability
+>> of IRQ remapping. This patch tests this capability and
+>> set the flag when iommu driver is initialized.
+>>
+>> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+>> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+>> ---
+>>  drivers/iommu/iommu.c | 8 ++++++++
+>>  drivers/pci/probe.c   | 1 +
+>>  2 files changed, 9 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index cf7ca7e70777..0b5881ddca09 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1063,6 +1063,14 @@ static int add_iommu_group(struct device *dev, void *data)
+>>         const struct iommu_ops *ops = cb->ops;
+>>         int ret;
+>>
+>> +       /*
+>> +        * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
+>> +        * have capability of IRQ remapping.
+>> +        */
+>> +       if (dev_is_pci(dev) && ops->capable &&
+>> +                       ops->capable(IOMMU_CAP_INTR_REMAP))
+>> +               to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+> 
+> This isn't my area, but this addition is really ugly.  It doesn't look
+> anything like the rest of the code in add_iommu_group(), so it just
+> feels like a wart.
 
-It will do the following:
-1. Disable/Deactivate each FlexRM ring
-2. Flush each FlexRM ring
 
-The cleanup sequence for FlexRM rings is adapted from
-Broadcom FlexRM mailbox driver.
+It does look like a wart, however it did not cause immediate rejection
+after first couple of revisions of this before I took it over...
 
-Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
----
- drivers/vfio/platform/reset/Kconfig                |  9 +++
- drivers/vfio/platform/reset/Makefile               |  1 +
- .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 91 ++++++++++++++++++++++
- 3 files changed, 101 insertions(+)
- create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+So. Here is the problem - deliver an MSIX isolation flag from IOMMU to
+VFIO-PCI driver. The options are:
 
-diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
-index 70cccc5..8d8d226 100644
---- a/drivers/vfio/platform/reset/Kconfig
-+++ b/drivers/vfio/platform/reset/Kconfig
-@@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
- 	  Enables the VFIO platform driver to handle reset for AMD XGBE
- 
- 	  If you don't know what to do here, say N.
-+
-+config VFIO_PLATFORM_BCMFLEXRM_RESET
-+	tristate "VFIO support for Broadcom FlexRM reset"
-+	depends on VFIO_PLATFORM
-+	depends on ARCH_BCM_IPROC || COMPILE_TEST
-+	help
-+	  Enables the VFIO platform driver to handle reset for Broadcom FlexRM
-+
-+	  If you don't know what to do here, say N.
-diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
-index 93f4e23..8d9874b 100644
---- a/drivers/vfio/platform/reset/Makefile
-+++ b/drivers/vfio/platform/reset/Makefile
-@@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
- 
- obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
- obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
-+obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
-diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-new file mode 100644
-index 0000000..a890472
---- /dev/null
-+++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-@@ -0,0 +1,91 @@
-+/*
-+ * Copyright (C) 2017 Broadcom
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ *
-+ * This driver provides reset support for Broadcom FlexRM ring manager
-+ * to VFIO platform.
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+
-+#include "vfio_platform_private.h"
-+
-+/* FlexRM configuration */
-+#define RING_REGS_SIZE					0x10000
-+#define RING_VER_MAGIC					0x76303031
-+
-+/* Per-Ring register offsets */
-+#define RING_VER					0x000
-+#define RING_CONTROL					0x034
-+#define RING_FLUSH_DONE					0x038
-+
-+/* Register RING_CONTROL fields */
-+#define CONTROL_FLUSH_SHIFT				5
-+#define CONTROL_ACTIVE_SHIFT				4
-+
-+/* Register RING_FLUSH_DONE fields */
-+#define FLUSH_DONE_MASK					0x1
-+
-+static void vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
-+{
-+	unsigned int timeout;
-+
-+	/* Disable/inactivate ring */
-+	writel_relaxed(0x0, ring + RING_CONTROL);
-+
-+	/* Flush ring with timeout of 1s */
-+	timeout = 1000;
-+	writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
-+	do {
-+		if (readl_relaxed(ring + RING_FLUSH_DONE) & FLUSH_DONE_MASK)
-+			break;
-+		mdelay(1);
-+	} while (timeout--);
-+
-+	if (!timeout)
-+		pr_warn("VFIO FlexRM shutdown timedout\n");
-+}
-+
-+static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
-+{
-+	void __iomem *ring;
-+	struct vfio_platform_region *reg = &vdev->regions[0];
-+
-+	/* Map FlexRM ring registers if not mapped */
-+	if (!reg->ioaddr) {
-+		reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
-+		if (!reg->ioaddr)
-+			return -ENOMEM;
-+	}
-+
-+	/* Discover and shutdown each FlexRM ring */
-+	for (ring = reg->ioaddr;
-+	     ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
-+		if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC)
-+			vfio_platform_bcmflexrm_shutdown(ring);
-+	}
-+
-+	return 0;
-+}
-+
-+module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
-+			  vfio_platform_bcmflexrm_reset);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>");
-+MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
+1. PCI_BUS_FLAGS_MSI_REMAP on a PCI bus - MSIX isolation is not really a
+PCI bus property and it is "like a wart".
+
+2. Introduce "flags" in iommu_group and define IOMMU_GROUP_MSIX_ISOLATED
+and set it when an IOMMU group is created; VFIO-PCI has ways to get to the
+group and read the flag.
+
+3. Create IOMMU_DOMAIN_UNMANAGED IOMMU domains for PPC64/powernv IOMMU
+groups and only define capable() hook to report IOMMU_CAP_INTR_REMAP;
+others already use these IOMMU domains. VFIO-PCI's mmap() hook could then
+check the capability via iommu_capable(bus). The problems is as Robin said:
+"iommu_capable() is a fundamentally broken and unworkable interface
+anyway"; however it is still not clear to me why it is unworkable in this
+particular case of isolation checking.
+
+I am missing knowledge about ARM, is there a good overview of these MSIX
+domains vs. IOMMU on ARM (as MSIX remapping seems not to be an IOMMU property)?
+
+
+Which one to pick? Thanks.
+
+
+
+> 
+>>         if (!ops->add_device)
+>>                 return 0;
+>>
+>> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+>> index f2393b7d7ebf..14aac9df3d17 100644
+>> --- a/drivers/pci/probe.c
+>> +++ b/drivers/pci/probe.c
+>> @@ -17,6 +17,7 @@
+>>  #include <linux/acpi.h>
+>>  #include <linux/irqdomain.h>
+>>  #include <linux/pm_runtime.h>
+>> +#include <linux/iommu.h>
+> 
+> This obviously belongs in another patch, as the compile error showed.
+> 
+>>  #include "pci.h"
+>>
+>>  #define CARDBUS_LATENCY_TIMER  176     /* secondary latency timer */
+>> --
+>> 2.11.0
+>>
+
+
 -- 
-2.7.4
+Alexey
