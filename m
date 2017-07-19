@@ -1,11 +1,14 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu: Convert to using %pOF instead of full_name
-Date: Tue, 18 Jul 2017 16:43:09 -0500
-Message-ID: <20170718214339.7774-29-robh@kernel.org>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Track context bank state
+Date: Wed, 19 Jul 2017 08:10:58 +0530
+Message-ID: <22b7eea9-d194-d768-a10f-fc3c6fec9e4c@codeaurora.org>
+References: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,171 +18,311 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we have a custom printf format specifier, convert users of
-full_name to use %pOF instead. This is preparation to remove storing
-of the full path string for each node.
+Hi Robin,
 
-Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+On 7/18/2017 6:14 PM, Robin Murphy wrote:
+> Echoing what we do for Stream Map Entries, maintain a software shadow
+> state for context bank configuration. With this in place, we are mere
+> moments away from blissfully easy suspend/resume support.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> Since the runtime PM discussion has come back again, I figured it was
+> probably about time to finish off my plan for system PM. Lightly tested
+> on Juno (MMU-401) with hibernation.
+> 
+> Robin.
+> 
+>  drivers/iommu/arm-smmu.c | 159 +++++++++++++++++++++++++++++------------------
+>  1 file changed, 97 insertions(+), 62 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index bc89b4d6c043..86897b7b81d8 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -338,6 +338,13 @@ struct arm_smmu_smr {
+>  	bool				valid;
+>  };
+>  
+> +struct arm_smmu_cb {
+> +	u64				ttbr[2];
+> +	u32				tcr[2];
+> +	u32				mair[2];
+> +	struct arm_smmu_cfg		*cfg;
+> +};
+> +
+
+ When i was trying this sometime back [1], was
+ saving and using the pgtbl->cfg and domain->cfg for
+ restoring the context. But this looks correct to make
+ a actual shadow once and use it later all the time.
+ Will also try some testing today.
+
+ Reviewed-by: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+
+[1] https://patchwork.kernel.org/patch/9389717/
+
+Regards,
+ Sricharan
+
+
+>  struct arm_smmu_master_cfg {
+>  	struct arm_smmu_device		*smmu;
+>  	s16				smendx[];
+> @@ -380,6 +387,7 @@ struct arm_smmu_device {
+>  	u32				num_context_banks;
+>  	u32				num_s2_context_banks;
+>  	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
+> +	struct arm_smmu_cb		*cbs;
+>  	atomic_t			irptndx;
+>  
+>  	u32				num_mapping_groups;
+> @@ -768,17 +776,69 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>  static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>  				       struct io_pgtable_cfg *pgtbl_cfg)
+>  {
+> -	u32 reg, reg2;
+> -	u64 reg64;
+> -	bool stage1;
+>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
+> +	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+> +
+> +	cb->cfg = cfg;
+> +
+> +	/* TTBCR */
+> +	if (stage1) {
+> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> +			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
+> +		} else {
+> +			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+> +			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+> +			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
+> +			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+> +				cb->tcr[1] |= TTBCR2_AS;
+> +		}
+> +	} else {
+> +		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+> +	}
+> +
+> +	/* TTBRs */
+> +	if (stage1) {
+> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> +			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+> +			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+> +		} else {
+> +			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+> +			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+> +		}
+> +	} else {
+> +		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+> +	}
+> +
+> +	/* MAIRs (stage-1 only) */
+> +	if (stage1) {
+> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> +			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
+> +			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
+> +		} else {
+> +			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
+> +			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
+> +		}
+> +	}
+> +}
+> +
+> +static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+> +{
+> +	u32 reg;
+> +	bool stage1;
+> +	struct arm_smmu_cb *cb = &smmu->cbs[idx];
+> +	struct arm_smmu_cfg *cfg = cb->cfg;
+> +	struct arm_smmu_cfg default_cfg = {0};
+>  	void __iomem *cb_base, *gr1_base;
+>  
+> +	if (!cfg)
+> +		cfg = &default_cfg;
+> +
+>  	gr1_base = ARM_SMMU_GR1(smmu);
+>  	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+> +	cb_base = ARM_SMMU_CB(smmu, idx);
+>  
+> +	/* CBA2R */
+>  	if (smmu->version > ARM_SMMU_V1) {
+>  		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+>  			reg = CBA2R_RW64_64BIT;
+> @@ -788,7 +848,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>  		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+>  			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
+>  
+> -		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
+> +		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
+>  	}
+>  
+>  	/* CBAR */
+> @@ -807,72 +867,43 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>  		/* 8-bit VMIDs live in CBAR */
+>  		reg |= cfg->vmid << CBAR_VMID_SHIFT;
+>  	}
+> -	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+> +	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
+>  
+>  	/*
+>  	 * TTBCR
+>  	 * We must write this before the TTBRs, since it determines the
+>  	 * access behaviour of some fields (in particular, ASID[15:8]).
+>  	 */
+> -	if (stage1) {
+> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> -			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
+> -			reg2 = 0;
+> -		} else {
+> -			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+> -			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+> -			reg2 |= TTBCR2_SEP_UPSTREAM;
+> -			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+> -				reg2 |= TTBCR2_AS;
+> -		}
+> -		if (smmu->version > ARM_SMMU_V1)
+> -			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+> -	} else {
+> -		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+> -	}
+> -	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+> +	if (stage1 && smmu->version > ARM_SMMU_V1)
+> +		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
+> +	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
+>  
+>  	/* TTBRs */
+> -	if (stage1) {
+> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> -			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
+> -			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
+> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
+> -			writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
+> -		} else {
+> -			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+> -			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
+> -			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+> -			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+> -			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
+> -			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+> -		}
+> +	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> +		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
+> +		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
+> +		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+>  	} else {
+> -		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+> -		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+> +		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
+> +		writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+>  	}
+>  
+>  	/* MAIRs (stage-1 only) */
+>  	if (stage1) {
+> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> -			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
+> -			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
+> -		} else {
+> -			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
+> -			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
+> -		}
+> -		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
+> -		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
+> +		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
+> +		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
+>  	}
+>  
+>  	/* SCTLR */
+> -	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+> -	if (stage1)
+> -		reg |= SCTLR_S1_ASIDPNE;
+> -#ifdef __BIG_ENDIAN
+> -	reg |= SCTLR_E;
+> -#endif
+> +	if (!cb->cfg) {
+> +		reg = 0;
+> +	} else {
+> +		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+> +		if (stage1)
+> +			reg |= SCTLR_S1_ASIDPNE;
+> +		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+> +			reg |= SCTLR_E;
+> +	}
+>  	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
+>  }
+>  
+> @@ -1035,6 +1066,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>  
+>  	/* Initialise the context bank with our page table cfg */
+>  	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+> +	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+>  
+>  	/*
+>  	 * Request context fault interrupt. Do this last to avoid the
+> @@ -1067,7 +1099,6 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> -	void __iomem *cb_base;
+>  	int irq;
+>  
+>  	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+> @@ -1077,8 +1108,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>  	 * Disable the context bank and free the page tables before freeing
+>  	 * it.
+>  	 */
+> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
+> -	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
+> +	smmu->cbs[cfg->cbndx] = (struct arm_smmu_cb){0};
+> +	arm_smmu_write_context_bank(smmu, cfg->cbndx);
+>  
+>  	if (cfg->irptndx != INVALID_IRPTNDX) {
+>  		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+> @@ -1722,7 +1753,6 @@ static struct iommu_ops arm_smmu_ops = {
+>  static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  {
+>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+> -	void __iomem *cb_base;
+>  	int i;
+>  	u32 reg, major;
+>  
+> @@ -1758,8 +1788,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  
+>  	/* Make sure all context banks are disabled and clear CB_FSR  */
+>  	for (i = 0; i < smmu->num_context_banks; ++i) {
+> -		cb_base = ARM_SMMU_CB(smmu, i);
+> -		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
+> +		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
+> +
+> +		arm_smmu_write_context_bank(smmu, i);
+>  		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
+>  		/*
+>  		 * Disable MMU-500's not-particularly-beneficial next-page
+> @@ -1964,6 +1995,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  		smmu->cavium_id_base -= smmu->num_context_banks;
+>  		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
+>  	}
+> +	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
+> +				 sizeof(*smmu->cbs), GFP_KERNEL);
+> +	if (!smmu->cbs)
+> +		return -ENOMEM;
+>  
+>  	/* ID2 */
+>  	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
+> 
+
+-- 
+"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+
 ---
- drivers/iommu/fsl_pamu.c        | 20 ++++++++------------
- drivers/iommu/fsl_pamu_domain.c | 10 ++++------
- drivers/iommu/of_iommu.c        |  3 +--
- drivers/iommu/rockchip-iommu.c  | 10 +++++-----
- 4 files changed, 18 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index a34355fca37a..919ad9045ac4 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -530,8 +530,8 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
- 		if (node) {
- 			prop = of_get_property(node, "cache-stash-id", NULL);
- 			if (!prop) {
--				pr_debug("missing cache-stash-id at %s\n",
--					 node->full_name);
-+				pr_debug("missing cache-stash-id at %pOF\n",
-+					 node);
- 				of_node_put(node);
- 				return ~(u32)0;
- 			}
-@@ -557,8 +557,8 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
- 		if (stash_dest_hint == cache_level) {
- 			prop = of_get_property(node, "cache-stash-id", NULL);
- 			if (!prop) {
--				pr_debug("missing cache-stash-id at %s\n",
--					 node->full_name);
-+				pr_debug("missing cache-stash-id at %pOF\n",
-+					 node);
- 				of_node_put(node);
- 				return ~(u32)0;
- 			}
-@@ -568,8 +568,7 @@ u32 get_stash_id(u32 stash_dest_hint, u32 vcpu)
-
- 		prop = of_get_property(node, "next-level-cache", NULL);
- 		if (!prop) {
--			pr_debug("can't find next-level-cache at %s\n",
--				 node->full_name);
-+			pr_debug("can't find next-level-cache at %pOF\n", node);
- 			of_node_put(node);
- 			return ~(u32)0;  /* can't traverse any further */
- 		}
-@@ -1063,8 +1062,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
-
- 	guts_node = of_find_matching_node(NULL, guts_device_ids);
- 	if (!guts_node) {
--		dev_err(dev, "could not find GUTS node %s\n",
--			dev->of_node->full_name);
-+		dev_err(dev, "could not find GUTS node %pOF\n", dev->of_node);
- 		ret = -ENODEV;
- 		goto error;
- 	}
-@@ -1246,8 +1244,7 @@ static __init int fsl_pamu_init(void)
-
- 	pdev = platform_device_alloc("fsl-of-pamu", 0);
- 	if (!pdev) {
--		pr_err("could not allocate device %s\n",
--		       np->full_name);
-+		pr_err("could not allocate device %pOF\n", np);
- 		ret = -ENOMEM;
- 		goto error_device_alloc;
- 	}
-@@ -1259,8 +1256,7 @@ static __init int fsl_pamu_init(void)
-
- 	ret = platform_device_add(pdev);
- 	if (ret) {
--		pr_err("could not add device %s (err=%i)\n",
--		       np->full_name, ret);
-+		pr_err("could not add device %pOF (err=%i)\n", np, ret);
- 		goto error_device_add;
- 	}
-
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index da0e1e30ef37..01c73479345d 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -619,8 +619,8 @@ static int handle_attach_device(struct fsl_dma_domain *dma_domain,
- 	for (i = 0; i < num; i++) {
- 		/* Ensure that LIODN value is valid */
- 		if (liodn[i] >= PAACE_NUMBER_ENTRIES) {
--			pr_debug("Invalid liodn %d, attach device failed for %s\n",
--				 liodn[i], dev->of_node->full_name);
-+			pr_debug("Invalid liodn %d, attach device failed for %pOF\n",
-+				 liodn[i], dev->of_node);
- 			ret = -EINVAL;
- 			break;
- 		}
-@@ -684,8 +684,7 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
- 		liodn_cnt = len / sizeof(u32);
- 		ret = handle_attach_device(dma_domain, dev, liodn, liodn_cnt);
- 	} else {
--		pr_debug("missing fsl,liodn property at %s\n",
--			 dev->of_node->full_name);
-+		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
- 		ret = -EINVAL;
- 	}
-
-@@ -720,8 +719,7 @@ static void fsl_pamu_detach_device(struct iommu_domain *domain,
- 	if (prop)
- 		detach_device(dev, dma_domain);
- 	else
--		pr_debug("missing fsl,liodn property at %s\n",
--			 dev->of_node->full_name);
-+		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
- }
-
- static  int configure_domain_geometry(struct iommu_domain *domain, void *data)
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 8cb60829a7a1..fe91b35ddf7f 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -255,8 +255,7 @@ static int __init of_iommu_init(void)
- 		const of_iommu_init_fn init_fn = match->data;
-
- 		if (init_fn && init_fn(np))
--			pr_err("Failed to initialise IOMMU %s\n",
--				of_node_full_name(np));
-+			pr_err("Failed to initialise IOMMU %pOF\n", np);
- 	}
-
- 	return 0;
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 4ba48a26b389..1b8155dada26 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1008,20 +1008,20 @@ static int rk_iommu_group_set_iommudata(struct iommu_group *group,
- 	ret = of_parse_phandle_with_args(np, "iommus", "#iommu-cells", 0,
- 					 &args);
- 	if (ret) {
--		dev_err(dev, "of_parse_phandle_with_args(%s) => %d\n",
--			np->full_name, ret);
-+		dev_err(dev, "of_parse_phandle_with_args(%pOF) => %d\n",
-+			np, ret);
- 		return ret;
- 	}
- 	if (args.args_count != 0) {
--		dev_err(dev, "incorrect number of iommu params found for %s (found %d, expected 0)\n",
--			args.np->full_name, args.args_count);
-+		dev_err(dev, "incorrect number of iommu params found for %pOF (found %d, expected 0)\n",
-+			args.np, args.args_count);
- 		return -EINVAL;
- 	}
-
- 	pd = of_find_device_by_node(args.np);
- 	of_node_put(args.np);
- 	if (!pd) {
--		dev_err(dev, "iommu %s not found\n", args.np->full_name);
-+		dev_err(dev, "iommu %pOF not found\n", args.np);
- 		return -EPROBE_DEFER;
- 	}
-
---
-2.11.0
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
