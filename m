@@ -1,328 +1,275 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu: Track context bank state
-Date: Wed, 19 Jul 2017 08:10:58 +0530
-Message-ID: <22b7eea9-d194-d768-a10f-fc3c6fec9e4c@codeaurora.org>
-References: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Yong Zhi <yong.zhi@intel.com>
+Subject: [PATCH v3 00/12] Intel IPU3 ImgU patchset
+Date: Tue, 18 Jul 2017 22:11:11 -0500
+Message-ID: <1500433871-2237-1-git-send-email-yong.zhi@intel.com>
+Return-path: <linux-media-owner@vger.kernel.org>
+Sender: linux-media-owner@vger.kernel.org
+To: linux-media@vger.kernel.org, sakari.ailus@linux.intel.com
+Cc: jian.xu.zheng@intel.com, rajmohan.mani@intel.com, hyungwoo.yang@intel.com, jerry.w.hu@intel.com, arnd@arndb.de, hch@lst.de, robin.murphy@arm.com, iommu@lists.linux-foundation.org, Yong Zhi <yong.zhi@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+This patchset adds support for the Intel IPU3 (Image Processing Unit)
+ImgU, which is essentially a modern memory-to-memory ISP. It implements
+raw Bayer to YUV image format conversion as well as a large number of
+other pixel processing algorithms for improving the image quality.
 
-On 7/18/2017 6:14 PM, Robin Murphy wrote:
-> Echoing what we do for Stream Map Entries, maintain a software shadow
-> state for context bank configuration. With this in place, we are mere
-> moments away from blissfully easy suspend/resume support.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> Since the runtime PM discussion has come back again, I figured it was
-> probably about time to finish off my plan for system PM. Lightly tested
-> on Juno (MMU-401) with hibernation.
-> 
-> Robin.
-> 
->  drivers/iommu/arm-smmu.c | 159 +++++++++++++++++++++++++++++------------------
->  1 file changed, 97 insertions(+), 62 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index bc89b4d6c043..86897b7b81d8 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -338,6 +338,13 @@ struct arm_smmu_smr {
->  	bool				valid;
->  };
->  
-> +struct arm_smmu_cb {
-> +	u64				ttbr[2];
-> +	u32				tcr[2];
-> +	u32				mair[2];
-> +	struct arm_smmu_cfg		*cfg;
-> +};
-> +
+Meta data formats are defined for image statistics (3A, i.e. automatic
+white balance, exposure and focus, histogram and local area contrast
+enhancement) as well as for the pixel processing algorithm parameters.
+The documentation for these formats is currently not included in the
+patchset but will be added in a future version of this set.
 
- When i was trying this sometime back [1], was
- saving and using the pgtbl->cfg and domain->cfg for
- restoring the context. But this looks correct to make
- a actual shadow once and use it later all the time.
- Will also try some testing today.
+The algorithm parameters need to be considered specific to a given frame
+and typically a large number of these parameters change on frame to frame
+basis. Additionally, the parameters are highly structured (and not a flat
+space of independent configuration primitives). They also reflect the
+data structures used by the firmware and the hardware. On top of that,
+the algorithms require highly specialized user space to make meaningful
+use of them. For these reasons it has been chosen video buffers to pass
+the parameters to the device.
 
- Reviewed-by: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+On individual patches:
 
-[1] https://patchwork.kernel.org/patch/9389717/
+The heart of ImgU is the CSS, or Camera Subsystem, which contains the
+image processors and HW accelerators.
 
-Regards,
- Sricharan
+The 3A statistics and other firmware parameter computation related
+functions are implemented in patch 8.
 
+All h/w programming related code can be found in patch 9.
 
->  struct arm_smmu_master_cfg {
->  	struct arm_smmu_device		*smmu;
->  	s16				smendx[];
-> @@ -380,6 +387,7 @@ struct arm_smmu_device {
->  	u32				num_context_banks;
->  	u32				num_s2_context_banks;
->  	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
-> +	struct arm_smmu_cb		*cbs;
->  	atomic_t			irptndx;
->  
->  	u32				num_mapping_groups;
-> @@ -768,17 +776,69 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
->  static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  				       struct io_pgtable_cfg *pgtbl_cfg)
->  {
-> -	u32 reg, reg2;
-> -	u64 reg64;
-> -	bool stage1;
->  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-> +	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-> +
-> +	cb->cfg = cfg;
-> +
-> +	/* TTBCR */
-> +	if (stage1) {
-> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> +			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
-> +		} else {
-> +			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-> +			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
-> +			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
-> +			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-> +				cb->tcr[1] |= TTBCR2_AS;
-> +		}
-> +	} else {
-> +		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
-> +	}
-> +
-> +	/* TTBRs */
-> +	if (stage1) {
-> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> +			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-> +			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-> +		} else {
-> +			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> +			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-> +		}
-> +	} else {
-> +		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-> +	}
-> +
-> +	/* MAIRs (stage-1 only) */
-> +	if (stage1) {
-> +		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> +			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
-> +			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
-> +		} else {
-> +			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-> +			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-> +		}
-> +	}
-> +}
-> +
-> +static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
-> +{
-> +	u32 reg;
-> +	bool stage1;
-> +	struct arm_smmu_cb *cb = &smmu->cbs[idx];
-> +	struct arm_smmu_cfg *cfg = cb->cfg;
-> +	struct arm_smmu_cfg default_cfg = {0};
->  	void __iomem *cb_base, *gr1_base;
->  
-> +	if (!cfg)
-> +		cfg = &default_cfg;
-> +
->  	gr1_base = ARM_SMMU_GR1(smmu);
->  	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
-> +	cb_base = ARM_SMMU_CB(smmu, idx);
->  
-> +	/* CBA2R */
->  	if (smmu->version > ARM_SMMU_V1) {
->  		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
->  			reg = CBA2R_RW64_64BIT;
-> @@ -788,7 +848,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  		if (smmu->features & ARM_SMMU_FEAT_VMID16)
->  			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
->  
-> -		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
-> +		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
->  	}
->  
->  	/* CBAR */
-> @@ -807,72 +867,43 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  		/* 8-bit VMIDs live in CBAR */
->  		reg |= cfg->vmid << CBAR_VMID_SHIFT;
->  	}
-> -	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
-> +	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
->  
->  	/*
->  	 * TTBCR
->  	 * We must write this before the TTBRs, since it determines the
->  	 * access behaviour of some fields (in particular, ASID[15:8]).
->  	 */
-> -	if (stage1) {
-> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> -			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
-> -			reg2 = 0;
-> -		} else {
-> -			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-> -			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
-> -			reg2 |= TTBCR2_SEP_UPSTREAM;
-> -			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-> -				reg2 |= TTBCR2_AS;
-> -		}
-> -		if (smmu->version > ARM_SMMU_V1)
-> -			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
-> -	} else {
-> -		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
-> -	}
-> -	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
-> +	if (stage1 && smmu->version > ARM_SMMU_V1)
-> +		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
-> +	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
->  
->  	/* TTBRs */
-> -	if (stage1) {
-> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> -			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
-> -			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
-> -			writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-> -		} else {
-> -			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> -			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
-> -			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-> -			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-> -			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
-> -			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
-> -		}
-> +	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> +		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-> +		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-> +		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
->  	} else {
-> -		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-> -		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-> +		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-> +		writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
->  	}
->  
->  	/* MAIRs (stage-1 only) */
->  	if (stage1) {
-> -		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> -			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
-> -			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
-> -		} else {
-> -			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-> -			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-> -		}
-> -		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
-> -		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
-> +		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
-> +		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
->  	}
->  
->  	/* SCTLR */
-> -	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
-> -	if (stage1)
-> -		reg |= SCTLR_S1_ASIDPNE;
-> -#ifdef __BIG_ENDIAN
-> -	reg |= SCTLR_E;
-> -#endif
-> +	if (!cb->cfg) {
-> +		reg = 0;
-> +	} else {
-> +		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
-> +		if (stage1)
-> +			reg |= SCTLR_S1_ASIDPNE;
-> +		if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
-> +			reg |= SCTLR_E;
-> +	}
->  	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
->  }
->  
-> @@ -1035,6 +1066,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->  
->  	/* Initialise the context bank with our page table cfg */
->  	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-> +	arm_smmu_write_context_bank(smmu, cfg->cbndx);
->  
->  	/*
->  	 * Request context fault interrupt. Do this last to avoid the
-> @@ -1067,7 +1099,6 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
->  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> -	void __iomem *cb_base;
->  	int irq;
->  
->  	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
-> @@ -1077,8 +1108,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
->  	 * Disable the context bank and free the page tables before freeing
->  	 * it.
->  	 */
-> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
-> -	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-> +	smmu->cbs[cfg->cbndx] = (struct arm_smmu_cb){0};
-> +	arm_smmu_write_context_bank(smmu, cfg->cbndx);
->  
->  	if (cfg->irptndx != INVALID_IRPTNDX) {
->  		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-> @@ -1722,7 +1753,6 @@ static struct iommu_ops arm_smmu_ops = {
->  static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  {
->  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-> -	void __iomem *cb_base;
->  	int i;
->  	u32 reg, major;
->  
-> @@ -1758,8 +1788,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  
->  	/* Make sure all context banks are disabled and clear CB_FSR  */
->  	for (i = 0; i < smmu->num_context_banks; ++i) {
-> -		cb_base = ARM_SMMU_CB(smmu, i);
-> -		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-> +		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
-> +
-> +		arm_smmu_write_context_bank(smmu, i);
->  		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
->  		/*
->  		 * Disable MMU-500's not-particularly-beneficial next-page
-> @@ -1964,6 +1995,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  		smmu->cavium_id_base -= smmu->num_context_banks;
->  		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
->  	}
-> +	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
-> +				 sizeof(*smmu->cbs), GFP_KERNEL);
-> +	if (!smmu->cbs)
-> +		return -ENOMEM;
->  
->  	/* ID2 */
->  	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
-> 
+To access DDR via ImgU's own memory space, IPU3 is also equipped with
+its own MMU unit, the driver is implemented in patch 2.
+
+Patch 3 uses above driver for DMA mapping operation.
+
+Tomasz Figa thoroughly reworked both mmu and dmamap driver submitted in v2;
+as a result, current code has dependency on "[RFC PATCH 0/5] Fixes for loadable modules
+implementing DMA/IOMMU APIs" series being discussed on the following thread:
+
+<URL:https://www.spinics.net/lists/kernel/msg2549391.html>
+
+Patch 5-10 are basically IPU3 CSS specific implementations:
+
+6 and 7 provide some utility functions and manage IPU3 fw download and
+install.
+
+The firmware which is called ipu3-fw.bin can be downloaded from here:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
+
+Patch 9 and 10 are of the same file, the latter implements interface
+functions for access fw & hw capabilities defined in patch 8.
+
+Patch 12 uses Kconfig and Makefile created by IPU3 cio2 patch series:
+
+<URL:https://patchwork.kernel.org/patch/9833873/>
+
+Here is the device topology:
+
+localhost ~ # media-ctl -d /dev/media0 -p
+Media controller API version 0.1.0
+
+Media device information
+------------------------
+driver          ipu3-imgu
+model           ipu3-imgu
+serial          
+bus info        0000:00:05.0
+hw revision     0x0
+driver version  4.12.0
+
+Device topology
+- entity 1: ipu3-imgu:0 (8 pads, 8 links)
+            type V4L2 subdev subtype Unknown flags 0
+            device node name /dev/v4l-subdev0
+        pad0:Sink
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                <- "input":0 [ENABLED,IMMUTABLE]
+        pad1:Sink
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                <- "parameters":0 []
+        pad2:Source
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                -> "output":0 []
+        pad3:Source
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                -> "viewfinder":0 []
+        pad4:Source
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                -> "postview":0 []
+        pad5:Source
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                -> "3a stat":0 []
+        pad6:Source
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                -> "dvs stat":0 []
+        pad7:Source
+                stream:0[fmt:UYVY2X8/352x288]
+                link: 
+                -> "lace stat":0 []
+
+- entity 2: input (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video0
+        pad0:Source
+                link: 
+                -> "ipu3-imgu:0":0 [ENABLED,IMMUTABLE]
+
+- entity 3: parameters (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video1
+        pad0:Source
+                link: 
+                -> "ipu3-imgu:0":1 []
+
+- entity 4: output (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video2
+        pad0:Sink
+                link: 
+                <- "ipu3-imgu:0":2 []
+
+- entity 5: viewfinder (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video3
+        pad0:Sink
+                link: 
+                <- "ipu3-imgu:0":3 []
+
+- entity 6: postview (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video4
+        pad0:Sink
+                link: 
+                <- "ipu3-imgu:0":4 []
+
+- entity 7: 3a stat (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video5
+        pad0:Sink
+                link: 
+                <- "ipu3-imgu:0":5 []
+
+- entity 8: dvs stat (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video6
+        pad0:Sink
+                link: 
+                <- "ipu3-imgu:0":6 []
+
+- entity 9: lace stat (1 pad, 1 link)
+            type Node subtype V4L flags 0
+            device node name /dev/video7
+        pad0:Sink
+                link: 
+                <- "ipu3-imgu:0":7 []
+
+===========
+= history =
+===========
+
+version 3:
+- ipu3-mmu.c and ipu3-dmamap.c:
+  Tomasz Figa reworked both drivers and updated related files.
+- ipu2-abi.h:
+  update imgu_abi_binary_info ABI to support latest ipu3-fw.bin.
+  use __packed qualifier on structs suggested by Sakari Ailus.
+- ipu3-css-fw.c and ipu3-css-fw.h: fix suggested by Tomasz Figa:
+  remove pointer type in firmware blob structs.
+  fix binary_header array in struct imgu_fw_header.
+  fix calling ipu3_css_fw_show_binary() before proper checking.
+  fix logic error for valid length checking of blob name.
+- ipu3-css-params.c/ipu3_css_scaler_get_exp():
+  use lib helper suggested by Andy Shevchenko.
+- ipu3-v4l2.c/ipu3_videoc_querycap():
+  fill device_caps fix suggested by Hans Verkuil.
+  add VB2_DMABUF suggested by Tomasz Figa.
+- ipu3-css.c: increase IMGU freq from 300MHZ to 450MHZ (internal fix)
+- ipu3.c: use vb2_dma_sg_memop for the time being(internal fix).
+
+Todo list:
+- Provide documentation on the new IPU3 meta format defined in patch 1.
+- Use V4L2_BUF_TYPE_META_OUTPUT instead of V4L2_BUF_TYPE_VIDEO_OUTPUT.
+- Run v4l2-compliance and fix the failure test cases.
+- Continue looking for opportunities to optimize code with generic lib.
+
+version 2:
+This version cherry-picked firmware ABI change and other
+fix in order to bring the code up-to-date with our internal release.
+
+I will go over the review comments in v1 and address them in v3 and
+future update.
+
+version 1:
+- Initial submission.
+
+Tomasz Figa (2):
+  intel-ipu3: mmu: implement driver
+  intel-ipu3: Add DMA API implementation
+
+Yong Zhi (10):
+  videodev2.h, v4l2-ioctl: add IPU3 meta buffer format
+  intel-ipu3: Add user space ABI definitions
+  intel-ipu3: css: tables
+  intel-ipu3: css: imgu dma buff pool
+  intel-ipu3: css: firmware management
+  intel-ipu3: params: compute and program ccs
+  intel-ipu3: css hardware setup
+  intel-ipu3: css pipeline
+  intel-ipu3: Add imgu v4l2 driver
+  intel-ipu3: imgu top level pci device
+
+ drivers/media/pci/intel/ipu3/Kconfig           |   31 +
+ drivers/media/pci/intel/ipu3/Makefile          |   22 +
+ drivers/media/pci/intel/ipu3/ipu3-abi.h        | 1578 ++++
+ drivers/media/pci/intel/ipu3/ipu3-css-fw.c     |  270 +
+ drivers/media/pci/intel/ipu3/ipu3-css-fw.h     |  206 +
+ drivers/media/pci/intel/ipu3/ipu3-css-params.c | 3114 ++++++++
+ drivers/media/pci/intel/ipu3/ipu3-css-params.h |  105 +
+ drivers/media/pci/intel/ipu3/ipu3-css-pool.c   |  130 +
+ drivers/media/pci/intel/ipu3/ipu3-css-pool.h   |   53 +
+ drivers/media/pci/intel/ipu3/ipu3-css.c        | 2274 ++++++
+ drivers/media/pci/intel/ipu3/ipu3-css.h        |  235 +
+ drivers/media/pci/intel/ipu3/ipu3-dmamap.c     |  302 +
+ drivers/media/pci/intel/ipu3/ipu3-dmamap.h     |   22 +
+ drivers/media/pci/intel/ipu3/ipu3-mmu.c        |  639 ++
+ drivers/media/pci/intel/ipu3/ipu3-mmu.h        |   27 +
+ drivers/media/pci/intel/ipu3/ipu3-tables.c     | 9621 ++++++++++++++++++++++++
+ drivers/media/pci/intel/ipu3/ipu3-tables.h     |   82 +
+ drivers/media/pci/intel/ipu3/ipu3-v4l2.c       |  724 ++
+ drivers/media/pci/intel/ipu3/ipu3.c            |  844 +++
+ drivers/media/pci/intel/ipu3/ipu3.h            |  188 +
+ drivers/media/v4l2-core/v4l2-ioctl.c           |    4 +
+ include/uapi/linux/intel-ipu3.h                | 2182 ++++++
+ include/uapi/linux/videodev2.h                 |    6 +
+ 23 files changed, 22659 insertions(+)
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-abi.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css-fw.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css-fw.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css-params.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css-params.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css-pool.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css-pool.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-css.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-dmamap.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-dmamap.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-mmu.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-mmu.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-tables.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-tables.h
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3-v4l2.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3.c
+ create mode 100644 drivers/media/pci/intel/ipu3/ipu3.h
+ create mode 100644 include/uapi/linux/intel-ipu3.h
 
 -- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
-
----
-This email has been checked for viruses by Avast antivirus software.
-https://www.avast.com/antivirus
+2.7.4
