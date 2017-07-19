@@ -1,75 +1,91 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/4] Optimise 64-bit IOVA allocations
-Date: Wed, 19 Jul 2017 11:23:12 +0100
-Message-ID: <19661034-093e-a744-b6fb-3d23a285ebe3@arm.com>
-References: <cover.1500396007.git.robin.murphy@arm.com>
- <CAKv+Gu8x1ssF0g-e=ycpfy6jw8mNfVrx5VQJhjtz2D9Gd4zA-Q@mail.gmail.com>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Wed, 19 Jul 2017 10:48:15 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA8383B9D5A@FRAEML521-MBX.china.huawei.com>
+References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
+ <20170623145801.325244-3-shameerali.kolothum.thodi@huawei.com>
+ <20170704173820.GO22175@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA83839DB59@FRAEML521-MBX.china.huawei.com>
+ <20170714193322.GH26488@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAKv+Gu8x1ssF0g-e=ycpfy6jw8mNfVrx5VQJhjtz2D9Gd4zA-Q@mail.gmail.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Zhen Lei <thunder.leizhen@huawei.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Jonathan.Cameron@huawei.com, nwatters@codeaurora.org, ray.jui@broadcom.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170714193322.GH26488@arm.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/07/17 09:37, Ard Biesheuvel wrote:
-> On 18 July 2017 at 17:57, Robin Murphy <robin.murphy@arm.com> wrote:
->> Hi all,
->>
->> In the wake of the ARM SMMU optimisation efforts, it seems that certain
->> workloads (e.g. storage I/O with large scatterlists) probably remain quite
->> heavily influenced by IOVA allocation performance. Separately, Ard also
->> reported massive performance drops for a graphical desktop on AMD Seattle
->> when enabling SMMUs via IORT, which we traced to dma_32bit_pfn in the DMA
->> ops domain getting initialised differently for ACPI vs. DT, and exposing
->> the overhead of the rbtree slow path. Whilst we could go around trying to
->> close up all the little gaps that lead to hitting the slowest case, it
->> seems a much better idea to simply make said slowest case a lot less slow.
->>
->> I had a go at rebasing Leizhen's last IOVA series[1], but ended up finding
->> the changes rather too hard to follow, so I've taken the liberty here of
->> picking the whole thing up and reimplementing the main part in a rather
->> less invasive manner.
->>
->> Robin.
->>
->> [1] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg17753.html
->>
->> Robin Murphy (1):
->>   iommu/iova: Extend rbtree node caching
->>
->> Zhen Lei (3):
->>   iommu/iova: Optimise rbtree searching
->>   iommu/iova: Optimise the padding calculation
->>   iommu/iova: Make dma_32bit_pfn implicit
->>
->>  drivers/gpu/drm/tegra/drm.c      |   3 +-
->>  drivers/gpu/host1x/dev.c         |   3 +-
->>  drivers/iommu/amd_iommu.c        |   7 +--
->>  drivers/iommu/dma-iommu.c        |  18 +------
->>  drivers/iommu/intel-iommu.c      |  11 ++--
->>  drivers/iommu/iova.c             | 112 ++++++++++++++++-----------------------
->>  drivers/misc/mic/scif/scif_rma.c |   3 +-
->>  include/linux/iova.h             |   8 +--
->>  8 files changed, 60 insertions(+), 105 deletions(-)
->>
+
+
+> -----Original Message-----
+> From: Will Deacon [mailto:will.deacon@arm.com]
+> Sent: Friday, July 14, 2017 8:33 PM
+> To: Shameerali Kolothum Thodi
+> Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
+> sudeep.holla@arm.com; robin.murphy@arm.com; hanjun.guo@linaro.org;
+> Gabriele Paoloni; John Garry; Linuxarm; linux-acpi@vger.kernel.org;
+> iommu@lists.linux-foundation.org; Wangzhou (B); Guohanjun (Hanjun Guo);
+> linux-arm-kernel@lists.infradead.org; devel@acpica.org
+> Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based
+> HiSilicon erratum 161010801
 > 
-> These patches look suspiciously like the ones I have been using over
-> the past couple of weeks (modulo the tegra and host1x changes) from
-> your git tree. They work fine on my AMD Overdrive B1, both in DT and
-> in ACPI/IORT modes, although it is difficult to quantify any
-> performance deltas on my setup.
+[...]
+> > > > -	list_add_tail(&region->list, head);
+> > > > +	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
+> > > > +
+> > > > +		if (!is_of_node(smmu->dev->fwnode))
+> > > > +			resv = iort_iommu_its_get_resv_regions(dev, head);
+> > >
+> > > How does this work when we're not using ACPI? Shouldn't of vs ACPI
+> > > be abstracted from the driver?
+> >
+> > At present ARM_SMMU_OPT_RESV_HW_MSI is only set for ACPI and  DT
+> > support for this is a low priority for us at the moment. Is the
+> > suggestion is to have a common function outside the smmu driver for
+> > _iommu_its_get_resv_regions() ? I am not sure what is the best way here.
+> 
+> Right, something like that. The driver shouldn't need to care whether or not
+> it's using ACPI or DT when setting these options.
 
-Indeed - this is a rebase (to account for those new callers) with a
-couple of trivial tweaks to error paths and corner cases that normal
-usage shouldn't have been hitting anyway. "No longer unusably awful" is
-a good enough performance delta for me :)
+Below is what I have in mind for the common function for msi reserve.
+But just wondering invoking iort_ functions from iommu code 
+is acceptable or not . Could you please take a look and let me know.
 
-> Tested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Many thanks,
+Shameer
 
-Thanks!
-
-Robin.
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -19,6 +19,7 @@
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
++#include <linux/acpi_iort.h>
+ #include <linux/device.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/gfp.h>
+@@ -198,6 +199,24 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+ }
+ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ 
++/**
++ * iommu_dma_get_msi_resv_regions - Reserved region driver helper
++ * @dev: Device from iommu_get_resv_regions()
++ * @list: Reserved region list from iommu_get_resv_regions()
++ *
++ * IOMMU drivers can use this to implement their .get_resv_regions
++ * callback for HW MSI specific reservations. For now, this only
++ * covers ITS MSI region reservation using ACPI IORT helper function.
++ */
++int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list)
++{
++	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
++		return iort_iommu_its_get_resv_regions(dev, list);
++
++	return -ENODEV;
++}
++EXPORT_SYMBOL(iommu_dma_get_msi_resv_regions);
