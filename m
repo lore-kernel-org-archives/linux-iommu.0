@@ -1,74 +1,259 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH] iommu: Convert to using %pOF instead of full_name
-Date: Thu, 20 Jul 2017 22:35:46 +0200
-Message-ID: <3567821.Si31GJ2fDW@phil>
-References: <20170718214339.7774-29-robh@kernel.org>
+From: Sakari Ailus <sakari.ailus@iki.fi>
+Subject: Re: [PATCH v3 02/12] intel-ipu3: mmu: implement driver
+Date: Fri, 21 Jul 2017 00:49:26 +0300
+Message-ID: <20170720214925.shnfmpjrvouzuyyc@valkosipuli.retiisi.org.uk>
+References: <1500433958-2304-1-git-send-email-yong.zhi@intel.com>
+ <efc5aab9-9f4e-fba3-034b-185d3d7e0fcd@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170718214339.7774-29-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-media-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <efc5aab9-9f4e-fba3-034b-185d3d7e0fcd@arm.com>
+Sender: linux-media-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, sakari.ailus@linux.intel.com, jian.xu.zheng@intel.com, rajmohan.mani@intel.com, hyungwoo.yang@intel.com, jerry.w.hu@intel.com, arnd@arndb.de, hch@lst.de, iommu@lists.linux-foundation.org, Tomasz Figa <tfiga@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Am Dienstag, 18. Juli 2017, 16:43:09 CEST schrieb Rob Herring:
-> Now that we have a custom printf format specifier, convert users of
-> full_name to use %pOF instead. This is preparation to remove storing
-> of the full path string for each node.
-> 
-> Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> ---
->  drivers/iommu/rockchip-iommu.c  | 10 +++++-----
+Hi Robin,
 
-for the Rockchip-related part
-Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+On Wed, Jul 19, 2017 at 02:37:12PM +0100, Robin Murphy wrote:
+...
+> > +static int ipu3_mmu_map(struct iommu_domain *domain, unsigned long iova,
+> > +			phys_addr_t paddr, size_t size, int prot)
+> > +{
+> > +	struct ipu3_mmu_domain *mmu_dom = to_ipu3_mmu_domain(domain);
+> > +	u32 l1pt_idx, l2pt_idx;
+> > +	unsigned long flags;
+> > +	u32 *l2pt;
+> > +
+> > +	/* We assume a page by page mapping. */
+> > +	if (WARN_ON(size != IPU3_PAGE_SIZE))
+> > +		return -EINVAL;
+> 
+> The core API already enforces this, so drivers shouldn't need to be
+> paranoid.
+> 
+> > +
+> > +	address_to_pte_idx(iova, &l1pt_idx, &l2pt_idx);
+> > +
+> > +	l2pt = ipu3_mmu_get_l2pt(mmu_dom, l1pt_idx, true);
+> > +	if (!l2pt)
+> > +		return -ENOMEM;
+> > +
+> > +	spin_lock_irqsave(&mmu_dom->lock, flags);
+> > +
+> > +	if (l2pt[l2pt_idx] != mmu_dom->dummy_page_pteval) {
+> > +		spin_unlock_irqrestore(&mmu_dom->lock, flags);
+> > +		return -EBUSY;
+> > +	}
+> > +
+> > +	l2pt[l2pt_idx] = IPU3_ADDR2PTE(paddr);
+> > +
+> > +	clflush_cache_range(&l2pt[l2pt_idx], sizeof(*l2pt));
+> > +
+> > +	if (mmu_dom->mmu)
+> 
+> Yikes, are there actually users in the kernel which allocate domains and
+> try to create mappings in them before attaching any devices? In general,
+> that poses an ugly problem for certain IOMMU drivers :(
 
+This case is a bit special. The MMU is part of a PCI device which is also
+behind the MMU itself.
 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 4ba48a26b389..1b8155dada26 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1008,20 +1008,20 @@ static int rk_iommu_group_set_iommudata(struct iommu_group *group,
->  	ret = of_parse_phandle_with_args(np, "iommus", "#iommu-cells", 0,
->  					 &args);
->  	if (ret) {
-> -		dev_err(dev, "of_parse_phandle_with_args(%s) => %d\n",
-> -			np->full_name, ret);
-> +		dev_err(dev, "of_parse_phandle_with_args(%pOF) => %d\n",
-> +			np, ret);
->  		return ret;
->  	}
->  	if (args.args_count != 0) {
-> -		dev_err(dev, "incorrect number of iommu params found for %s (found %d, expected 0)\n",
-> -			args.np->full_name, args.args_count);
-> +		dev_err(dev, "incorrect number of iommu params found for %pOF (found %d, expected 0)\n",
-> +			args.np, args.args_count);
->  		return -EINVAL;
->  	}
-> 
->  	pd = of_find_device_by_node(args.np);
->  	of_node_put(args.np);
->  	if (!pd) {
-> -		dev_err(dev, "iommu %s not found\n", args.np->full_name);
-> +		dev_err(dev, "iommu %pOF not found\n", args.np);
->  		return -EPROBE_DEFER;
->  	}
-> 
-> --
-> 2.11.0
-> 
-> 
-> 
+Just the existence of mapped memory (or the mapping operation itself)
+shouldn't require powering on or keeping the device powered on. Hence this.
 
+> > +		call_if_ipu3_is_powered(mmu_dom->mmu, ipu3_mmu_tlb_invalidate);
+> > +
+> > +	spin_unlock_irqrestore(&mmu_dom->lock, flags);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static size_t ipu3_mmu_unmap(struct iommu_domain *domain, unsigned long iova,
+> > +			     size_t size)
+> > +{
+> > +	struct ipu3_mmu_domain *mmu_dom = to_ipu3_mmu_domain(domain);
+> > +	u32 l1pt_idx, l2pt_idx;
+> > +	unsigned long flags;
+> > +	u32 *l2pt;
+> > +
+> > +	/* We assume a page by page unmapping. */
+> > +	if (WARN_ON(size != IPU3_PAGE_SIZE))
+> > +		return 0;
+> 
+> As above.
+> 
+> > +
+> > +	address_to_pte_idx(iova, &l1pt_idx, &l2pt_idx);
+> > +
+> > +	l2pt = ipu3_mmu_get_l2pt(mmu_dom, l1pt_idx, false);
+> > +	if (!l2pt)
+> > +		return 0;
+> > +
+> > +	spin_lock_irqsave(&mmu_dom->lock, flags);
+> > +
+> > +	if (l2pt[l2pt_idx] == mmu_dom->dummy_page_pteval)
+> > +		size = 0;
+> > +	l2pt[l2pt_idx] = mmu_dom->dummy_page_pteval;
+> > +
+> > +	clflush_cache_range(&l2pt[l2pt_idx], sizeof(*l2pt));
+> > +
+> > +	if (mmu_dom->mmu)
+> > +		call_if_ipu3_is_powered(mmu_dom->mmu, ipu3_mmu_tlb_invalidate);
+> > +
+> > +	spin_unlock_irqrestore(&mmu_dom->lock, flags);
+> > +
+> > +	return size;
+> > +}
+> > +
+> > +static phys_addr_t ipu3_mmu_iova_to_phys(struct iommu_domain *domain,
+> > +					 dma_addr_t iova)
+> > +{
+> > +	struct ipu3_mmu_domain *d = to_ipu3_mmu_domain(domain);
+> > +	u32 l1pt_idx, l2pt_idx;
+> > +	u32 pteval;
+> > +	u32 *l2pt;
+> > +
+> > +	address_to_pte_idx(iova, &l1pt_idx, &l2pt_idx);
+> > +
+> > +	l2pt = ipu3_mmu_get_l2pt(d, l1pt_idx, false);
+> > +	if (!l2pt)
+> > +		return 0;
+> > +
+> > +	pteval = l2pt[l2pt_idx];
+> > +	if (pteval == d->dummy_page_pteval)
+> > +		return 0;
+> > +
+> > +	return IPU3_PTE2ADDR(pteval);
+> > +}
+> > +
+> > +static struct iommu_group *ipu3_mmu_device_group(struct device *dev)
+> > +{
+> > +	struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
+> > +
+> > +	return mmu->group;
+> 
+> 	return iommu_group_ref_get(mmu->group);
+> 
+> Otherwise, add 2 or more devices, remove 1 again, and watch the
+> still-live group disappear from under your feet.
+> 
+> > +}
+> > +
+> > +static int ipu3_mmu_add_device(struct device *dev)
+> > +{
+> > +	struct iommu_group *group;
+> > +
+> > +	group = iommu_group_get_for_dev(dev);
+> > +	if (IS_ERR(group))
+> > +		return PTR_ERR(group);
+> > +
+> > +	iommu_group_put(group);
+> > +	return 0;
+> > +}
+> > +
+> > +static void ipu3_mmu_remove_device(struct device *dev)
+> > +{
+> > +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> > +
+> > +	if (!domain)
+> > +		return;
+> > +
+> > +	ipu3_mmu_detach_dev(domain, dev);
+> 
+> Ah, so you avoid the refcount bug by forgetting to remove the device
+> from the group at all, but then go and implement the unpleasant
+> consequences of tearing down a potentially-live domain manually :)
+> 
+> You should call iommu_group_remove_device() here (i.e. undoing what
+> iommu_group_get_for_dev() did), and let that take care of the domain as
+> necessary.
+> 
+> > +}
+> > +
+> > +static struct iommu_ops ipu3_iommu_ops_template = {
+> > +	.domain_alloc   = ipu3_mmu_domain_alloc,
+> > +	.domain_free    = ipu3_mmu_domain_free,
+> > +	.attach_dev	= ipu3_mmu_attach_dev,
+> > +	.detach_dev	= ipu3_mmu_detach_dev,
+> > +	.map		= ipu3_mmu_map,
+> > +	.unmap		= ipu3_mmu_unmap,
+> > +	.map_sg		= default_iommu_map_sg,
+> > +	.iova_to_phys	= ipu3_mmu_iova_to_phys,
+> > +	.device_group	= ipu3_mmu_device_group,
+> > +	.add_device	= ipu3_mmu_add_device,
+> > +	.remove_device	= ipu3_mmu_remove_device,
+> > +	.pgsize_bitmap	= SZ_4K,
+> 
+> Nit: should probably be IPU3_PAGE_SIZE for consistency.
+> 
+> > +};
+> > +
+> > +/**
+> > + * ipu3_mmu_init() - initialize IPU3 MMU block
+> > + * @parent:	Parent IPU device.
+> > + * @base:	IOMEM base of hardware registers.
+> > + * @bus:	Bus on which DMA devices are registered.
+> > + *
+> > + * Return: Pointer to IPU3 MMU private data pointer or ERR_PTR() on error.
+> > + */
+> > +struct ipu3_mmu *ipu3_mmu_init(struct device *parent, void __iomem *base,
+> > +			       struct bus_type *bus)
+> > +{
+> > +	struct ipu3_mmu *mmu;
+> > +	u32 pteval;
+> > +	int ret;
+> > +
+> > +	mmu = kzalloc(sizeof(*mmu), GFP_KERNEL);
+> > +	if (!mmu)
+> > +		return ERR_PTR(-ENOMEM);
+> > +	mmu->base = base;
+> > +	mmu->dev = parent;
+> > +	mmu->bus = bus;
+> > +	mmu->ops = ipu3_iommu_ops_template;
+> > +
+> > +	/* Disallow external memory access when having no valid page tables. */
+> > +	ipu3_mmu_set_halt(mmu, true);
+> > +
+> > +	/*
+> > +	 * Allocate the L1 page table.
+> > +	 *
+> > +	 * NOTE that the hardware does not allow changing the L1 page table
+> > +	 * at runtime, so we use shadow L1 tables with CPU L2 table pointers
+> > +	 * per-domain and update the L1 table on domain attach and detach.
+> > +	 */
+> > +	mmu->l1pt = ipu3_mmu_alloc_page_table(0);
+> > +	if (!mmu->l1pt) {
+> > +		ret = -ENOMEM;
+> > +		goto fail_mmu;
+> > +	}
+> > +
+> > +	mmu->group = iommu_group_alloc();
+> > +	if (!mmu->group) {
+> > +		ret = -ENOMEM;
+> > +		goto fail_l1pt;
+> > +	}
+> > +
+> > +	pteval = IPU3_ADDR2PTE(virt_to_phys(mmu->l1pt));
+> > +	writel(pteval, mmu->base + REG_L1_PHYS);
+> > +	ipu3_mmu_tlb_invalidate(mmu);
+> > +
+> > +	bus_set_iommu(bus, &mmu->ops);
+> > +
+> > +	return mmu;
+> 
+> Rather than playing tricks with bus->ops, it's probably better for the
+> bus code to stash imgu->mmu directly in the other subdevices' archdata
+> as it creates them; that seems the cleanest way.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Right now there aren't any: there's a PCI device + the MMU struct device
+created by the PCI device driver, while the MMU itself is part of that PCI
+device. I guess you could alternatively create another on the bus and
+designate that for the "real" driver to control the PCI device.
+
+-- 
+Kind regards,
+
+Sakari Ailus
+e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
