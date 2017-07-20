@@ -1,93 +1,199 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: RE: [PATCH v3 2/2] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Thu, 20 Jul 2017 15:30:01 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA8383BAE56@FRAEML521-MBX.china.huawei.com>
-References: <20170623145801.325244-1-shameerali.kolothum.thodi@huawei.com>
- <20170623145801.325244-3-shameerali.kolothum.thodi@huawei.com>
- <20170704173820.GO22175@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA83839DB59@FRAEML521-MBX.china.huawei.com>
- <20170714193322.GH26488@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA8383B9D5A@FRAEML521-MBX.china.huawei.com>
- <f3ba9136-068a-280d-2849-f3a0081c1d90@arm.com>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 1/5] iommu/arm-smmu-v3: put off the execution of TLBI* to
+	reduce lock confliction
+Date: Thu, 20 Jul 2017 15:07:05 -0400
+Message-ID: <c1d85f28-c57b-4414-3504-16afb3a19ce0@codeaurora.org>
+References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
+	<1498484330-10840-2-git-send-email-thunder.leizhen@huawei.com>
+	<20170628093207.GB11053@arm.com> <5954610F.9020807@huawei.com>
+	<cd5b8ec5-f884-450c-df61-45d70bf40b10@huawei.com>
+	<20170717222337.0000508f@huawei.com>
+	<3cec10c5-82ca-2c54-dfdb-ac73b16e5bc6@codeaurora.org>
+	<20170718172055.00006e84@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <f3ba9136-068a-280d-2849-f3a0081c1d90@arm.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170718172055.00006e84-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>
-Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, zhouyoujun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4gTXVycGh5IFtt
-YWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+IFNlbnQ6IFRodXJzZGF5LCBKdWx5IDIwLCAy
-MDE3IDM6MzIgUE0NCj4gVG86IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGk7IFdpbGwgRGVhY29u
-DQo+IENjOiBsb3JlbnpvLnBpZXJhbGlzaUBhcm0uY29tOyBtYXJjLnp5bmdpZXJAYXJtLmNvbTsN
-Cj4gc3VkZWVwLmhvbGxhQGFybS5jb207IGhhbmp1bi5ndW9AbGluYXJvLm9yZzsgR2FicmllbGUg
-UGFvbG9uaTsgSm9obg0KPiBHYXJyeTsgTGludXhhcm07IGxpbnV4LWFjcGlAdmdlci5rZXJuZWwu
-b3JnOyBpb21tdUBsaXN0cy5saW51eC0NCj4gZm91bmRhdGlvbi5vcmc7IFdhbmd6aG91IChCKTsg
-R3VvaGFuanVuIChIYW5qdW4gR3VvKTsgbGludXgtYXJtLQ0KPiBrZXJuZWxAbGlzdHMuaW5mcmFk
-ZWFkLm9yZzsgZGV2ZWxAYWNwaWNhLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYzIDIvMl0g
-aW9tbXUvYXJtLXNtbXUtdjM6RW5hYmxlIEFDUEkgYmFzZWQNCj4gSGlTaWxpY29uIGVycmF0dW0g
-MTYxMDEwODAxDQo+IA0KPiBPbiAxOS8wNy8xNyAxMTo0OCwgU2hhbWVlcmFsaSBLb2xvdGh1bSBU
-aG9kaSB3cm90ZToNCj4gPg0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+
-ID4+IEZyb206IFdpbGwgRGVhY29uIFttYWlsdG86d2lsbC5kZWFjb25AYXJtLmNvbV0NCj4gPj4g
-U2VudDogRnJpZGF5LCBKdWx5IDE0LCAyMDE3IDg6MzMgUE0NCj4gPj4gVG86IFNoYW1lZXJhbGkg
-S29sb3RodW0gVGhvZGkNCj4gPj4gQ2M6IGxvcmVuem8ucGllcmFsaXNpQGFybS5jb207IG1hcmMu
-enluZ2llckBhcm0uY29tOw0KPiA+PiBzdWRlZXAuaG9sbGFAYXJtLmNvbTsgcm9iaW4ubXVycGh5
-QGFybS5jb207DQo+IGhhbmp1bi5ndW9AbGluYXJvLm9yZzsNCj4gPj4gR2FicmllbGUgUGFvbG9u
-aTsgSm9obiBHYXJyeTsgTGludXhhcm07IGxpbnV4LWFjcGlAdmdlci5rZXJuZWwub3JnOw0KPiA+
-PiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgV2FuZ3pob3UgKEIpOyBHdW9oYW5q
-dW4gKEhhbmp1bg0KPiBHdW8pOw0KPiA+PiBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
-ZC5vcmc7IGRldmVsQGFjcGljYS5vcmcNCj4gPj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MyAyLzJd
-IGlvbW11L2FybS1zbW11LXYzOkVuYWJsZSBBQ1BJIGJhc2VkDQo+ID4+IEhpU2lsaWNvbiBlcnJh
-dHVtIDE2MTAxMDgwMQ0KPiA+Pg0KPiA+IFsuLi5dDQo+ID4+Pj4+IC0JbGlzdF9hZGRfdGFpbCgm
-cmVnaW9uLT5saXN0LCBoZWFkKTsNCj4gPj4+Pj4gKwlpZiAoKHNtbXUtPm9wdGlvbnMgJiBBUk1f
-U01NVV9PUFRfUkVTVl9IV19NU0kpKSB7DQo+ID4+Pj4+ICsNCj4gPj4+Pj4gKwkJaWYgKCFpc19v
-Zl9ub2RlKHNtbXUtPmRldi0+Zndub2RlKSkNCj4gPj4+Pj4gKwkJCXJlc3YgPQ0KPiBpb3J0X2lv
-bW11X2l0c19nZXRfcmVzdl9yZWdpb25zKGRldiwgaGVhZCk7DQo+ID4+Pj4NCj4gPj4+PiBIb3cg
-ZG9lcyB0aGlzIHdvcmsgd2hlbiB3ZSdyZSBub3QgdXNpbmcgQUNQST8gU2hvdWxkbid0IG9mIHZz
-IEFDUEkNCj4gPj4+PiBiZSBhYnN0cmFjdGVkIGZyb20gdGhlIGRyaXZlcj8NCj4gPj4+DQo+ID4+
-PiBBdCBwcmVzZW50IEFSTV9TTU1VX09QVF9SRVNWX0hXX01TSSBpcyBvbmx5IHNldCBmb3IgQUNQ
-SSBhbmQNCj4gRFQNCj4gPj4+IHN1cHBvcnQgZm9yIHRoaXMgaXMgYSBsb3cgcHJpb3JpdHkgZm9y
-IHVzIGF0IHRoZSBtb21lbnQuIElzIHRoZQ0KPiA+Pj4gc3VnZ2VzdGlvbiBpcyB0byBoYXZlIGEg
-Y29tbW9uIGZ1bmN0aW9uIG91dHNpZGUgdGhlIHNtbXUgZHJpdmVyIGZvcg0KPiA+Pj4gX2lvbW11
-X2l0c19nZXRfcmVzdl9yZWdpb25zKCkgPyBJIGFtIG5vdCBzdXJlIHdoYXQgaXMgdGhlIGJlc3Qg
-d2F5DQo+IGhlcmUuDQo+ID4+DQo+ID4+IFJpZ2h0LCBzb21ldGhpbmcgbGlrZSB0aGF0LiBUaGUg
-ZHJpdmVyIHNob3VsZG4ndCBuZWVkIHRvIGNhcmUgd2hldGhlciBvcg0KPiBub3QNCj4gPj4gaXQn
-cyB1c2luZyBBQ1BJIG9yIERUIHdoZW4gc2V0dGluZyB0aGVzZSBvcHRpb25zLg0KPiA+DQo+ID4g
-QmVsb3cgaXMgd2hhdCBJIGhhdmUgaW4gbWluZCBmb3IgdGhlIGNvbW1vbiBmdW5jdGlvbiBmb3Ig
-bXNpIHJlc2VydmUuDQo+ID4gQnV0IGp1c3Qgd29uZGVyaW5nIGludm9raW5nIGlvcnRfIGZ1bmN0
-aW9ucyBmcm9tIGlvbW11IGNvZGUNCj4gPiBpcyBhY2NlcHRhYmxlIG9yIG5vdCAuIENvdWxkIHlv
-dSBwbGVhc2UgdGFrZSBhIGxvb2sgYW5kIGxldCBtZSBrbm93Lg0KPiANCj4gQXQgdGhhdCBwb2lu
-dCwgaXQgc2VlbXMgbGlrZSB3ZSBtaWdodCBhcyB3ZWxsIGp1c3Qgcm9sbCBpdCBpbnRvDQo+IGlv
-bW11X2RtYV9nZXRfcmVzdl9yZWdpb25zKCkgZGlyZWN0bHlbMV0uIEl0IHByb2JhYmx5IG1ha2Vz
-IHNlbnNlIGZvcg0KPiBhbnkgRFQgZXF1aXZhbGVudCB0byBiZSBkZXNjcmliZWQgZ2VuZXJpY2Fs
-bHksIHJhdGhlciB0aGFuDQo+IFNNTVUtc3BlY2lmaWMsIHNvIHBhcnNpbmcgdGhhdCB3b3VsZCBm
-aXQgaW50byBjb21tb24gY29kZSBhcyB3ZWxsLg0KPiANCj4gVGhlbiBpbiB0aGUgU01NVSBkcml2
-ZXJzIHdlIGNhbiBza2lwIGNyZWF0aW5nIHRoZSBTV19NU0kgcmVnaW9uIGlmDQo+IGlvbW11LWRt
-YSBnYXZlIHVzIGJhY2sgYW55IHJlYWwgb25lcyAoYW5kIHJlbW92ZSB0aGUgYXBwYXJlbnRseQ0K
-PiB1bm5lY2Vzc2FyeSByZXN2X21zaSBjaGVjayBpbiBWRklPKS4gT3IgYmUgbGF6eSBhbmQganVz
-dCBsZWF2ZSBpdCwgYXMgaXQNCj4gZG9lc24ndCBzZWVtIHRvIGRvIG11Y2ggaGFybSB0byBoYXZl
-IGJvdGguDQoNCk9rLCBJZiBJIHJlYWQgdGhhdCBjb3JyZWN0bHksIHdlIGRvbuKAmXQgbmVlZCBh
-bnkgY2hhbmdlcyB0byBTTU1VIGRyaXZlciBmb3INCm5vdyBhbmQgdGhpcyB3aWxsIGJlIGEgZ2Vu
-ZXJpYyBjaGFuZ2UgcmF0aGVyIHRoYW4gYSBIaVNpIHF1aXJrLg0KDQpTbyBpcyBpdCBvaywgaWYg
-SSBqdXN0IHNlbmQgdGhlIHBhdGNoIzEgcmViYXNlZCBvbiA0LjEzLXJjMT8gIA0KDQpUaGFua3Ms
-DQpTaGFtZWVyDQoNCj4gDQo+IFsxXSBUaGlzIGlzIHdoYXQgSSBoYWNrZWQgdXAgbG9jYWxseSBv
-biB0b3Agb2YgcGF0Y2ggIzE6DQo+IC0tLS0tPjgtLS0tLQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9pb21tdS9kbWEtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMNCj4gaW5kZXgg
-OWQxY2ViZTdmNmNiLi41MDI5MjgyN2RhNDkgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
-ZG1hLWlvbW11LmMNCj4gKysrIGIvZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYw0KPiBAQCAtMTks
-NiArMTksNyBAQA0KPiAgICogYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0uICBJZiBub3QsIHNlZSA8
-aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzLz4uDQo+ICAgKi8NCj4gDQo+ICsjaW5jbHVkZSA8
-bGludXgvYWNwaV9pb3J0Lmg+DQo+ICAjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+DQo+ICAjaW5j
-bHVkZSA8bGludXgvZG1hLWlvbW11Lmg+DQo+ICAjaW5jbHVkZSA8bGludXgvZ2ZwLmg+DQo+IEBA
-IC0xNzQsNiArMTc1LDEwIEBAIHZvaWQgaW9tbXVfZG1hX2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0
-IGRldmljZQ0KPiAqZGV2LA0KPiBzdHJ1Y3QgbGlzdF9oZWFkICpsaXN0KQ0KPiAgCXN0cnVjdCBw
-Y2lfaG9zdF9icmlkZ2UgKmJyaWRnZTsNCj4gIAlzdHJ1Y3QgcmVzb3VyY2VfZW50cnkgKndpbmRv
-dzsNCj4gDQo+ICsJaWYgKCFpc19vZl9ub2RlKGRldi0+aW9tbXVfZndzcGVjLT5pb21tdV9md25v
-ZGUpICYmDQo+ICsJCWlvcnRfaW9tbXVfaXRzX2dldF9yZXN2X3JlZ2lvbnMoZGV2LCBsaXN0KSA8
-IDApDQo+ICsJCXJldHVybjsNCj4gKw0KPiAgCWlmICghZGV2X2lzX3BjaShkZXYpKQ0KPiAgCQly
-ZXR1cm47DQoNCg==
+Hi Jonathan,
+
+[...]
+>>>>>      
+>>> Hi All,
+>>>
+>>> I'm a bit of late entry to this discussion.  Just been running some more
+>>> detailed tests on our d05 boards and wanted to bring some more numbers to
+>>> the discussion.
+>>>
+>>> All tests against 4.12 with the following additions:
+>>> * Robin's series removing the io-pgtable spinlock (and a few recent fixes)
+>>> * Cherry picked updates to the sas driver, merged prior to 4.13-rc1
+>>> * An additional HNS (network card) bug fix that will be upstreamed shortly.
+>>>
+>>> I've broken the results down into this patch and this patch + the remainder
+>>> of the set. As leizhen mentioned we got a nice little performance
+>>> bump from Robin's series so that was applied first (as it's in mainline now)
+>>>
+>>> SAS tests were fio with noop scheduler, 4k block size and various io depths
+>>> 1 process per disk.  Note this is probably a different setup to leizhen's
+>>> original numbers.
+>>>
+>>> Precentages are off the performance seen with the smmu disabled.
+>>> SAS
+>>> 4.12 - none of this series.
+>>> SMMU disabled
+>>> read io-depth 32 -   384K IOPS (100%)
+>>> read io-depth 2048 - 950K IOPS (100%)
+>>> rw io-depth 32 -     166K IOPS (100%)
+>>> rw io-depth 2048 -   340K IOPS (100%)
+>>>
+>>> SMMU enabled
+>>> read io-depth 32 -   201K IOPS (52%)
+>>> read io-depth 2048 - 306K IOPS (32%)
+>>> rw io-depth 32 -     99K  IOPS (60%)
+>>> rw io-depth 2048 -   150K IOPS (44%)
+>>>
+>>> Robin's recent series with fixes as seen on list (now merged)
+>>> SMMU enabled.
+>>> read io-depth 32 -   208K IOPS (54%)
+>>> read io-depth 2048 - 335K IOPS (35%)
+>>> rw io-depth 32 -     105K IOPS (63%)
+>>> rw io-depth 2048 -   165K IOPS (49%)
+>>>
+>>> 4.12 + Robin's series + just this patch SMMU enabled
+>>>
+>>> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
+>>>
+>>> read io-depth 32 -   225K IOPS (59%)
+>>> read io-depth 2048 - 365K IOPS (38%)
+>>> rw io-depth 32 -     110K IOPS (66%)
+>>> rw io-depth 2048 -   179K IOPS (53%)
+>>>
+>>> 4.12 + Robin's series + Second part of this series
+>>>
+>>> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
+>>> (iommu: add a new member unmap_tlb_sync into struct iommu_ops)
+>>> (iommu/arm-smmu-v3: add supprot for unmap an iova range with only on tlb sync)
+>>> (iommu/arm-smmu: add support for unmap of a memory range with only one tlb sync)
+>>>
+>>> read io-depth 32 -    225K IOPS (59%)
+>>> read io-depth 2048 -  833K IOPS (88%)
+>>> rw io-depth 32 -      112K IOPS (67%)
+>>> rw io-depth 2048 -    220K IOPS (65%)
+>>>
+>>> Robin's series gave us small gains across the board (3-5% recovered)
+>>> relative to the no smmu performance (which we are taking as the ideal case)
+>>>
+>>> This first patch gets us back another 2-5% of the no smmu performance
+>>>
+>>> The next few patches get us very little advantage on the small io-depths
+>>> but make a large difference to the larger io-depths - in particular the
+>>> read IOPS which is over twice as fast as without the series.
+>>>
+>>> For HNS it seems that we are less dependent on the SMMU performance and
+>>> can reach the non SMMU speed.
+>>>
+>>> Tests with
+>>> iperf -t 30 -i 10 -c IPADDRESS -P 3 last 10 seconds taken to avoid any
+>>> initial variability.
+>>>
+>>> The server end of the link was always running with smmu v3 disabled
+>>> so as to act as a fast sink of the data. Some variation seen across
+>>> repeat runs.
+>>>
+>>> Mainline v4.12 + network card fix
+>>> NO SMMU
+>>> 9.42 GBits/sec
+>>>
+>>> SMMU
+>>> 4.36 GBits/sec (46%)
+>>>
+>>> Robin's io-pgtable spinlock series
+>>>
+>>> 6.68 to 7.34 (71% - 78% variation across runs)
+>>>
+>>> Just this patch SMMU enabled
+>>>
+>>> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
+>>>
+>>> 7.96-8.8 GBits/sec (85% - 94%  some variation across runs)
+>>>
+>>> Full series
+>>>
+>>> (iommu/arm-smmu-v3: put of the execution of TLBI* to reduce lock conflict)
+>>> (iommu: add a new member unmap_tlb_sync into struct iommu_ops)
+>>> (iommu/arm-smmu-v3: add supprot for unmap an iova range with only on tlb sync)
+>>> (iommu/arm-smmu: add support for unmap of a memory range with only one tlb sync)
+>>>
+>>> 9.42 GBits/Sec (100%)
+>>>
+>>> So HNS test shows a greater boost from Robin's series and this first patch.
+>>> This is most likely because the HNS test is not putting as high a load on
+>>> the SMMU and associated code as the SAS test.
+>>>
+>>> In both cases however, this shows that both parts of this patch
+>>> series are beneficial.
+>>>
+>>> So on to the questions ;)
+>>>
+>>> Will, you mentioned that along with Robin and Nate you were working on
+>>> a somewhat related strategy to improve the performance.  Any ETA on that?
+>>
+>> The strategy I was working on is basically equivalent to the second
+>> part of the series. I will test your patches out sometime this week, and
+>> I'll also try to have our performance team run it through their whole
+>> suite.
+> 
+> Thanks, that's excellent.  Look forward to hearing how it goes.
+
+I tested the patches with 4 NVME drives connected to a single SMMU and
+the results seem to be inline with those you've reported.
+
+FIO - 512k blocksize / io-depth 32 / 1 thread per drive
+  Baseline 4.13-rc1 w/SMMU enabled: 25% of SMMU bypass performance
+  Baseline + Patch 1              : 28%
+  Baseline + Patches 2-5          : 86%
+  Baseline + Complete series      : 100% [!!]
+
+I saw performance improvements across all of the other FIO profiles I
+tested, although not always as substantial as was seen in the 512k/32/1
+case. The performance of some of the profiles, especially those with
+many threads per drive, remains woeful (often below 20%), but hopefully
+Robin's iova series will help improve that.
+
+> 
+> Particularly useful would be to know if there are particular performance tests
+> that show up anything interesting that we might want to replicate.
+> 
+> Jonathan and Leizhen
+>>
+>>>
+>>> As you might imagine, with the above numbers we are very keen to try and
+>>> move forward with this as quickly as possible.
+>>>
+>>> If you want additional testing we would be happy to help.
+>>>
+>>> Thanks,
+>>>
+>>> Jonathan
+[...]
+
+-Nate
+
+-- 
+Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
