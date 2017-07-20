@@ -1,259 +1,410 @@
 From: Sakari Ailus <sakari.ailus@iki.fi>
-Subject: Re: [PATCH v3 02/12] intel-ipu3: mmu: implement driver
-Date: Fri, 21 Jul 2017 00:49:26 +0300
-Message-ID: <20170720214925.shnfmpjrvouzuyyc@valkosipuli.retiisi.org.uk>
-References: <1500433958-2304-1-git-send-email-yong.zhi@intel.com>
- <efc5aab9-9f4e-fba3-034b-185d3d7e0fcd@arm.com>
+Subject: Re: [PATCH v3 03/12] intel-ipu3: Add DMA API implementation
+Date: Fri, 21 Jul 2017 00:55:11 +0300
+Message-ID: <20170720215511.ejztqforel333uv5@valkosipuli.retiisi.org.uk>
+References: <1500433978-2350-1-git-send-email-yong.zhi@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-media-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <efc5aab9-9f4e-fba3-034b-185d3d7e0fcd@arm.com>
+In-Reply-To: <1500433978-2350-1-git-send-email-yong.zhi@intel.com>
 Sender: linux-media-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Yong Zhi <yong.zhi@intel.com>, linux-media@vger.kernel.org, sakari.ailus@linux.intel.com, jian.xu.zheng@intel.com, rajmohan.mani@intel.com, hyungwoo.yang@intel.com, jerry.w.hu@intel.com, arnd@arndb.de, hch@lst.de, iommu@lists.linux-foundation.org, Tomasz Figa <tfiga@chromium.org>
+To: Yong Zhi <yong.zhi@intel.com>
+Cc: linux-media@vger.kernel.org, sakari.ailus@linux.intel.com, jian.xu.zheng@intel.com, rajmohan.mani@intel.com, hyungwoo.yang@intel.com, jerry.w.hu@intel.com, arnd@arndb.de, hch@lst.de, robin.murphy@arm.com, iommu@lists.linux-foundation.org, Tomasz Figa <tfiga@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Yong,
 
-On Wed, Jul 19, 2017 at 02:37:12PM +0100, Robin Murphy wrote:
-...
-> > +static int ipu3_mmu_map(struct iommu_domain *domain, unsigned long iova,
-> > +			phys_addr_t paddr, size_t size, int prot)
-> > +{
-> > +	struct ipu3_mmu_domain *mmu_dom = to_ipu3_mmu_domain(domain);
-> > +	u32 l1pt_idx, l2pt_idx;
-> > +	unsigned long flags;
-> > +	u32 *l2pt;
-> > +
-> > +	/* We assume a page by page mapping. */
-> > +	if (WARN_ON(size != IPU3_PAGE_SIZE))
-> > +		return -EINVAL;
+On Tue, Jul 18, 2017 at 10:12:58PM -0500, Yong Zhi wrote:
+> From: Tomasz Figa <tfiga@chromium.org>
 > 
-> The core API already enforces this, so drivers shouldn't need to be
-> paranoid.
+> This patch adds support for the IPU3 DMA mapping API.
 > 
-> > +
-> > +	address_to_pte_idx(iova, &l1pt_idx, &l2pt_idx);
-> > +
-> > +	l2pt = ipu3_mmu_get_l2pt(mmu_dom, l1pt_idx, true);
-> > +	if (!l2pt)
-> > +		return -ENOMEM;
-> > +
-> > +	spin_lock_irqsave(&mmu_dom->lock, flags);
-> > +
-> > +	if (l2pt[l2pt_idx] != mmu_dom->dummy_page_pteval) {
-> > +		spin_unlock_irqrestore(&mmu_dom->lock, flags);
-> > +		return -EBUSY;
-> > +	}
-> > +
-> > +	l2pt[l2pt_idx] = IPU3_ADDR2PTE(paddr);
-> > +
-> > +	clflush_cache_range(&l2pt[l2pt_idx], sizeof(*l2pt));
-> > +
-> > +	if (mmu_dom->mmu)
+> Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Yong Zhi <yong.zhi@intel.com>
+> ---
+>  drivers/media/pci/intel/ipu3/Kconfig       |   8 +
+>  drivers/media/pci/intel/ipu3/Makefile      |   2 +-
+>  drivers/media/pci/intel/ipu3/ipu3-dmamap.c | 302 +++++++++++++++++++++++++++++
+>  drivers/media/pci/intel/ipu3/ipu3-dmamap.h |  22 +++
+>  4 files changed, 333 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/media/pci/intel/ipu3/ipu3-dmamap.c
+>  create mode 100644 drivers/media/pci/intel/ipu3/ipu3-dmamap.h
 > 
-> Yikes, are there actually users in the kernel which allocate domains and
-> try to create mappings in them before attaching any devices? In general,
-> that poses an ugly problem for certain IOMMU drivers :(
+> diff --git a/drivers/media/pci/intel/ipu3/Kconfig b/drivers/media/pci/intel/ipu3/Kconfig
+> index 7bcdfa5..d503806 100644
+> --- a/drivers/media/pci/intel/ipu3/Kconfig
+> +++ b/drivers/media/pci/intel/ipu3/Kconfig
+> @@ -24,3 +24,11 @@ config INTEL_IPU3_MMU
+>  	---help---
+>  	  For IPU3, this option enables its MMU driver to translate its internal
+>  	  virtual address to 39 bits wide physical address for 64GBytes space access.
+> +
+> +config INTEL_IPU3_DMAMAP
+> +	tristate
+> +	default n
+> +	select IOMMU_DMA
+> +	select IOMMU_IOVA
+> +	---help---
+> +	  This is IPU3 IOMMU domain specific DMA driver.
+> diff --git a/drivers/media/pci/intel/ipu3/Makefile b/drivers/media/pci/intel/ipu3/Makefile
+> index 91cac9c..6517732 100644
+> --- a/drivers/media/pci/intel/ipu3/Makefile
+> +++ b/drivers/media/pci/intel/ipu3/Makefile
+> @@ -13,4 +13,4 @@
+>  
+>  obj-$(CONFIG_VIDEO_IPU3_CIO2) += ipu3-cio2.o
+>  obj-$(CONFIG_INTEL_IPU3_MMU) += ipu3-mmu.o
+> -
+> +obj-$(CONFIG_INTEL_IPU3_DMAMAP) += ipu3-dmamap.o
+> diff --git a/drivers/media/pci/intel/ipu3/ipu3-dmamap.c b/drivers/media/pci/intel/ipu3/ipu3-dmamap.c
+> new file mode 100644
+> index 0000000..86a0e15
+> --- /dev/null
+> +++ b/drivers/media/pci/intel/ipu3/ipu3-dmamap.c
+> @@ -0,0 +1,302 @@
+> +/*
+> + * Copyright (c) 2017 Intel Corporation.
+> + * Copyright (C) 2017 Google, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License version
+> + * 2 as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +#include <linux/types.h>
+> +#include <linux/dma-iommu.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/highmem.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/version.h>
+> +#include <linux/vmalloc.h>
+> +#include "ipu3-mmu.h"
+> +
+> +/*
+> + * Based on arch/arm64/mm/dma-mapping.c, with simplifications possible due
+> + * to driver-specific character of this file.
+> + */
+> +
+> +static pgprot_t __get_dma_pgprot(unsigned long attrs, pgprot_t prot)
+> +{
+> +	if (DMA_ATTR_NON_CONSISTENT & attrs)
+> +		return prot;
+> +	return pgprot_writecombine(prot);
+> +}
+> +
+> +static void flush_page(struct device *dev, const void *virt, phys_addr_t phys)
+> +{
+> +	/*
+> +	 * FIXME: Yes, casting to override the const specifier is ugly.
+> +	 * However, for some reason, this callback is intended to flush cache
+> +	 * for a page pointed to by a const pointer, even though the cach
+> +	 * flush operation by definition does not keep the affected memory
+> +	 * constant...
+> +	 */
+> +	clflush_cache_range((void *)virt, PAGE_SIZE);
 
-This case is a bit special. The MMU is part of a PCI device which is also
-behind the MMU itself.
+Hmm. Is this needed? The hardware is coherent --- apart from the MMU
+tables.
 
-Just the existence of mapped memory (or the mapping operation itself)
-shouldn't require powering on or keeping the device powered on. Hence this.
+Same for the flushes below.
 
-> > +		call_if_ipu3_is_powered(mmu_dom->mmu, ipu3_mmu_tlb_invalidate);
-> > +
-> > +	spin_unlock_irqrestore(&mmu_dom->lock, flags);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static size_t ipu3_mmu_unmap(struct iommu_domain *domain, unsigned long iova,
-> > +			     size_t size)
-> > +{
-> > +	struct ipu3_mmu_domain *mmu_dom = to_ipu3_mmu_domain(domain);
-> > +	u32 l1pt_idx, l2pt_idx;
-> > +	unsigned long flags;
-> > +	u32 *l2pt;
-> > +
-> > +	/* We assume a page by page unmapping. */
-> > +	if (WARN_ON(size != IPU3_PAGE_SIZE))
-> > +		return 0;
-> 
-> As above.
-> 
-> > +
-> > +	address_to_pte_idx(iova, &l1pt_idx, &l2pt_idx);
-> > +
-> > +	l2pt = ipu3_mmu_get_l2pt(mmu_dom, l1pt_idx, false);
-> > +	if (!l2pt)
-> > +		return 0;
-> > +
-> > +	spin_lock_irqsave(&mmu_dom->lock, flags);
-> > +
-> > +	if (l2pt[l2pt_idx] == mmu_dom->dummy_page_pteval)
-> > +		size = 0;
-> > +	l2pt[l2pt_idx] = mmu_dom->dummy_page_pteval;
-> > +
-> > +	clflush_cache_range(&l2pt[l2pt_idx], sizeof(*l2pt));
-> > +
-> > +	if (mmu_dom->mmu)
-> > +		call_if_ipu3_is_powered(mmu_dom->mmu, ipu3_mmu_tlb_invalidate);
-> > +
-> > +	spin_unlock_irqrestore(&mmu_dom->lock, flags);
-> > +
-> > +	return size;
-> > +}
-> > +
-> > +static phys_addr_t ipu3_mmu_iova_to_phys(struct iommu_domain *domain,
-> > +					 dma_addr_t iova)
-> > +{
-> > +	struct ipu3_mmu_domain *d = to_ipu3_mmu_domain(domain);
-> > +	u32 l1pt_idx, l2pt_idx;
-> > +	u32 pteval;
-> > +	u32 *l2pt;
-> > +
-> > +	address_to_pte_idx(iova, &l1pt_idx, &l2pt_idx);
-> > +
-> > +	l2pt = ipu3_mmu_get_l2pt(d, l1pt_idx, false);
-> > +	if (!l2pt)
-> > +		return 0;
-> > +
-> > +	pteval = l2pt[l2pt_idx];
-> > +	if (pteval == d->dummy_page_pteval)
-> > +		return 0;
-> > +
-> > +	return IPU3_PTE2ADDR(pteval);
-> > +}
-> > +
-> > +static struct iommu_group *ipu3_mmu_device_group(struct device *dev)
-> > +{
-> > +	struct ipu3_mmu *mmu = to_ipu3_mmu(dev);
-> > +
-> > +	return mmu->group;
-> 
-> 	return iommu_group_ref_get(mmu->group);
-> 
-> Otherwise, add 2 or more devices, remove 1 again, and watch the
-> still-live group disappear from under your feet.
-> 
-> > +}
-> > +
-> > +static int ipu3_mmu_add_device(struct device *dev)
-> > +{
-> > +	struct iommu_group *group;
-> > +
-> > +	group = iommu_group_get_for_dev(dev);
-> > +	if (IS_ERR(group))
-> > +		return PTR_ERR(group);
-> > +
-> > +	iommu_group_put(group);
-> > +	return 0;
-> > +}
-> > +
-> > +static void ipu3_mmu_remove_device(struct device *dev)
-> > +{
-> > +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> > +
-> > +	if (!domain)
-> > +		return;
-> > +
-> > +	ipu3_mmu_detach_dev(domain, dev);
-> 
-> Ah, so you avoid the refcount bug by forgetting to remove the device
-> from the group at all, but then go and implement the unpleasant
-> consequences of tearing down a potentially-live domain manually :)
-> 
-> You should call iommu_group_remove_device() here (i.e. undoing what
-> iommu_group_get_for_dev() did), and let that take care of the domain as
-> necessary.
-> 
-> > +}
-> > +
-> > +static struct iommu_ops ipu3_iommu_ops_template = {
-> > +	.domain_alloc   = ipu3_mmu_domain_alloc,
-> > +	.domain_free    = ipu3_mmu_domain_free,
-> > +	.attach_dev	= ipu3_mmu_attach_dev,
-> > +	.detach_dev	= ipu3_mmu_detach_dev,
-> > +	.map		= ipu3_mmu_map,
-> > +	.unmap		= ipu3_mmu_unmap,
-> > +	.map_sg		= default_iommu_map_sg,
-> > +	.iova_to_phys	= ipu3_mmu_iova_to_phys,
-> > +	.device_group	= ipu3_mmu_device_group,
-> > +	.add_device	= ipu3_mmu_add_device,
-> > +	.remove_device	= ipu3_mmu_remove_device,
-> > +	.pgsize_bitmap	= SZ_4K,
-> 
-> Nit: should probably be IPU3_PAGE_SIZE for consistency.
-> 
-> > +};
-> > +
-> > +/**
-> > + * ipu3_mmu_init() - initialize IPU3 MMU block
-> > + * @parent:	Parent IPU device.
-> > + * @base:	IOMEM base of hardware registers.
-> > + * @bus:	Bus on which DMA devices are registered.
-> > + *
-> > + * Return: Pointer to IPU3 MMU private data pointer or ERR_PTR() on error.
-> > + */
-> > +struct ipu3_mmu *ipu3_mmu_init(struct device *parent, void __iomem *base,
-> > +			       struct bus_type *bus)
-> > +{
-> > +	struct ipu3_mmu *mmu;
-> > +	u32 pteval;
-> > +	int ret;
-> > +
-> > +	mmu = kzalloc(sizeof(*mmu), GFP_KERNEL);
-> > +	if (!mmu)
-> > +		return ERR_PTR(-ENOMEM);
-> > +	mmu->base = base;
-> > +	mmu->dev = parent;
-> > +	mmu->bus = bus;
-> > +	mmu->ops = ipu3_iommu_ops_template;
-> > +
-> > +	/* Disallow external memory access when having no valid page tables. */
-> > +	ipu3_mmu_set_halt(mmu, true);
-> > +
-> > +	/*
-> > +	 * Allocate the L1 page table.
-> > +	 *
-> > +	 * NOTE that the hardware does not allow changing the L1 page table
-> > +	 * at runtime, so we use shadow L1 tables with CPU L2 table pointers
-> > +	 * per-domain and update the L1 table on domain attach and detach.
-> > +	 */
-> > +	mmu->l1pt = ipu3_mmu_alloc_page_table(0);
-> > +	if (!mmu->l1pt) {
-> > +		ret = -ENOMEM;
-> > +		goto fail_mmu;
-> > +	}
-> > +
-> > +	mmu->group = iommu_group_alloc();
-> > +	if (!mmu->group) {
-> > +		ret = -ENOMEM;
-> > +		goto fail_l1pt;
-> > +	}
-> > +
-> > +	pteval = IPU3_ADDR2PTE(virt_to_phys(mmu->l1pt));
-> > +	writel(pteval, mmu->base + REG_L1_PHYS);
-> > +	ipu3_mmu_tlb_invalidate(mmu);
-> > +
-> > +	bus_set_iommu(bus, &mmu->ops);
-> > +
-> > +	return mmu;
-> 
-> Rather than playing tricks with bus->ops, it's probably better for the
-> bus code to stash imgu->mmu directly in the other subdevices' archdata
-> as it creates them; that seems the cleanest way.
+> +}
+> +
+> +static void *ipu3_dmamap_alloc(struct device *dev, size_t size,
+> +			       dma_addr_t *handle, gfp_t gfp,
+> +			       unsigned long attrs)
+> +{
+> +	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, false, attrs);
+> +	size_t iosize = size;
+> +	struct page **pages;
+> +	pgprot_t prot;
+> +	void *addr;
+> +
+> +	if (WARN(!dev, "cannot create IOMMU mapping for unknown device\n"))
+> +		return NULL;
+> +
+> +	if (WARN(!gfpflags_allow_blocking(gfp),
+> +		 "atomic allocations not supported\n") ||
+> +	    WARN((DMA_ATTR_FORCE_CONTIGUOUS & attrs),
+> +	         "contiguous allocations not supported\n"))
+> +		return NULL;
+> +
+> +	size = PAGE_ALIGN(size);
+> +
+> +	dev_dbg(dev, "%s: allocating %zu\n", __func__, size);
+> +
+> +	/*
+> +	 * Some drivers rely on this, and we probably don't want the
+> +	 * possibility of stale kernel data being read by devices anyway.
+> +	 */
+> +	gfp |= __GFP_ZERO;
+> +
+> +	/*
+> +	 * On x86, __GFP_DMA or __GFP_DMA32 might be added implicitly, based
+> +	 * on device DMA mask. However the mask does not apply to the IOMMU,
+> +	 * which is expected to be able to map any physical page.
+> +	 */
+> +	gfp &= ~(__GFP_DMA | __GFP_DMA32);
+> +
+> +	pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+> +				handle, flush_page);
+> +	if (!pages)
+> +		return NULL;
+> +
+> +	prot = __get_dma_pgprot(attrs, PAGE_KERNEL);
+> +	addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+> +				      __builtin_return_address(0));
+> +	if (!addr)
+> +		iommu_dma_free(dev, pages, iosize, handle);
+> +
+> +	dev_dbg(dev, "%s: allocated %zu @ IOVA %pad @ VA %p\n",
+> +		__func__, size, handle, addr);
+> +
+> +	return addr;
+> +}
+> +
+> +static void ipu3_dmamap_free(struct device *dev, size_t size, void *cpu_addr,
+> +			     dma_addr_t handle, unsigned long attrs)
+> +{
+> +	struct page **pages;
+> +	size_t iosize = size;
+> +
+> +	size = PAGE_ALIGN(size);
+> +
+> +	pages = dma_common_get_mapped_pages(cpu_addr, VM_USERMAP);
+> +	if (WARN_ON(!pages))
+> +		return;
+> +
+> +	dev_dbg(dev, "%s: freeing %zu @ IOVA %pad @ VA %p\n",
+> +		__func__, size, &handle, cpu_addr);
+> +
+> +	iommu_dma_free(dev, pages, iosize, &handle);
+> +
+> +	dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+> +}
+> +
+> +static int ipu3_dmamap_mmap(struct device *dev, struct vm_area_struct *vma,
+> +			    void *cpu_addr, dma_addr_t dma_addr, size_t size,
+> +			    unsigned long attrs)
+> +{
+> +	struct page **pages;
+> +
+> +	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot);
+> +
+> +	pages = dma_common_get_mapped_pages(cpu_addr, VM_USERMAP);
+> +	if (WARN_ON(!pages))
+> +		return -ENXIO;
+> +
+> +	return iommu_dma_mmap(pages, size, vma);
+> +}
+> +
+> +static int ipu3_dmamap_get_sgtable(struct device *dev, struct sg_table *sgt,
+> +				   void *cpu_addr, dma_addr_t dma_addr,
+> +				   size_t size, unsigned long attrs)
+> +{
+> +	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> +	struct page **pages;
+> +
+> +	pages = dma_common_get_mapped_pages(cpu_addr, VM_USERMAP);
+> +	if (WARN_ON(!pages))
+> +		return -ENXIO;
+> +
+> +	return sg_alloc_table_from_pages(sgt, pages, count, 0, size,
+> +					 GFP_KERNEL);
+> +}
+> +
+> +static void ipu3_dmamap_sync_single_for_cpu(struct device *dev,
+> +					dma_addr_t dev_addr, size_t size,
+> +					enum dma_data_direction dir)
+> +{
+> +	phys_addr_t phys;
+> +
+> +	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
+> +	clflush_cache_range(phys_to_virt(phys), size);
+> +}
+> +
+> +static void ipu3_dmamap_sync_single_for_device(struct device *dev,
+> +					   dma_addr_t dev_addr, size_t size,
+> +					   enum dma_data_direction dir)
+> +{
+> +	phys_addr_t phys;
+> +
+> +	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
+> +	clflush_cache_range(phys_to_virt(phys), size);
+> +}
+> +
+> +static dma_addr_t ipu3_dmamap_map_page(struct device *dev, struct page *page,
+> +				   unsigned long offset, size_t size,
+> +				   enum dma_data_direction dir,
+> +				   unsigned long attrs)
+> +{
+> +	int prot = dma_info_to_prot(dir, false, attrs);
+> +	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
+> +
+> +	if (!iommu_dma_mapping_error(dev, dev_addr) &&
+> +	    (DMA_ATTR_SKIP_CPU_SYNC & attrs) == 0)
+> +		ipu3_dmamap_sync_single_for_device(dev, dev_addr, size, dir);
+> +
+> +	return dev_addr;
+> +}
+> +
+> +static void ipu3_dmamap_unmap_page(struct device *dev, dma_addr_t dev_addr,
+> +			       size_t size, enum dma_data_direction dir,
+> +			       unsigned long attrs)
+> +{
+> +	if ((DMA_ATTR_SKIP_CPU_SYNC & attrs) == 0)
+> +		ipu3_dmamap_sync_single_for_cpu(dev, dev_addr, size, dir);
+> +
+> +	iommu_dma_unmap_page(dev, dev_addr, size, dir, attrs);
+> +}
+> +
+> +static void ipu3_dmamap_sync_sg_for_cpu(struct device *dev,
+> +				    struct scatterlist *sgl, int nelems,
+> +				    enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
+> +
+> +	for_each_sg(sgl, sg, nelems, i)
+> +		clflush_cache_range(sg_virt(sg), sg->length);
+> +}
+> +
+> +static void ipu3_dmamap_sync_sg_for_device(struct device *dev,
+> +				       struct scatterlist *sgl, int nelems,
+> +				       enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
+> +
+> +	for_each_sg(sgl, sg, nelems, i)
+> +		clflush_cache_range(sg_virt(sg), sg->length);
+> +}
+> +
+> +static int ipu3_dmamap_map_sg(struct device *dev, struct scatterlist *sgl,
+> +			      int nents, enum dma_data_direction dir,
+> +			      unsigned long attrs)
+> +{
+> +	if ((DMA_ATTR_SKIP_CPU_SYNC & attrs) == 0)
+> +		ipu3_dmamap_sync_sg_for_device(dev, sgl, nents, dir);
+> +
+> +	return iommu_dma_map_sg(dev, sgl, nents,
+> +				dma_info_to_prot(dir, false, attrs));
+> +}
+> +
+> +static void ipu3_dmamap_unmap_sg(struct device *dev, struct scatterlist *sgl,
+> +				 int nents, enum dma_data_direction dir,
+> +				 unsigned long attrs)
+> +{
+> +	if ((DMA_ATTR_SKIP_CPU_SYNC & attrs) == 0)
+> +		ipu3_dmamap_sync_sg_for_cpu(dev, sgl, nents, dir);
+> +
+> +	iommu_dma_unmap_sg(dev, sgl, nents, dir, attrs);
+> +}
+> +
+> +static struct dma_map_ops ipu3_dmamap_ops = {
 
-Right now there aren't any: there's a PCI device + the MMU struct device
-created by the PCI device driver, while the MMU itself is part of that PCI
-device. I guess you could alternatively create another on the bus and
-designate that for the "real" driver to control the PCI device.
+const?
+
+> +	.alloc = ipu3_dmamap_alloc,
+> +	.free = ipu3_dmamap_free,
+> +	.mmap = ipu3_dmamap_mmap,
+> +	.get_sgtable = ipu3_dmamap_get_sgtable,
+> +	.map_page = ipu3_dmamap_map_page,
+> +	.unmap_page = ipu3_dmamap_unmap_page,
+> +	.map_sg = ipu3_dmamap_map_sg,
+> +	.unmap_sg = ipu3_dmamap_unmap_sg,
+> +	.sync_single_for_cpu = ipu3_dmamap_sync_single_for_cpu,
+> +	.sync_single_for_device = ipu3_dmamap_sync_single_for_device,
+> +	.sync_sg_for_cpu = ipu3_dmamap_sync_sg_for_cpu,
+> +	.sync_sg_for_device = ipu3_dmamap_sync_sg_for_device,
+> +	.mapping_error = iommu_dma_mapping_error,
+> +};
+> +
+> +int ipu3_dmamap_init(struct device *dev, u64 dma_base, u64 size)
+> +{
+> +	struct iommu_domain *domain;
+> +	int ret;
+> +
+> +	ret = iommu_dma_init();
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * The IOMMU core code allocates the default DMA domain, which the
+> +	 * underlying IOMMU driver needs to support via the dma-iommu layer.
+> +	 */
+> +	domain = iommu_get_domain_for_dev(dev);
+> +	if (!domain) {
+> +		pr_warn("Failed to get IOMMU domain for device %s\n",
+> +			dev_name(dev));
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (WARN(domain->type != IOMMU_DOMAIN_DMA, "device %s already managed?\n",
+> +		 dev_name(dev)))
+> +		return -EINVAL;
+> +
+> +	ret = iommu_dma_init_domain(domain, dma_base, size, dev);
+> +	if (ret) {
+> +		pr_warn("Failed to init IOMMU domain for device %s\n",
+> +			dev_name(dev));
+> +		return ret;
+> +	}
+> +
+> +	dev->dma_ops = &ipu3_dmamap_ops;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(ipu3_dmamap_init);
+> +
+> +void ipu3_dmamap_cleanup(struct device *dev)
+> +{
+> +	dev->dma_ops = &ipu3_dmamap_ops;
+> +	iommu_dma_cleanup();
+> +}
+> +EXPORT_SYMBOL_GPL(ipu3_dmamap_cleanup);
+> +
+> +MODULE_AUTHOR("Tomasz Figa <tfiga@chromium.org>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("IPU3 DMA mapping support");
+> diff --git a/drivers/media/pci/intel/ipu3/ipu3-dmamap.h b/drivers/media/pci/intel/ipu3/ipu3-dmamap.h
+> new file mode 100644
+> index 0000000..fe5d0a4
+> --- /dev/null
+> +++ b/drivers/media/pci/intel/ipu3/ipu3-dmamap.h
+> @@ -0,0 +1,22 @@
+> +/*
+> + * Copyright (c) 2017 Intel Corporation.
+> + * Copyright (C) 2017 Google, Inc.
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License version
+> + * 2 as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +
+> +#ifndef __IPU3_DMAMAP_H
+> +#define __IPU3_DMAMAP_H
+> +
+> +int ipu3_dmamap_init(struct device *dev, u64 dma_base, u64 size);
+> +void ipu3_dmamap_cleanup(struct device *dev);
+> +
+> +#endif
 
 -- 
-Kind regards,
+Regards,
 
 Sakari Ailus
 e-mail: sakari.ailus@iki.fi	XMPP: sailus@retiisi.org.uk
