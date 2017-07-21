@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/4] iommu: Finish making iommu_group support mandatory
-Date: Fri, 21 Jul 2017 13:12:38 +0100
-Message-ID: <c696938d2fc3b09a3569bdea448fd0fbdc1ec5f0.1500637633.git.robin.murphy@arm.com>
+Subject: [PATCH 1/4] iommu/msm: Add iommu_group support
+Date: Fri, 21 Jul 2017 13:12:35 +0100
+Message-ID: <b87d44e09fa18efbb9daf6258c1f8ecbedaac23c.1500637633.git.robin.murphy@arm.com>
 References: <cover.1500637633.git.robin.murphy@arm.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1500637633.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
@@ -10,71 +10,62 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that all the drivers properly implementing the IOMMU API support
-groups (I'm ignoring the etnaviv GPU MMUs which seemingly only do just
-enough to convince the ARM DMA mapping ops), we can remove the FIXME
-workarounds from the core code. In the process, it also seems logical to
-make the .device_group callback non-optional for drivers calling
-iommu_group_get_for_dev() - the current callers all implement it anyway,
-and it doesn't make sense for any future callers not to either.
+As the last step to making groups mandatory, clean up the remaining
+drivers by adding basic support. Whilst it may not perfectly reflect the
+isolation capabilities of the hardware, using generic_device_group()
+should at least maintain existing behaviour with respect to the API.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ drivers/iommu/msm_iommu.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3f6ea160afed..af69bf7e035a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1005,11 +1005,10 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	if (group)
- 		return group;
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index d0448353d501..04f4d51ffacb 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -393,6 +393,7 @@ static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
+ static int msm_iommu_add_device(struct device *dev)
+ {
+ 	struct msm_iommu_dev *iommu;
++	struct iommu_group *group;
+ 	unsigned long flags;
+ 	int ret = 0;
  
--	group = ERR_PTR(-EINVAL);
--
--	if (ops && ops->device_group)
--		group = ops->device_group(dev);
-+	if (!ops)
-+		return ERR_PTR(-EINVAL);
+@@ -406,7 +407,16 @@ static int msm_iommu_add_device(struct device *dev)
  
-+	group = ops->device_group(dev);
- 	if (WARN_ON_ONCE(group == NULL))
- 		return ERR_PTR(-EINVAL);
+ 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
  
-@@ -1298,12 +1297,8 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
- 	int ret;
+-	return ret;
++	if (ret)
++		return ret;
++
++	group = iommu_group_get_for_dev(dev);
++	if (IS_ERR(group))
++		return PTR_ERR(group);
++
++	iommu_group_put(group);
++
++	return 0;
+ }
  
- 	group = iommu_group_get(dev);
--	/* FIXME: Remove this when groups a mandatory for iommu drivers */
--	if (group == NULL)
--		return __iommu_attach_device(domain, dev);
--
- 	/*
--	 * We have a group - lock it to make sure the device-count doesn't
-+	 * Lock the group to make sure the device-count doesn't
- 	 * change while we are attaching
- 	 */
- 	mutex_lock(&group->mutex);
-@@ -1336,9 +1331,6 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- 	struct iommu_group *group;
+ static void msm_iommu_remove_device(struct device *dev)
+@@ -421,6 +431,8 @@ static void msm_iommu_remove_device(struct device *dev)
+ 		iommu_device_unlink(&iommu->iommu, dev);
  
- 	group = iommu_group_get(dev);
--	/* FIXME: Remove this when groups a mandatory for iommu drivers */
--	if (group == NULL)
--		return __iommu_detach_device(domain, dev);
+ 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
++	iommu_group_remove_device(dev);
+ }
  
- 	mutex_lock(&group->mutex);
- 	if (iommu_group_device_count(group) != 1) {
-@@ -1360,9 +1352,6 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
- 	struct iommu_group *group;
- 
- 	group = iommu_group_get(dev);
--	/* FIXME: Remove this when groups a mandatory for iommu drivers */
--	if (group == NULL)
--		return NULL;
- 
- 	domain = group->domain;
- 
+ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+@@ -700,6 +712,7 @@ static struct iommu_ops msm_iommu_ops = {
+ 	.iova_to_phys = msm_iommu_iova_to_phys,
+ 	.add_device = msm_iommu_add_device,
+ 	.remove_device = msm_iommu_remove_device,
++	.device_group = generic_device_group,
+ 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
+ 	.of_xlate = qcom_iommu_of_xlate,
+ };
 -- 
 2.12.2.dirty
