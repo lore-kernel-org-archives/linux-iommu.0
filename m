@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v8 01/13] iommu/amd: Detect pre enabled translation
-Date: Fri, 21 Jul 2017 16:58:59 +0800
-Message-ID: <1500627551-12930-2-git-send-email-bhe@redhat.com>
+Subject: [PATCH v8 02/13] iommu/amd: add several helper functions
+Date: Fri, 21 Jul 2017 16:59:00 +0800
+Message-ID: <1500627551-12930-3-git-send-email-bhe@redhat.com>
 References: <1500627551-12930-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,95 +21,90 @@ To: jroedel-l3A5Bk7waGM@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to check whether translation is already enabled in IOMMU.
+Move single iommu enabling codes into a wrapper function early_enable_iommu().
+This can make later kdump change easier.
+
+And also add iommu_disable_command_buffer and iommu_disable_event_buffer
+for later usage.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  | 24 ++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |  1 +
- drivers/iommu/amd_iommu_types.h |  4 ++++
- 3 files changed, 29 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 42 +++++++++++++++++++++++++++++++-----------
+ 1 file changed, 31 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 5cc597b383c7..e39857ce6481 100644
+index e39857ce6481..4ca6e3257d92 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -258,6 +258,25 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
- 
-+bool translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
-+}
-+
-+static void clear_translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+	iommu->flags &= ~AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
-+static void init_translation_status(struct amd_iommu *iommu)
-+{
-+	u32 ctrl;
-+
-+	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
-+	if (ctrl & (1<<CONTROL_IOMMU_EN))
-+		iommu->flags |= AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
- static inline void update_last_devid(u16 devid)
- {
- 	if (devid > amd_iommu_last_bdf)
-@@ -1399,6 +1418,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	iommu->int_enabled = false;
- 
-+	init_translation_status(iommu);
-+
-+	if (translation_pre_enabled(iommu))
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 466260f8a1df..a9666d2005bb 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -87,4 +87,5 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- 	return !!(iommu->features & f);
+@@ -634,6 +634,14 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
+ 	amd_iommu_reset_cmd_buffer(iommu);
  }
  
-+extern bool translation_pre_enabled(struct amd_iommu *iommu);
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 294a409e283b..d15966b62b33 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -417,6 +417,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
- #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
- 
- 
++/*
++ * This function disables the command buffer
++ */
++static void iommu_disable_command_buffer(struct amd_iommu *iommu)
++{
++	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
++}
 +
- /*
-  * This struct is used to pass information about
-  * incoming PPR faults around.
-@@ -435,6 +436,8 @@ struct iommu_domain;
- struct irq_domain;
- struct amd_irte_ops;
+ static void __init free_command_buffer(struct amd_iommu *iommu)
+ {
+ 	free_pages((unsigned long)iommu->cmd_buf, get_order(CMD_BUFFER_SIZE));
+@@ -666,6 +674,14 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
+ 	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
+ }
  
-+#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
++/*
++ * This function disables the command buffer
++ */
++static void iommu_disable_event_buffer(struct amd_iommu *iommu)
++{
++	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
++}
 +
- /*
-  * This structure contains generic data for  IOMMU protection domains
-  * independent of their use.
-@@ -569,6 +572,7 @@ struct amd_iommu {
- 	struct amd_irte_ops *irte_ops;
+ static void __init free_event_buffer(struct amd_iommu *iommu)
+ {
+ 	free_pages((unsigned long)iommu->evt_buf, get_order(EVT_BUFFER_SIZE));
+@@ -2046,6 +2062,19 @@ static void iommu_enable_ga(struct amd_iommu *iommu)
  #endif
+ }
  
-+	u32 flags;
- 	volatile u64 __aligned(8) cmd_sem;
- };
++static void early_enable_iommu(struct amd_iommu *iommu)
++{
++	iommu_disable(iommu);
++	iommu_init_flags(iommu);
++	iommu_set_device_table(iommu);
++	iommu_enable_command_buffer(iommu);
++	iommu_enable_event_buffer(iommu);
++	iommu_set_exclusion_range(iommu);
++	iommu_enable_ga(iommu);
++	iommu_enable(iommu);
++	iommu_flush_all_caches(iommu);
++}
++
+ /*
+  * This function finally enables all IOMMUs found in the system after
+  * they have been initialized
+@@ -2054,17 +2083,8 @@ static void early_enable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
  
+-	for_each_iommu(iommu) {
+-		iommu_disable(iommu);
+-		iommu_init_flags(iommu);
+-		iommu_set_device_table(iommu);
+-		iommu_enable_command_buffer(iommu);
+-		iommu_enable_event_buffer(iommu);
+-		iommu_set_exclusion_range(iommu);
+-		iommu_enable_ga(iommu);
+-		iommu_enable(iommu);
+-		iommu_flush_all_caches(iommu);
+-	}
++	for_each_iommu(iommu)
++		early_enable_iommu(iommu);
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
 -- 
 2.5.5
