@@ -1,117 +1,115 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v8 04/13] iommu/amd: Define bit fields for DTE particularly
-Date: Fri, 21 Jul 2017 16:59:02 +0800
-Message-ID: <1500627551-12930-5-git-send-email-bhe@redhat.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: [PATCH v8 06/13] iommu/amd: copy old trans table from old kernel
+Date: Fri, 21 Jul 2017 16:59:04 +0800
+Message-ID: <1500627551-12930-7-git-send-email-bhe@redhat.com>
 References: <1500627551-12930-1-git-send-email-bhe@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1500627551-12930-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1500627551-12930-1-git-send-email-bhe@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: jroedel@suse.de
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-In AMD-Vi spec several bits of IO PTE fields and DTE fields are similar
-so that both of them can share the same MACRO definition. However
-defining them respectively can make code more read-able. Do it now.
+Here several things need be done:
+- If iommu is pre-enabled in a normal kernel, just disable it and print
+  warning.
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+- If failed to copy dev table of old kernel, continue to proceed as
+  it does in normal kernel.
+
+- Disable and Re-enable event/cmd buffer,  install the copied DTE table
+  to reg, and detect and enable guest vapic.
+
+- Flush all caches
+
+Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/amd_iommu.c       |  8 ++++----
- drivers/iommu/amd_iommu_types.h | 18 ++++++++++++++----
- 2 files changed, 18 insertions(+), 8 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 51 ++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 44 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index e8a6d8109564..e5a03f259986 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1537,9 +1537,9 @@ static int iommu_map_page(struct protection_domain *dom,
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index c58f091ce232..aa9b5918d11f 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -37,6 +37,7 @@
+ #include <asm/io_apic.h>
+ #include <asm/irq_remapping.h>
  
- 	if (count > 1) {
- 		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
--		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
- 	} else
--		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte = phys_addr | IOMMU_PTE_PR | IOMMU_PTE_FC;
++#include <linux/crash_dump.h>
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+ #include "irq_remapping.h"
+@@ -1489,9 +1490,12 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 	iommu->int_enabled = false;
  
- 	if (prot & IOMMU_PROT_IR)
- 		__pte |= IOMMU_PTE_IR;
-@@ -2053,7 +2053,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 	init_translation_status(iommu);
+-
+-	if (translation_pre_enabled(iommu))
+-		pr_warn("Translation is already enabled - trying to copy translation structures\n");
++	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
++		iommu_disable(iommu);
++		clear_translation_pre_enabled(iommu);
++		pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
++			iommu->index);
++	}
  
- 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
--	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
-+	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
+ 	ret = init_iommu_from_acpi(iommu, h);
+ 	if (ret)
+@@ -1986,8 +1990,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+ }
  
- 	flags = amd_iommu_dev_table[devid].data[1];
- 
-@@ -2096,7 +2096,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- static void clear_dte_entry(u16 devid)
+ /*
+- * Init the device table to not allow DMA access for devices and
+- * suppress all page faults
++ * Init the device table to not allow DMA access for devices
+  */
+ static void init_device_table_dma(void)
  {
- 	/* remove entry from the device table seen by the hardware */
--	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
-+	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
- 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
+@@ -2128,9 +2131,43 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+ static void early_enable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
++	bool is_pre_enabled = false;
  
- 	amd_iommu_apply_erratum_63(devid);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 608e81ca5e92..ea36af19b5b9 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -265,7 +265,7 @@
- #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
- #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
- #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
--				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
-+				 IOMMU_PTE_PR | IOMMU_PTE_IR | IOMMU_PTE_IW)
- #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
- 
- #define PM_MAP_4k		0
-@@ -314,13 +314,23 @@
- #define PTE_LEVEL_PAGE_SIZE(level)			\
- 	(1ULL << (12 + (9 * (level))))
- 
--#define IOMMU_PTE_P  (1ULL << 0)
--#define IOMMU_PTE_TV (1ULL << 1)
-+/*
-+ * Bit value definition for I/O PTE fields
-+ */
-+#define IOMMU_PTE_PR (1ULL << 0)
- #define IOMMU_PTE_U  (1ULL << 59)
- #define IOMMU_PTE_FC (1ULL << 60)
- #define IOMMU_PTE_IR (1ULL << 61)
- #define IOMMU_PTE_IW (1ULL << 62)
- 
-+/*
-+ * Bit value definition for DTE fields
-+ */
-+#define DTE_FLAG_V  (1ULL << 0)
-+#define DTE_FLAG_TV (1ULL << 1)
-+#define DTE_FLAG_IR (1ULL << 61)
-+#define DTE_FLAG_IW (1ULL << 62)
+-	for_each_iommu(iommu)
+-		early_enable_iommu(iommu);
++	for_each_iommu(iommu) {
++		if (translation_pre_enabled(iommu)) {
++			is_pre_enabled = true;
++			break;
++		}
++	}
 +
- #define DTE_FLAG_IOTLB	(1ULL << 32)
- #define DTE_FLAG_GV	(1ULL << 55)
- #define DTE_FLAG_MASK	(0x3ffULL << 32)
-@@ -342,7 +352,7 @@
- #define GCR3_VALID		0x01ULL
++	if (!is_pre_enabled) {
++		for_each_iommu(iommu)
++			early_enable_iommu(iommu);
++	} else {
++		pr_warn("Translation is already enabled - trying to copy translation structures\n");
++		if (copy_dev_tables()) {
++			pr_err("Failed to copy DEV table from previous kernel.\n");
++			/*
++			 * If failed to copy dev tables from old kernel, continue to proceed
++			 * as it does in normal kernel.
++			 */
++			for_each_iommu(iommu) {
++				clear_translation_pre_enabled(iommu);
++				early_enable_iommu(iommu);
++			}
++		} else {
++			pr_info("Copied DEV table from previous kernel.\n");
++			for_each_iommu(iommu) {
++				iommu_disable_command_buffer(iommu);
++				iommu_disable_event_buffer(iommu);
++				iommu_enable_command_buffer(iommu);
++				iommu_enable_event_buffer(iommu);
++				iommu_enable_ga(iommu);
++				iommu_set_device_table(iommu);
++				iommu_flush_all_caches(iommu);
++			}
++		}
++	}
  
- #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
--#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
-+#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
- #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
- #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
- 
+ #ifdef CONFIG_IRQ_REMAP
+ 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
 -- 
 2.5.5
