@@ -1,8 +1,10 @@
 From: Simon Xue <xxm@rock-chips.com>
-Subject: [PATCH 1/2] iommu/rockchip: add multi irqs support
-Date: Fri, 21 Jul 2017 09:35:20 +0800
-Message-ID: <1500600921-102537-1-git-send-email-xxm@rock-chips.com>
+Subject: [PATCH 2/2] iommu/rockchip: ignore isp mmu reset operation
+Date: Fri, 21 Jul 2017 09:35:21 +0800
+Message-ID: <1500600921-102537-2-git-send-email-xxm@rock-chips.com>
+References: <1500600921-102537-1-git-send-email-xxm@rock-chips.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1500600921-102537-1-git-send-email-xxm@rock-chips.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>
 Cc: linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Simon <xxm@rock-chips.com>
@@ -10,78 +12,46 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Simon <xxm@rock-chips.com>
 
-RK3368 vpu mmu have two irqs, this patch support multi irqs
+ISP mmu can't support reset operation, it won't get the
+expected result when reset, but rest functions work normally.
+Add this patch as a WA for this issue.
 
 Signed-off-by: Simon <xxm@rock-chips.com>
 ---
- drivers/iommu/rockchip-iommu.c | 34 ++++++++++++++++++++++++----------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 4ba48a2..b38283e 100644
+index b38283e..47c00b9 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -90,7 +90,8 @@ struct rk_iommu {
- 	struct device *dev;
- 	void __iomem **bases;
+@@ -92,6 +92,7 @@ struct rk_iommu {
  	int num_mmu;
--	int irq;
-+	int *irq;
-+	int num_irq;
+ 	int *irq;
+ 	int num_irq;
++	bool reset_disabled;
  	struct iommu_device iommu;
  	struct list_head node; /* entry in rk_iommu_domain.iommus */
  	struct iommu_domain *domain; /* domain to which iommu is attached */
-@@ -825,10 +826,12 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+@@ -415,6 +416,9 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
+ 	int ret, i;
+ 	u32 dte_addr;
  
- 	iommu->domain = domain;
- 
--	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
--			       IRQF_SHARED, dev_name(dev), iommu);
--	if (ret)
--		return ret;
-+	for (i = 0; i < iommu->num_irq; i++) {
-+		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
-+				       IRQF_SHARED, dev_name(dev), iommu);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
-@@ -878,7 +881,8 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	rk_iommu_disable_stall(iommu);
- 
--	devm_free_irq(iommu->dev, iommu->irq, iommu);
-+	for (i = 0; i < iommu->num_irq; i++)
-+		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
- 
- 	iommu->domain = NULL;
- 
-@@ -1157,10 +1161,20 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (iommu->num_mmu == 0)
- 		return PTR_ERR(iommu->bases[0]);
- 
--	iommu->irq = platform_get_irq(pdev, 0);
--	if (iommu->irq < 0) {
--		dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq);
--		return -ENXIO;
-+	while (platform_get_irq(pdev, iommu->num_irq) >= 0)
-+		iommu->num_irq++;
++	if (iommu->reset_disabled)
++		return 0;
 +
-+	iommu->irq = devm_kzalloc(dev, sizeof(*iommu->irq) * iommu->num_irq,
-+				  GFP_KERNEL);
-+	if (!iommu->irq)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < iommu->num_irq; i++) {
-+		iommu->irq[i] = platform_get_irq(pdev, i);
-+		if (iommu->irq[i] < 0) {
-+			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
-+			return -ENXIO;
-+		}
+ 	/*
+ 	 * Check if register DTE_ADDR is working by writing DTE_ADDR_DUMMY
+ 	 * and verifying that upper 5 nybbles are read back.
+@@ -1177,6 +1181,9 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 		}
  	}
  
++	iommu->reset_disabled = device_property_read_bool(dev,
++					"rk_iommu,disable_reset_quirk");
++
  	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
+ 	if (err)
+ 		return err;
 -- 
 1.9.1
