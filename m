@@ -1,128 +1,41 @@
-From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH V2 4/4] ARM64: dts: rockchip: rk3399 add iommu nodes
-Date: Fri, 21 Jul 2017 14:24:21 +0800
-Message-ID: <1500618261-114262-4-git-send-email-xxm@rock-chips.com>
-References: <1500618261-114262-1-git-send-email-xxm@rock-chips.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1500618261-114262-1-git-send-email-xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Simon Xue <xxm@rock-chips.com>
+Subject: [PATCH V2 1/3] Docs: dt: rockchip: add rk-iommu,disable-reset-quirk property
+Date: Fri, 21 Jul 2017 14:27:08 +0800
+Message-ID: <1500618430-114821-1-git-send-email-xxm@rock-chips.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>
+Cc: linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Simon <xxm@rock-chips.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+From: Simon <xxm@rock-chips.com>
 
-Add VPU/VDEC/IEP/VOPL/VOPB/ISP0/ISP1 iommu nodes
+Add rk-iommu,disable-reset-quirk property to ignore the isp mmu
+reset operation
 
-Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Signed-off-by: Simon <xxm@rock-chips.com>
 ---
 changes since V1:
- - add rk-iommu,disable-reset-quirk for isp mmus to ignore the isp
-   mmu reset operation
+ - new added file
 
- arch/arm64/boot/dts/rockchip/rk3399.dtsi | 65 ++++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ Documentation/devicetree/bindings/iommu/rockchip,iommu.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 69c56f7..601d7ef 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1151,6 +1151,33 @@
- 		status = "disabled";
- 	};
+diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+index 9a55ac3..aa2136c 100644
+--- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+@@ -15,6 +15,11 @@ Required properties:
+                     to associate with its master device.  See:
+                     Documentation/devicetree/bindings/iommu/iommu.txt
  
-+	vpu_mmu: iommu@ff650800 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff650800 0x0 0x40>;
-+		interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "vpu_mmu";
-+		#iommu-cells = <0>;
-+		status = "disabled";
-+	};
++Optional properties:
++- rk-iommu,disable-reset-quirk : This ignore the isp mmu reset operation.
++				 It can't get the expected result when isp mmu
++				 reset, but the reset function work normally
 +
-+	vdec_mmu: iommu@ff660480 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff660480 0x0 0x40>, <0x0 0xff6604c0 0x0 0x40>;
-+		interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "vdec_mmu";
-+		#iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
-+	iep_mmu: iommu@ff670800 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff670800 0x0 0x40>;
-+		interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "iep_mmu";
-+		#iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
- 	efuse0: efuse@ff690000 {
- 		compatible = "rockchip,rk3399-efuse";
- 		reg = <0x0 0xff690000 0x0 0x80>;
-@@ -1360,6 +1387,15 @@
- 		};
- 	};
+ Example:
  
-+	vopl_mmu: iommu@ff8f3f00 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff8f3f00 0x0 0x100>;
-+		interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "vopl_mmu";
-+		#iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
- 	watchdog@ff848000 {
- 		compatible = "snps,dw-wdt";
- 		reg = <0x0 0xff848000 0x0 0x100>;
-@@ -1426,6 +1462,35 @@
- 		status = "disabled";
- 	};
- 
-+	vopb_mmu: iommu@ff903f00 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff903f00 0x0 0x100>;
-+		interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "vopb_mmu";
-+		#iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
-+	isp0_mmu: iommu@ff914000 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff914000 0x0 0x100>, <0x0 0xff915000 0x0 0x100>;
-+		interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "isp0_mmu";
-+		#iommu-cells = <0>;
-+		rk-iommu,disable-reset-quirk;
-+		status = "disabled";
-+	};
-+
-+	isp1_mmu: iommu@ff924000 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x0 0xff924000 0x0 0x100>, <0x0 0xff925000 0x0 0x100>;
-+		interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH 0>;
-+		interrupt-names = "isp1_mmu";
-+		#iommu-cells = <0>;
-+		rk-iommu,disable-reset-quirk;
-+		status = "disabled";
-+	};
-+
- 	pinctrl: pinctrl {
- 		compatible = "rockchip,rk3399-pinctrl";
- 		rockchip,grf = <&grf>;
+ 	vopl_mmu: iommu@ff940300 {
 -- 
 1.9.1
