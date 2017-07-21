@@ -1,7 +1,8 @@
-From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH V2 2/3] iommu/rockchip: add multi irqs support
-Date: Fri, 21 Jul 2017 14:27:09 +0800
-Message-ID: <1500618430-114821-2-git-send-email-xxm@rock-chips.com>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH V2 1/3] Docs: dt: rockchip: add rk-iommu,
+	disable-reset-quirk property
+Date: Fri, 21 Jul 2017 08:57:24 +0200
+Message-ID: <1872258.Scr61cjSnF@phil>
 References: <1500618430-114821-1-git-send-email-xxm@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -17,87 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+To: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Hi Simon,
 
-RK3368 vpu mmu have two irqs, this patch support multi irqs
+Am Freitag, 21. Juli 2017, 14:27:08 CEST schrieb Simon Xue:
+> From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> 
+> Add rk-iommu,disable-reset-quirk property to ignore the isp mmu
+> reset operation
+> 
+> Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
-Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
----
-changes since V1:
- - use devm_kcalloc instead of devm_kzalloc when alloc irq array
+please use your full name in From and Signed-off.
 
- drivers/iommu/rockchip-iommu.c | 34 ++++++++++++++++++++++++----------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+Also, you need to include devicetree-people and mailinglists (as
+scripts/get_maintainer.pl will show you) when sending dt-binding
+changes.
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 4ba48a2..3c462c0 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -90,7 +90,8 @@ struct rk_iommu {
- 	struct device *dev;
- 	void __iomem **bases;
- 	int num_mmu;
--	int irq;
-+	int *irq;
-+	int num_irq;
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-@@ -825,10 +826,12 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 
- 	iommu->domain = domain;
- 
--	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
--			       IRQF_SHARED, dev_name(dev), iommu);
--	if (ret)
--		return ret;
-+	for (i = 0; i < iommu->num_irq; i++) {
-+		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
-+				       IRQF_SHARED, dev_name(dev), iommu);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
-@@ -878,7 +881,8 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	rk_iommu_disable_stall(iommu);
- 
--	devm_free_irq(iommu->dev, iommu->irq, iommu);
-+	for (i = 0; i < iommu->num_irq; i++)
-+		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
- 
- 	iommu->domain = NULL;
- 
-@@ -1157,10 +1161,20 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (iommu->num_mmu == 0)
- 		return PTR_ERR(iommu->bases[0]);
- 
--	iommu->irq = platform_get_irq(pdev, 0);
--	if (iommu->irq < 0) {
--		dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq);
--		return -ENXIO;
-+	while (platform_get_irq(pdev, iommu->num_irq) >= 0)
-+		iommu->num_irq++;
-+
-+	iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
-+				  GFP_KERNEL);
-+	if (!iommu->irq)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < iommu->num_irq; i++) {
-+		iommu->irq[i] = platform_get_irq(pdev, i);
-+		if (iommu->irq[i] < 0) {
-+			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
-+			return -ENXIO;
-+		}
- 	}
- 
- 	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
--- 
-1.9.1
+
+> ---
+> changes since V1:
+>  - new added file
+> 
+>  Documentation/devicetree/bindings/iommu/rockchip,iommu.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+> index 9a55ac3..aa2136c 100644
+> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+> @@ -15,6 +15,11 @@ Required properties:
+>                      to associate with its master device.  See:
+>                      Documentation/devicetree/bindings/iommu/iommu.txt
+>  
+> +Optional properties:
+> +- rk-iommu,disable-reset-quirk : This ignore the isp mmu reset operation.
+
+Prefix should be "rockchip," not "rk-iommu,".
+
+Also, this quirk could be renamed to something like:
+
+rockchip,disable-mmu-reset: Don't use the mmu reset operation.
+				Some mmu instances may produce unexpected results
+				when the reset operation is used.
+
+But that is more a 
+
+Heiko
+
+> +				 It can't get the expected result when isp mmu
+> +				 reset, but the reset function work normally
+> +
+>  Example:
+>  
+>  	vopl_mmu: iommu@ff940300 {
+> 
