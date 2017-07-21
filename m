@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/4] iommu/tegra-smmu: Add iommu_group support
-Date: Fri, 21 Jul 2017 13:12:36 +0100
-Message-ID: <7a6819a5a71c4b85db536169f71a4c087afb60f4.1500637633.git.robin.murphy@arm.com>
+Subject: [PATCH 4/4] iommu: Finish making iommu_group support mandatory
+Date: Fri, 21 Jul 2017 13:12:38 +0100
+Message-ID: <c696938d2fc3b09a3569bdea448fd0fbdc1ec5f0.1500637633.git.robin.murphy@arm.com>
 References: <cover.1500637633.git.robin.murphy@arm.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1500637633.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
@@ -10,57 +10,71 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As the last step to making groups mandatory, clean up the remaining
-drivers by adding basic support. Whilst it may not perfectly reflect
-the isolation capabilities of the hardware (tegra_smmu_swgroup sounds
-suspiciously like something that might warrant representing at the
-iommu_group level), using generic_device_group() should at least
-maintain existing behaviour with respect to the API.
+Now that all the drivers properly implementing the IOMMU API support
+groups (I'm ignoring the etnaviv GPU MMUs which seemingly only do just
+enough to convince the ARM DMA mapping ops), we can remove the FIXME
+workarounds from the core code. In the process, it also seems logical to
+make the .device_group callback non-optional for drivers calling
+iommu_group_get_for_dev() - the current callers all implement it anyway,
+and it doesn't make sense for any future callers not to either.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iommu/iommu.c | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index eeb19f560a05..faa9c1e70482 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -704,6 +704,7 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
- static int tegra_smmu_add_device(struct device *dev)
- {
- 	struct device_node *np = dev->of_node;
-+	struct iommu_group *group;
- 	struct of_phandle_args args;
- 	unsigned int index = 0;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3f6ea160afed..af69bf7e035a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1005,11 +1005,10 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 	if (group)
+ 		return group;
  
-@@ -725,12 +726,19 @@ static int tegra_smmu_add_device(struct device *dev)
- 		index++;
- 	}
+-	group = ERR_PTR(-EINVAL);
+-
+-	if (ops && ops->device_group)
+-		group = ops->device_group(dev);
++	if (!ops)
++		return ERR_PTR(-EINVAL);
  
-+	group = iommu_group_get_for_dev(dev);
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
-+
-+	iommu_group_put(group);
-+
- 	return 0;
- }
++	group = ops->device_group(dev);
+ 	if (WARN_ON_ONCE(group == NULL))
+ 		return ERR_PTR(-EINVAL);
  
- static void tegra_smmu_remove_device(struct device *dev)
- {
- 	dev->archdata.iommu = NULL;
-+	iommu_group_remove_device(dev);
- }
+@@ -1298,12 +1297,8 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ 	int ret;
  
- static const struct iommu_ops tegra_smmu_ops = {
-@@ -741,6 +749,7 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.detach_dev = tegra_smmu_detach_dev,
- 	.add_device = tegra_smmu_add_device,
- 	.remove_device = tegra_smmu_remove_device,
-+	.device_group = generic_device_group,
- 	.map = tegra_smmu_map,
- 	.unmap = tegra_smmu_unmap,
- 	.map_sg = default_iommu_map_sg,
+ 	group = iommu_group_get(dev);
+-	/* FIXME: Remove this when groups a mandatory for iommu drivers */
+-	if (group == NULL)
+-		return __iommu_attach_device(domain, dev);
+-
+ 	/*
+-	 * We have a group - lock it to make sure the device-count doesn't
++	 * Lock the group to make sure the device-count doesn't
+ 	 * change while we are attaching
+ 	 */
+ 	mutex_lock(&group->mutex);
+@@ -1336,9 +1331,6 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+ 	struct iommu_group *group;
+ 
+ 	group = iommu_group_get(dev);
+-	/* FIXME: Remove this when groups a mandatory for iommu drivers */
+-	if (group == NULL)
+-		return __iommu_detach_device(domain, dev);
+ 
+ 	mutex_lock(&group->mutex);
+ 	if (iommu_group_device_count(group) != 1) {
+@@ -1360,9 +1352,6 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+ 	struct iommu_group *group;
+ 
+ 	group = iommu_group_get(dev);
+-	/* FIXME: Remove this when groups a mandatory for iommu drivers */
+-	if (group == NULL)
+-		return NULL;
+ 
+ 	domain = group->domain;
+ 
 -- 
 2.12.2.dirty
