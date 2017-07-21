@@ -1,16 +1,11 @@
-From: xxm <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH V2 2/3] iommu/rockchip: add multi irqs support
-Date: Fri, 21 Jul 2017 15:54:40 +0800
-Message-ID: <675fd7bf-7551-4f95-9b9c-8a2151e59ee1@rock-chips.com>
-References: <1500618430-114821-1-git-send-email-xxm@rock-chips.com>
-	<1500618430-114821-2-git-send-email-xxm@rock-chips.com>
-	<5666211.VjCXUuunyU@phil>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v8 00/13] Fix the on-flight DMA issue on system with amd iommu
+Date: Fri, 21 Jul 2017 16:58:58 +0800
+Message-ID: <1500627551-12930-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5666211.VjCXUuunyU@phil>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,109 +15,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Heiko,
+When kernel panicked and jump into the kdump kernel, DMA started by the
+1st kernel is not stopped, this is called on-flight DMA. In the current
+code it will disable iommu and build new translation table and attach
+device to it. This will cause:
+
+ 1. IO_PAGE_FAULT warning message can be seen.
+ 2. transfer data to or from incorrect areas of memory.
+
+Sometime it causes the dump failure or kernel hang.
+
+The principle of the fix is to defer the assignment of device to domain to
+device driver initializtion stage. A new call-back is_attach_deferred() is
+added to iommu-ops, will check whether we need defer the domain attach/detach
+in iommu-core code. If defer is needed, just return directly from amd iommu
+attach/detach function. The attachment will be done in device driver
+initializaiton stage when calling get_domain().
+
+Change history:
+v8:v7:
+    Rebase patchset v7 on the latest v4.13-rc1.
+
+    - And re-enable printing IO_PAGE_FAULT message in kdump kernel.
+    - Only disable iommu if amd_iommu=off is specified in kdump kernel.
 
 
-On 07/21/2017 03:07 PM, Heiko Stuebner wrote:
-> Am Freitag, 21. Juli 2017, 14:27:09 CEST schrieb Simon Xue:
->> From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->>
->> RK3368 vpu mmu have two irqs, this patch support multi irqs
->>
->> Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->> ---
->> changes since V1:
->>   - use devm_kcalloc instead of devm_kzalloc when alloc irq array
->>
->>   drivers/iommu/rockchip-iommu.c | 34 ++++++++++++++++++++++++----------
->>   1 file changed, 24 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
->> index 4ba48a2..3c462c0 100644
->> --- a/drivers/iommu/rockchip-iommu.c
->> +++ b/drivers/iommu/rockchip-iommu.c
->> @@ -90,7 +90,8 @@ struct rk_iommu {
->>   	struct device *dev;
->>   	void __iomem **bases;
->>   	int num_mmu;
->> -	int irq;
->> +	int *irq;
->> +	int num_irq;
->>   	struct iommu_device iommu;
->>   	struct list_head node; /* entry in rk_iommu_domain.iommus */
->>   	struct iommu_domain *domain; /* domain to which iommu is attached */
->> @@ -825,10 +826,12 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
->>   
->>   	iommu->domain = domain;
->>   
->> -	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
->> -			       IRQF_SHARED, dev_name(dev), iommu);
->> -	if (ret)
->> -		return ret;
->> +	for (i = 0; i < iommu->num_irq; i++) {
->> +		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
->> +				       IRQF_SHARED, dev_name(dev), iommu);
->> +		if (ret)
->> +			return ret;
->> +	}
->>   
->>   	for (i = 0; i < iommu->num_mmu; i++) {
->>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
->> @@ -878,7 +881,8 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
->>   	}
->>   	rk_iommu_disable_stall(iommu);
->>   
->> -	devm_free_irq(iommu->dev, iommu->irq, iommu);
->> +	for (i = 0; i < iommu->num_irq; i++)
->> +		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
->>   
->>   	iommu->domain = NULL;
->>   
->> @@ -1157,10 +1161,20 @@ static int rk_iommu_probe(struct platform_device *pdev)
->>   	if (iommu->num_mmu == 0)
->>   		return PTR_ERR(iommu->bases[0]);
->>   
->> -	iommu->irq = platform_get_irq(pdev, 0);
->> -	if (iommu->irq < 0) {
->> -		dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq);
->> -		return -ENXIO;
->> +	while (platform_get_irq(pdev, iommu->num_irq) >= 0)
->> +		iommu->num_irq++;
-> Hmm, this could also result in a iommu having 0 irqs if wrongly
-> configured and probe would still suceed. This sounds somehow
-> wrong to me.
->
-> But I'm not sure if there is precedent on how to handle a variable
-> number of interrupts correctly somewhere.
+v6->v7:
+    Two main changes are made according to Joerg's suggestion:
+    - Add is_attach_deferred call-back to iommu-ops. With this domain
+      can be deferred to device driver init cleanly.
 
-How about add a judgement for iommu->num_irq ? like this:
-if (!iommu->num_irq)
-	return -ENOXIO;
+    - Allocate memory below 4G for dev table if translation pre-enabled.
+      AMD engineer pointed out that it's unsafe to update the device-table
+      while iommu is enabled. device-table pointer update is split up into
+      two 32bit writes in the IOMMU hardware. So updating it while the IOMMU
+      is enabled could have some nasty side effects.
 
->
-> Heiko
->
->> +
->> +	iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
->> +				  GFP_KERNEL);
->> +	if (!iommu->irq)
->> +		return -ENOMEM;
->> +
->> +	for (i = 0; i < iommu->num_irq; i++) {
->> +		iommu->irq[i] = platform_get_irq(pdev, i);
->> +		if (iommu->irq[i] < 0) {
->> +			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
->> +			return -ENXIO;
->> +		}
->>   	}
->>   
->>   	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
->>
->
->
->
->
+v5->v6:
+    According to Joerg's comments made several below main changes:
+    - Add sanity check when copy old dev tables.
+
+    - If a device is set up with guest translations (DTE.GV=1), then don't
+      copy that information but move the device over to an empty guest-cr3
+      table and handle the faults in the PPR log (which just answer them
+      with INVALID).
+
+v5:
+    bnx2 NIC can't reset itself during driver init. Post patch to reset
+    it during driver init. IO_PAGE_FAULT can't be seen anymore.
+
+    Below is link of v5 post.
+    https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
+
+
+Baoquan He (12):
+  iommu/amd: Detect pre enabled translation
+  iommu/amd: add several helper functions
+  Revert "iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel"
+  iommu/amd: Define bit fields for DTE particularly
+  iommu/amd: Add function copy_dev_tables()
+  iommu/amd: copy old trans table from old kernel
+  iommu/amd: Do sanity check for irq remap of old dev table entry
+  iommu: Add is_attach_deferred call-back to iommu-ops
+  iommu/amd: Use is_attach_deferred call-back
+  iommu/amd: Allocate memory below 4G for dev table if translation
+    pre-enabled
+  iommu/amd: Don't copy GCR3 table root pointer
+  iommu/amd: Clear out the GV flag when handle deferred domain attach
+
+root (1):
+  iommu/amd: Disable iommu only if amd_iommu=off is specified
+
+ drivers/iommu/amd_iommu.c       |  81 ++++++++-------
+ drivers/iommu/amd_iommu_init.c  | 212 ++++++++++++++++++++++++++++++++++++----
+ drivers/iommu/amd_iommu_proto.h |   2 +
+ drivers/iommu/amd_iommu_types.h |  56 ++++++++++-
+ drivers/iommu/amd_iommu_v2.c    |  18 +++-
+ drivers/iommu/iommu.c           |   8 ++
+ include/linux/iommu.h           |   1 +
+ 7 files changed, 315 insertions(+), 63 deletions(-)
+
+-- 
+2.5.5
