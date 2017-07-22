@@ -1,85 +1,61 @@
-From: valmiki <valmikibow@gmail.com>
-Subject: Re: Support SVM without PASID
-Date: Sat, 22 Jul 2017 07:35:31 +0530
-Message-ID: <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
- <20170708140257.2de02d63@w520.home>
- <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
- <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
- <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
- <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+From: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 2/2] acpi/iort: numa: Add numa node mapping for smmuv3
+	devices
+Date: Sat, 22 Jul 2017 11:23:59 +0800
+Message-ID: <5972C54F.6030000@huawei.com>
+References: <1496897059-8272-1-git-send-email-ganapatrao.kulkarni@cavium.com>
+	<1496897059-8272-3-git-send-email-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-pci@vger.kernel.org, tianyu.lan@intel.com, kevin.tian@intel.com, jacob.jun.pan@intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1496897059-8272-3-git-send-email-ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 7/12/2017 10:18 PM, Jean-Philippe Brucker wrote:
-> On 12/07/17 17:27, valmiki wrote:
->> On 7/11/2017 4:26 PM, Jean-Philippe Brucker wrote:
->>> Hi Valmiki,
->>>
->>> On 09/07/17 04:15, valmiki wrote:
->>>>>> Hi,
->>>>>>
->>>>>> In SMMUv3 architecture document i see "PASIDs are optional,
->>>>>> configurable, and of a size determined by the minimum
->>>>>> of the endpoint".
->>>>>>
->>>>>> So if PASID's are optional and not supported by PCIe end point, how SVM
->>>>>> can be achieved ?
->>>>>
->>>>> It cannot be inferred from that statement that PASID support is not
->>>>> required for SVM.  AIUI, SVM is a software feature enabled by numerous
->>>>> "optional" hardware features, including PASID.  Features that are
->>>>> optional per the hardware specification may be required for specific
->>>>> software features.  Thanks,
->>>>>
->>>> Thanks for the information Alex. Suppose if an End point doesn't support
->>>> PASID, is it still possible to achieve SVM ?
->>>> Are there any such features in SMMUv3 with which we can achieve it ?
->>>
->>> Not really, we don't plan to share the non-PASID context with a process.
->>>
->>> In theory you could achieve something resembling SVM by assigning the
->>> entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
->>> with a bind ioctl. If your device can do SR-IOV, then you can bind one
->>> process per virtual function.
->>>
->>> Unless we end up seeing lots of endpoints that implement PRI but not
->>> PASID, I don't plan to add this to VFIO or SMMUv3.
->>>
->>> For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
->>> enabled. In addition, the SMMU should support DVM (broadcast TLB
->>> maintenance) and must be compatible with the MMU (page sizes, output
->>> address size, ASID bits...)
->>>
->> Thanks Jean.
->> In SMMU document it was quoted as follows
->> "When STE.S1DSS==0b10, a transaction without a SubstreamID is accepted and
->> uses the CD of Substream 0. Under this configuration, transactions that
->> arrive with SubstreamID 0 are aborted and an event recorded."
->>
->> Is this mode supported in your previous series of SMMUv3 patches ?
->> If it is supported is it achieved through VFIO ?
+Hi Ganapat,
+
+On 2017/6/8 12:44, Ganapatrao Kulkarni wrote:
+> Add code to parse proximity domain in SMMUv3 IORT table to
+> set numa node mapping for smmuv3 devices.
 >
-> Yes, STE.S1DSS==0b10 is the only supported mode with my patches. And in
-> VFIO, the non-PASID context (CD 0) is managed with
-> VFIO_IOMMU_MAP/UNMAP_DMA ioctls, mirroring the current behavior for
-> devices that don't support PASID. All other CDs, with PASID > 0, are
-> managed via the new BIND ioctl.
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/acpi/arm64/iort.c | 28 ++++++++++++++++++++++++++--
+>  1 file changed, 26 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index bba2b59..e804386 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -882,6 +882,23 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+>  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+>  }
+>  
+> +/*
+> + * set numa proximity domain for smmuv3 device
+> + */
+> +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
+> +		struct device *dev)
+> +{
+> +	struct acpi_iort_smmu_v3 *smmu;
+> +
+> +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+> +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+> +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+                                                          ^^
+Will have compile error in !CONFIG_NUMA, I think we need to introduce
+a stub function in acpi_numa.h.
 
-Thanks Jean, this helps a lot.
-So i digged through your patches and i understood that using BIND ioctls 
-satge-1 translations are setup in SMMU for an application.
-If we use VFIO_IOMMU_MAP/UNMAP_DMA ioctls they are setting up stage-2 
-translations in SMMU.
-So without PASID support we can only work with stage-2 translations ?
-
-
-Regards,
-valmiki
+Thanks
+Hanjun
