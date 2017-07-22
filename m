@@ -1,116 +1,85 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH V2 2/3] iommu/rockchip: add multi irqs support
-Date: Fri, 21 Jul 2017 20:37:02 +0200
-Message-ID: <1622328.YERcK565Fd@phil>
-References: <1500618430-114821-1-git-send-email-xxm@rock-chips.com>
-	<5666211.VjCXUuunyU@phil>
-	<675fd7bf-7551-4f95-9b9c-8a2151e59ee1@rock-chips.com>
+From: valmiki <valmikibow@gmail.com>
+Subject: Re: Support SVM without PASID
+Date: Sat, 22 Jul 2017 07:35:31 +0530
+Message-ID: <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <675fd7bf-7551-4f95-9b9c-8a2151e59ee1-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: xxm <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-pci@vger.kernel.org, tianyu.lan@intel.com, kevin.tian@intel.com, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Am Freitag, 21. Juli 2017, 15:54:40 CEST schrieb xxm:
-> Hi Heiko,
-> 
-> 
-> On 07/21/2017 03:07 PM, Heiko Stuebner wrote:
-> > Am Freitag, 21. Juli 2017, 14:27:09 CEST schrieb Simon Xue:
-> >> From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> >>
-> >> RK3368 vpu mmu have two irqs, this patch support multi irqs
-> >>
-> >> Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> >> ---
-> >> changes since V1:
-> >>   - use devm_kcalloc instead of devm_kzalloc when alloc irq array
-> >>
-> >>   drivers/iommu/rockchip-iommu.c | 34 ++++++++++++++++++++++++----------
-> >>   1 file changed, 24 insertions(+), 10 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> >> index 4ba48a2..3c462c0 100644
-> >> --- a/drivers/iommu/rockchip-iommu.c
-> >> +++ b/drivers/iommu/rockchip-iommu.c
-> >> @@ -90,7 +90,8 @@ struct rk_iommu {
-> >>   	struct device *dev;
-> >>   	void __iomem **bases;
-> >>   	int num_mmu;
-> >> -	int irq;
-> >> +	int *irq;
-> >> +	int num_irq;
-> >>   	struct iommu_device iommu;
-> >>   	struct list_head node; /* entry in rk_iommu_domain.iommus */
-> >>   	struct iommu_domain *domain; /* domain to which iommu is attached */
-> >> @@ -825,10 +826,12 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
-> >>   
-> >>   	iommu->domain = domain;
-> >>   
-> >> -	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
-> >> -			       IRQF_SHARED, dev_name(dev), iommu);
-> >> -	if (ret)
-> >> -		return ret;
-> >> +	for (i = 0; i < iommu->num_irq; i++) {
-> >> +		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
-> >> +				       IRQF_SHARED, dev_name(dev), iommu);
-> >> +		if (ret)
-> >> +			return ret;
-> >> +	}
-> >>   
-> >>   	for (i = 0; i < iommu->num_mmu; i++) {
-> >>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
-> >> @@ -878,7 +881,8 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
-> >>   	}
-> >>   	rk_iommu_disable_stall(iommu);
-> >>   
-> >> -	devm_free_irq(iommu->dev, iommu->irq, iommu);
-> >> +	for (i = 0; i < iommu->num_irq; i++)
-> >> +		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
-> >>   
-> >>   	iommu->domain = NULL;
-> >>   
-> >> @@ -1157,10 +1161,20 @@ static int rk_iommu_probe(struct platform_device *pdev)
-> >>   	if (iommu->num_mmu == 0)
-> >>   		return PTR_ERR(iommu->bases[0]);
-> >>   
-> >> -	iommu->irq = platform_get_irq(pdev, 0);
-> >> -	if (iommu->irq < 0) {
-> >> -		dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq);
-> >> -		return -ENXIO;
-> >> +	while (platform_get_irq(pdev, iommu->num_irq) >= 0)
-> >> +		iommu->num_irq++;
-> > Hmm, this could also result in a iommu having 0 irqs if wrongly
-> > configured and probe would still suceed. This sounds somehow
-> > wrong to me.
-> >
-> > But I'm not sure if there is precedent on how to handle a variable
-> > number of interrupts correctly somewhere.
-> 
-> How about add a judgement for iommu->num_irq ? like this:
-> if (!iommu->num_irq)
-> 	return -ENOXIO;
+On 7/12/2017 10:18 PM, Jean-Philippe Brucker wrote:
+> On 12/07/17 17:27, valmiki wrote:
+>> On 7/11/2017 4:26 PM, Jean-Philippe Brucker wrote:
+>>> Hi Valmiki,
+>>>
+>>> On 09/07/17 04:15, valmiki wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> In SMMUv3 architecture document i see "PASIDs are optional,
+>>>>>> configurable, and of a size determined by the minimum
+>>>>>> of the endpoint".
+>>>>>>
+>>>>>> So if PASID's are optional and not supported by PCIe end point, how SVM
+>>>>>> can be achieved ?
+>>>>>
+>>>>> It cannot be inferred from that statement that PASID support is not
+>>>>> required for SVM.  AIUI, SVM is a software feature enabled by numerous
+>>>>> "optional" hardware features, including PASID.  Features that are
+>>>>> optional per the hardware specification may be required for specific
+>>>>> software features.  Thanks,
+>>>>>
+>>>> Thanks for the information Alex. Suppose if an End point doesn't support
+>>>> PASID, is it still possible to achieve SVM ?
+>>>> Are there any such features in SMMUv3 with which we can achieve it ?
+>>>
+>>> Not really, we don't plan to share the non-PASID context with a process.
+>>>
+>>> In theory you could achieve something resembling SVM by assigning the
+>>> entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
+>>> with a bind ioctl. If your device can do SR-IOV, then you can bind one
+>>> process per virtual function.
+>>>
+>>> Unless we end up seeing lots of endpoints that implement PRI but not
+>>> PASID, I don't plan to add this to VFIO or SMMUv3.
+>>>
+>>> For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
+>>> enabled. In addition, the SMMU should support DVM (broadcast TLB
+>>> maintenance) and must be compatible with the MMU (page sizes, output
+>>> address size, ASID bits...)
+>>>
+>> Thanks Jean.
+>> In SMMU document it was quoted as follows
+>> "When STE.S1DSS==0b10, a transaction without a SubstreamID is accepted and
+>> uses the CD of Substream 0. Under this configuration, transactions that
+>> arrive with SubstreamID 0 are aborted and an event recorded."
+>>
+>> Is this mode supported in your previous series of SMMUv3 patches ?
+>> If it is supported is it achieved through VFIO ?
+>
+> Yes, STE.S1DSS==0b10 is the only supported mode with my patches. And in
+> VFIO, the non-PASID context (CD 0) is managed with
+> VFIO_IOMMU_MAP/UNMAP_DMA ioctls, mirroring the current behavior for
+> devices that don't support PASID. All other CDs, with PASID > 0, are
+> managed via the new BIND ioctl.
 
-platform devices already have a function that gets you the number of irqs.
-Re-using that is way better than open-coding it, so
-
-iommu->num_irq = platform_irq_count(pdev);
-if (iommu->num_irq < 0)
-	return iommu->num_irq;
-if (iommu->num_irq == 0)
-	return -ENXIO;
+Thanks Jean, this helps a lot.
+So i digged through your patches and i understood that using BIND ioctls 
+satge-1 translations are setup in SMMU for an application.
+If we use VFIO_IOMMU_MAP/UNMAP_DMA ioctls they are setting up stage-2 
+translations in SMMU.
+So without PASID support we can only work with stage-2 translations ?
 
 
-Heiko
+Regards,
+valmiki
