@@ -1,7 +1,7 @@
 From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH V3 2/4] ARM: dts: rockchip: rk322x add iommu nodes
-Date: Mon, 24 Jul 2017 10:32:08 +0800
-Message-ID: <1500863530-32792-2-git-send-email-xxm@rock-chips.com>
+Subject: [PATCH V3 3/4] ARM64: dts: rockchip: rk3368 add iommu nodes
+Date: Mon, 24 Jul 2017 10:32:09 +0800
+Message-ID: <1500863530-32792-3-git-send-email-xxm@rock-chips.com>
 References: <1500863530-32792-1-git-send-email-xxm@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,62 +21,75 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Heiko Stuebner 
 Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add VPU/VDEC/VOP/IEP iommu nodes
+Add IEP/ISP/VOP/HEVC/VPU iommu nodes
 
 Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
 changes since V2:
- - none
+use rockchip,disable-mmu-reset instead of rk-iommu,disable-reset-quirk
 
- arch/arm/boot/dts/rk322x.dtsi | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ arch/arm64/boot/dts/rockchip/rk3368.dtsi | 49 ++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index f3e4ffd..36f7c4b 100644
---- a/arch/arm/boot/dts/rk322x.dtsi
-+++ b/arch/arm/boot/dts/rk322x.dtsi
-@@ -500,6 +500,42 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3368.dtsi b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
+index 6d5dc05..7b7f9c7 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3368.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
+@@ -724,6 +724,55 @@
  		status = "disabled";
  	};
  
-+	vpu_mmu: iommu@20020800 {
++	iep_mmu: iommu@ff900800 {
 +		compatible = "rockchip,iommu";
-+		reg = <0x20020800 0x100>;
-+		interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "vpu_mmu";
-+		iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
-+	vdec_mmu: iommu@20030480 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x20030480 0x40>, <0x200304c0 0x40>;
-+		interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "vdec_mmu";
-+		iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
-+	vop_mmu: iommu@20053f00 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x20053f00 0x100>;
-+		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "vop_mmu";
-+		iommu-cells = <0>;
-+		status = "disabled";
-+	};
-+
-+	iep_mmu: iommu@20070800 {
-+		compatible = "rockchip,iommu";
-+		reg = <0x20070800 0x100>;
-+		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
++		reg = <0x0 0xff900800 0x0 0x100>;
++		interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH 0>;
 +		interrupt-names = "iep_mmu";
-+		iommu-cells = <0>;
++		#iommu-cells = <0>;
 +		status = "disabled";
 +	};
 +
- 	emmc: dwmmc@30020000 {
- 		compatible = "rockchip,rk3288-dw-mshc";
- 		reg = <0x30020000 0x4000>;
++	isp_mmu: iommu@ff914000 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff914000 0x0 0x100>,
++		      <0x0 0xff915000 0x0 0x100>;
++		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "isp_mmu";
++		#iommu-cells = <0>;
++		rockchip,disable-mmu-reset;
++		status = "disabled";
++	};
++
++	vop_mmu: iommu@ff930300 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff930300 0x0 0x100>;
++		interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vop_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	hevc_mmu: iommu@ff9a0440 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff9a0440 0x0 0x40>,
++		      <0x0 0xff9a0480 0x0 0x40>;
++		interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "hevc_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	vpu_mmu: iommu@ff9a0800 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff9a0800 0x0 0x100>;
++		interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vepu_mmu", "vdpu_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
+ 	gic: interrupt-controller@ffb71000 {
+ 		compatible = "arm,gic-400";
+ 		interrupt-controller;
 -- 
 1.9.1
