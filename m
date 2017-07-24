@@ -1,93 +1,84 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 11/13] iommu/amd: Don't copy GCR3 table root pointer
-Date: Mon, 24 Jul 2017 07:53:13 +0800
-Message-ID: <20170723235313.GB24530@x1>
-References: <1500627551-12930-12-git-send-email-bhe@redhat.com>
-	<201707240618.mJ6b2eHv%fengguang.wu@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <201707240618.mJ6b2eHv%fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: [PATCH V3 1/4] ARM64: dts: rockchip: rk3328 add iommu nodes
+Date: Mon, 24 Jul 2017 10:32:07 +0800
+Message-ID: <1500863530-32792-1-git-send-email-xxm@rock-chips.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/24/17 at 06:33am, kbuild test robot wrote:
-> Hi Baoquan,
-> 
-> [auto build test WARNING on iommu/next]
-> [also build test WARNING on v4.13-rc1]
-> [cannot apply to next-20170721]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Baoquan-He/Fix-the-on-flight-DMA-issue-on-system-with-amd-iommu/20170724-060048
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-> config: x86_64-randconfig-x005-201730 (attached as .config)
-> compiler: gcc-6 (Debian 6.2.0-3) 6.2.0 20160901
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=x86_64 
-> 
-> Note: it may well be a FALSE warning. FWIW you are at least aware of it now.
-> http://gcc.gnu.org/wiki/Better_Uninitialized_Warnings
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    drivers//iommu/amd_iommu_v2.c: In function 'ppr_notifier':
-> >> drivers//iommu/amd_iommu_v2.c:566:6: warning: 'ret' may be used uninitialized in this function [-Wmaybe-uninitialized]
->      int ret;
->          ^~~
-> 
-> vim +/ret +566 drivers//iommu/amd_iommu_v2.c
+Add H265e/VEPU/VPU/VDEC/VOP iommu nodes
 
-Thanks, it should return NOTIFY_DONE anyway when ppr faults is handled
-in kdump kernel since the GCR3 table root pointer has been made NULL
-intentionally.
-
-I will add this into patch 11/13 when repost need be done.
-
-
->From 742d8a51d8832e12884800840c4ebe802767d808 Mon Sep 17 00:00:00 2001
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Date: Mon, 24 Jul 2017 07:48:10 +0800
-Subject: [PATCH] iommu/amd: The ppr faults handled in kdump kernel should
- return NOTIFY_DONE
-
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_v2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+changes since V2:
+ - none
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 0245d414a7b3..e705fac89cb4 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -578,6 +578,7 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
- 	dev_data = get_dev_data(&pdev->dev);
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 45 ++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+index 0be96ce..bdd7711 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -320,6 +320,51 @@
+ 		status = "disabled";
+ 	};
  
- 	/* In kdump kernel pci dev is not initialized yet -> send INVALID */
-+	ret = NOTIFY_DONE;
- 	if (translation_pre_enabled(amd_iommu_rlookup_table[devid])
- 		&& dev_data->defer_attach) {
- 		amd_iommu_complete_ppr(pdev, iommu_fault->pasid,
-@@ -585,7 +586,6 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
- 		goto out;
- 	}
- 
--	ret = NOTIFY_DONE;
- 	dev_state = get_device_state(iommu_fault->device_id);
- 	if (dev_state == NULL)
- 		goto out;
++	h265e_mmu: iommu@ff330200 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff330200 0 0x100>;
++		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "h265e_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	vepu_mmu: iommu@ff340800 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff340800 0x0 0x40>;
++		interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vepu_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	vpu_mmu: iommu@ff350800 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff350800 0x0 0x40>;
++		interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vpu_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	rkvdec_mmu: iommu@ff360480 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff360480 0x0 0x40>, <0x0 0xff3604c0 0x0 0x40>;
++		interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "rkvdec_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	vop_mmu: iommu@ff373f00 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff373f00 0x0 0x100>;
++		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH 0>;
++		interrupt-names = "vop_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
+ 	cru: clock-controller@ff440000 {
+ 		compatible = "rockchip,rk3328-cru", "rockchip,cru", "syscon";
+ 		reg = <0x0 0xff440000 0x0 0x1000>;
 -- 
-2.5.5
+1.9.1
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
