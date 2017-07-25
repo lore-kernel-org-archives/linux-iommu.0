@@ -1,27 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 3/5] iommu/arm-smmu-v3: add IOMMU_CAP_BYPASS to the ARM
-	SMMUv3 driver
-Date: Mon, 24 Jul 2017 13:06:56 -0600
-Message-ID: <20170724130656.5240ae0d@w520.home>
-References: <1500456838-18405-1-git-send-email-anup.patel@broadcom.com>
-	<1500456838-18405-4-git-send-email-anup.patel@broadcom.com>
-	<ace28bd1-2dd3-482c-d11b-539c055ee9b7@arm.com>
-	<CAALAos8y0kLGrbwgz3u=ZVyteSicuPyQZ3Yp=LPZohXzVaE5NQ@mail.gmail.com>
-	<20170719112524.GF13642@arm.com>
-	<CAALAos_xGCt7U1Oz5uCf9Q4hP6fdn4fcymFNQP5xO_UBduSY3g@mail.gmail.com>
-	<20170719113325.GI13642@arm.com>
-	<CAALAos99HWLoW=0P-dvFA+oNsF03TRNzNbfppyQNtqmcRELXXQ@mail.gmail.com>
-	<20170719115333.GJ13642@arm.com>
-	<CAALAos-YbVbgvPmDYXeWaF4y8MQ9i7CG3tgGuf-QLR6hmXo18Q@mail.gmail.com>
-	<20170720091003.GA17837@arm.com>
-	<8e82d8f5-e5e2-dd09-c774-29f9eda2ecdd@arm.com>
-	<20170724111621.7f1c3a85@w520.home>
-	<6468f359-1682-b9b0-5a4d-72738939cb84@arm.com>
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v4] acpi/iort: numa: Add numa node mapping for smmuv3 devices
+Date: Tue, 25 Jul 2017 10:32:37 +0530
+Message-ID: <20170725050237.11033-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6468f359-1682-b9b0-5a4d-72738939cb84-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -31,70 +15,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 24 Jul 2017 18:23:20 +0100
-Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+ARM IORT specification(rev. C) has added  provision to define proximity
+domain in SMMUv3 IORT table. Adding required code to parse Proximity
+domain and set numa_node of smmv3 platform devices.
 
-> On 24/07/17 18:16, Alex Williamson wrote:
-> > On Thu, 20 Jul 2017 12:17:12 +0100
-> > Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> >   
-> >> On 20/07/17 10:10, Will Deacon wrote:  
-> >>> On Thu, Jul 20, 2017 at 09:32:00AM +0530, Anup Patel wrote:    
-> >>>> On Wed, Jul 19, 2017 at 5:23 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:    
-> >>>>> There are two things here:
-> >>>>>
-> >>>>>   1. iommu_present() is pretty useless, because it applies to a "bus" which
-> >>>>>      doesn't actually tell you what you need to know for things like the
-> >>>>>      platform_bus, where some masters might be upstream of an SMMU and
-> >>>>>      others might not be.    
-> >>>>
-> >>>> I agree with you. The iommu_present() check in vfio_iommu_group_get()
-> >>>> is not much useful. We only reach line which checks iommu_present()
-> >>>> when iommu_group_get() returns NULL for given "struct device *". If there
-> >>>> is no IOMMU group for a "struct device *" then it means there is no IOMMU
-> >>>> HW doing translations for such device.
-> >>>>
-> >>>> If we drop the iommu_present() check (due to above reasons) in
-> >>>> vfio_iommu_group_get() then we don't require the IOMMU_CAP_BYPASS
-> >>>> and we can happily drop PATCH1, PATCH2, and PATCH3.
-> >>>>
-> >>>> I will remove the iommu_present() check in vfio_iommu_group_get()
-> >>>> because it is only comes into actions when VFIO_NOIOMMU is
-> >>>> enabled. This will also help us drop PATCH1-to-PATCH3.    
-> >>>
-> >>> I don't think that's the right answer. Whilst iommu_present has obvious
-> >>> shortcomings, its intention is clear: it should tell you whether a given
-> >>> *device* is upstream of an IOMMU. So the right fix is to make this
-> >>> per-device, instead of per-bus. Removing it altogether is worse than leaving
-> >>> it like it is.    
-> >>
-> >> Not really - if there is an IOMMU up and running to the point of setting
-> >> bus ops, every device it cares about can be expected to have a group
-> >> already (there are only a couple of drivers left that don't use groups,
-> >> and they're hardly relevant to VFIO). Thus iommu_group_get() already is
-> >> the de-facto per-device IOMMU check.
-> >>
-> >> And having looked into it, I'm now spinning a couple of patches to
-> >> finish off making groups truly mandatory so that that can be less
-> >> de-facto ;)  
-> > 
-> > No, look at vfio-noiommu and even vfio-mdev devices for devices which
-> > have an iommu group but there is no physical iommu supporting them.
-> > iommu_present() is how we can distinguish these groups and therefore
-> > not generate a segfault in trying to use the full IOMMU API on them.  
-> 
-> OK, so that means that the combination of vfio-noiommu and vfio-platform
-> is simply unusable, because iommu_present(&platform_bus_type) can give
-> such dangerous false positives too.
+Add code to parse proximity domain in SMMUv3 IORT table to
+set numa node mapping for smmuv3 devices.
 
-Yep, this kinda falls apart since platform_bus_type doesn't really map
-to a physical bus, nor does the presence of a group canonically
-demonstrate that an iommu is present since anyone can create a group
-for a device.  We really do need to migrate to per-device iommu_ops.
-Thanks,
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+---
 
-Alex
+This patch has dependency on header file patch [1], which is
+already merged to linux-pm.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=c944230064eb65e4fa018d86779b4fd200b1d7e7
+
+v4:
+  - Fix compilation issue in !CONFIG_NUMA
+
+v3:
+  - Addressed Lorenzo Pieralisi comment.
+
+v2:
+  - Changed as per Lorenzo Pieralisi and Hanjun Guo suggestions.
+
+v1:
+  - Initial patch
+
+ drivers/acpi/arm64/iort.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index a3215ee..c5c82c3 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -908,6 +908,28 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+ 	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+ }
+ 
++#if defined(CONFIG_ACPI_NUMA) && (ACPI_CA_VERSION >= 0x20170629)
++/*
++ * set numa proximity domain for smmuv3 device
++ */
++static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
++		struct device *dev)
++{
++	struct acpi_iort_smmu_v3 *smmu;
++
++	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
++	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
++		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
++		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
++			smmu->base_address,
++			smmu->pxm);
++	}
++}
++#else
++static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
++		struct device *dev) { }
++#endif
++
+ static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
+ {
+ 	struct acpi_iort_smmu *smmu;
+@@ -977,20 +999,24 @@ struct iort_iommu_config {
+ 	int (*iommu_count_resources)(struct acpi_iort_node *node);
+ 	void (*iommu_init_resources)(struct resource *res,
+ 				     struct acpi_iort_node *node);
++	void (*iommu_set_proximity)(struct acpi_iort_node *node,
++				     struct device *dev);
+ };
+ 
+ static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
+ 	.name = "arm-smmu-v3",
+ 	.iommu_is_coherent = arm_smmu_v3_is_coherent,
+ 	.iommu_count_resources = arm_smmu_v3_count_resources,
+-	.iommu_init_resources = arm_smmu_v3_init_resources
++	.iommu_init_resources = arm_smmu_v3_init_resources,
++	.iommu_set_proximity = arm_smmu_v3_set_proximity
+ };
+ 
+ static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
+ 	.name = "arm-smmu",
+ 	.iommu_is_coherent = arm_smmu_is_coherent,
+ 	.iommu_count_resources = arm_smmu_count_resources,
+-	.iommu_init_resources = arm_smmu_init_resources
++	.iommu_init_resources = arm_smmu_init_resources,
++	.iommu_set_proximity = NULL
+ };
+ 
+ static __init
+@@ -1028,6 +1054,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
+ 	if (!pdev)
+ 		return -ENOMEM;
+ 
++	if (ops->iommu_set_proximity)
++		ops->iommu_set_proximity(node, &pdev->dev);
++
+ 	count = ops->iommu_count_resources(node);
+ 
+ 	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
+-- 
+2.9.4
