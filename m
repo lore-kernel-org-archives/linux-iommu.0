@@ -1,164 +1,252 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v4] acpi/iort: numa: Add numa node mapping for smmuv3
- devices
-Date: Tue, 25 Jul 2017 17:01:52 +0100
-Message-ID: <20170725160152.GA19744@red-moon>
-References: <20170725050237.11033-1-ganapatrao.kulkarni@cavium.com>
- <20170725151305.GU17961@rric.localdomain>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 1/2] acpi:iort: Add an IORT helper function to reserve
+	HW ITS address regions for IOMMU drivers
+Date: Tue, 25 Jul 2017 18:11:00 +0100
+Message-ID: <20170725171100.GA1663@red-moon>
+References: <20170725111732.41792-1-shameerali.kolothum.thodi@huawei.com>
+	<20170725111732.41792-2-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170725151305.GU17961@rric.localdomain>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robert Richter <robert.richter@cavium.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Will.Deacon@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, lv.zheng@intel.com, joro@8bytes.org, rjw@rjwysocki.net, lenb@kernel.org, jnair@caviumnetworks.com, gklkml16@gmail.com
+In-Reply-To: <20170725111732.41792-2-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 25, 2017 at 05:13:05PM +0200, Robert Richter wrote:
-> On 25.07.17 10:32:37, Ganapatrao Kulkarni wrote:
-> > ARM IORT specification(rev. C) has added  provision to define proximity
-> > domain in SMMUv3 IORT table. Adding required code to parse Proximity
-> > domain and set numa_node of smmv3 platform devices.
-> > 
-> > Add code to parse proximity domain in SMMUv3 IORT table to
-> > set numa node mapping for smmuv3 devices.
-> > 
-> > Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> > ---
-> > 
-> > This patch has dependency on header file patch [1], which is
-> > already merged to linux-pm.
-> > 
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=c944230064eb65e4fa018d86779b4fd200b1d7e7
-> > 
-> > v4:
-> >   - Fix compilation issue in !CONFIG_NUMA
-> > 
-> > v3:
-> >   - Addressed Lorenzo Pieralisi comment.
-> > 
-> > v2:
-> >   - Changed as per Lorenzo Pieralisi and Hanjun Guo suggestions.
-> > 
-> > v1:
-> >   - Initial patch
-> > 
-> >  drivers/acpi/arm64/iort.c | 33 +++++++++++++++++++++++++++++++--
-> >  1 file changed, 31 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index a3215ee..c5c82c3 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -908,6 +908,28 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
-> >  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
-> >  }
-> >  
-> > +#if defined(CONFIG_ACPI_NUMA) && (ACPI_CA_VERSION >= 0x20170629)
+On Tue, Jul 25, 2017 at 12:17:31PM +0100, Shameer Kolothum wrote:
+> The helper function retrieves ITS address regions through IORT
+> device <-> ITS mappings and reserves it so that these regions
+> will not be translated by IOMMU and will be excluded from IOVA
+> allocations. IOMMU drivers can use this to implement their
+> .get_resv_regions callback.
 > 
-> This acpica version check was very unhandy for backports when we did
-> this last time. If we backport just c944230064 and this single patch
-> it wont work as the version check prevents the code from being
-> enabled. Isn't there another way to handle cross tree dependencies of
-> pull requests? E.g. we could base this patch on acpica (ab539eaa50)
-> and remove the check.
-
-I think I will send this patch (and other IORT ones) via arm64,
-if acpica goes via the ACPI tree I do not think there is much else
-we can do (that is not complicated).
-
-> Alternatively we could do in this case:
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/acpi/arm64/iort.c        | 91 ++++++++++++++++++++++++++++++++++++++--
+>  drivers/irqchip/irq-gic-v3-its.c |  3 +-
+>  include/linux/acpi_iort.h        |  8 +++-
+>  3 files changed, 97 insertions(+), 5 deletions(-)
 > 
-> #if defined(CONFIG_ACPI_NUMA) && defined(ACPI_IORT_SMMU_V3_PXM_VALID)
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index a3215ee..e28f30c 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -39,6 +39,7 @@
+>  struct iort_its_msi_chip {
+>  	struct list_head	list;
+>  	struct fwnode_handle	*fw_node;
+> +	phys_addr_t		base_addr;
+>  	u32			translation_id;
+>  };
+>  
+> @@ -136,14 +137,16 @@ typedef acpi_status (*iort_find_node_callback)
+>  static DEFINE_SPINLOCK(iort_msi_chip_lock);
+>  
+>  /**
+> - * iort_register_domain_token() - register domain token and related ITS ID
+> - * to the list from where we can get it back later on.
+> + * iort_register_domain_token() - register domain token along with related
+> + * ITS ID and base address to the list from where we can get it back later on.
+>   * @trans_id: ITS ID.
+> + * @base: ITS base address.
+>   * @fw_node: Domain token.
+>   *
+>   * Returns: 0 on success, -ENOMEM if no memory when allocating list element
+>   */
+> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
+> +int iort_register_domain_token(int trans_id, phys_addr_t base,
+> +			       struct fwnode_handle *fw_node)
+>  {
+>  	struct iort_its_msi_chip *its_msi_chip;
+>  
+> @@ -153,6 +156,7 @@ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
+>  
+>  	its_msi_chip->fw_node = fw_node;
+>  	its_msi_chip->translation_id = trans_id;
+> +	its_msi_chip->base_addr = base;
+>  
+>  	spin_lock(&iort_msi_chip_lock);
+>  	list_add(&its_msi_chip->list, &iort_msi_chip_list);
+> @@ -481,6 +485,24 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
+>  	return -ENODEV;
+>  }
+>  
+> +static int iort_find_its_base(u32 its_id, phys_addr_t *base)
 
-This would do, agreed on all other changes requested, I will send it
-to Catalin as soon as I collect all IORT patches for v4.14.
+You have to tag it as __maybe_unused for the !IOMMU_API case.
 
-Thanks !
+> +{
+> +	struct iort_its_msi_chip *its_msi_chip;
+> +	bool match = false;
+> +
+> +	spin_lock(&iort_msi_chip_lock);
+> +	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
+> +		if (its_msi_chip->translation_id == its_id) {
+> +			*base = its_msi_chip->base_addr;
+> +			match = true;
+> +			break;
+> +		}
+> +	}
+> +	spin_unlock(&iort_msi_chip_lock);
+> +
+> +	return match ? 0 : -ENODEV;
+> +}
+> +
+>  /**
+>   * iort_dev_find_its_id() - Find the ITS identifier for a device
+>   * @dev: The device.
+> @@ -639,6 +661,67 @@ int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
+>  
+>  	return err;
+>  }
+> +
+> +/**
+> + * iort_iommu_its_get_resv_regions - Reserved region driver helper
+> + * @dev: Device from iommu_get_resv_regions()
+> + * @list: Reserved region list from iommu_get_resv_regions()
+> + *
+> + * Returns: Number of reserved regions on success(0 if no associated ITS),
+> + *          appropriate error value otherwise.
+> + *
+> + * IOMMU drivers can use this to implement their .get_resv_regions callback
+> + * for reserving the HW ITS address regions.
+
+Stale comment.
+
+> + */
+> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> +	int i;
+> +	struct acpi_iort_its_group *its;
+> +	struct acpi_iort_node *node, *its_node = NULL;
+> +	int resv = 0;
+
+Nit: int i, resv = 0;
+
+I can make these changes but I suspect this series will go via IOMMU
+tree, let me know how you want to handle it.
+
 Lorenzo
 
-> > +/*
-> > + * set numa proximity domain for smmuv3 device
-> > + */
-> > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
-> > +		struct device *dev)
-> > +{
-> > +	struct acpi_iort_smmu_v3 *smmu;
-> > +
-> > +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-> > +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
-> > +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
-> > +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> +	node = iort_find_dev_node(dev);
+> +	if (!node)
+> +		return -ENODEV;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		u32 rid;
+> +
+> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid, &rid);
+> +		its_node = iort_node_map_id(node, rid, NULL, IORT_MSI_TYPE);
+> +	} else {
+> +		for (i = 0; i < node->mapping_count; i++) {
+> +			its_node = iort_node_map_platform_id(node, NULL,
+> +							 IORT_MSI_TYPE, i);
+> +			if (its_node)
+> +				break;
+> +		}
+> +	}
+> +
+> +	if (!its_node)
+> +		return 0;
+> +
+> +	/* Move to ITS specific data */
+> +	its = (struct acpi_iort_its_group *)its_node->node_data;
+> +
+> +	for (i = 0; i < its->its_count; i++) {
+> +		phys_addr_t base;
+> +
+> +		if (!iort_find_its_base(its->identifiers[i], &base)) {
+> +			int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +			struct iommu_resv_region *region;
+> +
+> +			region = iommu_alloc_resv_region(base, SZ_128K, prot,
+> +							 IOMMU_RESV_MSI);
+> +			if (region) {
+> +				list_add_tail(&region->list, head);
+> +				resv++;
+> +			}
+> +		}
+> +	}
+> +
+> +	return (resv == its->its_count) ? resv : -ENODEV;
+> +}
+>  #else
+>  static inline
+>  const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
+> @@ -646,6 +729,8 @@ const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
+>  static inline
+>  int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
+>  { return 0; }
+> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
+> +{ return -ENODEV; }
+>  #endif
+>  
+>  static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
+> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> index 6893287..77322b3 100644
+> --- a/drivers/irqchip/irq-gic-v3-its.c
+> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> @@ -1928,7 +1928,8 @@ static int __init gic_acpi_parse_madt_its(struct acpi_subtable_header *header,
+>  		return -ENOMEM;
+>  	}
+>  
+> -	err = iort_register_domain_token(its_entry->translation_id, dom_handle);
+> +	err = iort_register_domain_token(its_entry->translation_id, res.start,
+> +					 dom_handle);
+>  	if (err) {
+>  		pr_err("ITS@%pa: Unable to register GICv3 ITS domain token (ITS ID %d) to IORT\n",
+>  		       &res.start, its_entry->translation_id);
+> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> index 8379d40..56bb6c7 100644
+> --- a/include/linux/acpi_iort.h
+> +++ b/include/linux/acpi_iort.h
+> @@ -26,7 +26,8 @@
+>  #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
+>  #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
+>  
+> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
+> +int iort_register_domain_token(int trans_id, phys_addr_t base,
+> +			       struct fwnode_handle *fw_node);
+>  void iort_deregister_domain_token(int trans_id);
+>  struct fwnode_handle *iort_find_domain_token(int trans_id);
+>  #ifdef CONFIG_ACPI_IORT
+> @@ -38,8 +39,10 @@
+>  /* IOMMU interface */
+>  void iort_set_dma_mask(struct device *dev);
+>  const struct iommu_ops *iort_iommu_configure(struct device *dev);
+> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head);
+>  #else
+>  static inline void acpi_iort_init(void) { }
+> +static inline bool iort_node_match(u8 type) { return false; }
+>  static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+>  { return req_id; }
+>  static inline struct irq_domain *iort_get_device_domain(struct device *dev,
+> @@ -51,6 +54,9 @@ static inline void iort_set_dma_mask(struct device *dev) { }
+>  static inline
+>  const struct iommu_ops *iort_iommu_configure(struct device *dev)
+>  { return NULL; }
+> +static inline
+> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
+> +{ return -ENODEV; }
+>  #endif
+>  
+>  #endif /* __ACPI_IORT_H__ */
+> -- 
+> 1.9.1
 > 
-> Better use dev_info() here.
 > 
-> > +			smmu->base_address,
-> > +			smmu->pxm);
-> > +	}
-> > +}
-> > +#else
-> > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
-> > +		struct device *dev) { }
-> 
-> Just do:
-> 
-> #define arm_smmu_v3_set_proximity NULL
-> 
-> > +#endif
-> > +
-> >  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
-> >  {
-> >  	struct acpi_iort_smmu *smmu;
-> > @@ -977,20 +999,24 @@ struct iort_iommu_config {
-> >  	int (*iommu_count_resources)(struct acpi_iort_node *node);
-> >  	void (*iommu_init_resources)(struct resource *res,
-> >  				     struct acpi_iort_node *node);
-> > +	void (*iommu_set_proximity)(struct acpi_iort_node *node,
-> > +				     struct device *dev);
-> 
-> Wrt pseudo-OO programming this is more a method for struct dev than
-> node, so swap args: iommu_set_proximity(dev, node)
-> 
-> >  };
-> >  
-> >  static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
-> >  	.name = "arm-smmu-v3",
-> >  	.iommu_is_coherent = arm_smmu_v3_is_coherent,
-> >  	.iommu_count_resources = arm_smmu_v3_count_resources,
-> > -	.iommu_init_resources = arm_smmu_v3_init_resources
-> > +	.iommu_init_resources = arm_smmu_v3_init_resources,
-> > +	.iommu_set_proximity = arm_smmu_v3_set_proximity
-> 
-> Add comma at the end here.
-> 
-> >  };
-> >  
-> >  static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
-> >  	.name = "arm-smmu",
-> >  	.iommu_is_coherent = arm_smmu_is_coherent,
-> >  	.iommu_count_resources = arm_smmu_count_resources,
-> > -	.iommu_init_resources = arm_smmu_init_resources
-> > +	.iommu_init_resources = arm_smmu_init_resources,
-> > +	.iommu_set_proximity = NULL
-> 
-> No need for null assignment.
-> 
-> -Robert
-> 
-> >  };
-> >  
-> >  static __init
-> > @@ -1028,6 +1054,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
-> >  	if (!pdev)
-> >  		return -ENOMEM;
-> >  
-> > +	if (ops->iommu_set_proximity)
-> > +		ops->iommu_set_proximity(node, &pdev->dev);
-> > +
-> >  	count = ops->iommu_count_resources(node);
-> >  
-> >  	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
-> > -- 
-> > 2.9.4
-> > 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
