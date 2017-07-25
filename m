@@ -1,123 +1,125 @@
-From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4] acpi/iort: numa: Add numa node mapping for smmuv3 devices
-Date: Tue, 25 Jul 2017 10:32:37 +0530
-Message-ID: <20170725050237.11033-1-ganapatrao.kulkarni@cavium.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: [PATCH kernel v4 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu
+ driver initialization
+Date: Tue, 25 Jul 2017 16:09:39 +1000
+Message-ID: <5d35506e-4c37-7922-c398-d62955ddb1e2@ozlabs.ru>
+References: <20170630052436.15212-1-aik@ozlabs.ru>
+ <20170630052436.15212-5-aik@ozlabs.ru>
+ <CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
+ <b444851a-3240-f98f-04b9-0223649ea856@ozlabs.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=koi8-r
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <b444851a-3240-f98f-04b9-0223649ea856@ozlabs.ru>
+Content-Language: en-AU
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, David Gibson <david@gibson.dropbear.id.au>, Alex Williamson <alex.williamson@redhat.com>, Yongji Xie <elohimes@gmail.com>, Eric Auger <eric.auger@redhat.com>, Yongji Xie <xyjxie@linux.vnet.ibm.com>, Joerg Roedel <joro@8bytes.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Jike Song <jike.song@intel.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linux-pci <linux-pci@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-ARM IORT specification(rev. C) has added  provision to define proximity
-domain in SMMUv3 IORT table. Adding required code to parse Proximity
-domain and set numa_node of smmv3 platform devices.
+On 19/07/17 20:02, Alexey Kardashevskiy wrote:
+> On 11/07/17 05:23, Bjorn Helgaas wrote:
+>> [+cc Joerg, iommu]
+>>
+>> On Fri, Jun 30, 2017 at 12:24 AM, Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+>>> From: Yongji Xie <elohimes@gmail.com>
+>>>
+>>> Some iommu drivers would be initialized after PCI device
+>>> enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
+>>> when probing PCI devices although IOMMU enables capability
+>>> of IRQ remapping. This patch tests this capability and
+>>> set the flag when iommu driver is initialized.
+>>>
+>>> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+>>> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+>>> ---
+>>>  drivers/iommu/iommu.c | 8 ++++++++
+>>>  drivers/pci/probe.c   | 1 +
+>>>  2 files changed, 9 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>> index cf7ca7e70777..0b5881ddca09 100644
+>>> --- a/drivers/iommu/iommu.c
+>>> +++ b/drivers/iommu/iommu.c
+>>> @@ -1063,6 +1063,14 @@ static int add_iommu_group(struct device *dev, void *data)
+>>>         const struct iommu_ops *ops = cb->ops;
+>>>         int ret;
+>>>
+>>> +       /*
+>>> +        * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
+>>> +        * have capability of IRQ remapping.
+>>> +        */
+>>> +       if (dev_is_pci(dev) && ops->capable &&
+>>> +                       ops->capable(IOMMU_CAP_INTR_REMAP))
+>>> +               to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+>>
+>> This isn't my area, but this addition is really ugly.  It doesn't look
+>> anything like the rest of the code in add_iommu_group(), so it just
+>> feels like a wart.
+> 
+> 
+> It does look like a wart, however it did not cause immediate rejection
+> after first couple of revisions of this before I took it over...
+> 
+> So. Here is the problem - deliver an MSIX isolation flag from IOMMU to
+> VFIO-PCI driver. The options are:
+> 
+> 1. PCI_BUS_FLAGS_MSI_REMAP on a PCI bus - MSIX isolation is not really a
+> PCI bus property and it is "like a wart".
+> 
+> 2. Introduce "flags" in iommu_group and define IOMMU_GROUP_MSIX_ISOLATED
+> and set it when an IOMMU group is created; VFIO-PCI has ways to get to the
+> group and read the flag.
+> 
+> 3. Create IOMMU_DOMAIN_UNMANAGED IOMMU domains for PPC64/powernv IOMMU
+> groups and only define capable() hook to report IOMMU_CAP_INTR_REMAP;
+> others already use these IOMMU domains. VFIO-PCI's mmap() hook could then
+> check the capability via iommu_capable(bus). The problems is as Robin said:
+> "iommu_capable() is a fundamentally broken and unworkable interface
+> anyway"; however it is still not clear to me why it is unworkable in this
+> particular case of isolation checking.
+> 
+> I am missing knowledge about ARM, is there a good overview of these MSIX
+> domains vs. IOMMU on ARM (as MSIX remapping seems not to be an IOMMU property)?
+> 
+> 
+> Which one to pick? Thanks.
 
-Add code to parse proximity domain in SMMUv3 IORT table to
-set numa node mapping for smmuv3 devices.
 
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
 
-This patch has dependency on header file patch [1], which is
-already merged to linux-pm.
+Anyone, please?
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=c944230064eb65e4fa018d86779b4fd200b1d7e7
 
-v4:
-  - Fix compilation issue in !CONFIG_NUMA
 
-v3:
-  - Addressed Lorenzo Pieralisi comment.
+> 
+> 
+> 
+>>
+>>>         if (!ops->add_device)
+>>>                 return 0;
+>>>
+>>> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+>>> index f2393b7d7ebf..14aac9df3d17 100644
+>>> --- a/drivers/pci/probe.c
+>>> +++ b/drivers/pci/probe.c
+>>> @@ -17,6 +17,7 @@
+>>>  #include <linux/acpi.h>
+>>>  #include <linux/irqdomain.h>
+>>>  #include <linux/pm_runtime.h>
+>>> +#include <linux/iommu.h>
+>>
+>> This obviously belongs in another patch, as the compile error showed.
+>>
+>>>  #include "pci.h"
+>>>
+>>>  #define CARDBUS_LATENCY_TIMER  176     /* secondary latency timer */
+>>> --
+>>> 2.11.0
+>>>
+> 
+> 
 
-v2:
-  - Changed as per Lorenzo Pieralisi and Hanjun Guo suggestions.
 
-v1:
-  - Initial patch
-
- drivers/acpi/arm64/iort.c | 33 +++++++++++++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index a3215ee..c5c82c3 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -908,6 +908,28 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
- 	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
- }
- 
-+#if defined(CONFIG_ACPI_NUMA) && (ACPI_CA_VERSION >= 0x20170629)
-+/*
-+ * set numa proximity domain for smmuv3 device
-+ */
-+static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
-+		struct device *dev)
-+{
-+	struct acpi_iort_smmu_v3 *smmu;
-+
-+	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
-+		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
-+		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
-+			smmu->base_address,
-+			smmu->pxm);
-+	}
-+}
-+#else
-+static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
-+		struct device *dev) { }
-+#endif
-+
- static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
- {
- 	struct acpi_iort_smmu *smmu;
-@@ -977,20 +999,24 @@ struct iort_iommu_config {
- 	int (*iommu_count_resources)(struct acpi_iort_node *node);
- 	void (*iommu_init_resources)(struct resource *res,
- 				     struct acpi_iort_node *node);
-+	void (*iommu_set_proximity)(struct acpi_iort_node *node,
-+				     struct device *dev);
- };
- 
- static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
- 	.name = "arm-smmu-v3",
- 	.iommu_is_coherent = arm_smmu_v3_is_coherent,
- 	.iommu_count_resources = arm_smmu_v3_count_resources,
--	.iommu_init_resources = arm_smmu_v3_init_resources
-+	.iommu_init_resources = arm_smmu_v3_init_resources,
-+	.iommu_set_proximity = arm_smmu_v3_set_proximity
- };
- 
- static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
- 	.name = "arm-smmu",
- 	.iommu_is_coherent = arm_smmu_is_coherent,
- 	.iommu_count_resources = arm_smmu_count_resources,
--	.iommu_init_resources = arm_smmu_init_resources
-+	.iommu_init_resources = arm_smmu_init_resources,
-+	.iommu_set_proximity = NULL
- };
- 
- static __init
-@@ -1028,6 +1054,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
- 	if (!pdev)
- 		return -ENOMEM;
- 
-+	if (ops->iommu_set_proximity)
-+		ops->iommu_set_proximity(node, &pdev->dev);
-+
- 	count = ops->iommu_count_resources(node);
- 
- 	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
 -- 
-2.9.4
+Alexey
