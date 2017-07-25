@@ -1,78 +1,34 @@
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v4 0/2] iommu/smmu-v3: Workaround for hisilicon 161010801 erratum(reserve HW MSI)
-Date: Tue, 25 Jul 2017 12:17:30 +0100
-Message-ID: <20170725111732.41792-1-shameerali.kolothum.thodi@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [GIT PULL] iommu/arm-smmu: Fixes for 4.13
+Date: Tue, 25 Jul 2017 15:01:17 +0200
+Message-ID: <20170725130117.GB30429@8bytes.org>
+References: <20170724122943.GE29919@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170724122943.GE29919-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On certain HiSilicon platforms (Hip06/Hip07) the GIC ITS and
-PCIe RC deviates from the standard implementation and this breaks
-PCIe MSI functionality when SMMU is enabled.
+On Mon, Jul 24, 2017 at 01:29:43PM +0100, Will Deacon wrote:
+> The following changes since commit 5771a8c08880cdca3bfb4a3fc6d309d6bba20877:
+> 
+>   Linux v4.13-rc1 (2017-07-15 15:22:10 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
 
-The HiSilicon erratum 161010801 describes this limitation of certain
-HiSilicon platforms to support the SMMU mappings for MSI transactions.
-On these platforms GICv3 ITS translator is presented with the deviceID
-by extending the MSI payload data to 64 bits to include the deviceID.
-Hence, the PCIe controller on this platforms has to differentiate the
-MSI payload against other DMA payload and has to modify the MSI payload.
-This basically makes it difficult for this platforms to have a SMMU
-translation for MSI.
-
-To implement this quirk, the following changes are incorporated:
-
-1. Added a generic helper function to IORT code to retrieve and
-   reserve the HW ITS address regions.
-2. Modified iommu_dma_get_resv_regions() to reserve the hw msi
-   regions which means these address regions will not be translated and
-   will be excluded from iova allocations.
-
-Thanks,
-Shameer
-
-Changelog:
-
-v3 --> v4
-Rebased on 4.13-rc1.
-Addressed comments from Robin, Will and Lorenzo:
--As suggested by Robin, moved the ITS msi reservation into
- iommu_dma_get_resv_regions().
--Added its_count != resv region failure case(patch #1).
-
-v2 --> v3
-Addressed comments from Lorenzo and Robin:
--Removed dev_is_pci() check in smmuV3 driver.
--Don't treat device not having an ITS mapping as an error in
- iort helper function.
-
-v1 --> v2
--patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
-
-RFCv2 -->PATCH
--Incorporated Lorenzo's review comments.
-
-RFC v1 --> RFC v2
-Based on Robin's review comments,
--Removed  the generic erratum framework.
--Using IORT/MADT tables to retrieve the ITS base addr instead
- of vendor specific CSRT table.
-
-Shameer Kolothum (2):
-  acpi:iort: Add an IORT helper function to reserve HW ITS address
-    regions for IOMMU drivers
-  iommu/dma: Add HW MSI address regions reservation for IOMMU drivers
-
- drivers/acpi/arm64/iort.c        | 91 ++++++++++++++++++++++++++++++++++++++--
- drivers/iommu/dma-iommu.c        |  8 +++-
- drivers/irqchip/irq-gic-v3-its.c |  3 +-
- include/linux/acpi_iort.h        |  8 +++-
- 4 files changed, 104 insertions(+), 6 deletions(-)
-
--- 
-1.9.1
-
-
+Pulled into iommu/fixes, thanks Will.
