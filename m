@@ -1,40 +1,54 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH V3 1/4] ARM64: dts: rockchip: rk3328 add iommu nodes
-Date: Wed, 26 Jul 2017 14:27:53 +0200
-Message-ID: <20170726122753.GQ15833@8bytes.org>
-References: <1500863530-32792-1-git-send-email-xxm@rock-chips.com>
- <20170726105818.GK15833@8bytes.org>
- <7545443.2JTXH2SMA9@diego>
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH] memory: mtk-smi: Use of_device_get_match_data helper
+Date: Wed, 26 Jul 2017 20:35:27 +0800
+Message-ID: <1501072527.20860.1.camel@mtksdaap41>
+References: <1501063150-8778-1-git-send-email-honghui.zhang@mediatek.com>
+	<1d31eedd-fdab-bd6f-65b1-c0e8b79a8888@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <7545443.2JTXH2SMA9@diego>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Heiko =?iso-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1d31eedd-fdab-bd6f-65b1-c0e8b79a8888-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Heiko,
+On Wed, 2017-07-26 at 11:36 +0100, Robin Murphy wrote:
+> On 26/07/17 10:59, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
+> > From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > 
 
-On Wed, Jul 26, 2017 at 01:44:02PM +0200, Heiko Stübner wrote:
-> I really would prefer iommu dt-nodes going through my tree :-)
+> >  	 * for mtk smi gen 1, we need to get the ao(always on) base to config
+> >  	 * m4u port, and we need to enable the aync clock for transform the smi
+> >  	 * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
+> >  	 * base.
+> >  	 */
+> > -	smi_gen = (enum mtk_smi_gen)of_id->data;
+> > -	if (smi_gen == MTK_SMI_GEN1) {
+> > +	smi_gen = of_device_get_match_data(dev);
 > 
-> Especially as parts of these conflict with already pending patches for
-> graphics support and with the iommu nodes sitting in your tree these
-> would need to wait another kernel release.
+> The data you're retrieving is the exact same thing as of_id->data was,
+> i.e. an enum mtk_smi_gen cast to void*, so dereferencing it is not a
+> good idea. The first patch was almost right; you just need to keep the
+> cast in the assignment to smi_gen.
+> 
+> Robin.
+> 
+Hi, Robin, thanks very much.
+I will send a new version.
 
-Sure, no problem. I have nothing pushed yet, so it's easy to remove
-again. Do you want to take all three patch-sets from Simon through your
-tree or just this one?
-
-
-Regards,
-
-	Joerg
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > +	if (*smi_gen == MTK_SMI_GEN1) {
+> >  		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >  		common->smi_ao_base = devm_ioremap_resource(dev, res);
+> >  		if (IS_ERR(common->smi_ao_base))
+> > 
+> 
