@@ -1,14 +1,14 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH V3 1/4] ARM64: dts: rockchip: rk3328 add iommu nodes
-Date: Wed, 26 Jul 2017 15:53:06 +0200
-Message-ID: <1668393.AqADimcrsl@diego>
-References: <1500863530-32792-1-git-send-email-xxm@rock-chips.com>
-	<7545443.2JTXH2SMA9@diego> <20170726122753.GQ15833@8bytes.org>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC 0/2] arm-smmu-v3 tlbi-on-map option
+Date: Wed, 26 Jul 2017 16:41:08 +0200
+Message-ID: <d89a1f61-dd38-100f-2da0-2cddafd20920@redhat.com>
+References: <1499613303-30173-1-git-send-email-eric.auger@redhat.com>
+	<20170712175454.GF15191@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170726122753.GQ15833-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170712175454.GF15191-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,37 +18,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Will, Michael,
 
-Am Mittwoch, 26. Juli 2017, 14:27:53 CEST schrieb Joerg Roedel:
-> On Wed, Jul 26, 2017 at 01:44:02PM +0200, Heiko St=FCbner wrote:
-> > I really would prefer iommu dt-nodes going through my tree :-)
-> > =
+On 12/07/2017 19:54, Will Deacon wrote:
+> Hi Eric,
+> 
+> On Sun, Jul 09, 2017 at 05:15:01PM +0200, Eric Auger wrote:
+>> This series adds a new tlbi-on-map option to the smmuv3 driver.
+>> When set, the IO_PGTABLE_QUIRK_TLBI_ON_MAP quirk is applied for 
+>> LPAE tables and the smmuv3 driver sends TLB invalidations on map.
+>>
+>> This mode is useful when running the driver on a guest as it allows
+>> the virtualizer to trap any change to the translation structures.
+>> This is similar to the Intel vtd caching mode (CM).
+>>
+>> This is especially needed for VFIO integration integration where
+>> guest mappings must be applied to the physical IOMMU.
+>>
+>> At the moment the option only is available for DT probing.
+> 
+> I'm really not a fan of this approach. If a virtual IOMMU implementation is
+> advertising itself as an SMMUv3, then it should adhere to the SMMUv3
+> architecture and not require non-standard behaviour from the driver. If
+> we're going to allow that, then we're better off going the extra mile and
+> using a PV approach. Given that the the SMMU3 architecture does *not*
+> require TLBI on map, then I don't think we should be quirking our behaviour
+> in this way. The fact that you only have this implemented for DT is the
+> canary in the coal mine imo.
 
-> > Especially as parts of these conflict with already pending patches for
-> > graphics support and with the iommu nodes sitting in your tree these
-> > would need to wait another kernel release.
-> =
+I did not proceed with ACPI integration as I focused on the QEMU
+integration POC instead. I intended to propose a new model id just like
 
-> Sure, no problem. I have nothing pushed yet, so it's easy to remove
-> again. Do you want to take all three patch-sets from Simon through your
-> tree or just this one?
+12275bf  iommu/arm-smmu-v3, acpi: Add temporary Cavium SMMU-V3 IORT
+model number definitions?
 
-no, I'm of course fine with (and even very much in favor of) iommu-code
-going through your tree :-) . I just want to keep the devicetree changes
-together to prevent conflicts (and unnecessary wait times).
+Is it really costly to maintain such a quirk (which by the way does the
+same thing as Intel caching mode, unfortunately not in an HW specified
+manner) compared to other quirks?
 
-Having code and dts changes go through different trees is no problem, as th=
-ey =
+Having an smmu emulated device integrated with vfio can always be useful
+for debugging purpose and also to compare perfs/functionality against
+virtio-iommu solution. We said both solutions could co-exist, serving
+different purposes. Now if you close the door to vfio integration,
+emulated smmu just serves the purpose of guests using isolated virtio
+devices which limits quite a lot its usage, somehow questioning the
+efforts invested to develop/upstream it.
 
-don't have a compile-time dependencies on each other and come together nice=
-ly =
+Besides, before any further decision, I need to complete the DPDK use
+case enablement as I get a storm of page tlbi's although hugepages are
+used. And this hasn't worked yet ...
 
-in linux-next again.
+Thanks
+
+Eric
 
 
-Heiko
+> 
+> Will
+> 
