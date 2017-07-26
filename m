@@ -1,45 +1,30 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 01/05] iommu/ipmmu-vmsa: Use
- iommu_device_register()/unregister()
-Date: Wed, 26 Jul 2017 12:44:11 +0200
-Message-ID: <20170726104410.GI15833@8bytes.org>
-References: <150029669967.22030.8059216113725566341.sendpatchset@little-apple>
- <150029671059.22030.9200719361237858789.sendpatchset@little-apple>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/4] ARM64: dts: rockchip: rk3328 add iommu nodes
+Date: Wed, 26 Jul 2017 12:57:45 +0200
+Message-ID: <20170726105745.GJ15833@8bytes.org>
+References: <1500372125-114261-1-git-send-email-xxm@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <150029671059.22030.9200719361237858789.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, robin.murphy@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, sricharan@codeaurora.org, m.szyprowski@samsung.com
+In-Reply-To: <1500372125-114261-1-git-send-email-xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 17, 2017 at 10:05:10PM +0900, Magnus Damm wrote:
-> --- 0001/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c	2017-07-17 21:01:47.140607110 +0900
-> @@ -35,6 +35,7 @@
->  struct ipmmu_vmsa_device {
->  	struct device *dev;
->  	void __iomem *base;
-> +	struct iommu_device iommu;
->  	struct list_head list;
->  
->  	unsigned int num_utlbs;
-> @@ -1054,6 +1055,13 @@ static int ipmmu_probe(struct platform_d
->  
->  	ipmmu_device_reset(mmu);
->  
-> +	iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
-> +	iommu_device_set_fwnode(&mmu->iommu, &pdev->dev.of_node->fwnode);
-> +
-> +	ret = iommu_device_register(&mmu->iommu);
-> +	if (ret)
-> +		return ret;
-> +
+On Tue, Jul 18, 2017 at 06:02:02PM +0800, Simon Xue wrote:
+> From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> 
+> Add H265e/VEPU/VPU/VDEC/VOP iommu nodes
+> 
+> Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
+>  arch/arm64/boot/dts/rockchip/rk3328.dtsi | 45 ++++++++++++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
 
-Looks good so far, why don't you also add the iommu to sysfs with
-iommu_device_sysfs_add()?
-
-
-	Joerg
+Applied all, thanks.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
