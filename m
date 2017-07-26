@@ -1,75 +1,76 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH kernel v4 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on
-	iommu driver initialization
-Date: Wed, 26 Jul 2017 11:50:53 +0200
-Message-ID: <20170726095053.GG15833@8bytes.org>
-References: <20170630052436.15212-1-aik@ozlabs.ru>
-	<20170630052436.15212-5-aik@ozlabs.ru>
-	<CAErSpo4pAZfDx5p_S9Z8jR_ctH=ZrkgG6aNaNmPaN2H77dgEgQ@mail.gmail.com>
-	<b444851a-3240-f98f-04b9-0223649ea856@ozlabs.ru>
+From: <honghui.zhang@mediatek.com>
+Subject: [PATCH] memory: mtk-smi: Use of_device_get_match_data helper
+Date: Wed, 26 Jul 2017 17:52:05 +0800
+Message-ID: <1501062725-8571-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <b444851a-3240-f98f-04b9-0223649ea856-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Cc: Jike Song <jike.song-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, matthias.bgg@gmail.com, robh@kernel.org, robin.murphy@arm.com
+Cc: srv_heupstream@mediatek.com, catalin.marinas@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, youlin.pei@mediatek.com, erin.lo@mediatek.com, Honghui Zhang <honghui.zhang@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 19, 2017 at 08:02:04PM +1000, Alexey Kardashevskiy wrote:
-> On 11/07/17 05:23, Bjorn Helgaas wrote:
-> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >> index cf7ca7e70777..0b5881ddca09 100644
-> >> --- a/drivers/iommu/iommu.c
-> >> +++ b/drivers/iommu/iommu.c
-> >> @@ -1063,6 +1063,14 @@ static int add_iommu_group(struct device *dev, void *data)
-> >>         const struct iommu_ops *ops = cb->ops;
-> >>         int ret;
-> >>
-> >> +       /*
-> >> +        * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
-> >> +        * have capability of IRQ remapping.
-> >> +        */
-> >> +       if (dev_is_pci(dev) && ops->capable &&
-> >> +                       ops->capable(IOMMU_CAP_INTR_REMAP))
-> >> +               to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+From: Honghui Zhang <honghui.zhang@mediatek.com>
 
-We avoid bus-specific hacks in generic iommu code. This has to be done
-in bus-specific iommu-group setup code.
+Replace custom code with generic helper to retrieve driver data.
 
-> 1. PCI_BUS_FLAGS_MSI_REMAP on a PCI bus - MSIX isolation is not really a
-> PCI bus property and it is "like a wart".
+Signed-off-by: Honghui Zhang <honghui.zhang@mediatek.com>
+---
+ drivers/memory/mtk-smi.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
-This one is at least debatable. It could be a property of the bus.
-
-> 2. Introduce "flags" in iommu_group and define IOMMU_GROUP_MSIX_ISOLATED
-> and set it when an IOMMU group is created; VFIO-PCI has ways to get to the
-> group and read the flag.
-
-That's the best option I see here.
-
-> 3. Create IOMMU_DOMAIN_UNMANAGED IOMMU domains for PPC64/powernv IOMMU
-> groups and only define capable() hook to report IOMMU_CAP_INTR_REMAP;
-> others already use these IOMMU domains. VFIO-PCI's mmap() hook could then
-> check the capability via iommu_capable(bus). The problems is as Robin said:
-> "iommu_capable() is a fundamentally broken and unworkable interface
-> anyway"; however it is still not clear to me why it is unworkable in this
-> particular case of isolation checking.
-
-That one is wrong, IRQ remapping is not a property of a domain. A domain
-is an abstraction for a device address space. Attaching IRQ information
-there is just wrong.
-
-
-
-	Joerg
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index 4afbc41..69249f5 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -240,20 +240,15 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *smi_node;
+ 	struct platform_device *smi_pdev;
+-	const struct of_device_id *of_id;
+ 
+ 	if (!dev->pm_domain)
+ 		return -EPROBE_DEFER;
+ 
+-	of_id = of_match_node(mtk_smi_larb_of_ids, pdev->dev.of_node);
+-	if (!of_id)
+-		return -EINVAL;
+-
+ 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+ 	if (!larb)
+ 		return -ENOMEM;
+ 
+-	larb->larb_gen = of_id->data;
++	larb->larb_gen = of_device_get_match_data(dev);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	larb->base = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(larb->base))
+@@ -319,7 +314,6 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct mtk_smi *common;
+ 	struct resource *res;
+-	const struct of_device_id *of_id;
+ 	enum mtk_smi_gen smi_gen;
+ 
+ 	if (!dev->pm_domain)
+@@ -338,17 +332,13 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+ 	if (IS_ERR(common->clk_smi))
+ 		return PTR_ERR(common->clk_smi);
+ 
+-	of_id = of_match_node(mtk_smi_common_of_ids, pdev->dev.of_node);
+-	if (!of_id)
+-		return -EINVAL;
+-
+ 	/*
+ 	 * for mtk smi gen 1, we need to get the ao(always on) base to config
+ 	 * m4u port, and we need to enable the aync clock for transform the smi
+ 	 * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
+ 	 * base.
+ 	 */
+-	smi_gen = (enum mtk_smi_gen)of_id->data;
++	smi_gen = of_device_get_match_data(dev);
+ 	if (smi_gen == MTK_SMI_GEN1) {
+ 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 		common->smi_ao_base = devm_ioremap_resource(dev, res);
+-- 
+2.6.4
