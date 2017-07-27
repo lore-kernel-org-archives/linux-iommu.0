@@ -1,15 +1,13 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 3/4] iommu/tegra-gart: Add iommu_group support
-Date: Wed, 26 Jul 2017 23:56:58 +0300
-Message-ID: <e1de80c6-33fd-6bd5-bc28-8b3d3043ca4f@gmail.com>
-References: <cover.1500637633.git.robin.murphy@arm.com>
-	<9c3fa9661e8177f0ccea960dd584a05fc19f92c8.1500637633.git.robin.murphy@arm.com>
+From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 1/3] memory: mtk-smi: add larbid init routine
+Date: Thu, 27 Jul 2017 10:01:10 +0800
+Message-ID: <1501120872-19652-2-git-send-email-honghui.zhang@mediatek.com>
+References: <1501120872-19652-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9c3fa9661e8177f0ccea960dd584a05fc19f92c8.1500637633.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1501120872-19652-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +17,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xinping.qian-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 21.07.2017 15:12, Robin Murphy wrote:
-> As the last step to making groups mandatory, clean up the remaining
-> drivers by adding basic support. Whilst it may not perfectly reflect the
-> isolation capabilities of the hardware, using generic_device_group()
-> should at least maintain existing behaviour with respect to the API.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/tegra-gart.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Tested-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In the commit 3c8f4ad85c4b ("memory/mediatek: add support for mt2701"),
+the larb->larbid was added but not initialized.
+Mediatek's gen1 smi need this hardware larbid information to get the
+register offset which controls whether enable iommu for this larb.
+This patch add the initialize routine for larbid.
 
+Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+---
+ drivers/memory/mtk-smi.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index 2b798bb4..fe36b3e 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -240,6 +240,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *smi_node;
+ 	struct platform_device *smi_pdev;
++	int err;
+ 
+ 	if (!dev->pm_domain)
+ 		return -EPROBE_DEFER;
+@@ -263,6 +264,14 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 		return PTR_ERR(larb->smi.clk_smi);
+ 	larb->smi.dev = dev;
+ 
++	err = of_property_read_u32(dev->of_node, "mediatek,larbid",
++				   &larb->larbid);
++	if (err && of_device_is_compatible(dev->of_node,
++					   "mediatek,mt2701-smi-larb")) {
++		dev_err(dev, "missing larbid property\n");
++		return err;
++	}
++
+ 	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
+ 	if (!smi_node)
+ 		return -EINVAL;
 -- 
-Dmitry
+2.6.4
