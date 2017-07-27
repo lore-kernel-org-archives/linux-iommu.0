@@ -1,41 +1,65 @@
 From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH v8 01/13] iommu/amd: Detect pre enabled translation
-Date: Thu, 27 Jul 2017 17:04:45 +0200
-Message-ID: <20170727150445.GJ3610@suse.de>
+Subject: Re: [PATCH v8 02/13] iommu/amd: add several helper functions
+Date: Thu, 27 Jul 2017 17:06:12 +0200
+Message-ID: <20170727150612.GK3610@suse.de>
 References: <1500627551-12930-1-git-send-email-bhe@redhat.com>
- <1500627551-12930-2-git-send-email-bhe@redhat.com>
+ <1500627551-12930-3-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1500627551-12930-2-git-send-email-bhe@redhat.com>
+In-Reply-To: <1500627551-12930-3-git-send-email-bhe@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Baoquan He <bhe@redhat.com>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 21, 2017 at 04:58:59PM +0800, Baoquan He wrote:
-> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> index 294a409e283b..d15966b62b33 100644
-> --- a/drivers/iommu/amd_iommu_types.h
-> +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -417,6 +417,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
->  #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
+On Fri, Jul 21, 2017 at 04:59:00PM +0800, Baoquan He wrote:
+> Move single iommu enabling codes into a wrapper function early_enable_iommu().
+> This can make later kdump change easier.
+> 
+> And also add iommu_disable_command_buffer and iommu_disable_event_buffer
+> for later usage.
+> 
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> ---
+>  drivers/iommu/amd_iommu_init.c | 42 +++++++++++++++++++++++++++++++-----------
+>  1 file changed, 31 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index e39857ce6481..4ca6e3257d92 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -634,6 +634,14 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
+>  	amd_iommu_reset_cmd_buffer(iommu);
+>  }
 >  
->  
+> +/*
+> + * This function disables the command buffer
+> + */
+> +static void iommu_disable_command_buffer(struct amd_iommu *iommu)
+> +{
+> +	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
+> +}
 > +
-
-Forgot to remove that from the diff?
-
->  /*
->   * This struct is used to pass information about
->   * incoming PPR faults around.
-> @@ -435,6 +436,8 @@ struct iommu_domain;
->  struct irq_domain;
->  struct amd_irte_ops;
+>  static void __init free_command_buffer(struct amd_iommu *iommu)
+>  {
+>  	free_pages((unsigned long)iommu->cmd_buf, get_order(CMD_BUFFER_SIZE));
+> @@ -666,6 +674,14 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
+>  	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
+>  }
 >  
-> +#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
+> +/*
+> + * This function disables the command buffer
+
+s/command buffer/event log/
+
+> + */
+> +static void iommu_disable_event_buffer(struct amd_iommu *iommu)
+
+Please also use event_log here.
+
+> +{
+> +	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
+> +}
 > +
->  /*
->   * This structure contains generic data for  IOMMU protection domains
->   * independent of their use.
