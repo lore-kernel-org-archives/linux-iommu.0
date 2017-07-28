@@ -1,156 +1,54 @@
-From: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [iommu:core 1/3] drivers/iommu/of_iommu.c:231:21-28:
- ERROR: PTR_ERR applied after initialization to constant on line 173
-Date: Fri, 28 Jul 2017 14:15:22 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1707281414120.14346@hadrien>
-References: <201707280858.aviPx7yO%fengguang.wu@intel.com>
- <7fc4d02c-55e1-328e-586b-3162ce1def0f@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <cocci-bounces@systeme.lip6.fr>
-In-Reply-To: <7fc4d02c-55e1-328e-586b-3162ce1def0f@arm.com>
-List-Unsubscribe: <https://systeme.lip6.fr/mailman/options/cocci>,
- <mailto:cocci-request@systeme.lip6.fr?subject=unsubscribe>
-List-Archive: <https://systeme.lip6.fr/pipermail/cocci>
-List-Post: <mailto:cocci@systeme.lip6.fr>
-List-Help: <mailto:cocci-request@systeme.lip6.fr?subject=help>
-List-Subscribe: <https://systeme.lip6.fr/mailman/listinfo/cocci>,
- <mailto:cocci-request@systeme.lip6.fr?subject=subscribe>
-Sender: cocci-bounces@systeme.lip6.fr
-Errors-To: cocci-bounces@systeme.lip6.fr
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org, kbuild-all@01.org, kbuild test robot <fengguang.wu@intel.com>, cocci@systeme.lip6.fr
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] iommu/exynos: prevent building on big-endian kernels
+Date: Fri, 28 Jul 2017 15:19:19 +0200
+Message-ID: <20170728131954.213595-1-arnd@arndb.de>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+Since we print the correct warning, an allmodconfig build is no longer
+clean but always prints it, which defeats compile-testing:
 
+drivers/iommu/exynos-iommu.c:58:2: error: #warning "revisit driver if we can enable big-endian ptes" [-Werror=cpp]
 
-On Fri, 28 Jul 2017, Robin Murphy wrote:
+This replaces the #warning with a dependency, moving warning text into
+a comment.
 
-> On 28/07/17 01:26, kbuild test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git core
-> > head:   6bd4f1c754b2fafac403073b0d8469bed1d37e2d
-> > commit: d87beb749281404b4b4919930b1cc6352e3746f2 [1/3] iommu/of: Handle PCI aliases properly
-> >
-> >
-> > coccinelle warnings: (new ones prefixed by >>)
-> >
-> >>> drivers/iommu/of_iommu.c:231:21-28: ERROR: PTR_ERR applied after initialization to constant on line 173
->
-> I don't think I can see what Coccinelle sees here :/
->
-> > vim +231 drivers/iommu/of_iommu.c
-> >
-> > 2a0c5754 Robin Murphy     2017-04-10  169
-> > 2a0c5754 Robin Murphy     2017-04-10  170  const struct iommu_ops *of_iommu_configure(struct device *dev,
-> > 2a0c5754 Robin Murphy     2017-04-10  171  					   struct device_node *master_np)
-> > 2a0c5754 Robin Murphy     2017-04-10  172  {
-> > d87beb74 Robin Murphy     2017-05-31 @173  	const struct iommu_ops *ops = NULL;
->
-> Fair enough, NULL is indeed a constant, but it's also a valid value for
-> this function to return, since we're looking up a pointer to something
-> which may or may not exist...
->
-> > d7b05582 Robin Murphy     2017-04-10  174  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > d87beb74 Robin Murphy     2017-05-31  175  	int err;
-> > 7eba1d51 Will Deacon      2014-08-27  176
-> > 2a0c5754 Robin Murphy     2017-04-10  177  	if (!master_np)
-> > 7eba1d51 Will Deacon      2014-08-27  178  		return NULL;
-> > 2a0c5754 Robin Murphy     2017-04-10  179
-> > d7b05582 Robin Murphy     2017-04-10  180  	if (fwspec) {
-> > d7b05582 Robin Murphy     2017-04-10  181  		if (fwspec->ops)
-> > d7b05582 Robin Murphy     2017-04-10  182  			return fwspec->ops;
-> > d7b05582 Robin Murphy     2017-04-10  183
-> > d7b05582 Robin Murphy     2017-04-10  184  		/* In the deferred case, start again from scratch */
-> > d7b05582 Robin Murphy     2017-04-10  185  		iommu_fwspec_free(dev);
-> > d7b05582 Robin Murphy     2017-04-10  186  	}
-> > d7b05582 Robin Murphy     2017-04-10  187
-> > d87beb74 Robin Murphy     2017-05-31  188  	/*
-> > d87beb74 Robin Murphy     2017-05-31  189  	 * We don't currently walk up the tree looking for a parent IOMMU.
-> > d87beb74 Robin Murphy     2017-05-31  190  	 * See the `Notes:' section of
-> > d87beb74 Robin Murphy     2017-05-31  191  	 * Documentation/devicetree/bindings/iommu/iommu.txt
-> > d87beb74 Robin Murphy     2017-05-31  192  	 */
-> > d87beb74 Robin Murphy     2017-05-31  193  	if (dev_is_pci(dev)) {
-> > d87beb74 Robin Murphy     2017-05-31  194  		struct of_pci_iommu_alias_info info = {
-> > d87beb74 Robin Murphy     2017-05-31  195  			.dev = dev,
-> > d87beb74 Robin Murphy     2017-05-31  196  			.np = master_np,
-> > d87beb74 Robin Murphy     2017-05-31  197  		};
-> > d87beb74 Robin Murphy     2017-05-31  198
-> > d87beb74 Robin Murphy     2017-05-31  199  		err = pci_for_each_dma_alias(to_pci_dev(dev),
-> > d87beb74 Robin Murphy     2017-05-31  200  					     of_pci_iommu_init, &info);
-> > d87beb74 Robin Murphy     2017-05-31  201  		if (err) /* err > 0 means the walk stopped, but non-fatally */
-> > d87beb74 Robin Murphy     2017-05-31  202  			ops = ERR_PTR(min(err, 0));
-> > d87beb74 Robin Murphy     2017-05-31  203  		else /* success implies both fwspec and ops are now valid */
-> > d87beb74 Robin Murphy     2017-05-31  204  			ops = dev->iommu_fwspec->ops;
-> > d87beb74 Robin Murphy     2017-05-31  205  	} else {
-> > d87beb74 Robin Murphy     2017-05-31  206  		struct of_phandle_args iommu_spec;
-> > d87beb74 Robin Murphy     2017-05-31  207  		int idx = 0;
-> > d87beb74 Robin Murphy     2017-05-31  208
-> > d87beb74 Robin Murphy     2017-05-31  209  		while (!of_parse_phandle_with_args(master_np, "iommus",
-> > d87beb74 Robin Murphy     2017-05-31  210  						   "#iommu-cells",
-> > d87beb74 Robin Murphy     2017-05-31  211  						   idx, &iommu_spec)) {
-> > d87beb74 Robin Murphy     2017-05-31  212  			ops = of_iommu_xlate(dev, &iommu_spec);
-> > d87beb74 Robin Murphy     2017-05-31  213  			of_node_put(iommu_spec.np);
-> > d87beb74 Robin Murphy     2017-05-31  214  			idx++;
-> > d87beb74 Robin Murphy     2017-05-31  215  			if (IS_ERR_OR_NULL(ops))
-> > d87beb74 Robin Murphy     2017-05-31  216  				break;
-> > d87beb74 Robin Murphy     2017-05-31  217  		}
-> > d87beb74 Robin Murphy     2017-05-31  218  	}
->
-> ...here we've done some stuff that may have set ops to a valid pointer
-> or an ERR_PTR value, or we may not have touched it at all such that it
-> stays NULL...
->
-> > d7b05582 Robin Murphy     2017-04-10  219  	/*
-> > d7b05582 Robin Murphy     2017-04-10  220  	 * If we have reason to believe the IOMMU driver missed the initial
-> > d7b05582 Robin Murphy     2017-04-10  221  	 * add_device callback for dev, replay it to get things in order.
-> > d7b05582 Robin Murphy     2017-04-10  222  	 */
-> > d7b05582 Robin Murphy     2017-04-10  223  	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
-> > d7b05582 Robin Murphy     2017-04-10  224  	    dev->bus && !dev->iommu_group) {
-> > d87beb74 Robin Murphy     2017-05-31  225  		err = ops->add_device(dev);
-> > d7b05582 Robin Murphy     2017-04-10  226  		if (err)
-> > d7b05582 Robin Murphy     2017-04-10  227  			ops = ERR_PTR(err);
-> > d7b05582 Robin Murphy     2017-04-10  228  	}
-> > 2a0c5754 Robin Murphy     2017-04-10  229
-> > a37b19a3 Sricharan R      2017-05-27  230  	/* Ignore all other errors apart from EPROBE_DEFER */
-> > a37b19a3 Sricharan R      2017-05-27 @231  	if (IS_ERR(ops) && (PTR_ERR(ops) != -EPROBE_DEFER)) {
->
-> ...but if and only if it *has* been changed to an ERR_PTR value (i.e.
-> explicitly not the value it was initialised with), we want to
-> special-case one specific value. Why would that be considered an error?
->
-> Notably, the check also doesn't fire (but then does for the dev_dbg
-> below) if I swizzle this part of the statement to the
-> semantically-equivalent but less-obvious-to-read "(ops !=
-> ERR_PTR(-EPROBE_DEFER))". From what I can tell it seems to be ignoring
-> the initial IS_ERR(ops) predicate here.
+Fixes: 1f59adb1766d ("iommu/exynos: Replace non-existing big-endian Kconfig option")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iommu/Kconfig        | 1 +
+ drivers/iommu/exynos-iommu.c | 4 ----
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
-This is very likely the case.  False positive.  Perhaps the rule can be
-improved.  Thanks for the report.
-
-julia
-
-
->
-> Robin.
->
-> > a37b19a3 Sricharan R      2017-05-27  232  		dev_dbg(dev, "Adding to IOMMU failed: %ld\n", PTR_ERR(ops));
-> > a37b19a3 Sricharan R      2017-05-27  233  		ops = NULL;
-> > a37b19a3 Sricharan R      2017-05-27  234  	}
-> > a37b19a3 Sricharan R      2017-05-27  235
-> > 7b07cbef Laurent Pinchart 2017-04-10  236  	return ops;
-> > 7eba1d51 Will Deacon      2014-08-27  237  }
-> > 7eba1d51 Will Deacon      2014-08-27  238
-> >
-> > :::::: The code at line 231 was first introduced by commit
-> > :::::: a37b19a384914c60b7e1264a6c21e7bf96b637e8 iommu/of: Ignore all errors except EPROBE_DEFER
-> >
-> > :::::: TO: Sricharan R <sricharan@codeaurora.org>
-> > :::::: CC: Joerg Roedel <jroedel@suse.de>
-> >
-> > ---
-> > 0-DAY kernel test infrastructure                Open Source Technology Center
-> > https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
-> >
->
->
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f73ff28f77e2..c5d80fe3dab9 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -253,6 +253,7 @@ config TEGRA_IOMMU_SMMU
+ config EXYNOS_IOMMU
+ 	bool "Exynos IOMMU Support"
+ 	depends on ARCH_EXYNOS && MMU
++	depends on !CPU_BIG_ENDIAN # revisit driver if we can enable big-endian ptes
+ 	select IOMMU_API
+ 	select ARM_DMA_USE_IOMMU
+ 	help
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b7aebaf28b82..c6b69e91132b 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -54,10 +54,6 @@ typedef u32 sysmmu_pte_t;
+ #define lv2ent_small(pent) ((*(pent) & 2) == 2)
+ #define lv2ent_large(pent) ((*(pent) & 3) == 1)
+ 
+-#ifdef CONFIG_CPU_BIG_ENDIAN
+-#warning "revisit driver if we can enable big-endian ptes"
+-#endif
+-
+ /*
+  * v1.x - v3.x SYSMMU supports 32bit physical and 32bit virtual address spaces
+  * v5.0 introduced support for 36bit physical address space by shifting
+-- 
+2.9.0
