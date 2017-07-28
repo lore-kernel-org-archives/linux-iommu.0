@@ -1,16 +1,17 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 11/13] iommu/amd: Don't copy GCR3 table root pointer
-Date: Fri, 28 Jul 2017 17:07:01 +0800
-Message-ID: <20170728090701.GN24304@x1>
+Subject: Re: [PATCH v8 13/13] iommu/amd: Disable iommu only if amd_iommu=off
+	is specified
+Date: Fri, 28 Jul 2017 17:08:34 +0800
+Message-ID: <20170728090834.GO24304@x1>
 References: <1500627551-12930-1-git-send-email-bhe@redhat.com>
-	<1500627551-12930-12-git-send-email-bhe@redhat.com>
-	<20170727155755.GP3610@suse.de>
+	<1500627551-12930-14-git-send-email-bhe@redhat.com>
+	<20170727155852.GQ3610@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170727155755.GP3610-l3A5Bk7waGM@public.gmane.org>
+In-Reply-To: <20170727155852.GQ3610-l3A5Bk7waGM@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,21 +22,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, root <root-U2nCED00ozjD7sV1v1AExoa7Q5UgA9Lkp8t6gq825lw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/27/17 at 05:57pm, Joerg Roedel wrote:
-> On Fri, Jul 21, 2017 at 04:59:09PM +0800, Baoquan He wrote:
-> > When iommu is pre_enabled in kdump kernel, if a device is set up with
-> > guest translations (DTE.GV=1), then don't copy GCR3 table root pointer
-> > but move the device over to an empty guest-cr3 table and handle the
-> > faults in the PPR log (which answer them with INVALID). After all these
-> > PPR faults are recoverable for the device and we should not allow the
-> > device to change old-kernels data when we don't have to.
+On 07/27/17 at 05:58pm, Joerg Roedel wrote:
+> On Fri, Jul 21, 2017 at 04:59:11PM +0800, Baoquan He wrote:
+> > From: root <root-U2nCED00ozjD7sV1v1AExoa7Q5UgA9Lkp8t6gq825lw@public.gmane.org>
 > 
-> Okay, forget my previous comment about disabling IOMMUv2 features while
-> copying. Its done in this patch.
+> You probaly need to reset the author on this one.
 
-Yeah, as you said. Thanks.
+Oops, sorry. I made this patch on a testing machine. Will correct it.
+
+Thanks a lot for all these comments and great suggestions.
 
 > 
+> > 
+> > It's ok to disable iommu in normal kernel. While there's no need
+> > to disable it in kdump kernel after the on-flight dma issue has
+> > heen fixed.
+> > 
+> > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/iommu/amd_iommu_init.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> > index 8b4bac978062..880f693c809b 100644
+> > --- a/drivers/iommu/amd_iommu_init.c
+> > +++ b/drivers/iommu/amd_iommu_init.c
+> > @@ -2494,7 +2494,8 @@ static int __init early_amd_iommu_init(void)
+> >  		goto out;
+> >  
+> >  	/* Disable any previously enabled IOMMUs */
+> > -	disable_iommus();
+> > +	if (amd_iommu_disabled)
+> > +		disable_iommus();
+> >  
+> >  	if (amd_iommu_irq_remap)
+> >  		amd_iommu_irq_remap = check_ioapic_information();
+> > -- 
+> > 2.5.5
