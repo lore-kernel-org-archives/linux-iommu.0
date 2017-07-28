@@ -1,46 +1,73 @@
-From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v2 0/3] Add larbid init routine for mediatek's gen1 smi larb driver
-Date: Fri, 28 Jul 2017 18:55:40 +0800
-Message-ID: <1501239343-9190-1-git-send-email-honghui.zhang@mediatek.com>
+From: <honghui.zhang@mediatek.com>
+Subject: [PATCH v2 1/3] memory: mtk-smi: add larbid handle routine
+Date: Fri, 28 Jul 2017 18:55:41 +0800
+Message-ID: <1501239343-9190-2-git-send-email-honghui.zhang@mediatek.com>
+References: <1501239343-9190-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, xinping.qian-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1501239343-9190-1-git-send-email-honghui.zhang@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, matthias.bgg@gmail.com, robh@kernel.org, robin.murphy@arm.com
+Cc: devicetree@vger.kernel.org, kendrick.hsu@mediatek.com, srv_heupstream@mediatek.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, youlin.pei@mediatek.com, erin.lo@mediatek.com, yong.wu@mediatek.com, xinping.qian@mediatek.com, Honghui Zhang <honghui.zhang@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+From: Honghui Zhang <honghui.zhang@mediatek.com>
 
-Mediatek's gen1 smi need the hardware larbid to identify the offset for
-the register which controls whether enable iommu for this larb.
 In the commit 3c8f4ad85c4b ("memory/mediatek: add support for mt2701"),
-the larbid was used without properly initialized. This patchset fixed
-that.
-This patchset was based on the v2 version of the patch:
-memory: mtk-smi: Use of_device_get_match_data helper[1],
-which was base on 4.13-rc1
+the larb->larbid was added but not initialized.
+Mediatek's gen1 smi need this hardware larbid information to get the
+register offset which controls whether enable iommu for this larb.
+This patch add the initialize routine for larbid.
 
-[1] https://patchwork.kernel.org/patch/9864719
+Signed-off-by: Honghui Zhang <honghui.zhang@mediatek.com>
+---
+ drivers/memory/mtk-smi.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Change since v1:
- - Using mtk_smi_larb_gen to identify whether larbid was needed instead of
-   checking hard code bindings.
-
-Honghui Zhang (3):
-  memory: mtk-smi: add larbid handle routine
-  dt-bindings: mediatek: add descriptions for larbid
-  arm: dts: mediatek: add larbid property for larb
-
- .../bindings/memory-controllers/mediatek,smi-larb.txt     | 15 +++++++++++++++
- arch/arm/boot/dts/mt2701.dtsi                             |  3 +++
- drivers/memory/mtk-smi.c                                  | 12 ++++++++++++
- 3 files changed, 30 insertions(+)
-
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index 2b798bb4..8f75aaa 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -42,6 +42,7 @@
+ #define SMI_SECUR_CON_VAL_DOMAIN(id)	(0x3 << ((((id) & 0x7) << 2) + 1))
+ 
+ struct mtk_smi_larb_gen {
++	bool need_larbid;
+ 	int port_in_larb[MTK_LARB_NR_MAX + 1];
+ 	void (*config_port)(struct device *);
+ };
+@@ -214,6 +215,7 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
+ };
+ 
+ static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
++	.need_larbid = true,
+ 	.port_in_larb = {
+ 		LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
+ 		LARB2_PORT_OFFSET, LARB3_PORT_OFFSET
+@@ -240,6 +242,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *smi_node;
+ 	struct platform_device *smi_pdev;
++	int err;
+ 
+ 	if (!dev->pm_domain)
+ 		return -EPROBE_DEFER;
+@@ -263,6 +266,15 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 		return PTR_ERR(larb->smi.clk_smi);
+ 	larb->smi.dev = dev;
+ 
++	if (larb->larb_gen->need_larbid) {
++		err = of_property_read_u32(dev->of_node, "mediatek,larbid",
++					   &larb->larbid);
++		if (err) {
++			dev_err(dev, "missing larbid property\n");
++			return err;
++		}
++	}
++
+ 	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
+ 	if (!smi_node)
+ 		return -EINVAL;
 -- 
 2.6.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
