@@ -1,46 +1,197 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 0/4] iommu/tegra: gart: Couple corrections
-Date: Sat, 29 Jul 2017 14:09:18 +0300
-Message-ID: <78c22aa2-6401-a608-a9c6-ef001fdb3576@gmail.com>
-References: <cover.1499270277.git.digetx@gmail.com>
- <20170725144335.GC30429@8bytes.org>
- <430af3ab-29cd-bbe8-087d-82d8113d2a89@gmail.com>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3] vfio: platform: reset: Add Broadcom FlexRM reset module
+Date: Sat, 29 Jul 2017 15:01:16 +0200
+Message-ID: <c44c93c1-0bd9-bdaf-1603-ebbc4838c343@redhat.com>
+References: <1500549437-2870-1-git-send-email-anup.patel@broadcom.com>
+	<1500549437-2870-2-git-send-email-anup.patel@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <430af3ab-29cd-bbe8-087d-82d8113d2a89-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1500549437-2870-2-git-send-email-anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 29.07.2017 14:04, Dmitry Osipenko wrote:
-> On 25.07.2017 17:43, Joerg Roedel wrote:
->> On Wed, Jul 05, 2017 at 07:29:44PM +0300, Dmitry Osipenko wrote:
->>> I've added an experimental support of the GART to the Tegra DRM driver
->>> and it ended up with a very positive result. During the testing of the
->>> GART driver I've noticed couple of its minor shortcomings, so here the
->>> patches to remedy them.
->>>
->>> Dmitry Osipenko (4):
->>>   iommu/tegra: gart: Don't unnecessarily allocate registers context
->>>   iommu/tegra: gart: Check whether page is already mapped
->>>   iommu/tegra: gart: Move PFN validation out of spinlock
->>>   iommu/tegra: gart: Correct number of unmapped bytes
->>
->> Patches look good to me (except patch 1, which I am not sure about, but
->> maybe only due my limited knowledge about the hardware).
->>
->> So I take them when Thierry gives his Acked-by.
->>
+Hi Anup,
+On 20/07/2017 13:17, Anup Patel wrote:
+> This patch adds Broadcom FlexRM low-level reset for
+> VFIO platform.
 > 
-> Okay, Thierry should get to this patchset eventually.
+> It will do the following:
+> 1. Disable/Deactivate each FlexRM ring
+> 2. Flush each FlexRM ring
 > 
+> The cleanup sequence for FlexRM rings is adapted from
+> Broadcom FlexRM mailbox driver.
+> 
+> Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> ---
+>  drivers/vfio/platform/reset/Kconfig                |  9 +++
+>  drivers/vfio/platform/reset/Makefile               |  1 +
+>  .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 93 ++++++++++++++++++++++
+>  3 files changed, 103 insertions(+)
+>  create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> 
+> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+> index 70cccc5..8d8d226 100644
+> --- a/drivers/vfio/platform/reset/Kconfig
+> +++ b/drivers/vfio/platform/reset/Kconfig
+> @@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
+>  	  Enables the VFIO platform driver to handle reset for AMD XGBE
+>  
+>  	  If you don't know what to do here, say N.
+> +
+> +config VFIO_PLATFORM_BCMFLEXRM_RESET
+> +	tristate "VFIO support for Broadcom FlexRM reset"
+> +	depends on VFIO_PLATFORM
+> +	depends on ARCH_BCM_IPROC || COMPILE_TEST
+depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)?
+> +	help
+> +	  Enables the VFIO platform driver to handle reset for Broadcom FlexRM
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
+> index 93f4e23..8d9874b 100644
+> --- a/drivers/vfio/platform/reset/Makefile
+> +++ b/drivers/vfio/platform/reset/Makefile
+> @@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
+>  
+>  obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
+>  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
+> +obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
+> diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> new file mode 100644
+> index 0000000..a198196
+> --- /dev/null
+> +++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> @@ -0,0 +1,93 @@
+> +/*
+> + * Copyright (C) 2017 Broadcom
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +/*
+> + * This driver provides reset support for Broadcom FlexRM ring manager
+> + * to VFIO platform.
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +
+> +#include "vfio_platform_private.h"
+> +
+> +/* FlexRM configuration */
+> +#define RING_REGS_SIZE					0x10000
+> +#define RING_VER_MAGIC					0x76303031
+> +
+> +/* Per-Ring register offsets */
+> +#define RING_VER					0x000
+> +#define RING_CONTROL					0x034
+> +#define RING_FLUSH_DONE					0x038
+> +
+> +/* Register RING_CONTROL fields */
+> +#define CONTROL_FLUSH_SHIFT				5
+> +#define CONTROL_ACTIVE_SHIFT				4
+not used
+> +
+> +/* Register RING_FLUSH_DONE fields */
+> +#define FLUSH_DONE_MASK					0x1
+> +
+> +static void vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
+> +{
+> +	unsigned int timeout;
+> +
+> +	/* Disable/inactivate ring */
+> +	writel_relaxed(0x0, ring + RING_CONTROL);
+> +
+> +	/* Flush ring with timeout of 1s */
+> +	timeout = 1000;
+> +	writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
+> +	do {
+> +		if (readl_relaxed(ring + RING_FLUSH_DONE) & FLUSH_DONE_MASK)
+> +			break;
+> +		mdelay(1);
+> +	} while (timeout--);
+> +
+> +	if (!timeout)
+> +		pr_warn("VFIO FlexRM shutdown timedout\n");
+s/timedout/timeout
 
-BTW, looks like Hiroshi isn't in NVIDIA anymore, his email address isn't valid.
-Probably somebody else should take over maintaining of the affected Tegra drivers.
+vfio_platform_bcmflexrm_shutdown may also return an error that would be
+propagated to the called:
+vfio_platform_release() would then emit a dev_warn + WARN_ON. your
+choice - I know this is not done in amdxge reset function ;-) -.
 
--- 
-Dmitry
+
+Comparing to the drivers/mailbox/bcm-flexrm-mailbox.c flexrm_shutdown()
+there is one section missing commented as "Abort all in-flight
+requests". I understand there is no HW adherence of this section but I
+just want to double check that after disabling and flush the ring as
+above you guarantee there is no more DMA accesses likely to happen and
+also no platform MSI can be triggered by the HW.
+
+Otherwise looks good to me
+Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+
+For my curiosity do you intend to do a QEMU integration of this device?
+
+Thanks
+
+Eric
+> +}
+> +
+> +static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
+> +{
+> +	void __iomem *ring;
+> +	struct vfio_platform_region *reg = &vdev->regions[0];
+> +
+> +	/* Map FlexRM ring registers if not mapped */
+> +	if (!reg->ioaddr) {
+> +		reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
+> +		if (!reg->ioaddr)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	/* Discover and shutdown each FlexRM ring */
+> +	for (ring = reg->ioaddr;
+> +	     ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
+> +		if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC)
+> +			vfio_platform_bcmflexrm_shutdown(ring);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
+> +			  vfio_platform_bcmflexrm_reset);
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>");
+> +MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
+> 
