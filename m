@@ -1,15 +1,15 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: mailing list for the dma mapping code
-Date: Mon, 31 Jul 2017 07:42:05 +0200
-Message-ID: <b35dfcb6-cafc-788e-93fb-bd23b7f1a815@samsung.com>
-References: <CGME20170717064530epcas1p420482d9baffc1fdfabcc674dd351f7bd@epcas1p4.samsung.com>
-	<20170717064526.GA15839@lst.de>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] memory: mtk-smi: add larbid handle routine
+Date: Mon, 31 Jul 2017 11:32:01 +0200
+Message-ID: <18e1c24a-529d-85ef-0027-90c491927d6b@gmail.com>
+References: <1501239343-9190-1-git-send-email-honghui.zhang@mediatek.com>
+	<1501239343-9190-2-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20170717064526.GA15839-jcswGhMUV9g@public.gmane.org>
-Content-language: en-US
+In-Reply-To: <1501239343-9190-2-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,25 +19,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xinping.qian-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi All,
 
-On 2017-07-17 08:45, Christoph Hellwig wrote:
-> Hi all,
->
-> currently the dma-mapping code doesn't have a dedicated mailing list,
-> and thus posts get lots on linux-kernel.  I wonder if we should add
-> a new separate list for it, or if it makes sense to reuse the existing
-> iommu list given that there is a fair amount of overlap.
 
-I don't think that having one more mailing list is really needed. IOMMU
-ml is fine for me if its current users are not against using also for
-generic DMA-mapping related talks.
+On 07/28/2017 12:55 PM, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
+> From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> 
+> In the commit 3c8f4ad85c4b ("memory/mediatek: add support for mt2701"),
+> the larb->larbid was added but not initialized.
+> Mediatek's gen1 smi need this hardware larbid information to get the
+> register offset which controls whether enable iommu for this larb.
+> This patch add the initialize routine for larbid.
+> 
+> Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Reviewed-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+
+> ---
+>   drivers/memory/mtk-smi.c | 12 ++++++++++++
+>   1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 2b798bb4..8f75aaa 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -42,6 +42,7 @@
+>   #define SMI_SECUR_CON_VAL_DOMAIN(id)	(0x3 << ((((id) & 0x7) << 2) + 1))
+>   
+>   struct mtk_smi_larb_gen {
+> +	bool need_larbid;
+>   	int port_in_larb[MTK_LARB_NR_MAX + 1];
+>   	void (*config_port)(struct device *);
+>   };
+> @@ -214,6 +215,7 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
+>   };
+>   
+>   static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
+> +	.need_larbid = true,
+>   	.port_in_larb = {
+>   		LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
+>   		LARB2_PORT_OFFSET, LARB3_PORT_OFFSET
+> @@ -240,6 +242,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>   	struct device *dev = &pdev->dev;
+>   	struct device_node *smi_node;
+>   	struct platform_device *smi_pdev;
+> +	int err;
+>   
+>   	if (!dev->pm_domain)
+>   		return -EPROBE_DEFER;
+> @@ -263,6 +266,15 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>   		return PTR_ERR(larb->smi.clk_smi);
+>   	larb->smi.dev = dev;
+>   
+> +	if (larb->larb_gen->need_larbid) {
+> +		err = of_property_read_u32(dev->of_node, "mediatek,larbid",
+> +					   &larb->larbid);
+> +		if (err) {
+> +			dev_err(dev, "missing larbid property\n");
+> +			return err;
+> +		}
+> +	}
+> +
+>   	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
+>   	if (!smi_node)
+>   		return -EINVAL;
+> 
