@@ -1,181 +1,84 @@
-From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Feature Request: Ability to decode bus/dma address back into
-	physical address
-Date: Tue, 1 Aug 2017 14:04:16 -0400
-Message-ID: <20170801180415.GB3443@gmail.com>
-References: <8379cf5a-7539-e221-c678-20f617fb4337@amd.com>
-	<20170801172523.GA3443@gmail.com>
-	<30eb1ecb-c86f-4d3b-cd49-e002f46e582d@amd.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: Support SVM without PASID
+Date: Tue, 1 Aug 2017 19:40:08 +0100
+Message-ID: <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+ <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+ <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+ <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <30eb1ecb-c86f-4d3b-cd49-e002f46e582d-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-pci@vger.kernel.org, tianyu.lan@intel.com, kevin.tian@intel.com, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 01, 2017 at 01:32:35PM -0400, Tom St Denis wrote:
-> On 01/08/17 01:25 PM, Jerome Glisse wrote:
-> > On Tue, Aug 01, 2017 at 06:07:48AM -0400, Tom St Denis wrote:
-> > > Hi,
-> > > =
+On 01/08/17 18:38, valmiki wrote:
+[...]
+>>> So i digged through your patches and i understood that using BIND ioctls
+>>> satge-1 translations are setup in SMMU for an application.
+>>> If we use VFIO_IOMMU_MAP/UNMAP_DMA ioctls they are setting up stage-2
+>>> translations in SMMU.
+>>> So without PASID support we can only work with stage-2 translations ?
+>>
+>> It depends what type you use when registering the IOMMU with
+>> VFIO_SET_IOMMU:
+>>
+>> * If the type is VFIO_TYPE1v2_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
+>>   affects the stage-1 non-PASID context (already the case in mainline).
+>>   In addition, with my patch the BIND ioctl will affect stage-1 PASID
+>>   contexts, and bind process page directories to the device (host SVM).
+>>
+>> * If the type is VFIO_TYPE1_NESTING_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
+>>   will affect stage-2 mappings (already in mainline).
+>>   With my SMMU patch series, the BIND ioctl is not supported in this mode.
+>>   But in the future, BIND would allow to manage stage-1 as well:
+>>   - bind a process page directory (host SVM with added stage-2), or
+>>   - bind a guest page directory (viommu), or
+>>   - bind the full stage-1 context table (viommu).
+> 
+> Hi Jean, Thanks a lot for this information.
+> I tried to understand how stage-1 translations are setup if we use
+> VFIO_TYPE1v2_IOMMU & VFIO_IOMMU_MAP/UNMAP_DMA flow, but I'm not
+> successful, I couldn't find when context descriptor details are updated
+> with stage-1 translation table details in this flow.
+> I found that in BIND flow a new context descriptor being created and
+> assigned with required translation tables.
+> 
+> Can you please point to piece of code/patch series where and how context
+> descriptor is updated for VFIO_IOMMU_MAP/UNMAP_DMA flow with
+> VFIO_TYPE1v2_IOMMU.
 
-> > > We're working on a user space debugger for AMDGPU devices and are try=
-ing to
-> > > figure out a "proper" way of taking mapped pages and converting them =
-back to
-> > > physical addresses so the debugger can read memory that was sent to t=
-he GPU.
-> > > =
+What happens for SMMU is during initialization, the
+VFIO_GROUP_SET_CONTAINER ioctl calls vfio_iommu_type1_attach_group.
+This function creates a new iommu_domain, and then calls
+iommu_attach_group(domain, group), which calls arm_smmu_attach_dev(domain,
+dev) for all devices in the group.
 
-> > > The debugger largely operates at arms length from the application bei=
-ng
-> > > debugged so it has no knowledge of the buffers other than which PCI d=
-evice
-> > > mapped it and the mapped address.
-> > =
+If necessary we detach the existing domain, by clearing the STE (and all
+contexts). Then, since the new domain is only partially initialized, we
+call arm_smmu_domain_finalise, which allocates the page tables, and ends
+up calling arm_smmu_domain_finalise_s1. That function prepares the
+configuration of context descriptor 0, which is used for non-PASID
+mappings. Afterwards, back in arm_smmu_attach_dev, context descriptor 0 is
+written, along with the STE, and then the domain is live.
 
-> > There is your issue, you should reconsider your design. You should add a
-> > debuging/tracing API to the amdgpu kernel driver that allow one process
-> > to snoop on another process buffers. It would be a lot more realistic u=
-ser
-> > space interface.
-> =
+Then when userspace does VFIO_IOMMU_MAP/UNMAP_DMA, iommu_map/unmap are
+called on that domain. arm_smmu_map/unmap update the page tables attached
+to context descriptor 0 (but they don't modify the CD in any way).
 
-> It's funny you should say that:
-> =
+This is the current behavior in mainline Linux. My patch series don't
+change this, as we need to keep backward compatibility for all VFIO IOMMU
+types.
 
-> https://lists.freedesktop.org/archives/amd-gfx/2017-August/011653.html
-> =
-
-> That approach works but it's less than ideal for several reasons.
-> =
-
-> Another angle is to add a debugfs interface into TTM so we can search the=
-ir
-> page tables.  But again that would only work for pages mapped through a T=
-TM
-> interface.  Anything mapped inside the driver with its own pci_alloc_*()
-> wouldn't be searchable/traceable here.  So at every single place we would
-> have to trace/log/etc the pair.
-
-You miss-understood what i mean. The patch you are pointing too is wrong.
-The kind of API i have in mind is high level not low level. You would
-register with the amdgpu kernel driver as a snooper for a given process
-or file descriptor. This would allow you to get list of all gem objects
-of the process you are snooping. From there you could snap shot those
-gem object on listen on event on those. You could also ask to listen on
-GPU command submission and get event when that happen. No need to expose
-complex API like you are trying to do. Something like:
-
-struct amdgpu_snoop_process_ioctl {
-	uint32_t	pid;
-};
-
-struct amdgpu_snoop_bo_info {
-	uint32_t	handle;
-	uint32_t	size;
-	uint64_t	flags;
-	...
-};
-
-struct amdgpu_snoop_list_bo_ioctl {
-	uint32_t			nbos;
-	uint32_t			mbos;
-	struct amdgpu_snoop_bo_info	*bos; // bos[mbos] in size
-};
-
-struct amdgpu_snoop_snapshot_bo {
-	uint32_t	*uptr;
-	uint32_t	handle;
-	uint32_t	offset;
-	uint32_t	size;
-};
-
-struct amdgpu_snoop_cmd {
-	uint32_t	size;
-	uint32_t	*uptr;
-};
-
-...
-
-You would need to leverage thing like uevent to get event when something
-happen like a bo being destroy or command submission ...
-
-
-> > > We also use the debugger to read back kernel programmed buffers (ring
-> > > buffers and the like) so we really need a kernel level solution.
-> > =
-
-> > Not going to happen, this would be like /dev/mem on steroid and a big
-> > security risk.
-> =
-
-> Not looking to rehash old debates but from our point of view a user with
-> read/write access to debugfs can already do "bad things (tm)" so it's a m=
-oot
-> point (for instance, they could program an SDMA job on the GPU to read/wr=
-ite
-> anywhere in memory...).
-
-That's is wrong and it should not be allowed ! You need to fix that.
-
-
-> > > As a prototype I put a trace point in the AMDGPU driver when pci_map_=
-page()
-> > > is called which preserves the physical and dma address and that works=
- but
-> > > obviously is a bit of a hack and doesn't work if pages are mapped bef=
-ore the
-> > > trace is enabled.
-> > > =
-
-> > > Ideally, some form of debugfs interface would be nice.
-> > > =
-
-> > > Is there any sort of interface already I can take advantage of?  I've=
- tried
-> > > enabling the map/unmap tracepoints before loading amdgpu and it produ=
-ced no
-> > > traffic in the trace file.
-> > =
-
-> > I think you need to reconsider how to achieve your goal. It is a lot mo=
-re
-> > sensefull to add new API to amdgpu driver than asking kernel to provide=
- you
-> > with access to random physical memory.
-> =
-
-> We already have physical memory access (through /dev/mem or our own
-> /dev/fmem clone).  The issue is translating bus addresses.  With the IOMMU
-> enabled addresses programmed into the GPU are not physical anymore and the
-> debugger cannot read GPU related packets.
-
-CONFIG_STRICT_DEVMEM is enabled by many distributions so /dev/mem is root
-only and even when root there are restrictions. What you are asking for
-is insane.
-
-> =
-
-> The existing tracer patch "works" but it's not ideal and the maintainers =
-of
-> the AMDGPU driver are legitimately desiring a better solution.
-
-Again re-design what you are trying to do. There is no legitimate need to
-track individual page mapping. All you need is access to all buffer object
-a process have created and to be inform on anything a process do through
-the amdgpu device file.
-
-J=E9r=F4me
+Thanks,
+Jean
