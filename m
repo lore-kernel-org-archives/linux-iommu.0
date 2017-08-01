@@ -1,62 +1,72 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v9 10/13] iommu/amd: Allocate memory below 4G for dev table if translation pre-enabled
-Date: Tue,  1 Aug 2017 19:37:26 +0800
-Message-ID: <1501587449-9817-11-git-send-email-bhe@redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v9 08/13] iommu: Add is_attach_deferred call-back to iommu-ops
+Date: Tue,  1 Aug 2017 19:37:24 +0800
+Message-ID: <1501587449-9817-9-git-send-email-bhe@redhat.com>
 References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1501587449-9817-1-git-send-email-bhe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jroedel@suse.de
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1501587449-9817-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-AMD pointed out it's unsafe to update the device-table while iommu
-is enabled. It turns out that device-table pointer update is split
-up into two 32bit writes in the IOMMU hardware. So updating it while
-the IOMMU is enabled could have some nasty side effects.
+This new call-back will be used to check if the domain attach need be
+deferred for now. If yes, the domain attach/detach will return directly.
 
-The safe way to work around this is to always allocate the device-table
-below 4G, including the old device-table in normal kernel and the
-device-table used for copying the content of the old device-table in kdump
-kernel. Meanwhile we need check if the address of old device-table is
-above 4G because it might has been touched accidentally in corrupted
-1st kernel.
-
-Signed-off-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c | 8 ++++++++
+ include/linux/iommu.h | 1 +
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 6a77b99d08e4..8c6431ac5698 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -882,11 +882,15 @@ static int copy_device_table(void)
- 			continue;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3f6ea160afed..86581b115b92 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1283,6 +1283,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
+ 	int ret;
++	if ((domain->ops->is_attach_deferred != NULL) &&
++	    domain->ops->is_attach_deferred(domain, dev))
++		return 0;
++
+ 	if (unlikely(domain->ops->attach_dev == NULL))
+ 		return -ENODEV;
  
- 		old_devtb_phys = entry & PAGE_MASK;
-+		if (old_devtb_phys > 0x100000000ULL) {
-+			pr_err("The address of old device table is above 4G, not trustworthy!/n");
-+			return -1;
-+		}
- 		old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
- 		if (!old_devtb)
- 			return -1;
+@@ -1324,6 +1328,10 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
++	if ((domain->ops->is_attach_deferred != NULL) &&
++	    domain->ops->is_attach_deferred(domain, dev))
++		return;
++
+ 	if (unlikely(domain->ops->detach_dev == NULL))
+ 		return;
  
--		gfp_flag = GFP_KERNEL | __GFP_ZERO;
-+		gfp_flag = GFP_KERNEL | __GFP_ZERO | GFP_DMA32;
- 		old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
- 					get_order(dev_table_size));
- 		if (old_dev_tbl_cpy == NULL) {
-@@ -2436,7 +2440,8 @@ static int __init early_amd_iommu_init(void)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2cb54adc4a33..63983c9e6c3a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -225,6 +225,7 @@ struct iommu_ops {
+ 	u32 (*domain_get_windows)(struct iommu_domain *domain);
  
- 	/* Device table - directly used by all IOMMUs */
- 	ret = -ENOMEM;
--	amd_iommu_dev_table = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-+	amd_iommu_dev_table = (void *)__get_free_pages(
-+				      GFP_KERNEL | __GFP_ZERO | GFP_DMA32,
- 				      get_order(dev_table_size));
- 	if (amd_iommu_dev_table == NULL)
- 		goto out;
+ 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
++	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+ 
+ 	unsigned long pgsize_bitmap;
+ };
 -- 
 2.5.5
