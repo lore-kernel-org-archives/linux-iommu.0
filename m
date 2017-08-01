@@ -1,7 +1,7 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v9 03/13] Revert "iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel"
-Date: Tue,  1 Aug 2017 19:37:19 +0800
-Message-ID: <1501587449-9817-4-git-send-email-bhe@redhat.com>
+Subject: [PATCH v9 04/13] iommu/amd: Define bit fields for DTE particularly
+Date: Tue,  1 Aug 2017 19:37:20 +0800
+Message-ID: <1501587449-9817-5-git-send-email-bhe@redhat.com>
 References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1501587449-9817-1-git-send-email-bhe@redhat.com>
@@ -10,70 +10,97 @@ To: jroedel@suse.de
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This reverts commit 54bd63570484167cb13edf81e31fff107b879981.
-
-We still need the IO_PAGE_FAULT message to warn error after the
-issue of on-flight dma in kdump kernel is fixed.
+In AMD-Vi spec several bits of IO PTE fields and DTE fields are similar
+so that both of them can share the same MACRO definition. However
+defining them respectively can make code more read-able. Do it now.
 
 Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/amd_iommu.c       | 3 +--
- drivers/iommu/amd_iommu_init.c  | 9 ---------
- drivers/iommu/amd_iommu_types.h | 1 -
- 3 files changed, 1 insertion(+), 12 deletions(-)
+ drivers/iommu/amd_iommu.c       |  8 ++++----
+ drivers/iommu/amd_iommu_types.h | 18 ++++++++++++++----
+ 2 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 688e77576e5a..e8a6d8109564 100644
+index e8a6d8109564..e5a03f259986 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -2086,8 +2086,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- 		flags    |= tmp;
- 	}
+@@ -1537,9 +1537,9 @@ static int iommu_map_page(struct protection_domain *dom,
  
--
--	flags &= ~(DTE_FLAG_SA | 0xffffULL);
-+	flags &= ~(0xffffUL);
- 	flags |= domain->id;
+ 	if (count > 1) {
+ 		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
+-		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
++		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
+ 	} else
+-		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
++		__pte = phys_addr | IOMMU_PTE_PR | IOMMU_PTE_FC;
  
- 	amd_iommu_dev_table[devid].data[1]  = flags;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index b36c145c498d..8896137f17af 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -29,7 +29,6 @@
- #include <linux/export.h>
- #include <linux/iommu.h>
- #include <linux/kmemleak.h>
--#include <linux/crash_dump.h>
- #include <asm/pci-direct.h>
- #include <asm/iommu.h>
- #include <asm/gart.h>
-@@ -1942,14 +1941,6 @@ static void init_device_table_dma(void)
- 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
- 		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
- 		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
--		/*
--		 * In kdump kernels in-flight DMA from the old kernel might
--		 * cause IO_PAGE_FAULTs. There are no reports that a kdump
--		 * actually failed because of that, so just disable fault
--		 * reporting in the hardware to get rid of the messages
--		 */
--		if (is_kdump_kernel())
--			set_dev_entry_bit(devid, DEV_ENTRY_NO_PAGE_FAULT);
- 	}
- }
+ 	if (prot & IOMMU_PROT_IR)
+ 		__pte |= IOMMU_PTE_IR;
+@@ -2053,7 +2053,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
  
+ 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
+ 		    << DEV_ENTRY_MODE_SHIFT;
+-	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
++	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
+ 
+ 	flags = amd_iommu_dev_table[devid].data[1];
+ 
+@@ -2096,7 +2096,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ static void clear_dte_entry(u16 devid)
+ {
+ 	/* remove entry from the device table seen by the hardware */
+-	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
++	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
+ 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
+ 
+ 	amd_iommu_apply_erratum_63(devid);
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0c98b2cf04cc..db7ceb4d0957 100644
+index db7ceb4d0957..f88e802481a3 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -322,7 +322,6 @@
+@@ -265,7 +265,7 @@
+ #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
+ #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
+ #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
+-				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
++				 IOMMU_PTE_PR | IOMMU_PTE_IR | IOMMU_PTE_IW)
+ #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
+ 
+ #define PM_MAP_4k		0
+@@ -314,13 +314,23 @@
+ #define PTE_LEVEL_PAGE_SIZE(level)			\
+ 	(1ULL << (12 + (9 * (level))))
+ 
+-#define IOMMU_PTE_P  (1ULL << 0)
+-#define IOMMU_PTE_TV (1ULL << 1)
++/*
++ * Bit value definition for I/O PTE fields
++ */
++#define IOMMU_PTE_PR (1ULL << 0)
+ #define IOMMU_PTE_U  (1ULL << 59)
+ #define IOMMU_PTE_FC (1ULL << 60)
+ #define IOMMU_PTE_IR (1ULL << 61)
  #define IOMMU_PTE_IW (1ULL << 62)
  
++/*
++ * Bit value definition for DTE fields
++ */
++#define DTE_FLAG_V  (1ULL << 0)
++#define DTE_FLAG_TV (1ULL << 1)
++#define DTE_FLAG_IR (1ULL << 61)
++#define DTE_FLAG_IW (1ULL << 62)
++
  #define DTE_FLAG_IOTLB	(1ULL << 32)
--#define DTE_FLAG_SA	(1ULL << 34)
  #define DTE_FLAG_GV	(1ULL << 55)
  #define DTE_FLAG_MASK	(0x3ffULL << 32)
- #define DTE_GLX_SHIFT	(56)
+@@ -342,7 +352,7 @@
+ #define GCR3_VALID		0x01ULL
+ 
+ #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
+-#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
++#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
+ #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
+ #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
+ 
 -- 
 2.5.5
