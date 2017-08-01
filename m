@@ -1,15 +1,20 @@
-From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Feature Request: Ability to decode bus/dma address back into
-	physical address
-Date: Tue, 1 Aug 2017 13:25:24 -0400
-Message-ID: <20170801172523.GA3443@gmail.com>
-References: <8379cf5a-7539-e221-c678-20f617fb4337@amd.com>
+From: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Support SVM without PASID
+Date: Tue, 1 Aug 2017 23:08:26 +0530
+Message-ID: <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+	<20170708140257.2de02d63@w520.home>
+	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+	<eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+	<ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+	<ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+	<41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+	<564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <8379cf5a-7539-e221-c678-20f617fb4337-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <564ba70b-db95-7fe0-86bb-bb4eefcd87ec-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,60 +24,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 01, 2017 at 06:07:48AM -0400, Tom St Denis wrote:
-> Hi,
-> =
+On 8/1/2017 1:56 PM, Jean-Philippe Brucker wrote:
+> Hi Valmiki,
+>
+> Sorry for the delay, I was away last week.
+>
+> On 22/07/17 03:05, valmiki wrote:
+>> On 7/12/2017 10:18 PM, Jean-Philippe Brucker wrote:
+>>> On 12/07/17 17:27, valmiki wrote:
+>>>> On 7/11/2017 4:26 PM, Jean-Philippe Brucker wrote:
+>>>>> Hi Valmiki,
+>>>>>
+>>>>> On 09/07/17 04:15, valmiki wrote:
+>>>>>>>> Hi,
+>>>>>>>>
+>>>>>>>> In SMMUv3 architecture document i see "PASIDs are optional,
+>>>>>>>> configurable, and of a size determined by the minimum
+>>>>>>>> of the endpoint".
+>>>>>>>>
+>>>>>>>> So if PASID's are optional and not supported by PCIe end point, how
+>>>>>>>> SVM
+>>>>>>>> can be achieved ?
+>>>>>>>
+>>>>>>> It cannot be inferred from that statement that PASID support is not
+>>>>>>> required for SVM.  AIUI, SVM is a software feature enabled by numerous
+>>>>>>> "optional" hardware features, including PASID.  Features that are
+>>>>>>> optional per the hardware specification may be required for specific
+>>>>>>> software features.  Thanks,
+>>>>>>>
+>>>>>> Thanks for the information Alex. Suppose if an End point doesn't support
+>>>>>> PASID, is it still possible to achieve SVM ?
+>>>>>> Are there any such features in SMMUv3 with which we can achieve it ?
+>>>>>
+>>>>> Not really, we don't plan to share the non-PASID context with a process.
+>>>>>
+>>>>> In theory you could achieve something resembling SVM by assigning the
+>>>>> entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
+>>>>> with a bind ioctl. If your device can do SR-IOV, then you can bind one
+>>>>> process per virtual function.
+>>>>>
+>>>>> Unless we end up seeing lots of endpoints that implement PRI but not
+>>>>> PASID, I don't plan to add this to VFIO or SMMUv3.
+>>>>>
+>>>>> For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
+>>>>> enabled. In addition, the SMMU should support DVM (broadcast TLB
+>>>>> maintenance) and must be compatible with the MMU (page sizes, output
+>>>>> address size, ASID bits...)
+>>>>>
+>>>> Thanks Jean.
+>>>> In SMMU document it was quoted as follows
+>>>> "When STE.S1DSS==0b10, a transaction without a SubstreamID is accepted and
+>>>> uses the CD of Substream 0. Under this configuration, transactions that
+>>>> arrive with SubstreamID 0 are aborted and an event recorded."
+>>>>
+>>>> Is this mode supported in your previous series of SMMUv3 patches ?
+>>>> If it is supported is it achieved through VFIO ?
+>>>
+>>> Yes, STE.S1DSS==0b10 is the only supported mode with my patches. And in
+>>> VFIO, the non-PASID context (CD 0) is managed with
+>>> VFIO_IOMMU_MAP/UNMAP_DMA ioctls, mirroring the current behavior for
+>>> devices that don't support PASID. All other CDs, with PASID > 0, are
+>>> managed via the new BIND ioctl.
+>>
+>> Thanks Jean, this helps a lot.
+>> So i digged through your patches and i understood that using BIND ioctls
+>> satge-1 translations are setup in SMMU for an application.
+>> If we use VFIO_IOMMU_MAP/UNMAP_DMA ioctls they are setting up stage-2
+>> translations in SMMU.
+>> So without PASID support we can only work with stage-2 translations ?
+>
+> It depends what type you use when registering the IOMMU with VFIO_SET_IOMMU:
+>
+> * If the type is VFIO_TYPE1v2_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
+>   affects the stage-1 non-PASID context (already the case in mainline).
+>   In addition, with my patch the BIND ioctl will affect stage-1 PASID
+>   contexts, and bind process page directories to the device (host SVM).
+>
+> * If the type is VFIO_TYPE1_NESTING_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
+>   will affect stage-2 mappings (already in mainline).
+>   With my SMMU patch series, the BIND ioctl is not supported in this mode.
+>   But in the future, BIND would allow to manage stage-1 as well:
+>   - bind a process page directory (host SVM with added stage-2), or
+>   - bind a guest page directory (viommu), or
+>   - bind the full stage-1 context table (viommu).
 
-> We're working on a user space debugger for AMDGPU devices and are trying =
-to
-> figure out a "proper" way of taking mapped pages and converting them back=
- to
-> physical addresses so the debugger can read memory that was sent to the G=
-PU.
-> =
+Hi Jean, Thanks a lot for this information.
+I tried to understand how stage-1 translations are setup if we use 
+VFIO_TYPE1v2_IOMMU & VFIO_IOMMU_MAP/UNMAP_DMA flow, but I'm not 
+successful, I couldn't find when context descriptor details are updated 
+with stage-1 translation table details in this flow.
+I found that in BIND flow a new context descriptor being created and 
+assigned with required translation tables.
 
-> The debugger largely operates at arms length from the application being
-> debugged so it has no knowledge of the buffers other than which PCI device
-> mapped it and the mapped address.
+Can you please point to piece of code/patch series where and how context 
+descriptor is updated for VFIO_IOMMU_MAP/UNMAP_DMA flow with 
+VFIO_TYPE1v2_IOMMU.
 
-There is your issue, you should reconsider your design. You should add a
-debuging/tracing API to the amdgpu kernel driver that allow one process
-to snoop on another process buffers. It would be a lot more realistic user
-space interface.
 
-> =
-
-> We also use the debugger to read back kernel programmed buffers (ring
-> buffers and the like) so we really need a kernel level solution.
-
-Not going to happen, this would be like /dev/mem on steroid and a big
-security risk.
-
-> =
-
-> As a prototype I put a trace point in the AMDGPU driver when pci_map_page=
-()
-> is called which preserves the physical and dma address and that works but
-> obviously is a bit of a hack and doesn't work if pages are mapped before =
-the
-> trace is enabled.
-> =
-
-> Ideally, some form of debugfs interface would be nice.
-> =
-
-> Is there any sort of interface already I can take advantage of?  I've tri=
-ed
-> enabling the map/unmap tracepoints before loading amdgpu and it produced =
-no
-> traffic in the trace file.
-
-I think you need to reconsider how to achieve your goal. It is a lot more
-sensefull to add new API to amdgpu driver than asking kernel to provide you
-with access to random physical memory.
-
-J=E9r=F4me
+Regards,
+Valmiki
