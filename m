@@ -1,37 +1,49 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v9 13/13] iommu/amd: Disable iommu only if amd_iommu=off is specified
-Date: Tue,  1 Aug 2017 19:37:29 +0800
-Message-ID: <1501587449-9817-14-git-send-email-bhe@redhat.com>
-References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1501587449-9817-1-git-send-email-bhe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jroedel@suse.de
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
+From: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>
+Subject: Feature Request: Ability to decode bus/dma address back into physical
+	address
+Date: Tue, 1 Aug 2017 06:07:48 -0400
+Message-ID: <8379cf5a-7539-e221-c678-20f617fb4337@amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It's ok to disable iommu in normal kernel. While there's no need
-to disable it in kdump kernel after the on-flight dma issue has
-heen fixed.
+Hi,
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
----
- drivers/iommu/amd_iommu_init.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+We're working on a user space debugger for AMDGPU devices and are trying 
+to figure out a "proper" way of taking mapped pages and converting them 
+back to physical addresses so the debugger can read memory that was sent 
+to the GPU.
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index cada2e302761..5015d61c1dcf 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2502,7 +2502,8 @@ static int __init early_amd_iommu_init(void)
- 		goto out;
- 
- 	/* Disable any previously enabled IOMMUs */
--	disable_iommus();
-+	if (amd_iommu_disabled)
-+		disable_iommus();
- 
- 	if (amd_iommu_irq_remap)
- 		amd_iommu_irq_remap = check_ioapic_information();
--- 
-2.5.5
+The debugger largely operates at arms length from the application being 
+debugged so it has no knowledge of the buffers other than which PCI 
+device mapped it and the mapped address.
+
+We also use the debugger to read back kernel programmed buffers (ring 
+buffers and the like) so we really need a kernel level solution.
+
+As a prototype I put a trace point in the AMDGPU driver when 
+pci_map_page() is called which preserves the physical and dma address 
+and that works but obviously is a bit of a hack and doesn't work if 
+pages are mapped before the trace is enabled.
+
+Ideally, some form of debugfs interface would be nice.
+
+Is there any sort of interface already I can take advantage of?  I've 
+tried enabling the map/unmap tracepoints before loading amdgpu and it 
+produced no traffic in the trace file.
+
+Thanks,
+Tom
