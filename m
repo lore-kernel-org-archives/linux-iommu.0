@@ -1,115 +1,96 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Support SVM without PASID
-Date: Tue, 1 Aug 2017 09:26:14 +0100
-Message-ID: <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
-	<20170708140257.2de02d63@w520.home>
-	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
-	<eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
-	<ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
-	<ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
-	<41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v5 0/2] iommu/smmu-v3: Workaround for hisilicon 161010801
+ erratum(reserve HW MSI)
+Date: Tue, 1 Aug 2017 11:49:11 +0100
+Message-ID: <20170801104913.71912-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <41333a03-bf91-1152-4779-6579845609f6-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, linuxarm@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, wangzhou1@hisilicon.com, guohanjun@huawei.com, linux-arm-kernel@lists.infradead.org, devel@acpica.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Valmiki,
+On certain HiSilicon platforms (Hip06/Hip07) the GIC ITS and
+PCIe RC deviates from the standard implementation and this breaks
+PCIe MSI functionality when SMMU is enabled.
 
-Sorry for the delay, I was away last week.
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-On 22/07/17 03:05, valmiki wrote:
-> On 7/12/2017 10:18 PM, Jean-Philippe Brucker wrote:
->> On 12/07/17 17:27, valmiki wrote:
->>> On 7/11/2017 4:26 PM, Jean-Philippe Brucker wrote:
->>>> Hi Valmiki,
->>>>
->>>> On 09/07/17 04:15, valmiki wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> In SMMUv3 architecture document i see "PASIDs are optional,
->>>>>>> configurable, and of a size determined by the minimum
->>>>>>> of the endpoint".
->>>>>>>
->>>>>>> So if PASID's are optional and not supported by PCIe end point, how
->>>>>>> SVM
->>>>>>> can be achieved ?
->>>>>>
->>>>>> It cannot be inferred from that statement that PASID support is not
->>>>>> required for SVM.  AIUI, SVM is a software feature enabled by numerous
->>>>>> "optional" hardware features, including PASID.  Features that are
->>>>>> optional per the hardware specification may be required for specific
->>>>>> software features.  Thanks,
->>>>>>
->>>>> Thanks for the information Alex. Suppose if an End point doesn't support
->>>>> PASID, is it still possible to achieve SVM ?
->>>>> Are there any such features in SMMUv3 with which we can achieve it ?
->>>>
->>>> Not really, we don't plan to share the non-PASID context with a process.
->>>>
->>>> In theory you could achieve something resembling SVM by assigning the
->>>> entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
->>>> with a bind ioctl. If your device can do SR-IOV, then you can bind one
->>>> process per virtual function.
->>>>
->>>> Unless we end up seeing lots of endpoints that implement PRI but not
->>>> PASID, I don't plan to add this to VFIO or SMMUv3.
->>>>
->>>> For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
->>>> enabled. In addition, the SMMU should support DVM (broadcast TLB
->>>> maintenance) and must be compatible with the MMU (page sizes, output
->>>> address size, ASID bits...)
->>>>
->>> Thanks Jean.
->>> In SMMU document it was quoted as follows
->>> "When STE.S1DSS==0b10, a transaction without a SubstreamID is accepted and
->>> uses the CD of Substream 0. Under this configuration, transactions that
->>> arrive with SubstreamID 0 are aborted and an event recorded."
->>>
->>> Is this mode supported in your previous series of SMMUv3 patches ?
->>> If it is supported is it achieved through VFIO ?
->>
->> Yes, STE.S1DSS==0b10 is the only supported mode with my patches. And in
->> VFIO, the non-PASID context (CD 0) is managed with
->> VFIO_IOMMU_MAP/UNMAP_DMA ioctls, mirroring the current behavior for
->> devices that don't support PASID. All other CDs, with PASID > 0, are
->> managed via the new BIND ioctl.
-> 
-> Thanks Jean, this helps a lot.
-> So i digged through your patches and i understood that using BIND ioctls
-> satge-1 translations are setup in SMMU for an application.
-> If we use VFIO_IOMMU_MAP/UNMAP_DMA ioctls they are setting up stage-2
-> translations in SMMU.
-> So without PASID support we can only work with stage-2 translations ?
+To implement this quirk, the following changes are incorporated:
 
-It depends what type you use when registering the IOMMU with VFIO_SET_IOMMU:
+1. Added a generic helper function to IORT code to retrieve and
+   reserve the HW ITS address regions.
+2. Modified iommu_dma_get_resv_regions() to reserve the hw msi
+   regions which means these address regions will not be translated and
+   will be excluded from iova allocations.
 
-* If the type is VFIO_TYPE1v2_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
-  affects the stage-1 non-PASID context (already the case in mainline).
-  In addition, with my patch the BIND ioctl will affect stage-1 PASID
-  contexts, and bind process page directories to the device (host SVM).
-
-* If the type is VFIO_TYPE1_NESTING_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
-  will affect stage-2 mappings (already in mainline).
-  With my SMMU patch series, the BIND ioctl is not supported in this mode.
-  But in the future, BIND would allow to manage stage-1 as well:
-  - bind a process page directory (host SVM with added stage-2), or
-  - bind a guest page directory (viommu), or
-  - bind the full stage-1 context table (viommu).
+Note: This requires patches [1] and [2] for vfio pass-through support
+on these platforms.
 
 Thanks,
-Jean
+Shameer
+
+[1]: https://lkml.org/lkml/2017/7/27/388
+[2]: https://lkml.org/lkml/2017/7/27/386
+
+Changelog:
+
+v4 --> v5
+Addressed comments from Robin and Lorenzo:
+-Added a comment to make it clear that, for now, only straightforward 
+ HW topologies are handled while reserving ITS regions(patch #1).
+
+v3 --> v4
+Rebased on 4.13-rc1.
+Addressed comments from Robin, Will and Lorenzo:
+-As suggested by Robin, moved the ITS msi reservation into
+ iommu_dma_get_resv_regions().
+-Added its_count != resv region failure case(patch #1).
+
+v2 --> v3
+Addressed comments from Lorenzo and Robin:
+-Removed dev_is_pci() check in smmuV3 driver.
+-Don't treat device not having an ITS mapping as an error in
+ iort helper function.
+
+v1 --> v2
+-patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+
+RFCv2 -->PATCH
+-Incorporated Lorenzo's review comments.
+
+RFC v1 --> RFC v2
+Based on Robin's review comments,
+-Removed  the generic erratum framework.
+-Using IORT/MADT tables to retrieve the ITS base addr instead
+ of vendor specific CSRT table.
+
+Shameer Kolothum (2):
+  ACPI/IORT: Add ITS address regions reservation helper
+  iommu/dma: Add HW MSI address regions reservation
+
+ drivers/acpi/arm64/iort.c        | 95 ++++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/dma-iommu.c        |  8 +++-
+ drivers/irqchip/irq-gic-v3-its.c |  3 +-
+ include/linux/acpi_iort.h        |  7 ++-
+ 4 files changed, 107 insertions(+), 6 deletions(-)
+
+-- 
+1.9.1
