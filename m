@@ -1,16 +1,20 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 3/4] iommu/iova: Extend rbtree node caching
-Date: Mon, 31 Jul 2017 12:42:30 +0100
-Message-ID: <e5d4524e-bfe9-acf1-66c1-ea1d9d319855@arm.com>
-References: <cover.1500636791.git.robin.murphy@arm.com>
-	<b5b7e5541e47cba1112ef5bfb036d8ad44df8893.1500636791.git.robin.murphy@arm.com>
-	<23972edc-e59e-3a43-59a9-d776e64af4d7@codeaurora.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: Support SVM without PASID
+Date: Tue, 1 Aug 2017 09:26:14 +0100
+Message-ID: <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+	<20170708140257.2de02d63@w520.home>
+	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+	<eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+	<ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+	<ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+	<41333a03-bf91-1152-4779-6579845609f6@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <23972edc-e59e-3a43-59a9-d776e64af4d7-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <41333a03-bf91-1152-4779-6579845609f6-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,270 +24,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Nate,
+Hi Valmiki,
 
-On 29/07/17 04:57, Nate Watterson wrote:
-> Hi Robin,
-> I am seeing a crash when performing very basic testing on this series
-> with a Mellanox CX4 NIC. I dug into the crash a bit, and think this
-> patch is the culprit, but this rcache business is still mostly
-> witchcraft to me.
+Sorry for the delay, I was away last week.
+
+On 22/07/17 03:05, valmiki wrote:
+> On 7/12/2017 10:18 PM, Jean-Philippe Brucker wrote:
+>> On 12/07/17 17:27, valmiki wrote:
+>>> On 7/11/2017 4:26 PM, Jean-Philippe Brucker wrote:
+>>>> Hi Valmiki,
+>>>>
+>>>> On 09/07/17 04:15, valmiki wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> In SMMUv3 architecture document i see "PASIDs are optional,
+>>>>>>> configurable, and of a size determined by the minimum
+>>>>>>> of the endpoint".
+>>>>>>>
+>>>>>>> So if PASID's are optional and not supported by PCIe end point, how
+>>>>>>> SVM
+>>>>>>> can be achieved ?
+>>>>>>
+>>>>>> It cannot be inferred from that statement that PASID support is not
+>>>>>> required for SVM.  AIUI, SVM is a software feature enabled by numerous
+>>>>>> "optional" hardware features, including PASID.  Features that are
+>>>>>> optional per the hardware specification may be required for specific
+>>>>>> software features.  Thanks,
+>>>>>>
+>>>>> Thanks for the information Alex. Suppose if an End point doesn't support
+>>>>> PASID, is it still possible to achieve SVM ?
+>>>>> Are there any such features in SMMUv3 with which we can achieve it ?
+>>>>
+>>>> Not really, we don't plan to share the non-PASID context with a process.
+>>>>
+>>>> In theory you could achieve something resembling SVM by assigning the
+>>>> entire endpoint to userspace using VFIO, then use ATS+PRI capabilities
+>>>> with a bind ioctl. If your device can do SR-IOV, then you can bind one
+>>>> process per virtual function.
+>>>>
+>>>> Unless we end up seeing lots of endpoints that implement PRI but not
+>>>> PASID, I don't plan to add this to VFIO or SMMUv3.
+>>>>
+>>>> For a PCIe endpoint, the requirements for SVM are ATS, PRI and PASID
+>>>> enabled. In addition, the SMMU should support DVM (broadcast TLB
+>>>> maintenance) and must be compatible with the MMU (page sizes, output
+>>>> address size, ASID bits...)
+>>>>
+>>> Thanks Jean.
+>>> In SMMU document it was quoted as follows
+>>> "When STE.S1DSS==0b10, a transaction without a SubstreamID is accepted and
+>>> uses the CD of Substream 0. Under this configuration, transactions that
+>>> arrive with SubstreamID 0 are aborted and an event recorded."
+>>>
+>>> Is this mode supported in your previous series of SMMUv3 patches ?
+>>> If it is supported is it achieved through VFIO ?
+>>
+>> Yes, STE.S1DSS==0b10 is the only supported mode with my patches. And in
+>> VFIO, the non-PASID context (CD 0) is managed with
+>> VFIO_IOMMU_MAP/UNMAP_DMA ioctls, mirroring the current behavior for
+>> devices that don't support PASID. All other CDs, with PASID > 0, are
+>> managed via the new BIND ioctl.
 > 
-> # ifconfig eth5 up
-> # ifconfig eth5 down
->     Unable to handle kernel NULL pointer dereference at virtual address
-> 00000020
->     user pgtable: 64k pages, 48-bit VAs, pgd = ffff8007dbf47c00
->     [0000000000000020] *pgd=00000006efab0003, *pud=00000006efab0003,
-> *pmd=00000007d8720003, *pte=0000000000000000
->     Internal error: Oops: 96000007 [#1] SMP
->     Modules linked in:
->     CPU: 47 PID: 5082 Comm: ifconfig Not tainted 4.13.0-rtp-enablement+ #3
->     task: ffff8007da1e5780 task.stack: ffff8007ddcb8000
->     PC is at __cached_rbnode_delete_update+0x2c/0x58
->     LR is at private_free_iova+0x2c/0x60
->     pc : [<ffff00000852c6e4>] lr : [<ffff00000852cdac>] pstate: 204001c5
->     sp : ffff8007ddcbba00
->     x29: ffff8007ddcbba00 x28: ffff8007c8350210
->     x27: ffff8007d1a80000 x26: ffff8007dcc20800
->     x25: 0000000000000140 x24: ffff8007c98f0008
->     x23: 00000000fffffe4e x22: 0000000000000140
->     x21: ffff8007c98f0008 x20: ffff8007c9adb240
->     x19: ffff8007c98f0018 x18: 0000000000000010
->     x17: 0000000000000000 x16: 0000000000000000
->     x15: 4000000000000000 x14: 0000000000000000
->     x13: 00000000ffffffff x12: 0000000000000001
->     x11: dead000000000200 x10: 00000000ffffffff
->     x9 : 0000000000000000 x8 : ffff8007c9adb1c0
->     x7 : 0000000040002000 x6 : 0000000000210d00
->     x5 : 0000000000000000 x4 : 000000000000c57e
->     x3 : 00000000ffffffcf x2 : 00000000ffffffcf
->     x1 : ffff8007c9adb240 x0 : 0000000000000000
->     [...]
->     [<ffff00000852c6e4>] __cached_rbnode_delete_update+0x2c/0x58
->     [<ffff00000852cdac>] private_free_iova+0x2c/0x60
->     [<ffff00000852cea4>] iova_magazine_free_pfns+0x4c/0xa0
->     [<ffff00000852d0a8>] free_iova_fast+0x1b0/0x230
->     [<ffff000008529d34>] iommu_dma_free_iova+0x5c/0x80
->     [<ffff000008529db4>] __iommu_dma_unmap+0x5c/0x98
->     [<ffff00000852aebc>] iommu_dma_unmap_resource+0x24/0x30
->     [<ffff00000852aed4>] iommu_dma_unmap_page+0xc/0x18
->     [<ffff000008093030>] __iommu_unmap_page+0x40/0x60
->     [<ffff0000087401bc>] mlx5e_page_release+0xbc/0x128
->     [<ffff000008740498>] mlx5e_dealloc_rx_wqe+0x30/0x40
->     [<ffff000008735ef0>] mlx5e_close_channel+0x70/0x1f8
->     [<ffff0000087370f4>] mlx5e_close_channels+0x2c/0x50
->     [<ffff0000087385dc>] mlx5e_close_locked+0x54/0x68
->     [<ffff000008738620>] mlx5e_close+0x30/0x58
->     [...]
-> 
-> ** Disassembly for __cached_rbnode_delete_update() near the fault **
->               92|if (free->pfn_hi < iovad->dma_32bit_pfn)
-> FFFF00000852C6C4|            ldr     x3,[x1,#0x18]    ; x3,[free,#24]
-> FFFF00000852C6C8|            ldr     x2,[x0,#0x30]    ; x2,[iovad,#48]
-> FFFF00000852C6CC|            cmp     x3,x2
-> FFFF00000852C6D0|            b.cs    0xFFFF00000852C708
->                 |        curr = &iovad->cached32_node;
->               94|if (!curr)
-> FFFF00000852C6D4|            adds    x19,x0,#0x18     ; x19,iovad,#24
-> FFFF00000852C6D8|            b.eq    0xFFFF00000852C708
->                 |
->                 |cached_iova = rb_entry(*curr, struct iova, node);
->                 |
->               99|if (free->pfn_lo >= cached_iova->pfn_lo)
-> FFFF00000852C6DC|            ldr     x0,[x19]         ; xiovad,[curr]
-> FFFF00000852C6E0|            ldr     x2,[x1,#0x20]    ; x2,[free,#32]
-> FFFF00000852C6E4|            ldr     x0,[x0,#0x20]    ; x0,[x0,#32]
-> Apparently cached_iova was NULL so the pfn_lo access faulted.
-> 
-> FFFF00000852C6E8|            cmp     x2,x0
-> FFFF00000852C6EC|            b.cc    0xFFFF00000852C6FC
-> FFFF00000852C6F0|            mov     x0,x1            ; x0,free
->              100|        *curr = rb_next(&free->node);
-> After instrumenting the code a bit, this seems to be the culprit. In the
-> previous call, free->pfn_lo was 0xFFFF_FFFF which is actually the
-> dma_limit for the domain so rb_next() returns NULL.
-> 
-> Let me know if you have any questions or would like additional tests
-> run. I also applied your "DMA domain debug info" patches and dumped the
-> contents of the domain at each of the steps above in case that would be
-> useful. If nothing else, they reinforce how thirsty the CX4 NIC is
-> especially when using 64k pages and many CPUs.
+> Thanks Jean, this helps a lot.
+> So i digged through your patches and i understood that using BIND ioctls
+> satge-1 translations are setup in SMMU for an application.
+> If we use VFIO_IOMMU_MAP/UNMAP_DMA ioctls they are setting up stage-2
+> translations in SMMU.
+> So without PASID support we can only work with stage-2 translations ?
 
-Thanks for the report - I somehow managed to reason myself out of
-keeping the "no cached node" check in __cached_rbnode_delete_update() on
-the assumption that it must always be set by a previous allocation.
-However, there is indeed just one case case for which that fails: when
-you free any IOVA immediately after freeing the very topmost one. Which
-is something that freeing an entire magazine's worth of IOVAs back to
-the tree all at once has a very real chance of doing...
+It depends what type you use when registering the IOMMU with VFIO_SET_IOMMU:
 
-The obvious straightforward fix is inline below, but I'm now starting to
-understand the appeal of reserving a sentinel node to ensure the tree
-can never be empty, so I might have a quick go at that to see if it
-results in nicer code overall.
+* If the type is VFIO_TYPE1v2_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
+  affects the stage-1 non-PASID context (already the case in mainline).
+  In addition, with my patch the BIND ioctl will affect stage-1 PASID
+  contexts, and bind process page directories to the device (host SVM).
 
-Robin.
+* If the type is VFIO_TYPE1_NESTING_IOMMU, then VFIO_IOMMU_MAP/UNMAP_DMA
+  will affect stage-2 mappings (already in mainline).
+  With my SMMU patch series, the BIND ioctl is not supported in this mode.
+  But in the future, BIND would allow to manage stage-1 as well:
+  - bind a process page directory (host SVM with added stage-2), or
+  - bind a guest page directory (viommu), or
+  - bind the full stage-1 context table (viommu).
 
->
-> -Nate
-> 
-> On 7/21/2017 7:42 AM, Robin Murphy wrote:
->> The cached node mechanism provides a significant performance benefit for
->> allocations using a 32-bit DMA mask, but in the case of non-PCI devices
->> or where the 32-bit space is full, the loss of this benefit can be
->> significant - on large systems there can be many thousands of entries in
->> the tree, such that traversing to the end then walking all the way down
->> to find free space every time becomes increasingly awful.
->>
->> Maintain a similar cached node for the whole IOVA space as a superset of
->> the 32-bit space so that performance can remain much more consistent.
->>
->> Inspired by work by Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>.
->>
->> Tested-by: Ard Biesheuvel <ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->> Tested-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>
->> v2: No change
->>
->>   drivers/iommu/iova.c | 59
->> +++++++++++++++++++++++++---------------------------
->>   include/linux/iova.h |  3 ++-
->>   2 files changed, 30 insertions(+), 32 deletions(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index d094d1ca8f23..f5809a2ee6c2 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -46,6 +46,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
->> long granule,
->>         spin_lock_init(&iovad->iova_rbtree_lock);
->>       iovad->rbroot = RB_ROOT;
->> +    iovad->cached_node = NULL;
->>       iovad->cached32_node = NULL;
->>       iovad->granule = granule;
->>       iovad->start_pfn = start_pfn;
->> @@ -57,48 +58,46 @@ EXPORT_SYMBOL_GPL(init_iova_domain);
->>   static struct rb_node *
->>   __get_cached_rbnode(struct iova_domain *iovad, unsigned long
->> *limit_pfn)
->>   {
->> -    if ((*limit_pfn > iovad->dma_32bit_pfn) ||
->> -        (iovad->cached32_node == NULL))
->> +    struct rb_node *cached_node = NULL;
->> +    struct iova *curr_iova;
->> +
->> +    if (*limit_pfn <= iovad->dma_32bit_pfn)
->> +        cached_node = iovad->cached32_node;
->> +    if (!cached_node)
->> +        cached_node = iovad->cached_node;
->> +    if (!cached_node)
->>           return rb_last(&iovad->rbroot);
->> -    else {
->> -        struct rb_node *prev_node = rb_prev(iovad->cached32_node);
->> -        struct iova *curr_iova =
->> -            rb_entry(iovad->cached32_node, struct iova, node);
->> -        *limit_pfn = curr_iova->pfn_lo;
->> -        return prev_node;
->> -    }
->> +
->> +    curr_iova = rb_entry(cached_node, struct iova, node);
->> +    *limit_pfn = curr_iova->pfn_lo;
->> +
->> +    return rb_prev(cached_node);
->>   }
->>     static void
->> -__cached_rbnode_insert_update(struct iova_domain *iovad,
->> -    unsigned long limit_pfn, struct iova *new)
->> +__cached_rbnode_insert_update(struct iova_domain *iovad, struct iova
->> *new)
->>   {
->> -    if (limit_pfn != iovad->dma_32bit_pfn)
->> -        return;
->> -    iovad->cached32_node = &new->node;
->> +    if (new->pfn_lo > iovad->dma_32bit_pfn)
->> +        iovad->cached_node = &new->node;
->> +    else
->> +        iovad->cached32_node = &new->node;
->>   }
->>     static void
->>   __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova
->> *free)
->>   {
->>       struct iova *cached_iova;
->> -    struct rb_node *curr;
->> +    struct rb_node **curr = NULL;
->>   -    if (!iovad->cached32_node)
->> -        return;
->> -    curr = iovad->cached32_node;
->> -    cached_iova = rb_entry(curr, struct iova, node);
->> +    if (free->pfn_hi < iovad->dma_32bit_pfn)
->> +        curr = &iovad->cached32_node;
->> +    if (!curr)
->> +        curr = &iovad->cached_node;
-
-+	if (!*curr)
-+		return;
-
->>   -    if (free->pfn_lo >= cached_iova->pfn_lo) {
->> -        struct rb_node *node = rb_next(&free->node);
->> -        struct iova *iova = rb_entry(node, struct iova, node);
->> +    cached_iova = rb_entry(*curr, struct iova, node);
->>   -        /* only cache if it's below 32bit pfn */
->> -        if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
->> -            iovad->cached32_node = node;
->> -        else
->> -            iovad->cached32_node = NULL;
->> -    }
->> +    if (free->pfn_lo >= cached_iova->pfn_lo)
->> +        *curr = rb_next(&free->node);
->>   }
->>     /* Insert the iova into domain rbtree by holding writer lock */
->> @@ -135,7 +134,6 @@ static int __alloc_and_insert_iova_range(struct
->> iova_domain *iovad,
->>   {
->>       struct rb_node *prev, *curr = NULL;
->>       unsigned long flags;
->> -    unsigned long saved_pfn;
->>       unsigned long align_mask = ~0UL;
->>         if (size_aligned)
->> @@ -143,7 +141,6 @@ static int __alloc_and_insert_iova_range(struct
->> iova_domain *iovad,
->>         /* Walk the tree backwards */
->>       spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
->> -    saved_pfn = limit_pfn;
->>       curr = __get_cached_rbnode(iovad, &limit_pfn);
->>       prev = curr;
->>       while (curr) {
->> @@ -173,7 +170,7 @@ static int __alloc_and_insert_iova_range(struct
->> iova_domain *iovad,
->>         /* If we have 'prev', it's a valid place to start the
->> insertion. */
->>       iova_insert_rbtree(&iovad->rbroot, new, prev);
->> -    __cached_rbnode_insert_update(iovad, saved_pfn, new);
->> +    __cached_rbnode_insert_update(iovad, new);
->>         spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->>   diff --git a/include/linux/iova.h b/include/linux/iova.h
->> index e0a892ae45c0..0bb8df43b393 100644
->> --- a/include/linux/iova.h
->> +++ b/include/linux/iova.h
->> @@ -40,7 +40,8 @@ struct iova_rcache {
->>   struct iova_domain {
->>       spinlock_t    iova_rbtree_lock; /* Lock to protect update of
->> rbtree */
->>       struct rb_root    rbroot;        /* iova domain rbtree root */
->> -    struct rb_node    *cached32_node; /* Save last alloced node */
->> +    struct rb_node    *cached_node;    /* Save last alloced node */
->> +    struct rb_node    *cached32_node; /* Save last 32-bit alloced
->> node */
->>       unsigned long    granule;    /* pfn granularity for this domain */
->>       unsigned long    start_pfn;    /* Lower limit for this domain */
->>       unsigned long    dma_32bit_pfn;
->>
-> 
+Thanks,
+Jean
