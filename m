@@ -1,72 +1,70 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v9 08/13] iommu: Add is_attach_deferred call-back to iommu-ops
-Date: Tue,  1 Aug 2017 19:37:24 +0800
-Message-ID: <1501587449-9817-9-git-send-email-bhe@redhat.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: [PATCH v9 12/13] iommu/amd: Clear out the GV flag when handle deferred domain attach
+Date: Tue,  1 Aug 2017 19:37:28 +0800
+Message-ID: <1501587449-9817-13-git-send-email-bhe@redhat.com>
 References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1501587449-9817-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1501587449-9817-1-git-send-email-bhe@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: jroedel@suse.de
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This new call-back will be used to check if the domain attach need be
-deferred for now. If yes, the domain attach/detach will return directly.
+When handle deferred domain attach, we need check if the domain is
+v2. If not, should try to clear out the GV flag which could be
+copied from the old device table entry.
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/iommu.c | 8 ++++++++
- include/linux/iommu.h | 1 +
- 2 files changed, 9 insertions(+)
+ drivers/iommu/amd_iommu.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3f6ea160afed..86581b115b92 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1283,6 +1283,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev)
- {
- 	int ret;
-+	if ((domain->ops->is_attach_deferred != NULL) &&
-+	    domain->ops->is_attach_deferred(domain, dev))
-+		return 0;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 46d077784da0..98aaccecbb76 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2085,6 +2085,11 @@ static void clear_dte_entry(u16 devid)
+ 	amd_iommu_apply_erratum_63(devid);
+ }
+ 
++static void clear_dte_flag_gv(u16 devid)
++{
++	amd_iommu_dev_table[devid].data[0] &= (~DTE_FLAG_GV);
++}
 +
- 	if (unlikely(domain->ops->attach_dev == NULL))
- 		return -ENODEV;
- 
-@@ -1324,6 +1328,10 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
+ static void do_attach(struct iommu_dev_data *dev_data,
+ 		      struct protection_domain *domain)
  {
-+	if ((domain->ops->is_attach_deferred != NULL) &&
-+	    domain->ops->is_attach_deferred(domain, dev))
-+		return;
-+
- 	if (unlikely(domain->ops->detach_dev == NULL))
- 		return;
+@@ -2459,6 +2464,7 @@ static struct iommu_group *amd_iommu_device_group(struct device *dev)
+  */
+ static struct protection_domain *get_domain(struct device *dev)
+ {
++	struct iommu_dev_data *dev_data = get_dev_data(dev);
+ 	struct protection_domain *domain;
+ 	struct iommu_domain *io_domain;
  
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2cb54adc4a33..63983c9e6c3a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -225,6 +225,7 @@ struct iommu_ops {
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
+@@ -2466,11 +2472,21 @@ static struct protection_domain *get_domain(struct device *dev)
+ 		return ERR_PTR(-EINVAL);
  
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-+	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
- 
- 	unsigned long pgsize_bitmap;
- };
+ 	domain = get_dev_data(dev)->domain;
+-	if (domain == NULL && get_dev_data(dev)->defer_attach) {
++	if (domain == NULL && dev_data->defer_attach) {
++		u16 alias = amd_iommu_alias_table[dev_data->devid];
+ 		get_dev_data(dev)->defer_attach = false;
+ 		io_domain = iommu_get_domain_for_dev(dev);
+ 		domain = to_pdomain(io_domain);
+ 		attach_device(dev, domain);
++		/*
++		 * If the deferred attached domain is not v2, should clear out
++		 * the old GV flag.
++		 */
++		if (!(domain->flags & PD_IOMMUV2_MASK)) {
++			clear_dte_flag_gv(dev_data->devid);
++			if (alias != dev_data->devid)
++				clear_dte_flag_gv(dev_data->devid);
++		}
+ 	}
+ 	if (!dma_ops_domain(domain))
+ 		return ERR_PTR(-EBUSY);
 -- 
 2.5.5
