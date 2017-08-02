@@ -1,13 +1,24 @@
-From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v2] memory: mtk-smi: Use of_device_get_match_data helper
-Date: Wed, 2 Aug 2017 10:02:50 +0800
-Message-ID: <1501639370.5572.8.camel@mtksdaap41>
-References: <1501072660-10435-1-git-send-email-honghui.zhang@mediatek.com>
+From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Feature Request: Ability to decode bus/dma address back into
+	physical address
+Date: Wed, 2 Aug 2017 00:42:14 -0400
+Message-ID: <20170802044214.GA6285@gmail.com>
+References: <20170801172523.GA3443@gmail.com>
+	<30eb1ecb-c86f-4d3b-cd49-e002f46e582d@amd.com>
+	<20170801180415.GB3443@gmail.com>
+	<483ecda0-2977-d2ea-794c-320e429d7645@amd.com>
+	<20170801190259.GC3443@gmail.com>
+	<42c5fe2b-f179-cb71-03d3-7ae991543edb@amd.com>
+	<20170801195556.GD3443@gmail.com>
+	<77e557d2-aa75-46c4-88a7-cca5448ea08e@amd.com>
+	<20170801210105.GE3443@gmail.com>
+	<2cd345ee-d5ad-1ad7-508a-86225e65621c@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1501072660-10435-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <2cd345ee-d5ad-1ad7-508a-86225e65621c-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,81 +28,145 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>
+Cc: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Koenig,
+	Christian" <Christian.Koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2017-07-26 at 20:37 +0800, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> 
-> Replace custom code with generic helper to retrieve driver data.
+On Tue, Aug 01, 2017 at 05:38:05PM -0400, Tom St Denis wrote:
+> On 01/08/17 05:01 PM, Jerome Glisse wrote:
+> > > Unless you can nop that in a config invariant fashion (like you can f=
+or
+> > > tracers) that's a NAK from the get go.  And we'd need to buffer them =
+to be
+> > > practical since you might run the debugger out of sync with the appli=
+cation
+> > > (e.g. app hangs then you fire up umr to see what's going on).
+> > =
 
-Hi, Joerg, would you please take this one, because my last
-patch[1]([patch v2 0/3] Add larbid init routine for mediatek's gen1 smi
-larb driver) was base on this patch. Or should I put this one together
-with the last patchset[1] and resend it with Matthias's reviewed-by
-tag[2]?
+> > Again when you start snooping you can access all the existing bo
+> > informations and start monitoring event to keep userspace in sync
+> > with any changes from the first snapshot you take.
+> =
 
-[1]https://www.spinics.net/lists/arm-kernel/msg596629.html
-[2]https://lkml.org/lkml/2017/7/31/197
+> You'd have to be able to do this post-mortem as well though.  And ideally=
+ I
+> don't really care about getting live updates (at least not yet though...).
+> The way it would work now is you read the ring and get IB pointers which =
+you
+> then have to fetch and decode.  So all I care about now is what does the
+> pointer point to right now.
+> =
 
-thanks
-> 
-> Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/memory/mtk-smi.c | 14 ++------------
->  1 file changed, 2 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index 4afbc41..2b798bb4 100644
-> --- a/drivers/memory/mtk-smi.c
-> +++ b/drivers/memory/mtk-smi.c
-> @@ -240,20 +240,15 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
->  	struct device *dev = &pdev->dev;
->  	struct device_node *smi_node;
->  	struct platform_device *smi_pdev;
-> -	const struct of_device_id *of_id;
->  
->  	if (!dev->pm_domain)
->  		return -EPROBE_DEFER;
->  
-> -	of_id = of_match_node(mtk_smi_larb_of_ids, pdev->dev.of_node);
-> -	if (!of_id)
-> -		return -EINVAL;
-> -
->  	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
->  	if (!larb)
->  		return -ENOMEM;
->  
-> -	larb->larb_gen = of_id->data;
-> +	larb->larb_gen = of_device_get_match_data(dev);
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	larb->base = devm_ioremap_resource(dev, res);
->  	if (IS_ERR(larb->base))
-> @@ -319,7 +314,6 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
->  	struct device *dev = &pdev->dev;
->  	struct mtk_smi *common;
->  	struct resource *res;
-> -	const struct of_device_id *of_id;
->  	enum mtk_smi_gen smi_gen;
->  
->  	if (!dev->pm_domain)
-> @@ -338,17 +332,13 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
->  	if (IS_ERR(common->clk_smi))
->  		return PTR_ERR(common->clk_smi);
->  
-> -	of_id = of_match_node(mtk_smi_common_of_ids, pdev->dev.of_node);
-> -	if (!of_id)
-> -		return -EINVAL;
-> -
->  	/*
->  	 * for mtk smi gen 1, we need to get the ao(always on) base to config
->  	 * m4u port, and we need to enable the aync clock for transform the smi
->  	 * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
->  	 * base.
->  	 */
-> -	smi_gen = (enum mtk_smi_gen)of_id->data;
-> +	smi_gen = (enum mtk_smi_gen)of_device_get_match_data(dev);
->  	if (smi_gen == MTK_SMI_GEN1) {
->  		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  		common->smi_ao_base = devm_ioremap_resource(dev, res);
+> Though at this point I'm decoding a GPUVM address not a DMA nor physical
+> address so I then have to decode the GPUVM address "somehow" (assuming I
+> don't use my "unsafe" methods) then I can proceed to look up the buffer
+> based on the DMA address.
+
+Everything is a GPU virtual address in first place. Then it is translated
+to either GPU VRAM address or bus address. IIRC some of the DMA engine do
+not use GPU VM but directly bus address and VRAM but this can also fit in
+what i am proposing. See at the end.
+
+> =
+
+> (* being notified of changes might be useful later on.  We do have more
+> grandiose plans to integrate umr into gdb/etc functionality).
+> =
+
+> > So you want to add something to the kernel just for a corner case ie
+> > when debugging GPU hang. Not for more generic tools. I don't think
+> > that the work needed for that is worth the effort just for such a
+> > small usecase.
+> =
+
+> You can't really read GPU data when it's in flight anyways.  Ask a GFX
+> hardware person about reading registers when the GPU is running and they'=
+ll
+> say "NAK."
+> =
+
+> So even if the application hasn't crashed if you want to inspect things y=
+ou
+> need to halt the waves (effectively halting the GPU).
+
+I thought you were also doing a tracing/perf monitor tools so i wrongly
+assume that you wanted thing to keep going.
+
+
+> > > >     - GPU device memory is not necessary accessible (due to PCIE ba=
+r size
+> > > >       limit i know that there is patches to allow to remap all GPU =
+memory).
+> > > =
+
+> > > We have ways of accessing all of VRAM from basic MMIO accesses :)
+> > =
+
+> > Yes and it is insane to have to write VRAM address in one register and
+> > read the VRAM value in another, insane from tedious point of view :)
+> =
+
+> I'd think double buffering **all** of VRAM in case you might want parts of
+> it to be more insane.
+
+Not saying all vram only thing that is accessed think of it as temporary
+bounce buffer of couple mega byte.
+
+[...]
+
+> > > Except again you're looking at this from the lens that the KMD is wor=
+king
+> > > perfectly.  We use umr (our debugger) to debug the kernel driver itse=
+lf.
+> > > That means you need to be able to read/write MMIO registers, peek at =
+VRAM,
+> > > decode VM addresses, read rings, etc...
+> > =
+
+> > And you can do that with the scheme i propose.
+> =
+
+> Not everything is a BO though ...
+
+What isn't a bo ? Everything inside amdgpu driver is an amdgpu_bo unless i =
+missed
+something. I am ignoring amdkfd here as this one is easy.
+
+[...]
+
+> > I was saying that your design is restrictive and can not be use for oth=
+er
+> > thing and thus it is hard to justify the work for a single use case.
+> =
+
+> I'm not married to my trace idea.  It just happens to work for user
+> applications and is better than nothing (and is very unobtrusive).  If you
+> want to take a crack at a proper interface that accomplishes the same (and
+> more) by all means I'll gladly adopt using it.
+> =
+
+> Just keep in mind we have no plans to remove our existing debugfs
+> facilities.
+> =
+
+> > Well maybe i will code it down latter today on the train back home.
+> =
+
+> Good luck Fermat.  :-)
+
+So here it is
+
+https://cgit.freedesktop.org/~glisse/linux/log/?h=3Damdgpu-debug
+
+most of the plumbing is there, i am puzzle by the absence of an obvious
+lock that protect the virtual address range from concurrent insert/remove.
+
+I haven't finished the read method but what is missing is accessing ttm.tt
+object if any or falling back to mmio read otherwise. Probably couple hundr=
+ed
+line of code to add this.
+
+It is untested as i don't have hardware.
+
+J=E9r=F4me
