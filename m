@@ -1,11 +1,9 @@
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: Feature Request: Ability to decode bus/dma address back into
 	physical address
-Date: Wed, 2 Aug 2017 19:23:58 +0200
-Message-ID: <d4a6ad38-522c-2928-2ef1-1f7cd2267c4e@amd.com>
-References: <20170801190259.GC3443@gmail.com>
-	<42c5fe2b-f179-cb71-03d3-7ae991543edb@amd.com>
-	<20170801195556.GD3443@gmail.com>
+Date: Wed, 2 Aug 2017 13:33:11 -0400
+Message-ID: <20170802173311.GC3105@gmail.com>
+References: <20170801195556.GD3443@gmail.com>
 	<77e557d2-aa75-46c4-88a7-cca5448ea08e@amd.com>
 	<20170801210105.GE3443@gmail.com>
 	<2cd345ee-d5ad-1ad7-508a-86225e65621c@amd.com>
@@ -14,12 +12,13 @@ References: <20170801190259.GC3443@gmail.com>
 	<20170802164343.GA3105@gmail.com>
 	<5ecbb5c2-fe4e-fd84-43b5-67ae06c5a032@amd.com>
 	<20170802171303.GB3105@gmail.com>
+	<d4a6ad38-522c-2928-2ef1-1f7cd2267c4e@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170802171303.GB3105-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <d4a6ad38-522c-2928-2ef1-1f7cd2267c4e-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,44 +28,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "Deucher,
 	Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-QW0gMDIuMDguMjAxNyB1bSAxOToxMyBzY2hyaWViIEplcm9tZSBHbGlzc2U6Cj4gT24gV2VkLCBB
-dWcgMDIsIDIwMTcgYXQgMDc6MDU6MTFQTSArMDIwMCwgQ2hyaXN0aWFuIEvDtm5pZyB3cm90ZToK
-Pj4gQW0gMDIuMDguMjAxNyB1bSAxODo0MyBzY2hyaWViIEplcm9tZSBHbGlzc2U6Cj4+PiBPbiBX
-ZWQsIEF1ZyAwMiwgMjAxNyBhdCAxMDoyNjo0MEFNICswMjAwLCBDaHJpc3RpYW4gS8O2bmlnIHdy
-b3RlOgo+Pj4+IFtTTklQXQo+Pj4gU28gdG8gc3VtbWFyaXplIHlvdSBhcmUgc2F5aW5nIHlvdSBk
-byBub3QgdHJ1c3QgdGhlIHZhbHVlIHlvdSBnZXQgZnJvbQo+Pj4gcGNpX21hcF9wYWdlKCkgPwo+
-PiBXZWxsLCB3aGF0IHdlIGRvbid0IHRydXN0IGlzIHRoYXQgd2UgYWN0dWFsbHkgZ2V0IHRoaXMg
-dmFsdWUgY29ycmVjdGx5IGludG8KPj4gb3VyIHBhZ2UgdGFibGVzLgo+Pgo+Pj4gSWYgbm90IHRo
-ZW4gaSBzdHJlc3MgYWdhaW4gdGhhdCB5b3UgaGF2ZSBhbGwgdGhlIGluZm9ybWF0aW9ucyB5b3Ug
-bmVlZAo+Pj4gaW5zaWRlIHRoZSBhbWRncHUgZHJpdmVyLiBZb3UgY2FuIHRha2UgdGhlIHNhbWUg
-c2NoZW1lIGkgcHJvcG9zZSB0bwo+Pj4gZHVtcCB0dG0uZG1hX2FkZHJlc3NbXSBhbmQgY29tcGFy
-ZSBhZ2FpbnN0IGNvbnRlbnQgb2YgR1BVIHBhZ2UgdGFibGUuCj4+IFllcywgZXhhY3RseS4gQnV0
-IHRoZW4gYWdhaW4gd2UgaGF2ZSB0aGUgbWFwcGluZyBwYWdlIHRvIGRtYS1hZGRyZXNzCj4+IChi
-ZWNhdXNlIHRoYXQgaXMgd2hhdCBkcml2ZXJzIHVzdWFsbHkgbmVlZCksIGJ1dCB3aGF0IHdlIG5l
-ZWQgZm9yIGRlYnVnZ2luZwo+PiBpcyBhIG1hcCB3aXRoIHRoZSBpbmZvIGRtYS1hZGRyZXNzIHRv
-IHBhZ2UuCj4gV2h5IHdvdWxkIHlvdSBuZWVkIHRoZSByZXZlcnNlID8gWW91IGhhdmUgYSBHUFUg
-dmlydHVhbCBhZGRyZXNzIGRvIHRoZSBmb2xsb3dpbmc6Cj4gR1BVIHZhZGRyIC0+IEdQVSBwYWdl
-IHRhYmxlIGVudHJpZSAtPiBidXMgYWRkcmVzcwo+IEdQVSB2YWRkciAtPiBib192YV9tYXBwaW5n
-IC0+IGJvX3ZhIC0+IGJvIC0+IHBhZ2UgLT4gZG1hL2J1cyBhZGRyZXNzCgpGaXJzdCBvZiBhbGwg
-dGhlIFZNIGhvdXNla2VlcGluZyBzdHJ1Y3R1cmVzIGtlZXAgdGhlIHN0YXRlIGFzIGl0IGlzIApz
-dXBwb3NlZCB0byBiZSBvbiB0aGUgbmV4dCBjb21tYW5kIHN1Ym1pc3Npb24gYW5kIHNvIHRoZSB0
-b3Agb2YgdGhlIApwaXBlbGluZSwgYnV0IHRoZSBzdGF0ZSBvZiB0aGUgcGFnZSB0YWJsZXMgcmVw
-cmVzZW50IHRvIGJvdHRvbSBvZiB0aGUgCnBpcGVsaW5lLgoKU2Vjb25kIHlvdSBjYW4ndCBhY2Nl
-c3MgdGhlIEJPIGZyb20gaXQncyB2aXJ0dWFsIGFkZHJlc3MsIHRoZSBCTyBtYXBwaW5nIAppcyBw
-cm90ZWN0ZWQgYnkgdGhlIEJPIHJlc2VydmF0aW9uIGxvY2suIFNvIHdoZW4gSSB3YW50IHRvIGxv
-Y2t1cCB0aGUgQk8gCkkgd291bGQgbmVlZCB0byBsb2NrIHRoZSBCTyBmaXJzdCAtIGNoaWNrZW4g
-YW5kIGVnZyBwcm9ibGVtLiBUaGF0IGlzIG9mIApjb3Vyc2Ugc29sdmFibGUsIGJ1dCBub3Qgc29t
-ZXRoaW5nIEkgd291bGQgcmVhbGx5IGxpa2UgdG8gZG8gZm9yIGEgCmRlYnVnZ2luZyBmZWF0dXJl
-LgoKQ2hyaXN0aWFuLgoKPgo+IENvbXBhZ2UgdGhlIDIgdmFsdWVzIGlmIHRoZXkgYXJlIHRoZSBz
-YW1lIHRoZW4gdGhlIEdQVSBpcyBsb29raW5nIHdoZXJlCj4geW91IHdhbnRlZCBpdCB0byBsb29r
-LiBJZiB0aGV5IGFyZSBkaWZmZXJlbnQgdGhlbiB5b3Uga25vdyB5b3UgaGF2ZSBhIGJ1Zwo+IGtu
-b3dpbmcgdGhlIHBoeXNpY2FsIHBhZ2UgYWRkcmVzIGRvIG5vdCBnaXZlIHlvdSBhbnkgbW9yZSBp
-bmZvcm1hdGlvbnMKPiBoZXJlID8KPgo+IErDqXLDtG1lCgoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, Aug 02, 2017 at 07:23:58PM +0200, Christian K=F6nig wrote:
+> Am 02.08.2017 um 19:13 schrieb Jerome Glisse:
+> > On Wed, Aug 02, 2017 at 07:05:11PM +0200, Christian K=F6nig wrote:
+> > > Am 02.08.2017 um 18:43 schrieb Jerome Glisse:
+> > > > On Wed, Aug 02, 2017 at 10:26:40AM +0200, Christian K=F6nig wrote:
+> > > > > [SNIP]
+> > > > So to summarize you are saying you do not trust the value you get f=
+rom
+> > > > pci_map_page() ?
+> > > Well, what we don't trust is that we actually get this value correctl=
+y into
+> > > our page tables.
+> > > =
+
+> > > > If not then i stress again that you have all the informations you n=
+eed
+> > > > inside the amdgpu driver. You can take the same scheme i propose to
+> > > > dump ttm.dma_address[] and compare against content of GPU page tabl=
+e.
+> > > Yes, exactly. But then again we have the mapping page to dma-address
+> > > (because that is what drivers usually need), but what we need for deb=
+ugging
+> > > is a map with the info dma-address to page.
+> > Why would you need the reverse ? You have a GPU virtual address do the =
+following:
+> > GPU vaddr -> GPU page table entrie -> bus address
+> > GPU vaddr -> bo_va_mapping -> bo_va -> bo -> page -> dma/bus address
+> =
+
+> First of all the VM housekeeping structures keep the state as it is suppo=
+sed
+> to be on the next command submission and so the top of the pipeline, but =
+the
+> state of the page tables represent to bottom of the pipeline.
+> =
+
+> Second you can't access the BO from it's virtual address, the BO mapping =
+is
+> protected by the BO reservation lock. So when I want to lockup the BO I
+> would need to lock the BO first - chicken and egg problem. That is of cou=
+rse
+> solvable, but not something I would really like to do for a debugging
+> feature.
+
+Tom said that the GPU is stop and thus there is nothing happening to the vm
+nor any of the bo right ? So there is no need to protect anything. If you
+still allow thing to change vm (map/unmap bo ...) how do you expect to debu=
+g ?
+
+J=E9r=F4me
