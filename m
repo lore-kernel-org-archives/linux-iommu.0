@@ -1,104 +1,99 @@
-From: Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [PATCH -next] iommu/of: Check for valid fwspec after
- of_pci_iommu_init
-Date: Wed, 2 Aug 2017 17:43:01 +0100
-Message-ID: <f697df05-9048-18ef-511a-24d3dc32f693@arm.com>
-References: <1501690300-5447-1-git-send-email-sudeep.holla@arm.com>
- <7451645e-54e2-1ef3-fe28-80e1ff22cfdb@arm.com>
+From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Feature Request: Ability to decode bus/dma address back into
+	physical address
+Date: Wed, 2 Aug 2017 12:43:43 -0400
+Message-ID: <20170802164343.GA3105@gmail.com>
+References: <20170801180415.GB3443@gmail.com>
+	<483ecda0-2977-d2ea-794c-320e429d7645@amd.com>
+	<20170801190259.GC3443@gmail.com>
+	<42c5fe2b-f179-cb71-03d3-7ae991543edb@amd.com>
+	<20170801195556.GD3443@gmail.com>
+	<77e557d2-aa75-46c4-88a7-cca5448ea08e@amd.com>
+	<20170801210105.GE3443@gmail.com>
+	<2cd345ee-d5ad-1ad7-508a-86225e65621c@amd.com>
+	<20170802044214.GA6285@gmail.com>
+	<4a2b004b-ebc2-9331-84c4-4e6672dd7b97@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7451645e-54e2-1ef3-fe28-80e1ff22cfdb@arm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Sudeep Holla <sudeep.holla@arm.com>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <4a2b004b-ebc2-9331-84c4-4e6672dd7b97-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "Deucher,
+	Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Wed, Aug 02, 2017 at 10:26:40AM +0200, Christian K=F6nig wrote:
+> Hi Jerome,
+> =
+
+> sorry for being a bit late to the discussion and the top posting.
+> =
+
+> But I think you miss a very important point here, which makes the whole
+> discussion on how to implement completely superfluous:
+> =
+
+> We already have a functionality to access the content of BOs in a process
+> for debugging purpose which works similar as you described and just uses =
+the
+> BO housekeeping structures in the driver to access the pages and VRAM
+> locations in question.
+> =
+
+> See here for the implementation:
+> 1. drm/ttm: Implement vm_operations_struct.access v2
+> (http://www.spinics.net/lists/dri-devel/msg147302.html)
+> 2. drm/amdgpu: Implement ttm_bo_driver.access_memory callback v2
+> (http://www.spinics.net/lists/dri-devel/msg147303.html)
+> =
+
+> Those patches allow you to just attach gdb to a process and access the
+> content of every CPU mapped buffer, even when that buffer is in CPU
+> invisible VRAM.
+> =
+
+> So the primary goal of that effort is *NOT* to make the BO content
+> accessible to the debugger through the BO housekeeping, cause that's
+> something we already have.
+> =
+
+> The goal here is to walk the different page tables and hardware mapping
+> functionalities to access the data just in the same way the GPU would do =
+to
+> catch problems.
+> =
+
+> That works fine as long as IOMMU is disabled, but when it is enabled the
+> additional mapping breaks our neck and we don't knew if the stuff the page
+> table dumper is producing is correct or not.
+> =
+
+> So what we need is just a way to translate dma addresses back to struct
+> pages to check their validity.
+> =
+
+> I've considered to just add this information to amdgpu_gem_info, but then=
+ we
+> get page->dma-address mapping instead dma-address->page as we want.
+> =
 
 
-On 02/08/17 17:39, Robin Murphy wrote:
-> On 02/08/17 17:11, Sudeep Holla wrote:
->> The successful return from of_pci_iommu_init doesn't ensure valid
->> fwspec if it's IOMMU is disabled.
->>
->> Accessing dev->iommu_fwspec->ops without checking dev->iommu_fwspec
->> could result in NULL pointer dereference.
->>
->> Unable to handle kernel NULL pointer dereference at virtual address 00000000
->> task: ffff800976880000 task.stack: ffff800976888000
->> PC is at of_iommu_configure+0x130/0x138
->> LR is at of_iommu_configure+0x118/0x138
->>  of_iommu_configure+0x130/0x138
->>  of_dma_configure+0xa8/0x190
->>  dma_configure+0x40/0xe8
->>  driver_probe_device+0x190/0x2d0
->>  __device_attach_driver+0x9c/0xf8
->>  bus_for_each_drv+0x58/0x98
->>  __device_attach+0xc4/0x138
->>  device_attach+0x10/0x18
->>  pci_bus_add_device+0x4c/0xa8
->>  pci_bus_add_devices+0x44/0x90
->>  pci_bus_add_devices+0x74/0x90
->>  pci_host_common_probe+0x14c/0x3a8
->>  gen_pci_probe+0x2c/0x38
->>  platform_drv_probe+0x58/0xc0
->>  driver_probe_device+0x214/0x2d0
->>  __driver_attach+0xac/0xb0
->>  bus_for_each_dev+0x60/0xa0
->>  driver_attach+0x20/0x28
->>  bus_add_driver+0x110/0x230
->>  driver_register+0x60/0xf8
->>  __platform_driver_register+0x44/0x50
->>  gen_pci_driver_init+0x18/0x20
->>  do_one_initcall+0x38/0x120
->>  kernel_init_freeable+0x184/0x224
->>  kernel_init+0x10/0x100
->>
->> This patch adds the check for dev->iommu_fwspec and fixes the above.
->>
->> Fixes: d87beb749281 ("iommu/of: Handle PCI aliases properly")
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
->> ---
->>  drivers/iommu/of_iommu.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> Hi Robin,
->>
->> I see this crash on Juno with linux-next. Enabling PCIe SMMU fixes the
->> issue, but we may need to handle the disabled SMMU case to continue to
->> work with old DTBs.
-> 
-> Ugh, a disabled IOMMU should be conceptually the same as no IOMMU, but I
-> guess the phandle chasing fails to fail. Per the design intent, the most
-> correct fix should be this:
-> 
-> ----->8-----
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index be8ac1ddec06..9bc83f94bc10 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -163,6 +163,8 @@ static int of_pci_iommu_init(struct pci_dev *pdev,
-> u16 alias, void *data)
-> 
->         if (IS_ERR(ops))
->                 return PTR_ERR(ops);
-> +       if (!ops)
-> +               return 1;
-> 
->         return info->np == pdev->bus->dev.of_node;
->  }
-> -----8<-----
-> 
-> But looking again, I think an even better fix involves ripping out much
-> of the PTR_ERR shenanigans with ops that leads to this confusion in the
-> first place. Give me a moment...
-> 
+So to summarize you are saying you do not trust the value you get from
+pci_map_page() ?
 
-Sure, I will leave it to you then ;)
+If not then i stress again that you have all the informations you need
+inside the amdgpu driver. You can take the same scheme i propose to
+dump ttm.dma_address[] and compare against content of GPU page table.
 
--- 
-Regards,
-Sudeep
+J=E9r=F4me
