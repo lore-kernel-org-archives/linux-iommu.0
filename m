@@ -1,179 +1,80 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/arm-smmu: Defer TLB flush in case of unmap op
-Date: Wed, 2 Aug 2017 13:17:18 +0100
-Message-ID: <35aeb7dd-4fe6-3175-2252-41c3c54873a9@arm.com>
-References: <CAFp+6iFfu2-qrDDim7fzKKLqMcSVMmOr7esqBZ-xEeLTOOTNLA@mail.gmail.com>
- <1501667598-16404-1-git-send-email-vivek.gautam@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1501667598-16404-1-git-send-email-vivek.gautam@codeaurora.org>
-Content-Language: en-GB
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org
-Cc: robdclark@gmail.com, will.deacon@arm.com, joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, m.szyprowski@samsung.com, linux-kernel@vger.kernel.org, stanimir.varbanov@linaro.org, sricharan@codeaurora.org, sboyd@codeaurora.org, linux-arm-kernel@lists.infradead.org
+From: Sudeep Holla <sudeep.holla@arm.com>
+Subject: [PATCH -next] iommu/of: Check for valid fwspec after of_pci_iommu_init
+Date: Wed,  2 Aug 2017 17:11:40 +0100
+Message-ID: <1501690300-5447-1-git-send-email-sudeep.holla@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/08/17 10:53, Vivek Gautam wrote:
-> We don't want to touch the TLB when smmu is suspended.
-> Defer it until resume.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> ---
-> 
-> Hi all,
-> 
-> Here's the small patch in response of suggestion to defer tlb operations
-> when smmu is in suspend state.
-> The patch stores the TLB requests in 'unmap' when the smmu device is
-> suspended. On resume, it checks all the pending TLB requests, and
-> performs the unmap over those.
-> 
-> Right now, I have applied the patch on top of the pm runtime series.
-> Let me know what you think of the change. It will also be helpful if
-> somebody can please test a valid use case with this.
+The successful return from of_pci_iommu_init doesn't ensure valid
+fwspec if it's IOMMU is disabled.
 
-The patch itself doesn't make much sense to me, but more crucially it's
-definitely broken in concept. We can't return from arm_smmu_unmap()
-without having actually unmapped anything, because that leaves the page
-tables out of sync with what the caller expects - they may immmediately
-reuse that IOVA to map something else for a different device and hit an
-unexpected failure from io-pgtable when the PTE turns out to be non-empty.
+Accessing dev->iommu_fwspec->ops without checking dev->iommu_fwspec
+could result in NULL pointer dereference.
 
-However, if in general suspend *might* power-gate any part of the SMMU,
-then I don't think we have any guarantee of what state any TLBs could be
-in upon resume. Therefore any individual invalidations we skip while
-suspended are probably moot, since resume would almost certainly have to
-invalidate everything to get back to a safe state anyway.
+Unable to handle kernel NULL pointer dereference at virtual address 00000000
+task: ffff800976880000 task.stack: ffff800976888000
+PC is at of_iommu_configure+0x130/0x138
+LR is at of_iommu_configure+0x118/0x138
+ of_iommu_configure+0x130/0x138
+ of_dma_configure+0xa8/0x190
+ dma_configure+0x40/0xe8
+ driver_probe_device+0x190/0x2d0
+ __device_attach_driver+0x9c/0xf8
+ bus_for_each_drv+0x58/0x98
+ __device_attach+0xc4/0x138
+ device_attach+0x10/0x18
+ pci_bus_add_device+0x4c/0xa8
+ pci_bus_add_devices+0x44/0x90
+ pci_bus_add_devices+0x74/0x90
+ pci_host_common_probe+0x14c/0x3a8
+ gen_pci_probe+0x2c/0x38
+ platform_drv_probe+0x58/0xc0
+ driver_probe_device+0x214/0x2d0
+ __driver_attach+0xac/0xb0
+ bus_for_each_dev+0x60/0xa0
+ driver_attach+0x20/0x28
+ bus_add_driver+0x110/0x230
+ driver_register+0x60/0xf8
+ __platform_driver_register+0x44/0x50
+ gen_pci_driver_init+0x18/0x20
+ do_one_initcall+0x38/0x120
+ kernel_init_freeable+0x184/0x224
+ kernel_init+0x10/0x100
 
-Conversely though, the situation that still concerns me is whether this
-can work at all for a distributed SMMU if things *don't* lose state. Say
-the GPU and its local TBU are in the same clock domain - if the GPU has
-just gone idle and we've clock-gated it, but "the SMMU" (i.e. the TCU)
-is still active servicing other devices, we will assume we can happily
-unmap GPU buffers and issue TLBIs, but what happens with entries held in
-the unclocked TBU's micro-TLB?
+This patch adds the check for dev->iommu_fwspec and fixes the above.
 
-Robin.
+Fixes: d87beb749281 ("iommu/of: Handle PCI aliases properly")
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+---
+ drivers/iommu/of_iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> 
-> regards
-> Vivek
-> 
->  drivers/iommu/arm-smmu.c | 59 +++++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 53 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index fe8e7fd61282..1f9c2b16aabb 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -51,6 +51,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/slab.h>
->  #include <linux/spinlock.h>
-> +#include <linux/list.h>
->  
->  #include <linux/amba/bus.h>
->  
-> @@ -151,6 +152,14 @@ struct arm_smmu_master_cfg {
->  #define for_each_cfg_sme(fw, i, idx) \
->  	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
->  
-> +struct arm_smmu_tlb_req_info {
-> +	struct iommu_domain *domain;
-> +	unsigned long iova;
-> +	size_t size;
-> +	bool tlb_flush_pending;
-> +	struct list_head list;
-> +};
-> +
->  struct arm_smmu_device {
->  	struct device			*dev;
->  
-> @@ -182,6 +191,7 @@ struct arm_smmu_device {
->  	u32				num_s2_context_banks;
->  	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
->  	atomic_t			irptndx;
-> +	struct list_head		domain_list;
->  
->  	u32				num_mapping_groups;
->  	u16				streamid_mask;
-> @@ -1239,17 +1249,32 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
->  			     size_t size)
->  {
->  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-> -	size_t ret;
-> +	struct arm_smmu_tlb_req_info *tlb_info;
->  
->  	if (!ops)
->  		return 0;
->  
-> -	pm_runtime_get_sync(smmu_domain->smmu->dev);
-> -	ret = ops->unmap(ops, iova, size);
-> -	pm_runtime_put_sync(smmu_domain->smmu->dev);
-> +	/* if the device is suspended; we can't unmap, defer any tlb operations */
-> +	if (pm_runtime_suspended(smmu->dev)) {
-> +		tlb_info = devm_kzalloc(smmu->dev, sizeof(*tlb_info), GFP_ATOMIC);
-> +		if (!tlb_info)
-> +			return -ENOMEM;
->  
-> -	return ret;
-> +		tlb_info->domain = domain;
-> +		tlb_info->iova = iova;
-> +		tlb_info->size = size;
-> +		tlb_info->tlb_flush_pending = true;
-> +		INIT_LIST_HEAD(&tlb_info->list);
-> +
-> +		/* XXX: We need locks here, but that again introduce the slowpath ? */
-> +		list_add_tail(&tlb_info->list, &smmu->domain_list);
-> +
-> +		return size;
-> +	}
-> +
-> +	return ops->unmap(ops, iova, size);
->  }
->  
->  static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
-> @@ -2166,6 +2191,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  		smmu->irqs[i] = irq;
->  	}
->  
-> +	INIT_LIST_HEAD(&smmu->domain_list);
-> +
->  	err = arm_smmu_init_clocks(smmu);
->  	if (err)
->  		return err;
-> @@ -2268,8 +2295,28 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->  static int arm_smmu_resume(struct device *dev)
->  {
->  	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> +	struct arm_smmu_tlb_req_info  *tlb_info, *temp;
-> +	int ret;
-> +
-> +	ret = arm_smmu_enable_clocks(smmu);
-> +	if (ret)
-> +		return ret;
-> +
-> +	list_for_each_entry_safe(tlb_info, temp, &smmu->domain_list, list) {
-> +		printk("\n\n %s %d :: iterating over pending tlb request\n\n", __func__, __LINE__);
-> +		if (tlb_info->tlb_flush_pending) {
-> +			ret = arm_smmu_unmap(tlb_info->domain, tlb_info->iova, tlb_info->size);
-> +			if (!ret)
-> +				return -EINVAL;
->  
-> -	return arm_smmu_enable_clocks(smmu);
-> +			tlb_info->tlb_flush_pending = false;
-> +
-> +			/* we are done with this request; delete it */
-> +			list_del(&tlb_info->list);
-> +		}
-> +	}
-> +
-> +	return 0;
->  }
->  
->  static int arm_smmu_suspend(struct device *dev)
-> 
+Hi Robin,
+
+I see this crash on Juno with linux-next. Enabling PCIe SMMU fixes the
+issue, but we may need to handle the disabled SMMU case to continue to
+work with old DTBs.
+
+Regards,
+Sudeep
+
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 34160e7a8dd7..11e08ff2db57 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -200,7 +200,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					     of_pci_iommu_init, &info);
+ 		if (err) /* err > 0 means the walk stopped, but non-fatally */
+ 			ops = ERR_PTR(min(err, 0));
+-		else /* success implies both fwspec and ops are now valid */
++		/* success may not imply fwspec is valid */
++		else if (dev->iommu_fwspec)
+ 			ops = dev->iommu_fwspec->ops;
+ 	} else {
+ 		struct of_phandle_args iommu_spec;
+--
+2.7.4
