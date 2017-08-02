@@ -1,24 +1,26 @@
-From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: Feature Request: Ability to decode bus/dma address back into
 	physical address
-Date: Wed, 2 Aug 2017 14:36:41 -0400
-Message-ID: <20170802183641.GA4035@gmail.com>
-References: <20170801210105.GE3443@gmail.com>
+Date: Wed, 2 Aug 2017 19:42:57 +0100
+Message-ID: <2f9da712-1559-6593-e512-c0508e21d747@arm.com>
+References: <20170801180415.GB3443@gmail.com>
+	<483ecda0-2977-d2ea-794c-320e429d7645@amd.com>
+	<20170801190259.GC3443@gmail.com>
+	<42c5fe2b-f179-cb71-03d3-7ae991543edb@amd.com>
+	<20170801195556.GD3443@gmail.com>
+	<77e557d2-aa75-46c4-88a7-cca5448ea08e@amd.com>
+	<20170801210105.GE3443@gmail.com>
 	<2cd345ee-d5ad-1ad7-508a-86225e65621c@amd.com>
 	<20170802044214.GA6285@gmail.com>
 	<4a2b004b-ebc2-9331-84c4-4e6672dd7b97@amd.com>
 	<20170802164343.GA3105@gmail.com>
 	<5ecbb5c2-fe4e-fd84-43b5-67ae06c5a032@amd.com>
-	<20170802171303.GB3105@gmail.com>
-	<d4a6ad38-522c-2928-2ef1-1f7cd2267c4e@amd.com>
-	<20170802173311.GC3105@gmail.com>
-	<4f00e033-7a08-e54f-4b64-2813d5f25b5b@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4f00e033-7a08-e54f-4b64-2813d5f25b5b-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <5ecbb5c2-fe4e-fd84-43b5-67ae06c5a032-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,90 +30,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "Deucher,
 	Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 02, 2017 at 08:18:02PM +0200, Christian K=F6nig wrote:
-> Am 02.08.2017 um 19:33 schrieb Jerome Glisse:
-> > On Wed, Aug 02, 2017 at 07:23:58PM +0200, Christian K=F6nig wrote:
-> > > Am 02.08.2017 um 19:13 schrieb Jerome Glisse:
-> > > > On Wed, Aug 02, 2017 at 07:05:11PM +0200, Christian K=F6nig wrote:
-> > > > > Am 02.08.2017 um 18:43 schrieb Jerome Glisse:
-> > > > > > On Wed, Aug 02, 2017 at 10:26:40AM +0200, Christian K=F6nig wro=
-te:
-> > > > > > > [SNIP]
-> > > > > > So to summarize you are saying you do not trust the value you g=
-et from
-> > > > > > pci_map_page() ?
-> > > > > Well, what we don't trust is that we actually get this value corr=
-ectly into
-> > > > > our page tables.
-> > > > > =
-
-> > > > > > If not then i stress again that you have all the informations y=
-ou need
-> > > > > > inside the amdgpu driver. You can take the same scheme i propos=
-e to
-> > > > > > dump ttm.dma_address[] and compare against content of GPU page =
-table.
-> > > > > Yes, exactly. But then again we have the mapping page to dma-addr=
-ess
-> > > > > (because that is what drivers usually need), but what we need for=
- debugging
-> > > > > is a map with the info dma-address to page.
-> > > > Why would you need the reverse ? You have a GPU virtual address do =
-the following:
-> > > > GPU vaddr -> GPU page table entrie -> bus address
-> > > > GPU vaddr -> bo_va_mapping -> bo_va -> bo -> page -> dma/bus address
-> > > First of all the VM housekeeping structures keep the state as it is s=
-upposed
-> > > to be on the next command submission and so the top of the pipeline, =
-but the
-> > > state of the page tables represent to bottom of the pipeline.
-> > > =
-
-> > > Second you can't access the BO from it's virtual address, the BO mapp=
-ing is
-> > > protected by the BO reservation lock. So when I want to lockup the BO=
- I
-> > > would need to lock the BO first - chicken and egg problem. That is of=
- course
-> > > solvable, but not something I would really like to do for a debugging
-> > > feature.
-> > Tom said that the GPU is stop and thus there is nothing happening to th=
-e vm
-> > nor any of the bo right ? So there is no need to protect anything. If y=
-ou
-> > still allow thing to change vm (map/unmap bo ...) how do you expect to =
-debug ?
-> =
-
-> Well the GPU is stuck (or manually stopped), but keep in mind that this i=
-s a
-> very deep pipeline we are talking about here.
-> =
-
-> So even if there isn't any processing happening in the hardware any more
-> there can still state changes queued up waiting for processing (or even n=
-ew
-> one added).
-> =
-
-
-I am familiar with how it all works. Vm are protected by fences so a
-vm that is in use will be protected from bind/unbind if GPU is stop only
-and update to virtual address space of that vm might also be block if
-they were to happen through some GPU ring and not from CPU.
-
-To me it looks like you want to know if GPU is accessing what was meant
-to be access and i believe what i have outline allow that. Compare current
-GPU page table entry with valid mapping.
-
-Thus i do not see any value in trying to get bus -> page, especialy that
-once you get the page you can't know to which bo it belongs without going
-over all ttm tt objects and even then it might be an already "freed" page
-from ttm point of view.
-
-J=E9r=F4me
+T24gMDIvMDgvMTcgMTg6MDUsIENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6Cj4gQW0gMDIuMDguMjAx
+NyB1bSAxODo0MyBzY2hyaWViIEplcm9tZSBHbGlzc2U6Cj4+IE9uIFdlZCwgQXVnIDAyLCAyMDE3
+IGF0IDEwOjI2OjQwQU0gKzAyMDAsIENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6Cj4+PiBbU05JUF0K
+Pj4gU28gdG8gc3VtbWFyaXplIHlvdSBhcmUgc2F5aW5nIHlvdSBkbyBub3QgdHJ1c3QgdGhlIHZh
+bHVlIHlvdSBnZXQgZnJvbQo+PiBwY2lfbWFwX3BhZ2UoKSA/Cj4gCj4gV2VsbCwgd2hhdCB3ZSBk
+b24ndCB0cnVzdCBpcyB0aGF0IHdlIGFjdHVhbGx5IGdldCB0aGlzIHZhbHVlIGNvcnJlY3RseQo+
+IGludG8gb3VyIHBhZ2UgdGFibGVzLgo+IAo+PiBJZiBub3QgdGhlbiBpIHN0cmVzcyBhZ2FpbiB0
+aGF0IHlvdSBoYXZlIGFsbCB0aGUgaW5mb3JtYXRpb25zIHlvdSBuZWVkCj4+IGluc2lkZSB0aGUg
+YW1kZ3B1IGRyaXZlci4gWW91IGNhbiB0YWtlIHRoZSBzYW1lIHNjaGVtZSBpIHByb3Bvc2UgdG8K
+Pj4gZHVtcCB0dG0uZG1hX2FkZHJlc3NbXSBhbmQgY29tcGFyZSBhZ2FpbnN0IGNvbnRlbnQgb2Yg
+R1BVIHBhZ2UgdGFibGUuCj4gCj4gWWVzLCBleGFjdGx5LiBCdXQgdGhlbiBhZ2FpbiB3ZSBoYXZl
+IHRoZSBtYXBwaW5nIHBhZ2UgdG8gZG1hLWFkZHJlc3MKPiAoYmVjYXVzZSB0aGF0IGlzIHdoYXQg
+ZHJpdmVycyB1c3VhbGx5IG5lZWQpLCBidXQgd2hhdCB3ZSBuZWVkIGZvcgo+IGRlYnVnZ2luZyBp
+cyBhIG1hcCB3aXRoIHRoZSBpbmZvIGRtYS1hZGRyZXNzIHRvIHBhZ2UuCj4gCj4gSSBtZWFuIHdl
+IGNhbiBvYnZpb3VzbHkgYnVpbGQgdGhlIHJldmVyc2UgdGFibGUgaW4gdGhlIGRyaXZlciBvdXJz
+ZWxmLAo+IGJ1dCB0aGF0IGlzIGp1c3QgYSB3YXN0ZSBvZiBtZW1vcnkgaWYgeW91IGFzayBtZSBj
+YXVzZSB0aGUgSU9NTVUgZHJpdmVyCj4gc2hvdWxkIGhhdmUgdGhhdCBpbmZvIGluIGl0J3MgdGFi
+bGVzIGFueXdheS4KPiAKPiBBZGRpdGlvbmFsIHRvIHRoYXQgd2UgaGF2ZSBhdCBsZWFzdCBzb21l
+IHBsYW5zIHRvIGdldCBhd2F5IGZyb20gQk9zIGFuZAo+IHRvd2FyZHMgSE1NLiBTbyBpdCB3b3Vs
+ZCBiZSBuaWNlIHRvIGhhdmUgYSBjZW50cmFsIGRlYnVnZ2luZyBmZWF0dXJlIHRvCj4gYWNjZXNz
+IHRoZSBpb21tdSBtYXAuCgpOb3RlIHRoYXQgdW5kZXJseWluZyBpc3N1ZSBoZXJlIGRvZXNuJ3Qg
+aGF2ZSBhbnl0aGluZyBzcGVjaWZpY2FsbHkgdG8gZG8Kd2l0aCBJT01NVXMgLSB5ZXMsIHRoZSBE
+TUEgQVBJIG9wcyBpbXBsZW1lbnRlZCBieSBJT01NVSBkcml2ZXJzIHByb3ZpZGUKdGhlIG1vc3Qg
+b2J2aW91cyBicmVha2FnZSBvZiB0aGUgYXNzdW1wdGlvbiB0aGF0IERNQSBhZGRyZXNzID09IHBo
+eXNpY2FsCmFkZHJlc3MsIGJ1dCB0aGVyZSBhcmUgYWxzbyB2YXJpb3VzIG90aGVyIGNhc2VzIChi
+dXMgb2Zmc2V0cywgU1dJT1RMQiwKZXRjLikgZm9yIHdoaWNoIGl0IGRvZXNuJ3QgYWx3YXlzIGhv
+bGQuIElmIHRoZSBhbWRncHUtc3BlY2lmaWMgcGF0aApjb21lcyB0byBhIGRlYWQgZW5kLCBhbnkg
+YWNjZXB0YWJseSBnZW5lcmFsIHNvbHV0aW9uIHdvdWxkIHByb2JhYmx5IGhhdmUKdG8gYmUgaW1w
+bGVtZW50ZWQgYXQgdGhlIERNQSBBUEkgbGV2ZWwuCgo+IEknbSBhY3R1YWxseSBzdXJwcmlzZWQg
+dGhhdCB0aGUgSU9NTVUgc3Vic3lzdGVtIGRvZXNuJ3QgYWxyZWFkeSBoYXZlCj4gc29tZXRoaW5n
+IGxpa2UgdGhhdCBzb21ld2hlcmUuIEkgbWVhbiBob3cgZG8geW91IGd1eXMgdmFsaWRhdGUgdGhh
+dAo+IHdoYXQncyB3cml0dGVuIGludG8gdGhlIElPTU1VIHRhYmxlcyBpcyBhY3R1YWxseSBjb3Jy
+ZWN0PwoKSW4gdGVybXMgb2YgRE1BIEFQSSBpbXBsZW1lbnRhdGlvbiwgZXhwZXJpZW5jZSBzYXlz
+IHRoYXQgeW91IGNhbiB1c3VhbGx5CnJlbHkgb24gZXZlcnl0aGluZyBnb2luZyB0byBoZWxsIHBy
+ZXR0eSBtdWNoIGluc3RhbnRseSBpZiBpdCBpc24ndCA7KQoKVGhlIElPTU1VIEFQSSBpdHNlbGYg
+aGFzIHRyYWNlcG9pbnRzIGFzIG1lbnRpb25lZCBhdCB0aGUgdG9wIG9mIHRoZQp0aHJlYWQsIGJ1
+dCBldmVyeW9uZSBvdGhlciB0aGFuIGFybS9hcm02NCBpbXBsZW1lbnRzIHRoZWlyIElPTU1VLWJh
+c2VkCkRNQSBvcHMgZGlyZWN0bHkgd2l0aG91dCBnb2luZyB2aWEgdGhhdCBhYnN0cmFjdGlvbi4g
+QWRkaW5nIERNQSBBUEkKdHJhY2Vwb2ludHMgd291bGQgYmUgYSBwb3NzaWJpbGl0eSwgYnV0IHdv
+dWxkIGJlIGF3a3dhcmQgdG8gZG8KZ2VuZXJpY2FsbHkgYmVjYXVzZSBpdCdzIGFsbCBzdGF0aWMg
+aW5saW5lcyBpbiBhIGhlYWRlciB3aGljaCBlbmRzIHVwCmdldHRpbmcgcHVsbGVkIGludG8gdGhl
+IG1pZGRsZSBvZiBvdGhlciB0cmFjZSBldmVudCBoZWFkZXJzICh5ZXMsIEkKdHJpZWQuLi4pCgo+
+IElzbid0IHRoZXJlIHNvbWUgd2F5IChkZWJ1Z2ZzL3N5c2ZzL3Rvb2xzPykgdG8gZHVtcCB0aGVt
+PwoKRldJVyBJJ20gbm90IGF3YXJlIG9mIGFueXRoaW5nIHRoYXQgZG9lcyBleGFjdGx5IHdoYXQg
+eW91IHdhbnQgKG90aGVyCnRoYW4gc29tZSB0cmljayBwYXRjaGVzIEkga2VlcCBhcm91bmQgdGhh
+dCBvbmx5IHdvcmsgZm9yIGFybTY0KSwgYnV0IGl0CmRvZXMgY29tZSB0byBtaW5kIHRoYXQgaXQg
+b3VnaHQgdG8gYmUgZmFpcmx5IHN0cmFpZ2h0Zm9yd2FyZCB0byBnaXZlCmRtYS1kZWJ1ZyB0aGUg
+YWJpbGl0eSB0byBkdW1wIG91dCB0aGUgaW5mb3JtYXRpb24gaXQgYWxyZWFkeSBjYXB0dXJlcy4K
+SXQgd291bGRuJ3QgYmUgdmlhYmxlIGZvciBkZXBsb3ltZW50IGluIG5vbi1kZXZlbG9wbWVudCBr
+ZXJuZWxzLCBidXQKaXQncyBhIGlkZWEgLSBmb3IgcHJvZHVjdGlvbiBrZXJuZWxzLCB0aGUgc2lt
+cGxlIGFuc3dlciBpcyBwcm9iYWJseQoiYm9vdCB3aXRoIGlvbW11PW9mZnxwdCB3aGVuIEdQVSBk
+ZWJ1Z2dpbmciIGFueXdheS4KClJvYmluLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
