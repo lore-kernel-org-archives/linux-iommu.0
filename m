@@ -1,8 +1,8 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>
 Subject: Re: Feature Request: Ability to decode bus/dma address back into
 	physical address
-Date: Wed, 2 Aug 2017 19:42:57 +0100
-Message-ID: <2f9da712-1559-6593-e512-c0508e21d747@arm.com>
+Date: Wed, 2 Aug 2017 15:25:32 -0400
+Message-ID: <76c1f638-05a4-1e37-14ad-7f5b21e47028@amd.com>
 References: <20170801180415.GB3443@gmail.com>
 	<483ecda0-2977-d2ea-794c-320e429d7645@amd.com>
 	<20170801190259.GC3443@gmail.com>
@@ -15,12 +15,13 @@ References: <20170801180415.GB3443@gmail.com>
 	<4a2b004b-ebc2-9331-84c4-4e6672dd7b97@amd.com>
 	<20170802164343.GA3105@gmail.com>
 	<5ecbb5c2-fe4e-fd84-43b5-67ae06c5a032@amd.com>
+	<2f9da712-1559-6593-e512-c0508e21d747@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5ecbb5c2-fe4e-fd84-43b5-67ae06c5a032-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <2f9da712-1559-6593-e512-c0508e21d747-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -30,63 +31,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "Deucher,
-	Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDIvMDgvMTcgMTg6MDUsIENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6Cj4gQW0gMDIuMDguMjAx
-NyB1bSAxODo0MyBzY2hyaWViIEplcm9tZSBHbGlzc2U6Cj4+IE9uIFdlZCwgQXVnIDAyLCAyMDE3
-IGF0IDEwOjI2OjQwQU0gKzAyMDAsIENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6Cj4+PiBbU05JUF0K
-Pj4gU28gdG8gc3VtbWFyaXplIHlvdSBhcmUgc2F5aW5nIHlvdSBkbyBub3QgdHJ1c3QgdGhlIHZh
-bHVlIHlvdSBnZXQgZnJvbQo+PiBwY2lfbWFwX3BhZ2UoKSA/Cj4gCj4gV2VsbCwgd2hhdCB3ZSBk
-b24ndCB0cnVzdCBpcyB0aGF0IHdlIGFjdHVhbGx5IGdldCB0aGlzIHZhbHVlIGNvcnJlY3RseQo+
-IGludG8gb3VyIHBhZ2UgdGFibGVzLgo+IAo+PiBJZiBub3QgdGhlbiBpIHN0cmVzcyBhZ2FpbiB0
-aGF0IHlvdSBoYXZlIGFsbCB0aGUgaW5mb3JtYXRpb25zIHlvdSBuZWVkCj4+IGluc2lkZSB0aGUg
-YW1kZ3B1IGRyaXZlci4gWW91IGNhbiB0YWtlIHRoZSBzYW1lIHNjaGVtZSBpIHByb3Bvc2UgdG8K
-Pj4gZHVtcCB0dG0uZG1hX2FkZHJlc3NbXSBhbmQgY29tcGFyZSBhZ2FpbnN0IGNvbnRlbnQgb2Yg
-R1BVIHBhZ2UgdGFibGUuCj4gCj4gWWVzLCBleGFjdGx5LiBCdXQgdGhlbiBhZ2FpbiB3ZSBoYXZl
-IHRoZSBtYXBwaW5nIHBhZ2UgdG8gZG1hLWFkZHJlc3MKPiAoYmVjYXVzZSB0aGF0IGlzIHdoYXQg
-ZHJpdmVycyB1c3VhbGx5IG5lZWQpLCBidXQgd2hhdCB3ZSBuZWVkIGZvcgo+IGRlYnVnZ2luZyBp
-cyBhIG1hcCB3aXRoIHRoZSBpbmZvIGRtYS1hZGRyZXNzIHRvIHBhZ2UuCj4gCj4gSSBtZWFuIHdl
-IGNhbiBvYnZpb3VzbHkgYnVpbGQgdGhlIHJldmVyc2UgdGFibGUgaW4gdGhlIGRyaXZlciBvdXJz
-ZWxmLAo+IGJ1dCB0aGF0IGlzIGp1c3QgYSB3YXN0ZSBvZiBtZW1vcnkgaWYgeW91IGFzayBtZSBj
-YXVzZSB0aGUgSU9NTVUgZHJpdmVyCj4gc2hvdWxkIGhhdmUgdGhhdCBpbmZvIGluIGl0J3MgdGFi
-bGVzIGFueXdheS4KPiAKPiBBZGRpdGlvbmFsIHRvIHRoYXQgd2UgaGF2ZSBhdCBsZWFzdCBzb21l
-IHBsYW5zIHRvIGdldCBhd2F5IGZyb20gQk9zIGFuZAo+IHRvd2FyZHMgSE1NLiBTbyBpdCB3b3Vs
-ZCBiZSBuaWNlIHRvIGhhdmUgYSBjZW50cmFsIGRlYnVnZ2luZyBmZWF0dXJlIHRvCj4gYWNjZXNz
-IHRoZSBpb21tdSBtYXAuCgpOb3RlIHRoYXQgdW5kZXJseWluZyBpc3N1ZSBoZXJlIGRvZXNuJ3Qg
-aGF2ZSBhbnl0aGluZyBzcGVjaWZpY2FsbHkgdG8gZG8Kd2l0aCBJT01NVXMgLSB5ZXMsIHRoZSBE
-TUEgQVBJIG9wcyBpbXBsZW1lbnRlZCBieSBJT01NVSBkcml2ZXJzIHByb3ZpZGUKdGhlIG1vc3Qg
-b2J2aW91cyBicmVha2FnZSBvZiB0aGUgYXNzdW1wdGlvbiB0aGF0IERNQSBhZGRyZXNzID09IHBo
-eXNpY2FsCmFkZHJlc3MsIGJ1dCB0aGVyZSBhcmUgYWxzbyB2YXJpb3VzIG90aGVyIGNhc2VzIChi
-dXMgb2Zmc2V0cywgU1dJT1RMQiwKZXRjLikgZm9yIHdoaWNoIGl0IGRvZXNuJ3QgYWx3YXlzIGhv
-bGQuIElmIHRoZSBhbWRncHUtc3BlY2lmaWMgcGF0aApjb21lcyB0byBhIGRlYWQgZW5kLCBhbnkg
-YWNjZXB0YWJseSBnZW5lcmFsIHNvbHV0aW9uIHdvdWxkIHByb2JhYmx5IGhhdmUKdG8gYmUgaW1w
-bGVtZW50ZWQgYXQgdGhlIERNQSBBUEkgbGV2ZWwuCgo+IEknbSBhY3R1YWxseSBzdXJwcmlzZWQg
-dGhhdCB0aGUgSU9NTVUgc3Vic3lzdGVtIGRvZXNuJ3QgYWxyZWFkeSBoYXZlCj4gc29tZXRoaW5n
-IGxpa2UgdGhhdCBzb21ld2hlcmUuIEkgbWVhbiBob3cgZG8geW91IGd1eXMgdmFsaWRhdGUgdGhh
-dAo+IHdoYXQncyB3cml0dGVuIGludG8gdGhlIElPTU1VIHRhYmxlcyBpcyBhY3R1YWxseSBjb3Jy
-ZWN0PwoKSW4gdGVybXMgb2YgRE1BIEFQSSBpbXBsZW1lbnRhdGlvbiwgZXhwZXJpZW5jZSBzYXlz
-IHRoYXQgeW91IGNhbiB1c3VhbGx5CnJlbHkgb24gZXZlcnl0aGluZyBnb2luZyB0byBoZWxsIHBy
-ZXR0eSBtdWNoIGluc3RhbnRseSBpZiBpdCBpc24ndCA7KQoKVGhlIElPTU1VIEFQSSBpdHNlbGYg
-aGFzIHRyYWNlcG9pbnRzIGFzIG1lbnRpb25lZCBhdCB0aGUgdG9wIG9mIHRoZQp0aHJlYWQsIGJ1
-dCBldmVyeW9uZSBvdGhlciB0aGFuIGFybS9hcm02NCBpbXBsZW1lbnRzIHRoZWlyIElPTU1VLWJh
-c2VkCkRNQSBvcHMgZGlyZWN0bHkgd2l0aG91dCBnb2luZyB2aWEgdGhhdCBhYnN0cmFjdGlvbi4g
-QWRkaW5nIERNQSBBUEkKdHJhY2Vwb2ludHMgd291bGQgYmUgYSBwb3NzaWJpbGl0eSwgYnV0IHdv
-dWxkIGJlIGF3a3dhcmQgdG8gZG8KZ2VuZXJpY2FsbHkgYmVjYXVzZSBpdCdzIGFsbCBzdGF0aWMg
-aW5saW5lcyBpbiBhIGhlYWRlciB3aGljaCBlbmRzIHVwCmdldHRpbmcgcHVsbGVkIGludG8gdGhl
-IG1pZGRsZSBvZiBvdGhlciB0cmFjZSBldmVudCBoZWFkZXJzICh5ZXMsIEkKdHJpZWQuLi4pCgo+
-IElzbid0IHRoZXJlIHNvbWUgd2F5IChkZWJ1Z2ZzL3N5c2ZzL3Rvb2xzPykgdG8gZHVtcCB0aGVt
-PwoKRldJVyBJJ20gbm90IGF3YXJlIG9mIGFueXRoaW5nIHRoYXQgZG9lcyBleGFjdGx5IHdoYXQg
-eW91IHdhbnQgKG90aGVyCnRoYW4gc29tZSB0cmljayBwYXRjaGVzIEkga2VlcCBhcm91bmQgdGhh
-dCBvbmx5IHdvcmsgZm9yIGFybTY0KSwgYnV0IGl0CmRvZXMgY29tZSB0byBtaW5kIHRoYXQgaXQg
-b3VnaHQgdG8gYmUgZmFpcmx5IHN0cmFpZ2h0Zm9yd2FyZCB0byBnaXZlCmRtYS1kZWJ1ZyB0aGUg
-YWJpbGl0eSB0byBkdW1wIG91dCB0aGUgaW5mb3JtYXRpb24gaXQgYWxyZWFkeSBjYXB0dXJlcy4K
-SXQgd291bGRuJ3QgYmUgdmlhYmxlIGZvciBkZXBsb3ltZW50IGluIG5vbi1kZXZlbG9wbWVudCBr
-ZXJuZWxzLCBidXQKaXQncyBhIGlkZWEgLSBmb3IgcHJvZHVjdGlvbiBrZXJuZWxzLCB0aGUgc2lt
-cGxlIGFuc3dlciBpcyBwcm9iYWJseQoiYm9vdCB3aXRoIGlvbW11PW9mZnxwdCB3aGVuIEdQVSBk
-ZWJ1Z2dpbmciIGFueXdheS4KClJvYmluLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+On 02/08/17 02:42 PM, Robin Murphy wrote:
+
+> FWIW I'm not aware of anything that does exactly what you want (other
+> than some trick patches I keep around that only work for arm64), but it
+> does come to mind that it ought to be fairly straightforward to give
+> dma-debug the ability to dump out the information it already captures.
+> It wouldn't be viable for deployment in non-development kernels, but
+> it's a idea - for production kernels, the simple answer is probably
+> "boot with iommu=off|pt when GPU debugging" anyway.
+
+The genesis of this requirement is that IOMMU is a requirement in a lot 
+of new development (for instance, virtualization) and newer systems 
+cannot operate with it disabled.
+
+Previously, ya I'd tell umr (our debugger) users to turn it off but 
+that's becoming increasingly hard to sell :-)
+
+Right now our tracepoint seems to work but relatively light workloads 
+but can become somewhat laggy on higher loads and I fear that on data 
+center type loads will become completely unusable.
+
+Tom
