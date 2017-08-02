@@ -1,16 +1,15 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4] acpi/iort: numa: Add numa node mapping for smmuv3
-	devices
-Date: Wed, 2 Aug 2017 17:21:19 +0100
-Message-ID: <20170802162119.GA3984@red-moon>
-References: <20170725050237.11033-1-ganapatrao.kulkarni@cavium.com>
-	<20170725151305.GU17961@rric.localdomain>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH -next] iommu/of: Check for valid fwspec after
+	of_pci_iommu_init
+Date: Wed, 2 Aug 2017 17:39:17 +0100
+Message-ID: <7451645e-54e2-1ef3-fe28-80e1ff22cfdb@arm.com>
+References: <1501690300-5447-1-git-send-email-sudeep.holla@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170725151305.GU17961-vWBEXY7mpu582hYKe6nXyg@public.gmane.org>
+In-Reply-To: <1501690300-5447-1-git-send-email-sudeep.holla-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,208 +19,107 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Cc: rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 25, 2017 at 05:13:05PM +0200, Robert Richter wrote:
-> On 25.07.17 10:32:37, Ganapatrao Kulkarni wrote:
-> > ARM IORT specification(rev. C) has added  provision to define proximity
-> > domain in SMMUv3 IORT table. Adding required code to parse Proximity
-> > domain and set numa_node of smmv3 platform devices.
-> > 
-> > Add code to parse proximity domain in SMMUv3 IORT table to
-> > set numa node mapping for smmuv3 devices.
-> > 
-> > Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> > ---
-> > 
-> > This patch has dependency on header file patch [1], which is
-> > already merged to linux-pm.
-> > 
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=c944230064eb65e4fa018d86779b4fd200b1d7e7
-> > 
-> > v4:
-> >   - Fix compilation issue in !CONFIG_NUMA
-> > 
-> > v3:
-> >   - Addressed Lorenzo Pieralisi comment.
-> > 
-> > v2:
-> >   - Changed as per Lorenzo Pieralisi and Hanjun Guo suggestions.
-> > 
-> > v1:
-> >   - Initial patch
-> > 
-> >  drivers/acpi/arm64/iort.c | 33 +++++++++++++++++++++++++++++++--
-> >  1 file changed, 31 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index a3215ee..c5c82c3 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -908,6 +908,28 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
-> >  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
-> >  }
-> >  
-> > +#if defined(CONFIG_ACPI_NUMA) && (ACPI_CA_VERSION >= 0x20170629)
+On 02/08/17 17:11, Sudeep Holla wrote:
+> The successful return from of_pci_iommu_init doesn't ensure valid
+> fwspec if it's IOMMU is disabled.
 > 
-> This acpica version check was very unhandy for backports when we did
-> this last time. If we backport just c944230064 and this single patch
-> it wont work as the version check prevents the code from being
-> enabled. Isn't there another way to handle cross tree dependencies of
-> pull requests? E.g. we could base this patch on acpica (ab539eaa50)
-> and remove the check.
+> Accessing dev->iommu_fwspec->ops without checking dev->iommu_fwspec
+> could result in NULL pointer dereference.
 > 
-> Alternatively we could do in this case:
+> Unable to handle kernel NULL pointer dereference at virtual address 00000000
+> task: ffff800976880000 task.stack: ffff800976888000
+> PC is at of_iommu_configure+0x130/0x138
+> LR is at of_iommu_configure+0x118/0x138
+>  of_iommu_configure+0x130/0x138
+>  of_dma_configure+0xa8/0x190
+>  dma_configure+0x40/0xe8
+>  driver_probe_device+0x190/0x2d0
+>  __device_attach_driver+0x9c/0xf8
+>  bus_for_each_drv+0x58/0x98
+>  __device_attach+0xc4/0x138
+>  device_attach+0x10/0x18
+>  pci_bus_add_device+0x4c/0xa8
+>  pci_bus_add_devices+0x44/0x90
+>  pci_bus_add_devices+0x74/0x90
+>  pci_host_common_probe+0x14c/0x3a8
+>  gen_pci_probe+0x2c/0x38
+>  platform_drv_probe+0x58/0xc0
+>  driver_probe_device+0x214/0x2d0
+>  __driver_attach+0xac/0xb0
+>  bus_for_each_dev+0x60/0xa0
+>  driver_attach+0x20/0x28
+>  bus_add_driver+0x110/0x230
+>  driver_register+0x60/0xf8
+>  __platform_driver_register+0x44/0x50
+>  gen_pci_driver_init+0x18/0x20
+>  do_one_initcall+0x38/0x120
+>  kernel_init_freeable+0x184/0x224
+>  kernel_init+0x10/0x100
 > 
-> #if defined(CONFIG_ACPI_NUMA) && defined(ACPI_IORT_SMMU_V3_PXM_VALID)
+> This patch adds the check for dev->iommu_fwspec and fixes the above.
 > 
-> > +/*
-> > + * set numa proximity domain for smmuv3 device
-> > + */
-> > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
-> > +		struct device *dev)
-> > +{
-> > +	struct acpi_iort_smmu_v3 *smmu;
-> > +
-> > +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-> > +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
-> > +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
-> > +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> Fixes: d87beb749281 ("iommu/of: Handle PCI aliases properly")
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/of_iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> Better use dev_info() here.
+> Hi Robin,
 > 
-> > +			smmu->base_address,
-> > +			smmu->pxm);
-> > +	}
-> > +}
-> > +#else
-> > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
-> > +		struct device *dev) { }
-> 
-> Just do:
-> 
-> #define arm_smmu_v3_set_proximity NULL
-> 
-> > +#endif
-> > +
-> >  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
-> >  {
-> >  	struct acpi_iort_smmu *smmu;
-> > @@ -977,20 +999,24 @@ struct iort_iommu_config {
-> >  	int (*iommu_count_resources)(struct acpi_iort_node *node);
-> >  	void (*iommu_init_resources)(struct resource *res,
-> >  				     struct acpi_iort_node *node);
-> > +	void (*iommu_set_proximity)(struct acpi_iort_node *node,
-> > +				     struct device *dev);
-> 
-> Wrt pseudo-OO programming this is more a method for struct dev than
-> node, so swap args: iommu_set_proximity(dev, node)
-> 
-> >  };
-> >  
-> >  static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
-> >  	.name = "arm-smmu-v3",
-> >  	.iommu_is_coherent = arm_smmu_v3_is_coherent,
-> >  	.iommu_count_resources = arm_smmu_v3_count_resources,
-> > -	.iommu_init_resources = arm_smmu_v3_init_resources
-> > +	.iommu_init_resources = arm_smmu_v3_init_resources,
-> > +	.iommu_set_proximity = arm_smmu_v3_set_proximity
-> 
-> Add comma at the end here.
-> 
-> >  };
-> >  
-> >  static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
-> >  	.name = "arm-smmu",
-> >  	.iommu_is_coherent = arm_smmu_is_coherent,
-> >  	.iommu_count_resources = arm_smmu_count_resources,
-> > -	.iommu_init_resources = arm_smmu_init_resources
-> > +	.iommu_init_resources = arm_smmu_init_resources,
-> > +	.iommu_set_proximity = NULL
-> 
-> No need for null assignment.
+> I see this crash on Juno with linux-next. Enabling PCIe SMMU fixes the
+> issue, but we may need to handle the disabled SMMU case to continue to
+> work with old DTBs.
 
-Patch that I will send upstream below, please check, thanks.
+Ugh, a disabled IOMMU should be conceptually the same as no IOMMU, but I
+guess the phandle chasing fails to fail. Per the design intent, the most
+correct fix should be this:
 
--- >8 --
-Subject: [PATCH] ACPI/IORT: numa: Add numa node mapping for smmuv3 devices
+----->8-----
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index be8ac1ddec06..9bc83f94bc10 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -163,6 +163,8 @@ static int of_pci_iommu_init(struct pci_dev *pdev,
+u16 alias, void *data)
 
-ARM IORT specification(rev. C) has added  provision to define proximity
-domain in SMMUv3 IORT table. Adding required code to parse Proximity
-domain and set numa_node of smmv3 platform devices.
+        if (IS_ERR(ops))
+                return PTR_ERR(ops);
++       if (!ops)
++               return 1;
 
-Add code to parse proximity domain in SMMUv3 IORT table to
-set numa node mapping for smmuv3 devices.
-
-Link: http://lkml.kernel.org/r/20170706112017.GA16981-vWBEXY7mpu582hYKe6nXyg@public.gmane.org
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-[lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org: updated review comments]
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
----
- drivers/acpi/arm64/iort.c | 29 ++++++++++++++++++++++++++++-
- 1 file changed, 28 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index a3215ee..35dd803 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -908,6 +908,27 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
- 	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+        return info->np == pdev->bus->dev.of_node;
  }
- 
-+#if defined(CONFIG_ACPI_NUMA) && defined(ACPI_IORT_SMMU_v3_PXM_VALID)
-+/*
-+ * set numa proximity domain for smmuv3 device
-+ */
-+static void  __init arm_smmu_v3_set_proximity(struct device *dev,
-+					      struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_smmu_v3 *smmu;
-+
-+	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
-+		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
-+		dev_info(dev, "SMMUV3[%llx] Mapped to Proximity domain %d\n",
-+			smmu->base_address,
-+			smmu->pxm);
-+	}
-+}
-+#else
-+#define arm_smmu_v3_set_proximity NULL
-+#endif
-+
- static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
- {
- 	struct acpi_iort_smmu *smmu;
-@@ -977,13 +998,16 @@ struct iort_iommu_config {
- 	int (*iommu_count_resources)(struct acpi_iort_node *node);
- 	void (*iommu_init_resources)(struct resource *res,
- 				     struct acpi_iort_node *node);
-+	void (*iommu_set_proximity)(struct device *dev,
-+				    struct acpi_iort_node *node);
- };
- 
- static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
- 	.name = "arm-smmu-v3",
- 	.iommu_is_coherent = arm_smmu_v3_is_coherent,
- 	.iommu_count_resources = arm_smmu_v3_count_resources,
--	.iommu_init_resources = arm_smmu_v3_init_resources
-+	.iommu_init_resources = arm_smmu_v3_init_resources,
-+	.iommu_set_proximity = arm_smmu_v3_set_proximity,
- };
- 
- static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
-@@ -1028,6 +1052,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
- 	if (!pdev)
- 		return -ENOMEM;
- 
-+	if (ops->iommu_set_proximity)
-+		ops->iommu_set_proximity(&pdev->dev, node);
-+
- 	count = ops->iommu_count_resources(node);
- 
- 	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
--- 
-2.10.0
+-----8<-----
+
+But looking again, I think an even better fix involves ripping out much
+of the PTR_ERR shenanigans with ops that leads to this confusion in the
+first place. Give me a moment...
+
+Thanks,
+Robin.
+
+> 
+> Regards,
+> Sudeep
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 34160e7a8dd7..11e08ff2db57 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -200,7 +200,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  					     of_pci_iommu_init, &info);
+>  		if (err) /* err > 0 means the walk stopped, but non-fatally */
+>  			ops = ERR_PTR(min(err, 0));
+> -		else /* success implies both fwspec and ops are now valid */
+> +		/* success may not imply fwspec is valid */
+> +		else if (dev->iommu_fwspec)
+>  			ops = dev->iommu_fwspec->ops;
+>  	} else {
+>  		struct of_phandle_args iommu_spec;
+> --
+> 2.7.4
+> 
