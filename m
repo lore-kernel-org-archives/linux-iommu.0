@@ -1,11 +1,9 @@
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+From: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: Feature Request: Ability to decode bus/dma address back into
 	physical address
-Date: Wed, 2 Aug 2017 20:18:02 +0200
-Message-ID: <4f00e033-7a08-e54f-4b64-2813d5f25b5b@amd.com>
-References: <20170801195556.GD3443@gmail.com>
-	<77e557d2-aa75-46c4-88a7-cca5448ea08e@amd.com>
-	<20170801210105.GE3443@gmail.com>
+Date: Wed, 2 Aug 2017 14:36:41 -0400
+Message-ID: <20170802183641.GA4035@gmail.com>
+References: <20170801210105.GE3443@gmail.com>
 	<2cd345ee-d5ad-1ad7-508a-86225e65621c@amd.com>
 	<20170802044214.GA6285@gmail.com>
 	<4a2b004b-ebc2-9331-84c4-4e6672dd7b97@amd.com>
@@ -14,12 +12,13 @@ References: <20170801195556.GD3443@gmail.com>
 	<20170802171303.GB3105@gmail.com>
 	<d4a6ad38-522c-2928-2ef1-1f7cd2267c4e@amd.com>
 	<20170802173311.GC3105@gmail.com>
+	<4f00e033-7a08-e54f-4b64-2813d5f25b5b@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170802173311.GC3105-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <4f00e033-7a08-e54f-4b64-2813d5f25b5b-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,52 +28,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "Deucher,
 	Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-QW0gMDIuMDguMjAxNyB1bSAxOTozMyBzY2hyaWViIEplcm9tZSBHbGlzc2U6Cj4gT24gV2VkLCBB
-dWcgMDIsIDIwMTcgYXQgMDc6MjM6NThQTSArMDIwMCwgQ2hyaXN0aWFuIEvDtm5pZyB3cm90ZToK
-Pj4gQW0gMDIuMDguMjAxNyB1bSAxOToxMyBzY2hyaWViIEplcm9tZSBHbGlzc2U6Cj4+PiBPbiBX
-ZWQsIEF1ZyAwMiwgMjAxNyBhdCAwNzowNToxMVBNICswMjAwLCBDaHJpc3RpYW4gS8O2bmlnIHdy
-b3RlOgo+Pj4+IEFtIDAyLjA4LjIwMTcgdW0gMTg6NDMgc2NocmllYiBKZXJvbWUgR2xpc3NlOgo+
-Pj4+PiBPbiBXZWQsIEF1ZyAwMiwgMjAxNyBhdCAxMDoyNjo0MEFNICswMjAwLCBDaHJpc3RpYW4g
-S8O2bmlnIHdyb3RlOgo+Pj4+Pj4gW1NOSVBdCj4+Pj4+IFNvIHRvIHN1bW1hcml6ZSB5b3UgYXJl
-IHNheWluZyB5b3UgZG8gbm90IHRydXN0IHRoZSB2YWx1ZSB5b3UgZ2V0IGZyb20KPj4+Pj4gcGNp
-X21hcF9wYWdlKCkgPwo+Pj4+IFdlbGwsIHdoYXQgd2UgZG9uJ3QgdHJ1c3QgaXMgdGhhdCB3ZSBh
-Y3R1YWxseSBnZXQgdGhpcyB2YWx1ZSBjb3JyZWN0bHkgaW50bwo+Pj4+IG91ciBwYWdlIHRhYmxl
-cy4KPj4+Pgo+Pj4+PiBJZiBub3QgdGhlbiBpIHN0cmVzcyBhZ2FpbiB0aGF0IHlvdSBoYXZlIGFs
-bCB0aGUgaW5mb3JtYXRpb25zIHlvdSBuZWVkCj4+Pj4+IGluc2lkZSB0aGUgYW1kZ3B1IGRyaXZl
-ci4gWW91IGNhbiB0YWtlIHRoZSBzYW1lIHNjaGVtZSBpIHByb3Bvc2UgdG8KPj4+Pj4gZHVtcCB0
-dG0uZG1hX2FkZHJlc3NbXSBhbmQgY29tcGFyZSBhZ2FpbnN0IGNvbnRlbnQgb2YgR1BVIHBhZ2Ug
-dGFibGUuCj4+Pj4gWWVzLCBleGFjdGx5LiBCdXQgdGhlbiBhZ2FpbiB3ZSBoYXZlIHRoZSBtYXBw
-aW5nIHBhZ2UgdG8gZG1hLWFkZHJlc3MKPj4+PiAoYmVjYXVzZSB0aGF0IGlzIHdoYXQgZHJpdmVy
-cyB1c3VhbGx5IG5lZWQpLCBidXQgd2hhdCB3ZSBuZWVkIGZvciBkZWJ1Z2dpbmcKPj4+PiBpcyBh
-IG1hcCB3aXRoIHRoZSBpbmZvIGRtYS1hZGRyZXNzIHRvIHBhZ2UuCj4+PiBXaHkgd291bGQgeW91
-IG5lZWQgdGhlIHJldmVyc2UgPyBZb3UgaGF2ZSBhIEdQVSB2aXJ0dWFsIGFkZHJlc3MgZG8gdGhl
-IGZvbGxvd2luZzoKPj4+IEdQVSB2YWRkciAtPiBHUFUgcGFnZSB0YWJsZSBlbnRyaWUgLT4gYnVz
-IGFkZHJlc3MKPj4+IEdQVSB2YWRkciAtPiBib192YV9tYXBwaW5nIC0+IGJvX3ZhIC0+IGJvIC0+
-IHBhZ2UgLT4gZG1hL2J1cyBhZGRyZXNzCj4+IEZpcnN0IG9mIGFsbCB0aGUgVk0gaG91c2VrZWVw
-aW5nIHN0cnVjdHVyZXMga2VlcCB0aGUgc3RhdGUgYXMgaXQgaXMgc3VwcG9zZWQKPj4gdG8gYmUg
-b24gdGhlIG5leHQgY29tbWFuZCBzdWJtaXNzaW9uIGFuZCBzbyB0aGUgdG9wIG9mIHRoZSBwaXBl
-bGluZSwgYnV0IHRoZQo+PiBzdGF0ZSBvZiB0aGUgcGFnZSB0YWJsZXMgcmVwcmVzZW50IHRvIGJv
-dHRvbSBvZiB0aGUgcGlwZWxpbmUuCj4+Cj4+IFNlY29uZCB5b3UgY2FuJ3QgYWNjZXNzIHRoZSBC
-TyBmcm9tIGl0J3MgdmlydHVhbCBhZGRyZXNzLCB0aGUgQk8gbWFwcGluZyBpcwo+PiBwcm90ZWN0
-ZWQgYnkgdGhlIEJPIHJlc2VydmF0aW9uIGxvY2suIFNvIHdoZW4gSSB3YW50IHRvIGxvY2t1cCB0
-aGUgQk8gSQo+PiB3b3VsZCBuZWVkIHRvIGxvY2sgdGhlIEJPIGZpcnN0IC0gY2hpY2tlbiBhbmQg
-ZWdnIHByb2JsZW0uIFRoYXQgaXMgb2YgY291cnNlCj4+IHNvbHZhYmxlLCBidXQgbm90IHNvbWV0
-aGluZyBJIHdvdWxkIHJlYWxseSBsaWtlIHRvIGRvIGZvciBhIGRlYnVnZ2luZwo+PiBmZWF0dXJl
-Lgo+IFRvbSBzYWlkIHRoYXQgdGhlIEdQVSBpcyBzdG9wIGFuZCB0aHVzIHRoZXJlIGlzIG5vdGhp
-bmcgaGFwcGVuaW5nIHRvIHRoZSB2bQo+IG5vciBhbnkgb2YgdGhlIGJvIHJpZ2h0ID8gU28gdGhl
-cmUgaXMgbm8gbmVlZCB0byBwcm90ZWN0IGFueXRoaW5nLiBJZiB5b3UKPiBzdGlsbCBhbGxvdyB0
-aGluZyB0byBjaGFuZ2Ugdm0gKG1hcC91bm1hcCBibyAuLi4pIGhvdyBkbyB5b3UgZXhwZWN0IHRv
-IGRlYnVnID8KCldlbGwgdGhlIEdQVSBpcyBzdHVjayAob3IgbWFudWFsbHkgc3RvcHBlZCksIGJ1
-dCBrZWVwIGluIG1pbmQgdGhhdCB0aGlzIAppcyBhIHZlcnkgZGVlcCBwaXBlbGluZSB3ZSBhcmUg
-dGFsa2luZyBhYm91dCBoZXJlLgoKU28gZXZlbiBpZiB0aGVyZSBpc24ndCBhbnkgcHJvY2Vzc2lu
-ZyBoYXBwZW5pbmcgaW4gdGhlIGhhcmR3YXJlIGFueSBtb3JlIAp0aGVyZSBjYW4gc3RpbGwgc3Rh
-dGUgY2hhbmdlcyBxdWV1ZWQgdXAgd2FpdGluZyBmb3IgcHJvY2Vzc2luZyAob3IgZXZlbiAKbmV3
-IG9uZSBhZGRlZCkuCgpDaHJpc3RpYW4uCgo+Cj4gSsOpcsO0bWUKCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Wed, Aug 02, 2017 at 08:18:02PM +0200, Christian K=F6nig wrote:
+> Am 02.08.2017 um 19:33 schrieb Jerome Glisse:
+> > On Wed, Aug 02, 2017 at 07:23:58PM +0200, Christian K=F6nig wrote:
+> > > Am 02.08.2017 um 19:13 schrieb Jerome Glisse:
+> > > > On Wed, Aug 02, 2017 at 07:05:11PM +0200, Christian K=F6nig wrote:
+> > > > > Am 02.08.2017 um 18:43 schrieb Jerome Glisse:
+> > > > > > On Wed, Aug 02, 2017 at 10:26:40AM +0200, Christian K=F6nig wro=
+te:
+> > > > > > > [SNIP]
+> > > > > > So to summarize you are saying you do not trust the value you g=
+et from
+> > > > > > pci_map_page() ?
+> > > > > Well, what we don't trust is that we actually get this value corr=
+ectly into
+> > > > > our page tables.
+> > > > > =
+
+> > > > > > If not then i stress again that you have all the informations y=
+ou need
+> > > > > > inside the amdgpu driver. You can take the same scheme i propos=
+e to
+> > > > > > dump ttm.dma_address[] and compare against content of GPU page =
+table.
+> > > > > Yes, exactly. But then again we have the mapping page to dma-addr=
+ess
+> > > > > (because that is what drivers usually need), but what we need for=
+ debugging
+> > > > > is a map with the info dma-address to page.
+> > > > Why would you need the reverse ? You have a GPU virtual address do =
+the following:
+> > > > GPU vaddr -> GPU page table entrie -> bus address
+> > > > GPU vaddr -> bo_va_mapping -> bo_va -> bo -> page -> dma/bus address
+> > > First of all the VM housekeeping structures keep the state as it is s=
+upposed
+> > > to be on the next command submission and so the top of the pipeline, =
+but the
+> > > state of the page tables represent to bottom of the pipeline.
+> > > =
+
+> > > Second you can't access the BO from it's virtual address, the BO mapp=
+ing is
+> > > protected by the BO reservation lock. So when I want to lockup the BO=
+ I
+> > > would need to lock the BO first - chicken and egg problem. That is of=
+ course
+> > > solvable, but not something I would really like to do for a debugging
+> > > feature.
+> > Tom said that the GPU is stop and thus there is nothing happening to th=
+e vm
+> > nor any of the bo right ? So there is no need to protect anything. If y=
+ou
+> > still allow thing to change vm (map/unmap bo ...) how do you expect to =
+debug ?
+> =
+
+> Well the GPU is stuck (or manually stopped), but keep in mind that this i=
+s a
+> very deep pipeline we are talking about here.
+> =
+
+> So even if there isn't any processing happening in the hardware any more
+> there can still state changes queued up waiting for processing (or even n=
+ew
+> one added).
+> =
+
+
+I am familiar with how it all works. Vm are protected by fences so a
+vm that is in use will be protected from bind/unbind if GPU is stop only
+and update to virtual address space of that vm might also be block if
+they were to happen through some GPU ring and not from CPU.
+
+To me it looks like you want to know if GPU is accessing what was meant
+to be access and i believe what i have outline allow that. Compare current
+GPU page table entry with valid mapping.
+
+Thus i do not see any value in trying to get bus -> page, especialy that
+once you get the page you can't know to which bo it belongs without going
+over all ttm tt objects and even then it might be an already "freed" page
+from ttm point of view.
+
+J=E9r=F4me
