@@ -1,222 +1,44 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Defer TLB flush in case of unmap op
-Date: Thu, 3 Aug 2017 11:05:13 +0530
-Message-ID: <d9cdeeee-36a9-40d4-457e-b1a865c3b83f@codeaurora.org>
-References: <CAFp+6iFfu2-qrDDim7fzKKLqMcSVMmOr7esqBZ-xEeLTOOTNLA@mail.gmail.com>
-	<1501667598-16404-1-git-send-email-vivek.gautam@codeaurora.org>
-	<35aeb7dd-4fe6-3175-2252-41c3c54873a9@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <35aeb7dd-4fe6-3175-2252-41c3c54873a9-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Rob Clark <robdclark@gmail.com>
+Subject: [PATCH 0/4] iommu: add qcom_iommu for early "B" family devices
+Date: Thu,  3 Aug 2017 06:47:48 -0400
+Message-ID: <20170803104800.18624-1-robdclark@gmail.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org
+Cc: Archit Taneja <architt@codeaurora.org>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Robin Murphy <robin.murphy@arm.com>, Rob Clark <robdclark@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+An iommu driver for Qualcomm "B" family devices which do implement the
+ARM SMMU spec, but not in a way that arm-smmu can support.
 
+(I initially added support to arm-smmu, but it was decided that approach
+was too intrusive and it would be cleaner to have a separate driver.)
 
+I should note that all the dependencies for this driver have been merged
+since 4.12, and it is the last thing needed for having another fully-
+enabled (gpu/display/video codec/etc) ARM device that is fully upstream.
 
-On 08/02/2017 05:47 PM, Robin Murphy wrote:
-> On 02/08/17 10:53, Vivek Gautam wrote:
->> We don't want to touch the TLB when smmu is suspended.
->> Defer it until resume.
->>
->> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>
->> Hi all,
->>
->> Here's the small patch in response of suggestion to defer tlb operations
->> when smmu is in suspend state.
->> The patch stores the TLB requests in 'unmap' when the smmu device is
->> suspended. On resume, it checks all the pending TLB requests, and
->> performs the unmap over those.
->>
->> Right now, I have applied the patch on top of the pm runtime series.
->> Let me know what you think of the change. It will also be helpful if
->> somebody can please test a valid use case with this.
-> The patch itself doesn't make much sense to me, but more crucially it's
-> definitely broken in concept. We can't return from arm_smmu_unmap()
-> without having actually unmapped anything, because that leaves the page
-> tables out of sync with what the caller expects - they may immmediately
-> reuse that IOVA to map something else for a different device and hit an
-> unexpected failure from io-pgtable when the PTE turns out to be non-empty.
+One minor change to move a couple #defines and MMU500 bits back to
+arm-smmu.c as suggested by Will.
 
-To understand things bit more,
-once we don't *unmap* in arm_smmu_unmap(), and leave the TLBs as is,
-the next mapping can happen only with the *knowledge* of smmu, i.e.,
-smmu should be active at that time.
-If that's true then, the _runtime()_resume() method will take care of
-invalidating the TLBs when we call arm_smmu_unmap() from _runtime_resume().
-Is my understanding correct here?
+Rob Clark (3):
+  Docs: dt: document qcom iommu bindings
+  iommu: arm-smmu: split out register defines
+  iommu: add qcom_iommu
 
->
-> However, if in general suspend *might* power-gate any part of the SMMU,
-> then I don't think we have any guarantee of what state any TLBs could be
-> in upon resume. Therefore any individual invalidations we skip while
-> suspended are probably moot, since resume would almost certainly have to
-> invalidate everything to get back to a safe state anyway.
+Stanimir Varbanov (1):
+  iommu: qcom: initialize secure page table
 
-Right, in case when the suspend power-gates the SMMU, then
-the TLB context is lost anyways. So resume path can freshly start.
-This is something that exynos does at present.
-
->
-> Conversely though, the situation that still concerns me is whether this
-> can work at all for a distributed SMMU if things *don't* lose state. Say
-> the GPU and its local TBU are in the same clock domain - if the GPU has
-> just gone idle and we've clock-gated it, but "the SMMU" (i.e. the TCU)
-> is still active servicing other devices, we will assume we can happily
-> unmap GPU buffers and issue TLBIs, but what happens with entries held in
-> the unclocked TBU's micro-TLB?
-
-We know of platforms we have that have shared TCU and multiple TBUs.
-Each TBU is available in its own power domain, not in master's power domain.
-In such cases we may want to runtime_get() the TBUs, so that unmap() 
-call with
-master clock gated gets through.
-
-Can we have a situation where the TBU and master are in the same power
-domain, and the unmap is called when the master is not runtime active?
-How will such a situation be handled?
-
-Best regards
-Vivek
-
->
-> Robin.
->
->> regards
->> Vivek
->>
->>   drivers/iommu/arm-smmu.c | 59 +++++++++++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 53 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index fe8e7fd61282..1f9c2b16aabb 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -51,6 +51,7 @@
->>   #include <linux/pm_runtime.h>
->>   #include <linux/slab.h>
->>   #include <linux/spinlock.h>
->> +#include <linux/list.h>
->>   
->>   #include <linux/amba/bus.h>
->>   
->> @@ -151,6 +152,14 @@ struct arm_smmu_master_cfg {
->>   #define for_each_cfg_sme(fw, i, idx) \
->>   	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
->>   
->> +struct arm_smmu_tlb_req_info {
->> +	struct iommu_domain *domain;
->> +	unsigned long iova;
->> +	size_t size;
->> +	bool tlb_flush_pending;
->> +	struct list_head list;
->> +};
->> +
->>   struct arm_smmu_device {
->>   	struct device			*dev;
->>   
->> @@ -182,6 +191,7 @@ struct arm_smmu_device {
->>   	u32				num_s2_context_banks;
->>   	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
->>   	atomic_t			irptndx;
->> +	struct list_head		domain_list;
->>   
->>   	u32				num_mapping_groups;
->>   	u16				streamid_mask;
->> @@ -1239,17 +1249,32 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
->>   			     size_t size)
->>   {
->>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
->>   	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
->> -	size_t ret;
->> +	struct arm_smmu_tlb_req_info *tlb_info;
->>   
->>   	if (!ops)
->>   		return 0;
->>   
->> -	pm_runtime_get_sync(smmu_domain->smmu->dev);
->> -	ret = ops->unmap(ops, iova, size);
->> -	pm_runtime_put_sync(smmu_domain->smmu->dev);
->> +	/* if the device is suspended; we can't unmap, defer any tlb operations */
->> +	if (pm_runtime_suspended(smmu->dev)) {
->> +		tlb_info = devm_kzalloc(smmu->dev, sizeof(*tlb_info), GFP_ATOMIC);
->> +		if (!tlb_info)
->> +			return -ENOMEM;
->>   
->> -	return ret;
->> +		tlb_info->domain = domain;
->> +		tlb_info->iova = iova;
->> +		tlb_info->size = size;
->> +		tlb_info->tlb_flush_pending = true;
->> +		INIT_LIST_HEAD(&tlb_info->list);
->> +
->> +		/* XXX: We need locks here, but that again introduce the slowpath ? */
->> +		list_add_tail(&tlb_info->list, &smmu->domain_list);
->> +
->> +		return size;
->> +	}
->> +
->> +	return ops->unmap(ops, iova, size);
->>   }
->>   
->>   static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
->> @@ -2166,6 +2191,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->>   		smmu->irqs[i] = irq;
->>   	}
->>   
->> +	INIT_LIST_HEAD(&smmu->domain_list);
->> +
->>   	err = arm_smmu_init_clocks(smmu);
->>   	if (err)
->>   		return err;
->> @@ -2268,8 +2295,28 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->>   static int arm_smmu_resume(struct device *dev)
->>   {
->>   	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
->> +	struct arm_smmu_tlb_req_info  *tlb_info, *temp;
->> +	int ret;
->> +
->> +	ret = arm_smmu_enable_clocks(smmu);
->> +	if (ret)
->> +		return ret;
->> +
->> +	list_for_each_entry_safe(tlb_info, temp, &smmu->domain_list, list) {
->> +		printk("\n\n %s %d :: iterating over pending tlb request\n\n", __func__, __LINE__);
->> +		if (tlb_info->tlb_flush_pending) {
->> +			ret = arm_smmu_unmap(tlb_info->domain, tlb_info->iova, tlb_info->size);
->> +			if (!ret)
->> +				return -EINVAL;
->>   
->> -	return arm_smmu_enable_clocks(smmu);
->> +			tlb_info->tlb_flush_pending = false;
->> +
->> +			/* we are done with this request; delete it */
->> +			list_del(&tlb_info->list);
->> +		}
->> +	}
->> +
->> +	return 0;
->>   }
->>   
->>   static int arm_smmu_suspend(struct device *dev)
->>
+ .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++
+ drivers/iommu/Kconfig                              |  10 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/arm-smmu-regs.h                      | 220 +++++
+ drivers/iommu/arm-smmu.c                           | 211 +----
+ drivers/iommu/qcom_iommu.c                         | 932 +++++++++++++++++++++
+ 6 files changed, 1293 insertions(+), 202 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+ create mode 100644 drivers/iommu/arm-smmu-regs.h
+ create mode 100644 drivers/iommu/qcom_iommu.c
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.13.0
