@@ -1,44 +1,161 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: [PATCH 0/4] iommu: add qcom_iommu for early "B" family devices
-Date: Thu,  3 Aug 2017 06:47:48 -0400
-Message-ID: <20170803104800.18624-1-robdclark@gmail.com>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org
-Cc: Archit Taneja <architt@codeaurora.org>, Rob Herring <robh@kernel.org>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Robin Murphy <robin.murphy@arm.com>, Rob Clark <robdclark@gmail.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 1/4] Docs: dt: document qcom iommu bindings
+Date: Thu,  3 Aug 2017 06:47:49 -0400
+Message-ID: <20170803104800.18624-2-robdclark@gmail.com>
+References: <20170803104800.18624-1-robdclark@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170803104800.18624-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-An iommu driver for Qualcomm "B" family devices which do implement the
-ARM SMMU spec, but not in a way that arm-smmu can support.
-
-(I initially added support to arm-smmu, but it was decided that approach
-was too intrusive and it would be cleaner to have a separate driver.)
-
-I should note that all the dependencies for this driver have been merged
-since 4.12, and it is the last thing needed for having another fully-
-enabled (gpu/display/video codec/etc) ARM device that is fully upstream.
-
-One minor change to move a couple #defines and MMU500 bits back to
-arm-smmu.c as suggested by Will.
-
-Rob Clark (3):
-  Docs: dt: document qcom iommu bindings
-  iommu: arm-smmu: split out register defines
-  iommu: add qcom_iommu
-
-Stanimir Varbanov (1):
-  iommu: qcom: initialize secure page table
-
- .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++
- drivers/iommu/Kconfig                              |  10 +
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/arm-smmu-regs.h                      | 220 +++++
- drivers/iommu/arm-smmu.c                           | 211 +----
- drivers/iommu/qcom_iommu.c                         | 932 +++++++++++++++++++++
- 6 files changed, 1293 insertions(+), 202 deletions(-)
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Tested-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++++++++++++++++++++
+ 1 file changed, 121 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
- create mode 100644 drivers/iommu/arm-smmu-regs.h
- create mode 100644 drivers/iommu/qcom_iommu.c
 
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+new file mode 100644
+index 000000000000..b2641ceb2b40
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+@@ -0,0 +1,121 @@
++* QCOM IOMMU v1 Implementation
++
++Qualcomm "B" family devices which are not compatible with arm-smmu have
++a similar looking IOMMU but without access to the global register space,
++and optionally requiring additional configuration to route context irqs
++to non-secure vs secure interrupt line.
++
++** Required properties:
++
++- compatible       : Should be one of:
++
++                        "qcom,msm8916-iommu"
++
++                     Followed by "qcom,msm-iommu-v1".
++
++- clock-names      : Should be a pair of "iface" (required for IOMMUs
++                     register group access) and "bus" (required for
++                     the IOMMUs underlying bus access).
++
++- clocks           : Phandles for respective clocks described by
++                     clock-names.
++
++- #address-cells   : must be 1.
++
++- #size-cells      : must be 1.
++
++- #iommu-cells     : Must be 1.  Index identifies the context-bank #.
++
++- ranges           : Base address and size of the iommu context banks.
++
++- qcom,iommu-secure-id  : secure-id.
++
++- List of sub-nodes, one per translation context bank.  Each sub-node
++  has the following required properties:
++
++  - compatible     : Should be one of:
++        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
++        - "qcom,msm-iommu-v1-sec" : secure context bank
++  - reg            : Base address and size of context bank within the iommu
++  - interrupts     : The context fault irq.
++
++** Optional properties:
++
++- reg              : Base address and size of the SMMU local base, should
++                     be only specified if the iommu requires configuration
++                     for routing of context bank irq's to secure vs non-
++                     secure lines.  (Ie. if the iommu contains secure
++                     context banks)
++
++
++** Examples:
++
++	apps_iommu: iommu@1e20000 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		#iommu-cells = <1>;
++		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
++		ranges = <0 0x1e20000 0x40000>;
++		reg = <0x1ef0000 0x3000>;
++		clocks = <&gcc GCC_SMMU_CFG_CLK>,
++			 <&gcc GCC_APSS_TCU_CLK>;
++		clock-names = "iface", "bus";
++		qcom,iommu-secure-id = <17>;
++
++		// mdp_0:
++		iommu-ctx@4000 {
++			compatible = "qcom,msm-iommu-v1-ns";
++			reg = <0x4000 0x1000>;
++			interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
++		// venus_ns:
++		iommu-ctx@5000 {
++			compatible = "qcom,msm-iommu-v1-sec";
++			reg = <0x5000 0x1000>;
++			interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
++		};
++	};
++
++	gpu_iommu: iommu@1f08000 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		#iommu-cells = <1>;
++		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
++		ranges = <0 0x1f08000 0x10000>;
++		clocks = <&gcc GCC_SMMU_CFG_CLK>,
++			 <&gcc GCC_GFX_TCU_CLK>;
++		clock-names = "iface", "bus";
++		qcom,iommu-secure-id = <18>;
++
++		// gfx3d_user:
++		iommu-ctx@1000 {
++			compatible = "qcom,msm-iommu-v1-ns";
++			reg = <0x1000 0x1000>;
++			interrupts = <GIC_SPI 241 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
++		// gfx3d_priv:
++		iommu-ctx@2000 {
++			compatible = "qcom,msm-iommu-v1-ns";
++			reg = <0x2000 0x1000>;
++			interrupts = <GIC_SPI 242 IRQ_TYPE_LEVEL_HIGH>;
++		};
++	};
++
++	...
++
++	venus: video-codec@1d00000 {
++		...
++		iommus = <&apps_iommu 5>;
++	};
++
++	mdp: mdp@1a01000 {
++		...
++		iommus = <&apps_iommu 4>;
++	};
++
++	gpu@01c00000 {
++		...
++		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
++	};
 -- 
 2.13.0
