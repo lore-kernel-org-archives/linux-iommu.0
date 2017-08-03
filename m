@@ -1,27 +1,11 @@
-From: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: Feature Request: Ability to decode bus/dma address back into
-	physical address
-Date: Wed, 2 Aug 2017 15:25:32 -0400
-Message-ID: <76c1f638-05a4-1e37-14ad-7f5b21e47028@amd.com>
-References: <20170801180415.GB3443@gmail.com>
-	<483ecda0-2977-d2ea-794c-320e429d7645@amd.com>
-	<20170801190259.GC3443@gmail.com>
-	<42c5fe2b-f179-cb71-03d3-7ae991543edb@amd.com>
-	<20170801195556.GD3443@gmail.com>
-	<77e557d2-aa75-46c4-88a7-cca5448ea08e@amd.com>
-	<20170801210105.GE3443@gmail.com>
-	<2cd345ee-d5ad-1ad7-508a-86225e65621c@amd.com>
-	<20170802044214.GA6285@gmail.com>
-	<4a2b004b-ebc2-9331-84c4-4e6672dd7b97@amd.com>
-	<20170802164343.GA3105@gmail.com>
-	<5ecbb5c2-fe4e-fd84-43b5-67ae06c5a032@amd.com>
-	<2f9da712-1559-6593-e512-c0508e21d747@arm.com>
+From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: [PATCH] ARM: dts: rockchip: rk3288 add more iommu nodes
+Date: Thu,  3 Aug 2017 10:04:03 +0800
+Message-ID: <1501725843-37391-1-git-send-email-xxm@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2f9da712-1559-6593-e512-c0508e21d747-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -31,29 +15,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Jerome Glisse <j.glisse-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/08/17 02:42 PM, Robin Murphy wrote:
+Add IEP/ISP/VPU/HEVC iommu nodes
 
-> FWIW I'm not aware of anything that does exactly what you want (other
-> than some trick patches I keep around that only work for arm64), but it
-> does come to mind that it ought to be fairly straightforward to give
-> dma-debug the ability to dump out the information it already captures.
-> It wouldn't be viable for deployment in non-development kernels, but
-> it's a idea - for production kernels, the simple answer is probably
-> "boot with iommu=off|pt when GPU debugging" anyway.
+Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+---
+ arch/arm/boot/dts/rk3288.dtsi | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-The genesis of this requirement is that IOMMU is a requirement in a lot 
-of new development (for instance, virtualization) and newer systems 
-cannot operate with it disabled.
-
-Previously, ya I'd tell umr (our debugger) users to turn it off but 
-that's becoming increasingly hard to sell :-)
-
-Right now our tracepoint seems to work but relatively light workloads 
-but can become somewhat laggy on higher loads and I fear that on data 
-center type loads will become completely unusable.
-
-Tom
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index 2484f11..90646a2 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -953,6 +953,25 @@
+ 		status = "okay";
+ 	};
+ 
++	iep_mmu: iommu@ff900800 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff900800 0x0 0x40>;
++		interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH 0>;
++		interrupt-names = "iep_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	isp_mmu: iommu@ff914000 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff914000 0x0 0x100>, <0x0 0xff915000 0x0 0x100>;
++		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "isp_mmu";
++		#iommu-cells = <0>;
++		rockchip,disable-mmu-reset;
++		status = "disabled";
++	};
++
+ 	vopb: vop@ff930000 {
+ 		compatible = "rockchip,rk3288-vop";
+ 		reg = <0xff930000 0x19c>;
+@@ -1126,6 +1145,24 @@
+ 		};
+ 	};
+ 
++	vpu_mmu: iommu@ff9a0800 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff9a0800 0x0 0x100>;
++		interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vpu_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
++	hevc_mmu: iommu@ff9c0440 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff9c0440 0x0 0x40>, <0x0 0xff9c0480 0x0 0x40>;
++		interrupts = <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "hevc_mmu";
++		#iommu-cells = <0>;
++		status = "disabled";
++	};
++
+ 	gpu: mali@ffa30000 {
+ 		compatible = "rockchip,rk3288-mali", "arm,mali-t760", "arm,mali-midgard";
+ 		reg = <0xffa30000 0x10000>;
+-- 
+1.9.1
