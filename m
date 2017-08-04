@@ -1,243 +1,110 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v5 1/2] ACPI/IORT: Add ITS address regions reservation
- helper
-Date: Fri, 4 Aug 2017 17:57:12 +0100
-Message-ID: <b478d1b4-5993-9459-adfc-dec05525d72e@arm.com>
-References: <20170801104913.71912-1-shameerali.kolothum.thodi@huawei.com>
- <20170801104913.71912-2-shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Defer TLB flush in case of unmap op
+Date: Fri, 4 Aug 2017 18:04:40 +0100
+Message-ID: <fd13c041-7dd8-140b-1d02-36ff2bc3a633@arm.com>
+References: <CAFp+6iFfu2-qrDDim7fzKKLqMcSVMmOr7esqBZ-xEeLTOOTNLA@mail.gmail.com>
+ <1501667598-16404-1-git-send-email-vivek.gautam@codeaurora.org>
+ <35aeb7dd-4fe6-3175-2252-41c3c54873a9@arm.com>
+ <d9cdeeee-36a9-40d4-457e-b1a865c3b83f@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170801104913.71912-2-shameerali.kolothum.thodi@huawei.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <d9cdeeee-36a9-40d4-457e-b1a865c3b83f@codeaurora.org>
 Content-Language: en-GB
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org
+Cc: robdclark@gmail.com, will.deacon@arm.com, joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, m.szyprowski@samsung.com, linux-kernel@vger.kernel.org, stanimir.varbanov@linaro.org, sricharan@codeaurora.org, sboyd@codeaurora.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/08/17 11:49, Shameer Kolothum wrote:
-> On some platforms ITS address regions have to be excluded from normal
-> IOVA allocation in that they are detected and decoded in a HW specific
-> way by system components and so they cannot be considered normal IOVA
-> address space.
+On 03/08/17 06:35, Vivek Gautam wrote:
+> Hi Robin,
 > 
-> Add an helper function that retrieves ITS address regions through IORT
-> device <-> ITS mappings and reserves it so that these regions will not
-> be translated by IOMMU and will be excluded from IOVA allocations.
+> 
+> 
+> On 08/02/2017 05:47 PM, Robin Murphy wrote:
+>> On 02/08/17 10:53, Vivek Gautam wrote:
+>>> We don't want to touch the TLB when smmu is suspended.
+>>> Defer it until resume.
+>>>
+>>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>>> ---
+>>>
+>>> Hi all,
+>>>
+>>> Here's the small patch in response of suggestion to defer tlb operations
+>>> when smmu is in suspend state.
+>>> The patch stores the TLB requests in 'unmap' when the smmu device is
+>>> suspended. On resume, it checks all the pending TLB requests, and
+>>> performs the unmap over those.
+>>>
+>>> Right now, I have applied the patch on top of the pm runtime series.
+>>> Let me know what you think of the change. It will also be helpful if
+>>> somebody can please test a valid use case with this.
+>> The patch itself doesn't make much sense to me, but more crucially it's
+>> definitely broken in concept. We can't return from arm_smmu_unmap()
+>> without having actually unmapped anything, because that leaves the page
+>> tables out of sync with what the caller expects - they may immmediately
+>> reuse that IOVA to map something else for a different device and hit an
+>> unexpected failure from io-pgtable when the PTE turns out to be
+>> non-empty.
+> 
+> To understand things bit more,
+> once we don't *unmap* in arm_smmu_unmap(), and leave the TLBs as is,
+> the next mapping can happen only with the *knowledge* of smmu, i.e.,
+> smmu should be active at that time.
+> If that's true then, the _runtime()_resume() method will take care of
+> invalidating the TLBs when we call arm_smmu_unmap() from _runtime_resume().
+> Is my understanding correct here?
 
-I've just realised that we no longer seem to have a check that ensures
-the regions are only reserved on platforms that need it - if not, then
-we're going to break everything else that does have an ITS behind SMMU
-translation as expected.
+What I mean is that it's OK for arm_smmu_unmap() to defer the physical
+TLB maintenance for an unmap request if the SMMU is suspended, but it
+*must* still update the pagetable so that the given address is logically
+unmapped before returning. In other words, the place to make decisions
+based on the SMMU PM state would be in the .tlb_add_flush and .tlb_sync
+callbacks, rather than at the top level.
 
-It feels like IORT should know enough to be able to make that decision
-internally, but if not (or if it would be hideous to do so), then I
-guess my idea for patch #2 was a bust and we probably do need to go back
-to calling directly from the SMMU driver based on the SMMU model.
+>> However, if in general suspend *might* power-gate any part of the SMMU,
+>> then I don't think we have any guarantee of what state any TLBs could be
+>> in upon resume. Therefore any individual invalidations we skip while
+>> suspended are probably moot, since resume would almost certainly have to
+>> invalidate everything to get back to a safe state anyway.
+> 
+> Right, in case when the suspend power-gates the SMMU, then
+> the TLB context is lost anyways. So resume path can freshly start.
+> This is something that exynos does at present.
+
+Yes, in general I don't think we can assume any SMMU state is preserved,
+so the only safe option would be for .runtime_resume to do the same
+thing as .resume, which does at least make things nice and simple.
+
+>> Conversely though, the situation that still concerns me is whether this
+>> can work at all for a distributed SMMU if things *don't* lose state. Say
+>> the GPU and its local TBU are in the same clock domain - if the GPU has
+>> just gone idle and we've clock-gated it, but "the SMMU" (i.e. the TCU)
+>> is still active servicing other devices, we will assume we can happily
+>> unmap GPU buffers and issue TLBIs, but what happens with entries held in
+>> the unclocked TBU's micro-TLB?
+> 
+> We know of platforms we have that have shared TCU and multiple TBUs.
+> Each TBU is available in its own power domain, not in master's power
+> domain.
+> In such cases we may want to runtime_get() the TBUs, so that unmap()
+> call with
+> master clock gated gets through.
+> 
+> Can we have a situation where the TBU and master are in the same power
+> domain, and the unmap is called when the master is not runtime active?
+> How will such a situation be handled?
+
+Having thought about it a bit more, I think the
+unmap-after-master-suspended case is only one facet of the problem - if
+we can power down individual TBUs/micro-TLBs without suspending the rest
+of the SMMU, do we also have any guarantee that such TLBs don't power
+back on full of valid-looking random junk?
+
+I'm starting to think the only way to be generally safe would be to
+globally invalidate all TLBs after any *master* is resumed, and I'm not
+even sure that's feasible :/
 
 Robin.
-
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> [lorenzo.pieralisi@arm.com: updated commit log/added comments]
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> ---
->  drivers/acpi/arm64/iort.c        | 95 ++++++++++++++++++++++++++++++++++++++--
->  drivers/irqchip/irq-gic-v3-its.c |  3 +-
->  include/linux/acpi_iort.h        |  7 ++-
->  3 files changed, 100 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index a3215ee..86b5a51 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -39,6 +39,7 @@
->  struct iort_its_msi_chip {
->  	struct list_head	list;
->  	struct fwnode_handle	*fw_node;
-> +	phys_addr_t		base_addr;
->  	u32			translation_id;
->  };
->  
-> @@ -136,14 +137,16 @@ typedef acpi_status (*iort_find_node_callback)
->  static DEFINE_SPINLOCK(iort_msi_chip_lock);
->  
->  /**
-> - * iort_register_domain_token() - register domain token and related ITS ID
-> - * to the list from where we can get it back later on.
-> + * iort_register_domain_token() - register domain token along with related
-> + * ITS ID and base address to the list from where we can get it back later on.
->   * @trans_id: ITS ID.
-> + * @base: ITS base address.
->   * @fw_node: Domain token.
->   *
->   * Returns: 0 on success, -ENOMEM if no memory when allocating list element
->   */
-> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
-> +int iort_register_domain_token(int trans_id, phys_addr_t base,
-> +			       struct fwnode_handle *fw_node)
->  {
->  	struct iort_its_msi_chip *its_msi_chip;
->  
-> @@ -153,6 +156,7 @@ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
->  
->  	its_msi_chip->fw_node = fw_node;
->  	its_msi_chip->translation_id = trans_id;
-> +	its_msi_chip->base_addr = base;
->  
->  	spin_lock(&iort_msi_chip_lock);
->  	list_add(&its_msi_chip->list, &iort_msi_chip_list);
-> @@ -481,6 +485,24 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
->  	return -ENODEV;
->  }
->  
-> +static int __maybe_unused iort_find_its_base(u32 its_id, phys_addr_t *base)
-> +{
-> +	struct iort_its_msi_chip *its_msi_chip;
-> +	bool match = false;
-> +
-> +	spin_lock(&iort_msi_chip_lock);
-> +	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
-> +		if (its_msi_chip->translation_id == its_id) {
-> +			*base = its_msi_chip->base_addr;
-> +			match = true;
-> +			break;
-> +		}
-> +	}
-> +	spin_unlock(&iort_msi_chip_lock);
-> +
-> +	return match ? 0 : -ENODEV;
-> +}
-> +
->  /**
->   * iort_dev_find_its_id() - Find the ITS identifier for a device
->   * @dev: The device.
-> @@ -639,6 +661,71 @@ int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
->  
->  	return err;
->  }
-> +
-> +/**
-> + * iort_iommu_its_get_resv_regions - Reserved region driver helper
-> + * @dev: Device from iommu_get_resv_regions()
-> + * @list: Reserved region list from iommu_get_resv_regions()
-> + *
-> + * Returns: Number of reserved regions on success(0 if no associated ITS),
-> + *          appropriate error value otherwise.
-> + */
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
-> +{
-> +	struct acpi_iort_its_group *its;
-> +	struct acpi_iort_node *node, *its_node = NULL;
-> +	int i, resv = 0;
-> +
-> +	node = iort_find_dev_node(dev);
-> +	if (!node)
-> +		return -ENODEV;
-> +
-> +	/*
-> +	 * Current logic to reserve ITS regions relies on HW topologies
-> +	 * where a given PCI or named component maps its IDs to only one
-> +	 * ITS group; if a PCI or named component can map its IDs to
-> +	 * different ITS groups through IORT mappings this function has
-> +	 * to be reworked to ensure we reserve regions for all ITS groups
-> +	 * a given PCI or named component may map IDs to.
-> +	 */
-> +	if (dev_is_pci(dev)) {
-> +		u32 rid;
-> +
-> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid, &rid);
-> +		its_node = iort_node_map_id(node, rid, NULL, IORT_MSI_TYPE);
-> +	} else {
-> +		for (i = 0; i < node->mapping_count; i++) {
-> +			its_node = iort_node_map_platform_id(node, NULL,
-> +							 IORT_MSI_TYPE, i);
-> +			if (its_node)
-> +				break;
-> +		}
-> +	}
-> +
-> +	if (!its_node)
-> +		return 0;
-> +
-> +	/* Move to ITS specific data */
-> +	its = (struct acpi_iort_its_group *)its_node->node_data;
-> +
-> +	for (i = 0; i < its->its_count; i++) {
-> +		phys_addr_t base;
-> +
-> +		if (!iort_find_its_base(its->identifiers[i], &base)) {
-> +			int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> +			struct iommu_resv_region *region;
-> +
-> +			region = iommu_alloc_resv_region(base, SZ_128K, prot,
-> +							 IOMMU_RESV_MSI);
-> +			if (region) {
-> +				list_add_tail(&region->list, head);
-> +				resv++;
-> +			}
-> +		}
-> +	}
-> +
-> +	return (resv == its->its_count) ? resv : -ENODEV;
-> +}
->  #else
->  static inline
->  const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
-> @@ -646,6 +733,8 @@ const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
->  static inline
->  int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
->  { return 0; }
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
-> +{ return -ENODEV; }
->  #endif
->  
->  static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-> index 6893287..77322b3 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -1928,7 +1928,8 @@ static int __init gic_acpi_parse_madt_its(struct acpi_subtable_header *header,
->  		return -ENOMEM;
->  	}
->  
-> -	err = iort_register_domain_token(its_entry->translation_id, dom_handle);
-> +	err = iort_register_domain_token(its_entry->translation_id, res.start,
-> +					 dom_handle);
->  	if (err) {
->  		pr_err("ITS@%pa: Unable to register GICv3 ITS domain token (ITS ID %d) to IORT\n",
->  		       &res.start, its_entry->translation_id);
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index 8379d40..d7ed49c 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -26,7 +26,8 @@
->  #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
->  #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
->  
-> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
-> +int iort_register_domain_token(int trans_id, phys_addr_t base,
-> +			       struct fwnode_handle *fw_node);
->  void iort_deregister_domain_token(int trans_id);
->  struct fwnode_handle *iort_find_domain_token(int trans_id);
->  #ifdef CONFIG_ACPI_IORT
-> @@ -38,6 +39,7 @@
->  /* IOMMU interface */
->  void iort_set_dma_mask(struct device *dev);
->  const struct iommu_ops *iort_iommu_configure(struct device *dev);
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head);
->  #else
->  static inline void acpi_iort_init(void) { }
->  static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
-> @@ -51,6 +53,9 @@ static inline void iort_set_dma_mask(struct device *dev) { }
->  static inline
->  const struct iommu_ops *iort_iommu_configure(struct device *dev)
->  { return NULL; }
-> +static inline
-> +int iort_iommu_its_get_resv_regions(struct device *dev, struct list_head *head)
-> +{ return -ENODEV; }
->  #endif
->  
->  #endif /* __ACPI_IORT_H__ */
-> 
-
