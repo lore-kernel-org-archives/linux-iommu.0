@@ -1,13 +1,21 @@
-From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v3 4/4] arm: dts: mediatek: add larbid property for larb
-Date: Fri, 4 Aug 2017 09:32:28 +0800
-Message-ID: <1501810348-20997-5-git-send-email-honghui.zhang@mediatek.com>
-References: <1501810348-20997-1-git-send-email-honghui.zhang@mediatek.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: Support SVM without PASID
+Date: Fri, 4 Aug 2017 01:49:38 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D57191@SHSMSX101.ccr.corp.intel.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+	<20170708140257.2de02d63@w520.home>
+	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+	<eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+	<ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+	<ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+	<41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+	<564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1501810348-20997-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <564ba70b-db95-7fe0-86bb-bb4eefcd87ec-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,46 +25,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xinping.qian-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> From: Jean-Philippe Brucker
+> Sent: Tuesday, August 1, 2017 4:26 PM
+> 
+> It depends what type you use when registering the IOMMU with
+> VFIO_SET_IOMMU:
+> 
+> * If the type is VFIO_TYPE1v2_IOMMU, then
+> VFIO_IOMMU_MAP/UNMAP_DMA
+>   affects the stage-1 non-PASID context (already the case in mainline).
+>   In addition, with my patch the BIND ioctl will affect stage-1 PASID
+>   contexts, and bind process page directories to the device (host SVM).
+> 
+> * If the type is VFIO_TYPE1_NESTING_IOMMU, then
+> VFIO_IOMMU_MAP/UNMAP_DMA
+>   will affect stage-2 mappings (already in mainline).
+>   With my SMMU patch series, the BIND ioctl is not supported in this mode.
+>   But in the future, BIND would allow to manage stage-1 as well:
+>   - bind a process page directory (host SVM with added stage-2), or
 
-Add mediatek's hardware id information for smi larb.
+I thought host SVM will only go through VFIO_TYPE1v2_IOMMU,
+since you said stage-2 in ARM SMMU is only for GPA->HPA usage
+in previous explanation. then what does "host SVM with added 
+stage-2" mean here?
 
-Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- arch/arm/boot/dts/mt2701.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
-index f1efdc6..d95bfe0 100644
---- a/arch/arm/boot/dts/mt2701.dtsi
-+++ b/arch/arm/boot/dts/mt2701.dtsi
-@@ -533,6 +533,7 @@
- 		compatible = "mediatek,mt2701-smi-larb";
- 		reg = <0 0x14010000 0 0x1000>;
- 		mediatek,smi = <&smi_common>;
-+		mediatek,larb-id = <0>;
- 		clocks = <&mmsys CLK_MM_SMI_LARB0>,
- 			 <&mmsys CLK_MM_SMI_LARB0>;
- 		clock-names = "apb", "smi";
-@@ -549,6 +550,7 @@
- 		compatible = "mediatek,mt2701-smi-larb";
- 		reg = <0 0x15001000 0 0x1000>;
- 		mediatek,smi = <&smi_common>;
-+		mediatek,larb-id = <2>;
- 		clocks = <&imgsys CLK_IMG_SMI_COMM>,
- 			 <&imgsys CLK_IMG_SMI_COMM>;
- 		clock-names = "apb", "smi";
-@@ -579,6 +581,7 @@
- 		compatible = "mediatek,mt2701-smi-larb";
- 		reg = <0 0x16010000 0 0x1000>;
- 		mediatek,smi = <&smi_common>;
-+		mediatek,larb-id = <1>;
- 		clocks = <&vdecsys CLK_VDEC_CKGEN>,
- 			 <&vdecsys CLK_VDEC_LARB>;
- 		clock-names = "apb", "smi";
--- 
-2.6.4
+>   - bind a guest page directory (viommu), or
+>   - bind the full stage-1 context table (viommu).
+> 
+> Thanks,
+> Jean
