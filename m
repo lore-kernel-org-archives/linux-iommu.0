@@ -1,59 +1,52 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v9 05/13] iommu/amd: Add function copy_dev_tables()
-Date: Fri, 4 Aug 2017 20:21:24 +0800
-Message-ID: <20170804122124.GJ1874@x1>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH v9 10/13] iommu/amd: Allocate memory below 4G for dev
+ table if translation pre-enabled
+Date: Fri, 4 Aug 2017 14:25:24 +0200
+Message-ID: <20170804122524.GV3431@suse.de>
 References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
- <1501587449-9817-6-git-send-email-bhe@redhat.com>
- <20170804120908.GT3431@suse.de>
+ <1501587449-9817-11-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170804120908.GT3431@suse.de>
+In-Reply-To: <1501587449-9817-11-git-send-email-bhe@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <jroedel@suse.de>
+To: Baoquan He <bhe@redhat.com>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-Thanks for your reviewing!
-
-On 08/04/17 at 02:09pm, Joerg Roedel wrote:
-> Hi Baoquan,
+On Tue, Aug 01, 2017 at 07:37:26PM +0800, Baoquan He wrote:
+> AMD pointed out it's unsafe to update the device-table while iommu
+> is enabled. It turns out that device-table pointer update is split
+> up into two 32bit writes in the IOMMU hardware. So updating it while
+> the IOMMU is enabled could have some nasty side effects.
 > 
-> On Tue, Aug 01, 2017 at 07:37:21PM +0800, Baoquan He wrote:
-> > +	for_each_iommu(iommu) {
-> > +		/* All IOMMUs should use the same device table with the same size */
-> > +		lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-> > +		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-> > +		entry = (((u64) hi) << 32) + lo;
-> > +		if (last_entry && last_entry != entry) {
-> > +			pr_err("IOMMU:%d should use the same dev table as others!/n",
-> > +				iommu->index);
-> > +			return -1;
-> > +		}
-> > +		last_entry = entry;
-> > +
-> > +		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
-> > +		if (old_devtb_size != dev_table_size) {
-> > +			pr_err("The device table size of IOMMU:%d is not expected!/n",
-> > +				iommu->index);
-> > +			return -1;
-> > +		}
-> > +
-> > +		if (copied)
-> > +			continue;
-> > +
-> > +		old_devtb_phys = entry & PAGE_MASK;
-> > +		old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-> > +		if (!old_devtb)
-> > +			return -1;
+> The safe way to work around this is to always allocate the device-table
+> below 4G, including the old device-table in normal kernel and the
+> device-table used for copying the content of the old device-table in kdump
+> kernel. Meanwhile we need check if the address of old device-table is
+> above 4G because it might has been touched accidentally in corrupted
+> 1st kernel.
 > 
-> You forgot to check whether the old device table is also below 4GB.
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> ---
+>  drivers/iommu/amd_iommu_init.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 6a77b99d08e4..8c6431ac5698 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -882,11 +882,15 @@ static int copy_device_table(void)
+>  			continue;
+>  
+>  		old_devtb_phys = entry & PAGE_MASK;
+> +		if (old_devtb_phys > 0x100000000ULL) {
 
-I did it in patch 10/13. I think it's an sub-issue and can be explained
-in a specific patch.
+Needs to be '>='.
 
-Thanks
-Baoquan
+> +			pr_err("The address of old device table is above 4G, not trustworthy!/n");
+> +			return -1;
+> +		}
+
+Okay, forget my previous comment about it, the check is added here
