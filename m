@@ -1,110 +1,113 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/arm-smmu: Defer TLB flush in case of unmap op
-Date: Fri, 4 Aug 2017 18:04:40 +0100
-Message-ID: <fd13c041-7dd8-140b-1d02-36ff2bc3a633@arm.com>
-References: <CAFp+6iFfu2-qrDDim7fzKKLqMcSVMmOr7esqBZ-xEeLTOOTNLA@mail.gmail.com>
- <1501667598-16404-1-git-send-email-vivek.gautam@codeaurora.org>
- <35aeb7dd-4fe6-3175-2252-41c3c54873a9@arm.com>
- <d9cdeeee-36a9-40d4-457e-b1a865c3b83f@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d9cdeeee-36a9-40d4-457e-b1a865c3b83f@codeaurora.org>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org
-Cc: robdclark@gmail.com, will.deacon@arm.com, joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, m.szyprowski@samsung.com, linux-kernel@vger.kernel.org, stanimir.varbanov@linaro.org, sricharan@codeaurora.org, sboyd@codeaurora.org, linux-arm-kernel@lists.infradead.org
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFC] virtio-iommu version 0.4
+Date: Fri,  4 Aug 2017 19:19:25 +0100
+Message-ID: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+Return-path: <kvm-owner@vger.kernel.org>
+Sender: kvm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/08/17 06:35, Vivek Gautam wrote:
-> Hi Robin,
-> 
-> 
-> 
-> On 08/02/2017 05:47 PM, Robin Murphy wrote:
->> On 02/08/17 10:53, Vivek Gautam wrote:
->>> We don't want to touch the TLB when smmu is suspended.
->>> Defer it until resume.
->>>
->>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
->>> ---
->>>
->>> Hi all,
->>>
->>> Here's the small patch in response of suggestion to defer tlb operations
->>> when smmu is in suspend state.
->>> The patch stores the TLB requests in 'unmap' when the smmu device is
->>> suspended. On resume, it checks all the pending TLB requests, and
->>> performs the unmap over those.
->>>
->>> Right now, I have applied the patch on top of the pm runtime series.
->>> Let me know what you think of the change. It will also be helpful if
->>> somebody can please test a valid use case with this.
->> The patch itself doesn't make much sense to me, but more crucially it's
->> definitely broken in concept. We can't return from arm_smmu_unmap()
->> without having actually unmapped anything, because that leaves the page
->> tables out of sync with what the caller expects - they may immmediately
->> reuse that IOVA to map something else for a different device and hit an
->> unexpected failure from io-pgtable when the PTE turns out to be
->> non-empty.
-> 
-> To understand things bit more,
-> once we don't *unmap* in arm_smmu_unmap(), and leave the TLBs as is,
-> the next mapping can happen only with the *knowledge* of smmu, i.e.,
-> smmu should be active at that time.
-> If that's true then, the _runtime()_resume() method will take care of
-> invalidating the TLBs when we call arm_smmu_unmap() from _runtime_resume().
-> Is my understanding correct here?
+This is the continuation of my proposal for virtio-iommu, the para-
+virtualized IOMMU. Here is a summary of the changes since last time [1]:
 
-What I mean is that it's OK for arm_smmu_unmap() to defer the physical
-TLB maintenance for an unmap request if the SMMU is suspended, but it
-*must* still update the pagetable so that the given address is logically
-unmapped before returning. In other words, the place to make decisions
-based on the SMMU PM state would be in the .tlb_add_flush and .tlb_sync
-callbacks, rather than at the top level.
+* The virtio-iommu document now resembles an actual specification. It is
+  split into a formal description of the virtio device, and implementation
+  notes. Please find sources and binaries at [2].
 
->> However, if in general suspend *might* power-gate any part of the SMMU,
->> then I don't think we have any guarantee of what state any TLBs could be
->> in upon resume. Therefore any individual invalidations we skip while
->> suspended are probably moot, since resume would almost certainly have to
->> invalidate everything to get back to a safe state anyway.
-> 
-> Right, in case when the suspend power-gates the SMMU, then
-> the TLB context is lost anyways. So resume path can freshly start.
-> This is something that exynos does at present.
+* Added a probe request to describe to the guest different properties that
+  do not fit in firmware or in the virtio config space. This is a
+  necessary stepping stone for extending the virtio-iommu.
 
-Yes, in general I don't think we can assume any SMMU state is preserved,
-so the only safe option would be for .runtime_resume to do the same
-thing as .resume, which does at least make things nice and simple.
+* There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
+  Bhushan.
 
->> Conversely though, the situation that still concerns me is whether this
->> can work at all for a distributed SMMU if things *don't* lose state. Say
->> the GPU and its local TBU are in the same clock domain - if the GPU has
->> just gone idle and we've clock-gated it, but "the SMMU" (i.e. the TCU)
->> is still active servicing other devices, we will assume we can happily
->> unmap GPU buffers and issue TLBIs, but what happens with entries held in
->> the unclocked TBU's micro-TLB?
-> 
-> We know of platforms we have that have shared TCU and multiple TBUs.
-> Each TBU is available in its own power domain, not in master's power
-> domain.
-> In such cases we may want to runtime_get() the TBUs, so that unmap()
-> call with
-> master clock gated gets through.
-> 
-> Can we have a situation where the TBU and master are in the same power
-> domain, and the unmap is called when the master is not runtime active?
-> How will such a situation be handled?
+You can find the Linux driver and kvmtool device at [4] and [5]. I
+plan to rework driver and kvmtool device slightly before sending the
+patches.
 
-Having thought about it a bit more, I think the
-unmap-after-master-suspended case is only one facet of the problem - if
-we can power down individual TBUs/micro-TLBs without suspending the rest
-of the SMMU, do we also have any guarantee that such TLBs don't power
-back on full of valid-looking random junk?
+To understand the virtio-iommu, I advise to first read introduction and
+motivation, then skim through implementation notes and finally look at the
+device specification.
 
-I'm starting to think the only way to be generally safe would be to
-globally invalidate all TLBs after any *master* is resumed, and I'm not
-even sure that's feasible :/
+I wasn't sure how to organize the review. For those who prefer to comment
+inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
+to this thread. They are the biggest chunks of the document. But LaTeX
+isn't very pleasant to read, so you can simply send a list of comments in
+relation to section numbers and a few words of context, we'll manage.
 
-Robin.
+---
+Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
+more easily differences since the RFC (see [6]), but haven't been made
+public so far. This is the first public posting since initial proposal
+[1], and the following describes all changes.
+
+## v0.1 ##
+
+Content is the same as the RFC, but formatted to LaTeX. 'make' generates
+one PDF and one HTML document.
+
+## v0.2 ##
+
+Add introductions, improve topology example and firmware description based
+on feedback and a number of useful discussions.
+
+## v0.3 ##
+
+Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
+the device and driver behaviour. Unmap semantics are consolidated; they
+are now closer to VFIO Type1 v2 semantics.
+
+## v0.4 ##
+
+Introduce PROBE requests. They provide per-endpoint information to the
+driver that couldn't be described otherwise.
+
+For the moment, they allow to handle MSIs on x86 virtual platforms (see
+3.2). To do that we communicate reserved IOVA regions, that will also be
+useful for describing regions that cannot be mapped for a given endpoint,
+for instance addresses that correspond to a PCI bridge window.
+
+Introducing such a large framework for this tiny feature may seem
+overkill, but it is needed for future extensions of the virtio-iommu and I
+believe it really is worth the effort.
+
+## Future ##
+
+Other extensions are in preparation. I won't detail them here because v0.4
+already is a lot to digest, but in short, building on top of PROBE:
+
+* First, since the IOMMU is paravirtualized, the device can expose some
+  properties of the physical topology to the guest, and let it allocate
+  resources more efficiently. For example, when the virtio-iommu manages
+  both physical and emulated endpoints, with different underlying IOMMUs,
+  we now have a way to describe multiple page and block granularities,
+  instead of forcing the guest to use the most restricted one for all
+  endpoints. This will most likely be in v0.5.
+
+* Then on top of that, a major improvement will describe hardware
+  acceleration features available to the guest. There is what I call "Page
+  Table Handover" (or simply, from the host POV, "Nested"), the ability
+  for the guest to manipulate its own page tables instead of sending
+  MAP/UNMAP requests to the host. This, along with IO Page Fault
+  reporting, will also permit SVM virtualization on different platforms.
+
+Thanks,
+Jean
+
+[1] http://www.spinics.net/lists/kvm/msg147990.html
+[2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
+    http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
+    I reiterate the disclaimers: don't use this document as a reference,
+    it's a draft. It's also not an OASIS document yet. It may be riddled
+    with mistakes. As this is a working draft, it is unstable and I do not
+    guarantee backward compatibility of future versions.
+[3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
+[4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
+    Warning: UAPI headers have changed! They didn't follow the spec,
+    please update. (Use branch v0.1, that has the old headers, for the
+    Qemu prototype [3])
+[5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
+    Warning: command-line has changed! Use --viommu vfio[,opts] and
+    --viommu virtio[,opts] to instantiate a device.
+[6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
