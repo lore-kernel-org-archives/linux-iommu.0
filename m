@@ -1,61 +1,59 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH v9 06/13] iommu/amd: copy old trans table from old kernel
-Date: Fri, 4 Aug 2017 14:21:16 +0200
-Message-ID: <20170804122116.GU3431@suse.de>
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [PATCH v9 05/13] iommu/amd: Add function copy_dev_tables()
+Date: Fri, 4 Aug 2017 20:21:24 +0800
+Message-ID: <20170804122124.GJ1874@x1>
 References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
- <1501587449-9817-7-git-send-email-bhe@redhat.com>
+ <1501587449-9817-6-git-send-email-bhe@redhat.com>
+ <20170804120908.GT3431@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1501587449-9817-7-git-send-email-bhe@redhat.com>
+In-Reply-To: <20170804120908.GT3431@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
+To: Joerg Roedel <jroedel@suse.de>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 01, 2017 at 07:37:22PM +0800, Baoquan He wrote:
->  static void init_device_table_dma(void)
->  {
-> @@ -2137,9 +2140,49 @@ static void early_enable_iommu(struct amd_iommu *iommu)
->  static void early_enable_iommus(void)
->  {
->  	struct amd_iommu *iommu;
-> +	bool is_pre_disabled = false;
->  
-> -	for_each_iommu(iommu)
-> -		early_enable_iommu(iommu);
-> +	for_each_iommu(iommu) {
-> +		if (!translation_pre_enabled(iommu)) {
-> +			is_pre_disabled = true;
-> +			break;
-> +		}
-> +	}
+Hi Joerg,
 
-I think this could be easier if you make 'is_pre_disabled' a global state
-bool variable with reversed meaning and initialize it with 'true'.
-Basically
+Thanks for your reviewing!
 
-	static bool __init amd_iommu_pre_enabled = true;
+On 08/04/17 at 02:09pm, Joerg Roedel wrote:
+> Hi Baoquan,
+> 
+> On Tue, Aug 01, 2017 at 07:37:21PM +0800, Baoquan He wrote:
+> > +	for_each_iommu(iommu) {
+> > +		/* All IOMMUs should use the same device table with the same size */
+> > +		lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
+> > +		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
+> > +		entry = (((u64) hi) << 32) + lo;
+> > +		if (last_entry && last_entry != entry) {
+> > +			pr_err("IOMMU:%d should use the same dev table as others!/n",
+> > +				iommu->index);
+> > +			return -1;
+> > +		}
+> > +		last_entry = entry;
+> > +
+> > +		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
+> > +		if (old_devtb_size != dev_table_size) {
+> > +			pr_err("The device table size of IOMMU:%d is not expected!/n",
+> > +				iommu->index);
+> > +			return -1;
+> > +		}
+> > +
+> > +		if (copied)
+> > +			continue;
+> > +
+> > +		old_devtb_phys = entry & PAGE_MASK;
+> > +		old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
+> > +		if (!old_devtb)
+> > +			return -1;
+> 
+> You forgot to check whether the old device table is also below 4GB.
 
-And set this variable to 'false' when you find a already disabled IOMMU
-during initialization. Then you can remove the code above.
+I did it in patch 10/13. I think it's an sub-issue and can be explained
+in a specific patch.
 
-> +
-> +	if (is_pre_disabled) {
-> +		for_each_iommu(iommu)
-> +			early_enable_iommu(iommu);
-
-		return
-	}
-
-> +	} else {
-
-And remove this to get rid of one indendation level for the code below.
-
-> +		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-> +		if (copy_device_table()) {
-
-Seeing how the return value of copy_device_table() is used, it makes
-sense to change its return-type to bool. This way it is also easier to
-see which one is the sucess and which one the failure case.
+Thanks
+Baoquan
