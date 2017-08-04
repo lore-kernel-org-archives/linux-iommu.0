@@ -1,21 +1,10 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: Support SVM without PASID
-Date: Fri, 4 Aug 2017 01:49:38 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D57191@SHSMSX101.ccr.corp.intel.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
-	<20170708140257.2de02d63@w520.home>
-	<73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
-	<eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
-	<ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
-	<ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
-	<41333a03-bf91-1152-4779-6579845609f6@gmail.com>
-	<564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.13-rc3
+Date: Fri, 4 Aug 2017 10:38:54 +0200
+Message-ID: <20170804083849.GA15959@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6684296380454072334=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <564ba70b-db95-7fe0-86bb-bb4eefcd87ec-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,36 +14,119 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker
-> Sent: Tuesday, August 1, 2017 4:26 PM
-> 
-> It depends what type you use when registering the IOMMU with
-> VFIO_SET_IOMMU:
-> 
-> * If the type is VFIO_TYPE1v2_IOMMU, then
-> VFIO_IOMMU_MAP/UNMAP_DMA
->   affects the stage-1 non-PASID context (already the case in mainline).
->   In addition, with my patch the BIND ioctl will affect stage-1 PASID
->   contexts, and bind process page directories to the device (host SVM).
-> 
-> * If the type is VFIO_TYPE1_NESTING_IOMMU, then
-> VFIO_IOMMU_MAP/UNMAP_DMA
->   will affect stage-2 mappings (already in mainline).
->   With my SMMU patch series, the BIND ioctl is not supported in this mode.
->   But in the future, BIND would allow to manage stage-1 as well:
->   - bind a process page directory (host SVM with added stage-2), or
 
-I thought host SVM will only go through VFIO_TYPE1v2_IOMMU,
-since you said stage-2 in ARM SMMU is only for GPA->HPA usage
-in previous explanation. then what does "host SVM with added 
-stage-2" mean here?
+--===============6684296380454072334==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NzB8fVQJ5HfG6fxh"
+Content-Disposition: inline
 
->   - bind a guest page directory (viommu), or
->   - bind the full stage-1 context table (viommu).
-> 
-> Thanks,
-> Jean
+
+--NzB8fVQJ5HfG6fxh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 520eccdfe187591a51ea9ab4c1a024ae4d0f68d9:
+
+  Linux 4.13-rc2 (2017-07-23 16:15:17 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.13-rc3
+
+for you to fetch changes up to 74ddda71f44c84af62f736a77fb9fcebe5bb436a:
+
+  iommu/amd: Fix schedule-while-atomic BUG in initialization code (2017-07-26 15:39:14 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.13-rc3
+
+Including:
+
+	- Fix a scheduling-while-atomic bug in the AMD IOMMU driver. It
+	  was found after the checker was enabled earlier.
+
+	- A fix for the virtual APIC code in the AMD IOMMU driver which
+	  delivers device interrupts directly into KVM guests for
+	  assigned devices.
+
+	- Fixes for the recently merged lock-less page-table code for
+	  ARM. The redundant TLB syncs got reverted and locks added
+	  again around the TLB sync code.
+
+	- Fix for error handling in arm_smmu_add_device()
+
+	- Address sanitization fix for arm io-pgtable code
+
+----------------------------------------------------------------
+Joerg Roedel (2):
+      Merge branch 'for-joerg/arm-smmu/fixes' of git://git.kernel.org/.../will/linux into iommu/fixes
+      iommu/amd: Fix schedule-while-atomic BUG in initialization code
+
+Robin Murphy (3):
+      iommu/mtk: Avoid redundant TLB syncs locally
+      Revert "iommu/io-pgtable: Avoid redundant TLB syncs"
+      iommu/io-pgtable: Sanitise map/unmap addresses
+
+Suravee Suthikulpanit (1):
+      iommu/amd: Enable ga_log_intr when enabling guest_mode
+
+Vivek Gautam (1):
+      iommu/arm-smmu: Fix the error path in arm_smmu_add_device
+
+Will Deacon (1):
+      iommu/arm-smmu: Reintroduce locking around TLB sync operations
+
+ drivers/iommu/amd_iommu.c          |  1 +
+ drivers/iommu/amd_iommu_init.c     |  2 +-
+ drivers/iommu/arm-smmu.c           | 18 +++++++++++++-----
+ drivers/iommu/io-pgtable-arm-v7s.c |  6 ++++++
+ drivers/iommu/io-pgtable-arm.c     |  7 +++++++
+ drivers/iommu/io-pgtable.h         |  9 +--------
+ drivers/iommu/mtk_iommu.c          |  6 ++++++
+ drivers/iommu/mtk_iommu.h          |  1 +
+ 8 files changed, 36 insertions(+), 14 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--NzB8fVQJ5HfG6fxh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZhDKZAAoJECvwRC2XARrjo9oP/jbYmR2+NRxjDZx3S2+jIAB3
+vSwxV3oKebHn1PJPNlx1hqD1U33inb5EXeiSyk9ayHMWaDdGG7xnn9mEAkecuPk6
+816HhDqGWg6T8ERZBq0VlxeUtt/mq+f87kN3qF5e8cmTy46oupO64chg606gTe3K
+5Wqh1oXF7jqp9oFKZ7g6TYwevYLyrlwL6ZSI6IBkh7kOkB2TPb4GqNhME62BnyrN
+uSIf0ST/l3i2qFq+TbqegYlq+ArsmczVyoaPOpIuAoprmDHIAGcQCUmsE+MxD0rA
+rRC3vpbOtetF+K3Q6VRHrQS13BS6CwV3dW26gvf67cLGEkiSnnj9J/TFqHUl99S4
+gftZB9Vi8EE8X/2rKrksuWHCK4HuDPhj6oDzquqIz3o1tmZxgl63jR3bgYQf44al
+CA731uO4zTp7c0N+OSpI6g7CPLlbOyFz1vp8WiUhBJxMDIDkCtatjB6RGyNnRXA4
+tQT1QChjul6RDdNuTVoRyPlQDx+X64XC/8c4lyT5rx3Oobbxrk7Q6rpYa+qjvIJ4
+cUkjrUE7FYiIHnRLUJM4jA8D3NPGG7BL2xbiQnE1E1lkhLudMr+q5nD2n5xARJ+V
+GGoWpcAzIeSYhMFUX37HXQP+tYhaA6tpCkzcFkQGRVUjQIP7eaAGzo2nzR0sHld3
+7DU64R56exMAftUy/dz7
+=6uyE
+-----END PGP SIGNATURE-----
+
+--NzB8fVQJ5HfG6fxh--
+
+--===============6684296380454072334==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6684296380454072334==--
