@@ -1,52 +1,39 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH v9 12/13] iommu/amd: Clear out the GV flag when handle
- deferred domain attach
-Date: Fri, 4 Aug 2017 15:18:04 +0200
-Message-ID: <20170804131804.GZ3431@suse.de>
-References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
- <1501587449-9817-13-git-send-email-bhe@redhat.com>
- <20170804123041.GX3431@suse.de>
- <20170804131320.GO1874@x1>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v3 0/4] Add larbid init routine for mediatek's gen1 smi
+ larb driver
+Date: Fri, 4 Aug 2017 16:28:36 +0200
+Message-ID: <781f5dee-9a2d-30b6-b080-8b027de41b03@gmail.com>
+References: <1501810348-20997-1-git-send-email-honghui.zhang@mediatek.com>
+ <20170804100632.GC17443@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170804131320.GO1874@x1>
+In-Reply-To: <20170804100632.GC17443@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, honghui.zhang@mediatek.com
+Cc: robh@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org, devicetree@vger.kernel.org, kendrick.hsu@mediatek.com, srv_heupstream@mediatek.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, youlin.pei@mediatek.com, erin.lo@mediatek.com, yong.wu@mediatek.com, xinping.qian@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 04, 2017 at 09:13:20PM +0800, Baoquan He wrote:
-> On 08/04/17 at 02:30pm, Joerg Roedel wrote:
-> > On Tue, Aug 01, 2017 at 07:37:28PM +0800, Baoquan He wrote:
-> > > @@ -2466,11 +2472,21 @@ static struct protection_domain *get_domain(struct device *dev)
-> > >  		return ERR_PTR(-EINVAL);
-> > >  
-> > >  	domain = get_dev_data(dev)->domain;
-> > > -	if (domain == NULL && get_dev_data(dev)->defer_attach) {
-> > > +	if (domain == NULL && dev_data->defer_attach) {
-> > > +		u16 alias = amd_iommu_alias_table[dev_data->devid];
-> > >  		get_dev_data(dev)->defer_attach = false;
-> > >  		io_domain = iommu_get_domain_for_dev(dev);
-> > >  		domain = to_pdomain(io_domain);
-> > >  		attach_device(dev, domain);
-> > > +		/*
-> > > +		 * If the deferred attached domain is not v2, should clear out
-> > > +		 * the old GV flag.
-> > > +		 */
-> > > +		if (!(domain->flags & PD_IOMMUV2_MASK)) {
-> > > +			clear_dte_flag_gv(dev_data->devid);
-> > > +			if (alias != dev_data->devid)
-> > > +				clear_dte_flag_gv(dev_data->devid);
-> > 
-> > Hmm, thinking more about it, I am not sure what the IOMMU responds to
-> > PRI/PASID prefixes if the GV flag is 0.
-> > 
-> > But until we know it causes problems we should just disable the bit
-> > while doing the copy in the previous patch and avoid any special
-> > handling like done here.
-> 
-> So just drop this patch, right? Will do if I got it right. Thanks.
 
-Yes, and clear the GV flag in the previous patch too.
+
+On 08/04/2017 12:06 PM, Joerg Roedel wrote:
+> On Fri, Aug 04, 2017 at 09:32:24AM +0800, honghui.zhang@mediatek.com wrote:
+>> Honghui Zhang (4):
+>>    memory: mtk-smi: Use of_device_get_match_data helper
+>>    memory: mtk-smi: add larbid handle routine
+>>    dt-bindings: mediatek: add descriptions for larbid
+>>    arm: dts: mediatek: add larbid property for larb
+>>
+>>   .../memory-controllers/mediatek,smi-larb.txt       | 15 +++++++++++++
+>>   arch/arm/boot/dts/mt2701.dtsi                      |  3 +++
+>>   drivers/memory/mtk-smi.c                           | 26 ++++++++++++----------
+>>   3 files changed, 32 insertions(+), 12 deletions(-)
+> 
+> Applied, thanks.
+> 
+
+I just pushed patch 4/4 to v4.13-next/dts32
+
+Thanks everybody!
