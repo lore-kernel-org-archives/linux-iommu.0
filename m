@@ -1,67 +1,50 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v9 06/13] iommu/amd: copy old trans table from old kernel
-Date: Fri, 4 Aug 2017 21:09:29 +0800
-Message-ID: <20170804130929.GN1874@x1>
+Subject: Re: [PATCH v9 12/13] iommu/amd: Clear out the GV flag when handle
+ deferred domain attach
+Date: Fri, 4 Aug 2017 21:13:20 +0800
+Message-ID: <20170804131320.GO1874@x1>
 References: <1501587449-9817-1-git-send-email-bhe@redhat.com>
- <1501587449-9817-7-git-send-email-bhe@redhat.com>
- <20170804122116.GU3431@suse.de>
+ <1501587449-9817-13-git-send-email-bhe@redhat.com>
+ <20170804123041.GX3431@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170804122116.GU3431@suse.de>
+In-Reply-To: <20170804123041.GX3431@suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <jroedel@suse.de>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/04/17 at 02:21pm, Joerg Roedel wrote:
-> On Tue, Aug 01, 2017 at 07:37:22PM +0800, Baoquan He wrote:
-> >  static void init_device_table_dma(void)
-> >  {
-> > @@ -2137,9 +2140,49 @@ static void early_enable_iommu(struct amd_iommu *iommu)
-> >  static void early_enable_iommus(void)
-> >  {
-> >  	struct amd_iommu *iommu;
-> > +	bool is_pre_disabled = false;
+On 08/04/17 at 02:30pm, Joerg Roedel wrote:
+> On Tue, Aug 01, 2017 at 07:37:28PM +0800, Baoquan He wrote:
+> > @@ -2466,11 +2472,21 @@ static struct protection_domain *get_domain(struct device *dev)
+> >  		return ERR_PTR(-EINVAL);
 > >  
-> > -	for_each_iommu(iommu)
-> > -		early_enable_iommu(iommu);
-> > +	for_each_iommu(iommu) {
-> > +		if (!translation_pre_enabled(iommu)) {
-> > +			is_pre_disabled = true;
-> > +			break;
-> > +		}
-> > +	}
+> >  	domain = get_dev_data(dev)->domain;
+> > -	if (domain == NULL && get_dev_data(dev)->defer_attach) {
+> > +	if (domain == NULL && dev_data->defer_attach) {
+> > +		u16 alias = amd_iommu_alias_table[dev_data->devid];
+> >  		get_dev_data(dev)->defer_attach = false;
+> >  		io_domain = iommu_get_domain_for_dev(dev);
+> >  		domain = to_pdomain(io_domain);
+> >  		attach_device(dev, domain);
+> > +		/*
+> > +		 * If the deferred attached domain is not v2, should clear out
+> > +		 * the old GV flag.
+> > +		 */
+> > +		if (!(domain->flags & PD_IOMMUV2_MASK)) {
+> > +			clear_dte_flag_gv(dev_data->devid);
+> > +			if (alias != dev_data->devid)
+> > +				clear_dte_flag_gv(dev_data->devid);
 > 
-> I think this could be easier if you make 'is_pre_disabled' a global state
-> bool variable with reversed meaning and initialize it with 'true'.
-> Basically
+> Hmm, thinking more about it, I am not sure what the IOMMU responds to
+> PRI/PASID prefixes if the GV flag is 0.
 > 
-> 	static bool __init amd_iommu_pre_enabled = true;
-> 
-> And set this variable to 'false' when you find a already disabled IOMMU
-> during initialization. Then you can remove the code above.
+> But until we know it causes problems we should just disable the bit
+> while doing the copy in the previous patch and avoid any special
+> handling like done here.
 
-Great idea, will change as you suggested. Thanks.
+So just drop this patch, right? Will do if I got it right. Thanks.
 
-> 
-> > +
-> > +	if (is_pre_disabled) {
-> > +		for_each_iommu(iommu)
-> > +			early_enable_iommu(iommu);
-> 
-> 		return
-> 	}
-> 
-> > +	} else {
-> 
-> And remove this to get rid of one indendation level for the code below.
-> 
-> > +		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-> > +		if (copy_device_table()) {
-> 
-> Seeing how the return value of copy_device_table() is used, it makes
-> sense to change its return-type to bool. This way it is also easier to
-> see which one is the sucess and which one the failure case.
 > 
