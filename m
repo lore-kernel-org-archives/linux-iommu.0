@@ -1,66 +1,129 @@
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: [RFC PATCH v5 3/5] iommu/intel/amd: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if IRQ remapping is enabled
-Date: Mon,  7 Aug 2017 17:25:46 +1000
-Message-ID: <20170807072548.3023-4-aik@ozlabs.ru>
+From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Subject: [RFC PATCH v5 1/5] iommu: Add capabilities to a group
+Date: Mon,  7 Aug 2017 17:25:44 +1000
+Message-ID: <20170807072548.3023-2-aik@ozlabs.ru>
 References: <20170807072548.3023-1-aik@ozlabs.ru>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170807072548.3023-1-aik@ozlabs.ru>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linuxppc-dev@lists.ozlabs.org
-Cc: Alexey Kardashevskiy <aik@ozlabs.ru>, David Gibson <david@gibson.dropbear.id.au>, kvm-ppc@vger.kernel.org, kvm@vger.kernel.org, Yongji Xie <elohimes@gmail.com>, Eric Auger <eric.auger@redhat.com>, Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>, Alex Williamson <alex.williamson@redhat.com>, Jike Song <jike.song@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, Mauricio Faria de Oliveira <mauricfo@linux.vnet.ibm.com>, Neo Jia <cjia@nvidia.com>, Paul Mackerras <paulus@samba.org>, Vlad Tsyrklevich <vlad@tsyrklevich.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170807072548.3023-1-aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Kyle Mahlkuch <Kyle.Mahlkuch-qyM6JfAXOaQ@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mauricio Faria de Oliveira <mauricfo-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Vlad Tsyrklevich <vlad-NIZqynvkaCU43zv7NVfAiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This sets IOMMU_GROUP_CAP_ISOLATE_MSIX to a group if IRQ remapping
-is enabled. For Intel, this checks disable_sourceid_checking in addition;
-AMD ignores the "nosid" kernel parameters.
+This introduces capabilities to IOMMU groups. The first defined
+capability is IOMMU_GROUP_CAP_ISOLATE_MSIX which tells the IOMMU
+group users that a particular IOMMU group is capable of MSIX message
+filtering; this is useful when deciding whether or not to allow mapping
+of MSIX table to the userspace. Various architectures will enable it
+when they decide that it is safe to do so.
 
-Here is some background on how the isolation works:
-
-On Intel VT-d [1], there is an Interrupt Remapping Table, one entry per
-interrupt, has a source-id (i.e. BDFN) of allowed device.
-
-On AMD IOMMU [2], there is a Device Table, each entry is indexed by
-DevideID which is BDFN.
-
-[1] 9.10 Interrupt Remapping Table Entry (IRTE) for Remapped Interrupts
-https://www.intel.com/content/dam/www/public/us/en/documents/product-specifications/vt-directed-io-spec.pdf
-
-[2] "2.2 Data Structures" and "2.2.5 Interrupt Remapping Tables"
-https://support.amd.com/TechDocs/48882_IOMMU.pdf
-
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c   | 3 +++
- drivers/iommu/intel-iommu.c | 3 +++
- 2 files changed, 6 insertions(+)
+ include/linux/iommu.h | 20 ++++++++++++++++++++
+ drivers/iommu/iommu.c | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 688e77576e5a..d55fcbf3267e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -470,6 +470,9 @@ static void init_iommu_group(struct device *dev)
- 	if (IS_ERR(group))
- 		return;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2cb54adc4a33..6b6f3c2f4904 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -155,6 +155,9 @@ struct iommu_resv_region {
+ 	enum iommu_resv_type	type;
+ };
  
-+	if (irq_remapping_enabled)
-+		iommu_group_set_caps(group, 0, IOMMU_GROUP_CAP_ISOLATE_MSIX);
++/* IOMMU group capabilities */
++#define IOMMU_GROUP_CAP_ISOLATE_MSIX		(1U)
 +
- 	iommu_group_put(group);
+ #ifdef CONFIG_IOMMU_API
+ 
+ /**
+@@ -312,6 +315,11 @@ extern void *iommu_group_get_iommudata(struct iommu_group *group);
+ extern void iommu_group_set_iommudata(struct iommu_group *group,
+ 				      void *iommu_data,
+ 				      void (*release)(void *iommu_data));
++extern void iommu_group_set_caps(struct iommu_group *group,
++				 unsigned long clearcaps,
++				 unsigned long setcaps);
++extern bool iommu_group_is_capable(struct iommu_group *group,
++				   unsigned long cap);
+ extern int iommu_group_set_name(struct iommu_group *group, const char *name);
+ extern int iommu_group_add_device(struct iommu_group *group,
+ 				  struct device *dev);
+@@ -513,6 +521,18 @@ static inline void iommu_group_set_iommudata(struct iommu_group *group,
+ {
  }
  
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b7e670a7c243..3896c2d44bfa 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5233,6 +5233,9 @@ static int intel_iommu_add_device(struct device *dev)
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
-+	if (irq_remapping_enabled && !disable_sourceid_checking)
-+		iommu_group_set_caps(group, 0, IOMMU_GROUP_CAP_ISOLATE_MSIX);
++static inline void iommu_group_set_caps(struct iommu_group *group,
++					unsigned long clearcaps,
++					unsigned long setcaps)
++{
++}
 +
- 	iommu_group_put(group);
- 	return 0;
- }
++static inline bool iommu_group_is_capable(struct iommu_group *group,
++					  unsigned long cap)
++{
++	return false;
++}
++
+ static inline int iommu_group_set_name(struct iommu_group *group,
+ 				       const char *name)
+ {
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3f6ea160afed..6b2c34fe2c3d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -52,6 +52,7 @@ struct iommu_group {
+ 	void (*iommu_data_release)(void *iommu_data);
+ 	char *name;
+ 	int id;
++	unsigned long caps;
+ 	struct iommu_domain *default_domain;
+ 	struct iommu_domain *domain;
+ };
+@@ -447,6 +448,33 @@ void iommu_group_set_iommudata(struct iommu_group *group, void *iommu_data,
+ EXPORT_SYMBOL_GPL(iommu_group_set_iommudata);
+ 
+ /**
++ * iommu_group_set_caps - Change the group capabilities
++ * @group: the group
++ * @clearcaps: capabilities mask to remove
++ * @setcaps: capabilities mask to add
++ *
++ * IOMMU groups can be capable of various features which device drivers
++ * may read and adjust the behavior.
++ */
++void iommu_group_set_caps(struct iommu_group *group,
++		unsigned long clearcaps, unsigned long setcaps)
++{
++	group->caps &= ~clearcaps;
++	group->caps |= setcaps;
++}
++EXPORT_SYMBOL_GPL(iommu_group_set_caps);
++
++/**
++ * iommu_group_is_capable - Returns if a group capability is present
++ * @group: the group
++ */
++bool iommu_group_is_capable(struct iommu_group *group, unsigned long cap)
++{
++	return !!(group->caps & cap);
++}
++EXPORT_SYMBOL_GPL(iommu_group_is_capable);
++
++/**
+  * iommu_group_set_name - set name for a group
+  * @group: the group
+  * @name: name
 -- 
 2.11.0
