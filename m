@@ -1,83 +1,83 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH V4 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
- add/remove device
-Date: Mon, 7 Aug 2017 08:29:59 -0400
-Message-ID: <CAF6AEGsw2=nERuJ8UCBr_kTBS0TigaA9LL1Hxw3JmNiu4oycOA@mail.gmail.com>
-References: <1499333825-7658-1-git-send-email-vivek.gautam@codeaurora.org>
- <1499333825-7658-4-git-send-email-vivek.gautam@codeaurora.org>
- <20170712225459.GZ22780@codeaurora.org> <5ee0bacd-e557-a6c4-a897-844fb12ea6ae@codeaurora.org>
- <4dbc938c-ac88-9bd4-cf00-458008ae24c1@codeaurora.org> <CAF6AEGsFOtsOjt1sLNPSFLEcu-7d1zxCOhTeC+P8e0TDbb1dSA@mail.gmail.com>
- <CAFp+6iH-WR4gNExaOBfnwy7GG7DXrjdytPvnMHNmo64YQZdQWQ@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: Support SVM without PASID
+Date: Mon, 7 Aug 2017 13:52:26 +0100
+Message-ID: <1ef75c2d-f980-5cef-f760-be3b133c82ca@arm.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+ <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+ <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+ <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+ <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
+ <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
+ <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
+ <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <CAFp+6iH-WR4gNExaOBfnwy7GG7DXrjdytPvnMHNmo64YQZdQWQ@mail.gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, Stephen Boyd <sboyd@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Will Deacon <will.deacon@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Archit Taneja <architt@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Bob Liu <liubo95@huawei.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: tianyu.lan@intel.com, kevin.tian@intel.com, kvm@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 7, 2017 at 4:27 AM, Vivek Gautam
-<vivek.gautam@codeaurora.org> wrote:
-> On Thu, Jul 13, 2017 at 5:20 PM, Rob Clark <robdclark@gmail.com> wrote:
->> On Thu, Jul 13, 2017 at 1:35 AM, Sricharan R <sricharan@codeaurora.org> wrote:
->>> Hi Vivek,
->>>
->>> On 7/13/2017 10:43 AM, Vivek Gautam wrote:
->>>> Hi Stephen,
->>>>
->>>>
->>>> On 07/13/2017 04:24 AM, Stephen Boyd wrote:
->>>>> On 07/06, Vivek Gautam wrote:
->>>>>> @@ -1231,12 +1237,18 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
->>>>>>   static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
->>>>>>                    size_t size)
->>>>>>   {
->>>>>> -    struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
->>>>>> +    struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>>>>> +    struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
->>>>>> +    size_t ret;
->>>>>>         if (!ops)
->>>>>>           return 0;
->>>>>>   -    return ops->unmap(ops, iova, size);
->>>>>> +    pm_runtime_get_sync(smmu_domain->smmu->dev);
->>>>> Can these map/unmap ops be called from an atomic context? I seem
->>>>> to recall that being a problem before.
->>>>
->>>> That's something which was dropped in the following patch merged in master:
->>>> 523d7423e21b iommu/arm-smmu: Remove io-pgtable spinlock
->>>>
->>>> Looks like we don't  need locks here anymore?
->>>
->>>  Apart from the locking, wonder why a explicit pm_runtime is needed
->>>  from unmap. Somehow looks like some path in the master using that
->>>  should have enabled the pm ?
->>>
+Hi Bob,
+
+On 07/08/17 13:18, Bob Liu wrote:
+> On 2017/8/7 18:31, Jean-Philippe Brucker wrote:
+>> On 05/08/17 06:14, valmiki wrote:
+>> [...]
+>>> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
+>>> documentation we fill vaddr and iova in struct vfio_iommu_type1_dma_map
+>>> and pass them to VFIO. But if we use dynamic allocation in application
+>>> (say malloc), do we need to use dma API to get iova and then call
+>>> VFIO_IOMMU_MAP ioctl ?
+>>> If application needs multiple such dynamic allocations, then it need to
+>>> allocate large chunk and program it via VFIO_IOMMU_MAP ioctl and then
+>>> manage rest allocations requirements from this buffer ?
 >>
->> Yes, there are a bunch of scenarios where unmap can happen with
->> disabled master (but not in atomic context).
->
-> I would like to understand whether there is a situation where an unmap is
-> called in atomic context without an enabled master?
->
-> Let's say we have the case where all the unmap calls in atomic context happen
-> only from the master's context (in which case the device link should
-> take care of
-> the pm state of smmu), and the only unmap that happen in non-atomic context
-> is the one with master disabled. In such a case doesn it make sense to
-> distinguish
-> the atomic/non-atomic context and add pm_runtime_get_sync()/put_sync() only
-> for the non-atomic context since that would be the one with master disabled.
->
+>> Yes, without SVM, the application allocates large buffers, allocates IOVAs
+>> itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't rely on the
+>> DMA API at all, it manages IOVAs as it wants. Sizes passed to
+>> VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page granularity
+>> (that is at least 4kB), and both iova and vaddr have to be aligned on that
+>> granularity as well. So malloc isn't really suitable in this case, you'll
+>> need mmap. The application can then implement a small allocator to manage
+>> the DMA pool created with VFIO_IOMMU_MAP.
+>>
+>> With SVM the application binds its address space to the device, and then
+>> uses malloc for all DMA buffers, no need for VFIO_IOMMU_MAP.
+>>
+> 
+> Hi Jean,
+> 
+> I think there is another way to support SVM without PASID.
+> 
+> Suppose there is a device in the same SOC-chip, the device access memory through SMMU(using internal bus instead of PCIe)
+> Once page fault, the device send an event with (vaddr, substreamID) to SMMU, then SMMU triggers an event interrupt.
+> 
+> In the event interrupt handler, we can implement the same logic as PRI interrupt in your patch.
+> What do you think about that?
+What you're describing is the SMMU stall model for platform devices. From
+the driver perspective it's the same as PRI and PASID (SubstreamID=PASID).
 
-At least drm/msm needs to hold obj->lock (a mutex) in unmap, so it
-won't unmap anything in atomic ctx (but it can unmap w/ master
-disabled).  I can't really comment about other non-gpu drivers.  It
-seems like a reasonable constraint that either master is enabled or
-not in atomic ctx.
+When a stall-capable device accesses unmapped memory, the SMMU parks the
+transaction and sends an event marked "stall" on the event queue, with a
+stall tag (STAG, roughly equivalent to PRG Index). The OS handles the
+fault and sends a CMD_RESUME command with the status and the STAG. Then
+the SMMU completes the access or terminates it.
 
-Currently we actually wrap unmap w/ pm_runtime_get/put_sync(), but I'd
-like to drop that to avoid powering up the gpu.
+In a prototype I have, the stall implementation reuses most of the
+PASID/PRI code. The main difficulty is defining SSID and stall capability
+in firmware, as there are no standard capability probing for platform
+devices. Stall-capable devices must be able to wait an indefinite amount
+of time that their DMA transactions returns, therefore the stall model
+cannot work with PCI, only some integrated devices.
 
-BR,
--R
+Thanks,
+Jean
