@@ -1,33 +1,77 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH] ARM: dts: rockchip: rk3288 add more iommu nodes
-Date: Sun, 06 Aug 2017 12:45:02 +0200
-Message-ID: <4287138.y2GWYTbmEE@phil>
-References: <1501725843-37391-1-git-send-email-xxm@rock-chips.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <1501725843-37391-1-git-send-email-xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X table
+Date: Mon,  7 Aug 2017 17:25:43 +1000
+Message-ID: <20170807072548.3023-1-aik@ozlabs.ru>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linuxppc-dev@lists.ozlabs.org
+Cc: Alexey Kardashevskiy <aik@ozlabs.ru>, David Gibson <david@gibson.dropbear.id.au>, kvm-ppc@vger.kernel.org, kvm@vger.kernel.org, Yongji Xie <elohimes@gmail.com>, Eric Auger <eric.auger@redhat.com>, Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>, Alex Williamson <alex.williamson@redhat.com>, Jike Song <jike.song@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, Mauricio Faria de Oliveira <mauricfo@linux.vnet.ibm.com>, Neo Jia <cjia@nvidia.com>, Paul Mackerras <paulus@samba.org>, Vlad Tsyrklevich <vlad@tsyrklevich.net>
 List-Id: iommu@lists.linux-foundation.org
 
-Am Donnerstag, 3. August 2017, 10:04:03 CEST schrieb Simon Xue:
-> Add IEP/ISP/VPU/HEVC iommu nodes
-> 
-> Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
-applied for 4.14
+This is a followup for "[PATCH kernel v4 0/6] vfio-pci: Add support for mmapping MSI-X table"
+http://www.spinics.net/lists/kvm/msg152232.html
+
+This time it is using "caps" in IOMMU groups. The main question is if PCI
+bus flags or IOMMU domains are still better (and which one).
 
 
-Thanks
-Heiko
+
+Here is some background:
+
+Current vfio-pci implementation disallows to mmap the page
+containing MSI-X table in case that users can write directly
+to MSI-X table and generate an incorrect MSIs.
+
+However, this will cause some performance issue when there
+are some critical device registers in the same page as the
+MSI-X table. We have to handle the mmio access to these
+registers in QEMU emulation rather than in guest.
+
+To solve this issue, this series allows to expose MSI-X table
+to userspace when hardware enables the capability of interrupt
+remapping which can ensure that a given PCI device can only
+shoot the MSIs assigned for it. And we introduce a new bus_flags
+PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+for different archs.
+
+
+This is based on sha1
+26c5cebfdb6c "Merge branch 'parisc-4.13-4' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux"
+
+Please comment. Thanks.
+
+Changelog:
+
+v5:
+* redid the whole thing via so-called IOMMU group capabilities
+
+v4:
+* rebased on recent upstream
+* got all 6 patches from v2 (v3 was missing some)
+
+
+
+
+Alexey Kardashevskiy (5):
+  iommu: Add capabilities to a group
+  iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if MSI controller enables IRQ
+    remapping
+  iommu/intel/amd: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if IRQ remapping is
+    enabled
+  powerpc/iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX
+  vfio-pci: Allow to expose MSI-X table to userspace when safe
+
+ include/linux/iommu.h            | 20 ++++++++++++++++++++
+ include/linux/vfio.h             |  1 +
+ arch/powerpc/kernel/iommu.c      |  1 +
+ drivers/iommu/amd_iommu.c        |  3 +++
+ drivers/iommu/intel-iommu.c      |  3 +++
+ drivers/iommu/iommu.c            | 35 +++++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci.c      | 20 +++++++++++++++++---
+ drivers/vfio/pci/vfio_pci_rdwr.c |  5 ++++-
+ drivers/vfio/vfio.c              | 15 +++++++++++++++
+ 9 files changed, 99 insertions(+), 4 deletions(-)
+
+-- 
+2.11.0
