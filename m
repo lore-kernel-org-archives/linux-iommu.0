@@ -1,83 +1,86 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: Support SVM without PASID
-Date: Mon, 7 Aug 2017 13:52:26 +0100
-Message-ID: <1ef75c2d-f980-5cef-f760-be3b133c82ca@arm.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
- <20170708140257.2de02d63@w520.home>
- <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
- <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
- <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
- <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
- <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
- <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
- <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
- <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
- <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
- <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
- <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v5 1/2] ACPI/IORT: Add ITS address regions reservation
+ helper
+Date: Mon, 7 Aug 2017 18:09:21 +0100
+Message-ID: <20170807170921.GB27830@red-moon>
+References: <20170801104913.71912-1-shameerali.kolothum.thodi@huawei.com>
+ <20170801104913.71912-2-shameerali.kolothum.thodi@huawei.com>
+ <b478d1b4-5993-9459-adfc-dec05525d72e@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA8383C7EF8@FRAEML521-MBX.china.huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Bob Liu <liubo95@huawei.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: tianyu.lan@intel.com, kevin.tian@intel.com, kvm@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA8383C7EF8@FRAEML521-MBX.china.huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bob,
-
-On 07/08/17 13:18, Bob Liu wrote:
-> On 2017/8/7 18:31, Jean-Philippe Brucker wrote:
->> On 05/08/17 06:14, valmiki wrote:
->> [...]
->>> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
->>> documentation we fill vaddr and iova in struct vfio_iommu_type1_dma_map
->>> and pass them to VFIO. But if we use dynamic allocation in application
->>> (say malloc), do we need to use dma API to get iova and then call
->>> VFIO_IOMMU_MAP ioctl ?
->>> If application needs multiple such dynamic allocations, then it need to
->>> allocate large chunk and program it via VFIO_IOMMU_MAP ioctl and then
->>> manage rest allocations requirements from this buffer ?
->>
->> Yes, without SVM, the application allocates large buffers, allocates IOVAs
->> itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't rely on the
->> DMA API at all, it manages IOVAs as it wants. Sizes passed to
->> VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page granularity
->> (that is at least 4kB), and both iova and vaddr have to be aligned on that
->> granularity as well. So malloc isn't really suitable in this case, you'll
->> need mmap. The application can then implement a small allocator to manage
->> the DMA pool created with VFIO_IOMMU_MAP.
->>
->> With SVM the application binds its address space to the device, and then
->> uses malloc for all DMA buffers, no need for VFIO_IOMMU_MAP.
->>
+On Mon, Aug 07, 2017 at 08:21:40AM +0000, Shameerali Kolothum Thodi wrote:
 > 
-> Hi Jean,
 > 
-> I think there is another way to support SVM without PASID.
+> > -----Original Message-----
+> > From: Robin Murphy [mailto:robin.murphy@arm.com]
+> > Sent: Friday, August 04, 2017 5:57 PM
+> > To: Shameerali Kolothum Thodi; lorenzo.pieralisi@arm.com;
+> > marc.zyngier@arm.com; sudeep.holla@arm.com; will.deacon@arm.com;
+> > hanjun.guo@linaro.org
+> > Cc: Gabriele Paoloni; John Garry; iommu@lists.linux-foundation.org; linux-
+> > arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> > devel@acpica.org; Linuxarm; Wangzhou (B); Guohanjun (Hanjun Guo)
+> > Subject: Re: [PATCH v5 1/2] ACPI/IORT: Add ITS address regions reservation
+> > helper
+> > 
+> > On 01/08/17 11:49, Shameer Kolothum wrote:
+> > > On some platforms ITS address regions have to be excluded from normal
+> > > IOVA allocation in that they are detected and decoded in a HW specific
+> > > way by system components and so they cannot be considered normal
+> > IOVA
+> > > address space.
+> > >
+> > > Add an helper function that retrieves ITS address regions through IORT
+> > > device <-> ITS mappings and reserves it so that these regions will not
+> > > be translated by IOMMU and will be excluded from IOVA allocations.
+> > 
+> > I've just realised that we no longer seem to have a check that ensures
+> > the regions are only reserved on platforms that need it - if not, then
+> > we're going to break everything else that does have an ITS behind SMMU
+> > translation as expected.
 > 
-> Suppose there is a device in the same SOC-chip, the device access memory through SMMU(using internal bus instead of PCIe)
-> Once page fault, the device send an event with (vaddr, substreamID) to SMMU, then SMMU triggers an event interrupt.
+> Right. I had this doubt, but then my thinking was that we will have the SW_MSI
+> regions for those and will end up  using that. But that doesn’t seems
+> to be the case now.
 > 
-> In the event interrupt handler, we can implement the same logic as PRI interrupt in your patch.
-> What do you think about that?
-What you're describing is the SMMU stall model for platform devices. From
-the driver perspective it's the same as PRI and PASID (SubstreamID=PASID).
+> > It feels like IORT should know enough to be able to make that decision
+> > internally, but if not (or if it would be hideous to do so), then I
+> > guess my idea for patch #2 was a bust and we probably do need to go back
+> > to calling directly from the SMMU driver based on the SMMU model.
+> 
+> It might be possible to do that check inside iort code, but then we have to find
+> the  smmu node first and check the model number. I think it will be more
+> cleaner if SMMU driver makes that check and call the
+> iommu_dma_get_msi_resv_regions().
 
-When a stall-capable device accesses unmapped memory, the SMMU parks the
-transaction and sends an event marked "stall" on the event queue, with a
-stall tag (STAG, roughly equivalent to PRG Index). The OS handles the
-fault and sends a CMD_RESUME command with the status and the STAG. Then
-the SMMU completes the access or terminates it.
++1 on this one - we can do it in IORT but I think it is more logical
+to have a flag in the SMMU driver (keeping the DT/ACPI fwnode switch in
+generic IOMMU layer though).
 
-In a prototype I have, the stall implementation reuses most of the
-PASID/PRI code. The main difficulty is defining SSID and stall capability
-in firmware, as there are no standard capability probing for platform
-devices. Stall-capable devices must be able to wait an indefinite amount
-of time that their DMA transactions returns, therefore the stall model
-cannot work with PCI, only some integrated devices.
+Side note I: AFAICS iommu_dma_get_resv_regions() is only used on ARM, if
+it is not patch 2 would break miserably on arches that do not select
+IORT - you should rework the return code on !CONFIG_ACPI_IORT configs.
 
-Thanks,
-Jean
+Side note II(nit): why not call the function iort_iommu_get_resv_regions() ?
+
+Lorenzo
+
+> If you are Ok with that I will quickly rework and send out the next version.
+> 
+> Thanks,
+> Shameer
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
