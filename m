@@ -1,97 +1,51 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V4 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
- add/remove device
-Date: Mon, 7 Aug 2017 13:57:35 +0530
-Message-ID: <CAFp+6iH-WR4gNExaOBfnwy7GG7DXrjdytPvnMHNmo64YQZdQWQ@mail.gmail.com>
-References: <1499333825-7658-1-git-send-email-vivek.gautam@codeaurora.org>
- <1499333825-7658-4-git-send-email-vivek.gautam@codeaurora.org>
- <20170712225459.GZ22780@codeaurora.org> <5ee0bacd-e557-a6c4-a897-844fb12ea6ae@codeaurora.org>
- <4dbc938c-ac88-9bd4-cf00-458008ae24c1@codeaurora.org> <CAF6AEGsFOtsOjt1sLNPSFLEcu-7d1zxCOhTeC+P8e0TDbb1dSA@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: Support SVM without PASID
+Date: Mon, 7 Aug 2017 11:31:38 +0100
+Message-ID: <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+ <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+ <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+ <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+ <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
+ <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAF6AEGsFOtsOjt1sLNPSFLEcu-7d1zxCOhTeC+P8e0TDbb1dSA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-clk <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-pci@vger.kernel.org, tianyu.lan@intel.com, kevin.tian@intel.com, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 13, 2017 at 5:20 PM, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> On Thu, Jul 13, 2017 at 1:35 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->> Hi Vivek,
->>
->> On 7/13/2017 10:43 AM, Vivek Gautam wrote:
->>> Hi Stephen,
->>>
->>>
->>> On 07/13/2017 04:24 AM, Stephen Boyd wrote:
->>>> On 07/06, Vivek Gautam wrote:
->>>>> @@ -1231,12 +1237,18 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
->>>>>   static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
->>>>>                    size_t size)
->>>>>   {
->>>>> -    struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
->>>>> +    struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>>>> +    struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
->>>>> +    size_t ret;
->>>>>         if (!ops)
->>>>>           return 0;
->>>>>   -    return ops->unmap(ops, iova, size);
->>>>> +    pm_runtime_get_sync(smmu_domain->smmu->dev);
->>>> Can these map/unmap ops be called from an atomic context? I seem
->>>> to recall that being a problem before.
->>>
->>> That's something which was dropped in the following patch merged in master:
->>> 523d7423e21b iommu/arm-smmu: Remove io-pgtable spinlock
->>>
->>> Looks like we don't  need locks here anymore?
->>
->>  Apart from the locking, wonder why a explicit pm_runtime is needed
->>  from unmap. Somehow looks like some path in the master using that
->>  should have enabled the pm ?
->>
->
-> Yes, there are a bunch of scenarios where unmap can happen with
-> disabled master (but not in atomic context).
+On 05/08/17 06:14, valmiki wrote:
+[...]
+> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
+> documentation we fill vaddr and iova in struct vfio_iommu_type1_dma_map
+> and pass them to VFIO. But if we use dynamic allocation in application
+> (say malloc), do we need to use dma API to get iova and then call
+> VFIO_IOMMU_MAP ioctl ?
+> If application needs multiple such dynamic allocations, then it need to
+> allocate large chunk and program it via VFIO_IOMMU_MAP ioctl and then
+> manage rest allocations requirements from this buffer ?
 
-I would like to understand whether there is a situation where an unmap is
-called in atomic context without an enabled master?
+Yes, without SVM, the application allocates large buffers, allocates IOVAs
+itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't rely on the
+DMA API at all, it manages IOVAs as it wants. Sizes passed to
+VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page granularity
+(that is at least 4kB), and both iova and vaddr have to be aligned on that
+granularity as well. So malloc isn't really suitable in this case, you'll
+need mmap. The application can then implement a small allocator to manage
+the DMA pool created with VFIO_IOMMU_MAP.
 
-Let's say we have the case where all the unmap calls in atomic context happen
-only from the master's context (in which case the device link should
-take care of
-the pm state of smmu), and the only unmap that happen in non-atomic context
-is the one with master disabled. In such a case doesn it make sense to
-distinguish
-the atomic/non-atomic context and add pm_runtime_get_sync()/put_sync() only
-for the non-atomic context since that would be the one with master disabled.
+With SVM the application binds its address space to the device, and then
+uses malloc for all DMA buffers, no need for VFIO_IOMMU_MAP.
 
-
-Thanks
-Vivek
-
-> On the gpu side we
-> opportunistically keep a buffer mapping until the buffer is freed
-> (which can happen after gpu is disabled).  Likewise, v4l2 won't unmap
-> an exported dmabuf while some other driver holds a reference to it
-> (which can be dropped when the v4l2 device is suspended).
->
-> Since unmap triggers tbl flush which touches iommu regs, the iommu
-> driver *definitely* needs a pm_runtime_get_sync().
->
-> BR,
-> -R
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+Jean
