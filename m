@@ -1,137 +1,38 @@
 From: Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH 4/4] iommu/vt-d: Hooks to invalidate iotlb/devtlb when using supervisor PASID's.
-Date: Tue,  8 Aug 2017 13:29:30 -0700
-Message-ID: <1502224170-5344-5-git-send-email-ashok.raj@intel.com>
-References: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
-Sender: owner-linux-mm@kvack.org
+Subject: [PATCH 0/4] Patches to support ring0 SVM and devtlb
+Date: Tue,  8 Aug 2017 13:29:26 -0700
+Message-ID: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
-Cc: Ashok Raj <ashok.raj@intel.com>, Dave Hansen <dave.hansen@intel.com>, CQ Tang <cq.tang@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>, Rik van Riel <riel@redhat.com>, Kees Cook <keescook@chromium.org>, Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Vegard Nossum <vegard.nossum@oracle.com>, x86@kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>
+Cc: Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Jacob Pan <jacob.jun.pan@intel.com>, CQ Tang <cq.tang@intel.com>, Huang Ying <ying.huang@intel.com>, Dave Hansen <dave.hansen@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When a kernel client uses intel_svm_bind_mm() and requests a supervisor
-PASID, IOMMU needs to track changes to these addresses. Otherwise the device
-tlb will be stale compared to what's on the cpu for kernel mappings. This
-is similar to what's done for user space registrations via
-mmu_notifier_register() api's.
+Hi
 
-To: linux-kernel@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Dave Hansen <dave.hansen@intel.com>
-Cc:	Huang Ying <ying.huang@intel.com>
-Cc: CQ Tang <cq.tang@intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: H. Peter Anvin <hpa@zytor.com>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Rik van Riel <riel@redhat.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Cc: Vegard Nossum <vegard.nossum@oracle.com>
-Cc: x86@kernel.org
-Cc: linux-mm@kvack.org
-Cc: iommu@lists.linux-foundation.org
-Cc: David Woodhouse <dwmw2@infradead.org>
-CC: Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>
+Sorry for resending.. iommu list email was mistyped :-(
 
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
----
- drivers/iommu/intel-svm.c   | 29 +++++++++++++++++++++++++++--
- include/linux/intel-iommu.h |  5 ++++-
- 2 files changed, 31 insertions(+), 3 deletions(-)
+The first 2 patches in the series fix some simple bugs in Intel vt-d driver.
+The 3rd patch Adds support for kmem notify required to support ring0 SVM.
+4th patch uses the hooks to perform device tlb invalidations.
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 0c9f077..1758814 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -292,6 +292,26 @@ static const struct mmu_notifier_ops intel_mmuops = {
- 
- static DEFINE_MUTEX(pasid_mutex);
- 
-+static int intel_init_mm_inval_range(struct notifier_block *nb,
-+	unsigned long action, void *data)
-+{
-+	struct kernel_mmu_address_range *range;
-+	struct intel_svm *svm = container_of(nb, struct intel_svm, init_mm_nb);
-+	unsigned long start, end;
-+	struct intel_iommu *iommu;
-+
-+	if (action == KERNEL_MMU_INVALIDATE_RANGE) {
-+		range = data;
-+		start = range->start;
-+		end = range->end;
-+		iommu = svm->iommu;
-+
-+		intel_flush_svm_range(svm, start,
-+			(end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0, 0);
-+	}
-+	return 0;
-+}
-+
- int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
- {
- 	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
-@@ -391,12 +411,12 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 			goto out;
- 		}
- 		svm->pasid = ret;
--		svm->notifier.ops = &intel_mmuops;
- 		svm->mm = mm;
- 		svm->flags = flags;
- 		INIT_LIST_HEAD_RCU(&svm->devs);
- 		ret = -ENOMEM;
- 		if (mm) {
-+			svm->notifier.ops = &intel_mmuops;
- 			ret = mmu_notifier_register(&svm->notifier, mm);
- 			if (ret) {
- 				idr_remove(&svm->iommu->pasid_idr, svm->pasid);
-@@ -405,8 +425,11 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 				goto out;
- 			}
- 			iommu->pasid_table[svm->pasid].val = (u64)__pa(mm->pgd) | 1;
--		} else
-+		} else {
-+			svm->init_mm_nb.notifier_call = intel_init_mm_inval_range;
-+			kernel_mmu_notifier_register(&svm->init_mm_nb);
- 			iommu->pasid_table[svm->pasid].val = (u64)__pa(init_mm.pgd) | 1 | (1ULL << 11);
-+		}
- 		wmb();
- 		/* In caching mode, we still have to flush with PASID 0 when
- 		 * a PASID table entry becomes present. Not entirely clear
-@@ -471,6 +494,8 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 					idr_remove(&svm->iommu->pasid_idr, svm->pasid);
- 					if (svm->mm)
- 						mmu_notifier_unregister(&svm->notifier, svm->mm);
-+					else
-+						kernel_mmu_notifier_unregister(&svm->init_mm_nb);
- 
- 					/* We mandate that no page faults may be outstanding
- 					 * for the PASID when intel_svm_unbind_mm() is called.
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 485a5b4..d6019b4 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -477,7 +477,10 @@ struct intel_svm_dev {
- };
- 
- struct intel_svm {
--	struct mmu_notifier notifier;
-+	union {
-+		struct mmu_notifier notifier;
-+		struct notifier_block init_mm_nb;
-+	};
- 	struct mm_struct *mm;
- 	struct intel_iommu *iommu;
- 	int flags;
+Ashok Raj (3):
+  iommu/vt-d: IOMMU Page Request needs to check if address is canonical.
+  iommu/vt-d: Avoid calling virt_to_phys() on null pointer
+  iommu/vt-d: Hooks to invalidate iotlb/devtlb when using supervisor
+    PASID's.
+
+Huang Ying (1):
+  mm: Add kernel MMU notifier to manage remote TLB
+
+ arch/x86/include/asm/tlbflush.h |  1 +
+ arch/x86/mm/tlb.c               |  1 +
+ drivers/iommu/intel-iommu.c     |  3 ++-
+ drivers/iommu/intel-svm.c       | 43 +++++++++++++++++++++++++++++++++++++++--
+ include/linux/intel-iommu.h     |  5 ++++-
+ include/linux/mmu_notifier.h    | 33 +++++++++++++++++++++++++++++++
+ mm/mmu_notifier.c               | 25 ++++++++++++++++++++++++
+ 7 files changed, 107 insertions(+), 4 deletions(-)
+
 -- 
 2.7.4
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
