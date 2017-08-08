@@ -1,301 +1,171 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 1/2] iommu/arm-smmu: Track context bank state
-Date: Tue,  8 Aug 2017 14:56:14 +0100
-Message-ID: <8cbeda2e236903e20878694c975c8143fd32ad47.1502200001.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Ashok Raj <ashok.raj@intel.com>
+Subject: [PATCH 3/4] mm: Add kernel MMU notifier to manage remote TLB
+Date: Tue,  8 Aug 2017 13:29:29 -0700
+Message-ID: <1502224170-5344-4-git-send-email-ashok.raj@intel.com>
+References: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
+Sender: owner-linux-mm@kvack.org
+To: linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+Cc: Huang Ying <ying.huang@intel.com>, Ashok Raj <ashok.raj@intel.com>, Dave Hansen <dave.hansen@intel.com>, CQ Tang <cq.tang@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>, Rik van Riel <riel@redhat.com>, Kees Cook <keescook@chromium.org>, Andrew Morton <akpm@linux-foundation.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Michal Hocko <mhocko@suse.com>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Vegard Nossum <vegard.nossum@oracle.com>, x86@kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Echoing what we do for Stream Map Entries, maintain a software shadow
-state for context bank configuration. With this in place, we are mere
-moments away from blissfully easy suspend/resume support.
+From: Huang Ying <ying.huang@intel.com>
 
-Reviewed-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Shared Virtual Memory (SVM) devices have TLBs that cache entries from
+the CPU's page tables.  We need SVM device drivers to flush them at
+the same time that we flush the CPU TLBs.  We can use the existing MMU
+notifiers for userspace updates, but we lack a mechanism to get
+notified when kernel page tables are updated.
+
+To implement the MMU notification mechanism for the kernel address
+space, a kernel MMU notifier chain is defined, and will be called when
+the CPU TLB is flushed for the kernel address space.  The IOMMU SVM
+driver can register on the notifier chain to flush the device TLBs
+when necessary.
+
+To: linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: CQ Tang <cq.tang@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Rik van Riel <riel@redhat.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Cc: Vegard Nossum <vegard.nossum@oracle.com>
+Cc: x86@kernel.org
+Cc: linux-mm@kvack.org
+Cc: iommu@lists.linux-foundation.org
+Cc: David Woodhouse <dwmw2@infradead.org>
+CC: Jean-Phillipe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
 ---
+ arch/x86/include/asm/tlbflush.h |  1 +
+ arch/x86/mm/tlb.c               |  1 +
+ include/linux/mmu_notifier.h    | 33 +++++++++++++++++++++++++++++++++
+ mm/mmu_notifier.c               | 25 +++++++++++++++++++++++++
+ 4 files changed, 60 insertions(+)
 
-v2:
- - Don't forget ASIDs for stage 1 LPAE
- - Avoid touching TTBR1 for stage 2 (even if it is techinically OK)
- - Handle disabling (i.e. cfg == NULL) much more cleanly
-
- drivers/iommu/arm-smmu.c | 156 +++++++++++++++++++++++++++++------------------
- 1 file changed, 97 insertions(+), 59 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index bc89b4d6c043..8f2f345ab7b1 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -338,6 +338,13 @@ struct arm_smmu_smr {
- 	bool				valid;
- };
+diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
+index 50ea348..f5fd0b8 100644
+--- a/arch/x86/include/asm/tlbflush.h
++++ b/arch/x86/include/asm/tlbflush.h
+@@ -3,6 +3,7 @@
  
-+struct arm_smmu_cb {
-+	u64				ttbr[2];
-+	u32				tcr[2];
-+	u32				mair[2];
-+	struct arm_smmu_cfg		*cfg;
-+};
-+
- struct arm_smmu_master_cfg {
- 	struct arm_smmu_device		*smmu;
- 	s16				smendx[];
-@@ -380,6 +387,7 @@ struct arm_smmu_device {
- 	u32				num_context_banks;
- 	u32				num_s2_context_banks;
- 	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
-+	struct arm_smmu_cb		*cbs;
- 	atomic_t			irptndx;
+ #include <linux/mm.h>
+ #include <linux/sched.h>
++#include <linux/mmu_notifier.h>
  
- 	u32				num_mapping_groups;
-@@ -768,17 +776,74 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
- static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 				       struct io_pgtable_cfg *pgtbl_cfg)
- {
--	u32 reg, reg2;
--	u64 reg64;
--	bool stage1;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-+	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+
-+	cb->cfg = cfg;
-+
-+	/* TTBCR */
-+	if (stage1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
-+		} else {
-+			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-+			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
-+			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
-+			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+				cb->tcr[1] |= TTBCR2_AS;
-+		}
-+	} else {
-+		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
-+	}
-+
-+	/* TTBRs */
-+	if (stage1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-+			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-+		} else {
-+			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-+			cb->ttbr[0] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
-+			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-+			cb->ttbr[1] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
-+		}
-+	} else {
-+		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-+	}
-+
-+	/* MAIRs (stage-1 only) */
-+	if (stage1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
-+			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
-+		} else {
-+			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-+			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-+		}
-+	}
-+}
-+
-+static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
-+{
-+	u32 reg;
-+	bool stage1;
-+	struct arm_smmu_cb *cb = &smmu->cbs[idx];
-+	struct arm_smmu_cfg *cfg = cb->cfg;
- 	void __iomem *cb_base, *gr1_base;
- 
-+	cb_base = ARM_SMMU_CB(smmu, idx);
-+
-+	/* Unassigned context banks only need disabling */
-+	if (!cfg) {
-+		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-+		return;
-+	}
-+
- 	gr1_base = ARM_SMMU_GR1(smmu);
- 	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
--	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
- 
-+	/* CBA2R */
- 	if (smmu->version > ARM_SMMU_V1) {
- 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
- 			reg = CBA2R_RW64_64BIT;
-@@ -788,7 +853,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
- 			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
- 
--		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
-+		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
+ #include <asm/processor.h>
+ #include <asm/cpufeature.h>
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 014d07a..6dea8e9 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -314,6 +314,7 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+ 		info.end = end;
+ 		on_each_cpu(do_kernel_range_flush, &info, 1);
  	}
- 
- 	/* CBAR */
-@@ -807,72 +872,41 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 		/* 8-bit VMIDs live in CBAR */
- 		reg |= cfg->vmid << CBAR_VMID_SHIFT;
- 	}
--	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
-+	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
- 
- 	/*
- 	 * TTBCR
- 	 * We must write this before the TTBRs, since it determines the
- 	 * access behaviour of some fields (in particular, ASID[15:8]).
- 	 */
--	if (stage1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
--			reg2 = 0;
--		} else {
--			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
--			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
--			reg2 |= TTBCR2_SEP_UPSTREAM;
--			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
--				reg2 |= TTBCR2_AS;
--		}
--		if (smmu->version > ARM_SMMU_V1)
--			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
--	} else {
--		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
--	}
--	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
-+	if (stage1 && smmu->version > ARM_SMMU_V1)
-+		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
-+	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
- 
- 	/* TTBRs */
--	if (stage1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
--			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
--			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
--			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
--			writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
--		} else {
--			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
--			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
--			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
--			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
--			reg64 |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
--			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
--		}
-+	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-+		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-+		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
- 	} else {
--		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
--		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-+		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-+		if (stage1)
-+			writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
- 	}
- 
- 	/* MAIRs (stage-1 only) */
- 	if (stage1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
--			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
--		} else {
--			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
--			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
--		}
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
--		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
-+		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
-+		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
- 	}
- 
- 	/* SCTLR */
- 	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
- 	if (stage1)
- 		reg |= SCTLR_S1_ASIDPNE;
--#ifdef __BIG_ENDIAN
--	reg |= SCTLR_E;
--#endif
-+	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
-+		reg |= SCTLR_E;
-+
- 	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
++	kernel_mmu_notifier_invalidate_range(start, end);
  }
  
-@@ -1035,6 +1069,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
+diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
+index c91b3bc..4a96089 100644
+--- a/include/linux/mmu_notifier.h
++++ b/include/linux/mmu_notifier.h
+@@ -418,6 +418,25 @@ extern void mmu_notifier_call_srcu(struct rcu_head *rcu,
+ 				   void (*func)(struct rcu_head *rcu));
+ extern void mmu_notifier_synchronize(void);
  
- 	/* Initialise the context bank with our page table cfg */
- 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-+	arm_smmu_write_context_bank(smmu, cfg->cbndx);
- 
- 	/*
- 	 * Request context fault interrupt. Do this last to avoid the
-@@ -1067,7 +1102,6 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	void __iomem *cb_base;
- 	int irq;
- 
- 	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
-@@ -1077,8 +1111,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	 * Disable the context bank and free the page tables before freeing
- 	 * it.
- 	 */
--	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
--	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-+	smmu->cbs[cfg->cbndx] = (struct arm_smmu_cb){0};
-+	arm_smmu_write_context_bank(smmu, cfg->cbndx);
- 
- 	if (cfg->irptndx != INVALID_IRPTNDX) {
- 		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-@@ -1722,7 +1756,6 @@ static struct iommu_ops arm_smmu_ops = {
- static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- {
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
--	void __iomem *cb_base;
- 	int i;
- 	u32 reg, major;
- 
-@@ -1758,8 +1791,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 
- 	/* Make sure all context banks are disabled and clear CB_FSR  */
- 	for (i = 0; i < smmu->num_context_banks; ++i) {
--		cb_base = ARM_SMMU_CB(smmu, i);
--		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-+		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
++struct kernel_mmu_address_range {
++	unsigned long start;
++	unsigned long end;
++};
 +
-+		arm_smmu_write_context_bank(smmu, i);
- 		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
- 		/*
- 		 * Disable MMU-500's not-particularly-beneficial next-page
-@@ -1964,6 +1998,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 		smmu->cavium_id_base -= smmu->num_context_banks;
- 		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
- 	}
-+	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
-+				 sizeof(*smmu->cbs), GFP_KERNEL);
-+	if (!smmu->cbs)
-+		return -ENOMEM;
++/*
++ * Before the virtual address range managed by kernel (vmalloc/kmap)
++ * is reused, That is, remapped to the new physical addresses, the
++ * kernel MMU notifier will be called with KERNEL_MMU_INVALIDATE_RANGE
++ * and struct kernel_mmu_address_range as parameters.  This is used to
++ * manage the remote TLB.
++ */
++#define KERNEL_MMU_INVALIDATE_RANGE		1
++extern int kernel_mmu_notifier_register(struct notifier_block *nb);
++extern int kernel_mmu_notifier_unregister(struct notifier_block *nb);
++
++extern int kernel_mmu_notifier_invalidate_range(unsigned long start,
++						unsigned long end);
++
+ #else /* CONFIG_MMU_NOTIFIER */
  
- 	/* ID2 */
- 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
+ static inline void mmu_notifier_release(struct mm_struct *mm)
+@@ -479,6 +498,20 @@ static inline void mmu_notifier_mm_destroy(struct mm_struct *mm)
+ #define pudp_huge_clear_flush_notify pudp_huge_clear_flush
+ #define set_pte_at_notify set_pte_at
+ 
++static inline int kernel_mmu_notifier_register(struct notifier_block *nb)
++{
++	return 0;
++}
++
++static inline int kernel_mmu_notifier_unregister(struct notifier_block *nb)
++{
++	return 0;
++}
++
++static inline void kernel_mmu_notifier_invalidate_range(unsigned long start,
++							unsigned long end)
++{
++}
+ #endif /* CONFIG_MMU_NOTIFIER */
+ 
+ #endif /* _LINUX_MMU_NOTIFIER_H */
+diff --git a/mm/mmu_notifier.c b/mm/mmu_notifier.c
+index 54ca545..a919038 100644
+--- a/mm/mmu_notifier.c
++++ b/mm/mmu_notifier.c
+@@ -400,3 +400,28 @@ void mmu_notifier_unregister_no_release(struct mmu_notifier *mn,
+ 	mmdrop(mm);
+ }
+ EXPORT_SYMBOL_GPL(mmu_notifier_unregister_no_release);
++
++static ATOMIC_NOTIFIER_HEAD(kernel_mmu_notifier_list);
++
++int kernel_mmu_notifier_register(struct notifier_block *nb)
++{
++	return atomic_notifier_chain_register(&kernel_mmu_notifier_list, nb);
++}
++
++int kernel_mmu_notifier_unregister(struct notifier_block *nb)
++{
++	return atomic_notifier_chain_unregister(&kernel_mmu_notifier_list, nb);
++}
++
++int kernel_mmu_notifier_invalidate_range(unsigned long start,
++					 unsigned long end)
++{
++	struct kernel_mmu_address_range range = {
++		.start	= start,
++		.end	= end,
++	};
++
++	return atomic_notifier_call_chain(&kernel_mmu_notifier_list,
++					  KERNEL_MMU_INVALIDATE_RANGE,
++					  &range);
++}
 -- 
-2.13.4.dirty
+2.7.4
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
