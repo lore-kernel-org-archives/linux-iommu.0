@@ -1,21 +1,20 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v6 0/3] iommu/smmu-v3: Workaround for hisilicon 161010801 erratum(reserve HW MSI)
-Date: Wed, 9 Aug 2017 11:07:12 +0100
-Message-ID: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+Date: Wed, 9 Aug 2017 11:07:15 +0100
+Message-ID: <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
+References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
 Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On certain HiSilicon platforms (Hip06/Hip07) the GIC ITS and
-PCIe RC deviates from the standard implementation and this breaks
-PCIe MSI functionality when SMMU is enabled.
+The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
 
-The HiSilicon erratum 161010801 describes this limitation of certain
-HiSilicon platforms to support the SMMU mappings for MSI transactions.
 On these platforms GICv3 ITS translator is presented with the deviceID
 by extending the MSI payload data to 64 bits to include the deviceID.
 Hence, the PCIe controller on this platforms has to differentiate the
@@ -23,70 +22,70 @@ MSI payload against other DMA payload and has to modify the MSI payload.
 This basically makes it difficult for this platforms to have a SMMU
 translation for MSI.
 
-To implement this quirk, the following changes are incorporated:
+This patch implements a ACPI table based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
 
-1. Added a generic helper function to IORT code to retrieve and
-   reserve the HW ITS address regions.
-2. Added quirk to SMMUv3 to reserve HW ITS address regions based
-    on IORT SMMUv3 model with the help of a generic iommu helper
-    function.
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
 
-Thanks,
-Shameer
-
-Changelog:
-
-v5 --> v6
-Addressed comments from Robin and Lorenzo:
--No change to patch#1 .
--Reverted v5 patch#2 as this might break the platforms where this quirk
-is not applicable. Provided a generic function in iommu code and
-added back the quirk implementation in SMMU v3 driver(patch#3)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 568c400..6f21dd7 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -608,6 +608,7 @@ struct arm_smmu_device {
  
-v4 --> v5
-Addressed comments from Robin and Lorenzo:
--Added a comment to make it clear that, for now, only straightforward 
- HW topologies are handled while reserving ITS regions(patch #1).
-
-v3 --> v4
-Rebased on 4.13-rc1.
-Addressed comments from Robin, Will and Lorenzo:
--As suggested by Robin, moved the ITS msi reservation into
- iommu_dma_get_resv_regions().
--Added its_count != resv region failure case(patch #1).
-
-v2 --> v3
-Addressed comments from Lorenzo and Robin:
--Removed dev_is_pci() check in smmuV3 driver.
--Don't treat device not having an ITS mapping as an error in
- iort helper function.
-
-v1 --> v2
--patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
-
-RFCv2 -->PATCH
--Incorporated Lorenzo's review comments.
-
-RFC v1 --> RFC v2
-Based on Robin's review comments,
--Removed  the generic erratum framework.
--Using IORT/MADT tables to retrieve the ITS base addr instead
- of vendor specific CSRT table.
-
-Shameer Kolothum (3):
-  ACPI/IORT: Add ITS address regions reservation helper
-  iommu/dma: Add a helper function to reserve HW MSI address regions for
-    IOMMU drivers
-  iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
-
- drivers/acpi/arm64/iort.c        | 95 ++++++++++++++++++++++++++++++++++++++--
- drivers/iommu/arm-smmu-v3.c      | 27 +++++++++---
- drivers/iommu/dma-iommu.c        | 19 ++++++++
- drivers/irqchip/irq-gic-v3-its.c |  3 +-
- include/linux/acpi_iort.h        |  7 ++-
- include/linux/dma-iommu.h        |  7 +++
- 6 files changed, 148 insertions(+), 10 deletions(-)
-
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+ #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
++#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 2)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -1934,14 +1935,29 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 				      struct list_head *head)
+ {
+ 	struct iommu_resv_region *region;
++	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = master->smmu;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++	int resv = 0;
+ 
+-	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+-					 prot, IOMMU_RESV_SW_MSI);
+-	if (!region)
+-		return;
++	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
+ 
+-	list_add_tail(&region->list, head);
++		resv = iommu_dma_get_msi_resv_regions(dev, head);
++
++		if (resv < 0) {
++			dev_warn(dev, "HW MSI region resv failed: %d\n", resv);
++			return;
++		}
++	}
++
++	if (!resv) {
++		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++						 prot, IOMMU_RESV_SW_MSI);
++		if (!region)
++			return;
++
++		list_add_tail(&region->list, head);
++	}
+ 
+ 	iommu_dma_get_resv_regions(dev, head);
+ }
+@@ -2667,6 +2683,7 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+ 		break;
+ 	case ACPI_IORT_SMMU_HISILICON_HI161X:
+ 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
++		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
+ 		break;
+ 	}
+ 
 -- 
 1.9.1
 
