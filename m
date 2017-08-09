@@ -1,117 +1,147 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v10 04/12] iommu/amd: Define bit fields for DTE particularly
-Date: Wed,  9 Aug 2017 16:33:36 +0800
-Message-ID: <1502267624-7066-5-git-send-email-bhe@redhat.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: [PATCH v10 05/12] iommu/amd: Add function copy_dev_tables()
+Date: Wed,  9 Aug 2017 16:33:37 +0800
+Message-ID: <1502267624-7066-6-git-send-email-bhe@redhat.com>
 References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1502267624-7066-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502267624-7066-1-git-send-email-bhe@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: jroedel@suse.de
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-In AMD-Vi spec several bits of IO PTE fields and DTE fields are similar
-so that both of them can share the same MACRO definition. However
-defining them respectively can make code more read-able. Do it now.
+Add function copy_dev_tables to copy the old DEV table entries of the panicked
+kernel to the new allocated device table. Since all iommus share the same device
+table the copy only need be done one time. Here add a new global old_dev_tbl_cpy
+to point to the newly allocated device table which the content of old device
+table will be copied to. Besides, we also need to:
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+  - Check whether all IOMMUs actually use the same device table with the same size
+
+  - Verify that the size of the old device table is the expected size.
+
+  - Reserve the old domain id occupied in 1st kernel to avoid touching the old
+    io-page tables. Then on-flight DMA can continue looking it up.
+
+And also define MACRO DEV_DOMID_MASK to replace magic number 0xffffULL, it can be
+reused in copy_dev_tables().
+
+Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/amd_iommu.c       |  8 ++++----
- drivers/iommu/amd_iommu_types.h | 18 ++++++++++++++----
- 2 files changed, 18 insertions(+), 8 deletions(-)
+v9->v10:
+  Move the copy code block out of the iommu loop.
+
+  Change the return value of copy_device_table() to bool.
+
+ drivers/iommu/amd_iommu.c       |  2 +-
+ drivers/iommu/amd_iommu_init.c  | 62 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |  1 +
+ 3 files changed, 64 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6d2fc40a086d..097db07354b4 100644
+index 097db07354b4..b22b58b33400 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1537,9 +1537,9 @@ static int iommu_map_page(struct protection_domain *dom,
+@@ -2086,7 +2086,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 		flags    |= tmp;
+ 	}
  
- 	if (count > 1) {
- 		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
--		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
- 	} else
--		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte = phys_addr | IOMMU_PTE_PR | IOMMU_PTE_FC;
+-	flags &= ~(0xffffUL);
++	flags &= ~DEV_DOMID_MASK;
+ 	flags |= domain->id;
  
- 	if (prot & IOMMU_PROT_IR)
- 		__pte |= IOMMU_PTE_IR;
-@@ -2053,7 +2053,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 	amd_iommu_dev_table[devid].data[1]  = flags;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 7044510654fe..e2857204d32a 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -195,6 +195,11 @@ spinlock_t amd_iommu_pd_lock;
+  * page table root pointer.
+  */
+ struct dev_table_entry *amd_iommu_dev_table;
++/*
++ * Pointer to a device table which the content of old device table
++ * will be copied to. It's only be used in kdump kernel.
++ */
++static struct dev_table_entry *old_dev_tbl_cpy;
  
- 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
--	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
-+	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
+ /*
+  * The alias table is a driver specific data structure which contains the
+@@ -842,6 +847,63 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
+ }
  
- 	flags = amd_iommu_dev_table[devid].data[1];
  
-@@ -2096,7 +2096,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- static void clear_dte_entry(u16 devid)
++static bool copy_device_table(void)
++{
++	struct dev_table_entry *old_devtb = NULL;
++	u32 lo, hi, devid, old_devtb_size;
++	phys_addr_t old_devtb_phys;
++	u64 entry, last_entry = 0;
++	struct amd_iommu *iommu;
++	u16 dom_id, dte_v;
++	gfp_t gfp_flag;
++
++
++	pr_warn("Translation is already enabled - trying to copy translation structures\n");
++	for_each_iommu(iommu) {
++		/* All IOMMUs should use the same device table with the same size */
++		lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
++		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
++		entry = (((u64) hi) << 32) + lo;
++		if (last_entry && last_entry != entry) {
++			pr_err("IOMMU:%d should use the same dev table as others!/n",
++				iommu->index);
++			return false;
++		}
++		last_entry = entry;
++
++		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
++		if (old_devtb_size != dev_table_size) {
++			pr_err("The device table size of IOMMU:%d is not expected!/n",
++				iommu->index);
++			return false;
++		}
++	}
++
++	old_devtb_phys = entry & PAGE_MASK;
++	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
++	if (!old_devtb)
++		return false;
++
++	gfp_flag = GFP_KERNEL | __GFP_ZERO;
++	old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
++				get_order(dev_table_size));
++	if (old_dev_tbl_cpy == NULL) {
++		pr_err("Failed to allocate memory for copying old device table!/n");
++		return false;
++	}
++
++	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
++		old_dev_tbl_cpy[devid] = old_devtb[devid];
++		dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
++		dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
++		if (dte_v && dom_id)
++			__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
++	}
++	memunmap(old_devtb);
++
++	return true;
++}
++
+ void amd_iommu_apply_erratum_63(u16 devid)
  {
- 	/* remove entry from the device table seen by the hardware */
--	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
-+	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
- 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
- 
- 	amd_iommu_apply_erratum_63(devid);
+ 	int sysmgt;
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index db7ceb4d0957..f88e802481a3 100644
+index f88e802481a3..a7f6cf8c841e 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -265,7 +265,7 @@
- #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
- #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
- #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
--				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
-+				 IOMMU_PTE_PR | IOMMU_PTE_IR | IOMMU_PTE_IW)
- #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
- 
- #define PM_MAP_4k		0
-@@ -314,13 +314,23 @@
- #define PTE_LEVEL_PAGE_SIZE(level)			\
- 	(1ULL << (12 + (9 * (level))))
- 
--#define IOMMU_PTE_P  (1ULL << 0)
--#define IOMMU_PTE_TV (1ULL << 1)
-+/*
-+ * Bit value definition for I/O PTE fields
-+ */
-+#define IOMMU_PTE_PR (1ULL << 0)
- #define IOMMU_PTE_U  (1ULL << 59)
- #define IOMMU_PTE_FC (1ULL << 60)
- #define IOMMU_PTE_IR (1ULL << 61)
- #define IOMMU_PTE_IW (1ULL << 62)
- 
-+/*
-+ * Bit value definition for DTE fields
-+ */
-+#define DTE_FLAG_V  (1ULL << 0)
-+#define DTE_FLAG_TV (1ULL << 1)
-+#define DTE_FLAG_IR (1ULL << 61)
-+#define DTE_FLAG_IW (1ULL << 62)
-+
- #define DTE_FLAG_IOTLB	(1ULL << 32)
- #define DTE_FLAG_GV	(1ULL << 55)
+@@ -336,6 +336,7 @@
  #define DTE_FLAG_MASK	(0x3ffULL << 32)
-@@ -342,7 +352,7 @@
- #define GCR3_VALID		0x01ULL
+ #define DTE_GLX_SHIFT	(56)
+ #define DTE_GLX_MASK	(3)
++#define DEV_DOMID_MASK	0xffffULL
  
- #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
--#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
-+#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
- #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
- #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
- 
+ #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
+ #define DTE_GCR3_VAL_B(x)	(((x) >> 15) & 0x0ffffULL)
 -- 
 2.5.5
