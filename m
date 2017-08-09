@@ -1,92 +1,184 @@
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
-Date: Wed, 9 Aug 2017 11:07:15 +0100
-Message-ID: <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
-References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v3] iommu/s390: Add support for iommu_device handling
+Date: Wed,  9 Aug 2017 12:25:54 +0200
+Message-ID: <1502274354-643-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, hanjun.guo@linaro.org
-Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-On these platforms GICv3 ITS translator is presented with the deviceID
-by extending the MSI payload data to 64 bits to include the deviceID.
-Hence, the PCIe controller on this platforms has to differentiate the
-MSI payload against other DMA payload and has to modify the MSI payload.
-This basically makes it difficult for this platforms to have a SMMU
-translation for MSI.
+Add support for the iommu_device_register interface to make
+the s390 hardware iommus visible to the iommu core and in
+sysfs.
 
-This patch implements a ACPI table based quirk to reserve the hw msi
-regions in the smmu-v3 driver which means these address regions will
-not be translated and will be excluded from iova allocations.
-
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+ arch/s390/include/asm/pci.h |  7 +++++++
+ arch/s390/pci/pci.c         |  9 ++++++++-
+ drivers/iommu/s390-iommu.c  | 35 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 568c400..6f21dd7 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -608,6 +608,7 @@ struct arm_smmu_device {
+v2->v3:
+	- Rebased to v4.13-rc4
+	- Fixed error path in zpci_create_device() to
+	  destroy the iommu instance too (noted by
+	  Gerald Schaefer)
+
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index f36b4b726057..386df9adef0a 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -8,6 +8,7 @@
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
- #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
-+#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 2)
- 	u32				options;
+ #include <linux/pci.h>
+ #include <linux/mutex.h>
++#include <linux/iommu.h>
+ #include <asm-generic/pci.h>
+ #include <asm/pci_clp.h>
+ #include <asm/pci_debug.h>
+@@ -122,6 +123,8 @@ struct zpci_dev {
+ 	unsigned long	iommu_pages;
+ 	unsigned int	next_bit;
  
- 	struct arm_smmu_cmdq		cmdq;
-@@ -1934,14 +1935,29 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 				      struct list_head *head)
++	struct iommu_device iommu_dev;  /* IOMMU core handle */
++
+ 	char res_name[16];
+ 	struct zpci_bar_struct bars[PCI_BAR_COUNT];
+ 
+@@ -174,6 +177,10 @@ int clp_enable_fh(struct zpci_dev *, u8);
+ int clp_disable_fh(struct zpci_dev *);
+ int clp_get_state(u32 fid, enum zpci_state *state);
+ 
++/* IOMMU Interface */
++int zpci_init_iommu(struct zpci_dev *zdev);
++void zpci_destroy_iommu(struct zpci_dev *zdev);
++
+ #ifdef CONFIG_PCI
+ /* Error handling and recovery */
+ void zpci_event_error(void *);
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index 7b30af5da222..001ca80fa2fe 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -776,6 +776,7 @@ void pcibios_remove_bus(struct pci_bus *bus)
+ 
+ 	zpci_exit_slot(zdev);
+ 	zpci_cleanup_bus_resources(zdev);
++	zpci_destroy_iommu(zdev);
+ 	zpci_free_domain(zdev);
+ 
+ 	spin_lock(&zpci_list_lock);
+@@ -848,11 +849,15 @@ int zpci_create_device(struct zpci_dev *zdev)
+ 	if (rc)
+ 		goto out;
+ 
++	rc = zpci_init_iommu(zdev);
++	if (rc)
++		goto out_free;
++
+ 	mutex_init(&zdev->lock);
+ 	if (zdev->state == ZPCI_FN_STATE_CONFIGURED) {
+ 		rc = zpci_enable_device(zdev);
+ 		if (rc)
+-			goto out_free;
++			goto out_destroy_iommu;
+ 	}
+ 	rc = zpci_scan_bus(zdev);
+ 	if (rc)
+@@ -869,6 +874,8 @@ int zpci_create_device(struct zpci_dev *zdev)
+ out_disable:
+ 	if (zdev->state == ZPCI_FN_STATE_ONLINE)
+ 		zpci_disable_device(zdev);
++out_destroy_iommu:
++	zpci_destroy_iommu(zdev);
+ out_free:
+ 	zpci_free_domain(zdev);
+ out:
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 8788640756a7..85f3bc52efc2 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -18,6 +18,8 @@
+  */
+ #define S390_IOMMU_PGSIZES	(~0xFFFUL)
+ 
++static struct iommu_ops s390_iommu_ops;
++
+ struct s390_domain {
+ 	struct iommu_domain	domain;
+ 	struct list_head	devices;
+@@ -166,11 +168,13 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
+ static int s390_iommu_add_device(struct device *dev)
  {
- 	struct iommu_resv_region *region;
-+	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-+	struct arm_smmu_device *smmu = master->smmu;
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+	int resv = 0;
+ 	struct iommu_group *group = iommu_group_get_for_dev(dev);
++	struct zpci_dev *zdev = to_pci_dev(dev)->sysdata;
  
--	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_SW_MSI);
--	if (!region)
--		return;
-+	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
  
--	list_add_tail(&region->list, head);
-+		resv = iommu_dma_get_msi_resv_regions(dev, head);
-+
-+		if (resv < 0) {
-+			dev_warn(dev, "HW MSI region resv failed: %d\n", resv);
-+			return;
-+		}
-+	}
-+
-+	if (!resv) {
-+		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+						 prot, IOMMU_RESV_SW_MSI);
-+		if (!region)
-+			return;
-+
-+		list_add_tail(&region->list, head);
-+	}
+ 	iommu_group_put(group);
++	iommu_device_link(&zdev->iommu_dev, dev);
  
- 	iommu_dma_get_resv_regions(dev, head);
+ 	return 0;
  }
-@@ -2667,6 +2683,7 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
- 		break;
- 	case ACPI_IORT_SMMU_HISILICON_HI161X:
- 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-+		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
- 		break;
+@@ -197,6 +201,7 @@ static void s390_iommu_remove_device(struct device *dev)
+ 			s390_iommu_detach_device(domain, dev);
  	}
  
++	iommu_device_unlink(&zdev->iommu_dev, dev);
+ 	iommu_group_remove_device(dev);
+ }
+ 
+@@ -327,6 +332,36 @@ static size_t s390_iommu_unmap(struct iommu_domain *domain,
+ 	return size;
+ }
+ 
++int zpci_init_iommu(struct zpci_dev *zdev)
++{
++	int rc = 0;
++
++	rc = iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
++				    "s390-iommu.%08x", zdev->fid);
++	if (rc)
++		goto out_err;
++
++	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
++
++	rc = iommu_device_register(&zdev->iommu_dev);
++	if (rc)
++		goto out_sysfs;
++
++	return 0;
++
++out_sysfs:
++	iommu_device_sysfs_remove(&zdev->iommu_dev);
++
++out_err:
++	return rc;
++}
++
++void zpci_destroy_iommu(struct zpci_dev *zdev)
++{
++	iommu_device_unregister(&zdev->iommu_dev);
++	iommu_device_sysfs_remove(&zdev->iommu_dev);
++}
++
+ static struct iommu_ops s390_iommu_ops = {
+ 	.capable = s390_iommu_capable,
+ 	.domain_alloc = s390_domain_alloc,
 -- 
-1.9.1
-
-
+2.12.3
