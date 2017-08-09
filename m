@@ -1,104 +1,93 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: Support SVM without PASID
-Date: Wed, 9 Aug 2017 16:01:05 +0100
-Message-ID: <ad4d596c-97ec-7f06-8304-c21d42634909@arm.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
- <20170708140257.2de02d63@w520.home>
- <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
- <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
- <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
- <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
- <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
- <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
- <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
- <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
- <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
- <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
- <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
- <1ef75c2d-f980-5cef-f760-be3b133c82ca@arm.com>
- <d737a46a-cebc-f38d-371b-ffb91b7b344a@huawei.com>
+From: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/arm-smmu: fix null-pointer dereference in
+	arm_smmu_add_device
+Date: Wed, 9 Aug 2017 14:41:52 -0700
+Message-ID: <c399a57d-074f-71ee-b467-91cf4e65b3d9@caviumnetworks.com>
+References: <20170808092614.GB12887@arm.com>
+	<1502187962-16861-1-git-send-email-asavkov@redhat.com>
+	<d7a07e48-862d-a6f7-8bad-9c71f5a5be5b@arm.com>
+	<20170808112144.GE13355@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <d737a46a-cebc-f38d-371b-ffb91b7b344a@huawei.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170808112144.GE13355-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Bob Liu <liubo95@huawei.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: tianyu.lan@intel.com, kevin.tian@intel.com, kvm@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com, "xieyisheng (A)" <xieyisheng1@huawei.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Artem Savkov <asavkov-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/08/17 01:51, Bob Liu wrote:
-> On 2017/8/7 20:52, Jean-Philippe Brucker wrote:
->> Hi Bob,
+On 08/08/2017 04:21 AM, Will Deacon wrote:
+> [+ Joerg]
+> 
+> On Tue, Aug 08, 2017 at 11:37:40AM +0100, Robin Murphy wrote:
+>> On 08/08/17 11:26, Artem Savkov wrote:
+>>> Commit c54451a "iommu/arm-smmu: Fix the error path in arm_smmu_add_device"
+>>> removed fwspec assignment in legacy_binding path as redundant which is
+>>> wrong. It needs to be updated after fwspec initialisation in
+>>> arm_smmu_register_legacy_master() as it is dereferenced later. Without
+>>> this there is a NULL-pointer dereference panic during boot on some hosts.
 >>
->> On 07/08/17 13:18, Bob Liu wrote:
->>> On 2017/8/7 18:31, Jean-Philippe Brucker wrote:
->>>> On 05/08/17 06:14, valmiki wrote:
->>>> [...]
->>>>> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
->>>>> documentation we fill vaddr and iova in struct vfio_iommu_type1_dma_map
->>>>> and pass them to VFIO. But if we use dynamic allocation in application
->>>>> (say malloc), do we need to use dma API to get iova and then call
->>>>> VFIO_IOMMU_MAP ioctl ?
->>>>> If application needs multiple such dynamic allocations, then it need to
->>>>> allocate large chunk and program it via VFIO_IOMMU_MAP ioctl and then
->>>>> manage rest allocations requirements from this buffer ?
->>>>
->>>> Yes, without SVM, the application allocates large buffers, allocates IOVAs
->>>> itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't rely on the
->>>> DMA API at all, it manages IOVAs as it wants. Sizes passed to
->>>> VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page granularity
->>>> (that is at least 4kB), and both iova and vaddr have to be aligned on that
->>>> granularity as well. So malloc isn't really suitable in this case, you'll
->>>> need mmap. The application can then implement a small allocator to manage
->>>> the DMA pool created with VFIO_IOMMU_MAP.
->>>>
->>>> With SVM the application binds its address space to the device, and then
->>>> uses malloc for all DMA buffers, no need for VFIO_IOMMU_MAP.
->>>>
->>>
->>> Hi Jean,
->>>
->>> I think there is another way to support SVM without PASID.
->>>
->>> Suppose there is a device in the same SOC-chip, the device access memory through SMMU(using internal bus instead of PCIe)
->>> Once page fault, the device send an event with (vaddr, substreamID) to SMMU, then SMMU triggers an event interrupt.
->>>
->>> In the event interrupt handler, we can implement the same logic as PRI interrupt in your patch.
->>> What do you think about that?
->> What you're describing is the SMMU stall model for platform devices. From
->> the driver perspective it's the same as PRI and PASID (SubstreamID=PASID).
+>> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 >>
+>> Thanks for fixing it up, and sorry for failing to document the
+>> unfortunately subtle logic in the first place!
 > 
-> Indeed!
+> Well, I was the one that messed it up:
 > 
->> When a stall-capable device accesses unmapped memory, the SMMU parks the
->> transaction and sends an event marked "stall" on the event queue, with a
->> stall tag (STAG, roughly equivalent to PRG Index). The OS handles the
->> fault and sends a CMD_RESUME command with the status and the STAG. Then
->> the SMMU completes the access or terminates it.
->>
->> In a prototype I have, the stall implementation reuses most of the
+> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 > 
-> Glad to hear that.
-> Would you mind to share me the prototype patch？
-> 
->> PASID/PRI code. The main difficulty is defining SSID and stall capability
->> in firmware, as there are no standard capability probing for platform
->> devices. Stall-capable devices must be able to wait an indefinite amount
->> of time that their DMA transactions returns, therefore the stall model
->> cannot work with PCI, only some integrated devices.
->>
-> 
-> I happen to have a board with such devices and like to do the test.
-> Will re-post a full version patch upstream once completing the verification.
+> Joerg, can you pick this up as a fix for 4.13, please?
 
-Cool! You can find the prototype here:
-git://linux-arm.org/linux-jpb.git svm/stall
+I hit the Oops as well.  This patch fixes it for me on a Cavium CN88xx 
+system, so:
 
-Please let me know if you get anywhere with it, I'd like to get the series
-moving again.
+Acked-by: David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Thanks,
-Jean
+Thanks for working on this.
+
+
+
+> 
+> Will
+> 
+>>> Signed-off-by: Artem Savkov <asavkov-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> ---
+>>>   drivers/iommu/arm-smmu.c | 7 +++++++
+>>>   1 file changed, 7 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>> index b97188a..2d80fa8 100644
+>>> --- a/drivers/iommu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm-smmu.c
+>>> @@ -1519,6 +1519,13 @@ static int arm_smmu_add_device(struct device *dev)
+>>>   
+>>>   	if (using_legacy_binding) {
+>>>   		ret = arm_smmu_register_legacy_master(dev, &smmu);
+>>> +
+>>> +		/*
+>>> +		 * If dev->iommu_fwspec is initally NULL, arm_smmu_register_legacy_master()
+>>> +		 * will allocate/initialise a new one. Thus we need to update fwspec for
+>>> +		 * later use.
+>>> +		 */
+>>> +		fwspec = dev->iommu_fwspec;
+>>>   		if (ret)
+>>>   			goto out_free;
+>>>   	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
+>>>
+>>
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
