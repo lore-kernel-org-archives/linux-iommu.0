@@ -1,7 +1,7 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v10 09/12] iommu/amd: Use is_attach_deferred call-back
-Date: Wed,  9 Aug 2017 16:33:41 +0800
-Message-ID: <1502267624-7066-10-git-send-email-bhe@redhat.com>
+Subject: [PATCH v10 10/12] iommu/amd: Allocate memory below 4G for dev table if translation pre-enabled
+Date: Wed,  9 Aug 2017 16:33:42 +0800
+Message-ID: <1502267624-7066-11-git-send-email-bhe@redhat.com>
 References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502267624-7066-1-git-send-email-bhe@redhat.com>
@@ -10,86 +10,56 @@ To: jroedel@suse.de
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement call-back is_attach_deferred and use it to defer the
-domain attach from iommu driver init to device driver init when
-iommu is pre-enabled in kdump kernel.
+AMD pointed out it's unsafe to update the device-table while iommu
+is enabled. It turns out that device-table pointer update is split
+up into two 32bit writes in the IOMMU hardware. So updating it while
+the IOMMU is enabled could have some nasty side effects.
+
+The safe way to work around this is to always allocate the device-table
+below 4G, including the old device-table in normal kernel and the
+device-table used for copying the content of the old device-table in kdump
+kernel. Meanwhile we need check if the address of old device-table is
+above 4G because it might has been touched accidentally in corrupted
+1st kernel.
 
 Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/amd_iommu.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+v9->v10:
+  The judgement of the address of old_devtb_phys should be '>= 0x100000000ULL'.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index dab901b4f0f9..eebf4590cef9 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -121,6 +121,7 @@ struct iommu_dev_data {
- 					     PPR completions */
- 	u32 errata;			  /* Bitmap for errata to apply */
- 	bool use_vapic;			  /* Enable device to use vapic mode */
-+	bool defer_attach;
+ drivers/iommu/amd_iommu_init.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index d08ad74b0928..c348732f27d7 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -885,11 +885,15 @@ static bool copy_device_table(void)
+ 	}
  
- 	struct ratelimit_state rs;	  /* Ratelimit IOPF messages */
- };
-@@ -371,12 +372,17 @@ static u16 get_alias(struct device *dev)
- static struct iommu_dev_data *find_dev_data(u16 devid)
- {
- 	struct iommu_dev_data *dev_data;
-+	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
- 
- 	dev_data = search_dev_data(devid);
- 
--	if (dev_data == NULL)
-+	if (dev_data == NULL) {
- 		dev_data = alloc_dev_data(devid);
- 
-+		if (translation_pre_enabled(iommu))
-+			dev_data->defer_attach = true;
+ 	old_devtb_phys = entry & PAGE_MASK;
++	if (old_devtb_phys >= 0x100000000ULL) {
++		pr_err("The address of old device table is above 4G, not trustworthy!/n");
++		return false;
 +	}
-+
- 	return dev_data;
- }
+ 	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
+ 	if (!old_devtb)
+ 		return false;
  
-@@ -2477,11 +2483,18 @@ static struct iommu_group *amd_iommu_device_group(struct device *dev)
- static struct protection_domain *get_domain(struct device *dev)
- {
- 	struct protection_domain *domain;
-+	struct iommu_domain *io_domain;
+-	gfp_flag = GFP_KERNEL | __GFP_ZERO;
++	gfp_flag = GFP_KERNEL | __GFP_ZERO | GFP_DMA32;
+ 	old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
+ 				get_order(dev_table_size));
+ 	if (old_dev_tbl_cpy == NULL) {
+@@ -2432,7 +2436,8 @@ static int __init early_amd_iommu_init(void)
  
- 	if (!check_device(dev))
- 		return ERR_PTR(-EINVAL);
- 
- 	domain = get_dev_data(dev)->domain;
-+	if (domain == NULL && get_dev_data(dev)->defer_attach) {
-+		get_dev_data(dev)->defer_attach = false;
-+		io_domain = iommu_get_domain_for_dev(dev);
-+		domain = to_pdomain(io_domain);
-+		attach_device(dev, domain);
-+	}
- 	if (!dma_ops_domain(domain))
- 		return ERR_PTR(-EBUSY);
- 
-@@ -3372,6 +3385,13 @@ static void amd_iommu_apply_resv_region(struct device *dev,
- 	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
- }
- 
-+static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
-+					 struct device *dev)
-+{
-+	struct iommu_dev_data *dev_data = dev->archdata.iommu;
-+	return dev_data->defer_attach;
-+}
-+
- const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
-@@ -3388,6 +3408,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.get_resv_regions = amd_iommu_get_resv_regions,
- 	.put_resv_regions = amd_iommu_put_resv_regions,
- 	.apply_resv_region = amd_iommu_apply_resv_region,
-+	.is_attach_deferred = amd_iommu_is_attach_deferred,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
- };
- 
+ 	/* Device table - directly used by all IOMMUs */
+ 	ret = -ENOMEM;
+-	amd_iommu_dev_table = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
++	amd_iommu_dev_table = (void *)__get_free_pages(
++				      GFP_KERNEL | __GFP_ZERO | GFP_DMA32,
+ 				      get_order(dev_table_size));
+ 	if (amd_iommu_dev_table == NULL)
+ 		goto out;
 -- 
 2.5.5
