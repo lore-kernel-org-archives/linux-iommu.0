@@ -1,7 +1,7 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v10 01/12] iommu/amd: Detect pre enabled translation
-Date: Wed,  9 Aug 2017 16:33:33 +0800
-Message-ID: <1502267624-7066-2-git-send-email-bhe@redhat.com>
+Subject: [PATCH v10 03/12] Revert "iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel"
+Date: Wed,  9 Aug 2017 16:33:35 +0800
+Message-ID: <1502267624-7066-4-git-send-email-bhe@redhat.com>
 References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502267624-7066-1-git-send-email-bhe@redhat.com>
@@ -10,87 +10,70 @@ To: jroedel@suse.de
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to check whether translation is already enabled in IOMMU.
+This reverts commit 54bd63570484167cb13edf81e31fff107b879981.
+
+We still need the IO_PAGE_FAULT message to warn error after the
+issue of on-flight dma in kdump kernel is fixed.
 
 Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/amd_iommu_init.c  | 24 ++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |  1 +
- drivers/iommu/amd_iommu_types.h |  3 +++
- 3 files changed, 28 insertions(+)
+ drivers/iommu/amd_iommu.c       | 3 +--
+ drivers/iommu/amd_iommu_init.c  | 9 ---------
+ drivers/iommu/amd_iommu_types.h | 1 -
+ 3 files changed, 1 insertion(+), 12 deletions(-)
 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 354cbd6392cd..6d2fc40a086d 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2086,8 +2086,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 		flags    |= tmp;
+ 	}
+ 
+-
+-	flags &= ~(DTE_FLAG_SA | 0xffffULL);
++	flags &= ~(0xffffUL);
+ 	flags |= domain->id;
+ 
+ 	amd_iommu_dev_table[devid].data[1]  = flags;
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 372303700566..3f72f44fa2df 100644
+index 277838dbc3a6..7044510654fe 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -258,6 +258,25 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
- 
-+bool translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
-+}
-+
-+static void clear_translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+	iommu->flags &= ~AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
-+static void init_translation_status(struct amd_iommu *iommu)
-+{
-+	u32 ctrl;
-+
-+	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
-+	if (ctrl & (1<<CONTROL_IOMMU_EN))
-+		iommu->flags |= AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
- static inline void update_last_devid(u16 devid)
- {
- 	if (devid > amd_iommu_last_bdf)
-@@ -1399,6 +1418,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	iommu->int_enabled = false;
- 
-+	init_translation_status(iommu);
-+
-+	if (translation_pre_enabled(iommu))
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 466260f8a1df..a9666d2005bb 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -87,4 +87,5 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- 	return !!(iommu->features & f);
+@@ -29,7 +29,6 @@
+ #include <linux/export.h>
+ #include <linux/iommu.h>
+ #include <linux/kmemleak.h>
+-#include <linux/crash_dump.h>
+ #include <asm/pci-direct.h>
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+@@ -1942,14 +1941,6 @@ static void init_device_table_dma(void)
+ 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
+ 		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
+ 		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
+-		/*
+-		 * In kdump kernels in-flight DMA from the old kernel might
+-		 * cause IO_PAGE_FAULTs. There are no reports that a kdump
+-		 * actually failed because of that, so just disable fault
+-		 * reporting in the hardware to get rid of the messages
+-		 */
+-		if (is_kdump_kernel())
+-			set_dev_entry_bit(devid, DEV_ENTRY_NO_PAGE_FAULT);
+ 	}
  }
  
-+extern bool translation_pre_enabled(struct amd_iommu *iommu);
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 294a409e283b..0c98b2cf04cc 100644
+index 0c98b2cf04cc..db7ceb4d0957 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -435,6 +435,8 @@ struct iommu_domain;
- struct irq_domain;
- struct amd_irte_ops;
+@@ -322,7 +322,6 @@
+ #define IOMMU_PTE_IW (1ULL << 62)
  
-+#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
-+
- /*
-  * This structure contains generic data for  IOMMU protection domains
-  * independent of their use.
-@@ -569,6 +571,7 @@ struct amd_iommu {
- 	struct amd_irte_ops *irte_ops;
- #endif
- 
-+	u32 flags;
- 	volatile u64 __aligned(8) cmd_sem;
- };
- 
+ #define DTE_FLAG_IOTLB	(1ULL << 32)
+-#define DTE_FLAG_SA	(1ULL << 34)
+ #define DTE_FLAG_GV	(1ULL << 55)
+ #define DTE_FLAG_MASK	(0x3ffULL << 32)
+ #define DTE_GLX_SHIFT	(56)
 -- 
 2.5.5
