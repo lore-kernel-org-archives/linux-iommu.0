@@ -1,89 +1,96 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
-Date: Thu, 10 Aug 2017 00:29:11 +0200
-Message-ID: <1502317752-8792-2-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/2] iommu/tegra-gart: Add support for struct iommu_device
+Date: Thu, 10 Aug 2017 00:29:12 +0200
+Message-ID: <1502317752-8792-3-git-send-email-joro@8bytes.org>
 References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502317752-8792-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Hiroshi Doyu <hdoyu@nvidia.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1502317752-8792-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Add a struct iommu_device to each tegra-smmu and register it
+Add a struct iommu_device to each tegra-gart and register it
 with the iommu-core. Also link devices added to the driver
 to their respective hardware iommus.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/iommu/tegra-gart.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index faa9c1e..2802e12 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -36,6 +36,8 @@ struct tegra_smmu {
- 	struct list_head list;
- 
- 	struct dentry *debugfs;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 29bafc6..b62f790 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -61,6 +61,8 @@ struct gart_device {
+ 	struct list_head	client;
+ 	spinlock_t		client_lock;	/* for client list */
+ 	struct device		*dev;
 +
-+	struct iommu_device iommu;	/* IOMMU Core code handle */
++	struct iommu_device	iommu;		/* IOMMU Core handle */
  };
  
- struct tegra_smmu_as {
-@@ -720,6 +722,9 @@ static int tegra_smmu_add_device(struct device *dev)
- 			 * first match.
- 			 */
- 			dev->archdata.iommu = smmu;
-+
-+			iommu_device_link(&smmu->iommu, dev);
-+
- 			break;
- 		}
+ struct gart_domain {
+@@ -342,12 +344,16 @@ static int gart_iommu_add_device(struct device *dev)
+ 		return PTR_ERR(group);
  
-@@ -737,6 +742,11 @@ static int tegra_smmu_add_device(struct device *dev)
- 
- static void tegra_smmu_remove_device(struct device *dev)
- {
-+	struct tegra_smmu *smmu = dev->archdata.iommu;
+ 	iommu_group_put(group);
 +
-+	if (smmu)
-+		iommu_device_unlink(&smmu->iommu, dev);
++	iommu_device_link(&gart_handle->iommu, dev);
 +
- 	dev->archdata.iommu = NULL;
- 	iommu_group_remove_device(dev);
+ 	return 0;
  }
-@@ -943,6 +953,18 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	if (err < 0)
- 		return ERR_PTR(err);
  
-+	err = iommu_device_sysfs_add(&smmu->iommu, dev, NULL, dev_name(dev));
-+	if (err)
-+		return ERR_PTR(err);
-+
-+	iommu_device_set_ops(&smmu->iommu, &tegra_smmu_ops);
-+
-+	err = iommu_device_register(&smmu->iommu);
-+	if (err) {
-+		iommu_device_sysfs_remove(&smmu->iommu);
-+		return ERR_PTR(err);
+ static void gart_iommu_remove_device(struct device *dev)
+ {
+ 	iommu_group_remove_device(dev);
++	iommu_device_unlink(&gart_handle->iommu, dev);
+ }
+ 
+ static const struct iommu_ops gart_iommu_ops = {
+@@ -397,6 +403,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	struct resource *res, *res_remap;
+ 	void __iomem *gart_regs;
+ 	struct device *dev = &pdev->dev;
++	int ret;
+ 
+ 	if (gart_handle)
+ 		return -EIO;
+@@ -423,6 +430,22 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 		return -ENXIO;
+ 	}
+ 
++	ret = iommu_device_sysfs_add(&gart->iommu, &pdev->dev, NULL,
++				     dev_name(&pdev->dev));
++	if (ret) {
++		dev_err(dev, "Failed to register IOMMU in sysfs\n");
++		return ret;
 +	}
 +
- 	if (IS_ENABLED(CONFIG_DEBUG_FS))
- 		tegra_smmu_debugfs_init(smmu);
- 
-@@ -951,6 +973,9 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 
- void tegra_smmu_remove(struct tegra_smmu *smmu)
- {
-+	iommu_device_unregister(&smmu->iommu);
-+	iommu_device_sysfs_remove(&smmu->iommu);
++	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
 +
- 	if (IS_ENABLED(CONFIG_DEBUG_FS))
- 		tegra_smmu_debugfs_exit(smmu);
- }
++	ret = iommu_device_register(&gart->iommu);
++	if (ret) {
++		dev_err(dev, "Failed to register IOMMU\n");
++		iommu_device_sysfs_remove(&gart->iommu);
++		return ret;
++	}
++
+ 	gart->dev = &pdev->dev;
+ 	spin_lock_init(&gart->pte_lock);
+ 	spin_lock_init(&gart->client_lock);
+@@ -449,6 +472,9 @@ static int tegra_gart_remove(struct platform_device *pdev)
+ {
+ 	struct gart_device *gart = platform_get_drvdata(pdev);
+ 
++	iommu_device_unregister(&gart->iommu);
++	iommu_device_sysfs_remove(&gart->iommu);
++
+ 	writel(0, gart->regs + GART_CONFIG);
+ 	if (gart->savedata)
+ 		vfree(gart->savedata);
 -- 
 2.7.4
