@@ -1,184 +1,53 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v3] iommu/s390: Add support for iommu_device handling
-Date: Wed,  9 Aug 2017 12:25:54 +0200
-Message-ID: <1502274354-643-1-git-send-email-joro@8bytes.org>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 0/2] iommu/omap: Rework cache functionality with DMA Streaming API
+Date: Wed, 09 Aug 2017 14:20:42 +0300
+Message-ID: <1541952.tFANgzzemW@avalon>
+References: <1501274954-20973-1-git-send-email-j-albarran@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1501274954-20973-1-git-send-email-j-albarran@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Josue Albarran <j-albarran@ti.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Suman Anna <s-anna@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Josue,
 
-Add support for the iommu_device_register interface to make
-the s390 hardware iommus visible to the iommu core and in
-sysfs.
+Thank you for the patches.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- arch/s390/include/asm/pci.h |  7 +++++++
- arch/s390/pci/pci.c         |  9 ++++++++-
- drivers/iommu/s390-iommu.c  | 35 +++++++++++++++++++++++++++++++++++
- 3 files changed, 50 insertions(+), 1 deletion(-)
+On Friday 28 Jul 2017 15:49:12 Josue Albarran wrote:
+> Hi Joerg,
+> 
+> This series adapts the OMAP IOMMU driver to use the DMA API to flush
+> the page table/directory table entries from the CPU caches instead of
+> the ARM assembly calls. The patches are baselined on 4.13-rc1.
+> 
+> Following is the patch summary:
+>  1. Patch 1 disables the OMAP IOMMU fault interrupts instead of
+>     disabling the MMU upon a fault, and resulted in recurring bus
+>     errors during remoteproc recovery on OMAP4. The MMU fault itself
+>     is triggered due to the missing PL310 L2 cache operations, and
+>     this patch fixes the recurring bus errors.
+>  2. The second patch makes the adaptation to the DMA API for flushing
+>     the caches. This fixes the MMU fault triggering issues in the
+>     first place on OMAP4.
+> 
+> I have tested these patches on DRA7, OMAP5, and OMAP4 platforms using
+> both OMAP IOMMU unit tests and some out-of-tree patches for exercising
+> the MMUs using the OMAP remoteproc driver.
+> 
+> Laurent,
+> Appreciate it if you can check the OMAP3ISP functionality with these
+> patches once.
 
-v2->v3:
-	- Rebased to v4.13-rc4
-	- Fixed error path in zpci_create_device() to
-	  destroy the iommu instance too (noted by
-	  Gerald Schaefer)
+I apologize for the delay, I had to resurrect my Beagleboard-xM, which 
+involved updating and then debugging U-Boot.
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index f36b4b726057..386df9adef0a 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/pci.h>
- #include <linux/mutex.h>
-+#include <linux/iommu.h>
- #include <asm-generic/pci.h>
- #include <asm/pci_clp.h>
- #include <asm/pci_debug.h>
-@@ -122,6 +123,8 @@ struct zpci_dev {
- 	unsigned long	iommu_pages;
- 	unsigned int	next_bit;
- 
-+	struct iommu_device iommu_dev;  /* IOMMU core handle */
-+
- 	char res_name[16];
- 	struct zpci_bar_struct bars[PCI_BAR_COUNT];
- 
-@@ -174,6 +177,10 @@ int clp_enable_fh(struct zpci_dev *, u8);
- int clp_disable_fh(struct zpci_dev *);
- int clp_get_state(u32 fid, enum zpci_state *state);
- 
-+/* IOMMU Interface */
-+int zpci_init_iommu(struct zpci_dev *zdev);
-+void zpci_destroy_iommu(struct zpci_dev *zdev);
-+
- #ifdef CONFIG_PCI
- /* Error handling and recovery */
- void zpci_event_error(void *);
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 7b30af5da222..001ca80fa2fe 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -776,6 +776,7 @@ void pcibios_remove_bus(struct pci_bus *bus)
- 
- 	zpci_exit_slot(zdev);
- 	zpci_cleanup_bus_resources(zdev);
-+	zpci_destroy_iommu(zdev);
- 	zpci_free_domain(zdev);
- 
- 	spin_lock(&zpci_list_lock);
-@@ -848,11 +849,15 @@ int zpci_create_device(struct zpci_dev *zdev)
- 	if (rc)
- 		goto out;
- 
-+	rc = zpci_init_iommu(zdev);
-+	if (rc)
-+		goto out_free;
-+
- 	mutex_init(&zdev->lock);
- 	if (zdev->state == ZPCI_FN_STATE_CONFIGURED) {
- 		rc = zpci_enable_device(zdev);
- 		if (rc)
--			goto out_free;
-+			goto out_destroy_iommu;
- 	}
- 	rc = zpci_scan_bus(zdev);
- 	if (rc)
-@@ -869,6 +874,8 @@ int zpci_create_device(struct zpci_dev *zdev)
- out_disable:
- 	if (zdev->state == ZPCI_FN_STATE_ONLINE)
- 		zpci_disable_device(zdev);
-+out_destroy_iommu:
-+	zpci_destroy_iommu(zdev);
- out_free:
- 	zpci_free_domain(zdev);
- out:
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 8788640756a7..85f3bc52efc2 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -18,6 +18,8 @@
-  */
- #define S390_IOMMU_PGSIZES	(~0xFFFUL)
- 
-+static struct iommu_ops s390_iommu_ops;
-+
- struct s390_domain {
- 	struct iommu_domain	domain;
- 	struct list_head	devices;
-@@ -166,11 +168,13 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- static int s390_iommu_add_device(struct device *dev)
- {
- 	struct iommu_group *group = iommu_group_get_for_dev(dev);
-+	struct zpci_dev *zdev = to_pci_dev(dev)->sysdata;
- 
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
- 	iommu_group_put(group);
-+	iommu_device_link(&zdev->iommu_dev, dev);
- 
- 	return 0;
- }
-@@ -197,6 +201,7 @@ static void s390_iommu_remove_device(struct device *dev)
- 			s390_iommu_detach_device(domain, dev);
- 	}
- 
-+	iommu_device_unlink(&zdev->iommu_dev, dev);
- 	iommu_group_remove_device(dev);
- }
- 
-@@ -327,6 +332,36 @@ static size_t s390_iommu_unmap(struct iommu_domain *domain,
- 	return size;
- }
- 
-+int zpci_init_iommu(struct zpci_dev *zdev)
-+{
-+	int rc = 0;
-+
-+	rc = iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
-+				    "s390-iommu.%08x", zdev->fid);
-+	if (rc)
-+		goto out_err;
-+
-+	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
-+
-+	rc = iommu_device_register(&zdev->iommu_dev);
-+	if (rc)
-+		goto out_sysfs;
-+
-+	return 0;
-+
-+out_sysfs:
-+	iommu_device_sysfs_remove(&zdev->iommu_dev);
-+
-+out_err:
-+	return rc;
-+}
-+
-+void zpci_destroy_iommu(struct zpci_dev *zdev)
-+{
-+	iommu_device_unregister(&zdev->iommu_dev);
-+	iommu_device_sysfs_remove(&zdev->iommu_dev);
-+}
-+
- static struct iommu_ops s390_iommu_ops = {
- 	.capable = s390_iommu_capable,
- 	.domain_alloc = s390_domain_alloc,
+Tested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
 -- 
-2.12.3
+Regards,
+
+Laurent Pinchart
