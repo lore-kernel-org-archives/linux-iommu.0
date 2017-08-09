@@ -1,36 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/4] iommu/pamu: Let PAMU depend on PCI
-Date: Wed,  9 Aug 2017 16:46:51 +0200
-Message-ID: <1502290014-2890-2-git-send-email-joro@8bytes.org>
-References: <1502290014-2890-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502290014-2890-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Varun.Sethi@freescale.com, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/4] iommu/pamu: Support generic iommu-device handles
+Date: Wed,  9 Aug 2017 16:46:50 +0200
+Message-ID: <1502290014-2890-1-git-send-email-joro@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+Hi,
 
-The driver does not compile when PCI is not selected, so
-make it depend on it.
+Here is a patch-set to support the iommu_device_register()
+interface in the fsl-pamu iommu driver. To make it work a
+few fixes (Patch 1 and 2), an additional check (Patch 3)
+were necessary.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Please review.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f73ff28..e73b7c5 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -76,6 +76,7 @@ config IOMMU_DMA
- 
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-+	depends on PCI
- 	depends on PPC_E500MC || (COMPILE_TEST && PPC)
- 	select IOMMU_API
- 	select GENERIC_ALLOCATOR
+Regards,
+
+	Joerg
+
+Joerg Roedel (4):
+  iommu/pamu: Let PAMU depend on PCI
+  iommu/pamu: Make driver depend on CONFIG_PHYS_64BIT
+  iommu/pamu: WARN when fsl_pamu_probe() is called more than once
+  iommu/pamu: Add support for generic iommu-device
+
+ drivers/iommu/Kconfig           |  2 ++
+ drivers/iommu/fsl_pamu.c        | 24 ++++++++++++++++++++++++
+ drivers/iommu/fsl_pamu.h        |  3 +++
+ drivers/iommu/fsl_pamu_domain.c |  5 ++++-
+ drivers/iommu/fsl_pamu_domain.h |  2 ++
+ 5 files changed, 35 insertions(+), 1 deletion(-)
+
 -- 
 2.7.4
