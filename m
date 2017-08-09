@@ -1,7 +1,7 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v10 05/12] iommu/amd: Add function copy_dev_tables()
-Date: Wed,  9 Aug 2017 16:33:37 +0800
-Message-ID: <1502267624-7066-6-git-send-email-bhe@redhat.com>
+Subject: [PATCH v10 06/12] iommu/amd: copy old trans table from old kernel
+Date: Wed,  9 Aug 2017 16:33:38 +0800
+Message-ID: <1502267624-7066-7-git-send-email-bhe@redhat.com>
 References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502267624-7066-1-git-send-email-bhe@redhat.com>
@@ -10,138 +10,149 @@ To: jroedel@suse.de
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add function copy_dev_tables to copy the old DEV table entries of the panicked
-kernel to the new allocated device table. Since all iommus share the same device
-table the copy only need be done one time. Here add a new global old_dev_tbl_cpy
-to point to the newly allocated device table which the content of old device
-table will be copied to. Besides, we also need to:
+Here several things need be done:
+- If iommu is pre-enabled in a normal kernel, just disable it and print
+  warning.
 
-  - Check whether all IOMMUs actually use the same device table with the same size
+- If any one of IOMMUs is not pre-enabled in kdump kernel, just continue
+  as it does in normal kernel.
 
-  - Verify that the size of the old device table is the expected size.
+- If failed to copy dev table of old kernel, continue to proceed as
+  it does in normal kernel.
 
-  - Reserve the old domain id occupied in 1st kernel to avoid touching the old
-    io-page tables. Then on-flight DMA can continue looking it up.
+- Only if all IOMMUs are pre-enabled and copy dev table is done well, free
+  the dev table allocated in early_amd_iommu_init() and make amd_iommu_dev_table
+  point to the copied one.
 
-And also define MACRO DEV_DOMID_MASK to replace magic number 0xffffULL, it can be
-reused in copy_dev_tables().
+- Disable and Re-enable event/cmd buffer,  install the copied DTE table
+  to reg, and detect and enable guest vapic.
+
+- Flush all caches
 
 Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
 v9->v10:
-  Move the copy code block out of the iommu loop.
+  Add global variable amd_iommu_pre_enabled to mark if all IOMMUs are
+  pre-enabled. If any one is not pre-enabled, just set it as false.
 
-  Change the return value of copy_device_table() to bool.
+  Check amd_iommu_pre_enabled in copy_device_table(), return directly from
+  copy_device_table() if it's false.
 
- drivers/iommu/amd_iommu.c       |  2 +-
- drivers/iommu/amd_iommu_init.c  | 62 +++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_types.h |  1 +
- 3 files changed, 64 insertions(+), 1 deletion(-)
+  Judge by the return value of copy_device_table() to decide if it will go
+  through the normal handling or special handling after copy.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 097db07354b4..b22b58b33400 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2086,7 +2086,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- 		flags    |= tmp;
- 	}
- 
--	flags &= ~(0xffffUL);
-+	flags &= ~DEV_DOMID_MASK;
- 	flags |= domain->id;
- 
- 	amd_iommu_dev_table[devid].data[1]  = flags;
+ drivers/iommu/amd_iommu_init.c | 59 ++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 51 insertions(+), 8 deletions(-)
+
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 7044510654fe..e2857204d32a 100644
+index e2857204d32a..959c25d997e1 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -195,6 +195,11 @@ spinlock_t amd_iommu_pd_lock;
-  * page table root pointer.
-  */
- struct dev_table_entry *amd_iommu_dev_table;
-+/*
-+ * Pointer to a device table which the content of old device table
-+ * will be copied to. It's only be used in kdump kernel.
-+ */
-+static struct dev_table_entry *old_dev_tbl_cpy;
+@@ -37,6 +37,7 @@
+ #include <asm/io_apic.h>
+ #include <asm/irq_remapping.h>
  
- /*
-  * The alias table is a driver specific data structure which contains the
-@@ -842,6 +847,63 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
++#include <linux/crash_dump.h>
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+ #include "irq_remapping.h"
+@@ -262,6 +263,8 @@ static int amd_iommu_enable_interrupts(void);
+ static int __init iommu_go_to_state(enum iommu_init_state state);
+ static void init_device_table_dma(void);
+ 
++static bool __initdata amd_iommu_pre_enabled = true;
++
+ bool translation_pre_enabled(struct amd_iommu *iommu)
+ {
+ 	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
+@@ -857,6 +860,8 @@ static bool copy_device_table(void)
+ 	u16 dom_id, dte_v;
+ 	gfp_t gfp_flag;
+ 
++	if (!amd_iommu_pre_enabled)
++		return false;
+ 
+ 	pr_warn("Translation is already enabled - trying to copy translation structures\n");
+ 	for_each_iommu(iommu) {
+@@ -1496,9 +1501,14 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 	iommu->int_enabled = false;
+ 
+ 	init_translation_status(iommu);
+-
+-	if (translation_pre_enabled(iommu))
+-		pr_warn("Translation is already enabled - trying to copy translation structures\n");
++	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
++		iommu_disable(iommu);
++		clear_translation_pre_enabled(iommu);
++		pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
++			iommu->index);
++	}
++	if (amd_iommu_pre_enabled)
++		amd_iommu_pre_enabled = translation_pre_enabled(iommu);
+ 
+ 	ret = init_iommu_from_acpi(iommu, h);
+ 	if (ret)
+@@ -1993,8 +2003,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
  }
  
- 
-+static bool copy_device_table(void)
-+{
-+	struct dev_table_entry *old_devtb = NULL;
-+	u32 lo, hi, devid, old_devtb_size;
-+	phys_addr_t old_devtb_phys;
-+	u64 entry, last_entry = 0;
-+	struct amd_iommu *iommu;
-+	u16 dom_id, dte_v;
-+	gfp_t gfp_flag;
-+
-+
-+	pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+	for_each_iommu(iommu) {
-+		/* All IOMMUs should use the same device table with the same size */
-+		lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-+		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-+		entry = (((u64) hi) << 32) + lo;
-+		if (last_entry && last_entry != entry) {
-+			pr_err("IOMMU:%d should use the same dev table as others!/n",
-+				iommu->index);
-+			return false;
-+		}
-+		last_entry = entry;
-+
-+		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
-+		if (old_devtb_size != dev_table_size) {
-+			pr_err("The device table size of IOMMU:%d is not expected!/n",
-+				iommu->index);
-+			return false;
-+		}
-+	}
-+
-+	old_devtb_phys = entry & PAGE_MASK;
-+	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-+	if (!old_devtb)
-+		return false;
-+
-+	gfp_flag = GFP_KERNEL | __GFP_ZERO;
-+	old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
-+				get_order(dev_table_size));
-+	if (old_dev_tbl_cpy == NULL) {
-+		pr_err("Failed to allocate memory for copying old device table!/n");
-+		return false;
-+	}
-+
-+	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-+		old_dev_tbl_cpy[devid] = old_devtb[devid];
-+		dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
-+		dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
-+		if (dte_v && dom_id)
-+			__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-+	}
-+	memunmap(old_devtb);
-+
-+	return true;
-+}
-+
- void amd_iommu_apply_erratum_63(u16 devid)
+ /*
+- * Init the device table to not allow DMA access for devices and
+- * suppress all page faults
++ * Init the device table to not allow DMA access for devices
+  */
+ static void init_device_table_dma(void)
  {
- 	int sysmgt;
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index f88e802481a3..a7f6cf8c841e 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -336,6 +336,7 @@
- #define DTE_FLAG_MASK	(0x3ffULL << 32)
- #define DTE_GLX_SHIFT	(56)
- #define DTE_GLX_MASK	(3)
-+#define DEV_DOMID_MASK	0xffffULL
+@@ -2130,14 +2139,48 @@ static void early_enable_iommu(struct amd_iommu *iommu)
  
- #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
- #define DTE_GCR3_VAL_B(x)	(((x) >> 15) & 0x0ffffULL)
+ /*
+  * This function finally enables all IOMMUs found in the system after
+- * they have been initialized
++ * they have been initialized.
++ *
++ * Or if in kdump kernel and IOMMUs are all pre-enabled, try to copy
++ * the old content of device table entries. Not this case or copy failed,
++ * just continue as normal kernel does.
+  */
+ static void early_enable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
+ 
+-	for_each_iommu(iommu)
+-		early_enable_iommu(iommu);
++
++	if (!copy_device_table()) {
++		/*
++		 * If come here because of failure in copying device table from old
++		 * kernel with all IOMMUs enabled, print error message and try to
++		 * free allocated old_dev_tbl_cpy.
++		 */
++		if (amd_iommu_pre_enabled)
++			pr_err("Failed to copy DEV table from previous kernel.\n");
++		if (old_dev_tbl_cpy != NULL)
++			free_pages((unsigned long)old_dev_tbl_cpy,
++					get_order(dev_table_size));
++
++		for_each_iommu(iommu) {
++			clear_translation_pre_enabled(iommu);
++			early_enable_iommu(iommu);
++		}
++	} else {
++		pr_info("Copied DEV table from previous kernel.\n");
++		free_pages((unsigned long)amd_iommu_dev_table,
++				get_order(dev_table_size));
++		amd_iommu_dev_table = old_dev_tbl_cpy;
++		for_each_iommu(iommu) {
++			iommu_disable_command_buffer(iommu);
++			iommu_disable_event_buffer(iommu);
++			iommu_enable_command_buffer(iommu);
++			iommu_enable_event_buffer(iommu);
++			iommu_enable_ga(iommu);
++			iommu_set_device_table(iommu);
++			iommu_flush_all_caches(iommu);
++		}
++	}
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
 -- 
 2.5.5
