@@ -1,136 +1,104 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/4] iommu/pamu: Add support for generic iommu-device
-Date: Wed,  9 Aug 2017 16:46:54 +0200
-Message-ID: <1502290014-2890-5-git-send-email-joro@8bytes.org>
-References: <1502290014-2890-1-git-send-email-joro@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: Support SVM without PASID
+Date: Wed, 9 Aug 2017 16:01:05 +0100
+Message-ID: <ad4d596c-97ec-7f06-8304-c21d42634909@arm.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+ <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+ <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+ <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+ <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
+ <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
+ <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
+ <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
+ <1ef75c2d-f980-5cef-f760-be3b133c82ca@arm.com>
+ <d737a46a-cebc-f38d-371b-ffb91b7b344a@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1502290014-2890-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <d737a46a-cebc-f38d-371b-ffb91b7b344a@huawei.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Bob Liu <liubo95@huawei.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: tianyu.lan@intel.com, kevin.tian@intel.com, kvm@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com, "xieyisheng (A)" <xieyisheng1@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On 08/08/17 01:51, Bob Liu wrote:
+> On 2017/8/7 20:52, Jean-Philippe Brucker wrote:
+>> Hi Bob,
+>>
+>> On 07/08/17 13:18, Bob Liu wrote:
+>>> On 2017/8/7 18:31, Jean-Philippe Brucker wrote:
+>>>> On 05/08/17 06:14, valmiki wrote:
+>>>> [...]
+>>>>> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
+>>>>> documentation we fill vaddr and iova in struct vfio_iommu_type1_dma_map
+>>>>> and pass them to VFIO. But if we use dynamic allocation in application
+>>>>> (say malloc), do we need to use dma API to get iova and then call
+>>>>> VFIO_IOMMU_MAP ioctl ?
+>>>>> If application needs multiple such dynamic allocations, then it need to
+>>>>> allocate large chunk and program it via VFIO_IOMMU_MAP ioctl and then
+>>>>> manage rest allocations requirements from this buffer ?
+>>>>
+>>>> Yes, without SVM, the application allocates large buffers, allocates IOVAs
+>>>> itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't rely on the
+>>>> DMA API at all, it manages IOVAs as it wants. Sizes passed to
+>>>> VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page granularity
+>>>> (that is at least 4kB), and both iova and vaddr have to be aligned on that
+>>>> granularity as well. So malloc isn't really suitable in this case, you'll
+>>>> need mmap. The application can then implement a small allocator to manage
+>>>> the DMA pool created with VFIO_IOMMU_MAP.
+>>>>
+>>>> With SVM the application binds its address space to the device, and then
+>>>> uses malloc for all DMA buffers, no need for VFIO_IOMMU_MAP.
+>>>>
+>>>
+>>> Hi Jean,
+>>>
+>>> I think there is another way to support SVM without PASID.
+>>>
+>>> Suppose there is a device in the same SOC-chip, the device access memory through SMMU(using internal bus instead of PCIe)
+>>> Once page fault, the device send an event with (vaddr, substreamID) to SMMU, then SMMU triggers an event interrupt.
+>>>
+>>> In the event interrupt handler, we can implement the same logic as PRI interrupt in your patch.
+>>> What do you think about that?
+>> What you're describing is the SMMU stall model for platform devices. From
+>> the driver perspective it's the same as PRI and PASID (SubstreamID=PASID).
+>>
+> 
+> Indeed!
+> 
+>> When a stall-capable device accesses unmapped memory, the SMMU parks the
+>> transaction and sends an event marked "stall" on the event queue, with a
+>> stall tag (STAG, roughly equivalent to PRG Index). The OS handles the
+>> fault and sends a CMD_RESUME command with the status and the STAG. Then
+>> the SMMU completes the access or terminates it.
+>>
+>> In a prototype I have, the stall implementation reuses most of the
+> 
+> Glad to hear that.
+> Would you mind to share me the prototype patch？
+> 
+>> PASID/PRI code. The main difficulty is defining SSID and stall capability
+>> in firmware, as there are no standard capability probing for platform
+>> devices. Stall-capable devices must be able to wait an indefinite amount
+>> of time that their DMA transactions returns, therefore the stall model
+>> cannot work with PCI, only some integrated devices.
+>>
+> 
+> I happen to have a board with such devices and like to do the test.
+> Will re-post a full version patch upstream once completing the verification.
 
-This patch adds a global iommu-handle to the pamu driver and
-initializes it at probe time. Also link devices added to the
-iommu to this handle.
+Cool! You can find the prototype here:
+git://linux-arm.org/linux-jpb.git svm/stall
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/fsl_pamu.c        | 17 +++++++++++++++++
- drivers/iommu/fsl_pamu.h        |  3 +++
- drivers/iommu/fsl_pamu_domain.c |  5 ++++-
- drivers/iommu/fsl_pamu_domain.h |  2 ++
- 4 files changed, 26 insertions(+), 1 deletion(-)
+Please let me know if you get anywhere with it, I'd like to get the series
+moving again.
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 9ee8e9e..9238a85 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -44,6 +44,8 @@ static struct paace *spaact;
- 
- static bool probed;			/* Has PAMU been probed? */
- 
-+struct iommu_device pamu_iommu;	/* IOMMU core code handle */
-+
- /*
-  * Table for matching compatible strings, for device tree
-  * guts node, for QorIQ SOCs.
-@@ -1154,6 +1156,18 @@ static int fsl_pamu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto error_genpool;
- 
-+	ret = iommu_device_sysfs_add(&pamu_iommu, dev, NULL, "iommu0");
-+	if (ret)
-+		goto error_genpool;
-+
-+	iommu_device_set_ops(&pamu_iommu, &fsl_pamu_ops);
-+
-+	ret = iommu_device_register(&pamu_iommu);
-+	if (ret) {
-+		dev_err(dev, "Can't register iommu device\n");
-+		goto error_sysfs;
-+	}
-+
- 	pamubypenr = in_be32(&guts_regs->pamubypenr);
- 
- 	for (pamu_reg_off = 0, pamu_counter = 0x80000000; pamu_reg_off < size;
-@@ -1181,6 +1195,9 @@ static int fsl_pamu_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
-+error_sysfs:
-+	iommu_device_sysfs_remove(&pamu_iommu);
-+
- error_genpool:
- 	gen_pool_destroy(spaace_pool);
- 
-diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h
-index c3434f2..fa48222 100644
---- a/drivers/iommu/fsl_pamu.h
-+++ b/drivers/iommu/fsl_pamu.h
-@@ -391,6 +391,9 @@ struct ome {
- #define EOE_WWSAOL      0x1e    /* Write with stash allocate only and lock */
- #define EOE_VALID       0x80
- 
-+extern const struct iommu_ops fsl_pamu_ops;
-+extern struct iommu_device pamu_iommu;	/* IOMMU core code handle */
-+
- /* Function prototypes */
- int pamu_domain_init(void);
- int pamu_enable_liodn(int liodn);
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index da0e1e3..914953b 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -983,11 +983,14 @@ static int fsl_pamu_add_device(struct device *dev)
- 
- 	iommu_group_put(group);
- 
-+	iommu_device_link(&pamu_iommu, dev);
-+
- 	return 0;
- }
- 
- static void fsl_pamu_remove_device(struct device *dev)
- {
-+	iommu_device_unlink(&pamu_iommu, dev);
- 	iommu_group_remove_device(dev);
- }
- 
-@@ -1047,7 +1050,7 @@ static u32 fsl_pamu_get_windows(struct iommu_domain *domain)
- 	return dma_domain->win_cnt;
- }
- 
--static const struct iommu_ops fsl_pamu_ops = {
-+const struct iommu_ops fsl_pamu_ops = {
- 	.capable	= fsl_pamu_capable,
- 	.domain_alloc	= fsl_pamu_domain_alloc,
- 	.domain_free    = fsl_pamu_domain_free,
-diff --git a/drivers/iommu/fsl_pamu_domain.h b/drivers/iommu/fsl_pamu_domain.h
-index f2b0f74..6d8661e 100644
---- a/drivers/iommu/fsl_pamu_domain.h
-+++ b/drivers/iommu/fsl_pamu_domain.h
-@@ -21,6 +21,8 @@
- 
- #include "fsl_pamu.h"
- 
-+const struct iommu_ops fsl_pamu_ops;
-+
- struct dma_window {
- 	phys_addr_t paddr;
- 	u64 size;
--- 
-2.7.4
+Thanks,
+Jean
