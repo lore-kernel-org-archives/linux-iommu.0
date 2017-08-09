@@ -1,15 +1,16 @@
 From: Jon Derrick <jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/3] pci: Generalize is_vmd behavior
-Date: Wed, 9 Aug 2017 11:02:41 -0600
-Message-ID: <d70aa83d-8d9c-2393-8ce5-5890062134a7@intel.com>
+Subject: Re: [PATCH 3/3] iommu: prevent VMD child devices from being remapping
+	targets
+Date: Wed, 9 Aug 2017 11:13:30 -0600
+Message-ID: <e1ead7c8-0891-f1b2-e5b0-d601d1af80e0@intel.com>
 References: <20170807195713.10963-1-jonathan.derrick@intel.com>
-	<20170807195713.10963-2-jonathan.derrick@intel.com>
-	<20170811170319.GB17039@bhelgaas-glaptop.roam.corp.google.com>
+	<20170807195713.10963-3-jonathan.derrick@intel.com>
+	<fda8e2c5-11da-7189-794c-59a68273e4d8@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170811170319.GB17039-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <fda8e2c5-11da-7189-794c-59a68273e4d8-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,107 +21,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Fugate <david.fugate-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Scott Bauer <scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Fugate <david.fugate-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Scott Bauer <scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/11/2017 11:03 AM, Bjorn Helgaas wrote:
-> On Mon, Aug 07, 2017 at 01:57:12PM -0600, Jon Derrick wrote:
->> Generalize is_vmd behavior to remove dependency on domain number
->> checking in pci quirks.
->>
->> Signed-off-by: Jon Derrick <jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> ---
->>  arch/x86/include/asm/pci.h | 8 +++-----
->>  arch/x86/pci/common.c      | 2 +-
->>  drivers/pci/quirks.c       | 2 +-
->>  include/linux/pci.h        | 4 ++++
->>  4 files changed, 9 insertions(+), 7 deletions(-)
->>
->> diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
->> index 473a729..5c5d54a 100644
->> --- a/arch/x86/include/asm/pci.h
->> +++ b/arch/x86/include/asm/pci.h
->> @@ -60,16 +60,14 @@ static inline void *_pci_root_bus_fwnode(struct pci_bus *bus)
->>  #define pci_root_bus_fwnode	_pci_root_bus_fwnode
->>  #endif
->>  
->> -static inline bool is_vmd(struct pci_bus *bus)
->> -{
->>  #if IS_ENABLED(CONFIG_VMD)
->> +static inline bool pci_bus_is_vmd(struct pci_bus *bus)
->> +{
->>  	struct pci_sysdata *sd = bus->sysdata;
->>  
->>  	return sd->vmd_domain;
->> -#else
->> -	return false;
->> -#endif
->>  }
->> +#endif
->>  
->>  /* Can be used to override the logic in pci_scan_bus for skipping
->>     already-configured bus numbers - to be used for buggy BIOSes
->> diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
->> index dbe2132..18b2277 100644
->> --- a/arch/x86/pci/common.c
->> +++ b/arch/x86/pci/common.c
->> @@ -662,7 +662,7 @@ static void set_dma_domain_ops(struct pci_dev *pdev) {}
->>  
->>  static void set_dev_domain_options(struct pci_dev *pdev)
->>  {
->> -	if (is_vmd(pdev->bus))
->> +	if (pci_bus_is_vmd(pdev->bus))
->>  		pdev->hotplug_user_indicators = 1;
->>  }
->>  
->> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
->> index 6967c6b..ba47995 100644
->> --- a/drivers/pci/quirks.c
->> +++ b/drivers/pci/quirks.c
->> @@ -4666,7 +4666,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x443, quirk_intel_qat_vf_cap);
->>  static void quirk_no_aersid(struct pci_dev *pdev)
->>  {
->>  	/* VMD Domain */
->> -	if (pdev->bus->sysdata && pci_domain_nr(pdev->bus) >= 0x10000)
->> +	if (pci_bus_is_vmd(pdev->bus))
-> 
-> I like this part ...
-> 
->>  		pdev->bus->bus_flags |= PCI_BUS_FLAGS_NO_AERSID;
->>  }
->>  DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x2030, quirk_no_aersid);
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 4869e66..0299d8b 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -1471,6 +1471,10 @@ static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
->>  static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
->>  #endif /* CONFIG_PCI_DOMAINS */
->>  
->> +#if !IS_ENABLED(CONFIG_VMD)
->> +static inline bool pci_bus_is_vmd(struct pci_bus *bus) { return false; }
->> +#endif
-> 
-> But not so much this part.  VMD is (AFAIK) still fundamentally an
-> x86-only thing, so I'd like it better if this could all be within
-> arch/x86.  Could this be done by moving quirk_no_aersid() to
-> arch/x86/pci/fixup.c?
-> 
-Thanks for pointing this out. I'll think of something different and
-localize it to the x86 code domain.
+Hi Robin, thanks for the reply.
 
-> BTW, CONFIG_VMD in drivers/pci/host/Kconfig is currently "depends on
-> SRCU".  I'm not a Kconfig expert, but that doesn't seem like an
-> intuitive connection.  And it's the only such dependency on SRCU in
-> the tree -- most other places use "select SRCU", which makes more
-> sense to me.
-I agree - most places use select SRCU. I'll add that to v2.
-
+On 08/11/2017 12:25 PM, Robin Murphy wrote:
+> On 07/08/17 20:57, Jon Derrick wrote:
+>> VMD child devices must use the VMD endpoint's ID as the DMA source.
+>> Because of this, there needs to be a way to link the parent VMD
+>> endpoint's DMAR domain to the VMD child devices' DMAR domain such that
+>> attaching and detaching child devices modify the endpoint's DMAR mapping
+>> and prevents early detaching.
+> > That sounds like either pci_device_group() needs modifying, or perhaps
+> that intel-iommu needs its own extended iommu_ops::device_group
+> implementation, to ensure that VMD child devices get put in the same
+> group as their parent - if they share requester IDs they can't feasibly
+> be attached to different domains anyway.
 > 
->>  /*
->>   * Generic implementation for PCI domain support. If your
->>   * architecture does not need custom management of PCI
->> -- 
->> 2.9.4
->>
+> Robin.
+Yes it seems like that to me too. I have a high-level understanding of
+the changes required but not too much in the nitty-gritty details. It's
+a bit more complicated anyways because VMD emerges a set of root ports,
+and AFAICT, PCI ACS end at the root ports and iommu groups rely on ACS
+to group devices. Either way it's not within the scope of VMD.
