@@ -1,53 +1,60 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 0/2] iommu/omap: Rework cache functionality with DMA Streaming API
-Date: Wed, 09 Aug 2017 14:20:42 +0300
-Message-ID: <1541952.tFANgzzemW@avalon>
-References: <1501274954-20973-1-git-send-email-j-albarran@ti.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [RESEND PATCH 0/4] iommu: add qcom_iommu for early "B" family devices
+Date: Wed,  9 Aug 2017 10:41:51 -0400
+Message-ID: <20170809144155.22224-1-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1501274954-20973-1-git-send-email-j-albarran@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Josue Albarran <j-albarran@ti.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Suman Anna <s-anna@ti.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Josue,
+An iommu driver for Qualcomm "B" family devices which do implement the
+ARM SMMU spec, but not in a way that arm-smmu can support.
 
-Thank you for the patches.
+(I initially added support to arm-smmu, but it was decided that approach
+was too intrusive and it would be cleaner to have a separate driver.)
 
-On Friday 28 Jul 2017 15:49:12 Josue Albarran wrote:
-> Hi Joerg,
-> 
-> This series adapts the OMAP IOMMU driver to use the DMA API to flush
-> the page table/directory table entries from the CPU caches instead of
-> the ARM assembly calls. The patches are baselined on 4.13-rc1.
-> 
-> Following is the patch summary:
->  1. Patch 1 disables the OMAP IOMMU fault interrupts instead of
->     disabling the MMU upon a fault, and resulted in recurring bus
->     errors during remoteproc recovery on OMAP4. The MMU fault itself
->     is triggered due to the missing PL310 L2 cache operations, and
->     this patch fixes the recurring bus errors.
->  2. The second patch makes the adaptation to the DMA API for flushing
->     the caches. This fixes the MMU fault triggering issues in the
->     first place on OMAP4.
-> 
-> I have tested these patches on DRA7, OMAP5, and OMAP4 platforms using
-> both OMAP IOMMU unit tests and some out-of-tree patches for exercising
-> the MMUs using the OMAP remoteproc driver.
-> 
-> Laurent,
-> Appreciate it if you can check the OMAP3ISP functionality with these
-> patches once.
+I should note that all the dependencies for this driver have been merged
+since 4.12, and it is the last thing needed for having another fully-
+enabled (gpu/display/video codec/etc) ARM device that is fully upstream.
 
-I apologize for the delay, I had to resurrect my Beagleboard-xM, which 
-involved updating and then debugging U-Boot.
+These patches can also be found at:
 
-Tested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+  git://people.freedesktop.org/~robclark/linux qcom_iommu-next
+
+  https://cgit.freedesktop.org/~robclark/linux/log/?h=qcom_iommu-next
+
+No change since last time.
+
+Rob Clark (3):
+  Docs: dt: document qcom iommu bindings
+  iommu: arm-smmu: split out register defines
+  iommu: add qcom_iommu
+
+Stanimir Varbanov (1):
+  iommu: qcom: initialize secure page table
+
+ .../devicetree/bindings/iommu/qcom,iommu.txt       | 121 +++
+ drivers/iommu/Kconfig                              |  10 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/arm-smmu-regs.h                      | 220 +++++
+ drivers/iommu/arm-smmu.c                           | 211 +----
+ drivers/iommu/qcom_iommu.c                         | 932 +++++++++++++++++++++
+ 6 files changed, 1293 insertions(+), 202 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+ create mode 100644 drivers/iommu/arm-smmu-regs.h
+ create mode 100644 drivers/iommu/qcom_iommu.c
 
 -- 
-Regards,
-
-Laurent Pinchart
+2.13.0
