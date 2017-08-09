@@ -1,7 +1,7 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v10 07/12] iommu/amd: Do sanity check for address translation and irq remap of old dev table entry
-Date: Wed,  9 Aug 2017 16:33:39 +0800
-Message-ID: <1502267624-7066-8-git-send-email-bhe@redhat.com>
+Subject: [PATCH v10 09/12] iommu/amd: Use is_attach_deferred call-back
+Date: Wed,  9 Aug 2017 16:33:41 +0800
+Message-ID: <1502267624-7066-10-git-send-email-bhe@redhat.com>
 References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502267624-7066-1-git-send-email-bhe@redhat.com>
@@ -10,100 +10,86 @@ To: jroedel@suse.de
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Firstly split the dev table entry copy into address translation part
-and irq remapping part. Because these two parts could be enabled
-independently.
-
-Secondly do sanity check for address translation and irq remap of old
-dev table entry separately.
+Implement call-back is_attach_deferred and use it to defer the
+domain attach from iommu driver init to device driver init when
+iommu is pre-enabled in kdump kernel.
 
 Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- drivers/iommu/amd_iommu.c       |  5 -----
- drivers/iommu/amd_iommu_init.c  | 23 ++++++++++++++++++++---
- drivers/iommu/amd_iommu_types.h |  8 ++++++++
- 3 files changed, 28 insertions(+), 8 deletions(-)
+ drivers/iommu/amd_iommu.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b22b58b33400..dab901b4f0f9 100644
+index dab901b4f0f9..eebf4590cef9 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3776,11 +3776,6 @@ EXPORT_SYMBOL(amd_iommu_device_info);
+@@ -121,6 +121,7 @@ struct iommu_dev_data {
+ 					     PPR completions */
+ 	u32 errata;			  /* Bitmap for errata to apply */
+ 	bool use_vapic;			  /* Enable device to use vapic mode */
++	bool defer_attach;
  
- static struct irq_chip amd_ir_chip;
- 
--#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
--#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
--#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
--#define DTE_IRQ_REMAP_ENABLE    1ULL
--
- static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+ 	struct ratelimit_state rs;	  /* Ratelimit IOPF messages */
+ };
+@@ -371,12 +372,17 @@ static u16 get_alias(struct device *dev)
+ static struct iommu_dev_data *find_dev_data(u16 devid)
  {
- 	u64 dte;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 959c25d997e1..d08ad74b0928 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -852,12 +852,12 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
+ 	struct iommu_dev_data *dev_data;
++	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
  
- static bool copy_device_table(void)
+ 	dev_data = search_dev_data(devid);
+ 
+-	if (dev_data == NULL)
++	if (dev_data == NULL) {
+ 		dev_data = alloc_dev_data(devid);
+ 
++		if (translation_pre_enabled(iommu))
++			dev_data->defer_attach = true;
++	}
++
+ 	return dev_data;
+ }
+ 
+@@ -2477,11 +2483,18 @@ static struct iommu_group *amd_iommu_device_group(struct device *dev)
+ static struct protection_domain *get_domain(struct device *dev)
  {
-+	u64 int_ctl, int_tab_len, entry, last_entry = 0;
- 	struct dev_table_entry *old_devtb = NULL;
- 	u32 lo, hi, devid, old_devtb_size;
- 	phys_addr_t old_devtb_phys;
--	u64 entry, last_entry = 0;
- 	struct amd_iommu *iommu;
--	u16 dom_id, dte_v;
-+	u16 dom_id, dte_v, irq_v;
- 	gfp_t gfp_flag;
+ 	struct protection_domain *domain;
++	struct iommu_domain *io_domain;
  
- 	if (!amd_iommu_pre_enabled)
-@@ -901,8 +901,25 @@ static bool copy_device_table(void)
- 		old_dev_tbl_cpy[devid] = old_devtb[devid];
- 		dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
- 		dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
--		if (dte_v && dom_id)
-+
-+		if (dte_v && dom_id) {
-+			old_dev_tbl_cpy[devid].data[0] = old_devtb[devid].data[0];
-+			old_dev_tbl_cpy[devid].data[1] = old_devtb[devid].data[1];
- 			__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-+		}
-+
-+		irq_v = old_devtb[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
-+		int_ctl = old_devtb[devid].data[2] & DTE_IRQ_REMAP_INTCTL_MASK;
-+		int_tab_len = old_devtb[devid].data[2] & DTE_IRQ_TABLE_LEN_MASK;
-+		if (irq_v && (int_ctl || int_tab_len)) {
-+			if ((int_ctl != DTE_IRQ_REMAP_INTCTL) ||
-+			    (int_tab_len != DTE_IRQ_TABLE_LEN)) {
-+				pr_err("Wrong old irq remapping flag: %#x\n", devid);
-+				return false;
-+			}
-+
-+		        old_dev_tbl_cpy[devid].data[2] = old_devtb[devid].data[2];
-+		}
- 	}
- 	memunmap(old_devtb);
+ 	if (!check_device(dev))
+ 		return ERR_PTR(-EINVAL);
  
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index a7f6cf8c841e..f0979183ec9b 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -250,6 +250,14 @@
+ 	domain = get_dev_data(dev)->domain;
++	if (domain == NULL && get_dev_data(dev)->defer_attach) {
++		get_dev_data(dev)->defer_attach = false;
++		io_domain = iommu_get_domain_for_dev(dev);
++		domain = to_pdomain(io_domain);
++		attach_device(dev, domain);
++	}
+ 	if (!dma_ops_domain(domain))
+ 		return ERR_PTR(-EBUSY);
  
- #define GA_GUEST_NR		0x1
+@@ -3372,6 +3385,13 @@ static void amd_iommu_apply_resv_region(struct device *dev,
+ 	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
+ }
  
-+/* Bit value definition for dte irq remapping fields*/
-+#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-+#define DTE_IRQ_REMAP_INTCTL_MASK	(0x3ULL << 60)
-+#define DTE_IRQ_TABLE_LEN_MASK	(0xfULL << 1)
-+#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-+#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-+#define DTE_IRQ_REMAP_ENABLE    1ULL
++static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
++					 struct device *dev)
++{
++	struct iommu_dev_data *dev_data = dev->archdata.iommu;
++	return dev_data->defer_attach;
++}
 +
- #define PAGE_MODE_NONE    0x00
- #define PAGE_MODE_1_LEVEL 0x01
- #define PAGE_MODE_2_LEVEL 0x02
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3388,6 +3408,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.get_resv_regions = amd_iommu_get_resv_regions,
+ 	.put_resv_regions = amd_iommu_put_resv_regions,
+ 	.apply_resv_region = amd_iommu_apply_resv_region,
++	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+ };
+ 
 -- 
 2.5.5
