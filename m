@@ -1,13 +1,11 @@
-From: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
-Subject: Re: [RFC PATCH v5 1/5] iommu: Add capabilities to a group
-Date: Wed, 9 Aug 2017 15:55:56 +1000
-Message-ID: <20170809055556.GK13670@umbus.fritz.box>
-References: <20170807072548.3023-1-aik@ozlabs.ru>
-	<20170807072548.3023-2-aik@ozlabs.ru>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v10 00/12] Fix the on-flight DMA issue on system with amd iommu
+Date: Wed,  9 Aug 2017 16:33:32 +0800
+Message-ID: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5093738771653656401=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170807072548.3023-2-aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,172 +15,117 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Cc: Vlad Tsyrklevich <vlad-NIZqynvkaCU43zv7NVfAiQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kyle Mahlkuch <Kyle.Mahlkuch-qyM6JfAXOaQ@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mauricio Faria de Oliveira <mauricfo-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+When kernel panicked and jump into the kdump kernel, DMA started by the
+1st kernel is not stopped, this is called on-flight DMA. In the current
+code it will disable iommu and build new translation table and attach
+device to it. This will cause:
 
---===============5093738771653656401==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="nzri8VXeXB/g5ayr"
-Content-Disposition: inline
+ 1. IO_PAGE_FAULT warning message can be seen.
+ 2. transfer data to or from incorrect areas of memory.
 
+Sometime it causes the dump failure or kernel hang.
 
---nzri8VXeXB/g5ayr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The principle of the fix is to copy the old device table to let the old-flight
+DMA continue looking up to get correct address translation and irq remap result,
+meanwhile to defer the assignment of device to domain to device driver initializtion
+stage. The old domain ids used in 1st kernel are reserved. And a new call-back
+is_attach_deferred() is added to iommu-ops, will check whether we need defer the
+domain attach/detach in iommu-core code. If defer is needed, just return directly
+from amd iommu attach/detach function. The attachment will be done in device driver
+initializaiton stage when calling get_domain().
 
-On Mon, Aug 07, 2017 at 05:25:44PM +1000, Alexey Kardashevskiy wrote:
-> This introduces capabilities to IOMMU groups. The first defined
-> capability is IOMMU_GROUP_CAP_ISOLATE_MSIX which tells the IOMMU
-> group users that a particular IOMMU group is capable of MSIX message
-> filtering; this is useful when deciding whether or not to allow mapping
-> of MSIX table to the userspace. Various architectures will enable it
-> when they decide that it is safe to do so.
->=20
-> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Change history:
+v9->v10:
+    Main changes are as follows according to Joerg's suggestion. The detailed
+    changes will be added to each patch.
+    - Drop the old patch 12/13 patch.
 
-Reviewed-by: David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+    - Move the old dev table copy out of iommu loop in copy_dev_tables().
 
-This seems like a reasonable concept that's probably useful for
-something, whether or not it's the best approach for the problem at
-hand.
+    - Add global variable amd_iommu_pre_enabled to optimize code change
+      when call copy_dev_tables().
 
-> ---
->  include/linux/iommu.h | 20 ++++++++++++++++++++
->  drivers/iommu/iommu.c | 28 ++++++++++++++++++++++++++++
->  2 files changed, 48 insertions(+)
->=20
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 2cb54adc4a33..6b6f3c2f4904 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -155,6 +155,9 @@ struct iommu_resv_region {
->  	enum iommu_resv_type	type;
->  };
-> =20
-> +/* IOMMU group capabilities */
-> +#define IOMMU_GROUP_CAP_ISOLATE_MSIX		(1U)
-> +
->  #ifdef CONFIG_IOMMU_API
-> =20
->  /**
-> @@ -312,6 +315,11 @@ extern void *iommu_group_get_iommudata(struct iommu_=
-group *group);
->  extern void iommu_group_set_iommudata(struct iommu_group *group,
->  				      void *iommu_data,
->  				      void (*release)(void *iommu_data));
-> +extern void iommu_group_set_caps(struct iommu_group *group,
-> +				 unsigned long clearcaps,
-> +				 unsigned long setcaps);
-> +extern bool iommu_group_is_capable(struct iommu_group *group,
-> +				   unsigned long cap);
->  extern int iommu_group_set_name(struct iommu_group *group, const char *n=
-ame);
->  extern int iommu_group_add_device(struct iommu_group *group,
->  				  struct device *dev);
-> @@ -513,6 +521,18 @@ static inline void iommu_group_set_iommudata(struct =
-iommu_group *group,
->  {
->  }
-> =20
-> +static inline void iommu_group_set_caps(struct iommu_group *group,
-> +					unsigned long clearcaps,
-> +					unsigned long setcaps)
-> +{
-> +}
-> +
-> +static inline bool iommu_group_is_capable(struct iommu_group *group,
-> +					  unsigned long cap)
-> +{
-> +	return false;
-> +}
-> +
->  static inline int iommu_group_set_name(struct iommu_group *group,
->  				       const char *name)
->  {
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3f6ea160afed..6b2c34fe2c3d 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -52,6 +52,7 @@ struct iommu_group {
->  	void (*iommu_data_release)(void *iommu_data);
->  	char *name;
->  	int id;
-> +	unsigned long caps;
->  	struct iommu_domain *default_domain;
->  	struct iommu_domain *domain;
->  };
-> @@ -447,6 +448,33 @@ void iommu_group_set_iommudata(struct iommu_group *g=
-roup, void *iommu_data,
->  EXPORT_SYMBOL_GPL(iommu_group_set_iommudata);
-> =20
->  /**
-> + * iommu_group_set_caps - Change the group capabilities
-> + * @group: the group
-> + * @clearcaps: capabilities mask to remove
-> + * @setcaps: capabilities mask to add
-> + *
-> + * IOMMU groups can be capable of various features which device drivers
-> + * may read and adjust the behavior.
-> + */
-> +void iommu_group_set_caps(struct iommu_group *group,
-> +		unsigned long clearcaps, unsigned long setcaps)
-> +{
-> +	group->caps &=3D ~clearcaps;
-> +	group->caps |=3D setcaps;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_set_caps);
-> +
-> +/**
-> + * iommu_group_is_capable - Returns if a group capability is present
-> + * @group: the group
-> + */
-> +bool iommu_group_is_capable(struct iommu_group *group, unsigned long cap)
-> +{
-> +	return !!(group->caps & cap);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_is_capable);
-> +
-> +/**
->   * iommu_group_set_name - set name for a group
->   * @group: the group
->   * @name: name
+v8->v9:
+    Made changes according to Joerg's reviewing comments and suggestions:
+    - Check if all IOMMUs are pre-enabled, otherwise do not copy dev table
+      and just continue as normal kernel does.
 
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+    - Add a new global old_dev_tbl_cpy to point to a newly allocated device
+      table. The content of old device table will be copied to the specific
+      device table for copying which old_dev_tbl_cpy points at. If copy failed
+      we can still use the amd_iommu_dev_table which is allocated in
+      early_amd_iommu_init(). This is for better rolling back if copy failed,
+      the amd_iommu_dev_table has got necessary initialization since iommu init.
 
---nzri8VXeXB/g5ayr
-Content-Type: application/pgp-signature; name="signature.asc"
+    - Always allocate device table with GFP_DMA32 flag to make sure that they
+      are under 4G. This tries to work around the issue mentioned in patch 10/13.
+      Meanwhile double check if the address of device table is above 4G since
+      it could be touched accidentally in corrupted 1st kernel and not trustworthy
+      any more.
 
------BEGIN PGP SIGNATURE-----
+v7->v8:
+    Rebase patchset v7 on the latest v4.13-rc1.
+    - And re-enable printing IO_PAGE_FAULT message in kdump kernel.
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAlmKo+kACgkQbDjKyiDZ
-s5I0vBAAhy1jVDxiK6a1NCKKJFq/IhRToUhelylStIdVsad3R9h0E1dq4elxrOcs
-z976zHu5FRvCoaSD4SItOXSxHvqtDJRvnA94KL3ZZUF1ccfkDhMQy9UwXPDEwftU
-rFbrdbjqqiJMiposBGxZTdlDbCLYB1Y0v0mfkCQudvaTHuNAzR18dT0TpWiA85ld
-z/9nv/ztYNni8jYCLdLmLr4rUW4MmaKrTMdtGiEGz81EqMG09JyRqOGqOQ5FRNn2
-5ORbkpINJKv4xRglYmBlXrhWrysSvWPCh9QfZohgOQmHmjxFg3GB0Wka/CvFVHfg
-kuQFhTJWdHmLy3ucwDMlO48OQhxSZczRPNzGamFfMlEsrlrReGHmjmFhOy4awFSq
-Eu7WmitKTzPrZ03MPpk7mNq271EOdgWkQhob1Nwi84JaQWJAbgNlGjiNy0ZzvVUz
-gw/JsOe3FXjgLAWon3XWthHf/esWQQxficwuS0Nq2Wlf8eIv291GMEg45kEqLhaA
-94PnizhHdWB4ZUIJ6G4CrpVcWHnMA5YyidOo9RxwrSrDA1ZIv3EwPBTR1jtjyjq1
-wE6XKqsrtV/bRmH1VITr9uT1GuC3h0iLGFIeQgvbIy4Kaq6HcoXZV1JDaJq4m4nO
-Uy3QWpn4vVvJtn3RWB4OuZQ8LSSI7yfzqOe7XUYpBbpY5C1NgPA=
-=C9sa
------END PGP SIGNATURE-----
-
---nzri8VXeXB/g5ayr--
-
---===============5093738771653656401==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+    - Only disable iommu if amd_iommu=off is specified in kdump kernel.
 
 
---===============5093738771653656401==--
+v6->v7:
+    Two main changes are made according to Joerg's suggestion:
+    - Add is_attach_deferred call-back to iommu-ops. With this domain
+      can be deferred to device driver init cleanly.
+
+    - Allocate memory below 4G for dev table if translation pre-enabled.
+      AMD engineer pointed out that it's unsafe to update the device-table
+      while iommu is enabled. device-table pointer update is split up into
+      two 32bit writes in the IOMMU hardware. So updating it while the IOMMU
+      is enabled could have some nasty side effects.
+
+v5->v6:
+    According to Joerg's comments made several below main changes:
+    - Add sanity check when copy old dev tables.
+
+    - If a device is set up with guest translations (DTE.GV=1), then don't
+      copy that information but move the device over to an empty guest-cr3
+      table and handle the faults in the PPR log (which just answer them
+      with INVALID).
+
+v5:
+    bnx2 NIC can't reset itself during driver init. Post patch to reset
+    it during driver init. IO_PAGE_FAULT can't be seen anymore.
+
+    Below is link of v5 post.
+    https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
+
+
+Baoquan He (12):
+  iommu/amd: Detect pre enabled translation
+  iommu/amd: add several helper functions
+  Revert "iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel"
+  iommu/amd: Define bit fields for DTE particularly
+  iommu/amd: Add function copy_dev_tables()
+  iommu/amd: copy old trans table from old kernel
+  iommu/amd: Do sanity check for address translation and irq remap of
+    old dev table entry
+  iommu: Add is_attach_deferred call-back to iommu-ops
+  iommu/amd: Use is_attach_deferred call-back
+  iommu/amd: Allocate memory below 4G for dev table if translation
+    pre-enabled
+  iommu/amd: Don't copy GCR3 table root pointer
+  iommu/amd: Disable iommu only if amd_iommu=off is specified
+
+ drivers/iommu/amd_iommu.c       |  65 ++++++------
+ drivers/iommu/amd_iommu_init.c  | 223 +++++++++++++++++++++++++++++++++++-----
+ drivers/iommu/amd_iommu_proto.h |   2 +
+ drivers/iommu/amd_iommu_types.h |  55 +++++++++-
+ drivers/iommu/amd_iommu_v2.c    |  18 +++-
+ drivers/iommu/iommu.c           |   8 ++
+ include/linux/iommu.h           |   1 +
+ 7 files changed, 306 insertions(+), 66 deletions(-)
+
+-- 
+2.5.5
