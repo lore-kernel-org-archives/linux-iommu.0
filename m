@@ -1,11 +1,13 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v10 00/12] Fix the on-flight DMA issue on system with amd iommu
-Date: Wed,  9 Aug 2017 16:33:32 +0800
-Message-ID: <1502267624-7066-1-git-send-email-bhe@redhat.com>
+Subject: [PATCH v10 02/12] iommu/amd: add several helper functions
+Date: Wed,  9 Aug 2017 16:33:34 +0800
+Message-ID: <1502267624-7066-3-git-send-email-bhe@redhat.com>
+References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1502267624-7066-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,113 +21,90 @@ To: jroedel-l3A5Bk7waGM@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When kernel panicked and jump into the kdump kernel, DMA started by the
-1st kernel is not stopped, this is called on-flight DMA. In the current
-code it will disable iommu and build new translation table and attach
-device to it. This will cause:
+Move single iommu enabling codes into a wrapper function early_enable_iommu().
+This can make later kdump change easier.
 
- 1. IO_PAGE_FAULT warning message can be seen.
- 2. transfer data to or from incorrect areas of memory.
+And also add iommu_disable_command_buffer and iommu_disable_event_buffer
+for later usage.
 
-Sometime it causes the dump failure or kernel hang.
+Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c | 42 +++++++++++++++++++++++++++++++-----------
+ 1 file changed, 31 insertions(+), 11 deletions(-)
 
-The principle of the fix is to copy the old device table to let the old-flight
-DMA continue looking up to get correct address translation and irq remap result,
-meanwhile to defer the assignment of device to domain to device driver initializtion
-stage. The old domain ids used in 1st kernel are reserved. And a new call-back
-is_attach_deferred() is added to iommu-ops, will check whether we need defer the
-domain attach/detach in iommu-core code. If defer is needed, just return directly
-from amd iommu attach/detach function. The attachment will be done in device driver
-initializaiton stage when calling get_domain().
-
-Change history:
-v9->v10:
-    Main changes are as follows according to Joerg's suggestion. The detailed
-    changes will be added to each patch.
-    - Drop the old patch 12/13 patch.
-
-    - Move the old dev table copy out of iommu loop in copy_dev_tables().
-
-    - Add global variable amd_iommu_pre_enabled to optimize code change
-      when call copy_dev_tables().
-
-v8->v9:
-    Made changes according to Joerg's reviewing comments and suggestions:
-    - Check if all IOMMUs are pre-enabled, otherwise do not copy dev table
-      and just continue as normal kernel does.
-
-    - Add a new global old_dev_tbl_cpy to point to a newly allocated device
-      table. The content of old device table will be copied to the specific
-      device table for copying which old_dev_tbl_cpy points at. If copy failed
-      we can still use the amd_iommu_dev_table which is allocated in
-      early_amd_iommu_init(). This is for better rolling back if copy failed,
-      the amd_iommu_dev_table has got necessary initialization since iommu init.
-
-    - Always allocate device table with GFP_DMA32 flag to make sure that they
-      are under 4G. This tries to work around the issue mentioned in patch 10/13.
-      Meanwhile double check if the address of device table is above 4G since
-      it could be touched accidentally in corrupted 1st kernel and not trustworthy
-      any more.
-
-v7->v8:
-    Rebase patchset v7 on the latest v4.13-rc1.
-    - And re-enable printing IO_PAGE_FAULT message in kdump kernel.
-
-    - Only disable iommu if amd_iommu=off is specified in kdump kernel.
-
-
-v6->v7:
-    Two main changes are made according to Joerg's suggestion:
-    - Add is_attach_deferred call-back to iommu-ops. With this domain
-      can be deferred to device driver init cleanly.
-
-    - Allocate memory below 4G for dev table if translation pre-enabled.
-      AMD engineer pointed out that it's unsafe to update the device-table
-      while iommu is enabled. device-table pointer update is split up into
-      two 32bit writes in the IOMMU hardware. So updating it while the IOMMU
-      is enabled could have some nasty side effects.
-
-v5->v6:
-    According to Joerg's comments made several below main changes:
-    - Add sanity check when copy old dev tables.
-
-    - If a device is set up with guest translations (DTE.GV=1), then don't
-      copy that information but move the device over to an empty guest-cr3
-      table and handle the faults in the PPR log (which just answer them
-      with INVALID).
-
-v5:
-    bnx2 NIC can't reset itself during driver init. Post patch to reset
-    it during driver init. IO_PAGE_FAULT can't be seen anymore.
-
-    Below is link of v5 post.
-    https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
-
-
-Baoquan He (12):
-  iommu/amd: Detect pre enabled translation
-  iommu/amd: add several helper functions
-  Revert "iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel"
-  iommu/amd: Define bit fields for DTE particularly
-  iommu/amd: Add function copy_dev_tables()
-  iommu/amd: copy old trans table from old kernel
-  iommu/amd: Do sanity check for address translation and irq remap of
-    old dev table entry
-  iommu: Add is_attach_deferred call-back to iommu-ops
-  iommu/amd: Use is_attach_deferred call-back
-  iommu/amd: Allocate memory below 4G for dev table if translation
-    pre-enabled
-  iommu/amd: Don't copy GCR3 table root pointer
-  iommu/amd: Disable iommu only if amd_iommu=off is specified
-
- drivers/iommu/amd_iommu.c       |  65 ++++++------
- drivers/iommu/amd_iommu_init.c  | 223 +++++++++++++++++++++++++++++++++++-----
- drivers/iommu/amd_iommu_proto.h |   2 +
- drivers/iommu/amd_iommu_types.h |  55 +++++++++-
- drivers/iommu/amd_iommu_v2.c    |  18 +++-
- drivers/iommu/iommu.c           |   8 ++
- include/linux/iommu.h           |   1 +
- 7 files changed, 306 insertions(+), 66 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 3f72f44fa2df..277838dbc3a6 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -634,6 +634,14 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
+ 	amd_iommu_reset_cmd_buffer(iommu);
+ }
+ 
++/*
++ * This function disables the command buffer
++ */
++static void iommu_disable_command_buffer(struct amd_iommu *iommu)
++{
++	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
++}
++
+ static void __init free_command_buffer(struct amd_iommu *iommu)
+ {
+ 	free_pages((unsigned long)iommu->cmd_buf, get_order(CMD_BUFFER_SIZE));
+@@ -666,6 +674,14 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
+ 	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
+ }
+ 
++/*
++ * This function disables the event log buffer
++ */
++static void iommu_disable_event_buffer(struct amd_iommu *iommu)
++{
++	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
++}
++
+ static void __init free_event_buffer(struct amd_iommu *iommu)
+ {
+ 	free_pages((unsigned long)iommu->evt_buf, get_order(EVT_BUFFER_SIZE));
+@@ -2046,6 +2062,19 @@ static void iommu_enable_ga(struct amd_iommu *iommu)
+ #endif
+ }
+ 
++static void early_enable_iommu(struct amd_iommu *iommu)
++{
++	iommu_disable(iommu);
++	iommu_init_flags(iommu);
++	iommu_set_device_table(iommu);
++	iommu_enable_command_buffer(iommu);
++	iommu_enable_event_buffer(iommu);
++	iommu_set_exclusion_range(iommu);
++	iommu_enable_ga(iommu);
++	iommu_enable(iommu);
++	iommu_flush_all_caches(iommu);
++}
++
+ /*
+  * This function finally enables all IOMMUs found in the system after
+  * they have been initialized
+@@ -2054,17 +2083,8 @@ static void early_enable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
+ 
+-	for_each_iommu(iommu) {
+-		iommu_disable(iommu);
+-		iommu_init_flags(iommu);
+-		iommu_set_device_table(iommu);
+-		iommu_enable_command_buffer(iommu);
+-		iommu_enable_event_buffer(iommu);
+-		iommu_set_exclusion_range(iommu);
+-		iommu_enable_ga(iommu);
+-		iommu_enable(iommu);
+-		iommu_flush_all_caches(iommu);
+-	}
++	for_each_iommu(iommu)
++		early_enable_iommu(iommu);
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
 -- 
 2.5.5
