@@ -1,164 +1,57 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/8] iommu/iova: Add flush-queue data structures
-Date: Fri, 11 Aug 2017 16:41:11 +0200
-Message-ID: <1502462478-22045-2-git-send-email-joro@8bytes.org>
-References: <1502462478-22045-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 0/8] iommu/iova: Implement deferred flush queue
+Date: Fri, 11 Aug 2017 16:41:10 +0200
+Message-ID: <1502462478-22045-1-git-send-email-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502462478-22045-1-git-send-email-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>, dwmw2@infradead.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, dwmw2@infradead.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+Hi,
 
-This patch adds the basic data-structures to implement
-flush-queues in the generic IOVA code. It also adds the
-initialization and destroy routines for these data
-structures.
+here is an implementation of deferred flush queues in the
+common iova code. Some users of the iova code already
+implement their own flush-queues, like the AMD-Vi and
+Intel VT-d drivers.
 
-The initialization routine is designed so that the use of
-this feature is optional for the users of IOVA code.
+The implementation adds a per-cpu ring-buffer to the
+iova_domain structure and adds code to maintain that
+ring-buffer.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/iova.c | 39 +++++++++++++++++++++++++++++++++++++++
- include/linux/iova.h | 41 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 80 insertions(+)
+A timer is also used to make sure pending entries in the
+ring-buffer are flushed regularily, even when the
+ring-buffers don't fill up.
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 246f14c..b9f6ce0 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -50,10 +50,48 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->granule = granule;
- 	iovad->start_pfn = start_pfn;
- 	iovad->dma_32bit_pfn = pfn_32bit + 1;
-+	iovad->flush_cb = NULL;
-+	iovad->fq = NULL;
- 	init_iova_rcaches(iovad);
- }
- EXPORT_SYMBOL_GPL(init_iova_domain);
- 
-+static void free_iova_flush_queue(struct iova_domain *iovad)
-+{
-+	if (!iovad->fq)
-+		return;
-+
-+	free_percpu(iovad->fq);
-+
-+	iovad->fq         = NULL;
-+	iovad->flush_cb   = NULL;
-+	iovad->entry_dtor = NULL;
-+}
-+
-+int init_iova_flush_queue(struct iova_domain *iovad,
-+			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
-+{
-+	int cpu;
-+
-+	iovad->fq = alloc_percpu(struct iova_fq);
-+	if (!iovad->fq)
-+		return -ENOMEM;
-+
-+	iovad->flush_cb   = flush_cb;
-+	iovad->entry_dtor = entry_dtor;
-+
-+	for_each_possible_cpu(cpu) {
-+		struct iova_fq *fq;
-+
-+		fq = per_cpu_ptr(iovad->fq, cpu);
-+		fq->head = 0;
-+		fq->tail = 0;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(init_iova_flush_queue);
-+
- static struct rb_node *
- __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
- {
-@@ -433,6 +471,7 @@ void put_iova_domain(struct iova_domain *iovad)
- 	struct rb_node *node;
- 	unsigned long flags;
- 
-+	free_iova_flush_queue(iovad);
- 	free_iova_rcaches(iovad);
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
- 	node = rb_first(&iovad->rbroot);
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index e0a892a..8aa1089 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -36,6 +36,30 @@ struct iova_rcache {
- 	struct iova_cpu_rcache __percpu *cpu_rcaches;
- };
- 
-+struct iova_domain;
-+
-+/* Call-Back from IOVA code into IOMMU drivers */
-+typedef void (* iova_flush_cb)(struct iova_domain *domain);
-+
-+/* Destructor for per-entry data */
-+typedef void (* iova_entry_dtor)(unsigned long data);
-+
-+/* Number of entries per Flush Queue */
-+#define IOVA_FQ_SIZE	256
-+
-+/* Flush Queue entry for defered flushing */
-+struct iova_fq_entry {
-+	unsigned long iova_pfn;
-+	unsigned long pages;
-+	unsigned long data;
-+};
-+
-+/* Per-CPU Flush Queue structure */
-+struct iova_fq {
-+	struct iova_fq_entry entries[IOVA_FQ_SIZE];
-+	unsigned head, tail;
-+};
-+
- /* holds all the iova translations for a domain */
- struct iova_domain {
- 	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
-@@ -45,6 +69,14 @@ struct iova_domain {
- 	unsigned long	start_pfn;	/* Lower limit for this domain */
- 	unsigned long	dma_32bit_pfn;
- 	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
-+
-+	iova_flush_cb	flush_cb;	/* Call-Back function to flush IOMMU
-+					   TLBs */
-+
-+	iova_entry_dtor entry_dtor;	/* IOMMU driver specific destructor for
-+					   iova entry */
-+
-+	struct iova_fq __percpu *fq;	/* Flush Queue */
- };
- 
- static inline unsigned long iova_size(struct iova *iova)
-@@ -102,6 +134,8 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
- void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
- void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn, unsigned long pfn_32bit);
-+int init_iova_flush_queue(struct iova_domain *iovad,
-+			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
- struct iova *split_and_remove_iova(struct iova_domain *iovad,
-@@ -174,6 +208,13 @@ static inline void init_iova_domain(struct iova_domain *iovad,
- {
- }
- 
-+static inline int init_iova_flush_queue(struct iova_domain *iovad,
-+					iova_flush_cb flush_cb,
-+					iova_entry_dtor entry_dtor)
-+{
-+	return -ENODEV;
-+}
-+
- static inline struct iova *find_iova(struct iova_domain *iovad,
- 				     unsigned long pfn)
- {
+The AMD and Intel IOMMU drivers are converted to make use of
+this code and their own implementations for deferred
+flushing are removed.
+
+The code has been tested on an AMD and an Intel machine with
+network and disk IO.
+
+Please review.
+
+Regards,
+
+	Joerg
+
+Joerg Roedel (8):
+  iommu/iova: Add flush-queue data structures
+  iommu/iova: Implement Flush-Queue ring buffer
+  iommu/iova: Add flush counters to Flush-Queue implementation
+  iommu/iova: Add locking to Flush-Queues
+  iommu/iova: Add flush timer
+  iommu/amd: Make use of iova queue flushing
+  iommu/vt-d: Allow to flush more than 4GB of device TLBs
+  iommu/vt-d: Make use of iova deferred flushing
+
+ drivers/iommu/amd_iommu.c   | 229 ++------------------------------------------
+ drivers/iommu/dmar.c        |   2 +-
+ drivers/iommu/intel-iommu.c | 197 ++++++++-----------------------------
+ drivers/iommu/iova.c        | 183 +++++++++++++++++++++++++++++++++++
+ include/linux/iova.h        |  67 +++++++++++++
+ 5 files changed, 298 insertions(+), 380 deletions(-)
+
 -- 
 2.7.4
