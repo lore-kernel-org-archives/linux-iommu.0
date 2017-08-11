@@ -1,88 +1,62 @@
-From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: Add system PM support
-Date: Fri, 11 Aug 2017 11:04:06 +0100
-Message-ID: <20170811110406.00003346@huawei.com>
-References: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy@arm.com>
-	<d8d6f3b606ed05d53b47d36e1c6a7f4b74eb3afc.1500381551.git.robin.murphy@arm.com>
-	<20170808111816.GD13355@arm.com>
-	<7d0d846b-8ada-6514-ec27-22f4d8487014@arm.com>
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Subject: Re: [PATCH 5/8] iommu/mediatek: Disable iommu clock when system
+ suspend
+Date: Fri, 11 Aug 2017 16:39:57 +0530
+Message-ID: <b451cb47-505e-c300-42fd-9cb73c09ef0b@gmail.com>
+References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
+ <1502445377-26936-6-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7d0d846b-8ada-6514-ec27-22f4d8487014-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502445377-26936-6-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, k.zhang@mediatek.com, cloud.chou@mediatek.com, youlin.pei@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 8 Aug 2017 13:14:18 +0100
-Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+Hi Youn,
 
-> On 08/08/17 12:18, Will Deacon wrote:
-> > On Tue, Jul 18, 2017 at 01:44:42PM +0100, Robin Murphy wrote:  
-> >> With all our hardware state tracked in such a way that we can naturally
-> >> restore it as part of the necessary reset, resuming is trivial, and
-> >> there's nothing to do on suspend at all.
-> >>
-> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/arm-smmu.c | 12 ++++++++++++
-> >>  1 file changed, 12 insertions(+)
-> >>
-> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> >> index 86897b7b81d8..0f5f06e9abfa 100644
-> >> --- a/drivers/iommu/arm-smmu.c
-> >> +++ b/drivers/iommu/arm-smmu.c
-> >> @@ -2356,10 +2356,22 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
-> >>  	return 0;
-> >>  }
-> >>  
-> >> +static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
-> >> +{  
-> > 
-> > Did you actually get a warning here without the __maybe_unused annotation?
-> > It looks like some other drivers just guard the thing with CONFIG_PM_SLEEP.  
-> 
-> I'm under the impression that the annotation is preferred over #ifdefs
-> for new code (for the sake of coverage, I guess).
-https://patchwork.kernel.org/patch/9734367/
 
-Is a good thread discussing this.  Both coverage and to avoid common
-pitfalls of the ifdef fun.
-
-Jonathan
-> 
-> >> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> >> +
-> >> +	arm_smmu_device_reset(smmu);
-> >> +	return 0;
-> >> +}
-> >> +
-> >> +
-> >> +static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
-> >> +
-> >>  static struct platform_driver arm_smmu_driver = {
-> >>  	.driver	= {
-> >>  		.name		= "arm-smmu",
-> >>  		.of_match_table	= of_match_ptr(arm_smmu_of_match),
-> >> +		.pm = &arm_smmu_pm_ops,  
-> > 
-> > Cosmetic: can you tab-align this assignment please?  
-> 
-> Oops, I missed that - will do.
-> 
-> Robin.
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+On Friday 11 August 2017 03:26 PM, Yong Wu wrote:
+> When system suspend, infra power domain may be off, and the iommu's
+> clock must be disabled when system off, or the iommu's bclk clock maybe
+> disabled after system resume.
+>
+> Signed-off-by: Honghui Zhang <honghui.zhang@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index e81ed9a..b7c8e52 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -675,6 +675,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+>   	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
+>   	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+>   	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
+> +	clk_disable_unprepare(data->bclk);
+>   	return 0;
+>   }
+>   
+> @@ -684,6 +685,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>   	struct mtk_iommu_suspend_reg *reg = &data->reg;
+>   	void __iomem *base = data->base;
+>   
+> +	clk_prepare_enable(data->bclk);
+Please handle return value of clk_prepare_enable. It can fail
+>   	writel_relaxed(reg->standard_axi_mode,
+>   		       base + REG_MMU_STANDARD_AXI_MODE);
+>   	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
+> @@ -699,7 +701,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>   }
+>   
+>   static const struct dev_pm_ops mtk_iommu_pm_ops = {
+> -	SET_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
+> +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
+>   };
+>   
+>   static const struct of_device_id mtk_iommu_of_ids[] = {
+~arvind
