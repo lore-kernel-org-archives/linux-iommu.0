@@ -1,84 +1,48 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v2 1/4] iommu/io-pgtable-arm: flush TLBs when
-	IO_PGTABLE_QUIRK_TLBI_ON_MAP
-Date: Fri, 11 Aug 2017 15:45:27 +0200
-Message-ID: <1502459130-6234-2-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger@redhat.com>
+Subject: [RFC v2 3/4] iommu/arm-smmu-v3: Add hypothetical caching mode model
+Date: Fri, 11 Aug 2017 15:45:29 +0200
+Message-ID: <1502459130-6234-4-git-send-email-eric.auger@redhat.com>
 References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1502459130-6234-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org
-Cc: mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: eric.auger.pro@gmail.com, eric.auger@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Will.Deacon@arm.com, robin.murphy@arm.com, Jean-Philippe.Brucker@arm.com
+Cc: christoffer.dall@linaro.org, Marc.Zyngier@arm.com, alex.williamson@redhat.com, peterx@redhat.com, mst@redhat.com, tn@semihalf.com, bharat.bhushan@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch implements the IO_PGTABLE_QUIRK_TLBI_ON_MAP quirk for
-LPAE page tables. It forces TLB invalidations on map.
+Let's add an hypothetical "caching mode" smmuv3 model (not yet
+discussed for IORT spec) and enable the TLBI_ON_MAP option for
+this latter.
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
 ---
-v1 -> v2:
-- rebase on v4.13-rc2
----
- drivers/iommu/io-pgtable-arm.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index b182039..198a042 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -447,6 +447,8 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int ret, lvl = ARM_LPAE_START_LVL(data);
- 	arm_lpae_iopte prot;
-+	struct io_pgtable *iop = &data->iop;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 690247b..a1c10af 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -422,6 +422,10 @@
+ #define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
+ #endif
  
- 	/* If no access, then nothing to do */
- 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
-@@ -454,6 +456,12 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 
- 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
- 	ret = __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
++#ifndef ACPI_IORT_SMMU_V3_CACHING_MODE
++#define ACPI_IORT_SMMU_V3_CACHING_MODE		0x3
++#endif
 +
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
-+		io_pgtable_tlb_add_flush(iop, iova, size,
-+					 ARM_LPAE_GRANULE(data), false);
-+		io_pgtable_tlb_sync(iop);
-+	}
- 	/*
- 	 * Synchronise all PTE updates for the new mapping before there's
- 	 * a chance for anything to kick off a table walk for the new iova.
-@@ -739,7 +747,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	u64 reg;
- 	struct arm_lpae_io_pgtable *data;
+ static bool disable_bypass;
+ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+@@ -2673,6 +2677,9 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+ 	case ACPI_IORT_SMMU_HISILICON_HI161X:
+ 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
+ 		break;
++	case ACPI_IORT_SMMU_V3_CACHING_MODE:
++		smmu->options |= ARM_SMMU_OPT_TLBI_ON_MAP;
++		break;
+ 	}
  
--	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
-+			    IO_PGTABLE_QUIRK_TLBI_ON_MAP))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -828,7 +837,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
- 
- 	/* The NS quirk doesn't apply at stage 2 */
--	if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
-+	if (cfg->quirks &
-+		~(IO_PGTABLE_QUIRK_NO_DMA | IO_PGTABLE_QUIRK_TLBI_ON_MAP))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
+ 	dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
 -- 
 2.5.5
