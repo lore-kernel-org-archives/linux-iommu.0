@@ -1,74 +1,57 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fix for Linux v4.13-rc4
-Date: Fri, 11 Aug 2017 17:57:00 +0200
-Message-ID: <20170811155654.GA16219@8bytes.org>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: Support SVM without PASID
+Date: Fri, 11 Aug 2017 09:25:06 -0700
+Message-ID: <20170811162506.GB41059@otc-nc-03>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+ <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+ <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190D57191@SHSMSX101.ccr.corp.intel.com>
+ <b973c557-1b4a-18d2-a05e-28680a49daf9@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="M9NhX3UHpAaciwkO"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kvm-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Artem Savkov <asavkov@redhat.com>
+In-Reply-To: <b973c557-1b4a-18d2-a05e-28680a49daf9@arm.com>
+Sender: kvm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, Aug 04, 2017 at 10:42:41AM +0100, Jean-Philippe Brucker wrote:
+> Hi Kevin,
+> 
+> 
+> Consider the situation where a userspace driver (no virtualization) is
+> built in a client-server fashion: the server controls a device and spawns
+> new processes (clients), each sharing a context with the device using its
+> own PASID. If the server wants to hide parts of the client address space
 
---M9NhX3UHpAaciwkO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Just to be sure, you are't expecting the PASID's to be duplicated or 
+recreated after a new process is spawned. I would expect each process to 
+get its own PASID by doing a bind. Threads of the same process would be
+sharing the same PASID since they all share the same first level 
+mappings.
 
-Hi Linus,
 
-The following changes since commit 74ddda71f44c84af62f736a77fb9fcebe5bb436a:
+> from the device (e.g. .text), then it could control stage-2 via MAP/UNMAP
+> to restrict the address space.
 
-  iommu/amd: Fix schedule-while-atomic BUG in initialization code (2017-07-26 15:39:14 +0200)
+I'm confused.. maybe this is different from Intel IOMMU. the first level 
+requiring a second level is only true when virtualization is in play.
 
-are available in the git repository at:
+First level is gVA->gPA, and second level is gPA->hPA (sort of the cloned
+EPT map that is setup via VFIO to set up second level)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.13-rc4
+When you are in native user application, there is no nesting between first
+and second level. The first level is directly VA->hPA. There is no need
+for a nested walk in this case?
 
-for you to fetch changes up to a7990c647b35415e3dd07a077480a908678947ba:
-
-  iommu/arm-smmu: fix null-pointer dereference in arm_smmu_add_device (2017-08-11 16:56:51 +0200)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v4.13-rc4
-
-	- Fix a NULL-pointer dereference in arm_smmu_add_device
-
-----------------------------------------------------------------
-Artem Savkov (1):
-      iommu/arm-smmu: fix null-pointer dereference in arm_smmu_add_device
-
- drivers/iommu/arm-smmu.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---M9NhX3UHpAaciwkO
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJZjdPGAAoJECvwRC2XARrjJzUQAMeOIwrmSsOGsU5ldXTmjq82
-SP/Owwo32jd1y4I+4I+hctejr4BUFqow3b4ad4UfnaJFFdE6cDZonmaoheHvsSXp
-wTwFBTk6IhoHiXdG6nUrqg6sbhTnNYzGmHZvvTVXpBZFxmKL9dCQMcj7lEefrL6N
-xa2jrhgKo7EitFXu2AkmfKmeuFqoQpOvQwI6tDaffIVsOY0iZ++FCMru/rZgMHbf
-FfkMyMxqfGBhvx3Sml9YXlyDu7m3+M4JmaSrqTbVOeb7h7DGBdMs2NfajIf57gxX
-DP2I66crLlTB6YCkRRIBIzd/Ozd59M0l/T7xZWYEaq+7IZJWYcQq5Fn7XBLc1x1D
-tAcpTxY60gaaihekxnO14A7F6+DDOfiroZoc6gqlMJNvbR/bsjcLcXCICgqMzg70
-Qsjl20N0eYwA1kWgHIgHD3qZvGi/wgoem3v+Qvrsj8uVeb8I6srtG92RWMwqpNL6
-vd10+P7R51K8oeTiBIYjhLCADc07wdKYk4BHYMvG+v/fp+XRHI0XTfr5gzpJLULG
-8ETTE1YmyKuNUOKccDcJS/C4CCucyELMcW8B3+i3Kvm41g+lj/SG7U+ZsTTt4LSa
-GrUMBLl19HUABNI8KMIsR11LyuIQeCzHEJvAlrwqBEFK7uwoLpYZVALT5CaVhDjT
-sBuFNkIEr3Rfp8Vyryta
-=o5BA
------END PGP SIGNATURE-----
-
---M9NhX3UHpAaciwkO--
+> 
+> It would use different semantics of MAP/UNMAP though, as the ioctl would
+> only be used to define 1:1 translation windows, not pin memory.
+> 
