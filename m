@@ -1,113 +1,88 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH 8/8] memory: mtk-smi: Degrade SMI init to module_init
-Date: Fri, 11 Aug 2017 17:56:17 +0800
-Message-ID: <1502445377-26936-9-git-send-email-yong.wu@mediatek.com>
-References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
+From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/arm-smmu: Add system PM support
+Date: Fri, 11 Aug 2017 11:04:06 +0100
+Message-ID: <20170811110406.00003346@huawei.com>
+References: <71247263f4d88e7776f483fb1cc1139b516c0835.1500381551.git.robin.murphy@arm.com>
+	<d8d6f3b606ed05d53b47d36e1c6a7f4b74eb3afc.1500381551.git.robin.murphy@arm.com>
+	<20170808111816.GD13355@arm.com>
+	<7d0d846b-8ada-6514-ec27-22f4d8487014@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, k.zhang@mediatek.com, cloud.chou@mediatek.com, Arvind Yadav <arvind.yadav.cs@gmail.com>, youlin.pei@mediatek.com, yong.wu@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <7d0d846b-8ada-6514-ec27-22f4d8487014-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The initialization of Mediatek power manager(SCPSYS) is
-builtin_platform_driver, and SMI must depend on power-domain.
-Thus, currently subsys_initcall for SMI is unnecessary, SMI will be
-always probe defered by power-domain. Degrade it to module_init.
+On Tue, 8 Aug 2017 13:14:18 +0100
+Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
 
-In addition, there are two small changes.
-1) Delete this two lines.
-    	if (!dev->pm_domain)
-		return -EPROBE_DEFER;
-   This is not helpful. the platform driver framework guarantee this.
-   The "dev_pm_domain_attach" in the "platform_drv_probe" will return
-   EPROBE_DEFER if its powerdomain is not ready.
+> On 08/08/17 12:18, Will Deacon wrote:
+> > On Tue, Jul 18, 2017 at 01:44:42PM +0100, Robin Murphy wrote:  
+> >> With all our hardware state tracked in such a way that we can naturally
+> >> restore it as part of the necessary reset, resuming is trivial, and
+> >> there's nothing to do on suspend at all.
+> >>
+> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >> ---
+> >>  drivers/iommu/arm-smmu.c | 12 ++++++++++++
+> >>  1 file changed, 12 insertions(+)
+> >>
+> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> >> index 86897b7b81d8..0f5f06e9abfa 100644
+> >> --- a/drivers/iommu/arm-smmu.c
+> >> +++ b/drivers/iommu/arm-smmu.c
+> >> @@ -2356,10 +2356,22 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+> >>  	return 0;
+> >>  }
+> >>  
+> >> +static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+> >> +{  
+> > 
+> > Did you actually get a warning here without the __maybe_unused annotation?
+> > It looks like some other drivers just guard the thing with CONFIG_PM_SLEEP.  
+> 
+> I'm under the impression that the annotation is preferred over #ifdefs
+> for new code (for the sake of coverage, I guess).
+https://patchwork.kernel.org/patch/9734367/
 
-2) Add the probe-defer for the smi-larb device should waiting for
-   smi-common.
-   In mt2712, there are 2 smi-common, 8 smi-larb. All will be
-   probe-defered by the power-domain, there is seldom case that
-   smi-larb probe done before smi-common. then it will hang like
-   this:
+Is a good thread discussing this.  Both coverage and to avoid common
+pitfalls of the ifdef fun.
 
-   Unable to handle kernel NULL pointer dereference at virtual address
-00000000 pgd = ffffff800a4e0000
-[00000000] *pgd=00000000beffe003[   17.610026] , *pud=00000000beffe003
-...
-[<ffffff800897fe04>] mtk_smi_enable+0x1c/0xd0
-[<ffffff800897fee8>] mtk_smi_larb_get+0x30/0x98
-[<ffffff80088edfa8>] mtk_mipicsi0_resume+0x38/0x1b8
-[<ffffff8008634f44>] pm_generic_runtime_resume+0x3c/0x58
-[<ffffff8008644ff8>] __genpd_runtime_resume+0x38/0x98
-[<ffffff8008647434>] genpd_runtime_resume+0x164/0x220
-[<ffffff80086372f8>] __rpm_callback+0x78/0xa0
-[<ffffff8008637358>] rpm_callback+0x38/0xa0
-[<ffffff8008638a4c>] rpm_resume+0x4a4/0x6f8
-[<ffffff8008638d04>] __pm_runtime_resume+0x64/0xa0
-[<ffffff80088ed05c>] mtk_mipicsi0_probe+0x40c/0xb70
-[<ffffff800862cdc0>] platform_drv_probe+0x58/0xc0
-[<ffffff800862a514>] driver_probe_device+0x284/0x438
-[<ffffff800862a8ac>] __device_attach_driver+0xb4/0x160
-[<ffffff8008627d58>] bus_for_each_drv+0x68/0xa8
-[<ffffff800862a0a4>] __device_attach+0xd4/0x168
-[<ffffff800862a9d4>] device_initial_probe+0x24/0x30
-[<ffffff80086291d8>] bus_probe_device+0xa0/0xa8
-[<ffffff8008629784>] deferred_probe_work_func+0x94/0xf0
-[<ffffff80080f03a8>] process_one_work+0x1d8/0x6e0
-
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/memory/mtk-smi.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index ce27bdf..1a0286f 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -16,6 +16,7 @@
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/io.h>
-+#include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-@@ -273,9 +274,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
- 	struct platform_device *smi_pdev;
- 	int err;
- 
--	if (!dev->pm_domain)
--		return -EPROBE_DEFER;
--
- 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
- 	if (!larb)
- 		return -ENOMEM;
-@@ -311,6 +309,8 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
- 	smi_pdev = of_find_device_by_node(smi_node);
- 	of_node_put(smi_node);
- 	if (smi_pdev) {
-+		if (!platform_get_drvdata(smi_pdev))
-+			return -EPROBE_DEFER;
- 		larb->smi_common_dev = &smi_pdev->dev;
- 	} else {
- 		dev_err(dev, "Failed to get the smi_common device\n");
-@@ -362,9 +362,6 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
- 	enum mtk_smi_gen smi_gen;
- 	int ret;
- 
--	if (!dev->pm_domain)
--		return -EPROBE_DEFER;
--
- 	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
- 	if (!common)
- 		return -ENOMEM;
-@@ -441,4 +438,4 @@ static int __init mtk_smi_init(void)
- 	return ret;
- }
- 
--subsys_initcall(mtk_smi_init);
-+module_init(mtk_smi_init);
--- 
-1.9.1
+Jonathan
+> 
+> >> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> >> +
+> >> +	arm_smmu_device_reset(smmu);
+> >> +	return 0;
+> >> +}
+> >> +
+> >> +
+> >> +static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
+> >> +
+> >>  static struct platform_driver arm_smmu_driver = {
+> >>  	.driver	= {
+> >>  		.name		= "arm-smmu",
+> >>  		.of_match_table	= of_match_ptr(arm_smmu_of_match),
+> >> +		.pm = &arm_smmu_pm_ops,  
+> > 
+> > Cosmetic: can you tab-align this assignment please?  
+> 
+> Oops, I missed that - will do.
+> 
+> Robin.
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
