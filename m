@@ -1,110 +1,64 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH 2/3] pci: Generalize is_vmd behavior
-Date: Fri, 11 Aug 2017 12:03:19 -0500
-Message-ID: <20170811170319.GB17039@bhelgaas-glaptop.roam.corp.google.com>
-References: <20170807195713.10963-1-jonathan.derrick@intel.com>
- <20170807195713.10963-2-jonathan.derrick@intel.com>
+From: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v3] iommu/s390: Add support for iommu_device handling
+Date: Fri, 11 Aug 2017 19:11:53 +0200 (CEST)
+Message-ID: <alpine.LFD.2.20.1708111909480.1769@schleppi>
+References: <1502274354-643-1-git-send-email-joro@8bytes.org>
+	<alpine.LFD.2.20.1708102104390.4919@schleppi>
+	<20170811073118.GF30515@8bytes.org>
+	<alpine.LFD.2.20.1708111844340.1769@schleppi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170807195713.10963-2-jonathan.derrick@intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jon Derrick <jonathan.derrick@intel.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Keith Busch <keith.busch@intel.com>, Scott Bauer <scott.bauer@intel.com>, David Fugate <david.fugate@intel.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.LFD.2.20.1708111844340.1769@schleppi>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 07, 2017 at 01:57:12PM -0600, Jon Derrick wrote:
-> Generalize is_vmd behavior to remove dependency on domain number
-> checking in pci quirks.
-> 
-> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
-> ---
->  arch/x86/include/asm/pci.h | 8 +++-----
->  arch/x86/pci/common.c      | 2 +-
->  drivers/pci/quirks.c       | 2 +-
->  include/linux/pci.h        | 4 ++++
->  4 files changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
-> index 473a729..5c5d54a 100644
-> --- a/arch/x86/include/asm/pci.h
-> +++ b/arch/x86/include/asm/pci.h
-> @@ -60,16 +60,14 @@ static inline void *_pci_root_bus_fwnode(struct pci_bus *bus)
->  #define pci_root_bus_fwnode	_pci_root_bus_fwnode
->  #endif
->  
-> -static inline bool is_vmd(struct pci_bus *bus)
-> -{
->  #if IS_ENABLED(CONFIG_VMD)
-> +static inline bool pci_bus_is_vmd(struct pci_bus *bus)
-> +{
->  	struct pci_sysdata *sd = bus->sysdata;
->  
->  	return sd->vmd_domain;
-> -#else
-> -	return false;
-> -#endif
->  }
-> +#endif
->  
->  /* Can be used to override the logic in pci_scan_bus for skipping
->     already-configured bus numbers - to be used for buggy BIOSes
-> diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
-> index dbe2132..18b2277 100644
-> --- a/arch/x86/pci/common.c
-> +++ b/arch/x86/pci/common.c
-> @@ -662,7 +662,7 @@ static void set_dma_domain_ops(struct pci_dev *pdev) {}
->  
->  static void set_dev_domain_options(struct pci_dev *pdev)
->  {
-> -	if (is_vmd(pdev->bus))
-> +	if (pci_bus_is_vmd(pdev->bus))
->  		pdev->hotplug_user_indicators = 1;
->  }
->  
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index 6967c6b..ba47995 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -4666,7 +4666,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x443, quirk_intel_qat_vf_cap);
->  static void quirk_no_aersid(struct pci_dev *pdev)
->  {
->  	/* VMD Domain */
-> -	if (pdev->bus->sysdata && pci_domain_nr(pdev->bus) >= 0x10000)
-> +	if (pci_bus_is_vmd(pdev->bus))
+On Fri, 11 Aug 2017, Sebastian Ott wrote:
+> * iommu_release_device must not release the struct device but the
+> structure it is embedded in: struct iommu_device (I'll send a patch
+> for that)
 
-I like this part ...
+--->8
 
->  		pdev->bus->bus_flags |= PCI_BUS_FLAGS_NO_AERSID;
->  }
->  DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x2030, quirk_no_aersid);
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 4869e66..0299d8b 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1471,6 +1471,10 @@ static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
->  static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
->  #endif /* CONFIG_PCI_DOMAINS */
->  
-> +#if !IS_ENABLED(CONFIG_VMD)
-> +static inline bool pci_bus_is_vmd(struct pci_bus *bus) { return false; }
-> +#endif
+>From 2839c92e038af47b8cb569f84d571878c54d1815 Mon Sep 17 00:00:00 2001
+From: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Date: Fri, 11 Aug 2017 19:04:00 +0200
+Subject: [PATCH] iommu: fix the release function of iommu_class
 
-But not so much this part.  VMD is (AFAIK) still fundamentally an
-x86-only thing, so I'd like it better if this could all be within
-arch/x86.  Could this be done by moving quirk_no_aersid() to
-arch/x86/pci/fixup.c?
+The release function of iommu_class must not only free the device
+structure it gets called with but the whole structure the device
+is embedded in - struct iommu_device.
 
-BTW, CONFIG_VMD in drivers/pci/host/Kconfig is currently "depends on
-SRCU".  I'm not a Kconfig expert, but that doesn't seem like an
-intuitive connection.  And it's the only such dependency on SRCU in
-the tree -- most other places use "select SRCU", which makes more
-sense to me.
+Signed-off-by: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+---
+ drivers/iommu/iommu-sysfs.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
->  /*
->   * Generic implementation for PCI domain support. If your
->   * architecture does not need custom management of PCI
-> -- 
-> 2.9.4
-> 
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index c58351e..b65a501 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -34,7 +34,9 @@ static const struct attribute_group *iommu_dev_groups[] = {
+ 
+ static void iommu_release_device(struct device *dev)
+ {
+-	kfree(dev);
++	struct iommu_device *iommu = container_of(dev, struct iommu_device, dev);
++
++	kfree(iommu);
+ }
+ 
+ static struct class iommu_class = {
+-- 
+2.5.5
