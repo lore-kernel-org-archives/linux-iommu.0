@@ -1,100 +1,169 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 4/8] iommu/iova: Add locking to Flush-Queues
-Date: Fri, 11 Aug 2017 16:41:14 +0200
-Message-ID: <1502462478-22045-5-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/8] iommu/iova: Implement Flush-Queue ring buffer
+Date: Fri, 11 Aug 2017 16:41:12 +0200
+Message-ID: <1502462478-22045-3-git-send-email-joro@8bytes.org>
 References: <1502462478-22045-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502462478-22045-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>, dwmw2@infradead.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1502462478-22045-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The lock is taken from the same CPU most of the time. But
-having it allows to flush the queue also from another CPU if
-necessary.
+Add a function to add entries to the Flush-Queue ring
+buffer. If the buffer is full, call the flush-callback and
+free the entries.
 
-This will be used by a timer to regularily flush any pending
-IOVAs from the Flush-Queues.
-
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iova.c | 11 +++++++++++
- include/linux/iova.h |  1 +
- 2 files changed, 12 insertions(+)
+ drivers/iommu/iova.c | 80 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iova.h |  9 ++++++
+ 2 files changed, 89 insertions(+)
 
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 47b144e..749d395 100644
+index b9f6ce0..e5c9a7a 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -91,6 +91,8 @@ int init_iova_flush_queue(struct iova_domain *iovad,
- 		fq = per_cpu_ptr(iovad->fq, cpu);
- 		fq->head = 0;
- 		fq->tail = 0;
-+
-+		spin_lock_init(&fq->lock);
- 	}
+@@ -32,6 +32,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ 				     unsigned long limit_pfn);
+ static void init_iova_rcaches(struct iova_domain *iovad);
+ static void free_iova_rcaches(struct iova_domain *iovad);
++static void fq_destroy_all_entries(struct iova_domain *iovad);
  
- 	return 0;
-@@ -471,6 +473,7 @@ EXPORT_SYMBOL_GPL(free_iova_fast);
+ void
+ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+@@ -61,6 +62,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
+ 	if (!iovad->fq)
+ 		return;
  
- static inline bool fq_full(struct iova_fq *fq)
- {
-+	assert_spin_locked(&fq->lock);
- 	return (((fq->tail + 1) % IOVA_FQ_SIZE) == fq->head);
++	fq_destroy_all_entries(iovad);
+ 	free_percpu(iovad->fq);
+ 
+ 	iovad->fq         = NULL;
+@@ -461,6 +463,84 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
  }
+ EXPORT_SYMBOL_GPL(free_iova_fast);
  
-@@ -478,6 +481,8 @@ static inline unsigned fq_ring_add(struct iova_fq *fq)
- {
- 	unsigned idx = fq->tail;
- 
-+	assert_spin_locked(&fq->lock);
++#define fq_ring_for_each(i, fq) \
++	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
 +
- 	fq->tail = (idx + 1) % IOVA_FQ_SIZE;
- 
- 	return idx;
-@@ -488,6 +493,8 @@ static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
- 	u64 counter = atomic64_read(&iovad->fq_flush_finish_cnt);
- 	unsigned idx;
- 
-+	assert_spin_locked(&fq->lock);
++static inline bool fq_full(struct iova_fq *fq)
++{
++	return (((fq->tail + 1) % IOVA_FQ_SIZE) == fq->head);
++}
 +
- 	fq_ring_for_each(idx, fq) {
- 
- 		if (fq->entries[idx].counter >= counter)
-@@ -537,8 +544,11 @@ void queue_iova(struct iova_domain *iovad,
- 		unsigned long data)
- {
- 	struct iova_fq *fq = get_cpu_ptr(iovad->fq);
-+	unsigned long flags;
- 	unsigned idx;
- 
-+	spin_lock_irqsave(&fq->lock, flags);
++static inline unsigned fq_ring_add(struct iova_fq *fq)
++{
++	unsigned idx = fq->tail;
 +
- 	/*
- 	 * First remove all entries from the flush queue that have already been
- 	 * flushed out on another CPU. This makes the fq_full() check below less
-@@ -558,6 +568,7 @@ void queue_iova(struct iova_domain *iovad,
- 	fq->entries[idx].data     = data;
- 	fq->entries[idx].counter  = atomic64_read(&iovad->fq_flush_start_cnt);
- 
-+	spin_unlock_irqrestore(&fq->lock, flags);
- 	put_cpu_ptr(iovad->fq);
- }
- EXPORT_SYMBOL_GPL(queue_iova);
++	fq->tail = (idx + 1) % IOVA_FQ_SIZE;
++
++	return idx;
++}
++
++static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
++{
++	unsigned idx;
++
++	fq_ring_for_each(idx, fq) {
++
++		if (iovad->entry_dtor)
++			iovad->entry_dtor(fq->entries[idx].data);
++
++		free_iova_fast(iovad,
++			       fq->entries[idx].iova_pfn,
++			       fq->entries[idx].pages);
++	}
++
++	fq->head = 0;
++	fq->tail = 0;
++}
++
++static void fq_destroy_all_entries(struct iova_domain *iovad)
++{
++	int cpu;
++
++	/*
++	 * This code runs when the iova_domain is being detroyed, so don't
++	 * bother to free iovas, just call the entry_dtor on all remaining
++	 * entries.
++	 */
++	if (!iovad->entry_dtor)
++		return;
++
++	for_each_possible_cpu(cpu) {
++		struct iova_fq *fq = per_cpu_ptr(iovad->fq, cpu);
++		int idx;
++
++		fq_ring_for_each(idx, fq)
++			iovad->entry_dtor(fq->entries[idx].data);
++	}
++}
++
++void queue_iova(struct iova_domain *iovad,
++		unsigned long pfn, unsigned long pages,
++		unsigned long data)
++{
++	struct iova_fq *fq = get_cpu_ptr(iovad->fq);
++	unsigned idx;
++
++	if (fq_full(fq)) {
++		iovad->flush_cb(iovad);
++		fq_ring_free(iovad, fq);
++	}
++
++	idx = fq_ring_add(fq);
++
++	fq->entries[idx].iova_pfn = pfn;
++	fq->entries[idx].pages    = pages;
++	fq->entries[idx].data     = data;
++
++	put_cpu_ptr(iovad->fq);
++}
++EXPORT_SYMBOL_GPL(queue_iova);
++
+ /**
+  * put_iova_domain - destroys the iova doamin
+  * @iovad: - iova domain in question.
 diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 985b800..913a690 100644
+index 8aa1089..1ae8524 100644
 --- a/include/linux/iova.h
 +++ b/include/linux/iova.h
-@@ -60,6 +60,7 @@ struct iova_fq_entry {
- struct iova_fq {
- 	struct iova_fq_entry entries[IOVA_FQ_SIZE];
- 	unsigned head, tail;
-+	spinlock_t lock;
- };
+@@ -127,6 +127,9 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 	bool size_aligned);
+ void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
+ 		    unsigned long size);
++void queue_iova(struct iova_domain *iovad,
++		unsigned long pfn, unsigned long pages,
++		unsigned long data);
+ unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 			      unsigned long limit_pfn);
+ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+@@ -182,6 +185,12 @@ static inline void free_iova_fast(struct iova_domain *iovad,
+ {
+ }
  
- /* holds all the iova translations for a domain */
++static inline void queue_iova(struct iova_domain *iovad,
++			      unsigned long pfn, unsigned long pages,
++			      unsigned long data)
++{
++}
++
+ static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
+ 					    unsigned long size,
+ 					    unsigned long limit_pfn)
 -- 
 2.7.4
