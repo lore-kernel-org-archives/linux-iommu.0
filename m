@@ -1,48 +1,87 @@
-From: Eric Auger <eric.auger@redhat.com>
-Subject: [RFC v2 3/4] iommu/arm-smmu-v3: Add hypothetical caching mode model
-Date: Fri, 11 Aug 2017 15:45:29 +0200
-Message-ID: <1502459130-6234-4-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
+Date: Fri, 11 Aug 2017 15:45:28 +0200
+Message-ID: <1502459130-6234-3-git-send-email-eric.auger@redhat.com>
 References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Will.Deacon@arm.com, robin.murphy@arm.com, Jean-Philippe.Brucker@arm.com
-Cc: christoffer.dall@linaro.org, Marc.Zyngier@arm.com, alex.williamson@redhat.com, peterx@redhat.com, mst@redhat.com, tn@semihalf.com, bharat.bhushan@nxp.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1502459130-6234-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org
+Cc: mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Let's add an hypothetical "caching mode" smmuv3 model (not yet
-discussed for IORT spec) and enable the TLBI_ON_MAP option for
-this latter.
+When running a virtual SMMU on a guest we sometimes need to trap
+all changes to the translation structures. This is especially useful
+to integrate with VFIO. This patch adds a new option that forces
+the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
 
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
+TLBI commands then can be trapped.
+
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+
 ---
- drivers/iommu/arm-smmu-v3.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+v1 -> v2:
+- rebase on v4.13-rc2
+---
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
+ drivers/iommu/arm-smmu-v3.c                             | 5 +++++
+ 2 files changed, 9 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+index c9abbf3..ebb85e9 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+@@ -52,6 +52,10 @@ the PCIe specification.
+                         devicetree/bindings/interrupt-controller/msi.txt
+                       for a description of the msi-parent property.
+ 
++- tlbi-on-map       : invalidate caches whenever there is an update of
++                      any remapping structure (updates to not-present or
++                      present entries).
++
+ - hisilicon,broken-prefetch-cmd
+                     : Avoid sending CMD_PREFETCH_* commands to the SMMU.
+ 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 690247b..a1c10af 100644
+index 568c400..690247b 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -422,6 +422,10 @@
- #define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX		0x2
- #endif
+@@ -608,6 +608,7 @@ struct arm_smmu_device {
  
-+#ifndef ACPI_IORT_SMMU_V3_CACHING_MODE
-+#define ACPI_IORT_SMMU_V3_CACHING_MODE		0x3
-+#endif
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+ #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
++#define ARM_SMMU_OPT_TLBI_ON_MAP	(1 << 2)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -675,6 +676,7 @@ struct arm_smmu_option_prop {
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+ 	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
++	{ ARM_SMMU_OPT_TLBI_ON_MAP, "tlbi-on-map" },
+ 	{ 0, NULL},
+ };
+ 
+@@ -1604,6 +1606,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
+ 		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+ 
++	if (smmu->options & ARM_SMMU_OPT_TLBI_ON_MAP)
++		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_TLBI_ON_MAP;
 +
- static bool disable_bypass;
- module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_bypass,
-@@ -2673,6 +2677,9 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
- 	case ACPI_IORT_SMMU_HISILICON_HI161X:
- 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
- 		break;
-+	case ACPI_IORT_SMMU_V3_CACHING_MODE:
-+		smmu->options |= ARM_SMMU_OPT_TLBI_ON_MAP;
-+		break;
- 	}
- 
- 	dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
 -- 
 2.5.5
