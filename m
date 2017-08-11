@@ -1,58 +1,84 @@
-From: Eric Auger <eric.auger@redhat.com>
-Subject: [RFC v2 0/4] arm-smmu-v3 tlbi-on-map option
-Date: Fri, 11 Aug 2017 15:45:26 +0200
-Message-ID: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Will.Deacon@arm.com, robin.murphy@arm.com, Jean-Philippe.Brucker@arm.com
-Cc: christoffer.dall@linaro.org, Marc.Zyngier@arm.com, alex.williamson@redhat.com, peterx@redhat.com, mst@redhat.com, tn@semihalf.com, bharat.bhushan@nxp.com
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC v2 1/4] iommu/io-pgtable-arm: flush TLBs when
+	IO_PGTABLE_QUIRK_TLBI_ON_MAP
+Date: Fri, 11 Aug 2017 15:45:27 +0200
+Message-ID: <1502459130-6234-2-git-send-email-eric.auger@redhat.com>
+References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1502459130-6234-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will.Deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org
+Cc: mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This series adds a new tlbi-on-map option to the smmuv3 driver.
-When set, the IO_PGTABLE_QUIRK_TLBI_ON_MAP quirk is applied for
-LPAE tables and the smmuv3 driver sends TLB invalidations on map.
+This patch implements the IO_PGTABLE_QUIRK_TLBI_ON_MAP quirk for
+LPAE page tables. It forces TLB invalidations on map.
 
-This mode is useful when running the driver on a guest as it allows
-the virtualizer to trap any change to the translation structures.
-This is similar to the Intel vtd caching mode (CM).
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-This is mandated for vSMMUv3/VFIO integration where guest mappings
-must be applied to the physical IOMMU and also for VHOST.
-
-When this mode is set we use an implementation defined TLBI
-invalidation command which allows to invalidate a range of IOVA
-instead of using CMD_TLBI_NH_VA which works by page. This
-is needed for sake of efficiency when running DPDK use case on
-guest as DPDK uses hugepages. As far as I understand the intel
-IOMMU provides such invalidation command (using the address mask
-parameter) and at the moment, I haven't found something similar
-in the smmuv3 architecture specification.
-
-Best Regards
-
-Eric
-
-Git: complete series available at
-https://github.com/eauger/linux/tree/v4.13-rc3-tlbi-on-map-rfcv2
-
-History:
+---
 v1 -> v2:
-- add support for ACPI probing
-- add implementation defined CMD_TLBI_NH_VA_AM which allows
-  IOVA range invalidation
+- rebase on v4.13-rc2
+---
+ drivers/iommu/io-pgtable-arm.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-
-Eric Auger (4):
-  iommu/io-pgtable-arm: flush TLBs when IO_PGTABLE_QUIRK_TLBI_ON_MAP
-  iommu/arm-smmu-v3: Add tlbi_on_map option
-  iommu/arm-smmu-v3: Add hypothetical caching mode model
-  iommu/arm-smmu-v3: add CMD_TLBI_NH_VA_AM command for iova range
-    invalidation
-
- .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  4 +++
- drivers/iommu/arm-smmu-v3.c                        | 34 ++++++++++++++++++++--
- drivers/iommu/io-pgtable-arm.c                     | 14 +++++++--
- 3 files changed, 48 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index b182039..198a042 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -447,6 +447,8 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+ 	arm_lpae_iopte *ptep = data->pgd;
+ 	int ret, lvl = ARM_LPAE_START_LVL(data);
+ 	arm_lpae_iopte prot;
++	struct io_pgtable *iop = &data->iop;
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 
+ 	/* If no access, then nothing to do */
+ 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
+@@ -454,6 +456,12 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+ 
+ 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
+ 	ret = __arm_lpae_map(data, iova, paddr, size, prot, lvl, ptep);
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_TLBI_ON_MAP) {
++		io_pgtable_tlb_add_flush(iop, iova, size,
++					 ARM_LPAE_GRANULE(data), false);
++		io_pgtable_tlb_sync(iop);
++	}
+ 	/*
+ 	 * Synchronise all PTE updates for the new mapping before there's
+ 	 * a chance for anything to kick off a table walk for the new iova.
+@@ -739,7 +747,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	u64 reg;
+ 	struct arm_lpae_io_pgtable *data;
+ 
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
++			    IO_PGTABLE_QUIRK_TLBI_ON_MAP))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -828,7 +837,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ 	struct arm_lpae_io_pgtable *data;
+ 
+ 	/* The NS quirk doesn't apply at stage 2 */
+-	if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
++	if (cfg->quirks &
++		~(IO_PGTABLE_QUIRK_NO_DMA | IO_PGTABLE_QUIRK_TLBI_ON_MAP))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
 -- 
 2.5.5
