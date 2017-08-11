@@ -1,7 +1,7 @@
 From: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: RE: Support SVM without PASID
-Date: Fri, 11 Aug 2017 06:29:43 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D6ED70@SHSMSX101.ccr.corp.intel.com>
+Date: Fri, 11 Aug 2017 06:41:39 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D6EDB7@SHSMSX101.ccr.corp.intel.com>
 References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
  <20170708140257.2de02d63@w520.home>
  <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
@@ -10,56 +10,84 @@ References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
  <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
  <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
  <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D57191@SHSMSX101.ccr.corp.intel.com>
- <b973c557-1b4a-18d2-a05e-28680a49daf9@arm.com>
+ <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+ <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
+ <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
+ <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
+ <ed289d79-880a-a542-dcb1-0de8c55a8ca0@huawei.com>
+ <1ef75c2d-f980-5cef-f760-be3b133c82ca@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <b973c557-1b4a-18d2-a05e-28680a49daf9@arm.com>
+In-Reply-To: <1ef75c2d-f980-5cef-f760-be3b133c82ca@arm.com>
 Content-Language: en-US
 Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Bob Liu <liubo95@huawei.com>, valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: "Lan, Tianyu" <tianyu.lan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogRnJpZGF5LCBBdWd1c3QgNCwgMjAxNyA1OjQzIFBNDQo+IA0K
-PiBIaSBLZXZpbiwNCj4gDQo+IE9uIDA0LzA4LzE3IDAyOjQ5LCBUaWFuLCBLZXZpbiB3cm90ZToN
-Cj4gPj4gRnJvbTogSmVhbi1QaGlsaXBwZSBCcnVja2VyDQo+ID4+IFNlbnQ6IFR1ZXNkYXksIEF1
-Z3VzdCAxLCAyMDE3IDQ6MjYgUE0NCj4gPj4NCj4gPj4gSXQgZGVwZW5kcyB3aGF0IHR5cGUgeW91
-IHVzZSB3aGVuIHJlZ2lzdGVyaW5nIHRoZSBJT01NVSB3aXRoDQo+ID4+IFZGSU9fU0VUX0lPTU1V
-Og0KPiA+Pg0KPiA+PiAqIElmIHRoZSB0eXBlIGlzIFZGSU9fVFlQRTF2Ml9JT01NVSwgdGhlbg0K
-PiA+PiBWRklPX0lPTU1VX01BUC9VTk1BUF9ETUENCj4gPj4gICBhZmZlY3RzIHRoZSBzdGFnZS0x
-IG5vbi1QQVNJRCBjb250ZXh0IChhbHJlYWR5IHRoZSBjYXNlIGluIG1haW5saW5lKS4NCj4gPj4g
-ICBJbiBhZGRpdGlvbiwgd2l0aCBteSBwYXRjaCB0aGUgQklORCBpb2N0bCB3aWxsIGFmZmVjdCBz
-dGFnZS0xIFBBU0lEDQo+ID4+ICAgY29udGV4dHMsIGFuZCBiaW5kIHByb2Nlc3MgcGFnZSBkaXJl
-Y3RvcmllcyB0byB0aGUgZGV2aWNlIChob3N0IFNWTSkuDQo+ID4+DQo+ID4+ICogSWYgdGhlIHR5
-cGUgaXMgVkZJT19UWVBFMV9ORVNUSU5HX0lPTU1VLCB0aGVuDQo+ID4+IFZGSU9fSU9NTVVfTUFQ
-L1VOTUFQX0RNQQ0KPiA+PiAgIHdpbGwgYWZmZWN0IHN0YWdlLTIgbWFwcGluZ3MgKGFscmVhZHkg
-aW4gbWFpbmxpbmUpLg0KPiA+PiAgIFdpdGggbXkgU01NVSBwYXRjaCBzZXJpZXMsIHRoZSBCSU5E
-IGlvY3RsIGlzIG5vdCBzdXBwb3J0ZWQgaW4gdGhpcyBtb2RlLg0KPiA+PiAgIEJ1dCBpbiB0aGUg
-ZnV0dXJlLCBCSU5EIHdvdWxkIGFsbG93IHRvIG1hbmFnZSBzdGFnZS0xIGFzIHdlbGw6DQo+ID4+
-ICAgLSBiaW5kIGEgcHJvY2VzcyBwYWdlIGRpcmVjdG9yeSAoaG9zdCBTVk0gd2l0aCBhZGRlZCBz
-dGFnZS0yKSwgb3INCj4gPg0KPiA+IEkgdGhvdWdodCBob3N0IFNWTSB3aWxsIG9ubHkgZ28gdGhy
-b3VnaCBWRklPX1RZUEUxdjJfSU9NTVUsDQo+ID4gc2luY2UgeW91IHNhaWQgc3RhZ2UtMiBpbiBB
-Uk0gU01NVSBpcyBvbmx5IGZvciBHUEEtPkhQQSB1c2FnZQ0KPiA+IGluIHByZXZpb3VzIGV4cGxh
-bmF0aW9uLiB0aGVuIHdoYXQgZG9lcyAiaG9zdCBTVk0gd2l0aCBhZGRlZA0KPiA+IHN0YWdlLTIi
-IG1lYW4gaGVyZT8NCj4gDQo+IEFoLCB0aGF0J3MganVzdCBhIGNyYXp5IGlkZWEgSSBoYWQuIEkn
-bSBub3Qgc3VyZSBpdCBpcyB1c2VmdWwgb3Igd29ydGgNCj4gaW1wbGVtZW50aW5nLCBidXQgaXQg
-aXMgb25lIG9mIHRoZSBwb3NzaWJpbGl0eSBvZmZlcmVkIGJ5IG5lc3RlZCB0cmFuc2xhdGlvbi4N
-Cj4gDQo+IENvbnNpZGVyIHRoZSBzaXR1YXRpb24gd2hlcmUgYSB1c2Vyc3BhY2UgZHJpdmVyIChu
-byB2aXJ0dWFsaXphdGlvbikgaXMNCj4gYnVpbHQgaW4gYSBjbGllbnQtc2VydmVyIGZhc2hpb246
-IHRoZSBzZXJ2ZXIgY29udHJvbHMgYSBkZXZpY2UgYW5kIHNwYXducw0KPiBuZXcgcHJvY2Vzc2Vz
-IChjbGllbnRzKSwgZWFjaCBzaGFyaW5nIGEgY29udGV4dCB3aXRoIHRoZSBkZXZpY2UgdXNpbmcg
-aXRzDQo+IG93biBQQVNJRC4gSWYgdGhlIHNlcnZlciB3YW50cyB0byBoaWRlIHBhcnRzIG9mIHRo
-ZSBjbGllbnQgYWRkcmVzcyBzcGFjZQ0KPiBmcm9tIHRoZSBkZXZpY2UgKGUuZy4gLnRleHQpLCB0
-aGVuIGl0IGNvdWxkIGNvbnRyb2wgc3RhZ2UtMiB2aWEgTUFQL1VOTUFQDQo+IHRvIHJlc3RyaWN0
-IHRoZSBhZGRyZXNzIHNwYWNlLg0KDQpzdGFnZS0xIGlzIGxpbmtlZCB0byBDUFUgcGFnZSB0YWJs
-ZSAoVkEtPlBBKSBmb3IgU1ZNLCB3aGlsZSBwaHlzaWNhbCANCm1lbW9yeSBpcyBtYW5hZ2VkIGJ5
-IGtlcm5lbC4gSSBkaWRuJ3QgY29tZSB1cCBhIGdvb2QgcmVhc29uIHdoeSANCnNlcnZlciBhcHBs
-aWNhdGlvbiBuZWVkcyBvciBoYXMga25vd2xlZGdlIHRvIGhpZGUgc29tZSByZXNvdXJjZSANCndo
-aWNoIGlzIG5vdCBtYW5hZ2VkIGJ5IGl0c2VsZi4uLg0KDQo+IA0KPiBJdCB3b3VsZCB1c2UgZGlm
-ZmVyZW50IHNlbWFudGljcyBvZiBNQVAvVU5NQVAgdGhvdWdoLCBhcyB0aGUgaW9jdGwgd291bGQN
-Cj4gb25seSBiZSB1c2VkIHRvIGRlZmluZSAxOjEgdHJhbnNsYXRpb24gd2luZG93cywgbm90IHBp
-biBtZW1vcnkuDQo+IA0KPiBUaGFua3MsDQo+IEplYW4NCg==
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
+> Sent: Monday, August 7, 2017 8:52 PM
+> 
+> Hi Bob,
+> 
+> On 07/08/17 13:18, Bob Liu wrote:
+> > On 2017/8/7 18:31, Jean-Philippe Brucker wrote:
+> >> On 05/08/17 06:14, valmiki wrote:
+> >> [...]
+> >>> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
+> >>> documentation we fill vaddr and iova in struct
+> vfio_iommu_type1_dma_map
+> >>> and pass them to VFIO. But if we use dynamic allocation in application
+> >>> (say malloc), do we need to use dma API to get iova and then call
+> >>> VFIO_IOMMU_MAP ioctl ?
+> >>> If application needs multiple such dynamic allocations, then it need to
+> >>> allocate large chunk and program it via VFIO_IOMMU_MAP ioctl and
+> then
+> >>> manage rest allocations requirements from this buffer ?
+> >>
+> >> Yes, without SVM, the application allocates large buffers, allocates IOVAs
+> >> itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't rely on
+> the
+> >> DMA API at all, it manages IOVAs as it wants. Sizes passed to
+> >> VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page
+> granularity
+> >> (that is at least 4kB), and both iova and vaddr have to be aligned on that
+> >> granularity as well. So malloc isn't really suitable in this case, you'll
+> >> need mmap. The application can then implement a small allocator to
+> manage
+> >> the DMA pool created with VFIO_IOMMU_MAP.
+> >>
+> >> With SVM the application binds its address space to the device, and then
+> >> uses malloc for all DMA buffers, no need for VFIO_IOMMU_MAP.
+> >>
+> >
+> > Hi Jean,
+> >
+> > I think there is another way to support SVM without PASID.
+> >
+> > Suppose there is a device in the same SOC-chip, the device access memory
+> through SMMU(using internal bus instead of PCIe)
+> > Once page fault, the device send an event with (vaddr, substreamID) to
+> SMMU, then SMMU triggers an event interrupt.
+> >
+> > In the event interrupt handler, we can implement the same logic as PRI
+> interrupt in your patch.
+> > What do you think about that?
+> What you're describing is the SMMU stall model for platform devices. From
+> the driver perspective it's the same as PRI and PASID (SubstreamID=PASID).
+> 
+> When a stall-capable device accesses unmapped memory, the SMMU parks
+> the
+> transaction and sends an event marked "stall" on the event queue, with a
+> stall tag (STAG, roughly equivalent to PRG Index). The OS handles the
+> fault and sends a CMD_RESUME command with the status and the STAG.
+> Then
+> the SMMU completes the access or terminates it.
+
+Can such platform device send multiple SubstreamIDs, or one ID per
+device? 
+
+Thanks
+Kevin
