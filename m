@@ -1,138 +1,110 @@
-From: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v3] iommu/s390: Add support for iommu_device handling
-Date: Fri, 11 Aug 2017 19:02:36 +0200 (CEST)
-Message-ID: <alpine.LFD.2.20.1708111844340.1769@schleppi>
-References: <1502274354-643-1-git-send-email-joro@8bytes.org>
-	<alpine.LFD.2.20.1708102104390.4919@schleppi>
-	<20170811073118.GF30515@8bytes.org>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH 2/3] pci: Generalize is_vmd behavior
+Date: Fri, 11 Aug 2017 12:03:19 -0500
+Message-ID: <20170811170319.GB17039@bhelgaas-glaptop.roam.corp.google.com>
+References: <20170807195713.10963-1-jonathan.derrick@intel.com>
+ <20170807195713.10963-2-jonathan.derrick@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170811073118.GF30515-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170807195713.10963-2-jonathan.derrick@intel.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jon Derrick <jonathan.derrick@intel.com>
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Keith Busch <keith.busch@intel.com>, Scott Bauer <scott.bauer@intel.com>, David Fugate <david.fugate@intel.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Joerg,
-
-On Fri, 11 Aug 2017, Joerg Roedel wrote:
-> Hey Sebastian,
+On Mon, Aug 07, 2017 at 01:57:12PM -0600, Jon Derrick wrote:
+> Generalize is_vmd behavior to remove dependency on domain number
+> checking in pci quirks.
 > 
-> On Thu, Aug 10, 2017 at 09:07:06PM +0200, Sebastian Ott wrote:
-> > With this patch pci hot-unplug fails with a use after free or refcounting
-> > issue - I'm currently trying to understand what's going on...
+> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+> ---
+>  arch/x86/include/asm/pci.h | 8 +++-----
+>  arch/x86/pci/common.c      | 2 +-
+>  drivers/pci/quirks.c       | 2 +-
+>  include/linux/pci.h        | 4 ++++
+>  4 files changed, 9 insertions(+), 7 deletions(-)
 > 
-> Let me know if I can help with debugging the issue, do you have a
-> backtrace for me to look at?
+> diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+> index 473a729..5c5d54a 100644
+> --- a/arch/x86/include/asm/pci.h
+> +++ b/arch/x86/include/asm/pci.h
+> @@ -60,16 +60,14 @@ static inline void *_pci_root_bus_fwnode(struct pci_bus *bus)
+>  #define pci_root_bus_fwnode	_pci_root_bus_fwnode
+>  #endif
+>  
+> -static inline bool is_vmd(struct pci_bus *bus)
+> -{
+>  #if IS_ENABLED(CONFIG_VMD)
+> +static inline bool pci_bus_is_vmd(struct pci_bus *bus)
+> +{
+>  	struct pci_sysdata *sd = bus->sysdata;
+>  
+>  	return sd->vmd_domain;
+> -#else
+> -	return false;
+> -#endif
+>  }
+> +#endif
+>  
+>  /* Can be used to override the logic in pci_scan_bus for skipping
+>     already-configured bus numbers - to be used for buggy BIOSes
+> diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
+> index dbe2132..18b2277 100644
+> --- a/arch/x86/pci/common.c
+> +++ b/arch/x86/pci/common.c
+> @@ -662,7 +662,7 @@ static void set_dma_domain_ops(struct pci_dev *pdev) {}
+>  
+>  static void set_dev_domain_options(struct pci_dev *pdev)
+>  {
+> -	if (is_vmd(pdev->bus))
+> +	if (pci_bus_is_vmd(pdev->bus))
+>  		pdev->hotplug_user_indicators = 1;
+>  }
+>  
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 6967c6b..ba47995 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -4666,7 +4666,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x443, quirk_intel_qat_vf_cap);
+>  static void quirk_no_aersid(struct pci_dev *pdev)
+>  {
+>  	/* VMD Domain */
+> -	if (pdev->bus->sysdata && pci_domain_nr(pdev->bus) >= 0x10000)
+> +	if (pci_bus_is_vmd(pdev->bus))
 
-I would have send backtraces but everyone looked different: random mem
-corruptions, panic during unrelated allocations and stuff like that.
+I like this part ...
 
-..but I found the bug, actually 2 bugs:
+>  		pdev->bus->bus_flags |= PCI_BUS_FLAGS_NO_AERSID;
+>  }
+>  DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x2030, quirk_no_aersid);
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 4869e66..0299d8b 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1471,6 +1471,10 @@ static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
+>  static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
+>  #endif /* CONFIG_PCI_DOMAINS */
+>  
+> +#if !IS_ENABLED(CONFIG_VMD)
+> +static inline bool pci_bus_is_vmd(struct pci_bus *bus) { return false; }
+> +#endif
 
-* That patch embedded a struct iommu_device within struct zpci_dev but
-the iommu_device has a release function (via its class) - so when
-the release function gets called it frees memory that was never allocated.
-The fix is to not embedd struct iommu_device in zpci_dev (see below)
+But not so much this part.  VMD is (AFAIK) still fundamentally an
+x86-only thing, so I'd like it better if this could all be within
+arch/x86.  Could this be done by moving quirk_no_aersid() to
+arch/x86/pci/fixup.c?
 
-* iommu_release_device must not release the struct device but the
-structure it is embedded in: struct iommu_device (I'll send a patch
-for that)
+BTW, CONFIG_VMD in drivers/pci/host/Kconfig is currently "depends on
+SRCU".  I'm not a Kconfig expert, but that doesn't seem like an
+intuitive connection.  And it's the only such dependency on SRCU in
+the tree -- most other places use "select SRCU", which makes more
+sense to me.
 
-With these fixed it works fine.
-
-Sebastian
-
----
- arch/s390/include/asm/pci.h |  2 +-
- drivers/iommu/s390-iommu.c  | 20 ++++++++++++--------
- 2 files changed, 13 insertions(+), 9 deletions(-)
-
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 386df9a..de3129e 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -123,7 +123,7 @@ struct zpci_dev {
- 	unsigned long	iommu_pages;
- 	unsigned int	next_bit;
- 
--	struct iommu_device iommu_dev;  /* IOMMU core handle */
-+	struct iommu_device *iommu_dev;  /* IOMMU core handle */
- 
- 	char res_name[16];
- 	struct zpci_bar_struct bars[PCI_BAR_COUNT];
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 85f3bc5..58a7414 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -174,7 +174,7 @@ static int s390_iommu_add_device(struct device *dev)
- 		return PTR_ERR(group);
- 
- 	iommu_group_put(group);
--	iommu_device_link(&zdev->iommu_dev, dev);
-+	iommu_device_link(zdev->iommu_dev, dev);
- 
- 	return 0;
- }
-@@ -201,7 +201,7 @@ static void s390_iommu_remove_device(struct device *dev)
- 			s390_iommu_detach_device(domain, dev);
- 	}
- 
--	iommu_device_unlink(&zdev->iommu_dev, dev);
-+	iommu_device_unlink(zdev->iommu_dev, dev);
- 	iommu_group_remove_device(dev);
- }
- 
-@@ -336,21 +336,25 @@ int zpci_init_iommu(struct zpci_dev *zdev)
- {
- 	int rc = 0;
- 
--	rc = iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
-+	zdev->iommu_dev = kzalloc(sizeof(*zdev->iommu_dev), GFP_KERNEL);
-+	if (!zdev->iommu_dev)
-+		return -ENOMEM;
-+
-+	rc = iommu_device_sysfs_add(zdev->iommu_dev, NULL, NULL,
- 				    "s390-iommu.%08x", zdev->fid);
- 	if (rc)
- 		goto out_err;
- 
--	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
-+	iommu_device_set_ops(zdev->iommu_dev, &s390_iommu_ops);
- 
--	rc = iommu_device_register(&zdev->iommu_dev);
-+	rc = iommu_device_register(zdev->iommu_dev);
- 	if (rc)
- 		goto out_sysfs;
- 
- 	return 0;
- 
- out_sysfs:
--	iommu_device_sysfs_remove(&zdev->iommu_dev);
-+	iommu_device_sysfs_remove(zdev->iommu_dev);
- 
- out_err:
- 	return rc;
-@@ -358,8 +362,8 @@ int zpci_init_iommu(struct zpci_dev *zdev)
- 
- void zpci_destroy_iommu(struct zpci_dev *zdev)
- {
--	iommu_device_unregister(&zdev->iommu_dev);
--	iommu_device_sysfs_remove(&zdev->iommu_dev);
-+	iommu_device_unregister(zdev->iommu_dev);
-+	iommu_device_sysfs_remove(zdev->iommu_dev);
- }
- 
- static struct iommu_ops s390_iommu_ops = {
--- 
-2.5.5
+>  /*
+>   * Generic implementation for PCI domain support. If your
+>   * architecture does not need custom management of PCI
+> -- 
+> 2.9.4
+> 
