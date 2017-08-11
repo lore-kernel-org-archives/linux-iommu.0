@@ -1,124 +1,228 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 6/8] iommu/mediatek: Enlarge the validate PA range for 4GB mode
-Date: Fri, 11 Aug 2017 17:56:15 +0800
-Message-ID: <1502445377-26936-7-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH 7/8] memory: mtk-smi: Rearrange some function position alphabetically
+Date: Fri, 11 Aug 2017 17:56:16 +0800
+Message-ID: <1502445377-26936-8-git-send-email-yong.wu@mediatek.com>
 References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1502445377-26936-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, k.zhang@mediatek.com, cloud.chou@mediatek.com, Arvind Yadav <arvind.yadav.cs@gmail.com>, youlin.pei@mediatek.com, yong.wu@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is for 4GB mode, mainly for 4 issues:
-1) Fix a 4GB bug:
-   if the dram base is 0x4000_0000, the dram size is 0xc000_0000.
-   then the code just meet a corner case because max_pfn is
-   0x10_0000.
-   data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
-   It's true at the case above. That isn't unexpected.
-2) In mt2712, there is a new register for the 4GB PA range(0x118)
-   we should enlarge the max PA range, or the HW will report
-   error.
-   The dram range is from 0x1_0000_0000 to 0x1_ffff_ffff in the 4GB
-   mode, we cut out the bit[32:30] of the SA(Start address) and
-   EA(End address) into this REG_MMU_VLD_PA_RNG(0x118).
-3) In mt2712, the register(0x13c) is extended for 4GB mode.
-   bit[7:6] indicate the valid PA[32:33]. Thus, we don't mask the
-   value and print it directly for debug.
-4) if 4GB is enabled, the dram PA range is from 0x1_0000_0000 to
-   0x1_ffff_ffff. Thus, the PA from iova_to_pa should also '|' BIT(32)
+Only adjust some code position in Soc numerical order, from mt2701,
+mt2712 to mt8173.
 
-Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
-this patch also include bug-fix for mt8173 and mt2712.
-I also don't split them.
----
- drivers/iommu/mtk_iommu.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+Besides, 3 minor changes:
+1) fix a coding style issue:
+    CHECK: Alignment should match open parenthesis
+    +               writel(reg_val,
+    +                       common->smi_ao_base
+2) change from readl to readl_relaxed in gen1_config_port.
+3) change the type "larbid" from "int" to "unsigned int" to meet
+   the requirement of of_property_read_u32.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b7c8e52..a3817e0 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -60,6 +60,8 @@
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ drivers/memory/mtk-smi.c | 105 +++++++++++++++++++++++------------------------
+ 1 file changed, 52 insertions(+), 53 deletions(-)
+
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index ec06d2b..ce27bdf 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -23,9 +23,6 @@
+ #include <soc/mediatek/smi.h>
+ #include <dt-bindings/memory/mt2701-larb-port.h>
  
- #define REG_MMU_IVRP_PADDR			0x114
- #define F_MMU_IVRP_PA_SET(pa, ext)		(((pa) >> 1) | ((!!(ext)) << 31))
-+#define REG_MMU_VLD_PA_RNG			0x118
-+#define F_MMU_VLD_PA_RNG(EA, SA)		(((EA) << 8) | (SA))
+-/* mt8173 */
+-#define SMI_LARB_MMU_EN		0xf00
+-
+ /* mt2701 */
+ #define REG_SMI_SECUR_CON_BASE		0x5c0
  
- #define REG_MMU_INT_CONTROL0			0x120
- #define F_L2_MULIT_HIT_EN			BIT(0)
-@@ -84,7 +86,6 @@
- #define REG_MMU_FAULT_ST1			0x134
+@@ -48,16 +45,19 @@
+ #define SMI_LARB_NONSEC_CON(id)	(0x380 + (id * 4))
+ #define F_MMU_EN		BIT(0)
  
- #define REG_MMU_FAULT_VA			0x13c
--#define F_MMU_FAULT_VA_MSK			0xfffff000
- #define F_MMU_FAULT_VA_WRITE_BIT		BIT(1)
- #define F_MMU_FAULT_VA_LAYER_BIT		BIT(0)
- 
-@@ -206,7 +207,6 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
- 	fault_iova = readl_relaxed(data->base + REG_MMU_FAULT_VA);
- 	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
- 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
--	fault_iova &= F_MMU_FAULT_VA_MSK;
- 	fault_pa = readl_relaxed(data->base + REG_MMU_INVLD_PA);
- 	regval = readl_relaxed(data->base + REG_MMU_INT_ID);
- 	fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
-@@ -385,6 +385,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 					  dma_addr_t iova)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-+	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
- 	unsigned long flags;
- 	phys_addr_t pa;
- 
-@@ -392,6 +393,9 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 	pa = dom->iop->iova_to_phys(dom->iop, iova);
- 	spin_unlock_irqrestore(&dom->pgtlock, flags);
- 
-+	if (data->enable_4GB)
-+		pa |= BIT(32);
++/* mt8173 */
++#define SMI_LARB_MMU_EN		0xf00
 +
- 	return pa;
+ struct mtk_smi_larb_gen {
+-	bool need_larbid;
+-	int port_in_larb[MTK_LARB_NR_MAX + 1];
+-	void (*config_port)(struct device *);
++	bool	need_larbid;
++	int	port_in_larb[MTK_LARB_NR_MAX + 1];/* Only needed by smi gen1 */
++	void	(*config_port)(struct device *);
+ };
+ 
+ struct mtk_smi {
+ 	struct device			*dev;
+ 	struct clk			*clk_apb, *clk_smi;
+-	struct clk			*clk_async; /*only needed by mt2701*/
++	struct clk			*clk_async; /*only needed by smi gen1*/
+ 	void __iomem			*smi_ao_base;
+ };
+ 
+@@ -66,7 +66,7 @@ struct mtk_smi_larb { /* larb: local arbiter */
+ 	void __iomem			*base;
+ 	struct device			*smi_common_dev;
+ 	const struct mtk_smi_larb_gen	*larb_gen;
+-	int				larbid;
++	unsigned int			larbid;
+ 	u32				*mmu;
+ };
+ 
+@@ -166,28 +166,16 @@ void mtk_smi_larb_put(struct device *larbdev)
+ 	return -ENODEV;
  }
  
-@@ -522,6 +526,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+-static void mtk_smi_larb_config_port_mt8173(struct device *dev)
++static void
++mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
+ {
+-	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+-
+-	writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
++	/* Do nothing as the iommu is always enabled. */
+ }
  
- 	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
- 		       data->base + REG_MMU_IVRP_PADDR);
-+	if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
-+		/*
-+		 * If 4GB mode is enabled, the validate PA range is from
-+		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
-+		 */
-+		regval = F_MMU_VLD_PA_RNG(7, 4);
-+		writel_relaxed(regval, data->base + REG_MMU_VLD_PA_RNG);
+-static void mtk_smi_larb_config_port_mt2712(struct device *dev)
+-{
+-	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+-	u32 reg;
+-	int i;
+-
+-	for (i = 0; i < 32; i++) {
+-		if (*larb->mmu & BIT(i)) {
+-			reg = readl_relaxed(larb->base +
+-					    SMI_LARB_NONSEC_CON(i));
+-			reg |= F_MMU_EN;
+-			writel(reg, larb->base + SMI_LARB_NONSEC_CON(i));
+-		}
+-	}
+-}
++static const struct component_ops mtk_smi_larb_component_ops = {
++	.bind = mtk_smi_larb_bind,
++	.unbind = mtk_smi_larb_unbind,
++};
+ 
+ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+ {
+@@ -209,36 +197,39 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+ 			/* do not need to enable m4u for this port */
+ 			continue;
+ 		}
+-		reg_val = readl(common->smi_ao_base
++		reg_val = readl_relaxed(common->smi_ao_base
+ 			+ REG_SMI_SECUR_CON_ADDR(m4u_port_id));
+ 		reg_val &= SMI_SECUR_CON_VAL_MSK(m4u_port_id);
+ 		reg_val |= sec_con_val;
+ 		reg_val |= SMI_SECUR_CON_VAL_DOMAIN(m4u_port_id);
+ 		writel(reg_val,
+-			common->smi_ao_base
+-			+ REG_SMI_SECUR_CON_ADDR(m4u_port_id));
++		       common->smi_ao_base +
++		       REG_SMI_SECUR_CON_ADDR(m4u_port_id));
+ 	}
+ }
+ 
+-static void
+-mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
++static void mtk_smi_larb_config_port_mt2712(struct device *dev)
+ {
+-	/* Do nothing as the iommu is always enabled. */
+-}
++	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
++	u32 reg;
++	int i;
+ 
+-static const struct component_ops mtk_smi_larb_component_ops = {
+-	.bind = mtk_smi_larb_bind,
+-	.unbind = mtk_smi_larb_unbind,
+-};
++	for (i = 0; i < 32; i++) {
++		if (*larb->mmu & BIT(i)) {
++			reg = readl_relaxed(larb->base +
++					    SMI_LARB_NONSEC_CON(i));
++			reg |= F_MMU_EN;
++			writel(reg, larb->base + SMI_LARB_NONSEC_CON(i));
++		}
 +	}
- 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
++}
  
- 	/* It's MISC control register whose default value is ok except mt8173.*/
-@@ -567,7 +579,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+-static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
+-	/* mt8173 do not need the port in larb */
+-	.config_port = mtk_smi_larb_config_port_mt8173,
+-};
++static void mtk_smi_larb_config_port_mt8173(struct device *dev)
++{
++	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
  
- 	/* Whether the current dram is over 4GB */
--	data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
-+	data->enable_4GB = !!(max_pfn > (BIT(32) >> PAGE_SHIFT));
+-static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
+-	.config_port = mtk_smi_larb_config_port_mt2712,
+-};
++	writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
++}
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	data->base = devm_ioremap_resource(dev, res);
+ static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
+ 	.need_larbid = true,
+@@ -249,12 +240,16 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+ 	.config_port = mtk_smi_larb_config_port_gen1,
+ };
+ 
++static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
++	.config_port = mtk_smi_larb_config_port_mt2712,
++};
++
++static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
++	.config_port = mtk_smi_larb_config_port_mt8173,
++};
++
+ static const struct of_device_id mtk_smi_larb_of_ids[] = {
+ 	{
+-		.compatible = "mediatek,mt8173-smi-larb",
+-		.data = &mtk_smi_larb_mt8173
+-	},
+-	{
+ 		.compatible = "mediatek,mt2701-smi-larb",
+ 		.data = &mtk_smi_larb_mt2701
+ 	},
+@@ -262,6 +257,10 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+ 		.compatible = "mediatek,mt2712-smi-larb",
+ 		.data = &mtk_smi_larb_mt2712
+ 	},
++	{
++		.compatible = "mediatek,mt8173-smi-larb",
++		.data = &mtk_smi_larb_mt8173
++	},
+ 	{}
+ };
+ 
+@@ -341,10 +340,6 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
+ 
+ static const struct of_device_id mtk_smi_common_of_ids[] = {
+ 	{
+-		.compatible = "mediatek,mt8173-smi-common",
+-		.data = (void *)MTK_SMI_GEN2
+-	},
+-	{
+ 		.compatible = "mediatek,mt2701-smi-common",
+ 		.data = (void *)MTK_SMI_GEN1
+ 	},
+@@ -352,6 +347,10 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
+ 		.compatible = "mediatek,mt2712-smi-common",
+ 		.data = (void *)MTK_SMI_GEN2
+ 	},
++	{
++		.compatible = "mediatek,mt8173-smi-common",
++		.data = (void *)MTK_SMI_GEN2
++	},
+ 	{}
+ };
+ 
 -- 
 1.9.1
