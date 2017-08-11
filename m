@@ -1,228 +1,207 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 1/8] dt-bindings: mediatek: Add binding for mt2712 IOMMU and
-	SMI
-Date: Fri, 11 Aug 2017 17:56:10 +0800
-Message-ID: <1502445377-26936-2-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH 3/8] iommu/mediatek: Merge 2 M4U HWs into one iommu domain
+Date: Fri, 11 Aug 2017 17:56:12 +0800
+Message-ID: <1502445377-26936-4-git-send-email-yong.wu@mediatek.com>
 References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1502445377-26936-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Mark Rutland <mark.rutland@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, k.zhang@mediatek.com, cloud.chou@mediatek.com, Arvind Yadav <arvind.yadav.cs@gmail.com>, youlin.pei@mediatek.com, yong.wu@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds decriptions for mt2712 IOMMU and SMI.
+In theory, If there are 2 M4U HWs, there should be 2 IOMMU domains.
+But one IOMMU domain(4GB iova range) is enough for us currently,
+It's unnecessary to maintain 2 pagetables.
 
-In order to balance the bandwidth, mt2712 has two M4Us, two
-smi-commons, 8 smi-larbs. and mt2712 is also MTK IOMMU gen2 which
-use Short-Descriptor translation table format.
+Besides, This patch can simplify our consumer code largely. They don't
+need map a iova range from one domain into another, They can share the
+iova address easily.
 
-The mt2712 M4U-SMI HW diagram is as below:
-
-                            EMI
-                             |
-              -------------------------------
-              |                             |
-             M4U0                          M4U1
-              |                             |
-         smi-common0                   smi-common1
-              |                             |
-  -------------------------       --------------------
-  |     |     |     |     |       |         |        |
-  |     |     |     |     |       |         |        |
-larb0 larb1 larb2 larb3 larb6    larb4    larb5     larb7
-disp0 vdec  cam   venc   jpg  mdp1/disp1 mdp2/disp2  mdp3->larb names
-
-All the connections are HW fixed, SW can NOT adjust it.
-
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- .../devicetree/bindings/iommu/mediatek,iommu.txt   |  6 +-
- .../memory-controllers/mediatek,smi-common.txt     |  6 +-
- .../memory-controllers/mediatek,smi-larb.txt       |  5 +-
- include/dt-bindings/memory/mt2712-larb-port.h      | 91 ++++++++++++++++++++++
- 4 files changed, 102 insertions(+), 6 deletions(-)
- create mode 100644 include/dt-bindings/memory/mt2712-larb-port.h
+ drivers/iommu/mtk_iommu.c | 98 ++++++++++++++++++++++++++++++++++-------------
+ drivers/iommu/mtk_iommu.h |  2 +
+ 2 files changed, 73 insertions(+), 27 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-index 53c20ca..df5db73 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-@@ -40,6 +40,7 @@ video decode local arbiter, all these ports are according to the video HW.
- Required properties:
- - compatible : must be one of the following string:
- 	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
-+	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
- 	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
- - reg : m4u register base and size.
- - interrupts : the interrupt of m4u.
-@@ -50,8 +51,9 @@ Required properties:
- 	according to the local arbiter index, like larb0, larb1, larb2...
- - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
- 	Specifies the mtk_m4u_id as defined in
--	dt-binding/memory/mt2701-larb-port.h for mt2701 and
--	dt-binding/memory/mt8173-larb-port.h for mt8173
-+	dt-binding/memory/mt2701-larb-port.h for mt2701,
-+	dt-binding/memory/mt2712-larb-port.h for mt2712, and
-+	dt-binding/memory/mt8173-larb-port.h for mt8173.
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index da6cedb..e3848e1 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -106,6 +106,27 @@ struct mtk_iommu_domain {
  
- Example:
- 	iommu: iommu@10205000 {
-diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-index aa614b2..615abdd 100644
---- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-@@ -2,8 +2,9 @@ SMI (Smart Multimedia Interface) Common
+ static struct iommu_ops mtk_iommu_ops;
  
- The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
- 
--Mediatek SMI have two generations of HW architecture, mt8173 uses the second
--generation of SMI HW while mt2701 uses the first generation HW of SMI.
-+Mediatek SMI have two generations of HW architecture, mt2712 and mt8173 use
-+the second generation of SMI HW while mt2701 uses the first generation HW of
-+SMI.
- 
- There's slight differences between the two SMI, for generation 2, the
- register which control the iommu port is at each larb's register base. But
-@@ -15,6 +16,7 @@ not needed for SMI generation 2.
- Required properties:
- - compatible : must be one of :
- 	"mediatek,mt2701-smi-common"
-+	"mediatek,mt2712-smi-common"
- 	"mediatek,mt8173-smi-common"
- - reg : the register and size of the SMI block.
- - power-domains : a phandle to the power domain of this local arbiter.
-diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-index ddf46b8..083155c 100644
---- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-@@ -4,8 +4,9 @@ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
- 
- Required properties:
- - compatible : must be one of :
--		"mediatek,mt8173-smi-larb"
- 		"mediatek,mt2701-smi-larb"
-+		"mediatek,mt2712-smi-larb"
-+		"mediatek,mt8173-smi-larb"
- - reg : the register and size of this local arbiter.
- - mediatek,smi : a phandle to the smi_common node.
- - power-domains : a phandle to the power domain of this local arbiter.
-@@ -15,7 +16,7 @@ Required properties:
- 	    the register.
-   - "smi" : It's the clock for transfer data and command.
- 
--Required property for mt2701:
-+Required property for mt2701 and mt2712:
- - mediatek,larb-id :the hardware id of this larb.
- 
- Example:
-diff --git a/include/dt-bindings/memory/mt2712-larb-port.h b/include/dt-bindings/memory/mt2712-larb-port.h
-new file mode 100644
-index 0000000..4d74536
---- /dev/null
-+++ b/include/dt-bindings/memory/mt2712-larb-port.h
-@@ -0,0 +1,91 @@
++static LIST_HEAD(m4ulist); /* List all the M4U HWs */
++
++#define for_each_m4u(data) list_for_each_entry(data, &m4ulist, list)
++
 +/*
-+ * Copyright (c) 2017 MediaTek Inc.
-+ * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
++ * There may be 1 or 2 M4U HWs, But we always expect they are in the same domain
++ * for the performance.
 + *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
++ * Here always return the mtk_iommu_data of the first probed M4U where the
++ * iommu domain information is recorded.
 + */
-+#ifndef __DTS_IOMMU_PORT_MT2712_H
-+#define __DTS_IOMMU_PORT_MT2712_H
++static struct mtk_iommu_data *mtk_iommu_get_m4u_data(void)
++{
++	struct mtk_iommu_data *data;
 +
-+#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++	for_each_m4u(data)
++		return data;
 +
-+#define M4U_LARB0_ID			0
-+#define M4U_LARB1_ID			1
-+#define M4U_LARB2_ID			2
-+#define M4U_LARB3_ID			3
-+#define M4U_LARB4_ID			4
-+#define M4U_LARB5_ID			5
-+#define M4U_LARB6_ID			6
-+#define M4U_LARB7_ID			7
++	return NULL;
++}
 +
-+/* larb0 */
-+#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
-+#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
-+#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 2)
-+#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 3)
-+#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 4)
-+#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 5)
-+#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 6)
+ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
+ {
+ 	return container_of(dom, struct mtk_iommu_domain, domain);
+@@ -113,47 +134,57 @@ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
+ 
+ static void mtk_iommu_tlb_flush_all(void *cookie)
+ {
+-	struct mtk_iommu_data *data = cookie;
++	struct mtk_iommu_data *data;
+ 
+-	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0, data->base + REG_MMU_INV_SEL);
+-	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
+-	wmb(); /* Make sure the tlb flush all done */
++	for_each_m4u(data) {
++		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
++			       data->base + REG_MMU_INV_SEL);
++		writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
++		wmb(); /* Make sure the tlb flush all done */
++	}
+ }
+ 
+ static void mtk_iommu_tlb_add_flush_nosync(unsigned long iova, size_t size,
+ 					   size_t granule, bool leaf,
+ 					   void *cookie)
+ {
+-	struct mtk_iommu_data *data = cookie;
++	struct mtk_iommu_data *data;
+ 
+-	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0, data->base + REG_MMU_INV_SEL);
++	for_each_m4u(data) {
++		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
++			       data->base + REG_MMU_INV_SEL);
+ 
+-	writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
+-	writel_relaxed(iova + size - 1, data->base + REG_MMU_INVLD_END_A);
+-	writel_relaxed(F_MMU_INV_RANGE, data->base + REG_MMU_INVALIDATE);
+-	data->tlb_flush_active = true;
++		writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
++		writel_relaxed(iova + size - 1,
++			       data->base + REG_MMU_INVLD_END_A);
++		writel_relaxed(F_MMU_INV_RANGE,
++			       data->base + REG_MMU_INVALIDATE);
++		data->tlb_flush_active = true;
++	}
+ }
+ 
+ static void mtk_iommu_tlb_sync(void *cookie)
+ {
+-	struct mtk_iommu_data *data = cookie;
++	struct mtk_iommu_data *data;
+ 	int ret;
+ 	u32 tmp;
+ 
+-	/* Avoid timing out if there's nothing to wait for */
+-	if (!data->tlb_flush_active)
+-		return;
++	for_each_m4u(data) {
++		/* Avoid timing out if there's nothing to wait for */
++		if (!data->tlb_flush_active)
++			return;
+ 
+-	ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE, tmp,
+-					tmp != 0, 10, 100000);
+-	if (ret) {
+-		dev_warn(data->dev,
+-			 "Partial TLB flush timed out, falling back to full flush\n");
+-		mtk_iommu_tlb_flush_all(cookie);
++		ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
++						tmp, tmp != 0, 10, 100000);
++		if (ret) {
++			dev_warn(data->dev,
++				 "Partial TLB flush timed out, falling back to full flush\n");
++			mtk_iommu_tlb_flush_all(cookie);
++		}
++		/* Clear the CPE status */
++		writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
++		data->tlb_flush_active = false;
+ 	}
+-	/* Clear the CPE status */
+-	writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
+-	data->tlb_flush_active = false;
+ }
+ 
+ static const struct iommu_gather_ops mtk_iommu_gather_ops = {
+@@ -290,10 +321,11 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+-	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
++	struct mtk_iommu_data *curdata = dev->iommu_fwspec->iommu_priv;
++	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+ 	int ret;
+ 
+-	if (!data)
++	if (!data || !curdata)
+ 		return -ENODEV;
+ 
+ 	if (!data->m4u_dom) {
+@@ -305,7 +337,17 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		}
+ 	}
+ 
+-	mtk_iommu_config(data, dev, true);
++	/*
++	 * Update the pgtable base address register of another M4U HW with the
++	 * existed pgtable if there are more than one M4U HW.
++	 */
++	if (!curdata->m4u_dom) {
++		curdata->m4u_dom = data->m4u_dom;
++		writel(data->m4u_dom->cfg.arm_v7s_cfg.ttbr[0],
++		       curdata->base + REG_MMU_PT_BASE_ADDR);
++	}
 +
-+/* larb1 */
-+#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(M4U_LARB1_ID, 0)
-+#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(M4U_LARB1_ID, 1)
-+#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(M4U_LARB1_ID, 2)
-+#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 3)
-+#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(M4U_LARB1_ID, 4)
-+#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(M4U_LARB1_ID, 5)
-+#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 6)
-+#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(M4U_LARB1_ID, 7)
-+#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(M4U_LARB1_ID, 8)
-+#define M4U_PORT_HW_VDEC_TILE		MTK_M4U_ID(M4U_LARB1_ID, 9)
-+#define M4U_PORT_HW_IMG_RESZ_EXT	MTK_M4U_ID(M4U_LARB1_ID, 10)
++	mtk_iommu_config(curdata, dev, true);
+ 	return 0;
+ }
+ 
+@@ -397,7 +439,7 @@ static void mtk_iommu_remove_device(struct device *dev)
+ 
+ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ {
+-	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
++	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+ 
+ 	if (!data)
+ 		return ERR_PTR(-ENODEV);
+@@ -606,6 +648,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	list_add_tail(&data->list, &m4ulist);
 +
-+/* larb2 */
-+#define M4U_PORT_CAM_DMA0		MTK_M4U_ID(M4U_LARB2_ID, 0)
-+#define M4U_PORT_CAM_DMA1		MTK_M4U_ID(M4U_LARB2_ID, 1)
-+#define M4U_PORT_CAM_DMA2		MTK_M4U_ID(M4U_LARB2_ID, 2)
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
+ 
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index cd729a3..7d9ec49 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -57,6 +57,8 @@ struct mtk_iommu_data {
+ 
+ 	struct iommu_device		iommu;
+ 	enum mtk_iommu_type		m4u_type;
 +
-+/* larb3 */
-+#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
-+#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
-+#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
-+#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
-+#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
-+#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 5)
-+#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 6)
-+#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
-+#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
-+
-+/* larb4 */
-+#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB4_ID, 0)
-+#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 1)
-+#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB4_ID, 2)
-+#define M4U_PORT_DISP_OD1_R		MTK_M4U_ID(M4U_LARB4_ID, 3)
-+#define M4U_PORT_DISP_OD1_W		MTK_M4U_ID(M4U_LARB4_ID, 4)
-+#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 5)
-+#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB4_ID, 6)
-+
-+/* larb5 */
-+#define M4U_PORT_DISP_OVL2		MTK_M4U_ID(M4U_LARB5_ID, 0)
-+#define M4U_PORT_DISP_WDMA2		MTK_M4U_ID(M4U_LARB5_ID, 1)
-+#define M4U_PORT_MDP_RDMA2		MTK_M4U_ID(M4U_LARB5_ID, 2)
-+#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB5_ID, 3)
-+
-+/* larb6 */
-+#define M4U_PORT_JPGDEC_WDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 0)
-+#define M4U_PORT_JPGDEC_WDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 1)
-+#define M4U_PORT_JPGDEC_BSDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 2)
-+#define M4U_PORT_JPGDEC_BSDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 3)
-+
-+/* larb7 */
-+#define M4U_PORT_MDP_RDMA3		MTK_M4U_ID(M4U_LARB7_ID, 0)
-+#define M4U_PORT_MDP_WROT2		MTK_M4U_ID(M4U_LARB7_ID, 1)
-+
-+#endif
++	struct list_head		list;
+ };
+ 
+ static inline int compare_of(struct device *dev, void *data)
 -- 
 1.9.1
