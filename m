@@ -1,311 +1,162 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 6/8] iommu/amd: Make use of iova queue flushing
-Date: Fri, 11 Aug 2017 16:41:16 +0200
-Message-ID: <1502462478-22045-7-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 3/8] iommu/iova: Add flush counters to Flush-Queue
+	implementation
+Date: Fri, 11 Aug 2017 16:41:13 +0200
+Message-ID: <1502462478-22045-4-git-send-email-joro@8bytes.org>
 References: <1502462478-22045-1-git-send-email-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502462478-22045-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>, dwmw2@infradead.org, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1502462478-22045-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Rip out the implementation in the AMD IOMMU driver and use
-the one in the common iova code instead.
+There are two counters:
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+	* fq_flush_start_cnt  - Increased when a TLB flush
+	                        is started.
+
+	* fq_flush_finish_cnt - Increased when a TLB flush
+				is finished.
+
+The fq_flush_start_cnt is assigned to every Flush-Queue
+entry on its creation. When freeing entries from the
+Flush-Queue, the value in the entry is compared to the
+fq_flush_finish_cnt. The entry can only be freed when its
+value is less than the value of fq_flush_finish_cnt.
+
+The reason for these counters it to take advantage of IOMMU
+TLB flushes that happened on other CPUs. These already
+flushed the TLB for Flush-Queue entries on other CPUs so
+that they can already be freed without flushing the TLB
+again.
+
+This makes it less likely that the Flush-Queue is full and
+saves IOMMU TLB flushes.
+
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 229 ++--------------------------------------------
- 1 file changed, 9 insertions(+), 220 deletions(-)
+ drivers/iommu/iova.c | 27 ++++++++++++++++++++++++---
+ include/linux/iova.h |  8 ++++++++
+ 2 files changed, 32 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 354cbd6..5a61cf5 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -137,20 +137,7 @@ struct kmem_cache *amd_iommu_irq_cache;
- static void update_domain(struct protection_domain *domain);
- static int protection_domain_init(struct protection_domain *domain);
- static void detach_device(struct device *dev);
--
--#define FLUSH_QUEUE_SIZE 256
--
--struct flush_queue_entry {
--	unsigned long iova_pfn;
--	unsigned long pages;
--	u64 counter; /* Flush counter when this entry was added to the queue */
--};
--
--struct flush_queue {
--	struct flush_queue_entry *entries;
--	unsigned head, tail;
--	spinlock_t lock;
--};
-+static void iova_domain_flush_tlb(struct iova_domain *iovad);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index e5c9a7a..47b144e 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -75,6 +75,9 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ {
+ 	int cpu;
  
- /*
-  * Data container for a dma_ops specific protection domain
-@@ -161,36 +148,6 @@ struct dma_ops_domain {
++	atomic64_set(&iovad->fq_flush_start_cnt,  0);
++	atomic64_set(&iovad->fq_flush_finish_cnt, 0);
++
+ 	iovad->fq = alloc_percpu(struct iova_fq);
+ 	if (!iovad->fq)
+ 		return -ENOMEM;
+@@ -482,20 +485,30 @@ static inline unsigned fq_ring_add(struct iova_fq *fq)
  
- 	/* IOVA RB-Tree */
- 	struct iova_domain iovad;
--
--	struct flush_queue __percpu *flush_queue;
--
--	/*
--	 * We need two counter here to be race-free wrt. IOTLB flushing and
--	 * adding entries to the flush queue.
--	 *
--	 * The flush_start_cnt is incremented _before_ the IOTLB flush starts.
--	 * New entries added to the flush ring-buffer get their 'counter' value
--	 * from here. This way we can make sure that entries added to the queue
--	 * (or other per-cpu queues of the same domain) while the TLB is about
--	 * to be flushed are not considered to be flushed already.
--	 */
--	atomic64_t flush_start_cnt;
--
--	/*
--	 * The flush_finish_cnt is incremented when an IOTLB flush is complete.
--	 * This value is always smaller than flush_start_cnt. The queue_add
--	 * function frees all IOVAs that have a counter value smaller than
--	 * flush_finish_cnt. This makes sure that we only free IOVAs that are
--	 * flushed out of the IOTLB of the domain.
--	 */
--	atomic64_t flush_finish_cnt;
--
--	/*
--	 * Timer to make sure we don't keep IOVAs around unflushed
--	 * for too long
--	 */
--	struct timer_list flush_timer;
--	atomic_t flush_timer_on;
+ static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
+ {
++	u64 counter = atomic64_read(&iovad->fq_flush_finish_cnt);
+ 	unsigned idx;
+ 
+ 	fq_ring_for_each(idx, fq) {
+ 
++		if (fq->entries[idx].counter >= counter)
++			break;
++
+ 		if (iovad->entry_dtor)
+ 			iovad->entry_dtor(fq->entries[idx].data);
+ 
+ 		free_iova_fast(iovad,
+ 			       fq->entries[idx].iova_pfn,
+ 			       fq->entries[idx].pages);
++
++		fq->head = (fq->head + 1) % IOVA_FQ_SIZE;
+ 	}
++}
+ 
+-	fq->head = 0;
+-	fq->tail = 0;
++static void iova_domain_flush(struct iova_domain *iovad)
++{
++	atomic64_inc(&iovad->fq_flush_start_cnt);
++	iovad->flush_cb(iovad);
++	atomic64_inc(&iovad->fq_flush_finish_cnt);
+ }
+ 
+ static void fq_destroy_all_entries(struct iova_domain *iovad)
+@@ -526,8 +539,15 @@ void queue_iova(struct iova_domain *iovad,
+ 	struct iova_fq *fq = get_cpu_ptr(iovad->fq);
+ 	unsigned idx;
+ 
++	/*
++	 * First remove all entries from the flush queue that have already been
++	 * flushed out on another CPU. This makes the fq_full() check below less
++	 * likely to be true.
++	 */
++	fq_ring_free(iovad, fq);
++
+ 	if (fq_full(fq)) {
+-		iovad->flush_cb(iovad);
++		iova_domain_flush(iovad);
+ 		fq_ring_free(iovad, fq);
+ 	}
+ 
+@@ -536,6 +556,7 @@ void queue_iova(struct iova_domain *iovad,
+ 	fq->entries[idx].iova_pfn = pfn;
+ 	fq->entries[idx].pages    = pages;
+ 	fq->entries[idx].data     = data;
++	fq->entries[idx].counter  = atomic64_read(&iovad->fq_flush_start_cnt);
+ 
+ 	put_cpu_ptr(iovad->fq);
+ }
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 1ae8524..985b800 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -14,6 +14,7 @@
+ #include <linux/types.h>
+ #include <linux/kernel.h>
+ #include <linux/rbtree.h>
++#include <linux/atomic.h>
+ #include <linux/dma-mapping.h>
+ 
+ /* iova structure */
+@@ -52,6 +53,7 @@ struct iova_fq_entry {
+ 	unsigned long iova_pfn;
+ 	unsigned long pages;
+ 	unsigned long data;
++	u64 counter; /* Flush counter when this entrie was added */
  };
  
- static struct iova_domain reserved_iova_ranges;
-@@ -1788,178 +1745,19 @@ static void free_gcr3_table(struct protection_domain *domain)
- 	free_page((unsigned long)domain->gcr3_tbl);
- }
+ /* Per-CPU Flush Queue structure */
+@@ -77,6 +79,12 @@ struct iova_domain {
+ 					   iova entry */
  
--static void dma_ops_domain_free_flush_queue(struct dma_ops_domain *dom)
--{
--	int cpu;
--
--	for_each_possible_cpu(cpu) {
--		struct flush_queue *queue;
--
--		queue = per_cpu_ptr(dom->flush_queue, cpu);
--		kfree(queue->entries);
--	}
--
--	free_percpu(dom->flush_queue);
--
--	dom->flush_queue = NULL;
--}
--
--static int dma_ops_domain_alloc_flush_queue(struct dma_ops_domain *dom)
--{
--	int cpu;
--
--	atomic64_set(&dom->flush_start_cnt,  0);
--	atomic64_set(&dom->flush_finish_cnt, 0);
--
--	dom->flush_queue = alloc_percpu(struct flush_queue);
--	if (!dom->flush_queue)
--		return -ENOMEM;
--
--	/* First make sure everything is cleared */
--	for_each_possible_cpu(cpu) {
--		struct flush_queue *queue;
--
--		queue = per_cpu_ptr(dom->flush_queue, cpu);
--		queue->head    = 0;
--		queue->tail    = 0;
--		queue->entries = NULL;
--	}
--
--	/* Now start doing the allocation */
--	for_each_possible_cpu(cpu) {
--		struct flush_queue *queue;
--
--		queue = per_cpu_ptr(dom->flush_queue, cpu);
--		queue->entries = kzalloc(FLUSH_QUEUE_SIZE * sizeof(*queue->entries),
--					 GFP_KERNEL);
--		if (!queue->entries) {
--			dma_ops_domain_free_flush_queue(dom);
--			return -ENOMEM;
--		}
--
--		spin_lock_init(&queue->lock);
--	}
--
--	return 0;
--}
--
- static void dma_ops_domain_flush_tlb(struct dma_ops_domain *dom)
- {
--	atomic64_inc(&dom->flush_start_cnt);
- 	domain_flush_tlb(&dom->domain);
- 	domain_flush_complete(&dom->domain);
--	atomic64_inc(&dom->flush_finish_cnt);
- }
+ 	struct iova_fq __percpu *fq;	/* Flush Queue */
++
++	atomic64_t	fq_flush_start_cnt;	/* Number of TLB flushes that
++						   have been started */
++
++	atomic64_t	fq_flush_finish_cnt;	/* Number of TLB flushes that
++						   have been finished */
+ };
  
--static inline bool queue_ring_full(struct flush_queue *queue)
-+static void iova_domain_flush_tlb(struct iova_domain *iovad)
- {
--	assert_spin_locked(&queue->lock);
--
--	return (((queue->tail + 1) % FLUSH_QUEUE_SIZE) == queue->head);
--}
-+	struct dma_ops_domain *dom;
- 
--#define queue_ring_for_each(i, q) \
--	for (i = (q)->head; i != (q)->tail; i = (i + 1) % FLUSH_QUEUE_SIZE)
--
--static inline unsigned queue_ring_add(struct flush_queue *queue)
--{
--	unsigned idx = queue->tail;
--
--	assert_spin_locked(&queue->lock);
--	queue->tail = (idx + 1) % FLUSH_QUEUE_SIZE;
--
--	return idx;
--}
--
--static inline void queue_ring_remove_head(struct flush_queue *queue)
--{
--	assert_spin_locked(&queue->lock);
--	queue->head = (queue->head + 1) % FLUSH_QUEUE_SIZE;
--}
--
--static void queue_ring_free_flushed(struct dma_ops_domain *dom,
--				    struct flush_queue *queue)
--{
--	u64 counter = atomic64_read(&dom->flush_finish_cnt);
--	int idx;
--
--	queue_ring_for_each(idx, queue) {
--		/*
--		 * This assumes that counter values in the ring-buffer are
--		 * monotonously rising.
--		 */
--		if (queue->entries[idx].counter >= counter)
--			break;
--
--		free_iova_fast(&dom->iovad,
--			       queue->entries[idx].iova_pfn,
--			       queue->entries[idx].pages);
--
--		queue_ring_remove_head(queue);
--	}
--}
--
--static void queue_add(struct dma_ops_domain *dom,
--		      unsigned long address, unsigned long pages)
--{
--	struct flush_queue *queue;
--	unsigned long flags;
--	int idx;
--
--	pages     = __roundup_pow_of_two(pages);
--	address >>= PAGE_SHIFT;
--
--	queue = get_cpu_ptr(dom->flush_queue);
--	spin_lock_irqsave(&queue->lock, flags);
--
--	/*
--	 * First remove the enries from the ring-buffer that are already
--	 * flushed to make the below queue_ring_full() check less likely
--	 */
--	queue_ring_free_flushed(dom, queue);
--
--	/*
--	 * When ring-queue is full, flush the entries from the IOTLB so
--	 * that we can free all entries with queue_ring_free_flushed()
--	 * below.
--	 */
--	if (queue_ring_full(queue)) {
--		dma_ops_domain_flush_tlb(dom);
--		queue_ring_free_flushed(dom, queue);
--	}
--
--	idx = queue_ring_add(queue);
--
--	queue->entries[idx].iova_pfn = address;
--	queue->entries[idx].pages    = pages;
--	queue->entries[idx].counter  = atomic64_read(&dom->flush_start_cnt);
--
--	spin_unlock_irqrestore(&queue->lock, flags);
--
--	if (atomic_cmpxchg(&dom->flush_timer_on, 0, 1) == 0)
--		mod_timer(&dom->flush_timer, jiffies + msecs_to_jiffies(10));
--
--	put_cpu_ptr(dom->flush_queue);
--}
--
--static void queue_flush_timeout(unsigned long data)
--{
--	struct dma_ops_domain *dom = (struct dma_ops_domain *)data;
--	int cpu;
--
--	atomic_set(&dom->flush_timer_on, 0);
-+	dom = container_of(iovad, struct dma_ops_domain, iovad);
- 
- 	dma_ops_domain_flush_tlb(dom);
--
--	for_each_possible_cpu(cpu) {
--		struct flush_queue *queue;
--		unsigned long flags;
--
--		queue = per_cpu_ptr(dom->flush_queue, cpu);
--		spin_lock_irqsave(&queue->lock, flags);
--		queue_ring_free_flushed(dom, queue);
--		spin_unlock_irqrestore(&queue->lock, flags);
--	}
- }
- 
- /*
-@@ -1973,11 +1771,6 @@ static void dma_ops_domain_free(struct dma_ops_domain *dom)
- 
- 	del_domain_from_list(&dom->domain);
- 
--	if (timer_pending(&dom->flush_timer))
--		del_timer(&dom->flush_timer);
--
--	dma_ops_domain_free_flush_queue(dom);
--
- 	put_iova_domain(&dom->iovad);
- 
- 	free_pagetable(&dom->domain);
-@@ -2013,16 +1806,11 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
- 	init_iova_domain(&dma_dom->iovad, PAGE_SIZE,
- 			 IOVA_START_PFN, DMA_32BIT_PFN);
- 
--	/* Initialize reserved ranges */
--	copy_reserved_iova(&reserved_iova_ranges, &dma_dom->iovad);
--
--	if (dma_ops_domain_alloc_flush_queue(dma_dom))
-+	if (init_iova_flush_queue(&dma_dom->iovad, iova_domain_flush_tlb, NULL))
- 		goto free_dma_dom;
- 
--	setup_timer(&dma_dom->flush_timer, queue_flush_timeout,
--		    (unsigned long)dma_dom);
--
--	atomic_set(&dma_dom->flush_timer_on, 0);
-+	/* Initialize reserved ranges */
-+	copy_reserved_iova(&reserved_iova_ranges, &dma_dom->iovad);
- 
- 	add_domain_to_list(&dma_dom->domain);
- 
-@@ -2619,7 +2407,8 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
- 		domain_flush_tlb(&dma_dom->domain);
- 		domain_flush_complete(&dma_dom->domain);
- 	} else {
--		queue_add(dma_dom, dma_addr, pages);
-+		pages = __roundup_pow_of_two(pages);
-+		queue_iova(&dma_dom->iovad, dma_addr >> PAGE_SHIFT, pages, 0);
- 	}
- }
- 
+ static inline unsigned long iova_size(struct iova *iova)
 -- 
 2.7.4
