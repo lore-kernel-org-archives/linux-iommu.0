@@ -1,7 +1,7 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 5/8] iommu/mediatek: Disable iommu clock when system suspend
-Date: Fri, 11 Aug 2017 17:56:14 +0800
-Message-ID: <1502445377-26936-6-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH 6/8] iommu/mediatek: Enlarge the validate PA range for 4GB mode
+Date: Fri, 11 Aug 2017 17:56:15 +0800
+Message-ID: <1502445377-26936-7-git-send-email-yong.wu@mediatek.com>
 References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,44 +21,104 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <ro
 Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When system suspend, infra power domain may be off, and the iommu's
-clock must be disabled when system off, or the iommu's bclk clock maybe
-disabled after system resume.
+This patch is for 4GB mode, mainly for 4 issues:
+1) Fix a 4GB bug:
+   if the dram base is 0x4000_0000, the dram size is 0xc000_0000.
+   then the code just meet a corner case because max_pfn is
+   0x10_0000.
+   data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
+   It's true at the case above. That isn't unexpected.
+2) In mt2712, there is a new register for the 4GB PA range(0x118)
+   we should enlarge the max PA range, or the HW will report
+   error.
+   The dram range is from 0x1_0000_0000 to 0x1_ffff_ffff in the 4GB
+   mode, we cut out the bit[32:30] of the SA(Start address) and
+   EA(End address) into this REG_MMU_VLD_PA_RNG(0x118).
+3) In mt2712, the register(0x13c) is extended for 4GB mode.
+   bit[7:6] indicate the valid PA[32:33]. Thus, we don't mask the
+   value and print it directly for debug.
+4) if 4GB is enabled, the dram PA range is from 0x1_0000_0000 to
+   0x1_ffff_ffff. Thus, the PA from iova_to_pa should also '|' BIT(32)
 
 Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+this patch also include bug-fix for mt8173 and mt2712.
+I also don't split them.
+---
+ drivers/iommu/mtk_iommu.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index e81ed9a..b7c8e52 100644
+index b7c8e52..a3817e0 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -675,6 +675,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- 	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
- 	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
- 	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
-+	clk_disable_unprepare(data->bclk);
- 	return 0;
+@@ -60,6 +60,8 @@
+ 
+ #define REG_MMU_IVRP_PADDR			0x114
+ #define F_MMU_IVRP_PA_SET(pa, ext)		(((pa) >> 1) | ((!!(ext)) << 31))
++#define REG_MMU_VLD_PA_RNG			0x118
++#define F_MMU_VLD_PA_RNG(EA, SA)		(((EA) << 8) | (SA))
+ 
+ #define REG_MMU_INT_CONTROL0			0x120
+ #define F_L2_MULIT_HIT_EN			BIT(0)
+@@ -84,7 +86,6 @@
+ #define REG_MMU_FAULT_ST1			0x134
+ 
+ #define REG_MMU_FAULT_VA			0x13c
+-#define F_MMU_FAULT_VA_MSK			0xfffff000
+ #define F_MMU_FAULT_VA_WRITE_BIT		BIT(1)
+ #define F_MMU_FAULT_VA_LAYER_BIT		BIT(0)
+ 
+@@ -206,7 +207,6 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	fault_iova = readl_relaxed(data->base + REG_MMU_FAULT_VA);
+ 	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
+ 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+-	fault_iova &= F_MMU_FAULT_VA_MSK;
+ 	fault_pa = readl_relaxed(data->base + REG_MMU_INVLD_PA);
+ 	regval = readl_relaxed(data->base + REG_MMU_INT_ID);
+ 	fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
+@@ -385,6 +385,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					  dma_addr_t iova)
+ {
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
++	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+ 	unsigned long flags;
+ 	phys_addr_t pa;
+ 
+@@ -392,6 +393,9 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	pa = dom->iop->iova_to_phys(dom->iop, iova);
+ 	spin_unlock_irqrestore(&dom->pgtlock, flags);
+ 
++	if (data->enable_4GB)
++		pa |= BIT(32);
++
+ 	return pa;
  }
  
-@@ -684,6 +685,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	void __iomem *base = data->base;
+@@ -522,6 +526,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
  
-+	clk_prepare_enable(data->bclk);
- 	writel_relaxed(reg->standard_axi_mode,
- 		       base + REG_MMU_STANDARD_AXI_MODE);
- 	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
-@@ -699,7 +701,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- }
+ 	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
+ 		       data->base + REG_MMU_IVRP_PADDR);
++	if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
++		/*
++		 * If 4GB mode is enabled, the validate PA range is from
++		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
++		 */
++		regval = F_MMU_VLD_PA_RNG(7, 4);
++		writel_relaxed(regval, data->base + REG_MMU_VLD_PA_RNG);
++	}
+ 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
  
- static const struct dev_pm_ops mtk_iommu_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
- };
+ 	/* It's MISC control register whose default value is ok except mt8173.*/
+@@ -567,7 +579,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
  
- static const struct of_device_id mtk_iommu_of_ids[] = {
+ 	/* Whether the current dram is over 4GB */
+-	data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
++	data->enable_4GB = !!(max_pfn > (BIT(32) >> PAGE_SHIFT));
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	data->base = devm_ioremap_resource(dev, res);
 -- 
 1.9.1
