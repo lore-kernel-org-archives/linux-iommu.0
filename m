@@ -1,35 +1,74 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/4] IOMMU group cleanup
-Date: Fri, 11 Aug 2017 17:21:25 +0200
-Message-ID: <20170811152124.GH30515@8bytes.org>
-References: <cover.1500637633.git.robin.murphy@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fix for Linux v4.13-rc4
+Date: Fri, 11 Aug 2017 17:57:00 +0200
+Message-ID: <20170811155654.GA16219@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="M9NhX3UHpAaciwkO"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1500637633.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Artem Savkov <asavkov@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 21, 2017 at 01:12:34PM +0100, Robin Murphy wrote:
-> Hi all,
-> 
-> Prompted by some discussion around the questionable usefulness of
-> iommu_present() for SoC topologies, I took a look at what was left to
-> finish off the intention of making groups mandatory. Turns out it
-> wasn't much, so here it is. As well as the general rationalisation
-> aspect, between this and the probe-deferral changes in 4.12, we should
-> now be able to rely on the presence of a group unambiguously indicating
-> whether a given device is associated with an IOMMU or not.
-> 
-> Robin.
-> 
-> Robin Murphy (4):
->   iommu/msm: Add iommu_group support
->   iommu/tegra-smmu: Add iommu_group support
->   iommu/tegra-gart: Add iommu_group support
->   iommu: Finish making iommu_group support mandatory
 
-Applied, thanks Robin.
+--M9NhX3UHpAaciwkO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 74ddda71f44c84af62f736a77fb9fcebe5bb436a:
+
+  iommu/amd: Fix schedule-while-atomic BUG in initialization code (2017-07-26 15:39:14 +0200)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.13-rc4
+
+for you to fetch changes up to a7990c647b35415e3dd07a077480a908678947ba:
+
+  iommu/arm-smmu: fix null-pointer dereference in arm_smmu_add_device (2017-08-11 16:56:51 +0200)
+
+----------------------------------------------------------------
+IOMMU Fix for Linux v4.13-rc4
+
+	- Fix a NULL-pointer dereference in arm_smmu_add_device
+
+----------------------------------------------------------------
+Artem Savkov (1):
+      iommu/arm-smmu: fix null-pointer dereference in arm_smmu_add_device
+
+ drivers/iommu/arm-smmu.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--M9NhX3UHpAaciwkO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZjdPGAAoJECvwRC2XARrjJzUQAMeOIwrmSsOGsU5ldXTmjq82
+SP/Owwo32jd1y4I+4I+hctejr4BUFqow3b4ad4UfnaJFFdE6cDZonmaoheHvsSXp
+wTwFBTk6IhoHiXdG6nUrqg6sbhTnNYzGmHZvvTVXpBZFxmKL9dCQMcj7lEefrL6N
+xa2jrhgKo7EitFXu2AkmfKmeuFqoQpOvQwI6tDaffIVsOY0iZ++FCMru/rZgMHbf
+FfkMyMxqfGBhvx3Sml9YXlyDu7m3+M4JmaSrqTbVOeb7h7DGBdMs2NfajIf57gxX
+DP2I66crLlTB6YCkRRIBIzd/Ozd59M0l/T7xZWYEaq+7IZJWYcQq5Fn7XBLc1x1D
+tAcpTxY60gaaihekxnO14A7F6+DDOfiroZoc6gqlMJNvbR/bsjcLcXCICgqMzg70
+Qsjl20N0eYwA1kWgHIgHD3qZvGi/wgoem3v+Qvrsj8uVeb8I6srtG92RWMwqpNL6
+vd10+P7R51K8oeTiBIYjhLCADc07wdKYk4BHYMvG+v/fp+XRHI0XTfr5gzpJLULG
+8ETTE1YmyKuNUOKccDcJS/C4CCucyELMcW8B3+i3Kvm41g+lj/SG7U+ZsTTt4LSa
+GrUMBLl19HUABNI8KMIsR11LyuIQeCzHEJvAlrwqBEFK7uwoLpYZVALT5CaVhDjT
+sBuFNkIEr3Rfp8Vyryta
+=o5BA
+-----END PGP SIGNATURE-----
+
+--M9NhX3UHpAaciwkO--
