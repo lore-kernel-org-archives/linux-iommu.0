@@ -1,70 +1,59 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 5/8] iommu/mediatek: Disable iommu clock when system
- suspend
-Date: Sat, 12 Aug 2017 17:34:32 +0800
-Message-ID: <1502530472.11148.54.camel@mhfsdcap03>
+Subject: Re: [PATCH 7/8] memory: mtk-smi: Rearrange some function position
+ alphabetically
+Date: Sat, 12 Aug 2017 17:36:08 +0800
+Message-ID: <1502530568.11148.55.camel@mhfsdcap03>
 References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
-         <1502445377-26936-6-git-send-email-yong.wu@mediatek.com>
-         <b451cb47-505e-c300-42fd-9cb73c09ef0b@gmail.com>
+         <1502445377-26936-8-git-send-email-yong.wu@mediatek.com>
+         <34e9e7ec-ff9b-caf9-09ac-a0d9e9d85fa5@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <b451cb47-505e-c300-42fd-9cb73c09ef0b-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <34e9e7ec-ff9b-caf9-09ac-a0d9e9d85fa5-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2017-08-11 at 16:39 +0530, Arvind Yadav wrote:
-> Hi Youn,
+On Fri, 2017-08-11 at 19:09 +0100, Robin Murphy wrote:
+> On 11/08/17 10:56, Yong Wu wrote:
+> > Only adjust some code position in Soc numerical order, from mt2701,
+> > mt2712 to mt8173.
+> > 
+> > Besides, 3 minor changes:
+> > 1) fix a coding style issue:
+> >     CHECK: Alignment should match open parenthesis
+> >     +               writel(reg_val,
+> >     +                       common->smi_ao_base
+> > 2) change from readl to readl_relaxed in gen1_config_port.
+> > 3) change the type "larbid" from "int" to "unsigned int" to meet
+> >    the requirement of of_property_read_u32.
 > 
+> If moving existing code around is really necessary, do it as a
+> preliminary patch *before* any material changes (and arguably separate
+> even from the whitespace and comment updates) - those diffs are usually
+> hard to review as-is, so being able to check you get binary-identical
+> object files before and after is reassuring. A "cleanup" patch shouldn't
+> need to touch code added in the same series, and it certainly shouldn't
+> have significant things like the readl_relaxed() change hidden in it.
+
+OK. This patch is really not easy to read.
+
+This patch-set is mainly for supporting MT2712 IOMMU. thus, I will use a
+patch "readl_relaxed replace readl" instead of this one.
+
+About the cleanup patch, I can send it in future if necessary.
+
 > 
-> On Friday 11 August 2017 03:26 PM, Yong Wu wrote:
-> > When system suspend, infra power domain may be off, and the iommu's
-> > clock must be disabled when system off, or the iommu's bclk clock maybe
-> > disabled after system resume.
-> >
-> > Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> Robin.
+> 
 > > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > > ---
-> >   drivers/iommu/mtk_iommu.c | 4 +++-
-> >   1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index e81ed9a..b7c8e52 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -675,6 +675,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
-> >   	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
-> >   	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
-> >   	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
-> > +	clk_disable_unprepare(data->bclk);
-> >   	return 0;
-> >   }
-> >   
-> > @@ -684,6 +685,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
-> >   	struct mtk_iommu_suspend_reg *reg = &data->reg;
-> >   	void __iomem *base = data->base;
-> >   
-> > +	clk_prepare_enable(data->bclk);
-> Please handle return value of clk_prepare_enable. It can fail
-
-Thanks for the reminding. I will add it in next version.
-
-> >   	writel_relaxed(reg->standard_axi_mode,
-> >   		       base + REG_MMU_STANDARD_AXI_MODE);
-> >   	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
-> > @@ -699,7 +701,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
-> >   }
-> >   
-> >   static const struct dev_pm_ops mtk_iommu_pm_ops = {
-> > -	SET_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
-> > +	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
-> >   };
-> >   
-> >   static const struct of_device_id mtk_iommu_of_ids[] = {
-> ~arvind
+> >  drivers/memory/mtk-smi.c | 105 +++++++++++++++++++++++------------------------
+> >  1 file changed, 52 insertions(+), 53 deletions(-)
+> > 
+[...]
 
 
 --
