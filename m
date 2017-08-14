@@ -1,79 +1,64 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: Support SVM without PASID
-Date: Mon, 14 Aug 2017 10:07:12 +0100
-Message-ID: <2a8c13cb-ecca-1138-71c9-f923eaf08641@arm.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
- <20170708140257.2de02d63@w520.home>
- <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
- <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
- <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
- <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
- <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
- <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D57191@SHSMSX101.ccr.corp.intel.com>
- <b973c557-1b4a-18d2-a05e-28680a49daf9@arm.com>
- <20170811162506.GB41059@otc-nc-03>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D716A4@SHSMSX101.ccr.corp.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC] virtio-iommu version 0.4
+Date: Mon, 14 Aug 2017 10:38:51 +0100
+Message-ID: <1770ca04-0deb-a3d4-c63e-82054e8a584c@arm.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D190D7173C@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D716A4@SHSMSX101.ccr.corp.intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D7173C-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>
-Cc: valmiki <valmikibow@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>
+Cc: "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/08/17 09:00, Tian, Kevin wrote:
->> From: Raj, Ashok
->> Sent: Saturday, August 12, 2017 12:25 AM
->>
->> On Fri, Aug 04, 2017 at 10:42:41AM +0100, Jean-Philippe Brucker wrote:
->>> Hi Kevin,
->>>
->>>
->>> Consider the situation where a userspace driver (no virtualization) is
->>> built in a client-server fashion: the server controls a device and spawns
->>> new processes (clients), each sharing a context with the device using its
->>> own PASID. If the server wants to hide parts of the client address space
->>
->> Just to be sure, you are't expecting the PASID's to be duplicated or
->> recreated after a new process is spawned. I would expect each process to
->> get its own PASID by doing a bind. Threads of the same process would be
->> sharing the same PASID since they all share the same first level
->> mappings.
->>
->>
->>> from the device (e.g. .text), then it could control stage-2 via MAP/UNMAP
->>> to restrict the address space.
->>
->> I'm confused.. maybe this is different from Intel IOMMU. the first level
->> requiring a second level is only true when virtualization is in play.
->>
->> First level is gVA->gPA, and second level is gPA->hPA (sort of the cloned
->> EPT map that is setup via VFIO to set up second level)
->>
->> When you are in native user application, there is no nesting between first
->> and second level. The first level is directly VA->hPA. There is no need
->> for a nested walk in this case?
->>
+On 14/08/17 09:27, Tian, Kevin wrote:
+>> * First, since the IOMMU is paravirtualized, the device can expose some
+>>   properties of the physical topology to the guest, and let it allocate
+>>   resources more efficiently. For example, when the virtio-iommu manages
+>>   both physical and emulated endpoints, with different underlying IOMMUs,
+>>   we now have a way to describe multiple page and block granularities,
+>>   instead of forcing the guest to use the most restricted one for all
+>>   endpoints. This will most likely be in v0.5.
 > 
-> Strictly speaking nesting is just a hardware capability while 
-> virtualization is an use case using that capability. As long as 
-> some software entity (not hypervisor) can setup two level 
-> page tables, it should just work regardless of how the 
-> intermediate address is called.
+> emulated IOMMU has similar requirement, e.g. available PASID bits,
+> address widths, etc. which may break guest usage if not aligned to
+> physical limitation. Suppose we can introduce a general interface
+> through VFIO for all vIOMMU incarnations. 
 
-Yes, nested translation is just a tool, it doesn't have to be dedicated to
-virtualization.
+A nice location for this kind of info would be sysfs, as discussed in the
+SVM virtualization thread [1]. Properties of an IOMMU could be described
+in /sys/class/iommu/<dev>. Properties of a PCI device are available in its
+PASID/PRI capabilities. For platform devices we'll have to look at DT and
+ACPI properties in /sys/firmware.
 
-> I think Jean is trying to come up a non-virtualization usage
-> using nesting. Of course current example that he illustrated 
-> is not very meaningful (as I replied in another mail). :-)
+>> * Then on top of that, a major improvement will describe hardware
+>>   acceleration features available to the guest. There is what I call "Page
+>>   Table Handover" (or simply, from the host POV, "Nested"), the ability
+>>   for the guest to manipulate its own page tables instead of sending
+>>   MAP/UNMAP requests to the host. This, along with IO Page Fault
+>>   reporting, will also permit SVM virtualization on different platforms.
+> 
+> what's your planned cadence for future versions? :-)
 
-I also can't come up with a convincing API for setting up the second stage
-from userspace. Hopefully we can ignore this case for the moment :)
+Hard to say, it depends on a number of things. I have various other tasks
+eating up my bandwidth at the moment and I may have to considerably rework
+this version depending on the feedback it gets. Ideally, I would like to
+get the base driver merged and a proposal for hardware acceleration out by
+the end of the year, but I obviously can't make any guarantee.
 
 Thanks,
 Jean
+
+[1] https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg05731.html
