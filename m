@@ -1,15 +1,14 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC] virtio-iommu version 0.4
-Date: Mon, 14 Aug 2017 10:38:51 +0100
-Message-ID: <1770ca04-0deb-a3d4-c63e-82054e8a584c@arm.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190D7173C@SHSMSX101.ccr.corp.intel.com>
+From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Subject: Re: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X table
+Date: Mon, 14 Aug 2017 19:45:05 +1000
+Message-ID: <8f5f7b82-3c10-7f39-b587-db4c4424f04c@ozlabs.ru>
+References: <20170807072548.3023-1-aik@ozlabs.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D7173C-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20170807072548.3023-1-aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Content-Language: en-AU
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,46 +18,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>
-Cc: "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: Vlad Tsyrklevich <vlad-NIZqynvkaCU43zv7NVfAiQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Kyle Mahlkuch <Kyle.Mahlkuch-qyM6JfAXOaQ@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mauricio Faria de Oliveira <mauricfo-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/08/17 09:27, Tian, Kevin wrote:
->> * First, since the IOMMU is paravirtualized, the device can expose some
->>   properties of the physical topology to the guest, and let it allocate
->>   resources more efficiently. For example, when the virtio-iommu manages
->>   both physical and emulated endpoints, with different underlying IOMMUs,
->>   we now have a way to describe multiple page and block granularities,
->>   instead of forcing the guest to use the most restricted one for all
->>   endpoints. This will most likely be in v0.5.
+Folks,
+
+Is there anything to change besides those compiler errors and David's
+comment in 5/5? Or the while patchset is too bad? Thanks.
+
+
+
+On 07/08/17 17:25, Alexey Kardashevskiy wrote:
+> This is a followup for "[PATCH kernel v4 0/6] vfio-pci: Add support for mmapping MSI-X table"
+> http://www.spinics.net/lists/kvm/msg152232.html
 > 
-> emulated IOMMU has similar requirement, e.g. available PASID bits,
-> address widths, etc. which may break guest usage if not aligned to
-> physical limitation. Suppose we can introduce a general interface
-> through VFIO for all vIOMMU incarnations. 
+> This time it is using "caps" in IOMMU groups. The main question is if PCI
+> bus flags or IOMMU domains are still better (and which one).
 
-A nice location for this kind of info would be sysfs, as discussed in the
-SVM virtualization thread [1]. Properties of an IOMMU could be described
-in /sys/class/iommu/<dev>. Properties of a PCI device are available in its
-PASID/PRI capabilities. For platform devices we'll have to look at DT and
-ACPI properties in /sys/firmware.
-
->> * Then on top of that, a major improvement will describe hardware
->>   acceleration features available to the guest. There is what I call "Page
->>   Table Handover" (or simply, from the host POV, "Nested"), the ability
->>   for the guest to manipulate its own page tables instead of sending
->>   MAP/UNMAP requests to the host. This, along with IO Page Fault
->>   reporting, will also permit SVM virtualization on different platforms.
 > 
-> what's your planned cadence for future versions? :-)
+> 
+> 
+> Here is some background:
+> 
+> Current vfio-pci implementation disallows to mmap the page
+> containing MSI-X table in case that users can write directly
+> to MSI-X table and generate an incorrect MSIs.
+> 
+> However, this will cause some performance issue when there
+> are some critical device registers in the same page as the
+> MSI-X table. We have to handle the mmio access to these
+> registers in QEMU emulation rather than in guest.
+> 
+> To solve this issue, this series allows to expose MSI-X table
+> to userspace when hardware enables the capability of interrupt
+> remapping which can ensure that a given PCI device can only
+> shoot the MSIs assigned for it. And we introduce a new bus_flags
+> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+> for different archs.
+> 
+> 
+> This is based on sha1
+> 26c5cebfdb6c "Merge branch 'parisc-4.13-4' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux"
+> 
+> Please comment. Thanks.
+> 
+> Changelog:
+> 
+> v5:
+> * redid the whole thing via so-called IOMMU group capabilities
+> 
+> v4:
+> * rebased on recent upstream
+> * got all 6 patches from v2 (v3 was missing some)
+> 
+> 
+> 
+> 
+> Alexey Kardashevskiy (5):
+>   iommu: Add capabilities to a group
+>   iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if MSI controller enables IRQ
+>     remapping
+>   iommu/intel/amd: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if IRQ remapping is
+>     enabled
+>   powerpc/iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX
+>   vfio-pci: Allow to expose MSI-X table to userspace when safe
+> 
+>  include/linux/iommu.h            | 20 ++++++++++++++++++++
+>  include/linux/vfio.h             |  1 +
+>  arch/powerpc/kernel/iommu.c      |  1 +
+>  drivers/iommu/amd_iommu.c        |  3 +++
+>  drivers/iommu/intel-iommu.c      |  3 +++
+>  drivers/iommu/iommu.c            | 35 +++++++++++++++++++++++++++++++++++
+>  drivers/vfio/pci/vfio_pci.c      | 20 +++++++++++++++++---
+>  drivers/vfio/pci/vfio_pci_rdwr.c |  5 ++++-
+>  drivers/vfio/vfio.c              | 15 +++++++++++++++
+>  9 files changed, 99 insertions(+), 4 deletions(-)
+> 
 
-Hard to say, it depends on a number of things. I have various other tasks
-eating up my bandwidth at the moment and I may have to considerably rework
-this version depending on the feedback it gets. Ideally, I would like to
-get the base driver merged and a proposal for hardware acceleration out by
-the end of the year, but I obviously can't make any guarantee.
 
-Thanks,
-Jean
-
-[1] https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg05731.html
+-- 
+Alexey
