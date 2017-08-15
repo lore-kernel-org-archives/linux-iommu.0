@@ -1,30 +1,43 @@
-From: Sebastian Ott <sebott@linux.vnet.ibm.com>
-Subject: Re: [PATCH v3] iommu/s390: Add support for iommu_device handling
-Date: Tue, 15 Aug 2017 18:12:55 +0200 (CEST)
-Message-ID: <alpine.LFD.2.20.1708151812240.1730@schleppi>
-References: <1502274354-643-1-git-send-email-joro@8bytes.org> <alpine.LFD.2.20.1708102104390.4919@schleppi> <20170811073118.GF30515@8bytes.org> <alpine.LFD.2.20.1708111844340.1769@schleppi> <20170814162434.GF2853@suse.de> <alpine.LFD.2.20.1708151800210.1730@schleppi>
- <20170815161039.GH2853@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH v10 00/12] Fix the on-flight DMA issue on system with amd
+	iommu
+Date: Tue, 15 Aug 2017 18:18:10 +0200
+Message-ID: <20170815161810.GI2853@suse.de>
+References: <1502267624-7066-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170815161039.GH2853@suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <jroedel@suse.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1502267624-7066-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 15 Aug 2017, Joerg Roedel wrote:
-> On Tue, Aug 15, 2017 at 06:02:20PM +0200, Sebastian Ott wrote:
-> > On Mon, 14 Aug 2017, Joerg Roedel wrote:
-> > > I attach the patch I wrote to fix this, can you please test it together
-> > > with the initial patch in this thread?
-> > 
-> > I did and can confirm that everything worked as expected!
-> 
-> Great, thanks a lot for your testing and thanks again for the effort to
-> root-cause the crashes on s390x.
-> 
-> So, can I add an Acked-by to the initial patch and put it into the
-> iommu-tree?
+On Wed, Aug 09, 2017 at 04:33:32PM +0800, Baoquan He wrote:
+> Baoquan He (12):
+>   iommu/amd: Detect pre enabled translation
+>   iommu/amd: add several helper functions
+>   Revert "iommu/amd: Suppress IO_PAGE_FAULTs in kdump kernel"
+>   iommu/amd: Define bit fields for DTE particularly
+>   iommu/amd: Add function copy_dev_tables()
+>   iommu/amd: copy old trans table from old kernel
+>   iommu/amd: Do sanity check for address translation and irq remap of
+>     old dev table entry
+>   iommu: Add is_attach_deferred call-back to iommu-ops
+>   iommu/amd: Use is_attach_deferred call-back
+>   iommu/amd: Allocate memory below 4G for dev table if translation
+>     pre-enabled
+>   iommu/amd: Don't copy GCR3 table root pointer
+>   iommu/amd: Disable iommu only if amd_iommu=off is specified
 
-Yes, please do.
+Applied all of them, thanks a lot for your continued effort, Baoquan!
