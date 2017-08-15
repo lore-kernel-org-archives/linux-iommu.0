@@ -1,22 +1,152 @@
-From: Sebastian Ott <sebott@linux.vnet.ibm.com>
-Subject: Re: [PATCH v3] iommu/s390: Add support for iommu_device handling
-Date: Tue, 15 Aug 2017 18:02:20 +0200 (CEST)
-Message-ID: <alpine.LFD.2.20.1708151800210.1730@schleppi>
-References: <1502274354-643-1-git-send-email-joro@8bytes.org> <alpine.LFD.2.20.1708102104390.4919@schleppi> <20170811073118.GF30515@8bytes.org> <alpine.LFD.2.20.1708111844340.1769@schleppi> <20170814162434.GF2853@suse.de>
+From: Robert Richter <robert.richter@cavium.com>
+Subject: Re: [PATCH v4] acpi/iort: numa: Add numa node mapping for smmuv3
+ devices
+Date: Tue, 15 Aug 2017 18:10:14 +0200
+Message-ID: <20170815161014.GS31351@rric.localdomain>
+References: <20170725050237.11033-1-ganapatrao.kulkarni@cavium.com>
+ <20170815150213.GD18024@rric.localdomain>
+ <20170815150549.GA1301@e107981-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170814162434.GF2853@suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <jroedel@suse.de>
-Cc: Joerg Roedel <joro@8bytes.org>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170815150549.GA1301@e107981-lin.cambridge.arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Will.Deacon@arm.com, Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, lv.zheng@intel.com, joro@8bytes.org, rjw@rjwysocki.net, lenb@kernel.org, jnair@caviumnetworks.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 Aug 2017, Joerg Roedel wrote:
-> I attach the patch I wrote to fix this, can you please test it together
-> with the initial patch in this thread?
+On 15.08.17 16:05:49, Lorenzo Pieralisi wrote:
+> On Tue, Aug 15, 2017 at 05:02:13PM +0200, Robert Richter wrote:
+> > Lorenzo, Will,
+> > 
+> > On 25.07.17 10:32:37, Ganapatrao Kulkarni wrote:
+> > > ARM IORT specification(rev. C) has added  provision to define proximity
+> > > domain in SMMUv3 IORT table. Adding required code to parse Proximity
+> > > domain and set numa_node of smmv3 platform devices.
+> > > 
+> > > Add code to parse proximity domain in SMMUv3 IORT table to
+> > > set numa node mapping for smmuv3 devices.
+> > > 
+> > > Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> > > ---
+> > > 
+> > > This patch has dependency on header file patch [1], which is
+> > > already merged to linux-pm.
+> > > 
+> > > [1] https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/?h=linux-next&id=c944230064eb65e4fa018d86779b4fd200b1d7e7
+> > > 
+> > > v4:
+> > >   - Fix compilation issue in !CONFIG_NUMA
+> > > 
+> > > v3:
+> > >   - Addressed Lorenzo Pieralisi comment.
+> > > 
+> > > v2:
+> > >   - Changed as per Lorenzo Pieralisi and Hanjun Guo suggestions.
+> > > 
+> > > v1:
+> > >   - Initial patch
+> > > 
+> > >  drivers/acpi/arm64/iort.c | 33 +++++++++++++++++++++++++++++++--
+> > >  1 file changed, 31 insertions(+), 2 deletions(-)
+> > 
+> > could this patch being scheduled for v4.14?
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?h=for-next/core&id=5fe0ce3b9e514168427463d0c7a86dfa635da3d2
+> 
+> It is already :) (I CC'ed you on the PR)
 
-I did and can confirm that everything worked as expected!
+Ah, right. I missed that.
 
 Thanks,
-Sebastian
+
+-Robert
+
+> 
+> Thanks,
+> Lorenzo
+> 
+> > 
+> > Thanks,
+> > 
+> > -Robert
+> > 
+> > > 
+> > > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > > index a3215ee..c5c82c3 100644
+> > > --- a/drivers/acpi/arm64/iort.c
+> > > +++ b/drivers/acpi/arm64/iort.c
+> > > @@ -908,6 +908,28 @@ static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
+> > >  	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
+> > >  }
+> > >  
+> > > +#if defined(CONFIG_ACPI_NUMA) && (ACPI_CA_VERSION >= 0x20170629)
+> > > +/*
+> > > + * set numa proximity domain for smmuv3 device
+> > > + */
+> > > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
+> > > +		struct device *dev)
+> > > +{
+> > > +	struct acpi_iort_smmu_v3 *smmu;
+> > > +
+> > > +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+> > > +	if (smmu->flags & ACPI_IORT_SMMU_V3_PXM_VALID) {
+> > > +		set_dev_node(dev, acpi_map_pxm_to_node(smmu->pxm));
+> > > +		pr_info("SMMUV3[%llx] Mapped to Proximity domain %d\n",
+> > > +			smmu->base_address,
+> > > +			smmu->pxm);
+> > > +	}
+> > > +}
+> > > +#else
+> > > +static void  __init arm_smmu_v3_set_proximity(struct acpi_iort_node *node,
+> > > +		struct device *dev) { }
+> > > +#endif
+> > > +
+> > >  static int __init arm_smmu_count_resources(struct acpi_iort_node *node)
+> > >  {
+> > >  	struct acpi_iort_smmu *smmu;
+> > > @@ -977,20 +999,24 @@ struct iort_iommu_config {
+> > >  	int (*iommu_count_resources)(struct acpi_iort_node *node);
+> > >  	void (*iommu_init_resources)(struct resource *res,
+> > >  				     struct acpi_iort_node *node);
+> > > +	void (*iommu_set_proximity)(struct acpi_iort_node *node,
+> > > +				     struct device *dev);
+> > >  };
+> > >  
+> > >  static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
+> > >  	.name = "arm-smmu-v3",
+> > >  	.iommu_is_coherent = arm_smmu_v3_is_coherent,
+> > >  	.iommu_count_resources = arm_smmu_v3_count_resources,
+> > > -	.iommu_init_resources = arm_smmu_v3_init_resources
+> > > +	.iommu_init_resources = arm_smmu_v3_init_resources,
+> > > +	.iommu_set_proximity = arm_smmu_v3_set_proximity
+> > >  };
+> > >  
+> > >  static const struct iort_iommu_config iort_arm_smmu_cfg __initconst = {
+> > >  	.name = "arm-smmu",
+> > >  	.iommu_is_coherent = arm_smmu_is_coherent,
+> > >  	.iommu_count_resources = arm_smmu_count_resources,
+> > > -	.iommu_init_resources = arm_smmu_init_resources
+> > > +	.iommu_init_resources = arm_smmu_init_resources,
+> > > +	.iommu_set_proximity = NULL
+> > >  };
+> > >  
+> > >  static __init
+> > > @@ -1028,6 +1054,9 @@ static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
+> > >  	if (!pdev)
+> > >  		return -ENOMEM;
+> > >  
+> > > +	if (ops->iommu_set_proximity)
+> > > +		ops->iommu_set_proximity(node, &pdev->dev);
+> > > +
+> > >  	count = ops->iommu_count_resources(node);
+> > >  
+> > >  	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
+> > > -- 
+> > > 2.9.4
+> > > 
+> > > --
+> > > To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
+> > > the body of a message to majordomo@vger.kernel.org
+> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
