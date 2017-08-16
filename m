@@ -1,137 +1,245 @@
-From: Adam Tao <taozhe1@huawei.com>
-Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
-Date: Wed, 16 Aug 2017 12:08:53 +0800
-Message-ID: <20170816040853.GA10652@shay3t003839711.china.huawei.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [patch net-next 0/3] net/sched: Improve getting objects by indexes
+Date: Wed, 16 Aug 2017 09:49:07 +0200
+Message-ID: <144b87a3-bbe4-a194-ed83-e54840d7c7c2@amd.com>
+References: <1502849538-14284-1-git-send-email-chrism@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Return-path: <kvm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1502849538-14284-1-git-send-email-chrism-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Chris Mi <chrism-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: lucho-OnYtXJJ0/fesTnJN9+BGXg@public.gmane.org, sergey.senozhatsky.work-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, snitzer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, markb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, tom.leiming-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org, zhi.a.wang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, nsekhar-l0cyMroinI0@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, bfields-uC3wQj2KruNg9hUCZPvPmw@public.gmane.org, linux-sctp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, jinpu.wang-EIkl63zCoXaH+58JC4qpiA@public.gmane.org, pshelar-LZ6Gd1LRuIk@public.gmane.org, sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, AlexBin.Xie-5C7GfCeVMHo@public.gmane.org, david1.zhou-5C7GfCeVMHo@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, maximlevitsky-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, sudarsana.kalluru-h88ZbnxC6KDQT0dZR+AlfA@public.gmane.org, marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-atm-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, dtwlin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, michel.daenzer-5C7GfCeVMHo@public.gmane.org, dledford-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tpmdd-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org, longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, niranjana.vishwanathapura-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, philipp.reisner-63ez5xqkn6DQT0dZR+AlfA@public.gmane.org, shli-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org, ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, pmladek-IBi9RG/b67k@public.gmane.org, dick.kennedy-dY08KVG/lbpWk0Htik3J/w@public.gmane.orglinu
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 04, 2017 at 07:19:25PM +0100, Jean-Philippe Brucker wrote:
-> This is the continuation of my proposal for virtio-iommu, the para-
-> virtualized IOMMU. Here is a summary of the changes since last time [1]:
-> 
-> * The virtio-iommu document now resembles an actual specification. It is
->   split into a formal description of the virtio device, and implementation
->   notes. Please find sources and binaries at [2].
-> 
-> * Added a probe request to describe to the guest different properties that
->   do not fit in firmware or in the virtio config space. This is a
->   necessary stepping stone for extending the virtio-iommu.
-> 
-> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
->   Bhushan.
-Hi, Brucker
-I read the related spec for virtio IOMMU,
-I am wondering if we support both the virtual and physical devices in
-the guest to use the virtio IOMMU, how can we config the related address
-translation for the different type of devices.
-e.g.
-1. for Virtio devs(e.g. virtio-net), we can change the memmap table used
-by the vhost device.
-2. for physical devices we can directly config the IOMMU/SMMU on the
-host.
+Am 16.08.2017 um 04:12 schrieb Chris Mi:
+> Using current TC code, it is very slow to insert a lot of rules.
+>
+> In order to improve the rules update rate in TC,
+> we introduced the following two changes:
+>          1) changed cls_flower to use IDR to manage the filters.
+>          2) changed all act_xxx modules to use IDR instead of
+>             a small hash table
+>
+> But IDR has a limitation that it uses int. TC handle uses u32.
+> To make sure there is no regression, we also changed IDR to use
+> unsigned long. All clients of IDR are changed to use new IDR API.
 
-So do you know are there any RFCs for the back-end implementation for the virtio-IOMMU
-thanks
-Adam
-> 
-> You can find the Linux driver and kvmtool device at [4] and [5]. I
-> plan to rework driver and kvmtool device slightly before sending the
-> patches.
-> 
-> To understand the virtio-iommu, I advise to first read introduction and
-> motivation, then skim through implementation notes and finally look at the
-> device specification.
-> 
-> I wasn't sure how to organize the review. For those who prefer to comment
-> inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
-> to this thread. They are the biggest chunks of the document. But LaTeX
-> isn't very pleasant to read, so you can simply send a list of comments in
-> relation to section numbers and a few words of context, we'll manage.
-> 
-> ---
-> Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
-> more easily differences since the RFC (see [6]), but haven't been made
-> public so far. This is the first public posting since initial proposal
-> [1], and the following describes all changes.
-> 
-> ## v0.1 ##
-> 
-> Content is the same as the RFC, but formatted to LaTeX. 'make' generates
-> one PDF and one HTML document.
-> 
-> ## v0.2 ##
-> 
-> Add introductions, improve topology example and firmware description based
-> on feedback and a number of useful discussions.
-> 
-> ## v0.3 ##
-> 
-> Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
-> the device and driver behaviour. Unmap semantics are consolidated; they
-> are now closer to VFIO Type1 v2 semantics.
-> 
-> ## v0.4 ##
-> 
-> Introduce PROBE requests. They provide per-endpoint information to the
-> driver that couldn't be described otherwise.
-> 
-> For the moment, they allow to handle MSIs on x86 virtual platforms (see
-> 3.2). To do that we communicate reserved IOVA regions, that will also be
-> useful for describing regions that cannot be mapped for a given endpoint,
-> for instance addresses that correspond to a PCI bridge window.
-> 
-> Introducing such a large framework for this tiny feature may seem
-> overkill, but it is needed for future extensions of the virtio-iommu and I
-> believe it really is worth the effort.
-> 
-> ## Future ##
-> 
-> Other extensions are in preparation. I won't detail them here because v0.4
-> already is a lot to digest, but in short, building on top of PROBE:
-> 
-> * First, since the IOMMU is paravirtualized, the device can expose some
->   properties of the physical topology to the guest, and let it allocate
->   resources more efficiently. For example, when the virtio-iommu manages
->   both physical and emulated endpoints, with different underlying IOMMUs,
->   we now have a way to describe multiple page and block granularities,
->   instead of forcing the guest to use the most restricted one for all
->   endpoints. This will most likely be in v0.5.
-> 
-> * Then on top of that, a major improvement will describe hardware
->   acceleration features available to the guest. There is what I call "Page
->   Table Handover" (or simply, from the host POV, "Nested"), the ability
->   for the guest to manipulate its own page tables instead of sending
->   MAP/UNMAP requests to the host. This, along with IO Page Fault
->   reporting, will also permit SVM virtualization on different platforms.
-> 
-> Thanks,
-> Jean
-> 
-> [1] http://www.spinics.net/lists/kvm/msg147990.html
-> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
->     http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
->     I reiterate the disclaimers: don't use this document as a reference,
->     it's a draft. It's also not an OASIS document yet. It may be riddled
->     with mistakes. As this is a working draft, it is unstable and I do not
->     guarantee backward compatibility of future versions.
-> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
-> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
->     Warning: UAPI headers have changed! They didn't follow the spec,
->     please update. (Use branch v0.1, that has the old headers, for the
->     Qemu prototype [3])
-> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
->     Warning: command-line has changed! Use --viommu vfio[,opts] and
->     --viommu virtio[,opts] to instantiate a device.
-> [6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+WOW, wait a second. The idr change is touching a lot of drivers and to 
+be honest doesn't looks correct at all.
+
+Just look at the first chunk of your modification:
+> @@ -998,8 +999,9 @@ int bsg_register_queue(struct request_queue *q, struct device *parent,
+>   
+>   	mutex_lock(&bsg_mutex);
+>   
+> -	ret = idr_alloc(&bsg_minor_idr, bcd, 0, BSG_MAX_DEVS, GFP_KERNEL);
+> -	if (ret < 0) {
+> +	ret = idr_alloc(&bsg_minor_idr, bcd, &idr_index, 0, BSG_MAX_DEVS,
+> +			GFP_KERNEL);
+> +	if (ret) {
+>   		if (ret == -ENOSPC) {
+>   			printk(KERN_ERR "bsg: too many bsg devices\n");
+>   			ret = -EINVAL;
+The condition "if (ret)" will now always be true after the first 
+allocation and so we always run into the error handling after that.
+
+I've never read the bsg code before, but that's certainly not correct. 
+And that incorrect pattern repeats over and over again in this code.
+
+Apart from that why the heck do you want to allocate more than 1<<31 
+handles?
+
+Regards,
+Christian.
+
+>
+> Chris Mi (3):
+>    idr: Use unsigned long instead of int
+>    net/sched: Change cls_flower to use IDR
+>    net/sched: Change act_api and act_xxx modules to use IDR
+>
+>   block/bsg.c                                     |   8 +-
+>   block/genhd.c                                   |  12 +-
+>   drivers/atm/nicstar.c                           |  11 +-
+>   drivers/block/drbd/drbd_main.c                  |  31 +--
+>   drivers/block/drbd/drbd_nl.c                    |  22 ++-
+>   drivers/block/drbd/drbd_proc.c                  |   3 +-
+>   drivers/block/drbd/drbd_receiver.c              |  15 +-
+>   drivers/block/drbd/drbd_state.c                 |  34 ++--
+>   drivers/block/drbd/drbd_worker.c                |   6 +-
+>   drivers/block/loop.c                            |  17 +-
+>   drivers/block/nbd.c                             |  20 +-
+>   drivers/block/zram/zram_drv.c                   |   9 +-
+>   drivers/char/tpm/tpm-chip.c                     |  10 +-
+>   drivers/char/tpm/tpm.h                          |   2 +-
+>   drivers/dca/dca-sysfs.c                         |   9 +-
+>   drivers/firewire/core-cdev.c                    |  18 +-
+>   drivers/firewire/core-device.c                  |  15 +-
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_bo_list.c     |   8 +-
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_ctx.c         |   9 +-
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c         |   6 +-
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c         |   2 +-
+>   drivers/gpu/drm/drm_auth.c                      |   9 +-
+>   drivers/gpu/drm/drm_connector.c                 |  10 +-
+>   drivers/gpu/drm/drm_context.c                   |  20 +-
+>   drivers/gpu/drm/drm_dp_aux_dev.c                |  11 +-
+>   drivers/gpu/drm/drm_drv.c                       |   6 +-
+>   drivers/gpu/drm/drm_gem.c                       |  19 +-
+>   drivers/gpu/drm/drm_info.c                      |   2 +-
+>   drivers/gpu/drm/drm_mode_object.c               |  11 +-
+>   drivers/gpu/drm/drm_syncobj.c                   |  18 +-
+>   drivers/gpu/drm/exynos/exynos_drm_ipp.c         |  25 ++-
+>   drivers/gpu/drm/i915/gvt/display.c              |   2 +-
+>   drivers/gpu/drm/i915/gvt/kvmgt.c                |   2 +-
+>   drivers/gpu/drm/i915/gvt/vgpu.c                 |   9 +-
+>   drivers/gpu/drm/i915/i915_debugfs.c             |   6 +-
+>   drivers/gpu/drm/i915/i915_gem_context.c         |   9 +-
+>   drivers/gpu/drm/qxl/qxl_cmd.c                   |   8 +-
+>   drivers/gpu/drm/qxl/qxl_release.c               |  14 +-
+>   drivers/gpu/drm/sis/sis_mm.c                    |   8 +-
+>   drivers/gpu/drm/tegra/drm.c                     |  10 +-
+>   drivers/gpu/drm/tilcdc/tilcdc_slave_compat.c    |   3 +-
+>   drivers/gpu/drm/vgem/vgem_fence.c               |  12 +-
+>   drivers/gpu/drm/via/via_mm.c                    |   8 +-
+>   drivers/gpu/drm/virtio/virtgpu_kms.c            |   5 +-
+>   drivers/gpu/drm/virtio/virtgpu_vq.c             |   5 +-
+>   drivers/gpu/drm/vmwgfx/vmwgfx_resource.c        |   9 +-
+>   drivers/i2c/i2c-core-base.c                     |  19 +-
+>   drivers/infiniband/core/cm.c                    |   8 +-
+>   drivers/infiniband/core/cma.c                   |  12 +-
+>   drivers/infiniband/core/rdma_core.c             |   9 +-
+>   drivers/infiniband/core/sa_query.c              |  23 +--
+>   drivers/infiniband/core/ucm.c                   |   7 +-
+>   drivers/infiniband/core/ucma.c                  |  14 +-
+>   drivers/infiniband/hw/cxgb3/iwch.c              |   4 +-
+>   drivers/infiniband/hw/cxgb3/iwch.h              |   4 +-
+>   drivers/infiniband/hw/cxgb4/device.c            |  18 +-
+>   drivers/infiniband/hw/cxgb4/iw_cxgb4.h          |   4 +-
+>   drivers/infiniband/hw/hfi1/init.c               |   9 +-
+>   drivers/infiniband/hw/hfi1/vnic_main.c          |   6 +-
+>   drivers/infiniband/hw/mlx4/cm.c                 |  13 +-
+>   drivers/infiniband/hw/ocrdma/ocrdma_main.c      |   7 +-
+>   drivers/infiniband/hw/qib/qib_init.c            |   9 +-
+>   drivers/infiniband/ulp/opa_vnic/opa_vnic_vema.c |  10 +-
+>   drivers/iommu/intel-svm.c                       |   9 +-
+>   drivers/md/dm.c                                 |  13 +-
+>   drivers/memstick/core/memstick.c                |  10 +-
+>   drivers/memstick/core/ms_block.c                |   9 +-
+>   drivers/memstick/core/mspro_block.c             |  12 +-
+>   drivers/mfd/rtsx_pcr.c                          |   9 +-
+>   drivers/misc/c2port/core.c                      |   7 +-
+>   drivers/misc/cxl/context.c                      |   8 +-
+>   drivers/misc/cxl/main.c                         |  15 +-
+>   drivers/misc/mei/main.c                         |   8 +-
+>   drivers/misc/mic/scif/scif_api.c                |  11 +-
+>   drivers/misc/mic/scif/scif_ports.c              |  18 +-
+>   drivers/misc/tifm_core.c                        |   9 +-
+>   drivers/mtd/mtdcore.c                           |   9 +-
+>   drivers/mtd/mtdcore.h                           |   2 +-
+>   drivers/mtd/ubi/block.c                         |   7 +-
+>   drivers/net/ppp/ppp_generic.c                   |  27 +--
+>   drivers/net/tap.c                               |  10 +-
+>   drivers/net/wireless/ath/ath10k/htt.h           |   3 +-
+>   drivers/net/wireless/ath/ath10k/htt_tx.c        |  22 ++-
+>   drivers/net/wireless/ath/ath10k/mac.c           |   2 +-
+>   drivers/net/wireless/marvell/mwifiex/main.c     |  13 +-
+>   drivers/net/wireless/marvell/mwifiex/wmm.c      |   2 +-
+>   drivers/of/overlay.c                            |  15 +-
+>   drivers/of/unittest.c                           |  25 ++-
+>   drivers/power/supply/bq2415x_charger.c          |  16 +-
+>   drivers/power/supply/bq27xxx_battery_i2c.c      |  15 +-
+>   drivers/power/supply/ds2782_battery.c           |   9 +-
+>   drivers/powercap/powercap_sys.c                 |   8 +-
+>   drivers/pps/pps.c                               |  10 +-
+>   drivers/rapidio/rio_cm.c                        |  17 +-
+>   drivers/remoteproc/remoteproc_core.c            |   8 +-
+>   drivers/rpmsg/virtio_rpmsg_bus.c                |   8 +-
+>   drivers/scsi/bfa/bfad_im.c                      |   8 +-
+>   drivers/scsi/ch.c                               |   8 +-
+>   drivers/scsi/lpfc/lpfc_crtn.h                   |   2 +-
+>   drivers/scsi/lpfc/lpfc_init.c                   |  11 +-
+>   drivers/scsi/lpfc/lpfc_vport.c                  |   8 +-
+>   drivers/scsi/sg.c                               |  10 +-
+>   drivers/scsi/st.c                               |   8 +-
+>   drivers/staging/greybus/uart.c                  |  22 +--
+>   drivers/staging/unisys/visorhba/visorhba_main.c |   7 +-
+>   drivers/target/iscsi/iscsi_target.c             |   7 +-
+>   drivers/target/iscsi/iscsi_target_login.c       |   9 +-
+>   drivers/target/target_core_device.c             |   9 +-
+>   drivers/target/target_core_user.c               |  13 +-
+>   drivers/tee/tee_shm.c                           |   8 +-
+>   drivers/uio/uio.c                               |   9 +-
+>   drivers/usb/class/cdc-acm.c                     |  24 +--
+>   drivers/usb/core/devices.c                      |   2 +-
+>   drivers/usb/core/hcd.c                          |   7 +-
+>   drivers/usb/mon/mon_main.c                      |   3 +-
+>   drivers/usb/serial/usb-serial.c                 |  11 +-
+>   drivers/vfio/vfio.c                             |  15 +-
+>   fs/dlm/lock.c                                   |   9 +-
+>   fs/dlm/lockspace.c                              |   6 +-
+>   fs/dlm/recover.c                                |  10 +-
+>   fs/nfs/nfs4client.c                             |   9 +-
+>   fs/nfsd/nfs4state.c                             |   8 +-
+>   fs/notify/inotify/inotify_fsnotify.c            |   4 +-
+>   fs/notify/inotify/inotify_user.c                |   9 +-
+>   fs/ocfs2/cluster/tcp.c                          |  10 +-
+>   include/linux/idr.h                             |  26 +--
+>   include/linux/of.h                              |   4 +-
+>   include/linux/radix-tree.h                      |   2 +-
+>   include/net/9p/9p.h                             |   2 +-
+>   include/net/act_api.h                           |  76 +++-----
+>   ipc/msg.c                                       |   2 +-
+>   ipc/sem.c                                       |   2 +-
+>   ipc/shm.c                                       |   4 +-
+>   ipc/util.c                                      |  17 +-
+>   kernel/bpf/syscall.c                            |  20 +-
+>   kernel/cgroup/cgroup.c                          |  57 +++---
+>   kernel/events/core.c                            |  10 +-
+>   kernel/workqueue.c                              |  15 +-
+>   lib/idr.c                                       |  38 ++--
+>   lib/radix-tree.c                                |   5 +-
+>   mm/memcontrol.c                                 |  11 +-
+>   net/9p/client.c                                 |  17 +-
+>   net/9p/util.c                                   |  14 +-
+>   net/core/net_namespace.c                        |  23 ++-
+>   net/mac80211/cfg.c                              |  23 +--
+>   net/mac80211/iface.c                            |   3 +-
+>   net/mac80211/main.c                             |   2 +-
+>   net/mac80211/tx.c                               |   7 +-
+>   net/mac80211/util.c                             |   3 +-
+>   net/netlink/genetlink.c                         |  18 +-
+>   net/qrtr/qrtr.c                                 |  21 +-
+>   net/rxrpc/conn_client.c                         |  15 +-
+>   net/sched/act_api.c                             | 249 +++++++++++-------------
+>   net/sched/act_bpf.c                             |  17 +-
+>   net/sched/act_connmark.c                        |  16 +-
+>   net/sched/act_csum.c                            |  16 +-
+>   net/sched/act_gact.c                            |  16 +-
+>   net/sched/act_ife.c                             |  20 +-
+>   net/sched/act_ipt.c                             |  26 ++-
+>   net/sched/act_mirred.c                          |  19 +-
+>   net/sched/act_nat.c                             |  16 +-
+>   net/sched/act_pedit.c                           |  18 +-
+>   net/sched/act_police.c                          |  18 +-
+>   net/sched/act_sample.c                          |  17 +-
+>   net/sched/act_simple.c                          |  20 +-
+>   net/sched/act_skbedit.c                         |  18 +-
+>   net/sched/act_skbmod.c                          |  18 +-
+>   net/sched/act_tunnel_key.c                      |  20 +-
+>   net/sched/act_vlan.c                            |  22 +--
+>   net/sched/cls_flower.c                          |  55 +++---
+>   net/sctp/associola.c                            |   8 +-
+>   net/tipc/server.c                               |   7 +-
+>   172 files changed, 1256 insertions(+), 1113 deletions(-)
+>
