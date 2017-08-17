@@ -1,16 +1,13 @@
-From: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.4
-Date: Thu, 17 Aug 2017 11:27:01 +0000
-Message-ID: <AM5PR0401MB2545F70A3ABF2DBFFFC4A6B09A830@AM5PR0401MB2545.eurprd04.prod.outlook.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
-	<20170816040853.GA10652@shay3t003839711.china.huawei.com>
-	<a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 04/13] iommu/dma: Use sychronized interface of the IOMMU-API
+Date: Thu, 17 Aug 2017 14:56:27 +0200
+Message-ID: <1502974596-23835-5-git-send-email-joro@8bytes.org>
+References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <a2e573f3-bdfb-b5e5-7835-a7597abd48f5-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1502974596-23835-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,77 +17,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Adam Tao <taozhe1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-> -----Original Message-----
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Thursday, August 17, 2017 3:42 PM
-> To: Adam Tao <taozhe1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org;
-> will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org;
-> mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; marc.zyngier-5wv7dgnIgG8@public.gmane.org;
-> eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Bharat Bhushan
-> <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>; peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
-> Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
-> 
-> Hi Adam,
-> 
-> On 16/08/17 05:08, Adam Tao wrote:
-> >> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
-> >>   Bhushan.
-> > Hi, Brucker
-> > I read the related spec for virtio IOMMU, I am wondering if we support
-> > both the virtual and physical devices in the guest to use the virtio
-> > IOMMU, how can we config the related address translation for the
-> > different type of devices.
-> > e.g.
-> > 1. for Virtio devs(e.g. virtio-net), we can change the memmap table
-> > used by the vhost device.
-> > 2. for physical devices we can directly config the IOMMU/SMMU on the
-> > host.
-> >
-> > So do you know are there any RFCs for the back-end implementation for
-> > the virtio-IOMMU thanks Adam
-> 
-> Eric's series [3] adds support for virtual devices (I'v only had time to test
-> virtio-net so far, but as vhost-iotlb seems to be supported by Qemu, it should
-> work with vhost-net as well). Bharat is working on the VFIO backend for
-> physical devices. As far as I'm aware, his latest version is:
-> 
-> [7] https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg04094.html
+The map and unmap functions of the IOMMU-API changed their
+semantics: They do no longer guarantee that the hardware
+TLBs are synchronized with the page-table updates they made.
 
-I am working on newer version which will be based on Eric-v3.
-Actually I wanted to include the fix for the issue reported by Eric, it fails if we assign more than one interface.
-I reproduced the issues on my side and know the root cause. I am working on fixing this.
+To make conversion easier, new synchronized functions have
+been introduced which give these guarantees again until the
+code is converted to use the new TLB-flush interface of the
+IOMMU-API, which allows certain optimizations.
 
-Thanks
--Bharat
+But for now, just convert this code to use the synchronized
+functions so that it will behave as before.
 
-> 
-> Thanks,
-> Jean
-> 
-> 
-> >> [1] http://www.spinics.net/lists/kvm/msg147990.html
-> >> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
-> >>     http://www.linux-arm.org/git?p=virtio-
-> iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
-> >>     I reiterate the disclaimers: don't use this document as a reference,
-> >>     it's a draft. It's also not an OASIS document yet. It may be riddled
-> >>     with mistakes. As this is a working draft, it is unstable and I do not
-> >>     guarantee backward compatibility of future versions.
-> >> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
-> >> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
-> >>     Warning: UAPI headers have changed! They didn't follow the spec,
-> >>     please update. (Use branch v0.1, that has the old headers, for the
-> >>     Qemu prototype [3])
-> >> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
-> >>     Warning: command-line has changed! Use --viommu vfio[,opts] and
-> >>     --viommu virtio[,opts] to instantiate a device.
-> >> [6]
-> >> http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/dma-iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 9d1cebe..38c41a2 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -417,7 +417,7 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+ 	dma_addr -= iova_off;
+ 	size = iova_align(iovad, size + iova_off);
+ 
+-	WARN_ON(iommu_unmap(domain, dma_addr, size) != size);
++	WARN_ON(iommu_unmap_sync(domain, dma_addr, size) != size);
+ 	iommu_dma_free_iova(cookie, dma_addr, size);
+ }
+ 
+@@ -572,7 +572,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+ 		sg_miter_stop(&miter);
+ 	}
+ 
+-	if (iommu_map_sg(domain, iova, sgt.sgl, sgt.orig_nents, prot)
++	if (iommu_map_sg_sync(domain, iova, sgt.sgl, sgt.orig_nents, prot)
+ 			< size)
+ 		goto out_free_sg;
+ 
+@@ -631,7 +631,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+ 	if (!iova)
+ 		return IOMMU_MAPPING_ERROR;
+ 
+-	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
++	if (iommu_map_sync(domain, iova, phys - iova_off, size, prot)) {
+ 		iommu_dma_free_iova(cookie, iova, size);
+ 		return IOMMU_MAPPING_ERROR;
+ 	}
+@@ -791,7 +791,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	 * We'll leave any physical concatenation to the IOMMU driver's
+ 	 * implementation - it knows better than we do.
+ 	 */
+-	if (iommu_map_sg(domain, iova, sg, nents, prot) < iova_len)
++	if (iommu_map_sg_sync(domain, iova, sg, nents, prot) < iova_len)
+ 		goto out_free_iova;
+ 
+ 	return __finalise_sg(dev, sg, nents, iova);
+-- 
+2.7.4
