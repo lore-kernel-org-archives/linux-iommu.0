@@ -1,18 +1,14 @@
-From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Subject: Re: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X table
-Date: Thu, 17 Aug 2017 14:43:25 +1000
-Message-ID: <1502945005.4493.112.camel@kernel.crashing.org>
-References: <20170807072548.3023-1-aik@ozlabs.ru>
-	<8f5f7b82-3c10-7f39-b587-db4c4424f04c@ozlabs.ru>
-	<ca2a4550-fb26-28db-0eea-a5940dfa612f@arm.com>
-	<20170815103717.3b64e10c@w520.home>
-	<1502843749.4493.67.camel@kernel.crashing.org>
-	<20170816105602.57fd1dcc@w520.home>
+From: Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: Re: PCIe oops for NULL pointer dereference during next-20170807 and
+	next-20170815
+Date: Thu, 17 Aug 2017 15:02:31 +0800
+Message-ID: <2ac52f40-c34f-6c31-b8db-868c40a977a3@rock-chips.com>
+References: <c6ae57b6-1175-4ba4-b66d-d2f5393d06fc@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170816105602.57fd1dcc-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+In-Reply-To: <c6ae57b6-1175-4ba4-b66d-d2f5393d06fc-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,131 +18,305 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Kyle Mahlkuch <Kyle.Mahlkuch-qyM6JfAXOaQ@public.gmane.org>, Vlad Tsyrklevich <vlad-NIZqynvkaCU43zv7NVfAiQ@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mauricio Faria de Oliveira <mauricfo-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2017-08-16 at 10:56 -0600, Alex Williamson wrote:
++ Marc
+
+On 2017/8/17 11:34, Shawn Lin wrote:
+> Hi all,
 > 
-> > WTF ???? Alex, can you stop once and for all with all that "POWER is
-> > not standard" bullshit please ? It's completely wrong.
+> I see this NULL pointer dereference into linux-next these day which
+> break PCIe for my system, but not for linux-next-20170807. Is it that
+> commit causing this problem?
 > 
-> As you've stated, the MSI-X vector table on POWER is currently updated
-> via a hypercall.  POWER is overall PCI compliant (I assume), but the
-> guest does not directly modify the vector table in MMIO space of the
-> device.  This is important...
-
-Well no. On qemu the guest doesn't always (but it can save/restore it),
-but on PowerVM this is done by the FW running inside the partition
-itself. And that firmware just does normal stores to the device table.
-
-IE. The problem here isn't so much who does the actual stores to the
-device table but where they get the address and data values from, which
-isn't covered by the spec.
-
-The added fact that qemu hijacks the stores not just to "remap" them
-but also do the whole reuqesting of the interrupt etc... in the host
-system is a qemu design choice which also hasn't any relation to the
-spec (and arguably isnt' a great choice for our systems).
-
-For example, on PowerVM, the HV assigns a pile of MSIs to the guest to
-assign to its devices. The FW inside the guest does a default
-assignment but that can be changed.
-
-Thus the interrupts are effectively "hooked up" at the HV level at the
-point where the PCI bridge is mapped into the guest.
-
-> > This has nothing to do with PCIe standard !
+> 05f80300dc8bc ("iommu: Finish making iommu_group support mandatory")
 > 
-> Yes, it actually does, because if the guest relies on the vector table
-> to be virtualized then it doesn't particularly matter whether the
-> vfio-pci kernel driver allows that portion of device MMIO space to be
-> directly accessed or mapped because QEMU needs for it to be trapped in
-> order to provide that virtualization.
 
-And this has nothing to do with the PCIe standard... this has
-everything to do with a combination of qemu design choices and
-defficient FW interfaces on x86 platforms.
+The problem is that pcie-rockchip use gic-v3-its as a msi domain and
+it assumes all of the users using it should has iommu support, so it
+always iommu_dma_map_msi_msg . But unfortunately we don't.
 
-> I'm not knocking POWER, it's a smart thing for virtualization to have
-> defined this hypercall which negates the need for vector table
-> virtualization and allows efficient mapping of the device.  On other
-> platform, it's not necessarily practical given the broad base of legacy
-> guests supported where we'd never get agreement to implement this as
-> part of the platform spec... if there even was such a thing.  Maybe we
-> could provide the hypercall and dynamically enable direct vector table
-> mapping (disabling vector table virtualization) only if the hypercall
-> is used.
+Before this commit, iommu has a work around to fix this. Then Robin's
+patch expose that problem by removing all the workaroud.
 
-No I think a better approach would be to provide the guest with a pile
-of MSIs to use with devices and have FW (such as ACPI) tell the guest
-about them.
+So should we revert this commit or maybe we could add some checking
+into gic-v2m and gic-v3-its to see if the dev is iommu-capable? If not,
+we should create another routine to map MSI msg.
 
-> > The PCIe standard says strictly *nothing* whatsoever about how an OS
-> > obtains the magic address/values to put in the device and how the PCIe
-> > host bridge may do appropriate fitering.
-> 
-> And now we've jumped the tracks...  The only way the platform specific
-> address/data values become important is if we allow direct access to
-> the vector table AND now we're formulating how the user/guest might
-> write to it directly.  Otherwise the virtualization of the vector
-> table, or paravirtualization via hypercall provides the translation
-> where the host and guest address/data pairs can operate in completely
-> different address spaces.
 
-They can regardless if things are done properly :-)
-
-> > There is nothing on POWER that prevents the guest from writing the MSI-
-> > X address/data by hand. The problem isn't who writes the values or even
-> > how. The problem breaks down into these two things that are NOT covered
-> > by any aspect of the PCIe standard:
+> As I check the oops dump and asm code, which shows me that we got a
+> NULL pointer for iommu_group in iommu_get_domain_for_dev.
 > 
-> You've moved on to a different problem, I think everyone aside from
-> POWER is still back at the problem where who writes the vector table
-> values is a forefront problem.
->  
-> >   1- The OS needs to obtain address/data values for an MSI that will
-> > "work" for the device.
-> > 
-> >   2- The HW+HV needs to prevent collateral damage caused by a device
-> > issuing stores to incorrect address or with incorrect data. Now *this*
-> > is necessary for *ANY* kind of DMA whether it's an MSI or something
-> > else anyway.
-> > 
-> > Now, the filtering done by qemu is NOT a reasonable way to handle 2)
-> > and whatever excluse about "making it harder" doesn't fly a meter when
-> > it comes to security. Making it "harder to break accidentally" I also
-> > don't buy, people don't just randomly put things in their MSI-X tables
-> > "accidentally", that stuff works or doesn't.
 > 
-> As I said before, I'm not willing to preserve the weak attributes that
-> blocking direct vector table access provides over pursuing a more
-> performant interface, but I also don't think their value is absolute
-> zero either.
+> Full dump:
 > 
-> > That leaves us with 1). Now this is purely a platform specific matters,
-> > not a spec matter. Once the HW has a way to enforce you can only
-> > generate "allowed" MSIs it becomes a matter of having some FW mechanism
-> > that can be used to informed the OS what address/values to use for a
-> > given interrupts.
-> > 
-> > This is provided on POWER by a combination of device-tree and RTAS. It
-> > could be that x86/ARM64 doesn't provide good enough mechanisms via ACPI
-> > but this is no way a problem of standard compliance, just inferior
-> > firmware interfaces.
+> [    0.990401] pci 0000:00:00.0: PCI bridge to [bus 01]
+> [    0.990886] pci 0000:00:00.0:   bridge window [mem 
+> 0xfa000000-0xfa0fffff]
+> [    0.991553] pci 0000:00:00.0: Max Payload Size set to  128/ 256 (was 
+> 256), Max Read Rq  512
+> [    0.992391] pci 0000:01:00.0: Max Payload Size set to  128/ 128 (was 
+> 128), Max Read Rq  512
+> [    0.994084] pcieport 0000:00:00.0: enabling device (0000 -> 0002)
+> [    0.995009] Unable to handle kernel NULL pointer dereference at 
+> virtual address 000000d0
+> [    0.995775] Mem abort info:
+> [    0.996048]   Exception class = DABT (current EL), IL = 32 bits
+> [    0.996610]   SET = 0, FnV = 0
+> [    0.996952]   EA = 0, S1PTW = 0
+> [    0.997254] Data abort info:
+> [    0.997532]   ISV = 0, ISS = 0x00000004
+> [    0.997900]   CM = 0, WnR = 0
+> [    0.998187] [00000000000000d0] user address but active_mm is swapper
+> [    0.998797] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> [    0.999334] Modules linked in:
+> [    0.999660] CPU: 3 PID: 1 Comm: swapper/0 Not tainted 
+> 4.13.0-rc5-next-20170815-00001-g0744890-dirty #53
+> [    1.000547] Hardware name: Firefly-RK3399 Board (DT)
+> [    1.001022] task: ffff80007bc70000 task.stack: ffff80007bc6c000
+> [    1.001637] PC is at iommu_get_domain_for_dev+0x38/0x50
+> [    1.002143] LR is at iommu_dma_map_msi_msg+0x3c/0x1b8
+> [    1.002626] pc : [<ffff000008569210>] lr : [<ffff00000856c1e4>] 
+> pstate: a0000045
+> [    1.003325] sp : ffff80007bc6f6d0
+> [    1.003644] x29: ffff80007bc6f6d0 x28: ffff80007b654400
+> [    1.004159] x27: 00000000000000d7 x26: 0000000000000000
+> [    1.004673] x25: ffff000008f097a0 x24: ffff80007bacf0a0
+> [    1.005188] x23: ffff80007bacf0a0 x22: ffff80007bc5af00
+> [    1.005702] x21: ffff80007bacf2a0 x20: ffff80007bc6f790
+> [    1.006216] x19: 0000000000000000 x18: 0000000000000001
+> [    1.006729] x17: 0000000000000001 x16: 0000000000000019
+> [    1.007243] x15: ffffffffffffffff x14: ffff80007b62fd04
+> [    1.007758] x13: ffff80007b62fd03 x12: 0000000000000038
+> [    1.008271] x11: 0000000000000040 x10: ffff80007c0ab930
+> [    1.008785] x9 : ffff80007c0ab9e8 x8 : 0000000000000000
+> [    1.009298] x7 : ffff80007b61b200 x6 : ffff80007b61b200
+> [    1.009812] x5 : ffff80007c0ab908 x4 : ffff80007b61b200
+> [    1.010325] x3 : 0000000000000000 x2 : 0000000000000000
+> [    1.010839] x1 : ffff80007b61b220 x0 : ffff80007bacf0a0
+> [    1.011355] Process swapper/0 (pid: 1, stack limit = 0xffff80007bc6c000)
+> [    1.011993] Stack: (0xffff80007bc6f6d0 to 0xffff80007bc70000)
+> [    1.012544] f6c0:                                   ffff80007bc6f6f0 
+> ffff00000856c1e4
+> [    1.013293] f6e0: ffff80007b61b220 ffff80007bc6f790 ffff80007bc6f750 
+> ffff0000083d4d8c
+> [    1.014039] f700: ffff80007b61b220 ffff80007bc5af00 ffff80007bacf2a0 
+> ffff80007bc5af00
+> [    1.014786] f720: ffff80007bacf0a0 ffff000008f09970 ffff000008f097a0 
+> 0000000000000000
+> [    1.015531] f740: 00000000000000d7 ffff80007b654400 ffff80007bc6f760 
+> ffff00000811be50
+> [    1.016278] f760: ffff80007bc6f770 ffff000008120e34 ffff80007bc6f7a0 
+> ffff00000811d9f8
+> [    1.017026] f780: ffff80007b61b220 ffff00000811d9e0 00000000fee30040 
+> ffff800000000000
+> [    1.017774] f7a0: ffff80007bc6f7c0 ffff00000811f724 ffff80007b61b220 
+> ffff80007bacf2a0
+> [    1.018520] f7c0: ffff80007bc6f7e0 ffff00000812139c ffff80007b62fe80 
+> 0000000000000040
+> [    1.019267] f7e0: ffff80007bc6f860 ffff000008445abc ffff80007b62fe80 
+> ffff80007bacf000
+> [    1.020013] f800: 0000000000000001 0000000000000001 0000000000000001 
+> 0000000000000000
+> [    1.020760] f820: ffff80007bacf0a0 ffff000008cbaf10 0000000000000001 
+> 0000000000000000
+> [    1.021507] f840: ffff80007b62fe80 0000000000000000 ffff80007b62ff00 
+> ffff000008446564
+> [    1.022254] f860: ffff80007bc6f870 ffff00000844658c ffff80007bc6f8e0 
+> ffff0000084468a4
+> [    1.023001] f880: 0000000000000000 00000000fffffff4 0000000000000001 
+> ffff80007bacf000
+> [    1.023748] f8a0: 0000000000000006 0000000000000020 ffff000008c9d070 
+> ffff000008cbc000
+> [    1.024495] f8c0: ffff80007ba4fc80 ffff80007b654400 ffff80007bc6f900 
+> 018000000000c620
+> [    1.025242] f8e0: ffff80007bc6f920 ffff00000843cd98 ffff80007bacf000 
+> 0000000000000000
+> [    1.025988] f900: 0000000000000003 ffff80007bacf0a0 0000000000000000 
+> 0000000000000000
+> [    1.026735] f920: ffff80007bc6f9b0 ffff00000843d2ac ffff80007bacf000 
+> ffff80007bc6fa58
+> [    1.027482] f940: ffff000008f37298 ffff80007bacf0a0 0000000000000000 
+> 0000000000000000
+> [    1.028228] f960: ffff000008c9d070 ffff000008cbc000 ffff80007ba4fc80 
+> ffff80007b654400
+> [    1.028974] f980: 0000000000000000 ffff000000000000 ffff80007bc6f9f0 
+> ffffffffffffffff
+> [    1.029721] f9a0: ffffffffffffffff ffff0000ffffffff ffff80007bc6f9e0 
+> ffff00000842e2cc
+> [    1.030469] f9c0: ffff80007bacf000 ffff80007bc6fa58 ffff000008f37298 
+> ffff80007bacf0a0
+> [    1.031216] f9e0: ffff80007bc6fa20 ffff00000842f5f8 ffff80007bacf000 
+> ffff80007bacf0a0
+> [    1.031963] fa00: 00000000ffffffff ffff000008f37298 ffff80007bacf000 
+> ffff000008f37298
+> [    1.032710] fa20: ffff80007bc6fa70 ffff00000857d964 ffff80007bacf0a0 
+> ffff00000903e000
+> [    1.033457] fa40: 0000000000000000 ffff000008f37300 ffff80007bc6fa70 
+> ffff000008f37298
+> [    1.034204] fa60: ffff80007bacf000 ffff000008a388b0 ffff80007bc6fab0 
+> ffff00000857db6c
+> [    1.034951] fa80: ffff000008f37300 ffff80007bc6fb50 ffff80007bacf0a0 
+> 0000000000000000
+> [    1.035698] faa0: ffff80007b9fb018 ffff80007bc6fc40 ffff80007bc6fae0 
+> ffff00000857bbfc
+> [    1.036444] fac0: 0000000000000000 ffff80007bc6fb50 ffff00000857dad0 
+> ffff80007bc6fc40
+> [    1.037191] fae0: ffff80007bc6fb20 ffff00000857d61c ffff80007bacf0a0 
+> ffff80007bacf100
+> [    1.037938] fb00: ffff80007b9fb800 ffff80007bacf100 ffff80007bf7f8c8 
+> ffff80007ba4b668
+> [    1.038684] fb20: ffff80007bc6fb60 ffff00000857d6a0 ffff80007bacf000 
+> ffff80007bacf0a0
+> [    1.039431] fb40: ffff80007b9fb800 ffff80007b9fb818 ffff80007bacf0a0 
+> 0000000000000000
+> [    1.040177] fb60: ffff80007bc6fb70 ffff00000842395c ffff80007bc6fb90 
+> ffff0000084239fc
+> [    1.040926] fb80: ffff80007bacf000 ffff80007b9fb828 ffff80007bc6fbc0 
+> ffff000008451e88
+> [    1.041672] fba0: 0000000000000000 ffff80007b9fb818 ffff80007b9fb800 
+> 00ff000008451e64
+> [    1.042420] fbc0: ffff80007bc6fc50 ffff00000857f738 00000000fffffffe 
+> ffff80007b812010
+> [    1.043166] fbe0: ffff000008f385c0 ffff000008f385e8 0000000000000000 
+> 0000000000000000
+> [    1.043913] fc00: ffff000008ff0000 ffff000008db046c ffff000008eaf718 
+> 0000000000000000
+> [    1.044660] fc20: ffff000008cbc368 ffff80007b9fb3d0 ffff80007bc6fc50 
+> 00000000fbe00000
+> [    1.045407] fc40: ffff80007bc6fc40 ffff80007bc6fc40 ffff80007bc6fc80 
+> ffff00000857d964
+> [    1.046154] fc60: ffff80007b812010 ffff00000903e000 0000000000000000 
+> ffff00000903e000
+> [    1.046901] fc80: ffff80007bc6fcc0 ffff00000857dacc ffff80007b812010 
+> ffff000008f385e8
+> [    1.047648] fca0: ffff80007b812070 ffff000008fa04b0 ffff000008f9f000 
+> ffff000008e36068
+> [    1.048394] fcc0: ffff80007bc6fcf0 ffff00000857bb3c 0000000000000000 
+> ffff000008f385e8
+> [    1.049142] fce0: ffff00000857da20 ffff80007bc6fd40 ffff80007bc6fd30 
+> ffff00000857d258
+> [    1.049888] fd00: ffff000008f385e8 ffff80007ba4be00 0000000000000000 
+> 00000000ffffffe0
+> [    1.050635] fd20: ffff80007bc6a2a0 ffff80007bf7da68 ffff80007bc6fd40 
+> ffff00000857cd08
+> [    1.051382] fd40: ffff80007bc6fd80 ffff00000857e468 ffff000008f385e8 
+> ffff80007bc70000
+> [    1.052129] fd60: 0000000000000000 000000003519fa98 ffff000008da8000 
+> ffff00000880b08c
+> [    1.052876] fd80: ffff80007bc6fda0 ffff00000857f690 ffff000008dd6da8 
+> ffff80007bc70000
+> [    1.053624] fda0: ffff80007bc6fdb0 ffff000008dd6dc0 ffff80007bc6fdc0 
+> ffff000008083970
+> [    1.054371] fdc0: ffff80007bc6fe30 ffff000008db0cfc 0000000000000144 
+> ffff000008ff0000
+> [    1.055117] fde0: 0000000000000006 ffff000008e36078 ffff000008eaf100 
+> 0000000000000000
+> [    1.055864] fe00: ffff000008ef09e0 0000000600000006 0000000000000000 
+> ffff000008da8000
+> [    1.056611] fe20: ffff80007efff93d ffff80007efff951 ffff80007bc6fe90 
+> ffff00000896fce8
+> [    1.057358] fe40: ffff00000896fcd8 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.058104] fe60: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.058850] fe80: 0000000000000000 0000000000000000 0000000000000000 
+> ffff000008084ad0
+> [    1.059596] fea0: ffff00000896fcd8 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.060342] fec0: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.061087] fee0: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.061833] ff00: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.062579] ff20: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.063329] ff40: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.064074] ff60: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.064820] ff80: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.065566] ffa0: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000005
+> [    1.066314] ffc0: 0000000000000000 0000000000000000 0000000000000000 
+> 0000000000000000
+> [    1.067061] ffe0: 0000000000000000 0000000000000000 ffffffffffffffff 
+> ffffffffffffffff
+> [    1.067800] Call trace:
+> [    1.068042] Exception stack(0xffff80007bc6f590 to 0xffff80007bc6f6d0)
+> [    1.068656] f580:                                   ffff80007bacf0a0 
+> ffff80007b61b220
+> [    1.069403] f5a0: 0000000000000000 0000000000000000 ffff80007b61b200 
+> ffff80007c0ab908
+> [    1.070150] f5c0: ffff80007b61b200 ffff80007b61b200 0000000000000000 
+> ffff80007c0ab9e8
+> [    1.070897] f5e0: ffff80007c0ab930 0000000000000040 0000000000000038 
+> ffff80007b62fd03
+> [    1.071643] f600: ffff80007b62fd04 ffffffffffffffff 0000000000000019 
+> 0000000000000001
+> [    1.072390] f620: 0000000000000001 0000000000000000 ffff80007bc6f790 
+> ffff80007bacf2a0
+> [    1.073137] f640: ffff80007bc5af00 ffff80007bacf0a0 ffff80007bacf0a0 
+> ffff000008f097a0
+> [    1.073883] f660: 0000000000000000 00000000000000d7 ffff80007b654400 
+> ffff80007bc6f6d0
+> [    1.074630] f680: ffff00000856c1e4 ffff80007bc6f6d0 ffff000008569210 
+> 00000000a0000045
+> [    1.075377] f6a0: 00000000000f423f ffff80007c404e00 ffffffffffffffff 
+> 00000000000002a0
+> [    1.076121] f6c0: ffff80007bc6f6d0 ffff000008569210
+> [    1.076603] [<ffff000008569210>] iommu_get_domain_for_dev+0x38/0x50
+> [    1.077203] [<ffff00000856c1e4>] iommu_dma_map_msi_msg+0x3c/0x1b8
+> [    1.077793] [<ffff0000083d4d8c>] its_irq_compose_msi_msg+0x44/0x50
+> [    1.078388] [<ffff00000811be50>] irq_chip_compose_msi_msg+0x40/0x58
+> [    1.078991] [<ffff000008120e34>] msi_domain_activate+0x1c/0x48
+> [    1.079558] [<ffff00000811d9f8>] __irq_domain_activate_irq+0x40/0x58
+> [    1.080168] [<ffff00000811f724>] irq_domain_activate_irq+0x24/0x40
+> [    1.080762] [<ffff00000812139c>] msi_domain_alloc_irqs+0x104/0x190
+> [    1.081357] [<ffff000008445abc>] pci_msi_setup_msi_irqs+0x3c/0x48
+> [    1.081941] [<ffff00000844658c>] __pci_enable_msi_range+0x21c/0x408
+> [    1.082543] [<ffff0000084468a4>] 
+> pci_alloc_irq_vectors_affinity+0x104/0x168
+> [    1.083212] [<ffff00000843cd98>] pcie_port_device_register+0x200/0x488
+> [    1.083838] [<ffff00000843d2ac>] pcie_portdrv_probe+0x34/0xd0
+> [    1.084391] [<ffff00000842e2cc>] local_pci_probe+0x3c/0xb8
+> [    1.084919] [<ffff00000842f5f8>] pci_device_probe+0x138/0x170
+> [    1.085473] [<ffff00000857d964>] driver_probe_device+0x21c/0x2d8
+> [    1.086050] [<ffff00000857db6c>] __device_attach_driver+0x9c/0xf8
+> [    1.086634] [<ffff00000857bbfc>] bus_for_each_drv+0x5c/0x98
+> [    1.087171] [<ffff00000857d61c>] __device_attach+0xc4/0x138
+> [    1.087707] [<ffff00000857d6a0>] device_attach+0x10/0x18
+> [    1.088219] [<ffff00000842395c>] pci_bus_add_device+0x4c/0xa8
+> [    1.088771] [<ffff0000084239fc>] pci_bus_add_devices+0x44/0x90
+> [    1.089330] [<ffff000008451e88>] rockchip_pcie_probe+0xc70/0xcc8
+> [    1.089908] [<ffff00000857f738>] platform_drv_probe+0x58/0xc0
+> [    1.090460] [<ffff00000857d964>] driver_probe_device+0x21c/0x2d8
+> [    1.091037] [<ffff00000857dacc>] __driver_attach+0xac/0xb0
+> [    1.091564] [<ffff00000857bb3c>] bus_for_each_dev+0x64/0xa0
+> [    1.092100] [<ffff00000857d258>] driver_attach+0x20/0x28
+> [    1.092610] [<ffff00000857cd08>] bus_add_driver+0x110/0x230
+> [    1.093147] [<ffff00000857e468>] driver_register+0x60/0xf8
+> [    1.093676] [<ffff00000857f690>] __platform_driver_register+0x40/0x48
+> [    1.094326] [<ffff000008dd6dc0>] rockchip_pcie_driver_init+0x18/0x20
+> [    1.094937] [<ffff000008083970>] do_one_initcall+0xb0/0x120
+> [    1.095488] [<ffff000008db0cfc>] kernel_init_freeable+0x184/0x224
+> [    1.096073] [<ffff00000896fce8>] kernel_init+0x10/0x100
+> [    1.096577] [<ffff000008084ad0>] ret_from_fork+0x10/0x18
+> [    1.097092] Code: aa1403e0 a94153f3 a8c27bfd d65f03c0 (f9406a74)
+> [    1.097729] ---[ end trace 58bb8bb00bc97904 ]---
+> [    1.098477] Kernel panic - not syncing: Attempted to kill init! 
+> exitcode=0x0000000b
+> [    1.098477]
+> [    1.099359] SMP: stopping secondary CPUs
+> [    1.099820] Kernel Offset: disabled
+> [    1.100164] CPU features: 0x00200c
+> [    1.100491] Memory Limit: none
+> [    1.100795] ---[ end Kernel panic - not syncing: Attempted to kill 
+> init! exitcode=0x0000000b
 > 
-> Firmware pissing match...  Processors running with 8k or less page size
-> fall within the recommendations of the PCI spec for register alignment
-> of MMIO regions of the device and this whole problem becomes less of an
-> issue.
 > 
-> > So again, for the 234789246th time in years, can we get that 1-bit-of-
-> > information sorted one way or another so we can fix our massive
-> > performance issue instead of adding yet another dozen layers of paint
-> > on that shed ?
 > 
-> TBH, I'm not even sure which bikeshed we're looking at with this latest
-> distraction of interfaces through which the user/guest could discover
-> viable address/data values to write the vector table directly.  Thanks,
-> 
-> Alex
