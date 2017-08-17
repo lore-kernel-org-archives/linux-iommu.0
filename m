@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 05/13] arm: dma-mapping: Use sychronized interface of the
-	IOMMU-API
-Date: Thu, 17 Aug 2017 14:56:28 +0200
-Message-ID: <1502974596-23835-6-git-send-email-joro@8bytes.org>
+Subject: [PATCH 08/13] drm/nouveau/imem/gk20a: Use sychronized interface of
+	the IOMMU-API
+Date: Thu, 17 Aug 2017 14:56:31 +0200
+Message-ID: <1502974596-23835-9-git-send-email-joro@8bytes.org>
 References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,7 +19,7 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
@@ -36,109 +36,49 @@ IOMMU-API, which allows certain optimizations.
 But for now, just convert this code to use the synchronized
 functions so that it will behave as before.
 
-Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>
+Cc: dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- arch/arm/mm/dma-mapping.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index fcf1473..fae2398 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1444,7 +1444,7 @@ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
- 				break;
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
+index cd5adbe..3f0de47 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
+@@ -322,8 +322,9 @@ gk20a_instobj_dtor_iommu(struct nvkm_memory *memory)
  
- 		len = (j - i) << PAGE_SHIFT;
--		ret = iommu_map(mapping->domain, iova, phys, len,
-+		ret = iommu_map_sync(mapping->domain, iova, phys, len,
- 				__dma_info_to_prot(DMA_BIDIRECTIONAL, attrs));
- 		if (ret < 0)
- 			goto fail;
-@@ -1453,7 +1453,7 @@ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
- 	}
- 	return dma_addr;
- fail:
--	iommu_unmap(mapping->domain, dma_addr, iova-dma_addr);
-+	iommu_unmap_sync(mapping->domain, dma_addr, iova-dma_addr);
- 	__free_iova(mapping, dma_addr, size);
- 	return ARM_MAPPING_ERROR;
- }
-@@ -1469,7 +1469,7 @@ static int __iommu_remove_mapping(struct device *dev, dma_addr_t iova, size_t si
- 	size = PAGE_ALIGN((iova & ~PAGE_MASK) + size);
- 	iova &= PAGE_MASK;
+ 	/* Unmap pages from GPU address space and free them */
+ 	for (i = 0; i < node->base.mem.size; i++) {
+-		iommu_unmap(imem->domain,
+-			    (r->offset + i) << imem->iommu_pgshift, PAGE_SIZE);
++		iommu_unmap_sync(imem->domain,
++				 (r->offset + i) << imem->iommu_pgshift,
++				 PAGE_SIZE);
+ 		dma_unmap_page(dev, node->dma_addrs[i], PAGE_SIZE,
+ 			       DMA_BIDIRECTIONAL);
+ 		__free_page(node->pages[i]);
+@@ -458,14 +459,15 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
+ 	for (i = 0; i < npages; i++) {
+ 		u32 offset = (r->offset + i) << imem->iommu_pgshift;
  
--	iommu_unmap(mapping->domain, iova, size);
-+	iommu_unmap_sync(mapping->domain, iova, size);
- 	__free_iova(mapping, iova, size);
- 	return 0;
- }
-@@ -1730,7 +1730,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+-		ret = iommu_map(imem->domain, offset, node->dma_addrs[i],
+-				PAGE_SIZE, IOMMU_READ | IOMMU_WRITE);
++		ret = iommu_map_sync(imem->domain, offset, node->dma_addrs[i],
++				     PAGE_SIZE, IOMMU_READ | IOMMU_WRITE);
+ 		if (ret < 0) {
+ 			nvkm_error(subdev, "IOMMU mapping failure: %d\n", ret);
  
- 		prot = __dma_info_to_prot(dir, attrs);
- 
--		ret = iommu_map(mapping->domain, iova, phys, len, prot);
-+		ret = iommu_map_sync(mapping->domain, iova, phys, len, prot);
- 		if (ret < 0)
- 			goto fail;
- 		count += len >> PAGE_SHIFT;
-@@ -1740,7 +1740,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 
- 	return 0;
- fail:
--	iommu_unmap(mapping->domain, iova_base, count * PAGE_SIZE);
-+	iommu_unmap_sync(mapping->domain, iova_base, count * PAGE_SIZE);
- 	__free_iova(mapping, iova_base, size);
- 	return ret;
- }
-@@ -1938,7 +1938,8 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
- 
- 	prot = __dma_info_to_prot(dir, attrs);
- 
--	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
-+	ret = iommu_map_sync(mapping->domain, dma_addr, page_to_phys(page),
-+			     len, prot);
- 	if (ret < 0)
- 		goto fail;
- 
-@@ -1988,7 +1989,7 @@ static void arm_coherent_iommu_unmap_page(struct device *dev, dma_addr_t handle,
- 	if (!iova)
- 		return;
- 
--	iommu_unmap(mapping->domain, iova, len);
-+	iommu_unmap_sync(mapping->domain, iova, len);
- 	__free_iova(mapping, iova, len);
- }
- 
-@@ -2016,7 +2017,7 @@ static void arm_iommu_unmap_page(struct device *dev, dma_addr_t handle,
- 	if ((attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
- 		__dma_page_dev_to_cpu(page, offset, size, dir);
- 
--	iommu_unmap(mapping->domain, iova, len);
-+	iommu_unmap_sync(mapping->domain, iova, len);
- 	__free_iova(mapping, iova, len);
- }
- 
-@@ -2044,7 +2045,7 @@ static dma_addr_t arm_iommu_map_resource(struct device *dev,
- 
- 	prot = __dma_info_to_prot(dir, attrs) | IOMMU_MMIO;
- 
--	ret = iommu_map(mapping->domain, dma_addr, addr, len, prot);
-+	ret = iommu_map_sync(mapping->domain, dma_addr, addr, len, prot);
- 	if (ret < 0)
- 		goto fail;
- 
-@@ -2073,7 +2074,7 @@ static void arm_iommu_unmap_resource(struct device *dev, dma_addr_t dma_handle,
- 	if (!iova)
- 		return;
- 
--	iommu_unmap(mapping->domain, iova, len);
-+	iommu_unmap_sync(mapping->domain, iova, len);
- 	__free_iova(mapping, iova, len);
- }
- 
+ 			while (i-- > 0) {
+ 				offset -= PAGE_SIZE;
+-				iommu_unmap(imem->domain, offset, PAGE_SIZE);
++				iommu_unmap_sync(imem->domain, offset,
++						 PAGE_SIZE);
+ 			}
+ 			goto release_area;
+ 		}
 -- 
 2.7.4
