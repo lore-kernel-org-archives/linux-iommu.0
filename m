@@ -1,98 +1,61 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 00/13] Introduce IOMMU-API TLB Flushing Interface
-Date: Thu, 17 Aug 2017 14:56:23 +0200
-Message-ID: <1502974596-23835-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 07/13] drm/msm: Use sychronized interface of the IOMMU-API
+Date: Thu, 17 Aug 2017 14:56:30 +0200
+Message-ID: <1502974596-23835-8-git-send-email-joro@8bytes.org>
+References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502974596-23835-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Joerg Roedel <jroedel@suse.de>, Rob Clark <robdclark@gmail.com>, David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel@suse.de>
 
-here is a patch-set to introduce an explicit interface to
-the IOMMU-API to flush IOMMU and device IO/TLBs. Currently
-the iommu_map(), iommu_map_sg(), and iommu_unmap() functions
-have to make sure all IO/TLBs in the system are synchronized
-with the page-table updates they made.
+The map and unmap functions of the IOMMU-API changed their
+semantics: They do no longer guarantee that the hardware
+TLBs are synchronized with the page-table updates they made.
 
-This is very inefficient in some scenarios, for example when
-a large address space is unmapped and an IO/TLB flush has to
-be done in every call of iommu_unmap(). Or in a scenario
-where it makes sense to queue up some changes to the
-page-tables and flush them together.
+To make conversion easier, new synchronized functions have
+been introduced which give these guarantees again until the
+code is converted to use the new TLB-flush interface of the
+IOMMU-API, which allows certain optimizations.
 
-To optimize these scenarios, the need to synchronize with
-the IOMMU and device TLBs has been removed from the
-map/unmap functions of the IOMMU-API and an interface to
-explicitly do the flushes has been introduced.
+But for now, just convert this code to use the synchronized
+functions so that it will behave as before.
 
-To make the conversion of existing users of the IOMMU-API
-easier, new functions - iommu_map_sync(), iommu_map_sg_sync(),
-and iommu_unmap_sync() - have been introduced. These
-functions guarantee that the IO/TLBs are synchronized with
-any page-table update when they return. The optimizations
-possible with the new interface are subject to separate
-patch-sets.
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: linux-arm-msm@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: freedreno@lists.freedesktop.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/gpu/drm/msm/msm_iommu.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Patch 1 just renames a few functions in the AMD-Vi driver
-that would otherwise collide with the new TLB-flush
-functions from the IOMMU-API.
-
-Patch 2 introduces the new IO/TLB Flush-Interface.
-
-Patch 3-13 convert existing users of the IOMMU-API to use
-the *_sync functions for now.
-
-Please review.
-
-Thanks,
-
-	Joerg
-
-Joerg Roedel (13):
-  iommu/amd: Rename a few flush functions
-  iommu: Introduce Interface for IOMMU TLB Flushing
-  vfio/type1: Use sychronized interface of the IOMMU-API
-  iommu/dma: Use sychronized interface of the IOMMU-API
-  arm: dma-mapping: Use sychronized interface of the IOMMU-API
-  drm/etnaviv: Use sychronized interface of the IOMMU-API
-  drm/msm: Use sychronized interface of the IOMMU-API
-  drm/nouveau/imem/gk20a: Use sychronized interface of the IOMMU-API
-  drm/rockchip: Use sychronized interface of the IOMMU-API
-  drm/tegra: Use sychronized interface of the IOMMU-API
-  gpu: host1x: Use sychronized interface of the IOMMU-API
-  IB/usnic: Use sychronized interface of the IOMMU-API
-  remoteproc: Use sychronized interface of the IOMMU-API
-
- arch/arm/mm/dma-mapping.c                          | 21 +++---
- drivers/gpu/drm/etnaviv/etnaviv_mmu.c              | 10 +--
- drivers/gpu/drm/msm/msm_iommu.c                    |  5 +-
- .../gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c    | 12 ++--
- drivers/gpu/drm/rockchip/rockchip_drm_gem.c        |  6 +-
- drivers/gpu/drm/tegra/drm.c                        |  6 +-
- drivers/gpu/drm/tegra/gem.c                        |  6 +-
- drivers/gpu/host1x/cdma.c                          |  6 +-
- drivers/gpu/host1x/job.c                           |  6 +-
- drivers/infiniband/hw/usnic/usnic_uiom.c           | 10 +--
- drivers/iommu/amd_iommu.c                          | 16 ++---
- drivers/iommu/dma-iommu.c                          |  8 +--
- drivers/iommu/iommu.c                              | 26 +++++++
- drivers/remoteproc/remoteproc_core.c               | 10 +--
- drivers/vfio/vfio_iommu_type1.c                    | 38 +++++-----
- include/linux/iommu.h                              | 80 +++++++++++++++++++++-
- 16 files changed, 189 insertions(+), 77 deletions(-)
-
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index b23d336..b3525b7 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -64,7 +64,8 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
+ 	size_t ret;
+ 
+ //	pm_runtime_get_sync(mmu->dev);
+-	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
++	ret = iommu_map_sg_sync(iommu->domain, iova, sgt->sgl,
++				sgt->nents, prot);
+ //	pm_runtime_put_sync(mmu->dev);
+ 	WARN_ON(ret < 0);
+ 
+@@ -77,7 +78,7 @@ static int msm_iommu_unmap(struct msm_mmu *mmu, uint64_t iova,
+ 	struct msm_iommu *iommu = to_msm_iommu(mmu);
+ 
+ 	pm_runtime_get_sync(mmu->dev);
+-	iommu_unmap(iommu->domain, iova, len);
++	iommu_unmap_sync(iommu->domain, iova, len);
+ 	pm_runtime_put_sync(mmu->dev);
+ 
+ 	return 0;
 -- 
 2.7.4
