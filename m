@@ -1,17 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/13] Introduce IOMMU-API TLB Flushing Interface
-Date: Thu, 17 Aug 2017 17:22:20 +0200
-Message-ID: <20170817152220.GK16908@8bytes.org>
-References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
-	<20170817083520.3329c0ff@w520.home>
-	<20170817144308.GI16908@8bytes.org>
-	<20170817085407.3de4e755@w520.home>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/8] dt-bindings: mediatek: Add binding for mt2712 IOMMU
+	and SMI
+Date: Thu, 17 Aug 2017 10:33:41 -0500
+Message-ID: <20170817153220.52mt3jjgyktydeln@rob-hp-laptop>
+References: <1502445377-26936-1-git-send-email-yong.wu@mediatek.com>
+	<1502445377-26936-2-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170817085407.3de4e755-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+In-Reply-To: <1502445377-26936-2-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,38 +20,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, cloud.chou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 17, 2017 at 08:54:07AM -0600, Alex Williamson wrote:
-> So _sync() does imply that they're slower, but iommu_map() does not
-> imply that a _flush() is required.  One is a performance issue, the
-> other is an API usability issue.  If the sync version is used
-> sub-optimally, it's a performance issue, not a correctness issue.  If
-> the async version is used without an explicit flush, it's a correctness
-> issue.  Therefore, I would lean towards making the asynchronous mode
-> explicit and providing good documentation and comments to steer
-> developers to the async version.  I think it makes the API harder to
-> use incorrectly.
+On Fri, Aug 11, 2017 at 05:56:10PM +0800, Yong Wu wrote:
+> This patch adds decriptions for mt2712 IOMMU and SMI.
+> 
+> In order to balance the bandwidth, mt2712 has two M4Us, two
+> smi-commons, 8 smi-larbs. and mt2712 is also MTK IOMMU gen2 which
+> use Short-Descriptor translation table format.
 
-I agree that it makes the API a bit more complicated to use. But that
-can be solved by documenting it and by converting the main users (for me
-that is VFIO and dma-iommu.c) of it to the unsynchronized interface,
-because people will look at existing users and just do what they do.
+s/use/uses/
 
-Introducing _sync functions instead of _async ones also has the
-side-effect that it puts pressure on the maintainers of the code to
-convert it to the async interface, because they now see explicitly that
-they use the slow version and start looking for ways to make things
-faster.
+> 
+> The mt2712 M4U-SMI HW diagram is as below:
+> 
+>                             EMI
+>                              |
+>               -------------------------------
+>               |                             |
+>              M4U0                          M4U1
+>               |                             |
+>          smi-common0                   smi-common1
+>               |                             |
+>   -------------------------       --------------------
+>   |     |     |     |     |       |         |        |
+>   |     |     |     |     |       |         |        |
+> larb0 larb1 larb2 larb3 larb6    larb4    larb5     larb7
+> disp0 vdec  cam   venc   jpg  mdp1/disp1 mdp2/disp2  mdp3->larb names
+> 
+> All the connections are HW fixed, SW can NOT adjust it.
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>  .../devicetree/bindings/iommu/mediatek,iommu.txt   |  6 +-
+>  .../memory-controllers/mediatek,smi-common.txt     |  6 +-
+>  .../memory-controllers/mediatek,smi-larb.txt       |  5 +-
+>  include/dt-bindings/memory/mt2712-larb-port.h      | 91 ++++++++++++++++++++++
+>  4 files changed, 102 insertions(+), 6 deletions(-)
+>  create mode 100644 include/dt-bindings/memory/mt2712-larb-port.h
 
-What I absolutly don't want is that the whole explicit TLB flushing
-of the IOMMU-API (as introduced in this patch-set) is considered some
-optional part of the API, as it would be when I just introduce _async
-versions of map/unmap/map_sg.
-
-
-Regards,
-
-	Joerg
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
