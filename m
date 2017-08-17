@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 02/13] iommu: Introduce Interface for IOMMU TLB Flushing
-Date: Thu, 17 Aug 2017 14:56:25 +0200
-Message-ID: <1502974596-23835-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 11/13] gpu: host1x: Use sychronized interface of the IOMMU-API
+Date: Thu, 17 Aug 2017 14:56:34 +0200
+Message-ID: <1502974596-23835-12-git-send-email-joro@8bytes.org>
 References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,250 +18,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-With the current IOMMU-API the hardware TLBs have to be
-flushed in every iommu_map(), iommu_map_sg(), and
-iommu_unmap() call.
+The map and unmap functions of the IOMMU-API changed their
+semantics: They do no longer guarantee that the hardware
+TLBs are synchronized with the page-table updates they made.
 
-For unmapping large amounts of address space, like it
-happens when a KVM domain with assigned devices is
-destroyed, this causes thousands of unnecessary TLB flushes
-in the IOMMU hardware because the unmap call-back runs for
-every unmapped physical page.
+To make conversion easier, new synchronized functions have
+been introduced which give these guarantees again until the
+code is converted to use the new TLB-flush interface of the
+IOMMU-API, which allows certain optimizations.
 
-With the TLB Flush Interface introduced here the need to
-clean the hardware TLBs is removed from the iommu_map/unmap
-functions. Users now have to explicitly call these functions
-to sync the page-table changes to the hardware.
+But for now, just convert this code to use the synchronized
+functions so that it will behave as before.
 
-Three functions are introduced:
-
-	* iommu_flush_tlb_all() - Flushes all TLB entries
-	                          associated with that
-				  domain. TLBs entries are
-				  flushed when this function
-				  returns.
-
-	* iommu_tlb_range_add() - This will add a given
-				  range to the flush queue
-				  for this domain.
-
-	* iommu_tlb_sync() - Flushes all queued ranges from
-			     the hardware TLBs. Returns when
-			     the flush is finished.
-
-The semantic of this interface is intentionally similar to
-the iommu_gather_ops from the io-pgtable code.
-
-Additionally, this patch introduces synchronized versions of
-the iommu_map(), iommu_map_sg(), and iommu_unmap()
-functions. They will be used by current users of the
-IOMMU-API, before they are optimized to the unsynchronized
-versions.
-
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 26 +++++++++++++++++
- include/linux/iommu.h | 80 ++++++++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 105 insertions(+), 1 deletion(-)
+ drivers/gpu/host1x/cdma.c | 6 +++---
+ drivers/gpu/host1x/job.c  | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3f6ea16..816e248 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -527,6 +527,8 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+diff --git a/drivers/gpu/host1x/cdma.c b/drivers/gpu/host1x/cdma.c
+index 28541b2..bdf557e 100644
+--- a/drivers/gpu/host1x/cdma.c
++++ b/drivers/gpu/host1x/cdma.c
+@@ -55,7 +55,7 @@ static void host1x_pushbuffer_destroy(struct push_buffer *pb)
+ 		return;
  
+ 	if (host1x->domain) {
+-		iommu_unmap(host1x->domain, pb->dma, pb->alloc_size);
++		iommu_unmap_sync(host1x->domain, pb->dma, pb->alloc_size);
+ 		free_iova(&host1x->iova, iova_pfn(&host1x->iova, pb->dma));
  	}
  
-+	iommu_flush_tlb_all(domain);
-+
- out:
- 	iommu_put_resv_regions(dev, &mappings);
+@@ -105,8 +105,8 @@ static int host1x_pushbuffer_init(struct push_buffer *pb)
+ 		}
  
-@@ -1556,6 +1558,18 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- }
- EXPORT_SYMBOL_GPL(iommu_map);
+ 		pb->dma = iova_dma_addr(&host1x->iova, alloc);
+-		err = iommu_map(host1x->domain, pb->dma, pb->phys, size,
+-				IOMMU_READ);
++		err = iommu_map_sync(host1x->domain, pb->dma, pb->phys, size,
++				     IOMMU_READ);
+ 		if (err)
+ 			goto iommu_free_iova;
+ 	} else {
+diff --git a/drivers/gpu/host1x/job.c b/drivers/gpu/host1x/job.c
+index bee5044..70a029c 100644
+--- a/drivers/gpu/host1x/job.c
++++ b/drivers/gpu/host1x/job.c
+@@ -243,7 +243,7 @@ static unsigned int pin_job(struct host1x *host, struct host1x_job *job)
+ 				goto unpin;
+ 			}
  
-+int iommu_map_sync(struct iommu_domain *domain, unsigned long iova,
-+		   phys_addr_t paddr, size_t size, int prot)
-+{
-+	int ret = iommu_map(domain, iova, paddr, size, prot);
-+
-+	iommu_tlb_range_add(domain, iova, size);
-+	iommu_tlb_sync(domain);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_map_sync);
-+
- size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- {
- 	size_t unmapped_page, unmapped = 0;
-@@ -1608,6 +1622,18 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- }
- EXPORT_SYMBOL_GPL(iommu_unmap);
+-			err = iommu_map_sg(host->domain,
++			err = iommu_map_sg_sync(host->domain,
+ 					iova_dma_addr(&host->iova, alloc),
+ 					sgt->sgl, sgt->nents, IOMMU_READ);
+ 			if (err == 0) {
+@@ -695,8 +695,8 @@ void host1x_job_unpin(struct host1x_job *job)
+ 		struct host1x_job_unpin_data *unpin = &job->unpins[i];
  
-+size_t iommu_unmap_sync(struct iommu_domain *domain,
-+			unsigned long iova, size_t size)
-+{
-+	size_t ret = iommu_unmap(domain, iova, size);
-+
-+	iommu_tlb_range_add(domain, iova, size);
-+	iommu_tlb_sync(domain);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_unmap_sync);
-+
- size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 			 struct scatterlist *sg, unsigned int nents, int prot)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2cb54ad..7f9c114 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -167,6 +167,10 @@ struct iommu_resv_region {
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @unmap: unmap a physically contiguous memory region from an iommu domain
-  * @map_sg: map a scatter-gather list of physically contiguous memory chunks
-+ * @flush_tlb_all: Synchronously flush all hardware TLBs for this domain
-+ * @tlb_range_add: Add a given iova range to the flush queue for this domain
-+ * @tlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-+ *            queue
-  * to an iommu domain
-  * @iova_to_phys: translate iova to physical address
-  * @add_device: add device to iommu grouping
-@@ -199,6 +203,10 @@ struct iommu_ops {
- 		     size_t size);
- 	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
- 			 struct scatterlist *sg, unsigned int nents, int prot);
-+	void (*flush_iotlb_all)(struct iommu_domain *domain);
-+	void (*iotlb_range_add)(struct iommu_domain *domain,
-+				unsigned long iova, size_t size);
-+	void (*iotlb_sync)(struct iommu_domain *domain);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
- 	int (*add_device)(struct device *dev);
- 	void (*remove_device)(struct device *dev);
-@@ -285,8 +293,12 @@ extern void iommu_detach_device(struct iommu_domain *domain,
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
-+extern int iommu_map_sync(struct iommu_domain *domain, unsigned long iova,
-+			  phys_addr_t paddr, size_t size, int prot);
- extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
--		       size_t size);
-+			  size_t size);
-+extern size_t iommu_unmap_sync(struct iommu_domain *domain,
-+			       unsigned long iova, size_t size);
- extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 				struct scatterlist *sg,unsigned int nents,
- 				int prot);
-@@ -343,6 +355,25 @@ extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
- extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
- 			      unsigned long iova, int flags);
- 
-+static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
-+{
-+	if (domain->ops->flush_iotlb_all)
-+		domain->ops->flush_iotlb_all(domain);
-+}
-+
-+static inline void iommu_tlb_range_add(struct iommu_domain *domain,
-+				       unsigned long iova, size_t size)
-+{
-+	if (domain->ops->iotlb_range_add)
-+		domain->ops->iotlb_range_add(domain, iova, size);
-+}
-+
-+static inline void iommu_tlb_sync(struct iommu_domain *domain)
-+{
-+	if (domain->ops->iotlb_sync)
-+		domain->ops->iotlb_sync(domain);
-+}
-+
- static inline size_t iommu_map_sg(struct iommu_domain *domain,
- 				  unsigned long iova, struct scatterlist *sg,
- 				  unsigned int nents, int prot)
-@@ -350,6 +381,20 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
- 	return domain->ops->map_sg(domain, iova, sg, nents, prot);
- }
- 
-+static inline size_t iommu_map_sg_sync(struct iommu_domain *domain,
-+				       unsigned long iova,
-+				       struct scatterlist *sg,
-+				       unsigned int nents, int prot)
-+{
-+	size_t size = domain->ops->map_sg(domain, iova, sg, nents, prot);
-+	if (size > 0) {
-+		iommu_tlb_range_add(domain, iova, size);
-+		iommu_tlb_sync(domain);
-+	}
-+
-+	return size;
-+}
-+
- /* PCI device grouping function */
- extern struct iommu_group *pci_device_group(struct device *dev);
- /* Generic device grouping function */
-@@ -430,12 +475,24 @@ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	return -ENODEV;
- }
- 
-+static inline int iommu_map_sync(struct iommu_domain *domain, unsigned long iova,
-+				 phys_addr_t paddr, int gfp_order, int prot)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 			      int gfp_order)
- {
- 	return -ENODEV;
- }
- 
-+static inline int iommu_unmap_sync(struct iommu_domain *domain, unsigned long iova,
-+				   int gfp_order)
-+{
-+	return -ENODEV;
-+}
-+
- static inline size_t iommu_map_sg(struct iommu_domain *domain,
- 				  unsigned long iova, struct scatterlist *sg,
- 				  unsigned int nents, int prot)
-@@ -443,6 +500,27 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
- 	return -ENODEV;
- }
- 
-+static inline size_t iommu_map_sg_sync(struct iommu_domain *domain,
-+				       unsigned long iova,
-+				       struct scatterlist *sg,
-+				       unsigned int nents, int prot)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
-+{
-+}
-+
-+static inline void iommu_tlb_range_add(struct iommu_domain *domain,
-+				       unsigned long iova, size_t size)
-+{
-+}
-+
-+static inline void iommu_tlb_sync(struct iommu_domain *domain)
-+{
-+}
-+
- static inline int iommu_domain_window_enable(struct iommu_domain *domain,
- 					     u32 wnd_nr, phys_addr_t paddr,
- 					     u64 size, int prot)
+ 		if (!IS_ENABLED(CONFIG_TEGRA_HOST1X_FIREWALL) && host->domain) {
+-			iommu_unmap(host->domain, job->addr_phys[i],
+-				    unpin->size);
++			iommu_unmap_sync(host->domain, job->addr_phys[i],
++					 unpin->size);
+ 			free_iova(&host->iova,
+ 				iova_pfn(&host->iova, job->addr_phys[i]));
+ 		}
 -- 
 2.7.4
