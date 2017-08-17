@@ -1,112 +1,84 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH 2/2] iommu/tegra-gart: Add support for struct iommu_device
-Date: Thu, 17 Aug 2017 20:17:53 +0300
-Message-ID: <90e1ca9c-d763-c80a-a9b0-cdd84028620d@gmail.com>
-References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
- <1502317752-8792-3-git-send-email-joro@8bytes.org>
- <66711b72-455f-8ec1-e6f7-5946480dde14@gmail.com> <20170817135230.GF6854@ulmo>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
+Date: Thu, 17 Aug 2017 19:47:04 +0200
+Message-ID: <d502e172-5e98-cbbb-6a72-db32c71006fc@redhat.com>
+References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
+	<1502459130-6234-3-git-send-email-eric.auger@redhat.com>
+	<20170817163424.GC30719@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170817135230.GF6854@ulmo>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170817163424.GC30719-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17.08.2017 16:52, Thierry Reding wrote:
-> On Thu, Aug 17, 2017 at 01:21:52AM +0300, Dmitry Osipenko wrote:
->> Hello Joerg,
+Hi Will,
+
+On 17/08/2017 18:34, Will Deacon wrote:
+> On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
+>> When running a virtual SMMU on a guest we sometimes need to trap
+>> all changes to the translation structures. This is especially useful
+>> to integrate with VFIO. This patch adds a new option that forces
+>> the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
 >>
->> On 10.08.2017 01:29, Joerg Roedel wrote:
->>> From: Joerg Roedel <jroedel@suse.de>
->>>
->>> Add a struct iommu_device to each tegra-gart and register it
->>> with the iommu-core. Also link devices added to the driver
->>> to their respective hardware iommus.
->>>
->>> Signed-off-by: Joerg Roedel <jroedel@suse.de>
->>> ---
->>>  drivers/iommu/tegra-gart.c | 26 ++++++++++++++++++++++++++
->>>  1 file changed, 26 insertions(+)
->>>
+>> TLBI commands then can be trapped.
 >>
->> Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
->> Tested-by: Dmitry Osipenko <digetx@gmail.com>
+>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 >>
->>> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
->>> index 29bafc6..b62f790 100644
->>> --- a/drivers/iommu/tegra-gart.c
->>> +++ b/drivers/iommu/tegra-gart.c
+>> ---
+>> v1 -> v2:
+>> - rebase on v4.13-rc2
+>> ---
+>>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
+>>  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
+>>  2 files changed, 9 insertions(+)
 >>
->> [snip]
->>
->>> @@ -449,6 +472,9 @@ static int tegra_gart_remove(struct platform_device *pdev)
->>>  {
->>
->> BTW, GART's driver can't be build as a module, so this function is pretty much a
->> dead code. Probably worth considering its removal.
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>> index c9abbf3..ebb85e9 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>> @@ -52,6 +52,10 @@ the PCIe specification.
+>>                          devicetree/bindings/interrupt-controller/msi.txt
+>>                        for a description of the msi-parent property.
+>>  
+>> +- tlbi-on-map       : invalidate caches whenever there is an update of
+>> +                      any remapping structure (updates to not-present or
+>> +                      present entries).
+>> +
 > 
-> Technically you can unbind the driver via sysfs, in which case this
-> function would still be called. That said, all sorts of things will
-> probably start to crash when you do that. I'd like to think that we
-> will eventually be able to deal with this sanely (there's some work
-> in progress to establish stronger links between devices, so that we
-> can sanely deal with this kind of dependency), so I think it's okay
-> to keep this around in case we ever get there.
+> My position on this hasn't changed, so NAK for this patch. If you want to
+> emulate something outside of the SMMUv3 architecture, please do so, but
+> don't pretend that it's an SMMUv3.
+OK understood. I wanted to go down the road and enable DPDK use case
+using the same solution as Intel.
+
+So to me the approach is not adapted to SMMUv3 because
+- SMMUv3 does not expose anything similar to the Intel Caching Mode
+(when set, indicates the OS needs to invalidate TLB on map)
+- SMMUv3 does not expose any IOVA range TLB invalidation command.
+
+Do you agree with this conclusion? ACPI enablement was not a showstopper
+I think.
+
+I will see with Peter and other potential users in the community whether
+it is worth to pursue the efforts on upstreaming the QEMU vSMMUv3
+device, considering the VFIO/VHOST integration is made impossible.
+
+Thanks
+
+Eric
+
 > 
-
-Good point! I tried to unbind and with this patch kernel crashes immediately:
-
-[  193.968506] kernel BUG at mm/slab.c:2816!
-[  193.968912] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
-[  193.969466] Modules linked in:
-[  193.969822] CPU: 1 PID: 1177 Comm: bash Not tainted
-4.13.0-rc5-next-20170816-00067-gd320d19b76f8 #593
-[  193.970653] Hardware name: NVIDIA Tegra SoC (Flattened Device Tree)
-[  193.971313] task: ee31e380 task.stack: ee394000
-[  193.971771] PC is at ___cache_free+0x374/0x47c
-[  193.972261] LR is at 0x1
-[  193.972539] pc : [<c02776ec>]    lr : [<00000001>]    psr: 200b0093
-[  193.973112] sp : ee395dd0  ip : 00000009  fp : 00000000
-[  193.973603] r10: 00000480  r9 : 2e844000  r8 : c1814d8c
-[  193.974097] r7 : 005e4c40  r6 : c0f91fc0  r5 : ef262480  r4 : ef0003c0
-[  193.974694] r3 : ef262400  r2 : ef262000  r1 : 00000400  r0 : 00000004
-
-[snip]
-
-[  193.991288] [<c02776ec>] (___cache_free) from [<c0278230>] (kfree+0xbc/0x260)
-[  193.991978] [<c0278230>] (kfree) from [<c058897c>] (device_release+0x2c/0x90)
-[  193.992732] [<c058897c>] (device_release) from [<c0ab6f14>]
-(kobject_put+0x8c/0xe8)
-[  193.993474] [<c0ab6f14>] (kobject_put) from [<c0527868>]
-(tegra_gart_remove+0x1c/0x58)
-[  193.994320] [<c0527868>] (tegra_gart_remove) from [<c058f770>]
-(platform_drv_remove+0x24/0x3c)
-[  193.995121] [<c058f770>] (platform_drv_remove) from [<c058db30>]
-(device_release_driver_internal+0x15c/0x204)
-[  193.996033] [<c058db30>] (device_release_driver_internal) from [<c058c2fc>]
-(unbind_store+0x7c/0xfc)
-[  193.996890] [<c058c2fc>] (unbind_store) from [<c02f8078>]
-(kernfs_fop_write+0x104/0x208)
-[  193.997661] [<c02f8078>] (kernfs_fop_write) from [<c027f6ec>]
-(__vfs_write+0x1c/0x128)
-[  193.998445] [<c027f6ec>] (__vfs_write) from [<c02810b8>] (vfs_write+0xa4/0x168)
-[  194.017668] [<c02810b8>] (vfs_write) from [<c0281f0c>] (SyS_write+0x3c/0x90)
-[  194.038493] [<c0281f0c>] (SyS_write) from [<c0107ce0>]
-(ret_fast_syscall+0x0/0x1c)
-[  194.057182] Code: e3a03000 ebfff54e eaffffe2 e7f001f2 (e7f001f2)
-
-Without this patch, it crashes too after unbinding but not immediately. Either
-way unbinding isn't useful for this device.
-
-> I don't have any objections to making the driver unloadable if that
-> is what everyone else prefers, though. In that case, however, there
-> are more steps involved than just removing the ->remove() callback.
+> Will
 > 
-Indeed!
-
--- 
-Dmitry
