@@ -1,16 +1,18 @@
-From: Anup Patel via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH v4] vfio: platform: reset: Add Broadcom FlexRM reset module
-Date: Thu, 17 Aug 2017 09:15:46 +0530
-Message-ID: <CAALAos_FWj5Usfmp46NdPXJFKExuG2N3HqUd8b_EPoejRk7_7Q@mail.gmail.com>
-References: <1501652310-3638-1-git-send-email-anup.patel@broadcom.com>
-	<1501652310-3638-2-git-send-email-anup.patel@broadcom.com>
-	<20170810132338.406b06ce@w520.home>
-Reply-To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Subject: Re: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X table
+Date: Thu, 17 Aug 2017 14:43:25 +1000
+Message-ID: <1502945005.4493.112.camel@kernel.crashing.org>
+References: <20170807072548.3023-1-aik@ozlabs.ru>
+	<8f5f7b82-3c10-7f39-b587-db4c4424f04c@ozlabs.ru>
+	<ca2a4550-fb26-28db-0eea-a5940dfa612f@arm.com>
+	<20170815103717.3b64e10c@w520.home>
+	<1502843749.4493.67.camel@kernel.crashing.org>
+	<20170816105602.57fd1dcc@w520.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170810132338.406b06ce-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+In-Reply-To: <20170816105602.57fd1dcc-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,138 +23,130 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, Kyle Mahlkuch <Kyle.Mahlkuch-qyM6JfAXOaQ@public.gmane.org>, Vlad Tsyrklevich <vlad-NIZqynvkaCU43zv7NVfAiQ@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mauricio Faria de Oliveira <mauricfo-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 11, 2017 at 12:53 AM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Wed,  2 Aug 2017 11:08:30 +0530
-> Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
->
->> This patch adds Broadcom FlexRM low-level reset for
->> VFIO platform.
->>
->> It will do the following:
->> 1. Disable/Deactivate each FlexRM ring
->> 2. Flush each FlexRM ring
->>
->> The cleanup sequence for FlexRM rings is adapted from
->> Broadcom FlexRM mailbox driver.
->>
->> Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
->> Reviewed-by: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
->> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
->> Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> ---
->>  drivers/vfio/platform/reset/Kconfig                |   8 ++
->>  drivers/vfio/platform/reset/Makefile               |   1 +
->>  .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 100 +++++++++++++++++++++
->>  3 files changed, 109 insertions(+)
->>  create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
->>
->> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
->> index 70cccc5..8833805 100644
->> --- a/drivers/vfio/platform/reset/Kconfig
->> +++ b/drivers/vfio/platform/reset/Kconfig
->> @@ -13,3 +13,11 @@ config VFIO_PLATFORM_AMDXGBE_RESET
->>         Enables the VFIO platform driver to handle reset for AMD XGBE
->>
->>         If you don't know what to do here, say N.
->> +
->> +config VFIO_PLATFORM_BCMFLEXRM_RESET
->> +     tristate "VFIO support for Broadcom FlexRM reset"
->> +     depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
->> +     help
->> +       Enables the VFIO platform driver to handle reset for Broadcom FlexRM
->> +
->> +       If you don't know what to do here, say N.
->> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
->> index 93f4e23..8d9874b 100644
->> --- a/drivers/vfio/platform/reset/Makefile
->> +++ b/drivers/vfio/platform/reset/Makefile
->> @@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
->>
->>  obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
->>  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
->> +obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
->> diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
->> new file mode 100644
->> index 0000000..104c3c1
->> --- /dev/null
->> +++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
->> @@ -0,0 +1,100 @@
->> +/*
->> + * Copyright (C) 2017 Broadcom
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
->> + */
->> +
->> +/*
->> + * This driver provides reset support for Broadcom FlexRM ring manager
->> + * to VFIO platform.
->> + */
->> +
->> +#include <linux/delay.h>
->> +#include <linux/init.h>
->> +#include <linux/io.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +
->> +#include "vfio_platform_private.h"
->> +
->> +/* FlexRM configuration */
->> +#define RING_REGS_SIZE                                       0x10000
->> +#define RING_VER_MAGIC                                       0x76303031
->> +
->> +/* Per-Ring register offsets */
->> +#define RING_VER                                     0x000
->> +#define RING_CONTROL                                 0x034
->> +#define RING_FLUSH_DONE                                      0x038
->> +
->> +/* Register RING_CONTROL fields */
->> +#define CONTROL_FLUSH_SHIFT                          5
->> +
->> +/* Register RING_FLUSH_DONE fields */
->> +#define FLUSH_DONE_MASK                                      0x1
->> +
->> +static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
->> +{
->> +     unsigned int timeout;
->> +
->> +     /* Disable/inactivate ring */
->> +     writel_relaxed(0x0, ring + RING_CONTROL);
->> +
->> +     /* Flush ring with timeout of 1s */
->> +     timeout = 1000;
->> +     writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
->> +     do {
->> +             if (readl_relaxed(ring + RING_FLUSH_DONE) & FLUSH_DONE_MASK)
->> +                     break;
->> +             mdelay(1);
->> +     } while (timeout--);
->> +
->> +     if (!timeout) {
->> +             pr_warn("VFIO FlexRM shutdown timeout\n");
->> +             return -ETIMEDOUT;
->> +     }
->
->
-> This doesn't work, timeout is ~0 here.
+On Wed, 2017-08-16 at 10:56 -0600, Alex Williamson wrote:
+> 
+> > WTF ???? Alex, can you stop once and for all with all that "POWER is
+> > not standard" bullshit please ? It's completely wrong.
+> 
+> As you've stated, the MSI-X vector table on POWER is currently updated
+> via a hypercall.  POWER is overall PCI compliant (I assume), but the
+> guest does not directly modify the vector table in MMIO space of the
+> device.  This is important...
 
-Sure, I will use "--timeout" instead of "timeout--" which will
-fix the issue.
+Well no. On qemu the guest doesn't always (but it can save/restore it),
+but on PowerVM this is done by the FW running inside the partition
+itself. And that firmware just does normal stores to the device table.
 
-Thanks for pointing.
+IE. The problem here isn't so much who does the actual stores to the
+device table but where they get the address and data values from, which
+isn't covered by the spec.
 
-Regards,
-Anup
+The added fact that qemu hijacks the stores not just to "remap" them
+but also do the whole reuqesting of the interrupt etc... in the host
+system is a qemu design choice which also hasn't any relation to the
+spec (and arguably isnt' a great choice for our systems).
+
+For example, on PowerVM, the HV assigns a pile of MSIs to the guest to
+assign to its devices. The FW inside the guest does a default
+assignment but that can be changed.
+
+Thus the interrupts are effectively "hooked up" at the HV level at the
+point where the PCI bridge is mapped into the guest.
+
+> > This has nothing to do with PCIe standard !
+> 
+> Yes, it actually does, because if the guest relies on the vector table
+> to be virtualized then it doesn't particularly matter whether the
+> vfio-pci kernel driver allows that portion of device MMIO space to be
+> directly accessed or mapped because QEMU needs for it to be trapped in
+> order to provide that virtualization.
+
+And this has nothing to do with the PCIe standard... this has
+everything to do with a combination of qemu design choices and
+defficient FW interfaces on x86 platforms.
+
+> I'm not knocking POWER, it's a smart thing for virtualization to have
+> defined this hypercall which negates the need for vector table
+> virtualization and allows efficient mapping of the device.  On other
+> platform, it's not necessarily practical given the broad base of legacy
+> guests supported where we'd never get agreement to implement this as
+> part of the platform spec... if there even was such a thing.  Maybe we
+> could provide the hypercall and dynamically enable direct vector table
+> mapping (disabling vector table virtualization) only if the hypercall
+> is used.
+
+No I think a better approach would be to provide the guest with a pile
+of MSIs to use with devices and have FW (such as ACPI) tell the guest
+about them.
+
+> > The PCIe standard says strictly *nothing* whatsoever about how an OS
+> > obtains the magic address/values to put in the device and how the PCIe
+> > host bridge may do appropriate fitering.
+> 
+> And now we've jumped the tracks...  The only way the platform specific
+> address/data values become important is if we allow direct access to
+> the vector table AND now we're formulating how the user/guest might
+> write to it directly.  Otherwise the virtualization of the vector
+> table, or paravirtualization via hypercall provides the translation
+> where the host and guest address/data pairs can operate in completely
+> different address spaces.
+
+They can regardless if things are done properly :-)
+
+> > There is nothing on POWER that prevents the guest from writing the MSI-
+> > X address/data by hand. The problem isn't who writes the values or even
+> > how. The problem breaks down into these two things that are NOT covered
+> > by any aspect of the PCIe standard:
+> 
+> You've moved on to a different problem, I think everyone aside from
+> POWER is still back at the problem where who writes the vector table
+> values is a forefront problem.
+>  
+> >   1- The OS needs to obtain address/data values for an MSI that will
+> > "work" for the device.
+> > 
+> >   2- The HW+HV needs to prevent collateral damage caused by a device
+> > issuing stores to incorrect address or with incorrect data. Now *this*
+> > is necessary for *ANY* kind of DMA whether it's an MSI or something
+> > else anyway.
+> > 
+> > Now, the filtering done by qemu is NOT a reasonable way to handle 2)
+> > and whatever excluse about "making it harder" doesn't fly a meter when
+> > it comes to security. Making it "harder to break accidentally" I also
+> > don't buy, people don't just randomly put things in their MSI-X tables
+> > "accidentally", that stuff works or doesn't.
+> 
+> As I said before, I'm not willing to preserve the weak attributes that
+> blocking direct vector table access provides over pursuing a more
+> performant interface, but I also don't think their value is absolute
+> zero either.
+> 
+> > That leaves us with 1). Now this is purely a platform specific matters,
+> > not a spec matter. Once the HW has a way to enforce you can only
+> > generate "allowed" MSIs it becomes a matter of having some FW mechanism
+> > that can be used to informed the OS what address/values to use for a
+> > given interrupts.
+> > 
+> > This is provided on POWER by a combination of device-tree and RTAS. It
+> > could be that x86/ARM64 doesn't provide good enough mechanisms via ACPI
+> > but this is no way a problem of standard compliance, just inferior
+> > firmware interfaces.
+> 
+> Firmware pissing match...  Processors running with 8k or less page size
+> fall within the recommendations of the PCI spec for register alignment
+> of MMIO regions of the device and this whole problem becomes less of an
+> issue.
+> 
+> > So again, for the 234789246th time in years, can we get that 1-bit-of-
+> > information sorted one way or another so we can fix our massive
+> > performance issue instead of adding yet another dozen layers of paint
+> > on that shed ?
+> 
+> TBH, I'm not even sure which bikeshed we're looking at with this latest
+> distraction of interfaces through which the user/guest could discover
+> viable address/data values to write the vector table directly.  Thanks,
+> 
+> Alex
