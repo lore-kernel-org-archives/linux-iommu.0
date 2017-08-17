@@ -1,45 +1,96 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X
- table
-Date: Thu, 17 Aug 2017 10:56:35 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6DD0059144@AcuExch.aculab.com>
-References: <20170807072548.3023-1-aik@ozlabs.ru>
- <8f5f7b82-3c10-7f39-b587-db4c4424f04c@ozlabs.ru>
- <ca2a4550-fb26-28db-0eea-a5940dfa612f@arm.com>
- <20170815103717.3b64e10c@w520.home>
- <1502843749.4493.67.camel@kernel.crashing.org>
- <20170816105602.57fd1dcc@w520.home>
+From: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [virtio-dev] [RFC] virtio-iommu version 0.4
+Date: Thu, 17 Aug 2017 11:27:01 +0000
+Message-ID: <AM5PR0401MB2545F70A3ABF2DBFFFC4A6B09A830@AM5PR0401MB2545.eurprd04.prod.outlook.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+	<20170816040853.GA10652@shay3t003839711.china.huawei.com>
+	<a2e573f3-bdfb-b5e5-7835-a7597abd48f5@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170816105602.57fd1dcc@w520.home>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <a2e573f3-bdfb-b5e5-7835-a7597abd48f5-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Alex Williamson' <alex.williamson@redhat.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Jike Song <jike.song@intel.com>, Neo Jia <cjia@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Eric Auger <eric.auger@redhat.com>, Alexey Kardashevskiy <aik@ozlabs.ru>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>, Vlad Tsyrklevich <vlad@tsyrklevich.net>, "kvm-ppc@vger.kernel.org" <kvm-ppc@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Yongji Xie <elohimes@gmail.com>, Kirti Wankhede <kwankhede@nvidia.com>, Mauricio Faria de Oliveira <mauricfo@linux.vnet.ibm.com>, Paul Mackerras <paulus@samba.org>, Bjorn Helgaas <bhelgaas@google.com>, Arvind Yadav <arvind.yadav.cs@gmail.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Adam Tao <taozhe1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Alex Williamson
-> Sent: 16 August 2017 17:56
-...
-> Firmware pissing match...  Processors running with 8k or less page size
-> fall within the recommendations of the PCI spec for register alignment
-> of MMIO regions of the device and this whole problem becomes less of an
-> issue.
+Hi,
 
-Actually if qemu is causing the MSI-X table accesses to fault, why doesn't
-it just lie to the guest about the physical address of the MSI-X table?
-Then mmio access to anything in the same physical page will just work.
+> -----Original Message-----
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, August 17, 2017 3:42 PM
+> To: Adam Tao <taozhe1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org;
+> will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org;
+> mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; marc.zyngier-5wv7dgnIgG8@public.gmane.org;
+> eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Bharat Bhushan
+> <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>; peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+> Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
+> 
+> Hi Adam,
+> 
+> On 16/08/17 05:08, Adam Tao wrote:
+> >> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
+> >>   Bhushan.
+> > Hi, Brucker
+> > I read the related spec for virtio IOMMU, I am wondering if we support
+> > both the virtual and physical devices in the guest to use the virtio
+> > IOMMU, how can we config the related address translation for the
+> > different type of devices.
+> > e.g.
+> > 1. for Virtio devs(e.g. virtio-net), we can change the memmap table
+> > used by the vhost device.
+> > 2. for physical devices we can directly config the IOMMU/SMMU on the
+> > host.
+> >
+> > So do you know are there any RFCs for the back-end implementation for
+> > the virtio-IOMMU thanks Adam
+> 
+> Eric's series [3] adds support for virtual devices (I'v only had time to test
+> virtio-net so far, but as vhost-iotlb seems to be supported by Qemu, it should
+> work with vhost-net as well). Bharat is working on the VFIO backend for
+> physical devices. As far as I'm aware, his latest version is:
+> 
+> [7] https://lists.gnu.org/archive/html/qemu-devel/2017-07/msg04094.html
 
-It has already been pointed out that you can't actually police the
-interrupts that are raised without host hardware support.
+I am working on newer version which will be based on Eric-v3.
+Actually I wanted to include the fix for the issue reported by Eric, it fails if we assign more than one interface.
+I reproduced the issues on my side and know the root cause. I am working on fixing this.
 
-Actually, putting other vectors in the MSI-X table is boring, most
-drivers will ignore unexpected interrupts.
-Much more interesting are physical memory addresses and accessible IO
-addresses.
-Of course, a lot of boards have PCI master capability and can probably
-be persuaded to do writes to specific location anyway.
+Thanks
+-Bharat
 
-	David
+> 
+> Thanks,
+> Jean
+> 
+> 
+> >> [1] http://www.spinics.net/lists/kvm/msg147990.html
+> >> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
+> >>     http://www.linux-arm.org/git?p=virtio-
+> iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
+> >>     I reiterate the disclaimers: don't use this document as a reference,
+> >>     it's a draft. It's also not an OASIS document yet. It may be riddled
+> >>     with mistakes. As this is a working draft, it is unstable and I do not
+> >>     guarantee backward compatibility of future versions.
+> >> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
+> >> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
+> >>     Warning: UAPI headers have changed! They didn't follow the spec,
+> >>     please update. (Use branch v0.1, that has the old headers, for the
+> >>     Qemu prototype [3])
+> >> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
+> >>     Warning: command-line has changed! Use --viommu vfio[,opts] and
+> >>     --viommu virtio[,opts] to instantiate a device.
+> >> [6]
+> >> http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
