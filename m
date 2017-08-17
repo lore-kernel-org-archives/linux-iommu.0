@@ -1,52 +1,90 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
-Date: Thu, 17 Aug 2017 17:34:25 +0100
-Message-ID: <20170817163424.GC30719@arm.com>
-References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
- <1502459130-6234-3-git-send-email-eric.auger@redhat.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 02/13] iommu: Introduce Interface for IOMMU TLB Flushing
+Date: Thu, 17 Aug 2017 18:50:40 +0200
+Message-ID: <20170817165040.GK2853@suse.de>
+References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
+	<1502974596-23835-3-git-send-email-joro@8bytes.org>
+	<20170817163234.GB30719@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1502459130-6234-3-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, Jean-Philippe.Brucker@arm.com, christoffer.dall@linaro.org, Marc.Zyngier@arm.com, alex.williamson@redhat.com, peterx@redhat.com, mst@redhat.com, tn@semihalf.com, bharat.bhushan@nxp.com
+In-Reply-To: <20170817163234.GB30719-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
-> When running a virtual SMMU on a guest we sometimes need to trap
-> all changes to the translation structures. This is especially useful
-> to integrate with VFIO. This patch adds a new option that forces
-> the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
-> 
-> TLBI commands then can be trapped.
-> 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> 
-> ---
-> v1 -> v2:
-> - rebase on v4.13-rc2
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
->  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
->  2 files changed, 9 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> index c9abbf3..ebb85e9 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> @@ -52,6 +52,10 @@ the PCIe specification.
->                          devicetree/bindings/interrupt-controller/msi.txt
->                        for a description of the msi-parent property.
->  
-> +- tlbi-on-map       : invalidate caches whenever there is an update of
-> +                      any remapping structure (updates to not-present or
-> +                      present entries).
-> +
+Hi Will,
 
-My position on this hasn't changed, so NAK for this patch. If you want to
-emulate something outside of the SMMUv3 architecture, please do so, but
-don't pretend that it's an SMMUv3.
+On Thu, Aug 17, 2017 at 05:32:35PM +0100, Will Deacon wrote:
+> I really like the idea of this, but I have a couple of questions and
+> comments below.
 
-Will
+Great, this together with the common iova-flush it should make it
+possible to solve the performance problems of the dma-iommu code.
+
+> > +int iommu_map_sync(struct iommu_domain *domain, unsigned long iova,
+> > +		   phys_addr_t paddr, size_t size, int prot)
+> > +{
+> > +	int ret = iommu_map(domain, iova, paddr, size, prot);
+> > +
+> > +	iommu_tlb_range_add(domain, iova, size);
+> > +	iommu_tlb_sync(domain);
+> 
+> Many IOMMUs don't need these callbacks on ->map operations, but they won't
+> be able to distinguish them easily with this API. Could you add a flags
+> parameter or something to the iommu_tlb_* functions, please?
+
+Yeah, this is only needed for virtualized IOMMUs that have a non-present
+cache. My idea was to let the iommu-drivers tell the common code whether
+the iommu needs it and the code above just checks a flag and omits the
+calls to the flush-functions then.
+
+Problem currently is how to get this information from
+'struct iommu_device' to 'struct iommu_domain'. As a workaround I
+consider a per-domain flag in the iommu drivers which checks whether any
+unmap has happened and just do nothing on the flush-call-back if there
+were none.
+
+> I think we will struggle to implement this efficiently on ARM SMMUv3. The
+> way invalidation works there is that there is a single in-memory command
+> queue into which we can put TLB invalidation commands (they are inserted
+> under a lock). These are then processed asynchronously by the hardware, and
+> you can complete them by inserting a SYNC command and waiting for that to
+> be consumed by the SMMU. Sounds like a perfect fit, right?
+
+Yes, its basically the same as way as it works on AMD-Vi and Intel VT-d.
+
+> The problem is that we want to add those invalidation commands as early
+> as possible, so that they can be processed by the hardware concurrently
+> with us unmapping other pages.
+
+I think that's a bad idea, because then you re-introduce the performance
+problems again because everyone will spin on the cmd-queue lock in the
+unmap path of the dma-api.
+
+> That means adding the invalidation commands in the ->unmap callback
+> and not bothering to implement ->iotlb_range_add callback at all.
+> Then, we will do the sync in ->iotlb_sync. This falls apart if
+> somebody decides to use iommu_flush_tlb_all(), where we would prefer
+> not to insert all of the invalidation commands in unmap and instead
+> insert a single invalidate-all command, followed up with a SYNC.
+
+This problem can be solved with the deferred iova flushing code I posted
+to the ML. When a queue fills up, iommu_flush_tlb_all() is called and
+every entry that was unmapped before can be released. This works well on
+x86, are there reasons it wouldn't on ARM?
+
+Regards,
+
+	Joerg
