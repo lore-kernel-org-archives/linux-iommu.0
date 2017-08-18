@@ -1,11 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu/amd: Fix compiler warning in copy_device_table()
-Date: Sat, 19 Aug 2017 00:40:25 +0200
-Message-ID: <1503096026-6851-1-git-send-email-joro@8bytes.org>
+Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 4.14
+Date: Sat, 19 Aug 2017 00:42:59 +0200
+Message-ID: <20170818224258.GN16908@8bytes.org>
+References: <20170818151947.GB7900@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170818151947.GB7900-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,35 +18,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Fri, Aug 18, 2017 at 04:19:48PM +0100, Will Deacon wrote:
+> The following changes since commit aae4e7a8bc44722fe70d58920a36916b1043195e:
+> 
+>   Linux 4.13-rc4 (2017-08-06 18:44:49 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
 
-This was reported by the kbuild bot. The condition in which
-entry would be used uninitialized can not happen, because
-when there is no iommu this function would never be called.
-But its no fast-path, so fix the warning anyway.
-
-Reported-by: kbuild test robot
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index c7d0325..f2023cd 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -854,7 +854,7 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
- 
- static bool copy_device_table(void)
- {
--	u64 int_ctl, int_tab_len, entry, last_entry = 0;
-+	u64 int_ctl, int_tab_len, entry = 0, last_entry = 0;
- 	struct dev_table_entry *old_devtb = NULL;
- 	u32 lo, hi, devid, old_devtb_size;
- 	phys_addr_t old_devtb_phys;
--- 
-2.7.4
+Pulled, thanks Will.
