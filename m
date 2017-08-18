@@ -1,10 +1,11 @@
 From: kbuild test robot <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [iommu:x86/amd 6/12] drivers//iommu/amd_iommu_init.c:887:17:
-	warning: 'entry' may be used uninitialized in this function
-Date: Fri, 18 Aug 2017 21:46:09 +0800
-Message-ID: <201708182106.9FPuqIqQ%fengguang.wu@intel.com>
+Subject: [iommu:x86/amd 6/12] WARNING: vmlinux.o(.text+0x600c17): Section
+	mismatch in reference from the function early_enable_iommus() to the
+	variable .init.data:amd_iommu_pre_enabled
+Date: Fri, 18 Aug 2017 22:40:10 +0800
+Message-ID: <201708182209.EC4L4M1W%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="0F1p//8PRICkK4MW"
+Content-Type: multipart/mixed; boundary="vtzGhvizbBRQ85DL"
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -21,7 +22,7 @@ Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Ro
 List-Id: iommu@lists.linux-foundation.org
 
 
---0F1p//8PRICkK4MW
+--vtzGhvizbBRQ85DL
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -35,99 +36,24 @@ reproduce:
         # save the attached .config to linux build tree
         make ARCH=x86_64 
 
-Note: it may well be a FALSE warning. FWIW you are at least aware of it now.
-http://gcc.gnu.org/wiki/Better_Uninitialized_Warnings
-
 All warnings (new ones prefixed by >>):
 
-   drivers//iommu/amd_iommu_init.c: In function 'early_enable_iommus':
->> drivers//iommu/amd_iommu_init.c:887:17: warning: 'entry' may be used uninitialized in this function [-Wmaybe-uninitialized]
-     old_devtb_phys = entry & PAGE_MASK;
-                     
-   drivers//iommu/amd_iommu_init.c:858:6: note: 'entry' was declared here
-     u64 entry, last_entry = 0;
-         ^~~~~
-
-vim +/entry +887 drivers//iommu/amd_iommu_init.c
-
-c5cca146 arch/x86/kernel/amd_iommu_init.c Joerg Roedel 2009-10-09  851  
-c5cca146 arch/x86/kernel/amd_iommu_init.c Joerg Roedel 2009-10-09  852  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  853  static bool copy_device_table(void)
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  854  {
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  855  	struct dev_table_entry *old_devtb = NULL;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  856  	u32 lo, hi, devid, old_devtb_size;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  857  	phys_addr_t old_devtb_phys;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  858  	u64 entry, last_entry = 0;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  859  	struct amd_iommu *iommu;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  860  	u16 dom_id, dte_v;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  861  	gfp_t gfp_flag;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  862  
-3ac3e5ee drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  863  	if (!amd_iommu_pre_enabled)
-3ac3e5ee drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  864  		return false;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  865  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  866  	pr_warn("Translation is already enabled - trying to copy translation structures\n");
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  867  	for_each_iommu(iommu) {
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  868  		/* All IOMMUs should use the same device table with the same size */
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  869  		lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  870  		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  871  		entry = (((u64) hi) << 32) + lo;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  872  		if (last_entry && last_entry != entry) {
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  873  			pr_err("IOMMU:%d should use the same dev table as others!/n",
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  874  				iommu->index);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  875  			return false;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  876  		}
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  877  		last_entry = entry;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  878  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  879  		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  880  		if (old_devtb_size != dev_table_size) {
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  881  			pr_err("The device table size of IOMMU:%d is not expected!/n",
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  882  				iommu->index);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  883  			return false;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  884  		}
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  885  	}
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  886  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09 @887  	old_devtb_phys = entry & PAGE_MASK;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  888  	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  889  	if (!old_devtb)
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  890  		return false;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  891  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  892  	gfp_flag = GFP_KERNEL | __GFP_ZERO;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  893  	old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  894  				get_order(dev_table_size));
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  895  	if (old_dev_tbl_cpy == NULL) {
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  896  		pr_err("Failed to allocate memory for copying old device table!/n");
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  897  		return false;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  898  	}
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  899  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  900  	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  901  		old_dev_tbl_cpy[devid] = old_devtb[devid];
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  902  		dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  903  		dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  904  		if (dte_v && dom_id)
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  905  			__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  906  	}
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  907  	memunmap(old_devtb);
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  908  
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  909  	return true;
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  910  }
-45a01c42 drivers/iommu/amd_iommu_init.c   Baoquan He   2017-08-09  911  
-
-:::::: The code at line 887 was first introduced by commit
-:::::: 45a01c42933b93e59811099f97aa4179d499a42c iommu/amd: Add function copy_dev_tables()
-
-:::::: TO: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-:::::: CC: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>> WARNING: vmlinux.o(.text+0x600c17): Section mismatch in reference from the function early_enable_iommus() to the variable .init.data:amd_iommu_pre_enabled
+   The function early_enable_iommus() references
+   the variable __initdata amd_iommu_pre_enabled.
+   This is often because early_enable_iommus lacks a __initdata
+   annotation or the annotation of amd_iommu_pre_enabled is wrong.
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---0F1p//8PRICkK4MW
+--vtzGhvizbBRQ85DL
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICPrtllkAAy5jb25maWcAlDxdd9w2ru/9FXPS+7D70MZO0tz03OMHjkTNsCOJKknNjP2i
+H4sICKz6llkAAy5jb25maWcAlDxdd9w2ru/9FXPS+7D70MZO0tz03OMHjkTNsCOJKknNjP2i
 43Umrc8mdtZ29rb//gKgPkCKmu7NQxIB4BcIgAAIzvfffb8S314ev9y+3N/dfv785+q308Pp
 6fbl9HH16f7z6X9WuV7V2q1krtyPQFzeP3z74/UfH95379+t3v14+fbHix+e7n5a7U5PD6fP
 q+zx4dP9b9+gg/vHh+++/y7TdaE2QLtW7urP4fNIzYPv6UPV1pk2c0rXXS4znUszIXXrmtZ1
@@ -862,11 +788,11 @@ i8yKSJN9wtw9BABjaSYij2PuXonShpmQL6+EihI3CH1uN0sRoxE6SIDUe6OLmrk2552AaYn6
 ETd5IcLZGLdIv/q5skpY/ZTnzCSJoidfJlhbI8wIUZIOjSdbgzOHobBcFCYqMC/Jk/Wojmor
 bQWHoIA2EYqbioIMnLZE/vU//wexM+13p3QCAA==
 
---0F1p//8PRICkK4MW
+--vtzGhvizbBRQ85DL
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---0F1p//8PRICkK4MW--
+--vtzGhvizbBRQ85DL--
