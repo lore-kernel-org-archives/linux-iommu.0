@@ -1,48 +1,53 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
-Date: Fri, 18 Aug 2017 08:50:18 +0200
-Message-ID: <703a5dec-d1e6-f9cb-eab2-e4fcf8d20665@redhat.com>
-References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-	<1502459130-6234-3-git-send-email-eric.auger@redhat.com>
-	<20170817163424.GC30719@arm.com>
-	<d502e172-5e98-cbbb-6a72-db32c71006fc@redhat.com>
-	<20170818055031-mutt-send-email-mst@kernel.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 0/5] arm-smmu: performance optimization
+Date: Fri, 18 Aug 2017 09:39:22 +0100
+Message-ID: <20170818083922.GA2333@arm.com>
+References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
+ <20170817143650.GB30338@arm.com>
+ <59965CA4.10907@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170818055031-mutt-send-email-mst-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <59965CA4.10907@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc: Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>, Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, John Garry <john.garry@huawei.com>, nwatters@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Michael,
-On 18/08/2017 04:54, Michael S. Tsirkin wrote:
-> On Thu, Aug 17, 2017 at 07:47:04PM +0200, Auger Eric wrote:
->> I will see with Peter and other potential users in the community whether
->> it is worth to pursue the efforts on upstreaming the QEMU vSMMUv3
->> device, considering the VFIO/VHOST integration is made impossible.
+On Fri, Aug 18, 2017 at 11:19:00AM +0800, Leizhen (ThunderTown) wrote:
 > 
-> I posted more ideas on finding a way to support it after all separately.
-> Even without this:
-> 	1. VHOST does not need to be notified on map.
-My mistake. I will split the QEMU series accordingly.
-> 	2. VFIO might be possible for hardware that supports nested page tables.
 > 
-> IMHO 2 is worth looking into.
-OK That's my next step.
-
-Thank you for your suggestions.
-
-Eric
-
+> On 2017/8/17 22:36, Will Deacon wrote:
+> > Thunder, Nate, Robin,
+> > 
+> > On Mon, Jun 26, 2017 at 09:38:45PM +0800, Zhen Lei wrote:
+> >> I described the optimization more detail in patch 1 and 2, and patch 3-5 are
+> >> the implementation on arm-smmu/arm-smmu-v3 of patch 2.
+> >>
+> >> Patch 1 is v2. In v1, I directly replaced writel with writel_relaxed in
+> >> queue_inc_prod. But Robin figured that it may lead SMMU consume stale
+> >> memory contents. I thought more than 3 whole days and got this one.
+> >>
+> >> This patchset is based on Robin Murphy's [PATCH v2 0/8] io-pgtable lock removal.
+> > 
+> > For the time being, I think we should focus on the new TLB flushing
+> > interface posted by Joerg:
+> > 
+> > http://lkml.kernel.org/r/1502974596-23835-1-git-send-email-joro@8bytes.org
+> > 
+> > which looks like it can give us most of the benefits of this series. Once
+> > we've got that, we can see what's left in the way of performance and focus
+> > on the cmdq batching separately (because I'm still not convinced about it).
+> OK, this is a good news.
 > 
+> But I have a review comment(sorry, I have not subscribed it yet, so can not directly reply it):
+> I don't think we should add tlb sync for map operation
+> 1. at init time, all tlbs will be invalidated
+> 2. when we try to map a new range, there are no related ptes bufferd in tlb, because of above 1 and below 3
+> 3. when we unmap the above range, make sure all related ptes bufferd in tlb to be invalidated before unmap finished
+
+Yup, you're completely correct and I raised that with Joerg, who is looking
+into a way to avoid it.
+
+Will
