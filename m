@@ -1,58 +1,58 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
-Date: Fri, 18 Aug 2017 14:47:06 +0200
-Message-ID: <20170818124706.GB4556@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/2] iommu/tegra-gart: Add support for struct iommu_device
+Date: Fri, 18 Aug 2017 14:47:18 +0200
+Message-ID: <20170818124718.GC4556@ulmo>
 References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
- <1502317752-8792-2-git-send-email-joro@8bytes.org>
+ <1502317752-8792-3-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="JYK4vJDZwFMowpUq"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="hYooF8G/hrfVAmum"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1502317752-8792-2-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+In-Reply-To: <1502317752-8792-3-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Hiroshi Doyu <hdoyu@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
 
---JYK4vJDZwFMowpUq
+--hYooF8G/hrfVAmum
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 10, 2017 at 12:29:11AM +0200, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Thu, Aug 10, 2017 at 12:29:12AM +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
 >=20
-> Add a struct iommu_device to each tegra-smmu and register it
+> Add a struct iommu_device to each tegra-gart and register it
 > with the iommu-core. Also link devices added to the driver
 > to their respective hardware iommus.
 >=20
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 > ---
->  drivers/iommu/tegra-smmu.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
+>  drivers/iommu/tegra-gart.c | 26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
 
-Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Acked-by: Thierry Reding <treding@nvidia.com>
 
---JYK4vJDZwFMowpUq
+--hYooF8G/hrfVAmum
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmW4coACgkQ3SOs138+
-s6FArxAAnCAaC0KXS2Tdmdzq0AjNV2SNQboxlqlYfIFJaoTZtBFsUWZmp7pXs2NC
-fv3ajV+ooKELPNI4qx40t35XlUDhHwaL3uAF9Og7IE8IqDJS3KiPuXymZ82DLDM1
-sA3tN4+FNRtAvDXYrpz3PNsoOQDC6izIqeTOjAqCBCimi99nqY1rzPZip8iVIDV8
-VvRCekyi8NIfJSUHIiLcuZA83nXZA05s3ZUb+sXxCPImgilpxEwrKmi0MZX7mOrt
-N+v9G0hfxMhb4yN+vf/zKasNzt7V4cclfF0LGpJFsUWVZ3aIM4iYHkRKiaoG9wCZ
-1eZqSNMdqrgJncoN4jyjZP5JO6FqtJsZhsKdfO0SYO8CkVIpjkUz2BF75OItIQQT
-RhOAwudngz8pjvGoOSbvjYF3Kuxmjf/I1IgQaWcXMwdseWoWQwZA4G8gvDfubKY7
-zu0L6NI2z64diKsqibzo2n1plgdIc/QsEc0eIB41FnER+c6zK6HTR87kuVK1Hqt1
-JLkDrQ9IZvOeV0BEBREPKvdgYsCVCIqQ9wiwi/EGhZ6S67cDEtT2owKIzFO+e2or
-PRljrcK0tFp1V055Vkb20OlKhzCFcEr3sMUtlzWMT1ZKEZ3ImpzXrx8OG5sSOINS
-wl78j5ZTWF2dOJb+Glnu0X0X/oMioR8xZPoc9M/BpKtgjKl1j+M=
-=YoBc
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmW4dUACgkQ3SOs138+
+s6GlfRAAm+4WcacW+vbO4DgRHvEVSJqpCLXbVznf6uZXsS8eVLBSdqYY18zSXs0N
+pN763cRN9ZGYVrX6Rkv+l3CrbylSMyqc4RQuSs/oYInyGO8h6CNGda713xLfDgvB
+0j++xlGWfAT9sGq33GTEXnFLC8o6yNEi8yrfcfyArD4TJQ+5p15yilfagHbj5g71
+GWvjIHYze+MK1BcuRiPqnlcv3FFMmezdRvK/1hUOaRulbO18zO9HY5F0w/rlNrnR
+JzR7wPeiBIRobwUoHsQbmQ6JmAFokLyhkkPc4hP3xcjE5XwtG0ABGlptPhIA6fNT
+JGu4CaIHwSGE3JzZ6/s1M6Pysm/qPAJEuNt0qSeMKyNLb8m+zuVIzU/PLCNLicNs
+piz+A0dpTlrePRDWpuAjdmtY0I9W7JdIfM2EQTckzSDWFMwSJdzgzKuQfGkwJYrR
++7n0+OBuRouxMdFm71Hb592+/OgGT/O3+ZdzP5w/ReYQ8hkc6Ctpu/LWmWBRTrGW
+ISI712kXkxo5Omgc8ppiU/yS3GOqq13t2ALxsbysEqOQpDQcA7xxYz8j+C7GDSUj
+gVYtp76nCQ+qbdhWnBVanSu9VZmrsuJ3zVeS9Sx+kzerTE0uGylrDHmoJyaexb+o
+0dDupuKnbXDjyCo4ICtXgWHCd+Q8vK627JJ0KP7GEdFOG90zh6A=
+=/FQ1
 -----END PGP SIGNATURE-----
 
---JYK4vJDZwFMowpUq--
+--hYooF8G/hrfVAmum--
