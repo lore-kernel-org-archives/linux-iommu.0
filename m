@@ -1,61 +1,75 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/amd: Fix compiler warning in copy_device_table()
-Date: Sat, 19 Aug 2017 09:16:00 +0800
-Message-ID: <20170819011600.GC20615@x1>
-References: <1503096026-6851-1-git-send-email-joro@8bytes.org>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH 07/13] drm/msm: Use sychronized interface of the IOMMU-API
+Date: Sat, 19 Aug 2017 11:39:35 -0400
+Message-ID: <CAF6AEGta3aHs5WEV+X9CpMp0YHzgmWqOJLsznm-yWa97_BuQ7A@mail.gmail.com>
+References: <1502974596-23835-1-git-send-email-joro@8bytes.org> <1502974596-23835-8-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1503096026-6851-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1502974596-23835-8-git-send-email-joro@8bytes.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Joerg Roedel <jroedel@suse.de>, David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, freedreno <freedreno@lists.freedesktop.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/19/17 at 12:40am, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> This was reported by the kbuild bot. The condition in which
-> entry would be used uninitialized can not happen, because
-> when there is no iommu this function would never be called.
-> But its no fast-path, so fix the warning anyway.
-> 
-> Reported-by: kbuild test robot
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Thu, Aug 17, 2017 at 8:56 AM, Joerg Roedel <joro@8bytes.org> wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+>
+> The map and unmap functions of the IOMMU-API changed their
+> semantics: They do no longer guarantee that the hardware
+> TLBs are synchronized with the page-table updates they made.
+>
+> To make conversion easier, new synchronized functions have
+> been introduced which give these guarantees again until the
+> code is converted to use the new TLB-flush interface of the
+> IOMMU-API, which allows certain optimizations.
+>
+> But for now, just convert this code to use the synchronized
+> functions so that it will behave as before.
 
-Thanks for fixing these code bugs, Joerg.
 
-Ack the series!
+I like the idea of decoupling tlb inv with map (well that doesn't
+really effect any recent hw) and unmap (which does need tlb flush)..
+and for a gpu driver it should be pretty easy to back up unmaps.
 
-Acked-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+I did slightly prefer adding a new iommu_{map,unmap}_async() rather
+than changing semantics of existing API, but either way:
 
+Acked-by: Rob Clark <robdclark@gmail.com>
+
+> Cc: Rob Clark <robdclark@gmail.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: freedreno@lists.freedesktop.org
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 > ---
->  drivers/iommu/amd_iommu_init.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index c7d0325..f2023cd 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -854,7 +854,7 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
->  
->  static bool copy_device_table(void)
->  {
-> -	u64 int_ctl, int_tab_len, entry, last_entry = 0;
-> +	u64 int_ctl, int_tab_len, entry = 0, last_entry = 0;
->  	struct dev_table_entry *old_devtb = NULL;
->  	u32 lo, hi, devid, old_devtb_size;
->  	phys_addr_t old_devtb_phys;
-> -- 
+>  drivers/gpu/drm/msm/msm_iommu.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> index b23d336..b3525b7 100644
+> --- a/drivers/gpu/drm/msm/msm_iommu.c
+> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> @@ -64,7 +64,8 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
+>         size_t ret;
+>
+>  //     pm_runtime_get_sync(mmu->dev);
+> -       ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
+> +       ret = iommu_map_sg_sync(iommu->domain, iova, sgt->sgl,
+> +                               sgt->nents, prot);
+>  //     pm_runtime_put_sync(mmu->dev);
+>         WARN_ON(ret < 0);
+>
+> @@ -77,7 +78,7 @@ static int msm_iommu_unmap(struct msm_mmu *mmu, uint64_t iova,
+>         struct msm_iommu *iommu = to_msm_iommu(mmu);
+>
+>         pm_runtime_get_sync(mmu->dev);
+> -       iommu_unmap(iommu->domain, iova, len);
+> +       iommu_unmap_sync(iommu->domain, iova, len);
+>         pm_runtime_put_sync(mmu->dev);
+>
+>         return 0;
+> --
 > 2.7.4
-> 
+>
