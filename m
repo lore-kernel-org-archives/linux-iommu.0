@@ -1,8 +1,8 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v2 1/8] dt-bindings: mediatek: Add binding for mt2712 IOMMU
-	and SMI
-Date: Mon, 21 Aug 2017 19:00:14 +0800
-Message-ID: <1503313221-26453-2-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v2 2/8] iommu/mediatek: Move MTK_M4U_TO_LARB/PORT into
+	mtk_iommu.c
+Date: Mon, 21 Aug 2017 19:00:15 +0800
+Message-ID: <1503313221-26453-3-git-send-email-yong.wu@mediatek.com>
 References: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,222 +22,59 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <ro
 Cc: k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, cloud.zhou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds decriptions for mt2712 IOMMU and SMI.
+The definition of MTK_M4U_TO_LARB and MTK_M4U_TO_PORT are shared by
+all the gen2 M4U HWs. Thus, Move them out from mt8173-larb-port.h,
+and put them into the c file.
 
-In order to balance the bandwidth, mt2712 has two M4Us, two
-smi-commons, 10 smi-larbs. and mt2712 is also MTK IOMMU gen2 which
-uses ARM Short-Descriptor translation table format.
-
-The mt2712 M4U-SMI HW diagram is as below:
-
-                            EMI
-                             |
-              ------------------------------------
-              |                                  |
-             M4U0                              M4U1
-              |                                  |
-         smi-common0                        smi-common1
-              |                                  |
-  -------------------------       --------------------------------
-  |     |     |     |     |       |         |        |     |     |
-  |     |     |     |     |       |         |        |     |     |
-larb0 larb1 larb2 larb3 larb6    larb4    larb5    larb7 larb8 larb9
-disp0 vdec  cam   venc   jpg  mdp1/disp1 mdp2/disp2 mdp3 vdo/nr tvd
-
-All the connections are HW fixed, SW can NOT adjust it.
-
+Suggested-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
-Hi Rob,
-    Comparing with the v1, I add larb8 and larb9 in this version.
-    So I don't add your ACK here.
+This patch only moves the position of the MACRO MTK_M4U_TO_LARB/PORT.
 ---
- .../devicetree/bindings/iommu/mediatek,iommu.txt   |   6 +-
- .../memory-controllers/mediatek,smi-common.txt     |   6 +-
- .../memory-controllers/mediatek,smi-larb.txt       |   5 +-
- include/dt-bindings/memory/mt2712-larb-port.h      | 102 +++++++++++++++++++++
- 4 files changed, 113 insertions(+), 6 deletions(-)
- create mode 100644 include/dt-bindings/memory/mt2712-larb-port.h
+ drivers/iommu/mtk_iommu.c                     | 8 +++++++-
+ include/dt-bindings/memory/mt8173-larb-port.h | 4 ----
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-index 53c20ca..df5db73 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-@@ -40,6 +40,7 @@ video decode local arbiter, all these ports are according to the video HW.
- Required properties:
- - compatible : must be one of the following string:
- 	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
-+	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
- 	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
- - reg : m4u register base and size.
- - interrupts : the interrupt of m4u.
-@@ -50,8 +51,9 @@ Required properties:
- 	according to the local arbiter index, like larb0, larb1, larb2...
- - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
- 	Specifies the mtk_m4u_id as defined in
--	dt-binding/memory/mt2701-larb-port.h for mt2701 and
--	dt-binding/memory/mt8173-larb-port.h for mt8173
-+	dt-binding/memory/mt2701-larb-port.h for mt2701,
-+	dt-binding/memory/mt2712-larb-port.h for mt2712, and
-+	dt-binding/memory/mt8173-larb-port.h for mt8173.
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 91c6d36..4db6c8f 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -31,7 +31,6 @@
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <asm/barrier.h>
+-#include <dt-bindings/memory/mt8173-larb-port.h>
+ #include <soc/mediatek/smi.h>
  
- Example:
- 	iommu: iommu@10205000 {
-diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-index aa614b2..615abdd 100644
---- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-@@ -2,8 +2,9 @@ SMI (Smart Multimedia Interface) Common
+ #include "mtk_iommu.h"
+@@ -93,6 +92,13 @@
  
- The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+ #define MTK_PROTECT_PA_ALIGN			128
  
--Mediatek SMI have two generations of HW architecture, mt8173 uses the second
--generation of SMI HW while mt2701 uses the first generation HW of SMI.
-+Mediatek SMI have two generations of HW architecture, mt2712 and mt8173 use
-+the second generation of SMI HW while mt2701 uses the first generation HW of
-+SMI.
- 
- There's slight differences between the two SMI, for generation 2, the
- register which control the iommu port is at each larb's register base. But
-@@ -15,6 +16,7 @@ not needed for SMI generation 2.
- Required properties:
- - compatible : must be one of :
- 	"mediatek,mt2701-smi-common"
-+	"mediatek,mt2712-smi-common"
- 	"mediatek,mt8173-smi-common"
- - reg : the register and size of the SMI block.
- - power-domains : a phandle to the power domain of this local arbiter.
-diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-index ddf46b8..083155c 100644
---- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-+++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-@@ -4,8 +4,9 @@ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
- 
- Required properties:
- - compatible : must be one of :
--		"mediatek,mt8173-smi-larb"
- 		"mediatek,mt2701-smi-larb"
-+		"mediatek,mt2712-smi-larb"
-+		"mediatek,mt8173-smi-larb"
- - reg : the register and size of this local arbiter.
- - mediatek,smi : a phandle to the smi_common node.
- - power-domains : a phandle to the power domain of this local arbiter.
-@@ -15,7 +16,7 @@ Required properties:
- 	    the register.
-   - "smi" : It's the clock for transfer data and command.
- 
--Required property for mt2701:
-+Required property for mt2701 and mt2712:
- - mediatek,larb-id :the hardware id of this larb.
- 
- Example:
-diff --git a/include/dt-bindings/memory/mt2712-larb-port.h b/include/dt-bindings/memory/mt2712-larb-port.h
-new file mode 100644
-index 0000000..6b3a9e3
---- /dev/null
-+++ b/include/dt-bindings/memory/mt2712-larb-port.h
-@@ -0,0 +1,102 @@
 +/*
-+ * Copyright (c) 2017 MediaTek Inc.
-+ * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
++ * Get the local arbiter ID and the portid within the larb arbiter
++ * from mtk_m4u_id which is defined by MTK_M4U_ID.
 + */
-+#ifndef __DTS_IOMMU_PORT_MT2712_H
-+#define __DTS_IOMMU_PORT_MT2712_H
++#define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x7)
++#define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
 +
-+#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
-+
-+#define M4U_LARB0_ID			0
-+#define M4U_LARB1_ID			1
-+#define M4U_LARB2_ID			2
-+#define M4U_LARB3_ID			3
-+#define M4U_LARB4_ID			4
-+#define M4U_LARB5_ID			5
-+#define M4U_LARB6_ID			6
-+#define M4U_LARB7_ID			7
-+#define M4U_LARB8_ID			8
-+#define M4U_LARB9_ID			9
-+
-+/* larb0 */
-+#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
-+#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
-+#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 2)
-+#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 3)
-+#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 4)
-+#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 5)
-+#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 6)
-+
-+/* larb1 */
-+#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(M4U_LARB1_ID, 0)
-+#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(M4U_LARB1_ID, 1)
-+#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(M4U_LARB1_ID, 2)
-+#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 3)
-+#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(M4U_LARB1_ID, 4)
-+#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(M4U_LARB1_ID, 5)
-+#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 6)
-+#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(M4U_LARB1_ID, 7)
-+#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(M4U_LARB1_ID, 8)
-+#define M4U_PORT_HW_VDEC_TILE		MTK_M4U_ID(M4U_LARB1_ID, 9)
-+#define M4U_PORT_HW_IMG_RESZ_EXT	MTK_M4U_ID(M4U_LARB1_ID, 10)
-+
-+/* larb2 */
-+#define M4U_PORT_CAM_DMA0		MTK_M4U_ID(M4U_LARB2_ID, 0)
-+#define M4U_PORT_CAM_DMA1		MTK_M4U_ID(M4U_LARB2_ID, 1)
-+#define M4U_PORT_CAM_DMA2		MTK_M4U_ID(M4U_LARB2_ID, 2)
-+
-+/* larb3 */
-+#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
-+#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
-+#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
-+#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
-+#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
-+#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 5)
-+#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 6)
-+#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
-+#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
-+
-+/* larb4 */
-+#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB4_ID, 0)
-+#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 1)
-+#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB4_ID, 2)
-+#define M4U_PORT_DISP_OD1_R		MTK_M4U_ID(M4U_LARB4_ID, 3)
-+#define M4U_PORT_DISP_OD1_W		MTK_M4U_ID(M4U_LARB4_ID, 4)
-+#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 5)
-+#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB4_ID, 6)
-+
-+/* larb5 */
-+#define M4U_PORT_DISP_OVL2		MTK_M4U_ID(M4U_LARB5_ID, 0)
-+#define M4U_PORT_DISP_WDMA2		MTK_M4U_ID(M4U_LARB5_ID, 1)
-+#define M4U_PORT_MDP_RDMA2		MTK_M4U_ID(M4U_LARB5_ID, 2)
-+#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB5_ID, 3)
-+
-+/* larb6 */
-+#define M4U_PORT_JPGDEC_WDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 0)
-+#define M4U_PORT_JPGDEC_WDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 1)
-+#define M4U_PORT_JPGDEC_BSDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 2)
-+#define M4U_PORT_JPGDEC_BSDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 3)
-+
-+/* larb7 */
-+#define M4U_PORT_MDP_RDMA3		MTK_M4U_ID(M4U_LARB7_ID, 0)
-+#define M4U_PORT_MDP_WROT2		MTK_M4U_ID(M4U_LARB7_ID, 1)
-+
-+/* larb8 */
-+#define M4U_PORT_VDO			MTK_M4U_ID(M4U_LARB8_ID, 0)
-+#define M4U_PORT_NR			MTK_M4U_ID(M4U_LARB8_ID, 1)
-+#define M4U_PORT_WR_CHANNEL0		MTK_M4U_ID(M4U_LARB8_ID, 2)
-+
-+/* larb9 */
-+#define M4U_PORT_TVD			MTK_M4U_ID(M4U_LARB9_ID, 0)
-+#define M4U_PORT_WR_CHANNEL1		MTK_M4U_ID(M4U_LARB9_ID, 1)
-+
-+#endif
+ struct mtk_iommu_domain {
+ 	spinlock_t			pgtlock; /* lock for page table */
+ 
+diff --git a/include/dt-bindings/memory/mt8173-larb-port.h b/include/dt-bindings/memory/mt8173-larb-port.h
+index 5fef5d1..111b4b0 100644
+--- a/include/dt-bindings/memory/mt8173-larb-port.h
++++ b/include/dt-bindings/memory/mt8173-larb-port.h
+@@ -15,10 +15,6 @@
+ #define __DTS_IOMMU_PORT_MT8173_H
+ 
+ #define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
+-/* Local arbiter ID */
+-#define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x7)
+-/* PortID within the local arbiter */
+-#define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
+ 
+ #define M4U_LARB0_ID			0
+ #define M4U_LARB1_ID			1
 -- 
 1.9.1
