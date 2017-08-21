@@ -1,8 +1,7 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v2 7/8] iommu/mediatek: Enlarge the validate PA range for 4GB
-	mode
-Date: Mon, 21 Aug 2017 19:00:20 +0800
-Message-ID: <1503313221-26453-8-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v2 8/8] memory: mtk-smi: Degrade SMI init to module_init
+Date: Mon, 21 Aug 2017 19:00:21 +0800
+Message-ID: <1503313221-26453-9-git-send-email-yong.wu@mediatek.com>
 References: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,101 +21,102 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <ro
 Cc: k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, cloud.zhou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is for 4GB mode, mainly for 4 issues:
-1) Fix a 4GB bug:
-   if the dram base is 0x4000_0000, the dram size is 0xc000_0000.
-   then the code just meet a corner case because max_pfn is
-   0x10_0000.
-   data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
-   It's true at the case above. That is unexpected.
-2) In mt2712, there is a new register for the 4GB PA range(0x118)
-   we should enlarge the max PA range, or the HW will report
-   error.
-   The dram range is from 0x1_0000_0000 to 0x1_ffff_ffff in the 4GB
-   mode, we cut out the bit[32:30] of the SA(Start address) and
-   EA(End address) into this REG_MMU_VLD_PA_RNG(0x118).
-3) In mt2712, the register(0x13c) is extended for 4GB mode.
-   bit[7:6] indicate the valid PA[32:33]. Thus, we don't mask the
-   value and print it directly for debug.
-4) if 4GB is enabled, the dram PA range is from 0x1_0000_0000 to
-   0x1_ffff_ffff. Thus, the PA from iova_to_pa should also '|' BIT(32)
+The initialization of MediaTek power manager(SCPSYS) is
+builtin_platform_driver, and SMI must depend on power-domain.
+Thus, currently subsys_initcall for SMI is unnecessary, SMI will be
+always probe defered by power-domain. Degrade it to module_init.
 
-Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In addition, there are two small changes about the probe sequence:
+1) Delete this two lines.
+    	if (!dev->pm_domain)
+		return -EPROBE_DEFER;
+   This is not helpful. the platform driver framework guarantee this.
+   The "dev_pm_domain_attach" in the "platform_drv_probe" will return
+   EPROBE_DEFER if its powerdomain is not ready.
+
+2) Add the probe-defer for the smi-larb device should waiting for
+   smi-common.
+   In mt2712, there are 2 smi-commons, 10 smi-larbs. All will be
+   probe-defered by the power-domain, there is seldom case that
+   smi-larb probe done before smi-common. then it will hang like
+   this:
+
+   Unable to handle kernel NULL pointer dereference at virtual address
+00000000 pgd = ffffff800a4e0000
+[00000000] *pgd=00000000beffe003[   17.610026] , *pud=00000000beffe003
+...
+[<ffffff800897fe04>] mtk_smi_enable+0x1c/0xd0
+[<ffffff800897fee8>] mtk_smi_larb_get+0x30/0x98
+[<ffffff80088edfa8>] mtk_mipicsi0_resume+0x38/0x1b8
+[<ffffff8008634f44>] pm_generic_runtime_resume+0x3c/0x58
+[<ffffff8008644ff8>] __genpd_runtime_resume+0x38/0x98
+[<ffffff8008647434>] genpd_runtime_resume+0x164/0x220
+[<ffffff80086372f8>] __rpm_callback+0x78/0xa0
+[<ffffff8008637358>] rpm_callback+0x38/0xa0
+[<ffffff8008638a4c>] rpm_resume+0x4a4/0x6f8
+[<ffffff8008638d04>] __pm_runtime_resume+0x64/0xa0
+[<ffffff80088ed05c>] mtk_mipicsi0_probe+0x40c/0xb70
+[<ffffff800862cdc0>] platform_drv_probe+0x58/0xc0
+[<ffffff800862a514>] driver_probe_device+0x284/0x438
+[<ffffff800862a8ac>] __device_attach_driver+0xb4/0x160
+[<ffffff8008627d58>] bus_for_each_drv+0x68/0xa8
+[<ffffff800862a0a4>] __device_attach+0xd4/0x168
+[<ffffff800862a9d4>] device_initial_probe+0x24/0x30
+[<ffffff80086291d8>] bus_probe_device+0xa0/0xa8
+[<ffffff8008629784>] deferred_probe_work_func+0x94/0xf0
+[<ffffff80080f03a8>] process_one_work+0x1d8/0x6e0
+
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ drivers/memory/mtk-smi.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index e21de86..4f233e1 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -61,6 +61,8 @@
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index 8ffe321..8f2d152 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -16,6 +16,7 @@
+ #include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
++#include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+@@ -288,9 +289,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	struct platform_device *smi_pdev;
+ 	int err;
  
- #define REG_MMU_IVRP_PADDR			0x114
- #define F_MMU_IVRP_PA_SET(pa, ext)		(((pa) >> 1) | ((!!(ext)) << 31))
-+#define REG_MMU_VLD_PA_RNG			0x118
-+#define F_MMU_VLD_PA_RNG(EA, SA)		(((EA) << 8) | (SA))
+-	if (!dev->pm_domain)
+-		return -EPROBE_DEFER;
+-
+ 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+ 	if (!larb)
+ 		return -ENOMEM;
+@@ -326,6 +324,8 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	smi_pdev = of_find_device_by_node(smi_node);
+ 	of_node_put(smi_node);
+ 	if (smi_pdev) {
++		if (!platform_get_drvdata(smi_pdev))
++			return -EPROBE_DEFER;
+ 		larb->smi_common_dev = &smi_pdev->dev;
+ 	} else {
+ 		dev_err(dev, "Failed to get the smi_common device\n");
+@@ -377,9 +377,6 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+ 	enum mtk_smi_gen smi_gen;
+ 	int ret;
  
- #define REG_MMU_INT_CONTROL0			0x120
- #define F_L2_MULIT_HIT_EN			BIT(0)
-@@ -85,7 +87,6 @@
- #define REG_MMU_FAULT_ST1			0x134
- 
- #define REG_MMU_FAULT_VA			0x13c
--#define F_MMU_FAULT_VA_MSK			0xfffff000
- #define F_MMU_FAULT_VA_WRITE_BIT		BIT(1)
- #define F_MMU_FAULT_VA_LAYER_BIT		BIT(0)
- 
-@@ -214,7 +215,6 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
- 	fault_iova = readl_relaxed(data->base + REG_MMU_FAULT_VA);
- 	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
- 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
--	fault_iova &= F_MMU_FAULT_VA_MSK;
- 	fault_pa = readl_relaxed(data->base + REG_MMU_INVLD_PA);
- 	regval = readl_relaxed(data->base + REG_MMU_INT_ID);
- 	fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
-@@ -395,6 +395,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 					  dma_addr_t iova)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-+	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
- 	unsigned long flags;
- 	phys_addr_t pa;
- 
-@@ -402,6 +403,9 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 	pa = dom->iop->iova_to_phys(dom->iop, iova);
- 	spin_unlock_irqrestore(&dom->pgtlock, flags);
- 
-+	if (data->enable_4GB)
-+		pa |= BIT(32);
-+
- 	return pa;
+-	if (!dev->pm_domain)
+-		return -EPROBE_DEFER;
+-
+ 	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
+ 	if (!common)
+ 		return -ENOMEM;
+@@ -456,4 +453,4 @@ static int __init mtk_smi_init(void)
+ 	return ret;
  }
  
-@@ -529,6 +533,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 
- 	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
- 		       data->base + REG_MMU_IVRP_PADDR);
-+	if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
-+		/*
-+		 * If 4GB mode is enabled, the validate PA range is from
-+		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
-+		 */
-+		regval = F_MMU_VLD_PA_RNG(7, 4);
-+		writel_relaxed(regval, data->base + REG_MMU_VLD_PA_RNG);
-+	}
- 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
- 
- 	/* It's MISC control register whose default value is ok except mt8173.*/
-@@ -574,7 +586,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
- 
- 	/* Whether the current dram is over 4GB */
--	data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
-+	data->enable_4GB = !!(max_pfn > (BIT(32) >> PAGE_SHIFT));
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	data->base = devm_ioremap_resource(dev, res);
+-subsys_initcall(mtk_smi_init);
++module_init(mtk_smi_init);
 -- 
 1.9.1
