@@ -1,122 +1,123 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v2 8/8] memory: mtk-smi: Degrade SMI init to module_init
-Date: Mon, 21 Aug 2017 19:00:21 +0800
-Message-ID: <1503313221-26453-9-git-send-email-yong.wu@mediatek.com>
-References: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC 2/3] virtio-iommu: device probing and operations
+Date: Mon, 21 Aug 2017 13:00:23 +0100
+Message-ID: <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+ <20170407191747.26618-3-jean-philippe.brucker@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
+ <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
+ <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1503313221-26453-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: k.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, cloud.zhou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <virtio-dev-return-2486-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The initialization of MediaTek power manager(SCPSYS) is
-builtin_platform_driver, and SMI must depend on power-domain.
-Thus, currently subsys_initcall for SMI is unnecessary, SMI will be
-always probe defered by power-domain. Degrade it to module_init.
+On 21/08/17 08:59, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
+>> Sent: Monday, April 24, 2017 11:06 PM
+>>>>>>   1. Attach device
+>>>>>>   ----------------
+>>>>>>
+>>>>>> struct virtio_iommu_req_attach {
+>>>>>> 	le32	address_space;
+>>>>>> 	le32	device;
+>>>>>> 	le32	flags/reserved;
+>>>>>> };
+>>>>>>
+>>>>>> Attach a device to an address space. 'address_space' is an identifier
+>>>>>> unique to the guest. If the address space doesn't exist in the IOMMU
+>>>>>
+>>>>> Based on your description this address space ID is per operation right?
+>>>>> MAP/UNMAP and page-table sharing should have different ID spaces...
+>>>>
+>>>> I think it's simpler if we keep a single IOASID space per virtio-iommu
+>>>> device, because the maximum number of address spaces (described by
+>>>> ioasid_bits) might be a restriction of the pIOMMU. For page-table
+>> sharing
+>>>> you still need to define which devices will share a page directory using
+>>>> ATTACH requests, though that interface is not set in stone.
+>>>
+>>> got you. yes VM is supposed to consume less IOASIDs than physically
+>>> available. It doesn’t hurt to have one IOASID space for both IOVA
+>>> map/unmap usages (one IOASID per device) and SVM usages (multiple
+>>> IOASIDs per device). The former is digested by software and the latter
+>>> will be bound to hardware.
+>>>
+>>
+>> Hmm, I'm using address space indexed by IOASID for "classic" IOMMU, and
+>> then contexts indexed by PASID when talking about SVM. So in my mind an
+>> address space can have multiple sub-address-spaces (contexts). Number of
+>> IOASIDs is a limitation of the pIOMMU, and number of PASIDs is a
+>> limitation of the device. Therefore attaching devices to address spaces
+>> would update the number of available contexts in that address space. The
+>> terminology is not ideal, and I'd be happy to change it for something more
+>> clear.
+>>
+> 
+> (sorry to pick up this old thread, as the .tex one is not good for review
+> and this thread provides necessary background for IOASID).
+> 
+> Hi, Jean,
+> 
+> I'd like to hear more clarification regarding the relationship between 
+> IOASID and PASID. When reading back above explanation, it looks
+> confusing to me now (though I might get the meaning months ago :/).
+> At least Intel VT-d only understands PASID (or you can think IOASID
+> =PASID). There is no such layered address space concept. Then for
+> map/unmap type request, do you intend to steal some PASIDs for
+> that purpose on such architecture (since IOASID is a mandatory field 
+> in map/unmap request)?
 
-In addition, there are two small changes about the probe sequence:
-1) Delete this two lines.
-    	if (!dev->pm_domain)
-		return -EPROBE_DEFER;
-   This is not helpful. the platform driver framework guarantee this.
-   The "dev_pm_domain_attach" in the "platform_drv_probe" will return
-   EPROBE_DEFER if its powerdomain is not ready.
+IOASID is a logical ID, it isn't used by hardware. The address space
+concept in virtio-iommu allows to group endpoints together, so that they
+have the same address space. I thought it was pretty much the same as
+"domains" in VT-d? In any case, it is the same as domains in Linux. An
+IOASID provides a handle for communication between virtio-iommu device and
+driver, but unlike PASID, the IOASID number doesn't mean anything outside
+of virtio-iommu.
 
-2) Add the probe-defer for the smi-larb device should waiting for
-   smi-common.
-   In mt2712, there are 2 smi-commons, 10 smi-larbs. All will be
-   probe-defered by the power-domain, there is seldom case that
-   smi-larb probe done before smi-common. then it will hang like
-   this:
+I haven't introduced PASIDs in public virtio-iommu documents yet, but the
+way I intend it, PASID != IOASID. We will still have a logical address
+space identified by IOASID, that can contain multiple contexts identified
+by PASID. At the moment, after the ATTACH request, an address space
+contains a single anonymous context (NO PASID) that can be managed with
+MAP/UNMAP requests. With virtio-iommu v0.4, structures look like the
+following. The NO PASID context is implicit.
 
-   Unable to handle kernel NULL pointer dereference at virtual address
-00000000 pgd = ffffff800a4e0000
-[00000000] *pgd=00000000beffe003[   17.610026] , *pud=00000000beffe003
-...
-[<ffffff800897fe04>] mtk_smi_enable+0x1c/0xd0
-[<ffffff800897fee8>] mtk_smi_larb_get+0x30/0x98
-[<ffffff80088edfa8>] mtk_mipicsi0_resume+0x38/0x1b8
-[<ffffff8008634f44>] pm_generic_runtime_resume+0x3c/0x58
-[<ffffff8008644ff8>] __genpd_runtime_resume+0x38/0x98
-[<ffffff8008647434>] genpd_runtime_resume+0x164/0x220
-[<ffffff80086372f8>] __rpm_callback+0x78/0xa0
-[<ffffff8008637358>] rpm_callback+0x38/0xa0
-[<ffffff8008638a4c>] rpm_resume+0x4a4/0x6f8
-[<ffffff8008638d04>] __pm_runtime_resume+0x64/0xa0
-[<ffffff80088ed05c>] mtk_mipicsi0_probe+0x40c/0xb70
-[<ffffff800862cdc0>] platform_drv_probe+0x58/0xc0
-[<ffffff800862a514>] driver_probe_device+0x284/0x438
-[<ffffff800862a8ac>] __device_attach_driver+0xb4/0x160
-[<ffffff8008627d58>] bus_for_each_drv+0x68/0xa8
-[<ffffff800862a0a4>] __device_attach+0xd4/0x168
-[<ffffff800862a9d4>] device_initial_probe+0x24/0x30
-[<ffffff80086291d8>] bus_probe_device+0xa0/0xa8
-[<ffffff8008629784>] deferred_probe_work_func+0x94/0xf0
-[<ffffff80080f03a8>] process_one_work+0x1d8/0x6e0
+                    address space      context
+    endpoint ----.                                  .- mapping
+    endpoint ----+---- IOASID -------- NO PASID ----+- mapping
+    endpoint ----'                                  '- mapping
 
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- drivers/memory/mtk-smi.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+I'd like to add a flag to ATTACH that says "don't create a default
+anonymous context, I'll handle contexts myself". Then a new "ADD_TABLE"
+request to handle contexts. When creating a context, the guest decides if
+it wants to manage it via MAP/UNMAP requests (and a new "context" field),
+or instead manage mappings itself by allocating a page directory and use
+INVALIDATE requests.
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index 8ffe321..8f2d152 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -16,6 +16,7 @@
- #include <linux/device.h>
- #include <linux/err.h>
- #include <linux/io.h>
-+#include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-@@ -288,9 +289,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
- 	struct platform_device *smi_pdev;
- 	int err;
- 
--	if (!dev->pm_domain)
--		return -EPROBE_DEFER;
--
- 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
- 	if (!larb)
- 		return -ENOMEM;
-@@ -326,6 +324,8 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
- 	smi_pdev = of_find_device_by_node(smi_node);
- 	of_node_put(smi_node);
- 	if (smi_pdev) {
-+		if (!platform_get_drvdata(smi_pdev))
-+			return -EPROBE_DEFER;
- 		larb->smi_common_dev = &smi_pdev->dev;
- 	} else {
- 		dev_err(dev, "Failed to get the smi_common device\n");
-@@ -377,9 +377,6 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
- 	enum mtk_smi_gen smi_gen;
- 	int ret;
- 
--	if (!dev->pm_domain)
--		return -EPROBE_DEFER;
--
- 	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
- 	if (!common)
- 		return -ENOMEM;
-@@ -456,4 +453,4 @@ static int __init mtk_smi_init(void)
- 	return ret;
- }
- 
--subsys_initcall(mtk_smi_init);
-+module_init(mtk_smi_init);
--- 
-1.9.1
+                    address space      context
+    endpoint ----.                                  .- mapping
+    endpoint ----+---- IOASID ----+--- NO PASID ----+- mapping
+    endpoint ----'                |                 '- mapping
+                                  +--- PASID 0  ---- pgd
+                                  |     ...
+                                  '--- PASID N  ---- pgd
+
+In this example the guest chose to still have an anonymous context that
+uses MAP/UNMAP, along with a few PASID contexts with their own page tables.
+
+Thanks,
+Jean
