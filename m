@@ -1,112 +1,46 @@
-From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Subject: Re: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X table
-Date: Mon, 21 Aug 2017 12:47:57 +1000
-Message-ID: <3be3fca3-7f66-0f13-b93a-d3db40a8a934@ozlabs.ru>
-References: <20170807072548.3023-1-aik@ozlabs.ru>
-	<8f5f7b82-3c10-7f39-b587-db4c4424f04c@ozlabs.ru>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8f5f7b82-3c10-7f39-b587-db4c4424f04c-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Content-Language: en-AU
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Cc: Vlad Tsyrklevich <vlad-NIZqynvkaCU43zv7NVfAiQ@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Kyle Mahlkuch <Kyle.Mahlkuch-qyM6JfAXOaQ@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yongji Xie <elohimes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mauricio Faria de Oliveira <mauricfo-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH] iommu/ipmmu-vmsa: Use iommu_device_sysfs_add()/remove()
+Date: Mon, 21 Aug 2017 14:53:35 +0900
+Message-ID: <150329481531.31395.6238405988822544474.sendpatchset@little-apple>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, sricharan@codeaurora.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-Folks,
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Ok, people did talk, exchanged ideas, lovely :) What happens now? Do I
-repost this or go back to PCI bus flags or something else? Thanks.
+Extend the driver to make use of iommu_device_sysfs_add()/remove()
+functions to hook up initial sysfs support.
 
+Suggested-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+---
 
+ Applies on top of next-20170817
 
-On 14/08/17 19:45, Alexey Kardashevskiy wrote:
-> Folks,
-> 
-> Is there anything to change besides those compiler errors and David's
-> comment in 5/5? Or the while patchset is too bad? Thanks.
-> 
-> 
-> 
-> On 07/08/17 17:25, Alexey Kardashevskiy wrote:
->> This is a followup for "[PATCH kernel v4 0/6] vfio-pci: Add support for mmapping MSI-X table"
->> http://www.spinics.net/lists/kvm/msg152232.html
->>
->> This time it is using "caps" in IOMMU groups. The main question is if PCI
->> bus flags or IOMMU domains are still better (and which one).
-> 
->>
->>
->>
->> Here is some background:
->>
->> Current vfio-pci implementation disallows to mmap the page
->> containing MSI-X table in case that users can write directly
->> to MSI-X table and generate an incorrect MSIs.
->>
->> However, this will cause some performance issue when there
->> are some critical device registers in the same page as the
->> MSI-X table. We have to handle the mmio access to these
->> registers in QEMU emulation rather than in guest.
->>
->> To solve this issue, this series allows to expose MSI-X table
->> to userspace when hardware enables the capability of interrupt
->> remapping which can ensure that a given PCI device can only
->> shoot the MSIs assigned for it. And we introduce a new bus_flags
->> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
->> for different archs.
->>
->>
->> This is based on sha1
->> 26c5cebfdb6c "Merge branch 'parisc-4.13-4' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux"
->>
->> Please comment. Thanks.
->>
->> Changelog:
->>
->> v5:
->> * redid the whole thing via so-called IOMMU group capabilities
->>
->> v4:
->> * rebased on recent upstream
->> * got all 6 patches from v2 (v3 was missing some)
->>
->>
->>
->>
->> Alexey Kardashevskiy (5):
->>   iommu: Add capabilities to a group
->>   iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if MSI controller enables IRQ
->>     remapping
->>   iommu/intel/amd: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if IRQ remapping is
->>     enabled
->>   powerpc/iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX
->>   vfio-pci: Allow to expose MSI-X table to userspace when safe
->>
->>  include/linux/iommu.h            | 20 ++++++++++++++++++++
->>  include/linux/vfio.h             |  1 +
->>  arch/powerpc/kernel/iommu.c      |  1 +
->>  drivers/iommu/amd_iommu.c        |  3 +++
->>  drivers/iommu/intel-iommu.c      |  3 +++
->>  drivers/iommu/iommu.c            | 35 +++++++++++++++++++++++++++++++++++
->>  drivers/vfio/pci/vfio_pci.c      | 20 +++++++++++++++++---
->>  drivers/vfio/pci/vfio_pci_rdwr.c |  5 ++++-
->>  drivers/vfio/vfio.c              | 15 +++++++++++++++
->>  9 files changed, 99 insertions(+), 4 deletions(-)
->>
-> 
-> 
+ drivers/iommu/ipmmu-vmsa.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-
--- 
-Alexey
+--- 0001/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-08-21 14:40:13.940607110 +0900
+@@ -953,6 +953,11 @@ static int ipmmu_probe(struct platform_d
+ 
+ 	ipmmu_device_reset(mmu);
+ 
++	ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
++				     dev_name(&pdev->dev));
++	if (ret)
++		return ret;
++
+ 	iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
+ 	iommu_device_set_fwnode(&mmu->iommu, &pdev->dev.of_node->fwnode);
+ 
+@@ -975,6 +980,7 @@ static int ipmmu_remove(struct platform_
+ {
+ 	struct ipmmu_vmsa_device *mmu = platform_get_drvdata(pdev);
+ 
++	iommu_device_sysfs_remove(&mmu->iommu);
+ 	iommu_device_unregister(&mmu->iommu);
+ 
+ #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
