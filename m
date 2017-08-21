@@ -1,123 +1,66 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC 2/3] virtio-iommu: device probing and operations
-Date: Mon, 21 Aug 2017 13:00:23 +0100
-Message-ID: <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
- <20170407191747.26618-3-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
- <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
- <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value if
+	allocation failed
+Date: Mon, 21 Aug 2017 15:40:41 +0300
+Message-ID: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <virtio-dev-return-2486-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/08/17 08:59, Tian, Kevin wrote:
->> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
->> Sent: Monday, April 24, 2017 11:06 PM
->>>>>>   1. Attach device
->>>>>>   ----------------
->>>>>>
->>>>>> struct virtio_iommu_req_attach {
->>>>>> 	le32	address_space;
->>>>>> 	le32	device;
->>>>>> 	le32	flags/reserved;
->>>>>> };
->>>>>>
->>>>>> Attach a device to an address space. 'address_space' is an identifier
->>>>>> unique to the guest. If the address space doesn't exist in the IOMMU
->>>>>
->>>>> Based on your description this address space ID is per operation right?
->>>>> MAP/UNMAP and page-table sharing should have different ID spaces...
->>>>
->>>> I think it's simpler if we keep a single IOASID space per virtio-iommu
->>>> device, because the maximum number of address spaces (described by
->>>> ioasid_bits) might be a restriction of the pIOMMU. For page-table
->> sharing
->>>> you still need to define which devices will share a page directory using
->>>> ATTACH requests, though that interface is not set in stone.
->>>
->>> got you. yes VM is supposed to consume less IOASIDs than physically
->>> available. It doesn’t hurt to have one IOASID space for both IOVA
->>> map/unmap usages (one IOASID per device) and SVM usages (multiple
->>> IOASIDs per device). The former is digested by software and the latter
->>> will be bound to hardware.
->>>
->>
->> Hmm, I'm using address space indexed by IOASID for "classic" IOMMU, and
->> then contexts indexed by PASID when talking about SVM. So in my mind an
->> address space can have multiple sub-address-spaces (contexts). Number of
->> IOASIDs is a limitation of the pIOMMU, and number of PASIDs is a
->> limitation of the device. Therefore attaching devices to address spaces
->> would update the number of available contexts in that address space. The
->> terminology is not ideal, and I'd be happy to change it for something more
->> clear.
->>
-> 
-> (sorry to pick up this old thread, as the .tex one is not good for review
-> and this thread provides necessary background for IOASID).
-> 
-> Hi, Jean,
-> 
-> I'd like to hear more clarification regarding the relationship between 
-> IOASID and PASID. When reading back above explanation, it looks
-> confusing to me now (though I might get the meaning months ago :/).
-> At least Intel VT-d only understands PASID (or you can think IOASID
-> =PASID). There is no such layered address space concept. Then for
-> map/unmap type request, do you intend to steal some PASIDs for
-> that purpose on such architecture (since IOASID is a mandatory field 
-> in map/unmap request)?
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
 
-IOASID is a logical ID, it isn't used by hardware. The address space
-concept in virtio-iommu allows to group endpoints together, so that they
-have the same address space. I thought it was pretty much the same as
-"domains" in VT-d? In any case, it is the same as domains in Linux. An
-IOASID provides a handle for communication between virtio-iommu device and
-driver, but unlike PASID, the IOASID number doesn't mean anything outside
-of virtio-iommu.
+In ipmmu_domain_init_context() we are trying to allocate context and
+if allocation fails we will call free_io_pgtable_ops(),
+but "domain->context_id" hasn't been initialized yet (likely it is 0
+because of kzalloc). Having the following call stack:
+free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
+ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
+we will get a mistaken cache flush for a context pointed by
+uninitialized "domain->context_id".
 
-I haven't introduced PASIDs in public virtio-iommu documents yet, but the
-way I intend it, PASID != IOASID. We will still have a logical address
-space identified by IOASID, that can contain multiple contexts identified
-by PASID. At the moment, after the ATTACH request, an address space
-contains a single anonymous context (NO PASID) that can be managed with
-MAP/UNMAP requests. With virtio-iommu v0.4, structures look like the
-following. The NO PASID context is implicit.
+So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
+free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
+before calling ipmmu_tlb_invalidate().
 
-                    address space      context
-    endpoint ----.                                  .- mapping
-    endpoint ----+---- IOASID -------- NO PASID ----+- mapping
-    endpoint ----'                                  '- mapping
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+---
+ drivers/iommu/ipmmu-vmsa.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I'd like to add a flag to ATTACH that says "don't create a default
-anonymous context, I'll handle contexts myself". Then a new "ADD_TABLE"
-request to handle contexts. When creating a context, the guest decides if
-it wants to manage it via MAP/UNMAP requests (and a new "context" field),
-or instead manage mappings itself by allocating a page directory and use
-INVALIDATE requests.
-
-                    address space      context
-    endpoint ----.                                  .- mapping
-    endpoint ----+---- IOASID ----+--- NO PASID ----+- mapping
-    endpoint ----'                |                 '- mapping
-                                  +--- PASID 0  ---- pgd
-                                  |     ...
-                                  '--- PASID N  ---- pgd
-
-In this example the guest chose to still have an anonymous context that
-uses MAP/UNMAP, along with a few PASID contexts with their own page tables.
-
-Thanks,
-Jean
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 2a38aa1..5b226c0 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -303,6 +303,9 @@ static void ipmmu_tlb_flush_all(void *cookie)
+ {
+ 	struct ipmmu_vmsa_domain *domain = cookie;
+ 
++	if (domain->context_id >= IPMMU_CTX_MAX)
++		return;
++
+ 	ipmmu_tlb_invalidate(domain);
+ }
+ 
+@@ -380,6 +383,7 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ 	 */
+ 	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+ 	if (ret == IPMMU_CTX_MAX) {
++		domain->context_id = IPMMU_CTX_MAX;
+ 		free_io_pgtable_ops(domain->iop);
+ 		return -EBUSY;
+ 	}
+-- 
+2.7.4
