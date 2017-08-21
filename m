@@ -1,46 +1,78 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH] iommu/ipmmu-vmsa: Use iommu_device_sysfs_add()/remove()
-Date: Mon, 21 Aug 2017 14:53:35 +0900
-Message-ID: <150329481531.31395.6238405988822544474.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, sricharan@codeaurora.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [RFC 2/3] virtio-iommu: device probing and operations
+Date: Mon, 21 Aug 2017 07:59:29 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+	<20170407191747.26618-3-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
+	<34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
+	<a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "cdall@linaro.org" <cdall@linaro.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas@opensource.se>
-
-Extend the driver to make use of iommu_device_sysfs_add()/remove()
-functions to hook up initial sysfs support.
-
-Suggested-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
----
-
- Applies on top of next-20170817
-
- drivers/iommu/ipmmu-vmsa.c |    6 ++++++
- 1 file changed, 6 insertions(+)
-
---- 0001/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-08-21 14:40:13.940607110 +0900
-@@ -953,6 +953,11 @@ static int ipmmu_probe(struct platform_d
- 
- 	ipmmu_device_reset(mmu);
- 
-+	ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
-+				     dev_name(&pdev->dev));
-+	if (ret)
-+		return ret;
-+
- 	iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
- 	iommu_device_set_fwnode(&mmu->iommu, &pdev->dev.of_node->fwnode);
- 
-@@ -975,6 +980,7 @@ static int ipmmu_remove(struct platform_
- {
- 	struct ipmmu_vmsa_device *mmu = platform_get_drvdata(pdev);
- 
-+	iommu_device_sysfs_remove(&mmu->iommu);
- 	iommu_device_unregister(&mmu->iommu);
- 
- #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
+ZXJAYXJtLmNvbV0NCj4gU2VudDogTW9uZGF5LCBBcHJpbCAyNCwgMjAxNyAxMTowNiBQTQ0KPiA+
+Pj4+ICAgMS4gQXR0YWNoIGRldmljZQ0KPiA+Pj4+ICAgLS0tLS0tLS0tLS0tLS0tLQ0KPiA+Pj4+
+DQo+ID4+Pj4gc3RydWN0IHZpcnRpb19pb21tdV9yZXFfYXR0YWNoIHsNCj4gPj4+PiAJbGUzMglh
+ZGRyZXNzX3NwYWNlOw0KPiA+Pj4+IAlsZTMyCWRldmljZTsNCj4gPj4+PiAJbGUzMglmbGFncy9y
+ZXNlcnZlZDsNCj4gPj4+PiB9Ow0KPiA+Pj4+DQo+ID4+Pj4gQXR0YWNoIGEgZGV2aWNlIHRvIGFu
+IGFkZHJlc3Mgc3BhY2UuICdhZGRyZXNzX3NwYWNlJyBpcyBhbiBpZGVudGlmaWVyDQo+ID4+Pj4g
+dW5pcXVlIHRvIHRoZSBndWVzdC4gSWYgdGhlIGFkZHJlc3Mgc3BhY2UgZG9lc24ndCBleGlzdCBp
+biB0aGUgSU9NTVUNCj4gPj4+DQo+ID4+PiBCYXNlZCBvbiB5b3VyIGRlc2NyaXB0aW9uIHRoaXMg
+YWRkcmVzcyBzcGFjZSBJRCBpcyBwZXIgb3BlcmF0aW9uIHJpZ2h0Pw0KPiA+Pj4gTUFQL1VOTUFQ
+IGFuZCBwYWdlLXRhYmxlIHNoYXJpbmcgc2hvdWxkIGhhdmUgZGlmZmVyZW50IElEIHNwYWNlcy4u
+Lg0KPiA+Pg0KPiA+PiBJIHRoaW5rIGl0J3Mgc2ltcGxlciBpZiB3ZSBrZWVwIGEgc2luZ2xlIElP
+QVNJRCBzcGFjZSBwZXIgdmlydGlvLWlvbW11DQo+ID4+IGRldmljZSwgYmVjYXVzZSB0aGUgbWF4
+aW11bSBudW1iZXIgb2YgYWRkcmVzcyBzcGFjZXMgKGRlc2NyaWJlZCBieQ0KPiA+PiBpb2FzaWRf
+Yml0cykgbWlnaHQgYmUgYSByZXN0cmljdGlvbiBvZiB0aGUgcElPTU1VLiBGb3IgcGFnZS10YWJs
+ZQ0KPiBzaGFyaW5nDQo+ID4+IHlvdSBzdGlsbCBuZWVkIHRvIGRlZmluZSB3aGljaCBkZXZpY2Vz
+IHdpbGwgc2hhcmUgYSBwYWdlIGRpcmVjdG9yeSB1c2luZw0KPiA+PiBBVFRBQ0ggcmVxdWVzdHMs
+IHRob3VnaCB0aGF0IGludGVyZmFjZSBpcyBub3Qgc2V0IGluIHN0b25lLg0KPiA+DQo+ID4gZ290
+IHlvdS4geWVzIFZNIGlzIHN1cHBvc2VkIHRvIGNvbnN1bWUgbGVzcyBJT0FTSURzIHRoYW4gcGh5
+c2ljYWxseQ0KPiA+IGF2YWlsYWJsZS4gSXQgZG9lc27igJl0IGh1cnQgdG8gaGF2ZSBvbmUgSU9B
+U0lEIHNwYWNlIGZvciBib3RoIElPVkENCj4gPiBtYXAvdW5tYXAgdXNhZ2VzIChvbmUgSU9BU0lE
+IHBlciBkZXZpY2UpIGFuZCBTVk0gdXNhZ2VzIChtdWx0aXBsZQ0KPiA+IElPQVNJRHMgcGVyIGRl
+dmljZSkuIFRoZSBmb3JtZXIgaXMgZGlnZXN0ZWQgYnkgc29mdHdhcmUgYW5kIHRoZSBsYXR0ZXIN
+Cj4gPiB3aWxsIGJlIGJvdW5kIHRvIGhhcmR3YXJlLg0KPiA+DQo+IA0KPiBIbW0sIEknbSB1c2lu
+ZyBhZGRyZXNzIHNwYWNlIGluZGV4ZWQgYnkgSU9BU0lEIGZvciAiY2xhc3NpYyIgSU9NTVUsIGFu
+ZA0KPiB0aGVuIGNvbnRleHRzIGluZGV4ZWQgYnkgUEFTSUQgd2hlbiB0YWxraW5nIGFib3V0IFNW
+TS4gU28gaW4gbXkgbWluZCBhbg0KPiBhZGRyZXNzIHNwYWNlIGNhbiBoYXZlIG11bHRpcGxlIHN1
+Yi1hZGRyZXNzLXNwYWNlcyAoY29udGV4dHMpLiBOdW1iZXIgb2YNCj4gSU9BU0lEcyBpcyBhIGxp
+bWl0YXRpb24gb2YgdGhlIHBJT01NVSwgYW5kIG51bWJlciBvZiBQQVNJRHMgaXMgYQ0KPiBsaW1p
+dGF0aW9uIG9mIHRoZSBkZXZpY2UuIFRoZXJlZm9yZSBhdHRhY2hpbmcgZGV2aWNlcyB0byBhZGRy
+ZXNzIHNwYWNlcw0KPiB3b3VsZCB1cGRhdGUgdGhlIG51bWJlciBvZiBhdmFpbGFibGUgY29udGV4
+dHMgaW4gdGhhdCBhZGRyZXNzIHNwYWNlLiBUaGUNCj4gdGVybWlub2xvZ3kgaXMgbm90IGlkZWFs
+LCBhbmQgSSdkIGJlIGhhcHB5IHRvIGNoYW5nZSBpdCBmb3Igc29tZXRoaW5nIG1vcmUNCj4gY2xl
+YXIuDQo+IA0KDQooc29ycnkgdG8gcGljayB1cCB0aGlzIG9sZCB0aHJlYWQsIGFzIHRoZSAudGV4
+IG9uZSBpcyBub3QgZ29vZCBmb3IgcmV2aWV3DQphbmQgdGhpcyB0aHJlYWQgcHJvdmlkZXMgbmVj
+ZXNzYXJ5IGJhY2tncm91bmQgZm9yIElPQVNJRCkuDQoNCkhpLCBKZWFuLA0KDQpJJ2QgbGlrZSB0
+byBoZWFyIG1vcmUgY2xhcmlmaWNhdGlvbiByZWdhcmRpbmcgdGhlIHJlbGF0aW9uc2hpcCBiZXR3
+ZWVuIA0KSU9BU0lEIGFuZCBQQVNJRC4gV2hlbiByZWFkaW5nIGJhY2sgYWJvdmUgZXhwbGFuYXRp
+b24sIGl0IGxvb2tzDQpjb25mdXNpbmcgdG8gbWUgbm93ICh0aG91Z2ggSSBtaWdodCBnZXQgdGhl
+IG1lYW5pbmcgbW9udGhzIGFnbyA6LykuDQpBdCBsZWFzdCBJbnRlbCBWVC1kIG9ubHkgdW5kZXJz
+dGFuZHMgUEFTSUQgKG9yIHlvdSBjYW4gdGhpbmsgSU9BU0lEDQo9UEFTSUQpLiBUaGVyZSBpcyBu
+byBzdWNoIGxheWVyZWQgYWRkcmVzcyBzcGFjZSBjb25jZXB0LiBUaGVuIGZvcg0KbWFwL3VubWFw
+IHR5cGUgcmVxdWVzdCwgZG8geW91IGludGVuZCB0byBzdGVhbCBzb21lIFBBU0lEcyBmb3INCnRo
+YXQgcHVycG9zZSBvbiBzdWNoIGFyY2hpdGVjdHVyZSAoc2luY2UgSU9BU0lEIGlzIGEgbWFuZGF0
+b3J5IGZpZWxkIA0KaW4gbWFwL3VubWFwIHJlcXVlc3QpPw0KDQpUaGFua3MNCktldmluDQpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpWaXJ0dWFsaXphdGlv
+biBtYWlsaW5nIGxpc3QKVmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vdmlydHVh
+bGl6YXRpb24=
