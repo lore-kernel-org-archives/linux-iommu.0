@@ -1,12 +1,16 @@
-From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value if
-	allocation failed
-Date: Mon, 21 Aug 2017 15:40:41 +0300
-Message-ID: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 0/4] Patches to support ring0 SVM and devtlb
+Date: Mon, 21 Aug 2017 10:20:59 -0700
+Message-ID: <20170821172058.GA176549@otc-nc-03>
+References: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
+	<20170815145928.GA56170@otc-nc-03>
+	<20170818093521.GM16908@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170818093521.GM16908-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,51 +20,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Huang Ying <ying.huang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+Thanks Joerg
 
-In ipmmu_domain_init_context() we are trying to allocate context and
-if allocation fails we will call free_io_pgtable_ops(),
-but "domain->context_id" hasn't been initialized yet (likely it is 0
-because of kzalloc). Having the following call stack:
-free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
-ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
-we will get a mistaken cache flush for a context pointed by
-uninitialized "domain->context_id".
+On Fri, Aug 18, 2017 at 11:35:21AM +0200, Joerg Roedel wrote:
+> Hi Ashok,
+> 
+> On Tue, Aug 15, 2017 at 07:59:29AM -0700, Raj, Ashok wrote:
+> > I haven't received any update to this patchset.. 
+> > 
+> > Could you help get this merged through your tree? we have tested this
+> > series internally.
+> 
+> The mm-notifier patch needs acks or rb from mm-developers before I can
+> merge this patch-set.
 
-So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
-free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
-before calling ipmmu_tlb_invalidate().
+someone from the mm list.. could you help ack/rb this patch?
 
-Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
----
- drivers/iommu/ipmmu-vmsa.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 2a38aa1..5b226c0 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -303,6 +303,9 @@ static void ipmmu_tlb_flush_all(void *cookie)
- {
- 	struct ipmmu_vmsa_domain *domain = cookie;
- 
-+	if (domain->context_id >= IPMMU_CTX_MAX)
-+		return;
-+
- 	ipmmu_tlb_invalidate(domain);
- }
- 
-@@ -380,6 +383,7 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- 	 */
- 	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
- 	if (ret == IPMMU_CTX_MAX) {
-+		domain->context_id = IPMMU_CTX_MAX;
- 		free_io_pgtable_ops(domain->iop);
- 		return -EBUSY;
- 	}
--- 
-2.7.4
+Cheers,
+Ashok
