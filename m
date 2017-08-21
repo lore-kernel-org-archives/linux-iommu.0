@@ -1,16 +1,13 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/4] Patches to support ring0 SVM and devtlb
-Date: Mon, 21 Aug 2017 10:20:59 -0700
-Message-ID: <20170821172058.GA176549@otc-nc-03>
-References: <1502224170-5344-1-git-send-email-ashok.raj@intel.com>
-	<20170815145928.GA56170@otc-nc-03>
-	<20170818093521.GM16908@8bytes.org>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH V3 1/4] ARM64: dts: rockchip: rk3328 add iommu nodes
+Date: Mon, 21 Aug 2017 23:08:25 +0200
+Message-ID: <1661967.NgSaNf9bfI@phil>
+References: <1500863530-32792-1-git-send-email-xxm@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170818093521.GM16908-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1500863530-32792-1-git-send-email-xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,25 +17,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Huang Ying <ying.huang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks Joerg
-
-On Fri, Aug 18, 2017 at 11:35:21AM +0200, Joerg Roedel wrote:
-> Hi Ashok,
+Am Montag, 24. Juli 2017, 10:32:07 CEST schrieb Simon Xue:
+> Add H265e/VEPU/VPU/VDEC/VOP iommu nodes
 > 
-> On Tue, Aug 15, 2017 at 07:59:29AM -0700, Raj, Ashok wrote:
-> > I haven't received any update to this patchset.. 
-> > 
-> > Could you help get this merged through your tree? we have tested this
-> > series internally.
-> 
-> The mm-notifier patch needs acks or rb from mm-developers before I can
-> merge this patch-set.
+> Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
-someone from the mm list.. could you help ack/rb this patch?
+applied for 4.14 (after adapting the subject a bit)
 
-Cheers,
-Ashok
+
+Thanks
+Heiko
