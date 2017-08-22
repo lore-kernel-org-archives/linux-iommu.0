@@ -1,27 +1,58 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 0/8] MT2712 IOMMU SUPPORT
-Date: Tue, 22 Aug 2017 16:38:37 +0200
-Message-ID: <20170822143836.ac3faa7wcwfjtvjc@8bytes.org>
-References: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value
+	if allocation failed
+Date: Tue, 22 Aug 2017 17:43:07 +0300
+Message-ID: <CAPD2p-mioegk+5j-Rac7puQnffT-ERoq2kfxb5rZ3zjqikB0fQ@mail.gmail.com>
+References: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
+	<20170822142430.ft6yhl4etx2hhn7h@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, k.zhang@mediatek.com, cloud.zhou@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170822142430.ft6yhl4etx2hhn7h-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 21, 2017 at 07:00:13PM +0800, Yong Wu wrote:
-> Yong Wu (8):
->   dt-bindings: mediatek: Add binding for mt2712 IOMMU and SMI
->   iommu/mediatek: Move MTK_M4U_TO_LARB/PORT into mtk_iommu.c
->   iommu/mediatek: Add mt2712 IOMMU support
->   iommu/mediatek: Merge 2 M4U HWs into one iommu domain
->   iommu/mediatek: Move pgtable allocation into domain_alloc
->   iommu/mediatek: Disable iommu clock when system suspend
->   iommu/mediatek: Enlarge the validate PA range for 4GB mode
->   memory: mtk-smi: Degrade SMI init to module_init
+Hi,
 
-Applied patches 2-7. Patch 1 is something for Matthias.
+On Tue, Aug 22, 2017 at 5:24 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Mon, Aug 21, 2017 at 03:40:41PM +0300, Oleksandr Tyshchenko wrote:
+>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>>
+>> In ipmmu_domain_init_context() we are trying to allocate context and
+>> if allocation fails we will call free_io_pgtable_ops(),
+>> but "domain->context_id" hasn't been initialized yet (likely it is 0
+>> because of kzalloc). Having the following call stack:
+>> free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
+>> ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
+>> we will get a mistaken cache flush for a context pointed by
+>> uninitialized "domain->context_id".
+>>
+>> So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
+>> free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
+>> before calling ipmmu_tlb_invalidate().
+>>
+>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>> ---
+>>  drivers/iommu/ipmmu-vmsa.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>
+> Applied, thanks.
+Thank you.
+
+>
+
+-- 
+Regards,
+
+Oleksandr Tyshchenko
