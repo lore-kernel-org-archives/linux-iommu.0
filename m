@@ -1,16 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/arm-smmu-v3: put off the execution of TLBI* to
-	reduce lock confliction
-Date: Tue, 22 Aug 2017 17:41:42 +0200
-Message-ID: <20170822154142.GA19533@8bytes.org>
-References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
-	<1498484330-10840-2-git-send-email-thunder.leizhen@huawei.com>
+From: Scott Branden via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v5] vfio: platform: reset: Add Broadcom FlexRM reset module
+Date: Tue, 22 Aug 2017 11:47:52 -0700
+Message-ID: <ffcc2283-506f-6849-16e7-b0f0e618cd84@broadcom.com>
+References: <1503396041-19485-1-git-send-email-anup.patel@broadcom.com>
+	<1503396041-19485-2-git-send-email-anup.patel@broadcom.com>
+Reply-To: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1498484330-10840-2-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1503396041-19485-2-git-send-email-anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,66 +19,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 26, 2017 at 09:38:46PM +0800, Zhen Lei wrote:
-> -static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent)
-> +static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent, int optimize)
->  {
->  	if (queue_full(q))
->  		return -ENOSPC;
->  
->  	queue_write(Q_ENT(q, q->prod), ent, q->ent_dwords);
-> -	queue_inc_prod(q);
+Hi Anup,
+
+We should add default (as below).
+
+
+On 17-08-22 03:00 AM, Anup Patel wrote:
+> This patch adds Broadcom FlexRM low-level reset for
+> VFIO platform.
+>
+> It will do the following:
+> 1. Disable/Deactivate each FlexRM ring
+> 2. Flush each FlexRM ring
+>
+> The cleanup sequence for FlexRM rings is adapted from
+> Broadcom FlexRM mailbox driver.
+>
+> Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>   drivers/vfio/platform/reset/Kconfig                |   8 ++
+>   drivers/vfio/platform/reset/Makefile               |   1 +
+>   .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 100 +++++++++++++++++++++
+>   3 files changed, 109 insertions(+)
+>   create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+>
+> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+> index 70cccc5..8833805 100644
+> --- a/drivers/vfio/platform/reset/Kconfig
+> +++ b/drivers/vfio/platform/reset/Kconfig
+> @@ -13,3 +13,11 @@ config VFIO_PLATFORM_AMDXGBE_RESET
+>   	  Enables the VFIO platform driver to handle reset for AMD XGBE
+>   
+>   	  If you don't know what to do here, say N.
 > +
-> +	/*
-> +	 * We don't want too many commands to be delayed, this may lead the
-> +	 * followed sync command to wait for a long time.
-> +	 */
-> +	if (optimize && (++q->nr_delay < CMDQ_MAX_DELAYED)) {
-> +		queue_inc_swprod(q);
-> +	} else {
-> +		queue_inc_prod(q);
-> +		q->nr_delay = 0;
-> +	}
+> +config VFIO_PLATFORM_BCMFLEXRM_RESET
+> +	tristate "VFIO support for Broadcom FlexRM reset"
+> +	depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
+default ARCH_BCM_IPROC
+> +	help
+> +	  Enables the VFIO platform driver to handle reset for Broadcom FlexRM
 > +
->  	return 0;
->  }
->  
-> @@ -909,6 +928,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
->  static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->  				    struct arm_smmu_cmdq_ent *ent)
->  {
-> +	int optimize = 0;
->  	u64 cmd[CMDQ_ENT_DWORDS];
->  	unsigned long flags;
->  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
-> @@ -920,8 +940,17 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->  		return;
->  	}
->  
-> +	/*
-> +	 * All TLBI commands should be followed by a sync command later.
-> +	 * The CFGI commands is the same, but they are rarely executed.
-> +	 * So just optimize TLBI commands now, to reduce the "if" judgement.
-> +	 */
-> +	if ((ent->opcode >= CMDQ_OP_TLBI_NH_ALL) &&
-> +	    (ent->opcode <= CMDQ_OP_TLBI_NSNH_ALL))
-> +		optimize = 1;
-> +
->  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
-> -	while (queue_insert_raw(q, cmd) == -ENOSPC) {
-> +	while (queue_insert_raw(q, cmd, optimize) == -ENOSPC) {
->  		if (queue_poll_cons(q, false, wfe))
->  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
->  	}
-
-This doesn't look correct. How do you make sure that a given IOVA range
-is flushed before the addresses are reused?
-
-
-Regards,
-
-	Joerg
+> +	  If you don't know what to do here, say N.
+>
