@@ -1,21 +1,14 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC 2/3] virtio-iommu: device probing and operations
-Date: Tue, 22 Aug 2017 06:24:37 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D7CF52@SHSMSX101.ccr.corp.intel.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
-	<20170407191747.26618-3-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
-	<34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
-	<a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
-	<454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
+From: Anup Patel via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [PATCH v5] vfio: platform: reset: Add Broadcom FlexRM reset module
+Date: Tue, 22 Aug 2017 15:30:41 +0530
+Message-ID: <1503396041-19485-2-git-send-email-anup.patel@broadcom.com>
+References: <1503396041-19485-1-git-send-email-anup.patel@broadcom.com>
+Reply-To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <454095c4-cae5-ad52-a459-5c9e2cce4047-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1503396041-19485-1-git-send-email-anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,113 +18,161 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>
-Cc: "cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Baptiste Reynal <b.reynal-lrHrjnjw1UfHK3s98zE1ajGjJy/sRE9J@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogTW9uZGF5LCBBdWd1c3QgMjEsIDIwMTcgODowMCBQTQ0KPiAN
-Cj4gT24gMjEvMDgvMTcgMDg6NTksIFRpYW4sIEtldmluIHdyb3RlOg0KPiA+PiBGcm9tOiBKZWFu
-LVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNrZXJAYXJtLmNvbV0N
-Cj4gPj4gU2VudDogTW9uZGF5LCBBcHJpbCAyNCwgMjAxNyAxMTowNiBQTQ0KPiA+Pj4+Pj4gICAx
-LiBBdHRhY2ggZGV2aWNlDQo+ID4+Pj4+PiAgIC0tLS0tLS0tLS0tLS0tLS0NCj4gPj4+Pj4+DQo+
-ID4+Pj4+PiBzdHJ1Y3QgdmlydGlvX2lvbW11X3JlcV9hdHRhY2ggew0KPiA+Pj4+Pj4gCWxlMzIJ
-YWRkcmVzc19zcGFjZTsNCj4gPj4+Pj4+IAlsZTMyCWRldmljZTsNCj4gPj4+Pj4+IAlsZTMyCWZs
-YWdzL3Jlc2VydmVkOw0KPiA+Pj4+Pj4gfTsNCj4gPj4+Pj4+DQo+ID4+Pj4+PiBBdHRhY2ggYSBk
-ZXZpY2UgdG8gYW4gYWRkcmVzcyBzcGFjZS4gJ2FkZHJlc3Nfc3BhY2UnIGlzIGFuIGlkZW50aWZp
-ZXINCj4gPj4+Pj4+IHVuaXF1ZSB0byB0aGUgZ3Vlc3QuIElmIHRoZSBhZGRyZXNzIHNwYWNlIGRv
-ZXNuJ3QgZXhpc3QgaW4gdGhlDQo+IElPTU1VDQo+ID4+Pj4+DQo+ID4+Pj4+IEJhc2VkIG9uIHlv
-dXIgZGVzY3JpcHRpb24gdGhpcyBhZGRyZXNzIHNwYWNlIElEIGlzIHBlciBvcGVyYXRpb24NCj4g
-cmlnaHQ/DQo+ID4+Pj4+IE1BUC9VTk1BUCBhbmQgcGFnZS10YWJsZSBzaGFyaW5nIHNob3VsZCBo
-YXZlIGRpZmZlcmVudCBJRA0KPiBzcGFjZXMuLi4NCj4gPj4+Pg0KPiA+Pj4+IEkgdGhpbmsgaXQn
-cyBzaW1wbGVyIGlmIHdlIGtlZXAgYSBzaW5nbGUgSU9BU0lEIHNwYWNlIHBlciB2aXJ0aW8taW9t
-bXUNCj4gPj4+PiBkZXZpY2UsIGJlY2F1c2UgdGhlIG1heGltdW0gbnVtYmVyIG9mIGFkZHJlc3Mg
-c3BhY2VzIChkZXNjcmliZWQNCj4gYnkNCj4gPj4+PiBpb2FzaWRfYml0cykgbWlnaHQgYmUgYSBy
-ZXN0cmljdGlvbiBvZiB0aGUgcElPTU1VLiBGb3IgcGFnZS10YWJsZQ0KPiA+PiBzaGFyaW5nDQo+
-ID4+Pj4geW91IHN0aWxsIG5lZWQgdG8gZGVmaW5lIHdoaWNoIGRldmljZXMgd2lsbCBzaGFyZSBh
-IHBhZ2UgZGlyZWN0b3J5IHVzaW5nDQo+ID4+Pj4gQVRUQUNIIHJlcXVlc3RzLCB0aG91Z2ggdGhh
-dCBpbnRlcmZhY2UgaXMgbm90IHNldCBpbiBzdG9uZS4NCj4gPj4+DQo+ID4+PiBnb3QgeW91LiB5
-ZXMgVk0gaXMgc3VwcG9zZWQgdG8gY29uc3VtZSBsZXNzIElPQVNJRHMgdGhhbiBwaHlzaWNhbGx5
-DQo+ID4+PiBhdmFpbGFibGUuIEl0IGRvZXNu4oCZdCBodXJ0IHRvIGhhdmUgb25lIElPQVNJRCBz
-cGFjZSBmb3IgYm90aCBJT1ZBDQo+ID4+PiBtYXAvdW5tYXAgdXNhZ2VzIChvbmUgSU9BU0lEIHBl
-ciBkZXZpY2UpIGFuZCBTVk0gdXNhZ2VzIChtdWx0aXBsZQ0KPiA+Pj4gSU9BU0lEcyBwZXIgZGV2
-aWNlKS4gVGhlIGZvcm1lciBpcyBkaWdlc3RlZCBieSBzb2Z0d2FyZSBhbmQgdGhlIGxhdHRlcg0K
-PiA+Pj4gd2lsbCBiZSBib3VuZCB0byBoYXJkd2FyZS4NCj4gPj4+DQo+ID4+DQo+ID4+IEhtbSwg
-SSdtIHVzaW5nIGFkZHJlc3Mgc3BhY2UgaW5kZXhlZCBieSBJT0FTSUQgZm9yICJjbGFzc2ljIiBJ
-T01NVSwNCj4gYW5kDQo+ID4+IHRoZW4gY29udGV4dHMgaW5kZXhlZCBieSBQQVNJRCB3aGVuIHRh
-bGtpbmcgYWJvdXQgU1ZNLiBTbyBpbiBteSBtaW5kDQo+IGFuDQo+ID4+IGFkZHJlc3Mgc3BhY2Ug
-Y2FuIGhhdmUgbXVsdGlwbGUgc3ViLWFkZHJlc3Mtc3BhY2VzIChjb250ZXh0cykuIE51bWJlcg0K
-PiBvZg0KPiA+PiBJT0FTSURzIGlzIGEgbGltaXRhdGlvbiBvZiB0aGUgcElPTU1VLCBhbmQgbnVt
-YmVyIG9mIFBBU0lEcyBpcyBhDQo+ID4+IGxpbWl0YXRpb24gb2YgdGhlIGRldmljZS4gVGhlcmVm
-b3JlIGF0dGFjaGluZyBkZXZpY2VzIHRvIGFkZHJlc3Mgc3BhY2VzDQo+ID4+IHdvdWxkIHVwZGF0
-ZSB0aGUgbnVtYmVyIG9mIGF2YWlsYWJsZSBjb250ZXh0cyBpbiB0aGF0IGFkZHJlc3Mgc3BhY2Uu
-DQo+IFRoZQ0KPiA+PiB0ZXJtaW5vbG9neSBpcyBub3QgaWRlYWwsIGFuZCBJJ2QgYmUgaGFwcHkg
-dG8gY2hhbmdlIGl0IGZvciBzb21ldGhpbmcNCj4gbW9yZQ0KPiA+PiBjbGVhci4NCj4gPj4NCj4g
-Pg0KPiA+IChzb3JyeSB0byBwaWNrIHVwIHRoaXMgb2xkIHRocmVhZCwgYXMgdGhlIC50ZXggb25l
-IGlzIG5vdCBnb29kIGZvciByZXZpZXcNCj4gPiBhbmQgdGhpcyB0aHJlYWQgcHJvdmlkZXMgbmVj
-ZXNzYXJ5IGJhY2tncm91bmQgZm9yIElPQVNJRCkuDQo+ID4NCj4gPiBIaSwgSmVhbiwNCj4gPg0K
-PiA+IEknZCBsaWtlIHRvIGhlYXIgbW9yZSBjbGFyaWZpY2F0aW9uIHJlZ2FyZGluZyB0aGUgcmVs
-YXRpb25zaGlwIGJldHdlZW4NCj4gPiBJT0FTSUQgYW5kIFBBU0lELiBXaGVuIHJlYWRpbmcgYmFj
-ayBhYm92ZSBleHBsYW5hdGlvbiwgaXQgbG9va3MNCj4gPiBjb25mdXNpbmcgdG8gbWUgbm93ICh0
-aG91Z2ggSSBtaWdodCBnZXQgdGhlIG1lYW5pbmcgbW9udGhzIGFnbyA6LykuDQo+ID4gQXQgbGVh
-c3QgSW50ZWwgVlQtZCBvbmx5IHVuZGVyc3RhbmRzIFBBU0lEIChvciB5b3UgY2FuIHRoaW5rIElP
-QVNJRA0KPiA+ID1QQVNJRCkuIFRoZXJlIGlzIG5vIHN1Y2ggbGF5ZXJlZCBhZGRyZXNzIHNwYWNl
-IGNvbmNlcHQuIFRoZW4gZm9yDQo+ID4gbWFwL3VubWFwIHR5cGUgcmVxdWVzdCwgZG8geW91IGlu
-dGVuZCB0byBzdGVhbCBzb21lIFBBU0lEcyBmb3INCj4gPiB0aGF0IHB1cnBvc2Ugb24gc3VjaCBh
-cmNoaXRlY3R1cmUgKHNpbmNlIElPQVNJRCBpcyBhIG1hbmRhdG9yeSBmaWVsZA0KPiA+IGluIG1h
-cC91bm1hcCByZXF1ZXN0KT8NCj4gDQo+IElPQVNJRCBpcyBhIGxvZ2ljYWwgSUQsIGl0IGlzbid0
-IHVzZWQgYnkgaGFyZHdhcmUuIFRoZSBhZGRyZXNzIHNwYWNlDQo+IGNvbmNlcHQgaW4gdmlydGlv
-LWlvbW11IGFsbG93cyB0byBncm91cCBlbmRwb2ludHMgdG9nZXRoZXIsIHNvIHRoYXQgdGhleQ0K
-PiBoYXZlIHRoZSBzYW1lIGFkZHJlc3Mgc3BhY2UuIEkgdGhvdWdodCBpdCB3YXMgcHJldHR5IG11
-Y2ggdGhlIHNhbWUgYXMNCj4gImRvbWFpbnMiIGluIFZULWQ/IEluIGFueSBjYXNlLCBpdCBpcyB0
-aGUgc2FtZSBhcyBkb21haW5zIGluIExpbnV4LiBBbg0KPiBJT0FTSUQgcHJvdmlkZXMgYSBoYW5k
-bGUgZm9yIGNvbW11bmljYXRpb24gYmV0d2VlbiB2aXJ0aW8taW9tbXUgZGV2aWNlDQo+IGFuZA0K
-PiBkcml2ZXIsIGJ1dCB1bmxpa2UgUEFTSUQsIHRoZSBJT0FTSUQgbnVtYmVyIGRvZXNuJ3QgbWVh
-biBhbnl0aGluZyBvdXRzaWRlDQo+IG9mIHZpcnRpby1pb21tdS4NCg0KVGhhbmtzLiBJdCdzIGNs
-ZWFyIHRvIG1lIHRoZW4uDQoNCmJ0dyBkb2VzIGl0IG1ha2UgbW9yZSBzZW5zZSB0byB1c2UgImRv
-bWFpbiBpZCIgaW5zdGVhZCBvZiAiSU8gYWRkcmVzcw0Kc3BhY2UgaWQiPyBGb3Igb25lLCB3aGVu
-IHRhbGtpbmcgYWJvdXQgbGF5ZXJlZCBhZGRyZXNzIHNwYWNlcw0KdXN1YWxseSBwYXJlbnQgYWRk
-cmVzcyBzcGFjZSBpcyBhIHN1cGVyc2V0IG9mIGFsbCBjaGlsZCBhZGRyZXNzIHNwYWNlcw0Kd2hp
-Y2ggZG9lc24ndCBhcHBseSB0byB0aGlzIGNhc2UsIHNpbmNlIGVpdGhlciBhbm9ueW1vdXMgYWRk
-cmVzcw0Kc3BhY2Ugb3IgUEFTSUQtdGFnZ2VkIGFkZHJlc3Mgc3BhY2VzIGFyZSBjb21wbGV0ZWx5
-IGlzb2xhdGVkLiBJbnN0ZWFkDQonZG9tYWluJyBpcyBhIG1vcmUgaW5jbHVzaXZlIHRlcm1pbm9s
-b2d5IHRvIGVtYnJhY2UgbXVsdGlwbGUgYWRkcmVzcw0Kc3BhY2VzLiBGb3IgdHdvLCAnZG9tYWlu
-JyBpcyBiZXR0ZXIgYWxpZ25lZCB0byBzb2Z0d2FyZSB0ZXJtaW5vbG9neSAoZS5nLg0KaW9tbXVf
-ZG9tYWluKSBpcyBlYXNpZXIgZm9yIHBlb3BsZSB0byBjYXRjaCB1cC4gOi0pDQoNCj4gDQo+IEkg
-aGF2ZW4ndCBpbnRyb2R1Y2VkIFBBU0lEcyBpbiBwdWJsaWMgdmlydGlvLWlvbW11IGRvY3VtZW50
-cyB5ZXQsIGJ1dCB0aGUNCj4gd2F5IEkgaW50ZW5kIGl0LCBQQVNJRCAhPSBJT0FTSUQuIFdlIHdp
-bGwgc3RpbGwgaGF2ZSBhIGxvZ2ljYWwgYWRkcmVzcw0KPiBzcGFjZSBpZGVudGlmaWVkIGJ5IElP
-QVNJRCwgdGhhdCBjYW4gY29udGFpbiBtdWx0aXBsZSBjb250ZXh0cyBpZGVudGlmaWVkDQo+IGJ5
-IFBBU0lELiBBdCB0aGUgbW9tZW50LCBhZnRlciB0aGUgQVRUQUNIIHJlcXVlc3QsIGFuIGFkZHJl
-c3Mgc3BhY2UNCj4gY29udGFpbnMgYSBzaW5nbGUgYW5vbnltb3VzIGNvbnRleHQgKE5PIFBBU0lE
-KSB0aGF0IGNhbiBiZSBtYW5hZ2VkIHdpdGgNCj4gTUFQL1VOTUFQIHJlcXVlc3RzLiBXaXRoIHZp
-cnRpby1pb21tdSB2MC40LCBzdHJ1Y3R1cmVzIGxvb2sgbGlrZSB0aGUNCj4gZm9sbG93aW5nLiBU
-aGUgTk8gUEFTSUQgY29udGV4dCBpcyBpbXBsaWNpdC4NCj4gDQo+ICAgICAgICAgICAgICAgICAg
-ICAgYWRkcmVzcyBzcGFjZSAgICAgIGNvbnRleHQNCj4gICAgIGVuZHBvaW50IC0tLS0uICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIC4tIG1hcHBpbmcNCj4gICAgIGVuZHBvaW50IC0t
-LS0rLS0tLSBJT0FTSUQgLS0tLS0tLS0gTk8gUEFTSUQgLS0tLSstIG1hcHBpbmcNCj4gICAgIGVu
-ZHBvaW50IC0tLS0nICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICctIG1hcHBpbmcN
-Cj4gDQo+IEknZCBsaWtlIHRvIGFkZCBhIGZsYWcgdG8gQVRUQUNIIHRoYXQgc2F5cyAiZG9uJ3Qg
-Y3JlYXRlIGEgZGVmYXVsdA0KPiBhbm9ueW1vdXMgY29udGV4dCwgSSdsbCBoYW5kbGUgY29udGV4
-dHMgbXlzZWxmIi4gVGhlbiBhIG5ldyAiQUREX1RBQkxFIg0KPiByZXF1ZXN0IHRvIGhhbmRsZSBj
-b250ZXh0cy4gV2hlbiBjcmVhdGluZyBhIGNvbnRleHQsIHRoZSBndWVzdCBkZWNpZGVzIGlmDQo+
-IGl0IHdhbnRzIHRvIG1hbmFnZSBpdCB2aWEgTUFQL1VOTUFQIHJlcXVlc3RzIChhbmQgYSBuZXcg
-ImNvbnRleHQiIGZpZWxkKSwNCj4gb3IgaW5zdGVhZCBtYW5hZ2UgbWFwcGluZ3MgaXRzZWxmIGJ5
-IGFsbG9jYXRpbmcgYSBwYWdlIGRpcmVjdG9yeSBhbmQgdXNlDQo+IElOVkFMSURBVEUgcmVxdWVz
-dHMuDQo+IA0KPiAgICAgICAgICAgICAgICAgICAgIGFkZHJlc3Mgc3BhY2UgICAgICBjb250ZXh0
-DQo+ICAgICBlbmRwb2ludCAtLS0tLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAu
-LSBtYXBwaW5nDQo+ICAgICBlbmRwb2ludCAtLS0tKy0tLS0gSU9BU0lEIC0tLS0rLS0tIE5PIFBB
-U0lEIC0tLS0rLSBtYXBwaW5nDQo+ICAgICBlbmRwb2ludCAtLS0tJyAgICAgICAgICAgICAgICB8
-ICAgICAgICAgICAgICAgICAnLSBtYXBwaW5nDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICArLS0tIFBBU0lEIDAgIC0tLS0gcGdkDQo+ICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICB8ICAgICAuLi4NCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICctLS0gUEFTSUQgTiAgLS0tLSBwZ2QNCj4gDQo+IEluIHRoaXMgZXhhbXBsZSB0aGUgZ3Vlc3Qg
-Y2hvc2UgdG8gc3RpbGwgaGF2ZSBhbiBhbm9ueW1vdXMgY29udGV4dCB0aGF0DQo+IHVzZXMgTUFQ
-L1VOTUFQLCBhbG9uZyB3aXRoIGEgZmV3IFBBU0lEIGNvbnRleHRzIHdpdGggdGhlaXIgb3duIHBh
-Z2UNCj4gdGFibGVzLg0KPiANCg0KQWJvdmUgZXhwbGFuYXRpb24gaXMgYSBnb29kIGJhY2tncm91
-bmQuIElzIGl0IHVzZWZ1bCB0byBpbmNsdWRlIGl0DQppbiBjdXJyZW50IHNwZWM/IFRob3VnaCBT
-Vk0gc3VwcG9ydCBpcyBub3QgcGxhbm5lZCBub3csIGFkZGluZw0Kc3VjaCBiYWNrZ3JvdW5kIGNv
-dWxkIGhlbHAgYnVpbGQgYSBmdWxsIHN0b3J5IGZvciBJT0FTSUQgY29uY2VwdC4NCg0KVGhhbmtz
-DQpLZXZpbg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+This patch adds Broadcom FlexRM low-level reset for
+VFIO platform.
+
+It will do the following:
+1. Disable/Deactivate each FlexRM ring
+2. Flush each FlexRM ring
+
+The cleanup sequence for FlexRM rings is adapted from
+Broadcom FlexRM mailbox driver.
+
+Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/vfio/platform/reset/Kconfig                |   8 ++
+ drivers/vfio/platform/reset/Makefile               |   1 +
+ .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 100 +++++++++++++++++++++
+ 3 files changed, 109 insertions(+)
+ create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+
+diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+index 70cccc5..8833805 100644
+--- a/drivers/vfio/platform/reset/Kconfig
++++ b/drivers/vfio/platform/reset/Kconfig
+@@ -13,3 +13,11 @@ config VFIO_PLATFORM_AMDXGBE_RESET
+ 	  Enables the VFIO platform driver to handle reset for AMD XGBE
+ 
+ 	  If you don't know what to do here, say N.
++
++config VFIO_PLATFORM_BCMFLEXRM_RESET
++	tristate "VFIO support for Broadcom FlexRM reset"
++	depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
++	help
++	  Enables the VFIO platform driver to handle reset for Broadcom FlexRM
++
++	  If you don't know what to do here, say N.
+diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
+index 93f4e23..8d9874b 100644
+--- a/drivers/vfio/platform/reset/Makefile
++++ b/drivers/vfio/platform/reset/Makefile
+@@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
+ 
+ obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
+ obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
++obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
+diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+new file mode 100644
+index 0000000..966a813
+--- /dev/null
++++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+@@ -0,0 +1,100 @@
++/*
++ * Copyright (C) 2017 Broadcom
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * This driver provides reset support for Broadcom FlexRM ring manager
++ * to VFIO platform.
++ */
++
++#include <linux/delay.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++
++#include "vfio_platform_private.h"
++
++/* FlexRM configuration */
++#define RING_REGS_SIZE					0x10000
++#define RING_VER_MAGIC					0x76303031
++
++/* Per-Ring register offsets */
++#define RING_VER					0x000
++#define RING_CONTROL					0x034
++#define RING_FLUSH_DONE					0x038
++
++/* Register RING_CONTROL fields */
++#define CONTROL_FLUSH_SHIFT				5
++
++/* Register RING_FLUSH_DONE fields */
++#define FLUSH_DONE_MASK					0x1
++
++static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
++{
++	unsigned int timeout;
++
++	/* Disable/inactivate ring */
++	writel_relaxed(0x0, ring + RING_CONTROL);
++
++	/* Flush ring with timeout of 1s */
++	timeout = 1000;
++	writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
++	do {
++		if (readl_relaxed(ring + RING_FLUSH_DONE) & FLUSH_DONE_MASK)
++			break;
++		mdelay(1);
++	} while (--timeout);
++
++	if (!timeout) {
++		pr_warn("VFIO FlexRM shutdown timeout\n");
++		return -ETIMEDOUT;
++	}
++
++	return 0;
++}
++
++static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
++{
++	int rc = 0;
++	void __iomem *ring;
++	struct vfio_platform_region *reg = &vdev->regions[0];
++
++	/* Map FlexRM ring registers if not mapped */
++	if (!reg->ioaddr) {
++		reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
++		if (!reg->ioaddr)
++			return -ENOMEM;
++	}
++
++	/* Discover and shutdown each FlexRM ring */
++	for (ring = reg->ioaddr;
++	     ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
++		if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC) {
++			rc = vfio_platform_bcmflexrm_shutdown(ring);
++			if (rc)
++				break;
++		}
++	}
++
++	return rc;
++}
++
++module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
++			  vfio_platform_bcmflexrm_reset);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>");
++MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
+-- 
+2.7.4
