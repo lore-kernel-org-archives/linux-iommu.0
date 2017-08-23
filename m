@@ -1,130 +1,80 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
-Date: Wed, 23 Aug 2017 17:42:55 +0100
-Message-ID: <20170823164255.GB590@arm.com>
-References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-	<1502459130-6234-3-git-send-email-eric.auger@redhat.com>
-	<20170817163424.GC30719@arm.com>
-	<20170818053639-mutt-send-email-mst@kernel.org>
-	<20170822220457-mutt-send-email-mst@kernel.org>
-	<20170823102517.GE27301@arm.com>
-	<cc18b752-97fd-f95f-fdef-478adc06e505@redhat.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Wed, 23 Aug 2017 17:43:01 +0100
+Message-ID: <20170823164301.GC590@arm.com>
+References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
+ <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
+ <20170810172723.GD9980@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA8383CC287@FRAEML521-MBX.china.huawei.com>
+ <c6b7c641-b839-1388-7982-366e796e6ba9@huawei.com>
+ <20170823132430.GB634@arm.com>
+ <77b6c97f-f2d2-fd14-e83e-345addc5ea71@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <cc18b752-97fd-f95f-fdef-478adc06e505-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+In-Reply-To: <77b6c97f-f2d2-fd14-e83e-345addc5ea71@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: John Garry <john.garry@huawei.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
-
-On Wed, Aug 23, 2017 at 02:36:53PM +0200, Auger Eric wrote:
-> On 23/08/2017 12:25, Will Deacon wrote:
-> > On Tue, Aug 22, 2017 at 10:09:15PM +0300, Michael S. Tsirkin wrote:
-> >> On Fri, Aug 18, 2017 at 05:49:42AM +0300, Michael S. Tsirkin wrote:
-> >>> On Thu, Aug 17, 2017 at 05:34:25PM +0100, Will Deacon wrote:
-> >>>> On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
-> >>>>> When running a virtual SMMU on a guest we sometimes need to trap
-> >>>>> all changes to the translation structures. This is especially useful
-> >>>>> to integrate with VFIO. This patch adds a new option that forces
-> >>>>> the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
-> >>>>>
-> >>>>> TLBI commands then can be trapped.
-> >>>>>
-> >>>>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >>>>>
-> >>>>> ---
-> >>>>> v1 -> v2:
-> >>>>> - rebase on v4.13-rc2
-> >>>>> ---
-> >>>>>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
-> >>>>>  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
-> >>>>>  2 files changed, 9 insertions(+)
-> >>>>>
-> >>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >>>>> index c9abbf3..ebb85e9 100644
-> >>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >>>>> @@ -52,6 +52,10 @@ the PCIe specification.
-> >>>>>                          devicetree/bindings/interrupt-controller/msi.txt
-> >>>>>                        for a description of the msi-parent property.
-> >>>>>  
-> >>>>> +- tlbi-on-map       : invalidate caches whenever there is an update of
-> >>>>> +                      any remapping structure (updates to not-present or
-> >>>>> +                      present entries).
-> >>>>> +
+On Wed, Aug 23, 2017 at 03:29:46PM +0100, John Garry wrote:
+> On 23/08/2017 14:24, Will Deacon wrote:
+> >On Wed, Aug 23, 2017 at 02:17:24PM +0100, John Garry wrote:
+> >>>>>Signed-off-by: Shameer Kolothum
+> >>>><shameerali.kolothum.thodi@huawei.com>
+> >>>>>---
+> >>>>>drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
+> >>>>>1 file changed, 22 insertions(+), 5 deletions(-)
 > >>>>
-> >>>> My position on this hasn't changed, so NAK for this patch. If you want to
-> >>>> emulate something outside of the SMMUv3 architecture, please do so, but
-> >>>> don't pretend that it's an SMMUv3.
-> >>>>
-> >>>> Will
+> >>>>Please can you also add a devicetree binding with corresponding
+> >>>>documentation to enable this workaround on non-ACPI based systems too?
+> >>>>It should be straightforward if you update the arm_smmu_options table.
 > >>>
-> >>> What if the emulated device does not list arm,smmu-v3, listing
-> >>> qemu,ssmu-v3 as compatible? Would that address the concern?
+> >>>As I mentioned before, devicetree was a lower priority and we would definitely
+> >>>submit patch to support that. Even if we update the arm_smmu_options table
+> >>>with DT binding, the generic function to retrieve the MSI address regions only
+> >>>works on ACPI/IORT case now.
+> >>>
 > >>
-> >> Will, can you comment on this please? Are you open to reusing the code
-> >> in drivers/iommu/arm-smmu-v3.c to support a paravirtual device that does
-> >> not claim to be compatible with smmuv3 but does try to behave very close to
-> >> it except it can cache non-present structures? Or would you rather
-> >> the code to support this is forked to qemu-smmu-v3.c?
-> > 
-> > I still don't understand why this is preferable to a PV IOMMU
-> > implementation. Not only is this proposing to issue TLB maintenance on
-> > map, but the maintenance command itself is entirely made up. Why not just
-> > have a map command? Anyway, I'm reluctant to add this hack to the driver until:
-> > 
-> >   1. There is a compelling reason to pursue this approach instead of a
-> >      PV approach (including performance measurements).
-> > 
-> >   2. There is a specification for the QEMU fork of the ARM SMMUv3
-> >      architecture, including the semantics of the new command being proposed
-> >      and what exactly the TLB maintenance requirements are on map (for
-> >      example, what if I change an STE or a CD -- are they cached too?).
-> I am not sure I catch this last point. At the moment whenever the smmuv3
-> driver issues data structure invalidation commands (CMD_CFGI_*), those
-> are trapped and I replay the mappings on host side. I have not changed
-> anything on that side.
+> >>Hi Will,
+> >>
+> >>Can you confirm your stance on supporting this workaround for DT as well as
+> >>ACPI?
+> >>
+> >>For us, we now only "officially" support ACPI FW, and DT support at this
+> >>point is patchy/limited. To me, adding DT support is just more errata
+> >>workaround code to maintain with little useful gain.
+> >
+> >I basically don't like the idea of a driver that only works for one of
+> >ACPI or DT yet claims to support both. I'm less fussed about functionality
+> >differences (feature X is only available with firmware Y), but not working
+> >around a hardware erratum that we know about is just lazy.
+> >
+> >So I'd prefer that we handle this in both cases, or blacklist affected
+> >devices when booting with DT. Continuing as though there isn't an erratum
+> >is the worst thing we can do.
+> 
+> OK, seems reasonable.
+> 
+> We would consider blacklisting the device, where/how to do is the question.
+> 
+> So the errata is in the GICv3 ITS/PCI host controller, and we just use the
+> in-between SMMU (driver) to provide the workaround. So my initial impression
+> is that the PCI host controller would have to be blacklisted IFF behind an
+> IOMMU for DT firmware in pcie-hisi.c or pci quirks framework. How does it
+> sound?
 
-But STEs and CDs have very similar rules to TLBs: you don't need to issue
-invalidation if the data structure is transitioning from invalid to valid.
-If you're caching those in QEMU, how do you keep them up-to-date? I can
-also guarantee you that there will be additional data structures added
-in future versions of the architecture, so you'll need to consider how
-you want to operate when running on newer hardware.
+If that avoids us running into the erratum, then fine by me. I'd obviously
+prefer we work-around it since we know how to, but that's up to you.
 
-> I introduced a new map implementation defined command because the per
-> page CMD_TLBI_NH_VA IOVA invalidation command was not efficient/usable
-> with use cases such as DPDK on guest. I understood the spec provisions
-> for such implementation defined commands.
+> Please also note that in our SoC we have other devices behind the same SMMU,
+> like storage controller, which are not affected or related to the Errata.
+> 
+> BTW, ignoring DT support, are you happy with this patchset?
 
-Whilst there is a space for IMP DEF commands, this doesn't generally mean
-that they can be repurposed by software. What if the underlying hardware
-has an IMP DEF command that you want to export? Besides, my main points
-here are that your command isn't well-specified and if you have to add
-a command, why not just add a "map" command (i.e. implement a PV interface
-instead)?
-
-> >   3. The ACPI IORT spec is updated to recognise this implementation
-> > 
-> >   4. There is an implementation that can use the guest page tables directly,
-> >      because that may well make all of this moot.
-> Most probably I will come back to you with questions on stage 1 + stage2
-> enablement and "4.8 Virtualisation" chapter of smmuv3 spec. Besides I
-> also need to get access to some HW with smmuv3 ;-)
-
-Ok.
+Yes, but I won't ack it without the above taken care of.
 
 Will
