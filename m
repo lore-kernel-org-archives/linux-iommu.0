@@ -1,56 +1,61 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Wed, 23 Aug 2017 14:24:30 +0100
-Message-ID: <20170823132430.GB634@arm.com>
-References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
- <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
- <20170810172723.GD9980@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA8383CC287@FRAEML521-MBX.china.huawei.com>
- <c6b7c641-b839-1388-7982-366e796e6ba9@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <c6b7c641-b839-1388-7982-366e796e6ba9@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>
-Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] iommu: qcom: annotate PM functions as __maybe_unused
+Date: Wed, 23 Aug 2017 15:42:45 +0200
+Message-ID: <20170823134303.1000996-1-arnd@arndb.de>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Rob Clark <robdclark@gmail.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 23, 2017 at 02:17:24PM +0100, John Garry wrote:
-> >>>Signed-off-by: Shameer Kolothum
-> >><shameerali.kolothum.thodi@huawei.com>
-> >>>---
-> >>> drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
-> >>> 1 file changed, 22 insertions(+), 5 deletions(-)
-> >>
-> >>Please can you also add a devicetree binding with corresponding
-> >>documentation to enable this workaround on non-ACPI based systems too?
-> >>It should be straightforward if you update the arm_smmu_options table.
-> >
-> >As I mentioned before, devicetree was a lower priority and we would definitely
-> >submit patch to support that. Even if we update the arm_smmu_options table
-> >with DT binding, the generic function to retrieve the MSI address regions only
-> >works on ACPI/IORT case now.
-> >
-> 
-> Hi Will,
-> 
-> Can you confirm your stance on supporting this workaround for DT as well as
-> ACPI?
-> 
-> For us, we now only "officially" support ACPI FW, and DT support at this
-> point is patchy/limited. To me, adding DT support is just more errata
-> workaround code to maintain with little useful gain.
+The qcom_iommu_disable_clocks() function is only called from PM
+code that is hidden in an #ifdef, causing a harmless warning without
+CONFIG_PM:
 
-I basically don't like the idea of a driver that only works for one of
-ACPI or DT yet claims to support both. I'm less fussed about functionality
-differences (feature X is only available with firmware Y), but not working
-around a hardware erratum that we know about is just lazy.
+drivers/iommu/qcom_iommu.c:601:13: error: 'qcom_iommu_disable_clocks' defined but not used [-Werror=unused-function]
+ static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
+drivers/iommu/qcom_iommu.c:581:12: error: 'qcom_iommu_enable_clocks' defined but not used [-Werror=unused-function]
+ static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
 
-So I'd prefer that we handle this in both cases, or blacklist affected
-devices when booting with DT. Continuing as though there isn't an erratum
-is the worst thing we can do.
+Replacing that #ifdef with __maybe_unused annotations lets the compiler
+drop the functions silently instead.
 
-Will
+Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iommu/qcom_iommu.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index 48b62aa52787..c8a587d034b0 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -860,8 +860,7 @@ static int qcom_iommu_device_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM
+-static int qcom_iommu_resume(struct device *dev)
++static int __maybe_unused qcom_iommu_resume(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
+@@ -869,7 +868,7 @@ static int qcom_iommu_resume(struct device *dev)
+ 	return qcom_iommu_enable_clocks(qcom_iommu);
+ }
+ 
+-static int qcom_iommu_suspend(struct device *dev)
++static int __maybe_unused qcom_iommu_suspend(struct device *dev)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
+@@ -878,7 +877,6 @@ static int qcom_iommu_suspend(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops qcom_iommu_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(qcom_iommu_suspend, qcom_iommu_resume, NULL)
+-- 
+2.9.0
