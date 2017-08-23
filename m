@@ -1,164 +1,120 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC] virtio-iommu version 0.4
-Date: Wed, 23 Aug 2017 15:55:07 +0200
-Message-ID: <f9b02ce1-057f-df4f-90d7-52616ad60b88@redhat.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value
+	if allocation failed
+Date: Wed, 23 Aug 2017 16:56:48 +0300
+Message-ID: <CAPD2p-kThTic+jdY2jdd8qmr_mKQ9oTvxYQjRuQis5zgr9pcnw@mail.gmail.com>
+References: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
+	<050cf91d-1edb-a791-fdd2-5867a1504cf5@arm.com>
+	<CAPD2p-n8M5eY1XHaW-3b-opecXo0ut6fSRXcPssrJ-TxsvkEtA@mail.gmail.com>
+	<3189697.YHy3tKUDVd@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-2491-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
-Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <3189697.YHy3tKUDVd@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
+Hi, Laurent
 
-On 04/08/2017 20:19, Jean-Philippe Brucker wrote:
-> This is the continuation of my proposal for virtio-iommu, the para-
-> virtualized IOMMU. Here is a summary of the changes since last time [1]:
-> 
-> * The virtio-iommu document now resembles an actual specification. It is
->   split into a formal description of the virtio device, and implementation
->   notes. Please find sources and binaries at [2].
-> 
-> * Added a probe request to describe to the guest different properties that
->   do not fit in firmware or in the virtio config space. This is a
->   necessary stepping stone for extending the virtio-iommu.
-> 
-> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
->   Bhushan.
-> 
-> You can find the Linux driver and kvmtool device at [4] and [5]. I
-> plan to rework driver and kvmtool device slightly before sending the
-> patches.
-> 
-> To understand the virtio-iommu, I advise to first read introduction and
-> motivation, then skim through implementation notes and finally look at the
-> device specification.
-> 
-> I wasn't sure how to organize the review. For those who prefer to comment
-> inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
-> to this thread. They are the biggest chunks of the document. But LaTeX
-> isn't very pleasant to read, so you can simply send a list of comments in
-> relation to section numbers and a few words of context, we'll manage.
+On Wed, Aug 23, 2017 at 4:46 PM, Laurent Pinchart
+<laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
+> Hi Oleksandr,
+>
+> On Wednesday, 23 August 2017 14:58:47 EEST Oleksandr Tyshchenko wrote:
+>> On Wed, Aug 23, 2017 at 1:05 PM, Robin Murphy wrote:
+>> > On 23/08/17 10:36, Oleksandr Tyshchenko wrote:
+>> >> On Wed, Aug 23, 2017 at 12:25 AM, Laurent Pinchart wrote:
+>> >>> On Monday, 21 August 2017 15:40:41 EEST Oleksandr Tyshchenko wrote:
+>> >>>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>> >>>>
+>> >>>> In ipmmu_domain_init_context() we are trying to allocate context and
+>> >>>> if allocation fails we will call free_io_pgtable_ops(),
+>> >>>> but "domain->context_id" hasn't been initialized yet (likely it is 0
+>> >>>> because of kzalloc). Having the following call stack:
+>> >>>> free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
+>> >>>> ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
+>> >>>> we will get a mistaken cache flush for a context pointed by
+>> >>>> uninitialized "domain->context_id".
+>> >>>>
+>> >>>> So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
+>> >>>> free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
+>> >>>> before calling ipmmu_tlb_invalidate().
+>> >>>>
+>> >>>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>> >>>> ---
+>> >>>>
+>> >>>>  drivers/iommu/ipmmu-vmsa.c | 4 ++++
+>> >>>>  1 file changed, 4 insertions(+)
+>> >>>>
+>> >>>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>> >>>> index 2a38aa1..5b226c0 100644
+>> >>>> --- a/drivers/iommu/ipmmu-vmsa.c
+>> >>>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>> >>>> @@ -303,6 +303,9 @@ static void ipmmu_tlb_flush_all(void *cookie)
+>> >>>>  {
+>> >>>>       struct ipmmu_vmsa_domain *domain = cookie;
+>> >>>>
+>> >>>> +     if (domain->context_id >= IPMMU_CTX_MAX)
+>> >>>> +             return;
+>> >>>> +
+>> >>>>       ipmmu_tlb_invalidate(domain);
+>> >>>>  }
+>> >>>>
+>> >>>> @@ -380,6 +383,7 @@ static int ipmmu_domain_init_context(struct
+>> >>>> ipmmu_vmsa_domain *domain)
+>> >>>>                  */
+>> >>>>       ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+>> >>>>       if (ret == IPMMU_CTX_MAX) {
+>> >>>> +             domain->context_id = IPMMU_CTX_MAX;
+>> >>>
+>> >>> Wouldn't it make more sense to allocate the pgtable ops after
+>> >>> initializing the context (moving the ipmmu_domain_allocate_context()
+>> >>> call to the very end of the function) ? That way we would be less
+>> >>> dependent on changes to pgtable ops init/cleanup code that could
+>> >>> require the context to be set up.
+>> >>
+>> >> Why not. But, not sure about the very end of the function. Since for
+>> >> writing some HW registers down the function (IMTTLBR0/IMTTUBR0,
+>> >> IMMAIR0) we need to have what pgtable ops sets up for us (ttbr, mair).
+>> >> What about to just swap alloc_io_pgtable_ops() and
+>> >> ipmmu_domain_allocate_context()?
+>> >
+>> > This looks a lot more reasonable - reserving a free context is both
+>> > quicker and more likely to fail (due to limited hardware resources) than
+>> > setting up a pagetable, so it makes a lot of sense to do that before
+>> > anything else.
+>>
+>> Agree.
+>
+> That looks good to me too. In general I prefer initializing everything needed
+> by the error path before calling anything that could trigger that error path,
+> instead of initializing variables to magic values that mean part of the
+> cleanup should be skipped.
+Make sense.
 
-Please find some comments/questions below:
+>
+> Will you send a v2 ?
+Yes.
 
-2.6.7:1
-I do not understand the footnode #6 sentence: 'Without a specific
-definition of the ACK requirements for a given property type, it simply
-means that the driver read all fields of that property."
-2.6.7:2
-what if the driver has not provided a big enough buffer and the device
-cannot report all supported properties?
-2.6.8.2:
-Couldn't we use the same terminology as iommu_resv_type in iommu.h?
-the negative form is not the easiest to understand for me.
-Why F_MSI?
-2.6.8.2.1
-Multiple overlapping RESV_MEM properties are merged together. Device
-requirement? if same types I assume?
+>
+> --
+> Regards,
+>
+> Laurent Pinchart
+>
 
-what if the device is a physical assigned device. does the device report
-the host doorbell or the guest doorbell, may be worth to clarify.
+-- 
+Regards,
 
-3.1.1 last paragraph
-you talk about device ID but this is a terminology only known by ARM I
-think. Actually it is introduced later in 3.1.2.
-
-3.1.2
-About ACPI integration. Isn't IORT ARM specific? Will other
-architectures use that table? In IORT we also have Named Component node
-which look pretty the same. Could you elaborate of the difference?
-Device Object name: isn't it the path to the LNR0005 in the namespace?
-
-Thanks
-
-Eric
-> 
-> ---
-> Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
-> more easily differences since the RFC (see [6]), but haven't been made
-> public so far. This is the first public posting since initial proposal
-> [1], and the following describes all changes.
-> 
-> ## v0.1 ##
-> 
-> Content is the same as the RFC, but formatted to LaTeX. 'make' generates
-> one PDF and one HTML document.
-> 
-> ## v0.2 ##
-> 
-> Add introductions, improve topology example and firmware description based
-> on feedback and a number of useful discussions.
-> 
-> ## v0.3 ##
-> 
-> Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
-> the device and driver behaviour. Unmap semantics are consolidated; they
-> are now closer to VFIO Type1 v2 semantics.
-> 
-> ## v0.4 ##
-> 
-> Introduce PROBE requests. They provide per-endpoint information to the
-> driver that couldn't be described otherwise.
-> 
-> For the moment, they allow to handle MSIs on x86 virtual platforms (see
-> 3.2). To do that we communicate reserved IOVA regions, that will also be
-> useful for describing regions that cannot be mapped for a given endpoint,
-> for instance addresses that correspond to a PCI bridge window.
-> 
-> Introducing such a large framework for this tiny feature may seem
-> overkill, but it is needed for future extensions of the virtio-iommu and I
-> believe it really is worth the effort.
-> 
-> ## Future ##
-> 
-> Other extensions are in preparation. I won't detail them here because v0.4
-> already is a lot to digest, but in short, building on top of PROBE:
-> 
-> * First, since the IOMMU is paravirtualized, the device can expose some
->   properties of the physical topology to the guest, and let it allocate
->   resources more efficiently. For example, when the virtio-iommu manages
->   both physical and emulated endpoints, with different underlying IOMMUs,
->   we now have a way to describe multiple page and block granularities,
->   instead of forcing the guest to use the most restricted one for all
->   endpoints. This will most likely be in v0.5.
-> 
-> * Then on top of that, a major improvement will describe hardware
->   acceleration features available to the guest. There is what I call "Page
->   Table Handover" (or simply, from the host POV, "Nested"), the ability
->   for the guest to manipulate its own page tables instead of sending
->   MAP/UNMAP requests to the host. This, along with IO Page Fault
->   reporting, will also permit SVM virtualization on different platforms.
-> 
-> Thanks,
-> Jean
-> 
-> [1] http://www.spinics.net/lists/kvm/msg147990.html
-> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
->     http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
->     I reiterate the disclaimers: don't use this document as a reference,
->     it's a draft. It's also not an OASIS document yet. It may be riddled
->     with mistakes. As this is a working draft, it is unstable and I do not
->     guarantee backward compatibility of future versions.
-> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
-> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
->     Warning: UAPI headers have changed! They didn't follow the spec,
->     please update. (Use branch v0.1, that has the old headers, for the
->     Qemu prototype [3])
-> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
->     Warning: command-line has changed! Use --viommu vfio[,opts] and
->     --viommu virtio[,opts] to instantiate a device.
-> [6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
-> 
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> 
+Oleksandr Tyshchenko
