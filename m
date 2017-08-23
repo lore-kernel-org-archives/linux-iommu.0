@@ -1,11 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/2 v2] Introduce IOMMU-API TLB Flushing Interface
-Date: Wed, 23 Aug 2017 15:50:02 +0200
-Message-ID: <1503496204-2527-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/2] iommu/amd: Rename a few flush functions
+Date: Wed, 23 Aug 2017 15:50:03 +0200
+Message-ID: <1503496204-2527-2-git-send-email-joro@8bytes.org>
+References: <1503496204-2527-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1503496204-2527-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,47 +18,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-here is the second version of the patch-set to introduce an
-explicit TLB-flushing interface to the IOMMU-API. This
-version changed the interface quite a lot compared to the
-first version.
+Rename a few iommu cache-flush functions that start with
+iommu_ to start with amd_iommu now. This is to prevent name
+collisions with generic iommu code later on.
 
-This version does not change the semantics of the
-iommu_map() and iommu_unmap() functions anymore. The reason
-is that the semantic-change doesn't make sense for
-iommu_map(), as this path does not require a TLB-flush in
-almost all cases. And only changing the semantics of the
-iommu_unmap() path would introduce an asymmetry to the
-IOMMU-API, which makes it harder to use.
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-This series introduces the new function iommu_unmap_fast()
-instead, which is allowed to return with dirty TLBs. The
-three functions for TLB-flushing have not changed compared
-to the first version of this patch-set.
-
-Since the iommu_map()/unmap() functions don't change their
-semantics anymore, I've also dropped all patches which
-convert the existing users.
-
-Please review.
-
-Thanks,
-
-	Joerg
-
-Joerg Roedel (2):
-  iommu/amd: Rename a few flush functions
-  iommu: Introduce Interface for IOMMU TLB Flushing
-
- drivers/iommu/amd_iommu.c | 16 +++++------
- drivers/iommu/iommu.c     | 32 ++++++++++++++++++---
- include/linux/iommu.h     | 72 ++++++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 107 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 354cbd6..5469457 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1165,7 +1165,7 @@ static int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
+ 	return iommu_queue_command(iommu, &cmd);
+ }
+ 
+-static void iommu_flush_dte_all(struct amd_iommu *iommu)
++static void amd_iommu_flush_dte_all(struct amd_iommu *iommu)
+ {
+ 	u32 devid;
+ 
+@@ -1179,7 +1179,7 @@ static void iommu_flush_dte_all(struct amd_iommu *iommu)
+  * This function uses heavy locking and may disable irqs for some time. But
+  * this is no issue because it is only called during resume.
+  */
+-static void iommu_flush_tlb_all(struct amd_iommu *iommu)
++static void amd_iommu_flush_tlb_all(struct amd_iommu *iommu)
+ {
+ 	u32 dom_id;
+ 
+@@ -1193,7 +1193,7 @@ static void iommu_flush_tlb_all(struct amd_iommu *iommu)
+ 	iommu_completion_wait(iommu);
+ }
+ 
+-static void iommu_flush_all(struct amd_iommu *iommu)
++static void amd_iommu_flush_all(struct amd_iommu *iommu)
+ {
+ 	struct iommu_cmd cmd;
+ 
+@@ -1212,7 +1212,7 @@ static void iommu_flush_irt(struct amd_iommu *iommu, u16 devid)
+ 	iommu_queue_command(iommu, &cmd);
+ }
+ 
+-static void iommu_flush_irt_all(struct amd_iommu *iommu)
++static void amd_iommu_flush_irt_all(struct amd_iommu *iommu)
+ {
+ 	u32 devid;
+ 
+@@ -1225,11 +1225,11 @@ static void iommu_flush_irt_all(struct amd_iommu *iommu)
+ void iommu_flush_all_caches(struct amd_iommu *iommu)
+ {
+ 	if (iommu_feature(iommu, FEATURE_IA)) {
+-		iommu_flush_all(iommu);
++		amd_iommu_flush_all(iommu);
+ 	} else {
+-		iommu_flush_dte_all(iommu);
+-		iommu_flush_irt_all(iommu);
+-		iommu_flush_tlb_all(iommu);
++		amd_iommu_flush_dte_all(iommu);
++		amd_iommu_flush_irt_all(iommu);
++		amd_iommu_flush_tlb_all(iommu);
+ 	}
+ }
+ 
 -- 
 2.7.4
