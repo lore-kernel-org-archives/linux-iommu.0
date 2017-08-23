@@ -1,87 +1,129 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Wed, 23 Aug 2017 15:29:46 +0100
-Message-ID: <77b6c97f-f2d2-fd14-e83e-345addc5ea71@huawei.com>
-References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
- <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
- <20170810172723.GD9980@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA8383CC287@FRAEML521-MBX.china.huawei.com>
- <c6b7c641-b839-1388-7982-366e796e6ba9@huawei.com>
- <20170823132430.GB634@arm.com>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2] iommu/ipmmu-vmsa: Rereserving a free context before
+	setting up a pagetable
+Date: Wed, 23 Aug 2017 17:31:42 +0300
+Message-ID: <1503498702-27996-1-git-send-email-olekstysh@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170823132430.GB634@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 23/08/2017 14:24, Will Deacon wrote:
-> On Wed, Aug 23, 2017 at 02:17:24PM +0100, John Garry wrote:
->>>>> Signed-off-by: Shameer Kolothum
->>>> <shameerali.kolothum.thodi@huawei.com>
->>>>> ---
->>>>> drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
->>>>> 1 file changed, 22 insertions(+), 5 deletions(-)
->>>>
->>>> Please can you also add a devicetree binding with corresponding
->>>> documentation to enable this workaround on non-ACPI based systems too?
->>>> It should be straightforward if you update the arm_smmu_options table.
->>>
->>> As I mentioned before, devicetree was a lower priority and we would definitely
->>> submit patch to support that. Even if we update the arm_smmu_options table
->>> with DT binding, the generic function to retrieve the MSI address regions only
->>> works on ACPI/IORT case now.
->>>
->>
->> Hi Will,
->>
->> Can you confirm your stance on supporting this workaround for DT as well as
->> ACPI?
->>
->> For us, we now only "officially" support ACPI FW, and DT support at this
->> point is patchy/limited. To me, adding DT support is just more errata
->> workaround code to maintain with little useful gain.
->
-> I basically don't like the idea of a driver that only works for one of
-> ACPI or DT yet claims to support both. I'm less fussed about functionality
-> differences (feature X is only available with firmware Y), but not working
-> around a hardware erratum that we know about is just lazy.
->
-> So I'd prefer that we handle this in both cases, or blacklist affected
-> devices when booting with DT. Continuing as though there isn't an erratum
-> is the worst thing we can do.
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
 
-OK, seems reasonable.
+Reserving a free context is both quicker and more likely to fail
+(due to limited hardware resources) than setting up a pagetable.
+What is more the pagetable init/cleanup code could require
+the context to be set up.
 
-We would consider blacklisting the device, where/how to do is the question.
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+CC: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+CC: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 
-So the errata is in the GICv3 ITS/PCI host controller, and we just use 
-the in-between SMMU (driver) to provide the workaround. So my initial 
-impression is that the PCI host controller would have to be blacklisted 
-IFF behind an IOMMU for DT firmware in pcie-hisi.c or pci quirks 
-framework. How does it sound?
-
-Please also note that in our SoC we have other devices behind the same 
-SMMU, like storage controller, which are not affected or related to the 
-Errata.
-
-BTW, ignoring DT support, are you happy with this patchset?
-
-Regards,
-John
-
->
-> Will
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-> .
->
+---
+This patch fixes a bug during rollback logic:
+In ipmmu_domain_init_context() we are trying to find an unused context
+and if operation fails we will call free_io_pgtable_ops(),
+but "domain->context_id" hasn't been initialized yet (likely it is 0
+because of kzalloc). Having the following call stack:
+free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
+ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
+we will get a mistaken cache flush for a context pointed by
+uninitialized "domain->context_id".
 
 
+v1 here:
+https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023857.html
+---
+ drivers/iommu/ipmmu-vmsa.c | 42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 2a38aa1..382f387 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -341,6 +341,19 @@ static int ipmmu_domain_allocate_context(struct ipmmu_vmsa_device *mmu,
+ 	return ret;
+ }
+ 
++static void ipmmu_domain_free_context(struct ipmmu_vmsa_device *mmu,
++				      unsigned int context_id)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&mmu->lock, flags);
++
++	clear_bit(context_id, mmu->ctx);
++	mmu->domains[context_id] = NULL;
++
++	spin_unlock_irqrestore(&mmu->lock, flags);
++}
++
+ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ {
+ 	u64 ttbr;
+@@ -370,22 +383,22 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ 	 */
+ 	domain->cfg.iommu_dev = domain->mmu->dev;
+ 
+-	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+-					   domain);
+-	if (!domain->iop)
+-		return -EINVAL;
+-
+ 	/*
+ 	 * Find an unused context.
+ 	 */
+ 	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+-	if (ret == IPMMU_CTX_MAX) {
+-		free_io_pgtable_ops(domain->iop);
++	if (ret == IPMMU_CTX_MAX)
+ 		return -EBUSY;
+-	}
+ 
+ 	domain->context_id = ret;
+ 
++	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
++					   domain);
++	if (!domain->iop) {
++		ipmmu_domain_free_context(domain->mmu, domain->context_id);
++		return -EINVAL;
++	}
++
+ 	/* TTBR0 */
+ 	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
+ 	ipmmu_ctx_write(domain, IMTTLBR0, ttbr);
+@@ -426,19 +439,6 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ 	return 0;
+ }
+ 
+-static void ipmmu_domain_free_context(struct ipmmu_vmsa_device *mmu,
+-				      unsigned int context_id)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&mmu->lock, flags);
+-
+-	clear_bit(context_id, mmu->ctx);
+-	mmu->domains[context_id] = NULL;
+-
+-	spin_unlock_irqrestore(&mmu->lock, flags);
+-}
+-
+ static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
+ {
+ 	/*
+-- 
+2.7.4
