@@ -1,18 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
-Date: Wed, 23 Aug 2017 11:25:17 +0100
-Message-ID: <20170823102517.GE27301@arm.com>
-References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-	<1502459130-6234-3-git-send-email-eric.auger@redhat.com>
-	<20170817163424.GC30719@arm.com>
-	<20170818053639-mutt-send-email-mst@kernel.org>
-	<20170822220457-mutt-send-email-mst@kernel.org>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value
+	if allocation failed
+Date: Wed, 23 Aug 2017 14:58:47 +0300
+Message-ID: <CAPD2p-n8M5eY1XHaW-3b-opecXo0ut6fSRXcPssrJ-TxsvkEtA@mail.gmail.com>
+References: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
+	<3230921.pODNlFebuG@avalon>
+	<CAPD2p-ksGxF6Kq+=sE9gM1LYx9a9aM-OuPAcbw_N7nHabbhH4Q@mail.gmail.com>
+	<050cf91d-1edb-a791-fdd2-5867a1504cf5@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170822220457-mutt-send-email-mst-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <050cf91d-1edb-a791-fdd2-5867a1504cf5-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,77 +21,142 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 22, 2017 at 10:09:15PM +0300, Michael S. Tsirkin wrote:
-> On Fri, Aug 18, 2017 at 05:49:42AM +0300, Michael S. Tsirkin wrote:
-> > On Thu, Aug 17, 2017 at 05:34:25PM +0100, Will Deacon wrote:
-> > > On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
-> > > > When running a virtual SMMU on a guest we sometimes need to trap
-> > > > all changes to the translation structures. This is especially useful
-> > > > to integrate with VFIO. This patch adds a new option that forces
-> > > > the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
-> > > > 
-> > > > TLBI commands then can be trapped.
-> > > > 
-> > > > Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > > > 
-> > > > ---
-> > > > v1 -> v2:
-> > > > - rebase on v4.13-rc2
-> > > > ---
-> > > >  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
-> > > >  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
-> > > >  2 files changed, 9 insertions(+)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > > > index c9abbf3..ebb85e9 100644
-> > > > --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > > > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > > > @@ -52,6 +52,10 @@ the PCIe specification.
-> > > >                          devicetree/bindings/interrupt-controller/msi.txt
-> > > >                        for a description of the msi-parent property.
-> > > >  
-> > > > +- tlbi-on-map       : invalidate caches whenever there is an update of
-> > > > +                      any remapping structure (updates to not-present or
-> > > > +                      present entries).
-> > > > +
-> > > 
-> > > My position on this hasn't changed, so NAK for this patch. If you want to
-> > > emulate something outside of the SMMUv3 architecture, please do so, but
-> > > don't pretend that it's an SMMUv3.
-> > > 
-> > > Will
-> > 
-> > What if the emulated device does not list arm,smmu-v3, listing
-> > qemu,ssmu-v3 as compatible? Would that address the concern?
-> 
-> Will, can you comment on this please? Are you open to reusing the code
-> in drivers/iommu/arm-smmu-v3.c to support a paravirtual device that does
-> not claim to be compatible with smmuv3 but does try to behave very close to
-> it except it can cache non-present structures? Or would you rather
-> the code to support this is forked to qemu-smmu-v3.c?
+Hi, Robin
 
-I still don't understand why this is preferable to a PV IOMMU
-implementation. Not only is this proposing to issue TLB maintenance on
-map, but the maintenance command itself is entirely made up. Why not just
-have a map command? Anyway, I'm reluctant to add this hack to the driver until:
+On Wed, Aug 23, 2017 at 1:05 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 23/08/17 10:36, Oleksandr Tyshchenko wrote:
+>> Hi, Laurent.
+>>
+>> On Wed, Aug 23, 2017 at 12:25 AM, Laurent Pinchart
+>> <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
+>>> Hi Oleksandr,
+>>>
+>>> Thank you for the patch.
+>>>
+>>> On Monday, 21 August 2017 15:40:41 EEST Oleksandr Tyshchenko wrote:
+>>>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>>>>
+>>>> In ipmmu_domain_init_context() we are trying to allocate context and
+>>>> if allocation fails we will call free_io_pgtable_ops(),
+>>>> but "domain->context_id" hasn't been initialized yet (likely it is 0
+>>>> because of kzalloc). Having the following call stack:
+>>>> free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
+>>>> ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
+>>>> we will get a mistaken cache flush for a context pointed by
+>>>> uninitialized "domain->context_id".
+>>>>
+>>>> So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
+>>>> free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
+>>>> before calling ipmmu_tlb_invalidate().
+>>>>
+>>>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>>>> ---
+>>>>  drivers/iommu/ipmmu-vmsa.c | 4 ++++
+>>>>  1 file changed, 4 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>>>> index 2a38aa1..5b226c0 100644
+>>>> --- a/drivers/iommu/ipmmu-vmsa.c
+>>>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>>>> @@ -303,6 +303,9 @@ static void ipmmu_tlb_flush_all(void *cookie)
+>>>>  {
+>>>>       struct ipmmu_vmsa_domain *domain = cookie;
+>>>>
+>>>> +     if (domain->context_id >= IPMMU_CTX_MAX)
+>>>> +             return;
+>>>> +
+>>>>       ipmmu_tlb_invalidate(domain);
+>>>>  }
+>>>>
+>>>> @@ -380,6 +383,7 @@ static int ipmmu_domain_init_context(struct
+>>>> ipmmu_vmsa_domain *domain) */
+>>>>       ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+>>>>       if (ret == IPMMU_CTX_MAX) {
+>>>> +             domain->context_id = IPMMU_CTX_MAX;
+>>>
+>>> Wouldn't it make more sense to allocate the pgtable ops after initializing the
+>>> context (moving the ipmmu_domain_allocate_context() call to the very end of
+>>> the function) ? That way we would be less dependent on changes to pgtable ops
+>>> init/cleanup code that could require the context to be set up.
+>>
+>> Why not. But, not sure about the very end of the function. Since for
+>> writing some HW registers down the function (IMTTLBR0/IMTTUBR0,
+>> IMMAIR0)
+>> we need to have what pgtable ops sets up for us (ttbr, mair). What
+>> about to just swap alloc_io_pgtable_ops() and
+>> ipmmu_domain_allocate_context()?
+>
+> This looks a lot more reasonable - reserving a free context is both
+> quicker and more likely to fail (due to limited hardware resources) than
+> setting up a pagetable, so it makes a lot of sense to do that before
+> anything else.
+Agree.
 
-  1. There is a compelling reason to pursue this approach instead of a
-     PV approach (including performance measurements).
+>
+> Robin.
+>
+>> ...
+>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>> index 2a38aa1..90af1c7 100644
+>> --- a/drivers/iommu/ipmmu-vmsa.c
+>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>> @@ -370,22 +370,22 @@ static int ipmmu_domain_init_context(struct
+>> ipmmu_vmsa_domain *domain)
+>>          */
+>>         domain->cfg.iommu_dev = domain->mmu->dev;
+>>
+>> -       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+>> -                                          domain);
+>> -       if (!domain->iop)
+>> -               return -EINVAL;
+>> -
+>>         /*
+>>          * Find an unused context.
+>>          */
+>>         ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+>> -       if (ret == IPMMU_CTX_MAX) {
+>> -               free_io_pgtable_ops(domain->iop);
+>> +       if (ret == IPMMU_CTX_MAX)
+>>                 return -EBUSY;
+>> -       }
+>>
+>>         domain->context_id = ret;
+>>
+>> +       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+>> +                                          domain);
+>> +       if (!domain->iop) {
+>> +               ipmmu_domain_free_context(domain->mmu, domain->context_id);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>>         /* TTBR0 */
+>>         ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
+>>         ipmmu_ctx_write(domain, IMTTLBR0, ttbr);
+>> ...
+>>
+>>>
+>>>>               free_io_pgtable_ops(domain->iop);
+>>>>               return -EBUSY;
+>>>>       }
+>>>
+>>>
+>>> --
+>>> Regards,
+>>>
+>>> Laurent Pinchart
+>>>
+>>
+>>
+>>
+>
 
-  2. There is a specification for the QEMU fork of the ARM SMMUv3
-     architecture, including the semantics of the new command being proposed
-     and what exactly the TLB maintenance requirements are on map (for
-     example, what if I change an STE or a CD -- are they cached too?).
 
-  3. The ACPI IORT spec is updated to recognise this implementation
 
-  4. There is an implementation that can use the guest page tables directly,
-     because that may well make all of this moot.
+-- 
+Regards,
 
-Forking the driver doesn't sound very sensible to me.
-
-Will
+Oleksandr Tyshchenko
