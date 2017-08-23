@@ -1,123 +1,87 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH 1/5] iommu/arm-smmu-v3: put off the execution of TLBI* to
- reduce lock confliction
-Date: Wed, 23 Aug 2017 09:21:33 +0800
-Message-ID: <599CD89D.7080600@huawei.com>
-References: <1498484330-10840-1-git-send-email-thunder.leizhen@huawei.com>
- <1498484330-10840-2-git-send-email-thunder.leizhen@huawei.com>
- <20170822154142.GA19533@8bytes.org>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [RFC 2/3] virtio-iommu: device probing and operations
+Date: Wed, 23 Aug 2017 02:23:46 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D7E8D9@SHSMSX101.ccr.corp.intel.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+ <20170407191747.26618-3-jean-philippe.brucker@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
+ <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
+ <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
+ <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190D7CF52@SHSMSX101.ccr.corp.intel.com>
+ <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170822154142.GA19533@8bytes.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: John Garry <john.garry@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Will Deacon <will.deacon@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>, Xinwei Hu <huxinwei@huawei.com>, iommu <iommu@lists.linux-foundation.org>, Zefan Li <lizefan@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, Auger Eric <eric.auger@redhat.com>, Bharat Bhushan <bharat.bhushan@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2017/8/22 23:41, Joerg Roedel wrote:
-> On Mon, Jun 26, 2017 at 09:38:46PM +0800, Zhen Lei wrote:
->> -static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent)
->> +static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent, int optimize)
->>  {
->>  	if (queue_full(q))
->>  		return -ENOSPC;
->>  
->>  	queue_write(Q_ENT(q, q->prod), ent, q->ent_dwords);
->> -	queue_inc_prod(q);
->> +
->> +	/*
->> +	 * We don't want too many commands to be delayed, this may lead the
->> +	 * followed sync command to wait for a long time.
->> +	 */
->> +	if (optimize && (++q->nr_delay < CMDQ_MAX_DELAYED)) {
->> +		queue_inc_swprod(q);
->> +	} else {
->> +		queue_inc_prod(q);
->> +		q->nr_delay = 0;
->> +	}
->> +
->>  	return 0;
->>  }
->>  
->> @@ -909,6 +928,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
->>  static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->>  				    struct arm_smmu_cmdq_ent *ent)
->>  {
->> +	int optimize = 0;
->>  	u64 cmd[CMDQ_ENT_DWORDS];
->>  	unsigned long flags;
->>  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
->> @@ -920,8 +940,17 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->>  		return;
->>  	}
->>  
->> +	/*
->> +	 * All TLBI commands should be followed by a sync command later.
->> +	 * The CFGI commands is the same, but they are rarely executed.
->> +	 * So just optimize TLBI commands now, to reduce the "if" judgement.
->> +	 */
->> +	if ((ent->opcode >= CMDQ_OP_TLBI_NH_ALL) &&
->> +	    (ent->opcode <= CMDQ_OP_TLBI_NSNH_ALL))
->> +		optimize = 1;
->> +
->>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
->> -	while (queue_insert_raw(q, cmd) == -ENOSPC) {
->> +	while (queue_insert_raw(q, cmd, optimize) == -ENOSPC) {
->>  		if (queue_poll_cons(q, false, wfe))
->>  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
->>  	}
-> 
-> This doesn't look correct. How do you make sure that a given IOVA range
-> is flushed before the addresses are reused?
-Hi, Joerg:
-	It's actullay guaranteed by the upper layer functions, for example:
-	static int arm_lpae_unmap(
-        ...
-    	unmapped = __arm_lpae_unmap(data, iova, size, lvl, ptep);	//__arm_lpae_unmap will indirectly call arm_smmu_cmdq_issue_cmd to invalidate tlbs
-	if (unmapped)
-		io_pgtable_tlb_sync(&data->iop);			//a tlb_sync wait all tlbi operations finished
-
-	
-	I also described it in the next patch(2/5). Showed below:
-
-Some people might ask: Is it safe to do so? The answer is yes. The standard
-processing flow is:
-	alloc iova
-	map
-	process data
-	unmap
-	tlb invalidation and sync
-	free iova
-
-What should be guaranteed is: "free iova" action is behind "unmap" and "tlbi
-operation" action, that is what we are doing right now. This ensures that:
-all TLBs of an iova-range have been invalidated before the iova reallocated.
-
-Best regards,
-	LeiZhen
-
-> 
-> 
-> Regards,
-> 
-> 	Joerg
-> 
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
+ZXJAYXJtLmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDIyLCAyMDE3IDEwOjE5IFBNDQo+
+IA0KPiBPbiAyMi8wOC8xNyAwNzoyNCwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+PiAoc29ycnkg
+dG8gcGljayB1cCB0aGlzIG9sZCB0aHJlYWQsIGFzIHRoZSAudGV4IG9uZSBpcyBub3QgZ29vZCBm
+b3IgcmV2aWV3DQo+ID4+PiBhbmQgdGhpcyB0aHJlYWQgcHJvdmlkZXMgbmVjZXNzYXJ5IGJhY2tn
+cm91bmQgZm9yIElPQVNJRCkuDQo+ID4+Pg0KPiA+Pj4gSGksIEplYW4sDQo+ID4+Pg0KPiA+Pj4g
+SSdkIGxpa2UgdG8gaGVhciBtb3JlIGNsYXJpZmljYXRpb24gcmVnYXJkaW5nIHRoZSByZWxhdGlv
+bnNoaXAgYmV0d2Vlbg0KPiA+Pj4gSU9BU0lEIGFuZCBQQVNJRC4gV2hlbiByZWFkaW5nIGJhY2sg
+YWJvdmUgZXhwbGFuYXRpb24sIGl0IGxvb2tzDQo+ID4+PiBjb25mdXNpbmcgdG8gbWUgbm93ICh0
+aG91Z2ggSSBtaWdodCBnZXQgdGhlIG1lYW5pbmcgbW9udGhzIGFnbyA6LykuDQo+ID4+PiBBdCBs
+ZWFzdCBJbnRlbCBWVC1kIG9ubHkgdW5kZXJzdGFuZHMgUEFTSUQgKG9yIHlvdSBjYW4gdGhpbmsg
+SU9BU0lEDQo+ID4+PiA9UEFTSUQpLiBUaGVyZSBpcyBubyBzdWNoIGxheWVyZWQgYWRkcmVzcyBz
+cGFjZSBjb25jZXB0LiBUaGVuIGZvcg0KPiA+Pj4gbWFwL3VubWFwIHR5cGUgcmVxdWVzdCwgZG8g
+eW91IGludGVuZCB0byBzdGVhbCBzb21lIFBBU0lEcyBmb3INCj4gPj4+IHRoYXQgcHVycG9zZSBv
+biBzdWNoIGFyY2hpdGVjdHVyZSAoc2luY2UgSU9BU0lEIGlzIGEgbWFuZGF0b3J5IGZpZWxkDQo+
+ID4+PiBpbiBtYXAvdW5tYXAgcmVxdWVzdCk/DQo+ID4+DQo+ID4+IElPQVNJRCBpcyBhIGxvZ2lj
+YWwgSUQsIGl0IGlzbid0IHVzZWQgYnkgaGFyZHdhcmUuIFRoZSBhZGRyZXNzIHNwYWNlDQo+ID4+
+IGNvbmNlcHQgaW4gdmlydGlvLWlvbW11IGFsbG93cyB0byBncm91cCBlbmRwb2ludHMgdG9nZXRo
+ZXIsIHNvIHRoYXQgdGhleQ0KPiA+PiBoYXZlIHRoZSBzYW1lIGFkZHJlc3Mgc3BhY2UuIEkgdGhv
+dWdodCBpdCB3YXMgcHJldHR5IG11Y2ggdGhlIHNhbWUgYXMNCj4gPj4gImRvbWFpbnMiIGluIFZU
+LWQ/IEluIGFueSBjYXNlLCBpdCBpcyB0aGUgc2FtZSBhcyBkb21haW5zIGluIExpbnV4LiBBbg0K
+PiA+PiBJT0FTSUQgcHJvdmlkZXMgYSBoYW5kbGUgZm9yIGNvbW11bmljYXRpb24gYmV0d2VlbiB2
+aXJ0aW8taW9tbXUNCj4gZGV2aWNlDQo+ID4+IGFuZA0KPiA+PiBkcml2ZXIsIGJ1dCB1bmxpa2Ug
+UEFTSUQsIHRoZSBJT0FTSUQgbnVtYmVyIGRvZXNuJ3QgbWVhbiBhbnl0aGluZw0KPiBvdXRzaWRl
+DQo+ID4+IG9mIHZpcnRpby1pb21tdS4NCj4gPg0KPiA+IFRoYW5rcy4gSXQncyBjbGVhciB0byBt
+ZSB0aGVuLg0KPiA+DQo+ID4gYnR3IGRvZXMgaXQgbWFrZSBtb3JlIHNlbnNlIHRvIHVzZSAiZG9t
+YWluIGlkIiBpbnN0ZWFkIG9mICJJTyBhZGRyZXNzDQo+ID4gc3BhY2UgaWQiPyBGb3Igb25lLCB3
+aGVuIHRhbGtpbmcgYWJvdXQgbGF5ZXJlZCBhZGRyZXNzIHNwYWNlcw0KPiA+IHVzdWFsbHkgcGFy
+ZW50IGFkZHJlc3Mgc3BhY2UgaXMgYSBzdXBlcnNldCBvZiBhbGwgY2hpbGQgYWRkcmVzcyBzcGFj
+ZXMNCj4gPiB3aGljaCBkb2Vzbid0IGFwcGx5IHRvIHRoaXMgY2FzZSwgc2luY2UgZWl0aGVyIGFu
+b255bW91cyBhZGRyZXNzDQo+ID4gc3BhY2Ugb3IgUEFTSUQtdGFnZ2VkIGFkZHJlc3Mgc3BhY2Vz
+IGFyZSBjb21wbGV0ZWx5IGlzb2xhdGVkLiBJbnN0ZWFkPg0KPiAnZG9tYWluJyBpcyBhIG1vcmUg
+aW5jbHVzaXZlIHRlcm1pbm9sb2d5IHRvIGVtYnJhY2UgbXVsdGlwbGUgYWRkcmVzcw0KPiA+IHNw
+YWNlcy4gRm9yIHR3bywgJ2RvbWFpbicgaXMgYmV0dGVyIGFsaWduZWQgdG8gc29mdHdhcmUgdGVy
+bWlub2xvZ3kgKGUuZy4NCj4gPiBpb21tdV9kb21haW4pIGlzIGVhc2llciBmb3IgcGVvcGxlIHRv
+IGNhdGNoIHVwLiA6LSkNCj4gDQo+IEkgZG8gYWdyZWUgdGhhdCB0aGUgbmFtaW5nIGlzbid0IGdy
+ZWF0LiBJIGRpZG4ndCB1c2UgImRvbWFpbiIgZm9yIHZhcmlvdXMNCj4gcmVhc29ucyAoaXQgYWxz
+byBoYXMgYSBkaWZmZXJlbnQgbWVhbmluZ3MgaW4gQVJNKSBidXQgSSBrZWVwIHJlZ3JldHRpbmcN
+Cj4gaXQuIEFzIHRoZXJlIGlzIG5vIHZpcnRpby1pb21tdSBjb2RlIHVwc3RyZWFtIHlldCwgaXQg
+aXMgc3RpbGwgcG9zc2libGUgdG8NCj4gY2hhbmdlIHRoaXMgb25lLg0KPiANCj4gSSBmaW5kIHRo
+YXQgImFkZHJlc3Mgc3BhY2UiIHdhcyBhIGdvb2QgZml0IGZvciB0aGUgYmFzZWxpbmUgZGV2aWNl
+LCBidXQNCj4gdGhlIG5hbWUgZG9lc24ndCBzY2FsZS4gV2hlbiBpbnRyb2R1Y2luZyBQQVNJRHMs
+IHRoZSBhZGRyZXNzIHNwYWNlDQo+IG1vdmVzDQo+IG9uZSBsZXZlbCBkb3duIGluIHRoZSBwcm9n
+cmFtbWluZyBtb2RlbC4gSXQgaXMgY29udGV4dHMsIGFub255bW91cyBvcg0KPiBQQVNJRC10YWdn
+ZWQsIHRoYXQgc2hvdWxkIGJlIGNhbGxlZCBhZGRyZXNzIHNwYWNlcy4gSSB3YXMgY29uc2lkZXJp
+bmcNCj4gcmVwbGFjaW5nIGl0IHdpdGggImRvbWFpbiIsICJjb250YWluZXIiLCAicGFydGl0aW9u
+Ii4uLg0KPiANCj4gRXZlbiB0aG91Z2ggSSBkb24ndCB3YW50IHRvIHVzZSB0b28gbXVjaCBMaW51
+eCB0ZXJtaW5vbG9neSAodmlydGlvIGlzbid0DQo+IGp1c3QgTGludXgpLCAiZG9tYWluIiBpcyBi
+ZXR0ZXIgZml0dGVkLCBzb21ld2hhdCBuZXV0cmFsLCBhbmQgZ2V0cyB0aGUNCj4gcG9pbnQgYWNy
+b3NzLiBBIGRvbWFpbiBoYXMgb25lIG9yIG1vcmUgaW5wdXQgYWRkcmVzcyBzcGFjZXMgYW5kIGEg
+c2luZ2xlDQo+IG91dHB1dCBhZGRyZXNzIHNwYWNlLg0KPiANCj4gV2hlbiBpbnRyb2R1Y2luZyBu
+ZXN0ZWQgdHJhbnNsYXRpb24gdG8gdmlydGlvLWlvbW11IChmb3IgdGhlIGd1ZXN0IHRvIGhhdmUN
+Cj4gdmlydHVhbCBtYWNoaW5lcyBpdHNlbGYpLCB0aGVyZSB3aWxsIGJlIG9uZSBvciBtb3JlIGlu
+dGVybWVkaWF0ZSBhZGRyZXNzDQo+IHNwYWNlcy4gRG9tYWlucyB3aWxsIGJlIG5lc3RlZCwgd2l0
+aCB0aGUgdGVybWlub2xvZ3kgInBhcmVudCBkb21haW4iIGFuZA0KPiAiY2hpbGQgZG9tYWluIi4g
+SSBvbmx5IGJyaWVmbHkgbG9va2VkIGF0IGEgcHJvZ3JhbW1pbmcgbW9kZWwgZm9yIHRoaXMgYnV0
+DQo+IEkgdGhpbmsgd2UgY2FuIG5lc3QgdmlydGlvLWlvbW11cyB3aXRob3V0IG11Y2ggaGFzc2xl
+Lg0KPiANCj4gSWYgdGhlcmUgaXMgbm8gb2JqZWN0aW9uIHRoZSBuZXh0IHZlcnNpb24gd2lsbCB1
+c2UgImRvbWFpbiIgaW4gcGxhY2Ugb2YNCj4gImFkZHJlc3Nfc3BhY2UiLiBUaGUgY2hhbmdlIGlz
+IHF1aXRlIGludmFzaXZlIGF0IHRoaXMgcG9pbnQsIGJ1dCBJIGJlbGlldmUNCj4gdGhhdCBpdCB3
+aWxsIG1ha2VzIHRoaW5ncyBtb3JlIGNsZWFyIGRvd24gdGhlIHJvYWQuDQo+IA0KDQpTb3VuZHMg
+Z29vZCB0byBtZS4gVGhhbmtzLg0K
