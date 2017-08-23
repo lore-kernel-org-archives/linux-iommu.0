@@ -1,143 +1,52 @@
-From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value
-	if allocation failed
-Date: Wed, 23 Aug 2017 12:36:34 +0300
-Message-ID: <CAPD2p-ksGxF6Kq+=sE9gM1LYx9a9aM-OuPAcbw_N7nHabbhH4Q@mail.gmail.com>
-References: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
-	<3230921.pODNlFebuG@avalon>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC] virtio-iommu version 0.4
+Date: Wed, 23 Aug 2017 11:01:11 +0100
+Message-ID: <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3230921.pODNlFebuG@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <virtio-dev-return-2490-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+Content-Language: en-US
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Laurent.
+On 04/08/17 19:19, Jean-Philippe Brucker wrote:
+> Other extensions are in preparation. I won't detail them here because v0.4
+> already is a lot to digest, but in short, building on top of PROBE:
+> 
+> * First, since the IOMMU is paravirtualized, the device can expose some
+>   properties of the physical topology to the guest, and let it allocate
+>   resources more efficiently. For example, when the virtio-iommu manages
+>   both physical and emulated endpoints, with different underlying IOMMUs,
+>   we now have a way to describe multiple page and block granularities,
+>   instead of forcing the guest to use the most restricted one for all
+>   endpoints. This will most likely be in v0.5.
 
-On Wed, Aug 23, 2017 at 12:25 AM, Laurent Pinchart
-<laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
-> Hi Oleksandr,
->
-> Thank you for the patch.
->
-> On Monday, 21 August 2017 15:40:41 EEST Oleksandr Tyshchenko wrote:
->> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
->>
->> In ipmmu_domain_init_context() we are trying to allocate context and
->> if allocation fails we will call free_io_pgtable_ops(),
->> but "domain->context_id" hasn't been initialized yet (likely it is 0
->> because of kzalloc). Having the following call stack:
->> free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
->> ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
->> we will get a mistaken cache flush for a context pointed by
->> uninitialized "domain->context_id".
->>
->> So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
->> free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
->> before calling ipmmu_tlb_invalidate().
->>
->> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
->> ---
->>  drivers/iommu/ipmmu-vmsa.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
->> index 2a38aa1..5b226c0 100644
->> --- a/drivers/iommu/ipmmu-vmsa.c
->> +++ b/drivers/iommu/ipmmu-vmsa.c
->> @@ -303,6 +303,9 @@ static void ipmmu_tlb_flush_all(void *cookie)
->>  {
->>       struct ipmmu_vmsa_domain *domain = cookie;
->>
->> +     if (domain->context_id >= IPMMU_CTX_MAX)
->> +             return;
->> +
->>       ipmmu_tlb_invalidate(domain);
->>  }
->>
->> @@ -380,6 +383,7 @@ static int ipmmu_domain_init_context(struct
->> ipmmu_vmsa_domain *domain) */
->>       ret = ipmmu_domain_allocate_context(domain->mmu, domain);
->>       if (ret == IPMMU_CTX_MAX) {
->> +             domain->context_id = IPMMU_CTX_MAX;
->
-> Wouldn't it make more sense to allocate the pgtable ops after initializing the
-> context (moving the ipmmu_domain_allocate_context() call to the very end of
-> the function) ? That way we would be less dependent on changes to pgtable ops
-> init/cleanup code that could require the context to be set up.
+In order to extend requests with PASIDs and (later) nested mode, I intend
+to rename "address_space" field to "domain", since it is a lot more
+precise about what the field is referring to and the current name would
+make these extensions confusing. Please find the rationale at [1].
+"ioasid_bits" will be "domain_bits" and "VIRTIO_IOMMU_F_IOASID_BITS" will
+be "VIRTIO_IOMMU_F_DOMAIN_BITS".
 
-Why not. But, not sure about the very end of the function. Since for
-writing some HW registers down the function (IMTTLBR0/IMTTUBR0,
-IMMAIR0)
-we need to have what pgtable ops sets up for us (ttbr, mair). What
-about to just swap alloc_io_pgtable_ops() and
-ipmmu_domain_allocate_context()?
+For those that had time to read this version, do you have other comments
+and suggestions about v0.4? Otherwise it is the only update I have for
+v0.5 (along with fine-grained address range and page size properties from
+the quoted text) and I will send it soon.
 
-...
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 2a38aa1..90af1c7 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -370,22 +370,22 @@ static int ipmmu_domain_init_context(struct
-ipmmu_vmsa_domain *domain)
-         */
-        domain->cfg.iommu_dev = domain->mmu->dev;
+In particular, please tell me now if you see the need for other
+destructive changes like this one. They will be impossible to introduce
+once a driver or device is upstream.
 
--       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
--                                          domain);
--       if (!domain->iop)
--               return -EINVAL;
--
-        /*
-         * Find an unused context.
-         */
-        ret = ipmmu_domain_allocate_context(domain->mmu, domain);
--       if (ret == IPMMU_CTX_MAX) {
--               free_io_pgtable_ops(domain->iop);
-+       if (ret == IPMMU_CTX_MAX)
-                return -EBUSY;
--       }
+Thanks,
+Jean
 
-        domain->context_id = ret;
-
-+       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
-+                                          domain);
-+       if (!domain->iop) {
-+               ipmmu_domain_free_context(domain->mmu, domain->context_id);
-+               return -EINVAL;
-+       }
-+
-        /* TTBR0 */
-        ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
-        ipmmu_ctx_write(domain, IMTTLBR0, ttbr);
-...
-
->
->>               free_io_pgtable_ops(domain->iop);
->>               return -EBUSY;
->>       }
->
->
-> --
-> Regards,
->
-> Laurent Pinchart
->
-
-
-
--- 
-Regards,
-
-Oleksandr Tyshchenko
+[1] https://www.spinics.net/lists/kvm/msg154573.html
