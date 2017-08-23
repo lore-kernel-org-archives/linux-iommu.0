@@ -1,87 +1,143 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC 2/3] virtio-iommu: device probing and operations
-Date: Wed, 23 Aug 2017 02:23:46 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D7E8D9@SHSMSX101.ccr.corp.intel.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
- <20170407191747.26618-3-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
- <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
- <a4df3472-449f-297f-2a18-b3a21affadee@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D7BAB1@SHSMSX101.ccr.corp.intel.com>
- <454095c4-cae5-ad52-a459-5c9e2cce4047@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D7CF52@SHSMSX101.ccr.corp.intel.com>
- <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1] iommu/ipmmu-vmsa: Set context_id to non-existent value
+	if allocation failed
+Date: Wed, 23 Aug 2017 12:36:34 +0300
+Message-ID: <CAPD2p-ksGxF6Kq+=sE9gM1LYx9a9aM-OuPAcbw_N7nHabbhH4Q@mail.gmail.com>
+References: <1503319241-2912-1-git-send-email-olekstysh@gmail.com>
+	<3230921.pODNlFebuG@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <03eabc9f-5db1-0eb9-b91a-c47da9d1a29b@arm.com>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "cdall@linaro.org" <cdall@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, Auger Eric <eric.auger@redhat.com>, Bharat Bhushan <bharat.bhushan@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <3230921.pODNlFebuG@avalon>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDIyLCAyMDE3IDEwOjE5IFBNDQo+
-IA0KPiBPbiAyMi8wOC8xNyAwNzoyNCwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+PiAoc29ycnkg
-dG8gcGljayB1cCB0aGlzIG9sZCB0aHJlYWQsIGFzIHRoZSAudGV4IG9uZSBpcyBub3QgZ29vZCBm
-b3IgcmV2aWV3DQo+ID4+PiBhbmQgdGhpcyB0aHJlYWQgcHJvdmlkZXMgbmVjZXNzYXJ5IGJhY2tn
-cm91bmQgZm9yIElPQVNJRCkuDQo+ID4+Pg0KPiA+Pj4gSGksIEplYW4sDQo+ID4+Pg0KPiA+Pj4g
-SSdkIGxpa2UgdG8gaGVhciBtb3JlIGNsYXJpZmljYXRpb24gcmVnYXJkaW5nIHRoZSByZWxhdGlv
-bnNoaXAgYmV0d2Vlbg0KPiA+Pj4gSU9BU0lEIGFuZCBQQVNJRC4gV2hlbiByZWFkaW5nIGJhY2sg
-YWJvdmUgZXhwbGFuYXRpb24sIGl0IGxvb2tzDQo+ID4+PiBjb25mdXNpbmcgdG8gbWUgbm93ICh0
-aG91Z2ggSSBtaWdodCBnZXQgdGhlIG1lYW5pbmcgbW9udGhzIGFnbyA6LykuDQo+ID4+PiBBdCBs
-ZWFzdCBJbnRlbCBWVC1kIG9ubHkgdW5kZXJzdGFuZHMgUEFTSUQgKG9yIHlvdSBjYW4gdGhpbmsg
-SU9BU0lEDQo+ID4+PiA9UEFTSUQpLiBUaGVyZSBpcyBubyBzdWNoIGxheWVyZWQgYWRkcmVzcyBz
-cGFjZSBjb25jZXB0LiBUaGVuIGZvcg0KPiA+Pj4gbWFwL3VubWFwIHR5cGUgcmVxdWVzdCwgZG8g
-eW91IGludGVuZCB0byBzdGVhbCBzb21lIFBBU0lEcyBmb3INCj4gPj4+IHRoYXQgcHVycG9zZSBv
-biBzdWNoIGFyY2hpdGVjdHVyZSAoc2luY2UgSU9BU0lEIGlzIGEgbWFuZGF0b3J5IGZpZWxkDQo+
-ID4+PiBpbiBtYXAvdW5tYXAgcmVxdWVzdCk/DQo+ID4+DQo+ID4+IElPQVNJRCBpcyBhIGxvZ2lj
-YWwgSUQsIGl0IGlzbid0IHVzZWQgYnkgaGFyZHdhcmUuIFRoZSBhZGRyZXNzIHNwYWNlDQo+ID4+
-IGNvbmNlcHQgaW4gdmlydGlvLWlvbW11IGFsbG93cyB0byBncm91cCBlbmRwb2ludHMgdG9nZXRo
-ZXIsIHNvIHRoYXQgdGhleQ0KPiA+PiBoYXZlIHRoZSBzYW1lIGFkZHJlc3Mgc3BhY2UuIEkgdGhv
-dWdodCBpdCB3YXMgcHJldHR5IG11Y2ggdGhlIHNhbWUgYXMNCj4gPj4gImRvbWFpbnMiIGluIFZU
-LWQ/IEluIGFueSBjYXNlLCBpdCBpcyB0aGUgc2FtZSBhcyBkb21haW5zIGluIExpbnV4LiBBbg0K
-PiA+PiBJT0FTSUQgcHJvdmlkZXMgYSBoYW5kbGUgZm9yIGNvbW11bmljYXRpb24gYmV0d2VlbiB2
-aXJ0aW8taW9tbXUNCj4gZGV2aWNlDQo+ID4+IGFuZA0KPiA+PiBkcml2ZXIsIGJ1dCB1bmxpa2Ug
-UEFTSUQsIHRoZSBJT0FTSUQgbnVtYmVyIGRvZXNuJ3QgbWVhbiBhbnl0aGluZw0KPiBvdXRzaWRl
-DQo+ID4+IG9mIHZpcnRpby1pb21tdS4NCj4gPg0KPiA+IFRoYW5rcy4gSXQncyBjbGVhciB0byBt
-ZSB0aGVuLg0KPiA+DQo+ID4gYnR3IGRvZXMgaXQgbWFrZSBtb3JlIHNlbnNlIHRvIHVzZSAiZG9t
-YWluIGlkIiBpbnN0ZWFkIG9mICJJTyBhZGRyZXNzDQo+ID4gc3BhY2UgaWQiPyBGb3Igb25lLCB3
-aGVuIHRhbGtpbmcgYWJvdXQgbGF5ZXJlZCBhZGRyZXNzIHNwYWNlcw0KPiA+IHVzdWFsbHkgcGFy
-ZW50IGFkZHJlc3Mgc3BhY2UgaXMgYSBzdXBlcnNldCBvZiBhbGwgY2hpbGQgYWRkcmVzcyBzcGFj
-ZXMNCj4gPiB3aGljaCBkb2Vzbid0IGFwcGx5IHRvIHRoaXMgY2FzZSwgc2luY2UgZWl0aGVyIGFu
-b255bW91cyBhZGRyZXNzDQo+ID4gc3BhY2Ugb3IgUEFTSUQtdGFnZ2VkIGFkZHJlc3Mgc3BhY2Vz
-IGFyZSBjb21wbGV0ZWx5IGlzb2xhdGVkLiBJbnN0ZWFkPg0KPiAnZG9tYWluJyBpcyBhIG1vcmUg
-aW5jbHVzaXZlIHRlcm1pbm9sb2d5IHRvIGVtYnJhY2UgbXVsdGlwbGUgYWRkcmVzcw0KPiA+IHNw
-YWNlcy4gRm9yIHR3bywgJ2RvbWFpbicgaXMgYmV0dGVyIGFsaWduZWQgdG8gc29mdHdhcmUgdGVy
-bWlub2xvZ3kgKGUuZy4NCj4gPiBpb21tdV9kb21haW4pIGlzIGVhc2llciBmb3IgcGVvcGxlIHRv
-IGNhdGNoIHVwLiA6LSkNCj4gDQo+IEkgZG8gYWdyZWUgdGhhdCB0aGUgbmFtaW5nIGlzbid0IGdy
-ZWF0LiBJIGRpZG4ndCB1c2UgImRvbWFpbiIgZm9yIHZhcmlvdXMNCj4gcmVhc29ucyAoaXQgYWxz
-byBoYXMgYSBkaWZmZXJlbnQgbWVhbmluZ3MgaW4gQVJNKSBidXQgSSBrZWVwIHJlZ3JldHRpbmcN
-Cj4gaXQuIEFzIHRoZXJlIGlzIG5vIHZpcnRpby1pb21tdSBjb2RlIHVwc3RyZWFtIHlldCwgaXQg
-aXMgc3RpbGwgcG9zc2libGUgdG8NCj4gY2hhbmdlIHRoaXMgb25lLg0KPiANCj4gSSBmaW5kIHRo
-YXQgImFkZHJlc3Mgc3BhY2UiIHdhcyBhIGdvb2QgZml0IGZvciB0aGUgYmFzZWxpbmUgZGV2aWNl
-LCBidXQNCj4gdGhlIG5hbWUgZG9lc24ndCBzY2FsZS4gV2hlbiBpbnRyb2R1Y2luZyBQQVNJRHMs
-IHRoZSBhZGRyZXNzIHNwYWNlDQo+IG1vdmVzDQo+IG9uZSBsZXZlbCBkb3duIGluIHRoZSBwcm9n
-cmFtbWluZyBtb2RlbC4gSXQgaXMgY29udGV4dHMsIGFub255bW91cyBvcg0KPiBQQVNJRC10YWdn
-ZWQsIHRoYXQgc2hvdWxkIGJlIGNhbGxlZCBhZGRyZXNzIHNwYWNlcy4gSSB3YXMgY29uc2lkZXJp
-bmcNCj4gcmVwbGFjaW5nIGl0IHdpdGggImRvbWFpbiIsICJjb250YWluZXIiLCAicGFydGl0aW9u
-Ii4uLg0KPiANCj4gRXZlbiB0aG91Z2ggSSBkb24ndCB3YW50IHRvIHVzZSB0b28gbXVjaCBMaW51
-eCB0ZXJtaW5vbG9neSAodmlydGlvIGlzbid0DQo+IGp1c3QgTGludXgpLCAiZG9tYWluIiBpcyBi
-ZXR0ZXIgZml0dGVkLCBzb21ld2hhdCBuZXV0cmFsLCBhbmQgZ2V0cyB0aGUNCj4gcG9pbnQgYWNy
-b3NzLiBBIGRvbWFpbiBoYXMgb25lIG9yIG1vcmUgaW5wdXQgYWRkcmVzcyBzcGFjZXMgYW5kIGEg
-c2luZ2xlDQo+IG91dHB1dCBhZGRyZXNzIHNwYWNlLg0KPiANCj4gV2hlbiBpbnRyb2R1Y2luZyBu
-ZXN0ZWQgdHJhbnNsYXRpb24gdG8gdmlydGlvLWlvbW11IChmb3IgdGhlIGd1ZXN0IHRvIGhhdmUN
-Cj4gdmlydHVhbCBtYWNoaW5lcyBpdHNlbGYpLCB0aGVyZSB3aWxsIGJlIG9uZSBvciBtb3JlIGlu
-dGVybWVkaWF0ZSBhZGRyZXNzDQo+IHNwYWNlcy4gRG9tYWlucyB3aWxsIGJlIG5lc3RlZCwgd2l0
-aCB0aGUgdGVybWlub2xvZ3kgInBhcmVudCBkb21haW4iIGFuZA0KPiAiY2hpbGQgZG9tYWluIi4g
-SSBvbmx5IGJyaWVmbHkgbG9va2VkIGF0IGEgcHJvZ3JhbW1pbmcgbW9kZWwgZm9yIHRoaXMgYnV0
-DQo+IEkgdGhpbmsgd2UgY2FuIG5lc3QgdmlydGlvLWlvbW11cyB3aXRob3V0IG11Y2ggaGFzc2xl
-Lg0KPiANCj4gSWYgdGhlcmUgaXMgbm8gb2JqZWN0aW9uIHRoZSBuZXh0IHZlcnNpb24gd2lsbCB1
-c2UgImRvbWFpbiIgaW4gcGxhY2Ugb2YNCj4gImFkZHJlc3Nfc3BhY2UiLiBUaGUgY2hhbmdlIGlz
-IHF1aXRlIGludmFzaXZlIGF0IHRoaXMgcG9pbnQsIGJ1dCBJIGJlbGlldmUNCj4gdGhhdCBpdCB3
-aWxsIG1ha2VzIHRoaW5ncyBtb3JlIGNsZWFyIGRvd24gdGhlIHJvYWQuDQo+IA0KDQpTb3VuZHMg
-Z29vZCB0byBtZS4gVGhhbmtzLg0K
+Hi, Laurent.
+
+On Wed, Aug 23, 2017 at 12:25 AM, Laurent Pinchart
+<laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org> wrote:
+> Hi Oleksandr,
+>
+> Thank you for the patch.
+>
+> On Monday, 21 August 2017 15:40:41 EEST Oleksandr Tyshchenko wrote:
+>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>>
+>> In ipmmu_domain_init_context() we are trying to allocate context and
+>> if allocation fails we will call free_io_pgtable_ops(),
+>> but "domain->context_id" hasn't been initialized yet (likely it is 0
+>> because of kzalloc). Having the following call stack:
+>> free_io_pgtable_ops() -> io_pgtable_tlb_flush_all() ->
+>> ipmmu_tlb_flush_all() -> ipmmu_tlb_invalidate()
+>> we will get a mistaken cache flush for a context pointed by
+>> uninitialized "domain->context_id".
+>>
+>> So, set context_id to non-existent value (IPMMU_CTX_MAX) before calling
+>> free_io_pgtable_ops() and check it for a valid value (< IPMMU_CTX_MAX)
+>> before calling ipmmu_tlb_invalidate().
+>>
+>> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>> ---
+>>  drivers/iommu/ipmmu-vmsa.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>> index 2a38aa1..5b226c0 100644
+>> --- a/drivers/iommu/ipmmu-vmsa.c
+>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>> @@ -303,6 +303,9 @@ static void ipmmu_tlb_flush_all(void *cookie)
+>>  {
+>>       struct ipmmu_vmsa_domain *domain = cookie;
+>>
+>> +     if (domain->context_id >= IPMMU_CTX_MAX)
+>> +             return;
+>> +
+>>       ipmmu_tlb_invalidate(domain);
+>>  }
+>>
+>> @@ -380,6 +383,7 @@ static int ipmmu_domain_init_context(struct
+>> ipmmu_vmsa_domain *domain) */
+>>       ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+>>       if (ret == IPMMU_CTX_MAX) {
+>> +             domain->context_id = IPMMU_CTX_MAX;
+>
+> Wouldn't it make more sense to allocate the pgtable ops after initializing the
+> context (moving the ipmmu_domain_allocate_context() call to the very end of
+> the function) ? That way we would be less dependent on changes to pgtable ops
+> init/cleanup code that could require the context to be set up.
+
+Why not. But, not sure about the very end of the function. Since for
+writing some HW registers down the function (IMTTLBR0/IMTTUBR0,
+IMMAIR0)
+we need to have what pgtable ops sets up for us (ttbr, mair). What
+about to just swap alloc_io_pgtable_ops() and
+ipmmu_domain_allocate_context()?
+
+...
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 2a38aa1..90af1c7 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -370,22 +370,22 @@ static int ipmmu_domain_init_context(struct
+ipmmu_vmsa_domain *domain)
+         */
+        domain->cfg.iommu_dev = domain->mmu->dev;
+
+-       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+-                                          domain);
+-       if (!domain->iop)
+-               return -EINVAL;
+-
+        /*
+         * Find an unused context.
+         */
+        ret = ipmmu_domain_allocate_context(domain->mmu, domain);
+-       if (ret == IPMMU_CTX_MAX) {
+-               free_io_pgtable_ops(domain->iop);
++       if (ret == IPMMU_CTX_MAX)
+                return -EBUSY;
+-       }
+
+        domain->context_id = ret;
+
++       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
++                                          domain);
++       if (!domain->iop) {
++               ipmmu_domain_free_context(domain->mmu, domain->context_id);
++               return -EINVAL;
++       }
++
+        /* TTBR0 */
+        ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
+        ipmmu_ctx_write(domain, IMTTLBR0, ttbr);
+...
+
+>
+>>               free_io_pgtable_ops(domain->iop);
+>>               return -EBUSY;
+>>       }
+>
+>
+> --
+> Regards,
+>
+> Laurent Pinchart
+>
+
+
+
+-- 
+Regards,
+
+Oleksandr Tyshchenko
