@@ -1,138 +1,62 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
-Date: Thu, 24 Aug 2017 09:09:36 +0200
-Message-ID: <3fc23869-cc86-9c8a-0d89-643f1f6fc1d6@redhat.com>
-References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
- <1502459130-6234-3-git-send-email-eric.auger@redhat.com>
- <20170817163424.GC30719@arm.com>
- <20170818053639-mutt-send-email-mst@kernel.org>
- <20170822220457-mutt-send-email-mst@kernel.org>
- <20170823102517.GE27301@arm.com>
- <cc18b752-97fd-f95f-fdef-478adc06e505@redhat.com>
- <20170823164255.GB590@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v2 1/2] iommu/mediatek: Fix a build fail of m4u_type
+Date: Thu, 24 Aug 2017 15:42:11 +0800
+Message-ID: <1503560532-24416-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170823164255.GB590@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, Jean-Philippe.Brucker@arm.com, christoffer.dall@linaro.org, Marc.Zyngier@arm.com, alex.williamson@redhat.com, peterx@redhat.com, tn@semihalf.com, bharat.bhushan@nxp.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+The commit ("iommu/mediatek: Enlarge the validate PA range
+for 4GB mode") introduce the following build error:
 
-On 23/08/2017 18:42, Will Deacon wrote:
-> Hi Eric,
-> 
-> On Wed, Aug 23, 2017 at 02:36:53PM +0200, Auger Eric wrote:
->> On 23/08/2017 12:25, Will Deacon wrote:
->>> On Tue, Aug 22, 2017 at 10:09:15PM +0300, Michael S. Tsirkin wrote:
->>>> On Fri, Aug 18, 2017 at 05:49:42AM +0300, Michael S. Tsirkin wrote:
->>>>> On Thu, Aug 17, 2017 at 05:34:25PM +0100, Will Deacon wrote:
->>>>>> On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
->>>>>>> When running a virtual SMMU on a guest we sometimes need to trap
->>>>>>> all changes to the translation structures. This is especially useful
->>>>>>> to integrate with VFIO. This patch adds a new option that forces
->>>>>>> the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
->>>>>>>
->>>>>>> TLBI commands then can be trapped.
->>>>>>>
->>>>>>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>>>>>>
->>>>>>> ---
->>>>>>> v1 -> v2:
->>>>>>> - rebase on v4.13-rc2
->>>>>>> ---
->>>>>>>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
->>>>>>>  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
->>>>>>>  2 files changed, 9 insertions(+)
->>>>>>>
->>>>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
->>>>>>> index c9abbf3..ebb85e9 100644
->>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
->>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
->>>>>>> @@ -52,6 +52,10 @@ the PCIe specification.
->>>>>>>                          devicetree/bindings/interrupt-controller/msi.txt
->>>>>>>                        for a description of the msi-parent property.
->>>>>>>  
->>>>>>> +- tlbi-on-map       : invalidate caches whenever there is an update of
->>>>>>> +                      any remapping structure (updates to not-present or
->>>>>>> +                      present entries).
->>>>>>> +
->>>>>>
->>>>>> My position on this hasn't changed, so NAK for this patch. If you want to
->>>>>> emulate something outside of the SMMUv3 architecture, please do so, but
->>>>>> don't pretend that it's an SMMUv3.
->>>>>>
->>>>>> Will
->>>>>
->>>>> What if the emulated device does not list arm,smmu-v3, listing
->>>>> qemu,ssmu-v3 as compatible? Would that address the concern?
->>>>
->>>> Will, can you comment on this please? Are you open to reusing the code
->>>> in drivers/iommu/arm-smmu-v3.c to support a paravirtual device that does
->>>> not claim to be compatible with smmuv3 but does try to behave very close to
->>>> it except it can cache non-present structures? Or would you rather
->>>> the code to support this is forked to qemu-smmu-v3.c?
->>>
->>> I still don't understand why this is preferable to a PV IOMMU
->>> implementation. Not only is this proposing to issue TLB maintenance on
->>> map, but the maintenance command itself is entirely made up. Why not just
->>> have a map command? Anyway, I'm reluctant to add this hack to the driver until:
->>>
->>>   1. There is a compelling reason to pursue this approach instead of a
->>>      PV approach (including performance measurements).
->>>
->>>   2. There is a specification for the QEMU fork of the ARM SMMUv3
->>>      architecture, including the semantics of the new command being proposed
->>>      and what exactly the TLB maintenance requirements are on map (for
->>>      example, what if I change an STE or a CD -- are they cached too?).
->> I am not sure I catch this last point. At the moment whenever the smmuv3
->> driver issues data structure invalidation commands (CMD_CFGI_*), those
->> are trapped and I replay the mappings on host side. I have not changed
->> anything on that side.
-> 
-> But STEs and CDs have very similar rules to TLBs: you don't need to issue
-> invalidation if the data structure is transitioning from invalid to valid.
-> If you're caching those in QEMU, how do you keep them up-to-date? I can
-> also guarantee you that there will be additional data structures added
-> in future versions of the architecture, so you'll need to consider how
-> you want to operate when running on newer hardware.
-OK I get your point now. I thought the driver was currently sending
-CMD_CFGI_STE on each config change and I did not notice any issue yet
-with the various use cases. So that should be part of the FW quirk to
-guarantee that each time this happens, commands are sent for QEMU to trap.
+   drivers/iommu/mtk_iommu.c: In function 'mtk_iommu_hw_init':
+>> drivers/iommu/mtk_iommu.c:536:30: error: 'const struct mtk_iommu_data'
+ has no member named 'm4u_type'; did you mean 'm4u_dom'?
+     if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
 
-This FW quirk was devised to do exactly the same as the Intel vtd
-caching mode. Technically I guess Intel driver implements the exact same
-hooks (but they did to comply with the spec, I agree).
+This patch fix it, use "m4u_plat" instead of "m4u_type".
 
-Thanks
+Reported-by: kernel test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+---
+1) In the v2 of mt2712 iommu support patch-set, We changed a variant
+name from "m4u_type" to "m4u_plat", But I'm sorry that I forgot to
+change it in the later patch.
+2) This patch is based on [1].
+[1]:https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023847.html
+3) I cann't find the commit id of the patch ("iommu/mediatek: Enlarge
+the validate PA range for 4GB mode") in the [2].
+So I don't write the commit id for that patch in the commit message.
+[2]https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
+---
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Eric
-> 
->> I introduced a new map implementation defined command because the per
->> page CMD_TLBI_NH_VA IOVA invalidation command was not efficient/usable
->> with use cases such as DPDK on guest. I understood the spec provisions
->> for such implementation defined commands.
-> 
-> Whilst there is a space for IMP DEF commands, this doesn't generally mean
-> that they can be repurposed by software. What if the underlying hardware
-> has an IMP DEF command that you want to export? Besides, my main points
-> here are that your command isn't well-specified and if you have to add
-> a command, why not just add a "map" command (i.e. implement a PV interface
-> instead)?
-> 
->>>   3. The ACPI IORT spec is updated to recognise this implementation
->>>
->>>   4. There is an implementation that can use the guest page tables directly,
->>>      because that may well make all of this moot.
->> Most probably I will come back to you with questions on stage 1 + stage2
->> enablement and "4.8 Virtualisation" chapter of smmuv3 spec. Besides I
->> also need to get access to some HW with smmuv3 ;-)
-> 
-> Ok.
-> 
-> Will
-> 
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 4f233e1..bc00e40 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -533,7 +533,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 
+ 	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
+ 		       data->base + REG_MMU_IVRP_PADDR);
+-	if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
++	if (data->enable_4GB && data->m4u_plat != M4U_MT8173) {
+ 		/*
+ 		 * If 4GB mode is enabled, the validate PA range is from
+ 		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
+-- 
+1.9.1
