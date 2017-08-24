@@ -1,74 +1,85 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v2 4/4] iommu: Prevent VMD child devices from being
- remapping targets
-Date: Thu, 24 Aug 2017 11:02:45 -0500
-Message-ID: <20170824160245.GC31858@bhelgaas-glaptop.roam.corp.google.com>
-References: <20170817181014.1257-1-jonathan.derrick@intel.com>
- <20170817181014.1257-5-jonathan.derrick@intel.com>
- <20170818160433.GN28977@bhelgaas-glaptop.roam.corp.google.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 13/13] remoteproc: Use sychronized interface of the
+ IOMMU-API
+Date: Thu, 24 Aug 2017 12:06:36 -0700
+Message-ID: <20170824190636.GG20643@builder>
+References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
+ <1502974596-23835-14-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170818160433.GN28977@bhelgaas-glaptop.roam.corp.google.com>
+In-Reply-To: <1502974596-23835-14-git-send-email-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jon Derrick <jonathan.derrick@intel.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Keith Busch <keith.busch@intel.com>, Scott Bauer <scott.bauer@intel.com>, David Fugate <david.fugate@intel.com>, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Joerg Roedel <jroedel@suse.de>, Ohad Ben-Cohen <ohad@wizery.com>, linux-remoteproc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 18, 2017 at 11:04:33AM -0500, Bjorn Helgaas wrote:
-> [+cc Robin]
-> 
-> This series looks fine to me as far as PCI is concerned, and I'd be
-> happy to take it via my tree given an ack from David for this IOMMU
-> piece.  Alternatively, you can add my
-> 
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> 
-> to the other patches if you want to take it via another tree.
-> 
-> Robin raised a question about basically this same patch the first time
-> around.  Not sure whether there's still an objection there.
+On Thu 17 Aug 05:56 PDT 2017, Joerg Roedel wrote:
 
-Ping, David, any thoughts on this patch?
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> The map and unmap functions of the IOMMU-API changed their
+> semantics: They do no longer guarantee that the hardware
+> TLBs are synchronized with the page-table updates they made.
+> 
+> To make conversion easier, new synchronized functions have
+> been introduced which give these guarantees again until the
+> code is converted to use the new TLB-flush interface of the
+> IOMMU-API, which allows certain optimizations.
+> 
+> But for now, just convert this code to use the synchronized
+> functions so that it will behave as before.
+> 
+> Cc: Ohad Ben-Cohen <ohad@wizery.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: linux-remoteproc@vger.kernel.org
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 
-> On Thu, Aug 17, 2017 at 12:10:14PM -0600, Jon Derrick wrote:
-> > VMD child devices must use the VMD endpoint's ID as the requester.
-> > Because of this, there needs to be a way to link the parent VMD
-> > endpoint's iommu group and associated mappings to the VMD child devices
-> > such that attaching and detaching child devices modify the endpoint's
-> > mappings, while preventing early detaching on a singular device removal
-> > or unbinding.
-> > 
-> > The reassignment of individual VMD child devices devices to VMs is
-> > outside the scope of VMD, but may be implemented in the future. For now
-> > it is best to prevent any such attempts.
-> > 
-> > This patch prevents VMD child devices from returning an IOMMU, which
-> > prevents it from exposing an iommu_group sysfs directories and allowing
-> > subsequent binding by userspace-access drivers such as VFIO.
-> > 
-> > Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> > index 687f18f..94353a6e 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -901,6 +901,11 @@ static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devf
-> >  		struct pci_dev *pf_pdev;
-> >  
-> >  		pdev = to_pci_dev(dev);
-> > +
-> > +		/* VMD child devices currently cannot be handled individually */
-> > +		if (is_vmd(pdev->bus))
-> > +			return NULL;
-> > +
-> >  		/* VFs aren't listed in scope tables; we need to look up
-> >  		 * the PF instead to find the IOMMU. */
-> >  		pf_pdev = pci_physfn(pdev);
-> > -- 
-> > 2.9.4
-> > 
+Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+> ---
+>  drivers/remoteproc/remoteproc_core.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index 564061d..16db19c 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -553,7 +553,8 @@ static int rproc_handle_devmem(struct rproc *rproc, struct fw_rsc_devmem *rsc,
+>  	if (!mapping)
+>  		return -ENOMEM;
+>  
+> -	ret = iommu_map(rproc->domain, rsc->da, rsc->pa, rsc->len, rsc->flags);
+> +	ret = iommu_map_sync(rproc->domain, rsc->da,
+> +			     rsc->pa, rsc->len, rsc->flags);
+>  	if (ret) {
+>  		dev_err(dev, "failed to map devmem: %d\n", ret);
+>  		goto out;
+> @@ -661,8 +662,8 @@ static int rproc_handle_carveout(struct rproc *rproc,
+>  			goto dma_free;
+>  		}
+>  
+> -		ret = iommu_map(rproc->domain, rsc->da, dma, rsc->len,
+> -				rsc->flags);
+> +		ret = iommu_map_sync(rproc->domain, rsc->da, dma, rsc->len,
+> +				     rsc->flags);
+>  		if (ret) {
+>  			dev_err(dev, "iommu_map failed: %d\n", ret);
+>  			goto free_mapping;
+> @@ -823,7 +824,8 @@ static void rproc_resource_cleanup(struct rproc *rproc)
+>  	list_for_each_entry_safe(entry, tmp, &rproc->mappings, node) {
+>  		size_t unmapped;
+>  
+> -		unmapped = iommu_unmap(rproc->domain, entry->da, entry->len);
+> +		unmapped = iommu_unmap_sync(rproc->domain, entry->da,
+> +					    entry->len);
+>  		if (unmapped != entry->len) {
+>  			/* nothing much to do besides complaining */
+>  			dev_err(dev, "failed to unmap %u/%zu\n", entry->len,
+> -- 
+> 2.7.4
+> 
