@@ -1,71 +1,35 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [bug report] iommu/amd: Use is_attach_deferred call-back
-Date: Thu, 24 Aug 2017 19:55:17 +0800
-Message-ID: <20170824115517.GF19768@x1>
-References: <20170824110406.vm4yqalngig4seep@mwanda>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170824110406.vm4yqalngig4seep@mwanda>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Baoquan He <bhe@redhat.com>
+Subject: [PATCH] iommu/amd: Check if domain is NULL before dereference it
+Date: Thu, 24 Aug 2017 19:56:47 +0800
+Message-ID: <1503575807-15746-1-git-send-email-bhe@redhat.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: dan.carpenter@oracle.com, joro@8bytes.org, Baoquan He <bhe@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Dan,
+In get_domain(), 'domain' could still be NULL before it's passed to
+dma_ops_domain() to dereference. For safety, check if 'domain' is
+NULL before passing to dma_ops_domain().
 
-On 08/24/17 at 02:04pm, Dan Carpenter wrote:
-> Hello Baoquan He,
-> 
-> This is a semi-automatic email about new static checker warnings.
-> 
-> The patch df3f7a6e8e85: "iommu/amd: Use is_attach_deferred call-back" 
-> from Aug 9, 2017, leads to the following Smatch complaint:
-> 
-> drivers/iommu/amd_iommu.c:2265 get_domain()
-> 	 error: we previously assumed 'domain' could be null (see line 2259)
-> 
-> drivers/iommu/amd_iommu.c
->   2258		domain = get_dev_data(dev)->domain;
->   2259		if (domain == NULL && get_dev_data(dev)->defer_attach) {
->                     ^^^^^^^^^^^^^^
-> The patch adds a new check for NULL.
-> 
->   2260			get_dev_data(dev)->defer_attach = false;
->   2261			io_domain = iommu_get_domain_for_dev(dev);
->   2262			domain = to_pdomain(io_domain);
->   2263			attach_device(dev, domain);
->   2264		}
->   2265		if (!dma_ops_domain(domain))
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Baoquan He <bhe@redhat.com>
+---
+ drivers/iommu/amd_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for pointing it out, it's truly a code bug. We should check if
-'domain' is NULL when pass it to dma_ops_domain() to dereference.
-
-I would like to fix it with below code change, and will post a patch
-soon.
-
--       if (!dma_ops_domain(domain))
-+       if (domain && !dma_ops_domain(domain))
-                return ERR_PTR(-EBUSY);
-
-Thanks
-Baoquan
-
->                                     ^^^^^^
-> Existing unchecked dereference inside the function.
-> 
->   2266			return ERR_PTR(-EBUSY);
->   2267	
-> 
-> regards,
-> dan carpenter
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 16f1e6af00b0..2e2d5e6a13b3 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2262,7 +2262,7 @@ static struct protection_domain *get_domain(struct device *dev)
+ 		domain = to_pdomain(io_domain);
+ 		attach_device(dev, domain);
+ 	}
+-	if (!dma_ops_domain(domain))
++	if (domain && !dma_ops_domain(domain))
+ 		return ERR_PTR(-EBUSY);
+ 
+ 	return domain;
+-- 
+2.5.5
