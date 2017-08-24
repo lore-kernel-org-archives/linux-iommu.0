@@ -1,52 +1,88 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2] iommu/amd: Check if domain is NULL in get_domain() and
-	return -EBUSY
-Date: Thu, 24 Aug 2017 21:13:57 +0800
-Message-ID: <1503580437-20822-1-git-send-email-bhe@redhat.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
+ erratum 161010801
+Date: Thu, 24 Aug 2017 15:35:37 +0100
+Message-ID: <20170824143536.GA8904@arm.com>
+References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
+ <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
+ <20170810172723.GD9980@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA8383CC287@FRAEML521-MBX.china.huawei.com>
+ <c6b7c641-b839-1388-7982-366e796e6ba9@huawei.com>
+ <20170823132430.GB634@arm.com>
+ <77b6c97f-f2d2-fd14-e83e-345addc5ea71@huawei.com>
+ <20170823164301.GC590@arm.com>
+ <53b9795c-6222-9cf0-50dc-9dafbfb67a2c@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <53b9795c-6222-9cf0-50dc-9dafbfb67a2c@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: John Garry <john.garry@huawei.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-In get_domain(), 'domain' could be NULL before it's passed to dma_ops_domain()
-to dereference. And the current code calling get_domain() can't deal with the
-returned 'domain' well if its value is NULL.
+On Wed, Aug 23, 2017 at 05:55:52PM +0100, John Garry wrote:
+> On 23/08/2017 17:43, Will Deacon wrote:
+> >On Wed, Aug 23, 2017 at 03:29:46PM +0100, John Garry wrote:
+> >>On 23/08/2017 14:24, Will Deacon wrote:
+> >>>On Wed, Aug 23, 2017 at 02:17:24PM +0100, John Garry wrote:
+> >>>>>>>Signed-off-by: Shameer Kolothum
+> >>>>>><shameerali.kolothum.thodi@huawei.com>
+> >>>>>>>---
+> >>>>>>>drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
+> >>>>>>>1 file changed, 22 insertions(+), 5 deletions(-)
+> >>>>>>
+> >>>>>>Please can you also add a devicetree binding with corresponding
+> >>>>>>documentation to enable this workaround on non-ACPI based systems too?
+> >>>>>>It should be straightforward if you update the arm_smmu_options table.
+> >>>>>
+> >>>>>As I mentioned before, devicetree was a lower priority and we would definitely
+> >>>>>submit patch to support that. Even if we update the arm_smmu_options table
+> >>>>>with DT binding, the generic function to retrieve the MSI address regions only
+> >>>>>works on ACPI/IORT case now.
+> >>>>>
+> >>>>
+> >>>>Hi Will,
+> >>>>
+> >>>>Can you confirm your stance on supporting this workaround for DT as well as
+> >>>>ACPI?
+> >>>>
+> >>>>For us, we now only "officially" support ACPI FW, and DT support at this
+> >>>>point is patchy/limited. To me, adding DT support is just more errata
+> >>>>workaround code to maintain with little useful gain.
+> >>>
+> >>>I basically don't like the idea of a driver that only works for one of
+> >>>ACPI or DT yet claims to support both. I'm less fussed about functionality
+> >>>differences (feature X is only available with firmware Y), but not working
+> >>>around a hardware erratum that we know about is just lazy.
+> >>>
+> >>>So I'd prefer that we handle this in both cases, or blacklist affected
+> >>>devices when booting with DT. Continuing as though there isn't an erratum
+> >>>is the worst thing we can do.
+> >>
+> >>OK, seems reasonable.
+> >>
+> >>We would consider blacklisting the device, where/how to do is the question.
+> >>
+> >>So the errata is in the GICv3 ITS/PCI host controller, and we just use the
+> >>in-between SMMU (driver) to provide the workaround. So my initial impression
+> >>is that the PCI host controller would have to be blacklisted IFF behind an
+> >>IOMMU for DT firmware in pcie-hisi.c or pci quirks framework. How does it
+> >>sound?
+> >
+> >If that avoids us running into the erratum, then fine by me. I'd obviously
+> >prefer we work-around it since we know how to, but that's up to you.
+> 
+> I'm surpsised that you may want more errata workaround code to maintain.
+> 
+> Anyway we'll check both approaches and show you how they look and go from
+> there.
 
-So before dma_ops_domain() calling, check if 'domain' is NULL, If yes just return
-ERR_PTR(-EBUSY) directly.
+Don't get me wrong, I don't dream about adding errata workarounds to the
+code, but our job as an operating system is to abstract the hardware from
+the user, which means dealing with its quirks whether we like it or not.
 
-Reported-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Fixes: df3f7a6e8e85 ('iommu/amd: Use is_attach_deferred call-back')
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+Thanks,
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 16f1e6af00b0..2d7d04472555 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2262,6 +2262,9 @@ static struct protection_domain *get_domain(struct device *dev)
- 		domain = to_pdomain(io_domain);
- 		attach_device(dev, domain);
- 	}
-+	if (domain == NULL)
-+		return ERR_PTR(-EBUSY);
-+
- 	if (!dma_ops_domain(domain))
- 		return ERR_PTR(-EBUSY);
- 
--- 
-2.5.5
+Will
