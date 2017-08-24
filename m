@@ -1,21 +1,16 @@
-From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
-Date: Wed, 23 Aug 2017 22:43:41 +0300
-Message-ID: <20170823221301-mutt-send-email-mst@kernel.org>
-References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
-	<1502459130-6234-3-git-send-email-eric.auger@redhat.com>
-	<20170817163424.GC30719@arm.com>
-	<20170818053639-mutt-send-email-mst@kernel.org>
-	<20170822220457-mutt-send-email-mst@kernel.org>
-	<20170823102517.GE27301@arm.com>
-	<cc18b752-97fd-f95f-fdef-478adc06e505@redhat.com>
-	<20170823164255.GB590@arm.com>
+From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+Subject: Re: [PATCH 4/4] iommu/pamu: Add support for generic iommu-device
+Date: Thu, 24 Aug 2017 12:04:13 +1000
+Message-ID: <87ziapwwki.fsf@concordia.ellerman.id.au>
+References: <1502290014-2890-1-git-send-email-joro@8bytes.org>
+	<1502290014-2890-5-git-send-email-joro@8bytes.org>
+	<878tiaxyu4.fsf@concordia.ellerman.id.au>
+	<20170823142134.GD19533@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170823164255.GB590-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170823142134.GD19533-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,118 +20,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Marc.Zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 23, 2017 at 05:42:55PM +0100, Will Deacon wrote:
-> Hi Eric,
-> 
-> On Wed, Aug 23, 2017 at 02:36:53PM +0200, Auger Eric wrote:
-> > On 23/08/2017 12:25, Will Deacon wrote:
-> > > On Tue, Aug 22, 2017 at 10:09:15PM +0300, Michael S. Tsirkin wrote:
-> > >> On Fri, Aug 18, 2017 at 05:49:42AM +0300, Michael S. Tsirkin wrote:
-> > >>> On Thu, Aug 17, 2017 at 05:34:25PM +0100, Will Deacon wrote:
-> > >>>> On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
-> > >>>>> When running a virtual SMMU on a guest we sometimes need to trap
-> > >>>>> all changes to the translation structures. This is especially useful
-> > >>>>> to integrate with VFIO. This patch adds a new option that forces
-> > >>>>> the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
-> > >>>>>
-> > >>>>> TLBI commands then can be trapped.
-> > >>>>>
-> > >>>>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > >>>>>
-> > >>>>> ---
-> > >>>>> v1 -> v2:
-> > >>>>> - rebase on v4.13-rc2
-> > >>>>> ---
-> > >>>>>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
-> > >>>>>  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
-> > >>>>>  2 files changed, 9 insertions(+)
-> > >>>>>
-> > >>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > >>>>> index c9abbf3..ebb85e9 100644
-> > >>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > >>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> > >>>>> @@ -52,6 +52,10 @@ the PCIe specification.
-> > >>>>>                          devicetree/bindings/interrupt-controller/msi.txt
-> > >>>>>                        for a description of the msi-parent property.
-> > >>>>>  
-> > >>>>> +- tlbi-on-map       : invalidate caches whenever there is an update of
-> > >>>>> +                      any remapping structure (updates to not-present or
-> > >>>>> +                      present entries).
-> > >>>>> +
-> > >>>>
-> > >>>> My position on this hasn't changed, so NAK for this patch. If you want to
-> > >>>> emulate something outside of the SMMUv3 architecture, please do so, but
-> > >>>> don't pretend that it's an SMMUv3.
-> > >>>>
-> > >>>> Will
-> > >>>
-> > >>> What if the emulated device does not list arm,smmu-v3, listing
-> > >>> qemu,ssmu-v3 as compatible? Would that address the concern?
-> > >>
-> > >> Will, can you comment on this please? Are you open to reusing the code
-> > >> in drivers/iommu/arm-smmu-v3.c to support a paravirtual device that does
-> > >> not claim to be compatible with smmuv3 but does try to behave very close to
-> > >> it except it can cache non-present structures? Or would you rather
-> > >> the code to support this is forked to qemu-smmu-v3.c?
-> > > 
-> > > I still don't understand why this is preferable to a PV IOMMU
-> > > implementation. Not only is this proposing to issue TLB maintenance on
-> > > map, but the maintenance command itself is entirely made up. Why not just
-> > > have a map command? Anyway, I'm reluctant to add this hack to the driver until:
-> > > 
-> > >   1. There is a compelling reason to pursue this approach instead of a
-> > >      PV approach (including performance measurements).
-> > > 
-> > >   2. There is a specification for the QEMU fork of the ARM SMMUv3
-> > >      architecture, including the semantics of the new command being proposed
-> > >      and what exactly the TLB maintenance requirements are on map (for
-> > >      example, what if I change an STE or a CD -- are they cached too?).
-> > I am not sure I catch this last point. At the moment whenever the smmuv3
-> > driver issues data structure invalidation commands (CMD_CFGI_*), those
-> > are trapped and I replay the mappings on host side. I have not changed
-> > anything on that side.
-> 
-> But STEs and CDs have very similar rules to TLBs: you don't need to issue
-> invalidation if the data structure is transitioning from invalid to valid.
-> If you're caching those in QEMU, how do you keep them up-to-date? I can
-> also guarantee you that there will be additional data structures added
-> in future versions of the architecture, so you'll need to consider how
-> you want to operate when running on newer hardware.
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> writes:
+
+> Hello Michael,
 >
-> > I introduced a new map implementation defined command because the per
-> > page CMD_TLBI_NH_VA IOVA invalidation command was not efficient/usable
-> > with use cases such as DPDK on guest. I understood the spec provisions
-> > for such implementation defined commands.
-> 
-> Whilst there is a space for IMP DEF commands, this doesn't generally mean
-> that they can be repurposed by software. What if the underlying hardware
-> has an IMP DEF command that you want to export?
+> On Wed, Aug 23, 2017 at 10:17:39PM +1000, Michael Ellerman wrote:
+>
+>> [    0.358192] Call Trace:
+>> [    0.360624] [c0000000f7173680] [c0000000f7173710] 0xc0000000f7173710 (unreliable)
+>> [    0.368088] [c0000000f7173710] [c0000000002abf7c] .kernfs_find_and_get_ns+0x4c/0x7c
+>> [    0.375729] [c0000000f71737a0] [c0000000002b13c8] .sysfs_add_link_to_group+0x44/0x9c
+>> [    0.383456] [c0000000f7173840] [c000000000591660] .iommu_device_link+0x70/0x144
+>> [    0.390744] [c0000000f71738e0] [c0000000005942dc] .fsl_pamu_add_device+0x4c/0x80
+>> [    0.398121] [c0000000f7173960] [c00000000058ce8c] .add_iommu_group+0x5c/0x9c
+>> [    0.405153] [c0000000f71739e0] [c00000000059d6b8] .bus_for_each_dev+0x98/0xfc
+>> [    0.412269] [c0000000f7173a80] [c00000000058f1a0] .bus_set_iommu+0xd8/0x11c
+>> [    0.419218] [c0000000f7173b20] [c000000000d86998] .pamu_domain_init+0xb0/0xe0
+>> [    0.426331] [c0000000f7173ba0] [c000000000d86864] .fsl_pamu_init+0xec/0x170
+>> [    0.433276] [c0000000f7173c30] [c000000000001934] .do_one_initcall+0x68/0x1b8
+>> [    0.440395] [c0000000f7173d00] [c000000000d440e4] .kernel_init_freeable+0x24c/0x324
+>> [    0.448031] [c0000000f7173db0] [c000000000001b90] .kernel_init+0x20/0x140
+>> [    0.454801] [c0000000f7173e30] [c0000000000009bc] .ret_from_kernel_thread+0x58/0x9c
+>> [    0.462438] Instruction dump:
+>> [    0.465390] 7c0802a6 fb81ffe0 f8010010 fba1ffe8 fbc1fff0 fbe1fff8 f821ff71 7c7e1b78 
+>> [    0.473114] 7cbd2b78 7c9c2378 60000000 60000000 <a13e0068> 311dffff ebfe0048 552906b4 
+>> [    0.481017] ---[ end trace 5d11d3e6c29380bd ]---
+>
+> Thanks for the report, this looks like an initialization ordering
+> problem.
 
-The code needs to change to only issue these commands for the QEMU SMMU,
-not the arm one.  Then if necessary we will be able to add some kind of
-handshake with guest and transition to a different command for newer
-guests.
+Yes I suspect so.
 
-> Besides, my main points
-> here are that your command isn't well-specified and if you have to add
-> a command, why not just add a "map" command (i.e. implement a PV interface
-> instead)?
+> Can you please try the attached patch?
 
-Yes it's PV anyway, just do what's easier to code up and support.
+Thanks, that works.
+
+It boots happily, much later in boot I see these messages:
+
+[    2.085616] iommu: Adding device ffe301000.jr to group 9
+[    2.091101] iommu: Adding device ffe302000.jr to group 10
+[    2.096633] iommu: Adding device ffe303000.jr to group 11
+[    2.102161] iommu: Adding device ffe304000.jr to group 12
+
+In /sys I see:
+
+root@p5020ds:~# ls -l /sys/class/iommu/iommu0
+lrwxrwxrwx 1 root root 0 Aug 24 12:01 /sys/class/iommu/iommu0 -> ../../devices/virtual/iommu/iommu0
+
+And:
+
+root@p5020ds:~# ls -l /sys/devices/virtual/iommu/iommu0/devices/
+total 0
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 0000:00:00.0 -> ../../../../platform/ffe200000.pcie/pci0000:00/0000:00:00.0
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 2000:00:00.0 -> ../../../../platform/ffe202000.pcie/pci2000:00/2000:00:00.0
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 2000:01:00.0 -> ../../../../platform/ffe202000.pcie/pci2000:00/2000:00:00.0/2000:01:00.0
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 2000:01:00.1 -> ../../../../platform/ffe202000.pcie/pci2000:00/2000:00:00.0/2000:01:00.1
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe100300.dma -> ../../../../platform/ffe000000.soc/ffe100300.dma
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe101300.dma -> ../../../../platform/ffe000000.soc/ffe101300.dma
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe114000.sdhc -> ../../../../platform/ffe000000.soc/ffe114000.sdhc
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe200000.pcie -> ../../../../platform/ffe200000.pcie
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe202000.pcie -> ../../../../platform/ffe202000.pcie
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe210000.usb -> ../../../../platform/ffe000000.soc/ffe210000.usb
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe211000.usb -> ../../../../platform/ffe000000.soc/ffe211000.usb
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe220000.sata -> ../../../../platform/ffe000000.soc/ffe220000.sata
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe221000.sata -> ../../../../platform/ffe000000.soc/ffe221000.sata
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe301000.jr -> ../../../../platform/ffe000000.soc/ffe300000.crypto/ffe301000.jr
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe302000.jr -> ../../../../platform/ffe000000.soc/ffe300000.crypto/ffe302000.jr
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe303000.jr -> ../../../../platform/ffe000000.soc/ffe300000.crypto/ffe303000.jr
+lrwxrwxrwx 1 root root 0 Aug 24 12:02 ffe304000.jr -> ../../../../platform/ffe000000.soc/ffe300000.crypto/ffe304000.jr
 
 
-> > >   3. The ACPI IORT spec is updated to recognise this implementation
-> > > 
-> > >   4. There is an implementation that can use the guest page tables directly,
-> > >      because that may well make all of this moot.
-> > Most probably I will come back to you with questions on stage 1 + stage2
-> > enablement and "4.8 Virtualisation" chapter of smmuv3 spec. Besides I
-> > also need to get access to some HW with smmuv3 ;-)
-> 
-> Ok.
-> 
-> Will
+Which seems like it's working?
+
+cheers
