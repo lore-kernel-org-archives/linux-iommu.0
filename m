@@ -1,85 +1,75 @@
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH 13/13] remoteproc: Use sychronized interface of the
- IOMMU-API
-Date: Thu, 24 Aug 2017 12:06:36 -0700
-Message-ID: <20170824190636.GG20643@builder>
-References: <1502974596-23835-1-git-send-email-joro@8bytes.org>
- <1502974596-23835-14-git-send-email-joro@8bytes.org>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 0/3] SMMUv3 CMD_SYNC optimisation
+Date: Fri, 25 Aug 2017 00:44:48 -0400
+Message-ID: <16bf571e-4582-21af-c633-900bed400d2d@codeaurora.org>
+References: <cover.1503075486.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1502974596-23835-14-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Joerg Roedel <jroedel@suse.de>, Ohad Ben-Cohen <ohad@wizery.com>, linux-remoteproc@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1503075486.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu 17 Aug 05:56 PDT 2017, Joerg Roedel wrote:
+Hi Robin,
 
-> From: Joerg Roedel <jroedel@suse.de>
+On 8/18/2017 1:33 PM, Robin Murphy wrote:
+> Hi all,
 > 
-> The map and unmap functions of the IOMMU-API changed their
-> semantics: They do no longer guarantee that the hardware
-> TLBs are synchronized with the page-table updates they made.
+> Waiting for the command queue to drain for CMD_SYNC completion is likely
+> a contention hotspot on high-core-count systems. If the SMMU is coherent
+> and supports MSIs, though, we can use this cool feature (as suggested by
+> the architecture, no less) to make syncs effectively non-blocking for
+> anyone other than the caller.
 > 
-> To make conversion easier, new synchronized functions have
-> been introduced which give these guarantees again until the
-> code is converted to use the new TLB-flush interface of the
-> IOMMU-API, which allows certain optimizations.
-> 
-> But for now, just convert this code to use the synchronized
-> functions so that it will behave as before.
-> 
-> Cc: Ohad Ben-Cohen <ohad@wizery.com>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: linux-remoteproc@vger.kernel.org
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> I don't have any hardware that supports MSIs, but this has at least
+> passed muster on the Fast Model with cache modelling enabled - I'm hoping
+> the Qualcomm machines have the appropriate configuration to actually test
+> how well it works in reality. If it is worthwhile, I do have most of a
+> plan for how we can do something similar in the non-MSI polling case (it's
+> mostly a problem of handling the queue-wrapping edge cases correctly).
 
-Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+I tested this on QDF2400 hardware which supports MSI as a CMD_SYNC
+completion signal. As with Thunder's "performance optimization" series,
+I evaluated the patches using FIO with 4 NVME drives connected to a
+single SMMU. Here's how they compared:
 
-Regards,
-Bjorn
+FIO - 512k blocksize / io-depth 32 / 1 thread per drive
+  Baseline 4.13-rc1 w/SMMU enabled: 25% of SMMU bypass performance
+  Baseline + Thunder Patch 1      : 28%
+  Baseline + CMD_SYNC Optimization: 36%
+  Baseline + Thunder Patches 2-5  : 86%
+  Baseline + Thunder Patches 1-5  : 100% [!!]
 
-> ---
->  drivers/remoteproc/remoteproc_core.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+Seems like it would probably be worthwhile to implement this for the
+non-MSI case also. Let me know if there are other workloads you're
+particularly interested in, and I'll try to get those tested too.
+
+-Nate
 > 
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index 564061d..16db19c 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -553,7 +553,8 @@ static int rproc_handle_devmem(struct rproc *rproc, struct fw_rsc_devmem *rsc,
->  	if (!mapping)
->  		return -ENOMEM;
->  
-> -	ret = iommu_map(rproc->domain, rsc->da, rsc->pa, rsc->len, rsc->flags);
-> +	ret = iommu_map_sync(rproc->domain, rsc->da,
-> +			     rsc->pa, rsc->len, rsc->flags);
->  	if (ret) {
->  		dev_err(dev, "failed to map devmem: %d\n", ret);
->  		goto out;
-> @@ -661,8 +662,8 @@ static int rproc_handle_carveout(struct rproc *rproc,
->  			goto dma_free;
->  		}
->  
-> -		ret = iommu_map(rproc->domain, rsc->da, dma, rsc->len,
-> -				rsc->flags);
-> +		ret = iommu_map_sync(rproc->domain, rsc->da, dma, rsc->len,
-> +				     rsc->flags);
->  		if (ret) {
->  			dev_err(dev, "iommu_map failed: %d\n", ret);
->  			goto free_mapping;
-> @@ -823,7 +824,8 @@ static void rproc_resource_cleanup(struct rproc *rproc)
->  	list_for_each_entry_safe(entry, tmp, &rproc->mappings, node) {
->  		size_t unmapped;
->  
-> -		unmapped = iommu_unmap(rproc->domain, entry->da, entry->len);
-> +		unmapped = iommu_unmap_sync(rproc->domain, entry->da,
-> +					    entry->len);
->  		if (unmapped != entry->len) {
->  			/* nothing much to do besides complaining */
->  			dev_err(dev, "failed to unmap %u/%zu\n", entry->len,
-> -- 
-> 2.7.4
+> Robin.
 > 
+> 
+> Robin Murphy (3):
+>    iommu/arm-smmu-v3: Specialise CMD_SYNC handling
+>    iommu/arm-smmu-v3: Forget about cmdq-sync interrupt
+>    iommu/arm-smmu-v3: Utilise CMD_SYNC MSI feature
+> 
+>   drivers/iommu/arm-smmu-v3.c | 117 +++++++++++++++++++++++++++++---------------
+>   1 file changed, 77 insertions(+), 40 deletions(-)
+> 
+
+-- 
+Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
