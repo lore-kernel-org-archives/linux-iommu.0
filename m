@@ -1,59 +1,87 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/mediatek: Fix a build fail of m4u_type
-Date: Sat, 26 Aug 2017 21:46:13 +0300
-Message-ID: <c7e936c9-9d77-66cd-32d0-7a07ec45d68b@gmail.com>
-References: <1503552249-22060-1-git-send-email-yong.wu@mediatek.com>
- <ecd9b73a-0c8f-175c-175f-27ae318352bf@gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux iommu-fixes-v4.13-rc6
+Date: Sun, 27 Aug 2017 14:45:32 +0200
+Message-ID: <20170827124524.sye7hzriufwwjolu@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <ecd9b73a-0c8f-175c-175f-27ae318352bf-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="6mjxezoq7cigwihk"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
 
+--6mjxezoq7cigwihk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 08/26/2017 09:33 PM, Matthias Brugger wrote:
-> 
-> 
-> On 08/24/2017 08:24 AM, Yong Wu wrote:
->> The commit ("iommu/mediatek: Enlarge the validate PA range
->> for 4GB mode") introduce the following build error:
->>
->>     drivers/iommu/mtk_iommu.c: In function 'mtk_iommu_hw_init':
->>>> drivers/iommu/mtk_iommu.c:536:30: error: 'const struct mtk_iommu_data'
->>   has no member named 'm4u_type'; did you mean 'm4u_dom'?
->>       if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
->>
->> This patch fix it, use "m4u_plat" instead of "m4u_type".
->>
->> Reported-by: kernel test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
->> ---
->> 1) In the v2 of mt2712 iommu support patch-set, We changed a variant
->> name from "m4u_type" to "m4u_plat", But I'm sorry that I forgot to
->> change it in the later patch.
->> 2) This patch is based on [1].
->> [1]:https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023847.html
->> 3) I cann't find the commit id of the patch ("iommu/mediatek: Enlarge
->> the validate PA range for 4GB mode") in the [2].
->> So I don't write the commit id for that patch in the commit message.
->> [2]https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-> 
-> Because the kernel test robot took the patch from the mailinglist. Please fold 
-> this fix into v3 of the series.
-> 
+Hi Linus,
 
-Please ignore this message, I didn't realize that the driver was already queued 
-by Joerg.
+The following changes since commit a7990c647b35415e3dd07a077480a908678947ba:
 
-Regards,
-Matthias
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+  iommu/arm-smmu: fix null-pointer dereference in arm_smmu_add_device (2017-08-11 16:56:51 +0200)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.13-rc6
+
+for you to fetch changes up to 2926a2aa5c14fb2add75e6584845b1c03022235f:
+
+  iommu: Fix wrong freeing of iommu_device->dev (2017-08-15 13:58:48 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.13-rc6
+
+Another fix, this time in common IOMMU sysfs code
+
+	- In the conversion from the old iommu sysfs-code to the
+	  iommu_device_register interface, I missed to update the
+	  release path for the struct device associated with an IOMMU.
+	  It freed the 'struct device', which was a pointer before, but
+	  is now embedded in another struct. Freeing from the middle of
+	  allocated memory had all kinds of nasty side effects when an
+	  IOMMU was unplugged. Unfortunatly nobody unplugged and IOMMU
+	  until now, so this was not discovered earlier.  The fix is to
+	  make the 'struct device' a pointer again.
+
+----------------------------------------------------------------
+Joerg Roedel (1):
+      iommu: Fix wrong freeing of iommu_device->dev
+
+ drivers/iommu/amd_iommu_types.h |  4 +++-
+ drivers/iommu/intel-iommu.c     |  4 +++-
+ drivers/iommu/iommu-sysfs.c     | 32 ++++++++++++++++++++------------
+ include/linux/iommu.h           | 12 +++++++++++-
+ 4 files changed, 37 insertions(+), 15 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--6mjxezoq7cigwihk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZor7kAAoJECvwRC2XARrjCOEP/2KgSpikUlaY8qwv21i2FM34
+oYLEU/kXRKEo9K6sikZN2y2mgo0fORmRV8551tBdRtZMa22OwJE3oSQ105+Y/Gxb
+5uU/4NHv/lppb44777JmLcDOORvTWH7sKZLjZ07wd/5vN5JSYbGTewyx2vCGyUML
++iz0DP7hvLaSCj2KP5TRG3AZBrKLcBLfdFQbX1f+wAVFIm4IH5Y0JDsTaBm/egPG
+jQuQ8mDh2Mo5L9Xmzm0Tsf9MTmQFJsStwxr3JOyRQJEXhRNXk4nnys9KNkzbd8Mz
+6yvxQ/QwP4vHqRIX+H2dRGVpWgEGRv6JAbzHGs8XYoA9amnXalb2FpZBt04txLHI
+hn8wgW64dT4BHW27zWSgk3/jlOgS92sYbP/UnZvMyxEbOUjisdVJ5Ro07qYzQFEA
++ph8W6zGCT3SNSI+3c2Ev06A49KJEg9qfkIoDtwy6wnYELiXjLEs4Y86+Ptj1bAj
+7czwMaio4mqK3rzXdtsjI9hTUxQDiQbJgOaxWerIHgKfZQf7uJeqKHxSdqbNs+oP
+cYi8poYYvx8LNpYhT9q7JcStd32YDUJlX+8Na063PME9PMNB94xE+svFcCDzs3WY
+BNGp5QlIu9Vio52eTs+GOg/MFxbHNOdd7X520OxTIQLkDcBMYcOV49nrekvCSoM0
+OS+r+0eWvCy+2AiJWWdj
+=7tAI
+-----END PGP SIGNATURE-----
+
+--6mjxezoq7cigwihk--
