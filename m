@@ -1,50 +1,46 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 05/12] ia64: make dma_cache_sync a no-op
-Date: Sun, 27 Aug 2017 18:10:25 +0200
-Message-ID: <20170827161032.22772-6-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 07/12] mn10300: make dma_cache_sync a no-op
+Date: Sun, 27 Aug 2017 18:10:27 +0200
+Message-ID: <20170827161032.22772-8-hch@lst.de>
 References: <20170827161032.22772-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170827161032.22772-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20170827161032.22772-1-hch@lst.de>
+Sender: linux-ia64-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Michal Simek <monstr@monstr.eu>, David Howells <dhowells@redhat.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-xtensa@linux-xtensa.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-ia64 does not implement DMA_ATTR_NON_CONSISTENT allocations, so it doesn't
-make any sense to do any work in dma_cache_sync given that it must be a
-no-op when dma_alloc_attrs returns coherent memory.
+mn10300 does not implement DMA_ATTR_NON_CONSISTENT allocations, so it
+doesn't make any sense to do any work in dma_cache_sync given that it must
+be a no-op when dma_alloc_attrs returns coherent memory.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/ia64/include/asm/dma-mapping.h | 5 -----
- 1 file changed, 5 deletions(-)
+ arch/mn10300/include/asm/dma-mapping.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/ia64/include/asm/dma-mapping.h b/arch/ia64/include/asm/dma-mapping.h
-index 3ce5ab4339f3..99dfc1aa9d3c 100644
---- a/arch/ia64/include/asm/dma-mapping.h
-+++ b/arch/ia64/include/asm/dma-mapping.h
-@@ -48,11 +48,6 @@ static inline void
- dma_cache_sync (struct device *dev, void *vaddr, size_t size,
- 	enum dma_data_direction dir)
+diff --git a/arch/mn10300/include/asm/dma-mapping.h b/arch/mn10300/include/asm/dma-mapping.h
+index 737ef574b3ea..dc24163b190f 100644
+--- a/arch/mn10300/include/asm/dma-mapping.h
++++ b/arch/mn10300/include/asm/dma-mapping.h
+@@ -11,9 +11,6 @@
+ #ifndef _ASM_DMA_MAPPING_H
+ #define _ASM_DMA_MAPPING_H
+ 
+-#include <asm/cache.h>
+-#include <asm/io.h>
+-
+ extern const struct dma_map_ops mn10300_dma_ops;
+ 
+ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+@@ -25,7 +22,6 @@ static inline
+ void dma_cache_sync(void *vaddr, size_t size,
+ 		    enum dma_data_direction direction)
  {
--	/*
--	 * IA-64 is cache-coherent, so this is mostly a no-op.  However, we do need to
--	 * ensure that dma_cache_sync() enforces order, hence the mb().
--	 */
--	mb();
+-	mn10300_dcache_flush_inv();
  }
  
- #endif /* _ASM_IA64_DMA_MAPPING_H */
+ #endif
 -- 
 2.11.0
+
