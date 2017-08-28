@@ -1,66 +1,51 @@
-From: Filippo Sironi <sironi@amazon.de>
-Subject: [PATCH] intel-iommu: Don't be too aggressive when clearing one context entry
-Date: Mon, 28 Aug 2017 16:16:29 +0200
-Message-ID: <1503929789-26698-1-git-send-email-sironi@amazon.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Filippo Sironi <sironi@amazon.de>, David Woodhouse <dwmw@amazon.co.uk>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+From: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu: s390: constify iommu_ops
+Date: Mon, 28 Aug 2017 17:54:54 +0200
+Message-ID: <20170828175454.1401491a@thinkpad>
+References: <1503922370-25990-1-git-send-email-arvind.yadav.cs@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1503922370-25990-1-git-send-email-arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Previously, we were invalidating context cache and IOTLB globally when
-clearing one context entry.  This is a tad too aggressive.
-Invalidate the context cache and IOTLB for the interested device only.
+On Mon, 28 Aug 2017 17:42:50 +0530
+Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-Signed-off-by: Filippo Sironi <sironi@amazon.de>
-Cc: David Woodhouse <dwmw@amazon.co.uk>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/iommu/intel-iommu.c | 25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
+> iommu_ops are not supposed to change at runtime.
+> Functions 'bus_set_iommu' working with const iommu_ops provided
+> by <linux/iommu.h>. So mark the non-const structs as const.
+> 
+> Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/s390-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3e8636f1220e..4bf3e59b0929 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2351,13 +2351,32 @@ static inline int domain_pfn_mapping(struct dmar_domain *domain, unsigned long i
- 
- static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
- {
-+	unsigned long flags;
-+	struct context_entry *context;
-+	u16 did_old;
-+
- 	if (!iommu)
- 		return;
- 
-+	spin_lock_irqsave(&iommu->lock, flags);
-+	context = iommu_context_addr(iommu, bus, devfn, 0);
-+	if (!context) {
-+		spin_unlock_irqrestore(&iommu->lock, flags);
-+		return;
-+	}
-+	did_old = context_domain_id(context);
-+	spin_unlock_irqrestore(&iommu->lock, flags);
- 	clear_context_table(iommu, bus, devfn);
--	iommu->flush.flush_context(iommu, 0, 0, 0,
--					   DMA_CCMD_GLOBAL_INVL);
--	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-+	iommu->flush.flush_context(iommu,
-+				   did_old,
-+				   (((u16)bus) << 8) | devfn,
-+				   DMA_CCMD_MASK_NOBIT,
-+				   DMA_CCMD_DEVICE_INVL);
-+	iommu->flush.flush_iotlb(iommu,
-+				 did_old,
-+				 0,
-+				 0,
-+				 DMA_TLB_DSI_FLUSH);
- }
- 
- static inline void unlink_domain_info(struct device_domain_info *info)
--- 
-2.7.4
+Acked-by: Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+
+> 
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 8788640..400d75f 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -327,7 +327,7 @@ static size_t s390_iommu_unmap(struct iommu_domain *domain,
+>  	return size;
+>  }
+> 
+> -static struct iommu_ops s390_iommu_ops = {
+> +static const struct iommu_ops s390_iommu_ops = {
+>  	.capable = s390_iommu_capable,
+>  	.domain_alloc = s390_domain_alloc,
+>  	.domain_free = s390_domain_free,
