@@ -1,82 +1,64 @@
-From: Bharat Kumar Gogada <bharatku@xilinx.com>
-Subject: RE: Support SVM without PASID
-Date: Mon, 28 Aug 2017 13:10:25 +0000
-Message-ID: <BLUPR0201MB15051529B1A13F03B4CE7342A59E0@BLUPR0201MB1505.namprd02.prod.outlook.com>
-References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
- <20170708140257.2de02d63@w520.home>
- <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
- <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
- <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
- <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
- <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
- <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
- <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
- <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
- <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
- <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
- <e5be8314-dd3c-703a-3d46-cd180d404627@gmail.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D71673@SHSMSX101.ccr.corp.intel.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 1/3] iommu: exynos: constify iommu_ops
+Date: Mon, 28 Aug 2017 15:13:43 +0200
+Message-ID: <18f05dd3-4305-e607-57bb-dea086481bb8@samsung.com>
+References: <CGME20170828121232epcas2p49f8a17002f18d19b613b43ba38f71df9@epcas2p4.samsung.com>
+        <1503922325-25905-1-git-send-email-arvind.yadav.cs@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D71673@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>, valmiki <valmikibow@gmail.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <1503922325-25905-1-git-send-email-arvind.yadav.cs@gmail.com>
+Content-language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Arvind Yadav <arvind.yadav.cs@gmail.com>, joro@8bytes.org, kgene@kernel.org, krzk@kernel.org, matthias.bgg@gmail.com, gerald.schaefer@de.ibm.com
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> Subject: RE: Support SVM without PASID
->=20
-> > From: valmiki [mailto:valmikibow@gmail.com]
-> > Sent: Saturday, August 12, 2017 8:11 PM
-> >
-> > On 8/7/2017 4:01 PM, Jean-Philippe Brucker wrote:
-> > > On 05/08/17 06:14, valmiki wrote:
-> > > [...]
-> > >> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
-> > >> documentation we fill vaddr and iova in struct
-> > vfio_iommu_type1_dma_map
-> > >> and pass them to VFIO. But if we use dynamic allocation in
-> > >> application (say malloc), do we need to use dma API to get iova and
-> > >> then call VFIO_IOMMU_MAP ioctl ?
-> > >> If application needs multiple such dynamic allocations, then it
-> > >> need to allocate large chunk and program it via VFIO_IOMMU_MAP
-> > >> ioctl and
-> > then
-> > >> manage rest allocations requirements from this buffer ?
-> > >
-> > > Yes, without SVM, the application allocates large buffers, allocates
-> > > IOVAs itself, and maps them with VFIO_IOMMU_MAP. Userspace doesn't
-> > > rely
-> > on the
-> > > DMA API at all, it manages IOVAs as it wants. Sizes passed to
-> > > VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page
-> > granularity
-> > > (that is at least 4kB), and both iova and vaddr have to be aligned
-> > > on that granularity as well. So malloc isn't really suitable in this
-> > > case, you'll need mmap. The application can then implement a small
-> > > allocator to
-> > manage
-> > > the DMA pool created with VFIO_IOMMU_MAP.
-> >
-> > Thanks Jean, I have a confusion allocate IOVA's in userspace means,
-> > how can user application decide IOVA address, can user application
-> > pick any random IOVA address ?
-> >
->=20
-> yes, any address. In this mode the whole IOVA address space is owned by
-> application, which just needs to use VFIO_IOMMU_MAP to setup
-> IOVA->PA mapping in IOMMU (As Jean pointed out, input paramters
-> are iova and vaddr. VFIO will figure out pa corresponding to vaddr).
->=20
-Hi Kevin, I have a doubt in this case, what if someone assigns mmap returne=
-d virtual address as iova address, then=20
-EP will assume it is generating request on IOVA but in reality we are using=
- application allocated virtual address, then
-it looks like we are working with application virtual address directly with=
-out PASID. Is this valid ?
+Hi Arvind,
 
-Regards,
-Bharat
+On 2017-08-28 14:12, Arvind Yadav wrote:
+> iommu_ops are not supposed to change at runtime.
+> Functions 'iommu_device_set_ops' and 'bus_set_iommu' working with
+> const iommu_ops provided by <linux/iommu.h>. So mark the non-const
+> structs as const.
+>
+> Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+I remember that in the past there were a reason for non-const iommu_ops 
+in the
+IOMMU API, but I hope it has been finally resolved.
+
+> ---
+>   drivers/iommu/exynos-iommu.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 2395478..a540016 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -569,7 +569,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
+>   	spin_unlock_irqrestore(&data->lock, flags);
+>   }
+>   
+> -static struct iommu_ops exynos_iommu_ops;
+> +static const struct iommu_ops exynos_iommu_ops;
+>   
+>   static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+>   {
+> @@ -1323,7 +1323,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>   	return 0;
+>   }
+>   
+> -static struct iommu_ops exynos_iommu_ops = {
+> +static const struct iommu_ops exynos_iommu_ops = {
+>   	.domain_alloc = exynos_iommu_domain_alloc,
+>   	.domain_free = exynos_iommu_domain_free,
+>   	.attach_dev = exynos_iommu_attach_device,
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
