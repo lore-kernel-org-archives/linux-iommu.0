@@ -1,35 +1,39 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu: qcom: annotate PM functions as __maybe_unused
-Date: Mon, 28 Aug 2017 11:25:17 +0200
-Message-ID: <20170828092516.tht3a67qeytao3y7@8bytes.org>
-References: <20170823134303.1000996-1-arnd@arndb.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu/mediatek: Fix a build fail of m4u_type
+Date: Mon, 28 Aug 2017 11:26:42 +0200
+Message-ID: <20170828092641.mrr2qynqwxhrwhjb@8bytes.org>
+References: <1503560532-24416-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170823134303.1000996-1-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Rob Clark <robdclark@gmail.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1503560532-24416-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 23, 2017 at 03:42:45PM +0200, Arnd Bergmann wrote:
-> The qcom_iommu_disable_clocks() function is only called from PM
-> code that is hidden in an #ifdef, causing a harmless warning without
-> CONFIG_PM:
+On Thu, Aug 24, 2017 at 03:42:11PM +0800, Yong Wu wrote:
+> The commit ("iommu/mediatek: Enlarge the validate PA range
+> for 4GB mode") introduce the following build error:
 > 
-> drivers/iommu/qcom_iommu.c:601:13: error: 'qcom_iommu_disable_clocks' defined but not used [-Werror=unused-function]
->  static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
-> drivers/iommu/qcom_iommu.c:581:12: error: 'qcom_iommu_enable_clocks' defined but not used [-Werror=unused-function]
->  static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
+>    drivers/iommu/mtk_iommu.c: In function 'mtk_iommu_hw_init':
+> >> drivers/iommu/mtk_iommu.c:536:30: error: 'const struct mtk_iommu_data'
+>  has no member named 'm4u_type'; did you mean 'm4u_dom'?
+>      if (data->enable_4GB && data->m4u_type != M4U_MT8173) {
 > 
-> Replacing that #ifdef with __maybe_unused annotations lets the compiler
-> drop the functions silently instead.
+> This patch fix it, use "m4u_plat" instead of "m4u_type".
 > 
-> Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/iommu/qcom_iommu.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+> Reported-by: kernel test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Applied, thanks.
+Applied both, thanks.
