@@ -1,62 +1,54 @@
-From: =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>
-Subject: [PATCH 08/13] iommu/intel: update to new mmu_notifier semantic
-Date: Tue, 29 Aug 2017 19:54:42 -0400
-Message-ID: <20170829235447.10050-9-jglisse@redhat.com>
+From: =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 07/13] iommu/amd: update to new mmu_notifier semantic
+Date: Tue, 29 Aug 2017 19:54:41 -0400
+Message-ID: <20170829235447.10050-8-jglisse@redhat.com>
 References: <20170829235447.10050-1-jglisse@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170829235447.10050-1-jglisse@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc: =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170829235447.10050-1-jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
+Cc: Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Call to mmu_notifier_invalidate_page() are replaced by call to
-mmu_notifier_invalidate_range() and thus call are bracketed by
-call to mmu_notifier_invalidate_range_start()/end()
-
-Remove now useless invalidate_page callback.
-
-Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: iommu@lists.linux-foundation.org
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
----
- drivers/iommu/intel-svm.c | 9 ---------
- 1 file changed, 9 deletions(-)
-
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index f167c0d84ebf..f620dccec8ee 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -223,14 +223,6 @@ static void intel_change_pte(struct mmu_notifier *mn, struct mm_struct *mm,
- 	intel_flush_svm_range(svm, address, 1, 1, 0);
- }
- 
--static void intel_invalidate_page(struct mmu_notifier *mn, struct mm_struct *mm,
--				  unsigned long address)
--{
--	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
--
--	intel_flush_svm_range(svm, address, 1, 1, 0);
--}
--
- /* Pages have been freed at this point */
- static void intel_invalidate_range(struct mmu_notifier *mn,
- 				   struct mm_struct *mm,
-@@ -285,7 +277,6 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- static const struct mmu_notifier_ops intel_mmuops = {
- 	.release = intel_mm_release,
- 	.change_pte = intel_change_pte,
--	.invalidate_page = intel_invalidate_page,
- 	.invalidate_range = intel_invalidate_range,
- };
- 
--- 
-2.13.5
+Q2FsbCB0byBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9wYWdlKCkgYXJlIHJlcGxhY2VkIGJ5IGNh
+bGwgdG8KbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UoKSBhbmQgdGh1cyBjYWxsIGFyZSBi
+cmFja2V0ZWQgYnkKY2FsbCB0byBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZV9zdGFydCgp
+L2VuZCgpCgpSZW1vdmUgbm93IHVzZWxlc3MgaW52YWxpZGF0ZV9wYWdlIGNhbGxiYWNrLgoKU2ln
+bmVkLW9mZi1ieTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+CkNjOiBTdXJh
+dmVlIFN1dGhpa3VscGFuaXQgPHN1cmF2ZWUuc3V0aGlrdWxwYW5pdEBhbWQuY29tPgpDYzogaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKQ2M6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBz
+dXNlLmRlPgpDYzogS2lyaWxsIEEuIFNodXRlbW92IDxraXJpbGwuc2h1dGVtb3ZAbGludXguaW50
+ZWwuY29tPgpDYzogQW5kcmV3IE1vcnRvbiA8YWtwbUBsaW51eC1mb3VuZGF0aW9uLm9yZz4KQ2M6
+IExpbnVzIFRvcnZhbGRzIDx0b3J2YWxkc0BsaW51eC1mb3VuZGF0aW9uLm9yZz4KQ2M6IEFuZHJl
+YSBBcmNhbmdlbGkgPGFhcmNhbmdlQHJlZGhhdC5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9hbWRf
+aW9tbXVfdjIuYyB8IDggLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCA4IGRlbGV0aW9ucygtKQoK
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3YyLmMgYi9kcml2ZXJzL2lvbW11
+L2FtZF9pb21tdV92Mi5jCmluZGV4IDY2MjljNDcyZWFmZC4uZGNjZjViNzZlZmYyIDEwMDY0NAot
+LS0gYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYW1k
+X2lvbW11X3YyLmMKQEAgLTM5MSwxMyArMzkxLDYgQEAgc3RhdGljIGludCBtbl9jbGVhcl9mbHVz
+aF95b3VuZyhzdHJ1Y3QgbW11X25vdGlmaWVyICptbiwKIAlyZXR1cm4gMDsKIH0KIAotc3RhdGlj
+IHZvaWQgbW5faW52YWxpZGF0ZV9wYWdlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLAotCQkJICAg
+ICAgIHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLAotCQkJICAgICAgIHVuc2lnbmVkIGxvbmcgYWRkcmVz
+cykKLXsKLQlfX21uX2ZsdXNoX3BhZ2UobW4sIGFkZHJlc3MpOwotfQotCiBzdGF0aWMgdm9pZCBt
+bl9pbnZhbGlkYXRlX3JhbmdlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLAogCQkJCXN0cnVjdCBt
+bV9zdHJ1Y3QgKm1tLAogCQkJCXVuc2lnbmVkIGxvbmcgc3RhcnQsIHVuc2lnbmVkIGxvbmcgZW5k
+KQpAQCAtNDM2LDcgKzQyOSw2IEBAIHN0YXRpYyB2b2lkIG1uX3JlbGVhc2Uoc3RydWN0IG1tdV9u
+b3RpZmllciAqbW4sIHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQogc3RhdGljIGNvbnN0IHN0cnVjdCBt
+bXVfbm90aWZpZXJfb3BzIGlvbW11X21uID0gewogCS5yZWxlYXNlCQk9IG1uX3JlbGVhc2UsCiAJ
+LmNsZWFyX2ZsdXNoX3lvdW5nICAgICAgPSBtbl9jbGVhcl9mbHVzaF95b3VuZywKLQkuaW52YWxp
+ZGF0ZV9wYWdlICAgICAgICA9IG1uX2ludmFsaWRhdGVfcGFnZSwKIAkuaW52YWxpZGF0ZV9yYW5n
+ZSAgICAgICA9IG1uX2ludmFsaWRhdGVfcmFuZ2UsCiB9OwogCi0tIAoyLjEzLjUKCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
+dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
+bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
