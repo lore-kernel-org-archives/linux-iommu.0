@@ -1,284 +1,114 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu: Introduce Interface for IOMMU TLB Flushing
-Date: Tue, 29 Aug 2017 10:53:35 +0800
-Message-ID: <59A4D72F.9040600@huawei.com>
-References: <1503496204-2527-1-git-send-email-joro@8bytes.org>
-	<1503496204-2527-3-git-send-email-joro@8bytes.org>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: [RFC PATCH v5 0/5] vfio-pci: Add support for mmapping MSI-X table
+Date: Tue, 29 Aug 2017 12:58:46 +1000
+Message-ID: <79581f70-a4c9-dac9-a671-4de7f55bd86e@ozlabs.ru>
+References: <20170807072548.3023-1-aik@ozlabs.ru>
+ <8f5f7b82-3c10-7f39-b587-db4c4424f04c@ozlabs.ru>
+ <3be3fca3-7f66-0f13-b93a-d3db40a8a934@ozlabs.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1503496204-2527-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <3be3fca3-7f66-0f13-b93a-d3db40a8a934@ozlabs.ru>
+Content-Language: en-AU
+Sender: linux-kernel-owner@vger.kernel.org
+To: linuxppc-dev@lists.ozlabs.org
+Cc: David Gibson <david@gibson.dropbear.id.au>, kvm-ppc@vger.kernel.org, kvm@vger.kernel.org, Yongji Xie <elohimes@gmail.com>, Eric Auger <eric.auger@redhat.com>, Kyle Mahlkuch <Kyle.Mahlkuch@ibm.com>, Alex Williamson <alex.williamson@redhat.com>, Jike Song <jike.song@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, Mauricio Faria de Oliveira <mauricfo@linux.vnet.ibm.com>, Neo Jia <cjia@nvidia.com>, Paul Mackerras <paulus@samba.org>, Vlad Tsyrklevich <vlad@tsyrklevich.net>, iommu@lists.linux-foundation.org, linux-kerne
 List-Id: iommu@lists.linux-foundation.org
 
+On 21/08/17 12:47, Alexey Kardashevskiy wrote:
+> Folks,
+> 
+> Ok, people did talk, exchanged ideas, lovely :) What happens now? Do I
+> repost this or go back to PCI bus flags or something else? Thanks.
 
 
-On 2017/8/23 21:50, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> With the current IOMMU-API the hardware TLBs have to be
-> flushed in every iommu_ops->unmap() call-back.
-> 
-> For unmapping large amounts of address space, like it
-> happens when a KVM domain with assigned devices is
-> destroyed, this causes thousands of unnecessary TLB flushes
-> in the IOMMU hardware because the unmap call-back runs for
-> every unmapped physical page.
-> 
-> With the TLB Flush Interface and the new iommu_unmap_fast()
-> function introduced here the need to clean the hardware TLBs
-> is removed from the unmapping code-path. Users of
-> iommu_unmap_fast() have to explicitly call the TLB-Flush
-> functions to sync the page-table changes to the hardware.
-> 
-> Three functions for TLB-Flushes are introduced:
-> 
-> 	* iommu_flush_tlb_all() - Flushes all TLB entries
-> 	                          associated with that
-> 				  domain. TLBs entries are
-> 				  flushed when this function
-> 				  returns.
-> 
-> 	* iommu_tlb_range_add() - This will add a given
-> 				  range to the flush queue
-> 				  for this domain.
-> 
-> 	* iommu_tlb_sync() - Flushes all queued ranges from
-> 			     the hardware TLBs. Returns when
-> 			     the flush is finished.
-> 
-> The semantic of this interface is intentionally similar to
-> the iommu_gather_ops from the io-pgtable code.
-> 
-> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 32 ++++++++++++++++++++---
->  include/linux/iommu.h | 72 ++++++++++++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 99 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3f6ea16..0f68342 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -527,6 +527,8 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
->  
->  	}
->  
-> +	iommu_flush_tlb_all(domain);
-> +
->  out:
->  	iommu_put_resv_regions(dev, &mappings);
->  
-> @@ -1556,13 +1558,16 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
->  }
->  EXPORT_SYMBOL_GPL(iommu_map);
->  
-> -size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
-> +static size_t __iommu_unmap(struct iommu_domain *domain,
-> +			    unsigned long iova, size_t size,
-> +			    bool sync)
->  {
-> +	const struct iommu_ops *ops = domain->ops;
->  	size_t unmapped_page, unmapped = 0;
-> -	unsigned int min_pagesz;
->  	unsigned long orig_iova = iova;
-> +	unsigned int min_pagesz;
->  
-> -	if (unlikely(domain->ops->unmap == NULL ||
-> +	if (unlikely(ops->unmap == NULL ||
->  		     domain->pgsize_bitmap == 0UL))
->  		return -ENODEV;
->  
-> @@ -1592,10 +1597,13 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->  	while (unmapped < size) {
->  		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
->  
-> -		unmapped_page = domain->ops->unmap(domain, iova, pgsize);
-> +		unmapped_page = ops->unmap(domain, iova, pgsize);
->  		if (!unmapped_page)
->  			break;
->  
-> +		if (sync && ops->iotlb_range_add)
-> +			ops->iotlb_range_add(domain, iova, pgsize);
-> +
->  		pr_debug("unmapped: iova 0x%lx size 0x%zx\n",
->  			 iova, unmapped_page);
->  
-> @@ -1603,11 +1611,27 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
->  		unmapped += unmapped_page;
->  	}
->  
-> +	if (sync && ops->iotlb_sync)
-> +		ops->iotlb_sync(domain);
-> +
->  	trace_unmap(orig_iova, size, unmapped);
->  	return unmapped;
->  }
-> +
-> +size_t iommu_unmap(struct iommu_domain *domain,
-> +		   unsigned long iova, size_t size)
-> +{
-> +	return __iommu_unmap(domain, iova, size, true);
-> +}
->  EXPORT_SYMBOL_GPL(iommu_unmap);
->  
-> +size_t iommu_unmap_fast(struct iommu_domain *domain,
-> +			unsigned long iova, size_t size)
-> +{
-Do we need to add a check "if (!domain->ops->iotlb_sync)". Suppose the new added three hooks are not
-registered, we should fallback to iommu_unmap.
+Anyone, any help? How do we proceed with this? Thanks.
 
-> +	return __iommu_unmap(domain, iova, size, false);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unmap_fast);
-> +
->  size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
->  			 struct scatterlist *sg, unsigned int nents, int prot)
->  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 2cb54ad..67fa954 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -167,6 +167,10 @@ struct iommu_resv_region {
->   * @map: map a physically contiguous memory region to an iommu domain
->   * @unmap: unmap a physically contiguous memory region from an iommu domain
->   * @map_sg: map a scatter-gather list of physically contiguous memory chunks
-> + * @flush_tlb_all: Synchronously flush all hardware TLBs for this domain
-> + * @tlb_range_add: Add a given iova range to the flush queue for this domain
-> + * @tlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-> + *            queue
->   * to an iommu domain
->   * @iova_to_phys: translate iova to physical address
->   * @add_device: add device to iommu grouping
-> @@ -199,6 +203,10 @@ struct iommu_ops {
->  		     size_t size);
->  	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
->  			 struct scatterlist *sg, unsigned int nents, int prot);
-> +	void (*flush_iotlb_all)(struct iommu_domain *domain);
-> +	void (*iotlb_range_add)(struct iommu_domain *domain,
-> +				unsigned long iova, size_t size);
-> +	void (*iotlb_sync)(struct iommu_domain *domain);
-I think we'd better to make sure all these three hooks are registered or all are not, in
-function __iommu_domain_alloc or some other suitable place.
 
->  	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
->  	int (*add_device)(struct device *dev);
->  	void (*remove_device)(struct device *dev);
-> @@ -286,7 +294,9 @@ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
->  		     phys_addr_t paddr, size_t size, int prot);
->  extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-> -		       size_t size);
-> +			  size_t size);
-> +extern size_t iommu_unmap_fast(struct iommu_domain *domain,
-> +			       unsigned long iova, size_t size);
->  extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
->  				struct scatterlist *sg,unsigned int nents,
->  				int prot);
-> @@ -343,6 +353,25 @@ extern void iommu_domain_window_disable(struct iommu_domain *domain, u32 wnd_nr)
->  extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
->  			      unsigned long iova, int flags);
->  
-> +static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
-> +{
-> +	if (domain->ops->flush_iotlb_all)
-> +		domain->ops->flush_iotlb_all(domain);
-> +}
-> +
-> +static inline void iommu_tlb_range_add(struct iommu_domain *domain,
-> +				       unsigned long iova, size_t size)
-> +{
-> +	if (domain->ops->iotlb_range_add)
-> +		domain->ops->iotlb_range_add(domain, iova, size);
-> +}
-> +
-> +static inline void iommu_tlb_sync(struct iommu_domain *domain)
-> +{
-> +	if (domain->ops->iotlb_sync)
-> +		domain->ops->iotlb_sync(domain);
-> +}
-> +
->  static inline size_t iommu_map_sg(struct iommu_domain *domain,
->  				  unsigned long iova, struct scatterlist *sg,
->  				  unsigned int nents, int prot)
-> @@ -350,6 +379,20 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
->  	return domain->ops->map_sg(domain, iova, sg, nents, prot);
->  }
->  
-> +static inline size_t iommu_map_sg_sync(struct iommu_domain *domain,
-> +				       unsigned long iova,
-> +				       struct scatterlist *sg,
-> +				       unsigned int nents, int prot)
-> +{
-> +	size_t size = domain->ops->map_sg(domain, iova, sg, nents, prot);
-> +	if (size > 0) {
-> +		iommu_tlb_range_add(domain, iova, size);
-> +		iommu_tlb_sync(domain);
-> +	}
-> +
-> +	return size;
-> +}
-> +
->  /* PCI device grouping function */
->  extern struct iommu_group *pci_device_group(struct device *dev);
->  /* Generic device grouping function */
-> @@ -436,6 +479,12 @@ static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
->  	return -ENODEV;
->  }
->  
-> +static inline int iommu_unmap_fast(struct iommu_domain *domain, unsigned long iova,
-> +				   int gfp_order)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  static inline size_t iommu_map_sg(struct iommu_domain *domain,
->  				  unsigned long iova, struct scatterlist *sg,
->  				  unsigned int nents, int prot)
-> @@ -443,6 +492,27 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
->  	return -ENODEV;
->  }
->  
-> +static inline size_t iommu_map_sg_sync(struct iommu_domain *domain,
-> +				       unsigned long iova,
-> +				       struct scatterlist *sg,
-> +				       unsigned int nents, int prot)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
-> +{
-> +}
-> +
-> +static inline void iommu_tlb_range_add(struct iommu_domain *domain,
-> +				       unsigned long iova, size_t size)
-> +{
-> +}
-> +
-> +static inline void iommu_tlb_sync(struct iommu_domain *domain)
-> +{
-> +}
-> +
->  static inline int iommu_domain_window_enable(struct iommu_domain *domain,
->  					     u32 wnd_nr, phys_addr_t paddr,
->  					     u64 size, int prot)
+
 > 
+> 
+> 
+> On 14/08/17 19:45, Alexey Kardashevskiy wrote:
+>> Folks,
+>>
+>> Is there anything to change besides those compiler errors and David's
+>> comment in 5/5? Or the while patchset is too bad? Thanks.
+>>
+>>
+>>
+>> On 07/08/17 17:25, Alexey Kardashevskiy wrote:
+>>> This is a followup for "[PATCH kernel v4 0/6] vfio-pci: Add support for mmapping MSI-X table"
+>>> http://www.spinics.net/lists/kvm/msg152232.html
+>>>
+>>> This time it is using "caps" in IOMMU groups. The main question is if PCI
+>>> bus flags or IOMMU domains are still better (and which one).
+>>
+>>>
+>>>
+>>>
+>>> Here is some background:
+>>>
+>>> Current vfio-pci implementation disallows to mmap the page
+>>> containing MSI-X table in case that users can write directly
+>>> to MSI-X table and generate an incorrect MSIs.
+>>>
+>>> However, this will cause some performance issue when there
+>>> are some critical device registers in the same page as the
+>>> MSI-X table. We have to handle the mmio access to these
+>>> registers in QEMU emulation rather than in guest.
+>>>
+>>> To solve this issue, this series allows to expose MSI-X table
+>>> to userspace when hardware enables the capability of interrupt
+>>> remapping which can ensure that a given PCI device can only
+>>> shoot the MSIs assigned for it. And we introduce a new bus_flags
+>>> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+>>> for different archs.
+>>>
+>>>
+>>> This is based on sha1
+>>> 26c5cebfdb6c "Merge branch 'parisc-4.13-4' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux"
+>>>
+>>> Please comment. Thanks.
+>>>
+>>> Changelog:
+>>>
+>>> v5:
+>>> * redid the whole thing via so-called IOMMU group capabilities
+>>>
+>>> v4:
+>>> * rebased on recent upstream
+>>> * got all 6 patches from v2 (v3 was missing some)
+>>>
+>>>
+>>>
+>>>
+>>> Alexey Kardashevskiy (5):
+>>>   iommu: Add capabilities to a group
+>>>   iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if MSI controller enables IRQ
+>>>     remapping
+>>>   iommu/intel/amd: Set IOMMU_GROUP_CAP_ISOLATE_MSIX if IRQ remapping is
+>>>     enabled
+>>>   powerpc/iommu: Set IOMMU_GROUP_CAP_ISOLATE_MSIX
+>>>   vfio-pci: Allow to expose MSI-X table to userspace when safe
+>>>
+>>>  include/linux/iommu.h            | 20 ++++++++++++++++++++
+>>>  include/linux/vfio.h             |  1 +
+>>>  arch/powerpc/kernel/iommu.c      |  1 +
+>>>  drivers/iommu/amd_iommu.c        |  3 +++
+>>>  drivers/iommu/intel-iommu.c      |  3 +++
+>>>  drivers/iommu/iommu.c            | 35 +++++++++++++++++++++++++++++++++++
+>>>  drivers/vfio/pci/vfio_pci.c      | 20 +++++++++++++++++---
+>>>  drivers/vfio/pci/vfio_pci_rdwr.c |  5 ++++-
+>>>  drivers/vfio/vfio.c              | 15 +++++++++++++++
+>>>  9 files changed, 99 insertions(+), 4 deletions(-)
+>>>
+>>
+>>
+> 
+> 
+
 
 -- 
-Thanks!
-BestRegards
+Alexey
