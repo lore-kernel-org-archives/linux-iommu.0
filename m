@@ -1,43 +1,97 @@
-From: Bhumika Goyal <bhumirks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu/ipmmu-vmsa: make ipmmu_gather_ops const
-Date: Mon, 28 Aug 2017 23:47:27 +0530
-Message-ID: <1503944247-20783-1-git-send-email-bhumirks@gmail.com>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: Support SVM without PASID
+Date: Tue, 29 Aug 2017 01:32:11 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190D956F6@SHSMSX101.ccr.corp.intel.com>
+References: <a30962a6-2240-9263-96cc-10da1b179fcc@gmail.com>
+ <20170708140257.2de02d63@w520.home>
+ <73619426-6fcc-21ce-cfd4-8c66bde63f9a@gmail.com>
+ <eb132dfa-6708-5898-c2ce-ce7ab08809b1@arm.com>
+ <ee41f5d9-e7fb-8f7c-4b85-87cdb951ec70@gmail.com>
+ <ca0d9f94-f5e2-aaaf-2c64-0cd6ecc62754@arm.com>
+ <41333a03-bf91-1152-4779-6579845609f6@gmail.com>
+ <564ba70b-db95-7fe0-86bb-bb4eefcd87ec@arm.com>
+ <32b6402d-40fb-d40c-32f3-1ed6b9a3185a@gmail.com>
+ <c142fb8e-3618-152a-fbe3-521e6c8ff9bf@arm.com>
+ <dd3a7852-cd9a-3797-9421-dff97f6d7213@gmail.com>
+ <9b8611ca-3e39-90ec-e18e-7455115b38b3@arm.com>
+ <e5be8314-dd3c-703a-3d46-cd180d404627@gmail.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D190D71673@SHSMSX101.ccr.corp.intel.com>
+ <BLUPR0201MB15051529B1A13F03B4CE7342A59E0@BLUPR0201MB1505.namprd02.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: julia.lawall-L2FTfq7BK8M@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Bhumika Goyal <bhumirks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <BLUPR0201MB15051529B1A13F03B4CE7342A59E0@BLUPR0201MB1505.namprd02.prod.outlook.com>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
+To: Bharat Kumar Gogada <bharatku@xilinx.com>, valmiki <valmikibow@gmail.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Make these const as they are not modified anywhere.
+> From: Bharat Kumar Gogada [mailto:bharatku@xilinx.com]
+> Sent: Monday, August 28, 2017 9:10 PM
+> 
+> > Subject: RE: Support SVM without PASID
+> >
+> > > From: valmiki [mailto:valmikibow@gmail.com]
+> > > Sent: Saturday, August 12, 2017 8:11 PM
+> > >
+> > > On 8/7/2017 4:01 PM, Jean-Philippe Brucker wrote:
+> > > > On 05/08/17 06:14, valmiki wrote:
+> > > > [...]
+> > > >> Hi Jean, Thanks a lot, now i understood the flow. From vfio kernel
+> > > >> documentation we fill vaddr and iova in struct
+> > > vfio_iommu_type1_dma_map
+> > > >> and pass them to VFIO. But if we use dynamic allocation in
+> > > >> application (say malloc), do we need to use dma API to get iova and
+> > > >> then call VFIO_IOMMU_MAP ioctl ?
+> > > >> If application needs multiple such dynamic allocations, then it
+> > > >> need to allocate large chunk and program it via VFIO_IOMMU_MAP
+> > > >> ioctl and
+> > > then
+> > > >> manage rest allocations requirements from this buffer ?
+> > > >
+> > > > Yes, without SVM, the application allocates large buffers, allocates
+> > > > IOVAs itself, and maps them with VFIO_IOMMU_MAP. Userspace
+> doesn't
+> > > > rely
+> > > on the
+> > > > DMA API at all, it manages IOVAs as it wants. Sizes passed to
+> > > > VFIO_IOMMU_MAP have to be multiples of the MMU or IOMMU page
+> > > granularity
+> > > > (that is at least 4kB), and both iova and vaddr have to be aligned
+> > > > on that granularity as well. So malloc isn't really suitable in this
+> > > > case, you'll need mmap. The application can then implement a small
+> > > > allocator to
+> > > manage
+> > > > the DMA pool created with VFIO_IOMMU_MAP.
+> > >
+> > > Thanks Jean, I have a confusion allocate IOVA's in userspace means,
+> > > how can user application decide IOVA address, can user application
+> > > pick any random IOVA address ?
+> > >
+> >
+> > yes, any address. In this mode the whole IOVA address space is owned by
+> > application, which just needs to use VFIO_IOMMU_MAP to setup
+> > IOVA->PA mapping in IOMMU (As Jean pointed out, input paramters
+> > are iova and vaddr. VFIO will figure out pa corresponding to vaddr).
+> >
+> Hi Kevin, I have a doubt in this case, what if someone assigns mmap
+> returned virtual address as iova address, then
+> EP will assume it is generating request on IOVA but in reality we are using
+> application allocated virtual address, then
+> it looks like we are working with application virtual address directly without
+> PASID. Is this valid ?
+> 
 
-Signed-off-by: Bhumika Goyal <bhumirks-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/ipmmu-vmsa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+IOMMU doesn't care what an address in the DMA transaction from
+a device is. It cares only whether the DMA transaction has PASID
+tagged or not, and then pursue different structure to walk corresponding 
+I/O page table to get a translated address. Each I/O page table hosts
+a standalone virtual address space. An application can implement a
+new allocator to manage the address space (iova != vaddr), or simply
+reuse malloc-ed virtual address (iova == vaddr), which is not what
+hardware really cares about.
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 5093d1c..0423d17 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -295,7 +295,7 @@ static void ipmmu_tlb_add_flush(unsigned long iova, size_t size,
- 	/* The hardware doesn't support selective TLB flush. */
- }
- 
--static struct iommu_gather_ops ipmmu_gather_ops = {
-+static const struct iommu_gather_ops ipmmu_gather_ops = {
- 	.tlb_flush_all = ipmmu_tlb_flush_all,
- 	.tlb_add_flush = ipmmu_tlb_add_flush,
- 	.tlb_sync = ipmmu_tlb_flush_all,
--- 
-1.9.1
+Thanks
+Kevin
