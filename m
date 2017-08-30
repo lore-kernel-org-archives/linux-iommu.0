@@ -1,70 +1,49 @@
-From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
-Date: Wed, 30 Aug 2017 15:22:05 +0100
-Message-ID: <c6ee1ce0-7193-be63-c84d-73795c727d26@nvidia.com>
-References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
- <1502317752-8792-2-git-send-email-joro@8bytes.org>
- <f857ad53-66ca-0aa9-947a-f517443d114d@nvidia.com>
- <20170830120902.kqtxh2ls4ob7xpwy@8bytes.org>
+From: Adam Borowski <kilobyte@angband.pl>
+Subject: Re: [PATCH 00/13] mmu_notifier kill invalidate_page callback
+Date: Wed, 30 Aug 2017 16:57:42 +0200
+Message-ID: <20170830145742.xird3lgsb3nemtye@angband.pl>
+References: <20170829235447.10050-1-jglisse@redhat.com>
+ <CA+55aFz6ArJ-ADXiYCu6xMUzdY=mKBtkzfJmLaBohC6Ub9t2SQ@mail.gmail.com>
+ <20170830005615.GA2386@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170830120902.kqtxh2ls4ob7xpwy-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20170830005615.GA2386@redhat.com>
+Sender: owner-linux-mm@kvack.org
+To: Jerome Glisse <jglisse@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Bernhard Held <berny156@gmx.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Joerg Roedel <jroedel@suse.de>, Dan Williams <dan.j.williams@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Dimitri Sivanich <sivanich@sgi.com>, Jack Steiner <steiner@sgi.com>, Paolo Bonzini <pbonzini@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, ppc-dev <linuxppc-dev@lists.ozlabs.org>, DRI <dri-devel@lists.freedesktop.org>, amd-gfx@lists.freedesktop.org, "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, xen-devel <xen-dev>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue, Aug 29, 2017 at 08:56:15PM -0400, Jerome Glisse wrote:
+> I will wait for people to test and for result of my own test before
+> reposting if need be, otherwise i will post as separate patch.
+>
+> > But from a _very_ quick read-through this looks fine. But it obviously
+> > needs testing.
+> > 
+> > People - *especially* the people who saw issues under KVM - can you
+> > try out Jérôme's patch-series? I aded some people to the cc, the full
+> > series is on lkml. Jérôme - do you have a git branch for people to
+> > test that they could easily pull and try out?
+> 
+> https://cgit.freedesktop.org/~glisse/linux mmu-notifier branch
+> git://people.freedesktop.org/~glisse/linux
 
-On 30/08/17 13:09, Joerg Roedel wrote:
-> Hi Jon,
-> 
-> On Wed, Aug 30, 2017 at 12:04:38PM +0100, Jon Hunter wrote:
->> With next-20170829 I am seeing several Tegra boards crashing [0][1] on
->> boot in tegra_smmu_probe() and the bisect is point to this commit. Looks
->> like there maybe a sequence problem between calls to bus_set_iommu() and
->> iommu_device_add_sysfs() which results in a NULL pointer dereference.
-> 
-> Thanks for the report. Can you please test whether the patch below
-> fixes the problem?
-> 
-> Thanks,
-> 
-> 	Joerg
-> 
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 2802e12e6a54..48ffbe95a663 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -949,10 +949,6 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
->  
->  	tegra_smmu_ahb_enable();
->  
-> -	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
-> -	if (err < 0)
-> -		return ERR_PTR(err);
-> -
->  	err = iommu_device_sysfs_add(&smmu->iommu, dev, NULL, dev_name(dev));
->  	if (err)
->  		return ERR_PTR(err);
-> @@ -965,6 +961,10 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
->  		return ERR_PTR(err);
->  	}
->  
-> +	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
-> +	if (err < 0)
-> +		return ERR_PTR(err);
-> +
+Tested your branch as of 10f07641, on a long list of guest VMs.
+No earth-shattering kaboom.
 
-Yes I can confirm that this fixes the crash. I assume that you will fix
-the error path for bus_set_iommu() above as I believe now it needs to
-call iommu_device_sysfs_remove().
 
-Cheers!
-Jon
-
+Meow!
 -- 
-nvpublic
+⢀⣴⠾⠻⢶⣦⠀ 
+⣾⠁⢰⠒⠀⣿⡁ Vat kind uf sufficiently advanced technology iz dis!?
+⢿⡄⠘⠷⠚⠋⠀                                 -- Genghis Ht'rok'din
+⠈⠳⣄⠀⠀⠀⠀ 
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
