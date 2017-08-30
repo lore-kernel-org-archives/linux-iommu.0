@@ -1,65 +1,70 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] intel-iommu: Don't be too aggressive when clearing one
-	context entry
-Date: Wed, 30 Aug 2017 15:31:12 +0200
-Message-ID: <20170830133112.btbsmgbm2clz4767@8bytes.org>
-References: <1503929789-26698-1-git-send-email-sironi@amazon.de>
+From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
+Date: Wed, 30 Aug 2017 15:22:05 +0100
+Message-ID: <c6ee1ce0-7193-be63-c84d-73795c727d26@nvidia.com>
+References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
+ <1502317752-8792-2-git-send-email-joro@8bytes.org>
+ <f857ad53-66ca-0aa9-947a-f517443d114d@nvidia.com>
+ <20170830120902.kqtxh2ls4ob7xpwy@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1503929789-26698-1-git-send-email-sironi-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Filippo Sironi <sironi-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170830120902.kqtxh2ls4ob7xpwy-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Filippo,
+Hi Joerg,
 
-please change the subject to:
-
-	iommu/vt-d: Don't be too aggressive when clearing one context entry
-
-to follow the convention used in the iommu-tree. Another comment below.
-
-On Mon, Aug 28, 2017 at 04:16:29PM +0200, Filippo Sironi wrote:
->  static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
->  {
-> +	unsigned long flags;
-> +	struct context_entry *context;
-> +	u16 did_old;
-> +
->  	if (!iommu)
->  		return;
+On 30/08/17 13:09, Joerg Roedel wrote:
+> Hi Jon,
+> 
+> On Wed, Aug 30, 2017 at 12:04:38PM +0100, Jon Hunter wrote:
+>> With next-20170829 I am seeing several Tegra boards crashing [0][1] on
+>> boot in tegra_smmu_probe() and the bisect is point to this commit. Looks
+>> like there maybe a sequence problem between calls to bus_set_iommu() and
+>> iommu_device_add_sysfs() which results in a NULL pointer dereference.
+> 
+> Thanks for the report. Can you please test whether the patch below
+> fixes the problem?
+> 
+> Thanks,
+> 
+> 	Joerg
+> 
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 2802e12e6a54..48ffbe95a663 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -949,10 +949,6 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
 >  
-> +	spin_lock_irqsave(&iommu->lock, flags);
-> +	context = iommu_context_addr(iommu, bus, devfn, 0);
-> +	if (!context) {
-> +		spin_unlock_irqrestore(&iommu->lock, flags);
-> +		return;
-> +	}
-> +	did_old = context_domain_id(context);
-> +	spin_unlock_irqrestore(&iommu->lock, flags);
->  	clear_context_table(iommu, bus, devfn);
+>  	tegra_smmu_ahb_enable();
+>  
+> -	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
+> -	if (err < 0)
+> -		return ERR_PTR(err);
+> -
+>  	err = iommu_device_sysfs_add(&smmu->iommu, dev, NULL, dev_name(dev));
+>  	if (err)
+>  		return ERR_PTR(err);
+> @@ -965,6 +961,10 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+>  		return ERR_PTR(err);
+>  	}
+>  
+> +	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
+> +	if (err < 0)
+> +		return ERR_PTR(err);
+> +
 
-This function is the only caller of clear_context_table(), which does
-similar things (like fetching the context-entry) as you are adding
-above.
+Yes I can confirm that this fixes the crash. I assume that you will fix
+the error path for bus_set_iommu() above as I believe now it needs to
+call iommu_device_sysfs_remove().
 
-So you can either make clear_context_table() return the old domain-id
-so that you don't need to do it here, or you get rid of the function
-entirely and add the context_clear_entry() and __iommu_flush_cache()
-calls into this code-path.
+Cheers!
+Jon
 
-Regards,
-
-	Joerg
+-- 
+nvpublic
