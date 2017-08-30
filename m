@@ -1,52 +1,62 @@
-From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+From: Jerome Glisse <jglisse@redhat.com>
 Subject: Re: [PATCH 00/13] mmu_notifier kill invalidate_page callback
-Date: Tue, 29 Aug 2017 17:11:24 -0700
-Message-ID: <CA+55aFz6ArJ-ADXiYCu6xMUzdY=mKBtkzfJmLaBohC6Ub9t2SQ@mail.gmail.com>
+Date: Tue, 29 Aug 2017 20:56:15 -0400
+Message-ID: <20170830005615.GA2386@redhat.com>
 References: <20170829235447.10050-1-jglisse@redhat.com>
+ <CA+55aFz6ArJ-ADXiYCu6xMUzdY=mKBtkzfJmLaBohC6Ub9t2SQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170829235447.10050-1-jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bernhard Held <berny156-Mmb7MZpHnFY@public.gmane.org>, Adam Borowski <kilobyte-b9QjgO8OEXPVItvQsEIGlw@public.gmane.org>
-Cc: Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jack Steiner <steiner-sJ/iWh9BUns@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DRI <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Dimitri Sivanich <sivanich-sJ/iWh9BUns@public.gmane.org>, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, xen-devel <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, ppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <CA+55aFz6ArJ-ADXiYCu6xMUzdY=mKBtkzfJmLaBohC6Ub9t2SQ@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Bernhard Held <berny156@gmx.de>, KVM list <kvm@vger.kernel.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Sudeep Dutt <sudeep.dutt@intel.com>, DRI <dri-devel@lists.freedesktop.org>, linux-mm <linux-mm@kvack.org>, Andrea Arcangeli <aarcange@redhat.com>, Dimitri Sivanich <sivanich@sgi.com>, "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>, amd-gfx@lists.freedesktop.org, xen-devel <xen-devel@lists.xenproject.org>, Adam Borowski <kilobyte@angband.pl>, Joerg Roedel <jroedel@suse.de>, Jack Steiner <steiner@sgi.com>, Dan Williams <dan.j.williams@intel.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Ashutosh Dixit <ashutosh.dixit@intel.com>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Paolo Bonzini <pbonzini@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, ppc-dev <linuxppc-dev@lists.ozlabs.org>, Kirill A . S
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBBdWcgMjksIDIwMTcgYXQgNDo1NCBQTSwgSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3Nl
-QHJlZGhhdC5jb20+IHdyb3RlOgo+Cj4gTm90ZSB0aGlzIGlzIGJhcmVseSB0ZXN0ZWQuIEkgaW50
-ZW5kIHRvIGRvIG1vcmUgdGVzdGluZyBvZiBuZXh0IGZldyBkYXlzCj4gYnV0IGkgZG8gbm90IGhh
-dmUgYWNjZXNzIHRvIGFsbCBoYXJkd2FyZSB0aGF0IG1ha2UgdXNlIG9mIHRoZSBtbXVfbm90aWZp
-ZXIKPiBBUEkuCgpUaGFua3MgZm9yIGRvaW5nIHRoaXMuCgo+IEZpcnN0IDIgcGF0Y2hlcyBjb252
-ZXJ0IGV4aXN0aW5nIGNhbGwgb2YgbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcGFnZSgpCj4gdG8g
-bW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UoKSBhbmQgYnJhY2tldCB0aG9zZSBjYWxsIHdp
-dGggY2FsbCB0bwo+IG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX3N0YXJ0KCkvZW5kKCku
-CgpPaywgdGhvc2UgdHdvIHBhdGNoZXMgYXJlIGEgYml0IG1vcmUgY29tcGxleCB0aGFuIEkgd2Fz
-IGhvcGluZyBmb3IsCmJ1dCBub3QgKnRvbyogYmFkLgoKQW5kIHRoZSBmaW5hbCBlbmQgcmVzdWx0
-IGNlcnRhaW5seSBsb29rcyBuaWNlOgoKPiAgMTYgZmlsZXMgY2hhbmdlZCwgNzQgaW5zZXJ0aW9u
-cygrKSwgMjE0IGRlbGV0aW9ucygtKQoKWWVhaCwgcmVtb3ZpbmcgYWxsIHRob3NlIGludmFsaWRh
-dGVfcGFnZSgpIG5vdGlmaWVycyBjZXJ0YWlubHkgbWFrZXMKZm9yIGEgbmljZSBwYXRjaC4KCkFu
-ZCBJIGFjdHVhbGx5IHRoaW5rIHlvdSBtaXNzZWQgc29tZSBtb3JlIGxpbmVzIHRoYXQgY2FuIG5v
-dyBiZQpyZW1vdmVkOiBrdm1fYXJjaF9tbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9wYWdlKCkgc2hv
-dWxkIG5vIGxvbmdlciBiZQpuZWVkZWQgZWl0aGVyLCBzbyB5b3UgY2FuIHJlbW92ZSBhbGwgb2Yg
-dGhvc2UgdG9vIChtb3N0IG9mIHRoZW0gYXJlCmVtcHR5IGlubGluZSBmdW5jdGlvbnMsIGJ1dCB4
-ODYgaGFzIG9uZSB0aGF0IGFjdHVhbGx5IGRvZXMgc29tZXRoaW5nLgoKU28gdGhlcmUncyBhbiBh
-ZGRlZCAzMCBvciBzbyBkZWFkIGxpbmVzIHRoYXQgc2hvdWxkIGJlIHJlbW92ZWQgaW4gdGhlCmt2
-bSBwYXRjaCwgSSB0aGluay4KCkJ1dCBmcm9tIGEgX3ZlcnlfIHF1aWNrIHJlYWQtdGhyb3VnaCB0
-aGlzIGxvb2tzIGZpbmUuIEJ1dCBpdCBvYnZpb3VzbHkKbmVlZHMgdGVzdGluZy4KClBlb3BsZSAt
-ICplc3BlY2lhbGx5KiB0aGUgcGVvcGxlIHdobyBzYXcgaXNzdWVzIHVuZGVyIEtWTSAtIGNhbiB5
-b3UKdHJ5IG91dCBKw6lyw7RtZSdzIHBhdGNoLXNlcmllcz8gSSBhZGVkIHNvbWUgcGVvcGxlIHRv
-IHRoZSBjYywgdGhlIGZ1bGwKc2VyaWVzIGlzIG9uIGxrbWwuIErDqXLDtG1lIC0gZG8geW91IGhh
-dmUgYSBnaXQgYnJhbmNoIGZvciBwZW9wbGUgdG8KdGVzdCB0aGF0IHRoZXkgY291bGQgZWFzaWx5
-IHB1bGwgYW5kIHRyeSBvdXQ/CgogICAgICAgICAgICAgICAgICAgIExpbnVzCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+T24gVHVlLCBBdWcgMjksIDIwMTcgYXQgMDU6MTE6MjRQTSAtMDcwMCwgTGludXMgVG9ydmFsZHMg
+d3JvdGU6Cj4gT24gVHVlLCBBdWcgMjksIDIwMTcgYXQgNDo1NCBQTSwgSsOpcsO0bWUgR2xpc3Nl
+IDxqZ2xpc3NlQHJlZGhhdC5jb20+IHdyb3RlOgo+ID4KPiA+IE5vdGUgdGhpcyBpcyBiYXJlbHkg
+dGVzdGVkLiBJIGludGVuZCB0byBkbyBtb3JlIHRlc3Rpbmcgb2YgbmV4dCBmZXcgZGF5cwo+ID4g
+YnV0IGkgZG8gbm90IGhhdmUgYWNjZXNzIHRvIGFsbCBoYXJkd2FyZSB0aGF0IG1ha2UgdXNlIG9m
+IHRoZSBtbXVfbm90aWZpZXIKPiA+IEFQSS4KPiAKPiBUaGFua3MgZm9yIGRvaW5nIHRoaXMuCj4g
+Cj4gPiBGaXJzdCAyIHBhdGNoZXMgY29udmVydCBleGlzdGluZyBjYWxsIG9mIG1tdV9ub3RpZmll
+cl9pbnZhbGlkYXRlX3BhZ2UoKQo+ID4gdG8gbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2Uo
+KSBhbmQgYnJhY2tldCB0aG9zZSBjYWxsIHdpdGggY2FsbCB0bwo+ID4gbW11X25vdGlmaWVyX2lu
+dmFsaWRhdGVfcmFuZ2Vfc3RhcnQoKS9lbmQoKS4KPiAKPiBPaywgdGhvc2UgdHdvIHBhdGNoZXMg
+YXJlIGEgYml0IG1vcmUgY29tcGxleCB0aGFuIEkgd2FzIGhvcGluZyBmb3IsCj4gYnV0IG5vdCAq
+dG9vKiBiYWQuCj4gCj4gQW5kIHRoZSBmaW5hbCBlbmQgcmVzdWx0IGNlcnRhaW5seSBsb29rcyBu
+aWNlOgo+IAo+ID4gIDE2IGZpbGVzIGNoYW5nZWQsIDc0IGluc2VydGlvbnMoKyksIDIxNCBkZWxl
+dGlvbnMoLSkKPiAKPiBZZWFoLCByZW1vdmluZyBhbGwgdGhvc2UgaW52YWxpZGF0ZV9wYWdlKCkg
+bm90aWZpZXJzIGNlcnRhaW5seSBtYWtlcwo+IGZvciBhIG5pY2UgcGF0Y2guCj4gCj4gQW5kIEkg
+YWN0dWFsbHkgdGhpbmsgeW91IG1pc3NlZCBzb21lIG1vcmUgbGluZXMgdGhhdCBjYW4gbm93IGJl
+Cj4gcmVtb3ZlZDoga3ZtX2FyY2hfbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcGFnZSgpIHNob3Vs
+ZCBubyBsb25nZXIgYmUKPiBuZWVkZWQgZWl0aGVyLCBzbyB5b3UgY2FuIHJlbW92ZSBhbGwgb2Yg
+dGhvc2UgdG9vIChtb3N0IG9mIHRoZW0gYXJlCj4gZW1wdHkgaW5saW5lIGZ1bmN0aW9ucywgYnV0
+IHg4NiBoYXMgb25lIHRoYXQgYWN0dWFsbHkgZG9lcyBzb21ldGhpbmcuCj4gCj4gU28gdGhlcmUn
+cyBhbiBhZGRlZCAzMCBvciBzbyBkZWFkIGxpbmVzIHRoYXQgc2hvdWxkIGJlIHJlbW92ZWQgaW4g
+dGhlCj4ga3ZtIHBhdGNoLCBJIHRoaW5rLgoKWWVzIGkgbWlzc2VkIHRoYXQuIEkgd2lsbCB3YWl0
+IGZvciBwZW9wbGUgdG8gdGVzdCBhbmQgZm9yIHJlc3VsdCBvZiBteQpvd24gdGVzdCBiZWZvcmUg
+cmVwb3N0aW5nIGlmIG5lZWQgYmUsIG90aGVyd2lzZSBpIHdpbGwgcG9zdCBhcyBzZXBhcmF0ZQpw
+YXRjaC4KCj4gCj4gQnV0IGZyb20gYSBfdmVyeV8gcXVpY2sgcmVhZC10aHJvdWdoIHRoaXMgbG9v
+a3MgZmluZS4gQnV0IGl0IG9idmlvdXNseQo+IG5lZWRzIHRlc3RpbmcuCj4gCj4gUGVvcGxlIC0g
+KmVzcGVjaWFsbHkqIHRoZSBwZW9wbGUgd2hvIHNhdyBpc3N1ZXMgdW5kZXIgS1ZNIC0gY2FuIHlv
+dQo+IHRyeSBvdXQgSsOpcsO0bWUncyBwYXRjaC1zZXJpZXM/IEkgYWRlZCBzb21lIHBlb3BsZSB0
+byB0aGUgY2MsIHRoZSBmdWxsCj4gc2VyaWVzIGlzIG9uIGxrbWwuIErDqXLDtG1lIC0gZG8geW91
+IGhhdmUgYSBnaXQgYnJhbmNoIGZvciBwZW9wbGUgdG8KPiB0ZXN0IHRoYXQgdGhleSBjb3VsZCBl
+YXNpbHkgcHVsbCBhbmQgdHJ5IG91dD8KCmh0dHBzOi8vY2dpdC5mcmVlZGVza3RvcC5vcmcvfmds
+aXNzZS9saW51eCBtbXUtbm90aWZpZXIgYnJhbmNoCmdpdDovL3Blb3BsZS5mcmVlZGVza3RvcC5v
+cmcvfmdsaXNzZS9saW51eAoKKFNvcnJ5IGlmIHRoYXQgdHJlZSBpcyBiaXQgYmlnIGl0IGhhcyBh
+IGxvdCBvZiBkZWFkIHRoaW5nIGkgbmVlZAogdG8gcHVzaCBhIGNsZWFuIGFuZCBzbGltIG9uZSkK
+CkrDqXLDtG1lCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
+dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
