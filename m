@@ -1,47 +1,109 @@
-From: Mike Galbraith <efault@gmx.de>
-Subject: Re: [PATCH 00/13] mmu_notifier kill invalidate_page callback
-Date: Wed, 30 Aug 2017 10:40:14 +0200
-Message-ID: <1504082414.6014.39.camel@gmx.de>
-References: <20170829235447.10050-1-jglisse@redhat.com>
-	 <CA+55aFz6ArJ-ADXiYCu6xMUzdY=mKBtkzfJmLaBohC6Ub9t2SQ@mail.gmail.com>
-	 <20170830005615.GA2386@redhat.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
+Date: Wed, 30 Aug 2017 12:04:38 +0100
+Message-ID: <f857ad53-66ca-0aa9-947a-f517443d114d@nvidia.com>
+References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
+ <1502317752-8792-2-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170830005615.GA2386@redhat.com>
-Sender: owner-linux-mm@kvack.org
-To: Jerome Glisse <jglisse@redhat.com>, Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Bernhard Held <berny156@gmx.de>, Adam Borowski <kilobyte@angband.pl>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Joerg Roedel <jroedel@suse.de>, Dan Williams <dan.j.williams@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Dimitri Sivanich <sivanich@sgi.com>, Jack Steiner <steiner@sgi.com>, Paolo Bonzini <pbonzini@redhat.com>, Radim =?UTF-8?Q?Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>, ppc-dev <linuxppc-dev@lists.ozlabs.org>, DRI <dri-devel@lists.freedesktop.org>, amd-gfx@lists.freedesktop.org, "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>, "open list:AMD
- IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, xen-devel <xen-devel@l>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1502317752-8792-2-git-send-email-joro@8bytes.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Hiroshi Doyu <hdoyu@nvidia.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2017-08-29 at 20:56 -0400, Jerome Glisse wrote:
-> On Tue, Aug 29, 2017 at 05:11:24PM -0700, Linus Torvalds wrote:
->=20
-> > People - *especially* the people who saw issues under KVM - can you
-> > try out J=C3=A9r=C3=B4me's patch-series? I aded some people to the cc, =
-the full
-> > series is on lkml. J=C3=A9r=C3=B4me - do you have a git branch for peop=
-le to
-> > test that they could easily pull and try out?
->=20
-> https://cgit.freedesktop.org/~glisse/linux mmu-notifier branch
-> git://people.freedesktop.org/~glisse/linux
 
-Looks good here.
+On 09/08/17 23:29, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> Add a struct iommu_device to each tegra-smmu and register it
+> with the iommu-core. Also link devices added to the driver
+> to their respective hardware iommus.
+> 
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/iommu/tegra-smmu.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index faa9c1e..2802e12 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -36,6 +36,8 @@ struct tegra_smmu {
+>  	struct list_head list;
+>  
+>  	struct dentry *debugfs;
+> +
+> +	struct iommu_device iommu;	/* IOMMU Core code handle */
+>  };
+>  
+>  struct tegra_smmu_as {
+> @@ -720,6 +722,9 @@ static int tegra_smmu_add_device(struct device *dev)
+>  			 * first match.
+>  			 */
+>  			dev->archdata.iommu = smmu;
+> +
+> +			iommu_device_link(&smmu->iommu, dev);
+> +
+>  			break;
+>  		}
+>  
+> @@ -737,6 +742,11 @@ static int tegra_smmu_add_device(struct device *dev)
+>  
+>  static void tegra_smmu_remove_device(struct device *dev)
+>  {
+> +	struct tegra_smmu *smmu = dev->archdata.iommu;
+> +
+> +	if (smmu)
+> +		iommu_device_unlink(&smmu->iommu, dev);
+> +
+>  	dev->archdata.iommu = NULL;
+>  	iommu_group_remove_device(dev);
+>  }
+> @@ -943,6 +953,18 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+>  	if (err < 0)
+>  		return ERR_PTR(err);
+>  
+> +	err = iommu_device_sysfs_add(&smmu->iommu, dev, NULL, dev_name(dev));
+> +	if (err)
+> +		return ERR_PTR(err);
+> +
+> +	iommu_device_set_ops(&smmu->iommu, &tegra_smmu_ops);
+> +
+> +	err = iommu_device_register(&smmu->iommu);
+> +	if (err) {
+> +		iommu_device_sysfs_remove(&smmu->iommu);
+> +		return ERR_PTR(err);
+> +	}
+> +
+>  	if (IS_ENABLED(CONFIG_DEBUG_FS))
+>  		tegra_smmu_debugfs_init(smmu);
+>  
+> @@ -951,6 +973,9 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+>  
+>  void tegra_smmu_remove(struct tegra_smmu *smmu)
+>  {
+> +	iommu_device_unregister(&smmu->iommu);
+> +	iommu_device_sysfs_remove(&smmu->iommu);
+> +
+>  	if (IS_ENABLED(CONFIG_DEBUG_FS))
+>  		tegra_smmu_debugfs_exit(smmu);
+>  }
+> 
 
-I reproduced fairly quickly with RT host and 1 RT guest by just having
-the guest do a parallel kbuild over NFS (the guest had to be restored
-afterward, was corrupted). =C2=A0I'm currently flogging 2 guests as well as
-the host, whimper free. =C2=A0I'll let the lot broil for while longer, but
-at this point, smoke/flame appearance seems comfortingly unlikely.
+With next-20170829 I am seeing several Tegra boards crashing [0][1] on
+boot in tegra_smmu_probe() and the bisect is point to this commit. Looks
+like there maybe a sequence problem between calls to bus_set_iommu() and
+iommu_device_add_sysfs() which results in a NULL pointer dereference.
 
-	-Mike
+You can see the full crash log here [1].
 
+Cheers
+Jon
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+[0] https://nvtb.github.io//linux-next/
+[1]
+https://nvtb.github.io//linux-next/test_next-20170829/20170829024534/boot/tegra124-jetson-tk1/tegra124-jetson-tk1/tegra_defconfig_log.txt
