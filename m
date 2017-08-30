@@ -1,36 +1,50 @@
-From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
-Date: Wed, 30 Aug 2017 17:53:39 +0100
-Message-ID: <4db80c7b-ddfa-6844-66a9-d22ea10cd154@nvidia.com>
-References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
- <1502317752-8792-2-git-send-email-joro@8bytes.org>
- <f857ad53-66ca-0aa9-947a-f517443d114d@nvidia.com>
- <20170830120902.kqtxh2ls4ob7xpwy@8bytes.org>
- <c6ee1ce0-7193-be63-c84d-73795c727d26@nvidia.com>
- <20170830153034.GK19533@8bytes.org>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 0/4] VMD fixups
+Date: Wed, 30 Aug 2017 14:23:42 -0500
+Message-ID: <20170830192342.GV8154@bhelgaas-glaptop.roam.corp.google.com>
+References: <20170817181014.1257-1-jonathan.derrick@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170830153034.GK19533-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170817181014.1257-1-jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jon Derrick <jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Keith Busch <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Fugate <david.fugate-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Scott Bauer <scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+[+cc Joerg]
 
-On 30/08/17 16:30, Joerg Roedel wrote:
-> Hi Jon,
+On Thu, Aug 17, 2017 at 12:10:10PM -0600, Jon Derrick wrote:
+> Mostly just cleanup in this revision, eg, trying to limit scope of vmd code to
+> x86
 > 
-> On Wed, Aug 30, 2017 at 03:22:05PM +0100, Jon Hunter wrote:
->> Yes I can confirm that this fixes the crash. I assume that you will fix
->> the error path for bus_set_iommu() above as I believe now it needs to
->> call iommu_device_sysfs_remove().
+> Previous:
+> https://patchwork.kernel.org/patch/9886095/
+> https://patchwork.kernel.org/patch/9886097/
+> https://patchwork.kernel.org/patch/9886101/
 > 
-> Thanks for testing the patch. I updated the error-path and put the
-> commit below into the iommu-tree:
-Great! Thanks, Jon
+> 
+> Jon Derrick (4):
+>   MAINTAINERS: Add Jonathan Derrick as VMD maintainer
+>   pci/x86: Move VMD quirks to x86 fixups
+>   x86/PCI: Use is_vmd rather than relying on the domain number
+>   iommu: Prevent VMD child devices from being remapping targets
+> 
+>  MAINTAINERS                 |  1 +
+>  arch/x86/pci/fixup.c        | 18 ++++++++++++++++++
+>  drivers/iommu/intel-iommu.c |  5 +++++
+>  drivers/pci/quirks.c        | 17 -----------------
+>  4 files changed, 24 insertions(+), 17 deletions(-)
 
--- 
-nvpublic
+I haven't heard anything from IOMMU folks, so I applied these to
+pci/host-vmd for v4.14.  Let me know if there's any objection.
