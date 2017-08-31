@@ -1,43 +1,97 @@
-From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+From: =?ISO-8859-1?Q?J=F6rg_R=F6del?= <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH 1/2] iommu/tegra: Add support for struct iommu_device
-Date: Thu, 31 Aug 2017 11:23:39 +0100
-Message-ID: <8822281c-1188-1135-2cd3-68f988761cd8@nvidia.com>
-References: <1502317752-8792-1-git-send-email-joro@8bytes.org>
- <1502317752-8792-2-git-send-email-joro@8bytes.org>
- <f857ad53-66ca-0aa9-947a-f517443d114d@nvidia.com>
- <20170830120902.kqtxh2ls4ob7xpwy@8bytes.org>
- <c6ee1ce0-7193-be63-c84d-73795c727d26@nvidia.com>
- <20170830153034.GK19533@8bytes.org>
+Date: Thu, 31 Aug 2017 14:24:33 +0200
+Message-ID: <wyqxg14fyh3x8ythr5212oll.1504182273101@email.android.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170830153034.GK19533-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============1733674437709079962=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+--===============1733674437709079962==
+Content-Type: multipart/alternative; boundary="--_com.android.email_954445995998650"
 
-On 30/08/17 16:30, Joerg Roedel wrote:
-> Hi Jon,
-> 
-> On Wed, Aug 30, 2017 at 03:22:05PM +0100, Jon Hunter wrote:
->> Yes I can confirm that this fixes the crash. I assume that you will fix
->> the error path for bus_set_iommu() above as I believe now it needs to
->> call iommu_device_sysfs_remove().
-> 
-> Thanks for testing the patch. I updated the error-path and put the
-> commit below into the iommu-tree:
-Today's -next is still failing and I don't see this fix in your public
-tree yet [0]. Can you push this out?
+----_com.android.email_954445995998650
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 
-Cheers
-Jon
+CiAgICAKWWVzLCBJIHdhcyBydW5uaW5nIHNvbWUgdGVzdHMgYWdhaW5zdCB0aGUgbmV3IHRyZWUg
+d2hpY2ggZGlkbid0IGZpbmlzaCB5ZXN0ZXJkYXkuIFRvZGF5IEkgYW0gdHJhdmVsaW5nLCBidXQg
+d2lsbCBiZSBiYWNrIGltIHRoZSBldmVuaW5nIGFuZCB0aGVuIEkgcHVzaCB0aGUgdHJlZSBvdXQu
+ClJlZ2FyZHMsIEpvZXJnCgoKU2VudCBmcm9tIGEgR2FsYXh5IENsYXNzIFBob25lCgotLS0tLS0t
+LSBVcnNwcsO8bmdsaWNoZSBOYWNocmljaHQgLS0tLS0tLS0KVm9uOiBKb24gSHVudGVyIDxqb25h
+dGhhbmhAbnZpZGlhLmNvbT4gCkRhdHVtOiAzMS4wOC4xNyAgMTI6MjMgIChHTVQrMDE6MDApIApB
+bjogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+IApDYzogVGhpZXJyeSBSZWRpbmcgPHRo
+aWVycnkucmVkaW5nQGdtYWlsLmNvbT4sIFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5j
+b20+LCBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZywgbGludXgtdGVncmFAdmdlci5r
+ZXJuZWwub3JnLCBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnLCBKb2VyZyBSb2VkZWwgPGpy
+b2VkZWxAc3VzZS5kZT4gCkJldHJlZmY6IFJlOiBbUEFUQ0ggMS8yXSBpb21tdS90ZWdyYTogQWRk
+IHN1cHBvcnQgZm9yIHN0cnVjdCBpb21tdV9kZXZpY2UgCgpIaSBKb2VyZywKCk9uIDMwLzA4LzE3
+IDE2OjMwLCBKb2VyZyBSb2VkZWwgd3JvdGU6Cj4gSGkgSm9uLAo+IAo+IE9uIFdlZCwgQXVnIDMw
+LCAyMDE3IGF0IDAzOjIyOjA1UE0gKzAxMDAsIEpvbiBIdW50ZXIgd3JvdGU6Cj4+IFllcyBJIGNh
+biBjb25maXJtIHRoYXQgdGhpcyBmaXhlcyB0aGUgY3Jhc2guIEkgYXNzdW1lIHRoYXQgeW91IHdp
+bGwgZml4Cj4+IHRoZSBlcnJvciBwYXRoIGZvciBidXNfc2V0X2lvbW11KCkgYWJvdmUgYXMgSSBi
+ZWxpZXZlIG5vdyBpdCBuZWVkcyB0bwo+PiBjYWxsIGlvbW11X2RldmljZV9zeXNmc19yZW1vdmUo
+KS4KPiAKPiBUaGFua3MgZm9yIHRlc3RpbmcgdGhlIHBhdGNoLiBJIHVwZGF0ZWQgdGhlIGVycm9y
+LXBhdGggYW5kIHB1dCB0aGUKPiBjb21taXQgYmVsb3cgaW50byB0aGUgaW9tbXUtdHJlZToKVG9k
+YXkncyAtbmV4dCBpcyBzdGlsbCBmYWlsaW5nIGFuZCBJIGRvbid0IHNlZSB0aGlzIGZpeCBpbiB5
+b3VyIHB1YmxpYwp0cmVlIHlldCBbMF0uIENhbiB5b3UgcHVzaCB0aGlzIG91dD8KCkNoZWVycwpK
+b24KClswXSBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9q
+b3JvL2lvbW11LmdpdC8KCi0tIApudnB1YmxpYwo=
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/
+----_com.android.email_954445995998650
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
 
--- 
-nvpublic
+PGh0bWw+PGhlYWQ+PG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0
+L2h0bWw7IGNoYXJzZXQ9VVRGLTgiPjwvaGVhZD48Ym9keT4KICAgIAo8ZGl2PlllcywgSSB3YXMg
+cnVubmluZyBzb21lIHRlc3RzIGFnYWluc3QgdGhlIG5ldyB0cmVlIHdoaWNoIGRpZG4ndCBmaW5p
+c2ggeWVzdGVyZGF5LiBUb2RheSBJIGFtIHRyYXZlbGluZywgYnV0IHdpbGwgYmUgYmFjayBpbSB0
+aGUgZXZlbmluZyBhbmQgdGhlbiBJIHB1c2ggdGhlIHRyZWUgb3V0LjwvZGl2PjxkaXY+PGJyPjwv
+ZGl2PjxkaXY+UmVnYXJkcywgSm9lcmc8L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2Pjxicj48L2Rp
+dj48ZGl2Pjxicj48L2Rpdj48ZGl2IGlkPSJjb21wb3Nlcl9zaWduYXR1cmUiPjxkaXYgc3R5bGU9
+ImZvbnQtc2l6ZTo5cHgiPlNlbnQgZnJvbSBhIEdhbGF4eSBDbGFzcyBQaG9uZTwvZGl2PjxkaXY+
+PC9kaXY+PC9kaXY+PGJyPjxicj4tLS0tLS0tLSBVcnNwcsO8bmdsaWNoZSBOYWNocmljaHQgLS0t
+LS0tLS08YnI+Vm9uOiBKb24gSHVudGVyICZsdDtqb25hdGhhbmhAbnZpZGlhLmNvbSZndDsgPGJy
+PkRhdHVtOiAzMS4wOC4xNyAgMTI6MjMgIChHTVQrMDE6MDApIDxicj5BbjogSm9lcmcgUm9lZGVs
+ICZsdDtqb3JvQDhieXRlcy5vcmcmZ3Q7IDxicj5DYzogVGhpZXJyeSBSZWRpbmcgJmx0O3RoaWVy
+cnkucmVkaW5nQGdtYWlsLmNvbSZndDssIFJvYmluIE11cnBoeSAmbHQ7cm9iaW4ubXVycGh5QGFy
+bS5jb20mZ3Q7LCBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZywgbGludXgtdGVncmFA
+dmdlci5rZXJuZWwub3JnLCBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnLCBKb2VyZyBSb2Vk
+ZWwgJmx0O2pyb2VkZWxAc3VzZS5kZSZndDsgPGJyPkJldHJlZmY6IFJlOiBbUEFUQ0ggMS8yXSBp
+b21tdS90ZWdyYTogQWRkIHN1cHBvcnQgZm9yIHN0cnVjdCBpb21tdV9kZXZpY2UgPGJyPjxicj5I
+aSBKb2VyZyw8YnI+PGJyPk9uIDMwLzA4LzE3IDE2OjMwLCBKb2VyZyBSb2VkZWwgd3JvdGU6PGJy
+PiZndDsgSGkgSm9uLDxicj4mZ3Q7IDxicj4mZ3Q7IE9uIFdlZCwgQXVnIDMwLCAyMDE3IGF0IDAz
+OjIyOjA1UE0gKzAxMDAsIEpvbiBIdW50ZXIgd3JvdGU6PGJyPiZndDsmZ3Q7IFllcyBJIGNhbiBj
+b25maXJtIHRoYXQgdGhpcyBmaXhlcyB0aGUgY3Jhc2guIEkgYXNzdW1lIHRoYXQgeW91IHdpbGwg
+Zml4PGJyPiZndDsmZ3Q7IHRoZSBlcnJvciBwYXRoIGZvciBidXNfc2V0X2lvbW11KCkgYWJvdmUg
+YXMgSSBiZWxpZXZlIG5vdyBpdCBuZWVkcyB0bzxicj4mZ3Q7Jmd0OyBjYWxsIGlvbW11X2Rldmlj
+ZV9zeXNmc19yZW1vdmUoKS48YnI+Jmd0OyA8YnI+Jmd0OyBUaGFua3MgZm9yIHRlc3RpbmcgdGhl
+IHBhdGNoLiBJIHVwZGF0ZWQgdGhlIGVycm9yLXBhdGggYW5kIHB1dCB0aGU8YnI+Jmd0OyBjb21t
+aXQgYmVsb3cgaW50byB0aGUgaW9tbXUtdHJlZTo8YnI+VG9kYXkncyAtbmV4dCBpcyBzdGlsbCBm
+YWlsaW5nIGFuZCBJIGRvbid0IHNlZSB0aGlzIGZpeCBpbiB5b3VyIHB1YmxpYzxicj50cmVlIHll
+dCBbMF0uIENhbiB5b3UgcHVzaCB0aGlzIG91dD88YnI+PGJyPkNoZWVyczxicj5Kb248YnI+PGJy
+PlswXSBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9qb3Jv
+L2lvbW11LmdpdC88YnI+PGJyPi0tIDxicj5udnB1YmxpYzxicj48L2JvZHk+PC9odG1sPg==
+
+----_com.android.email_954445995998650--
+
+
+--===============1733674437709079962==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1733674437709079962==--
