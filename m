@@ -1,13 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 3/4] iommu/arm-smmu-v3: Use CMD_SYNC completion MSI
-Date: Thu, 31 Aug 2017 14:44:27 +0100
-Message-ID: <dbf0ce00f8e249c64f3d2041acd8d91818178e52.1504182142.git.robin.murphy@arm.com>
-References: <cover.1504182142.git.robin.murphy@arm.com>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH 04/12] x86: make dma_cache_sync a no-op
+Date: Thu, 31 Aug 2017 16:06:53 +0200 (CEST)
+Message-ID: <alpine.DEB.2.20.1708311606340.1874@nanos>
+References: <20170827161032.22772-1-hch@lst.de>
+	<20170827161032.22772-5-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1504182142.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170827161032.22772-5-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,143 +18,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-As an IRQ, the CMD_SYNC interrupt is not particularly useful, not least
-because we often need to wait for sync completion within someone else's
-IRQ handler anyway. However, when the SMMU is both coherent and supports
-MSIs, we can have a lot more fun by not using it as an interrupt at all.
-Following the example suggested in the architecture and using a write
-targeting normal memory, we can let callers wait on a status variable
-outside the lock instead of having to stall the entire queue or even
-touch MMIO registers. Since multiple sync commands are guaranteed to
-complete in order, a simple incrementing sequence count is all we need
-to unambiguously support any realistic number of overlapping waiters.
+On Sun, 27 Aug 2017, Christoph Hellwig wrote:
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+> x86 does not implement DMA_ATTR_NON_CONSISTENT allocations, so it doesn't
+> make any sense to do any work in dma_cache_sync given that it must be a
+> no-op when dma_alloc_attrs returns coherent memory.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org
 
-v2: Remove redundant 'bool msi' command member, other cosmetic tweaks
+Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 
- drivers/iommu/arm-smmu-v3.c | 47 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 45 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index f066725298cd..311f482b93d5 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -377,7 +377,16 @@
- 
- #define CMDQ_SYNC_0_CS_SHIFT		12
- #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
-+#define CMDQ_SYNC_0_CS_IRQ		(1UL << CMDQ_SYNC_0_CS_SHIFT)
- #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
-+#define CMDQ_SYNC_0_MSH_SHIFT		22
-+#define CMDQ_SYNC_0_MSH_ISH		(3UL << CMDQ_SYNC_0_MSH_SHIFT)
-+#define CMDQ_SYNC_0_MSIATTR_SHIFT	24
-+#define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
-+#define CMDQ_SYNC_0_MSIDATA_SHIFT	32
-+#define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
-+#define CMDQ_SYNC_1_MSIADDR_SHIFT	0
-+#define CMDQ_SYNC_1_MSIADDR_MASK	0xffffffffffffcUL
- 
- /* Event queue */
- #define EVTQ_ENT_DWORDS			4
-@@ -409,6 +418,7 @@
- /* High-level queue structures */
- #define ARM_SMMU_POLL_TIMEOUT_US	100
- #define ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US	1000000 /* 1s! */
-+#define ARM_SMMU_SYNC_TIMEOUT_US	1000000 /* 1s! */
- 
- #define MSI_IOVA_BASE			0x8000000
- #define MSI_IOVA_LENGTH			0x100000
-@@ -504,6 +514,10 @@ struct arm_smmu_cmdq_ent {
- 		} pri;
- 
- 		#define CMDQ_OP_CMD_SYNC	0x46
-+		struct {
-+			u32			msidata;
-+			u64			msiaddr;
-+		} sync;
- 	};
- };
- 
-@@ -617,6 +631,9 @@ struct arm_smmu_device {
- 	int				gerr_irq;
- 	int				combined_irq;
- 
-+	atomic_t			sync_nr;
-+	u32				sync_count;
-+
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
- 	unsigned long			pgsize_bitmap;
-@@ -878,7 +895,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		}
- 		break;
- 	case CMDQ_OP_CMD_SYNC:
--		cmd[0] |= CMDQ_SYNC_0_CS_SEV;
-+		if (ent->sync.msiaddr)
-+			cmd[0] |= CMDQ_SYNC_0_CS_IRQ;
-+		else
-+			cmd[0] |= CMDQ_SYNC_0_CS_SEV;
-+		cmd[0] |= CMDQ_SYNC_0_MSH_ISH | CMDQ_SYNC_0_MSIATTR_OIWB;
-+		cmd[0] |= (u64)ent->sync.msidata << CMDQ_SYNC_0_MSIDATA_SHIFT;
-+		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
- 		break;
- 	default:
- 		return -ENOENT;
-@@ -964,21 +987,40 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
- 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
- }
- 
-+static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
-+{
-+	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_SYNC_TIMEOUT_US);
-+	u32 val = smp_cond_load_acquire(&smmu->sync_count,
-+					(int)(VAL - sync_idx) >= 0 ||
-+					!ktime_before(ktime_get(), timeout));
-+
-+	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
-+}
-+
- static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
- {
- 	u64 cmd[CMDQ_ENT_DWORDS];
- 	unsigned long flags;
- 	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
-+	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
-+		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
- 	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
- 	int ret;
- 
-+	if (msi) {
-+		ent.sync.msidata = atomic_inc_return(&smmu->sync_nr);
-+		ent.sync.msiaddr = virt_to_phys(&smmu->sync_count);
-+	}
- 	arm_smmu_cmdq_build_cmd(cmd, &ent);
- 
- 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
- 	arm_smmu_cmdq_insert_cmd(smmu, cmd);
--	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
-+	if (!msi)
-+		ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
- 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
- 
-+	if (msi)
-+		ret = arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
- 	if (ret)
- 		dev_err_ratelimited(smmu->dev, "CMD_SYNC timeout\n");
- }
-@@ -2156,6 +2198,7 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- {
- 	int ret;
- 
-+	atomic_set(&smmu->sync_nr, 0);
- 	ret = arm_smmu_init_queues(smmu);
- 	if (ret)
- 		return ret;
--- 
-2.13.4.dirty
+> ---
+>  arch/x86/include/asm/dma-mapping.h | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+> index 398c79889f5c..04877267ad18 100644
+> --- a/arch/x86/include/asm/dma-mapping.h
+> +++ b/arch/x86/include/asm/dma-mapping.h
+> @@ -70,7 +70,6 @@ static inline void
+>  dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+>  	enum dma_data_direction dir)
+>  {
+> -	flush_write_buffers();
+>  }
+>  
+>  static inline unsigned long dma_alloc_coherent_mask(struct device *dev,
+> -- 
+> 2.11.0
+> 
+> 
