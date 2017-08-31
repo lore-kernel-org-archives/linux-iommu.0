@@ -1,8 +1,8 @@
 From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [RFC PATCH 6/6] iommu/arm-smmu-v3: Avoid ILLEGAL setting of
-	STE.S1STALLD and CD.S
-Date: Thu, 31 Aug 2017 16:20:42 +0800
-Message-ID: <1504167642-14922-7-git-send-email-xieyisheng1@huawei.com>
+Subject: [RFC PATCH 5/6] iommu/arm-smmu-v3: fix panic when handle stall mode
+	irq
+Date: Thu, 31 Aug 2017 16:20:41 +0800
+Message-ID: <1504167642-14922-6-git-send-email-xieyisheng1@huawei.com>
 References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,94 +22,74 @@ To: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, xieyisheng-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, chenjiankang1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It is ILLEGAL to set STE.S1STALLD if STALL_MODEL is not 0b00, which
-means we should not disable stall mode if stall/terminate mode is not
-configuable.
+When SMMU do not support SVM feature, however the master support SVM,
+which means matser can stall and with mult-pasid number, then the user
+can bind a task to device using API like iommu_bind_task(). however,
+when device trigger a stall mode fault i will cause panic:
 
-Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
-means if stall mode is force we should always set CD.S.
+[  106.996087] Unable to handle kernel NULL pointer dereference at virtual address 00000100
+[  106.996122] user pgtable: 4k pages, 48-bit VAs, pgd = ffff80003e023000
+[  106.996150] [0000000000000100] *pgd=000000003e04a003, *pud=000000003e04b003, *pmd=0000000000000000
+[  106.996201] Internal error: Oops: 96000006 [#1] PREEMPT SM
+[  106.996224] Modules linked in:
+[  106.996256] CPU: 0 PID: 916 Comm: irq/14-arm-smmu Not tainted 4.13.0-rc5-00035-g1235ddd-dirty #67
+[  106.996288] Hardware name: Hisilicon PhosphorHi1383 ESL (DT)
+[  106.996317] task: ffff80003adc1c00 task.stack: ffff80003a9f8000
+[  106.996347] PC is at __queue_work+0x30/0x3a8
+[  106.996374] LR is at queue_work_on+0x60/0x78
+[  106.996401] pc : [<ffff0000080d7d10>] lr : [<ffff0000080d80e8>] pstate: 40c001c9
+[  106.996430] sp : ffff80003a9fbc20
+[  106.996451] x29: ffff80003a9fbc20 x28: ffff80003adc1c00
+[  106.996488] x27: ffff000008d05080 x26: ffff80003ab0e028
+[  106.996526] x25: ffff80003a9900ac x24: 0000000000000001
+[  106.996562] x23: 0000000000000040 x22: 0000000000000000
+[  106.996598] x21: 0000000000000000 x20: 0000000000000140
+[  106.996634] x19: ffff80003ab0e028 x18: 0000000000000010
+[  106.996670] x17: 0000ffffa52a5040 x16: ffff00000820f260
+[  106.996708] x15: 00000018e97629e0 x14: ffff80003fb89468
+[  106.996744] x13: 0000000000000000 x12: ffff80003abb0600
+[  106.996781] x11: 0000000000000000 x10: 0000010100000100
+[  106.996817] x9 : 0000ffff85de5010 x8 : 00000000e4830001
+[  106.996854] x7 : ffff80003a9fbcf8 x6 : 0000000fffffffe0
+[  106.996890] x5 : 0000000000000000 x4 : 0000000000000001
+[  106.996926] x3 : 0000000000000000 x2 : ffff80003ab0e028
+[  106.996962] x1 : 0000000000000000 x0 : 00000000000001c0
+[  106.997002] Process irq/14-arm-smmu (pid: 916, stack limit =0xffff80003a9f8000)
+[  106.997035] Stack: (0xffff80003a9fbc20 to 0xffff80003a9fc000)
+[...]
+[  106.998366] Call trace:
+[  106.998842] [<ffff0000080d7d10>] __queue_work+0x30/0x3a8
+[  106.998874] [<ffff0000080d80e8>] queue_work_on+0x60/0x78
+[  106.998912] [<ffff00000857aae4>] arm_smmu_handle_stall+0x104/0x138
+[  106.998952] [<ffff00000857b150>] arm_smmu_evtq_thread+0xc0/0x158
+[  106.998989] [<ffff000008112128>] irq_thread_fn+0x28/0x68
+[  106.999025] [<ffff0000081123e0>] irq_thread+0x128/0x1d0
+[  106.999060] [<ffff0000080df6bc>] kthread+0xfc/0x128
+[  106.999093] [<ffff000008082ec0>] ret_from_fork+0x10/0x50
+[  106.999130] Code: a90153f3 a90573fb d53b4220 363814c0 (b94102a0)
+[  106.999159] ---[ end trace 7e5c9f0cb1f2fecd ]---
 
-This patch add ARM_SMMU_FEAT_TERMINATE feature bit for smmu, and use
-TERMINATE feature checking to ensue above ILLEGAL cases from happening.
+And the resean is we donot init fault_queue while the fault handle need
+to use it. Fix by return -EINVAL in arm_smmu_bind_task() when smmu do not
+support the feature of SVM.
 
 Signed-off-by: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index dbda2eb..0745522 100644
+index d44256a..dbda2eb 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -55,6 +55,7 @@
- #define IDR0_STALL_MODEL_SHIFT		24
- #define IDR0_STALL_MODEL_MASK		0x3
- #define IDR0_STALL_MODEL_STALL		(0 << IDR0_STALL_MODEL_SHIFT)
-+#define IDR0_STALL_MODEL_NS		(1 << IDR0_STALL_MODEL_SHIFT)
- #define IDR0_STALL_MODEL_FORCE		(2 << IDR0_STALL_MODEL_SHIFT)
- #define IDR0_TTENDIAN_SHIFT		21
- #define IDR0_TTENDIAN_MASK		0x3
-@@ -766,6 +767,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_SVM		(1 << 15)
- #define ARM_SMMU_FEAT_HA		(1 << 16)
- #define ARM_SMMU_FEAT_HD		(1 << 17)
-+#define ARM_SMMU_FEAT_TERMINATE		(1 << 18)
- 	u32				features;
+@@ -2922,6 +2922,8 @@ static int arm_smmu_bind_task(struct device *dev, struct task_struct *task,
+ 		return -EINVAL;
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1402,6 +1404,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
- 	u64 val;
- 	bool cd_live;
- 	__u64 *cdptr = arm_smmu_get_cd_ptr(smmu_domain, ssid);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	smmu = master->smmu;
++	if (!(smmu->features & ARM_SMMU_FEAT_SVM))
++		return -EINVAL;
  
- 	/*
- 	 * This function handles the following cases:
-@@ -1468,9 +1471,11 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
- 		      CTXDESC_CD_0_V;
- 
- 		/*
--		 * FIXME: STALL_MODEL==0b10 && CD.S==0 is ILLEGAL
-+		 * STALL_MODEL==0b10 && CD.S==0 is ILLEGAL
- 		 */
--		if (ssid && smmu_domain->s1_cfg.can_stall)
-+		if ((ssid && smmu_domain->s1_cfg.can_stall) ||
-+		    (!(smmu->features & ARM_SMMU_FEAT_TERMINATE) &&
-+		    smmu->features & ARM_SMMU_FEAT_STALLS))
- 			val |= CTXDESC_CD_0_S;
- 
- 		cdptr[0] = cpu_to_le64(val);
-@@ -1690,12 +1695,13 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 			dst[1] |= STRTAB_STE_1_PPAR;
- 
- 		/*
--		 * FIXME: it is illegal to set S1STALLD if STALL_MODEL=0b10
--		 * (force). But according to the spec, it *must* be set for
-+		 * According to spec, it is illegal to set S1STALLD if
-+		 * STALL_MODEL is not 0b00. And it *must* be set for
- 		 * devices that aren't capable of stalling (notably pci!)
--		 * So we need a "STALL_MODEL=0b00" feature bit.
- 		 */
--		if (smmu->features & ARM_SMMU_FEAT_STALLS && !ste->can_stall)
-+		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
-+		    smmu->features & ARM_SMMU_FEAT_TERMINATE &&
-+		    !ste->can_stall)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
- 		val |= (s1ctxptr & STRTAB_STE_0_S1CTXPTR_MASK
-@@ -4577,9 +4583,13 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 
- 	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
- 	case IDR0_STALL_MODEL_STALL:
-+		smmu->features |= ARM_SMMU_FEAT_TERMINATE;
- 		/* Fallthrough */
- 	case IDR0_STALL_MODEL_FORCE:
- 		smmu->features |= ARM_SMMU_FEAT_STALLS;
-+		break;
-+	case IDR0_STALL_MODEL_NS:
-+		smmu->features |= ARM_SMMU_FEAT_TERMINATE;
- 	}
- 
- 	if (reg & IDR0_S1P)
+ 	domain = iommu_get_domain_for_dev(dev);
+ 	if (WARN_ON(!domain))
 -- 
 1.7.12.4
