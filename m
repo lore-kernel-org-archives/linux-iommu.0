@@ -1,84 +1,115 @@
-From: Yisheng Xie <xieyisheng1@huawei.com>
-Subject: [RFC PATCH 3/6] ACPI: IORT: Add stall and pasid properties to iommu_fwspec
-Date: Thu, 31 Aug 2017 16:20:39 +0800
-Message-ID: <1504167642-14922-4-git-send-email-xieyisheng1@huawei.com>
+From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [RFC PATCH 6/6] iommu/arm-smmu-v3: Avoid ILLEGAL setting of
+	STE.S1STALLD and CD.S
+Date: Thu, 31 Aug 2017 16:20:42 +0800
+Message-ID: <1504167642-14922-7-git-send-email-xieyisheng1@huawei.com>
 References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: jean-philippe.brucker@arm.com
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, will.deacon@arm.com, robin.murphy@arm.com, robert.moore@intel.com, lv.zheng@intel.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devel@acpica.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng@huawei.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1504167642-14922-1-git-send-email-xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, xieyisheng-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, chenjiankang1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-According to ACPI IORT spec, named component specific data has a node
-flags field whoes bit0 is for Stall support. However, it do not have any
-field for pasid bit.
+It is ILLEGAL to set STE.S1STALLD if STALL_MODEL is not 0b00, which
+means we should not disable stall mode if stall/terminate mode is not
+configuable.
 
-As PCIe SMMU support 20 pasid bits, this patch suggest to use 5 bits[5:1]
-in node flags field for pasid bits which means we can have 32 pasid bits.
-And this should be enough for platform device. Anyway, this is just a RFC.
+Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
+means if stall mode is force we should always set CD.S.
 
-Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
+This patch add ARM_SMMU_FEAT_TERMINATE feature bit for smmu, and use
+TERMINATE feature checking to ensue above ILLEGAL cases from happening.
+
+Signed-off-by: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 20 ++++++++++++++++++++
- include/acpi/actbl2.h     |  5 +++++
- 2 files changed, 25 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 4d9ccdd0..514caca3 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -710,6 +710,22 @@ static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
- 	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
- }
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index dbda2eb..0745522 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -55,6 +55,7 @@
+ #define IDR0_STALL_MODEL_SHIFT		24
+ #define IDR0_STALL_MODEL_MASK		0x3
+ #define IDR0_STALL_MODEL_STALL		(0 << IDR0_STALL_MODEL_SHIFT)
++#define IDR0_STALL_MODEL_NS		(1 << IDR0_STALL_MODEL_SHIFT)
+ #define IDR0_STALL_MODEL_FORCE		(2 << IDR0_STALL_MODEL_SHIFT)
+ #define IDR0_TTENDIAN_SHIFT		21
+ #define IDR0_TTENDIAN_MASK		0x3
+@@ -766,6 +767,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_SVM		(1 << 15)
+ #define ARM_SMMU_FEAT_HA		(1 << 16)
+ #define ARM_SMMU_FEAT_HD		(1 << 17)
++#define ARM_SMMU_FEAT_TERMINATE		(1 << 18)
+ 	u32				features;
  
-+static bool iort_platform_support_stall(struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_named_component *ncomp;
-+
-+	ncomp = (struct acpi_iort_named_component *)node->node_data;
-+	return ncomp->node_flags & ACPI_IORT_STALL_SUPPORTED;
-+}
-+
-+static unsigned long iort_platform_get_pasid_bits(struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_named_component *ncomp;
-+
-+	ncomp = (struct acpi_iort_named_component *)node->node_data;
-+	return (ncomp->node_flags & ACPI_IORT_PASID_BITS_MASK) >> ACPI_IORT_PASID_BITS_SHIFT;
-+}
-+
- /**
-  * iort_iommu_configure - Set-up IOMMU configuration for a device.
-  *
-@@ -772,6 +788,10 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- 							   IORT_IOMMU_TYPE,
- 							   i++);
- 		}
-+		if (!IS_ERR_OR_NULL(ops)) {
-+			dev->iommu_fwspec->can_stall = iort_platform_support_stall(node);
-+			dev->iommu_fwspec->num_pasid_bits = iort_platform_get_pasid_bits(node);
-+		}
- 	}
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+@@ -1402,6 +1404,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 	u64 val;
+ 	bool cd_live;
+ 	__u64 *cdptr = arm_smmu_get_cd_ptr(smmu_domain, ssid);
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
  
  	/*
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index 707dda74..125b150 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -749,6 +749,11 @@ struct acpi_iort_named_component {
- 	char device_name[1];	/* Path of namespace object */
- };
+ 	 * This function handles the following cases:
+@@ -1468,9 +1471,11 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 		      CTXDESC_CD_0_V;
  
-+#define ACPI_IORT_STALL_SUPPORTED	0x00000001	/* The platform device supports stall */
-+#define ACPI_IORT_STALL_UNSUPPORTED	0x00000000	/* The platform device doesn't support stall */
-+#define ACPI_IORT_PASID_BITS_MASK	0x0000003e	/* 5 bits for PASID BITS */
-+#define ACPI_IORT_PASID_BITS_SHIFT	1		/* PASID BITS numbers shift */
-+
- struct acpi_iort_root_complex {
- 	u64 memory_properties;	/* Memory access properties */
- 	u32 ats_attribute;
+ 		/*
+-		 * FIXME: STALL_MODEL==0b10 && CD.S==0 is ILLEGAL
++		 * STALL_MODEL==0b10 && CD.S==0 is ILLEGAL
+ 		 */
+-		if (ssid && smmu_domain->s1_cfg.can_stall)
++		if ((ssid && smmu_domain->s1_cfg.can_stall) ||
++		    (!(smmu->features & ARM_SMMU_FEAT_TERMINATE) &&
++		    smmu->features & ARM_SMMU_FEAT_STALLS))
+ 			val |= CTXDESC_CD_0_S;
+ 
+ 		cdptr[0] = cpu_to_le64(val);
+@@ -1690,12 +1695,13 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 			dst[1] |= STRTAB_STE_1_PPAR;
+ 
+ 		/*
+-		 * FIXME: it is illegal to set S1STALLD if STALL_MODEL=0b10
+-		 * (force). But according to the spec, it *must* be set for
++		 * According to spec, it is illegal to set S1STALLD if
++		 * STALL_MODEL is not 0b00. And it *must* be set for
+ 		 * devices that aren't capable of stalling (notably pci!)
+-		 * So we need a "STALL_MODEL=0b00" feature bit.
+ 		 */
+-		if (smmu->features & ARM_SMMU_FEAT_STALLS && !ste->can_stall)
++		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
++		    smmu->features & ARM_SMMU_FEAT_TERMINATE &&
++		    !ste->can_stall)
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+ 
+ 		val |= (s1ctxptr & STRTAB_STE_0_S1CTXPTR_MASK
+@@ -4577,9 +4583,13 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 
+ 	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
+ 	case IDR0_STALL_MODEL_STALL:
++		smmu->features |= ARM_SMMU_FEAT_TERMINATE;
+ 		/* Fallthrough */
+ 	case IDR0_STALL_MODEL_FORCE:
+ 		smmu->features |= ARM_SMMU_FEAT_STALLS;
++		break;
++	case IDR0_STALL_MODEL_NS:
++		smmu->features |= ARM_SMMU_FEAT_TERMINATE;
+ 	}
+ 
+ 	if (reg & IDR0_S1P)
 -- 
 1.7.12.4
