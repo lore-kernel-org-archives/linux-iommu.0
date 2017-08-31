@@ -1,80 +1,107 @@
-From: "Sironi, Filippo via iommu" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+From: "Sironi, Filippo" <sironi@amazon.de>
 Subject: Re: [PATCH] intel-iommu: Don't be too aggressive when clearing one
-	context entry
-Date: Thu, 31 Aug 2017 08:41:25 +0000
-Message-ID: <8B5D8830-9DB1-40D9-BB98-C6F277E64F21@amazon.de>
+ context entry
+Date: Thu, 31 Aug 2017 08:47:03 +0000
+Message-ID: <77293ECA-2B4C-496C-9DDD-A5A2618F00A1@amazon.de>
 References: <1503929789-26698-1-git-send-email-sironi@amazon.de>
-	<20170830133112.btbsmgbm2clz4767@8bytes.org>
-Reply-To: "Sironi, Filippo" <sironi-ebkRAfMGSJGzQB+pC5nmwQ@public.gmane.org>
+ <20170830085025.7027c9f8@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170830133112.btbsmgbm2clz4767-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170830085025.7027c9f8@jacob-builder>
 Content-Language: en-US
-Content-ID: <764F48467F75E245B4A727A8C9C48850-vV1OtcyAfmbQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Woodhouse,
-	David" <dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org>
+Content-ID: <7A78EDE5B774D64BBA7786D39150A1DC@amazon.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Filippo Sironi via iommu <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, "Woodhouse, David" <dwmw@amazon.co.uk>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Jacob,
 
-> On 30. Aug 2017, at 15:31, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> 
-> Hi Filippo,
-> 
-> please change the subject to:
-> 
-> 	iommu/vt-d: Don't be too aggressive when clearing one context entry
-> 
-> to follow the convention used in the iommu-tree. Another comment below.
+> On 30. Aug 2017, at 17:50, Jacob Pan <jacob.jun.pan@linux.intel.com> wrot=
+e:
+> =
 
-Will do.
+> On Mon, 28 Aug 2017 16:16:29 +0200
+> Filippo Sironi via iommu <iommu@lists.linux-foundation.org> wrote:
+> =
 
-> On Mon, Aug 28, 2017 at 04:16:29PM +0200, Filippo Sironi wrote:
->> static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
->> {
+>> Previously, we were invalidating context cache and IOTLB globally when
+>> clearing one context entry.  This is a tad too aggressive.
+>> Invalidate the context cache and IOTLB for the interested device only.
+>> =
+
+>> Signed-off-by: Filippo Sironi <sironi@amazon.de>
+>> Cc: David Woodhouse <dwmw@amazon.co.uk>
+>> Cc: David Woodhouse <dwmw2@infradead.org>
+>> Cc: Joerg Roedel <joro@8bytes.org>
+>> Cc: iommu@lists.linux-foundation.org
+>> Cc: linux-kernel@vger.kernel.org
+>> ---
+>> drivers/iommu/intel-iommu.c | 25 ++++++++++++++++++++++---
+>> 1 file changed, 22 insertions(+), 3 deletions(-)
+>> =
+
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>> index 3e8636f1220e..4bf3e59b0929 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -2351,13 +2351,32 @@ static inline int domain_pfn_mapping(struct
+>> dmar_domain *domain, unsigned long i =
+
+>> static void domain_context_clear_one(struct intel_iommu *iommu, u8
+>> bus, u8 devfn) {
 >> +	unsigned long flags;
 >> +	struct context_entry *context;
 >> +	u16 did_old;
 >> +
 >> 	if (!iommu)
 >> 		return;
->> 
+>> =
+
 >> +	spin_lock_irqsave(&iommu->lock, flags);
->> +	context = iommu_context_addr(iommu, bus, devfn, 0);
+>> +	context =3D iommu_context_addr(iommu, bus, devfn, 0);
 >> +	if (!context) {
 >> +		spin_unlock_irqrestore(&iommu->lock, flags);
 >> +		return;
 >> +	}
->> +	did_old = context_domain_id(context);
+> perhaps check with device_context_mapped()?
+
+Using device_context_mapped() wouldn't simplify the code since it
+would just tell me that at the time of check there was a context.
+I would still need to lock, get the context, check if the context
+is valid, do the work, and unlock.
+
+Modifying device_context_mapped() to return the context isn't
+going to work either because it may go away in the meantime since
+I wouldn't hold the lock.
+
+>> +	did_old =3D context_domain_id(context);
 >> +	spin_unlock_irqrestore(&iommu->lock, flags);
 >> 	clear_context_table(iommu, bus, devfn);
-> 
-> This function is the only caller of clear_context_table(), which does
-> similar things (like fetching the context-entry) as you are adding
-> above.
-> 
-> So you can either make clear_context_table() return the old domain-id
-> so that you don't need to do it here, or you get rid of the function
-> entirely and add the context_clear_entry() and __iommu_flush_cache()
-> calls into this code-path.
-> 
-> Regards,
-> 
-> 	Joerg
+>> -	iommu->flush.flush_context(iommu, 0, 0, 0,
+>> -					   DMA_CCMD_GLOBAL_INVL);
+>> -	iommu->flush.flush_iotlb(iommu, 0, 0, 0,
+>> DMA_TLB_GLOBAL_FLUSH);
+>> +	iommu->flush.flush_context(iommu,
+>> +				   did_old,
+>> +				   (((u16)bus) << 8) | devfn,
+>> +				   DMA_CCMD_MASK_NOBIT,
+>> +				   DMA_CCMD_DEVICE_INVL);
+>> +	iommu->flush.flush_iotlb(iommu,
+>> +				 did_old,
+>> +				 0,
+>> +				 0,
+>> +				 DMA_TLB_DSI_FLUSH);
+>> }
+>> =
 
-I went for merging domain_context_clear_one() with context_clear_one().
+>> static inline void unlink_domain_info(struct device_domain_info
+>> *info)
+> =
+
+> [Jacob Pan]
 
 Regards,
 Filippo
