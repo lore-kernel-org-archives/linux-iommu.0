@@ -1,57 +1,45 @@
-From: jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Subject: [PATCH 08/13] iommu/intel: update to new mmu_notifier semantic
-Date: Thu, 31 Aug 2017 17:17:33 -0400
-Message-ID: <20170831211738.17922-9-jglisse@redhat.com>
-References: <20170831211738.17922-1-jglisse@redhat.com>
+From: Krishna Reddy <vdumpa@nvidia.com>
+Subject: [PATCH] iommu/dma: limit the IOVA allocated to dma-ranges region
+Date: Thu, 31 Aug 2017 15:08:21 -0700
+Message-ID: <1504217301-17216-1-git-send-email-vdumpa@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170831211738.17922-1-jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, vdumpa@nvidia.com
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+CgpDYWxsIHRvIG1tdV9u
-b3RpZmllcl9pbnZhbGlkYXRlX3BhZ2UoKSBhcmUgcmVwbGFjZWQgYnkgY2FsbCB0bwptbXVfbm90
-aWZpZXJfaW52YWxpZGF0ZV9yYW5nZSgpIGFuZCB0aHVzIGNhbGwgYXJlIGJyYWNrZXRlZCBieQpj
-YWxsIHRvIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX3N0YXJ0KCkvZW5kKCkKClJlbW92
-ZSBub3cgdXNlbGVzcyBpbnZhbGlkYXRlX3BhZ2UgY2FsbGJhY2suCgpTaWduZWQtb2ZmLWJ5OiBK
-w6lyw7RtZSBHbGlzc2UgPGpnbGlzc2VAcmVkaGF0LmNvbT4KQ2M6IERhdmlkIFdvb2Rob3VzZSA8
-ZHdtdzJAaW5mcmFkZWFkLm9yZz4KQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-CkNjOiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4KQ2M6IEtpcmlsbCBBLiBTaHV0ZW1v
-diA8a2lyaWxsLnNodXRlbW92QGxpbnV4LmludGVsLmNvbT4KQ2M6IEFuZHJldyBNb3J0b24gPGFr
-cG1AbGludXgtZm91bmRhdGlvbi5vcmc+CkNjOiBMaW51cyBUb3J2YWxkcyA8dG9ydmFsZHNAbGlu
-dXgtZm91bmRhdGlvbi5vcmc+CkNjOiBBbmRyZWEgQXJjYW5nZWxpIDxhYXJjYW5nZUByZWRoYXQu
-Y29tPgotLS0KIGRyaXZlcnMvaW9tbXUvaW50ZWwtc3ZtLmMgfCA5IC0tLS0tLS0tLQogMSBmaWxl
-IGNoYW5nZWQsIDkgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRl
-bC1zdm0uYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtc3ZtLmMKaW5kZXggZjE2N2MwZDg0ZWJmLi5m
-NjIwZGNjZWM4ZWUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtc3ZtLmMKKysrIGIv
-ZHJpdmVycy9pb21tdS9pbnRlbC1zdm0uYwpAQCAtMjIzLDE0ICsyMjMsNiBAQCBzdGF0aWMgdm9p
-ZCBpbnRlbF9jaGFuZ2VfcHRlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLCBzdHJ1Y3QgbW1fc3Ry
-dWN0ICptbSwKIAlpbnRlbF9mbHVzaF9zdm1fcmFuZ2Uoc3ZtLCBhZGRyZXNzLCAxLCAxLCAwKTsK
-IH0KIAotc3RhdGljIHZvaWQgaW50ZWxfaW52YWxpZGF0ZV9wYWdlKHN0cnVjdCBtbXVfbm90aWZp
-ZXIgKm1uLCBzdHJ1Y3QgbW1fc3RydWN0ICptbSwKLQkJCQkgIHVuc2lnbmVkIGxvbmcgYWRkcmVz
-cykKLXsKLQlzdHJ1Y3QgaW50ZWxfc3ZtICpzdm0gPSBjb250YWluZXJfb2YobW4sIHN0cnVjdCBp
-bnRlbF9zdm0sIG5vdGlmaWVyKTsKLQotCWludGVsX2ZsdXNoX3N2bV9yYW5nZShzdm0sIGFkZHJl
-c3MsIDEsIDEsIDApOwotfQotCiAvKiBQYWdlcyBoYXZlIGJlZW4gZnJlZWQgYXQgdGhpcyBwb2lu
-dCAqLwogc3RhdGljIHZvaWQgaW50ZWxfaW52YWxpZGF0ZV9yYW5nZShzdHJ1Y3QgbW11X25vdGlm
-aWVyICptbiwKIAkJCQkgICBzdHJ1Y3QgbW1fc3RydWN0ICptbSwKQEAgLTI4NSw3ICsyNzcsNiBA
-QCBzdGF0aWMgdm9pZCBpbnRlbF9tbV9yZWxlYXNlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLCBz
-dHJ1Y3QgbW1fc3RydWN0ICptbSkKIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbW11X25vdGlmaWVyX29w
-cyBpbnRlbF9tbXVvcHMgPSB7CiAJLnJlbGVhc2UgPSBpbnRlbF9tbV9yZWxlYXNlLAogCS5jaGFu
-Z2VfcHRlID0gaW50ZWxfY2hhbmdlX3B0ZSwKLQkuaW52YWxpZGF0ZV9wYWdlID0gaW50ZWxfaW52
-YWxpZGF0ZV9wYWdlLAogCS5pbnZhbGlkYXRlX3JhbmdlID0gaW50ZWxfaW52YWxpZGF0ZV9yYW5n
-ZSwKIH07CiAKLS0gCjIuMTMuNQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+Limit the IOVA allocated to dma-ranges specified for the device.
+This is necessary to ensure that IOVA allocated is addressable
+by device.
+
+Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
+---
+ drivers/iommu/dma-iommu.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 9d1cebe7f6cb..e8a8320b571b 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -364,6 +364,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	struct iova_domain *iovad = &cookie->iovad;
+ 	unsigned long shift, iova_len, iova = 0;
++	dma_addr_t dma_end_addr;
+ 
+ 	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+ 		cookie->msi_iova += size;
+@@ -381,6 +382,10 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+ 		iova_len = roundup_pow_of_two(iova_len);
+ 
++	/* Limit IOVA allocated to device addressable dma-ranges region. */
++	dma_end_addr = (dma_addr_t)iovad->dma_32bit_pfn << shift;
++	dma_limit = dma_limit > dma_end_addr ? dma_end_addr : dma_limit;
++
+ 	if (domain->geometry.force_aperture)
+ 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
+ 
+-- 
+2.1.4
