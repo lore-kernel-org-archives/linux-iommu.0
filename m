@@ -1,98 +1,475 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu: Introduce Interface for IOMMU TLB Flushing
-Date: Fri, 1 Sep 2017 18:20:45 +0100
-Message-ID: <20170901172044.GB20817@arm.com>
-References: <1503496204-2527-1-git-send-email-joro@8bytes.org>
-	<1503496204-2527-3-git-send-email-joro@8bytes.org>
+From: jglisse@redhat.com
+Subject: [PATCH] mm/mmu_notifier: avoid double notification when it is useless
+Date: Fri,  1 Sep 2017 13:30:11 -0400
+Message-ID: <20170901173011.10745-1-jglisse@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1503496204-2527-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-next-owner@vger.kernel.org>
+Sender: linux-next-owner@vger.kernel.org
+To: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Nadav Amit <nadav.amit@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-next@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+From: Jérôme Glisse <jglisse@redhat.com>
 
-On Wed, Aug 23, 2017 at 03:50:04PM +0200, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> With the current IOMMU-API the hardware TLBs have to be
-> flushed in every iommu_ops->unmap() call-back.
-> 
-> For unmapping large amounts of address space, like it
-> happens when a KVM domain with assigned devices is
-> destroyed, this causes thousands of unnecessary TLB flushes
-> in the IOMMU hardware because the unmap call-back runs for
-> every unmapped physical page.
-> 
-> With the TLB Flush Interface and the new iommu_unmap_fast()
-> function introduced here the need to clean the hardware TLBs
-> is removed from the unmapping code-path. Users of
-> iommu_unmap_fast() have to explicitly call the TLB-Flush
-> functions to sync the page-table changes to the hardware.
-> 
-> Three functions for TLB-Flushes are introduced:
-> 
-> 	* iommu_flush_tlb_all() - Flushes all TLB entries
-> 	                          associated with that
-> 				  domain. TLBs entries are
-> 				  flushed when this function
-> 				  returns.
-> 
-> 	* iommu_tlb_range_add() - This will add a given
-> 				  range to the flush queue
-> 				  for this domain.
-> 
-> 	* iommu_tlb_sync() - Flushes all queued ranges from
-> 			     the hardware TLBs. Returns when
-> 			     the flush is finished.
-> 
-> The semantic of this interface is intentionally similar to
-> the iommu_gather_ops from the io-pgtable code.
-> 
-> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 32 ++++++++++++++++++++---
->  include/linux/iommu.h | 72 ++++++++++++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 99 insertions(+), 5 deletions(-)
+(Note that this is 4.15 material or 4.14 if people are extra confident. I
+ am posting now to get people to test. To that effect maybe it would be a
+ good idea to have that patch sit in linux-next for a while for testing.
 
-[...]
+ Other motivation is that the problem is fresh in everyone's memory
 
-> +size_t iommu_unmap(struct iommu_domain *domain,
-> +		   unsigned long iova, size_t size)
-> +{
-> +	return __iommu_unmap(domain, iova, size, true);
-> +}
->  EXPORT_SYMBOL_GPL(iommu_unmap);
->  
-> +size_t iommu_unmap_fast(struct iommu_domain *domain,
-> +			unsigned long iova, size_t size)
-> +{
-> +	return __iommu_unmap(domain, iova, size, false);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unmap_fast);
+ Thanks to Andrea for thinking of a problematic scenario for COW)
 
-Really minor nit, but I think that iommu_unmap_nosync is a more descriptive
-name (who wouldn't want to use the _fast version?!).
+When clearing a pte/pmd we are given a choice to notify the event through
+(notify version of *_clear_flush call mmu_notifier_invalidate_range) under
+the page table lock. But that notification is not necessary in all cases.
 
-But anyway, this looks like a really welcome change and it addresses most
-of my concerns on v1, so, modulo Robin's comments about map_sg:
+This patches remove almost all the case where it is useless to have a call to
+mmu_notifier_invalidate_range() before mmu_notifier_invalidate_range_end().
+It also adds documentation in all those case explaining why.
 
-Reviewed-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Below is a more in depth analysis of why this is fine to do this:
 
-Will
+For secondary TLB (non CPU TLB) like IOMMU TLB or device TLB (when device use
+thing like ATS/PASID to get the IOMMU to walk the CPU page table to access a
+process virtual address space). There is only 2 cases when you need to notify
+those secondary TLB while holding page table lock when clearing a pte/pmd:
+
+  A) page backing address is free before mmu_notifier_invalidate_range_end()
+  B) a page table entry is updated to point to a new page (COW, write fault
+     on zero page, __replace_page(), ...)
+
+Case A is obvious you do not want to take the risk for the device to write to
+a page that might now be use by some completely different task.
+
+Case B is more subtle. For correctness it requires the following sequence to
+happen:
+  - take page table lock
+  - clear page table entry and notify ([pmd/pte]p_huge_clear_flush_notify())
+  - set page table entry to point to new page
+
+If clearing the page table entry is not followed by a notify before setting
+the new pte/pmd value then you can break memory model like C11 or C++11 for
+the device.
+
+Consider the following scenario (device use a feature similar to ATS/PASID):
+
+Two address addrA and addrB such that |addrA - addrB| >= PAGE_SIZE we assume
+they are write protected for COW (other case of B apply too).
+
+[Time N] --------------------------------------------------------------------
+CPU-thread-0  {try to write to addrA}
+CPU-thread-1  {try to write to addrB}
+CPU-thread-2  {}
+CPU-thread-3  {}
+DEV-thread-0  {read addrA and populate device TLB}
+DEV-thread-2  {read addrB and populate device TLB}
+[Time N+1] ------------------------------------------------------------------
+CPU-thread-0  {COW_step0: {mmu_notifier_invalidate_range_start(addrA)}}
+CPU-thread-1  {COW_step0: {mmu_notifier_invalidate_range_start(addrB)}}
+CPU-thread-2  {}
+CPU-thread-3  {}
+DEV-thread-0  {}
+DEV-thread-2  {}
+[Time N+2] ------------------------------------------------------------------
+CPU-thread-0  {COW_step1: {update page table to point to new page for addrA}}
+CPU-thread-1  {COW_step1: {update page table to point to new page for addrB}}
+CPU-thread-2  {}
+CPU-thread-3  {}
+DEV-thread-0  {}
+DEV-thread-2  {}
+[Time N+3] ------------------------------------------------------------------
+CPU-thread-0  {preempted}
+CPU-thread-1  {preempted}
+CPU-thread-2  {write to addrA which is a write to new page}
+CPU-thread-3  {}
+DEV-thread-0  {}
+DEV-thread-2  {}
+[Time N+3] ------------------------------------------------------------------
+CPU-thread-0  {preempted}
+CPU-thread-1  {preempted}
+CPU-thread-2  {}
+CPU-thread-3  {write to addrB which is a write to new page}
+DEV-thread-0  {}
+DEV-thread-2  {}
+[Time N+4] ------------------------------------------------------------------
+CPU-thread-0  {preempted}
+CPU-thread-1  {COW_step3: {mmu_notifier_invalidate_range_end(addrB)}}
+CPU-thread-2  {}
+CPU-thread-3  {}
+DEV-thread-0  {}
+DEV-thread-2  {}
+[Time N+5] ------------------------------------------------------------------
+CPU-thread-0  {preempted}
+CPU-thread-1  {}
+CPU-thread-2  {}
+CPU-thread-3  {}
+DEV-thread-0  {read addrA from old page}
+DEV-thread-2  {read addrB from new page}
+
+So here because at time N+2 the clear page table entry was not pair with a
+notification to invalidate the secondary TLB, the device see the new value for
+addrB before seing the new value for addrA. This break total memory ordering
+for the device.
+
+When changing a pte to write protect or to point to a new write protected page
+with same content (KSM) it is fine to delay the mmu_notifier_invalidate_range
+call to mmu_notifier_invalidate_range_end() outside the page table lock. This
+is true ven if the thread doing the page table update is preempted right after
+releasing page table lock but before call mmu_notifier_invalidate_range_end().
+
+Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Nadav Amit <nadav.amit@gmail.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Alistair Popple <alistair@popple.id.au>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+
+Cc: iommu@lists.linux-foundation.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-next@vger.kernel.org
+---
+ Documentation/vm/mmu_notifier.txt | 93 +++++++++++++++++++++++++++++++++++++++
+ fs/dax.c                          |  9 +++-
+ include/linux/mmu_notifier.h      |  3 +-
+ mm/huge_memory.c                  | 20 +++++++--
+ mm/hugetlb.c                      | 16 +++++--
+ mm/ksm.c                          | 15 ++++++-
+ mm/rmap.c                         | 47 +++++++++++++++++---
+ 7 files changed, 186 insertions(+), 17 deletions(-)
+ create mode 100644 Documentation/vm/mmu_notifier.txt
+
+diff --git a/Documentation/vm/mmu_notifier.txt b/Documentation/vm/mmu_notifier.txt
+new file mode 100644
+index 000000000000..84c808ce10f3
+--- /dev/null
++++ b/Documentation/vm/mmu_notifier.txt
+@@ -0,0 +1,93 @@
++When do you need to notify inside page table lock ?
++
++When clearing a pte/pmd we are given a choice to notify the event through
++(notify version of *_clear_flush call mmu_notifier_invalidate_range) under
++the page table lock. But that notification is not necessary in all cases.
++
++For secondary TLB (non CPU TLB) like IOMMU TLB or device TLB (when device use
++thing like ATS/PASID to get the IOMMU to walk the CPU page table to access a
++process virtual address space). There is only 2 cases when you need to notify
++those secondary TLB while holding page table lock when clearing a pte/pmd:
++
++  A) page backing address is free before mmu_notifier_invalidate_range_end()
++  B) a page table entry is updated to point to a new page (COW, write fault
++     on zero page, __replace_page(), ...)
++
++Case A is obvious you do not want to take the risk for the device to write to
++a page that might now be use by some completely different task.
++
++Case B is more subtle. For correctness it requires the following sequence to
++happen:
++  - take page table lock
++  - clear page table entry and notify ([pmd/pte]p_huge_clear_flush_notify())
++  - set page table entry to point to new page
++
++If clearing the page table entry is not followed by a notify before setting
++the new pte/pmd value then you can break memory model like C11 or C++11 for
++the device.
++
++Consider the following scenario (device use a feature similar to ATS/PASID):
++
++Two address addrA and addrB such that |addrA - addrB| >= PAGE_SIZE we assume
++they are write protected for COW (other case of B apply too).
++
++[Time N] --------------------------------------------------------------------
++CPU-thread-0  {try to write to addrA}
++CPU-thread-1  {try to write to addrB}
++CPU-thread-2  {}
++CPU-thread-3  {}
++DEV-thread-0  {read addrA and populate device TLB}
++DEV-thread-2  {read addrB and populate device TLB}
++[Time N+1] ------------------------------------------------------------------
++CPU-thread-0  {COW_step0: {mmu_notifier_invalidate_range_start(addrA)}}
++CPU-thread-1  {COW_step0: {mmu_notifier_invalidate_range_start(addrB)}}
++CPU-thread-2  {}
++CPU-thread-3  {}
++DEV-thread-0  {}
++DEV-thread-2  {}
++[Time N+2] ------------------------------------------------------------------
++CPU-thread-0  {COW_step1: {update page table to point to new page for addrA}}
++CPU-thread-1  {COW_step1: {update page table to point to new page for addrB}}
++CPU-thread-2  {}
++CPU-thread-3  {}
++DEV-thread-0  {}
++DEV-thread-2  {}
++[Time N+3] ------------------------------------------------------------------
++CPU-thread-0  {preempted}
++CPU-thread-1  {preempted}
++CPU-thread-2  {write to addrA which is a write to new page}
++CPU-thread-3  {}
++DEV-thread-0  {}
++DEV-thread-2  {}
++[Time N+3] ------------------------------------------------------------------
++CPU-thread-0  {preempted}
++CPU-thread-1  {preempted}
++CPU-thread-2  {}
++CPU-thread-3  {write to addrB which is a write to new page}
++DEV-thread-0  {}
++DEV-thread-2  {}
++[Time N+4] ------------------------------------------------------------------
++CPU-thread-0  {preempted}
++CPU-thread-1  {COW_step3: {mmu_notifier_invalidate_range_end(addrB)}}
++CPU-thread-2  {}
++CPU-thread-3  {}
++DEV-thread-0  {}
++DEV-thread-2  {}
++[Time N+5] ------------------------------------------------------------------
++CPU-thread-0  {preempted}
++CPU-thread-1  {}
++CPU-thread-2  {}
++CPU-thread-3  {}
++DEV-thread-0  {read addrA from old page}
++DEV-thread-2  {read addrB from new page}
++
++So here because at time N+2 the clear page table entry was not pair with a
++notification to invalidate the secondary TLB, the device see the new value for
++addrB before seing the new value for addrA. This break total memory ordering
++for the device.
++
++When changing a pte to write protect or to point to a new write protected page
++with same content (KSM) it is fine to delay the mmu_notifier_invalidate_range
++call to mmu_notifier_invalidate_range_end() outside the page table lock. This
++is true ven if the thread doing the page table update is preempted right after
++releasing page table lock but before call mmu_notifier_invalidate_range_end().
+diff --git a/fs/dax.c b/fs/dax.c
+index ab925dc6647a..cd307b6c6183 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -666,6 +666,13 @@ static void dax_mapping_entry_mkclean(struct address_space *mapping,
+ 		if (follow_pte_pmd(vma->vm_mm, address, &start, &end, &ptep, &pmdp, &ptl))
+ 			continue;
+ 
++		/*
++		 * No need to call mmu_notifier_invalidate_range() as we are
++		 * downgrading page table protection not changing it to point
++		 * to a new page.
++		 *
++		 * See Documentation/vm/mmu_notifier.txt
++		 */
+ 		if (pmdp) {
+ #ifdef CONFIG_FS_DAX_PMD
+ 			pmd_t pmd;
+@@ -680,7 +687,6 @@ static void dax_mapping_entry_mkclean(struct address_space *mapping,
+ 			pmd = pmd_wrprotect(pmd);
+ 			pmd = pmd_mkclean(pmd);
+ 			set_pmd_at(vma->vm_mm, address, pmdp, pmd);
+-			mmu_notifier_invalidate_range(vma->vm_mm, start, end);
+ unlock_pmd:
+ 			spin_unlock(ptl);
+ #endif
+@@ -695,7 +701,6 @@ static void dax_mapping_entry_mkclean(struct address_space *mapping,
+ 			pte = pte_wrprotect(pte);
+ 			pte = pte_mkclean(pte);
+ 			set_pte_at(vma->vm_mm, address, ptep, pte);
+-			mmu_notifier_invalidate_range(vma->vm_mm, start, end);
+ unlock_pte:
+ 			pte_unmap_unlock(ptep, ptl);
+ 		}
+diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
+index 7b2e31b1745a..e55b2f318fcb 100644
+--- a/include/linux/mmu_notifier.h
++++ b/include/linux/mmu_notifier.h
+@@ -155,7 +155,8 @@ struct mmu_notifier_ops {
+ 	 * shared page-tables, it not necessary to implement the
+ 	 * invalidate_range_start()/end() notifiers, as
+ 	 * invalidate_range() alread catches the points in time when an
+-	 * external TLB range needs to be flushed.
++	 * external TLB range needs to be flushed. For more in depth
++	 * discussion on this see Documentation/vm/mmu_notifier.txt
+ 	 *
+ 	 * The invalidate_range() function is called under the ptl
+ 	 * spin-lock and not allowed to sleep.
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 90731e3b7e58..5706252b828a 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1167,8 +1167,15 @@ static int do_huge_pmd_wp_page_fallback(struct vm_fault *vmf, pmd_t orig_pmd,
+ 		goto out_free_pages;
+ 	VM_BUG_ON_PAGE(!PageHead(page), page);
+ 
++	/*
++	 * Leave pmd empty until pte is filled note we must notify here as
++	 * concurrent CPU thread might write to new page before the call to
++	 * mmu_notifier_invalidate_range_end() happen which can lead to a
++	 * device seeing memory write in different order than CPU.
++	 *
++	 * See Documentation/vm/mmu_notifier.txt
++	 */
+ 	pmdp_huge_clear_flush_notify(vma, haddr, vmf->pmd);
+-	/* leave pmd empty until pte is filled */
+ 
+ 	pgtable = pgtable_trans_huge_withdraw(vma->vm_mm, vmf->pmd);
+ 	pmd_populate(vma->vm_mm, &_pmd, pgtable);
+@@ -1929,8 +1936,15 @@ static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
+ 	pmd_t _pmd;
+ 	int i;
+ 
+-	/* leave pmd empty until pte is filled */
+-	pmdp_huge_clear_flush_notify(vma, haddr, pmd);
++	/*
++	 * Leave pmd empty until pte is filled note that it is fine to delay
++	 * notification until mmu_notifier_invalidate_range_end() as we are
++	 * replacing a zero pmd write protected page with a zero pte write
++	 * protected page.
++	 *
++	 * See Documentation/vm/mmu_notifier.txt
++	 */
++	pmdp_huge_clear_flush(vma, haddr, pmd);
+ 
+ 	pgtable = pgtable_trans_huge_withdraw(mm, pmd);
+ 	pmd_populate(mm, &_pmd, pgtable);
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 31e207cb399b..421b816a7216 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -3249,9 +3249,14 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 			set_huge_swap_pte_at(dst, addr, dst_pte, entry, sz);
+ 		} else {
+ 			if (cow) {
++				/*
++				 * No need to notify as we downgrading page
++				 * table protection not changing it to point
++				 * to a new page.
++	 			 *
++				 * See Documentation/vm/mmu_notifier.txt
++				 */
+ 				huge_ptep_set_wrprotect(src, addr, src_pte);
+-				mmu_notifier_invalidate_range(src, mmun_start,
+-								   mmun_end);
+ 			}
+ 			entry = huge_ptep_get(src_pte);
+ 			ptepage = pte_page(entry);
+@@ -4283,7 +4288,12 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
+ 	 * and that page table be reused and filled with junk.
+ 	 */
+ 	flush_hugetlb_tlb_range(vma, start, end);
+-	mmu_notifier_invalidate_range(mm, start, end);
++	/*
++	 * No need to call mmu_notifier_invalidate_range() we are downgrading
++	 * page table protection not changing it to point to a new page.
++	 *
++	 * See Documentation/vm/mmu_notifier.txt
++	 */
+ 	i_mmap_unlock_write(vma->vm_file->f_mapping);
+ 	mmu_notifier_invalidate_range_end(mm, start, end);
+ 
+diff --git a/mm/ksm.c b/mm/ksm.c
+index db20f8436bc3..bbb5a9482f50 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -1052,8 +1052,13 @@ static int write_protect_page(struct vm_area_struct *vma, struct page *page,
+ 		 * So we clear the pte and flush the tlb before the check
+ 		 * this assure us that no O_DIRECT can happen after the check
+ 		 * or in the middle of the check.
++		 *
++		 * No need to notify as we downgrading page table to read only
++		 * not changing it to point to a new page.
++		 *
++		 * See Documentation/vm/mmu_notifier.txt
+ 		 */
+-		entry = ptep_clear_flush_notify(vma, pvmw.address, pvmw.pte);
++		entry = ptep_clear_flush(vma, pvmw.address, pvmw.pte);
+ 		/*
+ 		 * Check that no O_DIRECT or similar I/O is in progress on the
+ 		 * page
+@@ -1136,7 +1141,13 @@ static int replace_page(struct vm_area_struct *vma, struct page *page,
+ 	}
+ 
+ 	flush_cache_page(vma, addr, pte_pfn(*ptep));
+-	ptep_clear_flush_notify(vma, addr, ptep);
++	/*
++	 * No need to notify as we replacing a read only page with another
++	 * read only page with the same content.
++	 *
++	 * See Documentation/vm/mmu_notifier.txt
++	 */
++	ptep_clear_flush(vma, addr, ptep);
+ 	set_pte_at_notify(mm, addr, ptep, newpte);
+ 
+ 	page_remove_rmap(page, false);
+diff --git a/mm/rmap.c b/mm/rmap.c
+index c570f82e6827..d8ee4644e9a9 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -938,10 +938,15 @@ static bool page_mkclean_one(struct page *page, struct vm_area_struct *vma,
+ #endif
+ 		}
+ 
+-		if (ret) {
+-			mmu_notifier_invalidate_range(vma->vm_mm, cstart, cend);
++		/*
++		 * No need to call mmu_notifier_invalidate_range() as we are
++		 * downgrading page table protection not changing it to point
++		 * to a new page.
++		 *
++		 * See Documentation/vm/mmu_notifier.txt
++		 */
++		if (ret)
+ 			(*cleaned)++;
+-		}
+ 	}
+ 
+ 	mmu_notifier_invalidate_range_end(vma->vm_mm, start, end);
+@@ -1510,13 +1515,43 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+ 			if (pte_soft_dirty(pteval))
+ 				swp_pte = pte_swp_mksoft_dirty(swp_pte);
+ 			set_pte_at(mm, address, pvmw.pte, swp_pte);
+-		} else
++		} else {
++			/*
++			 * We should not need to notify here as we reach this
++			 * case only from freeze_page() itself only call from
++			 * split_huge_page_to_list() so everything below must
++			 * be true:
++			 *   - page is not anonymous
++			 *   - page is locked
++			 *
++			 * So as it is a shared page and it is locked, it can
++			 * not be remove from the page cache and replace by
++			 * a new page before mmu_notifier_invalidate_range_end
++			 * so no concurrent thread might update its page table
++			 * to point at new page while a device still is using
++			 * this page.
++			 *
++			 * But we can not assume that new user of try_to_unmap
++			 * will have that in mind so just to be safe here call
++			 * mmu_notifier_invalidate_range()
++			 *
++			 * See Documentation/vm/mmu_notifier.txt
++			 */
+ 			dec_mm_counter(mm, mm_counter_file(page));
++			mmu_notifier_invalidate_range(mm, address,
++						      address + PAGE_SIZE);
++		}
+ discard:
++		/*
++		 * No need to call mmu_notifier_invalidate_range() as we are
++		 * either replacing a present pte with non present one (either
++		 * a swap or special one). We handling the clearing pte case
++		 * above.
++		 *
++		 * See Documentation/vm/mmu_notifier.txt
++		 */
+ 		page_remove_rmap(subpage, PageHuge(page));
+ 		put_page(page);
+-		mmu_notifier_invalidate_range(mm, address,
+-					      address + PAGE_SIZE);
+ 	}
+ 
+ 	mmu_notifier_invalidate_range_end(vma->vm_mm, start, end);
+-- 
+2.13.5
