@@ -1,69 +1,73 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: limit the IOVA allocated to dma-ranges region
-Date: Fri, 1 Sep 2017 10:43:05 +0100
-Message-ID: <3aeeb13e-045f-4cde-2cfb-62d4a879d207@arm.com>
-References: <1504217301-17216-1-git-send-email-vdumpa@nvidia.com>
- <20170901092609.GL19533@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] MAINTAINERS: use the iommu list for the dma-mapping
+	subsystem
+Date: Fri, 1 Sep 2017 10:48:50 +0100
+Message-ID: <5b7d88b3-001e-7413-7bf3-789c234f7fdd@arm.com>
+References: <20170826092734.12859-1-hch@lst.de>
+	<CGME20170901075028epcas5p3485e17a0d67207bb42dd3f4d6d33aff2@epcas5p3.samsung.com>
+	<20170901075018.GA23035@lst.de>
+	<d7006533-4925-b869-c901-d619da5166d4@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170901092609.GL19533@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <d7006533-4925-b869-c901-d619da5166d4-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Krishna Reddy <vdumpa@nvidia.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/09/17 10:26, Joerg Roedel wrote:
-> Adding Robin for review.
+On 01/09/17 08:56, Marek Szyprowski wrote:
+> Hi Christoph,
 > 
-> On Thu, Aug 31, 2017 at 03:08:21PM -0700, Krishna Reddy wrote:
->> Limit the IOVA allocated to dma-ranges specified for the device.
->> This is necessary to ensure that IOVA allocated is addressable
->> by device.
+> On 2017-09-01 09:50, Christoph Hellwig wrote:
+>> Any comments?  I'd like to add this to the 4.14 pull request.
+>>
+>> On Sat, Aug 26, 2017 at 11:27:34AM +0200, Christoph Hellwig wrote:
+>>> Maintaining a subsystem with linux-kernel as the main list is painful
+>>> as it has way to much traffic.  On the other hand the dma-mapping
+>>> subsystem is small enough that a list on its own would be silly.
+>>> So use the list for the closes subsystem instead instead.
+>>>
+>>> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> 
+> Like I already said, its fine for me.
+> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-Why? IOVA allocation is already constrained as much as it should be - if
-the device's DMA mask is wrong that's another problem, and this isn't
-the right place to fix it.
+Fine by me too.
 
-dma_32bit_pfn means nothing more than an internal detail of IOVA
-allocator caching, which is subject to change[1]. As-is, on some
-platforms this patch will effectively force all allocations to fail already.
+Joerg, Alex, are you OK with the odd bit of extra ML traffic?
 
+Thanks,
 Robin.
 
-[1]:https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg19694.html
->> Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
->> ---
->>  drivers/iommu/dma-iommu.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 9d1cebe7f6cb..e8a8320b571b 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -364,6 +364,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
->>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>  	struct iova_domain *iovad = &cookie->iovad;
->>  	unsigned long shift, iova_len, iova = 0;
->> +	dma_addr_t dma_end_addr;
->>  
->>  	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
->>  		cookie->msi_iova += size;
->> @@ -381,6 +382,10 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
->>  	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
->>  		iova_len = roundup_pow_of_two(iova_len);
->>  
->> +	/* Limit IOVA allocated to device addressable dma-ranges region. */
->> +	dma_end_addr = (dma_addr_t)iovad->dma_32bit_pfn << shift;
->> +	dma_limit = dma_limit > dma_end_addr ? dma_end_addr : dma_limit;
+>>> ---
+>>>   MAINTAINERS | 2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>> index 6f7721d1634c..1df11ed346a7 100644
+>>> --- a/MAINTAINERS
+>>> +++ b/MAINTAINERS
+>>> @@ -4175,7 +4175,7 @@ DMA MAPPING HELPERS
+>>>   M:    Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+>>>   M:    Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>>   R:    Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>> -L:    linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>>> +L:    iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>>>   T:    git git://git.infradead.org/users/hch/dma-mapping.git
+>>>   W:    http://git.infradead.org/users/hch/dma-mapping.git
+>>>   S:    Supported
+>>> -- 
+>>> 2.11.0
 > 
-> This looks like a good use-case for min().
-> 
->> +
->>  	if (domain->geometry.force_aperture)
->>  		dma_limit = min(dma_limit, domain->geometry.aperture_end);
->>  
->> -- 
->> 2.1.4
+> Best regards
