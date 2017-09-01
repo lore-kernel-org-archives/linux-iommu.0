@@ -1,19 +1,15 @@
-From: Suman Anna via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/omap: Add support to program multiple iommus
-Date: Fri, 1 Sep 2017 12:05:37 -0500
-Message-ID: <2c8dd7ee-e645-420e-054c-8bdd16bb5338@ti.com>
-References: <20170831131402.29502-1-s-anna@ti.com>
-	<20170831131402.29502-3-s-anna@ti.com>
-	<20170901100141.2ooccy7ns2fwxceg@8bytes.org>
-	<d8b503a1-eaff-e4cc-215d-92520a91e205@ti.com>
-	<20170901163312.GM19533@8bytes.org>
-Reply-To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu: Introduce Interface for IOMMU TLB Flushing
+Date: Fri, 1 Sep 2017 18:20:45 +0100
+Message-ID: <20170901172044.GB20817@arm.com>
+References: <1503496204-2527-1-git-send-email-joro@8bytes.org>
+	<1503496204-2527-3-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170901163312.GM19533-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1503496204-2527-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,25 +20,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tero Kristo <t-kristo-l0cyMroinI0@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/01/2017 11:33 AM, Joerg Roedel wrote:
-> Hi Suman,
-> On Fri, Sep 01, 2017 at 11:21:45AM -0500, Suman Anna wrote:
->> It's primarily a question of whether each iommu platform device need to
->> be represented as a unique iommu_device or not. If you still think that
->> both these need to be presented to iommu core as one device, I would
->> have to add some glue logic in probe to tie the two devices together.
+Hi Joerg,
+
+On Wed, Aug 23, 2017 at 03:50:04PM +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > 
-> I think that you should only call iommu_device_register and friends for
-> the mmu-device you link the other devices against in .add_device.
-> Otherwise people will see two mmus in sysfs, one of them with no devices
-> behind it. That is inconsistent with the rest of the patch-set, which
-> basically handles bots mmus as one. But changing that should be easy, I
-> think.
+> With the current IOMMU-API the hardware TLBs have to be
+> flushed in every iommu_ops->unmap() call-back.
+> 
+> For unmapping large amounts of address space, like it
+> happens when a KVM domain with assigned devices is
+> destroyed, this causes thousands of unnecessary TLB flushes
+> in the IOMMU hardware because the unmap call-back runs for
+> every unmapped physical page.
+> 
+> With the TLB Flush Interface and the new iommu_unmap_fast()
+> function introduced here the need to clean the hardware TLBs
+> is removed from the unmapping code-path. Users of
+> iommu_unmap_fast() have to explicitly call the TLB-Flush
+> functions to sync the page-table changes to the hardware.
+> 
+> Three functions for TLB-Flushes are introduced:
+> 
+> 	* iommu_flush_tlb_all() - Flushes all TLB entries
+> 	                          associated with that
+> 				  domain. TLBs entries are
+> 				  flushed when this function
+> 				  returns.
+> 
+> 	* iommu_tlb_range_add() - This will add a given
+> 				  range to the flush queue
+> 				  for this domain.
+> 
+> 	* iommu_tlb_sync() - Flushes all queued ranges from
+> 			     the hardware TLBs. Returns when
+> 			     the flush is finished.
+> 
+> The semantic of this interface is intentionally similar to
+> the iommu_gather_ops from the io-pgtable code.
+> 
+> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/iommu.c | 32 ++++++++++++++++++++---
+>  include/linux/iommu.h | 72 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 99 insertions(+), 5 deletions(-)
 
-Thanks for the feedback and suggestions, let me look at adding that logic.
+[...]
 
-regards
-Suman
+> +size_t iommu_unmap(struct iommu_domain *domain,
+> +		   unsigned long iova, size_t size)
+> +{
+> +	return __iommu_unmap(domain, iova, size, true);
+> +}
+>  EXPORT_SYMBOL_GPL(iommu_unmap);
+>  
+> +size_t iommu_unmap_fast(struct iommu_domain *domain,
+> +			unsigned long iova, size_t size)
+> +{
+> +	return __iommu_unmap(domain, iova, size, false);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unmap_fast);
+
+Really minor nit, but I think that iommu_unmap_nosync is a more descriptive
+name (who wouldn't want to use the _fast version?!).
+
+But anyway, this looks like a really welcome change and it addresses most
+of my concerns on v1, so, modulo Robin's comments about map_sg:
+
+Reviewed-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+
+Will
