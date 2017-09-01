@@ -1,54 +1,41 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] MAINTAINERS: use the iommu list for the dma-mapping
-	subsystem
-Date: Fri, 1 Sep 2017 11:57:54 +0200
-Message-ID: <20170901095754.42pevlr7cqaahqxh@8bytes.org>
-References: <20170826092734.12859-1-hch@lst.de>
-	<CGME20170901075028epcas5p3485e17a0d67207bb42dd3f4d6d33aff2@epcas5p3.samsung.com>
-	<20170901075018.GA23035@lst.de>
-	<d7006533-4925-b869-c901-d619da5166d4@samsung.com>
-	<5b7d88b3-001e-7413-7bf3-789c234f7fdd@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 2/2] iommu/omap: Add support to program multiple iommus
+Date: Fri, 1 Sep 2017 12:01:41 +0200
+Message-ID: <20170901100141.2ooccy7ns2fwxceg@8bytes.org>
+References: <20170831131402.29502-1-s-anna@ti.com>
+ <20170831131402.29502-3-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5b7d88b3-001e-7413-7bf3-789c234f7fdd-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <20170831131402.29502-3-s-anna@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suman Anna <s-anna@ti.com>
+Cc: iommu@lists.linux-foundation.org, Tony Lindgren <tony@atomide.com>, Tero Kristo <t-kristo@ti.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 01, 2017 at 10:48:50AM +0100, Robin Murphy wrote:
-> On 01/09/17 08:56, Marek Szyprowski wrote:
-> > Hi Christoph,
-> > 
-> > On 2017-09-01 09:50, Christoph Hellwig wrote:
-> >> Any comments?  I'd like to add this to the 4.14 pull request.
-> >>
-> >> On Sat, Aug 26, 2017 at 11:27:34AM +0200, Christoph Hellwig wrote:
-> >>> Maintaining a subsystem with linux-kernel as the main list is painful
-> >>> as it has way to much traffic.  On the other hand the dma-mapping
-> >>> subsystem is small enough that a list on its own would be silly.
-> >>> So use the list for the closes subsystem instead instead.
-> >>>
-> >>> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> > 
-> > Like I already said, its fine for me.
-> > Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> 
-> Fine by me too.
-> 
-> Joerg, Alex, are you OK with the odd bit of extra ML traffic?
+Hi Suman,
 
-Fine by me, of course.
+On Thu, Aug 31, 2017 at 08:14:02AM -0500, Suman Anna wrote:
+> The OMAP IOMMU driver has been enhanced to support allowing
+> multiple IOMMUs to be programmed by a single client user. This
+> support is being added mainly to handle the DSP subsystems on
+> the DRA7xx SoCs, which have two MMUs within the same subsystem.
+> These MMUs provide translations to a processor core port and
+> an internal EDMA port. This support allows both the MMUs to
+> be programmed together, but with each one retaining it's own
+> internal state objects. The internal EDMA is managed by the
+> software running on the DSPs, and this design provides on-par
+> functionality with previous generation OMAP DSPs where the
+> EDMA and the DSP core shared the same MMU.
 
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+I didn't get that from the review, so a question here: Do both MMUs show
+show up in sysfs, means, do you register both of them the the core code?
+
+Because I think with the solution implemented here, only a single,
+combined MMU should be visible to iommu core code and in sysfs.
+
+
+Regards,
+
+	Joerg
