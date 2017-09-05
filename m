@@ -1,113 +1,94 @@
-From: Oleksandr <Oleksandr_Tyshchenko@epam.com>
-Subject: Re: [v4,0/3] iommu/ipmmu-vmsa: r8a7796 support V4
-Date: Tue, 5 Sep 2017 19:52:29 +0300
-Message-ID: <934fcc8c-4716-e027-12aa-297ad0e55535@epam.com>
-References: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
+From: Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH] iommu/dma: limit the IOVA allocated to dma-ranges region
+Date: Tue, 5 Sep 2017 17:35:41 +0000
+Message-ID: <385a0aa33013452fa7ac269cb6188b52@HQMAIL107.nvidia.com>
+References: <1504217301-17216-1-git-send-email-vdumpa@nvidia.com>
+	<20170901092609.GL19533@8bytes.org>
+	<3aeeb13e-045f-4cde-2cfb-62d4a879d207@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <3aeeb13e-045f-4cde-2cfb-62d4a879d207-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, robin.murphy@arm.com, m.szyprowski@samsung.com, olekstysh@gmail.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Robin,
+>>Why? IOVA allocation is already constrained as much as it should be - if the device's DMA mask is wrong that's another problem, and this isn't the right place to fix it.
 
-Hi, Magnus, maintainers, all.
+This is because of following reasons.
+1. Many of the HW modules in Tegra114 and Tegra30 can't access IOVA that overlap with MMIO. Even though these HW modules support 32-bit addressing, They can't access IOVA overlapping with range 0xff00:0000 to 0xffff:fffff, which is MMIO region for high vectors. These modules can only see 0x8000:0000 to 0xff00:0000 as IOVA. If dma mask is set to use 31-bit, the IOVA range reduces from ~2GB to 1GB.  The patch is to get most of IOVA range usable by using dma-ranges property. As we already use dma-ranges start as bottom on IOVA range, The patch is to restrict the IOVA top as well using dma-ranges range. 
+2. Most of  the drivers in Linux Kernel are setting mask as either 32-bit or 64-bit.  Especially, I am referring to driver/mmc/host/sdhci.c (sdhci_set_dma_mask()) here.  In Tegra124/210/186, HW modules support 34-bit addressing.  But, sdhci only support setting mask as either 32-bit or 64-bit.  As you pointed, This can be fixed by changing mask in sdhci common code.  Or This patch can help here as well without changing the driver code. 1 is the main driving factor for this patch.
 
-On 19.06.17 14:04, Magnus Damm wrote:
-> iommu/ipmmu-vmsa: r8a7796 support V4
->
-> [PATCH v4 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
-> [PATCH v4 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-> [PATCH v4 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
->
-> This series adds r8a7796 support to the IPMMU driver. The DT binding
-> gets updated, maximum number of micro-TLBs are increased and the
-> driver is adjusted to match on the new DT binding.
-I am interested in adding IPMMU-VMSA support to Xen hypervisor.
+>>dma_32bit_pfn means nothing more than an internal detail of IOVA allocator caching, which is subject to change[1]. As-is, on some platforms this patch will effectively force all allocations to fail already.
 
-I did some preparations for making IPMMU-VMSA to feel comfortable [1] 
-inside Xen
-followed by direct porting Linux IPMMU-VMSA driver and ARM LPAE 
-page-table allocator [2] to it.
+I see that your patches are removing specifying end of IOVA during init_iova_domain() and use mask as the end of IOVA range.  Do you have any suggestion on how to handle 1 in a way to use most of IOVA range supported by HW?  Can IOVA code look for dma-ranges on its own and limit the iova top to lowest of mask and dma-ranges, if it is present? or any other ways you can think of?
 
-I decided to base on the "BSP" driver [3] because it had more complete 
-support than the "mainline" one [4].
+-KR
 
-During review I got a feedback that "BSP" driver wasn't the best choice 
-to be ported.
-Xen ARM maintainers worry about "BSP" driver which haven't had a 
-thorough review by the Linux community and as the result might have bugs 
-which will never be fixed, etc.
+-----Original Message-----
+From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org] 
+Sent: Friday, September 1, 2017 2:43 AM
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Subject: Re: [PATCH] iommu/dma: limit the IOVA allocated to dma-ranges region
 
-So, for the IPMMU-VMSA support to be accepted by Xen community I should 
-either write our own driver based on BSP/mainline/whatever which 
-contains only relevant to Xen things or
-direct port from "mainline" driver. As the second option relies on the 
-required support [5] which isn't in mainline yet, it is not clear when 
-this support gets merged and how it will be modified/reworked before,
-we preliminarily decided to follow the first option. But, I would like 
-to consider second option again. Despite the complexity of second 
-option, it has one significant benefit.
+On 01/09/17 10:26, Joerg Roedel wrote:
+> Adding Robin for review.
+> 
+> On Thu, Aug 31, 2017 at 03:08:21PM -0700, Krishna Reddy wrote:
+>> Limit the IOVA allocated to dma-ranges specified for the device.
+>> This is necessary to ensure that IOVA allocated is addressable by 
+>> device.
 
-I see that Linux driver is being developed quite actively and looking 
-over all related patch series I got a feeling that required support was 
-about to reach upstream.
+Why? IOVA allocation is already constrained as much as it should be - if the device's DMA mask is wrong that's another problem, and this isn't the right place to fix it.
 
-Could you, please, clarify some questions which, I hope, help us to make 
-a decision:
-1. Do you have approximate time-frame for getting this support in?
-2. Are fundamental/significant changes planned for this support?
+dma_32bit_pfn means nothing more than an internal detail of IOVA allocator caching, which is subject to change[1]. As-is, on some platforms this patch will effectively force all allocations to fail already.
 
-Also, may I ask for a link to github branch which contains current (and 
-likely r8a7795 and 32-bit ARM update) patch series?
+Robin.
 
-Thank you in advance!
-
-And sorry for the most likely incorrect format of this email.
-
-[1] https://www.mail-archive.com/xen-devel@lists.xen.org/msg115901.html
-[2] https://lists.xen.org/archives/html/xen-devel/2017-07/msg02679.html
-[3] 
-https://git.kernel.org/pub/scm/linux/kernel/git/horms/renesas-bsp.git/tree/drivers/iommu/ipmmu-vmsa.c?h=v4.9/rcar-3.5.3
-[4] 
-http://elixir.free-electrons.com/linux/latest/source/drivers/iommu/ipmmu-vmsa.c
-[5] https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022567.html
-https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022577.html
-     https://lkml.org/lkml/2017/7/17/393
->
-> Changes since V3:
->   - Rebased on top of [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
->   - Patch 3/3 updated with Reviewed-by - thanks Geert!
->
-> Changes since V2:
->   - Patch 2/3 updated with an outer set of () - thanks Ramesh!
->   - Patch 2/3 updated with Reviewed-by - thanks Geert!
->   - Patch 3/3 updated to include white list support
->
-> Changes since V1:
->   - Patch 1/3 updated with more Acked-by tags
->   - Patch 2/3 updated with high I/O register range support
->
-> Patch 1/3 is ready for upstream merge and includes the following tags:
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-> Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Acked-by: Simon Horman <horms+renesas@verge.net.au>
-> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> Patch 2/3 and 3/3 are quite trivial but have no acked-by so far.
->
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-> ---
->
->   Developed on top of next-20170614 with the following series applied
->   [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
->   [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
->
->   Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1
->   drivers/iommu/ipmmu-vmsa.c                                     |   24 +++++++---
->   2 files changed, 18 insertions(+), 7 deletions(-)
+[1]:https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg19694.html
+>> Signed-off-by: Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/iommu/dma-iommu.c | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c 
+>> index 9d1cebe7f6cb..e8a8320b571b 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -364,6 +364,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>>  	struct iova_domain *iovad = &cookie->iovad;
+>>  	unsigned long shift, iova_len, iova = 0;
+>> +	dma_addr_t dma_end_addr;
+>>  
+>>  	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+>>  		cookie->msi_iova += size;
+>> @@ -381,6 +382,10 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>>  	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+>>  		iova_len = roundup_pow_of_two(iova_len);
+>>  
+>> +	/* Limit IOVA allocated to device addressable dma-ranges region. */
+>> +	dma_end_addr = (dma_addr_t)iovad->dma_32bit_pfn << shift;
+>> +	dma_limit = dma_limit > dma_end_addr ? dma_end_addr : dma_limit;
+> 
+> This looks like a good use-case for min().
+> 
+>> +
+>>  	if (domain->geometry.force_aperture)
+>>  		dma_limit = min(dma_limit, domain->geometry.aperture_end);
+>>  
+>> --
+>> 2.1.4
