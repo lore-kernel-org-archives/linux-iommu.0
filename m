@@ -1,207 +1,113 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v6] vfio: platform: reset: Add Broadcom FlexRM reset
- module
-Date: Tue, 5 Sep 2017 09:57:13 -0600
-Message-ID: <20170905095713.0db61015@w520.home>
-References: <1503979486-5364-1-git-send-email-anup.patel@broadcom.com>
-        <1503979486-5364-2-git-send-email-anup.patel@broadcom.com>
-        <20170829140902.GK32175@char.us.oracle.com>
-        <CAALAos9a7qrHtYpcW0NRyo4uowet8nWLettSKa=+qyNSeVcqRQ@mail.gmail.com>
+From: Oleksandr <Oleksandr_Tyshchenko@epam.com>
+Subject: Re: [v4,0/3] iommu/ipmmu-vmsa: r8a7796 support V4
+Date: Tue, 5 Sep 2017 19:52:29 +0300
+Message-ID: <934fcc8c-4716-e027-12aa-297ad0e55535@epam.com>
+References: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <CAALAos9a7qrHtYpcW0NRyo4uowet8nWLettSKa=+qyNSeVcqRQ@mail.gmail.com>
-Sender: kvm-owner@vger.kernel.org
-To: Anup Patel <anup.patel@broadcom.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Baptiste Reynal <b.reynal@virtualopensystems.com>, Scott Branden <sbranden@broadcom.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, kvm@vger.kernel.org, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, robin.murphy@arm.com, m.szyprowski@samsung.com, olekstysh@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 4 Sep 2017 15:20:11 +0530
-Anup Patel <anup.patel@broadcom.com> wrote:
 
-> Sorry for delayed response...
-> 
-> On Tue, Aug 29, 2017 at 7:39 PM, Konrad Rzeszutek Wilk
-> <konrad.wilk@oracle.com> wrote:
-> > On Tue, Aug 29, 2017 at 09:34:46AM +0530, Anup Patel wrote:  
-> >> This patch adds Broadcom FlexRM low-level reset for
-> >> VFIO platform.
-> >>  
-> >
-> > Is there an document that explains and /or details the various
-> > registers?  
-> 
-> Yes, there is a document but its not publicly accessible.
-> 
-> >> It will do the following:
-> >> 1. Disable/Deactivate each FlexRM ring
-> >> 2. Flush each FlexRM ring
-> >>
-> >> The cleanup sequence for FlexRM rings is adapted from
-> >> Broadcom FlexRM mailbox driver.
-> >>
-> >> Signed-off-by: Anup Patel <anup.patel@broadcom.com>
-> >> Reviewed-by: Oza Oza <oza.oza@broadcom.com>
-> >> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-> >> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> >> ---
-> >>  drivers/vfio/platform/reset/Kconfig                |   9 ++
-> >>  drivers/vfio/platform/reset/Makefile               |   1 +
-> >>  .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 100 +++++++++++++++++++++
-> >>  3 files changed, 110 insertions(+)
-> >>  create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-> >>
-> >> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
-> >> index 70cccc5..392e3c0 100644
-> >> --- a/drivers/vfio/platform/reset/Kconfig
-> >> +++ b/drivers/vfio/platform/reset/Kconfig
-> >> @@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
-> >>         Enables the VFIO platform driver to handle reset for AMD XGBE
-> >>
-> >>         If you don't know what to do here, say N.
-> >> +
-> >> +config VFIO_PLATFORM_BCMFLEXRM_RESET
-> >> +     tristate "VFIO support for Broadcom FlexRM reset"
-> >> +     depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
-> >> +     default ARCH_BCM_IPROC
-> >> +     help
-> >> +       Enables the VFIO platform driver to handle reset for Broadcom FlexRM
-> >> +
-> >> +       If you don't know what to do here, say N.
-> >> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
-> >> index 93f4e23..8d9874b 100644
-> >> --- a/drivers/vfio/platform/reset/Makefile
-> >> +++ b/drivers/vfio/platform/reset/Makefile
-> >> @@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
-> >>
-> >>  obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
-> >>  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
-> >> +obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
-> >> diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-> >> new file mode 100644
-> >> index 0000000..966a813
-> >> --- /dev/null
-> >> +++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-> >> @@ -0,0 +1,100 @@
-> >> +/*
-> >> + * Copyright (C) 2017 Broadcom
-> >> + *
-> >> + * This program is free software; you can redistribute it and/or modify
-> >> + * it under the terms of the GNU General Public License version 2 as
-> >> + * published by the Free Software Foundation.
-> >> + *
-> >> + * This program is distributed in the hope that it will be useful,
-> >> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> >> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> >> + * GNU General Public License for more details.
-> >> + *
-> >> + * You should have received a copy of the GNU General Public License
-> >> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-> >> + */
-> >> +
-> >> +/*
-> >> + * This driver provides reset support for Broadcom FlexRM ring manager
-> >> + * to VFIO platform.
-> >> + */
-> >> +
-> >> +#include <linux/delay.h>
-> >> +#include <linux/init.h>
-> >> +#include <linux/io.h>
-> >> +#include <linux/kernel.h>
-> >> +#include <linux/module.h>
-> >> +
-> >> +#include "vfio_platform_private.h"
-> >> +
-> >> +/* FlexRM configuration */
-> >> +#define RING_REGS_SIZE                                       0x10000
-> >> +#define RING_VER_MAGIC                                       0x76303031
-> >> +
-> >> +/* Per-Ring register offsets */
-> >> +#define RING_VER                                     0x000
-> >> +#define RING_CONTROL                                 0x034
-> >> +#define RING_FLUSH_DONE                                      0x038
-> >> +
-> >> +/* Register RING_CONTROL fields */
-> >> +#define CONTROL_FLUSH_SHIFT                          5
-> >> +
-> >> +/* Register RING_FLUSH_DONE fields */
-> >> +#define FLUSH_DONE_MASK                                      0x1
-> >> +
-> >> +static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
-> >> +{
-> >> +     unsigned int timeout;
-> >> +
-> >> +     /* Disable/inactivate ring */
-> >> +     writel_relaxed(0x0, ring + RING_CONTROL);
-> >> +
-> >> +     /* Flush ring with timeout of 1s */
-> >> +     timeout = 1000;  
-> >
-> > Perhaps a #define for this value?  
-> 
-> This magic value 1000 makes it explicit that we try till 1 second
-> because inside the loop we have mdelay(1).
-> 
-> >  
-> >> +     writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
-> >> +     do {
-> >> +             if (readl_relaxed(ring + RING_FLUSH_DONE) & FLUSH_DONE_MASK)
-> >> +                     break;
-> >> +             mdelay(1);
-> >> +     } while (--timeout);
-> >> +
-> >> +     if (!timeout) {
-> >> +             pr_warn("VFIO FlexRM shutdown timeout\n");
+Hi, Magnus, maintainers, all.
 
-Since you're planning a new version anyway, perhaps we could also pass
-the device through and use a dev_warn here so we can associate this
-error to a specific device.  Perhaps even knowing which ring on the
-device encountered the timeout would be useful.  Thanks,
+On 19.06.17 14:04, Magnus Damm wrote:
+> iommu/ipmmu-vmsa: r8a7796 support V4
+>
+> [PATCH v4 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+> [PATCH v4 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+> [PATCH v4 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+>
+> This series adds r8a7796 support to the IPMMU driver. The DT binding
+> gets updated, maximum number of micro-TLBs are increased and the
+> driver is adjusted to match on the new DT binding.
+I am interested in adding IPMMU-VMSA support to Xen hypervisor.
 
-Alex
+I did some preparations for making IPMMU-VMSA to feel comfortable [1] 
+inside Xen
+followed by direct porting Linux IPMMU-VMSA driver and ARM LPAE 
+page-table allocator [2] to it.
 
-> >> +             return -ETIMEDOUT;
-> >> +     }
-> >> +
-> >> +     return 0;
-> >> +}  
-> 
-> There is a correction in the sequence suggested by HW folks.
-> 
-> After above, we need to clear the FLUSH bit in RING_CONTROL
-> register and then wait for FLUSH_DONE bit to be cleared in
-> RING_FLUSH_DONE register.
-> 
-> This was missed out previously due to incomplete documentation.
-> 
-> >> +
-> >> +static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
-> >> +{
-> >> +     int rc = 0;
-> >> +     void __iomem *ring;
-> >> +     struct vfio_platform_region *reg = &vdev->regions[0];
-> >> +
-> >> +     /* Map FlexRM ring registers if not mapped */
-> >> +     if (!reg->ioaddr) {
-> >> +             reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
-> >> +             if (!reg->ioaddr)
-> >> +                     return -ENOMEM;
-> >> +     }
-> >> +
-> >> +     /* Discover and shutdown each FlexRM ring */
-> >> +     for (ring = reg->ioaddr;
-> >> +          ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
-> >> +             if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC) {
-> >> +                     rc = vfio_platform_bcmflexrm_shutdown(ring);
-> >> +                     if (rc)
-> >> +                             break;  
-> >
-> > You sure? Don't you want to continue trying to reset all of them and
-> > then return rc at the end?  
-> 
-> Yes, I think its better to reset all even if few fail. I will update this
-> accordingly.
-> 
-> Thanks,
-> Anup
+I decided to base on the "BSP" driver [3] because it had more complete 
+support than the "mainline" one [4].
+
+During review I got a feedback that "BSP" driver wasn't the best choice 
+to be ported.
+Xen ARM maintainers worry about "BSP" driver which haven't had a 
+thorough review by the Linux community and as the result might have bugs 
+which will never be fixed, etc.
+
+So, for the IPMMU-VMSA support to be accepted by Xen community I should 
+either write our own driver based on BSP/mainline/whatever which 
+contains only relevant to Xen things or
+direct port from "mainline" driver. As the second option relies on the 
+required support [5] which isn't in mainline yet, it is not clear when 
+this support gets merged and how it will be modified/reworked before,
+we preliminarily decided to follow the first option. But, I would like 
+to consider second option again. Despite the complexity of second 
+option, it has one significant benefit.
+
+I see that Linux driver is being developed quite actively and looking 
+over all related patch series I got a feeling that required support was 
+about to reach upstream.
+
+Could you, please, clarify some questions which, I hope, help us to make 
+a decision:
+1. Do you have approximate time-frame for getting this support in?
+2. Are fundamental/significant changes planned for this support?
+
+Also, may I ask for a link to github branch which contains current (and 
+likely r8a7795 and 32-bit ARM update) patch series?
+
+Thank you in advance!
+
+And sorry for the most likely incorrect format of this email.
+
+[1] https://www.mail-archive.com/xen-devel@lists.xen.org/msg115901.html
+[2] https://lists.xen.org/archives/html/xen-devel/2017-07/msg02679.html
+[3] 
+https://git.kernel.org/pub/scm/linux/kernel/git/horms/renesas-bsp.git/tree/drivers/iommu/ipmmu-vmsa.c?h=v4.9/rcar-3.5.3
+[4] 
+http://elixir.free-electrons.com/linux/latest/source/drivers/iommu/ipmmu-vmsa.c
+[5] https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022567.html
+https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022577.html
+     https://lkml.org/lkml/2017/7/17/393
+>
+> Changes since V3:
+>   - Rebased on top of [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
+>   - Patch 3/3 updated with Reviewed-by - thanks Geert!
+>
+> Changes since V2:
+>   - Patch 2/3 updated with an outer set of () - thanks Ramesh!
+>   - Patch 2/3 updated with Reviewed-by - thanks Geert!
+>   - Patch 3/3 updated to include white list support
+>
+> Changes since V1:
+>   - Patch 1/3 updated with more Acked-by tags
+>   - Patch 2/3 updated with high I/O register range support
+>
+> Patch 1/3 is ready for upstream merge and includes the following tags:
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Acked-by: Simon Horman <horms+renesas@verge.net.au>
+> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+> Patch 2/3 and 3/3 are quite trivial but have no acked-by so far.
+>
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> ---
+>
+>   Developed on top of next-20170614 with the following series applied
+>   [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
+>   [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
+>
+>   Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1
+>   drivers/iommu/ipmmu-vmsa.c                                     |   24 +++++++---
+>   2 files changed, 18 insertions(+), 7 deletions(-)
