@@ -1,41 +1,49 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v2 0/8] MT2712 IOMMU SUPPORT
-Date: Wed, 6 Sep 2017 13:40:44 +0800
-Message-ID: <1504676444.20565.3.camel@mhfsdcap03>
-References: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
-         <20170822143836.ac3faa7wcwfjtvjc@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170822143836.ac3faa7wcwfjtvjc-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, Honghui Zhang =?UTF-8?Q?=28=E5=BC=A0=E6=B4=AA=E8=BE=89=29?= <Honghui.Zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+From: Pushkar Jambhlekar <pushkar.iit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] drivers/iommu/tegra: Optimize mutex_unlock function call
+Date: Wed,  6 Sep 2017 11:20:37 +0530
+Message-ID: <1504677037-3224-1-git-send-email-pushkar.iit@gmail.com>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pushkar Jambhlekar <pushkar.iit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2017-08-22 at 22:38 +0800, Joerg Roedel wrote:
-> On Mon, Aug 21, 2017 at 07:00:13PM +0800, Yong Wu wrote:
-> > Yong Wu (8):
-> >   dt-bindings: mediatek: Add binding for mt2712 IOMMU and SMI
-> >   iommu/mediatek: Move MTK_M4U_TO_LARB/PORT into mtk_iommu.c
-> >   iommu/mediatek: Add mt2712 IOMMU support
-> >   iommu/mediatek: Merge 2 M4U HWs into one iommu domain
-> >   iommu/mediatek: Move pgtable allocation into domain_alloc
-> >   iommu/mediatek: Disable iommu clock when system suspend
-> >   iommu/mediatek: Enlarge the validate PA range for 4GB mode
-> >   memory: mtk-smi: Degrade SMI init to module_init
-> 
-> Applied patches 2-7. Patch 1 is something for Matthias.
+Code can be optimized more by making single exit point of function and calling mutex_unlock at the end
 
-Hi Matthias,
+Signed-off-by: Pushkar Jambhlekar <pushkar.iit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/tegra-smmu.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-   Could you help review the patch[1/8]? If it's ok for you too,Could
-you help apply that one via your tree.
-   Thanks.
-
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 3b6449e..da38833 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -232,20 +232,22 @@ static inline void smmu_flush(struct tegra_smmu *smmu)
+ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
+ {
+ 	unsigned long id;
++	int ret = 0;
+ 
+ 	mutex_lock(&smmu->lock);
+ 
+ 	id = find_first_zero_bit(smmu->asids, smmu->soc->num_asids);
+ 	if (id >= smmu->soc->num_asids) {
+-		mutex_unlock(&smmu->lock);
+-		return -ENOSPC;
++		ret = -ENOSPC;
++		goto Exit;
+ 	}
+ 
+ 	set_bit(id, smmu->asids);
+ 	*idp = id;
+ 
++Exit:
+ 	mutex_unlock(&smmu->lock);
+-	return 0;
++	return ret;
+ }
+ 
+ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
+-- 
+2.7.4
