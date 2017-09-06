@@ -1,182 +1,192 @@
-From: Anup Patel <anup.patel@broadcom.com>
-Subject: [PATCH v8] vfio: platform: reset: Add Broadcom FlexRM reset module
-Date: Wed,  6 Sep 2017 16:48:17 +0530
-Message-ID: <1504696697-2733-2-git-send-email-anup.patel@broadcom.com>
-References: <1504696697-2733-1-git-send-email-anup.patel@broadcom.com>
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1504696697-2733-1-git-send-email-anup.patel@broadcom.com>
-Sender: kvm-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Baptiste Reynal <b.reynal@virtualopensystems.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Scott Branden <sbranden@broadcom.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Anup Patel <anup.patel@broadcom.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [virtio-dev] [RFC] virtio-iommu version 0.4
+Date: Wed, 6 Sep 2017 12:48:42 +0100
+Message-ID: <6b56fd96-fee5-d105-5261-2e7274b4aa15@arm.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+	<f9b02ce1-057f-df4f-90d7-52616ad60b88@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <f9b02ce1-057f-df4f-90d7-52616ad60b88-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org
+Cc: mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds Broadcom FlexRM low-level reset for
-VFIO platform.
+Hi Eric,
 
-It will do the following:
-1. Disable/Deactivate each FlexRM ring
-2. Flush each FlexRM ring
+On 23/08/17 14:55, Auger Eric wrote:
+> Please find some comments/questions below:
 
-The cleanup sequence for FlexRM rings is adapted from
-Broadcom FlexRM mailbox driver.
+Thanks a lot for this. Sorry for the delay, I was on holiday and it took
+me a while to sort out the details.
 
-Signed-off-by: Anup Patel <anup.patel@broadcom.com>
-Reviewed-by: Oza Oza <oza.oza@broadcom.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
----
- drivers/vfio/platform/reset/Kconfig                |   9 ++
- drivers/vfio/platform/reset/Makefile               |   1 +
- .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 115 +++++++++++++++++++++
- 3 files changed, 125 insertions(+)
- create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> 2.6.7:1
+> I do not understand the footnode #6 sentence: 'Without a specific
+> definition of the ACK requirements for a given property type, it simply
+> means that the driver read all fields of that property."
 
-diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
-index 70cccc5..392e3c0 100644
---- a/drivers/vfio/platform/reset/Kconfig
-+++ b/drivers/vfio/platform/reset/Kconfig
-@@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
- 	  Enables the VFIO platform driver to handle reset for AMD XGBE
- 
- 	  If you don't know what to do here, say N.
-+
-+config VFIO_PLATFORM_BCMFLEXRM_RESET
-+	tristate "VFIO support for Broadcom FlexRM reset"
-+	depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
-+	default ARCH_BCM_IPROC
-+	help
-+	  Enables the VFIO platform driver to handle reset for Broadcom FlexRM
-+
-+	  If you don't know what to do here, say N.
-diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
-index 93f4e23..8d9874b 100644
---- a/drivers/vfio/platform/reset/Makefile
-+++ b/drivers/vfio/platform/reset/Makefile
-@@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
- 
- obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
- obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
-+obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
-diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-new file mode 100644
-index 0000000..5a17d50
---- /dev/null
-+++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-@@ -0,0 +1,115 @@
-+/*
-+ * Copyright (C) 2017 Broadcom
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+/*
-+ * This driver provides reset support for Broadcom FlexRM ring manager
-+ * to VFIO platform.
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+
-+#include "vfio_platform_private.h"
-+
-+/* FlexRM configuration */
-+#define RING_REGS_SIZE					0x10000
-+#define RING_VER_MAGIC					0x76303031
-+
-+/* Per-Ring register offsets */
-+#define RING_VER					0x000
-+#define RING_CONTROL					0x034
-+#define RING_FLUSH_DONE					0x038
-+
-+/* Register RING_CONTROL fields */
-+#define CONTROL_FLUSH_SHIFT				5
-+
-+/* Register RING_FLUSH_DONE fields */
-+#define FLUSH_DONE_MASK					0x1
-+
-+static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
-+{
-+	unsigned int timeout;
-+
-+	/* Disable/inactivate ring */
-+	writel_relaxed(0x0, ring + RING_CONTROL);
-+
-+	/* Set ring flush state */
-+	timeout = 1000; /* timeout of 1s */
-+	writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
-+	do {
-+		if (readl_relaxed(ring + RING_FLUSH_DONE) &
-+		    FLUSH_DONE_MASK)
-+			break;
-+		mdelay(1);
-+	} while (--timeout);
-+	if (!timeout)
-+		return -ETIMEDOUT;
-+
-+	/* Clear ring flush state */
-+	timeout = 1000; /* timeout of 1s */
-+	writel_relaxed(0x0, ring + RING_CONTROL);
-+	do {
-+		if (!(readl_relaxed(ring + RING_FLUSH_DONE) &
-+		      FLUSH_DONE_MASK))
-+			break;
-+		mdelay(1);
-+	} while (--timeout);
-+	if (!timeout)
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
-+{
-+	void __iomem *ring;
-+	int rc = 0, ret = 0, ring_num = 0;
-+	struct vfio_platform_region *reg = &vdev->regions[0];
-+
-+	/* Map FlexRM ring registers if not mapped */
-+	if (!reg->ioaddr) {
-+		reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
-+		if (!reg->ioaddr)
-+			return -ENOMEM;
-+	}
-+
-+	/* Discover and shutdown each FlexRM ring */
-+	for (ring = reg->ioaddr;
-+	     ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
-+		if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC) {
-+			rc = vfio_platform_bcmflexrm_shutdown(ring);
-+			if (rc) {
-+				dev_warn(vdev->device,
-+					 "FlexRM ring%d shutdown error %d\n",
-+					 ring_num, rc);
-+				ret |= rc;
-+			}
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
-+			  vfio_platform_bcmflexrm_reset);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Anup Patel <anup.patel@broadcom.com>");
-+MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
--- 
-2.7.4
+That doesn't serve any purpose, I'll remove the footnote.
+
+> 2.6.7:2
+> what if the driver has not provided a big enough buffer and the device
+> cannot report all supported properties?
+
+Good point, how about adding the following to 2.6.7.2 - Device
+Requirements: PROBE Request
+
+    If the properties array is smaller than \field{probe_size}, then the
+device SHOULD NOT write any property and SHOULD set the request
+\field{status} to VIRTIO_IOMMU_S_INVAL.
+
+> 2.6.8.2:
+> Couldn't we use the same terminology as iommu_resv_type in iommu.h?
+> the negative form is not the easiest to understand for me.
+> Why F_MSI?
+
+It also needs to be understandable by someone not familiar with the Linux
+APIs. It's not entirely obvious to me what the iommu.h regions are without
+looking at the implementation, maybe using names from the device point of
+view is more clear. I don't mind simplifying though, as I don't see a
+reason for the driver to know about BYPASS regions other than
+HW MSIs.
+
+How about I remove ABORT and BYPASS, make the only subtype RESV_MEM_T_MSI
+(1)? We'd use subtype 0 as "don't care, just don't map this". Can call it
+RESV_MEM_T_RESERVED. Flags won't be used for these subtypes.
+
+Another subtype will be RESV_MEM_T_IDENTITY (see my reply to Kevin).
+IDENTITY regions must be identity-mapped by the guest and, as I understand
+it, are virtual addresses used for DMA by firmware. The flags field will
+then contain read/write protection flags.
+
+> 2.6.8.2.1
+> Multiple overlapping RESV_MEM properties are merged together. Device
+> requirement? if same types I assume?
+
+Combination rules apply to device and driver. When the driver puts
+multiple endpoints in the same domain, combination rules apply. They will
+become important once the guest attempts to do things like combining
+endpoints with different PASID capabilities in the same domain. I'm
+considering these endpoints to be behind different physical IOMMUs.
+
+For reserved regions, we specify what the driver should do and what the
+device should enforce with regard to mapping IOVAs of overlapping regions.
+For example, if a device has some virtual address RESV_T_MSI and an other
+device has the same virtual address RESV_T_IDENTITY, what should the
+driver do?
+
+I think it should apply the RESV_T_IDENTITY. RESV_T_MSI is just a special
+case of RESV_T_RESERVED, it's a hint for the IRQ subsystem and doesn't
+have a meaning within a domain. From DMA mappings point of view, it is
+effectively the same as RESV_T_RESERVED. When merging RESV_T_RESERVED and
+RESV_T_IDENTITY, we should make it RESV_T_IDENTITY. Because it is required
+for one endpoint to work (the one with IDENTITY) and is not accessed by
+the other (the driver must not allocate this IOVA range for DMA).
+
+More generally, I'd like to add the following combination table to the
+spec, that shows the resulting reserved region type after merging regions
+from two endpoints. N: no reserved region, R: RESV_T_RESERVED, M:
+RESV_T_MSI, I: RESV_T_IDENTITY. It is symmetric so I didn't fill the
+bottom half.
+
+      | N | R | M | I
+    ------------------
+    N | N | R | M | ?
+    ------------------
+    R |   | R | R | I
+    ------------------
+    M |   |   | M | I
+    ------------------
+    I |   |   |   | I
+
+The 'I' column is problematic. If one endpoint has an IDENTITY region and
+the other doesn't have anything at that virtual address, then making that
+region an identity mapping will result in the second endpoint being able
+to access firmware memory. If using nested translation, stage-2 can help
+us here. But in general we should allow the device to reject an attach
+that would result in a N+I combination if the host considers it too dodgy.
+I think the other combinations are safe enough.
+
+> what if the device is a physical assigned device. does the device report
+> the host doorbell or the guest doorbell, may be worth to clarify.
+
+Indeed. For a physical assigned device it is the guest doorbell as it
+corresponds to the virtual ITS or APIC (though with the APIC it's the same
+region).
+
+> 3.1.1 last paragraph
+> you talk about device ID but this is a terminology only known by ARM I
+> think. Actually it is introduced later in 3.1.2.
+
+Indeed, I'll move the explanation up.
+
+> 3.1.2
+> About ACPI integration. Isn't IORT ARM specific?
+
+IORT is currently edited by ARM, as is virtio-iommu. Their contents are
+not ARM specific however, they describe software interfaces that solve
+mostly generic problems, and aim to be open.
+
+IORT describes the relation between endpoints and their translation
+agents. This problem has already been solved by IVRS, DMAR and IORT. From
+a technical point of view the latter is more flexible and can host a new
+translation agent. It should be relatively easy to use for virtio-iommu in
+the kernel, and therefore I don't think we should introduce a fourth type
+of table just for virtio-iommu.
+
+> Will other architectures use that table?
+
+Yes, in particular the IORT node would be used on virtual x86 platforms.
+On ARM platforms, Linux guests use existing device-tree bindings.
+Operating systems that don't implement DT could use IORT as well.
+
+> In IORT we also have Named Component node
+> which look pretty the same. Could you elaborate of the difference?
+
+It's the same mechanism, except that the named component node is supposed
+to be a leaf in the topology, not a translation agent. Using the same node
+type could make it difficult for the driver to understand the table. But
+see below.
+
+> Device Object name: isn't it the path to the LNR0005 in the namespace?
+
+It is. However, I wrote the example table to give a rough idea, but didn't
+investigate the feasibility. I now think it would be easier to not present
+the virtio-iommu as a LNRO0005 to the guest, but solely as the IORT node.
+Instead of a namespace path, the node would directly describe the _CRS
+content, which should be enough for the kernel to instantiate the device.
+
+I'll prototype something to understand the problem better and find which
+is easier to do. I'm busy preparing for conferences, so it might be two or
+three weeks.
+
+
+Unrelated remarks:
+
+* When renaming "devices" to "endpoints" in v0.3 (to avoid confusion wrt
+"The device", which is virtio-iommu dev), I didn't update the
+attach/detach/probe requests, they still have 'device' fields. Since I'm
+already butchering the API by renaming address_space to domain, should I
+also rename 'device' to 'endpoint' in the structure? It doesn't matter as
+much, since the difference here is mostly stylistic. But I think I will
+get it out of the way for v0.5, to make things more clear overall.
+
+* Regarding my question in v0.4 about adding a 'size' field to all
+requests. I don't think we should do that. The problem was for parsing
+interleaved RO/WO/RO buffers, but we might never hit the problem if we
+design virtio-iommu properly. Framing should be left to the transport
+protocol and it'd be mostly redundant in virtio-iommu requests.
+
+Thanks,
+Jean
