@@ -1,87 +1,64 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 0/6] Add platform device SVM support for ARM SMMUv3
-Date: Wed, 6 Sep 2017 10:59:43 +0100
-Message-ID: <fd4200c1-3c89-23f1-a2b1-6457ef8475c1@arm.com>
-References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
- <95d1a9e2-1816-ff7d-9a8d-98406a6c2c22@arm.com>
- <de1a6b52-5e4f-1c0a-af3d-f6adb4b01daf@huawei.com>
+From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: [PATCH] iommu/amd: Use raw_cpu_ptr() instead of get_cpu_ptr() for
+	->flush_queue
+Date: Wed, 6 Sep 2017 12:34:59 +0200
+Message-ID: <20170906103459.oi2nn7jondjqdo5m@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <de1a6b52-5e4f-1c0a-af3d-f6adb4b01daf@huawei.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Yisheng Xie <xieyisheng1@huawei.com>
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, will.deacon@arm.com, robin.murphy@arm.com, robert.moore@intel.com, lv.zheng@intel.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devel@acpica.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng@huawei.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/09/17 02:16, Yisheng Xie wrote:
-> Hi Jean-Philippe,
-> 
-> On 2017/9/5 20:56, Jean-Philippe Brucker wrote:
->> On 31/08/17 09:20, Yisheng Xie wrote:
->>> Jean-Philippe has post a patchset for Adding PCIe SVM support to ARM SMMUv3:
->>> https://www.spinics.net/lists/arm-kernel/msg565155.html
->>>
->>> But for some platform devices(aka on-chip integrated devices), there is also
->>> SVM requirement, which works based on the SMMU stall mode.
->>> Jean-Philippe has prepared a prototype patchset to support it:
->>> git://linux-arm.org/linux-jpb.git svm/stall
->>
->> Only meant for testing at that point, and unfit even for an RFC.
-> 
-> Sorry about that, I should ask you before send it out. It's my mistake. For I also
-> have some question about this patchset.
-> 
-> We have related device, and would like to do some help about it. Do you have
-> any plan about upstream ?
-> 
->>
->>> We tested this patchset with some fixes on a on-chip integrated device. The
->>> basic function is ok, so I just send them out for review, although this
->>> patchset heavily depends on the former patchset (PCIe SVM support for ARM
->>> SMMUv3), which is still under discussion.
->>>
->>> Patch Overview:
->>> *1 to 3 prepare for device tree or acpi get the device stall ability and pasid bits
->>> *4 is to realise the SVM function for platform device
->>> *5 is fix a bug when test SVM function while SMMU donnot support this feature
->>> *6 avoid ILLEGAL setting of STE and CD entry about stall
->>>
->>> Acctually here, I also have some questions about SVM on SMMUv3:
->>>
->>> 1. Why the SVM feature on SMMUv3 depends on BTM feature? when bind a task to device,
->>>    it will register a mmu_notify. Therefore, when a page range is invalid, we can
->>>    send TLBI or ATC invalid without BTM?
->>
->> We could, but the end goal for SVM is to perfectly mirror the CPU page
->> tables. So for platform SVM we would like to get rid of MMU notifiers
->> entirely.
-> 
-> I see, but for some SMMU which do not support BTM, it cannot benefit from SVM.
-> 
-> Meanwhile, do you mean even with BTM feature, the PCI-e device also need to send a
-> ATC invalid by MMU notify? It seems not fair, why not hardware do the entirely work
-> in this case? It may costly for send ATC invalid and sync.
+get_cpu_ptr() disables preemption and returns the ->flush_queue object
+of the current CPU. raw_cpu_ptr() does the same except that it not
+disable preemption which means the scheduler can move it to another CPU
+after it obtained the per-CPU object.
+In this case this is not bad because the data structure itself is
+protected with a spin_lock. This change shouldn't matter in general
+but on RT it does because the sleeping lock can't be accessed with
+disabled preemption.
 
-It will certainly be costly. But there are major problems with
-transforming broadcast TLB maintenance into ATC invalidations in HW:
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Reported-by: vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-* VMID:ASID to SID:SSID conversion. TLBIs use VMID:ASID, while ATCIs use
-SID:SSID.
-
-* Most importantly, ATC invalidations accounting. Each endpoint has a
-limited number of in-flight ATC invalidate requests. The conversion module
-would have to buffer incoming invalidations and wait for in-flight ATC
-invalidation to complete before sending the next ones. In case of
-overflow, either we lose invalidation (which opens security holes) or we
-somehow put back-pressure on the interconnect (no idea how feasible this
-is, I suspect really hard).
-
-Solving the last one is also quite difficult in software, but at least we
-can still invalidate a range. In hardware we would invalidate the ATC
-page-by-page and quickly jam the bus.
-
-Thanks,
-Jean
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 4ad7e5e31943..943efbc08128 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1911,7 +1911,7 @@ static void queue_add(struct dma_ops_domain *dom,
+ 	pages     = __roundup_pow_of_two(pages);
+ 	address >>= PAGE_SHIFT;
+ 
+-	queue = get_cpu_ptr(dom->flush_queue);
++	queue = raw_cpu_ptr(dom->flush_queue);
+ 	spin_lock_irqsave(&queue->lock, flags);
+ 
+ 	/*
+@@ -1940,8 +1940,6 @@ static void queue_add(struct dma_ops_domain *dom,
+ 
+ 	if (atomic_cmpxchg(&dom->flush_timer_on, 0, 1) == 0)
+ 		mod_timer(&dom->flush_timer, jiffies + msecs_to_jiffies(10));
+-
+-	put_cpu_ptr(dom->flush_queue);
+ }
+ 
+ static void queue_flush_timeout(unsigned long data)
+-- 
+2.14.1
