@@ -1,71 +1,163 @@
-From: Yisheng Xie <xieyisheng1@huawei.com>
-Subject: Re: [RFC PATCH 6/6] iommu/arm-smmu-v3: Avoid ILLEGAL setting of
- STE.S1STALLD and CD.S
-Date: Wed, 6 Sep 2017 10:23:00 +0800
-Message-ID: <de4599d6-277f-00d6-40e7-7ca43a2bf2b8@huawei.com>
-References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
- <1504167642-14922-7-git-send-email-xieyisheng1@huawei.com>
- <738977bb-4cd7-7d86-0ea0-0c88b6af721c@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <738977bb-4cd7-7d86-0ea0-0c88b6af721c@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, will.deacon@arm.com, robin.murphy@arm.com, robert.moore@intel.com, lv.zheng@intel.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devel@acpica.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng@huawei.com
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: [PATCH v2 1/1] iommu/arm-smmu: Defer TLB flush in case of unmap op
+Date: Wed,  6 Sep 2017 11:07:35 +0530
+Message-ID: <1504676255-15980-1-git-send-email-vivek.gautam@codeaurora.org>
+References: <CAFp+6iF=6W_X7Aq=Z4T+HuQT2x4sO+L3wCHuCOu8tQqK2QeTkQ@mail.gmail.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <CAFp+6iF=6W_X7Aq=Z4T+HuQT2x4sO+L3wCHuCOu8tQqK2QeTkQ@mail.gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: robin.murphy@arm.com, robdclark@gmail.com
+Cc: will.deacon@arm.com, stanimir.varbanov@linaro.org, sboyd@codeaurora.org, sricharan@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
+We don't want to touch the TLB when smmu is suspended, so
+defer the TLB maintenance until smmu is resumed.
+On resume, we issue arm_smmu_device_reset() to restore the
+configuration and flush the TLBs.
 
-On 2017/9/5 20:54, Jean-Philippe Brucker wrote:
-> On 31/08/17 09:20, Yisheng Xie wrote:
->> It is ILLEGAL to set STE.S1STALLD if STALL_MODEL is not 0b00, which
->> means we should not disable stall mode if stall/terminate mode is not
->> configuable.
->>
->> Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
->> means if stall mode is force we should always set CD.S.
->>
->> This patch add ARM_SMMU_FEAT_TERMINATE feature bit for smmu, and use
->> TERMINATE feature checking to ensue above ILLEGAL cases from happening.
->>
->> Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 22 ++++++++++++++++------
->>  1 file changed, 16 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index dbda2eb..0745522 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -55,6 +55,7 @@
->>  #define IDR0_STALL_MODEL_SHIFT		24
->>  #define IDR0_STALL_MODEL_MASK		0x3
->>  #define IDR0_STALL_MODEL_STALL		(0 << IDR0_STALL_MODEL_SHIFT)
->> +#define IDR0_STALL_MODEL_NS		(1 << IDR0_STALL_MODEL_SHIFT)
->>  #define IDR0_STALL_MODEL_FORCE		(2 << IDR0_STALL_MODEL_SHIFT)
->>  #define IDR0_TTENDIAN_SHIFT		21
->>  #define IDR0_TTENDIAN_MASK		0x3
->> @@ -766,6 +767,7 @@ struct arm_smmu_device {
->>  #define ARM_SMMU_FEAT_SVM		(1 << 15)
->>  #define ARM_SMMU_FEAT_HA		(1 << 16)
->>  #define ARM_SMMU_FEAT_HD		(1 << 17)
->> +#define ARM_SMMU_FEAT_TERMINATE		(1 << 18)
-> 
-> I'd rather introduce something like "ARM_SMMU_FEAT_STALL_FORCE" instead.
-> Terminate model has another meaning, and is defined by a different bit in
-> IDR0.
+Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+---
 
-Ok, sound more reasonable.
+Hi Robin,
 
-Thanks
-Yisheng Xie
+This patch comes after the discussion[1] we had about defering the
+physical TLB maintenance for an unmap request if the SMMU is
+suspended. Sorry for the delay in sending the updated version
+of the patch.
 
-> 
-> Thanks,
-> Jean
-> 
-> .
-> 
+As discussed, this patch now checks the PM state of smmu in
+.tlb_add_flush and .tlb_sync page-table ops and return if smmu
+is suspended. On resume without assuming that the TLBs state is
+preserved, we issue a arm_smmu_device_reset() which is the safest
+thing to do.
 
+Alternatively, without going into the TLB defer thing, we can simply
+avoid calling pm_runtime_get/put() in case of atomic context, as we
+discussed in the other thread[3]. This will look something like this:
+
+      static size_t arm_smmu_unmap(struct iommu_domain *domain, ....)
+      {
+      <snip>
+
+     -       return ops->unmap(ops, iova, size);
+     +       if (!in_atomic())
+     +              pm_runtime_get_sync(smmu_domain->smmu->dev);
+     +       ret = ops->unmap(ops, iova, size);
+     +       if (!in_atomic())
+     +              pm_runtime_put_sync(smmu_domain->smmu->dev);
+     +
+     +       return ret;
+      }
+
+Let me know which approach should work.
+
+One other concern that we were discussing was of distributed SMMU
+configuration.
+"Say the GPU and its local TBU are in the same clock domain - if the GPU has
+just gone idle and we've clock-gated it, but "the SMMU" (i.e. the TCU)
+is still active servicing other devices, we will assume we can happily
+unmap GPU buffers and issue TLBIs, but what happens with entries held in
+the unclocked TBU's micro-TLB?"
+
+In such scenerio, when master is clock gated and TCU is still running:
+ -> If TCU and TBU are in same clock/power domain, then we can still
+    issue TLBIs as long as the smmu is clocked.
+ -> If TCU and TBU are in separate clock/power domains, then we better
+    check the power state for TBUs and defer TLB maintenance if TBUs are
+    clock gated.
+    In such scenerio will it make sense to represent a distributed smmu
+    as TCU device with multiple TBU child devices?
+
+This patch is based on the pm runtime series for arm-smmu[2], the next
+version of which I will post after we conclude this discussion.
+
+[1] https://patchwork.kernel.org/patch/9876489/
+[2] https://lkml.org/lkml/2017/7/6/230
+[3] https://lkml.org/lkml/2017/8/7/386
+
+ drivers/iommu/arm-smmu.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 8384d5fad388..c6d904733166 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -439,6 +439,10 @@ static void arm_smmu_tlb_sync_context(void *cookie)
+ 	void __iomem *base = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
+ 	unsigned long flags;
+ 
++	/* smmu suspended? we can't perform TLB operations */
++	if (pm_runtime_suspended(smmu->dev))
++		return;
++
+ 	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
+ 	__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_CB_TLBSYNC,
+ 			    base + ARM_SMMU_CB_TLBSTATUS);
+@@ -449,6 +453,9 @@ static void arm_smmu_tlb_sync_vmid(void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+ 
++	if (pm_runtime_suspended(smmu_domain->smmu->dev))
++		return;
++
+ 	arm_smmu_tlb_sync_global(smmu_domain->smmu);
+ }
+ 
+@@ -458,6 +465,9 @@ static void arm_smmu_tlb_inv_context_s1(void *cookie)
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
+ 
++	if (pm_runtime_suspended(smmu_domain->smmu->dev))
++		return;
++
+ 	writel_relaxed(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
+ 	arm_smmu_tlb_sync_context(cookie);
+ }
+@@ -468,6 +478,9 @@ static void arm_smmu_tlb_inv_context_s2(void *cookie)
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	void __iomem *base = ARM_SMMU_GR0(smmu);
+ 
++	if (pm_runtime_suspended(smmu_domain->smmu->dev))
++		return;
++
+ 	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
+ 	arm_smmu_tlb_sync_global(smmu);
+ }
+@@ -480,6 +493,9 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+ 	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
+ 
++	if (pm_runtime_suspended(smmu_domain->smmu->dev))
++		return;
++
+ 	if (stage1) {
+ 		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+ 
+@@ -521,6 +537,9 @@ static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+ 	void __iomem *base = ARM_SMMU_GR0(smmu_domain->smmu);
+ 
++	if (pm_runtime_suspended(smmu_domain->smmu->dev))
++		return;
++
+ 	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
+ }
+ 
+@@ -2299,8 +2318,13 @@ static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+ static int __maybe_unused arm_smmu_resume(struct device *dev)
+ {
+ 	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
++	int ret;
++
++	ret = clk_bulk_prepare_enable(smmu->num_clks, smmu->clocks);
++	if (ret)
++		return ret;
+ 
+-	return clk_bulk_prepare_enable(smmu->num_clks, smmu->clocks);
++	return arm_smmu_device_reset(smmu);
+ }
+ 
+ static int __maybe_unused arm_smmu_suspend(struct device *dev)
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
