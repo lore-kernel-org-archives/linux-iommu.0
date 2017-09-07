@@ -1,172 +1,46 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v6 3/3] iommu/arm-smmu-v3:Enable ACPI based HiSilicon
- erratum 161010801
-Date: Thu, 7 Sep 2017 10:54:11 +0100
-Message-ID: <20170907095411.GA5057@red-moon>
-References: <20170809100715.870516-1-shameerali.kolothum.thodi@huawei.com>
- <20170809100715.870516-4-shameerali.kolothum.thodi@huawei.com>
- <20170810172723.GD9980@arm.com>
- <47b8bf19-abad-3503-2e1c-b9d1304a157e@huawei.com>
- <20170904170928.GB20601@red-moon>
- <9a999fd4-3ade-f7a4-56d7-68ed731ff646@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH 0/6] Add platform device SVM support for ARM SMMUv3
+Date: Thu, 7 Sep 2017 17:30:37 +0100
+Message-ID: <24e7e405-ad4a-4847-6177-987966182cbd@arm.com>
+References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
+ <95d1a9e2-1816-ff7d-9a8d-98406a6c2c22@arm.com>
+ <de1a6b52-5e4f-1c0a-af3d-f6adb4b01daf@huawei.com>
+ <fd4200c1-3c89-23f1-a2b1-6457ef8475c1@arm.com>
+ <8e4764f5-0e5d-7fd6-529b-35914e1e3668@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9a999fd4-3ade-f7a4-56d7-68ed731ff646@huawei.com>
+In-Reply-To: <8e4764f5-0e5d-7fd6-529b-35914e1e3668@huawei.com>
+Content-Language: en-US
 Sender: linux-acpi-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>
-Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, marc.zyngier@arm.com, sudeep.holla@arm.com, hanjun.guo@linaro.org, gabriele.paoloni@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
+To: Bob Liu <liubo95@huawei.com>, Yisheng Xie <xieyisheng1@huawei.com>
+Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, will.deacon@arm.com, robin.murphy@arm.com, robert.moore@intel.com, lv.zheng@intel.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devel@acpica.org, chenjiankang1@huawei.com, xieyisheng@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 05, 2017 at 12:07:59PM +0100, John Garry wrote:
-> >>
-> >>Hi Will, Lorenzo, Robin,
-> >>
-> >>I have created the patch to add DT support for this erratum.
-> >>However, currently I have only added support for pci-based devices.
-> >>I'm a bit stumped on how to add platform device support, or if we
-> >>should also add support at all. And I would rather ask before
-> >>sending the patches.
-> >>
-> >>The specific issue is that I know of no platform device with an ITS
-> >>msi-parent which we would want reserve, i.e. do not translate msi.
-> >>And, if there were, how to do it.
-> >>
-> >>The only platform devices I know off with msi ITS parents are SMMUv3
-> >>and mbigen. For mbigen, the msi are not translated. Actually, as I
-> >>see under IORT solution, for mbigen we don't reserve the hw msi
-> >>region as the SMMUv3 does not have an ID mapping. And we have no
-> >>equivalent ID mapping property for DT SMMUv3, so cannot create an
-> >>equivalent check.
-> >>
-> >>So here is how the DT iommu get reserved region function with only
-> >>pci device support looks:
-> >>
-> >>/**
-> >> * of_iommu_its_get_resv_regions - Reserved region driver helper
-> >> * @dev: Device from iommu_get_resv_regions()
-> >> * @list: Reserved region list from iommu_get_resv_regions()
-> >> *
-> >> * Returns: Number of reserved regions on success(0 if no associated ITS),
-> >> *          appropriate error value otherwise.
-> >> */
-> >>int of_iommu_its_get_resv_regions(struct device *dev, struct
-> >>list_head *head)
-> >>{
-> >>    struct device_node *of_node = NULL;
-> >>    struct device *parent_dev;
-> >>    const __be32 *msi_map;
-> >>    int num_mappings, i, err, len, resv = 0;
-> >>
-> >>    /* walk up to find the parent with a msi-map property */
-> >>    for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent) {
-> >>        if (!parent_dev->of_node)
-> >>            continue;
-> >>
-> >>        /*
-> >>         * Current logic to reserve ITS regions for only PCI root
-> >>         * complex.
-> >>         */
-> >>        msi_map = of_get_property(parent_dev->of_node, "msi-map", &len);
-> >>        if (msi_map) {
-> >>            of_node = parent_dev->of_node;
-> >>            break;
-> >>        }
-> >>    }
-> >>
-> >>    if (!of_node)
-> >>        return 0;
-> >>
-> >>    num_mappings = of_count_phandle_with_args(of_node, "msi-map",
-> >>NULL) / 4;
-> >>
-> >>    for (i = 0; i < num_mappings; i++) {
-> >>        int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> >>        struct iommu_resv_region *region;
-> >>        struct device_node *msi_node;
-> >>        struct resource resource;
-> >>        u32 phandle;
-> >>
-> >>        phandle = be32_to_cpup(msi_map + 1);
-> >>        msi_node = of_find_node_by_phandle(phandle);
-> >>        if (!msi_node)
-> >>            return -ENODEV;
-> >>
-> >>        /*
-> >>         * There may be different types of msi-controller, so check
-> >>         * for ITS.
-> >>         */
-> >>        if (!of_device_is_compatible(msi_node, "arm,gic-v3-its")) {
-> >>            of_node_put(msi_node);
-> >>            continue;
-> >>        }
-> >>
-> >>        err = of_address_to_resource(msi_node, 0, &resource);
-> >>
-> >>        of_node_put(msi_node);
-> >>        if (err)
-> >>            return err;
-> >>
-> >>        region = iommu_alloc_resv_region(resource.start, SZ_128K, prot,
-> >>                         IOMMU_RESV_MSI);
-> >>        if (region) {
-> >>            list_add_tail(&region->list, head);
-> >>            resv++;
-> >>        }
-> >>    }
-> >>
-> >>    return (resv == num_mappings) ? resv : -ENODEV;
-> >>}
-> >>
-> >>Any feedback is appreciated.
-> >
-> >Hi John,
-> >
-> >I appreciate it is not trivial to make the code generic, part of the
-> >snippet above can be shared between ACPI/IORT and OF, the only sticking
-> >point is probably the "compatible" string that has to be parameterized
-> >since having this code in generic IOMMU layer is a bit horrible to
-> >have it ITS specific (and it is a problem that was existing already
-> >in the original patch with the hardcoded ITS node type or function
-> >name).
+On 07/09/17 02:55, Bob Liu wrote:
+> Speak to the invalidation, I have one more question.
 > 
-> Hi Lorenzo,
+> There is a time window between 1) modify page table;  2) tlb invalidate;
 > 
-> Agreed, checking the ITS compatible string in IOMMU code is not
-> nice. However the function is just trying to replicate our ACPI
-> version, which calls IORT code directly, and this is ITS specific.
-> Anyway, we can make it generic.
+> ARM-CPU                           Device
 > 
-> >
-> >To sum it up the hook:
-> >
-> >- has to be called from SMMU driver in a firmware agnostic way
+> 1. modify page table
 > 
-> ok
+>                              ^^^^^
+>                               Can still write data through smmu tlb even page table was already modified.
+>                               (At this point, the same virtual addr may not point to the same thing for CPU and device!!!
+>                                I'm afraid there may be some data-loss or other potential problems if this situation happens.)
 > 
-> >- somehow it has to ascertain which interrupt controller "compatible"
-> >  (which in IORT is a node type) to match against so the hook has to
-> >  take an id of sorts
-> 
-> OK
-> 
-> I will mention 2 more points after discussion on OF solution with Shameer:
-> - for platform device, we can add suppport by checking for the
-> devices msi-parent property
-> - for both pci and platform device, we should check device rid for
-> msi-controller also, like IORT solution
-> 
-> BTW, even though merge window is open, we would like to send some
-> solution to the lists this week, so any outstanding topics can
-> potentially be discussed at LPC next week. Let me know if you're
-> unhappy about this.
+> 2. tlb invalidate range
 
-I am happy to find a way forward for this next week, posting patches
-this week would not help much with the merge window ongoing, I think
-it is better to try to find a way forward and post the resulting code
-after reaching an agreement, at -rc1 (or right after the IOMMU PR is
-merged).
+The mm code serializes map/unmap operations with mm->mmap_sem, and at a
+lower level I think the pte lock is used to prevent more subtle races.
+Don't take my word for it though, mm/ is still very obscure to me. So the
+kernel shouldn't be able to reuse the VA for something else before the tlb
+invalidation completes. Even if you're using the CMDQ to invalidate
+instead of TLBI instructions, you're still called by a notifier from the
+mm code so there is no problem.
 
 Thanks,
-Lorenzo
+Jean
