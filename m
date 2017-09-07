@@ -1,122 +1,115 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC] virtio-iommu version 0.4
-Date: Wed, 6 Sep 2017 12:54:46 +0100
-Message-ID: <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
+From: Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Add platform device SVM support for ARM SMMUv3
+Date: Thu, 7 Sep 2017 09:41:42 +0800
+Message-ID: <1d358989-48bb-ccde-d7d9-36e004bc2d78@huawei.com>
+References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
+ <95d1a9e2-1816-ff7d-9a8d-98406a6c2c22@arm.com>
+ <caf68193-6aff-1e1c-86cd-9cc7069b0e37@huawei.com>
+ <2874a1f3-22f1-20d4-4009-50add127a10f@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-2511-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <2874a1f3-22f1-20d4-4009-50add127a10f-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, chenjiankang1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Kevin,
-
-On 28/08/17 08:39, Tian, Kevin wrote:
-> Here comes some comments:
+On 2017/9/6 17:57, Jean-Philippe Brucker wrote:
+> On 06/09/17 02:02, Bob Liu wrote:
+>> On 2017/9/5 20:56, Jean-Philippe Brucker wrote:
+>>> On 31/08/17 09:20, Yisheng Xie wrote:
+>>>> Jean-Philippe has post a patchset for Adding PCIe SVM support to ARM SMMUv3:
+>>>> https://www.spinics.net/lists/arm-kernel/msg565155.html
+>>>>
+>>>> But for some platform devices(aka on-chip integrated devices), there is also
+>>>> SVM requirement, which works based on the SMMU stall mode.
+>>>> Jean-Philippe has prepared a prototype patchset to support it:
+>>>> git://linux-arm.org/linux-jpb.git svm/stall
+>>>
+>>> Only meant for testing at that point, and unfit even for an RFC.
+>>>
+>>
+>> Sorry for the misunderstanding.
+>> The PRI mode patches is in RFC even no hardware for testing, so I thought it's fine for "Stall mode" patches sent as RFC.
+>> We have tested the Stall mode on our platform.
+>> Anyway, I should confirm with you in advance.
+>>
+>> Btw, Would you consider the "stall mode" upstream at first? Since there is no hardware for testing the PRI mode.
+>> (We can provide you the hardware which support SMMU stall mode if necessary.)
 > 
-> 1.1 Motivation
+> Yes. What's blocking the ATS, PRI and PASID patches at the moment is the
+> lack of endpoints for testing. There has been lots of discussion on the
+> API side since my first RFC and I'd like to resubmit the API changes soon.
+> It is the same API for ATS+PRI+PASID and SSID+Stall, so the backend
+> doesn't matter.
 > 
-> You describe I/O page faults handling as future work. Seems you considered
-> only recoverable fault (since "aka. PCI PRI" being used). What about other
-> unrecoverable faults e.g. what to do if a virtual DMA request doesn't find 
-> a valid mapping? Even when there is no PRI support, we need some basic
-> form of fault reporting mechanism to indicate such errors to guest.
 
-I am considering recoverable faults as the end goal, but reporting
-unrecoverable faults should use the same queue, with slightly different
-fields and no need for the driver to reply to the device.
+Indeed!
 
-> 2.6.8.2 Property RESV_MEM
+> I'm considering upstreaming SSID+Stall first if it can be tested on
+> hardware (having direct access to it would certainly speed things up).
+
+Glad to hear that.
+
+> This would require some work in moving the PCI bits at the end of the
+> series. I can reserve some time in the coming months to do it, but I need
+> to know what to focus on. Are you able to test SSID as well?
 > 
-> I'm not immediately clear when VIRTIO_IOMMU_PROBE_RESV_MEM_T_ABORT
-> should be explicitly reported. Is there any real example on bare metal IOMMU?
-> usually reserved memory is reported to CPU through other method (e.g. e820
-> on x86 platform). Of course MSI is a special case which is covered by BYPASS 
-> and MSI flag... If yes, maybe you can also include an example in implementation 
-> notes.
 
-The RESV_MEM regions only describes IOVA space for the moment, not
-guest-physical, so I guess it provides different information than e820.
+Yes, but the difficulty is our devices are on-chip integrated hardware accelerators which requires complicate driver.
+You may need much time to understand the driver.
+That's the same case as intel/amd SVM, the current user is their GPU :-(
 
-I think a useful example is the PCI bridge windows reported by the Linux
-host to userspace using RESV_RESERVED regions (see
-iommu_dma_get_resv_regions). If I understand correctly, they represent DMA
-addresses that shouldn't be accessed by endpoints because they won't reach
-the IOMMU. These are specific to the physical topology: a device will have
-different reserved regions depending on the PCI slot it occupies.
+Btw, what kind of device/method do you think is ideal for testing arm-SVM?
 
-When handled properly, PCI bridge windows quickly become a nuisance. With
-kvmtool we observed that carving out their addresses globally removes a
-lot of useful GPA space from the guest. Without a virtual IOMMU we can
-either ignore them and hope everything will be fine, or remove all
-reserved regions from the GPA space (which currently means editing by hand
-the static guest-physical map...)
-
-That's where RESV_MEM_T_ABORT comes handy with virtio-iommu. It describes
-reserved IOVAs for a specific endpoint, and therefore removes the need to
-carve the window out of the whole guest.
-
-> Another thing I want to ask your opinion, about whether there is value of
-> adding another subtype (MEM_T_IDENTITY), asking for identity mapping
-> in the address space. It's similar to Reserved Memory Region Reporting
-> (RMRR) structure defined in VT-d, to indicate BIOS allocated reserved
-> memory ranges which may be DMA target and has to be identity mapped
-> when DMA remapping is enabled. I'm not sure whether ARM has similar
-> capability and whether there might be a general usage beyond VT-d. For
-> now the only usage in my mind is to assign a device with RMRR associated
-> on VT-d (Intel GPU, or some USB controllers) where the RMRR info needs
-> propagated to the guest (since identity mapping also means reservation
-> of virtual address space).
-
-Yes I think adding MEM_T_IDENTITY will be necessary. I can see they are
-used for both iGPU and USB controllers on my x86 machines. Do you know
-more precisely what they are used for by the firmware?
-
-It's not necessary with the base virtio-iommu device though (v0.4),
-because the device can create the identity mappings itself and report them
-to the guest as MEM_T_BYPASS. However, when we start handing page table
-control over to the guest, the host won't be in control of IOVA->GPA
-mappings and will need to gracefully ask the guest to do it.
-
-I'm not aware of any firmware description resembling Intel RMRR or AMD
-IVMD on ARM platforms. I do think ARM platforms could need MEM_T_IDENTITY
-for requesting the guest to map MSI windows when page-table handover is in
-use (MSI addresses are translated by the physical SMMU, so a IOVA->GPA
-mapping must be installed by the guest). But since a vSMMU would need a
-solution as well, I think I'll try to implement something more generic.
-
-> 2.6.8.2.3 Device Requirements: Property RESV_MEM
+>>>> We tested this patchset with some fixes on a on-chip integrated device. The
+>>>> basic function is ok, so I just send them out for review, although this
+>>>> patchset heavily depends on the former patchset (PCIe SVM support for ARM
+>>>> SMMUv3), which is still under discussion.
+>>>>
+>>>> Patch Overview:
+>>>> *1 to 3 prepare for device tree or acpi get the device stall ability and pasid bits
+>>>> *4 is to realise the SVM function for platform device
+>>>> *5 is fix a bug when test SVM function while SMMU donnot support this feature
+>>>> *6 avoid ILLEGAL setting of STE and CD entry about stall
+>>>>
+>>>> Acctually here, I also have a question about SVM on SMMUv3:
+>>>>
+>>>> 1. Why the SVM feature on SMMUv3 depends on BTM feature? when bind a task to device,
+>>>>    it will register a mmu_notify. Therefore, when a page range is invalid, we can
+>>>>    send TLBI or ATC invalid without BTM?
+>>>
+>>> We could, but the end goal for SVM is to perfectly mirror the CPU page
+>>> tables. So for platform SVM we would like to get rid of MMU notifiers
+>>> entirely.
+>>>
+>>>> 2. According to ACPI IORT spec, named component specific data has a node flags field
+>>>>    whoes bit0 is for Stall support. However, it do not have any field for pasid bit.
+>>>>    Can we use other 5 bits[5:1] for pasid bit numbers, so we can have 32 pasid bit for
+>>>>    a single platform device which should be enough, because SMMU only support 20 bit pasid
+>>>>
+>>
+>> Any comment on this?
+>> The ACPI IORT spec may need be updated?
 > 
-> --citation start--
-> If an endpoint is attached to an address space, the device SHOULD leave 
-> any access targeting one of its VIRTIO_IOMMU_PROBE_RESV_MEM_T_BYPASS 
-> regions pass through untranslated. In other words, the device SHOULD 
-> handle such a region as if it was identity-mapped (virtual address equal to
-> physical address). If the endpoint is not attached to any address space, 
-> then the device MAY abort the transaction.
-> --citation end
+> I suppose that the Named Component Node could be used for SSID and stall
+> capability bits. Can't the ACPI namespace entries be extended to host
+> these capabilities in a more generic way? Platforms with different IOMMUs
+> might also need this information some day.
 > 
-> I have a question for the last sentence. From definition of BYPASS, it's
-> orthogonal to whether there is an address space attached, then should
-> we still allow "May abort" behavior? 
 
-The behavior is left as an implementation choice, and I'm not sure it's
-worth enforcing in the architecture. If the endpoint isn't attached to any
-domain then (unless VIRTIO_IOMMU_F_BYPASS is negotiated), it isn't
-necessarily able to do DMA at all. The virtio-iommu device may setup DMA
-mastering lazily, in which case any DMA transaction would abort, or have
-setup DMA already, in which case the endpoint can access MEM_T_BYPASS regions.
+Hmm, that would be better.
+But in anyway, it depends on the ACPI IORT Spec would be extended in next version.
 
-Thanks!
-Jean
+--
+Thanks,
+Bob Liu
+
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
