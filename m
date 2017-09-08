@@ -1,109 +1,198 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: limit the IOVA allocated to dma-ranges region
-Date: Fri, 8 Sep 2017 15:12:53 +0100
-Message-ID: <a4b09f0f-bde4-d999-b041-370c9bf26a38@arm.com>
-References: <1504217301-17216-1-git-send-email-vdumpa@nvidia.com>
- <20170901092609.GL19533@8bytes.org>
- <3aeeb13e-045f-4cde-2cfb-62d4a879d207@arm.com>
- <385a0aa33013452fa7ac269cb6188b52@HQMAIL107.nvidia.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v8] vfio: platform: reset: Add Broadcom FlexRM reset
+ module
+Date: Fri, 8 Sep 2017 17:58:23 +0200
+Message-ID: <9ca6fe31-fdc4-71f4-4169-ddf9f515cfdf@redhat.com>
+References: <1504696697-2733-1-git-send-email-anup.patel@broadcom.com>
+ <1504696697-2733-2-git-send-email-anup.patel@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <385a0aa33013452fa7ac269cb6188b52@HQMAIL107.nvidia.com>
-Content-Language: en-US
+In-Reply-To: <1504696697-2733-2-git-send-email-anup.patel@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Krishna Reddy <vdumpa@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Anup Patel <anup.patel@broadcom.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Baptiste Reynal <b.reynal@virtualopensystems.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: kvm@vger.kernel.org, Scott Branden <sbranden@broadcom.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, bcm-kernel-feedback-list@broadcom.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/09/17 18:35, Krishna Reddy wrote:
-> Robin,
->>> Why? IOVA allocation is already constrained as much as it should be - if the device's DMA mask is wrong that's another problem, and this isn't the right place to fix it.
-> 
-> This is because of following reasons.
-> 1. Many of the HW modules in Tegra114 and Tegra30 can't access IOVA that overlap with MMIO. Even though these HW modules support 32-bit addressing, They can't access IOVA overlapping with range 0xff00:0000 to 0xffff:fffff, which is MMIO region for high vectors. These modules can only see 0x8000:0000 to 0xff00:0000 as IOVA. If dma mask is set to use 31-bit, the IOVA range reduces from ~2GB to 1GB.  The patch is to get most of IOVA range usable by using dma-ranges property. As we already use dma-ranges start as bottom on IOVA range, The patch is to restrict the IOVA top as well using dma-ranges range. 
+Hi Anup,
 
-OK, so that's really just another variant of the existing problem we
-have with certain PCI root complexes with restrictive inbound windows.
-The appropriate way to handle that is to reserve the unusable areas of
-the IOVA space up-front. Since the support for the ACPI equivalent of
-"dma-ranges" has just landed, this is now pretty much top of my
-to-do-list for the upcoming cycle (there's various things still to fix
-in the DT code, but that's essentially part of the same job).
+On 06/09/2017 13:18, Anup Patel wrote:
+> This patch adds Broadcom FlexRM low-level reset for
+> VFIO platform.
+> 
+> It will do the following:
+> 1. Disable/Deactivate each FlexRM ring
+> 2. Flush each FlexRM ring
+> 
+> The cleanup sequence for FlexRM rings is adapted from
+> Broadcom FlexRM mailbox driver.
+> 
+> Signed-off-by: Anup Patel <anup.patel@broadcom.com>
+> Reviewed-by: Oza Oza <oza.oza@broadcom.com>
+> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> ---
+>  drivers/vfio/platform/reset/Kconfig                |   9 ++
+>  drivers/vfio/platform/reset/Makefile               |   1 +
+>  .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 115 +++++++++++++++++++++
+>  3 files changed, 125 insertions(+)
+>  create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> 
+> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+> index 70cccc5..392e3c0 100644
+> --- a/drivers/vfio/platform/reset/Kconfig
+> +++ b/drivers/vfio/platform/reset/Kconfig
+> @@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
+>  	  Enables the VFIO platform driver to handle reset for AMD XGBE
+>  
+>  	  If you don't know what to do here, say N.
+> +
+> +config VFIO_PLATFORM_BCMFLEXRM_RESET
+> +	tristate "VFIO support for Broadcom FlexRM reset"
+> +	depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
+> +	default ARCH_BCM_IPROC
+> +	help
+> +	  Enables the VFIO platform driver to handle reset for Broadcom FlexRM
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
+> index 93f4e23..8d9874b 100644
+> --- a/drivers/vfio/platform/reset/Makefile
+> +++ b/drivers/vfio/platform/reset/Makefile
+> @@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
+>  
+>  obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
+>  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
+> +obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
+> diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> new file mode 100644
+> index 0000000..5a17d50
+> --- /dev/null
+> +++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> @@ -0,0 +1,115 @@
+> +/*
+> + * Copyright (C) 2017 Broadcom
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +/*
+> + * This driver provides reset support for Broadcom FlexRM ring manager
+> + * to VFIO platform.
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +
+> +#include "vfio_platform_private.h"
+> +
+> +/* FlexRM configuration */
+> +#define RING_REGS_SIZE					0x10000
+> +#define RING_VER_MAGIC					0x76303031
+> +
+> +/* Per-Ring register offsets */
+> +#define RING_VER					0x000
+> +#define RING_CONTROL					0x034
+> +#define RING_FLUSH_DONE					0x038
+> +
+> +/* Register RING_CONTROL fields */
+> +#define CONTROL_FLUSH_SHIFT				5
+> +
+> +/* Register RING_FLUSH_DONE fields */
+> +#define FLUSH_DONE_MASK					0x1
+> +
+> +static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
+> +{
+> +	unsigned int timeout;
+> +
+> +	/* Disable/inactivate ring */
+> +	writel_relaxed(0x0, ring + RING_CONTROL);
+> +
+> +	/* Set ring flush state */
+> +	timeout = 1000; /* timeout of 1s */
+> +	writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
+> +	do {
+> +		if (readl_relaxed(ring + RING_FLUSH_DONE) &
+> +		    FLUSH_DONE_MASK)
+> +			break;
+> +		mdelay(1);
+> +	} while (--timeout);
+> +	if (!timeout)
+> +		return -ETIMEDOUT;
+> +
+> +	/* Clear ring flush state */
+> +	timeout = 1000; /* timeout of 1s */
+> +	writel_relaxed(0x0, ring + RING_CONTROL);
+> +	do {
+> +		if (!(readl_relaxed(ring + RING_FLUSH_DONE) &
+> +		      FLUSH_DONE_MASK))
+> +			break;
+> +		mdelay(1);
+> +	} while (--timeout);
+> +	if (!timeout)
+> +		return -ETIMEDOUT;
+As this sequence is not part of flexrm_shutdown() in
+drivers/mailbox/bcm-flexrm-mailbox.c, do you plan to update the native
+driver with that addition?
 
-> 2. Most of  the drivers in Linux Kernel are setting mask as either 32-bit or 64-bit.  Especially, I am referring to driver/mmc/host/sdhci.c (sdhci_set_dma_mask()) here.  In Tegra124/210/186, HW modules support 34-bit addressing.  But, sdhci only support setting mask as either 32-bit or 64-bit.  As you pointed, This can be fixed by changing mask in sdhci common code.  Or This patch can help here as well without changing the driver code. 1 is the main driving factor for this patch.
+> +
+> +	return 0;
+> +}
+> +
+> +static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
+> +{
+> +	void __iomem *ring;
+> +	int rc = 0, ret = 0, ring_num = 0;
+> +	struct vfio_platform_region *reg = &vdev->regions[0];
+> +
+> +	/* Map FlexRM ring registers if not mapped */
+> +	if (!reg->ioaddr) {
+> +		reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
+> +		if (!reg->ioaddr)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	/* Discover and shutdown each FlexRM ring */
+> +	for (ring = reg->ioaddr;
+> +	     ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
+> +		if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC) {
+> +			rc = vfio_platform_bcmflexrm_shutdown(ring);
+> +			if (rc) {
+> +				dev_warn(vdev->device,
+> +					 "FlexRM ring%d shutdown error %d\n",
+> +					 ring_num, rc);
+sorry but ring_num sticks to 0.
 
-In the case of a 64-bit-capable IP block with only 34 bits of address
-wired up externally, if that 34-bit interconnect is described by
-"dma-ranges" then the device will already be created with an appropriate
-34-bit DMA mask. The fact that the driver can stomp on that with a
-64-bit mask later is entirely down to the implementations of
-dma_set_mask() etc. (I've had a patch to restrict masks for arm64 for a
-while, but I worry that it carries quite a high risk of breakage in
-default cases).
+Thanks
 
-Robin.
-
->>> dma_32bit_pfn means nothing more than an internal detail of IOVA allocator caching, which is subject to change[1]. As-is, on some platforms this patch will effectively force all allocations to fail already.
-> 
-> I see that your patches are removing specifying end of IOVA during init_iova_domain() and use mask as the end of IOVA range.  Do you have any suggestion on how to handle 1 in a way to use most of IOVA range supported by HW?  Can IOVA code look for dma-ranges on its own and limit the iova top to lowest of mask and dma-ranges, if it is present? or any other ways you can think of?
-> 
-> -KR
-> 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy@arm.com] 
-> Sent: Friday, September 1, 2017 2:43 AM
-> To: Joerg Roedel <joro@8bytes.org>; Krishna Reddy <vdumpa@nvidia.com>
-> Cc: iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH] iommu/dma: limit the IOVA allocated to dma-ranges region
-> 
-> On 01/09/17 10:26, Joerg Roedel wrote:
->> Adding Robin for review.
->>
->> On Thu, Aug 31, 2017 at 03:08:21PM -0700, Krishna Reddy wrote:
->>> Limit the IOVA allocated to dma-ranges specified for the device.
->>> This is necessary to ensure that IOVA allocated is addressable by 
->>> device.
-> 
-> Why? IOVA allocation is already constrained as much as it should be - if the device's DMA mask is wrong that's another problem, and this isn't the right place to fix it.
-> 
-> dma_32bit_pfn means nothing more than an internal detail of IOVA allocator caching, which is subject to change[1]. As-is, on some platforms this patch will effectively force all allocations to fail already.
-> 
-> Robin.
-> 
-> [1]:https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg19694.html
->>> Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
->>> ---
->>>  drivers/iommu/dma-iommu.c | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c 
->>> index 9d1cebe7f6cb..e8a8320b571b 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -364,6 +364,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
->>>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>>  	struct iova_domain *iovad = &cookie->iovad;
->>>  	unsigned long shift, iova_len, iova = 0;
->>> +	dma_addr_t dma_end_addr;
->>>  
->>>  	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
->>>  		cookie->msi_iova += size;
->>> @@ -381,6 +382,10 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
->>>  	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
->>>  		iova_len = roundup_pow_of_two(iova_len);
->>>  
->>> +	/* Limit IOVA allocated to device addressable dma-ranges region. */
->>> +	dma_end_addr = (dma_addr_t)iovad->dma_32bit_pfn << shift;
->>> +	dma_limit = dma_limit > dma_end_addr ? dma_end_addr : dma_limit;
->>
->> This looks like a good use-case for min().
->>
->>> +
->>>  	if (domain->geometry.force_aperture)
->>>  		dma_limit = min(dma_limit, domain->geometry.aperture_end);
->>>  
->>> --
->>> 2.1.4
+Eric
+> +				ret |= rc;
+> +			}
+> +		}
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
+> +			  vfio_platform_bcmflexrm_reset);
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Anup Patel <anup.patel@broadcom.com>");
+> +MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
 > 
