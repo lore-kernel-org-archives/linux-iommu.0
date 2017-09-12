@@ -1,159 +1,153 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 1/3] iommu/arm-smmu-v3: put off the execution of TLBI* to
-	reduce lock confliction
-Date: Tue, 12 Sep 2017 21:00:36 +0800
-Message-ID: <1505221238-9428-2-git-send-email-thunder.leizhen@huawei.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v2 3/3] iommu/arm-smmu: add support for unmap a memory range with only one tlb sync
+Date: Tue, 12 Sep 2017 21:00:38 +0800
+Message-ID: <1505221238-9428-4-git-send-email-thunder.leizhen@huawei.com>
 References: <1505221238-9428-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1505221238-9428-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Jinyue Li <lijinyue-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1505221238-9428-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>, Jinyue Li <lijinyue@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Because all TLBI commands should be followed by a SYNC command, to make
-sure that it has been completely finished. So we can just add the TLBI
-commands into the queue, and put off the execution until meet SYNC or
-other commands. To prevent the followed SYNC command waiting for a long
-time because of too many commands have been delayed, restrict the max
-delayed number.
+This patch is base on: 
+(add02cfdc9bc2 "iommu: Introduce Interface for IOMMU TLB Flushing")
 
-According to my test, I got the same performance data as I replaced writel
-with writel_relaxed in queue_inc_prod.
+Because iotlb_sync is moved out of ".unmap = arm_smmu_unmap", some interval
+".unmap" calls should explicitly followed by a iotlb_sync operation.
 
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 42 +++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 37 insertions(+), 5 deletions(-)
+ drivers/iommu/arm-smmu.c           | 10 ++++++++++
+ drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++++++++-----------
+ 2 files changed, 31 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e67ba6c..ef42c4b 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -337,6 +337,7 @@
- /* Command queue */
- #define CMDQ_ENT_DWORDS			2
- #define CMDQ_MAX_SZ_SHIFT		8
-+#define CMDQ_MAX_DELAYED		32
- 
- #define CMDQ_ERR_SHIFT			24
- #define CMDQ_ERR_MASK			0x7f
-@@ -482,6 +483,7 @@ struct arm_smmu_cmdq_ent {
- 			};
- 		} cfgi;
- 
-+		#define CMDQ_OP_TLBI_NH_ALL	0x10
- 		#define CMDQ_OP_TLBI_NH_ASID	0x11
- 		#define CMDQ_OP_TLBI_NH_VA	0x12
- 		#define CMDQ_OP_TLBI_EL2_ALL	0x20
-@@ -509,6 +511,7 @@ struct arm_smmu_cmdq_ent {
- 
- struct arm_smmu_queue {
- 	int				irq; /* Wired interrupt */
-+	u32				nr_delay;
- 
- 	__le64				*base;
- 	dma_addr_t			base_dma;
-@@ -745,11 +748,16 @@ static int queue_sync_prod(struct arm_smmu_queue *q)
- 	return ret;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 3bdb799..bb57d67 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1259,6 +1259,15 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return ops->unmap(ops, iova, size);
  }
  
--static void queue_inc_prod(struct arm_smmu_queue *q)
-+static void queue_inc_swprod(struct arm_smmu_queue *q)
- {
--	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + 1;
-+	u32 prod = q->prod + 1;
- 
- 	q->prod = Q_OVF(q, q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
++static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
++
++	if (ops && ops->iotlb_sync)
++		ops->iotlb_sync(ops);
 +}
 +
-+static void queue_inc_prod(struct arm_smmu_queue *q)
+ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 					      dma_addr_t iova)
+ {
+@@ -1561,6 +1570,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.attach_dev		= arm_smmu_attach_dev,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
++	.iotlb_sync		= arm_smmu_iotlb_sync,
+ 	.map_sg			= default_iommu_map_sg,
+ 	.iova_to_phys		= arm_smmu_iova_to_phys,
+ 	.add_device		= arm_smmu_add_device,
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index d665d0d..457ad29 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -370,6 +370,8 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+ 
+ 	for (i = 0; i < num_entries; i++)
+ 		if (ARM_V7S_PTE_IS_TABLE(ptep[i], lvl)) {
++			size_t unmapped;
++
+ 			/*
+ 			 * We need to unmap and free the old table before
+ 			 * overwriting it with a block entry.
+@@ -378,8 +380,10 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+ 			size_t sz = ARM_V7S_BLOCK_SIZE(lvl);
+ 
+ 			tblp = ptep - ARM_V7S_LVL_IDX(iova, lvl);
+-			if (WARN_ON(__arm_v7s_unmap(data, iova + i * sz,
+-						    sz, lvl, tblp) != sz))
++			unmapped = __arm_v7s_unmap(data, iova + i * sz,
++						    sz, lvl, tblp);
++			io_pgtable_tlb_sync(&data->iop);
++			if (WARN_ON(unmapped != sz))
+ 				return -EINVAL;
+ 		} else if (ptep[i]) {
+ 			/* We require an unmap first */
+@@ -633,7 +637,6 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+ 				/* Also flush any partial walks */
+ 				io_pgtable_tlb_add_flush(iop, iova, blk_size,
+ 					ARM_V7S_BLOCK_SIZE(lvl + 1), false);
+-				io_pgtable_tlb_sync(iop);
+ 				ptep = iopte_deref(pte[i], lvl);
+ 				__arm_v7s_free_table(ptep, lvl + 1, data);
+ 			} else {
+@@ -660,16 +663,18 @@ static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 			 size_t size)
+ {
+ 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
+-	size_t unmapped;
+ 
+ 	if (WARN_ON(upper_32_bits(iova)))
+ 		return 0;
+ 
+-	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
+-	if (unmapped)
+-		io_pgtable_tlb_sync(&data->iop);
++	return __arm_v7s_unmap(data, iova, size, 1, data->pgd);
++}
++
++static void arm_v7s_iotlb_sync(struct io_pgtable_ops *ops)
 +{
-+	queue_inc_swprod(q);
- 	writel(q->prod, q->prod_reg);
++	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 
+-	return unmapped;
++	io_pgtable_tlb_sync(&data->iop);
  }
  
-@@ -791,13 +799,24 @@ static void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
- 		*dst++ = cpu_to_le64(*src++);
- }
+ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+@@ -734,6 +739,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	data->iop.ops = (struct io_pgtable_ops) {
+ 		.map		= arm_v7s_map,
+ 		.unmap		= arm_v7s_unmap,
++		.iotlb_sync	= arm_v7s_iotlb_sync,
+ 		.iova_to_phys	= arm_v7s_iova_to_phys,
+ 	};
  
--static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent)
-+static int queue_insert_raw(struct arm_smmu_queue *q, u64 *ent, int optimize)
- {
- 	if (queue_full(q))
- 		return -ENOSPC;
+@@ -832,7 +838,7 @@ static int __init arm_v7s_do_selftests(void)
+ 		.quirks = IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA,
+ 		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+ 	};
+-	unsigned int iova, size, iova_start;
++	unsigned int iova, size, unmapped, iova_start;
+ 	unsigned int i, loopnr = 0;
  
- 	queue_write(Q_ENT(q, q->prod), ent, q->ent_dwords);
--	queue_inc_prod(q);
-+
-+	/*
-+	 * We don't want too many commands to be delayed, this may lead the
-+	 * followed sync command to wait for a long time.
-+	 */
-+	if (optimize && (++q->nr_delay < CMDQ_MAX_DELAYED)) {
-+		queue_inc_swprod(q);
-+	} else {
-+		queue_inc_prod(q);
-+		q->nr_delay = 0;
-+	}
-+
- 	return 0;
- }
+ 	selftest_running = true;
+@@ -887,7 +893,9 @@ static int __init arm_v7s_do_selftests(void)
+ 	size = 1UL << __ffs(cfg.pgsize_bitmap);
+ 	while (i < loopnr) {
+ 		iova_start = i * SZ_16M;
+-		if (ops->unmap(ops, iova_start + size, size) != size)
++		unmapped = ops->unmap(ops, iova_start + size, size);
++		ops->iotlb_sync(ops);
++		if (unmapped != size)
+ 			return __FAIL(ops);
  
-@@ -939,6 +958,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
- static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
- 				    struct arm_smmu_cmdq_ent *ent)
- {
-+	int optimize = 0;
- 	u64 cmd[CMDQ_ENT_DWORDS];
- 	unsigned long flags;
- 	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
-@@ -950,8 +970,17 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
- 		return;
- 	}
+ 		/* Remap of partial unmap */
+@@ -906,7 +914,9 @@ static int __init arm_v7s_do_selftests(void)
+ 	while (i != BITS_PER_LONG) {
+ 		size = 1UL << i;
  
-+	/*
-+	 * All TLBI commands should be followed by a sync command later.
-+	 * The CFGI commands is the same, but they are rarely executed.
-+	 * So just optimize TLBI commands now, to reduce the "if" judgement.
-+	 */
-+	if ((ent->opcode >= CMDQ_OP_TLBI_NH_ALL) &&
-+	    (ent->opcode <= CMDQ_OP_TLBI_NSNH_ALL))
-+		optimize = 1;
-+
- 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
--	while (queue_insert_raw(q, cmd) == -ENOSPC) {
-+	while (queue_insert_raw(q, cmd, optimize) == -ENOSPC) {
- 		if (queue_poll_cons(q, false, wfe))
- 			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
- 	}
-@@ -2001,6 +2030,8 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 		     << Q_BASE_LOG2SIZE_SHIFT;
+-		if (ops->unmap(ops, iova, size) != size)
++		unmapped = ops->unmap(ops, iova, size);
++		ops->iotlb_sync(ops);
++		if (unmapped != size)
+ 			return __FAIL(ops);
  
- 	q->prod = q->cons = 0;
-+	q->nr_delay = 0;
-+
- 	return 0;
- }
- 
-@@ -2584,6 +2615,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 		dev_err(smmu->dev, "unit-length command queue not supported\n");
- 		return -ENXIO;
- 	}
-+	BUILD_BUG_ON(CMDQ_MAX_DELAYED >= (1 << CMDQ_MAX_SZ_SHIFT));
- 
- 	smmu->evtq.q.max_n_shift = min((u32)EVTQ_MAX_SZ_SHIFT,
- 				       reg >> IDR1_EVTQ_SHIFT & IDR1_EVTQ_MASK);
+ 		if (ops->iova_to_phys(ops, iova + 42))
 -- 
 2.5.0
