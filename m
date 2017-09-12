@@ -1,58 +1,123 @@
-From: "Nath, Arindam" <Arindam.Nath@amd.com>
-Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only (v3)
-Date: Tue, 12 Sep 2017 09:02:59 +0000
-Message-ID: <MWHPR12MB15182E639B83A88BC6B95BFA9C690@MWHPR12MB1518.namprd12.prod.outlook.com>
-References: <20170407102039.GW7266@8bytes.org>
- <1495439281-24005-1-git-send-email-arindam.nath@amd.com>
- <20170529143831.GA30388@8bytes.org>
- <MWHPR12MB1518926453E8BAF205F3492D9CF00@MWHPR12MB1518.namprd12.prod.outlook.com>
- <CAD8Lp47XquppriMyTfjMgw2MHUL+KNwxv0at96+kYxGH9Qjkxg@mail.gmail.com>
+From: Oleksandr <Oleksandr_Tyshchenko@epam.com>
+Subject: Re: [v4,0/3] iommu/ipmmu-vmsa: r8a7796 support V4
+Date: Tue, 12 Sep 2017 13:52:23 +0300
+Message-ID: <9f59e912-24df-cfde-538c-f8c78480c29b@epam.com>
+References: <149787025647.32495.1584960416060100962.sendpatchset@little-apple>
+ <934fcc8c-4716-e027-12aa-297ad0e55535@epam.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <CAD8Lp47XquppriMyTfjMgw2MHUL+KNwxv0at96+kYxGH9Qjkxg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <934fcc8c-4716-e027-12aa-297ad0e55535@epam.com>
 Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Daniel Drake <drake@endlessm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>, "Deucher, Alexander" <Alexander.Deucher@amd.com>, "Bridgman, John" <John.Bridgman@amd.com>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>, "linux@endlessm.com" <linux@endlessm.com>, Craig Stein <stein12c@gmail.com>, "michel@daenzer.net" <michel@daenzer.net>, "Kuehling, Felix" <Felix.Kuehling@amd.com>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, robin.murphy@arm.com, m.szyprowski@samsung.com, olekstysh@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgRGFuaWVsLA0KDQo+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj5Gcm9tOiBEYW5pZWwg
-RHJha2UgW21haWx0bzpkcmFrZUBlbmRsZXNzbS5jb21dDQo+U2VudDogVHVlc2RheSwgU2VwdGVt
-YmVyIDEyLCAyMDE3IDEyOjIwIFBNDQo+VG86IE5hdGgsIEFyaW5kYW0gPEFyaW5kYW0uTmF0aEBh
-bWQuY29tPg0KPkNjOiBKb2VyZyBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz47IExlbmRhY2t5LCBU
-aG9tYXMNCj48VGhvbWFzLkxlbmRhY2t5QGFtZC5jb20+OyBpb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZzsgYW1kLQ0KPmdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmc7IERldWNoZXIsIEFs
-ZXhhbmRlcg0KPjxBbGV4YW5kZXIuRGV1Y2hlckBhbWQuY29tPjsgQnJpZGdtYW4sIEpvaG4NCj48
-Sm9obi5CcmlkZ21hbkBhbWQuY29tPjsgU3V0aGlrdWxwYW5pdCwgU3VyYXZlZQ0KPjxTdXJhdmVl
-LlN1dGhpa3VscGFuaXRAYW1kLmNvbT47IGxpbnV4QGVuZGxlc3NtLmNvbTsgQ3JhaWcgU3RlaW4N
-Cj48c3RlaW4xMmNAZ21haWwuY29tPjsgbWljaGVsQGRhZW56ZXIubmV0OyBLdWVobGluZywgRmVs
-aXgNCj48RmVsaXguS3VlaGxpbmdAYW1kLmNvbT47IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCj5T
-dWJqZWN0OiBSZTogW1BBVENIXSBpb21tdS9hbWQ6IGZsdXNoIElPVExCIGZvciBzcGVjaWZpYyBk
-b21haW5zIG9ubHkgKHYzKQ0KPg0KPkhpLA0KPg0KPk9uIFR1ZSwgTWF5IDMwLCAyMDE3IGF0IDM6
-MzggUE0sIE5hdGgsIEFyaW5kYW0gPEFyaW5kYW0uTmF0aEBhbWQuY29tPg0KPndyb3RlOg0KPj4+
-LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+PkZyb206IEpvZXJnIFJvZWRlbCBbbWFpbHRv
-Ompvcm9AOGJ5dGVzLm9yZ10NCj4+PlNlbnQ6IE1vbmRheSwgTWF5IDI5LCAyMDE3IDg6MDkgUE0N
-Cj4+PlRvOiBOYXRoLCBBcmluZGFtIDxBcmluZGFtLk5hdGhAYW1kLmNvbT47IExlbmRhY2t5LCBU
-aG9tYXMNCj4+PjxUaG9tYXMuTGVuZGFja3lAYW1kLmNvbT4NCj4+PkNjOiBpb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZzsgYW1kLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmc7DQo+Pj5E
-ZXVjaGVyLCBBbGV4YW5kZXIgPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5jb20+OyBCcmlkZ21hbiwg
-Sm9obg0KPj4+PEpvaG4uQnJpZGdtYW5AYW1kLmNvbT47IGRyYWtlQGVuZGxlc3NtLmNvbTsgU3V0
-aGlrdWxwYW5pdCwNCj5TdXJhdmVlDQo+Pj48U3VyYXZlZS5TdXRoaWt1bHBhbml0QGFtZC5jb20+
-OyBsaW51eEBlbmRsZXNzbS5jb207IENyYWlnIFN0ZWluDQo+Pj48c3RlaW4xMmNAZ21haWwuY29t
-PjsgbWljaGVsQGRhZW56ZXIubmV0OyBLdWVobGluZywgRmVsaXgNCj4+PjxGZWxpeC5LdWVobGlu
-Z0BhbWQuY29tPjsgc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KPj4+U3ViamVjdDogUmU6IFtQQVRD
-SF0gaW9tbXUvYW1kOiBmbHVzaCBJT1RMQiBmb3Igc3BlY2lmaWMgZG9tYWlucyBvbmx5DQo+KHYz
-KQ0KPj4+DQo+Pj5IaSBBcmluZGFtLA0KPj4+DQo+Pj5JIG1ldCBUb20gTGVuZGFja3kgbGFzdCB3
-ZWVrIGluIE51cmVtYmVyZyBsYXN0IHdlZWsgYW5kIGhlIHRvbGQgbWUgaGUgaXMNCj4+Pndvcmtp
-bmcgb24gdGhlIHNhbWUgYXJlYSBvZiB0aGUgY29kZSB0aGF0IHRoaXMgcGF0Y2ggaXMgZm9yLiBI
-aXMgcmVhc29uDQo+Pj5mb3IgdG91Y2hpbmcgdGhpcyBjb2RlIHdhcyB0byBzb2x2ZSBzb21lIGxv
-Y2tpbmcgcHJvYmxlbXMuIE1heWJlIHlvdSB0d28NCj4+PmNhbiB3b3JrIHRvZ2V0aGVyIG9uIGEg
-am9pbnQgYXBwcm9hY2ggdG8gaW1wcm92ZSB0aGlzPw0KPj4NCj4+IFN1cmUgSm9lcmcsIEkgd2ls
-bCB3b3JrIHdpdGggVG9tLg0KPg0KPldoYXQgd2FzIHRoZSBlbmQgcmVzdWx0IGhlcmU/IEkgc2Vl
-IHRoYXQgdGhlIGNvZGUgaGFzIGJlZW4gcmV3b3JrZWQgaW4NCj40LjEzIHNvIHlvdXIgb3JpZ2lu
-YWwgcGF0Y2ggbm8gbG9uZ2VyIGFwcGxpZXMuIElzIHRoZSByZXdvcmtlZCB2ZXJzaW9uDQo+YWxz
-byBleHBlY3RlZCB0byBzb2x2ZSB0aGUgb3JpZ2luYWwgaXNzdWU/DQoNClllcywgaWYgdGhlIHJl
-d29ya2VkIHBhdGNoIHJlc29sdmVzIHRoZSBpc3N1ZSwgbXkgcGF0Y2ggd29uJ3QgYmUgcmVxdWly
-ZWQgYW55bW9yZS4NCg0KVGhhbmtzLA0KQXJpbmRhbQ0KDQo+DQo+VGhhbmtzDQo+RGFuaWVsDQo=
+
+Hi, all.
+
+Gentle reminder.
+
+On 05.09.17 19:52, Oleksandr wrote:
+>
+> Hi, Magnus, maintainers, all.
+>
+> On 19.06.17 14:04, Magnus Damm wrote:
+>> iommu/ipmmu-vmsa: r8a7796 support V4
+>>
+>> [PATCH v4 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+>> [PATCH v4 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+>> [PATCH v4 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+>>
+>> This series adds r8a7796 support to the IPMMU driver. The DT binding
+>> gets updated, maximum number of micro-TLBs are increased and the
+>> driver is adjusted to match on the new DT binding.
+> I am interested in adding IPMMU-VMSA support to Xen hypervisor.
+>
+> I did some preparations for making IPMMU-VMSA to feel comfortable [1] 
+> inside Xen
+> followed by direct porting Linux IPMMU-VMSA driver and ARM LPAE 
+> page-table allocator [2] to it.
+>
+> I decided to base on the "BSP" driver [3] because it had more complete 
+> support than the "mainline" one [4].
+>
+> During review I got a feedback that "BSP" driver wasn't the best 
+> choice to be ported.
+> Xen ARM maintainers worry about "BSP" driver which haven't had a 
+> thorough review by the Linux community and as the result might have 
+> bugs which will never be fixed, etc.
+>
+> So, for the IPMMU-VMSA support to be accepted by Xen community I 
+> should either write our own driver based on BSP/mainline/whatever 
+> which contains only relevant to Xen things or
+> direct port from "mainline" driver. As the second option relies on the 
+> required support [5] which isn't in mainline yet, it is not clear when 
+> this support gets merged and how it will be modified/reworked before,
+> we preliminarily decided to follow the first option. But, I would like 
+> to consider second option again. Despite the complexity of second 
+> option, it has one significant benefit.
+>
+> I see that Linux driver is being developed quite actively and looking 
+> over all related patch series I got a feeling that required support 
+> was about to reach upstream.
+>
+> Could you, please, clarify some questions which, I hope, help us to 
+> make a decision:
+> 1. Do you have approximate time-frame for getting this support in?
+> 2. Are fundamental/significant changes planned for this support?
+>
+> Also, may I ask for a link to github branch which contains current 
+> (and likely r8a7795 and 32-bit ARM update) patch series?
+>
+> Thank you in advance!
+>
+> And sorry for the most likely incorrect format of this email.
+>
+> [1] https://www.mail-archive.com/xen-devel@lists.xen.org/msg115901.html
+> [2] https://lists.xen.org/archives/html/xen-devel/2017-07/msg02679.html
+> [3] 
+> https://git.kernel.org/pub/scm/linux/kernel/git/horms/renesas-bsp.git/tree/drivers/iommu/ipmmu-vmsa.c?h=v4.9/rcar-3.5.3
+> [4] 
+> http://elixir.free-electrons.com/linux/latest/source/drivers/iommu/ipmmu-vmsa.c
+> [5] 
+> https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022567.html
+> https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022577.html
+>     https://lkml.org/lkml/2017/7/17/393
+>>
+>> Changes since V3:
+>>   - Rebased on top of [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 
+>> support V4
+>>   - Patch 3/3 updated with Reviewed-by - thanks Geert!
+>>
+>> Changes since V2:
+>>   - Patch 2/3 updated with an outer set of () - thanks Ramesh!
+>>   - Patch 2/3 updated with Reviewed-by - thanks Geert!
+>>   - Patch 3/3 updated to include white list support
+>>
+>> Changes since V1:
+>>   - Patch 1/3 updated with more Acked-by tags
+>>   - Patch 2/3 updated with high I/O register range support
+>>
+>> Patch 1/3 is ready for upstream merge and includes the following tags:
+>> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+>> Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>> Acked-by: Rob Herring <robh@kernel.org>
+>> Acked-by: Simon Horman <horms+renesas@verge.net.au>
+>> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>>
+>> Patch 2/3 and 3/3 are quite trivial but have no acked-by so far.
+>>
+>> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+>> ---
+>>
+>>   Developed on top of next-20170614 with the following series applied
+>>   [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
+>>   [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
+>>
+>>   Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1
+>>   drivers/iommu/ipmmu-vmsa.c |   24 +++++++---
+>>   2 files changed, 18 insertions(+), 7 deletions(-)
+>
