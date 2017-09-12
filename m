@@ -1,167 +1,165 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2 2/3] iommu/arm-smmu-v3: add support for unmap an iova range with only one tlb sync
-Date: Tue, 12 Sep 2017 21:00:37 +0800
-Message-ID: <1505221238-9428-3-git-send-email-thunder.leizhen@huawei.com>
-References: <1505221238-9428-1-git-send-email-thunder.leizhen@huawei.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [RFC] virtio-iommu version 0.4
+Date: Tue, 12 Sep 2017 19:13:07 +0200
+Message-ID: <072f5a14-baae-57a9-9c5b-b93163c67075@redhat.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1505221238-9428-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>, Jinyue Li <lijinyue@huawei.com>, Kefeng Wang <wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <virtio-dev-return-2536-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch is base on: 
-(add02cfdc9bc2 "iommu: Introduce Interface for IOMMU TLB Flushing")
+Hi jean,
 
-Because iotlb_sync is moved out of ".unmap = arm_smmu_unmap", some interval
-".unmap" calls should explicitly followed by a iotlb_sync operation.
+On 04/08/2017 20:19, Jean-Philippe Brucker wrote:
+> This is the continuation of my proposal for virtio-iommu, the para-
+> virtualized IOMMU. Here is a summary of the changes since last time [1]:
+> 
+> * The virtio-iommu document now resembles an actual specification. It is
+>   split into a formal description of the virtio device, and implementation
+>   notes. Please find sources and binaries at [2].
+> 
+> * Added a probe request to describe to the guest different properties that
+>   do not fit in firmware or in the virtio config space. This is a
+>   necessary stepping stone for extending the virtio-iommu.
+> 
+> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
+>   Bhushan.
+> 
+> You can find the Linux driver and kvmtool device at [4] and [5]. I
+> plan to rework driver and kvmtool device slightly before sending the
+> patches.
+> 
+> To understand the virtio-iommu, I advise to first read introduction and
+> motivation, then skim through implementation notes and finally look at the
+> device specification.
+> 
+> I wasn't sure how to organize the review. For those who prefer to comment
+> inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
+> to this thread. They are the biggest chunks of the document. But LaTeX
+> isn't very pleasant to read, so you can simply send a list of comments in
+> relation to section numbers and a few words of context, we'll manage.
+> 
+> ---
+> Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
+> more easily differences since the RFC (see [6]), but haven't been made
+> public so far. This is the first public posting since initial proposal
+> [1], and the following describes all changes.
+> 
+> ## v0.1 ##
+> 
+> Content is the same as the RFC, but formatted to LaTeX. 'make' generates
+> one PDF and one HTML document.
+> 
+> ## v0.2 ##
+> 
+> Add introductions, improve topology example and firmware description based
+> on feedback and a number of useful discussions.
+> 
+> ## v0.3 ##
+> 
+> Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
+> the device and driver behaviour. Unmap semantics are consolidated; they
+> are now closer to VFIO Type1 v2 semantics.
+> 
+> ## v0.4 ##
+> 
+> Introduce PROBE requests. They provide per-endpoint information to the
+> driver that couldn't be described otherwise.
+> 
+> For the moment, they allow to handle MSIs on x86 virtual platforms (see
+> 3.2). To do that we communicate reserved IOVA regions, that will also be
+> useful for describing regions that cannot be mapped for a given endpoint,
+> for instance addresses that correspond to a PCI bridge window.
+> 
+> Introducing such a large framework for this tiny feature may seem
+> overkill, but it is needed for future extensions of the virtio-iommu and I
+> believe it really is worth the effort.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c    | 10 ++++++++++
- drivers/iommu/io-pgtable-arm.c | 30 ++++++++++++++++++++----------
- drivers/iommu/io-pgtable.h     |  1 +
- 3 files changed, 31 insertions(+), 10 deletions(-)
+2.6.7
+- As I am currently integrating v0.4 in QEMU here are some other comments:
+At the moment struct virtio_iommu_req_probe flags is missing in your
+header. As such I understood the ACK protocol was not implemented by the
+driver in your branch.
+- VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is VIRTIO_IOMMU_T_MASK in your
+header too.
+2.6.8.2:
+- I am really confused about what the device should report as resv
+regions depending on the PE nature (VFIO or not VFIO)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index ef42c4b..e92828e 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1772,6 +1772,15 @@ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 	return ops->unmap(ops, iova, size);
- }
- 
-+static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+
-+	if (ops && ops->iotlb_sync)
-+		ops->iotlb_sync(ops);
-+}
-+
- static phys_addr_t
- arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
-@@ -1991,6 +2000,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.attach_dev		= arm_smmu_attach_dev,
- 	.map			= arm_smmu_map,
- 	.unmap			= arm_smmu_unmap,
-+	.iotlb_sync		= arm_smmu_iotlb_sync,
- 	.map_sg			= default_iommu_map_sg,
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index e8018a3..805efc9 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -304,6 +304,8 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 		WARN_ON(!selftest_running);
- 		return -EEXIST;
- 	} else if (iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
-+		size_t unmapped;
-+
- 		/*
- 		 * We need to unmap and free the old table before
- 		 * overwriting it with a block entry.
-@@ -312,7 +314,9 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
- 
- 		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
--		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
-+		unmapped = __arm_lpae_unmap(data, iova, sz, lvl, tblp);
-+		io_pgtable_tlb_sync(&data->iop);
-+		if (WARN_ON(unmapped != sz))
- 			return -EINVAL;
- 	}
- 
-@@ -584,7 +588,6 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			/* Also flush any partial walks */
- 			io_pgtable_tlb_add_flush(iop, iova, size,
- 						ARM_LPAE_GRANULE(data), false);
--			io_pgtable_tlb_sync(iop);
- 			ptep = iopte_deref(pte, data);
- 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
- 		} else {
-@@ -609,7 +612,6 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 			  size_t size)
- {
--	size_t unmapped;
- 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int lvl = ARM_LPAE_START_LVL(data);
-@@ -617,11 +619,14 @@ static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
- 		return 0;
- 
--	unmapped = __arm_lpae_unmap(data, iova, size, lvl, ptep);
--	if (unmapped)
--		io_pgtable_tlb_sync(&data->iop);
-+	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-+}
-+
-+static void arm_lpae_iotlb_sync(struct io_pgtable_ops *ops)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 
--	return unmapped;
-+	io_pgtable_tlb_sync(&data->iop);
- }
- 
- static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-@@ -734,6 +739,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
- 	data->iop.ops = (struct io_pgtable_ops) {
- 		.map		= arm_lpae_map,
- 		.unmap		= arm_lpae_unmap,
-+		.iotlb_sync	= arm_lpae_iotlb_sync,
- 		.iova_to_phys	= arm_lpae_iova_to_phys,
- 	};
- 
-@@ -1030,7 +1036,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 
- 	int i, j;
- 	unsigned long iova;
--	size_t size;
-+	size_t size, unmapped;
- 	struct io_pgtable_ops *ops;
- 
- 	selftest_running = true;
-@@ -1082,7 +1088,9 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 
- 		/* Partial unmap */
- 		size = 1UL << __ffs(cfg->pgsize_bitmap);
--		if (ops->unmap(ops, SZ_1G + size, size) != size)
-+		unmapped = ops->unmap(ops, SZ_1G + size, size);
-+		ops->iotlb_sync(ops);
-+		if (unmapped != size)
- 			return __FAIL(ops, i);
- 
- 		/* Remap of partial unmap */
-@@ -1098,7 +1106,9 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 		while (j != BITS_PER_LONG) {
- 			size = 1UL << j;
- 
--			if (ops->unmap(ops, iova, size) != size)
-+			unmapped = ops->unmap(ops, iova, size);
-+			ops->iotlb_sync(ops);
-+			if (unmapped != size)
- 				return __FAIL(ops, i);
- 
- 			if (ops->iova_to_phys(ops, iova + 42))
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index a3e6670..3a72e08 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -120,6 +120,7 @@ struct io_pgtable_ops {
- 		   phys_addr_t paddr, size_t size, int prot);
- 	int (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
- 		     size_t size);
-+	void (*iotlb_sync)(struct io_pgtable_ops *ops);
- 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
- 				    unsigned long iova);
- };
--- 
-2.5.0
+In other iommu drivers, the resv regions are populated by the iommu
+driver through its get_resv_regions callback. They are usually composed
+of an iommu specific MSI region (mapped or bypassed) and non IOMMU
+specific (device specific) reserved regions:
+iommu_dma_get_resv_regions(). In the case of virtio-iommu driver, those
+are the guest reserved regions.
+
+First in the current virtio-iommu driver I don't see the
+iommu_dma_get_resv_regions call. Do you agree that the virtio-iommu
+driver should compute the non IOMMU specific MSI regions. ie. this is
+not the responsability of the virtio-iommu device.
+
+Then why is it more the job of the device to return the guest iommu
+specific region rather than the driver itself?
+
+Then I understand this is the responsability of the virtio-iommu device
+to gather information about the host resv regions in case of VFIO EP.
+Typically the host PCIe host bridge windows cannot be used for IOVA.
+Also the host MSI reserved IOVA window cannot be used. Do you agree.
+
+I really think the spec should clarify what exact resv regions the
+device should return in case of VFIO device and non VFIO device.
+
+Thanks
+
+Eric
+
+> 
+> ## Future ##
+> 
+> Other extensions are in preparation. I won't detail them here because v0.4
+> already is a lot to digest, but in short, building on top of PROBE:
+> 
+> * First, since the IOMMU is paravirtualized, the device can expose some
+>   properties of the physical topology to the guest, and let it allocate
+>   resources more efficiently. For example, when the virtio-iommu manages
+>   both physical and emulated endpoints, with different underlying IOMMUs,
+>   we now have a way to describe multiple page and block granularities,
+>   instead of forcing the guest to use the most restricted one for all
+>   endpoints. This will most likely be in v0.5.
+> 
+> * Then on top of that, a major improvement will describe hardware
+>   acceleration features available to the guest. There is what I call "Page
+>   Table Handover" (or simply, from the host POV, "Nested"), the ability
+>   for the guest to manipulate its own page tables instead of sending
+>   MAP/UNMAP requests to the host. This, along with IO Page Fault
+>   reporting, will also permit SVM virtualization on different platforms.
+> 
+> Thanks,
+> Jean
+> 
+> [1] http://www.spinics.net/lists/kvm/msg147990.html
+> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
+>     http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
+>     I reiterate the disclaimers: don't use this document as a reference,
+>     it's a draft. It's also not an OASIS document yet. It may be riddled
+>     with mistakes. As this is a working draft, it is unstable and I do not
+>     guarantee backward compatibility of future versions.
+> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
+> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
+>     Warning: UAPI headers have changed! They didn't follow the spec,
+>     please update. (Use branch v0.1, that has the old headers, for the
+>     Qemu prototype [3])
+> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
+>     Warning: command-line has changed! Use --viommu vfio[,opts] and
+>     --viommu virtio[,opts] to instantiate a device.
+> [6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
+> 
