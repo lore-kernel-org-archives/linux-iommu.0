@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2 3/3] iommu/arm-smmu: add support for unmap a memory range with only one tlb sync
-Date: Tue, 12 Sep 2017 21:00:38 +0800
-Message-ID: <1505221238-9428-4-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v2 2/3] iommu/arm-smmu-v3: add support for unmap an iova range with only one tlb sync
+Date: Tue, 12 Sep 2017 21:00:37 +0800
+Message-ID: <1505221238-9428-3-git-send-email-thunder.leizhen@huawei.com>
 References: <1505221238-9428-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -20,15 +20,16 @@ Because iotlb_sync is moved out of ".unmap = arm_smmu_unmap", some interval
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm-smmu.c           | 10 ++++++++++
- drivers/iommu/io-pgtable-arm-v7s.c | 32 +++++++++++++++++++++-----------
- 2 files changed, 31 insertions(+), 11 deletions(-)
+ drivers/iommu/arm-smmu-v3.c    | 10 ++++++++++
+ drivers/iommu/io-pgtable-arm.c | 30 ++++++++++++++++++++----------
+ drivers/iommu/io-pgtable.h     |  1 +
+ 3 files changed, 31 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 3bdb799..bb57d67 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1259,6 +1259,15 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index ef42c4b..e92828e 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1772,6 +1772,15 @@ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
  	return ops->unmap(ops, iova, size);
  }
  
@@ -41,10 +42,10 @@ index 3bdb799..bb57d67 100644
 +		ops->iotlb_sync(ops);
 +}
 +
- static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 					      dma_addr_t iova)
+ static phys_addr_t
+ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
  {
-@@ -1561,6 +1570,7 @@ static struct iommu_ops arm_smmu_ops = {
+@@ -1991,6 +2000,7 @@ static struct iommu_ops arm_smmu_ops = {
  	.attach_dev		= arm_smmu_attach_dev,
  	.map			= arm_smmu_map,
  	.unmap			= arm_smmu_unmap,
@@ -52,102 +53,115 @@ index 3bdb799..bb57d67 100644
  	.map_sg			= default_iommu_map_sg,
  	.iova_to_phys		= arm_smmu_iova_to_phys,
  	.add_device		= arm_smmu_add_device,
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index d665d0d..457ad29 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -370,6 +370,8 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
- 
- 	for (i = 0; i < num_entries; i++)
- 		if (ARM_V7S_PTE_IS_TABLE(ptep[i], lvl)) {
-+			size_t unmapped;
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index e8018a3..805efc9 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -304,6 +304,8 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		WARN_ON(!selftest_running);
+ 		return -EEXIST;
+ 	} else if (iopte_type(pte, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
++		size_t unmapped;
 +
- 			/*
- 			 * We need to unmap and free the old table before
- 			 * overwriting it with a block entry.
-@@ -378,8 +380,10 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
- 			size_t sz = ARM_V7S_BLOCK_SIZE(lvl);
+ 		/*
+ 		 * We need to unmap and free the old table before
+ 		 * overwriting it with a block entry.
+@@ -312,7 +314,9 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
  
- 			tblp = ptep - ARM_V7S_LVL_IDX(iova, lvl);
--			if (WARN_ON(__arm_v7s_unmap(data, iova + i * sz,
--						    sz, lvl, tblp) != sz))
-+			unmapped = __arm_v7s_unmap(data, iova + i * sz,
-+						    sz, lvl, tblp);
-+			io_pgtable_tlb_sync(&data->iop);
-+			if (WARN_ON(unmapped != sz))
- 				return -EINVAL;
- 		} else if (ptep[i]) {
- 			/* We require an unmap first */
-@@ -633,7 +637,6 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
- 				/* Also flush any partial walks */
- 				io_pgtable_tlb_add_flush(iop, iova, blk_size,
- 					ARM_V7S_BLOCK_SIZE(lvl + 1), false);
--				io_pgtable_tlb_sync(iop);
- 				ptep = iopte_deref(pte[i], lvl);
- 				__arm_v7s_free_table(ptep, lvl + 1, data);
- 			} else {
-@@ -660,16 +663,18 @@ static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 			 size_t size)
+ 		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+-		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
++		unmapped = __arm_lpae_unmap(data, iova, sz, lvl, tblp);
++		io_pgtable_tlb_sync(&data->iop);
++		if (WARN_ON(unmapped != sz))
+ 			return -EINVAL;
+ 	}
+ 
+@@ -584,7 +588,6 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			/* Also flush any partial walks */
+ 			io_pgtable_tlb_add_flush(iop, iova, size,
+ 						ARM_LPAE_GRANULE(data), false);
+-			io_pgtable_tlb_sync(iop);
+ 			ptep = iopte_deref(pte, data);
+ 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+ 		} else {
+@@ -609,7 +612,6 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 			  size_t size)
  {
- 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
 -	size_t unmapped;
- 
- 	if (WARN_ON(upper_32_bits(iova)))
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+ 	int lvl = ARM_LPAE_START_LVL(data);
+@@ -617,11 +619,14 @@ static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
  		return 0;
  
--	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
+-	unmapped = __arm_lpae_unmap(data, iova, size, lvl, ptep);
 -	if (unmapped)
 -		io_pgtable_tlb_sync(&data->iop);
-+	return __arm_v7s_unmap(data, iova, size, 1, data->pgd);
++	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
 +}
 +
-+static void arm_v7s_iotlb_sync(struct io_pgtable_ops *ops)
++static void arm_lpae_iotlb_sync(struct io_pgtable_ops *ops)
 +{
-+	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
  
 -	return unmapped;
 +	io_pgtable_tlb_sync(&data->iop);
  }
  
- static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
-@@ -734,6 +739,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+@@ -734,6 +739,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
  	data->iop.ops = (struct io_pgtable_ops) {
- 		.map		= arm_v7s_map,
- 		.unmap		= arm_v7s_unmap,
-+		.iotlb_sync	= arm_v7s_iotlb_sync,
- 		.iova_to_phys	= arm_v7s_iova_to_phys,
+ 		.map		= arm_lpae_map,
+ 		.unmap		= arm_lpae_unmap,
++		.iotlb_sync	= arm_lpae_iotlb_sync,
+ 		.iova_to_phys	= arm_lpae_iova_to_phys,
  	};
  
-@@ -832,7 +838,7 @@ static int __init arm_v7s_do_selftests(void)
- 		.quirks = IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA,
- 		.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	};
--	unsigned int iova, size, iova_start;
-+	unsigned int iova, size, unmapped, iova_start;
- 	unsigned int i, loopnr = 0;
+@@ -1030,7 +1036,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 
+ 	int i, j;
+ 	unsigned long iova;
+-	size_t size;
++	size_t size, unmapped;
+ 	struct io_pgtable_ops *ops;
  
  	selftest_running = true;
-@@ -887,7 +893,9 @@ static int __init arm_v7s_do_selftests(void)
- 	size = 1UL << __ffs(cfg.pgsize_bitmap);
- 	while (i < loopnr) {
- 		iova_start = i * SZ_16M;
--		if (ops->unmap(ops, iova_start + size, size) != size)
-+		unmapped = ops->unmap(ops, iova_start + size, size);
+@@ -1082,7 +1088,9 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 
+ 		/* Partial unmap */
+ 		size = 1UL << __ffs(cfg->pgsize_bitmap);
+-		if (ops->unmap(ops, SZ_1G + size, size) != size)
++		unmapped = ops->unmap(ops, SZ_1G + size, size);
 +		ops->iotlb_sync(ops);
 +		if (unmapped != size)
- 			return __FAIL(ops);
+ 			return __FAIL(ops, i);
  
  		/* Remap of partial unmap */
-@@ -906,7 +914,9 @@ static int __init arm_v7s_do_selftests(void)
- 	while (i != BITS_PER_LONG) {
- 		size = 1UL << i;
+@@ -1098,7 +1106,9 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 		while (j != BITS_PER_LONG) {
+ 			size = 1UL << j;
  
--		if (ops->unmap(ops, iova, size) != size)
-+		unmapped = ops->unmap(ops, iova, size);
-+		ops->iotlb_sync(ops);
-+		if (unmapped != size)
- 			return __FAIL(ops);
+-			if (ops->unmap(ops, iova, size) != size)
++			unmapped = ops->unmap(ops, iova, size);
++			ops->iotlb_sync(ops);
++			if (unmapped != size)
+ 				return __FAIL(ops, i);
  
- 		if (ops->iova_to_phys(ops, iova + 42))
+ 			if (ops->iova_to_phys(ops, iova + 42))
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index a3e6670..3a72e08 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -120,6 +120,7 @@ struct io_pgtable_ops {
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	int (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
+ 		     size_t size);
++	void (*iotlb_sync)(struct io_pgtable_ops *ops);
+ 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+ 				    unsigned long iova);
+ };
 -- 
 2.5.0
