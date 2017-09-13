@@ -1,72 +1,71 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [RFC PATCH 6/6] iommu/arm-smmu-v3: Avoid ILLEGAL setting of
- STE.S1STALLD and CD.S
-Date: Wed, 13 Sep 2017 18:11:59 +0100
-Message-ID: <20170913171159.GB14955@arm.com>
-References: <1504167642-14922-1-git-send-email-xieyisheng1@huawei.com>
- <1504167642-14922-7-git-send-email-xieyisheng1@huawei.com>
- <738977bb-4cd7-7d86-0ea0-0c88b6af721c@arm.com>
- <20170913030643.GD12411@arm.com>
- <2f952821-afc3-46dd-17eb-40e8626bd6e5@huawei.com>
+From: valmiki <valmikibow@gmail.com>
+Subject: Re: VFIO on ARM64
+Date: Wed, 13 Sep 2017 23:08:42 +0530
+Message-ID: <e8effeac-bdfb-34dd-63e5-eb3fb08fd540@gmail.com>
+References: <52a6fdbb-9a47-76c0-da59-89ac561b8ee3@gmail.com>
+ <8fd78f56-43ed-e480-1c98-5d1162452674@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <2f952821-afc3-46dd-17eb-40e8626bd6e5@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Yisheng Xie <xieyisheng1@huawei.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, robert.moore@intel.com, lv.zheng@intel.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devel@acpica.org, liubo95@huawei.com, chenjiankang1@huawei.com
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <8fd78f56-43ed-e480-1c98-5d1162452674@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 13, 2017 at 06:11:13PM +0800, Yisheng Xie wrote:
-> On 2017/9/13 11:06, Will Deacon wrote:
-> > On Tue, Sep 05, 2017 at 01:54:19PM +0100, Jean-Philippe Brucker wrote:
-> >> On 31/08/17 09:20, Yisheng Xie wrote:
-> >>> It is ILLEGAL to set STE.S1STALLD if STALL_MODEL is not 0b00, which
-> >>> means we should not disable stall mode if stall/terminate mode is not
-> >>> configuable.
-> >>>
-> >>> Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
-> >>> means if stall mode is force we should always set CD.S.
-> >>>
-> >>> This patch add ARM_SMMU_FEAT_TERMINATE feature bit for smmu, and use
-> >>> TERMINATE feature checking to ensue above ILLEGAL cases from happening.
-> >>>
-> >>> Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
-> >>> ---
-> >>>  drivers/iommu/arm-smmu-v3.c | 22 ++++++++++++++++------
-> >>>  1 file changed, 16 insertions(+), 6 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> >>> index dbda2eb..0745522 100644
-> >>> --- a/drivers/iommu/arm-smmu-v3.c
-> >>> +++ b/drivers/iommu/arm-smmu-v3.c
-> >>> @@ -55,6 +55,7 @@
-> >>>  #define IDR0_STALL_MODEL_SHIFT		24
-> >>>  #define IDR0_STALL_MODEL_MASK		0x3
-> >>>  #define IDR0_STALL_MODEL_STALL		(0 << IDR0_STALL_MODEL_SHIFT)
-> >>> +#define IDR0_STALL_MODEL_NS		(1 << IDR0_STALL_MODEL_SHIFT)
-> >>>  #define IDR0_STALL_MODEL_FORCE		(2 << IDR0_STALL_MODEL_SHIFT)
-> >>>  #define IDR0_TTENDIAN_SHIFT		21
-> >>>  #define IDR0_TTENDIAN_MASK		0x3
-> >>> @@ -766,6 +767,7 @@ struct arm_smmu_device {
-> >>>  #define ARM_SMMU_FEAT_SVM		(1 << 15)
-> >>>  #define ARM_SMMU_FEAT_HA		(1 << 16)
-> >>>  #define ARM_SMMU_FEAT_HD		(1 << 17)
-> >>> +#define ARM_SMMU_FEAT_TERMINATE		(1 << 18)
-> >>
-> >> I'd rather introduce something like "ARM_SMMU_FEAT_STALL_FORCE" instead.
-> >> Terminate model has another meaning, and is defined by a different bit in
-> >> IDR0.
-> > 
-> > Yes. What we need to do is:
-> > 
-> > - If STALL_MODEL is 0b00, then set S1STALLD
-> 
-> Yes, and within this case, we can only set the S1STALLD for masters which can
-> not stall in the future?
+On 9/13/2017 6:50 AM, Jean-Philippe Brucker wrote:
+> Hi Valmiki,
+>
+> On 12/09/17 19:01, valmiki wrote:
+>> Hi, as per VFIO documentation i see that we need to see
+>> "/sys/bus/pci/devices/0000:06:0d.0/iommu_group" in order to find group
+>> in which PCI bus is attached.
+>> But as per drivers/pci/pci-sysfs.c in static struct attribute
+>> *pci_dev_attrs[], i don't see any such attribute.
+>
+> This iommu_group attribute is created by
+> drivers/iommu/iommu.c:iommu_group_add_device. It is a symbolic link to
+> /sys/kernel/iommu_groups/<group>.
+>
+>> I tried enabling SMMUv2 driver and SMMU for PCIe node on our SOC, but
+>> this file doesn't show up and also in /sys/kernel/iommu_group i do not
+>> see "/sys/kernel/iommu_groups/17/devices/0000:00:1f.00" file, i see only
+>> PCIe root port device tree node in that group and not individual buses.
+>> So on ARM64 for showing these paths i.e show specific to each bus, does
+>> SMMU need any particular confguration (we have SMMUv2) > Do we need any specific kernel configuration ?
+>
+> I don't think so. If you're able to see the root complex in an IOMMU
+> group, then the configuration is probably fine. Could you provide a little
+> more information about your system, for example lspci along with "find
+> /sys/kernel/iommu_groups/*/devices/*"?
+>
+Here is the log:
+root@:~# lspci
+00:00.0 PCI bridge: Corporation Device a023
+01:00.0 Memory controller: Corporation Device a024
+root@:~# find /sys/kernel/iommu_groups/*/devices/*
+/sys/kernel/iommu_groups/0/devices/ad0c0000.pcie
+/sys/kernel/iommu_groups/1/devices/ad0f0000.spi
+/sys/kernel/iommu_groups/2/devices/adc70000.sdhci
+/sys/kernel/iommu_groups/3/devices/ad9d0000.usb0
+root@:~#
+> Ideally, each PCIe device will be in its own IOMMU group. So you shouldn't
+> have each bus in a group, but rather one device per group. Linux puts
+> multiple devices in a group if the IOMMU cannot properly isolate them. In
+> general it's not something you want in your system, because all devices in
+> a group will have the same address space and cannot be passed to a guest
+> separately.
+>
+So i don't see separate group per pci device.When you say one pci device 
+per group, when does smmu creates one group per pci device ?
+As per boot log i see that smmu drvier gets probed first and then pcie 
+root port driver, so how will smmu know number of pci devices present 
+downstream and create a group for each device ?
 
-Yeah, something like that. I'd probably predicate it on having afault
-handler registered too.
+Regards,
+Valmiki
 
-Will
+---
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
