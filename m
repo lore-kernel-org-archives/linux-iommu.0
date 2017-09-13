@@ -1,77 +1,83 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: VFIO on ARM64
-Date: Wed, 13 Sep 2017 19:57:40 +0100
-Message-ID: <a57fa067-a838-508d-3b45-dff8a3879f9a@arm.com>
-References: <52a6fdbb-9a47-76c0-da59-89ac561b8ee3@gmail.com>
- <8fd78f56-43ed-e480-1c98-5d1162452674@arm.com>
- <e8effeac-bdfb-34dd-63e5-eb3fb08fd540@gmail.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all
+	endpoints
+Date: Wed, 13 Sep 2017 15:31:20 -0400
+Message-ID: <CAF6AEGssw_-rSexP9gCCFfgoa1JPt1ChR98-5Ev7EUcXwWfkyA@mail.gmail.com>
+References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
+	<1471525542-14969-4-git-send-email-will.deacon@arm.com>
+	<CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com>
+	<20161216115413.GE13191@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <e8effeac-bdfb-34dd-63e5-eb3fb08fd540@gmail.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: valmiki <valmikibow@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161216115413.GE13191-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 13/09/17 18:38, valmiki wrote:
-> On 9/13/2017 6:50 AM, Jean-Philippe Brucker wrote:
->> Hi Valmiki,
+On Fri, Dec 16, 2016 at 6:54 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> Hi Rob,
+>
+> On Tue, Dec 06, 2016 at 06:30:21PM -0500, Rob Clark wrote:
+>> On Thu, Aug 18, 2016 at 9:05 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > Enabling stalling faults can result in hardware deadlock on poorly
+>> > designed systems, particularly those with a PCI root complex upstream of
+>> > the SMMU.
+>> >
+>> > Although it's not really Linux's job to save hardware integrators from
+>> > their own misfortune, it *is* our job to stop userspace (e.g. VFIO
+>> > clients) from hosing the system for everybody else, even if they might
+>> > already be required to have elevated privileges.
+>> >
+>> > Given that the fault handling code currently executes entirely in IRQ
+>> > context, there is nothing that can sensibly be done to recover from
+>> > things like page faults anyway, so let's rip this code out for now and
+>> > avoid the potential for deadlock.
 >>
->> On 12/09/17 19:01, valmiki wrote:
->>> Hi, as per VFIO documentation i see that we need to see
->>> "/sys/bus/pci/devices/0000:06:0d.0/iommu_group" in order to find group
->>> in which PCI bus is attached.
->>> But as per drivers/pci/pci-sysfs.c in static struct attribute
->>> *pci_dev_attrs[], i don't see any such attribute.
+>> so, I'd like to re-introduce this feature, I *guess* as some sort of
+>> opt-in quirk (ie. disabled by default unless something in DT tells you
+>> otherwise??  But I'm open to suggestions.  I'm not entirely sure what
+>> hw was having problems due to this feature.)
 >>
->> This iommu_group attribute is created by
->> drivers/iommu/iommu.c:iommu_group_add_device. It is a symbolic link to
->> /sys/kernel/iommu_groups/<group>.
->>
->>> I tried enabling SMMUv2 driver and SMMU for PCIe node on our SOC, but
->>> this file doesn't show up and also in /sys/kernel/iommu_group i do not
->>> see "/sys/kernel/iommu_groups/17/devices/0000:00:1f.00" file, i see only
->>> PCIe root port device tree node in that group and not individual buses.
->>> So on ARM64 for showing these paths i.e show specific to each bus, does
->>> SMMU need any particular confguration (we have SMMUv2) > Do we need any specific kernel configuration ?
->>
->> I don't think so. If you're able to see the root complex in an IOMMU
->> group, then the configuration is probably fine. Could you provide a little
->> more information about your system, for example lspci along with "find
->> /sys/kernel/iommu_groups/*/devices/*"?
->>
-> Here is the log:
-> root@:~# lspci
-> 00:00.0 PCI bridge: Corporation Device a023
-> 01:00.0 Memory controller: Corporation Device a024
-> root@:~# find /sys/kernel/iommu_groups/*/devices/*
-> /sys/kernel/iommu_groups/0/devices/ad0c0000.pcie
-> /sys/kernel/iommu_groups/1/devices/ad0f0000.spi
-> /sys/kernel/iommu_groups/2/devices/adc70000.sdhci
-> /sys/kernel/iommu_groups/3/devices/ad9d0000.usb0
-> root@:~#
->> Ideally, each PCIe device will be in its own IOMMU group. So you shouldn't
->> have each bus in a group, but rather one device per group. Linux puts
->> multiple devices in a group if the IOMMU cannot properly isolate them. In
->> general it's not something you want in your system, because all devices in
->> a group will have the same address space and cannot be passed to a guest
->> separately.
->>
-> So i don't see separate group per pci device.When you say one pci device
-> per group, when does smmu creates one group per pci device ?
-> As per boot log i see that smmu drvier gets probed first and then pcie
-> root port driver, so how will smmu know number of pci devices present
-> downstream and create a group for each device ?
+>> On newer snapdragon devices we are using arm-smmu for the GPU, and
+>> halting the GPU so the driver's fault handler can dump some GPU state
+>> on faults is enormously helpful for debugging and tracking down where
+>> in the gpu cmdstream the fault was triggered.  In addition, we will
+>> eventually want the ability to update pagetables from fault handler
+>> and resuming the faulting transition.
+>
+> I'm not against reintroducing this, but it would certainly need to be
+> opt-in, as you suggest. If we want to try to use stall faults to enable
+> demand paging for DMA, then that means running core mm code to resolve
+> the fault and we can't do that in irq context. Consequently, we have to
+> hand this off to a thread, which means the hardware must allow the SS
+> bit to remain set without immediately reasserting the interrupt line.
+> Furthermore, we can't handle multiple faults on a context-bank, so we'd
+> need to restrict ourselves to one device (i.e. faulting stream) per
+> domain (CB).
+>
+> I think that means we want both specific compatible strings to identify
+> the SS bit behaviour, but also a way to opt-in for the stall model as a
+> separate property to indicate that the SoC integration can support this
+> without e.g. deadlocking.
+>
 
-(I'm assuming you're using device-tree since you mentioned it in your
-initial post.) Are you using the iommu-map property in your root complex
-node? The "iommus" property in device-tree nodes defines one or more
-static SIDs of a device, and doesn't work with PCI. iommu-map is a
-wildcard for the whole PCI bus. It defines how PCI Requester IDs are
-translated to SIDs. See Documentation/devicetree/bindings/pci/pci-iommu.txt
+How do you feel about a short-term step to keep things in irq context,
+but enable stall mode?  I'm debugging an issue, where it appears that
+the gpu cannot handle a non-stalled fault (triggers some fairly
+bizarre follow-on problems).  So I think even if we don't add a fault
+handler callback, we still want to set the CFCFG bit and
+RESUME_TERMINATE in the fault handler on this hardware.
 
-Thanks,
-Jean
+BR,
+-R
