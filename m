@@ -1,15 +1,14 @@
 From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [patch 45/52] iommu/vt-d: Reevaluate vector configuration on
-	activate()
-Date: Wed, 13 Sep 2017 23:29:47 +0200
-Message-ID: <20170913213155.853028808@linutronix.de>
+Subject: [patch 46/52] iommu/amd: Reevaluate vector configuration on activate()
+Date: Wed, 13 Sep 2017 23:29:48 +0200
+Message-ID: <20170913213155.944883733@linutronix.de>
 References: <20170913212902.530704676@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline;
-	filename=iommu-vt-d--Reevaluate-vector-configuration-on-activate--.patch
+	filename=iommu-amd--Reevaluate-vector-configuration-on-activate--.patch
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -34,48 +33,64 @@ Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 ---
- drivers/iommu/intel_irq_remapping.c |   38 +++++++++++++++++++-----------------
- 1 file changed, 21 insertions(+), 17 deletions(-)
+ drivers/iommu/amd_iommu.c |   39 +++++++++++++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 10 deletions(-)
 
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1121,6 +1121,24 @@ struct irq_remap_ops intel_irq_remap_ops
- 	.get_irq_domain		= intel_get_irq_domain,
- };
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4170,16 +4170,25 @@ static void irq_remapping_free(struct ir
+ 	irq_domain_free_irqs_common(domain, virq, nr_irqs);
+ }
  
-+static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
++static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
++			       struct amd_ir_data *ir_data,
++			       struct irq_2_irte *irte_info,
++			       struct irq_cfg *cfg);
++
+ static int irq_remapping_activate(struct irq_domain *domain,
+ 				  struct irq_data *irq_data, bool early)
+ {
+ 	struct amd_ir_data *data = irq_data->chip_data;
+ 	struct irq_2_irte *irte_info = &data->irq_2_irte;
+ 	struct amd_iommu *iommu = amd_iommu_rlookup_table[irte_info->devid];
++	struct irq_cfg *cfg = irqd_cfg(irq_data);
+ 
+-	if (iommu)
+-		iommu->irte_ops->activate(data->entry, irte_info->devid,
+-					  irte_info->index);
++	if (!iommu)
++		return 0;
++
++	iommu->irte_ops->activate(data->entry, irte_info->devid,
++				  irte_info->index);
++	amd_ir_update_irte(irq_data, iommu, data, irte_info, cfg);
+ 	return 0;
+ }
+ 
+@@ -4267,6 +4276,22 @@ static int amd_ir_set_vcpu_affinity(stru
+ 	return modify_irte_ga(irte_info->devid, irte_info->index, irte, ir_data);
+ }
+ 
++
++static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
++			       struct amd_ir_data *ir_data,
++			       struct irq_2_irte *irte_info,
++			       struct irq_cfg *cfg)
 +{
-+	struct intel_ir_data *ir_data = irqd->chip_data;
-+	struct irte *irte = &ir_data->irte_entry;
-+	struct irq_cfg *cfg = irqd_cfg(irqd);
 +
 +	/*
 +	 * Atomically updates the IRTE with the new destination, vector
 +	 * and flushes the interrupt entry cache.
 +	 */
-+	irte->vector = cfg->vector;
-+	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
-+
-+	/* Update the hardware only if the interrupt is in remapped mode. */
-+	if (!force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
-+		modify_irte(&ir_data->irq_2_iommu, irte);
++	iommu->irte_ops->set_affinity(ir_data->entry, irte_info->devid,
++				      irte_info->index, cfg->vector,
++				      cfg->dest_apicid);
 +}
 +
- /*
-  * Migrate the IO-APIC irq in the presence of intr-remapping.
-  *
-@@ -1139,27 +1157,15 @@ static int
- intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 		      bool force)
+ static int amd_ir_set_affinity(struct irq_data *data,
+ 			       const struct cpumask *mask, bool force)
  {
--	struct intel_ir_data *ir_data = data->chip_data;
--	struct irte *irte = &ir_data->irte_entry;
--	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct irq_data *parent = data->parent_data;
-+	struct irq_cfg *cfg = irqd_cfg(data);
- 	int ret;
- 
- 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+@@ -4284,13 +4309,7 @@ static int amd_ir_set_affinity(struct ir
  	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
  		return ret;
  
@@ -83,25 +98,10 @@ Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 -	 * Atomically updates the IRTE with the new destination, vector
 -	 * and flushes the interrupt entry cache.
 -	 */
--	irte->vector = cfg->vector;
--	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+-	iommu->irte_ops->set_affinity(ir_data->entry, irte_info->devid,
+-			    irte_info->index, cfg->vector, cfg->dest_apicid);
 -
--	/* Update the hardware only if the interrupt is in remapped mode. */
--	if (ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
--		modify_irte(&ir_data->irq_2_iommu, irte);
--
-+	intel_ir_reconfigure_irte(data, false);
++	amd_ir_update_irte(data, iommu, ir_data, irte_info, cfg);
  	/*
  	 * After this point, all the interrupts will start arriving
  	 * at the new destination. So, time to cleanup the previous
-@@ -1392,9 +1398,7 @@ static void intel_irq_remapping_free(str
- static int intel_irq_remapping_activate(struct irq_domain *domain,
- 					struct irq_data *irq_data, bool early)
- {
--	struct intel_ir_data *data = irq_data->chip_data;
--
--	modify_irte(&data->irq_2_iommu, &data->irte_entry);
-+	intel_ir_reconfigure_irte(irq_data, true);
- 	return 0;
- }
- 
