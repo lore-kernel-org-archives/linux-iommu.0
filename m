@@ -1,76 +1,68 @@
-From: Yisheng Xie <xieyisheng1@huawei.com>
-Subject: [PATCH] iommu/arm-smmu-v3: Avoid ILLEGAL setting of STE.S1STALLD
-Date: Thu, 14 Sep 2017 13:08:42 +0800
-Message-ID: <1505365722-45418-1-git-send-email-xieyisheng1@huawei.com>
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v7 1/5] Doc: iommu/arm-smmu-v3: Add workaround for HiSilicon erratum 161010801
+Date: Thu, 14 Sep 2017 13:57:52 +0100
+Message-ID: <20170914125756.14836-2-shameerali.kolothum.thodi@huawei.com>
+References: <20170914125756.14836-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, jean-philippe.brucker@arm.com, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng1@huawei.com
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170914125756.14836-1-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, mark.rutland@arm.com, hanjun.guo@linaro.org
+Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-According to Spec, it is ILLEGAL to set STE.S1STALLD if STALL_MODEL
-is not 0b00, which means we should not disable stall mode if stall
-or terminate mode is not configuable.
+From: John Garry <john.garry@huawei.com>
 
-As Jean-Philippe's suggestion, this patch introduce a feature bit
-ARM_SMMU_FEAT_STALL_FORCE, which means smmu only supports stall force.
-Therefore, we can avoid the ILLEGAL setting of STE.S1STALLD.by checking
-ARM_SMMU_FEAT_STALL_FORCE.
+The HiSilicon erratum 161010801 describes the limitation of HiSilicon platforms
+hip06/hip07 to support the SMMU mappings for MSI transactions.
 
-This patch keeps the ARM_SMMU_FEAT_STALLS as the meaning of stall supported
-(force or configuable) to easy to expand the future function, i.e. we can
-only use ARM_SMMU_FEAT_STALLS to check whether we should register fault
-handle or enable master can_stall, etc to supporte platform SVM.
+On these platforms, GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the MSI
+payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-After apply this patch, the feature bit and S1STALLD setting will be like:
-STALL_MODEL  FEATURE                                              S1STALLD
-0b00         ARM_SMMU_FEAT_STALLS                                 0b1
-0b01         !ARM_SMMU_FEAT_STALLS && !ARM_SMMU_FEAT_STALL_FORCE  0b0
-0b10         ARM_SMMU_FEAT_STALLS && ARM_SMMU_FEAT_STALL_FORCE    0b0
+This patch adds a SMMUv3 binding to flag that the SMMU breaks msi
+translation at ITS.
 
-Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
+Also, the arm64 silicon errata is updated with this same erratum.
+
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ Documentation/arm64/silicon-errata.txt                  | 1 +
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e67ba6c..d2a3627 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -603,7 +603,8 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S1		(1 << 9)
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
- #define ARM_SMMU_FEAT_STALLS		(1 << 11)
--#define ARM_SMMU_FEAT_HYP		(1 << 12)
-+#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 12)
-+#define ARM_SMMU_FEAT_HYP		(1 << 13)
- 	u32				features;
+diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+index 66e8ce1..02816b1 100644
+--- a/Documentation/arm64/silicon-errata.txt
++++ b/Documentation/arm64/silicon-errata.txt
+@@ -70,6 +70,7 @@ stable kernels.
+ |                |                 |                 |                             |
+ | Hisilicon      | Hip0{5,6,7}     | #161010101      | HISILICON_ERRATUM_161010101 |
+ | Hisilicon      | Hip0{6,7}       | #161010701      | N/A                         |
++| Hisilicon      | Hip0{6,7}       | #161010801      | N/A                         |
+ |                |                 |                 |                             |
+ | Qualcomm Tech. | Falkor v1       | E1003           | QCOM_FALKOR_ERRATUM_1003    |
+ | Qualcomm Tech. | Falkor v1       | E1009           | QCOM_FALKOR_ERRATUM_1009    |
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+index c9abbf3..1f5f7f9 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+@@ -55,6 +55,9 @@ the PCIe specification.
+ - hisilicon,broken-prefetch-cmd
+                     : Avoid sending CMD_PREFETCH_* commands to the SMMU.
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1112,7 +1113,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- #endif
- 			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
- 
--		if (smmu->features & ARM_SMMU_FEAT_STALLS)
-+		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
-+		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
- 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
-@@ -2536,9 +2538,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			 coherent ? "true" : "false");
- 
- 	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
--	case IDR0_STALL_MODEL_STALL:
--		/* Fallthrough */
- 	case IDR0_STALL_MODEL_FORCE:
-+		smmu->features |= ARM_SMMU_FEAT_STALL_FORCE;
-+		/* Fallthrough */
-+	case IDR0_STALL_MODEL_STALL:
- 		smmu->features |= ARM_SMMU_FEAT_STALLS;
- 	}
- 
++- hisilicon,broken-untranslated-msi
++                    : Reserve ITS HW region to avoid translating msi.
++
+ - cavium,cn9900-broken-page1-regspace
+                     : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
+ 		      PRIQ_PROD/CONS register access with page 0 offsets.
 -- 
-1.7.12.4
+1.9.1
+
+
