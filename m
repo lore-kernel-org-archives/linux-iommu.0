@@ -1,7 +1,7 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v7 3/5] iommu/of: Add msi address regions reservation helper
-Date: Thu, 14 Sep 2017 13:57:54 +0100
-Message-ID: <20170914125756.14836-4-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v7 5/5] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+Date: Thu, 14 Sep 2017 13:57:56 +0100
+Message-ID: <20170914125756.14836-6-shameerali.kolothum.thodi@huawei.com>
 References: <20170914125756.14836-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,187 +12,90 @@ To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.
 Cc: gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: John Garry <john.garry@huawei.com>
+The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
 
-On some platforms msi-controller address regions have to be excluded
-from normal IOVA allocation in that they are detected and decoded in
-a HW specific way by system components and so they cannot be considered
-normal IOVA address space.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-Add a helper function that retrieves msi address regions through device
-tree msi mapping, so that these regions will not be translated by IOMMU
-and will be excluded from IOVA allocations.
+This patch implements a quirk to reserve the hw msi regions in the
+smmu-v3 driver which means these address regions will not be
+translated and will be excluded from iova allocations.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+[John: add DT support]
+Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/of_iommu.c | 117 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/of_iommu.h |  10 ++++
- 2 files changed, 127 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 8cb6082..f2d1a76 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -21,6 +21,7 @@
- #include <linux/iommu.h>
- #include <linux/limits.h>
- #include <linux/of.h>
-+#include <linux/of_address.h>
- #include <linux/of_iommu.h>
- #include <linux/of_pci.h>
- #include <linux/slab.h>
-@@ -246,6 +247,122 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 	return ops;
- }
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 568c400..8503f4d 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -608,6 +608,7 @@ struct arm_smmu_device {
  
-+/**
-+ * of_iommu_msi_get_resv_regions - Reserved region driver helper
-+ * @dev: Device from iommu_get_resv_regions()
-+ * @list: Reserved region list from iommu_get_resv_regions()
-+ *
-+ * Returns: Number of reserved regions on success (0 if no associated
-+ *          msi parent), appropriate error value otherwise.
-+ */
-+int of_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+{
-+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+	struct iommu_resv_region *region;
-+	struct device_node *np;
-+	struct resource res;
-+	int i, resv = 0, mappings = 0;
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+ #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
++#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 2)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -674,6 +675,7 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
++	{ ARM_SMMU_OPT_RESV_HW_MSI, "hisilicon,broken-untranslated-msi" },
+ 	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
+ 	{ 0, NULL},
+ };
+@@ -1934,14 +1936,29 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 				      struct list_head *head)
+ {
+ 	struct iommu_resv_region *region;
++	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = master->smmu;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++	int resv = 0;
+ 
+-	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+-					 prot, IOMMU_RESV_SW_MSI);
+-	if (!region)
+-		return;
++	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
+ 
+-	list_add_tail(&region->list, head);
++		resv = iommu_dma_get_msi_resv_regions(dev, head);
 +
-+	if (dev_is_pci(dev)) {
-+		struct device *dma_dev, *bridge;
-+		struct of_phandle_args iommu_spec;
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+		int err, count;
-+		u32 rid, map_mask;
-+		const __be32 *msi_map;
-+
-+		bridge = pci_get_host_bridge_device(pdev);
-+		dma_dev = bridge->parent;
-+		pci_put_host_bridge_device(bridge);
-+
-+		if (!dma_dev->of_node)
-+			return -ENODEV;
-+
-+		iommu_spec.args_count = 1;
-+		np = iommu_spec.np = dma_dev->of_node;
-+		pci_for_each_dma_alias(pdev, __get_pci_rid, &iommu_spec);
-+
-+		rid = iommu_spec.args[0];
-+		if (!of_property_read_u32(np, "msi-map-mask", &map_mask))
-+			rid &= map_mask;
-+
-+		msi_map = of_get_property(np, "msi-map", NULL);
-+		if (!msi_map)
-+			return -ENODEV;
-+
-+		mappings = of_count_phandle_with_args(np, "msi-map", NULL) / 4;
-+
-+		for (i = 0, count = mappings; i < count; i++, msi_map += 4) {
-+			struct device_node *msi_node;
-+			u32 rid_base, rid_len, phandle;
-+
-+			rid_base = be32_to_cpup(msi_map + 0);
-+			phandle = be32_to_cpup(msi_map + 1);
-+			rid_len = be32_to_cpup(msi_map + 3);
-+
-+			/* check rid is within range */
-+			if (rid < rid_base || rid >= rid_base + rid_len) {
-+				mappings--;
-+				continue;
-+			}
-+
-+			msi_node = of_find_node_by_phandle(phandle);
-+			if (!msi_node)
-+				return -ENODEV;
-+
-+			err = of_address_to_resource(msi_node, 0, &res);
-+			of_node_put(msi_node);
-+			if (err)
-+				return err;
-+
-+			region = iommu_alloc_resv_region(res.start,
-+							 resource_size(&res),
-+							 prot, IOMMU_RESV_MSI);
-+			if (region) {
-+				list_add_tail(&region->list, head);
-+				resv++;
-+			}
-+		}
-+	} else if (dev->of_node) {
-+		struct device_node *msi_np;
-+		int index = 0;
-+		int tuples;
-+
-+		np = dev->of_node;
-+
-+		tuples = of_count_phandle_with_args(np, "msi-parent", NULL);
-+
-+		while (index < tuples) {
-+			int msi_cells = 0;
-+			int err;
-+
-+			msi_np = of_parse_phandle(np, "msi-parent", index);
-+			if (!msi_np)
-+				return -ENODEV;
-+
-+			of_property_read_u32(msi_np, "#msi-cells", &msi_cells);
-+
-+			err = of_address_to_resource(msi_np, 0, &res);
-+			of_node_put(msi_np);
-+			if (err)
-+				return err;
-+
-+			mappings++;
-+
-+			region = iommu_alloc_resv_region(res.start,
-+							 resource_size(&res),
-+							 prot, IOMMU_RESV_MSI);
-+			if (region) {
-+				list_add_tail(&region->list, head);
-+				resv++;
-+			}
-+			index += 1 + msi_cells;
++		if (resv < 0) {
++			dev_warn(dev, "HW MSI region resv failed: %d\n", resv);
++			return;
 +		}
 +	}
 +
-+	return (resv == mappings) ? resv : -ENODEV;
-+}
++	if (!resv) {
++		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++						 prot, IOMMU_RESV_SW_MSI);
++		if (!region)
++			return;
 +
- static int __init of_iommu_init(void)
- {
- 	struct device_node *np;
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 13394ac..9267772 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -14,6 +14,9 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- extern const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					struct device_node *master_np);
++		list_add_tail(&region->list, head);
++	}
  
-+extern int of_iommu_msi_get_resv_regions(struct device *dev,
-+					struct list_head *head);
-+
- #else
- 
- static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-@@ -29,6 +32,13 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
- 	return NULL;
+ 	iommu_dma_get_resv_regions(dev, head);
  }
+@@ -2667,6 +2684,7 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+ 		break;
+ 	case ACPI_IORT_SMMU_HISILICON_HI161X:
+ 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
++		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
+ 		break;
+ 	}
  
-+static int of_iommu_msi_get_resv_regions(struct device *dev,
-+					struct list_head *head)
-+{
-+	return -ENODEV;
-+}
-+
-+
- #endif	/* CONFIG_OF_IOMMU */
- 
- extern struct of_device_id __iommu_of_table;
 -- 
 1.9.1
 
