@@ -1,107 +1,76 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [patch 46/52] iommu/amd: Reevaluate vector configuration on activate()
-Date: Wed, 13 Sep 2017 23:29:48 +0200
-Message-ID: <20170913213155.944883733@linutronix.de>
-References: <20170913212902.530704676@linutronix.de>
+From: Yisheng Xie <xieyisheng1@huawei.com>
+Subject: [PATCH] iommu/arm-smmu-v3: Avoid ILLEGAL setting of STE.S1STALLD
+Date: Thu, 14 Sep 2017 13:08:42 +0800
+Message-ID: <1505365722-45418-1-git-send-email-xieyisheng1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline;
-	filename=iommu-amd--Reevaluate-vector-configuration-on-activate--.patch
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Chen Yu <yu.c.chen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Alok Kataria <akataria-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Peter Anvin <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rui Zhang <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "K. Y. Srinivasan" <kys-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Arjan van de Ven <arjan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: will.deacon@arm.com, jean-philippe.brucker@arm.com, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng1@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-With the upcoming reservation/management scheme, early activation will
-assign a special vector. The final activation at request_irq() assigns a
-real vector, which needs to be updated in the tables.
+According to Spec, it is ILLEGAL to set STE.S1STALLD if STALL_MODEL
+is not 0b00, which means we should not disable stall mode if stall
+or terminate mode is not configuable.
 
-Split out the reconfiguration code in set_affinity and use it for
-reactivation.
+As Jean-Philippe's suggestion, this patch introduce a feature bit
+ARM_SMMU_FEAT_STALL_FORCE, which means smmu only supports stall force.
+Therefore, we can avoid the ILLEGAL setting of STE.S1STALLD.by checking
+ARM_SMMU_FEAT_STALL_FORCE.
 
-Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+This patch keeps the ARM_SMMU_FEAT_STALLS as the meaning of stall supported
+(force or configuable) to easy to expand the future function, i.e. we can
+only use ARM_SMMU_FEAT_STALLS to check whether we should register fault
+handle or enable master can_stall, etc to supporte platform SVM.
+
+After apply this patch, the feature bit and S1STALLD setting will be like:
+STALL_MODEL  FEATURE                                              S1STALLD
+0b00         ARM_SMMU_FEAT_STALLS                                 0b1
+0b01         !ARM_SMMU_FEAT_STALLS && !ARM_SMMU_FEAT_STALL_FORCE  0b0
+0b10         ARM_SMMU_FEAT_STALLS && ARM_SMMU_FEAT_STALL_FORCE    0b0
+
+Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
 ---
- drivers/iommu/amd_iommu.c |   39 +++++++++++++++++++++++++++++----------
- 1 file changed, 29 insertions(+), 10 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -4170,16 +4170,25 @@ static void irq_remapping_free(struct ir
- 	irq_domain_free_irqs_common(domain, virq, nr_irqs);
- }
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index e67ba6c..d2a3627 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -603,7 +603,8 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_TRANS_S1		(1 << 9)
+ #define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
+ #define ARM_SMMU_FEAT_STALLS		(1 << 11)
+-#define ARM_SMMU_FEAT_HYP		(1 << 12)
++#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 12)
++#define ARM_SMMU_FEAT_HYP		(1 << 13)
+ 	u32				features;
  
-+static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
-+			       struct amd_ir_data *ir_data,
-+			       struct irq_2_irte *irte_info,
-+			       struct irq_cfg *cfg);
-+
- static int irq_remapping_activate(struct irq_domain *domain,
- 				  struct irq_data *irq_data, bool early)
- {
- 	struct amd_ir_data *data = irq_data->chip_data;
- 	struct irq_2_irte *irte_info = &data->irq_2_irte;
- 	struct amd_iommu *iommu = amd_iommu_rlookup_table[irte_info->devid];
-+	struct irq_cfg *cfg = irqd_cfg(irq_data);
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+@@ -1112,7 +1113,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ #endif
+ 			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
  
--	if (iommu)
--		iommu->irte_ops->activate(data->entry, irte_info->devid,
--					  irte_info->index);
-+	if (!iommu)
-+		return 0;
-+
-+	iommu->irte_ops->activate(data->entry, irte_info->devid,
-+				  irte_info->index);
-+	amd_ir_update_irte(irq_data, iommu, data, irte_info, cfg);
- 	return 0;
- }
+-		if (smmu->features & ARM_SMMU_FEAT_STALLS)
++		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
++		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
  
-@@ -4267,6 +4276,22 @@ static int amd_ir_set_vcpu_affinity(stru
- 	return modify_irte_ga(irte_info->devid, irte_info->index, irte, ir_data);
- }
+ 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
+@@ -2536,9 +2538,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 			 coherent ? "true" : "false");
  
-+
-+static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
-+			       struct amd_ir_data *ir_data,
-+			       struct irq_2_irte *irte_info,
-+			       struct irq_cfg *cfg)
-+{
-+
-+	/*
-+	 * Atomically updates the IRTE with the new destination, vector
-+	 * and flushes the interrupt entry cache.
-+	 */
-+	iommu->irte_ops->set_affinity(ir_data->entry, irte_info->devid,
-+				      irte_info->index, cfg->vector,
-+				      cfg->dest_apicid);
-+}
-+
- static int amd_ir_set_affinity(struct irq_data *data,
- 			       const struct cpumask *mask, bool force)
- {
-@@ -4284,13 +4309,7 @@ static int amd_ir_set_affinity(struct ir
- 	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
- 		return ret;
+ 	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
+-	case IDR0_STALL_MODEL_STALL:
+-		/* Fallthrough */
+ 	case IDR0_STALL_MODEL_FORCE:
++		smmu->features |= ARM_SMMU_FEAT_STALL_FORCE;
++		/* Fallthrough */
++	case IDR0_STALL_MODEL_STALL:
+ 		smmu->features |= ARM_SMMU_FEAT_STALLS;
+ 	}
  
--	/*
--	 * Atomically updates the IRTE with the new destination, vector
--	 * and flushes the interrupt entry cache.
--	 */
--	iommu->irte_ops->set_affinity(ir_data->entry, irte_info->devid,
--			    irte_info->index, cfg->vector, cfg->dest_apicid);
--
-+	amd_ir_update_irte(data, iommu, ir_data, irte_info, cfg);
- 	/*
- 	 * After this point, all the interrupts will start arriving
- 	 * at the new destination. So, time to cleanup the previous
+-- 
+1.7.12.4
