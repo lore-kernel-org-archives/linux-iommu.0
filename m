@@ -1,27 +1,61 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH] dma-coherent: fix rmem_dma_device_init regression
-Date: Sun, 17 Sep 2017 17:20:20 +0200
-Message-ID: <20170917152020.GB19849@lst.de>
-References: <20170915150824.3805217-1-arnd@arndb.de>
+From: Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>
+Subject: [PATCH 0/1] Optimise IOVA allocations for PCI devices
+Date: Mon, 18 Sep 2017 12:56:53 +0200
+Message-ID: <1505732214-9052-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170915150824.3805217-1-arnd-r2nGTMty4D4@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Roy Pledge <roy.pledge-3arQi8VN3Tc@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Craske <Mark_Craske-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Bastian Hecht <bhecht-Tbglbhd2jqSoSS7kgVBzIA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "George G. Davis" <george_davis-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, robin.murphy@arm.com, will.deacon@arm.com
+Cc: lorenzo.pieralisi@arm.com, Jayachandran.Nair@cavium.com, Ganapatrao.Kulkarni@cavium.com, ard.biesheuvel@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks a lot Arnd,
+Here is my test setup where I have stareted performance measurements.
 
-applied to the dma-mapping tree for 4.14.
+ ------------  PCIe  -------------   TX   -------------  PCIe  -----
+| ThunderX2  |------| Intel XL710 | ---> | Intel XL710 |------| X86 |
+| (128 cpus) |      |   40GbE     |      |    40GbE    |       -----
+ ------------        -------------        -------------
+
+As the reference lets take v4.13 host, SMMUv3 off and 1-thread iperf
+taskset to one CPU. The performance results I got:
+
+SMMU off -> 100%
+SMMU on -> 0,02%
+
+I followed down the DMA mapping path and found out IOVA 32-bit space
+full so that kernel was flushing rcaches for all CPUs in (1).
+For 128 CPUs, this kills the performance. Furthermore, for my case, rcaches
+contained PFNs > 32-bit mostly so the second round of IOVA allocation failed
+as well. As the consequence IOVA had to be allocated outside of 32-bit (2)
+from scratch since all rcaches have been flushed in (1).
+
+    if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
+(1)-->  iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
+
+    if (!iova)
+(2)-->  iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
+
+My fix simply introduces parameter for alloc_iova_fast() to decide whether
+rcache flush has to be done or not. All users follow mentioned scenario
+so they should let flush as the last chance to avoid time costly iteration
+over all CPUs.
+
+This bring my iperf performance back to 100% with SMMU on.
+
+My bad feelings regarding this solution is that machines with relatively
+small numbers of CPUs may get DAC addresses more frequently for PCI
+devices. Please let me know your thoughts.
+
+Tomasz Nowicki (1):
+  iommu/iova: Make rcache flush optional on IOVA allocation failure
+
+ drivers/iommu/amd_iommu.c   | 5 +++--
+ drivers/iommu/dma-iommu.c   | 6 ++++--
+ drivers/iommu/intel-iommu.c | 5 +++--
+ drivers/iommu/iova.c        | 7 +++----
+ include/linux/iova.h        | 5 +++--
+ 5 files changed, 16 insertions(+), 12 deletions(-)
+
+-- 
+2.7.4
