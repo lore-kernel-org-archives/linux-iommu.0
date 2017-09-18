@@ -1,183 +1,60 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/1] iommu/iova: Make rcache flush optional on IOVA
- allocation failure
-Date: Mon, 18 Sep 2017 17:02:22 +0100
-Message-ID: <250f41c9-fb37-49b7-c336-68e163f77e16@arm.com>
-References: <1505732214-9052-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
- <1505732214-9052-2-git-send-email-tomasz.nowicki@caviumnetworks.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC] iommu: arm-smmu: stall support
+Date: Mon, 18 Sep 2017 18:33:32 +0100
+Message-ID: <20170918173331.GH11343@arm.com>
+References: <20170914194444.32551-1-robdclark@gmail.com>
+	<9c2c136a-8c0f-6196-a135-0135b41c9b6e@arm.com>
+	<CAF6AEGv0WZe-bYXUVYt4WxMX3RFnZxr5038pDg3VOiP8Edx+4Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1505732214-9052-2-git-send-email-tomasz.nowicki@caviumnetworks.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>, joro@8bytes.org, will.deacon@arm.com
-Cc: lorenzo.pieralisi@arm.com, Jayachandran.Nair@cavium.com, Ganapatrao.Kulkarni@cavium.com, ard.biesheuvel@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@codeaurora.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAF6AEGv0WZe-bYXUVYt4WxMX3RFnZxr5038pDg3VOiP8Edx+4Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, james.morse-5wv7dgnIgG8@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
+On Mon, Sep 18, 2017 at 08:11:47AM -0400, Rob Clark wrote:
+> IIRC Will or Robin mentioned wanting a token in earlier stall
+> discussion.. although not being familiar with v3 I wasn't quite sure
+> what the use was.
+> 
+> At any rate, adding a token to fault handler callback and
+> iommu_domain_resume() seems like something that could be added later,
+> when it is needed.
+> 
+> Anyways, I am interested to see what your proposal is.. although tend
+> to be a bit sceptical about trying to abstract too much.  (And if
+> there should be something more abstract, maybe it should be at the
+> dma-mapping layer instead?)
 
-On 18/09/17 11:56, Tomasz Nowicki wrote:
-> Since IOVA allocation failure is not unusual case we need to flush
-> CPUs' rcache in hope we will succeed in next round.
-> 
-> However, it is useful to decide whether we need rcache flush step because
-> of two reasons:
-> - Not scalability. On large system with ~100 CPUs iterating and flushing
->   rcache for each CPU becomes serious bottleneck so we may want to deffer it.
-> - free_cpu_cached_iovas() does not care about max PFN we are interested in.
->   Thus we may flush our rcaches and still get no new IOVA like in the
->   commonly used scenario:
-> 
->     if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
->         iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
-> 
->     if (!iova)
->         iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
-> 
->    1. First alloc_iova_fast() call is limited to DMA_BIT_MASK(32) to get
->       PCI devices a SAC address
->    2. alloc_iova() fails due to full 32-bit space
->    3. rcaches contain PFNs out of 32-bit space so free_cpu_cached_iovas()
->       throws entries away for nothing and alloc_iova() fails again
->    4. Next alloc_iova_fast() call cannot take advantage of rcache since we
->       have just defeated caches. In this case we pick the slowest option
->       to proceed.
-> 
-> This patch reworks flushed_rcache local flag to be additional function
-> argument instead and control rcache flush step. Also, it updates all users
-> to do the flush as the last chance.
+Whilst I'm also often sceptical about premature abstraction (which is why
+I previously suggested just plugging into iommu_set_fault_handler and
+managing any work queues yourself), in this case Jean-Philippe actually
+has SVM up and running with multiple hardware platforms using stalls, so
+I'm confident that if we have something that works for both of you, then
+it's worth abstracting at this stage.
 
-Looks like you've run into the same thing Nate found[1] - I came up with
-almost the exact same patch, only with separate alloc_iova_fast() and
-alloc_iova_fast_noretry() wrapper functions, but on reflection, just
-exposing the bool to callers is probably simpler. One nit, can you
-document it in the kerneldoc comment too? With that:
+When we last had this discussion, you were the only person writing code
+for this, but I think that things have moved on since then.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> I don't suppose you or someone working on this from ARM side will be
+> at linaro connect in a couple weeks?  Jordan and myself will be there,
+> and it could be a good time to chat about this, and also per-process
+> pagetables and gpu switching switching pagetables directly on v2 hw.
 
-Thanks,
-Robin.
+James Morse (CC'd) will be there from our group. He's not looked at this
+at all, but it might be worth speaking to him anyway as this is often
+better done face-to-face than over email.
 
-[1]:https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg19758.html
-
-> 
-> Signed-off-by: Tomasz Nowicki <Tomasz.Nowicki@caviumnetworks.com>
-> ---
->  drivers/iommu/amd_iommu.c   | 5 +++--
->  drivers/iommu/dma-iommu.c   | 6 ++++--
->  drivers/iommu/intel-iommu.c | 5 +++--
->  drivers/iommu/iova.c        | 7 +++----
->  include/linux/iova.h        | 5 +++--
->  5 files changed, 16 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 8d2ec60..ce68986 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -1604,10 +1604,11 @@ static unsigned long dma_ops_alloc_iova(struct device *dev,
->  
->  	if (dma_mask > DMA_BIT_MASK(32))
->  		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
-> -				      IOVA_PFN(DMA_BIT_MASK(32)));
-> +				      IOVA_PFN(DMA_BIT_MASK(32)), false);
->  
->  	if (!pfn)
-> -		pfn = alloc_iova_fast(&dma_dom->iovad, pages, IOVA_PFN(dma_mask));
-> +		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
-> +				      IOVA_PFN(dma_mask), true);
->  
->  	return (pfn << PAGE_SHIFT);
->  }
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 191be9c..25914d3 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -370,10 +370,12 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
->  
->  	/* Try to get PCI devices a SAC address */
->  	if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
-> -		iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
-> +		iova = alloc_iova_fast(iovad, iova_len,
-> +				       DMA_BIT_MASK(32) >> shift, false);
->  
->  	if (!iova)
-> -		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
-> +		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
-> +				       true);
->  
->  	return (dma_addr_t)iova << shift;
->  }
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 05c0c3a..75c8320 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3460,11 +3460,12 @@ static unsigned long intel_alloc_iova(struct device *dev,
->  		 * from higher range
->  		 */
->  		iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
-> -					   IOVA_PFN(DMA_BIT_MASK(32)));
-> +					   IOVA_PFN(DMA_BIT_MASK(32)), false);
->  		if (iova_pfn)
->  			return iova_pfn;
->  	}
-> -	iova_pfn = alloc_iova_fast(&domain->iovad, nrpages, IOVA_PFN(dma_mask));
-> +	iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
-> +				   IOVA_PFN(dma_mask), true);
->  	if (unlikely(!iova_pfn)) {
->  		pr_err("Allocating %ld-page iova for %s failed",
->  		       nrpages, dev_name(dev));
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index f88acad..1a18b14 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -358,9 +358,8 @@ EXPORT_SYMBOL_GPL(free_iova);
->  */
->  unsigned long
->  alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
-> -		unsigned long limit_pfn)
-> +		unsigned long limit_pfn, bool flush_rcache)
->  {
-> -	bool flushed_rcache = false;
->  	unsigned long iova_pfn;
->  	struct iova *new_iova;
->  
-> @@ -373,11 +372,11 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
->  	if (!new_iova) {
->  		unsigned int cpu;
->  
-> -		if (flushed_rcache)
-> +		if (!flush_rcache)
->  			return 0;
->  
->  		/* Try replenishing IOVAs by flushing rcache. */
-> -		flushed_rcache = true;
-> +		flush_rcache = false;
->  		for_each_online_cpu(cpu)
->  			free_cpu_cached_iovas(cpu, iovad);
->  		goto retry;
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 58c2a36..8fdcb66 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -97,7 +97,7 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
->  void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
->  		    unsigned long size);
->  unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
-> -			      unsigned long limit_pfn);
-> +			      unsigned long limit_pfn, bool flush_rcache);
->  struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
->  	unsigned long pfn_hi);
->  void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
-> @@ -151,7 +151,8 @@ static inline void free_iova_fast(struct iova_domain *iovad,
->  
->  static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
->  					    unsigned long size,
-> -					    unsigned long limit_pfn)
-> +					    unsigned long limit_pfn,
-> +					    bool flush_rcache)
->  {
->  	return 0;
->  }
-> 
+Will
