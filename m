@@ -1,33 +1,31 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH] iommu: QCOM_IOMMU should depend on HAS_DMA
-Date: Tue, 19 Sep 2017 15:31:13 +0200
-Message-ID: <20170919133113.7lu5bp7xpq3ghbwf@suse.de>
-References: <1505133274-25669-1-git-send-email-geert@linux-m68k.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1505133274-25669-1-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH 0/3] Misc IOVA tweaks
+Date: Tue, 19 Sep 2017 14:48:38 +0100
+Message-ID: <cover.1505827369.git.robin.murphy@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 11, 2017 at 02:34:34PM +0200, Geert Uytterhoeven wrote:
-> 
-> Fixes: 0ae349a0f33fb040 ("iommu/qcom: Add qcom_iommu")
-> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> ---
->  drivers/iommu/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+While I was elbow-deep in the IOVA code, a few other things came to
+light which don't really fit into the rbtree optimisation series.
+Patches #1 and #2 are more or less just cleanup, while patch #3
+complements Tomasz' recent PCI allocation patch as it aims to
+potentially improve the same situation.
 
-Applied, thanks.
+Last time I checked, these should all apply independently and without
+major conflicts against any other in-flight IOVA patches.
+
+Robin.
+
+Robin Murphy (3):
+  iommu/iova: Simplify domain destruction
+  iommu/iova: Make rcache limit_pfn handling more robust
+  iommu/iova: Try harder to allocate from rcache magazine
+
+ drivers/iommu/iova.c | 73 ++++++++++++++++++++--------------------------------
+ 1 file changed, 28 insertions(+), 45 deletions(-)
+
+-- 
+2.13.4.dirty
