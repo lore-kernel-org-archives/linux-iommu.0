@@ -1,76 +1,92 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 1/1] iommu/arm-smmu: Add support for multiple TBU
- child devices
-Date: Tue, 19 Sep 2017 09:10:34 -0500
-Message-ID: <20170919141034.ahhmuxfk6ldpegfp@rob-hp-laptop>
-References: <1505217667-31184-1-git-send-email-vivek.gautam@codeaurora.org>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [RFC] iommu: arm-smmu: stall support
+Date: Tue, 19 Sep 2017 10:23:43 -0400
+Message-ID: <CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
+References: <20170914194444.32551-1-robdclark@gmail.com> <20170919123038.GF8398@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1505217667-31184-1-git-send-email-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170919123038.GF8398@8bytes.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Jordan Crouse <jcrouse@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 12, 2017 at 05:31:07PM +0530, Vivek Gautam wrote:
-> ARM MMU-500 implements a TBU (uTLB) for each connected master
-> besides a single TCU which controls and manages the address
-> translations. Each of these TBUs can either be in the same
-> power domain as the master, or they can have a independent
-> power switch.
-> This design addresses the challenges to control TBU power.
-> Adding child devices for each TBUs present in the configuration
-> lets us control the power and clocks to TLBs having individual
-> power domains. The device link between master devices (such as,
-> display, and GPU) and TBU devices ensures that the master takes
-> care of powering the smmu as long as it's available.
-> When the master is not available, the TBUs are identified with
-> sid and powered on.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
-> 
->  - The idea behind this patch is to handle the distributed smmu
->    architectures, similar to MMU-500.
->  - Untested yet.
->  - There are still few instances where the correct tbu device has
->    to be referenced and thus powered on to handle TLB maintenance
->    operations.
-> 
->  .../devicetree/bindings/iommu/arm,smmu.txt         |  27 +++
->  drivers/iommu/arm-smmu.c                           | 191 +++++++++++++++++++--
->  2 files changed, 205 insertions(+), 13 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index d97a6bc8e608..7cf67e75022e 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -98,6 +98,18 @@ conditions.
->                    accessed before master gets enabled and linked to its
->                    SMMU.
->  
-> +- child nodes:    ARM MMU-500 implements a TBU (page table cache or TLB) for
-> +                  each connected master besides a single TCU that controls
-> +                  and manages the address translations.
-> +                  Each of the child nodes represents a TBU that is attached to
-> +                  the master. This child node will have following property:
-> +
-> +  - compatibe:       must be "arm,mmu-500-tbu" for TBU child nodes of arm,mmu-500
-> +                     smmu.
-> +  - stream-id-range: array representing the starting stream id and the number
-> +                     of supported stream-ids. This gives information about
-> +                     the range of stream-ids that are supported by this TBU.
+On Tue, Sep 19, 2017 at 8:30 AM, Joerg Roedel <joro@8bytes.org> wrote:
+> Hi Rob,
+>
+> thanks for the RFC patch. I have some comments about the interface to
+> the IOMMU-API below.
+>
+> On Thu, Sep 14, 2017 at 03:44:33PM -0400, Rob Clark wrote:
+>> +/**
+>> + * iommu_domain_resume - Resume translations for a domain after a fault.
+>> + *
+>> + * This can be called at some point after the fault handler is called,
+>> + * allowing the user of the IOMMU to (for example) handle the fault
+>> + * from a task context.  It is illegal to call this if
+>> + * iommu_domain_set_attr(STALL) failed.
+>> + *
+>> + * @domain:    the domain to resume
+>> + * @terminate: if true, the translation that triggered the fault should
+>> + *    be terminated, else it should be retried.
+>> + */
+>> +void iommu_domain_resume(struct iommu_domain *domain, bool terminate)
+>> +{
+>> +     /* invalid to call if iommu_domain_set_attr(STALL) failed: */
+>> +     if (WARN_ON(!domain->ops->domain_resume))
+>> +             return;
+>> +     domain->ops->domain_resume(domain, terminate);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_domain_resume);
+>
+> So this function is being called by the device driver owning the domain,
+> right?
 
-Needs a vendor prefix.
+yes, this was my plan
 
-Also need to document reg property. What does reg represent? If just an 
-index with no correlation to h/w numbering, then perhaps stream ids 
-could be put into reg instead.
+> I don't think that the resume call-back you added needs to be exposed
+> like this. It is better to do the page-fault handling completly in the
+> iommu-code, including calling the resume call-back and just let the
+> device-driver provide a per-domain call-back to let it handle the fault
+> and map in the required pages.
 
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I would like to decide in the IRQ whether or not to queue work or not,
+because when we get a gpu fault, we tend to get 1000's of gpu faults
+all at once (and I really only need to handle the first one).  I
+suppose that could also be achieved by having a special return value
+from the fault handler to say "call me again from a wq"..
+
+Note that in the drm driver I already have a suitable wq to queue the
+work, so it really doesn't buy me anything to have the iommu driver
+toss things off to a wq for me.  Might be a different situation for
+other drivers (but I guess mostly other drivers are using iommu API
+indirectly via dma-mapping?)
+
+> The interface could look like this:
+>
+>         * New function iommu_domain_enable_stalls(domain) - When
+>           this function returns the domain is in stall-handling mode. A
+>           iommu_domain_disable_stalls() might make sense too, not sure
+>           about that.
+
+I don't particularly see a use-case for disabling stalls, fwiw
+
+BR,
+-R
+
+>         * When stalls are enabled for a domain, report_iommu_fault()
+>           queues the fault to a workqueue (so that its handler can
+>           block) and in the workqueue you call ->resume() based on the
+>           return value of the handler.
+>
+> As a side-note, as there has been discussion on this: For now it doesn't
+> make sense to merge this with the SVM page-fault handling efforts, as
+> this path is different enough (SVM will call handle_mm_fault() as the
+> handler, for example).
+>
+>
+> Regards,
+>
+>         Joerg
+>
