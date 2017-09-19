@@ -1,89 +1,117 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC] virtio-iommu version 0.4
-Date: Tue, 19 Sep 2017 11:47:43 +0100
-Message-ID: <4543e6dc-0f36-11ad-784a-d7c07399d10f@arm.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <072f5a14-baae-57a9-9c5b-b93163c67075@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on driver
+	init.
+Date: Tue, 19 Sep 2017 11:47:00 +0100
+Message-ID: <944ded5f-58b9-43a9-fe1d-191b982545fa@arm.com>
+References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
+	<2550948.Yqn2DEl6fn@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <072f5a14-baae-57a9-9c5b-b93163c67075@redhat.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2550948.Yqn2DEl6fn@avalon>
 Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, IOMMU ML <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
+Hi Laurent,
 
-On 12/09/17 18:13, Auger Eric wrote:
-> 2.6.7
-> - As I am currently integrating v0.4 in QEMU here are some other comments:
-> At the moment struct virtio_iommu_req_probe flags is missing in your
-> header. As such I understood the ACK protocol was not implemented by the
-> driver in your branch.
+On 19/09/17 08:07, Laurent Pinchart wrote:
+> Hi Liviu,
+> 
+> Thank you for the patch.
+> 
+> On Monday, 18 September 2017 13:04:44 EEST Liviu Dudau wrote:
+>> If the IPMMU driver is compiled in the kernel it will replace the
+>> platform bus IOMMU ops on running the ipmmu_init() function, regardless
+>> if there is any IPMMU hardware present or not. This screws up systems
+>> that just want to build a generic kernel that runs on multiple platforms
+>> and use a different IOMMU implementation.
+>>
+>> Move the bus_set_iommu() call at the end of the ipmmu_probe() function
+>> when we know that hardware is present. With current IOMMU framework it
+>> should be safe (at least for OF case).
+> 
+> If I recall correctly the issue is that the IPMMU might be probed after bus 
+> master devices when using the legacy IOMMU DT integration, which the ipmmu-
+> vmsa driver does on ARM32. Calling bus_set_iommu() from the probe function 
+> will then result in some devices losing IOMMU support.
 
-Uh indeed. And yet I could swear I've written that code... somewhere. I
-will add it to the batch of v0.5 changes, it shouldn't be too invasive.
+Yes, that used to be the problem, but since IPMMU uses the generic
+bindings and iommu_device_register(), it should now benefit from client
+probe-deferral even when it doesn't support of_xlate().
 
-> - VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is VIRTIO_IOMMU_T_MASK in your
-> header too.
+Robin.
 
-Yes, keeping VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is probably best
-(though it is a mouthful).
-
-> 2.6.8.2:
-> - I am really confused about what the device should report as resv
-> regions depending on the PE nature (VFIO or not VFIO)
->
-> In other iommu drivers, the resv regions are populated by the iommu
-> driver through its get_resv_regions callback. They are usually composed
-> of an iommu specific MSI region (mapped or bypassed) and non IOMMU
-> specific (device specific) reserved regions:
-> iommu_dma_get_resv_regions(). In the case of virtio-iommu driver, those
-> are the guest reserved regions.
->
-> First in the current virtio-iommu driver I don't see the
-> iommu_dma_get_resv_regions call. Do you agree that the virtio-iommu
-> driver should compute the non IOMMU specific MSI regions. ie. this is
-> not the responsability of the virtio-iommu device.
-
-For SW_MSI, certainly. The driver allocates a fixed IOVA region for
-mapping the MSI doorbell. But the driver has to know whether the doorbell
-region is translated or bypassed.
-
-> Then why is it more the job of the device to return the guest iommu
-> specific region rather than the driver itself?
-
-The MSI region is architectural on x86 IOMMUs, but
-implementation-defined on virtio-iommu. It depends which platform the host
-is emulating. In Linux, x86 IOMMU drivers register the bypass region
-because there always is an IOAPIC on the other end, with a fixed MSI
-address. But virtio-iommu may be either behind a GIC, an APIC or some
-other IRQ chip.
-
-The driver *could* go over all the irqchips/platforms it knows and try to
-guess if there is a fixed doorbell or if it needs to reserve an IOVA for
-them, but it would look horrible. I much prefer having a well-defined way
-of doing this, so a description from the device.
-
-> Then I understand this is the responsability of the virtio-iommu device
-> to gather information about the host resv regions in case of VFIO EP.
-> Typically the host PCIe host bridge windows cannot be used for IOVA.
-> Also the host MSI reserved IOVA window cannot be used. Do you agree.
-
-Yes, all regions reported in sysfs reserved_regions in the host would be
-reported as RESV_T_RESERVED by virtio-iommu.
-
-> I really think the spec should clarify what exact resv regions the
-> device should return in case of VFIO device and non VFIO device.
-
-Agreed. I will add something about RESV_T_RESERVED with the PCI bridge
-example in Implementation Notes. Do you think the MSI examples at the end
-need improvement as well? I can try to explain that RESV_MSI regions in
-virtio-iommu are only those of the emulated platform, not the HW or SW MSI
-regions from the host.
-
-Thanks,
-Jean
+>> Now that the ipmmu_init() and ipmmu_exit() functions are simple calls to
+>> platform_driver_register() and platform_driver_unregister(), replace
+>> them with the module_platform_driver() macro call.
+>>
+>> Signed-off-by: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+>> Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>> ---
+>>  drivers/iommu/ipmmu-vmsa.c | 29 +++++------------------------
+>>  1 file changed, 5 insertions(+), 24 deletions(-)
+>>
+>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>> index 2a38aa15be17d..c60569c74678d 100644
+>> --- a/drivers/iommu/ipmmu-vmsa.c
+>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>> @@ -1055,10 +1055,11 @@ static int ipmmu_probe(struct platform_device *pdev)
+>> ipmmu_device_reset(mmu);
+>>
+>>  	/*
+>> -	 * We can't create the ARM mapping here as it requires the bus to have
+>> -	 * an IOMMU, which only happens when bus_set_iommu() is called in
+>> -	 * ipmmu_init() after the probe function returns.
+>> +	 * Now that we have validated the presence of the hardware, set
+>> +	 * the bus IOMMU ops to enable future domain and device setup.
+>>  	 */
+>> +	if (!iommu_present(&platform_bus_type))
+>> +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+>>
+>>  	spin_lock(&ipmmu_devices_lock);
+>>  	list_add(&mmu->list, &ipmmu_devices);
+> 
+> What branch is this patch based on ? ipmmu_devices_lock isn't in mainline.
+> 
+>> @@ -1100,27 +1101,7 @@ static struct platform_driver ipmmu_driver = {
+>>  	.remove	= ipmmu_remove,
+>>  };
+>>
+>> -static int __init ipmmu_init(void)
+>> -{
+>> -	int ret;
+>> -
+>> -	ret = platform_driver_register(&ipmmu_driver);
+>> -	if (ret < 0)
+>> -		return ret;
+>> -
+>> -	if (!iommu_present(&platform_bus_type))
+>> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+>> -
+>> -	return 0;
+>> -}
+>> -
+>> -static void __exit ipmmu_exit(void)
+>> -{
+>> -	return platform_driver_unregister(&ipmmu_driver);
+>> -}
+>> -
+>> -subsys_initcall(ipmmu_init);
+>> -module_exit(ipmmu_exit);
+>> +module_platform_driver(ipmmu_driver);
+>>
+>>  MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+>>  MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+> 
