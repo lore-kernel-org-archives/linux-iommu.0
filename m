@@ -1,31 +1,58 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 0/3] Misc IOVA tweaks
-Date: Tue, 19 Sep 2017 14:48:38 +0100
-Message-ID: <cover.1505827369.git.robin.murphy@arm.com>
+Subject: [PATCH 2/3] iommu/iova: Make rcache limit_pfn handling more robust
+Date: Tue, 19 Sep 2017 14:48:40 +0100
+Message-ID: <bf4856683d4130ffd34430452def7ea5d3ebc549.1505827369.git.robin.murphy@arm.com>
+References: <cover.1505827369.git.robin.murphy@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1505827369.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: joro@8bytes.org
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-While I was elbow-deep in the IOVA code, a few other things came to
-light which don't really fit into the rbtree optimisation series.
-Patches #1 and #2 are more or less just cleanup, while patch #3
-complements Tomasz' recent PCI allocation patch as it aims to
-potentially improve the same situation.
+When popping a pfn from an rcache, we are currently checking it directly
+against limit_pfn for viability. Since this represents iova->pfn_lo, it
+is technically possible for the corresponding iova->pfn_hi to be greater
+than limit_pfn. Although we generally get away with it in practice since
+limit_pfn is typically a power-of-two boundary and the IOVAs are
+size-aligned, it's pretty trivial to make the iova_rcache_get() path
+take the allocation size into account for complete safety.
 
-Last time I checked, these should all apply independently and without
-major conflicts against any other in-flight IOVA patches.
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/iova.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Robin.
-
-Robin Murphy (3):
-  iommu/iova: Simplify domain destruction
-  iommu/iova: Make rcache limit_pfn handling more robust
-  iommu/iova: Try harder to allocate from rcache magazine
-
- drivers/iommu/iova.c | 73 ++++++++++++++++++++--------------------------------
- 1 file changed, 28 insertions(+), 45 deletions(-)
-
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 35dde0fc7793..8f8b436afd81 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -411,7 +411,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 	unsigned long iova_pfn;
+ 	struct iova *new_iova;
+ 
+-	iova_pfn = iova_rcache_get(iovad, size, limit_pfn);
++	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
+ 	if (iova_pfn)
+ 		return iova_pfn;
+ 
+@@ -828,7 +828,7 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
+ {
+ 	BUG_ON(iova_magazine_empty(mag));
+ 
+-	if (mag->pfns[mag->size - 1] >= limit_pfn)
++	if (mag->pfns[mag->size - 1] > limit_pfn)
+ 		return 0;
+ 
+ 	return mag->pfns[--mag->size];
+@@ -982,7 +982,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
+ 		return 0;
+ 
+-	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn);
++	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
+ }
+ 
+ /*
 -- 
 2.13.4.dirty
