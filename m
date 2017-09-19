@@ -1,16 +1,14 @@
-From: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on driver
-	init.
-Date: Tue, 19 Sep 2017 10:45:39 +0100
-Message-ID: <20170919094539.GA10045@e110455-lin.cambridge.arm.com>
-References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
-	<2550948.Yqn2DEl6fn@avalon>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu: dmar: fix harmless section mismatch warning
+Date: Tue, 19 Sep 2017 11:45:24 +0200
+Message-ID: <20170919094524.3shqnacp2plp7rod@8bytes.org>
+References: <20170912201032.3661566-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <2550948.Yqn2DEl6fn@avalon>
+In-Reply-To: <20170912201032.3661566-1-arnd-r2nGTMty4D4@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,73 +18,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, IOMMU ML <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Jani Nikula <jani.nikula-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jarkko Sakkinen <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Lv Zheng <lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBTZXAgMTksIDIwMTcgYXQgMTA6MDc6NThBTSArMDMwMCwgTGF1cmVudCBQaW5jaGFy
-dCB3cm90ZToKPiBIaSBMaXZpdSwKPiAKPiBUaGFuayB5b3UgZm9yIHRoZSBwYXRjaC4KPiAKPiBP
-biBNb25kYXksIDE4IFNlcHRlbWJlciAyMDE3IDEzOjA0OjQ0IEVFU1QgTGl2aXUgRHVkYXUgd3Jv
-dGU6Cj4gPiBJZiB0aGUgSVBNTVUgZHJpdmVyIGlzIGNvbXBpbGVkIGluIHRoZSBrZXJuZWwgaXQg
-d2lsbCByZXBsYWNlIHRoZQo+ID4gcGxhdGZvcm0gYnVzIElPTU1VIG9wcyBvbiBydW5uaW5nIHRo
-ZSBpcG1tdV9pbml0KCkgZnVuY3Rpb24sIHJlZ2FyZGxlc3MKPiA+IGlmIHRoZXJlIGlzIGFueSBJ
-UE1NVSBoYXJkd2FyZSBwcmVzZW50IG9yIG5vdC4gVGhpcyBzY3Jld3MgdXAgc3lzdGVtcwo+ID4g
-dGhhdCBqdXN0IHdhbnQgdG8gYnVpbGQgYSBnZW5lcmljIGtlcm5lbCB0aGF0IHJ1bnMgb24gbXVs
-dGlwbGUgcGxhdGZvcm1zCj4gPiBhbmQgdXNlIGEgZGlmZmVyZW50IElPTU1VIGltcGxlbWVudGF0
-aW9uLgo+ID4gCj4gPiBNb3ZlIHRoZSBidXNfc2V0X2lvbW11KCkgY2FsbCBhdCB0aGUgZW5kIG9m
-IHRoZSBpcG1tdV9wcm9iZSgpIGZ1bmN0aW9uCj4gPiB3aGVuIHdlIGtub3cgdGhhdCBoYXJkd2Fy
-ZSBpcyBwcmVzZW50LiBXaXRoIGN1cnJlbnQgSU9NTVUgZnJhbWV3b3JrIGl0Cj4gPiBzaG91bGQg
-YmUgc2FmZSAoYXQgbGVhc3QgZm9yIE9GIGNhc2UpLgo+IAo+IElmIEkgcmVjYWxsIGNvcnJlY3Rs
-eSB0aGUgaXNzdWUgaXMgdGhhdCB0aGUgSVBNTVUgbWlnaHQgYmUgcHJvYmVkIGFmdGVyIGJ1cyAK
-PiBtYXN0ZXIgZGV2aWNlcyB3aGVuIHVzaW5nIHRoZSBsZWdhY3kgSU9NTVUgRFQgaW50ZWdyYXRp
-b24sIHdoaWNoIHRoZSBpcG1tdS0KPiB2bXNhIGRyaXZlciBkb2VzIG9uIEFSTTMyLiBDYWxsaW5n
-IGJ1c19zZXRfaW9tbXUoKSBmcm9tIHRoZSBwcm9iZSBmdW5jdGlvbiAKPiB3aWxsIHRoZW4gcmVz
-dWx0IGluIHNvbWUgZGV2aWNlcyBsb3NpbmcgSU9NTVUgc3VwcG9ydC4KClRoaXMgaXMgb24gYXJt
-NjQsIG9uIHRoZSBBcm0gSnVubyBib2FyZC4KCj4gCj4gPiBOb3cgdGhhdCB0aGUgaXBtbXVfaW5p
-dCgpIGFuZCBpcG1tdV9leGl0KCkgZnVuY3Rpb25zIGFyZSBzaW1wbGUgY2FsbHMgdG8KPiA+IHBs
-YXRmb3JtX2RyaXZlcl9yZWdpc3RlcigpIGFuZCBwbGF0Zm9ybV9kcml2ZXJfdW5yZWdpc3Rlcigp
-LCByZXBsYWNlCj4gPiB0aGVtIHdpdGggdGhlIG1vZHVsZV9wbGF0Zm9ybV9kcml2ZXIoKSBtYWNy
-byBjYWxsLgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBMaXZpdSBEdWRhdSA8TGl2aXUuRHVkYXVA
-YXJtLmNvbT4KPiA+IENjOiBMYXVyZW50IFBpbmNoYXJ0IDxsYXVyZW50LnBpbmNoYXJ0K3JlbmVz
-YXNAaWRlYXNvbmJvYXJkLmNvbT4KPiA+IC0tLQo+ID4gIGRyaXZlcnMvaW9tbXUvaXBtbXUtdm1z
-YS5jIHwgMjkgKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiA+ICAxIGZpbGUgY2hhbmdl
-ZCwgNSBpbnNlcnRpb25zKCspLCAyNCBkZWxldGlvbnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvaW9tbXUvaXBtbXUtdm1zYS5jIGIvZHJpdmVycy9pb21tdS9pcG1tdS12bXNhLmMK
-PiA+IGluZGV4IDJhMzhhYTE1YmUxN2QuLmM2MDU2OWM3NDY3OGQgMTAwNjQ0Cj4gPiAtLS0gYS9k
-cml2ZXJzL2lvbW11L2lwbW11LXZtc2EuYwo+ID4gKysrIGIvZHJpdmVycy9pb21tdS9pcG1tdS12
-bXNhLmMKPiA+IEBAIC0xMDU1LDEwICsxMDU1LDExIEBAIHN0YXRpYyBpbnQgaXBtbXVfcHJvYmUo
-c3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiA+IGlwbW11X2RldmljZV9yZXNldChtbXUp
-Owo+ID4gCj4gPiAgCS8qCj4gPiAtCSAqIFdlIGNhbid0IGNyZWF0ZSB0aGUgQVJNIG1hcHBpbmcg
-aGVyZSBhcyBpdCByZXF1aXJlcyB0aGUgYnVzIHRvIGhhdmUKPiA+IC0JICogYW4gSU9NTVUsIHdo
-aWNoIG9ubHkgaGFwcGVucyB3aGVuIGJ1c19zZXRfaW9tbXUoKSBpcyBjYWxsZWQgaW4KPiA+IC0J
-ICogaXBtbXVfaW5pdCgpIGFmdGVyIHRoZSBwcm9iZSBmdW5jdGlvbiByZXR1cm5zLgo+ID4gKwkg
-KiBOb3cgdGhhdCB3ZSBoYXZlIHZhbGlkYXRlZCB0aGUgcHJlc2VuY2Ugb2YgdGhlIGhhcmR3YXJl
-LCBzZXQKPiA+ICsJICogdGhlIGJ1cyBJT01NVSBvcHMgdG8gZW5hYmxlIGZ1dHVyZSBkb21haW4g
-YW5kIGRldmljZSBzZXR1cC4KPiA+ICAJICovCj4gPiArCWlmICghaW9tbXVfcHJlc2VudCgmcGxh
-dGZvcm1fYnVzX3R5cGUpKQo+ID4gKwkJYnVzX3NldF9pb21tdSgmcGxhdGZvcm1fYnVzX3R5cGUs
-ICZpcG1tdV9vcHMpOwo+ID4gCj4gPiAgCXNwaW5fbG9jaygmaXBtbXVfZGV2aWNlc19sb2NrKTsK
-PiA+ICAJbGlzdF9hZGQoJm1tdS0+bGlzdCwgJmlwbW11X2RldmljZXMpOwo+IAo+IFdoYXQgYnJh
-bmNoIGlzIHRoaXMgcGF0Y2ggYmFzZWQgb24gPyBpcG1tdV9kZXZpY2VzX2xvY2sgaXNuJ3QgaW4g
-bWFpbmxpbmUuCgpkcm0tbmV4dC4gOikKTG9va3MgbGlrZSB0aGluZ3MgaGF2ZSBtb3ZlIGZvcndh
-cmQgc2luY2UgSSd2ZSBtYWRlIHRoZSBwYXRjaCBiZWZvcmUKTFBDLCB3aWxsIHVwZGF0ZSBhbmQg
-cmVzZW5kLgoKQmVzdCByZWdhcmRzLApMaXZpdQoKPiAKPiA+IEBAIC0xMTAwLDI3ICsxMTAxLDcg
-QEAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgaXBtbXVfZHJpdmVyID0gewo+ID4gIAku
-cmVtb3ZlCT0gaXBtbXVfcmVtb3ZlLAo+ID4gIH07Cj4gPiAKPiA+IC1zdGF0aWMgaW50IF9faW5p
-dCBpcG1tdV9pbml0KHZvaWQpCj4gPiAtewo+ID4gLQlpbnQgcmV0Owo+ID4gLQo+ID4gLQlyZXQg
-PSBwbGF0Zm9ybV9kcml2ZXJfcmVnaXN0ZXIoJmlwbW11X2RyaXZlcik7Cj4gPiAtCWlmIChyZXQg
-PCAwKQo+ID4gLQkJcmV0dXJuIHJldDsKPiA+IC0KPiA+IC0JaWYgKCFpb21tdV9wcmVzZW50KCZw
-bGF0Zm9ybV9idXNfdHlwZSkpCj4gPiAtCQlidXNfc2V0X2lvbW11KCZwbGF0Zm9ybV9idXNfdHlw
-ZSwgJmlwbW11X29wcyk7Cj4gPiAtCj4gPiAtCXJldHVybiAwOwo+ID4gLX0KPiA+IC0KPiA+IC1z
-dGF0aWMgdm9pZCBfX2V4aXQgaXBtbXVfZXhpdCh2b2lkKQo+ID4gLXsKPiA+IC0JcmV0dXJuIHBs
-YXRmb3JtX2RyaXZlcl91bnJlZ2lzdGVyKCZpcG1tdV9kcml2ZXIpOwo+ID4gLX0KPiA+IC0KPiA+
-IC1zdWJzeXNfaW5pdGNhbGwoaXBtbXVfaW5pdCk7Cj4gPiAtbW9kdWxlX2V4aXQoaXBtbXVfZXhp
-dCk7Cj4gPiArbW9kdWxlX3BsYXRmb3JtX2RyaXZlcihpcG1tdV9kcml2ZXIpOwo+ID4gCj4gPiAg
-TU9EVUxFX0RFU0NSSVBUSU9OKCJJT01NVSBBUEkgZm9yIFJlbmVzYXMgVk1TQS1jb21wYXRpYmxl
-IElQTU1VIik7Cj4gPiAgTU9EVUxFX0FVVEhPUigiTGF1cmVudCBQaW5jaGFydCA8bGF1cmVudC5w
-aW5jaGFydEBpZGVhc29uYm9hcmQuY29tPiIpOwo+IAo+IC0tIAo+IFJlZ2FyZHMsCj4gCj4gTGF1
-cmVudCBQaW5jaGFydAo+IAoKLS0gCj09PT09PT09PT09PT09PT09PT09CnwgSSB3b3VsZCBsaWtl
-IHRvIHwKfCBmaXggdGhlIHdvcmxkLCAgfAp8IGJ1dCB0aGV5J3JlIG5vdCB8CnwgZ2l2aW5nIG1l
-IHRoZSAgIHwKIFwgc291cmNlIGNvZGUhICAvCiAgLS0tLS0tLS0tLS0tLS0tCiAgICDCr1xfKOOD
-hClfL8KvCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
-bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
-L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, Sep 12, 2017 at 10:10:21PM +0200, Arnd Bergmann wrote:
+> Building with gcc-4.6 results in this warning due to
+> dmar_table_print_dmar_entry being inlined as in newer compiler versions:
+> 
+> WARNING: vmlinux.o(.text+0x5c8bee): Section mismatch in reference from the function dmar_walk_remapping_entries() to the function .init.text:dmar_table_print_dmar_entry()
+> The function dmar_walk_remapping_entries() references
+> the function __init dmar_table_print_dmar_entry().
+> This is often because dmar_walk_remapping_entries lacks a __init
+> annotation or the annotation of dmar_table_print_dmar_entry is wrong.
+> 
+> This removes the __init annotation to avoid the warning. On compilers
+> that don't show the warning today, this should have no impact since the
+> function gets inlined anyway.
+> 
+> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> ---
+>  drivers/iommu/dmar.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Applied, thanks.
