@@ -1,14 +1,14 @@
-From: "Jasty, Ananth" <Ananth.Jasty-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: Seeing conflict with IPMMU driver under ACPI
-Date: Tue, 19 Sep 2017 06:54:49 +0000
-Message-ID: <49EA67E4-A526-4F47-9D3A-18E458850E03@caviumnetworks.com>
-References: <CAA01098-8301-4703-84CE-5CFA8A68AF13@caviumnetworks.com>
-	<2844194.3pNGIKcM4n@avalon>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on driver
+	init.
+Date: Tue, 19 Sep 2017 10:07:58 +0300
+Message-ID: <2550948.Yqn2DEl6fn@avalon>
+References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3868570075230227765=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2844194.3pNGIKcM4n@avalon>
-Content-Language: en-US
+In-Reply-To: <20170918100444.21878-1-Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,159 +18,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: "laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org" <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org" <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, dann frazier <dann.frazier-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Jasty, Ananth" <Ananth.Jasty-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+To: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, IOMMU ML <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============3868570075230227765==
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_49EA67E4A5264F479D3A18E458850E03caviumnetworkscom_"
+Hi Liviu,
 
---_000_49EA67E4A5264F479D3A18E458850E03caviumnetworkscom_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Thank you for the patch.
 
-T24gU2VwIDE4LCAyMDE3LCBhdCAxMTo0OSBQTSwgTGF1cmVudCBQaW5jaGFydCA8bGF1cmVudC5w
-aW5jaGFydEBpZGVhc29uYm9hcmQuY29tPG1haWx0bzpsYXVyZW50LnBpbmNoYXJ0QGlkZWFzb25i
-b2FyZC5jb20+PiB3cm90ZToNCg0KSGkgQW5hbnRoLA0KDQpPbiBUdWVzZGF5LCAxOSBTZXB0ZW1i
-ZXIgMjAxNyAwMzo0MzowNSBFRVNUIEphc3R5LCBBbmFudGggd3JvdGU6DQpIaSwgd2l0aCB5b3Vy
-IElQTU1VIGRyaXZlciBlbmFibGVkIHVuZGVyIDQuMTMgd2XigJlyZSBzZWVpbmcgYSBjcmFzaCBv
-biBib290Og0KDQpbIDEzLjc4NTE2NF0gVW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgTlVMTCBwb2lu
-dGVyIGRlcmVmZXJlbmNlIGF0IHZpcnR1YWwNCmFkZHJlc3MgMDAwMDAwMTgNClsgMTMuNzkzMjU0
-XSBbMDAwMDAwMDAwMDAwMDAxOF0gdXNlciBhZGRyZXNzIGJ1dCBhY3RpdmVfbW0gaXMgc3dhcHBl
-cg0KWyAxMy43OTk2MDBdIEludGVybmFsIGVycm9yOiBPb3BzOiA5NjAwMDAwNCBbIzFdIFNNUA0K
-WyAxMy44MDQ0NjZdIE1vZHVsZXMgbGlua2VkIGluOiBhZXNfbmVvbl9icyBhZXNfbmVvbl9ibGsg
-Y3J5cHRvX3NpbWQgY3J5cHRkDQpbIDEzLjgxMTMzNF0gQ1BVOiAxNTIgUElEOiAxNTI5IENvbW06
-IGt3b3JrZXIvMTUyOjEgTm90IHRhaW50ZWQNCjQuMTMuMC05LWdlbmVyaWMgIzEwLVVidW50dQ0K
-WyAxMy44MTk1ODRdIEhhcmR3YXJlIG5hbWU6IERlZmF1bHQgc3RyaW5nIENhdml1bSBUaHVuZGVy
-WDIvRGVmYXVsdCBzdHJpbmcsDQpCSU9TIDUuMTMgMDcvMjAvMjAxNw0KWyAxMy44MjgyODVdIFdv
-cmtxdWV1ZTogZXZlbnRzIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYw0KWyAxMy44MzM0MTBdIHRh
-c2s6IGZmZmY4MGJlZTkzZDAwMDAgdGFzay5zdGFjazogZmZmZjgwYmVlOTNkYzAwMA0KWyAxMy44
-MzkzMzBdIFBDIGlzIGF0IGlvbW11X29wc19mcm9tX2Z3bm9kZSsweDRjLzB4OTANClsgMTMuODQ0
-MjgyXSBMUiBpcyBhdCBpb21tdV9vcHNfZnJvbV9md25vZGUrMHgyOC8weDkwDQoNClRoZSBBUk0g
-U01NVXYzIGRyaXZlciAod2hpY2ggb3VyIHBsYXRmb3JtIGltcGxlbWVudHMpIHNlZW1zIHRvIGJl
-IGxvc2luZw0KaW9tbXVfb3BzIHRvIHRoZSBJUE1NVSBkcml2ZXIuDQoNCllvdSBzZWVtIG5vdCB0
-byBiZSB0aGUgZmlyc3Qgb25lIHRvIG5vdGljZToNCg0KaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVs
-Lm9yZy9wYXRjaC85OTU2NDQ5Lw0KDQpXb3csIGhlIGRpZCBub3QgYmVhdCBtZSBieSBtdWNoLg0K
-DQpOb3RlOiBvdXIgcGxhdGZvcm0gdXNlcyBBQ1BJIGZvciBkZXZpY2UgZW51bWVyYXRpb24uDQoN
-CkkgaGF2ZSBubyB3YXkgdG8gdGVzdCB0aGlzLCBidXQgaXMgdGhlcmUgYSByZWFzb24gdGhlIHNl
-dF9pb21tdSBpc27igJl0IGluDQpfcHJvYmU/DQoNCkkgY2FuJ3QgcmVjYWxsIHdoYXQgdGhlIHJl
-YXNvbiB3YXMgSSdtIGFmcmFpZC4NCg0KYXJtLXNtbXUtdjMuYyBkb2VzIGRvIHRoZSBzZXRfaW9t
-bXUgaW4gcHJvYmUsIGFuZCB0aHVzIGZhciB0aGVyZSBoYXZlIGJlZW4gbm8gY29uZmlybWVkIGZh
-dGFsaXRpZXMsIGJ1dCBJIGNhbid0IHNwZWFrIGF1dGhvcml0YXRpdmVseS4NCg0KSSdsbCBsZWF2
-ZSB5b3UgYWxsIHRvIGl0IHRoZW4uDQoNClRoYW5rcywNCg0KQW5hbnRoDQoNCg0KZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvaW9tbXUvaXBtbXUtdm1zYS5jIGIvZHJpdmVycy9pb21tdS9pcG1tdS12bXNh
-LmMNCmluZGV4IDJhMzhhYTEuLmQ0YzcyZGEgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L2lw
-bW11LXZtc2EuYw0KKysrIGIvZHJpdmVycy9pb21tdS9pcG1tdS12bXNhLmMNCkBAIC0xMDY2LDYg
-KzEwNjYsOSBAQCBzdGF0aWMgaW50IGlwbW11X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2Ug
-KnBkZXYpDQoNCiAgICAgICBwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBtbXUpOw0KDQorICAg
-ICAgIGlmICghaW9tbXVfcHJlc2VudCgmcGxhdGZvcm1fYnVzX3R5cGUpKQ0KKyAgICAgICAgICAg
-ICAgIGJ1c19zZXRfaW9tbXUoJnBsYXRmb3JtX2J1c190eXBlLCAmaXBtbXVfb3BzKTsNCisNCiAg
-ICAgICByZXR1cm4gMDsNCn0NCg0KQEAgLTExMDgsOSArMTExMSw2IEBAIHN0YXRpYyBpbnQgX19p
-bml0IGlwbW11X2luaXQodm9pZCkNCiAgICAgICBpZiAocmV0IDwgMCkNCiAgICAgICAgICAgICAg
-IHJldHVybiByZXQ7DQoNCi0gICAgICAgaWYgKCFpb21tdV9wcmVzZW50KCZwbGF0Zm9ybV9idXNf
-dHlwZSkpDQotICAgICAgICAgICAgICAgYnVzX3NldF9pb21tdSgmcGxhdGZvcm1fYnVzX3R5cGUs
-ICZpcG1tdV9vcHMpOw0KLQ0KICAgICAgIHJldHVybiAwOw0KfQ0KDQoNCklmIEnigJltIHdyb25n
-LCBteSBhcG9sb2dpZXMuDQoNCi0tDQpSZWdhcmRzLA0KDQpMYXVyZW50IFBpbmNoYXJ0DQoNCg0K
+On Monday, 18 September 2017 13:04:44 EEST Liviu Dudau wrote:
+> If the IPMMU driver is compiled in the kernel it will replace the
+> platform bus IOMMU ops on running the ipmmu_init() function, regardless
+> if there is any IPMMU hardware present or not. This screws up systems
+> that just want to build a generic kernel that runs on multiple platforms
+> and use a different IOMMU implementation.
+> 
+> Move the bus_set_iommu() call at the end of the ipmmu_probe() function
+> when we know that hardware is present. With current IOMMU framework it
+> should be safe (at least for OF case).
 
---_000_49EA67E4A5264F479D3A18E458850E03caviumnetworkscom_
-Content-Type: text/html; charset="utf-8"
-Content-ID: <97D88308BF1ECC4C87C4388413729616-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-Content-Transfer-Encoding: base64
+If I recall correctly the issue is that the IPMMU might be probed after bus 
+master devices when using the legacy IOMMU DT integration, which the ipmmu-
+vmsa driver does on ARM32. Calling bus_set_iommu() from the probe function 
+will then result in some devices losing IOMMU support.
 
-PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
-dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHN0eWxlPSJ3b3JkLXdy
-YXA6IGJyZWFrLXdvcmQ7IC13ZWJraXQtbmJzcC1tb2RlOiBzcGFjZTsgLXdlYmtpdC1saW5lLWJy
-ZWFrOiBhZnRlci13aGl0ZS1zcGFjZTsiIGNsYXNzPSIiPg0KT24gU2VwIDE4LCAyMDE3LCBhdCAx
-MTo0OSBQTSwgTGF1cmVudCBQaW5jaGFydCAmbHQ7PGEgaHJlZj0ibWFpbHRvOmxhdXJlbnQucGlu
-Y2hhcnRAaWRlYXNvbmJvYXJkLmNvbSIgY2xhc3M9IiI+bGF1cmVudC5waW5jaGFydEBpZGVhc29u
-Ym9hcmQuY29tPC9hPiZndDsgd3JvdGU6PGJyIGNsYXNzPSIiPg0KPGRpdj4NCjxibG9ja3F1b3Rl
-IHR5cGU9ImNpdGUiIGNsYXNzPSIiPjxiciBjbGFzcz0iQXBwbGUtaW50ZXJjaGFuZ2UtbmV3bGlu
-ZSI+DQo8ZGl2IGNsYXNzPSIiPg0KPGRpdiBjbGFzcz0iIj5IaSBBbmFudGgsPGJyIGNsYXNzPSIi
-Pg0KPGJyIGNsYXNzPSIiPg0KT24gVHVlc2RheSwgMTkgU2VwdGVtYmVyIDIwMTcgMDM6NDM6MDUg
-RUVTVCBKYXN0eSwgQW5hbnRoIHdyb3RlOjxiciBjbGFzcz0iIj4NCjxibG9ja3F1b3RlIHR5cGU9
-ImNpdGUiIGNsYXNzPSIiPkhpLCB3aXRoIHlvdXIgSVBNTVUgZHJpdmVyIGVuYWJsZWQgdW5kZXIg
-NC4xMyB3ZeKAmXJlIHNlZWluZyBhIGNyYXNoIG9uIGJvb3Q6PGJyIGNsYXNzPSIiPg0KPGJyIGNs
-YXNzPSIiPg0KWyAxMy43ODUxNjRdIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRl
-ciBkZXJlZmVyZW5jZSBhdCB2aXJ0dWFsPGJyIGNsYXNzPSIiPg0KYWRkcmVzcyAwMDAwMDAxODxi
-ciBjbGFzcz0iIj4NClsgMTMuNzkzMjU0XSBbMDAwMDAwMDAwMDAwMDAxOF0gdXNlciBhZGRyZXNz
-IGJ1dCBhY3RpdmVfbW0gaXMgc3dhcHBlcjxiciBjbGFzcz0iIj4NClsgMTMuNzk5NjAwXSBJbnRl
-cm5hbCBlcnJvcjogT29wczogOTYwMDAwMDQgWyMxXSBTTVA8YnIgY2xhc3M9IiI+DQpbIDEzLjgw
-NDQ2Nl0gTW9kdWxlcyBsaW5rZWQgaW46IGFlc19uZW9uX2JzIGFlc19uZW9uX2JsayBjcnlwdG9f
-c2ltZCBjcnlwdGQ8YnIgY2xhc3M9IiI+DQpbIDEzLjgxMTMzNF0gQ1BVOiAxNTIgUElEOiAxNTI5
-IENvbW06IGt3b3JrZXIvMTUyOjEgTm90IHRhaW50ZWQ8YnIgY2xhc3M9IiI+DQo0LjEzLjAtOS1n
-ZW5lcmljICMxMC1VYnVudHU8YnIgY2xhc3M9IiI+DQpbIDEzLjgxOTU4NF0gSGFyZHdhcmUgbmFt
-ZTogRGVmYXVsdCBzdHJpbmcgQ2F2aXVtIFRodW5kZXJYMi9EZWZhdWx0IHN0cmluZyw8YnIgY2xh
-c3M9IiI+DQpCSU9TIDUuMTMgMDcvMjAvMjAxNzxiciBjbGFzcz0iIj4NClsgMTMuODI4Mjg1XSBX
-b3JrcXVldWU6IGV2ZW50cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmM8YnIgY2xhc3M9IiI+DQpb
-IDEzLjgzMzQxMF0gdGFzazogZmZmZjgwYmVlOTNkMDAwMCB0YXNrLnN0YWNrOiBmZmZmODBiZWU5
-M2RjMDAwPGJyIGNsYXNzPSIiPg0KWyAxMy44MzkzMzBdIFBDIGlzIGF0IGlvbW11X29wc19mcm9t
-X2Z3bm9kZSYjNDM7MHg0Yy8weDkwPGJyIGNsYXNzPSIiPg0KWyAxMy44NDQyODJdIExSIGlzIGF0
-IGlvbW11X29wc19mcm9tX2Z3bm9kZSYjNDM7MHgyOC8weDkwPGJyIGNsYXNzPSIiPg0KPGJyIGNs
-YXNzPSIiPg0KVGhlIEFSTSBTTU1VdjMgZHJpdmVyICh3aGljaCBvdXIgcGxhdGZvcm0gaW1wbGVt
-ZW50cykgc2VlbXMgdG8gYmUgbG9zaW5nPGJyIGNsYXNzPSIiPg0KaW9tbXVfb3BzIHRvIHRoZSBJ
-UE1NVSBkcml2ZXIuPGJyIGNsYXNzPSIiPg0KPC9ibG9ja3F1b3RlPg0KPGJyIGNsYXNzPSIiPg0K
-WW91IHNlZW0gbm90IHRvIGJlIHRoZSBmaXJzdCBvbmUgdG8gbm90aWNlOjxiciBjbGFzcz0iIj4N
-CjxiciBjbGFzcz0iIj4NCjxhIGhyZWY9Imh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcGF0
-Y2gvOTk1NjQ0OS8iIGNsYXNzPSIiPmh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcGF0Y2gv
-OTk1NjQ0OS88L2E+PGJyIGNsYXNzPSIiPg0KPC9kaXY+DQo8L2Rpdj4NCjwvYmxvY2txdW90ZT4N
-CjxkaXY+PGJyIGNsYXNzPSIiPg0KPC9kaXY+DQpXb3csIGhlIGRpZCBub3QgYmVhdCBtZSBieSBt
-dWNoLjxiciBjbGFzcz0iIj4NCjxibG9ja3F1b3RlIHR5cGU9ImNpdGUiIGNsYXNzPSIiPg0KPGRp
-diBjbGFzcz0iIj4NCjxkaXYgY2xhc3M9IiI+PGJyIGNsYXNzPSIiPg0KPGJsb2NrcXVvdGUgdHlw
-ZT0iY2l0ZSIgY2xhc3M9IiI+Tm90ZTogb3VyIHBsYXRmb3JtIHVzZXMgQUNQSSBmb3IgZGV2aWNl
-IGVudW1lcmF0aW9uLjxiciBjbGFzcz0iIj4NCjxiciBjbGFzcz0iIj4NCkkgaGF2ZSBubyB3YXkg
-dG8gdGVzdCB0aGlzLCBidXQgaXMgdGhlcmUgYSByZWFzb24gdGhlIHNldF9pb21tdSBpc27igJl0
-IGluPGJyIGNsYXNzPSIiPg0KX3Byb2JlPzxiciBjbGFzcz0iIj4NCjwvYmxvY2txdW90ZT4NCjxi
-ciBjbGFzcz0iIj4NCkkgY2FuJ3QgcmVjYWxsIHdoYXQgdGhlIHJlYXNvbiB3YXMgSSdtIGFmcmFp
-ZC48YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjwvZGl2Pg0KPC9ibG9ja3F1b3RlPg0KPGRpdj48YnIg
-Y2xhc3M9IiI+DQo8L2Rpdj4NCmFybS1zbW11LXYzLmMgZG9lcyBkbyB0aGUgc2V0X2lvbW11IGlu
-IHByb2JlLCBhbmQgdGh1cyBmYXIgdGhlcmUgaGF2ZSBiZWVuIG5vIGNvbmZpcm1lZCBmYXRhbGl0
-aWVzLCBidXQgSSBjYW4ndCBzcGVhayBhdXRob3JpdGF0aXZlbHkuPC9kaXY+DQo8ZGl2PjxiciBj
-bGFzcz0iIj4NCjwvZGl2Pg0KPGRpdj5JJ2xsIGxlYXZlIHlvdSBhbGwgdG8gaXQgdGhlbi48L2Rp
-dj4NCjxkaXY+PGJyIGNsYXNzPSIiPg0KPC9kaXY+DQo8ZGl2PlRoYW5rcyw8L2Rpdj4NCjxkaXY+
-PGJyIGNsYXNzPSIiPg0KPC9kaXY+DQo8ZGl2PkFuYW50aDwvZGl2Pg0KPGRpdj48YnIgY2xhc3M9
-IiI+DQo8L2Rpdj4NCjxkaXY+DQo8YmxvY2txdW90ZSB0eXBlPSJjaXRlIiBjbGFzcz0iIj4NCjxk
-aXYgY2xhc3M9IiI+DQo8ZGl2IGNsYXNzPSIiPjxiciBjbGFzcz0iIj4NCjxibG9ja3F1b3RlIHR5
-cGU9ImNpdGUiIGNsYXNzPSIiPmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lwbW11LXZtc2Eu
-YyBiL2RyaXZlcnMvaW9tbXUvaXBtbXUtdm1zYS5jPGJyIGNsYXNzPSIiPg0KaW5kZXggMmEzOGFh
-MS4uZDRjNzJkYSAxMDA2NDQ8YnIgY2xhc3M9IiI+DQotLS0gYS9kcml2ZXJzL2lvbW11L2lwbW11
-LXZtc2EuYzxiciBjbGFzcz0iIj4NCiYjNDM7JiM0MzsmIzQzOyBiL2RyaXZlcnMvaW9tbXUvaXBt
-bXUtdm1zYS5jPGJyIGNsYXNzPSIiPg0KQEAgLTEwNjYsNiAmIzQzOzEwNjYsOSBAQCBzdGF0aWMg
-aW50IGlwbW11X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpPGJyIGNsYXNzPSIi
-Pg0KPGJyIGNsYXNzPSIiPg0KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
-c3A7cGxhdGZvcm1fc2V0X2RydmRhdGEocGRldiwgbW11KTs8YnIgY2xhc3M9IiI+DQo8YnIgY2xh
-c3M9IiI+DQomIzQzOyAmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDtpZiAoIWlv
-bW11X3ByZXNlbnQoJmFtcDtwbGF0Zm9ybV9idXNfdHlwZSkpPGJyIGNsYXNzPSIiPg0KJiM0Mzsg
-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
-c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7YnVzX3NldF9pb21tdSgmYW1wO3BsYXRmb3JtX2J1
-c190eXBlLCAmYW1wO2lwbW11X29wcyk7PGJyIGNsYXNzPSIiPg0KJiM0Mzs8YnIgY2xhc3M9IiI+
-DQombmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDtyZXR1cm4gMDs8YnIg
-Y2xhc3M9IiI+DQp9PGJyIGNsYXNzPSIiPg0KPGJyIGNsYXNzPSIiPg0KQEAgLTExMDgsOSAmIzQz
-OzExMTEsNiBAQCBzdGF0aWMgaW50IF9faW5pdCBpcG1tdV9pbml0KHZvaWQpPGJyIGNsYXNzPSIi
-Pg0KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7aWYgKHJldCAmbHQ7
-IDApPGJyIGNsYXNzPSIiPg0KJm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5i
-c3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7cmV0dXJu
-IHJldDs8YnIgY2xhc3M9IiI+DQo8YnIgY2xhc3M9IiI+DQotICZuYnNwOyZuYnNwOyZuYnNwOyZu
-YnNwOyZuYnNwOyZuYnNwO2lmICghaW9tbXVfcHJlc2VudCgmYW1wO3BsYXRmb3JtX2J1c190eXBl
-KSk8YnIgY2xhc3M9IiI+DQotICZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO2J1c19zZXRfaW9t
-bXUoJmFtcDtwbGF0Zm9ybV9idXNfdHlwZSwgJmFtcDtpcG1tdV9vcHMpOzxiciBjbGFzcz0iIj4N
-Ci08YnIgY2xhc3M9IiI+DQombmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJz
-cDtyZXR1cm4gMDs8YnIgY2xhc3M9IiI+DQp9PGJyIGNsYXNzPSIiPg0KPGJyIGNsYXNzPSIiPg0K
-PGJyIGNsYXNzPSIiPg0KSWYgSeKAmW0gd3JvbmcsIG15IGFwb2xvZ2llcy48YnIgY2xhc3M9IiI+
-DQo8L2Jsb2NrcXVvdGU+DQo8YnIgY2xhc3M9IiI+DQotLSA8YnIgY2xhc3M9IiI+DQpSZWdhcmRz
-LDxiciBjbGFzcz0iIj4NCjxiciBjbGFzcz0iIj4NCkxhdXJlbnQgUGluY2hhcnQ8YnIgY2xhc3M9
-IiI+DQo8YnIgY2xhc3M9IiI+DQo8L2Rpdj4NCjwvZGl2Pg0KPC9ibG9ja3F1b3RlPg0KPC9kaXY+
-DQo8YnIgY2xhc3M9IiI+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
+> Now that the ipmmu_init() and ipmmu_exit() functions are simple calls to
+> platform_driver_register() and platform_driver_unregister(), replace
+> them with the module_platform_driver() macro call.
+> 
+> Signed-off-by: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+> Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+>  drivers/iommu/ipmmu-vmsa.c | 29 +++++------------------------
+>  1 file changed, 5 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index 2a38aa15be17d..c60569c74678d 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -1055,10 +1055,11 @@ static int ipmmu_probe(struct platform_device *pdev)
+> ipmmu_device_reset(mmu);
+> 
+>  	/*
+> -	 * We can't create the ARM mapping here as it requires the bus to have
+> -	 * an IOMMU, which only happens when bus_set_iommu() is called in
+> -	 * ipmmu_init() after the probe function returns.
+> +	 * Now that we have validated the presence of the hardware, set
+> +	 * the bus IOMMU ops to enable future domain and device setup.
+>  	 */
+> +	if (!iommu_present(&platform_bus_type))
+> +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+> 
+>  	spin_lock(&ipmmu_devices_lock);
+>  	list_add(&mmu->list, &ipmmu_devices);
 
---_000_49EA67E4A5264F479D3A18E458850E03caviumnetworkscom_--
+What branch is this patch based on ? ipmmu_devices_lock isn't in mainline.
 
---===============3868570075230227765==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> @@ -1100,27 +1101,7 @@ static struct platform_driver ipmmu_driver = {
+>  	.remove	= ipmmu_remove,
+>  };
+> 
+> -static int __init ipmmu_init(void)
+> -{
+> -	int ret;
+> -
+> -	ret = platform_driver_register(&ipmmu_driver);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	if (!iommu_present(&platform_bus_type))
+> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+> -
+> -	return 0;
+> -}
+> -
+> -static void __exit ipmmu_exit(void)
+> -{
+> -	return platform_driver_unregister(&ipmmu_driver);
+> -}
+> -
+> -subsys_initcall(ipmmu_init);
+> -module_exit(ipmmu_exit);
+> +module_platform_driver(ipmmu_driver);
+> 
+>  MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+>  MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
 
+-- 
+Regards,
 
---===============3868570075230227765==--
+Laurent Pinchart
