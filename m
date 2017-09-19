@@ -1,94 +1,48 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all endpoints
-Date: Mon, 18 Sep 2017 14:45:21 -0400
-Message-ID: <CAF6AEGt4hX5bg4z8-FqD+O5pGYQdGhacBbWgeCk4qcjoDbFjaA@mail.gmail.com>
-References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
- <1471525542-14969-4-git-send-email-will.deacon@arm.com> <CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com>
- <20161216115413.GE13191@arm.com> <CAF6AEGssw_-rSexP9gCCFfgoa1JPt1ChR98-5Ev7EUcXwWfkyA@mail.gmail.com>
- <20170918173351.GJ11343@arm.com>
+From: "Jasty, Ananth" <Ananth.Jasty@cavium.com>
+Subject: Seeing conflict with IPMMU driver under ACPI
+Date: Tue, 19 Sep 2017 00:43:05 +0000
+Message-ID: <CAA01098-8301-4703-84CE-5CFA8A68AF13@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20170918173351.GJ11343@arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Sricharan R <sricharan@codeaurora.org>, Jordan Crouse <jcrouse@codeaurora.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Language: en-US
+Content-ID: <2886555FEDEEB144A3FEF4A7903EAB9D@namprd07.prod.outlook.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: "magnus.damm@gmail.com" <magnus.damm@gmail.com>
+Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, dann frazier <dann.frazier@canonical.com>, "laurent.pinchart+renesas@ideasonboard.com" <laurent.pinchart+renesas@ideasonboard.com>, "geert+renesas@glider.be" <geert+renesas@glider.be>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 18, 2017 at 1:33 PM, Will Deacon <will.deacon@arm.com> wrote:
-> On Wed, Sep 13, 2017 at 03:31:20PM -0400, Rob Clark wrote:
->> On Fri, Dec 16, 2016 at 6:54 AM, Will Deacon <will.deacon@arm.com> wrote:
->> > Hi Rob,
->> >
->> > On Tue, Dec 06, 2016 at 06:30:21PM -0500, Rob Clark wrote:
->> >> On Thu, Aug 18, 2016 at 9:05 AM, Will Deacon <will.deacon@arm.com> wrote:
->> >> > Enabling stalling faults can result in hardware deadlock on poorly
->> >> > designed systems, particularly those with a PCI root complex upstream of
->> >> > the SMMU.
->> >> >
->> >> > Although it's not really Linux's job to save hardware integrators from
->> >> > their own misfortune, it *is* our job to stop userspace (e.g. VFIO
->> >> > clients) from hosing the system for everybody else, even if they might
->> >> > already be required to have elevated privileges.
->> >> >
->> >> > Given that the fault handling code currently executes entirely in IRQ
->> >> > context, there is nothing that can sensibly be done to recover from
->> >> > things like page faults anyway, so let's rip this code out for now and
->> >> > avoid the potential for deadlock.
->> >>
->> >> so, I'd like to re-introduce this feature, I *guess* as some sort of
->> >> opt-in quirk (ie. disabled by default unless something in DT tells you
->> >> otherwise??  But I'm open to suggestions.  I'm not entirely sure what
->> >> hw was having problems due to this feature.)
->> >>
->> >> On newer snapdragon devices we are using arm-smmu for the GPU, and
->> >> halting the GPU so the driver's fault handler can dump some GPU state
->> >> on faults is enormously helpful for debugging and tracking down where
->> >> in the gpu cmdstream the fault was triggered.  In addition, we will
->> >> eventually want the ability to update pagetables from fault handler
->> >> and resuming the faulting transition.
->> >
->> > I'm not against reintroducing this, but it would certainly need to be
->> > opt-in, as you suggest. If we want to try to use stall faults to enable
->> > demand paging for DMA, then that means running core mm code to resolve
->> > the fault and we can't do that in irq context. Consequently, we have to
->> > hand this off to a thread, which means the hardware must allow the SS
->> > bit to remain set without immediately reasserting the interrupt line.
->> > Furthermore, we can't handle multiple faults on a context-bank, so we'd
->> > need to restrict ourselves to one device (i.e. faulting stream) per
->> > domain (CB).
->> >
->> > I think that means we want both specific compatible strings to identify
->> > the SS bit behaviour, but also a way to opt-in for the stall model as a
->> > separate property to indicate that the SoC integration can support this
->> > without e.g. deadlocking.
->> >
->>
->> How do you feel about a short-term step to keep things in irq context,
->> but enable stall mode?  I'm debugging an issue, where it appears that
->> the gpu cannot handle a non-stalled fault (triggers some fairly
->> bizarre follow-on problems).  So I think even if we don't add a fault
->> handler callback, we still want to set the CFCFG bit and
->> RESUME_TERMINATE in the fault handler on this hardware.
->
-> Hmm, colour me unconvinced. Why does enabling stalls fix this problem?
-> I'd rather we bite the bullet and implement things properly on top of
-> a workqueue so that you can build on the same basic infrastructure as
-> the SVM work that Jean-Philippe is looking at, particular as you also
-> have a use-case for running fault code in non-atomic context.
->
-
-So, it seems like setting either CFCFG or HUPCF (which is what
-downstream android kernel apparently does) avoids this issue.
-
-It seems like some sort of hw bug, but not sure if in the iommu or the
-gpu.. you'd probably have to ask someone @qcom about the details, but
-without setting either of these bits, it seems that other concurrent
-memory transactions to the one triggering fault and up returning bogus
-values to the GPU.  So the CP (which is reading cmdstream somewhat far
-ahead of the DRAW or COMPUTE shader that triggers a fault) ends up
-reading bogus cmdstream values and triggers all sorts of spectacular
-fireworks.
-
-BR,
--R
+SGksIHdpdGggeW91ciBJUE1NVSBkcml2ZXIgZW5hYmxlZCB1bmRlciA0LjEzIHdl4oCZcmUgc2Vl
+aW5nIGEgY3Jhc2ggb24gYm9vdDoNCg0KWyAxMy43ODUxNjRdIFVuYWJsZSB0byBoYW5kbGUga2Vy
+bmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBhdCB2aXJ0dWFsIGFkZHJlc3MgMDAwMDAwMTgN
+ClsgMTMuNzkzMjU0XSBbMDAwMDAwMDAwMDAwMDAxOF0gdXNlciBhZGRyZXNzIGJ1dCBhY3RpdmVf
+bW0gaXMgc3dhcHBlcg0KWyAxMy43OTk2MDBdIEludGVybmFsIGVycm9yOiBPb3BzOiA5NjAwMDAw
+NCBbIzFdIFNNUA0KWyAxMy44MDQ0NjZdIE1vZHVsZXMgbGlua2VkIGluOiBhZXNfbmVvbl9icyBh
+ZXNfbmVvbl9ibGsgY3J5cHRvX3NpbWQgY3J5cHRkDQpbIDEzLjgxMTMzNF0gQ1BVOiAxNTIgUElE
+OiAxNTI5IENvbW06IGt3b3JrZXIvMTUyOjEgTm90IHRhaW50ZWQgNC4xMy4wLTktZ2VuZXJpYyAj
+MTAtVWJ1bnR1DQpbIDEzLjgxOTU4NF0gSGFyZHdhcmUgbmFtZTogRGVmYXVsdCBzdHJpbmcgQ2F2
+aXVtIFRodW5kZXJYMi9EZWZhdWx0IHN0cmluZywgQklPUyA1LjEzIDA3LzIwLzIwMTcNClsgMTMu
+ODI4Mjg1XSBXb3JrcXVldWU6IGV2ZW50cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMNClsgMTMu
+ODMzNDEwXSB0YXNrOiBmZmZmODBiZWU5M2QwMDAwIHRhc2suc3RhY2s6IGZmZmY4MGJlZTkzZGMw
+MDANClsgMTMuODM5MzMwXSBQQyBpcyBhdCBpb21tdV9vcHNfZnJvbV9md25vZGUrMHg0Yy8weDkw
+DQpbIDEzLjg0NDI4Ml0gTFIgaXMgYXQgaW9tbXVfb3BzX2Zyb21fZndub2RlKzB4MjgvMHg5MA0K
+DQpUaGUgQVJNIFNNTVV2MyBkcml2ZXIgKHdoaWNoIG91ciBwbGF0Zm9ybSBpbXBsZW1lbnRzKSBz
+ZWVtcyB0byBiZSBsb3NpbmcgaW9tbXVfb3BzIHRvIHRoZSBJUE1NVSBkcml2ZXIuDQoNCk5vdGU6
+IG91ciBwbGF0Zm9ybSB1c2VzIEFDUEkgZm9yIGRldmljZSBlbnVtZXJhdGlvbi4NCg0KSSBoYXZl
+IG5vIHdheSB0byB0ZXN0IHRoaXMsIGJ1dCBpcyB0aGVyZSBhIHJlYXNvbiB0aGUgc2V0X2lvbW11
+IGlzbuKAmXQgaW4gX3Byb2JlPw0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pcG1tdS12
+bXNhLmMgYi9kcml2ZXJzL2lvbW11L2lwbW11LXZtc2EuYw0KaW5kZXggMmEzOGFhMS4uZDRjNzJk
+YSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvaW9tbXUvaXBtbXUtdm1zYS5jDQorKysgYi9kcml2ZXJz
+L2lvbW11L2lwbW11LXZtc2EuYw0KQEAgLTEwNjYsNiArMTA2Niw5IEBAIHN0YXRpYyBpbnQgaXBt
+bXVfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCg0KICAgICAgICBwbGF0Zm9y
+bV9zZXRfZHJ2ZGF0YShwZGV2LCBtbXUpOw0KDQorICAgICAgIGlmICghaW9tbXVfcHJlc2VudCgm
+cGxhdGZvcm1fYnVzX3R5cGUpKQ0KKyAgICAgICAgICAgICAgIGJ1c19zZXRfaW9tbXUoJnBsYXRm
+b3JtX2J1c190eXBlLCAmaXBtbXVfb3BzKTsNCisNCiAgICAgICAgcmV0dXJuIDA7DQogfQ0KDQpA
+QCAtMTEwOCw5ICsxMTExLDYgQEAgc3RhdGljIGludCBfX2luaXQgaXBtbXVfaW5pdCh2b2lkKQ0K
+ICAgICAgICBpZiAocmV0IDwgMCkNCiAgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KDQotICAg
+ICAgIGlmICghaW9tbXVfcHJlc2VudCgmcGxhdGZvcm1fYnVzX3R5cGUpKQ0KLSAgICAgICAgICAg
+ICAgIGJ1c19zZXRfaW9tbXUoJnBsYXRmb3JtX2J1c190eXBlLCAmaXBtbXVfb3BzKTsNCi0NCiAg
+ICAgICAgcmV0dXJuIDA7DQogfQ0KDQoNCklmIEnigJltIHdyb25nLCBteSBhcG9sb2dpZXMuDQoN
+ClRoYW5rIHlvdSwNCg0KQW5hbnRoIEphc3R5DQpMZWFkIFNvZnR3YXJlIEVuZ2luZWVyDQpDYXZp
+dW0NCg0K
