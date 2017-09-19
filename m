@@ -1,51 +1,66 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: Seeing conflict with IPMMU driver under ACPI
-Date: Tue, 19 Sep 2017 10:13:36 +0300
-Message-ID: <3844394.PedeR4fNcQ@avalon>
-References: <CAA01098-8301-4703-84CE-5CFA8A68AF13@caviumnetworks.com> <2844194.3pNGIKcM4n@avalon> <49EA67E4-A526-4F47-9D3A-18E458850E03@caviumnetworks.com>
+From: Tomasz Nowicki <tnowicki@caviumnetworks.com>
+Subject: Re: [PATCH 1/1] iommu/iova: Make rcache flush optional on IOVA
+ allocation failure
+Date: Tue, 19 Sep 2017 10:03:47 +0200
+Message-ID: <5632227b-3d9b-0f03-db3d-2b2d7ccc8079@caviumnetworks.com>
+References: <1505732214-9052-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
+ <1505732214-9052-2-git-send-email-tomasz.nowicki@caviumnetworks.com>
+ <250f41c9-fb37-49b7-c336-68e163f77e16@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <49EA67E4-A526-4F47-9D3A-18E458850E03@caviumnetworks.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: "Jasty, Ananth" <Ananth.Jasty@cavium.com>
-Cc: "magnus.damm@gmail.com" <magnus.damm@gmail.com>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, dann frazier <dann.frazier@canonical.com>, "laurent.pinchart+renesas@ideasonboard.com" <laurent.pinchart+renesas@ideasonboard.com>, "geert+renesas@glider.be" <geert+renesas@glider.be>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <250f41c9-fb37-49b7-c336-68e163f77e16@arm.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>, joro@8bytes.org, will.deacon@arm.com
+Cc: lorenzo.pieralisi@arm.com, Jayachandran.Nair@cavium.com, Ganapatrao.Kulkarni@cavium.com, ard.biesheuvel@linaro.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQW5hbnRoLAoKT24gVHVlc2RheSwgMTkgU2VwdGVtYmVyIDIwMTcgMDk6NTQ6NDkgRUVTVCBK
-YXN0eSwgQW5hbnRoIHdyb3RlOgo+IE9uIFNlcCAxOCwgMjAxNywgYXQgMTE6NDkgUE0sIExhdXJl
-bnQgUGluY2hhcnQgd3JvdGU6Cj4gPiBPbiBUdWVzZGF5LCAxOSBTZXB0ZW1iZXIgMjAxNyAwMzo0
-MzowNSBFRVNUIEphc3R5LCBBbmFudGggd3JvdGU6Cj4gPj4gSGksIHdpdGggeW91ciBJUE1NVSBk
-cml2ZXIgZW5hYmxlZCB1bmRlciA0LjEzIHdl4oCZcmUgc2VlaW5nIGEgY3Jhc2ggb24KPiA+PiBi
-b290Ogo+ID4+IAo+ID4+IFsgMTMuNzg1MTY0XSBVbmFibGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxM
-IHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQgdmlydHVhbAo+ID4+IGFkZHJlc3MgMDAwMDAwMTgKPiA+
-PiBbIDEzLjc5MzI1NF0gWzAwMDAwMDAwMDAwMDAwMThdIHVzZXIgYWRkcmVzcyBidXQgYWN0aXZl
-X21tIGlzIHN3YXBwZXIKPiA+PiBbIDEzLjc5OTYwMF0gSW50ZXJuYWwgZXJyb3I6IE9vcHM6IDk2
-MDAwMDA0IFsjMV0gU01QCj4gPj4gWyAxMy44MDQ0NjZdIE1vZHVsZXMgbGlua2VkIGluOiBhZXNf
-bmVvbl9icyBhZXNfbmVvbl9ibGsgY3J5cHRvX3NpbWQKPiA+PiBjcnlwdGQKPiA+PiBbIDEzLjgx
-MTMzNF0gQ1BVOiAxNTIgUElEOiAxNTI5IENvbW06IGt3b3JrZXIvMTUyOjEgTm90IHRhaW50ZWQK
-PiA+PiA0LjEzLjAtOS1nZW5lcmljICMxMC1VYnVudHUKPiA+PiBbIDEzLjgxOTU4NF0gSGFyZHdh
-cmUgbmFtZTogRGVmYXVsdCBzdHJpbmcgQ2F2aXVtIFRodW5kZXJYMi9EZWZhdWx0Cj4gPj4gc3Ry
-aW5nLCBCSU9TIDUuMTMgMDcvMjAvMjAxNwo+ID4+IFsgMTMuODI4Mjg1XSBXb3JrcXVldWU6IGV2
-ZW50cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMKPiA+PiBbIDEzLjgzMzQxMF0gdGFzazogZmZm
-ZjgwYmVlOTNkMDAwMCB0YXNrLnN0YWNrOiBmZmZmODBiZWU5M2RjMDAwCj4gPj4gWyAxMy44Mzkz
-MzBdIFBDIGlzIGF0IGlvbW11X29wc19mcm9tX2Z3bm9kZSsweDRjLzB4OTAKPiA+PiBbIDEzLjg0
-NDI4Ml0gTFIgaXMgYXQgaW9tbXVfb3BzX2Zyb21fZndub2RlKzB4MjgvMHg5MAo+ID4+IAo+ID4+
-IFRoZSBBUk0gU01NVXYzIGRyaXZlciAod2hpY2ggb3VyIHBsYXRmb3JtIGltcGxlbWVudHMpIHNl
-ZW1zIHRvIGJlIGxvc2luZwo+ID4+IGlvbW11X29wcyB0byB0aGUgSVBNTVUgZHJpdmVyLgo+ID4g
-Cj4gPiBZb3Ugc2VlbSBub3QgdG8gYmUgdGhlIGZpcnN0IG9uZSB0byBub3RpY2U6Cj4gPiAKPiA+
-IGh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcGF0Y2gvOTk1NjQ0OS8ACj4gCj4gV293LCBo
-ZSBkaWQgbm90IGJlYXQgbWUgYnkgbXVjaC4KPiAKPiA+PiBOb3RlOiBvdXIgcGxhdGZvcm0gdXNl
-cyBBQ1BJIGZvciBkZXZpY2UgZW51bWVyYXRpb24uCj4gPj4gCj4gPj4gSSBoYXZlIG5vIHdheSB0
-byB0ZXN0IHRoaXMsIGJ1dCBpcyB0aGVyZSBhIHJlYXNvbiB0aGUgc2V0X2lvbW11IGlzbuKAmXQg
-aW4KPiA+PiBfcHJvYmU/Cj4gPiAKPiA+IEkgY2FuJ3QgcmVjYWxsIHdoYXQgdGhlIHJlYXNvbiB3
-YXMgSSdtIGFmcmFpZC4KPiAKPiBhcm0tc21tdS12My5jIGRvZXMgZG8gdGhlIHNldF9pb21tdSBp
-biBwcm9iZSwgYW5kIHRodXMgZmFyIHRoZXJlIGhhdmUgYmVlbgo+IG5vIGNvbmZpcm1lZCBmYXRh
-bGl0aWVzLCBidXQgSSBjYW4ndCBzcGVhayBhdXRob3JpdGF0aXZlbHkuCj4gCj4gSSdsbCBsZWF2
-ZSB5b3UgYWxsIHRvIGl0IHRoZW4uCgpBZnRlciBkaWdnaW5nIGEgYml0IEkgcmVhbGl6ZWQgdGhh
-dCBjYWxsaW5nIGJ1c19zZXRfaW9tbXUoKSBmcm9tIHRoZSBpbml0IApmdW5jdGlvbiBpcyBuZWVk
-ZWQgdG8gc3VwcG9ydCBBUk0zMiAodGhlIHNhbWUgZHJpdmVyIHN1cHBvcnRzIGJvdGggQVJNMzIg
-YW5kIApBUk02NCkuIExldCdzIGRpc2N1c3MgdGhlIG1hdHRlciBpbiBhIHJlcGx5IHRvIGh0dHBz
-Oi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvCnBhdGNoLzk5NTY0NDkvAC4KCi0tIApSZWdhcmRzLAoK
-TGF1cmVudCBQaW5jaGFydAo=
+Hi Robin,
+
+On 18.09.2017 18:02, Robin Murphy wrote:
+> Hi Tomasz,
+> 
+> On 18/09/17 11:56, Tomasz Nowicki wrote:
+>> Since IOVA allocation failure is not unusual case we need to flush
+>> CPUs' rcache in hope we will succeed in next round.
+>>
+>> However, it is useful to decide whether we need rcache flush step because
+>> of two reasons:
+>> - Not scalability. On large system with ~100 CPUs iterating and flushing
+>>    rcache for each CPU becomes serious bottleneck so we may want to deffer it.
+>> - free_cpu_cached_iovas() does not care about max PFN we are interested in.
+>>    Thus we may flush our rcaches and still get no new IOVA like in the
+>>    commonly used scenario:
+>>
+>>      if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
+>>          iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
+>>
+>>      if (!iova)
+>>          iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
+>>
+>>     1. First alloc_iova_fast() call is limited to DMA_BIT_MASK(32) to get
+>>        PCI devices a SAC address
+>>     2. alloc_iova() fails due to full 32-bit space
+>>     3. rcaches contain PFNs out of 32-bit space so free_cpu_cached_iovas()
+>>        throws entries away for nothing and alloc_iova() fails again
+>>     4. Next alloc_iova_fast() call cannot take advantage of rcache since we
+>>        have just defeated caches. In this case we pick the slowest option
+>>        to proceed.
+>>
+>> This patch reworks flushed_rcache local flag to be additional function
+>> argument instead and control rcache flush step. Also, it updates all users
+>> to do the flush as the last chance.
+> 
+> Looks like you've run into the same thing Nate found[1] - I came up with
+> almost the exact same patch, only with separate alloc_iova_fast() and
+> alloc_iova_fast_noretry() wrapper functions, but on reflection, just
+> exposing the bool to callers is probably simpler. One nit, can you
+> document it in the kerneldoc comment too? With that:
+> 
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+Thanks! I will add missing comment.
+
+Tomasz
