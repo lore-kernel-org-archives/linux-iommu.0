@@ -1,92 +1,80 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [RFC] iommu: arm-smmu: stall support
-Date: Tue, 19 Sep 2017 10:23:43 -0400
-Message-ID: <CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
-References: <20170914194444.32551-1-robdclark@gmail.com> <20170919123038.GF8398@8bytes.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v7 1/5] Doc: iommu/arm-smmu-v3: Add workaround for
+ HiSilicon erratum 161010801
+Date: Tue, 19 Sep 2017 09:53:14 -0500
+Message-ID: <20170919145314.2irmqpsfneeydupo@rob-hp-laptop>
+References: <20170914125756.14836-1-shameerali.kolothum.thodi@huawei.com>
+ <20170914125756.14836-2-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20170919123038.GF8398@8bytes.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Jordan Crouse <jcrouse@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170914125756.14836-2-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, mark.rutland@arm.com, hanjun.guo@linaro.org, gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 19, 2017 at 8:30 AM, Joerg Roedel <joro@8bytes.org> wrote:
-> Hi Rob,
->
-> thanks for the RFC patch. I have some comments about the interface to
-> the IOMMU-API below.
->
-> On Thu, Sep 14, 2017 at 03:44:33PM -0400, Rob Clark wrote:
->> +/**
->> + * iommu_domain_resume - Resume translations for a domain after a fault.
->> + *
->> + * This can be called at some point after the fault handler is called,
->> + * allowing the user of the IOMMU to (for example) handle the fault
->> + * from a task context.  It is illegal to call this if
->> + * iommu_domain_set_attr(STALL) failed.
->> + *
->> + * @domain:    the domain to resume
->> + * @terminate: if true, the translation that triggered the fault should
->> + *    be terminated, else it should be retried.
->> + */
->> +void iommu_domain_resume(struct iommu_domain *domain, bool terminate)
->> +{
->> +     /* invalid to call if iommu_domain_set_attr(STALL) failed: */
->> +     if (WARN_ON(!domain->ops->domain_resume))
->> +             return;
->> +     domain->ops->domain_resume(domain, terminate);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_domain_resume);
->
-> So this function is being called by the device driver owning the domain,
-> right?
+On Thu, Sep 14, 2017 at 01:57:52PM +0100, Shameer Kolothum wrote:
+> From: John Garry <john.garry@huawei.com>
+> 
+> The HiSilicon erratum 161010801 describes the limitation of HiSilicon platforms
+> hip06/hip07 to support the SMMU mappings for MSI transactions.
+> 
+> On these platforms, GICv3 ITS translator is presented with the deviceID
+> by extending the MSI payload data to 64 bits to include the deviceID.
+> Hence, the PCIe controller on this platforms has to differentiate the MSI
+> payload against other DMA payload and has to modify the MSI payload.
+> This basically makes it difficult for this platforms to have a SMMU
+> translation for MSI.
+> 
+> This patch adds a SMMUv3 binding to flag that the SMMU breaks msi
+> translation at ITS.
+> 
+> Also, the arm64 silicon errata is updated with this same erratum.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  Documentation/arm64/silicon-errata.txt                  | 1 +
+>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 3 +++
+>  2 files changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
+> index 66e8ce1..02816b1 100644
+> --- a/Documentation/arm64/silicon-errata.txt
+> +++ b/Documentation/arm64/silicon-errata.txt
+> @@ -70,6 +70,7 @@ stable kernels.
+>  |                |                 |                 |                             |
+>  | Hisilicon      | Hip0{5,6,7}     | #161010101      | HISILICON_ERRATUM_161010101 |
+>  | Hisilicon      | Hip0{6,7}       | #161010701      | N/A                         |
+> +| Hisilicon      | Hip0{6,7}       | #161010801      | N/A                         |
+>  |                |                 |                 |                             |
+>  | Qualcomm Tech. | Falkor v1       | E1003           | QCOM_FALKOR_ERRATUM_1003    |
+>  | Qualcomm Tech. | Falkor v1       | E1009           | QCOM_FALKOR_ERRATUM_1009    |
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> index c9abbf3..1f5f7f9 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+> @@ -55,6 +55,9 @@ the PCIe specification.
+>  - hisilicon,broken-prefetch-cmd
+>                      : Avoid sending CMD_PREFETCH_* commands to the SMMU.
+>  
+> +- hisilicon,broken-untranslated-msi
+> +                    : Reserve ITS HW region to avoid translating msi.
+> +
 
-yes, this was my plan
+This should be determined from the compatible string. Continuing to add 
+properties for each errata doesn't scale.
 
-> I don't think that the resume call-back you added needs to be exposed
-> like this. It is better to do the page-fault handling completly in the
-> iommu-code, including calling the resume call-back and just let the
-> device-driver provide a per-domain call-back to let it handle the fault
-> and map in the required pages.
-
-I would like to decide in the IRQ whether or not to queue work or not,
-because when we get a gpu fault, we tend to get 1000's of gpu faults
-all at once (and I really only need to handle the first one).  I
-suppose that could also be achieved by having a special return value
-from the fault handler to say "call me again from a wq"..
-
-Note that in the drm driver I already have a suitable wq to queue the
-work, so it really doesn't buy me anything to have the iommu driver
-toss things off to a wq for me.  Might be a different situation for
-other drivers (but I guess mostly other drivers are using iommu API
-indirectly via dma-mapping?)
-
-> The interface could look like this:
->
->         * New function iommu_domain_enable_stalls(domain) - When
->           this function returns the domain is in stall-handling mode. A
->           iommu_domain_disable_stalls() might make sense too, not sure
->           about that.
-
-I don't particularly see a use-case for disabling stalls, fwiw
-
-BR,
--R
-
->         * When stalls are enabled for a domain, report_iommu_fault()
->           queues the fault to a workqueue (so that its handler can
->           block) and in the workqueue you call ->resume() based on the
->           return value of the handler.
->
-> As a side-note, as there has been discussion on this: For now it doesn't
-> make sense to merge this with the SVM page-fault handling efforts, as
-> this path is different enough (SVM will call handle_mm_fault() as the
-> handler, for example).
->
->
-> Regards,
->
->         Joerg
->
+>  - cavium,cn9900-broken-page1-regspace
+>                      : Replaces all page 1 offsets used for EVTQ_PROD/CONS,
+>  		      PRIQ_PROD/CONS register access with page 0 offsets.
+> -- 
+> 1.9.1
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
