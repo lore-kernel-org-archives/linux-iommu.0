@@ -1,142 +1,40 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 5/6] iommu/iova: Extend rbtree node caching
-Date: Wed, 20 Sep 2017 18:27:59 +0100
-Message-ID: <58b99d02-44c4-cde7-7a55-5b9ae4a1276e@arm.com>
-References: <cover.1505829018.git.robin.murphy@arm.com>
- <223f0fddac0dcefc43ad81594979875967745c58.1505829018.git.robin.murphy@arm.com>
- <ee693561-67c4-ed2a-9462-e783dfc013c2@caviumnetworks.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] a dma-mapping fix for 4.14-rc2
+Date: Wed, 20 Sep 2017 14:25:39 -0700
+Message-ID: <20170920212539.y3xbs3uvkkyyoxxc@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ee693561-67c4-ed2a-9462-e783dfc013c2@caviumnetworks.com>
-Content-Language: en-US
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Nowicki <tnowicki@caviumnetworks.com>, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/09/17 13:59, Tomasz Nowicki wrote:
-> Hi Robin,
-> 
-> On 19.09.2017 18:31, Robin Murphy wrote:
->> The cached node mechanism provides a significant performance benefit for
->> allocations using a 32-bit DMA mask, but in the case of non-PCI devices
->> or where the 32-bit space is full, the loss of this benefit can be
->> significant - on large systems there can be many thousands of entries in
->> the tree, such that walking all the way down to find free space every
->> time becomes increasingly awful.
->>
->> Maintain a similar cached node for the whole IOVA space as a superset of
->> the 32-bit space so that performance can remain much more consistent.
->>
->> Inspired by work by Zhen Lei <thunder.leizhen@huawei.com>.
->>
->> Tested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
->> Tested-by: Zhen Lei <thunder.leizhen@huawei.com>
->> Tested-by: Nate Watterson <nwatters@codeaurora.org>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> v4:
->>   - Adjust to simplified __get_cached_rbnode() behaviour
->>   - Cosmetic tweaks
->>
->>   drivers/iommu/iova.c | 43 +++++++++++++++++++++----------------------
->>   include/linux/iova.h |  3 ++-
->>   2 files changed, 23 insertions(+), 23 deletions(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index c93a6c46bcb1..a125a5786dbf 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -51,6 +51,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
->> long granule,
->>         spin_lock_init(&iovad->iova_rbtree_lock);
->>       iovad->rbroot = RB_ROOT;
->> +    iovad->cached_node = NULL;
->>       iovad->cached32_node = NULL;
->>       iovad->granule = granule;
->>       iovad->start_pfn = start_pfn;
->> @@ -119,39 +120,38 @@ __get_cached_rbnode(struct iova_domain *iovad,
->> unsigned long limit_pfn)
->>       if (limit_pfn <= iovad->dma_32bit_pfn && iovad->cached32_node)
->>           return iovad->cached32_node;
->>   +    if (iovad->cached_node)
->> +        return iovad->cached_node;
->> +
->>       return &iovad->anchor.node;
->>   }
->>     static void
->> -__cached_rbnode_insert_update(struct iova_domain *iovad,
->> -    unsigned long limit_pfn, struct iova *new)
->> +__cached_rbnode_insert_update(struct iova_domain *iovad, struct iova
->> *new)
->>   {
->> -    if (limit_pfn != iovad->dma_32bit_pfn)
->> -        return;
->> -    iovad->cached32_node = &new->node;
->> +    if (new->pfn_hi < iovad->dma_32bit_pfn)
->> +        iovad->cached32_node = &new->node;
->> +    else
->> +        iovad->cached_node = &new->node;
->>   }
->>     static void
->>   __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova
->> *free)
->>   {
->>       struct iova *cached_iova;
->> -    struct rb_node *curr;
->> +    struct rb_node **curr;
->>   -    if (!iovad->cached32_node)
->> +    if (free->pfn_hi < iovad->dma_32bit_pfn)
->> +        curr = &iovad->cached32_node;
->> +    else
->> +        curr = &iovad->cached_node;
->> +
->> +    if (!*curr)
->>           return;
->> -    curr = iovad->cached32_node;
->> -    cached_iova = rb_entry(curr, struct iova, node);
->>   -    if (free->pfn_lo >= cached_iova->pfn_lo) {
->> -        struct rb_node *node = rb_next(&free->node);
->> -        struct iova *iova = rb_entry(node, struct iova, node);
->> -
->> -        /* only cache if it's below 32bit pfn */
->> -        if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
->> -            iovad->cached32_node = node;
->> -        else
->> -            iovad->cached32_node = NULL;
->> -    }
->> +    cached_iova = rb_entry(*curr, struct iova, node);
->> +    if (free->pfn_lo >= cached_iova->pfn_lo)
->> +        *curr = rb_next(&free->node);
-> 
-> IMO, we may incorrectly update iovad->cached32_node here.
-> 
->                               32-bit boundary
->      --------       --------        |          --------       --------
->     |        |     |        |       |         |        |     |        |
-> ----  IOVA0   -----  IOVA1   -----------------  IOVA3   -----  anchor |
->     |        |     |        |       |         |        |     |        |
->      --------       --------        |          --------       --------
-> 
-> If we free last IOVA from 32-bit space (IOVA1) we will update
-> iovad->cached32_node to IOVA3.
+Hi Linus,
 
-That in itself is intentional and correct - the cached node is where we
-*start* searching for free space, so if the topmost 32-bit pfn is free,
-we want to start from whichever node represents the next-highest pfn.
-Even if more 64-bit IOVAs were allocated below IOVA3 before the next
-32-bit allocation, walking through those is better that walking all the
-way down from the anchor.
+below is a single fix for an issue that crept in with the previous pull
+request.
 
-However, you have made me realise that if IOVA3 were freed before the
-next 32-bit allocation things we'd only update cached_node and leave
-cached32_node with a stale pointer...
 
-I'll get a v5 out tomorrow (and keep the new stuff at the end of the
-series this time)
+The following changes since commit 2bd6bf03f4c1c59381d62c61d03f6cc3fe71f66e:
 
-Thanks,
-Robin.
+  Linux 4.14-rc1 (2017-09-16 15:47:51 -0700)
+
+are available in the git repository at:
+
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.14-2
+
+for you to fetch changes up to 6d57339890c9a9dfcd4ba4f8931b911b962968e3:
+
+  dma-coherent: fix rmem_dma_device_init regression (2017-09-17 08:20:02 -0700)
+
+----------------------------------------------------------------
+A fix for a fix that went in this merge window from Arnd.
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      dma-coherent: fix rmem_dma_device_init regression
+
+ drivers/base/dma-coherent.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
