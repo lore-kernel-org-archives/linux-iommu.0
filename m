@@ -1,99 +1,65 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: bind pasid table API
-Date: Wed, 20 Sep 2017 13:09:47 +0100
-Message-ID: <6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
-References: <20170918204516.2f6beffb@jacob-builder>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH] pci: Add dummy for pci_acs_enabled() if CONFIG_PCI=n to
+ fix iommmu build
+Date: Wed, 20 Sep 2017 14:12:26 +0200
+Message-ID: <20170920121226.74fnymghl6cnpi3g@suse.de>
+References: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170918204516.2f6beffb@jacob-builder>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
+Hey Bjorn,
 
-[Adding Eric as he might need pasid_table_info for vSVM at some point]
-
-On 19/09/17 04:45, Jacob Pan wrote:
-> Hi Jean and All,
+On Mon, Sep 11, 2017 at 02:29:15PM +0200, Geert Uytterhoeven wrote:
+> If CONFIG_PCI=n, and gcc (e.g. 4.1.2) decides not to inline
+> get_pci_function_alias_group(), the build fails with:
 > 
-> This is a follow-up on the LPC discussion we had last week.
-> (https://linuxplumbersconf.org/2017/ocw/proposals/4748)
+>     drivers/iommu/iommu.o: In function `get_pci_function_alias_group':
+>     iommu.c:(.text+0xfdc): undefined reference to `pci_acs_enabled'
 > 
-> My understanding is that the data structure below can satisfy the
-> needs from Intel (pointer + size) and AMD (pointer only). But ARM
-> pvIOMMU would need additional info to indicate the page table format.
-> Could you share your idea of the right addition for ARM such that we
-> can have a unified API?
+> Due to the various dummies for PCI calls in the CONFIG_PCI=n case,
+> pci_acs_enabled() isn't actually ever called, but not all versions of
+> gcc are smart enough to realize that.
 > 
-> /**
->  * PASID table data used to bind guest PASID table to the host IOMMU. This will
->  * enable guest managed first level page tables.
->  * @ptr:	PASID table pointer
->  * @size_order:	number of bits supported in the guest PASID table, must be less
->  *		or equal than the host table size.
->  */
-> struct pasid_table_info {
-> 	__u64	ptr;
-> 	__u64	size_order;
-> };
+> While explicitly marking get_pci_function_alias_group() inline would fix
+> the build, this would inflate the code for the CONFIG_PCI=y case, as
+> get_pci_function_alias_group() is a not-so-small function called from
+> two places.
+> 
+> Hence fix the issue by introducing a dummy for pci_acs_enabled()
+> instead.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+>  include/linux/pci.h | 2 ++
+>  1 file changed, 2 insertions(+)
 
-For the PASID table, Arm SMMUv3 would need two additional fields:
-* 'format' telling whether the table has 1 or 2 levels and their
-  dimensions,
-* 'default_substream' telling if PASID0 is reserved for non-pasid traffic.
-
-I think that's it for the moment, but it does require to leave space
-for a vendor-specific structure at the end. It is one reason why I'd
-prefer having a 'model' field in the pasid_table_info structure telling
-what fields the whole structure actually contains.
-
-Another reason is if some IOMMU is able to support multiple PASID table
-formats, it could advertise them all in sysfs and Qemu could tell which
-one it chose in 'model'. I'm not sure we'll ever see that in practice.
-
-
-
-For binding page tables instead of PASID tables (e.g. virtio-iommu), the
-generic data would be:
-
-struct pgtable_info {
-	__u32	pasid;
-	__u64	ptr;
-	__u32	model;
-	__u8	model_data[];
-};
-
-Followed by a few arch-specific configuration values. For Arm we can
-summarize this to three registers, defined in the Armv8 Architecture
-Reference Manual:
-
-struct arm_lpae_pgtable_info {
-	__u64	tcr;	/* Translation Control Register */
-	__u64	mair;	/* Memory Attributes Indirection Register */
-	__u64	asid;	/* Address Space ID */
-};
-
-Some data packed in the TCR might be common to most architectures, like
-page granularity and max VA size. Most fields of the TCR won't be used but
-it provides a nice architected way to communicate Arm page table
-configuration.
-
-Note that there might be an additional page directory in the arch-specific
-info, as we can split the address space in two. I'm not sure whether we
-should allow it yet.
+I am sending iommu-fixes upstream this week, and this would fit into it.
+Can you have a look please and ack it if you are okay with that?
 
 Thanks,
-Jean
+
+	Joerg
+
+> 
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index f68c58a93dd045b9..f4f8ee5a7362e982 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1685,6 +1685,8 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
+>  
+>  #define dev_is_pci(d) (false)
+>  #define dev_is_pf(d) (false)
+> +static inline bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
+> +{ return false; }
+>  #endif /* CONFIG_PCI */
+>  
+>  /* Include architecture-dependent settings and functions */
+> -- 
+> 2.7.4
