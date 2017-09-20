@@ -1,94 +1,174 @@
-From: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on driver
-	init.
-Date: Wed, 20 Sep 2017 15:13:52 +0100
-Message-ID: <20170920141352.29377-1-Liviu.Dudau@arm.com>
-References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170918100444.21878-1-Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, IOMMU ML <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+From: David Woods <dwoods@mellanox.com>
+Subject: [PATCH] iommu/iova: Improve alloc_iova performance
+Date: Wed, 20 Sep 2017 11:28:19 -0400
+Message-ID: <1505921299-7837-1-git-send-email-dwoods@mellanox.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cmetcalf@mellanox.com
+Cc: David Woods <dwoods@mellanox.com>
 List-Id: iommu@lists.linux-foundation.org
 
-If the IPMMU driver is compiled in the kernel it will replace the
-platform bus IOMMU ops on running the ipmmu_init() function, regardless
-if there is any IPMMU hardware present or not. This screws up systems
-that just want to build a generic kernel that runs on multiple platforms
-and use a different IOMMU implementation.
+When allocating pages with alloc_iova() where limit_pfn > dma_32bit_pfn
+__alloc_and_insert_iova_range does a linear traversal of the tree to
+find a free block.  In the worst case it makes the alloc O(n) for each
+page, where n is the number of pages allocated so far.  The worst case
+turns out to be common for drivers that allocate lots of pages at start
+up and never free them.
 
-Move the bus_set_iommu() call at the end of the ipmmu_probe() function
-when we know that hardware is present. With current IOMMU framework it
-should be safe (at least for OF case).
+There is an optimization for allocating 32-bit addresses where it
+starts the search at the point where the previous allocated page was
+inserted.  This is sensible, since otherwise it would have to always
+search through all the 64-bit pages first.
 
-Now that the ipmmu_init() and ipmmu_exit() functions are simple calls to
-platform_driver_register() and platform_driver_unregister(), replace
-them with the module_platform_driver() macro call.
+To improve this situation, extend the optimization to also keep track
+of the point were the previous 64-bit page was inserted.  With this
+change, the search for an available slot can normally be done in
+constant time and the whole alloc_iova only costs O(log n) due to the
+rb tree insert.
 
-Signed-off-by: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Reviewed-by: Chris Metcalf <cmetcalf@mellanox.com>
+Signed-off-by: David Woods <dwoods@mellanox.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 29 +++++------------------------
- 1 file changed, 5 insertions(+), 24 deletions(-)
+ drivers/iommu/iova.c | 82 +++++++++++++++++++++++++++++++++++-----------------
+ include/linux/iova.h |  1 +
+ 2 files changed, 56 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 195d6e93ac718..31912997bffdf 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -966,10 +966,11 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		return ret;
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 33edfa7..3c82694 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -108,15 +108,26 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ EXPORT_SYMBOL_GPL(init_iova_flush_queue);
  
- 	/*
--	 * We can't create the ARM mapping here as it requires the bus to have
--	 * an IOMMU, which only happens when bus_set_iommu() is called in
--	 * ipmmu_init() after the probe function returns.
-+	 * Now that we have validated the presence of the hardware, set
-+	 * the bus IOMMU ops to enable future domain and device setup.
- 	 */
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+ static struct rb_node *
+-__get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
++__get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
+ {
+-	if ((*limit_pfn > iovad->dma_32bit_pfn) ||
+-		(iovad->cached32_node == NULL))
++	if (limit_pfn <= iovad->dma_32bit_pfn)
++		return iovad->cached32_node;
++	else
++		return iovad->cached64_node;
++}
++
++static struct rb_node *
++__get_cached_rbnode_and_limit(struct iova_domain *iovad,
++			      unsigned long *limit_pfn)
++{
++	struct rb_node *cached_node = __get_cached_rbnode(iovad, *limit_pfn);
++
++	if (cached_node == NULL) {
+ 		return rb_last(&iovad->rbroot);
+-	else {
+-		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
++	} else {
++		struct rb_node *prev_node = rb_prev(cached_node);
+ 		struct iova *curr_iova =
+-			rb_entry(iovad->cached32_node, struct iova, node);
++			rb_entry(cached_node, struct iova, node);
+ 		*limit_pfn = curr_iova->pfn_lo;
+ 		return prev_node;
+ 	}
+@@ -124,33 +135,50 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
  
- 	platform_set_drvdata(pdev, mmu);
+ static void
+ __cached_rbnode_insert_update(struct iova_domain *iovad,
+-	unsigned long limit_pfn, struct iova *new)
++	unsigned long limit_pfn, struct rb_node *node)
+ {
+-	if (limit_pfn != iovad->dma_32bit_pfn)
+-		return;
+-	iovad->cached32_node = &new->node;
++	if (limit_pfn == iovad->dma_32bit_pfn)
++		iovad->cached32_node = node;
++	else if (limit_pfn > iovad->dma_32bit_pfn)
++		iovad->cached64_node = node;
+ }
  
-@@ -1006,27 +1007,7 @@ static struct platform_driver ipmmu_driver = {
- 	.remove	= ipmmu_remove,
- };
+ static void
+ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ {
+ 	struct iova *cached_iova;
+-	struct rb_node *curr;
+-
+-	if (!iovad->cached32_node)
+-		return;
+-	curr = iovad->cached32_node;
+-	cached_iova = rb_entry(curr, struct iova, node);
+-
+-	if (free->pfn_lo >= cached_iova->pfn_lo) {
+-		struct rb_node *node = rb_next(&free->node);
+-		struct iova *iova = rb_entry(node, struct iova, node);
++	struct rb_node *cached_node;
  
--static int __init ipmmu_init(void)
--{
--	int ret;
--
--	ret = platform_driver_register(&ipmmu_driver);
--	if (ret < 0)
--		return ret;
--
--	if (!iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
--
--	return 0;
--}
--
--static void __exit ipmmu_exit(void)
--{
--	return platform_driver_unregister(&ipmmu_driver);
--}
--
--subsys_initcall(ipmmu_init);
--module_exit(ipmmu_exit);
-+module_platform_driver(ipmmu_driver);
+-		/* only cache if it's below 32bit pfn */
+-		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
+-			iovad->cached32_node = node;
+-		else
+-			iovad->cached32_node = NULL;
++	if (free->pfn_lo <= iovad->dma_32bit_pfn) {
++		if (unlikely(iovad->cached64_node == &free->node))
++			iovad->cached64_node = NULL;
++		cached_node = iovad->cached32_node;
++		if (!cached_node)
++			return;
++		cached_iova = rb_entry(cached_node, struct iova, node);
++		if (free->pfn_lo >= cached_iova->pfn_lo) {
++			struct rb_node *next_node = rb_next(&free->node);
++
++			if (next_node &&
++			    rb_entry(next_node, struct iova, node)->pfn_lo <=
++			    iovad->dma_32bit_pfn)
++				iovad->cached32_node = next_node;
++			else
++				iovad->cached32_node = NULL;
++		}
++	} else {
++		cached_node = iovad->cached64_node;
++		if (!cached_node)
++			return;
++		cached_iova = container_of(cached_node, struct iova, node);
++		if (free->pfn_lo >= cached_iova->pfn_lo) {
++			struct rb_node *next_node = rb_next(&free->node);
++
++			if (next_node)
++				iovad->cached64_node = next_node;
++			else
++				iovad->cached64_node = NULL;
++		}
+ 	}
+ }
  
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
- MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+@@ -204,7 +232,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+ 	saved_pfn = limit_pfn;
+-	curr = __get_cached_rbnode(iovad, &limit_pfn);
++	curr = __get_cached_rbnode_and_limit(iovad, &limit_pfn);
+ 	prev = curr;
+ 	while (curr) {
+ 		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+@@ -238,7 +266,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 	/* If we have 'prev', it's a valid place to start the insertion. */
+ 	iova_insert_rbtree(&iovad->rbroot, new, prev);
+-	__cached_rbnode_insert_update(iovad, saved_pfn, new);
++	__cached_rbnode_insert_update(iovad, saved_pfn, &new->node);
+ 
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index d179b9b..ea89695 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -71,6 +71,7 @@ struct iova_domain {
+ 	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
+ 	struct rb_root	rbroot;		/* iova domain rbtree root */
+ 	struct rb_node	*cached32_node; /* Save last alloced node */
++	struct rb_node	*cached64_node; /* Save last alloced node */
+ 	unsigned long	granule;	/* pfn granularity for this domain */
+ 	unsigned long	start_pfn;	/* Lower limit for this domain */
+ 	unsigned long	dma_32bit_pfn;
 -- 
-2.14.1
+2.1.2
