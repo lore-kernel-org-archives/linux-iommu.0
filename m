@@ -1,65 +1,128 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH] pci: Add dummy for pci_acs_enabled() if CONFIG_PCI=n to
- fix iommmu build
-Date: Wed, 20 Sep 2017 14:12:26 +0200
-Message-ID: <20170920121226.74fnymghl6cnpi3g@suse.de>
-References: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
+From: Tomasz Nowicki <tnowicki@caviumnetworks.com>
+Subject: Re: [PATCH v4 5/6] iommu/iova: Extend rbtree node caching
+Date: Wed, 20 Sep 2017 14:59:09 +0200
+Message-ID: <ee693561-67c4-ed2a-9462-e783dfc013c2@caviumnetworks.com>
+References: <cover.1505829018.git.robin.murphy@arm.com>
+ <223f0fddac0dcefc43ad81594979875967745c58.1505829018.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <223f0fddac0dcefc43ad81594979875967745c58.1505829018.git.robin.murphy@arm.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Bjorn,
+Hi Robin,
 
-On Mon, Sep 11, 2017 at 02:29:15PM +0200, Geert Uytterhoeven wrote:
-> If CONFIG_PCI=n, and gcc (e.g. 4.1.2) decides not to inline
-> get_pci_function_alias_group(), the build fails with:
+On 19.09.2017 18:31, Robin Murphy wrote:
+> The cached node mechanism provides a significant performance benefit for
+> allocations using a 32-bit DMA mask, but in the case of non-PCI devices
+> or where the 32-bit space is full, the loss of this benefit can be
+> significant - on large systems there can be many thousands of entries in
+> the tree, such that walking all the way down to find free space every
+> time becomes increasingly awful.
 > 
->     drivers/iommu/iommu.o: In function `get_pci_function_alias_group':
->     iommu.c:(.text+0xfdc): undefined reference to `pci_acs_enabled'
+> Maintain a similar cached node for the whole IOVA space as a superset of
+> the 32-bit space so that performance can remain much more consistent.
 > 
-> Due to the various dummies for PCI calls in the CONFIG_PCI=n case,
-> pci_acs_enabled() isn't actually ever called, but not all versions of
-> gcc are smart enough to realize that.
+> Inspired by work by Zhen Lei <thunder.leizhen@huawei.com>.
 > 
-> While explicitly marking get_pci_function_alias_group() inline would fix
-> the build, this would inflate the code for the CONFIG_PCI=y case, as
-> get_pci_function_alias_group() is a not-so-small function called from
-> two places.
-> 
-> Hence fix the issue by introducing a dummy for pci_acs_enabled()
-> instead.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Tested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+> Tested-by: Zhen Lei <thunder.leizhen@huawei.com>
+> Tested-by: Nate Watterson <nwatters@codeaurora.org>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  include/linux/pci.h | 2 ++
->  1 file changed, 2 insertions(+)
+> 
+> v4:
+>   - Adjust to simplified __get_cached_rbnode() behaviour
+>   - Cosmetic tweaks
+> 
+>   drivers/iommu/iova.c | 43 +++++++++++++++++++++----------------------
+>   include/linux/iova.h |  3 ++-
+>   2 files changed, 23 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index c93a6c46bcb1..a125a5786dbf 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -51,6 +51,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+>   
+>   	spin_lock_init(&iovad->iova_rbtree_lock);
+>   	iovad->rbroot = RB_ROOT;
+> +	iovad->cached_node = NULL;
+>   	iovad->cached32_node = NULL;
+>   	iovad->granule = granule;
+>   	iovad->start_pfn = start_pfn;
+> @@ -119,39 +120,38 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
+>   	if (limit_pfn <= iovad->dma_32bit_pfn && iovad->cached32_node)
+>   		return iovad->cached32_node;
+>   
+> +	if (iovad->cached_node)
+> +		return iovad->cached_node;
+> +
+>   	return &iovad->anchor.node;
+>   }
+>   
+>   static void
+> -__cached_rbnode_insert_update(struct iova_domain *iovad,
+> -	unsigned long limit_pfn, struct iova *new)
+> +__cached_rbnode_insert_update(struct iova_domain *iovad, struct iova *new)
+>   {
+> -	if (limit_pfn != iovad->dma_32bit_pfn)
+> -		return;
+> -	iovad->cached32_node = &new->node;
+> +	if (new->pfn_hi < iovad->dma_32bit_pfn)
+> +		iovad->cached32_node = &new->node;
+> +	else
+> +		iovad->cached_node = &new->node;
+>   }
+>   
+>   static void
+>   __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>   {
+>   	struct iova *cached_iova;
+> -	struct rb_node *curr;
+> +	struct rb_node **curr;
+>   
+> -	if (!iovad->cached32_node)
+> +	if (free->pfn_hi < iovad->dma_32bit_pfn)
+> +		curr = &iovad->cached32_node;
+> +	else
+> +		curr = &iovad->cached_node;
+> +
+> +	if (!*curr)
+>   		return;
+> -	curr = iovad->cached32_node;
+> -	cached_iova = rb_entry(curr, struct iova, node);
+>   
+> -	if (free->pfn_lo >= cached_iova->pfn_lo) {
+> -		struct rb_node *node = rb_next(&free->node);
+> -		struct iova *iova = rb_entry(node, struct iova, node);
+> -
+> -		/* only cache if it's below 32bit pfn */
+> -		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
+> -			iovad->cached32_node = node;
+> -		else
+> -			iovad->cached32_node = NULL;
+> -	}
+> +	cached_iova = rb_entry(*curr, struct iova, node);
+> +	if (free->pfn_lo >= cached_iova->pfn_lo)
+> +		*curr = rb_next(&free->node);
 
-I am sending iommu-fixes upstream this week, and this would fit into it.
-Can you have a look please and ack it if you are okay with that?
+IMO, we may incorrectly update iovad->cached32_node here.
+
+                               32-bit boundary
+      --------       --------        |          --------       --------
+     |        |     |        |       |         |        |     |        |
+----  IOVA0   -----  IOVA1   -----------------  IOVA3   -----  anchor |
+     |        |     |        |       |         |        |     |        |
+      --------       --------        |          --------       --------
+
+If we free last IOVA from 32-bit space (IOVA1) we will update 
+iovad->cached32_node to IOVA3.
 
 Thanks,
-
-	Joerg
-
-> 
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index f68c58a93dd045b9..f4f8ee5a7362e982 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1685,6 +1685,8 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
->  
->  #define dev_is_pci(d) (false)
->  #define dev_is_pf(d) (false)
-> +static inline bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
-> +{ return false; }
->  #endif /* CONFIG_PCI */
->  
->  /* Include architecture-dependent settings and functions */
-> -- 
-> 2.7.4
+Tomasz
