@@ -1,128 +1,94 @@
-From: Tomasz Nowicki <tnowicki@caviumnetworks.com>
-Subject: Re: [PATCH v4 5/6] iommu/iova: Extend rbtree node caching
-Date: Wed, 20 Sep 2017 14:59:09 +0200
-Message-ID: <ee693561-67c4-ed2a-9462-e783dfc013c2@caviumnetworks.com>
-References: <cover.1505829018.git.robin.murphy@arm.com>
- <223f0fddac0dcefc43ad81594979875967745c58.1505829018.git.robin.murphy@arm.com>
+From: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on driver
+	init.
+Date: Wed, 20 Sep 2017 15:13:52 +0100
+Message-ID: <20170920141352.29377-1-Liviu.Dudau@arm.com>
+References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <223f0fddac0dcefc43ad81594979875967745c58.1505829018.git.robin.murphy@arm.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170918100444.21878-1-Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, IOMMU ML <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+If the IPMMU driver is compiled in the kernel it will replace the
+platform bus IOMMU ops on running the ipmmu_init() function, regardless
+if there is any IPMMU hardware present or not. This screws up systems
+that just want to build a generic kernel that runs on multiple platforms
+and use a different IOMMU implementation.
 
-On 19.09.2017 18:31, Robin Murphy wrote:
-> The cached node mechanism provides a significant performance benefit for
-> allocations using a 32-bit DMA mask, but in the case of non-PCI devices
-> or where the 32-bit space is full, the loss of this benefit can be
-> significant - on large systems there can be many thousands of entries in
-> the tree, such that walking all the way down to find free space every
-> time becomes increasingly awful.
-> 
-> Maintain a similar cached node for the whole IOVA space as a superset of
-> the 32-bit space so that performance can remain much more consistent.
-> 
-> Inspired by work by Zhen Lei <thunder.leizhen@huawei.com>.
-> 
-> Tested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-> Tested-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Tested-by: Nate Watterson <nwatters@codeaurora.org>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> v4:
->   - Adjust to simplified __get_cached_rbnode() behaviour
->   - Cosmetic tweaks
-> 
->   drivers/iommu/iova.c | 43 +++++++++++++++++++++----------------------
->   include/linux/iova.h |  3 ++-
->   2 files changed, 23 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index c93a6c46bcb1..a125a5786dbf 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -51,6 +51,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   
->   	spin_lock_init(&iovad->iova_rbtree_lock);
->   	iovad->rbroot = RB_ROOT;
-> +	iovad->cached_node = NULL;
->   	iovad->cached32_node = NULL;
->   	iovad->granule = granule;
->   	iovad->start_pfn = start_pfn;
-> @@ -119,39 +120,38 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
->   	if (limit_pfn <= iovad->dma_32bit_pfn && iovad->cached32_node)
->   		return iovad->cached32_node;
->   
-> +	if (iovad->cached_node)
-> +		return iovad->cached_node;
-> +
->   	return &iovad->anchor.node;
->   }
->   
->   static void
-> -__cached_rbnode_insert_update(struct iova_domain *iovad,
-> -	unsigned long limit_pfn, struct iova *new)
-> +__cached_rbnode_insert_update(struct iova_domain *iovad, struct iova *new)
->   {
-> -	if (limit_pfn != iovad->dma_32bit_pfn)
-> -		return;
-> -	iovad->cached32_node = &new->node;
-> +	if (new->pfn_hi < iovad->dma_32bit_pfn)
-> +		iovad->cached32_node = &new->node;
-> +	else
-> +		iovad->cached_node = &new->node;
->   }
->   
->   static void
->   __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
->   {
->   	struct iova *cached_iova;
-> -	struct rb_node *curr;
-> +	struct rb_node **curr;
->   
-> -	if (!iovad->cached32_node)
-> +	if (free->pfn_hi < iovad->dma_32bit_pfn)
-> +		curr = &iovad->cached32_node;
-> +	else
-> +		curr = &iovad->cached_node;
-> +
-> +	if (!*curr)
->   		return;
-> -	curr = iovad->cached32_node;
-> -	cached_iova = rb_entry(curr, struct iova, node);
->   
-> -	if (free->pfn_lo >= cached_iova->pfn_lo) {
-> -		struct rb_node *node = rb_next(&free->node);
-> -		struct iova *iova = rb_entry(node, struct iova, node);
-> -
-> -		/* only cache if it's below 32bit pfn */
-> -		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
-> -			iovad->cached32_node = node;
-> -		else
-> -			iovad->cached32_node = NULL;
-> -	}
-> +	cached_iova = rb_entry(*curr, struct iova, node);
-> +	if (free->pfn_lo >= cached_iova->pfn_lo)
-> +		*curr = rb_next(&free->node);
+Move the bus_set_iommu() call at the end of the ipmmu_probe() function
+when we know that hardware is present. With current IOMMU framework it
+should be safe (at least for OF case).
 
-IMO, we may incorrectly update iovad->cached32_node here.
+Now that the ipmmu_init() and ipmmu_exit() functions are simple calls to
+platform_driver_register() and platform_driver_unregister(), replace
+them with the module_platform_driver() macro call.
 
-                               32-bit boundary
-      --------       --------        |          --------       --------
-     |        |     |        |       |         |        |     |        |
-----  IOVA0   -----  IOVA1   -----------------  IOVA3   -----  anchor |
-     |        |     |        |       |         |        |     |        |
-      --------       --------        |          --------       --------
+Signed-off-by: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ drivers/iommu/ipmmu-vmsa.c | 29 +++++------------------------
+ 1 file changed, 5 insertions(+), 24 deletions(-)
 
-If we free last IOVA from 32-bit space (IOVA1) we will update 
-iovad->cached32_node to IOVA3.
-
-Thanks,
-Tomasz
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 195d6e93ac718..31912997bffdf 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -966,10 +966,11 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	/*
+-	 * We can't create the ARM mapping here as it requires the bus to have
+-	 * an IOMMU, which only happens when bus_set_iommu() is called in
+-	 * ipmmu_init() after the probe function returns.
++	 * Now that we have validated the presence of the hardware, set
++	 * the bus IOMMU ops to enable future domain and device setup.
+ 	 */
++	if (!iommu_present(&platform_bus_type))
++		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+ 
+ 	platform_set_drvdata(pdev, mmu);
+ 
+@@ -1006,27 +1007,7 @@ static struct platform_driver ipmmu_driver = {
+ 	.remove	= ipmmu_remove,
+ };
+ 
+-static int __init ipmmu_init(void)
+-{
+-	int ret;
+-
+-	ret = platform_driver_register(&ipmmu_driver);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (!iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+-
+-	return 0;
+-}
+-
+-static void __exit ipmmu_exit(void)
+-{
+-	return platform_driver_unregister(&ipmmu_driver);
+-}
+-
+-subsys_initcall(ipmmu_init);
+-module_exit(ipmmu_exit);
++module_platform_driver(ipmmu_driver);
+ 
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+-- 
+2.14.1
