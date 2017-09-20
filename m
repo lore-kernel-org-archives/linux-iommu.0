@@ -1,83 +1,64 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 7/6] iommu/iova: Make cached_node always valid
-Date: Wed, 20 Sep 2017 12:02:48 +0100
-Message-ID: <0c9865fdc53820a81f81adec5a7bb4239aba7bc1.1505904195.git.robin.murphy@arm.com>
-References: <cover.1505829018.git.robin.murphy@arm.com>
+From: Harsh Jain <Harsh@chelsio.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Wed, 20 Sep 2017 16:50:24 +0530
+Message-ID: <81e629aa-8b68-4e0e-404b-08f09a4bc52f@chelsio.com>
+References: <20170920080151.GA3348@gondor.apana.org.au>
+ <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1505829018.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+Content-Language: en-US
+Sender: linux-crypto-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>
+Cc: leedom@chelsio.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, dwmw2@infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the anchor node at the top of the rbtree, there is always a valid
-node for rb_next() to return, such that cached_node is only ever NULL
-until the first allocation. Initialising it to point at the anchor node
-gets rid of that window and makes the NULL checking entirely redundant.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
 
-Oops, spotted this one slightly too late. This could be squashed into
-patch #5 (which I'll do myself if I there's any cause to resend the
-whole series again).
+On 20-09-2017 15:42, Robin Murphy wrote:
+> On 20/09/17 09:01, Herbert Xu wrote:
+>> Harsh Jain <Harsh@chelsio.com> wrote:
+>>> While debugging DMA mapping error in chelsio crypto driver we observed that when scatter/gather list received by driver has some entry with page->offset > 4096 (PAGE_SIZE). It starts giving DMA error.  Without IOMMU it works fine.
+>> This is not a bug.  The network stack can and will feed us such
+>> SG lists.
+>>
+>>> 2) It cannot be driver's responsibilty to update received sg entries to adjust offset and page 
+>>> because we are not the only one who directly uses received sg list.
+>> No the driver must deal with this.  Having said that, if we can
+>> improve our driver helper interface to make this easier then we
+>> should do that too.  What we certainly shouldn't do is to take a
+>> whack-a-mole approach like this patch does.
+> AFAICS this is entirely on intel-iommu - from a brief look it appears
+> that all the IOVA calculations would handle the offset correctly, but
+> then __domain_mapping() blindly uses sg_page() for the physical address,
+> so if offset is larger than a page it would end up with the DMA mapping
+> covering the wrong part of the buffer.
+>
+> Does the diff below help?
+>
+> Robin.
+>
+> ----->8-----
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index b3914fce8254..2ed43d928135 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2253,7 +2253,7 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+>  			sg_res = aligned_nrpages(sg->offset, sg->length);
+>  			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
+>  			sg->dma_length = sg->length;
+> -			pteval = page_to_phys(sg_page(sg)) | prot;
+> +			pteval = (sg_phys(sg) & PAGE_MASK) | prot;
+>  			phys_pfn = pteval >> VTD_PAGE_SHIFT;
+>  		}
+Robin,
+Still having following error with above change.
 
-Robin.
+[  429.645492] DMAR: DRHD: handling fault status reg 2
+[  429.650847] DMAR: [DMA Write] Request device [02:00.4] fault addr f2682000 [t
 
- drivers/iommu/iova.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index a7af8273fa98..ec443c0a8319 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -51,7 +51,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 
- 	spin_lock_init(&iovad->iova_rbtree_lock);
- 	iovad->rbroot = RB_ROOT;
--	iovad->cached_node = NULL;
-+	iovad->cached_node = &iovad->anchor.node;
- 	iovad->cached32_node = NULL;
- 	iovad->granule = granule;
- 	iovad->start_pfn = start_pfn;
-@@ -120,10 +120,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
- 	if (limit_pfn <= iovad->dma_32bit_pfn && iovad->cached32_node)
- 		return iovad->cached32_node;
- 
--	if (iovad->cached_node)
--		return iovad->cached_node;
--
--	return &iovad->anchor.node;
-+	return iovad->cached_node;
- }
- 
- static void
-@@ -141,14 +138,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
- 	struct iova *cached_iova;
- 	struct rb_node **curr;
- 
--	if (free->pfn_hi < iovad->dma_32bit_pfn)
-+	if (free->pfn_hi < iovad->dma_32bit_pfn && iovad->cached32_node)
- 		curr = &iovad->cached32_node;
- 	else
- 		curr = &iovad->cached_node;
- 
--	if (!*curr)
--		return;
--
- 	cached_iova = rb_entry(*curr, struct iova, node);
- 	if (free->pfn_lo >= cached_iova->pfn_lo)
- 		*curr = rb_next(&free->node);
--- 
-2.13.4.dirty
+>  
