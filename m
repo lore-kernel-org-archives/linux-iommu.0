@@ -1,122 +1,57 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC] virtio-iommu version 0.4
-Date: Wed, 20 Sep 2017 11:37:25 +0200
-Message-ID: <6d9f91df-ebb0-2ae0-a098-60a6bcd0e09b@redhat.com>
-References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <072f5a14-baae-57a9-9c5b-b93163c67075@redhat.com>
- <4543e6dc-0f36-11ad-784a-d7c07399d10f@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Wed, 20 Sep 2017 11:12:08 +0100
+Message-ID: <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+References: <20170920080151.GA3348@gondor.apana.org.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <4543e6dc-0f36-11ad-784a-d7c07399d10f@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170920080151.GA3348@gondor.apana.org.au>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Herbert Xu <herbert@gondor.apana.org.au>, Harsh Jain <Harsh@chelsio.com>
+Cc: leedom@chelsio.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, dwmw2@infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
-On 19/09/2017 12:47, Jean-Philippe Brucker wrote:
-> Hi Eric,
-> 
-> On 12/09/17 18:13, Auger Eric wrote:
->> 2.6.7
->> - As I am currently integrating v0.4 in QEMU here are some other comments:
->> At the moment struct virtio_iommu_req_probe flags is missing in your
->> header. As such I understood the ACK protocol was not implemented by the
->> driver in your branch.
-> 
-> Uh indeed. And yet I could swear I've written that code... somewhere. I
-> will add it to the batch of v0.5 changes, it shouldn't be too invasive.
-> 
->> - VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is VIRTIO_IOMMU_T_MASK in your
->> header too.
-> 
-> Yes, keeping VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is probably best
-> (though it is a mouthful).
-> 
->> 2.6.8.2:
->> - I am really confused about what the device should report as resv
->> regions depending on the PE nature (VFIO or not VFIO)
+On 20/09/17 09:01, Herbert Xu wrote:
+> Harsh Jain <Harsh@chelsio.com> wrote:
 >>
->> In other iommu drivers, the resv regions are populated by the iommu
->> driver through its get_resv_regions callback. They are usually composed
->> of an iommu specific MSI region (mapped or bypassed) and non IOMMU
->> specific (device specific) reserved regions:
->> iommu_dma_get_resv_regions(). In the case of virtio-iommu driver, those
->> are the guest reserved regions.
->>
->> First in the current virtio-iommu driver I don't see the
->> iommu_dma_get_resv_regions call. Do you agree that the virtio-iommu
->> driver should compute the non IOMMU specific MSI regions ie. this is
->> not the responsability of the virtio-iommu device.
+>> While debugging DMA mapping error in chelsio crypto driver we observed that when scatter/gather list received by driver has some entry with page->offset > 4096 (PAGE_SIZE). It starts giving DMA error.  Without IOMMU it works fine.
 > 
-> For SW_MSI, certainly. The driver allocates a fixed IOVA region for
-> mapping the MSI doorbell. But the driver has to know whether the doorbell
-> region is translated or bypassed.
-Sorry I was talking about *non* IOMMU specific MSI regions, typically
-the regions corresponding to guest PCI host bridge windows. This is
-normally computed in the iommu driver and I didn't that that in the
-existing virtio-iommu driver.
+> This is not a bug.  The network stack can and will feed us such
+> SG lists.
 > 
->> Then why is it more the job of the device to return the guest iommu
->> specific region rather than the driver itself?
+>> 2) It cannot be driver's responsibilty to update received sg entries to adjust offset and page 
+>> because we are not the only one who directly uses received sg list.
 > 
-> The MSI region is architectural on x86 IOMMUs, but
-> implementation-defined on virtio-iommu. It depends which platform the host
-> is emulating. In Linux, x86 IOMMU drivers register the bypass region
-> because there always is an IOAPIC on the other end, with a fixed MSI
-> address. But virtio-iommu may be either behind a GIC, an APIC or some
-> other IRQ chip.
-> 
-> The driver *could* go over all the irqchips/platforms it knows and try to
-> guess if there is a fixed doorbell or if it needs to reserve an IOVA for
-> them, but it would look horrible. I much prefer having a well-defined way
-> of doing this, so a description from the device.
+> No the driver must deal with this.  Having said that, if we can
+> improve our driver helper interface to make this easier then we
+> should do that too.  What we certainly shouldn't do is to take a
+> whack-a-mole approach like this patch does.
 
-This means I must have target specific code in the virtio-iommu device
-which is unusual, right? I was initially thinking you could handle that
-on the driver side using a config set for ARM|ARM64. But on the other
-hand you should communicate the info to the device ...
+AFAICS this is entirely on intel-iommu - from a brief look it appears
+that all the IOVA calculations would handle the offset correctly, but
+then __domain_mapping() blindly uses sg_page() for the physical address,
+so if offset is larger than a page it would end up with the DMA mapping
+covering the wrong part of the buffer.
 
-> 
->> Then I understand this is the responsability of the virtio-iommu device
->> to gather information about the host resv regions in case of VFIO EP.
->> Typically the host PCIe host bridge windows cannot be used for IOVA.
->> Also the host MSI reserved IOVA window cannot be used. Do you agree.
-> 
-> Yes, all regions reported in sysfs reserved_regions in the host would be
-> reported as RESV_T_RESERVED by virtio-iommu.
-So to summarize if the probe request is sent to an emulated device, we
-should return the target specific MSI window. We can't and don't return
-the non IOMMU specific guest reserved windows.
+Does the diff below help?
 
-For a VFIO device, we would return all reserved regions of the group the
-device belongs to. Is that correct?
-> 
->> I really think the spec should clarify what exact resv regions the
->> device should return in case of VFIO device and non VFIO device.
-> 
-> Agreed. I will add something about RESV_T_RESERVED with the PCI bridge
-> example in Implementation Notes. Do you think the MSI examples at the end
-> need improvement as well? I can try to explain that RESV_MSI regions in
-> virtio-iommu are only those of the emulated platform, not the HW or SW MSI
-> regions from the host.
+Robin.
 
-I think I would expect an explanation detailing returned reserved
-regions for pure emulated devices and HW/VFIO devices.
-
-Another unrelated remark:
-- you should add a permission violation error.
-- wrt the probe request ACK protocol, this looks pretty heavy as both
-the driver and the device need to parse the req_probe buffer. The device
-need to fill in the output buffer and then read the same info on the
-input buffer. Couldn't we imagine something simpler?
-
-Thanks
-
-Eric
-> 
-> Thanks,
-> Jean
-> 
+----->8-----
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b3914fce8254..2ed43d928135 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2253,7 +2253,7 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 			sg_res = aligned_nrpages(sg->offset, sg->length);
+ 			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
+ 			sg->dma_length = sg->length;
+-			pteval = page_to_phys(sg_page(sg)) | prot;
++			pteval = (sg_phys(sg) & PAGE_MASK) | prot;
+ 			phys_pfn = pteval >> VTD_PAGE_SHIFT;
+ 		}
+ 
