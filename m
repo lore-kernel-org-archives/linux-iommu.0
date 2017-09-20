@@ -1,34 +1,99 @@
-From: Harsh Jain <Harsh@chelsio.com>
-Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
- Intel IOMMU
-Date: Wed, 20 Sep 2017 17:00:00 +0530
-Message-ID: <dbc09c67-825b-31ea-df1c-9e6b825aa0b7@chelsio.com>
-References: <20170920080151.GA3348@gondor.apana.org.au>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: bind pasid table API
+Date: Wed, 20 Sep 2017 13:09:47 +0100
+Message-ID: <6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
+References: <20170918204516.2f6beffb@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-crypto-owner@vger.kernel.org>
-In-Reply-To: <20170920080151.GA3348@gondor.apana.org.au>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170918204516.2f6beffb@jacob-builder>
 Content-Language: en-US
-Sender: linux-crypto-owner@vger.kernel.org
-To: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: dwmw2@infradead.org, joro@8bytes.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, leedom@chelsio.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Jacob,
+
+[Adding Eric as he might need pasid_table_info for vSVM at some point]
+
+On 19/09/17 04:45, Jacob Pan wrote:
+> Hi Jean and All,
+> 
+> This is a follow-up on the LPC discussion we had last week.
+> (https://linuxplumbersconf.org/2017/ocw/proposals/4748)
+> 
+> My understanding is that the data structure below can satisfy the
+> needs from Intel (pointer + size) and AMD (pointer only). But ARM
+> pvIOMMU would need additional info to indicate the page table format.
+> Could you share your idea of the right addition for ARM such that we
+> can have a unified API?
+> 
+> /**
+>  * PASID table data used to bind guest PASID table to the host IOMMU. This will
+>  * enable guest managed first level page tables.
+>  * @ptr:	PASID table pointer
+>  * @size_order:	number of bits supported in the guest PASID table, must be less
+>  *		or equal than the host table size.
+>  */
+> struct pasid_table_info {
+> 	__u64	ptr;
+> 	__u64	size_order;
+> };
+
+For the PASID table, Arm SMMUv3 would need two additional fields:
+* 'format' telling whether the table has 1 or 2 levels and their
+  dimensions,
+* 'default_substream' telling if PASID0 is reserved for non-pasid traffic.
+
+I think that's it for the moment, but it does require to leave space
+for a vendor-specific structure at the end. It is one reason why I'd
+prefer having a 'model' field in the pasid_table_info structure telling
+what fields the whole structure actually contains.
+
+Another reason is if some IOMMU is able to support multiple PASID table
+formats, it could advertise them all in sysfs and Qemu could tell which
+one it chose in 'model'. I'm not sure we'll ever see that in practice.
 
 
-On 20-09-2017 13:31, Herbert Xu wrote:
-> Harsh Jain <Harsh@chelsio.com> wrote:
->> While debugging DMA mapping error in chelsio crypto driver we observed that when scatter/gather list received by driver has some entry with page->offset > 4096 (PAGE_SIZE). It starts giving DMA error.  Without IOMMU it works fine.
-> This is not a bug.  The network stack can and will feed us such
-> SG lists.
->
->> 2) It cannot be driver's responsibilty to update received sg entries to adjust offset and page 
->> because we are not the only one who directly uses received sg list.
-> No the driver must deal with this.  Having said that, if we can
-> improve our driver helper interface to make this easier then we
-> should do that too.  What we certainly shouldn't do is to take a
-> whack-a-mole approach like this patch does.
-Agreed,I added that patch for understanding purpose only. Today I referred other crypto driver for DMA related code. Most of them are using dma_map_sg except QAT. In QAT, They are first updating the Page address using offset then mapping each page in for loop with dma_map_single(0. I will try the same in chelsio driver will see the behavior.
->
-> Cheers,
+
+For binding page tables instead of PASID tables (e.g. virtio-iommu), the
+generic data would be:
+
+struct pgtable_info {
+	__u32	pasid;
+	__u64	ptr;
+	__u32	model;
+	__u8	model_data[];
+};
+
+Followed by a few arch-specific configuration values. For Arm we can
+summarize this to three registers, defined in the Armv8 Architecture
+Reference Manual:
+
+struct arm_lpae_pgtable_info {
+	__u64	tcr;	/* Translation Control Register */
+	__u64	mair;	/* Memory Attributes Indirection Register */
+	__u64	asid;	/* Address Space ID */
+};
+
+Some data packed in the TCR might be common to most architectures, like
+page granularity and max VA size. Most fields of the TCR won't be used but
+it provides a nice architected way to communicate Arm page table
+configuration.
+
+Note that there might be an additional page directory in the arch-specific
+info, as we can split the address space in two. I'm not sure whether we
+should allow it yet.
+
+Thanks,
+Jean
