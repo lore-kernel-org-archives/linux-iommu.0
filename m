@@ -1,183 +1,122 @@
-From: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH V2 1/1] iommu/iova: Make rcache flush optional on IOVA
-	allocation failure
-Date: Wed, 20 Sep 2017 10:52:02 +0200
-Message-ID: <1505897522-9237-2-git-send-email-tomasz.nowicki@caviumnetworks.com>
-References: <1505897522-9237-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [RFC] virtio-iommu version 0.4
+Date: Wed, 20 Sep 2017 11:37:25 +0200
+Message-ID: <6d9f91df-ebb0-2ae0-a098-60a6bcd0e09b@redhat.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+ <072f5a14-baae-57a9-9c5b-b93163c67075@redhat.com>
+ <4543e6dc-0f36-11ad-784a-d7c07399d10f@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1505897522-9237-1-git-send-email-tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: Jayachandran.Nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Tomasz Nowicki <Tomasz.Nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Ganapatrao.Kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <4543e6dc-0f36-11ad-784a-d7c07399d10f@arm.com>
+Sender: kvm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Since IOVA allocation failure is not unusual case we need to flush
-CPUs' rcache in hope we will succeed in next round.
+Hi Jean,
+On 19/09/2017 12:47, Jean-Philippe Brucker wrote:
+> Hi Eric,
+> 
+> On 12/09/17 18:13, Auger Eric wrote:
+>> 2.6.7
+>> - As I am currently integrating v0.4 in QEMU here are some other comments:
+>> At the moment struct virtio_iommu_req_probe flags is missing in your
+>> header. As such I understood the ACK protocol was not implemented by the
+>> driver in your branch.
+> 
+> Uh indeed. And yet I could swear I've written that code... somewhere. I
+> will add it to the batch of v0.5 changes, it shouldn't be too invasive.
+> 
+>> - VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is VIRTIO_IOMMU_T_MASK in your
+>> header too.
+> 
+> Yes, keeping VIRTIO_IOMMU_PROBE_PROPERTY_TYPE_MASK is probably best
+> (though it is a mouthful).
+> 
+>> 2.6.8.2:
+>> - I am really confused about what the device should report as resv
+>> regions depending on the PE nature (VFIO or not VFIO)
+>>
+>> In other iommu drivers, the resv regions are populated by the iommu
+>> driver through its get_resv_regions callback. They are usually composed
+>> of an iommu specific MSI region (mapped or bypassed) and non IOMMU
+>> specific (device specific) reserved regions:
+>> iommu_dma_get_resv_regions(). In the case of virtio-iommu driver, those
+>> are the guest reserved regions.
+>>
+>> First in the current virtio-iommu driver I don't see the
+>> iommu_dma_get_resv_regions call. Do you agree that the virtio-iommu
+>> driver should compute the non IOMMU specific MSI regions ie. this is
+>> not the responsability of the virtio-iommu device.
+> 
+> For SW_MSI, certainly. The driver allocates a fixed IOVA region for
+> mapping the MSI doorbell. But the driver has to know whether the doorbell
+> region is translated or bypassed.
+Sorry I was talking about *non* IOMMU specific MSI regions, typically
+the regions corresponding to guest PCI host bridge windows. This is
+normally computed in the iommu driver and I didn't that that in the
+existing virtio-iommu driver.
+> 
+>> Then why is it more the job of the device to return the guest iommu
+>> specific region rather than the driver itself?
+> 
+> The MSI region is architectural on x86 IOMMUs, but
+> implementation-defined on virtio-iommu. It depends which platform the host
+> is emulating. In Linux, x86 IOMMU drivers register the bypass region
+> because there always is an IOAPIC on the other end, with a fixed MSI
+> address. But virtio-iommu may be either behind a GIC, an APIC or some
+> other IRQ chip.
+> 
+> The driver *could* go over all the irqchips/platforms it knows and try to
+> guess if there is a fixed doorbell or if it needs to reserve an IOVA for
+> them, but it would look horrible. I much prefer having a well-defined way
+> of doing this, so a description from the device.
 
-However, it is useful to decide whether we need rcache flush step because
-of two reasons:
-- Not scalability. On large system with ~100 CPUs iterating and flushing
-  rcache for each CPU becomes serious bottleneck so we may want to defer it.
-- free_cpu_cached_iovas() does not care about max PFN we are interested in.
-  Thus we may flush our rcaches and still get no new IOVA like in the
-  commonly used scenario:
+This means I must have target specific code in the virtio-iommu device
+which is unusual, right? I was initially thinking you could handle that
+on the driver side using a config set for ARM|ARM64. But on the other
+hand you should communicate the info to the device ...
 
-    if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
-        iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
+> 
+>> Then I understand this is the responsability of the virtio-iommu device
+>> to gather information about the host resv regions in case of VFIO EP.
+>> Typically the host PCIe host bridge windows cannot be used for IOVA.
+>> Also the host MSI reserved IOVA window cannot be used. Do you agree.
+> 
+> Yes, all regions reported in sysfs reserved_regions in the host would be
+> reported as RESV_T_RESERVED by virtio-iommu.
+So to summarize if the probe request is sent to an emulated device, we
+should return the target specific MSI window. We can't and don't return
+the non IOMMU specific guest reserved windows.
 
-    if (!iova)
-        iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
+For a VFIO device, we would return all reserved regions of the group the
+device belongs to. Is that correct?
+> 
+>> I really think the spec should clarify what exact resv regions the
+>> device should return in case of VFIO device and non VFIO device.
+> 
+> Agreed. I will add something about RESV_T_RESERVED with the PCI bridge
+> example in Implementation Notes. Do you think the MSI examples at the end
+> need improvement as well? I can try to explain that RESV_MSI regions in
+> virtio-iommu are only those of the emulated platform, not the HW or SW MSI
+> regions from the host.
 
-   1. First alloc_iova_fast() call is limited to DMA_BIT_MASK(32) to get
-      PCI devices a SAC address
-   2. alloc_iova() fails due to full 32-bit space
-   3. rcaches contain PFNs out of 32-bit space so free_cpu_cached_iovas()
-      throws entries away for nothing and alloc_iova() fails again
-   4. Next alloc_iova_fast() call cannot take advantage of rcache since we
-      have just defeated caches. In this case we pick the slowest option
-      to proceed.
+I think I would expect an explanation detailing returned reserved
+regions for pure emulated devices and HW/VFIO devices.
 
-This patch reworks flushed_rcache local flag to be additional function
-argument instead and control rcache flush step. Also, it updates all users
-to do the flush as the last chance.
+Another unrelated remark:
+- you should add a permission violation error.
+- wrt the probe request ACK protocol, this looks pretty heavy as both
+the driver and the device need to parse the req_probe buffer. The device
+need to fill in the output buffer and then read the same info on the
+input buffer. Couldn't we imagine something simpler?
 
-Signed-off-by: Tomasz Nowicki <Tomasz.Nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/amd_iommu.c   |  5 +++--
- drivers/iommu/dma-iommu.c   |  6 ++++--
- drivers/iommu/intel-iommu.c |  5 +++--
- drivers/iommu/iova.c        | 11 ++++++-----
- include/linux/iova.h        |  5 +++--
- 5 files changed, 19 insertions(+), 13 deletions(-)
+Thanks
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 8d2ec60..ce68986 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1604,10 +1604,11 @@ static unsigned long dma_ops_alloc_iova(struct device *dev,
- 
- 	if (dma_mask > DMA_BIT_MASK(32))
- 		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
--				      IOVA_PFN(DMA_BIT_MASK(32)));
-+				      IOVA_PFN(DMA_BIT_MASK(32)), false);
- 
- 	if (!pfn)
--		pfn = alloc_iova_fast(&dma_dom->iovad, pages, IOVA_PFN(dma_mask));
-+		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
-+				      IOVA_PFN(dma_mask), true);
- 
- 	return (pfn << PAGE_SHIFT);
- }
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 191be9c..25914d3 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -370,10 +370,12 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 
- 	/* Try to get PCI devices a SAC address */
- 	if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
--		iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
-+		iova = alloc_iova_fast(iovad, iova_len,
-+				       DMA_BIT_MASK(32) >> shift, false);
- 
- 	if (!iova)
--		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
-+		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
-+				       true);
- 
- 	return (dma_addr_t)iova << shift;
- }
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 05c0c3a..75c8320 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3460,11 +3460,12 @@ static unsigned long intel_alloc_iova(struct device *dev,
- 		 * from higher range
- 		 */
- 		iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
--					   IOVA_PFN(DMA_BIT_MASK(32)));
-+					   IOVA_PFN(DMA_BIT_MASK(32)), false);
- 		if (iova_pfn)
- 			return iova_pfn;
- 	}
--	iova_pfn = alloc_iova_fast(&domain->iovad, nrpages, IOVA_PFN(dma_mask));
-+	iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
-+				   IOVA_PFN(dma_mask), true);
- 	if (unlikely(!iova_pfn)) {
- 		pr_err("Allocating %ld-page iova for %s failed",
- 		       nrpages, dev_name(dev));
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index f88acad..e8c140c 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -353,14 +353,15 @@ EXPORT_SYMBOL_GPL(free_iova);
-  * @iovad: - iova domain in question
-  * @size: - size of page frames to allocate
-  * @limit_pfn: - max limit address
-+ * @flush_rcache: - set to flush rcache on regular allocation failure
-  * This function tries to satisfy an iova allocation from the rcache,
-- * and falls back to regular allocation on failure.
-+ * and falls back to regular allocation on failure. If regular allocation
-+ * fails too and the flush_rcache flag is set then the rcache will be flushed.
- */
- unsigned long
- alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
--		unsigned long limit_pfn)
-+		unsigned long limit_pfn, bool flush_rcache)
- {
--	bool flushed_rcache = false;
- 	unsigned long iova_pfn;
- 	struct iova *new_iova;
- 
-@@ -373,11 +374,11 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
- 	if (!new_iova) {
- 		unsigned int cpu;
- 
--		if (flushed_rcache)
-+		if (!flush_rcache)
- 			return 0;
- 
- 		/* Try replenishing IOVAs by flushing rcache. */
--		flushed_rcache = true;
-+		flush_rcache = false;
- 		for_each_online_cpu(cpu)
- 			free_cpu_cached_iovas(cpu, iovad);
- 		goto retry;
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 58c2a36..8fdcb66 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -97,7 +97,7 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
- void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
- 		    unsigned long size);
- unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
--			      unsigned long limit_pfn);
-+			      unsigned long limit_pfn, bool flush_rcache);
- struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
- 	unsigned long pfn_hi);
- void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
-@@ -151,7 +151,8 @@ static inline void free_iova_fast(struct iova_domain *iovad,
- 
- static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
- 					    unsigned long size,
--					    unsigned long limit_pfn)
-+					    unsigned long limit_pfn,
-+					    bool flush_rcache)
- {
- 	return 0;
- }
--- 
-2.7.4
+Eric
+> 
+> Thanks,
+> Jean
+> 
