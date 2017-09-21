@@ -1,132 +1,250 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v5 6/6] iommu/iova: Simplify cached node logic
-Date: Thu, 21 Sep 2017 16:52:47 +0100
-Message-ID: <748a2bbb8c7dee79f3faffe6b349d8cdc0743904.1506007392.git.robin.murphy@arm.com>
+Subject: [PATCH v5 4/6] iommu/iova: Make dma_32bit_pfn implicit
+Date: Thu, 21 Sep 2017 16:52:45 +0100
+Message-ID: <303e5bcd57ca4d829ef6cfdec704834f1f8de5af.1506007392.git.robin.murphy@arm.com>
 References: <cover.1506007392.git.robin.murphy@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1506007392.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, dwoods@mellanox.com, linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, dwoods@mellanox.com, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, David Airlie <airlied@linux.ie>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The logic of __get_cached_rbnode() is a little obtuse, but then
-__get_prev_node_of_cached_rbnode_or_last_node_and_update_limit_pfn()
-wouldn't exactly roll off the tongue...
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-Now that we have the invariant that there is always a valid node to
-start searching downwards from, everything gets a bit easier to follow
-if we simplify that function to do what it says on the tin and return
-the cached node (or anchor node as appropriate) directly. In turn, we
-can then deduplicate the rb_prev() and limit_pfn logic into the main
-loop itself, further reduce the amount of code under the lock, and
-generally make the inner workings a bit less subtle.
+Now that the cached node optimisation can apply to all allocations, the
+couple of users which were playing tricks with dma_32bit_pfn in order to
+benefit from it can stop doing so. Conversely, there is also no need for
+all the other users to explicitly calculate a 'real' 32-bit PFN, when
+init_iova_domain() can happily do that itself from the page granularity.
 
+CC: Thierry Reding <thierry.reding@gmail.com>
+CC: Jonathan Hunter <jonathanh@nvidia.com>
+CC: David Airlie <airlied@linux.ie>
+CC: Sudeep Dutt <sudeep.dutt@intel.com>
+CC: Ashutosh Dixit <ashutosh.dixit@intel.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Tested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Tested-by: Zhen Lei <thunder.leizhen@huawei.com>
+Tested-by: Nate Watterson <nwatters@codeaurora.org>
+[rm: use iova_shift(), rewrote commit message]
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-v5: Make cached nodes always valid
+v5: No change
 
- drivers/iommu/iova.c | 51 +++++++++++++++++----------------------------------
- 1 file changed, 17 insertions(+), 34 deletions(-)
+ drivers/gpu/drm/tegra/drm.c      |  3 +--
+ drivers/gpu/host1x/dev.c         |  3 +--
+ drivers/iommu/amd_iommu.c        |  7 ++-----
+ drivers/iommu/dma-iommu.c        | 18 +-----------------
+ drivers/iommu/intel-iommu.c      | 11 +++--------
+ drivers/iommu/iova.c             |  4 ++--
+ drivers/misc/mic/scif/scif_rma.c |  3 +--
+ include/linux/iova.h             |  5 ++---
+ 8 files changed, 13 insertions(+), 41 deletions(-)
 
+diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
+index 597d563d636a..b822e484b7e5 100644
+--- a/drivers/gpu/drm/tegra/drm.c
++++ b/drivers/gpu/drm/tegra/drm.c
+@@ -155,8 +155,7 @@ static int tegra_drm_load(struct drm_device *drm, unsigned long flags)
+ 
+ 		order = __ffs(tegra->domain->pgsize_bitmap);
+ 		init_iova_domain(&tegra->carveout.domain, 1UL << order,
+-				 carveout_start >> order,
+-				 carveout_end >> order);
++				 carveout_start >> order);
+ 
+ 		tegra->carveout.shift = iova_shift(&tegra->carveout.domain);
+ 		tegra->carveout.limit = carveout_end >> tegra->carveout.shift;
+diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+index 7f22c5c37660..5267c62e8896 100644
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -198,8 +198,7 @@ static int host1x_probe(struct platform_device *pdev)
+ 
+ 		order = __ffs(host->domain->pgsize_bitmap);
+ 		init_iova_domain(&host->iova, 1UL << order,
+-				 geometry->aperture_start >> order,
+-				 geometry->aperture_end >> order);
++				 geometry->aperture_start >> order);
+ 		host->iova_end = geometry->aperture_end;
+ 	}
+ 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 51f8215877f5..647ab7691aee 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -63,7 +63,6 @@
+ /* IO virtual address start page frame number */
+ #define IOVA_START_PFN		(1)
+ #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
+-#define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
+ 
+ /* Reserved IOVA ranges */
+ #define MSI_RANGE_START		(0xfee00000)
+@@ -1788,8 +1787,7 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
+ 	if (!dma_dom->domain.pt_root)
+ 		goto free_dma_dom;
+ 
+-	init_iova_domain(&dma_dom->iovad, PAGE_SIZE,
+-			 IOVA_START_PFN, DMA_32BIT_PFN);
++	init_iova_domain(&dma_dom->iovad, PAGE_SIZE, IOVA_START_PFN);
+ 
+ 	if (init_iova_flush_queue(&dma_dom->iovad, iova_domain_flush_tlb, NULL))
+ 		goto free_dma_dom;
+@@ -2696,8 +2694,7 @@ static int init_reserved_iova_ranges(void)
+ 	struct pci_dev *pdev = NULL;
+ 	struct iova *val;
+ 
+-	init_iova_domain(&reserved_iova_ranges, PAGE_SIZE,
+-			 IOVA_START_PFN, DMA_32BIT_PFN);
++	init_iova_domain(&reserved_iova_ranges, PAGE_SIZE, IOVA_START_PFN);
+ 
+ 	lockdep_set_class(&reserved_iova_ranges.iova_rbtree_lock,
+ 			  &reserved_rbtree_key);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 9d1cebe7f6cb..191be9c80a8a 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -292,18 +292,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 		/* ...then finally give it a kicking to make sure it fits */
+ 		base_pfn = max_t(unsigned long, base_pfn,
+ 				domain->geometry.aperture_start >> order);
+-		end_pfn = min_t(unsigned long, end_pfn,
+-				domain->geometry.aperture_end >> order);
+ 	}
+-	/*
+-	 * PCI devices may have larger DMA masks, but still prefer allocating
+-	 * within a 32-bit mask to avoid DAC addressing. Such limitations don't
+-	 * apply to the typical platform device, so for those we may as well
+-	 * leave the cache limit at the top of their range to save an rb_last()
+-	 * traversal on every allocation.
+-	 */
+-	if (dev && dev_is_pci(dev))
+-		end_pfn &= DMA_BIT_MASK(32) >> order;
+ 
+ 	/* start_pfn is always nonzero for an already-initialised domain */
+ 	if (iovad->start_pfn) {
+@@ -312,16 +301,11 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 			pr_warn("Incompatible range for DMA domain\n");
+ 			return -EFAULT;
+ 		}
+-		/*
+-		 * If we have devices with different DMA masks, move the free
+-		 * area cache limit down for the benefit of the smaller one.
+-		 */
+-		iovad->dma_32bit_pfn = min(end_pfn + 1, iovad->dma_32bit_pfn);
+ 
+ 		return 0;
+ 	}
+ 
+-	init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
++	init_iova_domain(iovad, 1UL << order, base_pfn);
+ 	if (!dev)
+ 		return 0;
+ 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6784a05dd6b2..ebb48353dd39 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -82,8 +82,6 @@
+ #define IOVA_START_PFN		(1)
+ 
+ #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
+-#define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
+-#define DMA_64BIT_PFN		IOVA_PFN(DMA_BIT_MASK(64))
+ 
+ /* page table handling */
+ #define LEVEL_STRIDE		(9)
+@@ -1878,8 +1876,7 @@ static int dmar_init_reserved_ranges(void)
+ 	struct iova *iova;
+ 	int i;
+ 
+-	init_iova_domain(&reserved_iova_list, VTD_PAGE_SIZE, IOVA_START_PFN,
+-			DMA_32BIT_PFN);
++	init_iova_domain(&reserved_iova_list, VTD_PAGE_SIZE, IOVA_START_PFN);
+ 
+ 	lockdep_set_class(&reserved_iova_list.iova_rbtree_lock,
+ 		&reserved_rbtree_key);
+@@ -1938,8 +1935,7 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
+ 	unsigned long sagaw;
+ 	int err;
+ 
+-	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN,
+-			DMA_32BIT_PFN);
++	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
+ 
+ 	err = init_iova_flush_queue(&domain->iovad,
+ 				    iommu_flush_iova, iova_entry_free);
+@@ -4897,8 +4893,7 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
+ {
+ 	int adjust_width;
+ 
+-	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN,
+-			DMA_32BIT_PFN);
++	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
+ 	domain_reserve_special_ranges(domain);
+ 
+ 	/* calculate AGAW */
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 9e04c1f3e740..7b7363518733 100644
+index c6f5a22f8d20..65032e60a5d1 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -51,8 +51,8 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+@@ -37,7 +37,7 @@ static void fq_flush_timeout(unsigned long data);
  
- 	spin_lock_init(&iovad->iova_rbtree_lock);
- 	iovad->rbroot = RB_ROOT;
--	iovad->cached_node = NULL;
--	iovad->cached32_node = NULL;
-+	iovad->cached_node = &iovad->anchor.node;
-+	iovad->cached32_node = &iovad->anchor.node;
+ void
+ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+-	unsigned long start_pfn, unsigned long pfn_32bit)
++	unsigned long start_pfn)
+ {
+ 	/*
+ 	 * IOVA granularity will normally be equal to the smallest
+@@ -52,7 +52,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->cached32_node = NULL;
  	iovad->granule = granule;
  	iovad->start_pfn = start_pfn;
- 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
-@@ -115,22 +115,12 @@ int init_iova_flush_queue(struct iova_domain *iovad,
- EXPORT_SYMBOL_GPL(init_iova_flush_queue);
+-	iovad->dma_32bit_pfn = pfn_32bit + 1;
++	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
+ 	iovad->flush_cb = NULL;
+ 	iovad->fq = NULL;
+ 	init_iova_rcaches(iovad);
+diff --git a/drivers/misc/mic/scif/scif_rma.c b/drivers/misc/mic/scif/scif_rma.c
+index 329727e00e97..c824329f7012 100644
+--- a/drivers/misc/mic/scif/scif_rma.c
++++ b/drivers/misc/mic/scif/scif_rma.c
+@@ -39,8 +39,7 @@ void scif_rma_ep_init(struct scif_endpt *ep)
+ 	struct scif_endpt_rma_info *rma = &ep->rma_info;
  
- static struct rb_node *
--__get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
-+__get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
+ 	mutex_init(&rma->rma_lock);
+-	init_iova_domain(&rma->iovad, PAGE_SIZE, SCIF_IOVA_START_PFN,
+-			 SCIF_DMA_64BIT_PFN);
++	init_iova_domain(&rma->iovad, PAGE_SIZE, SCIF_IOVA_START_PFN);
+ 	spin_lock_init(&rma->tc_lock);
+ 	mutex_init(&rma->mmn_lock);
+ 	INIT_LIST_HEAD(&rma->reg_list);
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 69ea3e258ff2..953cfd20f152 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -154,7 +154,7 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+ 	unsigned long pfn_hi);
+ void copy_reserved_iova(struct iova_domain *from, struct iova_domain *to);
+ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+-	unsigned long start_pfn, unsigned long pfn_32bit);
++	unsigned long start_pfn);
+ int init_iova_flush_queue(struct iova_domain *iovad,
+ 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
+ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+@@ -230,8 +230,7 @@ static inline void copy_reserved_iova(struct iova_domain *from,
+ 
+ static inline void init_iova_domain(struct iova_domain *iovad,
+ 				    unsigned long granule,
+-				    unsigned long start_pfn,
+-				    unsigned long pfn_32bit)
++				    unsigned long start_pfn)
  {
--	struct rb_node *cached_node = NULL;
--	struct iova *curr_iova;
-+	if (limit_pfn <= iovad->dma_32bit_pfn)
-+		return iovad->cached32_node;
- 
--	if (*limit_pfn <= iovad->dma_32bit_pfn)
--		cached_node = iovad->cached32_node;
--	if (!cached_node)
--		cached_node = iovad->cached_node;
--	if (!cached_node)
--		return rb_prev(&iovad->anchor.node);
--
--	curr_iova = rb_entry(cached_node, struct iova, node);
--	*limit_pfn = min(*limit_pfn, curr_iova->pfn_lo);
--
--	return rb_prev(cached_node);
-+	return iovad->cached_node;
  }
  
- static void
-@@ -149,11 +139,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
- 
- 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
- 	if (free->pfn_hi < iovad->dma_32bit_pfn &&
--	    iovad->cached32_node && free->pfn_lo >= cached_iova->pfn_lo)
-+	    free->pfn_lo >= cached_iova->pfn_lo)
- 		iovad->cached32_node = rb_next(&free->node);
- 
- 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
--	if (iovad->cached_node && free->pfn_lo >= cached_iova->pfn_lo)
-+	if (free->pfn_lo >= cached_iova->pfn_lo)
- 		iovad->cached_node = rb_next(&free->node);
- }
- 
-@@ -189,7 +179,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 		unsigned long size, unsigned long limit_pfn,
- 			struct iova *new, bool size_aligned)
- {
--	struct rb_node *prev, *curr = NULL;
-+	struct rb_node *curr, *prev;
-+	struct iova *curr_iova;
- 	unsigned long flags;
- 	unsigned long new_pfn;
- 	unsigned long align_mask = ~0UL;
-@@ -199,24 +190,16 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 
- 	/* Walk the tree backwards */
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
--	curr = __get_cached_rbnode(iovad, &limit_pfn);
--	prev = curr;
--	while (curr) {
--		struct iova *curr_iova = rb_entry(curr, struct iova, node);
--
--		if (limit_pfn <= curr_iova->pfn_lo)
--			goto move_left;
--
--		if (((limit_pfn - size) & align_mask) > curr_iova->pfn_hi)
--			break;	/* found a free slot */
--
--		limit_pfn = curr_iova->pfn_lo;
--move_left:
-+	curr = __get_cached_rbnode(iovad, limit_pfn);
-+	curr_iova = rb_entry(curr, struct iova, node);
-+	do {
-+		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
-+		new_pfn = (limit_pfn - size) & align_mask;
- 		prev = curr;
- 		curr = rb_prev(curr);
--	}
-+		curr_iova = rb_entry(curr, struct iova, node);
-+	} while (curr && new_pfn <= curr_iova->pfn_hi);
- 
--	new_pfn = (limit_pfn - size) & align_mask;
- 	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
- 		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- 		return -ENOMEM;
 -- 
 2.13.4.dirty
