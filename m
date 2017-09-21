@@ -1,71 +1,48 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v2] iommu/iova: Use raw_cpu_ptr() instead of get_cpu_ptr()
- for ->fq
-Date: Thu, 21 Sep 2017 17:21:40 +0200
-Message-ID: <20170921152140.grayy3a7ok2im7xa@linutronix.de>
-References: <20170906103459.oi2nn7jondjqdo5m@linutronix.de>
- <20170919094119.bibxslqyeefbx7gf@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v5 0/6] Optimise 64-bit IOVA allocations
+Date: Thu, 21 Sep 2017 16:52:41 +0100
+Message-ID: <cover.1506007392.git.robin.murphy@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170919094119.bibxslqyeefbx7gf@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, vinadhy@gmail.com, linux-kernel@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, dwoods@mellanox.com, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-get_cpu_ptr() disabled preemption and returns the ->fq object of the
-current CPU. raw_cpu_ptr() does the same except that it not disable
-preemption which means the scheduler can move it to another CPU after it
-obtained the per-CPU object.
-In this case this is not bad because the data structure itself is
-protected with a spin_lock. This change shouldn't matter however on RT
-it does because the sleeping lock can't be accessed with disabled
-preemption.
+v4: https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1493704.html
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org
-Reported-by: vinadhy@gmail.com
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-On 2017-09-19 11:41:19 [+0200], Joerg Roedel wrote:
-> Hi Sebastian,
-Hi Jörg,
+Right, this is hopefully the last version - I've put things back in a
+sensible order with the new additions at the end, so if they prove
+contentious the first 4 previously-tested patches can still get their
+time in -next. Patch #3 is updated to fix the bug brought to light by
+Tomasz, patch #6 includes the cleanup afterthought from v4, and I've
+nobbled one or two rogue whitespace changes I'd missed before.
 
-> I moved the flushing to driver/iommu/iova.c to share it with the Intel
-> IOMMU and possibly other drivers too, so this patch does no longer apply
-> to v4.14-rc1. Can you update the patch to these changes?
+And the diffstat is still even more negative than before, hooray! For
+the whole series, the total code size reduction of alloc_iova() comes
+to just over 26% (AArch64 GCC 6.3.1).
 
-Sure.
+Robin.
 
-v1…v2: move the change from amd_iommu.c to iova.c
 
- drivers/iommu/iova.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Robin Murphy (3):
+  iommu/iova: Extend rbtree node caching
+  iommu/iova: Add rbtree anchor node
+  iommu/iova: Simplify cached node logic
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 33edfa794ae9..b30900025c62 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -570,7 +570,7 @@ void queue_iova(struct iova_domain *iovad,
- 		unsigned long pfn, unsigned long pages,
- 		unsigned long data)
- {
--	struct iova_fq *fq = get_cpu_ptr(iovad->fq);
-+	struct iova_fq *fq = raw_cpu_ptr(iovad->fq);
- 	unsigned long flags;
- 	unsigned idx;
- 
-@@ -600,8 +600,6 @@ void queue_iova(struct iova_domain *iovad,
- 	if (atomic_cmpxchg(&iovad->fq_timer_on, 0, 1) == 0)
- 		mod_timer(&iovad->fq_timer,
- 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
--
--	put_cpu_ptr(iovad->fq);
- }
- EXPORT_SYMBOL_GPL(queue_iova);
- 
+Zhen Lei (3):
+  iommu/iova: Optimise rbtree searching
+  iommu/iova: Optimise the padding calculation
+  iommu/iova: Make dma_32bit_pfn implicit
+
+ drivers/gpu/drm/tegra/drm.c      |   3 +-
+ drivers/gpu/host1x/dev.c         |   3 +-
+ drivers/iommu/amd_iommu.c        |   7 +-
+ drivers/iommu/dma-iommu.c        |  18 +-----
+ drivers/iommu/intel-iommu.c      |  11 +---
+ drivers/iommu/iova.c             | 135 ++++++++++++++++-----------------------
+ drivers/misc/mic/scif/scif_rma.c |   3 +-
+ include/linux/iova.h             |   9 +--
+ 8 files changed, 69 insertions(+), 120 deletions(-)
+
 -- 
-2.14.1
+2.13.4.dirty
