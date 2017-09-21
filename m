@@ -1,104 +1,39 @@
-From: Yisheng Xie <xieyisheng1@huawei.com>
-Subject: [PATCH v2] iommu/arm-smmu-v3: Avoid ILLEGAL setting of STE.S1STALLD and CD.S
-Date: Thu, 21 Sep 2017 20:36:07 +0800
-Message-ID: <1505997367-51569-1-git-send-email-xieyisheng1@huawei.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
+	stream tables and comamnd queues
+Date: Thu, 21 Sep 2017 16:26:39 +0200
+Message-ID: <20170921142639.GA18211@lst.de>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com> <20170921085922.11659-4-ganapatrao.kulkarni@cavium.com> <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, jean-philippe.brucker@arm.com, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng1@huawei.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
+Sender: owner-linux-mm@kvack.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Will.Deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-According to Spec, it is ILLEGAL to set STE.S1STALLD if STALL_MODEL
-is not 0b00, which means we should not disable stall mode if stall
-or terminate mode is not configuable.
+On Thu, Sep 21, 2017 at 12:58:04PM +0100, Robin Murphy wrote:
+> Christoph, Marek; how reasonable do you think it is to expect
+> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
+> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
+> allocation case; I'm not sure it's even worth it for bounce-buffering),
+> but the likes of CMA might be a little trickier...
 
-Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
-means if stall mode is force we should always set CD.S.
+I think allocating data node local to dev is a good default.  I'm not
+sure if we'd still need a version that takes an explicit node, though.
 
-As Jean-Philippe's suggestion, this patch introduce a feature bit
-ARM_SMMU_FEAT_STALL_FORCE, which means smmu only supports stall force.
-Therefore, we can avoid the ILLEGAL setting of STE.S1STALLD.by checking
-ARM_SMMU_FEAT_STALL_FORCE.
+On the one hand devices like NVMe or RDMA nics have queues that are
+assigned to specific cpus and thus have an inherent affinity to given
+nodes.  On the other hand we'd still need to access the PCIe device,
+so for it to make sense we'd need to access the dma memory a lot more
+from the host than from the device, and I'm not sure if we ever have
+devices where that is the case (which would not be optimal to start
+with).
 
-This patch keeps the ARM_SMMU_FEAT_STALLS as the meaning of stall supported
-(force or configuable) to easy to expand the future function, i.e. we can
-only use ARM_SMMU_FEAT_STALLS to check whether we should register fault
-handle or enable master can_stall, etc to supporte platform SVM.
-
-The feature bit, STE.S1STALLD and CD.S setting will be like:
-
-STALL_MODEL  FEATURE                                         S1STALLD CD.S
-0b00         ARM_SMMU_FEAT_STALLS                                 0b1 0b0
-0b01         !ARM_SMMU_FEAT_STALLS && !ARM_SMMU_FEAT_STALL_FORCE  0b0 0b0
-0b10         ARM_SMMU_FEAT_STALLS && ARM_SMMU_FEAT_STALL_FORCE    0b0 0b1
-
-after apply this patch.
-
-Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
----
-v2:
- * Keep the feature bits backward compatible and add new one at the end
- * Avoid ILLEGAL of CD.S - both as Jean's suggestion.
-
- drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e67ba6c..22a6b08 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -316,6 +316,7 @@
- #define ARM64_TCR_TBI0_MASK		0x1UL
- 
- #define CTXDESC_CD_0_AA64		(1UL << 41)
-+#define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
- #define CTXDESC_CD_0_A			(1UL << 46)
- #define CTXDESC_CD_0_ASET_SHIFT		47
-@@ -604,6 +605,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
- #define ARM_SMMU_FEAT_STALLS		(1 << 11)
- #define ARM_SMMU_FEAT_HYP		(1 << 12)
-+#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -996,6 +998,11 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
- 	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET_PRIVATE |
- 	      CTXDESC_CD_0_AA64 | (u64)cfg->cd.asid << CTXDESC_CD_0_ASID_SHIFT |
- 	      CTXDESC_CD_0_V;
-+
-+	/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
-+	if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-+		val |= CTXDESC_CD_0_S;
-+
- 	cfg->cdptr[0] = cpu_to_le64(val);
- 
- 	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK << CTXDESC_CD_1_TTB0_SHIFT;
-@@ -1112,7 +1119,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- #endif
- 			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
- 
--		if (smmu->features & ARM_SMMU_FEAT_STALLS)
-+		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
-+		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
- 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
-@@ -2536,9 +2544,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			 coherent ? "true" : "false");
- 
- 	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
--	case IDR0_STALL_MODEL_STALL:
--		/* Fallthrough */
- 	case IDR0_STALL_MODEL_FORCE:
-+		smmu->features |= ARM_SMMU_FEAT_STALL_FORCE;
-+		/* Fallthrough */
-+	case IDR0_STALL_MODEL_STALL:
- 		smmu->features |= ARM_SMMU_FEAT_STALLS;
- 	}
- 
--- 
-1.7.12.4
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
