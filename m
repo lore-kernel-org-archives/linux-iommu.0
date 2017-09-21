@@ -1,165 +1,104 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
-	stream tables and comamnd queues
-Date: Thu, 21 Sep 2017 12:58:04 +0100
-Message-ID: <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
-	<20170921085922.11659-4-ganapatrao.kulkarni@cavium.com>
+From: Yisheng Xie <xieyisheng1@huawei.com>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Avoid ILLEGAL setting of STE.S1STALLD and CD.S
+Date: Thu, 21 Sep 2017 20:36:07 +0800
+Message-ID: <1505997367-51569-1-git-send-email-xieyisheng1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170921085922.11659-4-ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Will.Deacon-5wv7dgnIgG8@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: will.deacon@arm.com, jean-philippe.brucker@arm.com, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, liubo95@huawei.com, chenjiankang1@huawei.com, xieyisheng1@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-[+Christoph and Marek]
+According to Spec, it is ILLEGAL to set STE.S1STALLD if STALL_MODEL
+is not 0b00, which means we should not disable stall mode if stall
+or terminate mode is not configuable.
 
-On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
-> Introduce smmu_alloc_coherent and smmu_free_coherent functions to
-> allocate/free dma coherent memory from NUMA node associated with SMMU.
-> Replace all calls of dmam_alloc_coherent with smmu_alloc_coherent
-> for SMMU stream tables and command queues.
+Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
+means if stall mode is force we should always set CD.S.
 
-This doesn't work - not only do you lose the 'managed' aspect and risk
-leaking various tables on probe failure or device removal, but more
-importantly, unless you add DMA syncs around all the CPU accesses to the
-tables, you lose the critical 'coherent' aspect, and that's a horribly
-invasive change that I really don't want to make.
+As Jean-Philippe's suggestion, this patch introduce a feature bit
+ARM_SMMU_FEAT_STALL_FORCE, which means smmu only supports stall force.
+Therefore, we can avoid the ILLEGAL setting of STE.S1STALLD.by checking
+ARM_SMMU_FEAT_STALL_FORCE.
 
-Christoph, Marek; how reasonable do you think it is to expect
-dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
-systems? SWIOTLB looks fairly straightforward to fix up (for the simple
-allocation case; I'm not sure it's even worth it for bounce-buffering),
-but the likes of CMA might be a little trickier...
+This patch keeps the ARM_SMMU_FEAT_STALLS as the meaning of stall supported
+(force or configuable) to easy to expand the future function, i.e. we can
+only use ARM_SMMU_FEAT_STALLS to check whether we should register fault
+handle or enable master can_stall, etc to supporte platform SVM.
 
-Robin.
+The feature bit, STE.S1STALLD and CD.S setting will be like:
 
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 57 ++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 51 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index e67ba6c..bc4ba1f 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -1158,6 +1158,50 @@ static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
->  	}
->  }
->  
-> +static void *smmu_alloc_coherent(struct arm_smmu_device *smmu, size_t size,
-> +		dma_addr_t *dma_handle,	gfp_t gfp)
-> +{
-> +	struct device *dev = smmu->dev;
-> +	void *pages;
-> +	dma_addr_t dma;
-> +	int numa_node = dev_to_node(dev);
-> +
-> +	pages = alloc_pages_exact_nid(numa_node, size, gfp | __GFP_ZERO);
-> +	if (!pages)
-> +		return NULL;
-> +
-> +	if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY)) {
-> +		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
-> +		if (dma_mapping_error(dev, dma))
-> +			goto out_free;
-> +		/*
-> +		 * We depend on the SMMU being able to work with any physical
-> +		 * address directly, so if the DMA layer suggests otherwise by
-> +		 * translating or truncating them, that bodes very badly...
-> +		 */
-> +		if (dma != virt_to_phys(pages))
-> +			goto out_unmap;
-> +	}
-> +
-> +	*dma_handle = (dma_addr_t)virt_to_phys(pages);
-> +	return pages;
-> +
-> +out_unmap:
-> +	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
-> +	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-> +out_free:
-> +	free_pages_exact(pages, size);
-> +	return NULL;
-> +}
-> +
-> +static void smmu_free_coherent(struct arm_smmu_device *smmu, size_t size,
-> +		void *pages, dma_addr_t dma_handle)
-> +{
-> +	if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
-> +		dma_unmap_single(smmu->dev, dma_handle, size, DMA_TO_DEVICE);
-> +	free_pages_exact(pages, size);
-> +}
-> +
->  static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->  {
->  	size_t size;
-> @@ -1172,7 +1216,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->  	strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
->  
->  	desc->span = STRTAB_SPLIT + 1;
-> -	desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
-> +	desc->l2ptr = smmu_alloc_coherent(smmu, size, &desc->l2ptr_dma,
->  					  GFP_KERNEL | __GFP_ZERO);
->  	if (!desc->l2ptr) {
->  		dev_err(smmu->dev,
-> @@ -1487,7 +1531,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
->  		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
->  
->  		if (cfg->cdptr) {
-> -			dmam_free_coherent(smmu_domain->smmu->dev,
-> +			smmu_free_coherent(smmu,
->  					   CTXDESC_CD_DWORDS << 3,
->  					   cfg->cdptr,
->  					   cfg->cdptr_dma);
-> @@ -1515,7 +1559,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->  	if (asid < 0)
->  		return asid;
->  
-> -	cfg->cdptr = dmam_alloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
-> +	cfg->cdptr = smmu_alloc_coherent(smmu, CTXDESC_CD_DWORDS << 3,
->  					 &cfg->cdptr_dma,
->  					 GFP_KERNEL | __GFP_ZERO);
->  	if (!cfg->cdptr) {
-> @@ -1984,7 +2028,7 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->  {
->  	size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
->  
-> -	q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma, GFP_KERNEL);
-> +	q->base = smmu_alloc_coherent(smmu, qsz, &q->base_dma, GFP_KERNEL);
->  	if (!q->base) {
->  		dev_err(smmu->dev, "failed to allocate queue (0x%zx bytes)\n",
->  			qsz);
-> @@ -2069,7 +2113,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
->  			 size, smmu->sid_bits);
->  
->  	l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
-> -	strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
-> +	strtab = smmu_alloc_coherent(smmu, l1size, &cfg->strtab_dma,
->  				     GFP_KERNEL | __GFP_ZERO);
->  	if (!strtab) {
->  		dev_err(smmu->dev,
-> @@ -2097,8 +2141,9 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
->  	u32 size;
->  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
->  
-> +
->  	size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
-> -	strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
-> +	strtab = smmu_alloc_coherent(smmu, size, &cfg->strtab_dma,
->  				     GFP_KERNEL | __GFP_ZERO);
->  	if (!strtab) {
->  		dev_err(smmu->dev,
-> 
+STALL_MODEL  FEATURE                                         S1STALLD CD.S
+0b00         ARM_SMMU_FEAT_STALLS                                 0b1 0b0
+0b01         !ARM_SMMU_FEAT_STALLS && !ARM_SMMU_FEAT_STALL_FORCE  0b0 0b0
+0b10         ARM_SMMU_FEAT_STALLS && ARM_SMMU_FEAT_STALL_FORCE    0b0 0b1
+
+after apply this patch.
+
+Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
+---
+v2:
+ * Keep the feature bits backward compatible and add new one at the end
+ * Avoid ILLEGAL of CD.S - both as Jean's suggestion.
+
+ drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index e67ba6c..22a6b08 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -316,6 +316,7 @@
+ #define ARM64_TCR_TBI0_MASK		0x1UL
+ 
+ #define CTXDESC_CD_0_AA64		(1UL << 41)
++#define CTXDESC_CD_0_S			(1UL << 44)
+ #define CTXDESC_CD_0_R			(1UL << 45)
+ #define CTXDESC_CD_0_A			(1UL << 46)
+ #define CTXDESC_CD_0_ASET_SHIFT		47
+@@ -604,6 +605,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
+ #define ARM_SMMU_FEAT_STALLS		(1 << 11)
+ #define ARM_SMMU_FEAT_HYP		(1 << 12)
++#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+@@ -996,6 +998,11 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
+ 	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET_PRIVATE |
+ 	      CTXDESC_CD_0_AA64 | (u64)cfg->cd.asid << CTXDESC_CD_0_ASID_SHIFT |
+ 	      CTXDESC_CD_0_V;
++
++	/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
++	if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
++		val |= CTXDESC_CD_0_S;
++
+ 	cfg->cdptr[0] = cpu_to_le64(val);
+ 
+ 	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK << CTXDESC_CD_1_TTB0_SHIFT;
+@@ -1112,7 +1119,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ #endif
+ 			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
+ 
+-		if (smmu->features & ARM_SMMU_FEAT_STALLS)
++		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
++		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+ 
+ 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
+@@ -2536,9 +2544,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 			 coherent ? "true" : "false");
+ 
+ 	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
+-	case IDR0_STALL_MODEL_STALL:
+-		/* Fallthrough */
+ 	case IDR0_STALL_MODEL_FORCE:
++		smmu->features |= ARM_SMMU_FEAT_STALL_FORCE;
++		/* Fallthrough */
++	case IDR0_STALL_MODEL_STALL:
+ 		smmu->features |= ARM_SMMU_FEAT_STALLS;
+ 	}
+ 
+-- 
+1.7.12.4
