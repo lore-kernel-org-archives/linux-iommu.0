@@ -1,82 +1,52 @@
-From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-Subject: [PATCH 4/4] iommu/dma, numa: Use NUMA aware memory allocations in __iommu_dma_alloc_pages
-Date: Thu, 21 Sep 2017 14:29:22 +0530
-Message-ID: <20170921085922.11659-5-ganapatrao.kulkarni@cavium.com>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/of: Remove PCI host bridge node check
+Date: Thu, 21 Sep 2017 11:16:27 +0100
+Message-ID: <7ff4e56719d2e90426d9338eab00396bb2b61995.1505988973.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
-Sender: owner-linux-mm@kvack.org
-To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org
-Cc: Will.Deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Change function __iommu_dma_alloc_pages to allocate memory/pages
-for dma from respective device numa node.
+of_pci_iommu_init() tries to be clever and stop its alias walk at the
+device represented by master_np, in case of weird PCI topologies where
+the bridge to the IOMMU and the rest of the system is not at the root.
+It turns out this is a bit short-sighted, since there are plenty of
+other callers of pci_for_each_dma_alias() which would also need the same
+behaviour in that situation, and the only platform so far with such a
+topology (Cavium ThunderX2) already solves it more generally via a PCI
+quirk. As this check is effectively redundant, and returning a boolean
+value as an int is a bit broken anyway, let's just get rid of it.
 
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Reported-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/dma-iommu.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/iommu/of_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9d1cebe..0626b58 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -428,20 +428,21 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
- 	kvfree(pages);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e60e3dba85a0..6f34dea8aef9 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -160,7 +160,7 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ 	if (err)
+ 		return err;
+ 
+-	return info->np == pdev->bus->dev.of_node;
++	return 0;
  }
  
--static struct page **__iommu_dma_alloc_pages(unsigned int count,
--		unsigned long order_mask, gfp_t gfp)
-+static struct page **__iommu_dma_alloc_pages(struct device *dev,
-+		unsigned int count, unsigned long order_mask, gfp_t gfp)
- {
- 	struct page **pages;
- 	unsigned int i = 0, array_size = count * sizeof(*pages);
-+	int numa_node = dev_to_node(dev);
- 
- 	order_mask &= (2U << MAX_ORDER) - 1;
- 	if (!order_mask)
- 		return NULL;
- 
- 	if (array_size <= PAGE_SIZE)
--		pages = kzalloc(array_size, GFP_KERNEL);
-+		pages = kzalloc_node(array_size, GFP_KERNEL, numa_node);
- 	else
--		pages = vzalloc(array_size);
-+		pages = vzalloc_node(array_size, numa_node);
- 	if (!pages)
- 		return NULL;
- 
-@@ -462,8 +463,9 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
- 			unsigned int order = __fls(order_mask);
- 
- 			order_size = 1U << order;
--			page = alloc_pages((order_mask - order_size) ?
--					   gfp | __GFP_NORETRY : gfp, order);
-+			page = alloc_pages_node(numa_node,
-+					(order_mask - order_size) ?
-+				   gfp | __GFP_NORETRY : gfp, order);
- 			if (!page)
- 				continue;
- 			if (!order)
-@@ -548,7 +550,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 		alloc_sizes = min_size;
- 
- 	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
-+	pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
-+			gfp);
- 	if (!pages)
- 		return NULL;
- 
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
 -- 
-2.9.4
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+2.13.4.dirty
