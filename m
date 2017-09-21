@@ -1,42 +1,59 @@
 From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-Subject: [PATCH 0/4] numa, iommu/smmu: IOMMU/SMMU driver optimization for NUMA systems
-Date: Thu, 21 Sep 2017 14:29:18 +0530
-Message-ID: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+Subject: [PATCH 1/4] mm: move function alloc_pages_exact_nid out of __meminit
+Date: Thu, 21 Sep 2017 14:29:19 +0530
+Message-ID: <20170921085922.11659-2-ganapatrao.kulkarni@cavium.com>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <owner-linux-mm@kvack.org>
-Sender: owner-linux-mm@kvack.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org
 Cc: Will.Deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Adding numa aware memory allocations used for iommu dma allocation and
-memory allocated for SMMU stream tables, page walk tables and command queues.
+This function can be used on NUMA systems in place of alloc_pages_exact
+Adding code to export and to remove __meminit section tagging.
 
-With this patch, iperf testing on ThunderX2, with 40G NIC card on
-NODE 1 PCI shown same performance(around 30% improvement) as NODE 0.
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+---
+ include/linux/gfp.h | 2 +-
+ mm/page_alloc.c     | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-Ganapatrao Kulkarni (4):
-  mm: move function alloc_pages_exact_nid out of __meminit
-  numa, iommu/io-pgtable-arm: Use NUMA aware memory allocation for smmu
-    translation tables
-  iommu/arm-smmu-v3: Use NUMA memory allocations for stream tables and
-    comamnd queues
-  iommu/dma, numa: Use NUMA aware memory allocations in
-    __iommu_dma_alloc_pages
-
- drivers/iommu/arm-smmu-v3.c    | 57 +++++++++++++++++++++++++++++++++++++-----
- drivers/iommu/dma-iommu.c      | 17 +++++++------
- drivers/iommu/io-pgtable-arm.c |  4 ++-
- include/linux/gfp.h            |  2 +-
- mm/page_alloc.c                |  3 ++-
- 5 files changed, 67 insertions(+), 16 deletions(-)
-
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index f780718..a4bd234 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -528,7 +528,7 @@ extern unsigned long get_zeroed_page(gfp_t gfp_mask);
+ 
+ void *alloc_pages_exact(size_t size, gfp_t gfp_mask);
+ void free_pages_exact(void *virt, size_t size);
+-void * __meminit alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask);
++void *alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask);
+ 
+ #define __get_free_page(gfp_mask) \
+ 		__get_free_pages((gfp_mask), 0)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index c841af8..7975870 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4442,7 +4442,7 @@ EXPORT_SYMBOL(alloc_pages_exact);
+  * Like alloc_pages_exact(), but try to allocate on node nid first before falling
+  * back.
+  */
+-void * __meminit alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask)
++void *alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask)
+ {
+ 	unsigned int order = get_order(size);
+ 	struct page *p = alloc_pages_node(nid, gfp_mask, order);
+@@ -4450,6 +4450,7 @@ void * __meminit alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask)
+ 		return NULL;
+ 	return make_alloc_exact((unsigned long)page_address(p), order, size);
+ }
++EXPORT_SYMBOL(alloc_pages_exact_nid);
+ 
+ /**
+  * free_pages_exact - release memory allocated via alloc_pages_exact()
 -- 
 2.9.4
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
