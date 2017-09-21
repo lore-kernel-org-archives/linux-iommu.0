@@ -1,22 +1,13 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/of: Remove PCI host bridge node check
-Date: Thu, 21 Sep 2017 11:16:27 +0100
-Message-ID: <7ff4e56719d2e90426d9338eab00396bb2b61995.1505988973.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2] iommu/of: Remove PCI host bridge node check
+Date: Thu, 21 Sep 2017 11:20:58 +0100
+Message-ID: <56a797382ffc65243169205c36d9f9fb1173dddd.1505989095.git.robin.murphy@arm.com>
+References: <7ff4e56719d2e90426d9338eab00396bb2b61995.1505988973.git.robin.murphy@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <7ff4e56719d2e90426d9338eab00396bb2b61995.1505988973.git.robin.murphy@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jean-philippe.brucker@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
 of_pci_iommu_init() tries to be clever and stop its alias walk at the
@@ -29,22 +20,28 @@ topology (Cavium ThunderX2) already solves it more generally via a PCI
 quirk. As this check is effectively redundant, and returning a boolean
 value as an int is a bit broken anyway, let's just get rid of it.
 
-Reported-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Reported-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/of_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Ugh, I'm really failing to spot the obvious today...
+
+ drivers/iommu/of_iommu.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index e60e3dba85a0..6f34dea8aef9 100644
+index e60e3dba85a0..50947ebb6d17 100644
 --- a/drivers/iommu/of_iommu.c
 +++ b/drivers/iommu/of_iommu.c
-@@ -160,7 +160,7 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
- 	if (err)
- 		return err;
+@@ -157,10 +157,7 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
  
+ 	err = of_iommu_xlate(info->dev, &iommu_spec);
+ 	of_node_put(iommu_spec.np);
+-	if (err)
+-		return err;
+-
 -	return info->np == pdev->bus->dev.of_node;
-+	return 0;
++	return err;
  }
  
  const struct iommu_ops *of_iommu_configure(struct device *dev,
