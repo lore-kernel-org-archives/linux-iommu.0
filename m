@@ -1,39 +1,59 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
-	stream tables and comamnd queues
-Date: Thu, 21 Sep 2017 16:26:39 +0200
-Message-ID: <20170921142639.GA18211@lst.de>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com> <20170921085922.11659-4-ganapatrao.kulkarni@cavium.com> <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
+From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Use raw_cpu_ptr() instead of get_cpu_ptr()
+	for ->flush_queue
+Date: Thu, 21 Sep 2017 17:10:40 +0200
+Message-ID: <20170921151040.szekdgibvojrdzhf@linutronix.de>
+References: <20170906103459.oi2nn7jondjqdo5m@linutronix.de>
+	<CABp9dQUcXTAX9ggX+TAMHE2oH0SF8bcu47E=UYG9fgJdKBXEVg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
-Sender: owner-linux-mm@kvack.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Will.Deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
+In-Reply-To: <CABp9dQUcXTAX9ggX+TAMHE2oH0SF8bcu47E=UYG9fgJdKBXEVg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vinod Adhikary <vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 21, 2017 at 12:58:04PM +0100, Robin Murphy wrote:
-> Christoph, Marek; how reasonable do you think it is to expect
-> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
-> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
-> allocation case; I'm not sure it's even worth it for bounce-buffering),
-> but the likes of CMA might be a little trickier...
+On 2017-09-11 22:22:11 [-0400], Vinod Adhikary wrote:
+> Dear all,
+Hi,
 
-I think allocating data node local to dev is a good default.  I'm not
-sure if we'd still need a version that takes an explicit node, though.
+> Thank you for the great community support and support from Sebastian to
+> provide me this patch. I wanted to send this email to inform you and
+> perhaps get some information on how I could keep myself updated on updates
+> in regards to linux-rt. I apologize if I'm spamming you with this email.
 
-On the one hand devices like NVMe or RDMA nics have queues that are
-assigned to specific cpus and thus have an inherent affinity to given
-nodes.  On the other hand we'd still need to access the PCIe device,
-so for it to make sense we'd need to access the dma memory a lot more
-from the host than from the device, and I'm not sure if we ever have
-devices where that is the case (which would not be optimal to start
-with).
+There is a rt-users mailing list, see
+	https://wiki.linuxfoundation.org/realtime/communication/mailinglists
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+> I noticed `Bug: Scheduling while atomic` on ahci after building 4.9 rt and
+> reported the issue on oftc channel. Sebastian quickly helped me get a patch
+> and my `journalctl -f` was clean without any such messages. Yesterday I
+> decided to build 4.11 without the patch but I saw a whole bunch of similar
+> bug logs not just on ahci but on my nic card as well among a few others.
+> There were a few instances where I had to hard shutdown my machine. I
+> patched 4.11 with Sebastian's patch again and so far it's been okay for
+> about 24 hours and going.
+
+It sounds like the same issue. I taking this for v4.11 RT and v4.9 will
+pick it at some point.
+
+> My concern is, how I can provide more information to resolve this issue,
+> perhaps in the next release. Please let me know how I can be of help.
+
+usually providing a backtrace like you did to the rt-usrs list is
+enough.
+
+> Thank you
+
+Sebastian
