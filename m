@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v5 2/6] iommu/iova: Optimise the padding calculation
-Date: Thu, 21 Sep 2017 16:52:43 +0100
-Message-ID: <69401ae633a0a869423eaf6b4ea61bc38a3e0e80.1506007392.git.robin.murphy@arm.com>
+Subject: [PATCH v5 6/6] iommu/iova: Simplify cached node logic
+Date: Thu, 21 Sep 2017 16:52:47 +0100
+Message-ID: <748a2bbb8c7dee79f3faffe6b349d8cdc0743904.1506007392.git.robin.murphy@arm.com>
 References: <cover.1506007392.git.robin.murphy@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <cover.1506007392.git.robin.murphy@arm.com>
@@ -10,106 +10,123 @@ To: joro@8bytes.org
 Cc: iommu@lists.linux-foundation.org, thunder.leizhen@huawei.com, nwatters@codeaurora.org, tomasz.nowicki@caviumnetworks.com, dwoods@mellanox.com, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+The logic of __get_cached_rbnode() is a little obtuse, but then
+__get_prev_node_of_cached_rbnode_or_last_node_and_update_limit_pfn()
+wouldn't exactly roll off the tongue...
 
-The mask for calculating the padding size doesn't change, so there's no
-need to recalculate it every loop iteration. Furthermore, Once we've
-done that, it becomes clear that we don't actually need to calculate a
-padding size at all - by flipping the arithmetic around, we can just
-combine the upper limit, size, and mask directly to check against the
-lower limit.
+Now that we have the invariant that there is always a valid node to
+start searching downwards from, everything gets a bit easier to follow
+if we simplify that function to do what it says on the tin and return
+the cached node (or anchor node as appropriate) directly. In turn, we
+can then deduplicate the rb_prev() and limit_pfn logic into the main
+loop itself, further reduce the amount of code under the lock, and
+generally make the inner workings a bit less subtle.
 
-For an arm64 build, this alone knocks 20% off the object code size of
-the entire alloc_iova() function!
-
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Tested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Tested-by: Zhen Lei <thunder.leizhen@huawei.com>
-Tested-by: Nate Watterson <nwatters@codeaurora.org>
-[rm: simplified more of the arithmetic, rewrote commit message]
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-v5: No change
+v5: Make cached nodes always valid
 
- drivers/iommu/iova.c | 42 +++++++++++++++---------------------------
- 1 file changed, 15 insertions(+), 27 deletions(-)
+ drivers/iommu/iova.c | 51 +++++++++++++++++----------------------------------
+ 1 file changed, 17 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index f129ff4f5c89..20be9a8b3188 100644
+index 9e04c1f3e740..7b7363518733 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -182,24 +182,17 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
- 	rb_insert_color(&iova->node, root);
+@@ -51,8 +51,8 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 
+ 	spin_lock_init(&iovad->iova_rbtree_lock);
+ 	iovad->rbroot = RB_ROOT;
+-	iovad->cached_node = NULL;
+-	iovad->cached32_node = NULL;
++	iovad->cached_node = &iovad->anchor.node;
++	iovad->cached32_node = &iovad->anchor.node;
+ 	iovad->granule = granule;
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
+@@ -115,22 +115,12 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ EXPORT_SYMBOL_GPL(init_iova_flush_queue);
+ 
+ static struct rb_node *
+-__get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
++__get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
+ {
+-	struct rb_node *cached_node = NULL;
+-	struct iova *curr_iova;
++	if (limit_pfn <= iovad->dma_32bit_pfn)
++		return iovad->cached32_node;
+ 
+-	if (*limit_pfn <= iovad->dma_32bit_pfn)
+-		cached_node = iovad->cached32_node;
+-	if (!cached_node)
+-		cached_node = iovad->cached_node;
+-	if (!cached_node)
+-		return rb_prev(&iovad->anchor.node);
+-
+-	curr_iova = rb_entry(cached_node, struct iova, node);
+-	*limit_pfn = min(*limit_pfn, curr_iova->pfn_lo);
+-
+-	return rb_prev(cached_node);
++	return iovad->cached_node;
  }
  
--/*
-- * Computes the padding size required, to make the start address
-- * naturally aligned on the power-of-two order of its size
-- */
--static unsigned int
--iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
--{
--	return (limit_pfn - size) & (__roundup_pow_of_two(size) - 1);
--}
--
- static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ static void
+@@ -149,11 +139,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+ 	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	    iovad->cached32_node && free->pfn_lo >= cached_iova->pfn_lo)
++	    free->pfn_lo >= cached_iova->pfn_lo)
+ 		iovad->cached32_node = rb_next(&free->node);
+ 
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+-	if (iovad->cached_node && free->pfn_lo >= cached_iova->pfn_lo)
++	if (free->pfn_lo >= cached_iova->pfn_lo)
+ 		iovad->cached_node = rb_next(&free->node);
+ }
+ 
+@@ -189,7 +179,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
  		unsigned long size, unsigned long limit_pfn,
  			struct iova *new, bool size_aligned)
  {
- 	struct rb_node *prev, *curr = NULL;
+-	struct rb_node *prev, *curr = NULL;
++	struct rb_node *curr, *prev;
++	struct iova *curr_iova;
  	unsigned long flags;
--	unsigned long saved_pfn;
--	unsigned int pad_size = 0;
-+	unsigned long saved_pfn, new_pfn;
-+	unsigned long align_mask = ~0UL;
-+
-+	if (size_aligned)
-+		align_mask <<= fls_long(size - 1);
+ 	unsigned long new_pfn;
+ 	unsigned long align_mask = ~0UL;
+@@ -199,24 +190,16 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
  
  	/* Walk the tree backwards */
  	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-@@ -209,31 +202,26 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	while (curr) {
- 		struct iova *curr_iova = rb_entry(curr, struct iova, node);
- 
--		if (limit_pfn <= curr_iova->pfn_lo) {
-+		if (limit_pfn <= curr_iova->pfn_lo)
- 			goto move_left;
--		} else if (limit_pfn > curr_iova->pfn_hi) {
--			if (size_aligned)
--				pad_size = iova_get_pad_size(size, limit_pfn);
--			if ((curr_iova->pfn_hi + size + pad_size) < limit_pfn)
--				break;	/* found a free slot */
--		}
-+
-+		if (((limit_pfn - size) & align_mask) > curr_iova->pfn_hi)
-+			break;	/* found a free slot */
-+
- 		limit_pfn = curr_iova->pfn_lo;
- move_left:
+-	curr = __get_cached_rbnode(iovad, &limit_pfn);
+-	prev = curr;
+-	while (curr) {
+-		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+-
+-		if (limit_pfn <= curr_iova->pfn_lo)
+-			goto move_left;
+-
+-		if (((limit_pfn - size) & align_mask) > curr_iova->pfn_hi)
+-			break;	/* found a free slot */
+-
+-		limit_pfn = curr_iova->pfn_lo;
+-move_left:
++	curr = __get_cached_rbnode(iovad, limit_pfn);
++	curr_iova = rb_entry(curr, struct iova, node);
++	do {
++		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
++		new_pfn = (limit_pfn - size) & align_mask;
  		prev = curr;
  		curr = rb_prev(curr);
- 	}
+-	}
++		curr_iova = rb_entry(curr, struct iova, node);
++	} while (curr && new_pfn <= curr_iova->pfn_hi);
  
--	if (!curr) {
--		if (size_aligned)
--			pad_size = iova_get_pad_size(size, limit_pfn);
--		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
--			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--			return -ENOMEM;
--		}
-+	new_pfn = (limit_pfn - size) & align_mask;
-+	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
-+		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+		return -ENOMEM;
- 	}
- 
- 	/* pfn_lo will point to size aligned address if size_aligned is set */
--	new->pfn_lo = limit_pfn - (size + pad_size);
-+	new->pfn_lo = new_pfn;
- 	new->pfn_hi = new->pfn_lo + size - 1;
- 
- 	/* If we have 'prev', it's a valid place to start the insertion. */
+-	new_pfn = (limit_pfn - size) & align_mask;
+ 	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+ 		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 		return -ENOMEM;
 -- 
 2.13.4.dirty
