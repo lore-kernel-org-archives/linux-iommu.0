@@ -1,150 +1,84 @@
 From: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: RE: [RFC] virtio-iommu version 0.4
-Date: Thu, 21 Sep 2017 06:27:17 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190DDCF8D@SHSMSX101.ccr.corp.intel.com>
+Date: Thu, 21 Sep 2017 06:41:45 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190DDD022@SHSMSX101.ccr.corp.intel.com>
 References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
- <5be484ff-6a1a-6c9b-947c-f64ea23f58cc@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D190D941E3@SHSMSX101.ccr.corp.intel.com>
- <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
+ <f9b02ce1-057f-df4f-90d7-52616ad60b88@redhat.com>
+ <6b56fd96-fee5-d105-5261-2e7274b4aa15@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <virtio-dev-return-2560-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <virtio-dev-return-2561-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
 Sender: <virtio-dev@lists.oasis-open.org>
 List-Post: <mailto:virtio-dev@lists.oasis-open.org>
 List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
 List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
 List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <013a2fdd-86f7-a7ee-7e71-11bbb6261f33@arm.com>
+In-Reply-To: <6b56fd96-fee5-d105-5261-2e7274b4aa15@arm.com>
 Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXINCj4gU2VudDogV2VkbmVzZGF5LCBTZXB0ZW1i
-ZXIgNiwgMjAxNyA3OjU1IFBNDQo+IA0KPiBIaSBLZXZpbiwNCj4gDQo+IE9uIDI4LzA4LzE3IDA4
-OjM5LCBUaWFuLCBLZXZpbiB3cm90ZToNCj4gPiBIZXJlIGNvbWVzIHNvbWUgY29tbWVudHM6DQo+
-ID4NCj4gPiAxLjEgTW90aXZhdGlvbg0KPiA+DQo+ID4gWW91IGRlc2NyaWJlIEkvTyBwYWdlIGZh
-dWx0cyBoYW5kbGluZyBhcyBmdXR1cmUgd29yay4gU2VlbXMgeW91DQo+IGNvbnNpZGVyZWQNCj4g
-PiBvbmx5IHJlY292ZXJhYmxlIGZhdWx0IChzaW5jZSAiYWthLiBQQ0kgUFJJIiBiZWluZyB1c2Vk
-KS4gV2hhdCBhYm91dCBvdGhlcg0KPiA+IHVucmVjb3ZlcmFibGUgZmF1bHRzIGUuZy4gd2hhdCB0
-byBkbyBpZiBhIHZpcnR1YWwgRE1BIHJlcXVlc3QgZG9lc24ndCBmaW5kDQo+ID4gYSB2YWxpZCBt
-YXBwaW5nPyBFdmVuIHdoZW4gdGhlcmUgaXMgbm8gUFJJIHN1cHBvcnQsIHdlIG5lZWQgc29tZSBi
-YXNpYw0KPiA+IGZvcm0gb2YgZmF1bHQgcmVwb3J0aW5nIG1lY2hhbmlzbSB0byBpbmRpY2F0ZSBz
-dWNoIGVycm9ycyB0byBndWVzdC4NCj4gDQo+IEkgYW0gY29uc2lkZXJpbmcgcmVjb3ZlcmFibGUg
-ZmF1bHRzIGFzIHRoZSBlbmQgZ29hbCwgYnV0IHJlcG9ydGluZw0KPiB1bnJlY292ZXJhYmxlIGZh
-dWx0cyBzaG91bGQgdXNlIHRoZSBzYW1lIHF1ZXVlLCB3aXRoIHNsaWdodGx5IGRpZmZlcmVudA0K
-PiBmaWVsZHMgYW5kIG5vIG5lZWQgZm9yIHRoZSBkcml2ZXIgdG8gcmVwbHkgdG8gdGhlIGRldmlj
-ZS4NCg0Kd2hhdCBhYm91dCBhZGRpbmcgYSBwbGFjZWhvbGRlciBmb3Igbm93PyBUaG91Z2ggc2Ft
-ZSBtZWNoYW5pc20NCmNhbiBiZSByZXVzZWQsIGl0J3MgYW4gZXNzZW50aWFsIHBhcnQgdG8gbWFr
-ZSB2aXJ0aW8taW9tbXUgYXJjaGl0ZWN0dXJlDQpjb21wbGV0ZSBldmVuIGJlZm9yZSB0YWxraW5n
-IHN1cHBvcnQgZm9yIHJlY292ZXJhYmxlIGZhdWx0cy4gOi0pDQoNCj4gDQo+ID4gMi42LjguMiBQ
-cm9wZXJ0eSBSRVNWX01FTQ0KPiA+DQo+ID4gSSdtIG5vdCBpbW1lZGlhdGVseSBjbGVhciB3aGVu
-DQo+IFZJUlRJT19JT01NVV9QUk9CRV9SRVNWX01FTV9UX0FCT1JUDQo+ID4gc2hvdWxkIGJlIGV4
-cGxpY2l0bHkgcmVwb3J0ZWQuIElzIHRoZXJlIGFueSByZWFsIGV4YW1wbGUgb24gYmFyZSBtZXRh
-bA0KPiBJT01NVT8NCj4gPiB1c3VhbGx5IHJlc2VydmVkIG1lbW9yeSBpcyByZXBvcnRlZCB0byBD
-UFUgdGhyb3VnaCBvdGhlciBtZXRob2QgKGUuZy4NCj4gZTgyMA0KPiA+IG9uIHg4NiBwbGF0Zm9y
-bSkuIE9mIGNvdXJzZSBNU0kgaXMgYSBzcGVjaWFsIGNhc2Ugd2hpY2ggaXMgY292ZXJlZCBieQ0K
-PiBCWVBBU1MNCj4gPiBhbmQgTVNJIGZsYWcuLi4gSWYgeWVzLCBtYXliZSB5b3UgY2FuIGFsc28g
-aW5jbHVkZSBhbiBleGFtcGxlIGluDQo+IGltcGxlbWVudGF0aW9uDQo+ID4gbm90ZXMuDQo+IA0K
-PiBUaGUgUkVTVl9NRU0gcmVnaW9ucyBvbmx5IGRlc2NyaWJlcyBJT1ZBIHNwYWNlIGZvciB0aGUg
-bW9tZW50LCBub3QNCj4gZ3Vlc3QtcGh5c2ljYWwsIHNvIEkgZ3Vlc3MgaXQgcHJvdmlkZXMgZGlm
-ZmVyZW50IGluZm9ybWF0aW9uIHRoYW4gZTgyMC4NCj4gDQo+IEkgdGhpbmsgYSB1c2VmdWwgZXhh
-bXBsZSBpcyB0aGUgUENJIGJyaWRnZSB3aW5kb3dzIHJlcG9ydGVkIGJ5IHRoZSBMaW51eA0KPiBo
-b3N0IHRvIHVzZXJzcGFjZSB1c2luZyBSRVNWX1JFU0VSVkVEIHJlZ2lvbnMgKHNlZQ0KPiBpb21t
-dV9kbWFfZ2V0X3Jlc3ZfcmVnaW9ucykuIElmIEkgdW5kZXJzdGFuZCBjb3JyZWN0bHksIHRoZXkg
-cmVwcmVzZW50DQo+IERNQQ0KPiBhZGRyZXNzZXMgdGhhdCBzaG91bGRuJ3QgYmUgYWNjZXNzZWQg
-YnkgZW5kcG9pbnRzIGJlY2F1c2UgdGhleSB3b24ndA0KPiByZWFjaA0KPiB0aGUgSU9NTVUuIFRo
-ZXNlIGFyZSBzcGVjaWZpYyB0byB0aGUgcGh5c2ljYWwgdG9wb2xvZ3k6IGEgZGV2aWNlIHdpbGwg
-aGF2ZQ0KPiBkaWZmZXJlbnQgcmVzZXJ2ZWQgcmVnaW9ucyBkZXBlbmRpbmcgb24gdGhlIFBDSSBz
-bG90IGl0IG9jY3VwaWVzLg0KPiANCj4gV2hlbiBoYW5kbGVkIHByb3Blcmx5LCBQQ0kgYnJpZGdl
-IHdpbmRvd3MgcXVpY2tseSBiZWNvbWUgYSBudWlzYW5jZS4NCj4gV2l0aA0KPiBrdm10b29sIHdl
-IG9ic2VydmVkIHRoYXQgY2FydmluZyBvdXQgdGhlaXIgYWRkcmVzc2VzIGdsb2JhbGx5IHJlbW92
-ZXMgYQ0KPiBsb3Qgb2YgdXNlZnVsIEdQQSBzcGFjZSBmcm9tIHRoZSBndWVzdC4gV2l0aG91dCBh
-IHZpcnR1YWwgSU9NTVUgd2UgY2FuDQo+IGVpdGhlciBpZ25vcmUgdGhlbSBhbmQgaG9wZSBldmVy
-eXRoaW5nIHdpbGwgYmUgZmluZSwgb3IgcmVtb3ZlIGFsbA0KPiByZXNlcnZlZCByZWdpb25zIGZy
-b20gdGhlIEdQQSBzcGFjZSAod2hpY2ggY3VycmVudGx5IG1lYW5zIGVkaXRpbmcgYnkNCj4gaGFu
-ZA0KPiB0aGUgc3RhdGljIGd1ZXN0LXBoeXNpY2FsIG1hcC4uLikNCj4gDQo+IFRoYXQncyB3aGVy
-ZSBSRVNWX01FTV9UX0FCT1JUIGNvbWVzIGhhbmR5IHdpdGggdmlydGlvLWlvbW11LiBJdA0KPiBk
-ZXNjcmliZXMNCj4gcmVzZXJ2ZWQgSU9WQXMgZm9yIGEgc3BlY2lmaWMgZW5kcG9pbnQsIGFuZCB0
-aGVyZWZvcmUgcmVtb3ZlcyB0aGUgbmVlZCB0bw0KPiBjYXJ2ZSB0aGUgd2luZG93IG91dCBvZiB0
-aGUgd2hvbGUgZ3Vlc3QuDQoNClVuZGVyc3RhbmQgYW5kIHRoYW5rcyBmb3IgZWxhYm9yYXRpb24u
-DQoNCj4gDQo+ID4gQW5vdGhlciB0aGluZyBJIHdhbnQgdG8gYXNrIHlvdXIgb3BpbmlvbiwgYWJv
-dXQgd2hldGhlciB0aGVyZSBpcyB2YWx1ZSBvZg0KPiA+IGFkZGluZyBhbm90aGVyIHN1YnR5cGUg
-KE1FTV9UX0lERU5USVRZKSwgYXNraW5nIGZvciBpZGVudGl0eSBtYXBwaW5nDQo+ID4gaW4gdGhl
-IGFkZHJlc3Mgc3BhY2UuIEl0J3Mgc2ltaWxhciB0byBSZXNlcnZlZCBNZW1vcnkgUmVnaW9uIFJl
-cG9ydGluZw0KPiA+IChSTVJSKSBzdHJ1Y3R1cmUgZGVmaW5lZCBpbiBWVC1kLCB0byBpbmRpY2F0
-ZSBCSU9TIGFsbG9jYXRlZCByZXNlcnZlZA0KPiA+IG1lbW9yeSByYW5nZXMgd2hpY2ggbWF5IGJl
-IERNQSB0YXJnZXQgYW5kIGhhcyB0byBiZSBpZGVudGl0eSBtYXBwZWQNCj4gPiB3aGVuIERNQSBy
-ZW1hcHBpbmcgaXMgZW5hYmxlZC4gSSdtIG5vdCBzdXJlIHdoZXRoZXIgQVJNIGhhcyBzaW1pbGFy
-DQo+ID4gY2FwYWJpbGl0eSBhbmQgd2hldGhlciB0aGVyZSBtaWdodCBiZSBhIGdlbmVyYWwgdXNh
-Z2UgYmV5b25kIFZULWQuIEZvcg0KPiA+IG5vdyB0aGUgb25seSB1c2FnZSBpbiBteSBtaW5kIGlz
-IHRvIGFzc2lnbiBhIGRldmljZSB3aXRoIFJNUlIgYXNzb2NpYXRlZA0KPiA+IG9uIFZULWQgKElu
-dGVsIEdQVSwgb3Igc29tZSBVU0IgY29udHJvbGxlcnMpIHdoZXJlIHRoZSBSTVJSIGluZm8gbmVl
-ZHMNCj4gPiBwcm9wYWdhdGVkIHRvIHRoZSBndWVzdCAoc2luY2UgaWRlbnRpdHkgbWFwcGluZyBh
-bHNvIG1lYW5zIHJlc2VydmF0aW9uDQo+ID4gb2YgdmlydHVhbCBhZGRyZXNzIHNwYWNlKS4NCj4g
-DQo+IFllcyBJIHRoaW5rIGFkZGluZyBNRU1fVF9JREVOVElUWSB3aWxsIGJlIG5lY2Vzc2FyeS4g
-SSBjYW4gc2VlIHRoZXkgYXJlDQo+IHVzZWQgZm9yIGJvdGggaUdQVSBhbmQgVVNCIGNvbnRyb2xs
-ZXJzIG9uIG15IHg4NiBtYWNoaW5lcy4gRG8geW91IGtub3cNCj4gbW9yZSBwcmVjaXNlbHkgd2hh
-dCB0aGV5IGFyZSB1c2VkIGZvciBieSB0aGUgZmlybXdhcmU/DQoNClZUZCBzcGVjIGhhcyBhIGNs
-ZWFyIGRlc2NyaXB0aW9uOg0KDQozLjE0IEhhbmRsaW5nIFJlcXVlc3RzIHRvIFJlc2VydmVkIFN5
-c3RlbSBNZW1vcnkNClJlc2VydmVkIHN5c3RlbSBtZW1vcnkgcmVnaW9ucyBhcmUgdHlwaWNhbGx5
-IGFsbG9jYXRlZCBieSBCSU9TIGF0IGJvb3QgDQp0aW1lIGFuZCByZXBvcnRlZCB0byBPUyBhcyBy
-ZXNlcnZlZCBhZGRyZXNzIHJhbmdlcyBpbiB0aGUgc3lzdGVtIG1lbW9yeSANCm1hcC4gUmVxdWVz
-dHMtd2l0aG91dC1QQVNJRCB0byB0aGVzZSByZXNlcnZlZCByZWdpb25zIG1heSBlaXRoZXIgb2Nj
-dXIgDQphcyBhIHJlc3VsdCBvZiBvcGVyYXRpb25zIHBlcmZvcm1lZCBieSB0aGUgc3lzdGVtIHNv
-ZnR3YXJlIGRyaXZlciAoZm9yIA0KZXhhbXBsZSBpbiB0aGUgY2FzZSBvZiBETUEgZnJvbSB1bmlm
-aWVkIG1lbW9yeSBhY2Nlc3MgKFVNQSkgZ3JhcGhpY3MgDQpjb250cm9sbGVycyB0byBncmFwaGlj
-cyByZXNlcnZlZCBtZW1vcnkpLCBvciBtYXkgYmUgaW5pdGlhdGVkIGJ5IG5vbiANCnN5c3RlbSBz
-b2Z0d2FyZSAoZm9yIGV4YW1wbGUgaW4gY2FzZSBvZiBETUEgcGVyZm9ybWVkIGJ5IGEgVVNCIA0K
-Y29udHJvbGxlciB1bmRlciBCSU9TIFNNTSBjb250cm9sIGZvciBsZWdhY3kga2V5Ym9hcmQgZW11
-bGF0aW9uKS4gDQpGb3IgcHJvcGVyIGZ1bmN0aW9uaW5nIG9mIHRoZXNlIGxlZ2FjeSByZXNlcnZl
-ZCBtZW1vcnkgdXNhZ2VzLCB3aGVuIA0Kc3lzdGVtIHNvZnR3YXJlIGVuYWJsZXMgRE1BIHJlbWFw
-cGluZywgdGhlIHNlY29uZC1sZXZlbCB0cmFuc2xhdGlvbiANCnN0cnVjdHVyZXMgZm9yIHRoZSBy
-ZXNwZWN0aXZlIGRldmljZXMgYXJlIGV4cGVjdGVkIHRvIGJlIHNldCB1cCB0byBwcm92aWRlDQpp
-ZGVudGl0eSBtYXBwaW5nIGZvciB0aGUgc3BlY2lmaWVkIHJlc2VydmVkIG1lbW9yeSByZWdpb25z
-IHdpdGggcmVhZCANCmFuZCB3cml0ZSBwZXJtaXNzaW9ucy4NCg0KKG9uZSBzcGVjaWZpYyBleGFt
-cGxlIGZvciBHUFUgaGFwcGVucyBpbiBsZWdhY3kgVkdBIHVzYWdlIGluIGVhcmx5DQpib290IHRp
-bWUgYmVmb3JlIGFjdHVhbCBncmFwaGljcyBkcml2ZXIgaXMgbG9hZGVkKQ0KDQo+IA0KPiBJdCdz
-IG5vdCBuZWNlc3Nhcnkgd2l0aCB0aGUgYmFzZSB2aXJ0aW8taW9tbXUgZGV2aWNlIHRob3VnaCAo
-djAuNCksDQo+IGJlY2F1c2UgdGhlIGRldmljZSBjYW4gY3JlYXRlIHRoZSBpZGVudGl0eSBtYXBw
-aW5ncyBpdHNlbGYgYW5kIHJlcG9ydCB0aGVtDQo+IHRvIHRoZSBndWVzdCBhcyBNRU1fVF9CWVBB
-U1MuIEhvd2V2ZXIsIHdoZW4gd2Ugc3RhcnQgaGFuZGluZyBwYWdlDQoNCndoZW4geW91IHNheSAi
-dGhlIGRldmljZSBjYW4gY3JlYXRlIC4uLiIsIEkgdGhpbmsgeW91IHJlYWxseSBtZWFudA0KImhv
-c3QgaW9tbXUgZHJpdmVyIGNhbiBjcmVhdGUgaWRlbnRpdHkgbWFwcGluZyBmb3IgYXNzaWduZWQg
-ZGV2aWNlIiwNCmNvcnJlY3Q/DQoNClRoZW4geWVzLCBJIHRoaW5rIGFib3ZlIHdvcmtzLg0KDQo+
-IHRhYmxlDQo+IGNvbnRyb2wgb3ZlciB0byB0aGUgZ3Vlc3QsIHRoZSBob3N0IHdvbid0IGJlIGlu
-IGNvbnRyb2wgb2YgSU9WQS0+R1BBDQo+IG1hcHBpbmdzIGFuZCB3aWxsIG5lZWQgdG8gZ3JhY2Vm
-dWxseSBhc2sgdGhlIGd1ZXN0IHRvIGRvIGl0Lg0KPiANCj4gSSdtIG5vdCBhd2FyZSBvZiBhbnkg
-ZmlybXdhcmUgZGVzY3JpcHRpb24gcmVzZW1ibGluZyBJbnRlbCBSTVJSIG9yIEFNRA0KPiBJVk1E
-IG9uIEFSTSBwbGF0Zm9ybXMuIEkgZG8gdGhpbmsgQVJNIHBsYXRmb3JtcyBjb3VsZCBuZWVkDQo+
-IE1FTV9UX0lERU5USVRZDQo+IGZvciByZXF1ZXN0aW5nIHRoZSBndWVzdCB0byBtYXAgTVNJIHdp
-bmRvd3Mgd2hlbiBwYWdlLXRhYmxlIGhhbmRvdmVyIGlzDQo+IGluDQo+IHVzZSAoTVNJIGFkZHJl
-c3NlcyBhcmUgdHJhbnNsYXRlZCBieSB0aGUgcGh5c2ljYWwgU01NVSwgc28gYSBJT1ZBLT5HUEEN
-Cj4gbWFwcGluZyBtdXN0IGJlIGluc3RhbGxlZCBieSB0aGUgZ3Vlc3QpLiBCdXQgc2luY2UgYSB2
-U01NVSB3b3VsZCBuZWVkIGENCj4gc29sdXRpb24gYXMgd2VsbCwgSSB0aGluayBJJ2xsIHRyeSB0
-byBpbXBsZW1lbnQgc29tZXRoaW5nIG1vcmUgZ2VuZXJpYy4NCg0KY3VyaW91cyBkbyB5b3UgbmVl
-ZCBpZGVudGl0eSBtYXBwaW5nIGZ1bGwgSU9WQS0+R1BBLT5IUEEgdHJhbnNsYXRpb24sIA0Kb3Ig
-anVzdCBpbiBHUEEtPkhQQSBzdGFnZSBzdWZmaWNpZW50IGZvciBhYm92ZSBNU0kgc2NlbmFyaW8/
-DQoNCj4gDQo+ID4gMi42LjguMi4zIERldmljZSBSZXF1aXJlbWVudHM6IFByb3BlcnR5IFJFU1Zf
-TUVNDQo+ID4NCj4gPiAtLWNpdGF0aW9uIHN0YXJ0LS0NCj4gPiBJZiBhbiBlbmRwb2ludCBpcyBh
-dHRhY2hlZCB0byBhbiBhZGRyZXNzIHNwYWNlLCB0aGUgZGV2aWNlIFNIT1VMRCBsZWF2ZQ0KPiA+
-IGFueSBhY2Nlc3MgdGFyZ2V0aW5nIG9uZSBvZiBpdHMNCj4gVklSVElPX0lPTU1VX1BST0JFX1JF
-U1ZfTUVNX1RfQllQQVNTDQo+ID4gcmVnaW9ucyBwYXNzIHRocm91Z2ggdW50cmFuc2xhdGVkLiBJ
-biBvdGhlciB3b3JkcywgdGhlIGRldmljZSBTSE9VTEQNCj4gPiBoYW5kbGUgc3VjaCBhIHJlZ2lv
-biBhcyBpZiBpdCB3YXMgaWRlbnRpdHktbWFwcGVkICh2aXJ0dWFsIGFkZHJlc3MgZXF1YWwgdG8N
-Cj4gPiBwaHlzaWNhbCBhZGRyZXNzKS4gSWYgdGhlIGVuZHBvaW50IGlzIG5vdCBhdHRhY2hlZCB0
-byBhbnkgYWRkcmVzcyBzcGFjZSwNCj4gPiB0aGVuIHRoZSBkZXZpY2UgTUFZIGFib3J0IHRoZSB0
-cmFuc2FjdGlvbi4NCj4gPiAtLWNpdGF0aW9uIGVuZA0KPiA+DQo+ID4gSSBoYXZlIGEgcXVlc3Rp
-b24gZm9yIHRoZSBsYXN0IHNlbnRlbmNlLiBGcm9tIGRlZmluaXRpb24gb2YgQllQQVNTLCBpdCdz
-DQo+ID4gb3J0aG9nb25hbCB0byB3aGV0aGVyIHRoZXJlIGlzIGFuIGFkZHJlc3Mgc3BhY2UgYXR0
-YWNoZWQsIHRoZW4gc2hvdWxkDQo+ID4gd2Ugc3RpbGwgYWxsb3cgIk1heSBhYm9ydCIgYmVoYXZp
-b3I/DQo+IA0KPiBUaGUgYmVoYXZpb3IgaXMgbGVmdCBhcyBhbiBpbXBsZW1lbnRhdGlvbiBjaG9p
-Y2UsIGFuZCBJJ20gbm90IHN1cmUgaXQncw0KPiB3b3J0aCBlbmZvcmNpbmcgaW4gdGhlIGFyY2hp
-dGVjdHVyZS4gSWYgdGhlIGVuZHBvaW50IGlzbid0IGF0dGFjaGVkIHRvIGFueQ0KPiBkb21haW4g
-dGhlbiAodW5sZXNzIFZJUlRJT19JT01NVV9GX0JZUEFTUyBpcyBuZWdvdGlhdGVkKSwgaXQgaXNu
-J3QNCj4gbmVjZXNzYXJpbHkgYWJsZSB0byBkbyBETUEgYXQgYWxsLiBUaGUgdmlydGlvLWlvbW11
-IGRldmljZSBtYXkgc2V0dXAgRE1BDQo+IG1hc3RlcmluZyBsYXppbHksIGluIHdoaWNoIGNhc2Ug
-YW55IERNQSB0cmFuc2FjdGlvbiB3b3VsZCBhYm9ydCwgb3IgaGF2ZQ0KPiBzZXR1cCBETUEgYWxy
-ZWFkeSwgaW4gd2hpY2ggY2FzZSB0aGUgZW5kcG9pbnQgY2FuIGFjY2VzcyBNRU1fVF9CWVBBU1MN
-Cj4gcmVnaW9ucy4NCj4gDQoNCmZhaXIgZW5vdWdoLiB0aGFua3MNCg0KS2V2aW4NCg==
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
+> Sent: Wednesday, September 6, 2017 7:49 PM
+>=20
+>=20
+> > 2.6.8.2.1
+> > Multiple overlapping RESV_MEM properties are merged together. Device
+> > requirement? if same types I assume?
+>=20
+> Combination rules apply to device and driver. When the driver puts
+> multiple endpoints in the same domain, combination rules apply. They will
+> become important once the guest attempts to do things like combining
+> endpoints with different PASID capabilities in the same domain. I'm
+> considering these endpoints to be behind different physical IOMMUs.
+>=20
+> For reserved regions, we specify what the driver should do and what the
+> device should enforce with regard to mapping IOVAs of overlapping regions=
+.
+> For example, if a device has some virtual address RESV_T_MSI and an other
+> device has the same virtual address RESV_T_IDENTITY, what should the
+> driver do?
+>=20
+> I think it should apply the RESV_T_IDENTITY. RESV_T_MSI is just a special
+> case of RESV_T_RESERVED, it's a hint for the IRQ subsystem and doesn't
+> have a meaning within a domain. From DMA mappings point of view, it is
+> effectively the same as RESV_T_RESERVED. When merging
+> RESV_T_RESERVED and
+> RESV_T_IDENTITY, we should make it RESV_T_IDENTITY. Because it is
+> required
+> for one endpoint to work (the one with IDENTITY) and is not accessed by
+> the other (the driver must not allocate this IOVA range for DMA).
+>=20
+> More generally, I'd like to add the following combination table to the
+> spec, that shows the resulting reserved region type after merging regions
+> from two endpoints. N: no reserved region, R: RESV_T_RESERVED, M:
+> RESV_T_MSI, I: RESV_T_IDENTITY. It is symmetric so I didn't fill the
+> bottom half.
+>=20
+>       | N | R | M | I
+>     ------------------
+>     N | N | R | M | ?
+>     ------------------
+>     R |   | R | R | I
+>     ------------------
+>     M |   |   | M | I
+>     ------------------
+>     I |   |   |   | I
+>=20
+> The 'I' column is problematic. If one endpoint has an IDENTITY region and
+> the other doesn't have anything at that virtual address, then making that
+> region an identity mapping will result in the second endpoint being able
+> to access firmware memory. If using nested translation, stage-2 can help
+> us here. But in general we should allow the device to reject an attach
+> that would result in a N+I combination if the host considers it too dodgy=
+.
+> I think the other combinations are safe enough.
+>=20
+
+will overlap happen in real? Can we simplify the spec to have device
+not reporting overlapping regions?
+
+Thanks
+Kevin
