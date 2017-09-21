@@ -1,59 +1,71 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Use raw_cpu_ptr() instead of get_cpu_ptr()
-	for ->flush_queue
-Date: Thu, 21 Sep 2017 17:10:40 +0200
-Message-ID: <20170921151040.szekdgibvojrdzhf@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH v2] iommu/iova: Use raw_cpu_ptr() instead of get_cpu_ptr()
+ for ->fq
+Date: Thu, 21 Sep 2017 17:21:40 +0200
+Message-ID: <20170921152140.grayy3a7ok2im7xa@linutronix.de>
 References: <20170906103459.oi2nn7jondjqdo5m@linutronix.de>
-	<CABp9dQUcXTAX9ggX+TAMHE2oH0SF8bcu47E=UYG9fgJdKBXEVg@mail.gmail.com>
+ <20170919094119.bibxslqyeefbx7gf@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CABp9dQUcXTAX9ggX+TAMHE2oH0SF8bcu47E=UYG9fgJdKBXEVg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vinod Adhikary <vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20170919094119.bibxslqyeefbx7gf@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, vinadhy@gmail.com, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017-09-11 22:22:11 [-0400], Vinod Adhikary wrote:
-> Dear all,
-Hi,
+get_cpu_ptr() disabled preemption and returns the ->fq object of the
+current CPU. raw_cpu_ptr() does the same except that it not disable
+preemption which means the scheduler can move it to another CPU after it
+obtained the per-CPU object.
+In this case this is not bad because the data structure itself is
+protected with a spin_lock. This change shouldn't matter however on RT
+it does because the sleeping lock can't be accessed with disabled
+preemption.
 
-> Thank you for the great community support and support from Sebastian to
-> provide me this patch. I wanted to send this email to inform you and
-> perhaps get some information on how I could keep myself updated on updates
-> in regards to linux-rt. I apologize if I'm spamming you with this email.
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
+Reported-by: vinadhy@gmail.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+On 2017-09-19 11:41:19 [+0200], Joerg Roedel wrote:
+> Hi Sebastian,
+Hi Jörg,
 
-There is a rt-users mailing list, see
-	https://wiki.linuxfoundation.org/realtime/communication/mailinglists
+> I moved the flushing to driver/iommu/iova.c to share it with the Intel
+> IOMMU and possibly other drivers too, so this patch does no longer apply
+> to v4.14-rc1. Can you update the patch to these changes?
 
-> I noticed `Bug: Scheduling while atomic` on ahci after building 4.9 rt and
-> reported the issue on oftc channel. Sebastian quickly helped me get a patch
-> and my `journalctl -f` was clean without any such messages. Yesterday I
-> decided to build 4.11 without the patch but I saw a whole bunch of similar
-> bug logs not just on ahci but on my nic card as well among a few others.
-> There were a few instances where I had to hard shutdown my machine. I
-> patched 4.11 with Sebastian's patch again and so far it's been okay for
-> about 24 hours and going.
+Sure.
 
-It sounds like the same issue. I taking this for v4.11 RT and v4.9 will
-pick it at some point.
+v1…v2: move the change from amd_iommu.c to iova.c
 
-> My concern is, how I can provide more information to resolve this issue,
-> perhaps in the next release. Please let me know how I can be of help.
+ drivers/iommu/iova.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-usually providing a backtrace like you did to the rt-usrs list is
-enough.
-
-> Thank you
-
-Sebastian
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 33edfa794ae9..b30900025c62 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -570,7 +570,7 @@ void queue_iova(struct iova_domain *iovad,
+ 		unsigned long pfn, unsigned long pages,
+ 		unsigned long data)
+ {
+-	struct iova_fq *fq = get_cpu_ptr(iovad->fq);
++	struct iova_fq *fq = raw_cpu_ptr(iovad->fq);
+ 	unsigned long flags;
+ 	unsigned idx;
+ 
+@@ -600,8 +600,6 @@ void queue_iova(struct iova_domain *iovad,
+ 	if (atomic_cmpxchg(&iovad->fq_timer_on, 0, 1) == 0)
+ 		mod_timer(&iovad->fq_timer,
+ 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
+-
+-	put_cpu_ptr(iovad->fq);
+ }
+ EXPORT_SYMBOL_GPL(queue_iova);
+ 
+-- 
+2.14.1
