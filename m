@@ -1,104 +1,68 @@
-From: Ganapatrao Kulkarni <gklkml16@gmail.com>
-Subject: Re: [PATCH 4/4] iommu/dma, numa: Use NUMA aware memory allocations in __iommu_dma_alloc_pages
-Date: Fri, 22 Sep 2017 21:14:51 +0530
-Message-ID: <CAKTKpr6O9OpT+WgWStYda3EZcbwbs5dzp10SnEfDEt8Z-ZaAhA@mail.gmail.com>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
- <20170921085922.11659-5-ganapatrao.kulkarni@cavium.com> <9d65676f-e4e8-e0a6-602c-361d83ce83c1@arm.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH] pci: Add dummy for pci_acs_enabled() if CONFIG_PCI=n to
+ fix iommmu build
+Date: Fri, 22 Sep 2017 10:56:05 -0500
+Message-ID: <20170922155605.GB15970@bhelgaas-glaptop.roam.corp.google.com>
+References: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <9d65676f-e4e8-e0a6-602c-361d83ce83c1@arm.com>
-Sender: owner-linux-mm@kvack.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Joerg Roedel <joro@8bytes.org>, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Arnd Bergmann <arnd@arndb.de>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Mon, Sep 11, 2017 at 02:29:15PM +0200, Geert Uytterhoeven wrote:
+> If CONFIG_PCI=n, and gcc (e.g. 4.1.2) decides not to inline
+> get_pci_function_alias_group(), the build fails with:
+> 
+>     drivers/iommu/iommu.o: In function `get_pci_function_alias_group':
+>     iommu.c:(.text+0xfdc): undefined reference to `pci_acs_enabled'
+> 
+> Due to the various dummies for PCI calls in the CONFIG_PCI=n case,
+> pci_acs_enabled() isn't actually ever called, but not all versions of
+> gcc are smart enough to realize that.
+> 
+> While explicitly marking get_pci_function_alias_group() inline would fix
+> the build, this would inflate the code for the CONFIG_PCI=y case, as
+> get_pci_function_alias_group() is a not-so-small function called from
+> two places.
+> 
+> Hence fix the issue by introducing a dummy for pci_acs_enabled()
+> instead.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-On Thu, Sep 21, 2017 at 5:11 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
->> Change function __iommu_dma_alloc_pages to allocate memory/pages
->> for dma from respective device numa node.
->>
->> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
->> ---
->>  drivers/iommu/dma-iommu.c | 17 ++++++++++-------
->>  1 file changed, 10 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 9d1cebe..0626b58 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -428,20 +428,21 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
->>       kvfree(pages);
->>  }
->>
->> -static struct page **__iommu_dma_alloc_pages(unsigned int count,
->> -             unsigned long order_mask, gfp_t gfp)
->> +static struct page **__iommu_dma_alloc_pages(struct device *dev,
->> +             unsigned int count, unsigned long order_mask, gfp_t gfp)
->>  {
->>       struct page **pages;
->>       unsigned int i = 0, array_size = count * sizeof(*pages);
->> +     int numa_node = dev_to_node(dev);
->>
->>       order_mask &= (2U << MAX_ORDER) - 1;
->>       if (!order_mask)
->>               return NULL;
->>
->>       if (array_size <= PAGE_SIZE)
->> -             pages = kzalloc(array_size, GFP_KERNEL);
->> +             pages = kzalloc_node(array_size, GFP_KERNEL, numa_node);
->>       else
->> -             pages = vzalloc(array_size);
->> +             pages = vzalloc_node(array_size, numa_node);
->
-> kvzalloc{,_node}() didn't exist when this code was first written, but it
-> does now - since you're touching it you may as well get rid of the whole
-> if-else and array_size local.
+Joerg, if you pick this up, would you mind capitalizing the subject
+line to match the PCI convention, e.g.,
 
-thanks, i will update in next version.
->
-> Further nit: some of the indentation below is a bit messed up.
+  PCI: Add dummy pci_acs_enabled() for CONFIG_PCI=n build
 
-ok, will fix it.
->
-> Robin.
->
->>       if (!pages)
->>               return NULL;
->>
->> @@ -462,8 +463,9 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
->>                       unsigned int order = __fls(order_mask);
->>
->>                       order_size = 1U << order;
->> -                     page = alloc_pages((order_mask - order_size) ?
->> -                                        gfp | __GFP_NORETRY : gfp, order);
->> +                     page = alloc_pages_node(numa_node,
->> +                                     (order_mask - order_size) ?
->> +                                gfp | __GFP_NORETRY : gfp, order);
->>                       if (!page)
->>                               continue;
->>                       if (!order)
->> @@ -548,7 +550,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->>               alloc_sizes = min_size;
->>
->>       count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->> -     pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
->> +     pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
->> +                     gfp);
->>       if (!pages)
->>               return NULL;
->>
->>
->
+If it's too late for you to pick this up this week, I can include it
+next week.  I assume this is not related to a specific change, i.e.,
+it's not a regression?  Should it be marked for stable?
 
-thanks
-Ganapat
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+> ---
+>  include/linux/pci.h | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index f68c58a93dd045b9..f4f8ee5a7362e982 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1685,6 +1685,8 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
+>  
+>  #define dev_is_pci(d) (false)
+>  #define dev_is_pf(d) (false)
+> +static inline bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
+> +{ return false; }
+>  #endif /* CONFIG_PCI */
+>  
+>  /* Include architecture-dependent settings and functions */
+> -- 
+> 2.7.4
+> 
