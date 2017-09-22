@@ -1,50 +1,56 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2] iommu/of: Remove PCI host bridge node check
-Date: Fri, 22 Sep 2017 10:51:30 +0100
-Message-ID: <49550b7b-b5bc-6687-dc5d-3a71605389ca@arm.com>
-References: <7ff4e56719d2e90426d9338eab00396bb2b61995.1505988973.git.robin.murphy@arm.com>
- <56a797382ffc65243169205c36d9f9fb1173dddd.1505989095.git.robin.murphy@arm.com>
- <20170922085618.GI8398@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC] iommu: arm-smmu: stall support
+Date: Fri, 22 Sep 2017 11:02:53 +0100
+Message-ID: <32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
+References: <20170914194444.32551-1-robdclark@gmail.com>
+ <20170919123038.GF8398@8bytes.org>
+ <CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
+ <20170922090204.GJ8398@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170922085618.GI8398@8bytes.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170922090204.GJ8398@8bytes.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jean-philippe.brucker@arm.com
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Rob Clark <robdclark@gmail.com>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <Will.Deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/09/17 09:56, Joerg Roedel wrote:
-> Hey Robin,
-> 
-> On Thu, Sep 21, 2017 at 11:20:58AM +0100, Robin Murphy wrote:
->> of_pci_iommu_init() tries to be clever and stop its alias walk at the
->> device represented by master_np, in case of weird PCI topologies where
->> the bridge to the IOMMU and the rest of the system is not at the root.
->> It turns out this is a bit short-sighted, since there are plenty of
->> other callers of pci_for_each_dma_alias() which would also need the same
->> behaviour in that situation, and the only platform so far with such a
->> topology (Cavium ThunderX2) already solves it more generally via a PCI
->> quirk. As this check is effectively redundant, and returning a boolean
->> value as an int is a bit broken anyway, let's just get rid of it.
+On 22/09/17 10:02, Joerg Roedel wrote:
+> On Tue, Sep 19, 2017 at 10:23:43AM -0400, Rob Clark wrote:
+>> I would like to decide in the IRQ whether or not to queue work or not,
+>> because when we get a gpu fault, we tend to get 1000's of gpu faults
+>> all at once (and I really only need to handle the first one).  I
+>> suppose that could also be achieved by having a special return value
+>> from the fault handler to say "call me again from a wq"..
 >>
->> Reported-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> Note that in the drm driver I already have a suitable wq to queue the
+>> work, so it really doesn't buy me anything to have the iommu driver
+>> toss things off to a wq for me.  Might be a different situation for
+>> other drivers (but I guess mostly other drivers are using iommu API
+>> indirectly via dma-mapping?)
 > 
-> Can you send me a Fixes: tag for this please? No need to resend the
-> whole patch, I just need the tag.
+> Okay, so since you are the only user for now, we don't need a
+> work-queue. But I still want the ->resume call-back to be hidden in the
+> iommu code and not be exposed to users.
+> 
+> We already have per-domain fault-handlers, so the best solution for now
+> is to call ->resume from report_iommu_fault() when the fault-handler
+> returns a special value.
 
-Sure, I'd go for:
+The problem is that report_iommu_fault is called from IRQ context by the
+SMMU driver, so the device driver callback cannot sleep.
 
-Fixes: d87beb749281 ("iommu/of: Handle PCI aliases properly")
+So if the device driver needs to be able to sleep between fault report and
+resume, as I understand Rob needs for writing debugfs, we can either:
 
-The check itself originally dates back to b996444cf35e ("iommu/of:
-Handle iommu-map property for PCI") but it's really not worth
-backporting past the above refactoring - it's only with da4b02750a9f
-("iommu/of: Fix of_iommu_configure() for disabled IOMMUs") in 4.14-rc1
-that it started to have noticeable ill effects.
+* call report_iommu_fault from higher up, in a thread or workqueue.
+* split the fault reporting as this patch proposes. The exact same
+  mechanism is needed for the vSVM work by Intel: in order to inject fault
+  into the guest, they would like to have an atomic notifier registered by
+  VFIO for passing down the Page Request, and a new function in the IOMMU
+  API to resume/complete the fault.
 
 Thanks,
-Robin.
+Jean
