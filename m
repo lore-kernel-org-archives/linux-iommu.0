@@ -1,65 +1,80 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH] pci: Add dummy for pci_acs_enabled() if CONFIG_PCI=n to
- fix iommmu build
-Date: Mon, 25 Sep 2017 11:13:44 -0500
-Message-ID: <20170925161344.GC15970@bhelgaas-glaptop.roam.corp.google.com>
-References: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
- <20170922155605.GB15970@bhelgaas-glaptop.roam.corp.google.com>
- <CAMuHMdU4atjKiddgtt-=jee1FSjt8cHVN2XGg1m+1TzaMytAUg@mail.gmail.com>
+From: Casey Leedom <leedom@chelsio.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Mon, 25 Sep 2017 17:46:40 +0000
+Message-ID: <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+References: <20170920080151.GA3348@gondor.apana.org.au>,<26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdU4atjKiddgtt-=jee1FSjt8cHVN2XGg1m+1TzaMytAUg@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Arnd Bergmann <arnd@arndb.de>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+Content-Language: en-US
+Sender: linux-crypto-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>, Harsh Jain <Harsh@chelsio.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, David Woodhouse <David.Woodhouse@intel.com>, Dan Williams <dan.j.williams@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 22, 2017 at 08:12:46PM +0200, Geert Uytterhoeven wrote:
-> Hi Björn,
-> 
-> On Fri, Sep 22, 2017 at 5:56 PM, Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Mon, Sep 11, 2017 at 02:29:15PM +0200, Geert Uytterhoeven wrote:
-> >> If CONFIG_PCI=n, and gcc (e.g. 4.1.2) decides not to inline
-> >> get_pci_function_alias_group(), the build fails with:
-> >>
-> >>     drivers/iommu/iommu.o: In function `get_pci_function_alias_group':
-> >>     iommu.c:(.text+0xfdc): undefined reference to `pci_acs_enabled'
-> >>
-> >> Due to the various dummies for PCI calls in the CONFIG_PCI=n case,
-> >> pci_acs_enabled() isn't actually ever called, but not all versions of
-> >> gcc are smart enough to realize that.
-> >>
-> >> While explicitly marking get_pci_function_alias_group() inline would fix
-> >> the build, this would inflate the code for the CONFIG_PCI=y case, as
-> >> get_pci_function_alias_group() is a not-so-small function called from
-> >> two places.
-> >>
-> >> Hence fix the issue by introducing a dummy for pci_acs_enabled()
-> >> instead.
-> >>
-> >> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> >
-> > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> >
-> > Joerg, if you pick this up, would you mind capitalizing the subject
-> > line to match the PCI convention, e.g.,
-> >
-> >   PCI: Add dummy pci_acs_enabled() for CONFIG_PCI=n build
-> >
-> > If it's too late for you to pick this up this week, I can include it
-> > next week.  I assume this is not related to a specific change, i.e.,
-> > it's not a regression?  Should it be marked for stable?
-> 
-> It was introduced by commit 0ae349a0f33fb040 ("iommu/qcom: Add qcom_iommu"),
-> which enabled IOMMU support for compile-testing in e.g. allmodconfig on
-> platforms that don't have IOMMUs.
+| From: Robin Murphy <robin.murphy@arm.com>
+| Sent: Wednesday, September 20, 2017 3:12 AM
+|
+| On 20/09/17 09:01, Herbert Xu wrote:
+| >
+| > Harsh Jain <Harsh@chelsio.com> wrote:
+| >>
+| >> While debugging DMA mapping error in chelsio crypto driver we
+| >> observed that when scatter/gather list received by driver has
+| >> some entry with page->offset > 4096 (PAGE_SIZE). It starts
+| >> giving DMA error.  Without IOMMU it works fine.
+| >
+| > This is not a bug.  The network stack can and will feed us such
+| > SG lists.
+| >
+| >> 2) It cannot be driver's responsibilty to update received sg
+| >> entries to adjust offset and page because we are not the only
+| >> one who directly uses received sg list.
+| >
+| > No the driver must deal with this.  Having said that, if we can
+| > improve our driver helper interface to make this easier then we
+| > should do that too.  What we certainly shouldn't do is to take a
+| > whack-a-mole approach like this patch does.
+|
+| AFAICS this is entirely on intel-iommu - from a brief look it appears
+| that all the IOVA calculations would handle the offset correctly, but
+| then __domain_mapping() blindly uses sg_page() for the physical address,
+| so if offset is larger than a page it would end up with the DMA mapping
+| covering the wrong part of the buffer.
+|
+| Does the diff below help?
+|
+| Robin.
+|
+| ----->8-----
+| diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+| index b3914fce8254..2ed43d928135 100644
+| --- a/drivers/iommu/intel-iommu.c
+| +++ b/drivers/iommu/intel-iommu.c
+| @@ -2253,7 +2253,7 @@ static int __domain_mapping(struct dmar_domain *dom=
+ain, unsigned long iov_pfn,
+|                          sg_res =3D aligned_nrpages(sg->offset, sg->lengt=
+h);
+|                          sg->dma_address =3D ((dma_addr_t)iov_pfn << VTD_=
+PAGE_SHIFT) + sg->offset;
+|                          sg->dma_length =3D sg->length;
+| -                       pteval =3D page_to_phys(sg_page(sg)) | prot;
+| +                       pteval =3D (sg_phys(sg) & PAGE_MASK) | prot;
+|                          phys_pfn =3D pteval >> VTD_PAGE_SHIFT;
+|                  }
 
-I put this on my for-linus branch for v4.14 with Alex's reviewed-by.
+  Adding some likely people to the Cc list so they can comment on this.
+Dan Williams submitted that specific piece of code in kernel.org:3e6110fd54
+... but there are lots of similar bits in that function.  Hopefully one of
+the Intel I/O MMU Gurus will have a better idea of what may be going wrong
+here.  In the mean time I've asked our team to gather far more detailed
+debug traces showing the exact Scatter/Gather Lists we're getting, what the=
+y
+get translated to in the DMA Mappings, and what DMA Addresses were seeing i=
+n
+error.
 
-Since 0ae349a0f33f was merged in the v4.14 merge window (it first
-appeared in v4.14-rc1), I don't think we need to mark it for stable.
-
-Bjorn
+Casey
