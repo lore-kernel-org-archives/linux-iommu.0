@@ -1,45 +1,44 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: bind pasid table API
-Date: Mon, 25 Sep 2017 08:14:04 -0700
-Message-ID: <20170925151403.GA131920@otc-nc-03>
-References: <20170918204516.2f6beffb@jacob-builder>
-	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
-	<20170920153510.4dc5e5c3@jacob-builder>
-	<ef71b446-ae00-29af-a934-2e253454df31@arm.com>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Mon, 25 Sep 2017 08:54:30 -0700
+Message-ID: <20170925155430.GB131920@otc-nc-03>
+References: <20170920080151.GA3348@gondor.apana.org.au>
+ <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+ <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <ef71b446-ae00-29af-a934-2e253454df31-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+In-Reply-To: <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Casey Leedom <leedom@chelsio.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>, Harsh Jain <Harsh@chelsio.com>, David Woodhouse <David.Woodhouse@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 25, 2017 at 12:45:00PM +0100, Jean-Philippe Brucker wrote:
-[snip]
+Hi Casey
 
-> This format tells how the guest organizes its PASID tables. Depending on
-> 'format', the PASID table can be:
-> * A flat array of descriptors
-> * One array of 1st-level descriptors pointing to a 2nd level of
-> descriptors. When translating an access, the SMMU splits the PASID at bit
-> 6, uses the upper half to get the 1st level descriptor and the lower half
-> to get the 2nd level one (4k leaf table).
-> * The same format, but instead split at PASID bit 10 (64k leaf table)
+Sorry, somehow didn't see this one come by.
 
-When in multilevel PASID table, do you shadow it in the host? or every 
-level is all hosted in guest space? in Intel vt-d, when context is in 
-a nested mode, PASID table is a gPA. Its a single level table.
+
+On Mon, Sep 25, 2017 at 05:46:40PM +0000, Casey Leedom wrote:
+> | From: Robin Murphy <robin.murphy@arm.com>
+> | Sent: Wednesday, September 20, 2017 3:12 AM
+> |
+> | On 20/09/17 09:01, Herbert Xu wrote:
+> | >
+> | > Harsh Jain <Harsh@chelsio.com> wrote:
+> | >>
+> | >> While debugging DMA mapping error in chelsio crypto driver we
+> | >> observed that when scatter/gather list received by driver has
+> | >> some entry with page->offset > 4096 (PAGE_SIZE). It starts
+> | >> giving DMA error.  Without IOMMU it works fine.
+
+Not sure how the page->offset would end up being greater than page-size?
+
+If you have additional traces, please send them by. 
+
+Is this a new driver? wondering how we didn't run into this?
 
 
 Cheers,
