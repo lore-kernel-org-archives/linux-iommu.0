@@ -1,135 +1,65 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: iommu/io-pgtable: depend on !GENERIC_ATOMIC64 when using
-	COMPILE_TEST with LPAE
-Date: Mon, 25 Sep 2017 16:53:48 +0100
-Message-ID: <20170925155347.GE30917@arm.com>
-References: <20170712171654.35DA922D7E@pdx-korg-gitolite-1.ci.codeaurora.org>
-	<CAMuHMdVSR1fcDPgruPPDFAXQe_yVXHJFE-sCR3U8MNYOAUzfKQ@mail.gmail.com>
-	<20170925152111.GB30917@arm.com>
-	<CAMuHMdVF0BWr_-5QxR3254dGhunPyfq-YLChO8CkCbGk_Oo02Q@mail.gmail.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH] pci: Add dummy for pci_acs_enabled() if CONFIG_PCI=n to
+ fix iommmu build
+Date: Mon, 25 Sep 2017 11:13:44 -0500
+Message-ID: <20170925161344.GC15970@bhelgaas-glaptop.roam.corp.google.com>
+References: <1505132955-9517-1-git-send-email-geert@linux-m68k.org>
+ <20170922155605.GB15970@bhelgaas-glaptop.roam.corp.google.com>
+ <CAMuHMdU4atjKiddgtt-=jee1FSjt8cHVN2XGg1m+1TzaMytAUg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdVF0BWr_-5QxR3254dGhunPyfq-YLChO8CkCbGk_Oo02Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <CAMuHMdU4atjKiddgtt-=jee1FSjt8cHVN2XGg1m+1TzaMytAUg@mail.gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Arnd Bergmann <arnd@arndb.de>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[+PeterZ because he enjoys things like this]
-
-On Mon, Sep 25, 2017 at 05:37:46PM +0200, Geert Uytterhoeven wrote:
-> On Mon, Sep 25, 2017 at 5:21 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Mon, Sep 25, 2017 at 09:16:22AM +0200, Geert Uytterhoeven wrote:
-> >> On Wed, Jul 12, 2017 at 7:16 PM, Linux Kernel Mailing List
-> >> <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> wrote:
-> >> > Web:        https://git.kernel.org/torvalds/c/c1004803b40596c1aabbbc78a6b1b33e4dfd96c6
-> >> > Commit:     c1004803b40596c1aabbbc78a6b1b33e4dfd96c6
-> >> > Parent:     58188afeb727e0f73706f1460707bd3ba6ccc221
-> >> > Refname:    refs/heads/master
-> >> > Author:     Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >> > AuthorDate: Fri Jun 23 11:45:57 2017 +0100
-> >> > Committer:  Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >> > CommitDate: Fri Jun 23 17:58:02 2017 +0100
-> >> >
-> >> >     iommu/io-pgtable: depend on !GENERIC_ATOMIC64 when using COMPILE_TEST with LPAE
-> >> >
-> >> >     The LPAE/ARMv8 page table format relies on the ability to read and write
-> >> >     64-bit page table entries in an atomic fashion. With the move to a lockless
-> >> >     implementation, we also need support for cmpxchg64 to resolve races when
-> >> >     installing table entries concurrently.
-> >> >
-> >> >     Unfortunately, not all architectures support cmpxchg64, so the code can
-> >> >     fail to compiler when building for these architectures using COMPILE_TEST.
-> >> >     Rather than disable COMPILE_TEST altogether, instead check that
-> >> >     GENERIC_ATOMIC64 is not selected, which is a reasonable indication that
-> >> >     the architecture has support for 64-bit cmpxchg.
-> >> >
-> >> >     Reported-by: kbuild test robot <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> >> >     Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >> > ---
-> >> >  drivers/iommu/Kconfig | 2 +-
-> >> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >> >
-> >> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> >> > index 6ee3a25ae731..c88cfa7522b2 100644
-> >> > --- a/drivers/iommu/Kconfig
-> >> > +++ b/drivers/iommu/Kconfig
-> >> > @@ -23,7 +23,7 @@ config IOMMU_IO_PGTABLE
-> >> >  config IOMMU_IO_PGTABLE_LPAE
-> >> >         bool "ARMv7/v8 Long Descriptor Format"
-> >> >         select IOMMU_IO_PGTABLE
-> >> > -       depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
-> >> > +       depends on HAS_DMA && (ARM || ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64))
-> >> >         help
-> >> >           Enable support for the ARM long descriptor pagetable format.
-> >> >           This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
+On Fri, Sep 22, 2017 at 08:12:46PM +0200, Geert Uytterhoeven wrote:
+> Hi Björn,
+> 
+> On Fri, Sep 22, 2017 at 5:56 PM, Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Mon, Sep 11, 2017 at 02:29:15PM +0200, Geert Uytterhoeven wrote:
+> >> If CONFIG_PCI=n, and gcc (e.g. 4.1.2) decides not to inline
+> >> get_pci_function_alias_group(), the build fails with:
 > >>
-> >> I can't find where this patch was submitted and discussed, so I'm replying
-> >> to this email. On which architectures did it fail to compile?
+> >>     drivers/iommu/iommu.o: In function `get_pci_function_alias_group':
+> >>     iommu.c:(.text+0xfdc): undefined reference to `pci_acs_enabled'
+> >>
+> >> Due to the various dummies for PCI calls in the CONFIG_PCI=n case,
+> >> pci_acs_enabled() isn't actually ever called, but not all versions of
+> >> gcc are smart enough to realize that.
+> >>
+> >> While explicitly marking get_pci_function_alias_group() inline would fix
+> >> the build, this would inflate the code for the CONFIG_PCI=y case, as
+> >> get_pci_function_alias_group() is a not-so-small function called from
+> >> two places.
+> >>
+> >> Hence fix the issue by introducing a dummy for pci_acs_enabled()
+> >> instead.
+> >>
+> >> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 > >
-> > It was in response to a report from the kbuild test robot on m32r, but
-> > looking back I now see that it didn't go to the lists for some reason. I've
-> > included the report at the end of this email so you can have a look.
-> 
-> Thanks!
-> 
-> >> cmpxchg64() is defined by include/asm-generic/cmpxchg.h, so I fail to
-> >> see what's the relation with GENERIC_ATOMIC64, which is related to
-> >> lib/atomic64.c instead.
+> > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 > >
-> > Yeah, it's a bit of a hack, but we're basically relying on architectures
-> > that don't select GENERIC_ATOMIC64 providing their own cmpxchg64
-> > implementation, which seems to be the case.
+> > Joerg, if you pick this up, would you mind capitalizing the subject
+> > line to match the PCI convention, e.g.,
 > >
-> >> E.g. on m68k, which uses GENERIC_ATOMIC64, it compile-tested fine before.
+> >   PCI: Add dummy pci_acs_enabled() for CONFIG_PCI=n build
 > >
-> > FWIW, the lock-based atomics wouldn't be sufficient at runtime, but I
-> > appreciate that we're only talking about COMPILE_TEST here.
+> > If it's too late for you to pick this up this week, I can include it
+> > next week.  I assume this is not related to a specific change, i.e.,
+> > it's not a regression?  Should it be marked for stable?
 > 
-> Correct.
-> 
-> >> Perhaps there's another (SMP vs UP?) dependency, as
-> >> include/asm-generic/cmpxchg.h cannot be used on SMP?
-> >> Should it be COMPILE_TEST && (!GENERIC_ATOMIC64 || !SMP)?
-> >
-> > I don't see how that helps. Are you seeing build failures on a non-SMP
-> > arch?
-> 
-> I'm not seeing build failures.
-> I see reduced build coverage on m68k due to this change.
-> 
-> So m32r fails to provide a definition for cmpxchg64(), which has nothing to
-> do with GENERIC_ATOMIC64.
-> Probably m32r just needs the same treatment as in commit feb20ec2bb859d1d
-> ("m68k: Add missing cmpxchg64() if CONFIG_RMW_INSNS=y")
+> It was introduced by commit 0ae349a0f33fb040 ("iommu/qcom: Add qcom_iommu"),
+> which enabled IOMMU support for compile-testing in e.g. allmodconfig on
+> platforms that don't have IOMMUs.
 
-I have no idea, tbh. m32r claims to be SMP in some cases but it's orphaned
-so I don't know who we could ask about this. If we ended up with a
-lock-based 64-bit cmpxchg but a native 8/16/32-bit cmpxchg then we're
-asking for trouble because they don't interwork.
+I put this on my for-linus branch for v4.14 with Alex's reviewed-by.
 
-> Worse, people are now adding more depends on !GENERIC_ATOMIC64 for
-> various IOMMU drivers, to fix up "selects IOMMU_IO_PGTABLE_LPAE which
-> has unmet direct dependencies" warnings :-(
+Since 0ae349a0f33f was merged in the v4.14 merge window (it first
+appeared in v4.14-rc1), I don't think we need to mark it for stable.
 
-Well I'd certainly be willing to revisit the dependency if all architectures
-provided cmpxchg64, but that's not something that I'm comfortable
-implementing without the ability to test it since it could actually cause
-runtime breakage just for the sake of getting a driver building that will
-never be used on those architectures.
-
-I didn't want to drop the || COMPILE_TEST completely because we get useful
-coverage from it on x86.
-
-Will
+Bjorn
