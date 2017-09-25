@@ -1,66 +1,95 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [RFC] iommu: arm-smmu: stall support
-Date: Fri, 22 Sep 2017 14:42:44 -0400
-Message-ID: <CAF6AEGuh0FiNWEAmFm+7-7pc6MV5hKKz9cyA_J0d256bY-nYOQ@mail.gmail.com>
-References: <20170914194444.32551-1-robdclark@gmail.com> <20170919123038.GF8398@8bytes.org>
- <CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
- <20170922090204.GJ8398@8bytes.org> <32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: iommu/io-pgtable: depend on !GENERIC_ATOMIC64 when using
+	COMPILE_TEST with LPAE
+Date: Mon, 25 Sep 2017 09:16:22 +0200
+Message-ID: <CAMuHMdVSR1fcDPgruPPDFAXQe_yVXHJFE-sCR3U8MNYOAUzfKQ@mail.gmail.com>
+References: <20170712171654.35DA922D7E@pdx-korg-gitolite-1.ci.codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <Will.Deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170712171654.35DA922D7E-gPoWRKU9cvXFdobaOcSF9GAAIAxnTgIKkeh0/CE3bsqGglJvpFV4uA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 22, 2017 at 6:02 AM, Jean-Philippe Brucker
-<jean-philippe.brucker@arm.com> wrote:
-> On 22/09/17 10:02, Joerg Roedel wrote:
->> On Tue, Sep 19, 2017 at 10:23:43AM -0400, Rob Clark wrote:
->>> I would like to decide in the IRQ whether or not to queue work or not,
->>> because when we get a gpu fault, we tend to get 1000's of gpu faults
->>> all at once (and I really only need to handle the first one).  I
->>> suppose that could also be achieved by having a special return value
->>> from the fault handler to say "call me again from a wq"..
->>>
->>> Note that in the drm driver I already have a suitable wq to queue the
->>> work, so it really doesn't buy me anything to have the iommu driver
->>> toss things off to a wq for me.  Might be a different situation for
->>> other drivers (but I guess mostly other drivers are using iommu API
->>> indirectly via dma-mapping?)
->>
->> Okay, so since you are the only user for now, we don't need a
->> work-queue. But I still want the ->resume call-back to be hidden in the
->> iommu code and not be exposed to users.
->>
->> We already have per-domain fault-handlers, so the best solution for now
->> is to call ->resume from report_iommu_fault() when the fault-handler
->> returns a special value.
->
-> The problem is that report_iommu_fault is called from IRQ context by the
-> SMMU driver, so the device driver callback cannot sleep.
->
-> So if the device driver needs to be able to sleep between fault report and
-> resume, as I understand Rob needs for writing debugfs, we can either:
->
-> * call report_iommu_fault from higher up, in a thread or workqueue.
-> * split the fault reporting as this patch proposes. The exact same
->   mechanism is needed for the vSVM work by Intel: in order to inject fault
->   into the guest, they would like to have an atomic notifier registered by
->   VFIO for passing down the Page Request, and a new function in the IOMMU
->   API to resume/complete the fault.
->
+Hi Will,
 
-I'm in favour if splitting the reporting *somehow*.. the two
-approaches that seemed sane are:
+On Wed, Jul 12, 2017 at 7:16 PM, Linux Kernel Mailing List
+<linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> wrote:
+> Web:        https://git.kernel.org/torvalds/c/c1004803b40596c1aabbbc78a6b1b33e4dfd96c6
+> Commit:     c1004803b40596c1aabbbc78a6b1b33e4dfd96c6
+> Parent:     58188afeb727e0f73706f1460707bd3ba6ccc221
+> Refname:    refs/heads/master
+> Author:     Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> AuthorDate: Fri Jun 23 11:45:57 2017 +0100
+> Committer:  Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> CommitDate: Fri Jun 23 17:58:02 2017 +0100
+>
+>     iommu/io-pgtable: depend on !GENERIC_ATOMIC64 when using COMPILE_TEST with LPAE
+>
+>     The LPAE/ARMv8 page table format relies on the ability to read and write
+>     64-bit page table entries in an atomic fashion. With the move to a lockless
+>     implementation, we also need support for cmpxchg64 to resolve races when
+>     installing table entries concurrently.
+>
+>     Unfortunately, not all architectures support cmpxchg64, so the code can
+>     fail to compiler when building for these architectures using COMPILE_TEST.
+>     Rather than disable COMPILE_TEST altogether, instead check that
+>     GENERIC_ATOMIC64 is not selected, which is a reasonable indication that
+>     the architecture has support for 64-bit cmpxchg.
+>
+>     Reported-by: kbuild test robot <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>     Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 6ee3a25ae731..c88cfa7522b2 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -23,7 +23,7 @@ config IOMMU_IO_PGTABLE
+>  config IOMMU_IO_PGTABLE_LPAE
+>         bool "ARMv7/v8 Long Descriptor Format"
+>         select IOMMU_IO_PGTABLE
+> -       depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
+> +       depends on HAS_DMA && (ARM || ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64))
+>         help
+>           Enable support for the ARM long descriptor pagetable format.
+>           This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
 
-1) call fault handler from irq and having separate domain->resume()
-called by the driver, potentially from a wq
-2) or having two fault callbacks, first called before wq and then
-based on returned value, optionally 2nd callback called from wq
+I can't find where this patch was submitted and discussed, so I'm replying
+to this email. On which architectures did it fail to compile?
 
-The first seemed less intrusive to me, but I'm flexible.
+cmpxchg64() is defined by include/asm-generic/cmpxchg.h, so I fail to
+see what's the relation with GENERIC_ATOMIC64, which is related to
+lib/atomic64.c instead.
 
-BR,
--R
+E.g. on m68k, which uses GENERIC_ATOMIC64, it compile-tested fine before.
+
+Perhaps there's another (SMP vs UP?) dependency, as
+include/asm-generic/cmpxchg.h cannot be used on SMP?
+Should it be COMPILE_TEST && (!GENERIC_ATOMIC64 || !SMP)?
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
