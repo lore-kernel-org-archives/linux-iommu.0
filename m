@@ -1,64 +1,71 @@
-From: Harsh Jain <Harsh@chelsio.com>
-Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
- Intel IOMMU
-Date: Tue, 26 Sep 2017 09:16:46 +0530
-Message-ID: <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
-References: <20170920080151.GA3348@gondor.apana.org.au>
- <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
- <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
- <20170925155430.GB131920@otc-nc-03>
- <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/amd: pr_err() strings should end with newlines
+Date: Tue, 26 Sep 2017 13:07:46 +0530
+Message-ID: <a981b82525849ccf4fa869c74c0358f350a9998d.1506411289.git.arvind.yadav.cs@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-crypto-owner@vger.kernel.org>
-In-Reply-To: <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
-Content-Language: en-US
-Sender: linux-crypto-owner@vger.kernel.org
-To: Casey Leedom <leedom@chelsio.com>, "Raj, Ashok" <ashok.raj@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>, David Woodhouse <David.Woodhouse@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+pr_err() messages should end with a new-line to avoid other messages
+being concatenated. So replace '/n' with '\n'.
 
-On 26-09-2017 00:16, Casey Leedom wrote:
-> | From: Raj, Ashok <ashok.raj@intel.com>
-> | Sent: Monday, September 25, 2017 8:54 AM
-> |
-> | Not sure how the page->offset would end up being greater than page-size?
-Refer below
-> |
-> | If you have additional traces, please send them by.
-> |
-> | Is this a new driver? wondering how we didn't run into this?
->
->   According to Herbert Xu and one of our own engineers, it's actually legal
-> for Scatter/Gather Lists to have this.  This isn't my area of expertise
-> though so I'm just passing that on.
->
->   I've asked our team to produce a detailed trace of the exact
-> Scatter/Gather Lists they're seeing and what ends up coming out of the DMA
-> Mappings, etc.  They're in India, so I expect that they'll have this for you
-> by tomorrow morning.
-Below mentioned log was already there in 1st mail. Copied here for easy reference. Let me know if you need
-additional traces.
+Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/amd_iommu_init.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-1) IN esp_output() "__skb_to_sgvec()" convert skb frags to scatter gather list. 
-At that moment sg->offset was 4094.
-2) From esp_output control reaches to "crypto_authenc_encrypt()". Here in 
-"scatterwalk_ffwd()" sg->offset become 4110.
-3) Same sg list received by chelsio crypto driver(chcr). When chcr try to do 
-DMA mapping it starts giving DMA errors.
-
-Following error observed. first two prints are added for debugging in chcr. 
-Kernel version used to reproduce is 4.9.28 on x86_64 with Page size 4K.
-
-Sep 15 12:40:52 heptagon kernel: process_cipher req src ffff8803cb41f0a8
-Sep 15 12:40:52 heptagon kernel: ========= issue    hit offset:4110 ======= 
-dma_addr f24b000e ==> DMA mapped address returned by dma_map_sg()
-
-Sep 15 12:40:52 heptagon kernel: DMAR: DRHD: handling fault status reg 2
-Sep 15 12:40:52 heptagon kernel: DMAR: [DMA Write] Request device [02:00.4] 
-fault addr f24b0000 [fault reason 05] PTE Write access is not set
-
->
-> Casey
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 382de42..6fe2d03 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -874,7 +874,7 @@ static bool copy_device_table(void)
+ 		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
+ 		entry = (((u64) hi) << 32) + lo;
+ 		if (last_entry && last_entry != entry) {
+-			pr_err("IOMMU:%d should use the same dev table as others!/n",
++			pr_err("IOMMU:%d should use the same dev table as others!\n",
+ 				iommu->index);
+ 			return false;
+ 		}
+@@ -882,7 +882,7 @@ static bool copy_device_table(void)
+ 
+ 		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
+ 		if (old_devtb_size != dev_table_size) {
+-			pr_err("The device table size of IOMMU:%d is not expected!/n",
++			pr_err("The device table size of IOMMU:%d is not expected!\n",
+ 				iommu->index);
+ 			return false;
+ 		}
+@@ -890,7 +890,7 @@ static bool copy_device_table(void)
+ 
+ 	old_devtb_phys = entry & PAGE_MASK;
+ 	if (old_devtb_phys >= 0x100000000ULL) {
+-		pr_err("The address of old device table is above 4G, not trustworthy!/n");
++		pr_err("The address of old device table is above 4G, not trustworthy!\n");
+ 		return false;
+ 	}
+ 	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
+@@ -901,7 +901,7 @@ static bool copy_device_table(void)
+ 	old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
+ 				get_order(dev_table_size));
+ 	if (old_dev_tbl_cpy == NULL) {
+-		pr_err("Failed to allocate memory for copying old device table!/n");
++		pr_err("Failed to allocate memory for copying old device table!\n");
+ 		return false;
+ 	}
+ 
+-- 
+1.9.1
