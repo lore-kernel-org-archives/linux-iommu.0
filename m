@@ -1,80 +1,38 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: Re: [PATCH 1/4] mm: move function alloc_pages_exact_nid out of
- __meminit
-Date: Tue, 26 Sep 2017 15:35:25 +0200
-Message-ID: <20170926133525.2h55vfa25gjiu5ts@dhcp22.suse.cz>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
- <20170921085922.11659-2-ganapatrao.kulkarni@cavium.com>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1 2/4] iommu/tegra: gart: Check whether page is already
+ mapped
+Date: Tue, 26 Sep 2017 16:49:52 +0300
+Message-ID: <e59eb818-4edf-f3a2-947a-bc21507b0b85@gmail.com>
+References: <cover.1499270277.git.digetx@gmail.com>
+ <a19ba1ca835aa2526d2c0492e6b0d0b35889596a.1499270277.git.digetx@gmail.com>
+ <20170926110636.GA23108@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20170921085922.11659-2-ganapatrao.kulkarni@cavium.com>
-Sender: owner-linux-mm@kvack.org
-To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Will.Deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170926110636.GA23108@ulmo>
+Content-Language: en-US
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu 21-09-17 14:29:19, Ganapatrao Kulkarni wrote:
-> This function can be used on NUMA systems in place of alloc_pages_exact
-> Adding code to export and to remove __meminit section tagging.
-
-It is usually better to fold such a change into a patch which adds a new
-user. Other than that I do not have any objections.
-
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-> ---
->  include/linux/gfp.h | 2 +-
->  mm/page_alloc.c     | 3 ++-
->  2 files changed, 3 insertions(+), 2 deletions(-)
+On 26.09.2017 14:06, Thierry Reding wrote:
+> On Wed, Jul 05, 2017 at 07:29:46PM +0300, Dmitry Osipenko wrote:
+>> Due to a bug, multiple devices may try to map the same IOVA region. We can
+>> catch that case by checking that 'VALID' bit of the GART's page entry is
+>> unset prior to mapping of the page.
 > 
-> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-> index f780718..a4bd234 100644
-> --- a/include/linux/gfp.h
-> +++ b/include/linux/gfp.h
-> @@ -528,7 +528,7 @@ extern unsigned long get_zeroed_page(gfp_t gfp_mask);
->  
->  void *alloc_pages_exact(size_t size, gfp_t gfp_mask);
->  void free_pages_exact(void *virt, size_t size);
-> -void * __meminit alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask);
-> +void *alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask);
->  
->  #define __get_free_page(gfp_mask) \
->  		__get_free_pages((gfp_mask), 0)
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index c841af8..7975870 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -4442,7 +4442,7 @@ EXPORT_SYMBOL(alloc_pages_exact);
->   * Like alloc_pages_exact(), but try to allocate on node nid first before falling
->   * back.
->   */
-> -void * __meminit alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask)
-> +void *alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask)
->  {
->  	unsigned int order = get_order(size);
->  	struct page *p = alloc_pages_node(nid, gfp_mask, order);
-> @@ -4450,6 +4450,7 @@ void * __meminit alloc_pages_exact_nid(int nid, size_t size, gfp_t gfp_mask)
->  		return NULL;
->  	return make_alloc_exact((unsigned long)page_address(p), order, size);
->  }
-> +EXPORT_SYMBOL(alloc_pages_exact_nid);
->  
->  /**
->   * free_pages_exact - release memory allocated via alloc_pages_exact()
-> -- 
-> 2.9.4
+> Due to what bug? Sounds to me like access to the GART should be
+> exclusive, so that only a single driver can ever access it.
 > 
+
+Actually, there are a lot of peripherals behind the GART. But yes, probably we
+would use it exclusively for the GPU allocations.
+
+In a case of the GPU allocations there could be a bug in the allocation code
+(drm_mm_scan) that would cause re-mapping of the already mapped pages, we would
+be able to catch such a bug.
 
 -- 
-Michal Hocko
-SUSE Labs
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Dmitry
