@@ -1,45 +1,102 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 1/4] iommu/tegra: gart: Don't unnecessarily allocate
- registers context
-Date: Tue, 26 Sep 2017 17:15:15 +0300
-Message-ID: <d75405bc-62c3-b26b-7ece-7300fc4a582a@gmail.com>
-References: <cover.1499270277.git.digetx@gmail.com>
- <df570fb6649da6bc3b5f2a68afcb5471e6148269.1499270277.git.digetx@gmail.com>
- <20170926111950.GD23108@ulmo>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Tue, 26 Sep 2017 15:22:47 +0100
+Message-ID: <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
+References: <20170920080151.GA3348@gondor.apana.org.au>
+ <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+ <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170925155430.GB131920@otc-nc-03>
+ <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
+ <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170926111950.GD23108@ulmo>
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
 Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: linux-crypto-owner@vger.kernel.org
+To: Harsh Jain <Harsh@chelsio.com>, Casey Leedom <leedom@chelsio.com>, "Raj, Ashok" <ashok.raj@intel.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>, David Woodhouse <David.Woodhouse@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 26.09.2017 14:19, Thierry Reding wrote:
-> On Wed, Jul 05, 2017 at 07:29:45PM +0300, Dmitry Osipenko wrote:
->> GART looses it's state only in case of a deepest suspend level. Let's not
->> waste memory if machine doesn't support that suspend level.
+On 26/09/17 13:21, Harsh Jain wrote:
+> Find attached new set of log. After repeated tries it panics.
+
+Thanks, that makes things a bit clearer - looks like fixing the physical
+address/pteval calculation to not be off by a page in one direction wasn't
+helping much because the returned DMA address is actually also off by a
+page in the other direction, and thus overflowing past the allocated IOVA
+into whoever else's mapping happened to be there; complete carnage ensues.
+
+After another look through the intel_map_sg() path, here's my second (still
+completely untested) guess at a possible fix.
+
+Robin.
+
+----->8-----
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6784a05dd6b2..d7f7def81613 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2254,10 +2254,12 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		uint64_t tmp;
+ 
+ 		if (!sg_res) {
++			size_t off = sg->offset & ~PAGE_MASK;
++
+ 			sg_res = aligned_nrpages(sg->offset, sg->length);
+-			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
++			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + off;
+ 			sg->dma_length = sg->length;
+-			pteval = page_to_phys(sg_page(sg)) | prot;
++			pteval = (page_to_phys(sg_page(sg)) + sg->offset - off) | prot;
+ 			phys_pfn = pteval >> VTD_PAGE_SHIFT;
+ 		}
+ 
+> 
+> 
+> On 26-09-2017 09:16, Harsh Jain wrote:
+>> On 26-09-2017 00:16, Casey Leedom wrote:
+>>> | From: Raj, Ashok <ashok.raj@intel.com>
+>>> | Sent: Monday, September 25, 2017 8:54 AM
+>>> |
+>>> | Not sure how the page->offset would end up being greater than page-size?
+>> Refer below
+>>> |
+>>> | If you have additional traces, please send them by.
+>>> |
+>>> | Is this a new driver? wondering how we didn't run into this?
+>>>
+>>>   According to Herbert Xu and one of our own engineers, it's actually legal
+>>> for Scatter/Gather Lists to have this.  This isn't my area of expertise
+>>> though so I'm just passing that on.
+>>>
+>>>   I've asked our team to produce a detailed trace of the exact
+>>> Scatter/Gather Lists they're seeing and what ends up coming out of the DMA
+>>> Mappings, etc.  They're in India, so I expect that they'll have this for you
+>>> by tomorrow morning.
+>> Below mentioned log was already there in 1st mail. Copied here for easy reference. Let me know if you need
+>> additional traces.
 >>
->> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> ---
->>  drivers/iommu/tegra-gart.c | 36 +++++++++++++++++++++++++-----------
->>  1 file changed, 25 insertions(+), 11 deletions(-)
+>> 1) IN esp_output() "__skb_to_sgvec()" convert skb frags to scatter gather list. 
+>> At that moment sg->offset was 4094.
+>> 2) From esp_output control reaches to "crypto_authenc_encrypt()". Here in 
+>> "scatterwalk_ffwd()" sg->offset become 4110.
+>> 3) Same sg list received by chelsio crypto driver(chcr). When chcr try to do 
+>> DMA mapping it starts giving DMA errors.
+>>
+>> Following error observed. first two prints are added for debugging in chcr. 
+>> Kernel version used to reproduce is 4.9.28 on x86_64 with Page size 4K.
+>>
+>> Sep 15 12:40:52 heptagon kernel: process_cipher req src ffff8803cb41f0a8
+>> Sep 15 12:40:52 heptagon kernel: ========= issue    hit offset:4110 ======= 
+>> dma_addr f24b000e ==> DMA mapped address returned by dma_map_sg()
+>>
+>> Sep 15 12:40:52 heptagon kernel: DMAR: DRHD: handling fault status reg 2
+>> Sep 15 12:40:52 heptagon kernel: DMAR: [DMA Write] Request device [02:00.4] 
+>> fault addr f24b0000 [fault reason 05] PTE Write access is not set
+>>
+>>> Casey
 > 
-> I'm not sure about this. The savedata region uses 32 KiB of memory,
-> which is really not a whole lot.
-> 
-> In addition, the suspend mode can be set in different places during the
-> boot process, some of which fairly late. I'm concerned that this boot
-> order dependency is going to come back to bite us eventually.
-> 
-
-Indeed, suspend mode is set after drivers been probed, my bad.
-
-On the other hand LP0 support haven't been implemented for years, some of
-drivers do not implement suspend/resume. So maybe it's worth to give up on LP0
-entirely...
-
--- 
-Dmitry
