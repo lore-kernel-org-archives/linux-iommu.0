@@ -1,102 +1,158 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
- Intel IOMMU
-Date: Tue, 26 Sep 2017 15:22:47 +0100
-Message-ID: <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
-References: <20170920080151.GA3348@gondor.apana.org.au>
- <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
- <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
- <20170925155430.GB131920@otc-nc-03>
- <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
- <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
- <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] dma-debug: fix incorrect pfn calculation
+Date: Tue, 26 Sep 2017 15:53:10 +0100
+Message-ID: <03870968-0060-d6db-d109-f2c299c35bf1@arm.com>
+References: <1506432287-7214-1-git-send-email-miles.chen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-crypto-owner@vger.kernel.org>
-In-Reply-To: <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1506432287-7214-1-git-send-email-miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Content-Language: en-US
-Sender: linux-crypto-owner@vger.kernel.org
-To: Harsh Jain <Harsh@chelsio.com>, Casey Leedom <leedom@chelsio.com>, "Raj, Ashok" <ashok.raj@intel.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>, David Woodhouse <David.Woodhouse@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wsd_upstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 26/09/17 13:21, Harsh Jain wrote:
-> Find attached new set of log. After repeated tries it panics.
+On 26/09/17 14:24, miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
+> From: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> 
+> dma-debug report the following warning:
+> 
+> [name:panic&]WARNING: CPU: 3 PID: 298 at kernel-4.4/lib/dma-debug.c:604
+> debug _dma_assert_idle+0x1a8/0x230()
+> DMA-API: cpu touching an active dma mapped cacheline [cln=0x00000882300]
+> CPU: 3 PID: 298 Comm: vold Tainted: G        W  O    4.4.22+ #1
+> Hardware name: MT6739 (DT)
+> Call trace:
+> [<ffffff800808acd0>] dump_backtrace+0x0/0x1d4
+> [<ffffff800808affc>] show_stack+0x14/0x1c
+> [<ffffff800838019c>] dump_stack+0xa8/0xe0
+> [<ffffff80080a0594>] warn_slowpath_common+0xf4/0x11c
+> [<ffffff80080a061c>] warn_slowpath_fmt+0x60/0x80
+> [<ffffff80083afe24>] debug_dma_assert_idle+0x1a8/0x230
+> [<ffffff80081dca9c>] wp_page_copy.isra.96+0x118/0x520
+> [<ffffff80081de114>] do_wp_page+0x4fc/0x534
+> [<ffffff80081e0a14>] handle_mm_fault+0xd4c/0x1310
+> [<ffffff8008098798>] do_page_fault+0x1c8/0x394
+> [<ffffff800808231c>] do_mem_abort+0x50/0xec
+> 
+> I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
+> always use type "dma_debug_coherent" and assume that dma_alloc_coherent()
+> always returns a linear address.
+> 
+> However if a device returns false on is_device_dma_coherent(),
+> dma_alloc_coherent() will create another non-cacheable mapping
+> (also non linear). In this case, page_to_pfn(virt_to_page(virt)) will
+> return an incorrect pfn. If the pfn is valid and mapped as a COW page,
+> we will hit the warning when doing wp_page_copy().
+> 
+> Fix this by calculating correct pfn if is_device_dma_coherent()
+> returns false.
 
-Thanks, that makes things a bit clearer - looks like fixing the physical
-address/pteval calculation to not be off by a page in one direction wasn't
-helping much because the returned DMA address is actually also off by a
-page in the other direction, and thus overflowing past the allocated IOVA
-into whoever else's mapping happened to be there; complete carnage ensues.
+As the inevitable storm of kbuild robot reports will tell you soon, you
+can't do that: is_device_dma_coherent() is a private helper between
+arm{,64} arch code and xen, and should not be used anywhere else.
 
-After another look through the intel_map_sg() path, here's my second (still
-completely untested) guess at a possible fix.
+> Signed-off-by: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>  lib/dma-debug.c | 20 ++++++++++++++------
+>  1 file changed, 14 insertions(+), 6 deletions(-)
+> 
+> diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+> index ea4cc3d..b17e56e 100644
+> --- a/lib/dma-debug.c
+> +++ b/lib/dma-debug.c
+> @@ -47,6 +47,8 @@ enum {
+>  	dma_debug_sg,
+>  	dma_debug_coherent,
+>  	dma_debug_resource,
+> +	dma_debug_noncoherent,
+> +	nr_dma_debug_types,
+>  };
+>  
+>  enum map_err_types {
+> @@ -154,9 +156,9 @@ static inline bool dma_debug_disabled(void)
+>  	[MAP_ERR_CHECKED] = "dma map error checked",
+>  };
+>  
+> -static const char *type2name[5] = { "single", "page",
+> +static const char *type2name[nr_dma_debug_types] = { "single", "page",
+>  				    "scather-gather", "coherent",
+> -				    "resource" };
+> +				    "resource", "noncoherent" };
+>  
+>  static const char *dir2name[4] = { "DMA_BIDIRECTIONAL", "DMA_TO_DEVICE",
+>  				   "DMA_FROM_DEVICE", "DMA_NONE" };
+> @@ -1484,6 +1486,7 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+>  			      dma_addr_t dma_addr, void *virt)
+>  {
+>  	struct dma_debug_entry *entry;
+> +	bool coherent = is_device_dma_coherent(dev);
+>  
+>  	if (unlikely(dma_debug_disabled()))
+>  		return;
+> @@ -1495,9 +1498,11 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+>  	if (!entry)
+>  		return;
+>  
+> -	entry->type      = dma_debug_coherent;
+> +	entry->type      = coherent ? dma_debug_coherent :
+> +					dma_debug_noncoherent;
+>  	entry->dev       = dev;
+> -	entry->pfn	 = page_to_pfn(virt_to_page(virt));
+
+There are more architectures where the virtual address returned by
+dma_alloc_coherent is not a linear map address - some just have a static
+offset between cacheable and non-cacheable aliases - so there may be
+other cases where this is the wrong calculation, but at least those
+probably don't trigger the problematic false-positive.
+
+That said, the cases where coherent allocations *are* dynamically
+remapped should be easy enough to handle properly without having to
+resort to dodgy hacks:
+
+	if (is_vmalloc_addr(virt))
+		pfn = vmalloc_to_pfn(virt);
+	else
+		pfn = page_to_pfn(virt_to_page(virt));
+
+Simple.
+
+> +	entry->pfn	 = coherent ? page_to_pfn(virt_to_page(virt)) :
+> +					dma_addr >> PAGE_SHIFT;
+
+And in particular, this is just as likely to just give *different* false
+positives, since there's no guarantee whatsoever that dma_addr has any
+relationship to the appropriate pfn.
 
 Robin.
 
------>8-----
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6784a05dd6b2..d7f7def81613 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2254,10 +2254,12 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 		uint64_t tmp;
- 
- 		if (!sg_res) {
-+			size_t off = sg->offset & ~PAGE_MASK;
-+
- 			sg_res = aligned_nrpages(sg->offset, sg->length);
--			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
-+			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + off;
- 			sg->dma_length = sg->length;
--			pteval = page_to_phys(sg_page(sg)) | prot;
-+			pteval = (page_to_phys(sg_page(sg)) + sg->offset - off) | prot;
- 			phys_pfn = pteval >> VTD_PAGE_SHIFT;
- 		}
- 
-> 
-> 
-> On 26-09-2017 09:16, Harsh Jain wrote:
->> On 26-09-2017 00:16, Casey Leedom wrote:
->>> | From: Raj, Ashok <ashok.raj@intel.com>
->>> | Sent: Monday, September 25, 2017 8:54 AM
->>> |
->>> | Not sure how the page->offset would end up being greater than page-size?
->> Refer below
->>> |
->>> | If you have additional traces, please send them by.
->>> |
->>> | Is this a new driver? wondering how we didn't run into this?
->>>
->>>   According to Herbert Xu and one of our own engineers, it's actually legal
->>> for Scatter/Gather Lists to have this.  This isn't my area of expertise
->>> though so I'm just passing that on.
->>>
->>>   I've asked our team to produce a detailed trace of the exact
->>> Scatter/Gather Lists they're seeing and what ends up coming out of the DMA
->>> Mappings, etc.  They're in India, so I expect that they'll have this for you
->>> by tomorrow morning.
->> Below mentioned log was already there in 1st mail. Copied here for easy reference. Let me know if you need
->> additional traces.
->>
->> 1) IN esp_output() "__skb_to_sgvec()" convert skb frags to scatter gather list. 
->> At that moment sg->offset was 4094.
->> 2) From esp_output control reaches to "crypto_authenc_encrypt()". Here in 
->> "scatterwalk_ffwd()" sg->offset become 4110.
->> 3) Same sg list received by chelsio crypto driver(chcr). When chcr try to do 
->> DMA mapping it starts giving DMA errors.
->>
->> Following error observed. first two prints are added for debugging in chcr. 
->> Kernel version used to reproduce is 4.9.28 on x86_64 with Page size 4K.
->>
->> Sep 15 12:40:52 heptagon kernel: process_cipher req src ffff8803cb41f0a8
->> Sep 15 12:40:52 heptagon kernel: ========= issue    hit offset:4110 ======= 
->> dma_addr f24b000e ==> DMA mapped address returned by dma_map_sg()
->>
->> Sep 15 12:40:52 heptagon kernel: DMAR: DRHD: handling fault status reg 2
->> Sep 15 12:40:52 heptagon kernel: DMAR: [DMA Write] Request device [02:00.4] 
->> fault addr f24b0000 [fault reason 05] PTE Write access is not set
->>
->>> Casey
+>  	entry->offset	 = offset_in_page(virt);
+>  	entry->size      = size;
+>  	entry->dev_addr  = dma_addr;
+> @@ -1510,10 +1515,13 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+>  void debug_dma_free_coherent(struct device *dev, size_t size,
+>  			 void *virt, dma_addr_t addr)
+>  {
+> +	bool coherent = is_device_dma_coherent(dev);
+>  	struct dma_debug_entry ref = {
+> -		.type           = dma_debug_coherent,
+> +		.type           = coherent ? dma_debug_coherent :
+> +						dma_debug_noncoherent,
+>  		.dev            = dev,
+> -		.pfn		= page_to_pfn(virt_to_page(virt)),
+> +		.pfn		= coherent ? page_to_pfn(virt_to_page(virt)) :
+> +						addr >> PAGE_SHIFT,
+>  		.offset		= offset_in_page(virt),
+>  		.dev_addr       = addr,
+>  		.size           = size,
 > 
