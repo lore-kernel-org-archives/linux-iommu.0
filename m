@@ -1,74 +1,96 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 2/4] iommu/tegra: gart: Check whether page is already
- mapped
-Date: Tue, 26 Sep 2017 19:57:30 +0300
-Message-ID: <c479f9fb-9510-3c6c-ed94-e6b5415f2ee0@gmail.com>
-References: <cover.1499270277.git.digetx@gmail.com>
- <a19ba1ca835aa2526d2c0492e6b0d0b35889596a.1499270277.git.digetx@gmail.com>
- <20170926110636.GA23108@ulmo>
- <e59eb818-4edf-f3a2-947a-bc21507b0b85@gmail.com>
- <20170926160727.GB12426@ulmo>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Tue, 26 Sep 2017 07:34:41 -0700
+Message-ID: <20170926143441.GA136940@otc-nc-03>
+References: <20170920080151.GA3348@gondor.apana.org.au>
+ <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+ <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170925155430.GB131920@otc-nc-03>
+ <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
+ <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+ <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170926160727.GB12426@ulmo>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: multipart/mixed; boundary="KsGdsel6WgEHnImy"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Harsh Jain <Harsh@chelsio.com>, Casey Leedom <leedom@chelsio.com>, Herbert Xuy <herbert@gondor.apana.org.au>, David Woodhouse <David.Woodhouse@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 26.09.2017 19:07, Thierry Reding wrote:
-> On Tue, Sep 26, 2017 at 04:49:52PM +0300, Dmitry Osipenko wrote:
->> On 26.09.2017 14:06, Thierry Reding wrote:
->>> On Wed, Jul 05, 2017 at 07:29:46PM +0300, Dmitry Osipenko wrote:
->>>> Due to a bug, multiple devices may try to map the same IOVA region. We can
->>>> catch that case by checking that 'VALID' bit of the GART's page entry is
->>>> unset prior to mapping of the page.
->>>
->>> Due to what bug? Sounds to me like access to the GART should be
->>> exclusive, so that only a single driver can ever access it.
->>>
->>
->> Actually, there are a lot of peripherals behind the GART. But yes, probably we
->> would use it exclusively for the GPU allocations.
->>
->> In a case of the GPU allocations there could be a bug in the allocation code
->> (drm_mm_scan) that would cause re-mapping of the already mapped pages, we would
->> be able to catch such a bug.
-> 
-> Sounds to me like something that should be opt-in. Given that we could
-> potentially map a lot of memory, the additional read seems like it could
-> incur a significant performance penalty.
-> 
-> How about protecting this by some Kconfig symbol (or debug module
-> parameter) and adding a WARN instead of failing the mapping operation?
-> 
-> The reason is that we really should be using the GART from a single
-> driver because it is a shared memory region. To avoid drivers from
-> treading on each others' feet the allocations must be managed by some
-> central entity. So either something like DMA API should manage it, or
-> we hardwire it to Tegra DRM explicitly.
-> 
-> And if a central allocator is responsible for all mappings through the
-> GART, then we should assume that it isn't buggy, and therefore the extra
-> check of the PTEs should not be needed in most cases, hence we can get a
-> performance boost by disabling the check by default.
-> 
-> Of course if there is not much performance impact, maybe it is okay to
-> keep it always enabled.
-> 
 
-I had a similar thought about making this checking and the "proper" unmapping
-optional, but decided that it is not very worthy to implement it now because
-caching of mappings helps to get rid of all IOVA expenses. The "checking" is
-nearly "free" in terms of performance, it's the unmapping that causes measurable
-performance impact. Maybe the improper unmapping was made intentionally for
-better performance.
+--KsGdsel6WgEHnImy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Given that you've made suggestion to make the checking optional, I'm going to
-update this patchset, adding a new "debug" Kconfig option.
+On Tue, Sep 26, 2017 at 03:22:47PM +0100, Robin Murphy wrote:
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6784a05dd6b2..d7f7def81613 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2254,10 +2254,12 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+>  		uint64_t tmp;
+>  
+>  		if (!sg_res) {
+> +			size_t off = sg->offset & ~PAGE_MASK;
 
--- 
-Dmitry
+Should this be VTD_PAGE_MASK?
+
+> +
+>  			sg_res = aligned_nrpages(sg->offset, sg->length);
+> -			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
+> +			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + off;
+>  			sg->dma_length = sg->length;
+> -			pteval = page_to_phys(sg_page(sg)) | prot;
+> +			pteval = (page_to_phys(sg_page(sg)) + sg->offset - off) | prot;
+
+Something seems wrong here.. sg->offset can be > VTD_PAGE_SIZE, think 
+we should add sg->offset and then find the pteval?
+
+attached below another cut at fixing the same problem.. if there is something
+obvious i missed, let me know.
+
+again.. untested :-)
+
+Cheers,
+Ashok
+
+
+--KsGdsel6WgEHnImy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=fix-vtd-offset-gt4k
+
+Sometimes offset can be greater than 4K. vt-d needs to account for that.
+
+From: Ashok Raj <ashok.raj@intel.com>
+
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+---
+ drivers/iommu/intel-iommu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6784a05..d43b566 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2254,10 +2254,13 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		uint64_t tmp;
+ 
+ 		if (!sg_res) {
++			size_t off = sg->offset & ~VTD_PAGE_SHIFT;
+ 			sg_res = aligned_nrpages(sg->offset, sg->length);
+-			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
++			sg->dma_address = ((dma_addr_t)
++				(iov_pfn + sg->offset) << VTD_PAGE_SHIFT) + off;
+ 			sg->dma_length = sg->length;
+-			pteval = page_to_phys(sg_page(sg)) | prot;
++			pteval = (page_to_phys(sg_page(sg)) +
++				(sg->offset << VTD_PAGE_SHIFT)) | prot;
+ 			phys_pfn = pteval >> VTD_PAGE_SHIFT;
+ 		}
+ 
+
+--KsGdsel6WgEHnImy--
