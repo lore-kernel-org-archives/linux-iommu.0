@@ -1,11 +1,18 @@
-From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu/amd: pr_err() strings should end with newlines
-Date: Tue, 26 Sep 2017 13:07:46 +0530
-Message-ID: <a981b82525849ccf4fa869c74c0358f350a9998d.1506411289.git.arvind.yadav.cs@gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: bind pasid table API
+Date: Tue, 26 Sep 2017 10:46:00 +0100
+Message-ID: <3f48ada2-3ba3-8247-11c2-2e06e4108848@arm.com>
+References: <20170918204516.2f6beffb@jacob-builder>
+	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
+	<20170920153510.4dc5e5c3@jacob-builder>
+	<ef71b446-ae00-29af-a934-2e253454df31@arm.com>
+	<20170925151403.GA131920@otc-nc-03>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170925151403.GA131920@otc-nc-03>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,57 +22,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-pr_err() messages should end with a new-line to avoid other messages
-being concatenated. So replace '/n' with '\n'.
+On 25/09/17 16:14, Raj, Ashok wrote:
+> On Mon, Sep 25, 2017 at 12:45:00PM +0100, Jean-Philippe Brucker wrote:
+> [snip]
+> 
+>> This format tells how the guest organizes its PASID tables. Depending on
+>> 'format', the PASID table can be:
+>> * A flat array of descriptors
+>> * One array of 1st-level descriptors pointing to a 2nd level of
+>> descriptors. When translating an access, the SMMU splits the PASID at bit
+>> 6, uses the upper half to get the 1st level descriptor and the lower half
+>> to get the 2nd level one (4k leaf table).
+>> * The same format, but instead split at PASID bit 10 (64k leaf table)
+> 
+> When in multilevel PASID table, do you shadow it in the host? or every 
+> level is all hosted in guest space? in Intel vt-d, when context is in 
+> a nested mode, PASID table is a gPA. Its a single level table.
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+In the SMMU as well, both levels of PASID tables are accessed by gPA, so
+there's no need to shadow them.
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 382de42..6fe2d03 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -874,7 +874,7 @@ static bool copy_device_table(void)
- 		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
- 		entry = (((u64) hi) << 32) + lo;
- 		if (last_entry && last_entry != entry) {
--			pr_err("IOMMU:%d should use the same dev table as others!/n",
-+			pr_err("IOMMU:%d should use the same dev table as others!\n",
- 				iommu->index);
- 			return false;
- 		}
-@@ -882,7 +882,7 @@ static bool copy_device_table(void)
- 
- 		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
- 		if (old_devtb_size != dev_table_size) {
--			pr_err("The device table size of IOMMU:%d is not expected!/n",
-+			pr_err("The device table size of IOMMU:%d is not expected!\n",
- 				iommu->index);
- 			return false;
- 		}
-@@ -890,7 +890,7 @@ static bool copy_device_table(void)
- 
- 	old_devtb_phys = entry & PAGE_MASK;
- 	if (old_devtb_phys >= 0x100000000ULL) {
--		pr_err("The address of old device table is above 4G, not trustworthy!/n");
-+		pr_err("The address of old device table is above 4G, not trustworthy!\n");
- 		return false;
- 	}
- 	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-@@ -901,7 +901,7 @@ static bool copy_device_table(void)
- 	old_dev_tbl_cpy = (void *)__get_free_pages(gfp_flag,
- 				get_order(dev_table_size));
- 	if (old_dev_tbl_cpy == NULL) {
--		pr_err("Failed to allocate memory for copying old device table!/n");
-+		pr_err("Failed to allocate memory for copying old device table!\n");
- 		return false;
- 	}
- 
--- 
-1.9.1
+Thanks,
+Jean
