@@ -1,93 +1,76 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 2/4] iommu/tegra: gart: Check whether page is already
- mapped
-Date: Tue, 26 Sep 2017 18:07:27 +0200
-Message-ID: <20170926160727.GB12426@ulmo>
-References: <cover.1499270277.git.digetx@gmail.com>
- <a19ba1ca835aa2526d2c0492e6b0d0b35889596a.1499270277.git.digetx@gmail.com>
- <20170926110636.GA23108@ulmo>
- <e59eb818-4edf-f3a2-947a-bc21507b0b85@gmail.com>
+From: Dan Williams <dan.j.williams@intel.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Tue, 26 Sep 2017 09:10:52 -0700
+Message-ID: <CAPcyv4jtYMZJ6V5VoXkGrcZ+ykWvYp1=qXrqJkjknk8Q_BVwgA@mail.gmail.com>
+References: <20170920080151.GA3348@gondor.apana.org.au> <26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+ <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170925155430.GB131920@otc-nc-03> <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com> <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+ <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com> <MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xgyAXRrhYN0wYx8y"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <e59eb818-4edf-f3a2-947a-bc21507b0b85-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Casey Leedom <leedom@chelsio.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Harsh Jain <Harsh@chelsio.com>, "Raj, Ashok" <ashok.raj@intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, David Woodhouse <David.Woodhouse@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Michael Werner <werner@chelsio.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, Sep 26, 2017 at 9:06 AM, Casey Leedom <leedom@chelsio.com> wrote:
+> | From: Robin Murphy <robin.murphy@arm.com>
+> | Sent: Tuesday, September 26, 2017 7:22 AM
+>
+> |
+> | On 26/09/17 13:21, Harsh Jain wrote:
+> | > Find attached new set of log. After repeated tries it panics.
+> |
+> | Thanks, that makes things a bit clearer - looks like fixing the physical
+> | address/pteval calculation to not be off by a page in one direction wasn't
+> | helping much because the returned DMA address is actually also off by a
+> | page in the other direction, and thus overflowing past the allocated IOVA
+> | into whoever else's mapping happened to be there; complete carnage ensues.
+> |
+> | After another look through the intel_map_sg() path, here's my second
+> (still
+> | completely untested) guess at a possible fix.
+> |
+> | Robin.
+> |
+> | ----->8-----
+> | diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> | index 6784a05dd6b2..d7f7def81613 100644
+> | --- a/drivers/iommu/intel-iommu.c
+> | +++ b/drivers/iommu/intel-iommu.c
+> | @@ -2254,10 +2254,12 @@ static int __domain_mapping(struct dmar_domain
+> *domain, unsigned long iov_pfn,
+> |                  uint64_t tmp;
+> |
+> |                  if (!sg_res) {
+> | +                       size_t off = sg->offset & ~PAGE_MASK;
+> | +
+> |                          sg_res = aligned_nrpages(sg->offset, sg->length);
+> | -                       sg->dma_address = ((dma_addr_t)iov_pfn <<
+> VTD_PAGE_SHIFT) + sg->offset;
+> | +                       sg->dma_address = ((dma_addr_t)iov_pfn <<
+> VTD_PAGE_SHIFT) + off;
+> |                          sg->dma_length = sg->length;
+> | -                       pteval = page_to_phys(sg_page(sg)) | prot;
+> | +                       pteval = (page_to_phys(sg_page(sg)) + sg->offset -
+> off) | prot;
+> |                          phys_pfn = pteval >> VTD_PAGE_SHIFT;
+> |                  }
+>
+>   Thanks Robin.  And thanks Harsh for sending the detailed trace logs.  I'll
+> see if I can get this tested today.  Harsh is probably headed towards bed,
+> but there may be sufficiently good instructions in our internal bug system
+> to reproduce the issue.
+>
+>   Regardless, it seems that you agree that there's an issue with the Intel
+> I/O MMU support code with regard to the legal values which a (struct
+> scatterlist) can take on?  I still can't find any documentation for this
+> and, personally, I'm a bit baffled by a Page-oriented Scatter/Gather List
+> representation where [Offset, Offset+Length) can reside outside the Page.
 
---xgyAXRrhYN0wYx8y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Sep 26, 2017 at 04:49:52PM +0300, Dmitry Osipenko wrote:
-> On 26.09.2017 14:06, Thierry Reding wrote:
-> > On Wed, Jul 05, 2017 at 07:29:46PM +0300, Dmitry Osipenko wrote:
-> >> Due to a bug, multiple devices may try to map the same IOVA region. We=
- can
-> >> catch that case by checking that 'VALID' bit of the GART's page entry =
-is
-> >> unset prior to mapping of the page.
-> >=20
-> > Due to what bug? Sounds to me like access to the GART should be
-> > exclusive, so that only a single driver can ever access it.
-> >=20
->=20
-> Actually, there are a lot of peripherals behind the GART. But yes, probab=
-ly we
-> would use it exclusively for the GPU allocations.
->=20
-> In a case of the GPU allocations there could be a bug in the allocation c=
-ode
-> (drm_mm_scan) that would cause re-mapping of the already mapped pages, we=
- would
-> be able to catch such a bug.
-
-Sounds to me like something that should be opt-in. Given that we could
-potentially map a lot of memory, the additional read seems like it could
-incur a significant performance penalty.
-
-How about protecting this by some Kconfig symbol (or debug module
-parameter) and adding a WARN instead of failing the mapping operation?
-
-The reason is that we really should be using the GART from a single
-driver because it is a shared memory region. To avoid drivers from
-treading on each others' feet the allocations must be managed by some
-central entity. So either something like DMA API should manage it, or
-we hardwire it to Tegra DRM explicitly.
-
-And if a central allocator is responsible for all mappings through the
-GART, then we should assume that it isn't buggy, and therefore the extra
-check of the PTEs should not be needed in most cases, hence we can get a
-performance boost by disabling the check by default.
-
-Of course if there is not much performance impact, maybe it is okay to
-keep it always enabled.
-
-Thierry
-
---xgyAXRrhYN0wYx8y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlnKezwACgkQ3SOs138+
-s6HxwBAAtUGzudH2ZB8j7pdl2dq5Nd/criu3B5AUMTkJIwL4ZFKYfxfvdAAjmeAW
-SUsXIDwsozrKZP51V4+M9cFgqqqxqkzVPWh2iLJ5CaOMxIdnNhJ8gsi4ZckXSolL
-Qn+bOdSj2/FeedCFG6AX3v7bRbfnHbNmgdemQbjEJEZHVBqemT/+mZlN0iB91TPs
-geXrgv9ndhN9P7fbwM5tDrEnyjovPy2q1V1nckGoAxfzOtDL8neyhGQNR59bbxgF
-Bo7Ogh2HFYTGXzbCZuP0h0ecU5MVUR5eQ65GBs2fi1u4oA7KqFxVrwR7hIMpv4nq
-tfnb/BHY88Rs2d+C8qNLa7dmlhUWbNMaZ0qWTjej5JuRRzqYEyUatbE5CtDOP39B
-R5nEjTxWyWTFJPRRcBylhnoHr1PjF+sL5ATKddITCHrs3ULdr7+gYr3c8SXq62U2
-9GJTRxy9Nm+sLj5H7DcdGaRYTCdRxIpTocoBKk3q2nuuCwrsaDK5VTczCvRjYXg/
-ljYqeVFjsIYl98leUKADwC3BFji6ifuDuIlytrao8KguilSxenm1eAWL2WH45uoI
-ATq8n6uZhtjmBiocjVwBvp9jxRZcb9ypQ0xmSYaAPWzWr8pJZugIRHGBhgPZcDgU
-93Gzc8NEjbn8v3l/YK6o+WGf3tWZ17b7BkvA1NRkMaSDaiGEQVc=
-=K6kp
------END PGP SIGNATURE-----
-
---xgyAXRrhYN0wYx8y--
+Consider the case where the page represents a huge page, then an
+offset greater than PAGE_SIZE (up to HPAGE_SIZE) makes sense.
