@@ -1,159 +1,62 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: intel-dmar: possible circular locking dependency detected
-Date: Wed, 27 Sep 2017 16:19:15 +0200
-Message-ID: <82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
-References: <4e9f9665-38f7-c5f0-2a9d-13bb3a00aab2@siemens.com>
- <6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [RFC] iommu: arm-smmu: stall support
+Date: Wed, 27 Sep 2017 16:35:34 +0200
+Message-ID: <20170927143534.GQ8398@8bytes.org>
+References: <20170914194444.32551-1-robdclark@gmail.com>
+ <20170919123038.GF8398@8bytes.org>
+ <CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
+ <20170922090204.GJ8398@8bytes.org>
+ <32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
+ <CAF6AEGuh0FiNWEAmFm+7-7pc6MV5hKKz9cyA_J0d256bY-nYOQ@mail.gmail.com>
+ <20170927121540.GL8398@8bytes.org>
+ <4e2fc08e-3e7e-3355-17e5-72106196c732@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <4e2fc08e-3e7e-3355-17e5-72106196c732@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Rob Clark <robdclark@gmail.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <Will.Deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017-09-27 15:21, Jan Kiszka wrote:
-> On 2017-09-27 14:14, Jan Kiszka wrote:
->> Hi,
->>
->> while I'm triggering this with a still out-of-tree module from the
->> Jailhouse project, the potential deadlock appears to me being unrelated
->> to it. Please have a look:
->>
->> ======================================================
->> WARNING: possible circular locking dependency detected
->> 4.14.0-rc2-dbg+ #176 Tainted: G           O
->> ------------------------------------------------------
->> jailhouse/6105 is trying to acquire lock:
->> dmar_pci_bus_notifier+0x4f/0xcb
->>
->> but task is already holding lock:
->> __blocking_notifier_call_chain+0x31/0x65
->>
->> which lock already depends on the new lock.
->>
->>
->> the existing dependency chain (in reverse order) is:
->>
->> -> #1 (&(&priv->bus_notifier)->rwsem){++++}:
->>        __lock_acquire+0xed7/0x113b
->>        lock_acquire+0x148/0x1f6
->>        down_write+0x3b/0x6a
->>        blocking_notifier_chain_register+0x33/0x53
->>        bus_register_notifier+0x1c/0x1e
->>        dmar_dev_scope_init+0x2c6/0x2db
->>        intel_iommu_init+0xec/0x11c2
->>        pci_iommu_init+0x17/0x41
->>        do_one_initcall+0x90/0x143
->>        kernel_init_freeable+0x1cc/0x256
->>        kernel_init+0xe/0xf8
->>        ret_from_fork+0x2a/0x40
->>
->> -> #0 (dmar_global_lock){++++}:
->>        check_prev_add+0x112/0x65f
->>        __lock_acquire+0xed7/0x113b
->>        lock_acquire+0x148/0x1f6
->>        down_write+0x3b/0x6a
->>        dmar_pci_bus_notifier+0x4f/0xcb
->>        notifier_call_chain+0x3c/0x5e
->>        __blocking_notifier_call_chain+0x4c/0x65
->>        blocking_notifier_call_chain+0x14/0x16
->>        device_add+0x40c/0x522
->>        pci_device_add+0x1c0/0x1ce
->>        pci_scan_single_device+0x92/0x9d
->>        pci_scan_slot+0x59/0x10a
->>        jailhouse_pci_do_all_devices+0x74/0x263 [jailhouse]
->>        jailhouse_pci_virtual_root_devices_add+0x40/0x42 [jailhouse]
->>        jailhouse_cmd_enable+0x4fd/0x5e8 [jailhouse]
->>        jailhouse_ioctl+0x28/0x70 [jailhouse]
->>        vfs_ioctl+0x18/0x34
->>        do_vfs_ioctl+0x51b/0x5e3
->>        SyS_ioctl+0x50/0x7b
->>        entry_SYSCALL_64_fastpath+0x1f/0xbe
->>
->> other info that might help us debug this:
->>
->>  Possible unsafe locking scenario:
->>
->>        CPU0                    CPU1
->>        ----                    ----
->>   lock(&(&priv->bus_notifier)->rwsem);
->>                                lock(dmar_global_lock);
->>                                lock(&(&priv->bus_notifier)->rwsem);
->>   lock(dmar_global_lock);
->>
->>  *** DEADLOCK ***
->>
->> 2 locks held by jailhouse/6105:
->> jailhouse_cmd_enable+0x130/0x5e8 [jailhouse]
->> __blocking_notifier_call_chain+0x31/0x65
->>
->> stack backtrace:
->> CPU: 1 PID: 6105 Comm: jailhouse Tainted: G           O
->> 4.14.0-rc2-dbg+ #176
->> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
->> rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
->> Call Trace:
->>  dump_stack+0x85/0xbe
->>  print_circular_bug+0x389/0x398
->>  ? add_lock_to_list.isra.23+0x96/0x96
->>  check_prev_add+0x112/0x65f
->>  ? kernel_text_address+0x1c/0x6a
->>  ? add_lock_to_list.isra.23+0x96/0x96
->>  __lock_acquire+0xed7/0x113b
->>  ? __lock_acquire+0xed7/0x113b
->>  lock_acquire+0x148/0x1f6
->>  ? dmar_pci_bus_notifier+0x4f/0xcb
->>  down_write+0x3b/0x6a
->>  ? dmar_pci_bus_notifier+0x4f/0xcb
->>  dmar_pci_bus_notifier+0x4f/0xcb
->>  notifier_call_chain+0x3c/0x5e
->>  __blocking_notifier_call_chain+0x4c/0x65
->>  blocking_notifier_call_chain+0x14/0x16
->>  device_add+0x40c/0x522
->>  pci_device_add+0x1c0/0x1ce
->>  pci_scan_single_device+0x92/0x9d
->>  pci_scan_slot+0x59/0x10a
->>  jailhouse_pci_do_all_devices+0x74/0x263 [jailhouse]
->>  jailhouse_pci_virtual_root_devices_add+0x40/0x42 [jailhouse]
->>  jailhouse_cmd_enable+0x4fd/0x5e8 [jailhouse]
->>  jailhouse_ioctl+0x28/0x70 [jailhouse]
->>  vfs_ioctl+0x18/0x34
->>  do_vfs_ioctl+0x51b/0x5e3
->>  ? kmem_cache_free+0x15b/0x1fa
->>  ? entry_SYSCALL_64_fastpath+0x5/0xbe
->>  ? trace_hardirqs_on_caller+0x180/0x19c
->>  SyS_ioctl+0x50/0x7b
->>  entry_SYSCALL_64_fastpath+0x1f/0xbe
->> RIP: 0033:0x7f8b3b110d87
->> RSP: 002b:00007ffc44b70088 EFLAGS: 00000206 ORIG_RAX: 0000000000000010
->> RAX: ffffffffffffffda RBX: 0000000000000046 RCX: 00007f8b3b110d87
->> RDX: 0000000000604010 RSI: 0000000040080000 RDI: 0000000000000003
->> RBP: 0000000000604010 R08: 00007f8b3b3ade80 R09: 00000000000885d0
->> R10: 00007ffc44b6fe40 R11: 0000000000000206 R12: 00000000000025d4
->> R13: 0000000000000000 R14: 00007ffc44b714a4 R15: 0000000000000000
->>
->> Thanks,
->> Jan
->>
-> 
-> Oh, just realized that I already sent this report earlier this year [1]
-> but didn't receive any feedback so far.
-> 
+Hi Jean,
 
-Looking closer at the locking dmar does, specifically around
-dmar_global_lock, it is either unneeded during the initialization path
-or even more seriously broken. One example: dmar_table_init is not
-consistently protected by dmar_global_lock.
+On Wed, Sep 27, 2017 at 02:49:00PM +0100, Jean-Philippe Brucker wrote:
+> I like this approach. When the device driver registers a fault handler,
+> it also tells when it would like to be called (either in atomic context,
+> blocking context, or both).
 
-Could someone elaborate on why we need that global lock for during init?
+Is there a use-case for calling the same handler from both contexts?
 
-If we could drop the dmar_global_lock around bus_register_notifier in
-dmar_dev_scope_init, the issue above would likely be resolved.
+> enum iommu_fault_status {
+>         IOMMU_FAULT_STATUS_NONE = 0,
+>         IOMMU_FAULT_STATUS_FAILURE,
+>         IOMMU_FAULT_STATUS_INVALID,
+>         IOMMU_FAULT_STATUS_HANDLED,
+>         IOMMU_FAULT_STATUS_IGNORE,
+> };
 
-Jan
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+
+This all certainly makes sense for the PRI/PASID case, but I don't think
+that it makes sense yet to extend the existing report_iommu_fault()
+interface to also handle PASID/PPR faults.
+
+The later needs a lot more parameters to successfully handle a fault. In
+the AMD driver these are all in 'struct fault', the relevant members
+are:
+
+        u64 address;
+        u16 devid;
+        u16 pasid;
+        u16 tag;
+        u16 finish;
+        u16 flags;
+
+And passing all this through the existing interface which also handles
+non-pasid faults is cumbersome. So I'd like to keep the PASID/PPR
+interface separate from the old one for now.
+
+Regards,
+
+	Joerg
