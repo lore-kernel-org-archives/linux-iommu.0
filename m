@@ -1,24 +1,15 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
-	Intel IOMMU
-Date: Wed, 27 Sep 2017 07:48:48 -0700
-Message-ID: <20170927144847.GA95654@otc-nc-03>
-References: <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
-	<20170925155430.GB131920@otc-nc-03>
-	<MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
-	<afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
-	<6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
-	<437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
-	<MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
-	<CAPcyv4jtYMZJ6V5VoXkGrcZ+ykWvYp1=qXrqJkjknk8Q_BVwgA@mail.gmail.com>
-	<MWHPR12MB160060436AC70CB5BE8C0C6EC8780@MWHPR12MB1600.namprd12.prod.outlook.com>
-	<20170927181802.3dcd7efb@m750.lan>
+From: Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: bind pasid table API
+Date: Wed, 27 Sep 2017 10:51:55 -0700
+Message-ID: <20170927105155.0dddbc2d@jacob-builder>
+References: <20170918204516.2f6beffb@jacob-builder>
+	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
+	<20170927134041.GN8398@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170927181802.3dcd7efb-h2/QxWiDqNo@public.gmane.org>
+In-Reply-To: <20170927134041.GN8398-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,82 +19,86 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: nd-5wv7dgnIgG8@public.gmane.org, Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Werner <werner-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Harsh Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin
+On Wed, 27 Sep 2017 15:40:41 +0200
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-On Wed, Sep 27, 2017 at 06:18:02PM +0100, Robin Murphy wrote:
-> On Wed, 27 Sep 2017 16:31:04 +0000
-> Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org> wrote:
+> Hi,
 > 
-> > | From: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > | Sent: Tuesday, September 26, 2017 9:10 AM
-> > |   
-> > | On Tue, Sep 26, 2017 at 9:06 AM, Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-> > wrote: | > | From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > | > | Sent: Tuesday, September 26, 2017 7:22 AM
-> > | > |...
-> > | > ...
-> > | >   Regardless, it seems that you agree that there's an issue with
-> > the Intel | > I/O MMU support code with regard to the legal values
-> > which a (struct | > scatterlist) can take on?  I still can't find any
-> > documentation for this | > and, personally, I'm a bit baffled by a
-> > Page-oriented Scatter/Gather List | > representation where [Offset,
-> > Offset+Length) can reside outside the Page. |
-> > | Consider the case where the page represents a huge page, then an
-> > | offset greater than PAGE_SIZE (up to HPAGE_SIZE) makes sense.
+> On Wed, Sep 20, 2017 at 01:09:47PM +0100, Jean-Philippe Brucker wrote:
+> > For binding page tables instead of PASID tables (e.g.
+> > virtio-iommu), the generic data would be:
 > > 
-> >   Okay, but whatever the underlaying Page Size is, should [Offset,
-> > Offset+Length) completely reside within the referenced Page?  I'm just
-> > trying to understand the Invariance Conditions which are assumed by
-> > all of the code which processes Scatter/gather Lists ...
+> > struct pgtable_info {
+> > 	__u32	pasid;
+> > 	__u64	ptr;
+> > 	__u32	model;
+> > 	__u8	model_data[];
+> > };  
 > 
-> From my experience, in general terms each scatterlist segment
-> represents some contiguous quantity of pages, of which sg->page is the
-> first, while sg->length and sg->offset describe the specific bounds of
-> that segment's data. As such, the length may certainly (and frequently
-> does) exceed PAGE_SIZE; for the offset, it's unlikely that the producer
-> would initially construct one greater than PAGE_SIZE instead of just
-> pointing sg->page further forward, but it seems reasonable for it to
-> come about if some intermediate subsystem is processing an existing
-> list in-place (as seems to be the case with crypto here).
+> I had a look again and at the AMD side there is no way to build a
+> shadow pasid-table when more than 9-bit pasids are used, because all
+> pointers in that multi-level table are GPA and thus translated.
 > 
-> My opinion is that this may be a slightly unusual case, but I would
-> not consider it an illegal one. I think most DMA mapping
-> implementations would handle it whether intentionally or not.
+> So how about allowing the virtio-iommu to build pasid-tables in
+> different formats? We can easily collect the existing code for that in
+> the Intel and AMD drivers into a library that could be used by the
+> virtio-iommu driver too. Then the virtio-iommu can create the correct
+> table for the host-iommu and we don't have to rely on shadowing.
+> 
+> For binding whole pasid tables, reading through the thread, it looks
+> like we can't get away with generic attributes that would fit
+> everyone. For AMD and Intel it would suffice to have a base-ptr and
+> the number of pasids-bits the table can map.
+> 
+> The Intel driver can then calculate the size of the table and the AMD
+> driver can compute the GLX value;
+> 
+> In case we need the model-specific info, I'd like to have them
+> explicitly stated in the struct:
+> 
+> 	enum pasid_table_model {
+> 		PASID_TABLE_INTEL,
+> 		PASID_TABLE_ARM,
+> 		PASID_TABLE_AMD,
+> 		/* ... */
+> 	};
+> 
+I guess one vendor could have multiple pasid table format. so perhaps
+the name could reflect the format as well?
+> 	struct pasid_table_config {
+> 		__u64 base_ptr;
+> 		__u8 pasid_bits;
+> 		union {
+> 			struct {
+> 				/* Intel specific fields */
+> 			} intel;
+> 
+> 			struct {
+> 				/* ARM specific fields */
+> 			} arm;
+> 
+> 
+> 			struct {
+> 				/* AMD specific fields */
+> 			} amd;
+> 
+> 			/* ... */
+> 		};
+> 	};
+> 
+> How does that look?
+> 
+It should work for us for now but I am not sure how stable the vendor
+specific fields will be, this is UAPI. BTW, do you also intend to
+include the pasid_table_model # in pasid_table_config?
 
-In this specific case, it appears that 
+> Regards,
+> 
+> 	Joerg
+> 
 
-scatterwalk_ffwd()->sg_set_page()
-
-sg_set_page(dst, sg_page(src), src->length - len, src->offset + len);
-
-and 
-
-static inline void sg_set_page(struct scatterlist *sg, struct page *page,
-                   unsigned int len, unsigned int offset)
-{
-    sg_assign_page(sg, page);
-    sg->offset = offset;
-    sg->length = len;
-}
-
-The src->offset + len seems to be the culprit putting it past the page.
-Looks like in the cases when it breaks, the offset is already towards
-the end of page.. and adding the len, puts it over the limit.
-
-When dealing with the offset > PAGE_SIZE, is the expectation you have another
-additional entry for sgl? for e.g.
-
-if sg->page = X, and offset=4092. and len = 16. Since IOMMU only understands
-4K pages this last entry needs to be adjusted?
-
-I'm not sure if the offset+len is a buffer overflow situation or just 
-trips IOMMU. 
-
-Cheers,
-Ashok
-
-the scatter gather list, should we 
+[Jacob Pan]
