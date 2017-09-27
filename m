@@ -1,16 +1,24 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/3] iommu/iova: Try harder to allocate from rcache
-	magazine
-Date: Wed, 27 Sep 2017 17:50:31 +0100
-Message-ID: <20170927175031.7fef6fdd@m750.lan>
-References: <cover.1505827369.git.robin.murphy@arm.com>
-	<8127fabc219811d8169189e9d7177d42bc74bcbf.1505827369.git.robin.murphy@arm.com>
-	<20170927140051.GO8398@8bytes.org>
+From: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+	Intel IOMMU
+Date: Wed, 27 Sep 2017 10:13:51 -0700
+Message-ID: <CAPcyv4hL92Ru5x-b_5s80EwO=w37M=KEr289zrCRSM_8juvDzw@mail.gmail.com>
+References: <20170920080151.GA3348@gondor.apana.org.au>
+	<26992a1e-edb3-ed78-ce8e-31e0739d75f4@arm.com>
+	<MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+	<20170925155430.GB131920@otc-nc-03>
+	<MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+	<afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
+	<6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+	<437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
+	<MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
+	<CAPcyv4jtYMZJ6V5VoXkGrcZ+ykWvYp1=qXrqJkjknk8Q_BVwgA@mail.gmail.com>
+	<MWHPR12MB160060436AC70CB5BE8C0C6EC8780@MWHPR12MB1600.namprd12.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170927140051.GO8398-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <MWHPR12MB160060436AC70CB5BE8C0C6EC8780-Gy0DoCVfaSVsWITs4OkDoAdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,70 +28,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, nd-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
+Cc: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Michael Werner <werner-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Harsh Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 27 Sep 2017 16:00:51 +0200
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+On Wed, Sep 27, 2017 at 9:31 AM, Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org> wrote:
+> | From: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> | Sent: Tuesday, September 26, 2017 9:10 AM
+> |
+> | On Tue, Sep 26, 2017 at 9:06 AM, Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org> wrote:
+> | > | From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> | > | Sent: Tuesday, September 26, 2017 7:22 AM
+> | > |...
+> | > ...
+> | >   Regardless, it seems that you agree that there's an issue with the Intel
+> | > I/O MMU support code with regard to the legal values which a (struct
+> | > scatterlist) can take on?  I still can't find any documentation for this
+> | > and, personally, I'm a bit baffled by a Page-oriented Scatter/Gather List
+> | > representation where [Offset, Offset+Length) can reside outside the Page.
+> |
+> | Consider the case where the page represents a huge page, then an
+> | offset greater than PAGE_SIZE (up to HPAGE_SIZE) makes sense.
+>
+>   Okay, but whatever the underlaying Page Size is, should [Offset,
+> Offset+Length) completely reside within the referenced Page?  I'm just
+> trying to understand the Invariance Conditions which are assumed by all of
+> the code which processes Scatter/gather Lists ...
 
-> On Tue, Sep 19, 2017 at 02:48:41PM +0100, Robin Murphy wrote:
-> > When devices with different DMA masks are using the same domain, or
-> > for PCI devices where we usually try a speculative 32-bit
-> > allocation first, there is a fair possibility that the top PFN of
-> > the rcache stack at any given time may be unsuitable for the lower
-> > limit, prompting a fallback to allocating anew from the rbtree.
-> > Consequently, we may end up artifically increasing pressure on the
-> > 32-bit IOVA space as unused IOVAs accumulate lower down in the
-> > rcache stacks, while callers with 32-bit masks also impose
-> > unnecessary rbtree overhead.
-> > 
-> > In such cases, let's try a bit harder to satisfy the allocation
-> > locally first - scanning the whole stack should still be relatively
-> > inexpensive, and even rotating an entry up from the very bottom
-> > probably has less overall impact than going to the rbtree.
-> > 
-> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > ---
-> >  drivers/iommu/iova.c | 19 ++++++++++++++++---
-> >  1 file changed, 16 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> > index 8f8b436afd81..a7af8273fa98 100644
-> > --- a/drivers/iommu/iova.c
-> > +++ b/drivers/iommu/iova.c
-> > @@ -826,12 +826,25 @@ static bool iova_magazine_empty(struct
-> > iova_magazine *mag) static unsigned long iova_magazine_pop(struct
-> > iova_magazine *mag, unsigned long limit_pfn)
-> >  {
-> > +	int i;
-> > +	unsigned long pfn;
-> > +
-> >  	BUG_ON(iova_magazine_empty(mag));
-> >  
-> > -	if (mag->pfns[mag->size - 1] > limit_pfn)
-> > -		return 0;
-> > +	/*
-> > +	 * If we can pull a suitable pfn from anywhere in the
-> > stack, that's
-> > +	 * still probably preferable to falling back to the rbtree.
-> > +	 */
-> > +	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
-> > +		if (i == 0)
-> > +			return 0;
-> >  
-> > -	return mag->pfns[--mag->size];
-> > +	pfn = mag->pfns[i];
-> > +	mag->size--;
-> > +	for (; i < mag->size; i++)
-> > +		mag->pfns[i] = mag->pfns[i + 1];  
-> 
-> Do we need to preserve the order of the elements on the stack or would
-> it also suffice to just copy the top-element to the position we are
-> removing?
-
-Ooh, good point - the order is more or less meaningless, and if it *did*
-matter then that would imply we couldn't do this anyway. Getting rid of
-the second loop makes it even more compelling.
-
-Robin.
+As far as I can see "Offset can be greater than PAGE_SIZE" is the only
+safe assumption for core code.
