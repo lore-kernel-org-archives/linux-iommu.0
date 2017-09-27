@@ -1,104 +1,52 @@
-From: Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: bind pasid table API
-Date: Wed, 27 Sep 2017 10:51:55 -0700
-Message-ID: <20170927105155.0dddbc2d@jacob-builder>
-References: <20170918204516.2f6beffb@jacob-builder>
-	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
-	<20170927134041.GN8398@8bytes.org>
+From: Casey Leedom <leedom@chelsio.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Wed, 27 Sep 2017 21:29:23 +0000
+Message-ID: <MWHPR12MB16005D59D7A33F3D5BE43395C8780@MWHPR12MB1600.namprd12.prod.outlook.com>
+References: <MWHPR12MB160092A868C613FF64CA9EE9C87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170925155430.GB131920@otc-nc-03>
+ <MWHPR12MB16004E2A92CC3FFEC6313DDBC87A0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
+ <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+ <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
+ <MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <CAPcyv4jtYMZJ6V5VoXkGrcZ+ykWvYp1=qXrqJkjknk8Q_BVwgA@mail.gmail.com>
+ <MWHPR12MB160060436AC70CB5BE8C0C6EC8780@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170927181802.3dcd7efb@m750.lan>,<20170927144847.GA95654@otc-nc-03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170927134041.GN8398-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <20170927144847.GA95654@otc-nc-03>
+Content-Language: en-US
+Sender: linux-crypto-owner@vger.kernel.org
+To: "Raj, Ashok" <ashok.raj@intel.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Dan Williams <dan.j.williams@intel.com>, Harsh Jain <Harsh@chelsio.com>, Herbert Xu <herbert@gondor.apana.org.au>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Michael Werner <werner@chelsio.com>, "nd@arm.com" <nd@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 27 Sep 2017 15:40:41 +0200
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+Hey Raj,
 
-> Hi,
-> 
-> On Wed, Sep 20, 2017 at 01:09:47PM +0100, Jean-Philippe Brucker wrote:
-> > For binding page tables instead of PASID tables (e.g.
-> > virtio-iommu), the generic data would be:
-> > 
-> > struct pgtable_info {
-> > 	__u32	pasid;
-> > 	__u64	ptr;
-> > 	__u32	model;
-> > 	__u8	model_data[];
-> > };  
-> 
-> I had a look again and at the AMD side there is no way to build a
-> shadow pasid-table when more than 9-bit pasids are used, because all
-> pointers in that multi-level table are GPA and thus translated.
-> 
-> So how about allowing the virtio-iommu to build pasid-tables in
-> different formats? We can easily collect the existing code for that in
-> the Intel and AMD drivers into a library that could be used by the
-> virtio-iommu driver too. Then the virtio-iommu can create the correct
-> table for the host-iommu and we don't have to rely on shadowing.
-> 
-> For binding whole pasid tables, reading through the thread, it looks
-> like we can't get away with generic attributes that would fit
-> everyone. For AMD and Intel it would suffice to have a base-ptr and
-> the number of pasids-bits the table can map.
-> 
-> The Intel driver can then calculate the size of the table and the AMD
-> driver can compute the GLX value;
-> 
-> In case we need the model-specific info, I'd like to have them
-> explicitly stated in the struct:
-> 
-> 	enum pasid_table_model {
-> 		PASID_TABLE_INTEL,
-> 		PASID_TABLE_ARM,
-> 		PASID_TABLE_AMD,
-> 		/* ... */
-> 	};
-> 
-I guess one vendor could have multiple pasid table format. so perhaps
-the name could reflect the format as well?
-> 	struct pasid_table_config {
-> 		__u64 base_ptr;
-> 		__u8 pasid_bits;
-> 		union {
-> 			struct {
-> 				/* Intel specific fields */
-> 			} intel;
-> 
-> 			struct {
-> 				/* ARM specific fields */
-> 			} arm;
-> 
-> 
-> 			struct {
-> 				/* AMD specific fields */
-> 			} amd;
-> 
-> 			/* ... */
-> 		};
-> 	};
-> 
-> How does that look?
-> 
-It should work for us for now but I am not sure how stable the vendor
-specific fields will be, this is UAPI. BTW, do you also intend to
-include the pasid_table_model # in pasid_table_config?
+  Let us know if you need help in gathering more debugging information.  Fo=
+r
+the time being we've decided to ERRATA the use of the Intel I/O MMU with
+IPsec till we Root Cause the issue.  But this is still at the top of Harsh'=
+s
+bug list.
+=20
+  With Robin's comments, I'm almost sure that the:
 
-> Regards,
-> 
-> 	Joerg
-> 
+    (iov_pfn + sg->offset) << VTD_PAGE_SHIFT)
 
-[Jacob Pan]
+in your suggested patch is an issue.  iov_pfn is a Page Frame Number and
+sg->offset is a Byte Offset.  It feels like this should be:
+
+    size_t page_off =3D sg->offset & ~VTD_PAGE_MASK;
+    unsigned long pfn_off =3D sg->offset >> VTD_PAGE_MASK;
+    ...
+    sg->dma_address =3D ((dma_addr_t)
+                       (iov_pfn + pfn_off) << VTD_PAGE_SHIFT) + page_off;
+
+When Harsh tried your original patch, Harsh' test system wouldn't even boot=
+.
+
+Casey
