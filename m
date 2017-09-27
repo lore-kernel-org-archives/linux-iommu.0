@@ -1,95 +1,81 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC] iommu: arm-smmu: stall support
-Date: Wed, 27 Sep 2017 14:49:00 +0100
-Message-ID: <4e2fc08e-3e7e-3355-17e5-72106196c732@arm.com>
-References: <20170914194444.32551-1-robdclark@gmail.com>
- <20170919123038.GF8398@8bytes.org>
- <CAF6AEGuutkqjrWk4jagE=p-NwHgxdiPZjjsaFsfwtczK568j+A@mail.gmail.com>
- <20170922090204.GJ8398@8bytes.org>
- <32e3ab2c-a996-c805-2a0d-a2e85deb3a50@arm.com>
- <CAF6AEGuh0FiNWEAmFm+7-7pc6MV5hKKz9cyA_J0d256bY-nYOQ@mail.gmail.com>
- <20170927121540.GL8398@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu/iova: Try harder to allocate from rcache
+	magazine
+Date: Wed, 27 Sep 2017 16:00:51 +0200
+Message-ID: <20170927140051.GO8398@8bytes.org>
+References: <cover.1505827369.git.robin.murphy@arm.com>
+	<8127fabc219811d8169189e9d7177d42bc74bcbf.1505827369.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170927121540.GL8398@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Rob Clark <robdclark@gmail.com>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <Will.Deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <8127fabc219811d8169189e9d7177d42bc74bcbf.1505827369.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On 27/09/17 13:15, Joerg Roedel wrote:
-> Hi Rob, Jean,
+On Tue, Sep 19, 2017 at 02:48:41PM +0100, Robin Murphy wrote:
+> When devices with different DMA masks are using the same domain, or for
+> PCI devices where we usually try a speculative 32-bit allocation first,
+> there is a fair possibility that the top PFN of the rcache stack at any
+> given time may be unsuitable for the lower limit, prompting a fallback
+> to allocating anew from the rbtree. Consequently, we may end up
+> artifically increasing pressure on the 32-bit IOVA space as unused IOVAs
+> accumulate lower down in the rcache stacks, while callers with 32-bit
+> masks also impose unnecessary rbtree overhead.
 > 
-> On Fri, Sep 22, 2017 at 02:42:44PM -0400, Rob Clark wrote:
->> I'm in favour if splitting the reporting *somehow*.. the two
->> approaches that seemed sane are:
->> 
->> 1) call fault handler from irq and having separate domain->resume()
->> called by the driver, potentially from a wq
->> 2) or having two fault callbacks, first called before wq and then
->> based on returned value, optionally 2nd callback called from wq
->> 
->> The first seemed less intrusive to me, but I'm flexible.
+> In such cases, let's try a bit harder to satisfy the allocation locally
+> first - scanning the whole stack should still be relatively inexpensive,
+> and even rotating an entry up from the very bottom probably has less
+> overall impact than going to the rbtree.
 > 
-> How about adding a flag to the fault-handler call-back that tells us
-> whether it wants to sleep or not. If it wants, we call it from a wq, if
-> not we call call it directly like we do today in the
-> report_iommu_fault() function.
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/iova.c | 19 ++++++++++++++++---
+>  1 file changed, 16 insertions(+), 3 deletions(-)
 > 
-> In any case we call iommu_ops->resume() when set on completion of the
-> fault-handler either from the workqueue or report_iommu_fault itself.
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 8f8b436afd81..a7af8273fa98 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -826,12 +826,25 @@ static bool iova_magazine_empty(struct iova_magazine *mag)
+>  static unsigned long iova_magazine_pop(struct iova_magazine *mag,
+>  				       unsigned long limit_pfn)
+>  {
+> +	int i;
+> +	unsigned long pfn;
+> +
+>  	BUG_ON(iova_magazine_empty(mag));
+>  
+> -	if (mag->pfns[mag->size - 1] > limit_pfn)
+> -		return 0;
+> +	/*
+> +	 * If we can pull a suitable pfn from anywhere in the stack, that's
+> +	 * still probably preferable to falling back to the rbtree.
+> +	 */
+> +	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
+> +		if (i == 0)
+> +			return 0;
+>  
+> -	return mag->pfns[--mag->size];
+> +	pfn = mag->pfns[i];
+> +	mag->size--;
+> +	for (; i < mag->size; i++)
+> +		mag->pfns[i] = mag->pfns[i + 1];
 
-I like this approach. When the device driver registers a fault handler,
-it also tells when it would like to be called (either in atomic context,
-blocking context, or both).
+Do we need to preserve the order of the elements on the stack or would
+it also suffice to just copy the top-element to the position we are
+removing?
 
-Then the handler itself receives a flag that says which context it's
-being called from. It returns a value telling the IOMMU how to proceed.
-Depending on this value we either resume/abort immediately, or add the
-fault to the workqueue if necessary.
 
-How about using the following return values:
-
-/**
- * enum iommu_fault_status - Return status of fault handlers, telling the IOMMU
- *      driver how to proceed with the fault.
- *
- * @IOMMU_FAULT_STATUS_NONE: Fault was not handled. Call the next handler, or
- *      terminate.
- * @IOMMU_FAULT_STATUS_FAILURE: General error. Drop all subsequent faults from
- *      this device if possible. This is "Response Failure" in PCI PRI.
- * @IOMMU_FAULT_STATUS_INVALID: Could not handle this fault, don't retry the
- *      access. This is "Invalid Request" in PCI PRI.
- * @IOMMU_FAULT_STATUS_HANDLED: Fault has been handled and the page tables
- *      populated, retry the access.
- * @IOMMU_FAULT_STATUS_IGNORE: Stop processing the fault, and do not send a
- *      reply to the device.
- *
- * For unrecoverable faults, the only valid status is IOMMU_FAULT_STATUS_NONE
- * For a recoverable fault, if no one handled the fault, treat as
- * IOMMU_FAULT_STATUS_INVALID.
- */
-enum iommu_fault_status {
-        IOMMU_FAULT_STATUS_NONE = 0,
-        IOMMU_FAULT_STATUS_FAILURE,
-        IOMMU_FAULT_STATUS_INVALID,
-        IOMMU_FAULT_STATUS_HANDLED,
-        IOMMU_FAULT_STATUS_IGNORE,
-};
-
-This would probably cover the two use-cases of reporting faults to
-device drivers, and injecting them into the guest with VFIO, as well as
-handling PPRs internally. I'm also working on providing more details
-(pasid for instance) in the fault callback.
-
-We could also use the fault handler for invalid PRI Page Requests
-(currently specialized by amd_iommu_set_invalid_ppr_cb). It's just a
-matter of adding a registration flag to iommu_set_fault_handler.
-
-Thanks,
-Jean
+	Joerg
