@@ -1,16 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/3] iommu/iova: Try harder to allocate from rcache
-	magazine
-Date: Wed, 27 Sep 2017 16:00:51 +0200
-Message-ID: <20170927140051.GO8398@8bytes.org>
-References: <cover.1505827369.git.robin.murphy@arm.com>
-	<8127fabc219811d8169189e9d7177d42bc74bcbf.1505827369.git.robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/iova: Improve alloc_iova performance
+Date: Wed, 27 Sep 2017 16:10:57 +0200
+Message-ID: <20170927141057.GP8398@8bytes.org>
+References: <1505921299-7837-1-git-send-email-dwoods@mellanox.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <8127fabc219811d8169189e9d7177d42bc74bcbf.1505827369.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1505921299-7837-1-git-send-email-dwoods-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,62 +18,176 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: David Woods <dwoods-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, cmetcalf-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 19, 2017 at 02:48:41PM +0100, Robin Murphy wrote:
-> When devices with different DMA masks are using the same domain, or for
-> PCI devices where we usually try a speculative 32-bit allocation first,
-> there is a fair possibility that the top PFN of the rcache stack at any
-> given time may be unsuitable for the lower limit, prompting a fallback
-> to allocating anew from the rbtree. Consequently, we may end up
-> artifically increasing pressure on the 32-bit IOVA space as unused IOVAs
-> accumulate lower down in the rcache stacks, while callers with 32-bit
-> masks also impose unnecessary rbtree overhead.
+Adding Robin.
+
+Robin, can you please have a look?
+
+On Wed, Sep 20, 2017 at 11:28:19AM -0400, David Woods wrote:
+> When allocating pages with alloc_iova() where limit_pfn > dma_32bit_pfn
+> __alloc_and_insert_iova_range does a linear traversal of the tree to
+> find a free block.  In the worst case it makes the alloc O(n) for each
+> page, where n is the number of pages allocated so far.  The worst case
+> turns out to be common for drivers that allocate lots of pages at start
+> up and never free them.
 > 
-> In such cases, let's try a bit harder to satisfy the allocation locally
-> first - scanning the whole stack should still be relatively inexpensive,
-> and even rotating an entry up from the very bottom probably has less
-> overall impact than going to the rbtree.
+> There is an optimization for allocating 32-bit addresses where it
+> starts the search at the point where the previous allocated page was
+> inserted.  This is sensible, since otherwise it would have to always
+> search through all the 64-bit pages first.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> To improve this situation, extend the optimization to also keep track
+> of the point were the previous 64-bit page was inserted.  With this
+> change, the search for an available slot can normally be done in
+> constant time and the whole alloc_iova only costs O(log n) due to the
+> rb tree insert.
+> 
+> Reviewed-by: Chris Metcalf <cmetcalf-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: David Woods <dwoods-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 > ---
->  drivers/iommu/iova.c | 19 ++++++++++++++++---
->  1 file changed, 16 insertions(+), 3 deletions(-)
+>  drivers/iommu/iova.c | 82 +++++++++++++++++++++++++++++++++++-----------------
+>  include/linux/iova.h |  1 +
+>  2 files changed, 56 insertions(+), 27 deletions(-)
 > 
 > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 8f8b436afd81..a7af8273fa98 100644
+> index 33edfa7..3c82694 100644
 > --- a/drivers/iommu/iova.c
 > +++ b/drivers/iommu/iova.c
-> @@ -826,12 +826,25 @@ static bool iova_magazine_empty(struct iova_magazine *mag)
->  static unsigned long iova_magazine_pop(struct iova_magazine *mag,
->  				       unsigned long limit_pfn)
+> @@ -108,15 +108,26 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+>  EXPORT_SYMBOL_GPL(init_iova_flush_queue);
+>  
+>  static struct rb_node *
+> -__get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+> +__get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
 >  {
-> +	int i;
-> +	unsigned long pfn;
+> -	if ((*limit_pfn > iovad->dma_32bit_pfn) ||
+> -		(iovad->cached32_node == NULL))
+> +	if (limit_pfn <= iovad->dma_32bit_pfn)
+> +		return iovad->cached32_node;
+> +	else
+> +		return iovad->cached64_node;
+> +}
 > +
->  	BUG_ON(iova_magazine_empty(mag));
+> +static struct rb_node *
+> +__get_cached_rbnode_and_limit(struct iova_domain *iovad,
+> +			      unsigned long *limit_pfn)
+> +{
+> +	struct rb_node *cached_node = __get_cached_rbnode(iovad, *limit_pfn);
+> +
+> +	if (cached_node == NULL) {
+>  		return rb_last(&iovad->rbroot);
+> -	else {
+> -		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
+> +	} else {
+> +		struct rb_node *prev_node = rb_prev(cached_node);
+>  		struct iova *curr_iova =
+> -			rb_entry(iovad->cached32_node, struct iova, node);
+> +			rb_entry(cached_node, struct iova, node);
+>  		*limit_pfn = curr_iova->pfn_lo;
+>  		return prev_node;
+>  	}
+> @@ -124,33 +135,50 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
 >  
-> -	if (mag->pfns[mag->size - 1] > limit_pfn)
-> -		return 0;
-> +	/*
-> +	 * If we can pull a suitable pfn from anywhere in the stack, that's
-> +	 * still probably preferable to falling back to the rbtree.
-> +	 */
-> +	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
-> +		if (i == 0)
-> +			return 0;
+>  static void
+>  __cached_rbnode_insert_update(struct iova_domain *iovad,
+> -	unsigned long limit_pfn, struct iova *new)
+> +	unsigned long limit_pfn, struct rb_node *node)
+>  {
+> -	if (limit_pfn != iovad->dma_32bit_pfn)
+> -		return;
+> -	iovad->cached32_node = &new->node;
+> +	if (limit_pfn == iovad->dma_32bit_pfn)
+> +		iovad->cached32_node = node;
+> +	else if (limit_pfn > iovad->dma_32bit_pfn)
+> +		iovad->cached64_node = node;
+>  }
 >  
-> -	return mag->pfns[--mag->size];
-> +	pfn = mag->pfns[i];
-> +	mag->size--;
-> +	for (; i < mag->size; i++)
-> +		mag->pfns[i] = mag->pfns[i + 1];
-
-Do we need to preserve the order of the elements on the stack or would
-it also suffice to just copy the top-element to the position we are
-removing?
-
-
-	Joerg
+>  static void
+>  __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>  {
+>  	struct iova *cached_iova;
+> -	struct rb_node *curr;
+> -
+> -	if (!iovad->cached32_node)
+> -		return;
+> -	curr = iovad->cached32_node;
+> -	cached_iova = rb_entry(curr, struct iova, node);
+> -
+> -	if (free->pfn_lo >= cached_iova->pfn_lo) {
+> -		struct rb_node *node = rb_next(&free->node);
+> -		struct iova *iova = rb_entry(node, struct iova, node);
+> +	struct rb_node *cached_node;
+>  
+> -		/* only cache if it's below 32bit pfn */
+> -		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
+> -			iovad->cached32_node = node;
+> -		else
+> -			iovad->cached32_node = NULL;
+> +	if (free->pfn_lo <= iovad->dma_32bit_pfn) {
+> +		if (unlikely(iovad->cached64_node == &free->node))
+> +			iovad->cached64_node = NULL;
+> +		cached_node = iovad->cached32_node;
+> +		if (!cached_node)
+> +			return;
+> +		cached_iova = rb_entry(cached_node, struct iova, node);
+> +		if (free->pfn_lo >= cached_iova->pfn_lo) {
+> +			struct rb_node *next_node = rb_next(&free->node);
+> +
+> +			if (next_node &&
+> +			    rb_entry(next_node, struct iova, node)->pfn_lo <=
+> +			    iovad->dma_32bit_pfn)
+> +				iovad->cached32_node = next_node;
+> +			else
+> +				iovad->cached32_node = NULL;
+> +		}
+> +	} else {
+> +		cached_node = iovad->cached64_node;
+> +		if (!cached_node)
+> +			return;
+> +		cached_iova = container_of(cached_node, struct iova, node);
+> +		if (free->pfn_lo >= cached_iova->pfn_lo) {
+> +			struct rb_node *next_node = rb_next(&free->node);
+> +
+> +			if (next_node)
+> +				iovad->cached64_node = next_node;
+> +			else
+> +				iovad->cached64_node = NULL;
+> +		}
+>  	}
+>  }
+>  
+> @@ -204,7 +232,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>  	/* Walk the tree backwards */
+>  	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+>  	saved_pfn = limit_pfn;
+> -	curr = __get_cached_rbnode(iovad, &limit_pfn);
+> +	curr = __get_cached_rbnode_and_limit(iovad, &limit_pfn);
+>  	prev = curr;
+>  	while (curr) {
+>  		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+> @@ -238,7 +266,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>  
+>  	/* If we have 'prev', it's a valid place to start the insertion. */
+>  	iova_insert_rbtree(&iovad->rbroot, new, prev);
+> -	__cached_rbnode_insert_update(iovad, saved_pfn, new);
+> +	__cached_rbnode_insert_update(iovad, saved_pfn, &new->node);
+>  
+>  	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>  
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index d179b9b..ea89695 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -71,6 +71,7 @@ struct iova_domain {
+>  	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
+>  	struct rb_root	rbroot;		/* iova domain rbtree root */
+>  	struct rb_node	*cached32_node; /* Save last alloced node */
+> +	struct rb_node	*cached64_node; /* Save last alloced node */
+>  	unsigned long	granule;	/* pfn granularity for this domain */
+>  	unsigned long	start_pfn;	/* Lower limit for this domain */
+>  	unsigned long	dma_32bit_pfn;
+> -- 
+> 2.1.2
