@@ -1,193 +1,159 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/iova: Improve alloc_iova performance
-Date: Wed, 27 Sep 2017 16:10:57 +0200
-Message-ID: <20170927141057.GP8398@8bytes.org>
-References: <1505921299-7837-1-git-send-email-dwoods@mellanox.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: intel-dmar: possible circular locking dependency detected
+Date: Wed, 27 Sep 2017 16:19:15 +0200
+Message-ID: <82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
+References: <4e9f9665-38f7-c5f0-2a9d-13bb3a00aab2@siemens.com>
+ <6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1505921299-7837-1-git-send-email-dwoods-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woods <dwoods-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, cmetcalf-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Adding Robin.
+On 2017-09-27 15:21, Jan Kiszka wrote:
+> On 2017-09-27 14:14, Jan Kiszka wrote:
+>> Hi,
+>>
+>> while I'm triggering this with a still out-of-tree module from the
+>> Jailhouse project, the potential deadlock appears to me being unrelated
+>> to it. Please have a look:
+>>
+>> ======================================================
+>> WARNING: possible circular locking dependency detected
+>> 4.14.0-rc2-dbg+ #176 Tainted: G           O
+>> ------------------------------------------------------
+>> jailhouse/6105 is trying to acquire lock:
+>> dmar_pci_bus_notifier+0x4f/0xcb
+>>
+>> but task is already holding lock:
+>> __blocking_notifier_call_chain+0x31/0x65
+>>
+>> which lock already depends on the new lock.
+>>
+>>
+>> the existing dependency chain (in reverse order) is:
+>>
+>> -> #1 (&(&priv->bus_notifier)->rwsem){++++}:
+>>        __lock_acquire+0xed7/0x113b
+>>        lock_acquire+0x148/0x1f6
+>>        down_write+0x3b/0x6a
+>>        blocking_notifier_chain_register+0x33/0x53
+>>        bus_register_notifier+0x1c/0x1e
+>>        dmar_dev_scope_init+0x2c6/0x2db
+>>        intel_iommu_init+0xec/0x11c2
+>>        pci_iommu_init+0x17/0x41
+>>        do_one_initcall+0x90/0x143
+>>        kernel_init_freeable+0x1cc/0x256
+>>        kernel_init+0xe/0xf8
+>>        ret_from_fork+0x2a/0x40
+>>
+>> -> #0 (dmar_global_lock){++++}:
+>>        check_prev_add+0x112/0x65f
+>>        __lock_acquire+0xed7/0x113b
+>>        lock_acquire+0x148/0x1f6
+>>        down_write+0x3b/0x6a
+>>        dmar_pci_bus_notifier+0x4f/0xcb
+>>        notifier_call_chain+0x3c/0x5e
+>>        __blocking_notifier_call_chain+0x4c/0x65
+>>        blocking_notifier_call_chain+0x14/0x16
+>>        device_add+0x40c/0x522
+>>        pci_device_add+0x1c0/0x1ce
+>>        pci_scan_single_device+0x92/0x9d
+>>        pci_scan_slot+0x59/0x10a
+>>        jailhouse_pci_do_all_devices+0x74/0x263 [jailhouse]
+>>        jailhouse_pci_virtual_root_devices_add+0x40/0x42 [jailhouse]
+>>        jailhouse_cmd_enable+0x4fd/0x5e8 [jailhouse]
+>>        jailhouse_ioctl+0x28/0x70 [jailhouse]
+>>        vfs_ioctl+0x18/0x34
+>>        do_vfs_ioctl+0x51b/0x5e3
+>>        SyS_ioctl+0x50/0x7b
+>>        entry_SYSCALL_64_fastpath+0x1f/0xbe
+>>
+>> other info that might help us debug this:
+>>
+>>  Possible unsafe locking scenario:
+>>
+>>        CPU0                    CPU1
+>>        ----                    ----
+>>   lock(&(&priv->bus_notifier)->rwsem);
+>>                                lock(dmar_global_lock);
+>>                                lock(&(&priv->bus_notifier)->rwsem);
+>>   lock(dmar_global_lock);
+>>
+>>  *** DEADLOCK ***
+>>
+>> 2 locks held by jailhouse/6105:
+>> jailhouse_cmd_enable+0x130/0x5e8 [jailhouse]
+>> __blocking_notifier_call_chain+0x31/0x65
+>>
+>> stack backtrace:
+>> CPU: 1 PID: 6105 Comm: jailhouse Tainted: G           O
+>> 4.14.0-rc2-dbg+ #176
+>> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+>> rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
+>> Call Trace:
+>>  dump_stack+0x85/0xbe
+>>  print_circular_bug+0x389/0x398
+>>  ? add_lock_to_list.isra.23+0x96/0x96
+>>  check_prev_add+0x112/0x65f
+>>  ? kernel_text_address+0x1c/0x6a
+>>  ? add_lock_to_list.isra.23+0x96/0x96
+>>  __lock_acquire+0xed7/0x113b
+>>  ? __lock_acquire+0xed7/0x113b
+>>  lock_acquire+0x148/0x1f6
+>>  ? dmar_pci_bus_notifier+0x4f/0xcb
+>>  down_write+0x3b/0x6a
+>>  ? dmar_pci_bus_notifier+0x4f/0xcb
+>>  dmar_pci_bus_notifier+0x4f/0xcb
+>>  notifier_call_chain+0x3c/0x5e
+>>  __blocking_notifier_call_chain+0x4c/0x65
+>>  blocking_notifier_call_chain+0x14/0x16
+>>  device_add+0x40c/0x522
+>>  pci_device_add+0x1c0/0x1ce
+>>  pci_scan_single_device+0x92/0x9d
+>>  pci_scan_slot+0x59/0x10a
+>>  jailhouse_pci_do_all_devices+0x74/0x263 [jailhouse]
+>>  jailhouse_pci_virtual_root_devices_add+0x40/0x42 [jailhouse]
+>>  jailhouse_cmd_enable+0x4fd/0x5e8 [jailhouse]
+>>  jailhouse_ioctl+0x28/0x70 [jailhouse]
+>>  vfs_ioctl+0x18/0x34
+>>  do_vfs_ioctl+0x51b/0x5e3
+>>  ? kmem_cache_free+0x15b/0x1fa
+>>  ? entry_SYSCALL_64_fastpath+0x5/0xbe
+>>  ? trace_hardirqs_on_caller+0x180/0x19c
+>>  SyS_ioctl+0x50/0x7b
+>>  entry_SYSCALL_64_fastpath+0x1f/0xbe
+>> RIP: 0033:0x7f8b3b110d87
+>> RSP: 002b:00007ffc44b70088 EFLAGS: 00000206 ORIG_RAX: 0000000000000010
+>> RAX: ffffffffffffffda RBX: 0000000000000046 RCX: 00007f8b3b110d87
+>> RDX: 0000000000604010 RSI: 0000000040080000 RDI: 0000000000000003
+>> RBP: 0000000000604010 R08: 00007f8b3b3ade80 R09: 00000000000885d0
+>> R10: 00007ffc44b6fe40 R11: 0000000000000206 R12: 00000000000025d4
+>> R13: 0000000000000000 R14: 00007ffc44b714a4 R15: 0000000000000000
+>>
+>> Thanks,
+>> Jan
+>>
+> 
+> Oh, just realized that I already sent this report earlier this year [1]
+> but didn't receive any feedback so far.
+> 
 
-Robin, can you please have a look?
+Looking closer at the locking dmar does, specifically around
+dmar_global_lock, it is either unneeded during the initialization path
+or even more seriously broken. One example: dmar_table_init is not
+consistently protected by dmar_global_lock.
 
-On Wed, Sep 20, 2017 at 11:28:19AM -0400, David Woods wrote:
-> When allocating pages with alloc_iova() where limit_pfn > dma_32bit_pfn
-> __alloc_and_insert_iova_range does a linear traversal of the tree to
-> find a free block.  In the worst case it makes the alloc O(n) for each
-> page, where n is the number of pages allocated so far.  The worst case
-> turns out to be common for drivers that allocate lots of pages at start
-> up and never free them.
-> 
-> There is an optimization for allocating 32-bit addresses where it
-> starts the search at the point where the previous allocated page was
-> inserted.  This is sensible, since otherwise it would have to always
-> search through all the 64-bit pages first.
-> 
-> To improve this situation, extend the optimization to also keep track
-> of the point were the previous 64-bit page was inserted.  With this
-> change, the search for an available slot can normally be done in
-> constant time and the whole alloc_iova only costs O(log n) due to the
-> rb tree insert.
-> 
-> Reviewed-by: Chris Metcalf <cmetcalf-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> Signed-off-by: David Woods <dwoods-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/iommu/iova.c | 82 +++++++++++++++++++++++++++++++++++-----------------
->  include/linux/iova.h |  1 +
->  2 files changed, 56 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 33edfa7..3c82694 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -108,15 +108,26 @@ int init_iova_flush_queue(struct iova_domain *iovad,
->  EXPORT_SYMBOL_GPL(init_iova_flush_queue);
->  
->  static struct rb_node *
-> -__get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
-> +__get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
->  {
-> -	if ((*limit_pfn > iovad->dma_32bit_pfn) ||
-> -		(iovad->cached32_node == NULL))
-> +	if (limit_pfn <= iovad->dma_32bit_pfn)
-> +		return iovad->cached32_node;
-> +	else
-> +		return iovad->cached64_node;
-> +}
-> +
-> +static struct rb_node *
-> +__get_cached_rbnode_and_limit(struct iova_domain *iovad,
-> +			      unsigned long *limit_pfn)
-> +{
-> +	struct rb_node *cached_node = __get_cached_rbnode(iovad, *limit_pfn);
-> +
-> +	if (cached_node == NULL) {
->  		return rb_last(&iovad->rbroot);
-> -	else {
-> -		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
-> +	} else {
-> +		struct rb_node *prev_node = rb_prev(cached_node);
->  		struct iova *curr_iova =
-> -			rb_entry(iovad->cached32_node, struct iova, node);
-> +			rb_entry(cached_node, struct iova, node);
->  		*limit_pfn = curr_iova->pfn_lo;
->  		return prev_node;
->  	}
-> @@ -124,33 +135,50 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
->  
->  static void
->  __cached_rbnode_insert_update(struct iova_domain *iovad,
-> -	unsigned long limit_pfn, struct iova *new)
-> +	unsigned long limit_pfn, struct rb_node *node)
->  {
-> -	if (limit_pfn != iovad->dma_32bit_pfn)
-> -		return;
-> -	iovad->cached32_node = &new->node;
-> +	if (limit_pfn == iovad->dma_32bit_pfn)
-> +		iovad->cached32_node = node;
-> +	else if (limit_pfn > iovad->dma_32bit_pfn)
-> +		iovad->cached64_node = node;
->  }
->  
->  static void
->  __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
->  {
->  	struct iova *cached_iova;
-> -	struct rb_node *curr;
-> -
-> -	if (!iovad->cached32_node)
-> -		return;
-> -	curr = iovad->cached32_node;
-> -	cached_iova = rb_entry(curr, struct iova, node);
-> -
-> -	if (free->pfn_lo >= cached_iova->pfn_lo) {
-> -		struct rb_node *node = rb_next(&free->node);
-> -		struct iova *iova = rb_entry(node, struct iova, node);
-> +	struct rb_node *cached_node;
->  
-> -		/* only cache if it's below 32bit pfn */
-> -		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
-> -			iovad->cached32_node = node;
-> -		else
-> -			iovad->cached32_node = NULL;
-> +	if (free->pfn_lo <= iovad->dma_32bit_pfn) {
-> +		if (unlikely(iovad->cached64_node == &free->node))
-> +			iovad->cached64_node = NULL;
-> +		cached_node = iovad->cached32_node;
-> +		if (!cached_node)
-> +			return;
-> +		cached_iova = rb_entry(cached_node, struct iova, node);
-> +		if (free->pfn_lo >= cached_iova->pfn_lo) {
-> +			struct rb_node *next_node = rb_next(&free->node);
-> +
-> +			if (next_node &&
-> +			    rb_entry(next_node, struct iova, node)->pfn_lo <=
-> +			    iovad->dma_32bit_pfn)
-> +				iovad->cached32_node = next_node;
-> +			else
-> +				iovad->cached32_node = NULL;
-> +		}
-> +	} else {
-> +		cached_node = iovad->cached64_node;
-> +		if (!cached_node)
-> +			return;
-> +		cached_iova = container_of(cached_node, struct iova, node);
-> +		if (free->pfn_lo >= cached_iova->pfn_lo) {
-> +			struct rb_node *next_node = rb_next(&free->node);
-> +
-> +			if (next_node)
-> +				iovad->cached64_node = next_node;
-> +			else
-> +				iovad->cached64_node = NULL;
-> +		}
->  	}
->  }
->  
-> @@ -204,7 +232,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->  	/* Walk the tree backwards */
->  	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
->  	saved_pfn = limit_pfn;
-> -	curr = __get_cached_rbnode(iovad, &limit_pfn);
-> +	curr = __get_cached_rbnode_and_limit(iovad, &limit_pfn);
->  	prev = curr;
->  	while (curr) {
->  		struct iova *curr_iova = rb_entry(curr, struct iova, node);
-> @@ -238,7 +266,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->  
->  	/* If we have 'prev', it's a valid place to start the insertion. */
->  	iova_insert_rbtree(&iovad->rbroot, new, prev);
-> -	__cached_rbnode_insert_update(iovad, saved_pfn, new);
-> +	__cached_rbnode_insert_update(iovad, saved_pfn, &new->node);
->  
->  	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->  
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index d179b9b..ea89695 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -71,6 +71,7 @@ struct iova_domain {
->  	spinlock_t	iova_rbtree_lock; /* Lock to protect update of rbtree */
->  	struct rb_root	rbroot;		/* iova domain rbtree root */
->  	struct rb_node	*cached32_node; /* Save last alloced node */
-> +	struct rb_node	*cached64_node; /* Save last alloced node */
->  	unsigned long	granule;	/* pfn granularity for this domain */
->  	unsigned long	start_pfn;	/* Lower limit for this domain */
->  	unsigned long	dma_32bit_pfn;
-> -- 
-> 2.1.2
+Could someone elaborate on why we need that global lock for during init?
+
+If we could drop the dmar_global_lock around bus_register_notifier in
+dmar_dev_scope_init, the issue above would likely be resolved.
+
+Jan
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
