@@ -1,7 +1,7 @@
 From: <miles.chen@mediatek.com>
-Subject: [PATCH v2] dma-debug: fix incorrect pfn calculation
-Date: Wed, 27 Sep 2017 09:41:33 +0800
-Message-ID: <1506476493-28949-1-git-send-email-miles.chen@mediatek.com>
+Subject: [PATCH v3] dma-debug: fix incorrect pfn calculation
+Date: Wed, 27 Sep 2017 11:48:07 +0800
+Message-ID: <1506484087-1177-1-git-send-email-miles.chen@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -12,7 +12,7 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Miles Chen <miles.chen@mediatek.com>
 
-dma-debug report the following warning:
+dma-debug reports the following warning:
 
 [name:panic&]WARNING: CPU: 3 PID: 298 at kernel-4.4/lib/dma-debug.c:604
 debug _dma_assert_idle+0x1a8/0x230()
@@ -35,7 +35,9 @@ Call trace:
 I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
 assume that dma_alloc_coherent() always returns a linear address.
 However it's possible that dma_alloc_coherent() returns a non-linear
-address. So we cannot calculate a pfn by page_to_pfn(virt_to_page(virt)).
+address. In this case, page_to_pfn(virt_to_page(virt)) will return an
+incorrect pfn. If the pfn is valid and mapped as a COW page,
+we will hit the warning when doing wp_page_copy().
 
 Fix this by calculating pfn for linear and non-linear addresses.
 
@@ -45,7 +47,7 @@ Signed-off-by: Miles Chen <miles.chen@mediatek.com>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/lib/dma-debug.c b/lib/dma-debug.c
-index ea4cc3d..381f2ac 100644
+index ea4cc3d..e5b4237 100644
 --- a/lib/dma-debug.c
 +++ b/lib/dma-debug.c
 @@ -1497,7 +1497,8 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
@@ -54,7 +56,7 @@ index ea4cc3d..381f2ac 100644
  	entry->dev       = dev;
 -	entry->pfn	 = page_to_pfn(virt_to_page(virt));
 +	entry->pfn	 = is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
-+						page_to_pfn(virt_to_page(virt)),
++						page_to_pfn(virt_to_page(virt));
  	entry->offset	 = offset_in_page(virt);
  	entry->size      = size;
  	entry->dev_addr  = dma_addr;
