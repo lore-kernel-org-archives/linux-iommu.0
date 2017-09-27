@@ -1,74 +1,100 @@
-From: <miles.chen@mediatek.com>
-Subject: [PATCH v3] dma-debug: fix incorrect pfn calculation
-Date: Wed, 27 Sep 2017 11:48:07 +0800
-Message-ID: <1506484087-1177-1-git-send-email-miles.chen@mediatek.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [RFC PATCH 1/1] iommu/arm-smmu: Add support for multiple TBU
+ child devices
+Date: Wed, 27 Sep 2017 12:12:27 +0530
+Message-ID: <b148de29-be38-41f1-7eb5-1ea81c15243e@codeaurora.org>
+References: <1505217667-31184-1-git-send-email-vivek.gautam@codeaurora.org>
+ <20170919141034.ahhmuxfk6ldpegfp@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170919141034.ahhmuxfk6ldpegfp@rob-hp-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, wsd_upstream@mediatek.com, linux-mediatek@lists.infradead.org, iommu@lists.linux-foundation.org, Miles Chen <miles.chen@mediatek.com>
+To: Rob Herring <robh@kernel.org>
+Cc: robin.murphy@arm.com, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Miles Chen <miles.chen@mediatek.com>
+Hi Rob,
 
-dma-debug reports the following warning:
 
-[name:panic&]WARNING: CPU: 3 PID: 298 at kernel-4.4/lib/dma-debug.c:604
-debug _dma_assert_idle+0x1a8/0x230()
-DMA-API: cpu touching an active dma mapped cacheline [cln=0x00000882300]
-CPU: 3 PID: 298 Comm: vold Tainted: G        W  O    4.4.22+ #1
-Hardware name: MT6739 (DT)
-Call trace:
-[<ffffff800808acd0>] dump_backtrace+0x0/0x1d4
-[<ffffff800808affc>] show_stack+0x14/0x1c
-[<ffffff800838019c>] dump_stack+0xa8/0xe0
-[<ffffff80080a0594>] warn_slowpath_common+0xf4/0x11c
-[<ffffff80080a061c>] warn_slowpath_fmt+0x60/0x80
-[<ffffff80083afe24>] debug_dma_assert_idle+0x1a8/0x230
-[<ffffff80081dca9c>] wp_page_copy.isra.96+0x118/0x520
-[<ffffff80081de114>] do_wp_page+0x4fc/0x534
-[<ffffff80081e0a14>] handle_mm_fault+0xd4c/0x1310
-[<ffffff8008098798>] do_page_fault+0x1c8/0x394
-[<ffffff800808231c>] do_mem_abort+0x50/0xec
+On 09/19/2017 07:40 PM, Rob Herring wrote:
 
-I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
-assume that dma_alloc_coherent() always returns a linear address.
-However it's possible that dma_alloc_coherent() returns a non-linear
-address. In this case, page_to_pfn(virt_to_page(virt)) will return an
-incorrect pfn. If the pfn is valid and mapped as a COW page,
-we will hit the warning when doing wp_page_copy().
+Thanks for reviewing the patch.
 
-Fix this by calculating pfn for linear and non-linear addresses.
+> On Tue, Sep 12, 2017 at 05:31:07PM +0530, Vivek Gautam wrote:
+>> ARM MMU-500 implements a TBU (uTLB) for each connected master
+>> besides a single TCU which controls and manages the address
+>> translations. Each of these TBUs can either be in the same
+>> power domain as the master, or they can have a independent
+>> power switch.
+>> This design addresses the challenges to control TBU power.
+>> Adding child devices for each TBUs present in the configuration
+>> lets us control the power and clocks to TLBs having individual
+>> power domains. The device link between master devices (such as,
+>> display, and GPU) and TBU devices ensures that the master takes
+>> care of powering the smmu as long as it's available.
+>> When the master is not available, the TBUs are identified with
+>> sid and powered on.
+>>
+>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>> ---
+>>
+>>   - The idea behind this patch is to handle the distributed smmu
+>>     architectures, similar to MMU-500.
+>>   - Untested yet.
+>>   - There are still few instances where the correct tbu device has
+>>     to be referenced and thus powered on to handle TLB maintenance
+>>     operations.
+>>
+>>   .../devicetree/bindings/iommu/arm,smmu.txt         |  27 +++
+>>   drivers/iommu/arm-smmu.c                           | 191 +++++++++++++++++++--
+>>   2 files changed, 205 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> index d97a6bc8e608..7cf67e75022e 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> @@ -98,6 +98,18 @@ conditions.
+>>                     accessed before master gets enabled and linked to its
+>>                     SMMU.
+>>   
+>> +- child nodes:    ARM MMU-500 implements a TBU (page table cache or TLB) for
+>> +                  each connected master besides a single TCU that controls
+>> +                  and manages the address translations.
+>> +                  Each of the child nodes represents a TBU that is attached to
+>> +                  the master. This child node will have following property:
+>> +
+>> +  - compatibe:       must be "arm,mmu-500-tbu" for TBU child nodes of arm,mmu-500
+>> +                     smmu.
+>> +  - stream-id-range: array representing the starting stream id and the number
+>> +                     of supported stream-ids. This gives information about
+>> +                     the range of stream-ids that are supported by this TBU.
+> Needs a vendor prefix.
 
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
----
- lib/dma-debug.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Sure will add the vendor prefix.
+This can be a generic arm-mmu500 implementation where,
+a range of stream-ids are serviced by a TBU.
+Would "arm,stream-id-range" make sense?
 
-diff --git a/lib/dma-debug.c b/lib/dma-debug.c
-index ea4cc3d..e5b4237 100644
---- a/lib/dma-debug.c
-+++ b/lib/dma-debug.c
-@@ -1497,7 +1497,8 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 
- 	entry->type      = dma_debug_coherent;
- 	entry->dev       = dev;
--	entry->pfn	 = page_to_pfn(virt_to_page(virt));
-+	entry->pfn	 = is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
-+						page_to_pfn(virt_to_page(virt));
- 	entry->offset	 = offset_in_page(virt);
- 	entry->size      = size;
- 	entry->dev_addr  = dma_addr;
-@@ -1513,7 +1514,8 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 	struct dma_debug_entry ref = {
- 		.type           = dma_debug_coherent,
- 		.dev            = dev,
--		.pfn		= page_to_pfn(virt_to_page(virt)),
-+		.pfn		= is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
-+						page_to_pfn(virt_to_page(virt)),
- 		.offset		= offset_in_page(virt),
- 		.dev_addr       = addr,
- 		.size           = size,
+>
+> Also need to document reg property. What does reg represent? If just an
+> index with no correlation to h/w numbering, then perhaps stream ids
+> could be put into reg instead.
+
+Okay. Stream-ids make sense, since the reg doesn't necessarily represent
+any hardware number such as channel number, etc.
+
+Best regards
+Vivek
+
+>
+> Rob
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-1.9.1
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
