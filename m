@@ -1,125 +1,36 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 2/2] iommu/io-pgtable-arm-v7s: Convert to IOMMU API TLB sync
-Date: Thu, 28 Sep 2017 15:55:02 +0100
-Message-ID: <e00ef8af9b0dfe89a6680a485f3b27283df2b77b.1506610256.git.robin.murphy@arm.com>
-References: <1eaf255a7a334b3b1b100da8b75b73d19c924860.1506610256.git.robin.murphy@arm.com>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
+ Intel IOMMU
+Date: Thu, 28 Sep 2017 06:05:50 -0700
+Message-ID: <20170928130549.GA99456@otc-nc-03>
+References: <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
+ <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
+ <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
+ <MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <CAPcyv4jtYMZJ6V5VoXkGrcZ+ykWvYp1=qXrqJkjknk8Q_BVwgA@mail.gmail.com>
+ <MWHPR12MB160060436AC70CB5BE8C0C6EC8780@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170927181802.3dcd7efb@m750.lan>
+ <20170927144847.GA95654@otc-nc-03>
+ <MWHPR12MB16005D59D7A33F3D5BE43395C8780@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <26d68681-a157-26d3-84cb-6684dcaf3135@chelsio.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1eaf255a7a334b3b1b100da8b75b73d19c924860.1506610256.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <26d68681-a157-26d3-84cb-6684dcaf3135@chelsio.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Harsh Jain <Harsh@chelsio.com>
+Cc: Casey Leedom <leedom@chelsio.com>, Robin Murphy <robin.murphy@arm.com>, Dan Williams <dan.j.williams@intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Michael Werner <werner@chelsio.com>, "nd@arm.com" <nd@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Now that the core API issues its own post-unmap TLB sync call, push that
-operation out from the io-pgtable-arm-v7s internals into the users. For
-now, we leave the invalidation implicit in the unmap operation, since
-none of the current users would benefit much from any change to that.
+Thanks for trying that Harsh. 
 
-Note that the conversion of msm_iommu is implicit, since that apparently
-has no specific TLB sync operation anyway.
+sp_off turns of super page support. Which this mode, do you still see offsets greater than 4k?
 
-CC: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-CC: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+On Thu, Sep 28, 2017 at 07:08:21PM +0530, Harsh Jain wrote:
+> 
+> 
+> Today I tried with "Intel_iommu=sp_off" boot option. Traffic runs without any error for more than 1 hrs. What magic this option did? :)
 
-v2: Wire up .flush_iotlb_all and cope with uninitialised domains
-
- drivers/iommu/io-pgtable-arm-v7s.c |  7 +------
- drivers/iommu/mtk_iommu.c          |  7 +++++++
- drivers/iommu/qcom_iommu.c         | 15 +++++++++++++++
- 3 files changed, 23 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index d665d0dc16e8..397531da8d9c 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -660,16 +660,11 @@ static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 			 size_t size)
- {
- 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
--	size_t unmapped;
- 
- 	if (WARN_ON(upper_32_bits(iova)))
- 		return 0;
- 
--	unmapped = __arm_v7s_unmap(data, iova, size, 1, data->pgd);
--	if (unmapped)
--		io_pgtable_tlb_sync(&data->iop);
--
--	return unmapped;
-+	return __arm_v7s_unmap(data, iova, size, 1, data->pgd);
- }
- 
- static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index bd515be5b380..d0c8dfbbd74d 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -391,6 +391,11 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
- 	return unmapsz;
- }
- 
-+static void mtk_iommu_iotlb_sync(struct iommu_domain *domain)
-+{
-+	mtk_iommu_tlb_sync(mtk_iommu_get_m4u_data());
-+}
-+
- static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 					  dma_addr_t iova)
- {
-@@ -490,6 +495,8 @@ static struct iommu_ops mtk_iommu_ops = {
- 	.map		= mtk_iommu_map,
- 	.unmap		= mtk_iommu_unmap,
- 	.map_sg		= default_iommu_map_sg,
-+	.flush_iotlb_all = mtk_iommu_iotlb_sync,
-+	.iotlb_sync	= mtk_iommu_iotlb_sync,
- 	.iova_to_phys	= mtk_iommu_iova_to_phys,
- 	.add_device	= mtk_iommu_add_device,
- 	.remove_device	= mtk_iommu_remove_device,
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index c8a587d034b0..4a2c4378b3db 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -443,6 +443,19 @@ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return ret;
- }
- 
-+static void qcom_iommu_iotlb_sync(struct iommu_domain *domain)
-+{
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	struct io_pgtable *pgtable = container_of(qcom_domain->pgtbl_ops,
-+						  struct io_pgtable, ops);
-+	if (!qcom_domain->pgtbl_ops)
-+		return;
-+
-+	pm_runtime_get_sync(qcom_domain->iommu->dev);
-+	qcom_iommu_tlb_sync(pgtable->cookie);
-+	pm_runtime_put_sync(qcom_domain->iommu->dev);
-+}
-+
- static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
- {
-@@ -570,6 +583,8 @@ static const struct iommu_ops qcom_iommu_ops = {
- 	.map		= qcom_iommu_map,
- 	.unmap		= qcom_iommu_unmap,
- 	.map_sg		= default_iommu_map_sg,
-+	.flush_iotlb_all = qcom_iommu_iotlb_sync,
-+	.iotlb_sync	= qcom_iommu_iotlb_sync,
- 	.iova_to_phys	= qcom_iommu_iova_to_phys,
- 	.add_device	= qcom_iommu_add_device,
- 	.remove_device	= qcom_iommu_remove_device,
--- 
-2.13.4.dirty
+Cheers,
+Ashok
