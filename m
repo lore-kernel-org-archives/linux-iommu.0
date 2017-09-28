@@ -1,33 +1,24 @@
-From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: intel-dmar: possible circular locking dependency detected
-Date: Thu, 28 Sep 2017 15:41:21 +0200
-Message-ID: <20170928130107.kjjegfuxf6gwtpqm@suse.de>
-References: <4e9f9665-38f7-c5f0-2a9d-13bb3a00aab2@siemens.com>
- <6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
- <82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
+From: Casey Leedom <leedom@chelsio.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Thu, 28 Sep 2017 16:17:59 +0000
+Message-ID: <MWHPR12MB1600DA9DF9CF54221B752694C8790@MWHPR12MB1600.namprd12.prod.outlook.com>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+Content-Language: en-US
+Sender: linux-crypto-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>, "ashok.raj@intel.com" <ashok.raj@intel.com>, Harsh Jain <Harsh@chelsio.com>, "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael Werner <werner@chelsio.com>, Atul Gupta <atul.gupta@chelsio.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Jan,
-
-On Wed, Sep 27, 2017 at 04:19:15PM +0200, Jan Kiszka wrote:
-> On 2017-09-27 15:21, Jan Kiszka wrote:
-> > On 2017-09-27 14:14, Jan Kiszka wrote:
-> >> while I'm triggering this with a still out-of-tree module from the
-> >> Jailhouse project, the potential deadlock appears to me being unrelated
-> >> to it. Please have a look:
-
-Thanks for the report. I'll have a look soon.
-
-
-
-Regards,
-
-	Joerg
+  Thanks Robin.  Harsh can certainly test your latest patch as soon as he's
+back in the office tomorrow morning India time.  If your patch works and is
+accepted, it sounds like the commit would be important enough to consider
+backporting into various Long-Term Support releases and the affected
+distributions.  What's the procedure for nominating a commit for LTS inclus=
+ion?
+=20
+Casey
