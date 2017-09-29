@@ -1,58 +1,115 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
- stream tables and comamnd queues
-Date: Fri, 29 Sep 2017 14:13:50 +0200
-Message-ID: <7e270ffc-963c-c1c7-410c-ff3c2e767984@samsung.com>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
-        <20170921085922.11659-4-ganapatrao.kulkarni@cavium.com>
-        <CGME20170921115811epcas5p49012d8793fc765bb86830bfc377b6d36@epcas5p4.samsung.com>
-        <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.14-rc2
+Date: Fri, 29 Sep 2017 15:51:13 +0200
+Message-ID: <20170929135109.57hvydwuexbqyzvr@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
-Content-language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>
-Cc: Will.Deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
+Content-Type: multipart/mixed; boundary="===============1593790044188152278=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
 
-On 2017-09-21 13:58, Robin Murphy wrote:
-> [+Christoph and Marek]
->
-> On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
->> Introduce smmu_alloc_coherent and smmu_free_coherent functions to
->> allocate/free dma coherent memory from NUMA node associated with SMMU.
->> Replace all calls of dmam_alloc_coherent with smmu_alloc_coherent
->> for SMMU stream tables and command queues.
-> This doesn't work - not only do you lose the 'managed' aspect and risk
-> leaking various tables on probe failure or device removal, but more
-> importantly, unless you add DMA syncs around all the CPU accesses to the
-> tables, you lose the critical 'coherent' aspect, and that's a horribly
-> invasive change that I really don't want to make.
->
-> Christoph, Marek; how reasonable do you think it is to expect
-> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
-> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
-> allocation case; I'm not sure it's even worth it for bounce-buffering),
-> but the likes of CMA might be a little trickier...
+--===============1593790044188152278==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3lxzswvgkq3vuxk2"
+Content-Disposition: inline
 
-I'm not sure if there is any dma-coherent implementation that is NUMA aware.
 
-Maybe author should provide some benchmarks, which show that those 
-structures
-should be allocated in NUMA-aware way?
+--3lxzswvgkq3vuxk2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On the other hand it is not that hard to add required dma_sync_* calls 
-around
-all the code which updated those tables.
+Hi Linus,
 
- > ...
+The following changes since commit e19b205be43d11bff638cad4487008c48d21c103:
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+  Linux 4.14-rc2 (2017-09-24 16:38:56 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.14-rc2
+
+for you to fetch changes up to 50ce6312f293e129eedf2affc7bd791c71d8287e:
+
+  iommu: Fix comment for iommu_ops.map_sg (2017-09-27 17:02:45 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.14-rc2
+
+Including:
+
+	* A comment fix for 'struct iommu_ops'
+
+	* Format string fixes for AMD IOMMU, unfortunatly I missed that
+	  during review.
+
+	* Limit mediatek physical addresses to 32 bit for v7s to fix a
+	  warning triggered in io-page-table code.
+
+	* Fix dma-sync in io-pgtable-arm-v7s code
+
+----------------------------------------------------------------
+Arvind Yadav (1):
+      iommu/amd: pr_err() strings should end with newlines
+
+Jean-Philippe Brucker (1):
+      iommu: Fix comment for iommu_ops.map_sg
+
+Yong Wu (2):
+      iommu/io-pgtable-arm-v7s: Need dma-sync while there is no QUIRK_NO_DMA
+      iommu/mediatek: Limit the physical address in 32bit for v7s
+
+ drivers/iommu/amd_iommu_init.c     | 8 ++++----
+ drivers/iommu/io-pgtable-arm-v7s.c | 2 +-
+ drivers/iommu/mtk_iommu.c          | 3 ++-
+ include/linux/iommu.h              | 2 +-
+ 4 files changed, 8 insertions(+), 7 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--3lxzswvgkq3vuxk2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZzk/NAAoJECvwRC2XARrjHZMQANSnWEGaMyHMvdGWGXFt4aZ9
+dL2O6De9taCZYT1gQKH+aqtDziMOF9qvp2dkKI8t6hGdaX1hDDwl+uNkXILNtQkx
+mpJu9bLH0Oad2h1nnLmjHRphNdjupH4G8XAjsMqCxzGgcJXhtEfPAGsxsJmNG346
+rgup++Z9m4CbOPI/LdFDilbyhsD2alA6X1U3UA7VBD+iXwWKdO6wy77tDJ5Z7tJO
+fu7RC7P4iH3A2bGYXjna7g/sdrhYFtj0O/f6QWsfYWjLZz0OIhLyNuL9iOdBpzKq
+qsyxk4L7YYZTiLSpNVOxRsfQlWQ8eJcd57ejYgdHGD1rz058SL7Fs0YUpOBTLk5T
+Y0tQA2uNqv4Ol/Jrkvw2ytnqmCX6vx2K/qwij13ApXPvhcWSH/vv93L+dFKHT0k9
+IZJuIUrs+vOvhhFLUQlr60B9U/3s4KNOGm+2jEEDK9Td3ZzXbfiNZP/K8Jz1oHy3
+M+cej1FHvMmCDv2q3wA9aeFepi+EQVyb7HBqBF0Qb9WubMgAJWtkIQma27C8j0Yy
+S0dRD2q1CNP9qe/OibzQOF4C6XpRqBXmjQQeVZSEnb+yOCDeGrc26AlSt7fgvOM0
+vB7sxl2Zb/MxkhL41Le3TJy+32NohfyL3j4VKyfdkC/gqpLNPRmLottFV48Nf2G4
+1Wmwb/S5d6fxF2nyTPMR
+=3VmD
+-----END PGP SIGNATURE-----
+
+--3lxzswvgkq3vuxk2--
+
+--===============1593790044188152278==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1593790044188152278==--
