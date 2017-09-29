@@ -1,61 +1,58 @@
-From: Ronan Jouchet <ronan-RYxqDi3kOPxGWvitb5QawA@public.gmane.org>
-Subject: Re: PROBLEM: intel_iommu=on under 4.13 breaks resume from suspend on
-	my Thinkpad T560
-Date: Fri, 29 Sep 2017 08:08:52 -0400
-Message-ID: <34e8f4b2-b0d7-1fb5-a01d-62ac6b947072@jouchet.fr>
-References: <3fc58417-93ff-f5eb-e9af-57ad378c6241@jouchet.fr>
-	<20170929000019.GA102630@otc-nc-03>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
+ stream tables and comamnd queues
+Date: Fri, 29 Sep 2017 14:13:50 +0200
+Message-ID: <7e270ffc-963c-c1c7-410c-ff3c2e767984@samsung.com>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+        <20170921085922.11659-4-ganapatrao.kulkarni@cavium.com>
+        <CGME20170921115811epcas5p49012d8793fc765bb86830bfc377b6d36@epcas5p4.samsung.com>
+        <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170929000019.GA102630@otc-nc-03>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
+Content-language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>
+Cc: Will.Deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, joro@8bytes.org, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Raj, Lu, thanks for the fast feedback :)
+Hi Robin,
 
-On 9/28/17 20:00, Raj, Ashok wrote:
-> has it worked ever with intel_iommu=on?
+On 2017-09-21 13:58, Robin Murphy wrote:
+> [+Christoph and Marek]
+>
+> On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
+>> Introduce smmu_alloc_coherent and smmu_free_coherent functions to
+>> allocate/free dma coherent memory from NUMA node associated with SMMU.
+>> Replace all calls of dmam_alloc_coherent with smmu_alloc_coherent
+>> for SMMU stream tables and command queues.
+> This doesn't work - not only do you lose the 'managed' aspect and risk
+> leaking various tables on probe failure or device removal, but more
+> importantly, unless you add DMA syncs around all the CPU accesses to the
+> tables, you lose the critical 'coherent' aspect, and that's a horribly
+> invasive change that I really don't want to make.
+>
+> Christoph, Marek; how reasonable do you think it is to expect
+> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
+> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
+> allocation case; I'm not sure it's even worth it for bounce-buffering),
+> but the likes of CMA might be a little trickier...
 
-Good point. I just tested that by rolling back to 4.12.13-1
-and manually activating `intel_iommu=on`. As expected, no,
-resume is similarly broken.
+I'm not sure if there is any dma-coherent implementation that is NUMA aware.
 
-`intel_iommu={on, igfx_on}` probably have been breaking resume
-for a long time on my system, I just happened to notice it now
-due to being `on` by default.
+Maybe author should provide some benchmarks, which show that those 
+structures
+should be allocated in NUMA-aware way?
 
-On 9/29/17 00:29, Lu Baolu wrote:
- > I will look into it. But we will have a holiday till Oct. 8.
- > We probably won't see any progress before I am back.
+On the other hand it is not that hard to add required dma_sync_* calls 
+around
+all the code which updated those tables.
 
-Awesome! Note I will also be away mid-October, so if you
-ask for feedback at this moment it might be a while before
-I answer. But be sure I will.
+ > ...
 
-Also, not sure if this is related or a separate bug, but looking at
-my system logs I see two errors logged when `intel_iommu` is `on`:
-
-     DMAR: DRHD: handling fault status reg 3
-     DMAR: [DMA Read] Request device [00:12.4] fault addr b7fff000 
-[fault reason 02] Present bit in context entry is clear
-
-Feel free to ask for more info about that DMAR error, or ignore
-it if you know it's irrelevant / already tracked elsewhere :)
-
-Amending https://bugzilla.kernel.org/show_bug.cgi?id=197029 with
-the new information.
-
-Thanks again, good day everyone.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
