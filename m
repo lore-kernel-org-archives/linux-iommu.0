@@ -1,95 +1,106 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: bind pasid table API
-Date: Fri, 29 Sep 2017 05:44:02 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190DEA654@SHSMSX101.ccr.corp.intel.com>
-References: <20170918204516.2f6beffb@jacob-builder>
-	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
-	<20170927134041.GN8398@8bytes.org>
-	<e23f7d00-90f2-e5d4-6619-9fe9150a96b9@arm.com>
-	<20170928171121.GA101520@otc-nc-03>
+From: Harsh Jain <Harsh@chelsio.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Fri, 29 Sep 2017 13:44:45 +0530
+Message-ID: <fe25071a-18bf-e468-01e7-36515f2110e2@chelsio.com>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170928171121.GA101520@otc-nc-03>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+Cc: dwmw2@infradead.org, ashok.raj@intel.com, leedom@chelsio.com, herbert@gondor.apana.org.au, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Raj, Ashok
-> Sent: Friday, September 29, 2017 1:11 AM
-> 
-> Hi Jean
-> 
-> On Thu, Sep 28, 2017 at 12:21:34PM +0100, Jean-Philippe Brucker wrote:
-> > On 27/09/17 14:40, Joerg Roedel wrote:
-> > > Hi,
-> > >
-> > > On Wed, Sep 20, 2017 at 01:09:47PM +0100, Jean-Philippe Brucker
-> wrote:
-> > >> For binding page tables instead of PASID tables (e.g. virtio-iommu), the
-> > >> generic data would be:
-> > >>
-> > >> struct pgtable_info {
-> > >> 	__u32	pasid;
-> > >> 	__u64	ptr;
-> > >> 	__u32	model;
-> > >> 	__u8	model_data[];
-> > >> };
-> > >
-> > > I had a look again and at the AMD side there is no way to build a
-> shadow
-> > > pasid-table when more than 9-bit pasids are used, because all pointers
-> > > in that multi-level table are GPA and thus translated.
-> >
-> > It's the same problem on SMMUv3, all pointers in the multi-level PASID
-> > tables are GPAs. Our solution was to grab chunks GPA space from the
-> guest
-> > when necessary.
-> 
-> If pasid table is gPA and built and managed by guest IOMMU driver in case
-> of
-> vIOMMU, or virtio-iommu. Is this complex interaction to reserve memory
-> and
-> setup required? wouldn't it be sufficient if we do this.
-> 
-> - Host advertises the capability in terms of what table format it it supports.
-> - guest does all the memory allocation and management.
-> - communicate to host via VFIO, gPA, format, size of table
-> - host now programs context entries appropriately with proper nested
-> mode
-> 
+Robin,
 
-I can see the motivation why Jean would like to go this way. As he 
-explained below, it doesn't require factoring PASID codes (all formats
-on all vendors) into a library in guest. Guest just provides PGD and
-host IOMMU driver has all the logic to build PASID table in right form.
+I tried running patch on our test setup.
 
-However I'm with Ashok here. I'm not sure whether host-side change
-is really less invasive. New memreserve APIs need to be introduced
-cross Qemu/VFIO/IOMMU driver. Also PASID logic in each host IOMMU
-driver needs change to cope with whether the table is built for a native 
-usage or guest usage. In the latter case, memreserve must be considered 
-which is not like a typical way of page table mgmt. (especially regarding 
-to a multi-level PASID table).
+With "intel_iommu=on" : I can see single occurrence of DMAR Write failure on perf traffic with 10 thread.
 
-Thinking about anyway we need to factor page table code in the
-guest side. It's not a big deal to further factor PASID code due to the
-same reason. Of course there are additional format info to be 
-communicated back-and-forth, but the framework should be same
-for both page table and PASID purposes. Also such change is restricted
-within IOMMU sub-system. :-)
+    [  749.616480] perf: interrupt took too long (3203 > 3202), lowering kernel.perf_event_max_sample_rate to 62000
+[  852.500671] DMAR: DRHD: handling fault status reg 2
+[  852.506039] DMAR: [DMA Write] Request device [02:00.4] fault addr ef919000 [fault reason 05] PTE Write access is not set
+[root@heptagon linux_t4_build]# cat /proc/cmdline
+BOOT_IMAGE=/vmlinuz-4.9.51+ root=UUID=ccbb7f18-b3f0-43df-89de-07521e9c02fe ro intel_iommu=on crashkernel=auto rhgb quiet rhgb quiet console=ttyS0,115200, console=tty0 LANG=en_US.UTF-8
 
-Thanks
-Kevin
+With intel_iommu=sp_off : It works fine for more than 30 minutes without any issues.
+
+
+On 28-09-2017 19:44, Robin Murphy wrote:
+> The intel-iommu DMA ops fail to correctly handle scatterlists where
+> sg->offset is greater than PAGE_SIZE - the IOVA allocation is computed
+> appropriately based on the page-aligned portion of the offset, but the
+> mapping is set up relative to sg->page, which means it fails to actually
+> cover the whole buffer (and in the worst case doesn't cover it at all):
+>
+>     (sg->dma_address + sg->dma_len) ----+
+>     sg->dma_address ---------+          |
+>     iov_pfn------+           |          |
+>                  |           |          |
+>                  v           v          v
+> iova:   a        b        c        d        e        f
+>         |--------|--------|--------|--------|--------|
+>                           <...calculated....>
+>                  [_____mapped______]
+> pfn:    0        1        2        3        4        5
+>         |--------|--------|--------|--------|--------|
+>                  ^           ^          ^
+>                  |           |          |
+>     sg->page ----+           |          |
+>     sg->offset --------------+          |
+>     (sg->offset + sg->length) ----------+
+>
+> As a result, the caller ends up overrunning the mapping into whatever
+> lies beyond, which usually goes badly:
+>
+> [  429.645492] DMAR: DRHD: handling fault status reg 2
+> [  429.650847] DMAR: [DMA Write] Request device [02:00.4] fault addr f2682000 ...
+>
+> Whilst this is a fairly rare occurrence, it can happen from the result
+> of intermediate scatterlist processing such as scatterwalk_ffwd() in the
+> crypto layer. Whilst that particular site could be fixed up, it still
+> seems worthwhile to bring intel-iommu in line with other DMA API
+> implementations in handling this robustly.
+>
+> To that end, fix the intel_map_sg() path to line up the mapping
+> correctly (in units of MM pages rather than VT-d pages to match the
+> aligned_nrpages() calculation) regardless of the offset, and use
+> sg_phys() consistently for clarity.
+>
+> Reported-by: Harsh Jain <Harsh@chelsio.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/intel-iommu.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6784a05dd6b2..83f3d4831f94 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2254,10 +2254,12 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+>  		uint64_t tmp;
+>  
+>  		if (!sg_res) {
+> +			unsigned int pgoff = sg->offset & ~PAGE_MASK;
+> +
+>  			sg_res = aligned_nrpages(sg->offset, sg->length);
+> -			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
+> +			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + pgoff;
+>  			sg->dma_length = sg->length;
+> -			pteval = page_to_phys(sg_page(sg)) | prot;
+> +			pteval = (sg_phys(sg) - pgoff) | prot;
+>  			phys_pfn = pteval >> VTD_PAGE_SHIFT;
+>  		}
+>  
+> @@ -3790,7 +3792,7 @@ static int intel_nontranslate_map_sg(struct device *hddev,
+>  
+>  	for_each_sg(sglist, sg, nelems, i) {
+>  		BUG_ON(!sg_page(sg));
+> -		sg->dma_address = page_to_phys(sg_page(sg)) + sg->offset;
+> +		sg->dma_address = sg_phys(sg);
+>  		sg->dma_length = sg->length;
+>  	}
+>  	return nelems;
