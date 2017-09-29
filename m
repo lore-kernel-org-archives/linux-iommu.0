@@ -1,106 +1,61 @@
-From: Harsh Jain <Harsh@chelsio.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Fri, 29 Sep 2017 13:44:45 +0530
-Message-ID: <fe25071a-18bf-e468-01e7-36515f2110e2@chelsio.com>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+From: Ronan Jouchet <ronan-RYxqDi3kOPxGWvitb5QawA@public.gmane.org>
+Subject: Re: PROBLEM: intel_iommu=on under 4.13 breaks resume from suspend on
+	my Thinkpad T560
+Date: Fri, 29 Sep 2017 08:08:52 -0400
+Message-ID: <34e8f4b2-b0d7-1fb5-a01d-62ac6b947072@jouchet.fr>
+References: <3fc58417-93ff-f5eb-e9af-57ad378c6241@jouchet.fr>
+	<20170929000019.GA102630@otc-nc-03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-crypto-owner@vger.kernel.org>
-In-Reply-To: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170929000019.GA102630@otc-nc-03>
 Content-Language: en-US
-Sender: linux-crypto-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-Cc: dwmw2@infradead.org, ashok.raj@intel.com, leedom@chelsio.com, herbert@gondor.apana.org.au, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Robin,
+Hi Raj, Lu, thanks for the fast feedback :)
 
-I tried running patch on our test setup.
+On 9/28/17 20:00, Raj, Ashok wrote:
+> has it worked ever with intel_iommu=on?
 
-With "intel_iommu=on" : I can see single occurrence of DMAR Write failure on perf traffic with 10 thread.
+Good point. I just tested that by rolling back to 4.12.13-1
+and manually activating `intel_iommu=on`. As expected, no,
+resume is similarly broken.
 
-    [  749.616480] perf: interrupt took too long (3203 > 3202), lowering kernel.perf_event_max_sample_rate to 62000
-[  852.500671] DMAR: DRHD: handling fault status reg 2
-[  852.506039] DMAR: [DMA Write] Request device [02:00.4] fault addr ef919000 [fault reason 05] PTE Write access is not set
-[root@heptagon linux_t4_build]# cat /proc/cmdline
-BOOT_IMAGE=/vmlinuz-4.9.51+ root=UUID=ccbb7f18-b3f0-43df-89de-07521e9c02fe ro intel_iommu=on crashkernel=auto rhgb quiet rhgb quiet console=ttyS0,115200, console=tty0 LANG=en_US.UTF-8
+`intel_iommu={on, igfx_on}` probably have been breaking resume
+for a long time on my system, I just happened to notice it now
+due to being `on` by default.
 
-With intel_iommu=sp_off : It works fine for more than 30 minutes without any issues.
+On 9/29/17 00:29, Lu Baolu wrote:
+ > I will look into it. But we will have a holiday till Oct. 8.
+ > We probably won't see any progress before I am back.
 
+Awesome! Note I will also be away mid-October, so if you
+ask for feedback at this moment it might be a while before
+I answer. But be sure I will.
 
-On 28-09-2017 19:44, Robin Murphy wrote:
-> The intel-iommu DMA ops fail to correctly handle scatterlists where
-> sg->offset is greater than PAGE_SIZE - the IOVA allocation is computed
-> appropriately based on the page-aligned portion of the offset, but the
-> mapping is set up relative to sg->page, which means it fails to actually
-> cover the whole buffer (and in the worst case doesn't cover it at all):
->
->     (sg->dma_address + sg->dma_len) ----+
->     sg->dma_address ---------+          |
->     iov_pfn------+           |          |
->                  |           |          |
->                  v           v          v
-> iova:   a        b        c        d        e        f
->         |--------|--------|--------|--------|--------|
->                           <...calculated....>
->                  [_____mapped______]
-> pfn:    0        1        2        3        4        5
->         |--------|--------|--------|--------|--------|
->                  ^           ^          ^
->                  |           |          |
->     sg->page ----+           |          |
->     sg->offset --------------+          |
->     (sg->offset + sg->length) ----------+
->
-> As a result, the caller ends up overrunning the mapping into whatever
-> lies beyond, which usually goes badly:
->
-> [  429.645492] DMAR: DRHD: handling fault status reg 2
-> [  429.650847] DMAR: [DMA Write] Request device [02:00.4] fault addr f2682000 ...
->
-> Whilst this is a fairly rare occurrence, it can happen from the result
-> of intermediate scatterlist processing such as scatterwalk_ffwd() in the
-> crypto layer. Whilst that particular site could be fixed up, it still
-> seems worthwhile to bring intel-iommu in line with other DMA API
-> implementations in handling this robustly.
->
-> To that end, fix the intel_map_sg() path to line up the mapping
-> correctly (in units of MM pages rather than VT-d pages to match the
-> aligned_nrpages() calculation) regardless of the offset, and use
-> sg_phys() consistently for clarity.
->
-> Reported-by: Harsh Jain <Harsh@chelsio.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/intel-iommu.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 6784a05dd6b2..83f3d4831f94 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -2254,10 +2254,12 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
->  		uint64_t tmp;
->  
->  		if (!sg_res) {
-> +			unsigned int pgoff = sg->offset & ~PAGE_MASK;
-> +
->  			sg_res = aligned_nrpages(sg->offset, sg->length);
-> -			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + sg->offset;
-> +			sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + pgoff;
->  			sg->dma_length = sg->length;
-> -			pteval = page_to_phys(sg_page(sg)) | prot;
-> +			pteval = (sg_phys(sg) - pgoff) | prot;
->  			phys_pfn = pteval >> VTD_PAGE_SHIFT;
->  		}
->  
-> @@ -3790,7 +3792,7 @@ static int intel_nontranslate_map_sg(struct device *hddev,
->  
->  	for_each_sg(sglist, sg, nelems, i) {
->  		BUG_ON(!sg_page(sg));
-> -		sg->dma_address = page_to_phys(sg_page(sg)) + sg->offset;
-> +		sg->dma_address = sg_phys(sg);
->  		sg->dma_length = sg->length;
->  	}
->  	return nelems;
+Also, not sure if this is related or a separate bug, but looking at
+my system logs I see two errors logged when `intel_iommu` is `on`:
+
+     DMAR: DRHD: handling fault status reg 3
+     DMAR: [DMA Read] Request device [00:12.4] fault addr b7fff000 
+[fault reason 02] Present bit in context entry is clear
+
+Feel free to ask for more info about that DMAR error, or ignore
+it if you know it's irrelevant / already tracked elsewhere :)
+
+Amending https://bugzilla.kernel.org/show_bug.cgi?id=197029 with
+the new information.
+
+Thanks again, good day everyone.
