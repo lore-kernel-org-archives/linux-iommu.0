@@ -1,19 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: bind pasid table API
-Date: Fri, 29 Sep 2017 17:38:41 +0200
-Message-ID: <20170929153841.GV8398@8bytes.org>
-References: <20170918204516.2f6beffb@jacob-builder>
-	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
-	<20170927134041.GN8398@8bytes.org>
-	<e23f7d00-90f2-e5d4-6619-9fe9150a96b9@arm.com>
-	<20170928171121.GA101520@otc-nc-03>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190DEA654@SHSMSX101.ccr.corp.intel.com>
+From: Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Fri, 29 Sep 2017 16:18:16 +0000
+Message-ID: <MWHPR12MB160034E91A834504FE85C07BC87E0@MWHPR12MB1600.namprd12.prod.outlook.com>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>,
+	<fe25071a-18bf-e468-01e7-36515f2110e2@chelsio.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190DEA654-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <fe25071a-18bf-e468-01e7-36515f2110e2-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,25 +19,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Harsh  Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org" <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 29, 2017 at 05:44:02AM +0000, Tian, Kevin wrote:
-> Thinking about anyway we need to factor page table code in the
-> guest side. It's not a big deal to further factor PASID code due to the
-> same reason. Of course there are additional format info to be 
-> communicated back-and-forth, but the framework should be same
-> for both page table and PASID purposes. Also such change is restricted
-> within IOMMU sub-system. :-)
+| From: Harsh Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
+| Sent: Friday, September 29, 2017 1:14:45 AM
+|     
+| Robin,
+| 
+| I tried running patch on our test setup.
+| 
+| With "intel_iommu=on" : I can see single occurrence of DMAR Write failure
+| on perf traffic with 10 thread.
+| 
+| [  749.616480] perf: interrupt took too long (3203 > 3202), lowering kernel.perf_event_max_sample_rate to 62000
+| [  852.500671] DMAR: DRHD: handling fault status reg 2
+| [  852.506039] DMAR: [DMA Write] Request device [02:00.4] fault addr ef919000 [fault reason 05] PTE Write access is not set
+| [root@heptagon linux_t4_build]# cat /proc/cmdline
+| BOOT_IMAGE=/vmlinuz-4.9.51+ root=UUID=ccbb7f18-b3f0-43df-89de-07521e9c02fe ro intel_iommu=on crashkernel=auto rhgb quiet rhgb quiet console=ttyS0,115200, console=tty0 LANG=en_US.UTF-8
 
-Right, and in the common case where the guest runs a distro-kernel which
-has the iommu-drivers compiled-in, the code to build the pasid-tables is
-also already available and vIOMMU just needs to use it. So this is the
-easiest approach.
+Harsh. Can you provide the debugging information for that one DMA FAILURE
+trace?  It May be yet another corner case in __domain_mapping() or a
+different path.
 
+| With intel_iommu=sp_off : It works fine for more than 30 minutes without
+| any issues.
 
-Regards,
+I think that even without Robin's patch using intel_iommu=sp_off worked
+without errors, right?
 
-	Joerg
+Casey
