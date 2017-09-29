@@ -1,55 +1,95 @@
-From: Harsh Jain <Harsh@chelsio.com>
-Subject: Re: DMA error when sg->offset value is greater than PAGE_SIZE in
- Intel IOMMU
-Date: Fri, 29 Sep 2017 11:07:36 +0530
-Message-ID: <e950a8e0-5ad2-b4e7-196a-065dbf33f2c3@chelsio.com>
-References: <afa02763-4556-0e14-7d1b-1c044cdc1ff7@chelsio.com>
- <6d2af675-7b97-6eaf-4daa-d7bf80a05923@chelsio.com>
- <437a9bd8-d4d6-22ca-1a64-1a3e73f1101a@arm.com>
- <MWHPR12MB1600694D099E1CFAD6849A68C87B0@MWHPR12MB1600.namprd12.prod.outlook.com>
- <CAPcyv4jtYMZJ6V5VoXkGrcZ+ykWvYp1=qXrqJkjknk8Q_BVwgA@mail.gmail.com>
- <MWHPR12MB160060436AC70CB5BE8C0C6EC8780@MWHPR12MB1600.namprd12.prod.outlook.com>
- <20170927181802.3dcd7efb@m750.lan> <20170927144847.GA95654@otc-nc-03>
- <MWHPR12MB16005D59D7A33F3D5BE43395C8780@MWHPR12MB1600.namprd12.prod.outlook.com>
- <26d68681-a157-26d3-84cb-6684dcaf3135@chelsio.com>
- <20170928130549.GA99456@otc-nc-03>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: bind pasid table API
+Date: Fri, 29 Sep 2017 05:44:02 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190DEA654@SHSMSX101.ccr.corp.intel.com>
+References: <20170918204516.2f6beffb@jacob-builder>
+	<6ecc1afc-6302-cd22-6944-ef4c6ac09587@arm.com>
+	<20170927134041.GN8398@8bytes.org>
+	<e23f7d00-90f2-e5d4-6619-9fe9150a96b9@arm.com>
+	<20170928171121.GA101520@otc-nc-03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-crypto-owner@vger.kernel.org>
-In-Reply-To: <20170928130549.GA99456@otc-nc-03>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170928171121.GA101520@otc-nc-03>
 Content-Language: en-US
-Sender: linux-crypto-owner@vger.kernel.org
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Cc: Casey Leedom <leedom@chelsio.com>, Robin Murphy <robin.murphy@arm.com>, Dan Williams <dan.j.williams@intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Michael Werner <werner@chelsio.com>, "nd@arm.com" <nd@arm.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+> From: Raj, Ashok
+> Sent: Friday, September 29, 2017 1:11 AM
+> 
+> Hi Jean
+> 
+> On Thu, Sep 28, 2017 at 12:21:34PM +0100, Jean-Philippe Brucker wrote:
+> > On 27/09/17 14:40, Joerg Roedel wrote:
+> > > Hi,
+> > >
+> > > On Wed, Sep 20, 2017 at 01:09:47PM +0100, Jean-Philippe Brucker
+> wrote:
+> > >> For binding page tables instead of PASID tables (e.g. virtio-iommu), the
+> > >> generic data would be:
+> > >>
+> > >> struct pgtable_info {
+> > >> 	__u32	pasid;
+> > >> 	__u64	ptr;
+> > >> 	__u32	model;
+> > >> 	__u8	model_data[];
+> > >> };
+> > >
+> > > I had a look again and at the AMD side there is no way to build a
+> shadow
+> > > pasid-table when more than 9-bit pasids are used, because all pointers
+> > > in that multi-level table are GPA and thus translated.
+> >
+> > It's the same problem on SMMUv3, all pointers in the multi-level PASID
+> > tables are GPAs. Our solution was to grab chunks GPA space from the
+> guest
+> > when necessary.
+> 
+> If pasid table is gPA and built and managed by guest IOMMU driver in case
+> of
+> vIOMMU, or virtio-iommu. Is this complex interaction to reserve memory
+> and
+> setup required? wouldn't it be sufficient if we do this.
+> 
+> - Host advertises the capability in terms of what table format it it supports.
+> - guest does all the memory allocation and management.
+> - communicate to host via VFIO, gPA, format, size of table
+> - host now programs context entries appropriately with proper nested
+> mode
+> 
 
-On 28-09-2017 18:35, Raj, Ashok wrote:
-> Thanks for trying that Harsh. 
->
-> sp_off turns of super page support. Which this mode, do you still see offsets greater than 4k?
-Yes, offset greater than 4k is still there. Refer below.
-[56732.774872] offset 4110 len 76 dma addr 3a531200e dma len 76
-[56732.804187] offset 4110 len 84 dma addr 3a63b200e dma len 84
-[56732.805104] offset 4110 len 68 dma addr 3a531200e dma len 68
-[56732.806870] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.808987] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.811215] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.813155] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.814823] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.816481] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.818159] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.819712] offset 4110 len 56 dma addr 3a531200e dma len 56
-[56732.821629] offset 4110 len 56 dma addr 3a531200e dma len 56
-[root@heptagon linux_t4_build]#
-[root@heptagon linux_t4_build]#
-[root@heptagon linux_t4_build]# cat /proc/cmdline
-BOOT_IMAGE=/vmlinuz-4.9.51 root=UUID=ccbb7f18-b3f0-43df-89de-07521e9c02fe ro intel_iommu=sp_off crashkernel=auto rhgb quiet rhgb quiet console=ttyS0,115200, console=tty0 LANG=en_US.UTF-8
+I can see the motivation why Jean would like to go this way. As he 
+explained below, it doesn't require factoring PASID codes (all formats
+on all vendors) into a library in guest. Guest just provides PGD and
+host IOMMU driver has all the logic to build PASID table in right form.
 
->
-> On Thu, Sep 28, 2017 at 07:08:21PM +0530, Harsh Jain wrote:
->>
->> Today I tried with "Intel_iommu=sp_off" boot option. Traffic runs without any error for more than 1 hrs. What magic this option did? :)
-> Cheers,
-> Ashok
+However I'm with Ashok here. I'm not sure whether host-side change
+is really less invasive. New memreserve APIs need to be introduced
+cross Qemu/VFIO/IOMMU driver. Also PASID logic in each host IOMMU
+driver needs change to cope with whether the table is built for a native 
+usage or guest usage. In the latter case, memreserve must be considered 
+which is not like a typical way of page table mgmt. (especially regarding 
+to a multi-level PASID table).
+
+Thinking about anyway we need to factor page table code in the
+guest side. It's not a big deal to further factor PASID code due to the
+same reason. Of course there are additional format info to be 
+communicated back-and-forth, but the framework should be same
+for both page table and PASID purposes. Also such change is restricted
+within IOMMU sub-system. :-)
+
+Thanks
+Kevin
