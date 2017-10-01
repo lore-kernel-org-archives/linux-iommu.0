@@ -1,52 +1,47 @@
-From: Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Fri, 29 Sep 2017 16:18:16 +0000
-Message-ID: <MWHPR12MB160034E91A834504FE85C07BC87E0@MWHPR12MB1600.namprd12.prod.outlook.com>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>,
-	<fe25071a-18bf-e468-01e7-36515f2110e2@chelsio.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v3] dma-debug: fix incorrect pfn calculation
+Date: Sun, 1 Oct 2017 10:04:49 +0200
+Message-ID: <20171001080449.GB11843@lst.de>
+References: <1506484087-1177-1-git-send-email-miles.chen@mediatek.com> <273077fd-c5ad-82c8-60aa-cde89355e5e8@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <fe25071a-18bf-e468-01e7-36515f2110e2-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Harsh  Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org" <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <273077fd-c5ad-82c8-60aa-cde89355e5e8@arm.com>
+Sender: owner-linux-mm@kvack.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: miles.chen@mediatek.com, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-| From: Harsh Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-| Sent: Friday, September 29, 2017 1:14:45 AM
-|     
-| Robin,
-| 
-| I tried running patch on our test setup.
-| 
-| With "intel_iommu=on" : I can see single occurrence of DMAR Write failure
-| on perf traffic with 10 thread.
-| 
-| [  749.616480] perf: interrupt took too long (3203 > 3202), lowering kernel.perf_event_max_sample_rate to 62000
-| [  852.500671] DMAR: DRHD: handling fault status reg 2
-| [  852.506039] DMAR: [DMA Write] Request device [02:00.4] fault addr ef919000 [fault reason 05] PTE Write access is not set
-| [root@heptagon linux_t4_build]# cat /proc/cmdline
-| BOOT_IMAGE=/vmlinuz-4.9.51+ root=UUID=ccbb7f18-b3f0-43df-89de-07521e9c02fe ro intel_iommu=on crashkernel=auto rhgb quiet rhgb quiet console=ttyS0,115200, console=tty0 LANG=en_US.UTF-8
+On Wed, Sep 27, 2017 at 11:23:52AM +0100, Robin Murphy wrote:
+> > I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
+> > assume that dma_alloc_coherent() always returns a linear address.
+> > However it's possible that dma_alloc_coherent() returns a non-linear
+> > address. In this case, page_to_pfn(virt_to_page(virt)) will return an
+> > incorrect pfn. If the pfn is valid and mapped as a COW page,
+> > we will hit the warning when doing wp_page_copy().
 
-Harsh. Can you provide the debugging information for that one DMA FAILURE
-trace?  It May be yet another corner case in __domain_mapping() or a
-different path.
+Hmm, can the debug code assume anything?  Right now you're just patching
+it from supporting linear and vmalloc.  But what about other
+potential mapping types?
 
-| With intel_iommu=sp_off : It works fine for more than 30 minutes without
-| any issues.
+> > +	entry->pfn	 = is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
+> > +						page_to_pfn(virt_to_page(virt));
 
-I think that even without Robin's patch using intel_iommu=sp_off worked
-without errors, right?
+Please use normal if/else conditionsals:
 
-Casey
+	if (is_vmalloc_addr(virt))
+		entry->pfn = vmalloc_to_pfn(virt);
+	else
+		entry->pfn = page_to_pfn(virt_to_page(virt));
+
+> > +		.pfn		= is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
+> > +						page_to_pfn(virt_to_page(virt)),
+
+Same here.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
