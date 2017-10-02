@@ -1,71 +1,37 @@
-From: Miles Chen <miles.chen@mediatek.com>
-Subject: Re: [PATCH v3] dma-debug: fix incorrect pfn calculation
-Date: Mon, 2 Oct 2017 18:30:41 +0800
-Message-ID: <1506940241.28397.36.camel@mtkswgap22>
-References: <1506484087-1177-1-git-send-email-miles.chen@mediatek.com>
-         <273077fd-c5ad-82c8-60aa-cde89355e5e8@arm.com>
-         <20171001080449.GB11843@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] iommu/iova: Don't try to copy anchor nodes
+Date: Mon,  2 Oct 2017 11:53:31 +0100
+Message-ID: <3f64827632194aa89821d9183baa08321f00167d.1506941611.git.robin.murphy@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171001080449.GB11843@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 2017-10-01 at 10:04 +0200, Christoph Hellwig wrote:
-> On Wed, Sep 27, 2017 at 11:23:52AM +0100, Robin Murphy wrote:
-> > > I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
-> > > assume that dma_alloc_coherent() always returns a linear address.
-> > > However it's possible that dma_alloc_coherent() returns a non-linear
-> > > address. In this case, page_to_pfn(virt_to_page(virt)) will return an
-> > > incorrect pfn. If the pfn is valid and mapped as a COW page,
-> > > we will hit the warning when doing wp_page_copy().
-> 
-> Hmm, can the debug code assume anything?  Right now you're just patching
-> it from supporting linear and vmalloc.  But what about other
-> potential mapping types?
+Anchor nodes are not reserved IOVAs in the way that copy_reserved_iova()
+cares about - while the failure from reserve_iova() is benign since the
+target domain will already have its own anchor, we still don't want to
+be triggering spurious warnings.
 
-thanks for the review.
+Reported-by: kernel test robot <fengguang.wu@intel.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/iova.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-ARCHs like metag and xtensa define their mappings (non-vmalloc and
-non-linear) for dma allocation.
-These mapping types are architecture-dependent and should not be used
-outside arch folders. So it is hard to check the mappings and convert
-a virtual address to a correct pfn in lib/dam-debug.c
-
-How about recording only vmalloc (by is_vmalloc_addr()) and linear
-address (by virt_addr_valid()) in lib/dma-debug? Since current 
-implementation is not correct for those ARCHs.
-
-if (!is_vmalloc_addr(addr) && !virt_addr_valid(addr))
-    return;
-
-or
-
-every ARCH should define its own dmava-to-pfn API to convert
-a dma-allocted virtual address to a correct pfn and lib/dma-debug.c
-can use that API directly. (long-term)
-
-> 
-> > > +	entry->pfn	 = is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
-> > > +						page_to_pfn(virt_to_page(virt));
-> 
-> Please use normal if/else conditionsals:
-
-Is this for better readability? I'll send another patch for this.
-
-
-thanks 
-> 
-> 	if (is_vmalloc_addr(virt))
-> 		entry->pfn = vmalloc_to_pfn(virt);
-> 	else
-> 		entry->pfn = page_to_pfn(virt_to_page(virt));
-> 
-> > > +		.pfn		= is_vmalloc_addr(virt) ? vmalloc_to_pfn(virt) :
-> > > +						page_to_pfn(virt_to_page(virt)),
-> 
-> Same here.
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index bd854ca9fa80..c258ba84ee62 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -705,6 +705,9 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+ 		struct iova *iova = rb_entry(node, struct iova, node);
+ 		struct iova *new_iova;
+ 
++		if (iova->pfn_lo == IOVA_ANCHOR)
++			continue;
++
+ 		new_iova = reserve_iova(to, iova->pfn_lo, iova->pfn_hi);
+ 		if (!new_iova)
+ 			printk(KERN_ERR "Reserve iova range %lx@%lx failed\n",
+-- 
+2.13.4.dirty
