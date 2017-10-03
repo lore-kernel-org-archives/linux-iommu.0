@@ -1,86 +1,49 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 09/11] xtensa: make dma_cache_sync a no-op
-Date: Tue,  3 Oct 2017 12:43:09 +0200
-Message-ID: <20171003104311.10058-10-hch@lst.de>
+From: Christophe LEROY <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH 07/11] powerpc: make dma_cache_sync a no-op
+Date: Tue, 3 Oct 2017 13:24:57 +0200
+Message-ID: <670a0571-1a36-51a3-db52-64bc61184c35@c-s.fr>
 References: <20171003104311.10058-1-hch@lst.de>
+ <20171003104311.10058-8-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171003104311.10058-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171003104311.10058-8-hch@lst.de>
+Content-Language: fr
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: Chris Zankel <chris@zankel.net>, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-xtensa does not implement DMA_ATTR_NON_CONSISTENT allocations, so it
-doesn't make any sense to do any work in dma_cache_sync given that it
-must be a no-op when dma_alloc_attrs returns coherent memory.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/xtensa/include/asm/dma-mapping.h |  6 ++++--
- arch/xtensa/kernel/pci-dma.c          | 23 -----------------------
- 2 files changed, 4 insertions(+), 25 deletions(-)
 
-diff --git a/arch/xtensa/include/asm/dma-mapping.h b/arch/xtensa/include/asm/dma-mapping.h
-index 269738dc9d1d..353e0314d6ba 100644
---- a/arch/xtensa/include/asm/dma-mapping.h
-+++ b/arch/xtensa/include/asm/dma-mapping.h
-@@ -23,8 +23,10 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
- 	return &xtensa_dma_map_ops;
- }
- 
--void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		    enum dma_data_direction direction);
-+static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
-+		    enum dma_data_direction direction)
-+{
-+}
- 
- static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
-diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
-index cec86a1c2acc..623720a11143 100644
---- a/arch/xtensa/kernel/pci-dma.c
-+++ b/arch/xtensa/kernel/pci-dma.c
-@@ -26,29 +26,6 @@
- #include <asm/cacheflush.h>
- #include <asm/io.h>
- 
--void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
--		    enum dma_data_direction dir)
--{
--	switch (dir) {
--	case DMA_BIDIRECTIONAL:
--		__flush_invalidate_dcache_range((unsigned long)vaddr, size);
--		break;
--
--	case DMA_FROM_DEVICE:
--		__invalidate_dcache_range((unsigned long)vaddr, size);
--		break;
--
--	case DMA_TO_DEVICE:
--		__flush_dcache_range((unsigned long)vaddr, size);
--		break;
--
--	case DMA_NONE:
--		BUG();
--		break;
--	}
--}
--EXPORT_SYMBOL(dma_cache_sync);
--
- static void do_cache_op(dma_addr_t dma_handle, size_t size,
- 			void (*fn)(unsigned long, unsigned long))
- {
--- 
-2.14.1
+Le 03/10/2017 à 12:43, Christoph Hellwig a écrit :
+> powerpc does not implement DMA_ATTR_NON_CONSISTENT allocations, so it
+> doesn't make any sense to do any work in dma_cache_sync given that it
+> must be a no-op when dma_alloc_attrs returns coherent memory.
+What about arch/powerpc/mm/dma-noncoherent.c ?
+
+Powerpc 8xx doesn't have coherent memory.
+
+Christophe
+
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   arch/powerpc/include/asm/dma-mapping.h | 2 --
+>   1 file changed, 2 deletions(-)
+> 
+> diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
+> index eaece3d3e225..320846442bfb 100644
+> --- a/arch/powerpc/include/asm/dma-mapping.h
+> +++ b/arch/powerpc/include/asm/dma-mapping.h
+> @@ -144,8 +144,6 @@ static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
+>   static inline void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+>   		enum dma_data_direction direction)
+>   {
+> -	BUG_ON(direction == DMA_NONE);
+> -	__dma_sync(vaddr, size, (int)direction);
+>   }
+>   
+>   #endif /* __KERNEL__ */
+> 
