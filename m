@@ -1,179 +1,147 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Tue, 03 Oct 2017 13:55:34 +0100
-Message-ID: <1507035334.29211.105.camel@infradead.org>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [RFC] virtio-iommu version 0.4
+Date: Tue, 3 Oct 2017 15:04:47 +0200
+Message-ID: <0e0db2c0-86bc-a76a-05bd-0b41e00ba926@redhat.com>
+References: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2876288640515285937=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org, herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <virtio-dev-return-2591-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <20170804181927.12148-1-jean-philippe.brucker@arm.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Jean,
 
---===============2876288640515285937==
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/x-pkcs7-signature"; boundary="=-2/UcBlLLHL4VfgqLk49h"
+On 04/08/2017 20:19, Jean-Philippe Brucker wrote:
+> This is the continuation of my proposal for virtio-iommu, the para-
+> virtualized IOMMU. Here is a summary of the changes since last time [1]:
+> 
+> * The virtio-iommu document now resembles an actual specification. It is
+>   split into a formal description of the virtio device, and implementation
+>   notes. Please find sources and binaries at [2].
+> 
+> * Added a probe request to describe to the guest different properties that
+>   do not fit in firmware or in the virtio config space. This is a
+>   necessary stepping stone for extending the virtio-iommu.
+> 
+> * There is a working Qemu prototype [3], thanks to Eric Auger and Bharat
+>   Bhushan.
+> 
+> You can find the Linux driver and kvmtool device at [4] and [5]. I
+> plan to rework driver and kvmtool device slightly before sending the
+> patches.
+> 
+> To understand the virtio-iommu, I advise to first read introduction and
+> motivation, then skim through implementation notes and finally look at the
+> device specification.
+> 
+> I wasn't sure how to organize the review. For those who prefer to comment
+> inline, I attached v0.4 of device-operations.tex and topology.tex+MSI.tex
+> to this thread. They are the biggest chunks of the document. But LaTeX
+> isn't very pleasant to read, so you can simply send a list of comments in
+> relation to section numbers and a few words of context, we'll manage.
+> 
+> ---
+> Version numbers 0.1-0.4 are arbitrary. I'm hoping they allow to compare
+> more easily differences since the RFC (see [6]), but haven't been made
+> public so far. This is the first public posting since initial proposal
+> [1], and the following describes all changes.
+> 
+> ## v0.1 ##
+> 
+> Content is the same as the RFC, but formatted to LaTeX. 'make' generates
+> one PDF and one HTML document.
+> 
+> ## v0.2 ##
+> 
+> Add introductions, improve topology example and firmware description based
+> on feedback and a number of useful discussions.
+> 
+> ## v0.3 ##
+> 
+> Add normative sections (MUST, SHOULD, etc). Clarify some things, tighten
+> the device and driver behaviour. Unmap semantics are consolidated; they
+> are now closer to VFIO Type1 v2 semantics.
+> 
+> ## v0.4 ##
+> 
+> Introduce PROBE requests. They provide per-endpoint information to the
+> driver that couldn't be described otherwise.
+> 
+> For the moment, they allow to handle MSIs on x86 virtual platforms (see
+> 3.2). To do that we communicate reserved IOVA regions, that will also be
+> useful for describing regions that cannot be mapped for a given endpoint,
+> for instance addresses that correspond to a PCI bridge window.
+> 
+> Introducing such a large framework for this tiny feature may seem
+> overkill, but it is needed for future extensions of the virtio-iommu and I
+> believe it really is worth the effort.
+> 
+> ## Future ##
+> 
+> Other extensions are in preparation. I won't detail them here because v0.4
+> already is a lot to digest, but in short, building on top of PROBE:
+> 
+> * First, since the IOMMU is paravirtualized, the device can expose some
+>   properties of the physical topology to the guest, and let it allocate
+>   resources more efficiently. For example, when the virtio-iommu manages
+>   both physical and emulated endpoints, with different underlying IOMMUs,
+>   we now have a way to describe multiple page and block granularities,
+>   instead of forcing the guest to use the most restricted one for all
+>   endpoints. This will most likely be in v0.5.
+> 
+> * Then on top of that, a major improvement will describe hardware
+>   acceleration features available to the guest. There is what I call "Page
+>   Table Handover" (or simply, from the host POV, "Nested"), the ability
+>   for the guest to manipulate its own page tables instead of sending
+>   MAP/UNMAP requests to the host. This, along with IO Page Fault
+>   reporting, will also permit SVM virtualization on different platforms.
+> 
+> Thanks,
+> Jean
+> 
+> [1] http://www.spinics.net/lists/kvm/msg147990.html
+> [2] git://linux-arm.org/virtio-iommu.git branch viommu/v0.4
+>     http://www.linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.4/virtio-iommu-v0.4.pdf
+>     I reiterate the disclaimers: don't use this document as a reference,
+>     it's a draft. It's also not an OASIS document yet. It may be riddled
+>     with mistakes. As this is a working draft, it is unstable and I do not
+>     guarantee backward compatibility of future versions.
+> [3] https://lists.gnu.org/archive/html/qemu-arm/2017-08/msg00004.html
+> [4] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.4
+>     Warning: UAPI headers have changed! They didn't follow the spec,
+>     please update. (Use branch v0.1, that has the old headers, for the
+>     Qemu prototype [3])
+When rebasing the v0.4 driver on master I observe a regression: commands
+are not received properly by QEMU (typically an attach command is
+received with a type of 0). After a bisection of the guest kernel the
+first commit the problem appears is:
 
+commit e3067861ba6650a566a6273738c23c956ad55c02
+arm64: add basic VMAP_STACK support
 
---=-2/UcBlLLHL4VfgqLk49h
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+After reverting this patch, things resume working.
 
-T24gVGh1LCAyMDE3LTA5LTI4IGF0IDE1OjE0ICswMTAwLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4g
-VGhlIGludGVsLWlvbW11IERNQSBvcHMgZmFpbCB0byBjb3JyZWN0bHkgaGFuZGxlIHNjYXR0ZXJs
-aXN0cyB3aGVyZQo+IHNnLT5vZmZzZXQgaXMgZ3JlYXRlciB0aGFuIFBBR0VfU0laRSAtIHRoZSBJ
-T1ZBIGFsbG9jYXRpb24gaXMgY29tcHV0ZWQKPiBhcHByb3ByaWF0ZWx5IGJhc2VkIG9uIHRoZSBw
-YWdlLWFsaWduZWQgcG9ydGlvbiBvZiB0aGUgb2Zmc2V0LCBidXQgdGhlCj4gbWFwcGluZyBpcyBz
-ZXQgdXAgcmVsYXRpdmUgdG8gc2ctPnBhZ2UsIHdoaWNoIG1lYW5zIGl0IGZhaWxzIHRvIGFjdHVh
-bGx5Cj4gY292ZXIgdGhlIHdob2xlIGJ1ZmZlciAoYW5kIGluIHRoZSB3b3JzdCBjYXNlIGRvZXNu
-J3QgY292ZXIgaXQgYXQgYWxsKToKPiAKPiDCoMKgwqAgKHNnLT5kbWFfYWRkcmVzcyArIHNnLT5k
-bWFfbGVuKSAtLS0tKwo+IMKgwqDCoCBzZy0+ZG1hX2FkZHJlc3MgLS0tLS0tLS0tK8KgwqDCoMKg
-wqDCoMKgwqDCoCB8Cj4gwqDCoMKgIGlvdl9wZm4tLS0tLS0rwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-fMKgwqDCoMKgwqDCoMKgwqDCoCB8Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-fMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoMKgwqDCoMKgwqDCoMKgwqAgfAo+IMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHbCoMKgwqDCoMKgwqDCoMKgwqDCoCB2wqDCoMKgwqDCoMKg
-wqDCoMKgIHYKPiBpb3ZhOsKgwqAgYcKgwqDCoMKgwqDCoMKgIGLCoMKgwqDCoMKgwqDCoCBjwqDC
-oMKgwqDCoMKgwqAgZMKgwqDCoMKgwqDCoMKgIGXCoMKgwqDCoMKgwqDCoCBmCj4gwqDCoMKgwqDC
-oMKgwqAgfC0tLS0tLS0tfC0tLS0tLS0tfC0tLS0tLS0tfC0tLS0tLS0tfC0tLS0tLS0tfAo+IMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwuLi5jYWxj
-dWxhdGVkLi4uLj4KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBbX19fX19tYXBw
-ZWRfX19fX19dCj4gcGZuOsKgwqDCoCAwwqDCoMKgwqDCoMKgwqAgMcKgwqDCoMKgwqDCoMKgIDLC
-oMKgwqDCoMKgwqDCoCAzwqDCoMKgwqDCoMKgwqAgNMKgwqDCoMKgwqDCoMKgIDUKPiDCoMKgwqDC
-oMKgwqDCoCB8LS0tLS0tLS18LS0tLS0tLS18LS0tLS0tLS18LS0tLS0tLS18LS0tLS0tLS18Cj4g
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgXsKgwqDCoMKgwqDCoMKgwqDCoMKgIF7C
-oMKgwqDCoMKgwqDCoMKgwqAgXgo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzC
-oMKgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgIHwKPiDCoMKgwqAgc2ctPnBh
-Z2UgLS0tLSvCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgwqDCoMKgwqDCoMKgIHwKPiDCoMKg
-wqAgc2ctPm9mZnNldCAtLS0tLS0tLS0tLS0tLSvCoMKgwqDCoMKgwqDCoMKgwqAgfAo+IMKgwqDC
-oCAoc2ctPm9mZnNldCArIHNnLT5sZW5ndGgpIC0tLS0tLS0tLS0rCgpJJ2Qgc3RpbGwgZGVhcmx5
-IGxvdmUgdG8gc2VlIHNvbWUgY2xlYXIgZG9jdW1lbnRhdGlvbiBvZiB3aGF0IGl0IG1lYW5zCmZv
-ciBzZy0+b2Zmc2V0IHRvIGJlIG91dHNpZGUgdGhlIHBhZ2UgcmVmZXJlbmNlZCBieSBzZy0+cGFn
-ZS4KCk9yIGlzIGl0IHJlYWxseSBub3QgIm91dHNpZGUiLCBhbmQgaXQncyAqb25seSogdmFsaWQg
-Zm9yIHRoZSBvZmZzZXQgdG8KYmUgPiBQQUdFX09GRlNFVCB3aGVuIGl0J3MgYSBodWdlIHBhZ2Us
-IHNvIHdlIGNhbiBjaGVjayB0aGF0IHdpdGggYQpCVUdfT04oKSA/wqAKCkluIHBhcnRpY3VsYXIs
-IEknZCBsaWtlIHRvIGtub3cgd2hhdCBpcyBpbnRlbmRlZCBpbiB0aGUgWGVuIFBWIGNhc2UsCndo
-ZXJlIHRoZXJlIGlzbid0IGEgc3RyYWlnaHQgY29ycmVzcG9uZGVuY2UgYmV0d2VlbiBwZm4gYW5k
-IG1mbi4gSXMgdGhlCm91dC1vZi1yYW5nZSBzZy0+b2Zmc2V0IGludGVuZGVkIHRvIHJlZmVyIHRv
-IHRoZSBuZXh0ICpwZm4qIGFmdGVyIHNnLQo+cGFnZSwgb3IgdG8gdGhlIG5leHQgKm1mbiogYWZ0
-ZXIgc2ctPnBhZ2U/wqAKCkkgY29uZmVzcyBJJ3ZlIG9ubHkgZm9sbG93ZWQgdGhpcyB0aHJlYWQg
-dmFndWVseSwgYnV0IEkgaGF2ZW4ndCBzZWVuIGEKKmNvaGVyZW50KiBleHBsYW5hdGlvbiBleGNl
-cHQgaW4gdGhlIGh1Z2UgcGFnZSBjYXNlIChpbiB3aGljaCBjYXNlIEkKd2FudCB0byBzZWUgdGhh
-dCBCVUdfT04gaW4gdGhlIHBhdGNoKSBvZiB3aHkgdGhpcyBpc24ndCBqdXN0IHRvdGFsbHkKYm9n
-dXMuCg==
+I observe the problem with a 4kB page guest kernel.
 
+Thanks
 
---=-2/UcBlLLHL4VfgqLk49h
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDzUw
-ggSvMIIDl6ADAgECAhEA4CPLFRKDU4mtYW56VGdrITANBgkqhkiG9w0BAQsFADBvMQswCQYDVQQG
-EwJTRTEUMBIGA1UEChMLQWRkVHJ1c3QgQUIxJjAkBgNVBAsTHUFkZFRydXN0IEV4dGVybmFsIFRU
-UCBOZXR3b3JrMSIwIAYDVQQDExlBZGRUcnVzdCBFeHRlcm5hbCBDQSBSb290MB4XDTE0MTIyMjAw
-MDAwMFoXDTIwMDUzMDEwNDgzOFowgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1h
-bmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEw
-PwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBF
-bWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAImxDdp6UxlOcFIdvFamBia3
-uEngludRq/HwWhNJFaO0jBtgvHpRQqd5jKQi3xdhTpHVdiMKFNNKAn+2HQmAbqUEPdm6uxb+oYep
-LkNSQxZ8rzJQyKZPWukI2M+TJZx7iOgwZOak+FaA/SokFDMXmaxE5WmLo0YGS8Iz1OlAnwawsayT
-QLm1CJM6nCpToxDbPSBhPFUDjtlOdiUCISn6o3xxdk/u4V+B6ftUgNvDezVSt4TeIj0sMC0xf1m9
-UjewM2ktQ+v61qXxl3dnUYzZ7ifrvKUHOHaMpKk4/9+M9QOsSb7K93OZOg8yq5yVOhM9DkY6V3Rh
-UL7GQD/L5OKfoiECAwEAAaOCARcwggETMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1Qa
-MB0GA1UdDgQWBBSSYWuC4aKgqk/sZ/HCo/e0gADB7DAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/
-BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwEQYDVR0gBAowCDAGBgRV
-HSAAMEQGA1UdHwQ9MDswOaA3oDWGM2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9BZGRUcnVzdEV4
-dGVybmFsQ0FSb290LmNybDA1BggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3Nw
-LnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQELBQADggEBABsqbqxVwTqriMXY7c1V86prYSvACRAj
-mQ/FZmpvsfW0tXdeDwJhAN99Bf4Ss6SAgAD8+x1banICCkG8BbrBWNUmwurVTYT7/oKYz1gb4yJj
-nFL4uwU2q31Ypd6rO2Pl2tVz7+zg+3vio//wQiOcyraNTT7kSxgDsqgt1Ni7QkuQaYUQ26Y3NOh7
-4AEQpZzKOsefT4g0bopl0BqKu6ncyso20fT8wmQpNa/WsadxEdIDQ7GPPprsnjJT9HaSyoY0B7ks
-yuYcStiZDcGG4pCS+1pCaiMhEOllx/XVu37qjIUgAmLq0ToHLFnFmTPyOInltukWeh95FPZKEBom
-+nyK+5swggU9MIIEJaADAgECAhBqC1BYlVMtBFBN4igR/howMA0GCSqGSIb3DQEBCwUAMIGbMQsw
-CQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3Jk
-MRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xp
-ZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTYxMjIwMDAwMDAwWhcN
-MTcxMjIwMjM1OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjAN
-BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwbTrFaiGdvN2pThnR9q+4eaXB2wQZQNqhter5ZrJ
-pPO47e87bZ+f1tmYoh6+rB90G/XN24NErPRfvU4zVzNT9pCtCzSSVnBlZQBpaEYMKhcXo5PGKNsm
-An8BoGwNXjlxwbBNRaNO+ky0wNCaMNd1JLxEuvqg9J7rrcpHhWmnpXD5IKa8gv9GyVAJgOpiBOts
-p91sShc2kHvWJ5waPEWPCHDH9J+twGGKqKIIU7fdbURLUgUL1wlDSAHf/lgIAVCSj2H2HpoGqHpy
-HgOAClX9iRSLNa0Znj8HTaqfOwxXevsz1KkLFY+Ahm426GIEqdfkK2iT6Hhgc7tjNO3f8i5ALQID
-AQABo4IB8TCCAe0wHwYDVR0jBBgwFoAUkmFrguGioKpP7GfxwqP3tIAAwewwHQYDVR0OBBYEFILE
-dmHLtK6oxmFJZvBhTQhvqrS0MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMCAGA1UdJQQZ
-MBcGCCsGAQUFBwMEBgsrBgEEAbIxAQMFAjARBglghkgBhvhCAQEEBAMCBSAwRgYDVR0gBD8wPTA7
-BgwrBgEEAbIxAQIBAQEwKzApBggrBgEFBQcCARYdaHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9D
-UFMwXQYDVR0fBFYwVDBSoFCgToZMaHR0cDovL2NybC5jb21vZG9jYS5jb20vQ09NT0RPU0hBMjU2
-Q2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNybDCBkAYIKwYBBQUHAQEEgYMw
-gYAwWAYIKwYBBQUHMAKGTGh0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVu
-dEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
-Y3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRlYWQub3JnMA0GCSqGSIb3
-DQEBCwUAA4IBAQA+AfvNhFwtapF5Lzjapgul3zYuEnMfR538Ya1vhP8wuOkcoJeT2gEFXzVO2WUu
-eWM0g0/DumnRB53htV/Qq/+vsL0i6a2+iOO7kHi5O7bZkgbdNv0t2lzonDUHi6LTa7NUj+tv+j6y
-hW+iNquC3ACP1dIZH8gJmicHblW63qRgp6wxhn315MLBeavi3uiSag2eeKFePiTIwJjN2UYq6kWg
-PL5G/Ycf9x/xN1XBTfJiURc0FsXhrA98VMWnt52C5Lo4txhGjzTI+IZg40b3YDs6E7mTYb5KKmbc
-QZA9priOFDdj1z5W9BdWhU6I/D0P9y8Z4Tr6+ZscMUVD0RqWy2LeMIIFPTCCBCWgAwIBAgIQagtQ
-WJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQsFADCBmzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdy
-ZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
-bWl0ZWQxQTA/BgNVBAMTOENPTU9ETyBTSEEtMjU2IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQg
-U2VjdXJlIEVtYWlsIENBMB4XDTE2MTIyMDAwMDAwMFoXDTE3MTIyMDIzNTk1OVowJDEiMCAGCSqG
-SIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBAMG06xWohnbzdqU4Z0favuHmlwdsEGUDaobXq+WayaTzuO3vO22fn9bZmKIevqwfdBv1zduD
-RKz0X71OM1czU/aQrQs0klZwZWUAaWhGDCoXF6OTxijbJgJ/AaBsDV45ccGwTUWjTvpMtMDQmjDX
-dSS8RLr6oPSe663KR4Vpp6Vw+SCmvIL/RslQCYDqYgTrbKfdbEoXNpB71iecGjxFjwhwx/SfrcBh
-iqiiCFO33W1ES1IFC9cJQ0gB3/5YCAFQko9h9h6aBqh6ch4DgApV/YkUizWtGZ4/B02qnzsMV3r7
-M9SpCxWPgIZuNuhiBKnX5Ctok+h4YHO7YzTt3/IuQC0CAwEAAaOCAfEwggHtMB8GA1UdIwQYMBaA
-FJJha4LhoqCqT+xn8cKj97SAAMHsMB0GA1UdDgQWBBSCxHZhy7SuqMZhSWbwYU0Ib6q0tDAOBgNV
-HQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQED
-BQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYB
-BQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMF0GA1UdHwRWMFQwUqBQoE6GTGh0
-dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVudEF1dGhlbnRpY2F0aW9uYW5k
-U2VjdXJlRW1haWxDQS5jcmwwgZAGCCsGAQUFBwEBBIGDMIGAMFgGCCsGAQUFBzAChkxodHRwOi8v
-Y3J0LmNvbW9kb2NhLmNvbS9DT01PRE9TSEEyNTZDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0R
-BBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAPgH7zYRcLWqReS84
-2qYLpd82LhJzH0ed/GGtb4T/MLjpHKCXk9oBBV81TtllLnljNINPw7pp0Qed4bVf0Kv/r7C9Iumt
-vojju5B4uTu22ZIG3Tb9Ldpc6Jw1B4ui02uzVI/rb/o+soVvojargtwAj9XSGR/ICZonB25Vut6k
-YKesMYZ99eTCwXmr4t7okmoNnnihXj4kyMCYzdlGKupFoDy+Rv2HH/cf8TdVwU3yYlEXNBbF4awP
-fFTFp7edguS6OLcYRo80yPiGYONG92A7OhO5k2G+Sipm3EGQPaa4jhQ3Y9c+VvQXVoVOiPw9D/cv
-GeE6+vmbHDFFQ9Ealsti3jGCA9MwggPPAgEBMIGwMIGbMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
-R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0Eg
-TGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFu
-ZCBTZWN1cmUgRW1haWwgQ0ECEGoLUFiVUy0EUE3iKBH+GjAwDQYJYIZIAWUDBAIBBQCgggHzMBgG
-CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE3MTAwMzEyNTUzNFowLwYJ
-KoZIhvcNAQkEMSIEIJz+ZwfKVd9Dm9flrCvZKxodHu378rlgrjvVQG8CXonlMIHBBgkrBgEEAYI3
-EAQxgbMwgbAwgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
-BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01P
-RE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQ
-WJVTLQRQTeIoEf4aMDCBwwYLKoZIhvcNAQkQAgsxgbOggbAwgZsxCzAJBgNVBAYTAkdCMRswGQYD
-VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9E
-TyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRp
-b24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQWJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQEFAASC
-AQAPo8bESnEas6uriAvTs5YdkJUuZSsDZW7ZO36ISG0XZVMnIR6nVn3ygaflrCG6vGA/hjh4Z4Bq
-9vck0L42vfIAHDzTN2MMMhrKI5L6of2z+MsvWScu38Aw1yC7aajzVjWpIPENDJFQVqubNbAsd341
-FPRNDWfuED4zErNxNUDPo2wjydOybUQJXzJphqPt/cpBRJ7bd0utJBN4x4rBDTIwYzVBIhv2/QGJ
-/vpaCF27oS5QoVID8g0RKK5zC5zXEiUFZANLjHcHJzvsC+bhQUxLKJlgjWh/NdARL9YKlQAgy8S3
-MzJs7AAZZxdRNBEh+9Me7Xwd+MPFBvwErOEE+kzHAAAAAAAA
+Eric
 
 
---=-2/UcBlLLHL4VfgqLk49h--
-
-
---===============2876288640515285937==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2876288640515285937==--
+> [5] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.4
+>     Warning: command-line has changed! Use --viommu vfio[,opts] and
+>     --viommu virtio[,opts] to instantiate a device.
+> [6] http://www.linux-arm.org/git?p=virtio-iommu.git;a=tree;f=dist/diffs
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
+> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
+> 
