@@ -1,75 +1,153 @@
-From: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Tue, 3 Oct 2017 12:36:53 -0700
-Message-ID: <20171003193653.GA244814@otc-nc-03>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
- <MWHPR12MB1600DA9DF9CF54221B752694C8790@MWHPR12MB1600.namprd12.prod.outlook.com>
- <20170928132942.GA99552@otc-nc-03>
- <a135090f-27e2-cf69-b3a7-c9d0e101bf07@arm.com>
- <20170928154345.GA101272@otc-nc-03>
+From: Andrea Arcangeli <aarcange@redhat.com>
+Subject: Re: [PATCH] mm/mmu_notifier: avoid double notification when it is
+ useless
+Date: Wed, 4 Oct 2017 01:42:15 +0200
+Message-ID: <20171003234215.GA5231@redhat.com>
+References: <20170901173011.10745-1-jglisse@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-crypto-owner@vger.kernel.org>
+Return-path: <linux-next-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170928154345.GA101272@otc-nc-03>
-Sender: linux-crypto-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Casey Leedom <leedom@chelsio.com>, "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Atul Gupta <atul.gupta@chelsio.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Michael Werner <werner@chelsio.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Harsh Jain <Harsh@chelsio.com>
+In-Reply-To: <20170901173011.10745-1-jglisse@redhat.com>
+Sender: linux-next-owner@vger.kernel.org
+To: jglisse@redhat.com
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, Nadav Amit <nadav.amit@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-next@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin
+Hello Jerome,
 
-I now see your patch and it does seem to be fix the problem.
+On Fri, Sep 01, 2017 at 01:30:11PM -0400, Jerome Glisse wrote:
+> +Case A is obvious you do not want to take the risk for the device to write to
+> +a page that might now be use by some completely different task.
 
-On Thu, Sep 28, 2017 at 08:43:46AM -0700, Ashok Raj wrote:
-> Hi Robin
-> 
-> 
-> On Thu, Sep 28, 2017 at 05:59:11PM +0100, Robin Murphy wrote:
-> > I hope our email server hasn't got blacklisted again... Said patch is
-> > the top of this very thread we're replying on[1] - you were definitely
-> > on cc :(
-> 
->         (sg->dma_address + sg->dma_len) ----+
->         sg->dma_address ---------+          |
->         iov_pfn------+           |          |
->                      |           |          |
->                      v           v          v
->     iova:   a        b        c        d        e        f
->             |--------|--------|--------|--------|--------|
->                               <...calculated....>
->                      [_____mapped______]
->     pfn:    0        1        2        3        4        5
->             |--------|--------|--------|--------|--------|
->                      ^           ^          ^
->                      |           |          |
->         sg->page ----+           |          |
->         sg->offset --------------+          |
->         (sg->offset + sg->length) ----------+
-> 
-> The picture seems right. Looking at the code i'm not sure if i understand
-> it correctly.
-> 
-> pgoff = sg->offset & ~PAGE_MASK;
-> 
-> this gets the offset past the start of page.
-> 
-> sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + pgoff;
-> 
-> this would set dma_address at b+off instead of starting at c+off correct?
+used
 
+> +is true ven if the thread doing the page table update is preempted right after
 
-I assumed align_nrpages() would allocate 2 pages when
-the offset is over PAGE_SIZE, but it seems economical and only
-allocates 1 page to cover just the sg->length bytes.
+even
 
-the pteval also seems correct now, since you changed to 
-sg_phys() that already accounts for sg->offset, so you 
-subtract pgoff.
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 90731e3b7e58..5706252b828a 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -1167,8 +1167,15 @@ static int do_huge_pmd_wp_page_fallback(struct vm_fault *vmf, pmd_t orig_pmd,
+>  		goto out_free_pages;
+>  	VM_BUG_ON_PAGE(!PageHead(page), page);
+>  
+> +	/*
+> +	 * Leave pmd empty until pte is filled note we must notify here as
+> +	 * concurrent CPU thread might write to new page before the call to
+> +	 * mmu_notifier_invalidate_range_end() happen which can lead to a
 
--           pteval = page_to_phys(sg_page(sg)) | prot;
-+           pteval = (sg_phys(sg) - pgoff) | prot;
+happens
 
+> +	 * device seeing memory write in different order than CPU.
+> +	 *
+> +	 * See Documentation/vm/mmu_notifier.txt
+> +	 */
+>  	pmdp_huge_clear_flush_notify(vma, haddr, vmf->pmd);
+> -	/* leave pmd empty until pte is filled */
+>  
 
-Cheers,
-Ashok
+Here we can change the following mmu_notifier_invalidate_range_end to
+skip calling ->invalidate_range. It could be called
+mmu_notifier_invalidate_range_only_end, or other suggestions
+welcome. Otherwise we'll repeat the call for nothing.
+
+We need it inside the PT lock for the ordering issue, but we don't
+need to run it twice.
+
+Same in do_huge_pmd_wp_page, wp_page_copy and
+migrate_vma_insert_page. Every time *clear_flush_notify is used
+mmu_notifier_invalidate_range_only_end should be called after it,
+instead of mmu_notifier_invalidate_range_end.
+
+I think optimizing that part too, fits in the context of this patchset
+(if not in the same patch), because the objective is still the same:
+to remove unnecessary ->invalidate_range calls.
+
+> +				 * No need to notify as we downgrading page
+
+are
+
+> +				 * table protection not changing it to point
+> +				 * to a new page.
+> +	 			 *
+
+> +		 * No need to notify as we downgrading page table to read only
+
+are
+
+> +	 * No need to notify as we replacing a read only page with another
+
+are
+
+> @@ -1510,13 +1515,43 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+>  			if (pte_soft_dirty(pteval))
+>  				swp_pte = pte_swp_mksoft_dirty(swp_pte);
+>  			set_pte_at(mm, address, pvmw.pte, swp_pte);
+> -		} else
+> +		} else {
+> +			/*
+> +			 * We should not need to notify here as we reach this
+> +			 * case only from freeze_page() itself only call from
+> +			 * split_huge_page_to_list() so everything below must
+> +			 * be true:
+> +			 *   - page is not anonymous
+> +			 *   - page is locked
+> +			 *
+> +			 * So as it is a shared page and it is locked, it can
+> +			 * not be remove from the page cache and replace by
+> +			 * a new page before mmu_notifier_invalidate_range_end
+> +			 * so no concurrent thread might update its page table
+> +			 * to point at new page while a device still is using
+> +			 * this page.
+> +			 *
+> +			 * But we can not assume that new user of try_to_unmap
+> +			 * will have that in mind so just to be safe here call
+> +			 * mmu_notifier_invalidate_range()
+> +			 *
+> +			 * See Documentation/vm/mmu_notifier.txt
+> +			 */
+>  			dec_mm_counter(mm, mm_counter_file(page));
+> +			mmu_notifier_invalidate_range(mm, address,
+> +						      address + PAGE_SIZE);
+> +		}
+>  discard:
+> +		/*
+> +		 * No need to call mmu_notifier_invalidate_range() as we are
+> +		 * either replacing a present pte with non present one (either
+> +		 * a swap or special one). We handling the clearing pte case
+> +		 * above.
+> +		 *
+> +		 * See Documentation/vm/mmu_notifier.txt
+> +		 */
+>  		page_remove_rmap(subpage, PageHuge(page));
+>  		put_page(page);
+> -		mmu_notifier_invalidate_range(mm, address,
+> -					      address + PAGE_SIZE);
+>  	}
+>  
+>  	mmu_notifier_invalidate_range_end(vma->vm_mm, start, end);
+
+That is the path that unmaps filebacked pages (btw, not necessarily
+shared unlike comment says, they can be private but still filebacked).
+
+I'd like some more explanation about the inner working of "that new
+user" as per comment above.
+
+It would be enough to drop mmu_notifier_invalidate_range from above
+without adding it to the filebacked case. The above gives higher prio
+to the hypothetical and uncertain future case, than to the current
+real filebacked case that doesn't need ->invalidate_range inside the
+PT lock, or do you see something that might already need such
+->invalidate_range?
+
+I certainly like the patch. I expect ->invalidate_range users will
+like the slight higher complexity in order to eliminate unnecessary
+invalidates that are slowing them down unnecessarily. At the same time
+this is zero risk (because a noop) for all other MMU notifier users
+(those that don't share the primary MMU pagetables, like KVM).
+
+Thanks!
+Andrea
