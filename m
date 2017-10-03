@@ -1,73 +1,72 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: road blocks for using dma-iommu on more than arm64
-Date: Mon, 2 Oct 2017 18:48:20 +0100
-Message-ID: <8027096b-08f8-ca31-3b23-6cf41178b75a@arm.com>
-References: <20171001090245.GA22124@infradead.org>
-	<7fcdaa8c-a12c-3264-0173-5c1be6f11ff7@arm.com>
-	<20171002145025.GA28291@infradead.org>
-	<7037c9c3-002b-2228-6988-aa659667056e@arm.com>
-	<20171002163153.GA17254@infradead.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171002163153.GA17254-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Anup Patel <anup.patel@broadcom.com>
+Subject: [PATCH v10] FlexRM support in VFIO platform
+Date: Tue,  3 Oct 2017 10:57:43 +0530
+Message-ID: <1507008464-27236-1-git-send-email-anup.patel@broadcom.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Baptiste Reynal <b.reynal@virtualopensystems.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Scott Branden <sbranden@broadcom.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Anup Patel <anup.patel@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/10/17 17:31, Christoph Hellwig wrote:
-> On Mon, Oct 02, 2017 at 03:56:14PM +0100, Robin Murphy wrote:
->> IIRC, dmabounce has to stay because it handles non-contiguous DMA masks,
->> thanks to a StrongARM hardware erratum where the DMA controller could
->> only access every other megabyte of memory (or something like that).
-> 
-> Isn't that exactly the problem that xen-swiotlb solves?
+This patchset primarily adds Broadcom FlexRM reset module for
+VFIO platform driver.
 
-As far as I can see, not quite - swiotlb-xen appears to handle buffers
-which span non-contiguous host pages, but still assumes that DMA masks
-are of the full DMA_BIT_MASK() form such that checks like "addr <= mask"
-work. I suppose we *could* try just making the SWIOTLB users themselves
-robust against incomplete masks (e.g. [2]) if they need to be, but I'm
-not sure whether that would actually work in practice.
+The patches are based on Linux-4.14-rc3 and can also be
+found at flexrm-vfio-v10 branch of
+https://github.com/Broadcom/arm64-linux.git
 
-FWIW, I could have sworn I had an old mail from Russell about this but
-that seems to have vanished - after a bit more digging it's actually
-about avoiding a particular address line on the SA-1111 as documented in
-[1], and set up in sa1111_configure_smc() (arch/arm/common/sa1111.c).
+Changes since v9:
+ - Make GPL comment header similar to other Broadcom drivers
 
-Robin.
+Changes since v8:
+ - Add missing "ring_num++" in vfio_platform_bcmflexrm_reset()
 
+Changes since v7:
+ - Use "ret |= rc" instead of "ret = rc" in
+   vfio_platform_bcmflexrm_reset()
 
-[1] https://wwwcip.informatik.uni-erlangen.de/~simigern/jornada-7xx/docs/sa1111-errata.pdf
+Changes since v6:
+ - Update the FlexRM ring flush sequence as suggested
+   by HW folks
+ - Shutdown all FlexRM ring anyway even if it fails on
+   any of the FlexRM rings
+ - Use dev_warn() instead of pr_warn()
 
-[2]
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index 0df756b24863..8db96d714517 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -66,10 +66,13 @@ static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dev_addr)
- 
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- {
-+	dma_addr_t mask;
-+
- 	if (!dev->dma_mask)
- 		return false;
- 
--	return addr + size - 1 <= *dev->dma_mask;
-+	mask = *dev->dma_mask;
-+	return !(addr + size - 1 & ~mask) && (size - 1 <= mask ^ (mask + 1));
- }
- 
- static inline void dma_mark_clean(void *addr, size_t size)
+Changes since v5:
+ - Make kconfig option VFIO_PLATFORM_BCMFLEXRM_RESET
+   default to ARCH_BCM_IPROC
+
+Changes since v4:
+ - Use "--timeout" instead of "timeout--" in
+   vfio_platform_bcmflexrm_shutdown()
+
+Changes since v3:
+ - Improve "depends on" for Kconfig option
+   VFIO_PLATFORM_BCMFLEXRM_RESET
+ - Fix typo in pr_warn() called by
+   vfio_platform_bcmflexrm_shutdown()
+ - Return error from vfio_platform_bcmflexrm_shutdown()
+   when FlexRM ring flush timeout happens
+
+Changes since v2:
+ - Remove PATCH1 because fixing VFIO no-IOMMU mode is
+   a separate topic
+
+Changes since v1:
+ - Remove iommu_present() check in vfio_iommu_group_get()
+ - Drop PATCH1-to-PATCH3 because IOMMU_CAP_BYPASS is not
+   required
+ - Move additional comments out of license header in
+   vfio_platform_bcmflexrm.c
+
+Anup Patel (1):
+  vfio: platform: reset: Add Broadcom FlexRM reset module
+
+ drivers/vfio/platform/reset/Kconfig                |   9 ++
+ drivers/vfio/platform/reset/Makefile               |   1 +
+ .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 113 +++++++++++++++++++++
+ 3 files changed, 123 insertions(+)
+ create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+
+-- 
+2.7.4
