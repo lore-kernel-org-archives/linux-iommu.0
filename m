@@ -1,34 +1,75 @@
-From: Casey Leedom <leedom@chelsio.com>
+From: "Raj, Ashok" <ashok.raj@intel.com>
 Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Tue, 3 Oct 2017 22:22:31 +0000
-Message-ID: <MWHPR12MB1600E4FC91BC6D99017D3FCDC8720@MWHPR12MB1600.namprd12.prod.outlook.com>
+Date: Tue, 3 Oct 2017 12:36:53 -0700
+Message-ID: <20171003193653.GA244814@otc-nc-03>
 References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
- <fe25071a-18bf-e468-01e7-36515f2110e2@chelsio.com>
- <MWHPR12MB160034E91A834504FE85C07BC87E0@MWHPR12MB1600.namprd12.prod.outlook.com>,<e2c92d3a-3d5d-a0eb-7d5f-a9453e48cfd5@chelsio.com>
+ <MWHPR12MB1600DA9DF9CF54221B752694C8790@MWHPR12MB1600.namprd12.prod.outlook.com>
+ <20170928132942.GA99552@otc-nc-03>
+ <a135090f-27e2-cf69-b3a7-c9d0e101bf07@arm.com>
+ <20170928154345.GA101272@otc-nc-03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-crypto-owner@vger.kernel.org>
-In-Reply-To: <e2c92d3a-3d5d-a0eb-7d5f-a9453e48cfd5@chelsio.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20170928154345.GA101272@otc-nc-03>
 Sender: linux-crypto-owner@vger.kernel.org
-To: Harsh  Jain <Harsh@chelsio.com>, Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>
-Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Atul Gupta <atul.gupta@chelsio.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Casey Leedom <leedom@chelsio.com>, "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Atul Gupta <atul.gupta@chelsio.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Michael Werner <werner@chelsio.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, Harsh Jain <Harsh@chelsio.com>
 List-Id: iommu@lists.linux-foundation.org
 
-| From: Harsh Jain <Harsh@chelsio.com>
-| Sent: Tuesday, October 3, 2017 5:22 AM
-|
-| Hi Robin/Ashok,
-|
-| Find attached trace of DMA write error. I had a look on trace but didn't
-| find anything suspicious.
-|
-| Let me know if you need more trace.
+Hi Robin
 
-As a reminder, Harsh and Atul will be waking up in a few hours, so if there
-are additional tests for which you'd like them to gather data, it would be
-good to ask now so it's available to them to work on while we're all off
-asleep ...
+I now see your patch and it does seem to be fix the problem.
 
-Casey
+On Thu, Sep 28, 2017 at 08:43:46AM -0700, Ashok Raj wrote:
+> Hi Robin
+> 
+> 
+> On Thu, Sep 28, 2017 at 05:59:11PM +0100, Robin Murphy wrote:
+> > I hope our email server hasn't got blacklisted again... Said patch is
+> > the top of this very thread we're replying on[1] - you were definitely
+> > on cc :(
+> 
+>         (sg->dma_address + sg->dma_len) ----+
+>         sg->dma_address ---------+          |
+>         iov_pfn------+           |          |
+>                      |           |          |
+>                      v           v          v
+>     iova:   a        b        c        d        e        f
+>             |--------|--------|--------|--------|--------|
+>                               <...calculated....>
+>                      [_____mapped______]
+>     pfn:    0        1        2        3        4        5
+>             |--------|--------|--------|--------|--------|
+>                      ^           ^          ^
+>                      |           |          |
+>         sg->page ----+           |          |
+>         sg->offset --------------+          |
+>         (sg->offset + sg->length) ----------+
+> 
+> The picture seems right. Looking at the code i'm not sure if i understand
+> it correctly.
+> 
+> pgoff = sg->offset & ~PAGE_MASK;
+> 
+> this gets the offset past the start of page.
+> 
+> sg->dma_address = ((dma_addr_t)iov_pfn << VTD_PAGE_SHIFT) + pgoff;
+> 
+> this would set dma_address at b+off instead of starting at c+off correct?
+
+
+I assumed align_nrpages() would allocate 2 pages when
+the offset is over PAGE_SIZE, but it seems economical and only
+allocates 1 page to cover just the sg->length bytes.
+
+the pteval also seems correct now, since you changed to 
+sg_phys() that already accounts for sg->offset, so you 
+subtract pgoff.
+
+-           pteval = page_to_phys(sg_page(sg)) | prot;
++           pteval = (sg_phys(sg) - pgoff) | prot;
+
+
+Cheers,
+Ashok
