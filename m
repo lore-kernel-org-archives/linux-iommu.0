@@ -1,12 +1,12 @@
 From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 1/2] iommu/tegra: gart: Add optional debug checking for overwriting of page mappings
-Date: Wed,  4 Oct 2017 04:02:30 +0300
-Message-ID: <2eadfde76987532354e419ffc98aae44e4af489a.1507078586.git.digetx@gmail.com>
+Subject: [PATCH v2 1/2] iommu/tegra: gart: Optionally check for overwriting of page mappings
+Date: Wed,  4 Oct 2017 04:02:31 +0300
+Message-ID: <7eea4a30b0f4fdbe14351cf2c6cf537365080d2d.1507078770.git.digetx@gmail.com>
 References: <cover.1507078770.git.digetx@gmail.com>
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1507078770.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-In-Reply-To: <cover.1507078586.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-References: <cover.1507078586.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <cover.1507078770.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+References: <cover.1507078770.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
@@ -45,7 +45,7 @@ index f3a21343e636..851156a4896d 100644
  	bool "NVIDIA Tegra SMMU Support"
  	depends on ARCH_TEGRA
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index b62f790ad1ba..7e5df0ebcdfc 100644
+index b62f790ad1ba..bc4cb200fa03 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
 @@ -271,6 +271,7 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
@@ -71,15 +71,18 @@ index b62f790ad1ba..7e5df0ebcdfc 100644
  	gart_set_pte(gart, iova, GART_PTE(pfn));
  	FLUSH_GART_REGS(gart);
  	spin_unlock_irqrestore(&gart->pte_lock, flags);
-@@ -298,11 +307,16 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	if (!gart_iova_range_valid(gart, iova, bytes))
- 		return 0;
+@@ -295,6 +304,10 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	struct gart_device *gart = gart_domain->gart;
+ 	unsigned long flags;
  
 +	/* don't unmap page entries to achieve better performance */
 +	if (!IS_ENABLED(TEGRA_IOMMU_GART_DEBUG))
 +		return 0;
 +
- 	spin_lock_irqsave(&gart->pte_lock, flags);
+ 	if (!gart_iova_range_valid(gart, iova, bytes))
+ 		return 0;
+ 
+@@ -302,7 +315,8 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
  	gart_set_pte(gart, iova, 0);
  	FLUSH_GART_REGS(gart);
  	spin_unlock_irqrestore(&gart->pte_lock, flags);
