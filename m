@@ -1,142 +1,103 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v8 3/5] iommu/of: Add msi address regions reservation
-	helper
-Date: Wed, 4 Oct 2017 17:07:15 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA83841C809@FRAEML521-MBX.china.huawei.com>
-References: <20170927133241.21036-1-shameerali.kolothum.thodi@huawei.com>
-	<20170927133241.21036-4-shameerali.kolothum.thodi@huawei.com>
-	<f3146f49-6004-7a15-866b-653e3ea54856@arm.com>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Task based virtual address spaces
+Date: Wed, 4 Oct 2017 13:43:27 -0600
+Message-ID: <20171004194327.GA25346@jcrouse-lnx.qualcomm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f3146f49-6004-7a15-866b-653e3ea54856-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: ssusheel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Marc Zyngier [mailto:marc.zyngier-5wv7dgnIgG8@public.gmane.org]
-> Sent: Wednesday, October 04, 2017 12:22 PM
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
-> lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> robin.murphy-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org;
-> robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> Cc: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; John Garry
-> <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org; Linuxarm
-> <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Wangzhou (B) <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>;
-> Guohanjun (Hanjun Guo) <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> Subject: Re: [PATCH v8 3/5] iommu/of: Add msi address regions reservation
-> helper
-> 
-> On 27/09/17 14:32, Shameer Kolothum wrote:
-> > From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> >
-> > On some platforms msi-controller address regions have to be excluded
-> > from normal IOVA allocation in that they are detected and decoded in a
-> > HW specific way by system components and so they cannot be considered
-> > normal IOVA address space.
-> >
-> > Add a helper function that retrieves msi address regions through
-> > device tree msi mapping, so that these regions will not be translated
-> > by IOMMU and will be excluded from IOVA allocations.
-> >
-> > Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > [Shameer: Modified msi-parent retrieval logic]
-> > Signed-off-by: Shameer Kolothum
-> <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/of_iommu.c | 95
-> > ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/of_iommu.h | 10 +++++
-> >  2 files changed, 105 insertions(+)
-> >
-> > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index
-> > e60e3db..ffd7fb7 100644
-> > --- a/drivers/iommu/of_iommu.c
-> > +++ b/drivers/iommu/of_iommu.c
-> > @@ -21,6 +21,7 @@
-> >  #include <linux/iommu.h>
-> >  #include <linux/limits.h>
-> >  #include <linux/of.h>
-> > +#include <linux/of_address.h>
-> >  #include <linux/of_iommu.h>
-> >  #include <linux/of_pci.h>
-> >  #include <linux/slab.h>
-> > @@ -138,6 +139,14 @@ static int of_iommu_xlate(struct device *dev,
-> >  	return ops->of_xlate(dev, iommu_spec);  }
-> >
-> > +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-> > +{
-> > +	u32 *rid = data;
-> > +
-> > +	*rid = alias;
-> > +	return 0;
-> > +}
-> > +
-> >  struct of_pci_iommu_alias_info {
-> >  	struct device *dev;
-> >  	struct device_node *np;
-> > @@ -163,6 +172,73 @@ static int of_pci_iommu_init(struct pci_dev *pdev,
-> u16 alias, void *data)
-> >  	return info->np == pdev->bus->dev.of_node;  }
-> >
-> > +static int of_iommu_alloc_resv_region(struct device_node *np,
-> > +				      struct list_head *head)
-> > +{
-> > +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > +	struct iommu_resv_region *region;
-> > +	struct resource res;
-> > +	int err;
-> > +
-> > +	err = of_address_to_resource(np, 0, &res);
-> 
-> What is the rational for registering the first region only? Surely you can have
-> more than one region in an MSI controller (yes, your particular case is the ITS
-> which has only one, but we're trying to do something generic here).
-
-Ok. 
-
-> Another issue I have with this code is that it inserts all of the ITS MMIO in the
-> RESV_MSI range. As long as we don't generate any page tables for this, we're
-> fine. But if we ever change this, we'll end-up with the ITS programming
-> interface being exposed to a device, which wouldn't be acceptable.
-
-I understand the concern of reserving the whole of ITS MMIO region. Sorry, 
-but just being curious, how this will be exposed to a  device ? You mean a device
-can  be configured to access the ITS MMIO region and it will fail because there is
-no SMMU mapping for that?
- 
-> Why can't we have some generic property instead, that would describe the
-> actual ranges that cannot be translated? That way, no random insertion of a
-> random range, and relatively future proof.
-> 
-> I'm not sure where to declare it (PCIe node? IOMMU node?), but it'd feel like
-> a much nicer and simpler solution to this problem.
-
-I am not sure that will be seen as legitimizing the untranslated regions or not.
-We had this discussion to include the regions specified in IORT spec and the
-answer was that, it will in a way legitimize this and encourage future
-implementations.
-
-How about making the _msi_get_resv_regions() function be very specific to GIC
-ITS like _its_msi_get_resv_regions() ? Is that something we can consider?
-(In fact we had a checking for "arm, gic-v3-its" in a previous version of this series).
-
-Thanks,
-Shameer
+VHJ5aW5nIHRvIHN0YXJ0IGJhY2sgdXAgdGhlIGNvbnZlcnNhdGlvbiBhYm91dCBtdWx0aXBsZSBh
+ZGRyZXNzCnNwYWNlcyBmb3IgSU9NTVUgZGV2aWNlcy4gSWYgeW91IHdpbGwgcmVtZW1iZXIgSmVh
+bi1QaGlsaXBwZSBwb3N0ZWQKc29tZSBwYXRjaGVzIGJhY2sgaW4gRmVicnVhcnkgZm9yIFNWTSBv
+biBhcm0tc21tdS12My4KCkZvciBxdWl0ZSBzb21lIHRpbWUgdGhlIGRvd25zdHJlYW0gU25hcGRy
+YWdvbiBrZXJuZWxzIGhhdmUgc3VwcG9ydGVkCnNvbWV0aGluZyB3ZSBjYWxsICJwZXItcHJvY2Vz
+cyIgcGFnZSB0YWJsZXMgZm9yIHRoZSBHUFUuIEFzIHdpdGggZnVsbCBTVk0KdGhpcyBpbnZvbHZl
+cyBjcmVhdGluZyBhIHZpcnR1YWwgYWRkcmVzcyBzcGFjZSBwZXIgdGFzayBidXQgdW5saWtlIFNW
+TQp3ZSBkb24ndCBhdXRvbWF0aWNhbGx5IHNoYXJlIHRoZSBwYWdlIHRhYmxlIGZyb20gdGhlIENQ
+VS4gSW5zdGVhZCB3ZQp3YW50IHRvIGNyZWF0ZSBhIG5ldyBwYWdlIHRhYmxlIGFuZCBleHBsaWNp
+dGx5IG1hcC91bm1hcCBhZGRyZXNzIHJhbmdlcwppbnRvIGl0LiBXZSBwcm92aWRlIHRoZSBwaHlz
+aWNhbCBhZGRyZXNzIG9mIHRoZSBwYWdlIHRhYmxlIHRvIHRoZSBHUFUgYW5kCml0IGdvZXMgdGhy
+b3VnaCB0aGUgbWVjaGFuaWNzIG9mIHByb2dyYW1taW5nIHRoZSBUVEJSMCBhbmQgaW52YWxpZGF0
+aW5nCnRoZSBUTEIgd2hlbiBzdGFydHMgZXhlY3V0aW5nIGEgc3VibWlzc2lvbiBmb3IgYSBnaXZl
+biB0YXNrLgoKQXMgd2l0aCBhbGwgdGhpbmdzIElPTU1VIHRoaXMgZGlzY3Vzc2lvbiBuZWVkcyB0
+byBiZSBzcGxpdCBpbnRvIHR3byBwYXJ0cyAtCnRoZSBBUEkgYW5kIHRoZSBpbXBsZW1lbnRhdGlv
+bi4gSSB3YW50IHRvIGZvY3VzIG9uIHRoZSBnZW5lcmljIEFQSSBmb3IgdGhpcwplbWFpbC4gU2hv
+cnRseSBhZnRlciBKZWFuLVBoaWxpcHBlIHBvc3RlZCBoaXMgcGF0Y2hlcyBJIHNlbnQgb3V0IGEg
+cm91Z2gKcHJvdG90eXBlIG9mIGhvdyB0aGUgZG93bnN0cmVhbSBzb2x1dGlvbiB3b3JrZWQgWzFd
+OgoKKy0tLS0tLS0tLS0tLS0tLS0tKyAgICAgICArLS0tLS0tLS0tLS0tLS0tLS0tKwp8ICJtYXN0
+ZXIiIGRvbWFpbiB8ICAtLS0+IHwgImR5bmFtaWMiIGRvbWFpbiB8CistLS0tLS0tLS0tLS0tLS0t
+LSsgIFwgICAgKy0tLS0tLS0tLS0tLS0tLS0tLSsKICAgICAgICAgICAgICAgICAgICAgIFwgICAg
+ICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgIFwgICstLS0tLS0tLS0tLS0t
+LS0tLS0rCiAgICAgICAgICAgICAgICAgICAgICAgIC0gfCAiZHluYW1pYyIgZG9tYWluIHwKICAg
+ICAgICAgICAgICAgICAgICAgICAgICArLS0tLS0tLS0tLS0tLS0tLS0tKwoKR2l2ZW4gYSAibWFz
+dGVyIiBkb21haW4gKGNyZWF0ZWQgaW4gdGhlIG5vcm1hbCB3YXkpIHdlIGNhbiBjcmVhdGUgYW55
+IG51bWJlcgpvZiAiZHluYW1pYyIgZG9tYWlucyB3aGljaCBzaGFyZSB0aGUgc2FtZSBjb25maWd1
+cmF0aW9uIGFzIHRoZSBtYXN0ZXIgKHRhYmxlCmZvcm1hdCwgY29udGV4dCBiYW5rLCBxdWlya3Ms
+IGV0YykuIFdoZW4gdGhlIGR5bmFtaWMgZG9tYWluIGlzIGFsbG9jYXRlZC8KYXR0YWNoZWQgaXQg
+Y3JlYXRlcyBhIG5ldyBwYWdlIHRhYmxlIC0gZm9yIGFsbCBpbnRlbnRzIGFuZCBwdXJwb3NlcyB0
+aGlzIGlzCmEgInJlYWwiIGRvbWFpbiBleGNlcHQgdGhhdCBpdCBkb2Vzbid0IGFjdHVhbGx5IHRv
+dWNoIHRoZSBoYXJkd2FyZS4gV2UgY2FuCnVzZSB0aGlzIGRvbWFpbiB3aXRoIGlvbW11X21hcCgp
+IC8gaW9tbXVfdW5tYXAoKSBhcyB1c3VhbCBhbmQgdGhlbiBwYXNzIHRoZQpwaHlzaWNhbCBhZGRy
+ZXNzIChhY3F1aXJlZCB0aHJvdWdoIGEgSU9NTVUgZG9tYWluIGF0dHJpYnV0ZSkgdG8gdGhlIEdQ
+VSBhbmQKZXZlcnl0aGluZyB3b3Jrcy4KClRoZSBtYWluIGdvYWwgZm9yIHRoaXMgYXBwcm9hY2gg
+d2FzIHRvIHRyeSB0byB1c2UgdGhlIGlvbW11IEFQSSBpbnN0ZWFkIG9mCnRlYWNoaW5nIHRoZSBH
+UFUgZHJpdmVyIGhvdyB0byBkZWFsIHdpdGggc2V2ZXJhbCBnZW5lcmF0aW9ucyBvZiBwYWdlIHRh
+YmxlCmZvcm1hdHMgYW5kIElPTU1VIGRldmljZXMuIFNob2Vob3JuaW5nIGl0IGludG8gdGhlIGRv
+bWFpbiBzdHJ1Y3Qgd2FzIGEKcGF0aCBvZiBsZWFzdCByZXNpc3RhbmNlIHRoYXQgaGFzIHNlcnZl
+ZCBTbmFwZHJhZ29uIHdlbGwgYnV0IGl0IHdhcyBuZXZlcgpyZWFsbHkgYW55dGhpbmcgd2UgY29u
+c2lkZXJlZCB0byBiZSBhIGdlbmVyaWMgc29sdXRpb24uCgpJbiB0aGUgU1ZNIHBhdGNoZXMsIEpl
+YW4tUGhpbGlwcGUgaW50cm9kdWNlcyBpb21tdV9iaW5kX3Rhc2soKToKaHR0cHM6Ly9wYXRjaHdv
+cmsuY29kZWF1cm9yYS5vcmcvcGF0Y2gvMTg0Nzc3Ly4gR2l2ZW4gYSBzdHJ1Y3QgdGFzayBhbmQK
+YSBiaXQgb2Ygb3RoZXIgc3R1ZmYgaXQgZ29lcyBvZmYgYW5kIGRvZXMgU1ZNIG1hZ2ljLgoKTXkg
+cHJvcG9zYWwgd291bGQgYmUgdG8gZXh0ZW5kIHRoaXMgc2xpZ2h0bHkgYW5kIHJldHVybiBhIGlv
+bW11X3Rhc2sKc3RydWN0IGZyb20gaW9tbXVfYmluZF90YXNrOgoKc3RydWN0IGlvbW11X3Rhc2sg
+KmlvbW11X2JpbmRfdGFzayhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnV0IHRhc2tfc3RydXQgKnRh
+c2ssCglpbnQgKnBhc2lkLCBpbnQgZmxhZ3MsIHZvaWQgKnByaXYpOwoKRm9yIGltcGxlbWVudGF0
+aW9ucyB0aGF0IGRpZCByZWFsIFNWTSB0aGUgcmVzdCB3b3VsZCBiZWhhdmUgdGhlIHNhbWUsIGJ1
+dCBmb3IKdGFyZ2V0cyB3aXRoIGV4cGxpY2l0IG1hcCByZXF1aXJlbWVudHMgdGhlIGlvbW11X3Rh
+c2sgdG9rZW4gY291bGQgdGhlbiBiZQp1c2VkIGZvciBtYXAvdW5tYXA6Cgppb21tdV90YXNrX21h
+cChzdHJ1Y3QgaW9tbXVfdGFzayAqdGFzaywgdW5zaWduZWQgbG9uZyBpb3ZhLCBwaHlzX2FkZHJf
+dCBwYWRkciwKCXNpemVfdCBzaXplLCBpbnQgcHJvdCk7Cgppb21tdV90YXNrX3VubWFwKHN0cnVj
+dCBpb21tdV90YXNrICp0YXNrLCB1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplKTsKCmlu
+dCBpb21tdV91bmJpbmRfdGFzayhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBpb21tdV90YXNr
+ICp0YXNrLCBpbnQgcGFzaWQsCglpbnQgZmxhZ3MpOwoKKE5vdGUgdGhhdCBJJ20gdHlwaW5nIHRo
+ZXNlIHVwIG9uIHRoZSBmbHkgLSBkb24ndCB0YWtlIHRoZXNlIHByb3RvdHlwZXMgYXMKZ29zcGVs
+LiBUaGlzIGlzIG1vc3RseSBqdXN0IGEgcmVwcmVzZW50YXRpb24gb2YgdGhlIGhvb2tzIHdlIHdv
+dWxkIG5lZWQpLgoKSW50ZXJuYWxseSB0aGlzIHdvdWxkIGNvbWUgZG93biBpbnRvIHRoZSBkZXZp
+Y2UgZHJpdmVycyB3aXRoIGNvZGUgc2ltaWxhcgp0byBodHRwczovL3BhdGNod29yay5jb2RlYXVy
+b3JhLm9yZy9wYXRjaC8xODQ3NTEvLiBBdCB0aGUgZGV2aWNlIGxldmVsCnRoZSBiaWdnZXN0IHF1
+ZXN0aW9uIGZpZ3VyaW5nIG91dCBpZiB0aGlzIGlzIHRoZSAiZnVsbCBTVk0iIG9yICJleHBsaWNp
+dCIKbW9kZWwgLSB3ZSBjb3VsZCBoYW5kbGUgdGhhdCB3aXRoIGNvbXBhdGlibGUgc3RyaW5ncyBv
+ciBkdCBxdWlya3Mgb3IgZXZlbgphIGZsYWcgdG8gaW9tbXVfYmluZF90YXNrKCkuIE9uIFNuYXBk
+cmFnb24gd2UgaGF2ZSB0aGUgYWRkaXRpb25hbApyZXF1aXJlbWVudCB0byBnZXQgdGhlIHBoeXNp
+Y2FsIGFkZHJlc3MgZm9yIHRoZSBwYWdlIHRhYmxlLiBUaGF0IGNvdWxkCmJlIGVuY29kZWQgaW50
+byBwYXNpZCBvciByZXR1cm5lZCBpbiB0aGUgaW9tbXVfdGFzayBzdHJ1Y3Qgb3IgYSB0YXNrCmF0
+dHJpYnV0ZSBmdW5jdGlvbi4KCkNvbW1lbnRzIHdlbGNvbWUgb2YgY291cnNlLiBJIHRoaW5rIHRo
+YXQgaWYgd2UgY2FuIGZvY3VzIG9uIGdldHRpbmcgYSBnb29kCmdlbmVyaWMgQVBJIG5haWxlZCBk
+b3duIHdlIGNhbiBkcmlsbCBpbnRvIHRoZSBzcGVjaWZpY3MuIEJldHdlZW4gdGhlIDQxMGMKYW5k
+IHRoZSA4MjBjIHdlIGhhdmUgdHdvIGdvb2QgZXhhbXBsZXMgdGhhdCB3ZSBjYW4gcmFwaWRseSBw
+cm90b3R5cGUuCkkgd291bGQgbGlrZSB0byBnZXQgdGhpcyBvbiB0aGUgcmFkYXIgc28gd2UgY2Fu
+IGdldCBpdCBtZXJnZWQgYW5kIHN0YWJpbGl6ZWQKd2l0aCBlbm91Z2ggdGltZSB0byBoaXQgYSBM
+VFMgcmVsZWFzZS4KClRoYW5rcywKSm9yZGFuCgpbMV0gaHR0cHM6Ly9wYXRjaHdvcmsuY29kZWF1
+cm9yYS5vcmcvcGF0Y2gvMTkyNTczLwpodHRwczovL3BhdGNod29yay5jb2RlYXVyb3JhLm9yZy9w
+YXRjaC8xOTI1NzEvCmh0dHBzOi8vcGF0Y2h3b3JrLmNvZGVhdXJvcmEub3JnL3BhdGNoLzE5MjU3
+Ny8KaHR0cHM6Ly9wYXRjaHdvcmsuY29kZWF1cm9yYS5vcmcvcGF0Y2gvMTkyNTc5LwoKCi0tIApU
+aGUgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIgb2YgQ29kZSBB
+dXJvcmEgRm9ydW0sCmEgTGludXggRm91bmRhdGlvbiBDb2xsYWJvcmF0aXZlIFByb2plY3QKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1h
+aWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
