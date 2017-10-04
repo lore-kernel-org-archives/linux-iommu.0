@@ -1,100 +1,60 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] iommu/tegra: gart: Add optional debug checking for
- overwriting of page mappings
-Date: Wed, 4 Oct 2017 04:12:31 +0300
-Message-ID: <21da6e28-c788-0a41-2fa5-a8bc5d99e9a2@gmail.com>
-References: <cover.1507078770.git.digetx@gmail.com>
- <2eadfde76987532354e419ffc98aae44e4af489a.1507078586.git.digetx@gmail.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [PATCH] mm/mmu_notifier: avoid double notification when it is
+ useless
+Date: Tue, 3 Oct 2017 21:20:16 -0400
+Message-ID: <20171004012016.GE20644@redhat.com>
+References: <20170901173011.10745-1-jglisse@redhat.com>
+ <20171003234215.GA5231@redhat.com>
+ <20171004001559.GD20644@redhat.com>
+ <0D64494B-AB3D-4091-B75A-883EA37BE098@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <2eadfde76987532354e419ffc98aae44e4af489a.1507078586.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-next-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <0D64494B-AB3D-4091-B75A-883EA37BE098@gmail.com>
+Sender: linux-next-owner@vger.kernel.org
+To: Nadav Amit <nadav.amit@gmail.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>, "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-next@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04.10.2017 04:02, Dmitry Osipenko wrote:
-> Due to a bug in IOVA allocator, page mapping could accidentally overwritten.
-> We can catch this case by checking 'VALID' bit of GART's page entry prior to
-> mapping of a page. Since that check introduces a noticeable performance
-> impact, it should be enabled explicitly by a new CONFIG_TEGRA_IOMMU_GART_DEBUG
-> option.
+On Tue, Oct 03, 2017 at 05:43:47PM -0700, Nadav Amit wrote:
+> Jerome Glisse <jglisse@redhat.com> wrote:
 > 
-> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/Kconfig      |  9 +++++++++
->  drivers/iommu/tegra-gart.c | 16 +++++++++++++++-
->  2 files changed, 24 insertions(+), 1 deletion(-)
+> > On Wed, Oct 04, 2017 at 01:42:15AM +0200, Andrea Arcangeli wrote:
+> > 
+> >> I'd like some more explanation about the inner working of "that new
+> >> user" as per comment above.
+> >> 
+> >> It would be enough to drop mmu_notifier_invalidate_range from above
+> >> without adding it to the filebacked case. The above gives higher prio
+> >> to the hypothetical and uncertain future case, than to the current
+> >> real filebacked case that doesn't need ->invalidate_range inside the
+> >> PT lock, or do you see something that might already need such
+> >> ->invalidate_range?
+> > 
+> > No i don't see any new user today that might need such invalidate but
+> > i was trying to be extra cautious as i have a tendency to assume that
+> > someone might do a patch that use try_to_unmap() without going through
+> > all the comments in the function and thus possibly using it in a an
+> > unexpected way from mmu_notifier callback point of view. I am fine
+> > with putting the burden on new user to get it right and adding an
+> > extra warning in the function description to try to warn people in a
+> > sensible way.
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f3a21343e636..851156a4896d 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -242,6 +242,15 @@ config TEGRA_IOMMU_GART
->  	  space through the GART (Graphics Address Relocation Table)
->  	  hardware included on Tegra SoCs.
->  
-> +config TEGRA_IOMMU_GART_DEBUG
-> +	bool "Debug Tegra GART IOMMU"
-> +	depends on TEGRA_IOMMU_GART
-> +	help
-> +	  Properly unmap pages and check whether page is already mapped
-> +	  during of mapping in expense of performance. This allows to
-> +	  catch double page remappings, caused by a bug in the IOVA
-> +	  allocator for example.
-> +
->  config TEGRA_IOMMU_SMMU
->  	bool "NVIDIA Tegra SMMU Support"
->  	depends on ARCH_TEGRA
-> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-> index b62f790ad1ba..7e5df0ebcdfc 100644
-> --- a/drivers/iommu/tegra-gart.c
-> +++ b/drivers/iommu/tegra-gart.c
-> @@ -271,6 +271,7 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
->  	struct gart_device *gart = gart_domain->gart;
->  	unsigned long flags;
->  	unsigned long pfn;
-> +	unsigned long pte;
->  
->  	if (!gart_iova_range_valid(gart, iova, bytes))
->  		return -EINVAL;
-> @@ -282,6 +283,14 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
->  		spin_unlock_irqrestore(&gart->pte_lock, flags);
->  		return -EINVAL;
->  	}
-> +	if (IS_ENABLED(TEGRA_IOMMU_GART_DEBUG)) {
-> +		pte = gart_read_pte(gart, iova);
-> +		if (pte & GART_ENTRY_PHYS_ADDR_VALID) {
-> +			spin_unlock_irqrestore(&gart->pte_lock, flags);
-> +			dev_err(gart->dev, "Page entry is used already\n");
-> +			return -EBUSY;
-> +		}
-> +	}
->  	gart_set_pte(gart, iova, GART_PTE(pfn));
->  	FLUSH_GART_REGS(gart);
->  	spin_unlock_irqrestore(&gart->pte_lock, flags);
-> @@ -298,11 +307,16 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
->  	if (!gart_iova_range_valid(gart, iova, bytes))
->  		return 0;
->  
-> +	/* don't unmap page entries to achieve better performance */
-> +	if (!IS_ENABLED(TEGRA_IOMMU_GART_DEBUG))
-> +		return 0;
-> +
->  	spin_lock_irqsave(&gart->pte_lock, flags);
->  	gart_set_pte(gart, iova, 0);
->  	FLUSH_GART_REGS(gart);
->  	spin_unlock_irqrestore(&gart->pte_lock, flags);
-> -	return 0;
-> +
-> +	return bytes;
->  }
->  
->  static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
+> I must be missing something. After the PTE is changed, but before the
+> secondary TLB notification/invalidation - What prevents another thread from
+> changing the mappings (e.g., using munmap/mmap), and setting a new page
+> at that PTE?
 > 
+> Wouldn’t it end with the page being mapped without a secondary TLB flush in
+> between?
 
-Please ignore this email, it was sent out by an accident. And please let me know
-if I should re-send the patchset.
+munmap would call mmu_notifier to invalidate the range too so secondary
+TLB would be properly flush before any new pte can be setup in for that
+particular virtual address range. Unlike CPU TLB flush, secondary TLB
+flush are un-conditional and thus current pte value does not play any
+role.
+
+Cheers,
+Jérôme
