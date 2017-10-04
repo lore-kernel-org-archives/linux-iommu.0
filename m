@@ -1,51 +1,34 @@
-From: Nadav Amit <nadav.amit@gmail.com>
-Subject: Re: [PATCH] mm/mmu_notifier: avoid double notification when it is
- useless
-Date: Tue, 3 Oct 2017 17:43:47 -0700
-Message-ID: <0D64494B-AB3D-4091-B75A-883EA37BE098@gmail.com>
-References: <20170901173011.10745-1-jglisse@redhat.com>
- <20171003234215.GA5231@redhat.com> <20171004001559.GD20644@redhat.com>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <20171004001559.GD20644@redhat.com>
-Sender: linux-next-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>, "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-next@vger.kernel.org
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 0/2] TEGRA GART cleanup and new debug option
+Date: Wed,  4 Oct 2017 04:02:29 +0300
+Message-ID: <cover.1507078770.git.digetx@gmail.com>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Jerome Glisse <jglisse@redhat.com> wrote:
+This is a continuation of the "iommu/tegra: gart: Couple corrections"
+patchset that was send out quite some time ago and reviewed by Thierry Reding
+recently.
 
-> On Wed, Oct 04, 2017 at 01:42:15AM +0200, Andrea Arcangeli wrote:
->=20
->> I'd like some more explanation about the inner working of "that new
->> user" as per comment above.
->>=20
->> It would be enough to drop mmu_notifier_invalidate_range from above
->> without adding it to the filebacked case. The above gives higher prio
->> to the hypothetical and uncertain future case, than to the current
->> real filebacked case that doesn't need ->invalidate_range inside the
->> PT lock, or do you see something that might already need such
->> ->invalidate_range?
->=20
-> No i don't see any new user today that might need such invalidate but
-> i was trying to be extra cautious as i have a tendency to assume that
-> someone might do a patch that use try_to_unmap() without going through
-> all the comments in the function and thus possibly using it in a an
-> unexpected way from mmu_notifier callback point of view. I am fine
-> with putting the burden on new user to get it right and adding an
-> extra warning in the function description to try to warn people in a
-> sensible way.
+Change log:
 
-I must be missing something. After the PTE is changed, but before the
-secondary TLB notification/invalidation - What prevents another thread =
-from
-changing the mappings (e.g., using munmap/mmap), and setting a new page
-at that PTE?
+v2:
+	- Dropped "Don't unnecessarily allocate registers context" patch
+	  as it is not entirely correct.
 
-Wouldn=E2=80=99t it end with the page being mapped without a secondary =
-TLB flush in
-between?
+	- Replaced "Correct number of unmapped bytes" and "Check whether page
+	  is already mapped" patches with a new GART debug Kconfig option
+	  patch.
 
-Nadav
+Dmitry Osipenko (2):
+  iommu/tegra: gart: Optionally check for overwriting of page mappings
+  iommu/tegra: gart: Move PFN validation out of spinlock
+
+ drivers/iommu/Kconfig      |  9 +++++++++
+ drivers/iommu/tegra-gart.c | 20 +++++++++++++++++---
+ 2 files changed, 26 insertions(+), 3 deletions(-)
+
+-- 
+2.14.1
