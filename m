@@ -1,60 +1,44 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [PATCH] mm/mmu_notifier: avoid double notification when it is
- useless
-Date: Tue, 3 Oct 2017 21:20:16 -0400
-Message-ID: <20171004012016.GE20644@redhat.com>
-References: <20170901173011.10745-1-jglisse@redhat.com>
- <20171003234215.GA5231@redhat.com>
- <20171004001559.GD20644@redhat.com>
- <0D64494B-AB3D-4091-B75A-883EA37BE098@gmail.com>
+From: Christophe LEROY <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH 07/11] powerpc: make dma_cache_sync a no-op
+Date: Wed, 4 Oct 2017 10:29:13 +0200
+Message-ID: <fd0ccac1-51dc-1eff-f1ac-63f9df282de2@c-s.fr>
+References: <20171003104311.10058-1-hch@lst.de>
+ <20171003104311.10058-8-hch@lst.de>
+ <670a0571-1a36-51a3-db52-64bc61184c35@c-s.fr> <20171003114330.GA24592@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-next-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <0D64494B-AB3D-4091-B75A-883EA37BE098@gmail.com>
-Sender: linux-next-owner@vger.kernel.org
-To: Nadav Amit <nadav.amit@gmail.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>, "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-next@vger.kernel.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20171003114330.GA24592@lst.de>
+Content-Language: fr
+Sender: linux-ia64-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Chris Zankel <chris@zankel.net>, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 03, 2017 at 05:43:47PM -0700, Nadav Amit wrote:
-> Jerome Glisse <jglisse@redhat.com> wrote:
-> 
-> > On Wed, Oct 04, 2017 at 01:42:15AM +0200, Andrea Arcangeli wrote:
-> > 
-> >> I'd like some more explanation about the inner working of "that new
-> >> user" as per comment above.
-> >> 
-> >> It would be enough to drop mmu_notifier_invalidate_range from above
-> >> without adding it to the filebacked case. The above gives higher prio
-> >> to the hypothetical and uncertain future case, than to the current
-> >> real filebacked case that doesn't need ->invalidate_range inside the
-> >> PT lock, or do you see something that might already need such
-> >> ->invalidate_range?
-> > 
-> > No i don't see any new user today that might need such invalidate but
-> > i was trying to be extra cautious as i have a tendency to assume that
-> > someone might do a patch that use try_to_unmap() without going through
-> > all the comments in the function and thus possibly using it in a an
-> > unexpected way from mmu_notifier callback point of view. I am fine
-> > with putting the burden on new user to get it right and adding an
-> > extra warning in the function description to try to warn people in a
-> > sensible way.
-> 
-> I must be missing something. After the PTE is changed, but before the
-> secondary TLB notification/invalidation - What prevents another thread from
-> changing the mappings (e.g., using munmap/mmap), and setting a new page
-> at that PTE?
-> 
-> Wouldn’t it end with the page being mapped without a secondary TLB flush in
-> between?
 
-munmap would call mmu_notifier to invalidate the range too so secondary
-TLB would be properly flush before any new pte can be setup in for that
-particular virtual address range. Unlike CPU TLB flush, secondary TLB
-flush are un-conditional and thus current pte value does not play any
-role.
 
-Cheers,
-Jérôme
+Le 03/10/2017 à 13:43, Christoph Hellwig a écrit :
+> On Tue, Oct 03, 2017 at 01:24:57PM +0200, Christophe LEROY wrote:
+>>> powerpc does not implement DMA_ATTR_NON_CONSISTENT allocations, so it
+>>> doesn't make any sense to do any work in dma_cache_sync given that it
+>>> must be a no-op when dma_alloc_attrs returns coherent memory.
+>> What about arch/powerpc/mm/dma-noncoherent.c ?
+>>
+>> Powerpc 8xx doesn't have coherent memory.
+> 
+> It doesn't implement the DMA_ATTR_NON_CONSISTENT interface either,
+> so if it really doesn't have a way to provide dma coherent allocation
+> (although the code in __dma_alloc_coherent suggests it does provide
+> dma coherent allocations) I have no idea how it could ever have
+> worked.
+> 
+
+Yes indeed it provides coherent memory by allocation non cached memory.
+
+And drivers aiming at using non coherent memory do it by using kmalloc() 
+with GFP_DMA then dma_map_single().
+Then they use dma_sync_single_for_xxx(), which calls __dma_sync() on the 
+8xx and is a nop on other powerpcs.
+
+Christophe
