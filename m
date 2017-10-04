@@ -1,112 +1,184 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v8 3/5] iommu/of: Add msi address regions reservation
- helper
-Date: Wed, 4 Oct 2017 14:50:07 +0100
-Message-ID: <20171004135007.GA12327@red-moon>
-References: <20170927133241.21036-1-shameerali.kolothum.thodi@huawei.com>
- <20170927133241.21036-4-shameerali.kolothum.thodi@huawei.com>
- <f3146f49-6004-7a15-866b-653e3ea54856@arm.com>
+From: Ganapatrao Kulkarni <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
+	stream tables and comamnd queues
+Date: Wed, 4 Oct 2017 19:23:03 +0530
+Message-ID: <CAKTKpr508ArR1RUSY8HnaOkp==zPZ2=P_6gcXOAfi9hJq6XcqA@mail.gmail.com>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+	<20170921085922.11659-4-ganapatrao.kulkarni@cavium.com>
+	<db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f3146f49-6004-7a15-866b-653e3ea54856-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Cc: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <db28d6ff-77e5-ed59-c1b8-57c917564a68-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 04, 2017 at 12:22:04PM +0100, Marc Zyngier wrote:
-> On 27/09/17 14:32, Shameer Kolothum wrote:
-> > From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > 
-> > On some platforms msi-controller address regions have to be excluded
-> > from normal IOVA allocation in that they are detected and decoded in
-> > a HW specific way by system components and so they cannot be considered
-> > normal IOVA address space.
-> > 
-> > Add a helper function that retrieves msi address regions through device
-> > tree msi mapping, so that these regions will not be translated by IOMMU
-> > and will be excluded from IOVA allocations.
-> > 
-> > Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > [Shameer: Modified msi-parent retrieval logic]
-> > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  drivers/iommu/of_iommu.c | 95 ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/of_iommu.h | 10 +++++
-> >  2 files changed, 105 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> > index e60e3db..ffd7fb7 100644
-> > --- a/drivers/iommu/of_iommu.c
-> > +++ b/drivers/iommu/of_iommu.c
-> > @@ -21,6 +21,7 @@
-> >  #include <linux/iommu.h>
-> >  #include <linux/limits.h>
-> >  #include <linux/of.h>
-> > +#include <linux/of_address.h>
-> >  #include <linux/of_iommu.h>
-> >  #include <linux/of_pci.h>
-> >  #include <linux/slab.h>
-> > @@ -138,6 +139,14 @@ static int of_iommu_xlate(struct device *dev,
-> >  	return ops->of_xlate(dev, iommu_spec);
-> >  }
-> >  
-> > +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-> > +{
-> > +	u32 *rid = data;
-> > +
-> > +	*rid = alias;
-> > +	return 0;
-> > +}
-> > +
-> >  struct of_pci_iommu_alias_info {
-> >  	struct device *dev;
-> >  	struct device_node *np;
-> > @@ -163,6 +172,73 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
-> >  	return info->np == pdev->bus->dev.of_node;
-> >  }
-> >  
-> > +static int of_iommu_alloc_resv_region(struct device_node *np,
-> > +				      struct list_head *head)
-> > +{
-> > +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> > +	struct iommu_resv_region *region;
-> > +	struct resource res;
-> > +	int err;
-> > +
-> > +	err = of_address_to_resource(np, 0, &res);
-> 
-> What is the rational for registering the first region only? Surely you
-> can have more than one region in an MSI controller (yes, your particular
-> case is the ITS which has only one, but we're trying to do something
-> generic here).
-> 
-> Another issue I have with this code is that it inserts all of the ITS
-> MMIO in the RESV_MSI range. As long as we don't generate any page tables
-> for this, we're fine. But if we ever change this, we'll end-up with the
-> ITS programming interface being exposed to a device, which wouldn't be
-> acceptable.
-> 
-> Why can't we have some generic property instead, that would describe the
-> actual ranges that cannot be translated? That way, no random insertion
-> of a random range, and relatively future proof.
+Hi Robin,
 
-IORT code has the same issue (ie it reserves all ITS regions) and I do
-not know where a property can be added to describe those ranges (IORT
-specs ? I'd rather not) in ACPI other than the IORT tables entries
-themselves.
 
-> I'm not sure where to declare it (PCIe node? IOMMU node?), but it'd feel
-> like a much nicer and simpler solution to this problem.
+On Thu, Sep 21, 2017 at 5:28 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> [+Christoph and Marek]
+>
+> On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
+>> Introduce smmu_alloc_coherent and smmu_free_coherent functions to
+>> allocate/free dma coherent memory from NUMA node associated with SMMU.
+>> Replace all calls of dmam_alloc_coherent with smmu_alloc_coherent
+>> for SMMU stream tables and command queues.
+>
+> This doesn't work - not only do you lose the 'managed' aspect and risk
+> leaking various tables on probe failure or device removal, but more
+> importantly, unless you add DMA syncs around all the CPU accesses to the
+> tables, you lose the critical 'coherent' aspect, and that's a horribly
+> invasive change that I really don't want to make.
 
-It could be but if we throw ACPI into the picture we have to knock
-together Hisilicon specific namespace bindings to handle this and
-quickly.
+this implementation is similar to function used to allocate memory for
+translation tables.
+why do you see it affects to stream tables and not to page tables.
+at runtime, both tables are accessed by SMMU only.
 
-Lorenzo
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+As said in cover letter, having stream table from respective NUMA node
+is yielding
+around 30% performance!
+please suggest, if there is any better way to address this issue?
+
+>
+> Christoph, Marek; how reasonable do you think it is to expect
+> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
+> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
+> allocation case; I'm not sure it's even worth it for bounce-buffering),
+> but the likes of CMA might be a little trickier...
+>
+> Robin.
+>
+>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu-v3.c | 57 ++++++++++++++++++++++++++++++++++++++++-----
+>>  1 file changed, 51 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index e67ba6c..bc4ba1f 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -1158,6 +1158,50 @@ static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
+>>       }
+>>  }
+>>
+>> +static void *smmu_alloc_coherent(struct arm_smmu_device *smmu, size_t size,
+>> +             dma_addr_t *dma_handle, gfp_t gfp)
+>> +{
+>> +     struct device *dev = smmu->dev;
+>> +     void *pages;
+>> +     dma_addr_t dma;
+>> +     int numa_node = dev_to_node(dev);
+>> +
+>> +     pages = alloc_pages_exact_nid(numa_node, size, gfp | __GFP_ZERO);
+>> +     if (!pages)
+>> +             return NULL;
+>> +
+>> +     if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY)) {
+>> +             dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+>> +             if (dma_mapping_error(dev, dma))
+>> +                     goto out_free;
+>> +             /*
+>> +              * We depend on the SMMU being able to work with any physical
+>> +              * address directly, so if the DMA layer suggests otherwise by
+>> +              * translating or truncating them, that bodes very badly...
+>> +              */
+>> +             if (dma != virt_to_phys(pages))
+>> +                     goto out_unmap;
+>> +     }
+>> +
+>> +     *dma_handle = (dma_addr_t)virt_to_phys(pages);
+>> +     return pages;
+>> +
+>> +out_unmap:
+>> +     dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
+>> +     dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
+>> +out_free:
+>> +     free_pages_exact(pages, size);
+>> +     return NULL;
+>> +}
+>> +
+>> +static void smmu_free_coherent(struct arm_smmu_device *smmu, size_t size,
+>> +             void *pages, dma_addr_t dma_handle)
+>> +{
+>> +     if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
+>> +             dma_unmap_single(smmu->dev, dma_handle, size, DMA_TO_DEVICE);
+>> +     free_pages_exact(pages, size);
+>> +}
+>> +
+>>  static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+>>  {
+>>       size_t size;
+>> @@ -1172,7 +1216,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+>>       strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
+>>
+>>       desc->span = STRTAB_SPLIT + 1;
+>> -     desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
+>> +     desc->l2ptr = smmu_alloc_coherent(smmu, size, &desc->l2ptr_dma,
+>>                                         GFP_KERNEL | __GFP_ZERO);
+>>       if (!desc->l2ptr) {
+>>               dev_err(smmu->dev,
+>> @@ -1487,7 +1531,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+>>               struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+>>
+>>               if (cfg->cdptr) {
+>> -                     dmam_free_coherent(smmu_domain->smmu->dev,
+>> +                     smmu_free_coherent(smmu,
+>>                                          CTXDESC_CD_DWORDS << 3,
+>>                                          cfg->cdptr,
+>>                                          cfg->cdptr_dma);
+>> @@ -1515,7 +1559,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+>>       if (asid < 0)
+>>               return asid;
+>>
+>> -     cfg->cdptr = dmam_alloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
+>> +     cfg->cdptr = smmu_alloc_coherent(smmu, CTXDESC_CD_DWORDS << 3,
+>>                                        &cfg->cdptr_dma,
+>>                                        GFP_KERNEL | __GFP_ZERO);
+>>       if (!cfg->cdptr) {
+>> @@ -1984,7 +2028,7 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+>>  {
+>>       size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
+>>
+>> -     q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma, GFP_KERNEL);
+>> +     q->base = smmu_alloc_coherent(smmu, qsz, &q->base_dma, GFP_KERNEL);
+>>       if (!q->base) {
+>>               dev_err(smmu->dev, "failed to allocate queue (0x%zx bytes)\n",
+>>                       qsz);
+>> @@ -2069,7 +2113,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>>                        size, smmu->sid_bits);
+>>
+>>       l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+>> -     strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
+>> +     strtab = smmu_alloc_coherent(smmu, l1size, &cfg->strtab_dma,
+>>                                    GFP_KERNEL | __GFP_ZERO);
+>>       if (!strtab) {
+>>               dev_err(smmu->dev,
+>> @@ -2097,8 +2141,9 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+>>       u32 size;
+>>       struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+>>
+>> +
+>>       size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
+>> -     strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
+>> +     strtab = smmu_alloc_coherent(smmu, size, &cfg->strtab_dma,
+>>                                    GFP_KERNEL | __GFP_ZERO);
+>>       if (!strtab) {
+>>               dev_err(smmu->dev,
+>>
+>
+
+thanks
+Ganapat
