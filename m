@@ -1,153 +1,64 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v8 0/5] iommu/smmu-v3: Workaround for hisilicon
-	161010801 erratum(reserve HW MSI)
-Date: Wed, 4 Oct 2017 10:03:39 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA83841C405@FRAEML521-MBX.china.huawei.com>
-References: <20170927133241.21036-1-shameerali.kolothum.thodi@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Wed, 4 Oct 2017 12:18:45 +0100
+Message-ID: <69e5e981-ab16-39d4-87dd-9c6b2b1c926d@arm.com>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+ <1507035334.29211.105.camel@infradead.org>
+ <db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
+ <1507068976.29211.156.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170927133241.21036-1-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1507068976.29211.156.camel@infradead.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org" <devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>, joro@8bytes.org
+Cc: ashok.raj@intel.com, leedom@chelsio.com, Harsh@chelsio.com, herbert@gondor.apana.org.au, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will/Lorenzo/Marc,
+On 03/10/17 23:16, David Woodhouse wrote:
+> On Tue, 2017-10-03 at 19:05 +0100, Robin Murphy wrote:
+>>
+>> Now, there are indeed plenty of drivers and subsystems which do work on
+>> lists of explicitly single pages - anything doing some variant of
+>> "addr = kmap_atomic(sg_page(sg)) + sg->offset;" is easy to spot - but I
+>> don't think DMA API implementations are in a position to make any kind
+>> of assumption; nearly all of them just shut up and handle sg->length
+>> bytes from sg_phys(sg) without questioning the caller, and I reckon
+>> that's exactly what they should be doing.
+> 
+> So what's the point in sg->page in the first place? If even the
+> *offset* can be greater than page size, it isn't even the *first* page
+> (as you called it). Why aren't we just using a physical address,
+> instead of an arbitrary page and an offset from that?
 
-Any feedback on this series, please? Really appreciate if you can take a look
-and let us know. 
+To nitpick, "the first of one or more contiguous pages" does not imply
+"the first page of the buffer" - the buffer just lies *somewhere* within
+that run of pages.
 
-Thanks,
-Shameer
+Historically, it looks like page+offset first came about in the 2.5 era
+to support highmem[1] - note that scatterlist users still only really
+care about virtual and DMA address, not physical. Sure, it wouldn't be
+entirely impossible to use phys_addr_t instead, but at this point it
+would be a massively invasive change, and would make implementations of
+one DMA API callback a tiny bit simpler at the cost of pushing rather
+more complexity out to hundreds of other users, some of whom might not
+even call dma_map_sg().
 
-> -----Original Message-----
-> From: Shameerali Kolothum Thodi
-> Sent: Wednesday, September 27, 2017 2:33 PM
-> To: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; marc.zyngier-5wv7dgnIgG8@public.gmane.org;
-> sudeep.holla-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org; robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> Cc: Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; John Garry
-> <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org; Linuxarm
-> <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Wangzhou (B) <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>;
-> Guohanjun (Hanjun Guo) <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Shameerali Kolothum
-> Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> Subject: [PATCH v8 0/5] iommu/smmu-v3: Workaround for hisilicon
-> 161010801 erratum(reserve HW MSI)
-> 
-> On certain HiSilicon platforms (hip06/hip07) the GIC ITS and PCIe RC
-> deviates from the standard implementation and this breaks PCIe MSI
-> functionality when SMMU is enabled.
-> 
-> The HiSilicon erratum 161010801 describes this limitation of certain
-> HiSilicon platforms to support the SMMU mappings for MSI transactions.
-> On these platforms GICv3 ITS translator is presented with the deviceID
-> by extending the MSI payload data to 64 bits to include the deviceID.
-> Hence, the PCIe controller on this platforms has to differentiate the MSI
-> payload against other DMA payload and has to modify the MSI payload.
-> This basically makes it difficult for this platforms to have a SMMU
-> translation for MSI.
-> 
-> This patch implements an ACPI and DT based quirk to reserve the hw msi
-> regions in the smmu-v3 driver which means these address regions will
-> not be translated and will be excluded from iova allocations.
-> 
-> To implement this quirk, the following changes are incorporated:
-> 1. Added a generic helper function to IORT code to retrieve the
->    associated ITS base address from a device IORT node.
-> 2. Added a generic helper function to of iommu code to retrieve the
->    associated msi controller base address from for a PCI RC
->    msi-mapping and also platform device msi-parent.
-> 3. Added quirk to SMMUv3 to retrieve the HW ITS address and replace
->    the default SW MSI reserve address based on the IORT SMMU model
->    or DT bindings.
-> 
-> Changelog:
-> 
-> v7 --> v8
-> Addressed comments from Rob and Lorenzo:
->  -Modified to use DT compatible string for errata.
->  -Changed logic to retrieve the msi-parent for DT case.
-> 
-> v6 --> v7
-> Addressed request from Will to add DT support for the erratum:
->  - added bt binding
->  - add of_iommu_msi_get_resv_regions()
-> New arm64 silicon errata entry
-> Rename iort_iommu_{its->msi}_get_resv_regions
-> 
-> v5 --> v6
-> Addressed comments from Robin and Lorenzo:
-> -No change to patch#1 .
-> -Reverted v5 patch#2 as this might break the platforms where this quirk
->   is not applicable. Provided a generic function in iommu code and added
->   back the quirk implementation in SMMU v3 driver(patch#3)
-> 
-> v4 --> v5
-> Addressed comments from Robin and Lorenzo:
-> -Added a comment to make it clear that, for now, only straightforward
->   HW topologies are handled while reserving ITS regions(patch #1).
-> 
-> v3 --> v4
-> Rebased on 4.13-rc1.
-> Addressed comments from Robin, Will and Lorenzo:
-> -As suggested by Robin, moved the ITS msi reservation into
->   iommu_dma_get_resv_regions().
-> -Added its_count != resv region failure case(patch #1).
-> 
-> v2 --> v3
-> Addressed comments from Lorenzo and Robin:
-> -Removed dev_is_pci() check in smmuV3 driver.
-> -Don't treat device not having an ITS mapping as an error in
->   iort helper function.
-> 
-> v1 --> v2
-> -patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
-> 
-> RFCv2 -->PATCH
-> -Incorporated Lorenzo's review comments.
-> 
-> RFC v1 --> RFC v2
-> Based on Robin's review comments,
-> -Removed  the generic erratum framework.
-> -Using IORT/MADT tables to retrieve the ITS base addr instead  of vendor
-> specific CSRT table.
-> 
-> John Garry (2):
->   Doc: iommu/arm-smmu-v3: Add workaround for HiSilicon erratum
-> 161010801
->   iommu/of: Add msi address regions reservation helper
-> 
-> Shameer Kolothum (3):
->   ACPI/IORT: Add msi address regions reservation helper
->   iommu/dma: Add a helper function to reserve HW MSI address regions for
->     IOMMU drivers
->   iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
-> 
->  Documentation/arm64/silicon-errata.txt             |  1 +
->  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  9 +-
->  drivers/acpi/arm64/iort.c                          | 96 +++++++++++++++++++++-
->  drivers/iommu/arm-smmu-v3.c                        | 41 +++++++--
->  drivers/iommu/dma-iommu.c                          | 19 +++++
->  drivers/iommu/of_iommu.c                           | 95 +++++++++++++++++++++
->  drivers/irqchip/irq-gic-v3-its.c                   |  3 +-
->  include/linux/acpi_iort.h                          |  7 +-
->  include/linux/dma-iommu.h                          |  7 ++
->  include/linux/of_iommu.h                           | 10 +++
->  10 files changed, 276 insertions(+), 12 deletions(-)
-> 
-> --
-> 1.9.1
-> 
+The fact is, regardless of how much sense it does or doesn't make, a
+fair amount of scatterlist-mangling code exists that is capable of
+generating silly offsets, and it's so simple to make sure the DMA API
+implementations don't care that I'd rather just keep on top of that than
+go off on a crusade in attempt to wipe out the grey areas.
+
+> Can we have *negative* sg->offset too? :)
+
+	unsigned int	offset;
+
+I'm gonna say no ;)
+
+Robin.
+
+
+[1]:https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/tree/include/asm-i386/scatterlist.h?h=v2.5.0
