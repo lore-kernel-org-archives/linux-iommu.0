@@ -1,129 +1,173 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: Task based virtual address spaces
-Date: Thu, 5 Oct 2017 11:08:12 +0100
-Message-ID: <dc2eabcc-0aba-89ce-cf03-b220fd5c2132@arm.com>
-References: <20171004194327.GA25346@jcrouse-lnx.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v8 3/5] iommu/of: Add msi address regions reservation
+ helper
+Date: Thu, 5 Oct 2017 12:07:26 +0100
+Message-ID: <5c80f292-dc5d-a1c6-d7a0-df2a84cc77d1@arm.com>
+References: <20170927133241.21036-1-shameerali.kolothum.thodi@huawei.com>
+ <20170927133241.21036-4-shameerali.kolothum.thodi@huawei.com>
+ <f3146f49-6004-7a15-866b-653e3ea54856@arm.com>
+ <20171004135007.GA12327@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20171004194327.GA25346@jcrouse-lnx.qualcomm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171004135007.GA12327@red-moon>
 Content-Language: en-US
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: jcrouse@codeaurora.org
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org, arnd@arndb.de, ssusheel@codeaurora.org
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Marc Zyngier <marc.zyngier@arm.com>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, sudeep.holla@arm.com, will.deacon@arm.com, joro@8bytes.org, mark.rutland@arm.com, robh@kernel.org, gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jordan,
+On 04/10/17 14:50, Lorenzo Pieralisi wrote:
+> On Wed, Oct 04, 2017 at 12:22:04PM +0100, Marc Zyngier wrote:
+>> On 27/09/17 14:32, Shameer Kolothum wrote:
+>>> From: John Garry <john.garry@huawei.com>
+>>>
+>>> On some platforms msi-controller address regions have to be excluded
+>>> from normal IOVA allocation in that they are detected and decoded in
+>>> a HW specific way by system components and so they cannot be considered
+>>> normal IOVA address space.
+>>>
+>>> Add a helper function that retrieves msi address regions through device
+>>> tree msi mapping, so that these regions will not be translated by IOMMU
+>>> and will be excluded from IOVA allocations.
+>>>
+>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>> [Shameer: Modified msi-parent retrieval logic]
+>>> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+>>> ---
+>>>  drivers/iommu/of_iommu.c | 95 ++++++++++++++++++++++++++++++++++++++++++++++++
+>>>  include/linux/of_iommu.h | 10 +++++
+>>>  2 files changed, 105 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>>> index e60e3db..ffd7fb7 100644
+>>> --- a/drivers/iommu/of_iommu.c
+>>> +++ b/drivers/iommu/of_iommu.c
+>>> @@ -21,6 +21,7 @@
+>>>  #include <linux/iommu.h>
+>>>  #include <linux/limits.h>
+>>>  #include <linux/of.h>
+>>> +#include <linux/of_address.h>
+>>>  #include <linux/of_iommu.h>
+>>>  #include <linux/of_pci.h>
+>>>  #include <linux/slab.h>
+>>> @@ -138,6 +139,14 @@ static int of_iommu_xlate(struct device *dev,
+>>>  	return ops->of_xlate(dev, iommu_spec);
+>>>  }
+>>>  
+>>> +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>>> +{
+>>> +	u32 *rid = data;
+>>> +
+>>> +	*rid = alias;
+>>> +	return 0;
+>>> +}
+>>> +
+>>>  struct of_pci_iommu_alias_info {
+>>>  	struct device *dev;
+>>>  	struct device_node *np;
+>>> @@ -163,6 +172,73 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+>>>  	return info->np == pdev->bus->dev.of_node;
+>>>  }
+>>>  
+>>> +static int of_iommu_alloc_resv_region(struct device_node *np,
+>>> +				      struct list_head *head)
+>>> +{
+>>> +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>>> +	struct iommu_resv_region *region;
+>>> +	struct resource res;
+>>> +	int err;
+>>> +
+>>> +	err = of_address_to_resource(np, 0, &res);
+>>
+>> What is the rational for registering the first region only? Surely you
+>> can have more than one region in an MSI controller (yes, your particular
+>> case is the ITS which has only one, but we're trying to do something
+>> generic here).
+>>
+>> Another issue I have with this code is that it inserts all of the ITS
+>> MMIO in the RESV_MSI range. As long as we don't generate any page tables
+>> for this, we're fine. But if we ever change this, we'll end-up with the
+>> ITS programming interface being exposed to a device, which wouldn't be
+>> acceptable.
+>>
+>> Why can't we have some generic property instead, that would describe the
+>> actual ranges that cannot be translated? That way, no random insertion
+>> of a random range, and relatively future proof.
 
-On 04/10/17 20:43, Jordan Crouse wrote:
-> Trying to start back up the conversation about multiple address
-> spaces for IOMMU devices. If you will remember Jean-Philippe posted
-> some patches back in February for SVM on arm-smmu-v3.
-> 
-> For quite some time the downstream Snapdragon kernels have supported
-> something we call "per-process" page tables for the GPU. As with full SVM
-> this involves creating a virtual address space per task but unlike SVM
-> we don't automatically share the page table from the CPU. Instead we
-> want to create a new page table and explicitly map/unmap address ranges
-> into it. We provide the physical address of the page table to the GPU and
-> it goes through the mechanics of programming the TTBR0 and invalidating
-> the TLB when starts executing a submission for a given task.
+Indeed. Furthermore, IORT has the advantage of being limited to a few
+distinct device types and SBSA-compliant system topologies, so the
+ITS-chasing is reasonable there (modulo only reserving GITS_TRANSLATER).
+The scope of DT covers more embedded things as well like PCI host
+controllers with internal MSI doorbells, and potentially even
+direct-mapped memory regions for things like bootloader framebuffers to
+prevent display glitches - a generic address/size/flags description of a
+region could work for just about everything.
 
-Why does the GPU need the pgd? Does it implement its own MMU specifically
-for process contexts? I understand you don't use PASIDs/SSIDs to isolate
-process PT but context switch instead?
+> IORT code has the same issue (ie it reserves all ITS regions) and I do
+> not know where a property can be added to describe those ranges (IORT
+> specs ? I'd rather not) in ACPI other than the IORT tables entries
+> themselves.
+> 
+>> I'm not sure where to declare it (PCIe node? IOMMU node?), but it'd feel
+>> like a much nicer and simpler solution to this problem.
+> 
+> It could be but if we throw ACPI into the picture we have to knock
+> together Hisilicon specific namespace bindings to handle this and
+> quickly.
 
-> As with all things IOMMU this discussion needs to be split into two parts -
-> the API and the implementation. I want to focus on the generic API for this
-> email. Shortly after Jean-Philippe posted his patches I sent out a rough
-> prototype of how the downstream solution worked [1]:
-> 
-> +-----------------+       +------------------+
-> | "master" domain |  ---> | "dynamic" domain |
-> +-----------------+  \    +------------------+
->                       \                    
->                        \  +------------------+
->                         - | "dynamic" domain |
->                           +------------------+
+As above I'm happy with the ITS-specific solution for ACPI given the
+limits of IORT. What I had in mind for DT was something tied in with the
+generic IOMMU bindings. Something like this is probably easiest to
+handle, but does rather spread the information around:
 
-I also considered using hierarchical domains in my first prototype, but it
-didn't seem to fit the IOMMU API. In the RFC that I intend to post this
-week, I propose an iommu_process structure for everything process related.
 
-I'm not sure if my new proposal fits your model since I didn't intend
-iommu_process to be controllable externally with an IOMMU map/unmap
-interface (the meat of the bind/unbind API is really page table sharing).
-In v2 bind/unbind still only returns a PASID, not the process structure,
-but I'll Cc you so we can work something out.
+  pci {
+  	...
+  	iommu-map = <0 0 &iommu1 0x10000>;
+  	iommu-reserved-ranges = <0x12340000 0x1000 IOMMU_MSI>,
+  				<0x34560000 0x1000 IOMMU_MSI>;
+  };
 
-> Given a "master" domain (created in the normal way) we can create any number
-> of "dynamic" domains which share the same configuration as the master (table
-> format, context bank, quirks, etc). When the dynamic domain is allocated/
-> attached it creates a new page table - for all intents and purposes this is
-> a "real" domain except that it doesn't actually touch the hardware. We can
-> use this domain with iommu_map() / iommu_unmap() as usual and then pass the
-> physical address (acquired through a IOMMU domain attribute) to the GPU and
-> everything works.
-> 
-> The main goal for this approach was to try to use the iommu API instead of
-> teaching the GPU driver how to deal with several generations of page table
-> formats and IOMMU devices. Shoehorning it into the domain struct was a
-> path of least resistance that has served Snapdragon well but it was never
-> really anything we considered to be a generic solution.
-> 
-> In the SVM patches, Jean-Philippe introduces iommu_bind_task():
-> https://patchwork.codeaurora.org/patch/184777/. Given a struct task and
-> a bit of other stuff it goes off and does SVM magic.
-> 
-> My proposal would be to extend this slightly and return a iommu_task
-> struct from iommu_bind_task:
-> 
-> struct iommu_task *iommu_bind_task(struct device *dev, strut task_strut *task,
-> 	int *pasid, int flags, void *priv);
+  display {
+  	...
+  	iommus = <&iommu1 0x20000>;
+  	/* simplefb region */
+  	iommu-reserved-ranges = <0x80080000 0x80000 IOMMU_DIRECT>,
+  };
 
-Since the GPU driver acts as a proxy and the PT are not shared, I suppose
-you don't need the task_struct at all? Or maybe just for cleaning up on
-process exit?
 
-Thanks,
-Jean
+Alternatively, something inspired by reserved-memory might perhaps be
+conceptually neater, at the risk of being more complicated:
 
-> For implementations that did real SVM the rest would behave the same, but for
-> targets with explicit map requirements the iommu_task token could then be
-> used for map/unmap:
-> 
-> iommu_task_map(struct iommu_task *task, unsigned long iova, phys_addr_t paddr,
-> 	size_t size, int prot);
-> 
-> iommu_task_unmap(struct iommu_task *task, unsigned long iova, size_t size);
-> 
-> int iommu_unbind_task(struct device *dev, struct iommu_task *task, int pasid,
-> 	int flags);
-> 
-> (Note that I'm typing these up on the fly - don't take these prototypes as
-> gospel. This is mostly just a representation of the hooks we would need).
-> 
-> Internally this would come down into the device drivers with code similar
-> to https://patchwork.codeaurora.org/patch/184751/. At the device level
-> the biggest question figuring out if this is the "full SVM" or "explicit"
-> model - we could handle that with compatible strings or dt quirks or even
-> a flag to iommu_bind_task(). On Snapdragon we have the additional
-> requirement to get the physical address for the page table. That could
-> be encoded into pasid or returned in the iommu_task struct or a task
-> attribute function.>
-> Comments welcome of course. I think that if we can focus on getting a good
-> generic API nailed down we can drill into the specifics. Between the 410c
-> and the 820c we have two good examples that we can rapidly prototype.
-> I would like to get this on the radar so we can get it merged and stabilized
-> with enough time to hit a LTS release.
-> 
-> Thanks,
-> Jordan
-> 
-> [1] https://patchwork.codeaurora.org/patch/192573/
-> https://patchwork.codeaurora.org/patch/192571/
-> https://patchwork.codeaurora.org/patch/192577/
-> https://patchwork.codeaurora.org/patch/192579/
-> 
-> 
+
+  iommu1: iommu@acbd0000 {
+  	...
+  	#iommu-cells = <1>;
+
+  	iommu-reserved-ranges {
+  		#address-cells = <1>;
+  		#size-cells = <1>;
+
+		its0_resv: msi@12340000 {
+  			compatible = "iommu-msi-region";
+  			reg = <0x12340000 0x1000>;
+  		};
+
+		its1_resv: msi@34560000 {
+  			compatible = "iommu-msi-region";
+  			reg = <0x34560000 0x1000>;
+  		};
+
+		fb_resv: direct@12340000 {
+  			compatible = "iommu-direct-region";
+  			reg = <0x80080000 0x80000>;
+  		};
+  	};
+  };
+
+
+DT folks - any opinions?
+
+Robin.
