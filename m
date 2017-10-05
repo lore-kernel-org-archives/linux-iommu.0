@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v2 06/16] iommu/vt-d: move device_domain_info to header
-Date: Thu,  5 Oct 2017 16:03:34 -0700
-Message-ID: <1507244624-39189-7-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 05/16] iommu/vt-d: add iommu invalidate function
+Date: Thu,  5 Oct 2017 16:03:33 -0700
+Message-ID: <1507244624-39189-6-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,76 +18,223 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Allow both intel-iommu.c and dmar.c to access device_domain_info.
-Prepare for additional per device arch data used in TLB flush function
+This patch adds Intel VT-d specific function to implement
+iommu passdown invalidate API.
 
+The use case is for supporting caching structure invalidation
+of assigned SVM capable devices. Emulated IOMMU exposes queue
+invalidation capability and passes down all descriptors from the guest
+to the physical IOMMU.
+
+The assumption is that guest to host device ID mapping should be
+resolved prior to calling IOMMU driver. Based on the device handle,
+host IOMMU driver can replace certain fields before submit to the
+invalidation queue.
+
+Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 18 ------------------
- include/linux/intel-iommu.h | 19 +++++++++++++++++++
- 2 files changed, 19 insertions(+), 18 deletions(-)
+ drivers/iommu/intel-iommu.c | 148 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  10 +++
+ 2 files changed, 158 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 81e27eb..e5a5209 100644
+index 6832f73..81e27eb 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -416,24 +416,6 @@ struct dmar_domain {
- 					   iommu core */
- };
+@@ -5023,6 +5023,153 @@ static void intel_iommu_detach_device(struct iommu_domain *domain,
+ 	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
+ }
  
--/* PCI domain-device relationship */
--struct device_domain_info {
--	struct list_head link;	/* link to domain siblings */
--	struct list_head global; /* link to global list */
--	u8 bus;			/* PCI bus number */
--	u8 devfn;		/* PCI devfn number */
--	u8 pasid_supported:3;
--	u8 pasid_enabled:1;
--	u8 pri_supported:1;
--	u8 pri_enabled:1;
--	u8 ats_supported:1;
--	u8 ats_enabled:1;
--	u8 ats_qdep;
--	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
--	struct intel_iommu *iommu; /* IOMMU used by this device */
--	struct dmar_domain *domain; /* pointer to domain */
--};
--
- struct dmar_rmrr_unit {
- 	struct list_head list;		/* list of rmrr units	*/
- 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 5c734bd..f42b46c 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -436,6 +436,25 @@ struct intel_iommu {
- 	u32		flags;      /* Software defined flags */
- };
- 
-+/* PCI domain-device relationship */
-+struct device_domain_info {
-+	struct list_head link;	/* link to domain siblings */
-+	struct list_head global; /* link to global list */
-+	u8 bus;			/* PCI bus number */
-+	u8 devfn;		/* PCI devfn number */
-+	u8 pasid_supported:3;
-+	u8 pasid_enabled:1;
-+	u8 pri_supported:1;
-+	u8 pri_enabled:1;
-+	u8 ats_supported:1;
-+	u8 ats_enabled:1;
-+	u8 ats_qdep;
-+	u64 fault_mask;	/* selected IOMMU faults to be reported */
-+	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
-+	struct intel_iommu *iommu; /* IOMMU used by this device */
-+	struct dmar_domain *domain; /* pointer to domain */
++/*
++ * 3D array for converting IOMMU generic type-granularity to VT-d granularity
++ * X indexed by enum iommu_inv_type
++ * Y indicates request without and with PASID
++ * Z indexed by enum enum iommu_inv_granularity
++ *
++ * For an example, if we want to find the VT-d granularity encoding for IOTLB
++ * type, DMA request with PASID, and page selective. The look up indices are:
++ * [1][1][8], where
++ * 1: IOMMU_INV_TYPE_TLB
++ * 1: with PASID
++ * 8: IOMMU_INV_GRANU_PAGE_PASID
++ *
++ */
++const static u64 inv_type_granu_table[IOMMU_INV_NR_TYPE][2][IOMMU_INV_NR_GRANU] = {
++	/* extended dev IOTLBs, only global is valid */
++	{
++		{1}
++	},
++	/* IOTLB and EIOTLB */
++	{
++		{DMA_TLB_GLOBAL_FLUSH, DMA_TLB_DSI_FLUSH, 0, DMA_TLB_PSI_FLUSH},
++		{0, 0, 0, 0, QI_GRAN_ALL_ALL, 0, QI_GRAN_NONG_ALL, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID}
++	},
++	/* PASID cache */
++	{
++		{0, 0, 0, 0, 1}
++	},
++	/* context cache */
++	{
++		{DMA_CCMD_GLOBAL_INVL, DMA_CCMD_DOMAIN_INVL, DMA_CCMD_DEVICE_INVL}
++	}
 +};
 +
- static inline void __iommu_flush_cache(
- 	struct intel_iommu *iommu, void *addr, int size)
- {
++static inline int to_vtd_granularity(int type, int granu, int with_pasid, u64 *vtd_granu)
++{
++	if (type >= IOMMU_INV_NR_TYPE || granu >= IOMMU_INV_NR_GRANU || with_pasid > 1)
++		return -EINVAL;
++	*vtd_granu = inv_type_granu_table[type][with_pasid][granu];
++
++	return 0;
++}
++
++static int intel_iommu_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct tlb_invalidate_info *inv_info)
++{
++	struct intel_iommu *iommu;
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	struct device_domain_info *info;
++	struct pci_dev *pdev;
++	u16 did, sid, pfsid;
++	u8 bus, devfn;
++	int ret = 0;
++	u64 granu;
++	unsigned long flags;
++
++	if (!inv_info || !dmar_domain)
++		return -EINVAL;
++
++	iommu = device_to_iommu(dev, &bus, &devfn);
++	if (!iommu)
++		return -ENODEV;
++
++	if (!dev || !dev_is_pci(dev))
++		return -ENODEV;
++
++	did = dmar_domain->iommu_did[iommu->seq_id];
++	sid = PCI_DEVID(bus, devfn);
++	ret = to_vtd_granularity(inv_info->hdr.type, inv_info->granularity,
++				!!(inv_info->flags & IOMMU_INVALIDATE_DMA_PASID), &granu);
++	if (ret) {
++		pr_err("Invalid range type %d, granu %d\n", inv_info->hdr.type,
++			inv_info->granularity);
++		return ret;
++	}
++
++	spin_lock(&iommu->lock);
++	spin_lock_irqsave(&device_domain_lock, flags);
++
++	switch (inv_info->hdr.type) {
++	case IOMMU_INV_TYPE_CONTEXT:
++		iommu->flush.flush_context(iommu, did, sid,
++					DMA_CCMD_MASK_NOBIT, granu);
++		break;
++	case IOMMU_INV_TYPE_TLB:
++		/* We need to deal with two scenarios:
++		 * - IOTLB for request w/o PASID
++		 * - extended IOTLB for request with PASID.
++		 */
++		if (inv_info->size &&
++			(inv_info->addr & ((1 << (VTD_PAGE_SHIFT + inv_info->size)) - 1))) {
++			pr_err("Addr out of range, addr 0x%llx, size order %d\n",
++				inv_info->addr, inv_info->size);
++			ret = -ERANGE;
++			goto out_unlock;
++		}
++
++		if (inv_info->flags & IOMMU_INVALIDATE_DMA_PASID)
++			qi_flush_eiotlb(iommu, did, mm_to_dma_pfn(inv_info->addr),
++					inv_info->pasid,
++					inv_info->size, granu,
++					inv_info->flags & IOMMU_INVALIDATE_GLOBAL_PAGE);
++		else
++			qi_flush_iotlb(iommu, did, mm_to_dma_pfn(inv_info->addr),
++				inv_info->size, granu);
++		/* For SRIOV VF, invalidation of device IOTLB requires PFSID */
++		pdev = to_pci_dev(dev);
++		if (pdev && pdev->is_virtfn)
++			pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
++		else
++			pfsid = sid;
++
++		/**
++		 * Always flush device IOTLB if ATS is enabled since guest
++		 * vIOMMU exposes CM = 1, no device IOTLB flush will be passed
++		 * down.
++		 * TODO: check if device is VF, use PF ATS data if spec does not require
++		 * VF to include all PF capabilities,  VF qdep and VF ats_enabled.
++		 */
++		info = iommu_support_dev_iotlb(dmar_domain, iommu, bus, devfn);
++		if (info && info->ats_enabled) {
++			if (inv_info->flags & IOMMU_INVALIDATE_NO_PASID)
++				qi_flush_dev_iotlb(iommu, sid, info->pfsid,
++						info->ats_qdep, inv_info->addr,
++						inv_info->size);
++			else
++				qi_flush_dev_eiotlb(iommu, sid, info->pfsid,
++						inv_info->pasid, info->ats_qdep,
++						inv_info->addr, inv_info->size);
++		}
++		break;
++	case IOMMU_INV_TYPE_PASID:
++		qi_flush_pasid(iommu, did, granu, inv_info->pasid);
++
++		break;
++	default:
++		dev_err(dev, "Unknown IOMMU invalidation type %d\n",
++			inv_info->hdr.type);
++		ret = -EINVAL;
++	}
++out_unlock:
++	spin_unlock(&iommu->lock);
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	return ret;
++}
++
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot)
+@@ -5451,6 +5598,7 @@ const struct iommu_ops intel_iommu_ops = {
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	.bind_pasid_table	= intel_iommu_bind_pasid_table,
+ 	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
++	.invalidate		= intel_iommu_invalidate,
+ #endif
+ 	.map			= intel_iommu_map,
+ 	.unmap			= intel_iommu_unmap,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index e42d317..5c734bd 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -258,6 +258,10 @@ enum {
+ #define QI_PGRP_RESP_TYPE	0x9
+ #define QI_PSTRM_RESP_TYPE	0xa
+ 
++#define QI_DID(did)		(((u64)did & 0xffff) << 16)
++#define QI_DID_MASK		GENMASK(31, 16)
++#define QI_TYPE_MASK		GENMASK(3, 0)
++
+ #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+ #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+ #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
+@@ -495,6 +499,12 @@ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_
+ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+ #endif
+ 
++struct intel_invalidate_data {
++	u16 sid;
++	u32 pasid;
++	struct qi_desc inv_desc;
++};
++
+ extern const struct attribute_group *intel_iommu_groups[];
+ 
+ #endif
 -- 
 2.7.4
