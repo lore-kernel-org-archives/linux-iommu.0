@@ -1,64 +1,44 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Ensure we sync STE when only changing
-	config field
-Date: Thu, 5 Oct 2017 17:54:50 +0100
-Message-ID: <7e9ef711-b1d7-ee70-b740-5d03a4fc61f6@arm.com>
-References: <1507222158-4151-1-git-send-email-will.deacon@arm.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v8 1/5] Doc: iommu/arm-smmu-v3: Add workaround for
+ HiSilicon erratum 161010801
+Date: Thu, 5 Oct 2017 17:24:16 -0500
+Message-ID: <20171005222416.zrrzwd3lmxccwodo@rob-hp-laptop>
+References: <20170927133241.21036-1-shameerali.kolothum.thodi@huawei.com>
+ <20170927133241.21036-2-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1507222158-4151-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170927133241.21036-2-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, mark.rutland@arm.com, gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/10/17 17:49, Will Deacon wrote:
-> The SMMUv3 architecture permits caching of data structures deemed to be
-> "reachable" by the SMU, which includes STEs marked as invalid. When
-> transitioning an STE to a bypass/fault configuration at init or detach
-> time, we mistakenly elide the CMDQ_OP_CFGI_STE operation in some cases,
-> therefore potentially leaving the old STE state cached in the SMMU.
+On Wed, Sep 27, 2017 at 02:32:37PM +0100, Shameer Kolothum wrote:
+> From: John Garry <john.garry@huawei.com>
 > 
-> This patch fixes the problem by ensuring that we perform the
-> CMDQ_OP_CFGI_STE operation irrespective of the validity of the previous
-> STE.
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Reported-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> platforms hip06/hip07 to support the SMMU mappings for MSI transactions.
+> 
+> On these platforms, GICv3 ITS translator is presented with the deviceID
+> by extending the MSI payload data to 64 bits to include the deviceID.
+> Hence, the PCIe controller on this platforms has to differentiate the MSI
+> payload against other DMA payload and has to modify the MSI payload.
+> This basically makes it difficult for this platforms to have a SMMU
+> translation for MSI.
+> 
+> This patch adds a compatible string to implement this errata for
+> HiSilicon Hi161x SMMUv3 model on hip06/hip07 platforms.
+> 
+> Also, the arm64 silicon errata is updated with this same erratum.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> [Shameer: Modified to use compatible string for errata]
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 > ---
->  drivers/iommu/arm-smmu-v3.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 47f52b1ab838..91fdabdb4de6 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -1085,8 +1085,11 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
->  		dst[1] = cpu_to_le64(STRTAB_STE_1_SHCFG_INCOMING
->  			 << STRTAB_STE_1_SHCFG_SHIFT);
->  		dst[2] = 0; /* Nuke the VMID */
-> -		if (ste_live)
-> -			arm_smmu_sync_ste_for_sid(smmu, sid);
-> +		/*
-> +		 * The SMMU can perform negative caching, so we must sync
-> +		 * the STE regardless of whether the old value was live.
-> +		 */
-> +		arm_smmu_sync_ste_for_sid(smmu, sid);
->  		return;
->  	}
->  
-> 
+>  Documentation/arm64/silicon-errata.txt                  | 1 +
+>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 9 ++++++++-
+>  2 files changed, 9 insertions(+), 1 deletion(-)
+
+Acked-by: Rob Herring <robh@kernel.org>
