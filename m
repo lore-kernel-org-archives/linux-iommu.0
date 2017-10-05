@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v2 09/16] driver core: add iommu device fault reporting data
-Date: Thu,  5 Oct 2017 16:03:37 -0700
-Message-ID: <1507244624-39189-10-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 08/16] iommu: introduce device fault data
+Date: Thu,  5 Oct 2017 16:03:36 -0700
+Message-ID: <1507244624-39189-9-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,46 +21,128 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <li
 Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DMA faults can be detected by IOMMU at device level. Adding a pointer
-to struct device allows IOMMU subsystem to report relevant faults
-back to the device driver for further handling.
-For direct assigned device (or user space drivers), guest OS holds
-responsibility to handle and respond per device IOMMU fault.
-Therefore we need fault reporting mechanism to propagate faults beyond
-IOMMU subsystem.
+Device faults detected by IOMMU can be reported outside IOMMU
+subsystem. This patch intends to provide a generic device
+fault data such that device drivers can communicate IOMMU faults
+without model specific knowledge.
+
+The assumption is that model specific IOMMU driver can filter and
+handle most of the IOMMU faults if the cause is within IOMMU driver
+control. Therefore, the fault reasons can be reported are grouped
+and generalized based common specifications such as PCI ATS.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/device.h | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/iommu.h | 69 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 1d26079..4e3d543 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -42,6 +42,7 @@ struct fwnode_handle;
- struct iommu_ops;
- struct iommu_group;
- struct iommu_fwspec;
-+struct iommu_fault_param;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 4af1820..3f9b367 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -49,6 +49,7 @@ struct bus_type;
+ struct device;
+ struct iommu_domain;
+ struct notifier_block;
++struct iommu_fault_event;
  
- struct bus_attribute {
- 	struct attribute	attr;
-@@ -873,6 +874,7 @@ struct dev_links_info {
-  * 		device (i.e. the bus driver that discovered the device).
-  * @iommu_group: IOMMU group the device belongs to.
-  * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
-+ * @iommu_fault_param: Per device generic IOMMU runtime parameters
-  *
-  * @offline_disabled: If set, the device is permanently online.
-  * @offline:	Set after successful invocation of bus type's .offline().
-@@ -962,6 +964,7 @@ struct device {
- 	void	(*release)(struct device *dev);
- 	struct iommu_group	*iommu_group;
- 	struct iommu_fwspec	*iommu_fwspec;
-+	struct iommu_fault_param	*iommu_fault_param;
+ /* iommu fault flags */
+ #define IOMMU_FAULT_READ	0x0
+@@ -56,6 +57,7 @@ struct notifier_block;
  
- 	bool			offline_disabled:1;
- 	bool			offline:1;
+ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
++typedef int (*iommu_dev_fault_handler_t)(struct device *, struct iommu_fault_event *);
+ 
+ struct iommu_domain_geometry {
+ 	dma_addr_t aperture_start; /* First address that can be mapped    */
+@@ -264,6 +266,60 @@ struct iommu_device {
+ 	struct device *dev;
+ };
+ 
++enum iommu_model {
++	IOMMU_MODEL_INTEL = 1,
++	IOMMU_MODEL_AMD,
++	IOMMU_MODEL_SMMU3,
++};
++
++/*  Generic fault types, can be expanded IRQ remapping fault */
++enum iommu_fault_type {
++	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
++	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
++};
++
++enum iommu_fault_reason {
++	IOMMU_FAULT_REASON_CTX = 1,
++	IOMMU_FAULT_REASON_ACCESS,
++	IOMMU_FAULT_REASON_INVALIDATE,
++	IOMMU_FAULT_REASON_UNKNOWN,
++};
++
++/**
++ * struct iommu_fault_event - Generic per device fault data
++ *
++ * - PCI and non-PCI devices
++ * - Recoverable faults (e.g. page request), information based on PCI ATS
++ * and PASID spec.
++ * - Un-recoverable faults of device interest
++ * - DMA remapping and IRQ remapping faults
++
++ * @type contains fault type.
++ * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
++ *         faults are not reported
++ * @paddr: tells the offending page address
++ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
++ * @rid: requestor ID
++ * @page_req_group_id: page request group index
++ * @last_req: last request in a page request group
++ * @pasid_valid: indicates if the PRQ has a valid PASID
++ * @prot: page access protection flag, e.g. IOMMU_READ, IOMMU_WRITE
++ * @private_data: uniquely identify device-specific private data for an
++ *                individual page request
++ */
++struct iommu_fault_event {
++	enum iommu_fault_type type;
++	enum iommu_fault_reason reason;
++	u64 paddr;
++	u32 pasid;
++	u32 rid:16;
++	u32 page_req_group_id : 9;
++	u32 last_req : 1;
++	u32 pasid_valid : 1;
++	u32 prot;
++	u32 private_data;
++};
++
+ int  iommu_device_register(struct iommu_device *iommu);
+ void iommu_device_unregister(struct iommu_device *iommu);
+ int  iommu_device_sysfs_add(struct iommu_device *iommu,
+@@ -425,6 +481,18 @@ struct iommu_fwspec {
+ 	u32			ids[1];
+ };
+ 
++/**
++ * struct iommu_fault_param - per-device IOMMU runtime data
++ * @dev_fault_handler: Callback function to handle IOMMU faults at device level
++ * @pasid_tbl_bound: Device PASID table is bound to a guest
++ *
++ */
++struct iommu_fault_param {
++	iommu_dev_fault_handler_t dev_fault_handler;
++	bool pasid_tbl_bound:1;
++	bool pasid_tbl_shadowed:1;
++};
++
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 		      const struct iommu_ops *ops);
+ void iommu_fwspec_free(struct device *dev);
+@@ -437,6 +505,7 @@ struct iommu_ops {};
+ struct iommu_group {};
+ struct iommu_fwspec {};
+ struct iommu_device {};
++struct iommu_fault_param {};
+ 
+ static inline bool iommu_present(struct bus_type *bus)
+ {
 -- 
 2.7.4
