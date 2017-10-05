@@ -1,174 +1,154 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v8 3/5] iommu/of: Add msi address regions reservation
-	helper
-Date: Thu, 5 Oct 2017 15:05:41 +0100
-Message-ID: <6f8e27fc-3f16-7f66-5443-2be64ce9e464@arm.com>
-References: <20170927133241.21036-1-shameerali.kolothum.thodi@huawei.com>
-	<20170927133241.21036-4-shameerali.kolothum.thodi@huawei.com>
-	<f3146f49-6004-7a15-866b-653e3ea54856@arm.com>
-	<20171004135007.GA12327@red-moon>
-	<5c80f292-dc5d-a1c6-d7a0-df2a84cc77d1@arm.com>
-	<d525f112-fb20-d14b-bea0-6547c8b933dd@huawei.com>
-	<cd4d3ad0-317e-6b7b-c5f4-f4e6eac3ee10@arm.com>
-	<82272c18-717d-bbaf-b8c3-61785af496bd@huawei.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [RFC v2 2/4] iommu/arm-smmu-v3: Add tlbi_on_map option
+Date: Thu, 5 Oct 2017 17:14:47 +0200
+Message-ID: <c354646d-4191-50a3-22a8-86a4008ad5f4@redhat.com>
+References: <1502459130-6234-1-git-send-email-eric.auger@redhat.com>
+ <1502459130-6234-3-git-send-email-eric.auger@redhat.com>
+ <20170817163424.GC30719@arm.com>
+ <20170818053639-mutt-send-email-mst@kernel.org>
+ <20170822220457-mutt-send-email-mst@kernel.org>
+ <20170823102517.GE27301@arm.com>
+ <cc18b752-97fd-f95f-fdef-478adc06e505@redhat.com>
+ <20170823164255.GB590@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <82272c18-717d-bbaf-b8c3-61785af496bd-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170823164255.GB590@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, Jean-Philippe.Brucker@arm.com, christoffer.dall@linaro.org, Marc.Zyngier@arm.com, alex.williamson@redhat.com, peterx@redhat.com, tn@semihalf.com, bharat.bhushan@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDUvMTAvMTcgMTQ6MDgsIEpvaG4gR2Fycnkgd3JvdGU6Cj4gT24gMDUvMTAvMjAxNyAxMzo0
-NCwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbiAwNS8xMC8xNyAxMzozNywgSm9obiBHYXJyeSB3
-cm90ZToKPj4+IE9uIDA1LzEwLzIwMTcgMTI6MDcsIFJvYmluIE11cnBoeSB3cm90ZToKPj4+PiBP
-biAwNC8xMC8xNyAxNDo1MCwgTG9yZW56byBQaWVyYWxpc2kgd3JvdGU6Cj4+Pj4+IE9uIFdlZCwg
-T2N0IDA0LCAyMDE3IGF0IDEyOjIyOjA0UE0gKzAxMDAsIE1hcmMgWnluZ2llciB3cm90ZToKPj4+
-Pj4+IE9uIDI3LzA5LzE3IDE0OjMyLCBTaGFtZWVyIEtvbG90aHVtIHdyb3RlOgo+Pj4+Pj4+IEZy
-b206IEpvaG4gR2FycnkgPGpvaG4uZ2FycnlAaHVhd2VpLmNvbT4KPj4+Pj4+Pgo+Pj4+Pj4+IE9u
-IHNvbWUgcGxhdGZvcm1zIG1zaS1jb250cm9sbGVyIGFkZHJlc3MgcmVnaW9ucyBoYXZlIHRvIGJl
-IGV4Y2x1ZGVkCj4+Pj4+Pj4gZnJvbSBub3JtYWwgSU9WQSBhbGxvY2F0aW9uIGluIHRoYXQgdGhl
-eSBhcmUgZGV0ZWN0ZWQgYW5kIGRlY29kZWQgaW4KPj4+Pj4+PiBhIEhXIHNwZWNpZmljIHdheSBi
-eSBzeXN0ZW0gY29tcG9uZW50cyBhbmQgc28gdGhleSBjYW5ub3QgYmUKPj4+Pj4+PiBjb25zaWRl
-cmVkCj4+Pj4+Pj4gbm9ybWFsIElPVkEgYWRkcmVzcyBzcGFjZS4KPj4+Pj4+Pgo+Pj4+Pj4+IEFk
-ZCBhIGhlbHBlciBmdW5jdGlvbiB0aGF0IHJldHJpZXZlcyBtc2kgYWRkcmVzcyByZWdpb25zIHRo
-cm91Z2gKPj4+Pj4+PiBkZXZpY2UKPj4+Pj4+PiB0cmVlIG1zaSBtYXBwaW5nLCBzbyB0aGF0IHRo
-ZXNlIHJlZ2lvbnMgd2lsbCBub3QgYmUgdHJhbnNsYXRlZCBieQo+Pj4+Pj4+IElPTU1VCj4+Pj4+
-Pj4gYW5kIHdpbGwgYmUgZXhjbHVkZWQgZnJvbSBJT1ZBIGFsbG9jYXRpb25zLgo+Pj4+Pj4+Cj4+
-Pj4+Pj4gU2lnbmVkLW9mZi1ieTogSm9obiBHYXJyeSA8am9obi5nYXJyeUBodWF3ZWkuY29tPgo+
-Pj4+Pj4+IFtTaGFtZWVyOiBNb2RpZmllZCBtc2ktcGFyZW50IHJldHJpZXZhbCBsb2dpY10KPj4+
-Pj4+PiBTaWduZWQtb2ZmLWJ5OiBTaGFtZWVyIEtvbG90aHVtCj4+Pj4+Pj4gPHNoYW1lZXJhbGku
-a29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4KPj4+Pj4+PiAtLS0KPj4+Pj4+PiDCoGRyaXZlcnMv
-aW9tbXUvb2ZfaW9tbXUuYyB8IDk1Cj4+Pj4+Pj4gKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrCj4+Pj4+Pj4gwqBpbmNsdWRlL2xpbnV4L29mX2lvbW11Lmgg
-fCAxMCArKysrKwo+Pj4+Pj4+IMKgMiBmaWxlcyBjaGFuZ2VkLCAxMDUgaW5zZXJ0aW9ucygrKQo+
-Pj4+Pj4+Cj4+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvb2ZfaW9tbXUuYyBiL2Ry
-aXZlcnMvaW9tbXUvb2ZfaW9tbXUuYwo+Pj4+Pj4+IGluZGV4IGU2MGUzZGIuLmZmZDdmYjcgMTAw
-NjQ0Cj4+Pj4+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9vZl9pb21tdS5jCj4+Pj4+Pj4gKysrIGIv
-ZHJpdmVycy9pb21tdS9vZl9pb21tdS5jCj4+Pj4+Pj4gQEAgLTIxLDYgKzIxLDcgQEAKPj4+Pj4+
-PiDCoCNpbmNsdWRlIDxsaW51eC9pb21tdS5oPgo+Pj4+Pj4+IMKgI2luY2x1ZGUgPGxpbnV4L2xp
-bWl0cy5oPgo+Pj4+Pj4+IMKgI2luY2x1ZGUgPGxpbnV4L29mLmg+Cj4+Pj4+Pj4gKyNpbmNsdWRl
-IDxsaW51eC9vZl9hZGRyZXNzLmg+Cj4+Pj4+Pj4gwqAjaW5jbHVkZSA8bGludXgvb2ZfaW9tbXUu
-aD4KPj4+Pj4+PiDCoCNpbmNsdWRlIDxsaW51eC9vZl9wY2kuaD4KPj4+Pj4+PiDCoCNpbmNsdWRl
-IDxsaW51eC9zbGFiLmg+Cj4+Pj4+Pj4gQEAgLTEzOCw2ICsxMzksMTQgQEAgc3RhdGljIGludCBv
-Zl9pb21tdV94bGF0ZShzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+Pj4+Pj4gwqDCoMKgwqAgcmV0dXJu
-IG9wcy0+b2ZfeGxhdGUoZGV2LCBpb21tdV9zcGVjKTsKPj4+Pj4+PiDCoH0KPj4+Pj4+Pgo+Pj4+
-Pj4+ICtzdGF0aWMgaW50IF9fZ2V0X3BjaV9yaWQoc3RydWN0IHBjaV9kZXYgKnBkZXYsIHUxNiBh
-bGlhcywgdm9pZAo+Pj4+Pj4+ICpkYXRhKQo+Pj4+Pj4+ICt7Cj4+Pj4+Pj4gK8KgwqDCoCB1MzIg
-KnJpZCA9IGRhdGE7Cj4+Pj4+Pj4gKwo+Pj4+Pj4+ICvCoMKgwqAgKnJpZCA9IGFsaWFzOwo+Pj4+
-Pj4+ICvCoMKgwqAgcmV0dXJuIDA7Cj4+Pj4+Pj4gK30KPj4+Pj4+PiArCj4+Pj4+Pj4gwqBzdHJ1
-Y3Qgb2ZfcGNpX2lvbW11X2FsaWFzX2luZm8gewo+Pj4+Pj4+IMKgwqDCoMKgIHN0cnVjdCBkZXZp
-Y2UgKmRldjsKPj4+Pj4+PiDCoMKgwqDCoCBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wOwo+Pj4+Pj4+
-IEBAIC0xNjMsNiArMTcyLDczIEBAIHN0YXRpYyBpbnQgb2ZfcGNpX2lvbW11X2luaXQoc3RydWN0
-IHBjaV9kZXYKPj4+Pj4+PiAqcGRldiwgdTE2IGFsaWFzLCB2b2lkICpkYXRhKQo+Pj4+Pj4+IMKg
-wqDCoMKgIHJldHVybiBpbmZvLT5ucCA9PSBwZGV2LT5idXMtPmRldi5vZl9ub2RlOwo+Pj4+Pj4+
-IMKgfQo+Pj4+Pj4+Cj4+Pj4+Pj4gK3N0YXRpYyBpbnQgb2ZfaW9tbXVfYWxsb2NfcmVzdl9yZWdp
-b24oc3RydWN0IGRldmljZV9ub2RlICpucCwKPj4+Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBsaXN0X2hlYWQgKmhlYWQpCj4+Pj4+Pj4gK3sK
-Pj4+Pj4+PiArwqDCoMKgIGludCBwcm90ID0gSU9NTVVfV1JJVEUgfCBJT01NVV9OT0VYRUMgfCBJ
-T01NVV9NTUlPOwo+Pj4+Pj4+ICvCoMKgwqAgc3RydWN0IGlvbW11X3Jlc3ZfcmVnaW9uICpyZWdp
-b247Cj4+Pj4+Pj4gK8KgwqDCoCBzdHJ1Y3QgcmVzb3VyY2UgcmVzOwo+Pj4+Pj4+ICvCoMKgwqAg
-aW50IGVycjsKPj4+Pj4+PiArCj4+Pj4+Pj4gK8KgwqDCoCBlcnIgPSBvZl9hZGRyZXNzX3RvX3Jl
-c291cmNlKG5wLCAwLCAmcmVzKTsKPj4+Pj4+Cj4+Pj4+PiBXaGF0IGlzIHRoZSByYXRpb25hbCBm
-b3IgcmVnaXN0ZXJpbmcgdGhlIGZpcnN0IHJlZ2lvbiBvbmx5PyBTdXJlbHkKPj4+Pj4+IHlvdQo+
-Pj4+Pj4gY2FuIGhhdmUgbW9yZSB0aGFuIG9uZSByZWdpb24gaW4gYW4gTVNJIGNvbnRyb2xsZXIg
-KHllcywgeW91cgo+Pj4+Pj4gcGFydGljdWxhcgo+Pj4+Pj4gY2FzZSBpcyB0aGUgSVRTIHdoaWNo
-IGhhcyBvbmx5IG9uZSwgYnV0IHdlJ3JlIHRyeWluZyB0byBkbyBzb21ldGhpbmcKPj4+Pj4+IGdl
-bmVyaWMgaGVyZSkuCj4+Pj4+Pgo+Pj4+Pj4gQW5vdGhlciBpc3N1ZSBJIGhhdmUgd2l0aCB0aGlz
-IGNvZGUgaXMgdGhhdCBpdCBpbnNlcnRzIGFsbCBvZiB0aGUgSVRTCj4+Pj4+PiBNTUlPIGluIHRo
-ZSBSRVNWX01TSSByYW5nZS4gQXMgbG9uZyBhcyB3ZSBkb24ndCBnZW5lcmF0ZSBhbnkgcGFnZQo+
-Pj4+Pj4gdGFibGVzCj4+Pj4+PiBmb3IgdGhpcywgd2UncmUgZmluZS4gQnV0IGlmIHdlIGV2ZXIg
-Y2hhbmdlIHRoaXMsIHdlJ2xsIGVuZC11cAo+Pj4+Pj4gd2l0aCB0aGUKPj4+Pj4+IElUUyBwcm9n
-cmFtbWluZyBpbnRlcmZhY2UgYmVpbmcgZXhwb3NlZCB0byBhIGRldmljZSwgd2hpY2gKPj4+Pj4+
-IHdvdWxkbid0IGJlCj4+Pj4+PiBhY2NlcHRhYmxlLgo+Pj4+Pj4KPj4+Pj4+IFdoeSBjYW4ndCB3
-ZSBoYXZlIHNvbWUgZ2VuZXJpYyBwcm9wZXJ0eSBpbnN0ZWFkLCB0aGF0IHdvdWxkIGRlc2NyaWJl
-Cj4+Pj4+PiB0aGUKPj4+Pj4+IGFjdHVhbCByYW5nZXMgdGhhdCBjYW5ub3QgYmUgdHJhbnNsYXRl
-ZD8gVGhhdCB3YXksIG5vIHJhbmRvbQo+Pj4+Pj4gaW5zZXJ0aW9uCj4+Pj4+PiBvZiBhIHJhbmRv
-bSByYW5nZSwgYW5kIHJlbGF0aXZlbHkgZnV0dXJlIHByb29mLgo+Pj4+Cj4+Pj4gSW5kZWVkLiBG
-dXJ0aGVybW9yZSwgSU9SVCBoYXMgdGhlIGFkdmFudGFnZSBvZiBiZWluZyBsaW1pdGVkIHRvIGEg
-ZmV3Cj4+Pj4gZGlzdGluY3QgZGV2aWNlIHR5cGVzIGFuZCBTQlNBLWNvbXBsaWFudCBzeXN0ZW0g
-dG9wb2xvZ2llcywgc28gdGhlCj4+Pj4gSVRTLWNoYXNpbmcgaXMgcmVhc29uYWJsZSB0aGVyZSAo
-bW9kdWxvIG9ubHkgcmVzZXJ2aW5nCj4+Pj4gR0lUU19UUkFOU0xBVEVSKS4KPj4+PiBUaGUgc2Nv
-cGUgb2YgRFQgY292ZXJzIG1vcmUgZW1iZWRkZWQgdGhpbmdzIGFzIHdlbGwgbGlrZSBQQ0kgaG9z
-dAo+Pj4+IGNvbnRyb2xsZXJzIHdpdGggaW50ZXJuYWwgTVNJIGRvb3JiZWxscywgYW5kIHBvdGVu
-dGlhbGx5IGV2ZW4KPj4+PiBkaXJlY3QtbWFwcGVkIG1lbW9yeSByZWdpb25zIGZvciB0aGluZ3Mg
-bGlrZSBib290bG9hZGVyIGZyYW1lYnVmZmVycyB0bwo+Pj4+IHByZXZlbnQgZGlzcGxheSBnbGl0
-Y2hlcyAtIGEgZ2VuZXJpYyBhZGRyZXNzL3NpemUvZmxhZ3MgZGVzY3JpcHRpb24KPj4+PiBvZiBh
-Cj4+Pj4gcmVnaW9uIGNvdWxkIHdvcmsgZm9yIGp1c3QgYWJvdXQgZXZlcnl0aGluZy4KPj4+Pgo+
-Pj4+PiBJT1JUIGNvZGUgaGFzIHRoZSBzYW1lIGlzc3VlIChpZSBpdCByZXNlcnZlcyBhbGwgSVRT
-IHJlZ2lvbnMpIGFuZCBJIGRvCj4+Pj4+IG5vdCBrbm93IHdoZXJlIGEgcHJvcGVydHkgY2FuIGJl
-IGFkZGVkIHRvIGRlc2NyaWJlIHRob3NlIHJhbmdlcyAoSU9SVAo+Pj4+PiBzcGVjcyA/IEknZCBy
-YXRoZXIgbm90KSBpbiBBQ1BJIG90aGVyIHRoYW4gdGhlIElPUlQgdGFibGVzIGVudHJpZXMKPj4+
-Pj4gdGhlbXNlbHZlcy4KPj4+Pj4KPj4+Pj4+IEknbSBub3Qgc3VyZSB3aGVyZSB0byBkZWNsYXJl
-IGl0IChQQ0llIG5vZGU/IElPTU1VIG5vZGU/KSwgYnV0IGl0J2QKPj4+Pj4+IGZlZWwKPj4+Pj4+
-IGxpa2UgYSBtdWNoIG5pY2VyIGFuZCBzaW1wbGVyIHNvbHV0aW9uIHRvIHRoaXMgcHJvYmxlbS4K
-Pj4+Pj4KPj4+Pj4gSXQgY291bGQgYmUgYnV0IGlmIHdlIHRocm93IEFDUEkgaW50byB0aGUgcGlj
-dHVyZSB3ZSBoYXZlIHRvIGtub2NrCj4+Pj4+IHRvZ2V0aGVyIEhpc2lsaWNvbiBzcGVjaWZpYyBu
-YW1lc3BhY2UgYmluZGluZ3MgdG8gaGFuZGxlIHRoaXMgYW5kCj4+Pj4+IHF1aWNrbHkuCj4+Pj4K
-Pj4+PiBBcyBhYm92ZSBJJ20gaGFwcHkgd2l0aCB0aGUgSVRTLXNwZWNpZmljIHNvbHV0aW9uIGZv
-ciBBQ1BJIGdpdmVuIHRoZQo+Pj4+IGxpbWl0cyBvZiBJT1JULiBXaGF0IEkgaGFkIGluIG1pbmQg
-Zm9yIERUIHdhcyBzb21ldGhpbmcgdGllZCBpbiB3aXRoCj4+Pj4gdGhlCj4+Pj4gZ2VuZXJpYyBJ
-T01NVSBiaW5kaW5ncy4gU29tZXRoaW5nIGxpa2UgdGhpcyBpcyBwcm9iYWJseSBlYXNpZXN0IHRv
-Cj4+Pj4gaGFuZGxlLCBidXQgZG9lcyByYXRoZXIgc3ByZWFkIHRoZSBpbmZvcm1hdGlvbiBhcm91
-bmQ6Cj4+Pj4KPj4+Pgo+Pj4+IMKgIHBjaSB7Cj4+Pj4gwqDCoMKgwqDCoCAuLi4KPj4+PiDCoMKg
-wqDCoMKgIGlvbW11LW1hcCA9IDwwIDAgJmlvbW11MSAweDEwMDAwPjsKPj4+PiDCoMKgwqDCoMKg
-IGlvbW11LXJlc2VydmVkLXJhbmdlcyA9IDwweDEyMzQwMDAwIDB4MTAwMCBJT01NVV9NU0k+LAo+
-Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPDB4MzQ1NjAwMDAgMHgxMDAw
-IElPTU1VX01TST47Cj4+Pj4gwqAgfTsKPj4+Pgo+Pj4+IMKgIGRpc3BsYXkgewo+Pj4+IMKgwqDC
-oMKgwqAgLi4uCj4+Pj4gwqDCoMKgwqDCoCBpb21tdXMgPSA8JmlvbW11MSAweDIwMDAwPjsKPj4+
-PiDCoMKgwqDCoMKgIC8qIHNpbXBsZWZiIHJlZ2lvbiAqLwo+Pj4+IMKgwqDCoMKgwqAgaW9tbXUt
-cmVzZXJ2ZWQtcmFuZ2VzID0gPDB4ODAwODAwMDAgMHg4MDAwMCBJT01NVV9ESVJFQ1Q+LAo+Pj4+
-IMKgIH07Cj4+Pj4KPj4+Pgo+Pj4+IEFsdGVybmF0aXZlbHksIHNvbWV0aGluZyBpbnNwaXJlZCBi
-eSByZXNlcnZlZC1tZW1vcnkgbWlnaHQgcGVyaGFwcyBiZQo+Pj4+IGNvbmNlcHR1YWxseSBuZWF0
-ZXIsIGF0IHRoZSByaXNrIG9mIGJlaW5nIG1vcmUgY29tcGxpY2F0ZWQ6Cj4+Pj4KPj4+Pgo+Pj4+
-IMKgIGlvbW11MTogaW9tbXVAYWNiZDAwMDAgewo+Pj4+IMKgwqDCoMKgwqAgLi4uCj4+Pj4gwqDC
-oMKgwqDCoCAjaW9tbXUtY2VsbHMgPSA8MT47Cj4+Pj4KPj4+PiDCoMKgwqDCoMKgIGlvbW11LXJl
-c2VydmVkLXJhbmdlcyB7Cj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgICNhZGRyZXNzLWNlbGxzID0g
-PDE+Owo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1jZWxscyA9IDwxPjsKPj4+Pgo+Pj4+
-IMKgwqDCoMKgwqDCoMKgIGl0czBfcmVzdjogbXNpQDEyMzQwMDAwIHsKPj4+PiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gImlvbW11LW1zaS1yZWdpb24iOwo+Pj4+IMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJlZyA9IDwweDEyMzQwMDAwIDB4MTAwMD47Cj4+Pj4g
-wqDCoMKgwqDCoMKgwqDCoMKgIH07Cj4+Pj4KPj4+PiDCoMKgwqDCoMKgwqDCoCBpdHMxX3Jlc3Y6
-IG1zaUAzNDU2MDAwMCB7Cj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0aWJs
-ZSA9ICJpb21tdS1tc2ktcmVnaW9uIjsKPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBy
-ZWcgPSA8MHgzNDU2MDAwMCAweDEwMDA+Owo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9Owo+Pj4+
-Cj4+Pj4gwqDCoMKgwqDCoMKgwqAgZmJfcmVzdjogZGlyZWN0QDEyMzQwMDAwIHsKPj4+PiDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gImlvbW11LWRpcmVjdC1yZWdpb24i
-Owo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJlZyA9IDwweDgwMDgwMDAwIDB4ODAw
-MDA+Owo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9Owo+Pj4+IMKgwqDCoMKgwqAgfTsKPj4+PiDC
-oCB9Owo+Pj4+Cj4+Pj4KPj4+Cj4+PiBJZiB3ZSBkaWQgdGhpcywgd291bGRuJ3QgaXQgYmUgZWFz
-aWVyIHRvIGNyZWF0ZSBkYW5nZXJvdXMgcmVzZXJ2ZWQKPj4+IHJlZ2lvbnMsIGxpa2Ugb3VyIElU
-UyByZWdpb24gd2hpY2ggTWFyYyB3YXMgY29uY2VybmVkIGJ5PyBJdCdzIG5vdCBzbwo+Pj4gaGFy
-ZCB0byBnZXQgZHRzIGNoYW5nZXMgaW50byB0aGUga2VybmVsLgo+Pgo+PiBXZWxsLCB5ZWFoLiBJ
-dCdzIGFsc28gZXF1YWxseSBlYXN5IHRvIGFkZCBzb21lIHBlcmlwaGVyYWwgcmVnaXN0ZXIKPj4g
-cmVnaW9uIHRvIHRoZSAvbWVtb3J5IG5vZGUgYW5kIHdhdGNoIGhpbGFyaXR5IGVuc3VlLiBUaGUg
-c29sdXRpb24gdG8KPj4gYm90aCBpcyAiZG9uJ3QgcHV0IGJvZ3VzIGNyYXAgaW4geW91ciBEVCIu
-Cj4+Cj4gCj4gU3VyZSwgYnV0IHBlb3BsZSBtYWtlIG1pc3Rha2VzIGFuZCBvZnRlbiBhIGxvdCBt
-b3JlIHN1YnRsZSB0aGFuIHlvdXIKPiBleGFtcGxlLgoKSSB3YW50ZWQgdG8gd3JpdGUgYSByZXNw
-b25zZSB0byB0aGF0IGJ1dCBzaW5jZSBpdCB3YXMgdG9vIGVhc3kgdG8gaGl0CnRoZSB3cm9uZyBr
-ZXlzIG9uIG15IGtleWJvYXJkLCBJIGRpZG4ndC4KCkkgZG9uJ3Qgc2VlIGEgcHJvcG9zYWwgZm9y
-IHNvbWUgYWx0ZXJuYXRlIG1ldGhvZCBvZiBkZXNjcmliaW5nCnJlc3RyaWN0ZWQgSU9WQSByZWdp
-b25zIHdoaWNoIHNjYWxlcyBiZXlvbmQgSGlTaWxpY29uIEhpcDA3IGFuZCB3b3VsZCBiZQplbnRp
-cmVseSBpbW11bmUgdG8gYnVncywgc28gSSdtIHJlYWxseSBub3Qgc3VyZSB3aGF0IHlvdXIgYXJn
-dW1lbnQgaXMKaGVyZSA6LwoKUm9iaW4uCgo+IE9ubHkgb25lIHBlcnNvbiBzcG90dGVkIHRoZSBw
-cm9ibGVtIHdpdGggb3VyIGFwcHJvYWNoIHRvIHRoZSBJVFMKPiBwcm9ibGVtLiBJJ20gcHJldHR5
-IGNvbmZpZGVudCBpdCB3b3VsZCBub3QgaGF2ZSBiZWVuIHNwb3R0ZWQgaWYgaXQgd2FzCj4gc3Vi
-bWl0dGVkIGFzIGEgZHRzIGNoYW5nZS4KPiAKPiBNdWNoIGFwcHJlY2lhdGVkLAo+IEpvaG4KPiAK
-Pj4gVGhlcmUncyBhIGJpZyBkaWZmZXJlbmNlIGJldHdlZW4gd2lsZnVsbHkgbWlzZGVzY3JpYmlu
-ZyB5b3VyIHBsYXRmb3JtCj4+IHJlcXVpcmVtZW50cyB2cy4gaGF2aW5nIHRoZSBrZXJuZWwgYXV0
-b21hdGljYWxseSBpbmZlciBzb21ldGhpbmcgYnV0Cj4+IGxlYXZlIGEgaG9sZSBvcGVuIGluIHRo
-ZSBwcm9jZXNzLgo+Pgo+PiBSb2Jpbi4KPj4KPj4gLgo+Pgo+IAo+IAoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Will,
+
+On 23/08/2017 18:42, Will Deacon wrote:
+> Hi Eric,
+> 
+> On Wed, Aug 23, 2017 at 02:36:53PM +0200, Auger Eric wrote:
+>> On 23/08/2017 12:25, Will Deacon wrote:
+>>> On Tue, Aug 22, 2017 at 10:09:15PM +0300, Michael S. Tsirkin wrote:
+>>>> On Fri, Aug 18, 2017 at 05:49:42AM +0300, Michael S. Tsirkin wrote:
+>>>>> On Thu, Aug 17, 2017 at 05:34:25PM +0100, Will Deacon wrote:
+>>>>>> On Fri, Aug 11, 2017 at 03:45:28PM +0200, Eric Auger wrote:
+>>>>>>> When running a virtual SMMU on a guest we sometimes need to trap
+>>>>>>> all changes to the translation structures. This is especially useful
+>>>>>>> to integrate with VFIO. This patch adds a new option that forces
+>>>>>>> the IO_PGTABLE_QUIRK_TLBI_ON_MAP to be applied on LPAE page tables.
+>>>>>>>
+>>>>>>> TLBI commands then can be trapped.
+>>>>>>>
+>>>>>>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>>>>>>>
+>>>>>>> ---
+>>>>>>> v1 -> v2:
+>>>>>>> - rebase on v4.13-rc2
+>>>>>>> ---
+>>>>>>>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 4 ++++
+>>>>>>>  drivers/iommu/arm-smmu-v3.c                             | 5 +++++
+>>>>>>>  2 files changed, 9 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>>>>>>> index c9abbf3..ebb85e9 100644
+>>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+>>>>>>> @@ -52,6 +52,10 @@ the PCIe specification.
+>>>>>>>                          devicetree/bindings/interrupt-controller/msi.txt
+>>>>>>>                        for a description of the msi-parent property.
+>>>>>>>  
+>>>>>>> +- tlbi-on-map       : invalidate caches whenever there is an update of
+>>>>>>> +                      any remapping structure (updates to not-present or
+>>>>>>> +                      present entries).
+>>>>>>> +
+>>>>>>
+>>>>>> My position on this hasn't changed, so NAK for this patch. If you want to
+>>>>>> emulate something outside of the SMMUv3 architecture, please do so, but
+>>>>>> don't pretend that it's an SMMUv3.
+>>>>>>
+>>>>>> Will
+>>>>>
+>>>>> What if the emulated device does not list arm,smmu-v3, listing
+>>>>> qemu,ssmu-v3 as compatible? Would that address the concern?
+>>>>
+>>>> Will, can you comment on this please? Are you open to reusing the code
+>>>> in drivers/iommu/arm-smmu-v3.c to support a paravirtual device that does
+>>>> not claim to be compatible with smmuv3 but does try to behave very close to
+>>>> it except it can cache non-present structures? Or would you rather
+>>>> the code to support this is forked to qemu-smmu-v3.c?
+>>>
+>>> I still don't understand why this is preferable to a PV IOMMU
+>>> implementation. Not only is this proposing to issue TLB maintenance on
+>>> map, but the maintenance command itself is entirely made up. Why not just
+>>> have a map command? Anyway, I'm reluctant to add this hack to the driver until:
+>>>
+>>>   1. There is a compelling reason to pursue this approach instead of a
+>>>      PV approach (including performance measurements).
+>>>
+>>>   2. There is a specification for the QEMU fork of the ARM SMMUv3
+>>>      architecture, including the semantics of the new command being proposed
+>>>      and what exactly the TLB maintenance requirements are on map (for
+>>>      example, what if I change an STE or a CD -- are they cached too?).
+>> I am not sure I catch this last point. At the moment whenever the smmuv3
+>> driver issues data structure invalidation commands (CMD_CFGI_*), those
+>> are trapped and I replay the mappings on host side. I have not changed
+>> anything on that side.
+> 
+> But STEs and CDs have very similar rules to TLBs: you don't need to issue
+> invalidation if the data structure is transitioning from invalid to valid.
+
+While looking at chapter "4.8 virtualisation" of the smmuv3 spec, I
+understand that if we were to use the 2 stages we would need to trap on
+STE updates since they are owned by the hyp.
+
+Spec says "updates to a guest STE are accompanied by a CMD_CFGI_STE (or
+similar) issued from the guest. So I understand invalidation of CDs are
+not mandated by the spec but invalidation of STEs if the data structure
+is transitioning from invalid to valid would be requested. Is that
+correct? I fail to understand if this is currently done by the smmuv3
+driver though.
+
+
+> If you're caching those in QEMU, how do you keep them up-to-date? I can
+> also guarantee you that there will be additional data structures added
+> in future versions of the architecture, so you'll need to consider how
+> you want to operate when running on newer hardware.
+> 
+>> I introduced a new map implementation defined command because the per
+>> page CMD_TLBI_NH_VA IOVA invalidation command was not efficient/usable
+>> with use cases such as DPDK on guest. I understood the spec provisions
+>> for such implementation defined commands.
+
+Also if we were to use dual stage, command queue accesses still would be
+trapped. So if a guest invalidates a hugepage it would send a storm of
+granule sized invalidations and each would be trapped. So maybe it does
+not happen often but I guess it would be pretty inefficient.
+
+On intel I understand the IOTLB Invalidation Descriptor has an AM field
+(address-mask) which specifies the number of contiguous second level
+pages that needs to be invalidated. When invalidating a large-page
+transaction, the driver can use the appropriate mask value (0 for 4KB, 9
+for 2MB, 18 for 1GB).
+
+Thanks
+
+Eric
+> 
+> Whilst there is a space for IMP DEF commands, this doesn't generally mean
+> that they can be repurposed by software. What if the underlying hardware
+> has an IMP DEF command that you want to export? Besides, my main points
+> here are that your command isn't well-specified and if you have to add
+> a command, why not just add a "map" command (i.e. implement a PV interface
+> instead)?
+> 
+>>>   3. The ACPI IORT spec is updated to recognise this implementation
+>>>
+>>>   4. There is an implementation that can use the guest page tables directly,
+>>>      because that may well make all of this moot.
+>> Most probably I will come back to you with questions on stage 1 + stage2
+>> enablement and "4.8 Virtualisation" chapter of smmuv3 spec. Besides I
+>> also need to get access to some HW with smmuv3 ;-)
+> 
+> Ok.
+> 
+> Will
+> 
