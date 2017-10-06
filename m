@@ -1,7 +1,7 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v9 2/4] iommu/dma: Add a helper function to reserve HW MSI address regions for IOMMU drivers
-Date: Fri, 6 Oct 2017 15:04:48 +0100
-Message-ID: <20171006140450.89652-3-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v9 3/4] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+Date: Fri, 6 Oct 2017 15:04:49 +0100
+Message-ID: <20171006140450.89652-4-shameerali.kolothum.thodi@huawei.com>
 References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,85 +12,80 @@ To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.
 Cc: john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU drivers can use this to implement their .get_resv_regions callback
-for HW MSI specific reservations(e.g. ARM GICv3 ITS MSI region).
+The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
+
+This patch implements a ACPI table based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/dma-iommu.c | 20 ++++++++++++++++++++
- include/linux/dma-iommu.h |  7 +++++++
- 2 files changed, 27 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9d1cebe..bae677e 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -19,6 +19,7 @@
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  */
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index e67ba6c..dd42ae9 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -608,6 +608,7 @@ struct arm_smmu_device {
  
-+#include <linux/acpi_iort.h>
- #include <linux/device.h>
- #include <linux/dma-iommu.h>
- #include <linux/gfp.h>
-@@ -27,6 +28,7 @@
- #include <linux/iova.h>
- #include <linux/irq.h>
- #include <linux/mm.h>
-+#include <linux/of_iommu.h>
- #include <linux/pci.h>
- #include <linux/scatterlist.h>
- #include <linux/vmalloc.h>
-@@ -198,6 +200,24 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
- }
- EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+ #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
++#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 2)
+ 	u32				options;
  
-+/**
-+ * iommu_dma_get_msi_resv_regions - Reserved region driver helper
-+ * @dev: Device from iommu_get_resv_regions()
-+ * @list: Reserved region list from iommu_get_resv_regions()
-+ *
-+ * IOMMU drivers can use this to implement their .get_resv_regions
-+ * callback for HW MSI specific reservations. For now, this only
-+ * covers ITS MSI region reservation using ACPI IORT helper function.
-+ */
-+int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list)
-+{
-+	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
-+		return iort_iommu_msi_get_resv_regions(dev, list);
-+
-+	return -ENODEV;
-+}
-+EXPORT_SYMBOL(iommu_dma_get_msi_resv_regions);
-+
- static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
- 		phys_addr_t start, phys_addr_t end)
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -1934,14 +1935,29 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 				      struct list_head *head)
  {
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 92f2083..6062ef0 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -74,6 +74,8 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 	struct iommu_resv_region *region;
++	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = master->smmu;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++	int resv = 0;
  
-+int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list);
+-	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+-					 prot, IOMMU_RESV_SW_MSI);
+-	if (!region)
+-		return;
++	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
+ 
+-	list_add_tail(&region->list, head);
++		resv = iommu_dma_get_msi_resv_regions(dev, head);
 +
- #else
++		if (resv < 0) {
++			dev_warn(dev, "HW MSI region resv failed: %d\n", resv);
++			return;
++		}
++	}
++
++	if (!resv) {
++		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++						 prot, IOMMU_RESV_SW_MSI);
++		if (!region)
++			return;
++
++		list_add_tail(&region->list, head);
++	}
  
- struct iommu_domain;
-@@ -107,6 +109,11 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
- {
+ 	iommu_dma_get_resv_regions(dev, head);
  }
+@@ -2667,6 +2683,7 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
+ 		break;
+ 	case ACPI_IORT_SMMU_HISILICON_HI161X:
+ 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
++		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
+ 		break;
+ 	}
  
-+static inline int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list)
-+{
-+	return -ENODEV;
-+}
-+
- #endif	/* CONFIG_IOMMU_DMA */
- #endif	/* __KERNEL__ */
- #endif	/* __DMA_IOMMU_H */
 -- 
 1.9.1
 
