@@ -1,113 +1,98 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFCv2 PATCH 02/36] iommu: Add a process_exit callback for device drivers
-Date: Fri,  6 Oct 2017 14:31:29 +0100
-Message-ID: <20171006133203.22803-3-jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 03/36] iommu/process: Add public function to search for a process
+Date: Fri,  6 Oct 2017 14:31:30 +0100
+Message-ID: <20171006133203.22803-4-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
+Sender: linux-pci-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
 Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-When a process exits, we need to ensure that devices attached to it stop
-issuing transactions with its PASID. Let device drivers register a
-callback to be notified on process exit.
-
-At the moment the callback is set on the domain like the fault handler,
-because we don't have a structure available for IOMMU masters. This can
-become problematic if different devices in a domain are managed by
-distinct device drivers (for example multiple devices in the same group).
-The problem is the same for the fault handler, so we'll probably fix them
-all at once.
+The fault handler will need to find a process given its PASID. This is
+the reason we have an IDR for storing processes, so hook it up.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/iommu-process.c | 31 +++++++++++++++++++++++++++++++
- include/linux/iommu.h         | 19 +++++++++++++++++++
- 2 files changed, 50 insertions(+)
+ drivers/iommu/iommu-process.c | 35 +++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h         | 12 ++++++++++++
+ 2 files changed, 47 insertions(+)
 
 diff --git a/drivers/iommu/iommu-process.c b/drivers/iommu/iommu-process.c
-index a7e5a1c94305..61ca0bd707c0 100644
+index 61ca0bd707c0..8f4c98632d58 100644
 --- a/drivers/iommu/iommu-process.c
 +++ b/drivers/iommu/iommu-process.c
-@@ -223,3 +223,34 @@ static void iommu_process_detach_locked(struct iommu_context *context,
- 	if (last)
- 		iommu_context_free(context);
+@@ -145,6 +145,41 @@ static void iommu_process_put_locked(struct iommu_process *process)
+ 	kref_put(&process->kref, iommu_process_release);
  }
+ 
++/**
++ * iommu_process_put - Put reference to process, freeing it if necessary.
++ */
++void iommu_process_put(struct iommu_process *process)
++{
++	spin_lock(&iommu_process_lock);
++	iommu_process_put_locked(process);
++	spin_unlock(&iommu_process_lock);
++}
++EXPORT_SYMBOL_GPL(iommu_process_put);
 +
 +/**
-+ * iommu_set_process_exit_handler() - set a callback for stopping the use of
-+ * PASID in a device.
-+ * @dev: the device
-+ * @handler: exit handler
-+ * @token: user data, will be passed back to the exit handler
++ * iommu_process_find - Find process associated to the given PASID
 + *
-+ * Users of the bind/unbind API should call this function to set a
-+ * device-specific callback telling them when a process is exiting.
-+ *
-+ * After the callback returns, the device must not issue any more transaction
-+ * with the PASIDs given as argument to the handler. It can be a single PASID
-+ * value or the special IOMMU_PROCESS_EXIT_ALL.
-+ *
-+ * The handler itself should return 0 on success, and an appropriate error code
-+ * otherwise.
++ * Returns the IOMMU process corresponding to this PASID, or NULL if not found.
++ * A reference to the iommu_process is kept, and must be released with
++ * iommu_process_put.
 + */
-+void iommu_set_process_exit_handler(struct device *dev,
-+				    iommu_process_exit_handler_t handler,
-+				    void *token)
++struct iommu_process *iommu_process_find(int pasid)
 +{
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct iommu_process *process;
 +
-+	if (WARN_ON(!domain))
-+		return;
++	spin_lock(&iommu_process_lock);
++	process = idr_find(&iommu_process_idr, pasid);
++	if (process) {
++		if (!iommu_process_get_locked(process))
++			/* kref is 0, process is defunct */
++			process = NULL;
++	}
++	spin_unlock(&iommu_process_lock);
 +
-+	domain->process_exit = handler;
-+	domain->process_exit_token = token;
++	return process;
 +}
-+EXPORT_SYMBOL_GPL(iommu_set_process_exit_handler);
++EXPORT_SYMBOL_GPL(iommu_process_find);
++
+ static int iommu_process_attach(struct iommu_domain *domain, struct device *dev,
+ 				struct iommu_process *process)
+ {
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3978dc094706..8d74f9058f30 100644
+index 8d74f9058f30..e9528fcacab1 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -56,6 +56,11 @@ struct notifier_block;
- typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
- 			struct device *, unsigned long, int, void *);
- 
-+/* All process are being detached from this device */
-+#define IOMMU_PROCESS_EXIT_ALL			(-1)
-+typedef int (*iommu_process_exit_handler_t)(struct iommu_domain *, struct device *dev,
-+					    int pasid, void *);
+@@ -733,12 +733,24 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ extern void iommu_set_process_exit_handler(struct device *dev,
+ 					   iommu_process_exit_handler_t cb,
+ 					   void *token);
++extern struct iommu_process *iommu_process_find(int pasid);
++extern void iommu_process_put(struct iommu_process *process);
 +
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
- 	dma_addr_t aperture_end;   /* Last address that can be mapped     */
-@@ -92,6 +97,8 @@ struct iommu_domain {
- 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
-+	iommu_process_exit_handler_t process_exit;
-+	void *process_exit_token;
- 	struct iommu_domain_geometry geometry;
- 	void *iova_cookie;
- 
-@@ -722,4 +729,16 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 
- #endif /* CONFIG_IOMMU_API */
- 
-+#ifdef CONFIG_IOMMU_PROCESS
-+extern void iommu_set_process_exit_handler(struct device *dev,
-+					   iommu_process_exit_handler_t cb,
-+					   void *token);
-+#else /* CONFIG_IOMMU_PROCESS */
-+static inline void iommu_set_process_exit_handler(struct device *dev,
-+						  iommu_process_exit_handler_t cb,
-+						  void *token)
+ #else /* CONFIG_IOMMU_PROCESS */
+ static inline void iommu_set_process_exit_handler(struct device *dev,
+ 						  iommu_process_exit_handler_t cb,
+ 						  void *token)
+ {
+ }
++
++static inline struct iommu_process *iommu_process_find(int pasid)
++{
++	return NULL;
++}
++
++static inline void iommu_process_put(struct iommu_process *process)
 +{
 +}
-+#endif /* CONFIG_IOMMU_PROCESS */
-+
+ #endif /* CONFIG_IOMMU_PROCESS */
+ 
  #endif /* __LINUX_IOMMU_H */
 -- 
 2.13.3
-
