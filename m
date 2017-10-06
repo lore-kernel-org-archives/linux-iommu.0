@@ -1,60 +1,281 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFCv2 PATCH 36/36] iommu/arm-smmu-v3: Add support for PCI PASID
-Date: Fri,  6 Oct 2017 14:32:03 +0100
-Message-ID: <20171006133203.22803-37-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFCv2 PATCH 35/36] iommu/arm-smmu-v3: Add support for PRI
+Date: Fri,  6 Oct 2017 14:32:02 +0100
+Message-ID: <20171006133203.22803-36-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Enable PASID for PCI devices that support it.
+For PCI devices that support it, enable the PRI capability and handle
+PRI Page Requests with the generic fault handler.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 52 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 176 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 122 insertions(+), 54 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 852714f35010..42c8378624ed 100644
+index f008b4617cd4..852714f35010 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -3012,6 +3012,50 @@ static void arm_smmu_disable_pri(struct arm_smmu_master_data *master)
- 	master->can_fault = false;
+@@ -272,6 +272,7 @@
+ #define STRTAB_STE_1_S1COR_SHIFT	4
+ #define STRTAB_STE_1_S1CSH_SHIFT	6
+ 
++#define STRTAB_STE_1_PPAR		(1UL << 18)
+ #define STRTAB_STE_1_S1STALLD		(1UL << 27)
+ 
+ #define STRTAB_STE_1_EATS_ABT		0UL
+@@ -426,9 +427,9 @@
+ #define CMDQ_PRI_1_GRPID_SHIFT		0
+ #define CMDQ_PRI_1_GRPID_MASK		0x1ffUL
+ #define CMDQ_PRI_1_RESP_SHIFT		12
+-#define CMDQ_PRI_1_RESP_DENY		(0UL << CMDQ_PRI_1_RESP_SHIFT)
+-#define CMDQ_PRI_1_RESP_FAIL		(1UL << CMDQ_PRI_1_RESP_SHIFT)
+-#define CMDQ_PRI_1_RESP_SUCC		(2UL << CMDQ_PRI_1_RESP_SHIFT)
++#define CMDQ_PRI_1_RESP_FAILURE		(0UL << CMDQ_PRI_1_RESP_SHIFT)
++#define CMDQ_PRI_1_RESP_INVALID		(1UL << CMDQ_PRI_1_RESP_SHIFT)
++#define CMDQ_PRI_1_RESP_SUCCESS		(2UL << CMDQ_PRI_1_RESP_SHIFT)
+ 
+ #define CMDQ_RESUME_0_SID_SHIFT		32
+ #define CMDQ_RESUME_0_SID_MASK		0xffffffffUL
+@@ -504,6 +505,7 @@
+ 
+ /* Flags for iommu_data in iommu_fault */
+ #define ARM_SMMU_FAULT_STALL		(1 << 0)
++#define ARM_SMMU_FAULT_RESP_PASID	(1 << 1);
+ 
+ /* Until ACPICA headers cover IORT rev. C */
+ #ifndef ACPI_IORT_SMMU_HISILICON_HI161X
+@@ -524,12 +526,6 @@ module_param_named(disable_ats_check, disable_ats_check, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_ats_check,
+ 	"By default, the SMMU checks whether each incoming transaction marked as translated is allowed by the stream configuration. This option disables the check.");
+ 
+-enum pri_resp {
+-	PRI_RESP_DENY,
+-	PRI_RESP_FAIL,
+-	PRI_RESP_SUCC,
+-};
+-
+ enum arm_smmu_msi_index {
+ 	EVTQ_MSI_INDEX,
+ 	GERROR_MSI_INDEX,
+@@ -613,7 +609,7 @@ struct arm_smmu_cmdq_ent {
+ 			u32			sid;
+ 			u32			ssid;
+ 			u16			grpid;
+-			enum pri_resp		resp;
++			enum iommu_fault_status	resp;
+ 		} pri;
+ 
+ 		#define CMDQ_OP_RESUME		0x44
+@@ -720,6 +716,7 @@ struct arm_smmu_strtab_ent {
+ 	struct arm_smmu_s2_cfg		*s2_cfg;
+ 
+ 	bool				can_stall;
++	bool				prg_resp_needs_ssid;
+ };
+ 
+ struct arm_smmu_strtab_cfg {
+@@ -1078,14 +1075,14 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 		cmd[0] |= (u64)ent->pri.sid << CMDQ_PRI_0_SID_SHIFT;
+ 		cmd[1] |= ent->pri.grpid << CMDQ_PRI_1_GRPID_SHIFT;
+ 		switch (ent->pri.resp) {
+-		case PRI_RESP_DENY:
+-			cmd[1] |= CMDQ_PRI_1_RESP_DENY;
++		case IOMMU_FAULT_STATUS_FAILURE:
++			cmd[1] |= CMDQ_PRI_1_RESP_FAILURE;
+ 			break;
+-		case PRI_RESP_FAIL:
+-			cmd[1] |= CMDQ_PRI_1_RESP_FAIL;
++		case IOMMU_FAULT_STATUS_INVALID:
++			cmd[1] |= CMDQ_PRI_1_RESP_INVALID;
+ 			break;
+-		case PRI_RESP_SUCC:
+-			cmd[1] |= CMDQ_PRI_1_RESP_SUCC;
++		case IOMMU_FAULT_STATUS_HANDLED:
++			cmd[1] |= CMDQ_PRI_1_RESP_SUCCESS;
+ 			break;
+ 		default:
+ 			return -EINVAL;
+@@ -1214,8 +1211,13 @@ static int arm_smmu_fault_response(struct iommu_domain *domain,
+ 		cmd.resume.stag		= fault->id;
+ 		cmd.resume.resp		= resp;
+ 	} else {
+-		/* TODO: put PRI response here */
+-		return -EINVAL;
++		cmd.opcode		= CMDQ_OP_PRI_RESP;
++		cmd.substream_valid	= fault->iommu_data &
++					  ARM_SMMU_FAULT_RESP_PASID;
++		cmd.pri.sid		= sid;
++		cmd.pri.ssid		= fault->pasid;
++		cmd.pri.grpid		= fault->id;
++		cmd.pri.resp		= resp;
+ 	}
+ 
+ 	arm_smmu_cmdq_issue_cmd(smmu_domain->smmu, &cmd);
+@@ -1631,6 +1633,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 			  STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1) <<
+ 			 STRTAB_STE_1_STRW_SHIFT);
+ 
++		if (ste->prg_resp_needs_ssid)
++			dst[1] |= STRTAB_STE_1_PPAR;
++
+ 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+ 		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE) &&
+ 		   !ste->can_stall)
+@@ -1856,40 +1861,42 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 
+ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
+ {
+-	u32 sid, ssid;
+-	u16 grpid;
+-	bool ssv, last;
+-
+-	sid = evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK;
+-	ssv = evt[0] & PRIQ_0_SSID_V;
+-	ssid = ssv ? evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK : 0;
+-	last = evt[0] & PRIQ_0_PRG_LAST;
+-	grpid = evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK;
+-
+-	dev_info(smmu->dev, "unexpected PRI request received:\n");
+-	dev_info(smmu->dev,
+-		 "\tsid 0x%08x.0x%05x: [%u%s] %sprivileged %s%s%s access at iova 0x%016llx\n",
+-		 sid, ssid, grpid, last ? "L" : "",
+-		 evt[0] & PRIQ_0_PERM_PRIV ? "" : "un",
+-		 evt[0] & PRIQ_0_PERM_READ ? "R" : "",
+-		 evt[0] & PRIQ_0_PERM_WRITE ? "W" : "",
+-		 evt[0] & PRIQ_0_PERM_EXEC ? "X" : "",
+-		 evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT);
++	u32 sid = evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK;
+ 
+-	if (last) {
+-		struct arm_smmu_cmdq_ent cmd = {
+-			.opcode			= CMDQ_OP_PRI_RESP,
+-			.substream_valid	= ssv,
+-			.pri			= {
+-				.sid	= sid,
+-				.ssid	= ssid,
+-				.grpid	= grpid,
+-				.resp	= PRI_RESP_DENY,
+-			},
+-		};
++	struct arm_smmu_master_data *master;
++	struct iommu_domain *domain;
++	struct iommu_fault fault = {
++		.pasid		= evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK,
++		.id		= evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK,
++		.address	= evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT,
++		.flags		= IOMMU_FAULT_GROUP | IOMMU_FAULT_RECOVERABLE,
++	};
+ 
+-		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+-	}
++	if (evt[0] & PRIQ_0_SSID_V)
++		fault.flags |= IOMMU_FAULT_PASID;
++	if (evt[0] & PRIQ_0_PRG_LAST)
++		fault.flags |= IOMMU_FAULT_LAST;
++	if (evt[0] & PRIQ_0_PERM_READ)
++		fault.flags |= IOMMU_FAULT_READ;
++	if (evt[0] & PRIQ_0_PERM_WRITE)
++		fault.flags |= IOMMU_FAULT_WRITE;
++	if (evt[0] & PRIQ_0_PERM_EXEC)
++		fault.flags |= IOMMU_FAULT_EXEC;
++	if (evt[0] & PRIQ_0_PERM_PRIV)
++		fault.flags |= IOMMU_FAULT_PRIV;
++
++	master = arm_smmu_find_master(smmu, sid);
++	if (WARN_ON(!master))
++		return;
++
++	if (fault.flags & IOMMU_FAULT_PASID && master->ste.prg_resp_needs_ssid)
++		fault.iommu_data |= ARM_SMMU_FAULT_RESP_PASID;
++
++	domain = iommu_get_domain_for_dev(master->dev);
++	if (WARN_ON(!domain))
++		return;
++
++	handle_iommu_fault(domain, master->dev, &fault);
  }
  
-+static int arm_smmu_enable_pasid(struct arm_smmu_master_data *master)
+ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+@@ -1967,7 +1974,8 @@ static int arm_smmu_flush_queues(struct notifier_block *nb,
+ 	if (master) {
+ 		if (master->ste.can_stall)
+ 			arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
+-		/* TODO: add support for PRI */
++		else if (master->can_fault)
++			arm_smmu_flush_queue(smmu, &smmu->priq.q, "priq");
+ 		return 0;
+ 	}
+ 
+@@ -2933,6 +2941,46 @@ static int arm_smmu_enable_ats(struct arm_smmu_master_data *master)
+ 	return 0;
+ }
+ 
++static int arm_smmu_enable_pri(struct arm_smmu_master_data *master)
 +{
-+	int ret;
-+	int features;
-+	int num_ssids;
++	int ret, pos;
 +	struct pci_dev *pdev;
++	/*
++	 * TODO: find a good inflight PPR number. We should divide the PRI queue
++	 * by the number of PRI-capable devices, but it's impossible to know
++	 * about current and future (hotplugged) devices. So we're at risk of
++	 * dropping PPRs (and leaking pending requests in the FQ).
++	 */
++	size_t max_inflight_pprs = 16;
++	struct arm_smmu_device *smmu = master->smmu;
 +
-+	if (!dev_is_pci(master->dev))
++	if (!(smmu->features & ARM_SMMU_FEAT_PRI) || !dev_is_pci(master->dev))
 +		return -ENOSYS;
 +
 +	pdev = to_pci_dev(master->dev);
 +
-+	features = pci_pasid_features(pdev);
-+	if (features < 0)
++	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
++	if (!pos)
 +		return -ENOSYS;
 +
-+	num_ssids = pci_max_pasids(pdev);
++	ret = pci_reset_pri(pdev);
++	if (ret)
++		return ret;
 +
-+	dev_dbg(&pdev->dev, "device supports %#x SSIDs [%s%s]\n", num_ssids,
-+		(features & PCI_PASID_CAP_EXEC) ? "x" : "",
-+		(features & PCI_PASID_CAP_PRIV) ? "p" : "");
++	ret = pci_enable_pri(pdev, max_inflight_pprs);
++	if (ret) {
++		dev_err(master->dev, "cannot enable PRI: %d\n", ret);
++		return ret;
++	}
 +
-+	num_ssids = clamp_val(num_ssids, 1, 1 << master->smmu->ssid_bits);
-+	num_ssids = rounddown_pow_of_two(num_ssids);
++	master->can_fault = true;
++	master->ste.prg_resp_needs_ssid = pci_prg_resp_requires_prefix(pdev);
 +
-+	ret = pci_enable_pasid(pdev, features);
-+	return ret ? ret : num_ssids;
++	dev_dbg(master->dev, "enabled PRI");
++
++	return 0;
 +}
 +
-+static void arm_smmu_disable_pasid(struct arm_smmu_master_data *master)
+ static void arm_smmu_disable_ats(struct arm_smmu_master_data *master)
+ {
+ 	struct pci_dev *pdev;
+@@ -2948,6 +2996,22 @@ static void arm_smmu_disable_ats(struct arm_smmu_master_data *master)
+ 	pci_disable_ats(pdev);
+ }
+ 
++static void arm_smmu_disable_pri(struct arm_smmu_master_data *master)
 +{
 +	struct pci_dev *pdev;
 +
@@ -63,45 +284,50 @@ index 852714f35010..42c8378624ed 100644
 +
 +	pdev = to_pci_dev(master->dev);
 +
-+	if (!pdev->pasid_enabled)
++	if (!pdev->pri_enabled)
 +		return;
 +
-+	pci_disable_pasid(pdev);
++	pci_disable_pri(pdev);
++	master->can_fault = false;
 +}
 +
  static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
  				  struct arm_smmu_master_data *master)
  {
-@@ -3134,6 +3178,11 @@ static int arm_smmu_add_device(struct device *dev)
+@@ -3070,12 +3134,13 @@ static int arm_smmu_add_device(struct device *dev)
  		master->ste.can_stall = true;
  	}
  
-+	/* PASID must be enabled before ATS */
-+	ret = arm_smmu_enable_pasid(master);
-+	if (ret > 0)
-+		master->num_ssids = ret;
-+
- 	if (!arm_smmu_enable_ats(master))
- 		arm_smmu_enable_pri(master);
+-	arm_smmu_enable_ats(master);
++	if (!arm_smmu_enable_ats(master))
++		arm_smmu_enable_pri(master);
  
-@@ -3152,6 +3201,7 @@ static int arm_smmu_add_device(struct device *dev)
- err_disable_pri:
- 	arm_smmu_disable_pri(master);
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group)) {
+ 		ret = PTR_ERR(group);
+-		goto err_disable_ats;
++		goto err_disable_pri;
+ 	}
+ 
+ 	iommu_group_put(group);
+@@ -3084,7 +3149,8 @@ static int arm_smmu_add_device(struct device *dev)
+ 
+ 	return 0;
+ 
+-err_disable_ats:
++err_disable_pri:
++	arm_smmu_disable_pri(master);
  	arm_smmu_disable_ats(master);
-+	arm_smmu_disable_pasid(master);
  
  	return ret;
- }
-@@ -3172,7 +3222,9 @@ static void arm_smmu_remove_device(struct device *dev)
+@@ -3104,6 +3170,8 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	if (master && master->ste.assigned)
+ 		arm_smmu_detach_dev(dev);
  	arm_smmu_remove_master(smmu, master);
- 
- 	arm_smmu_disable_pri(master);
-+	/* PASID must be disabled after ATS */
++
++	arm_smmu_disable_pri(master);
  	arm_smmu_disable_ats(master);
-+	arm_smmu_disable_pasid(master);
  
  	iommu_group_remove_device(dev);
- 	iommu_device_unlink(&smmu->iommu, dev);
 -- 
 2.13.3
-
