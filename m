@@ -1,17 +1,16 @@
-From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
-Subject: RE: the imfamous asix ax88179 iommu error
-Date: Fri, 6 Oct 2017 16:37:45 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6DD008BF6D@AcuExch.aculab.com>
-References: <20170929095807.6b02085b@nibenay.lan>
-	<20171006111942.773eb515@nibenay.lan>
-	<73af1113-86de-25f0-d688-d39e8cfc2c77@arm.com>
-	<474710f0-4e19-e4c4-8698-b1d84acffccc@arm.com>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 34/36] PCI: Make "PRG Response PASID Required"
+	handling common
+Date: Fri, 6 Oct 2017 13:11:38 -0500
+Message-ID: <20171006181138.GD25517@bhelgaas-glaptop.roam.corp.google.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+	<20171006133203.22803-35-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <474710f0-4e19-e4c4-8698-b1d84acffccc-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20171006133203.22803-35-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,36 +20,125 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Trives <renevant-CkBdp7X+a1oIQCUVoCVjmQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> >> It appears that my ax88179 is working just fine now with the vendor
-> >> driver. So perhaps it's possible to revert the old commit in the linux
-> >> kernel and allow the use of scatter gather ? (perhaps for non-intel
-> >> hosts ? I'm not sure if this device is effected by intel xhci errata)
-> >
-> > Thanks for the tip-off - as luck would have it I have an AX88179 dongle
-> > to hand! Does the out-of-tree driver behave significantly differently to
-> > the mainline driver (CONFIG_USB_NET_AX88179_178A)?
+On Fri, Oct 06, 2017 at 02:32:01PM +0100, Jean-Philippe Brucker wrote:
+> The PASID ECN to the PCIe spec added a bit in the PRI status register that
+> allows a Function to declare whether a PRG Response should contain the
+> PASID prefix or not.
 > 
-> To answer myself - yes, the out-of-tree driver produces all manner of
-> >PAGE_SIZE offsets for dma_map_sg():
+> Move the helper that accesses it from amd_iommu into the PCI subsystem,
+> renaming it to be consistent with the current spec (PRPR - PRG Response
+> PASID Required).
 > 
-> ...
-> [  571.019335] xhci_hcd 0000:04:00.0: ####### sg->offset = 0x7770
-> [  571.025497] xhci_hcd 0000:04:00.0: ####### sg->offset = 0x7a60
-> [  571.031402] xhci_hcd 0000:04:00.0: ####### sg->offset = 0x1100
-> [  571.037353] xhci_hcd 0000:04:00.0: ####### sg->offset = 0x1c50
-> [  571.043254] xhci_hcd 0000:04:00.0: ####### sg->offset = 0x27a0
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 
-I remember a load of XHCI patches I had that were needed to get the
-AX88179 working reliably
-I think most of the ones to do with the TRB boundaries and ZLP have
-been fixed now.
-There was a problem with an ASMedia host controller (1b21:1042) that
-it needed the command ring doorbell rung in the command completion
-code in order to process a second command.
-Not sure I've seen a fix for that.
-I've still got the host system, but not the dongle.
+Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 
-	David
+I assume this will be merged with the rest of the series, probably via an
+IOMMU tree.
+
+> ---
+>  drivers/iommu/amd_iommu.c     | 19 +------------------
+>  drivers/pci/ats.c             | 17 +++++++++++++++++
+>  include/linux/pci-ats.h       |  8 ++++++++
+>  include/uapi/linux/pci_regs.h |  1 +
+>  4 files changed, 27 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 51f8215877f5..45036a253d63 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -2039,23 +2039,6 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
+>  	return ret;
+>  }
+>  
+> -/* FIXME: Move this to PCI code */
+> -#define PCI_PRI_TLP_OFF		(1 << 15)
+> -
+> -static bool pci_pri_tlp_required(struct pci_dev *pdev)
+> -{
+> -	u16 status;
+> -	int pos;
+> -
+> -	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+> -	if (!pos)
+> -		return false;
+> -
+> -	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+> -
+> -	return (status & PCI_PRI_TLP_OFF) ? true : false;
+> -}
+> -
+>  /*
+>   * If a device is not yet associated with a domain, this function
+>   * assigns it visible for the hardware
+> @@ -2084,7 +2067,7 @@ static int attach_device(struct device *dev,
+>  
+>  			dev_data->ats.enabled = true;
+>  			dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
+> -			dev_data->pri_tlp     = pci_pri_tlp_required(pdev);
+> +			dev_data->pri_tlp     = pci_prg_resp_requires_prefix(pdev);
+>  		}
+>  	} else if (amd_iommu_iotlb_sup &&
+>  		   pci_enable_ats(pdev, PAGE_SHIFT) == 0) {
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index ad8ddbbbf245..f95e42df728b 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -389,3 +389,20 @@ int pci_max_pasids(struct pci_dev *pdev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_max_pasids);
+>  #endif /* CONFIG_PCI_PASID */
+> +
+> +#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
+> +bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
+> +{
+> +	u16 status;
+> +	int pos;
+> +
+> +	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+> +	if (!pos)
+> +		return false;
+> +
+> +	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+> +
+> +	return !!(status & PCI_PRI_STATUS_PRPR);
+> +}
+> +EXPORT_SYMBOL_GPL(pci_prg_resp_requires_prefix);
+> +#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index 782fb8e0755f..367ea9448441 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -67,5 +67,13 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
+>  
+>  #endif /* CONFIG_PCI_PASID */
+>  
+> +#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
+> +bool pci_prg_resp_requires_prefix(struct pci_dev *pdev);
+> +#else
+> +static inline bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
+> +{
+> +	return false;
+> +}
+> +#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+>  
+>  #endif /* LINUX_PCI_ATS_H*/
+> diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+> index f8d58045926f..a0eeb16a2bfe 100644
+> --- a/include/uapi/linux/pci_regs.h
+> +++ b/include/uapi/linux/pci_regs.h
+> @@ -862,6 +862,7 @@
+>  #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
+>  #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
+>  #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
+> +#define  PCI_PRI_STATUS_PRPR	0x8000	/* PRG Response requires PASID prefix */
+>  #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
+>  #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
+>  #define PCI_EXT_CAP_PRI_SIZEOF	16
+> -- 
+> 2.13.3
+> 
