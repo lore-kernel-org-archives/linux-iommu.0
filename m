@@ -1,69 +1,61 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFCv2 PATCH 13/36] iommu/of: Add stall and pasid properties to
-	iommu_fwspec
-Date: Fri,  6 Oct 2017 14:31:40 +0100
-Message-ID: <20171006133203.22803-14-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 12/36] dt-bindings: document stall and PASID properties for IOMMU masters
+Date: Fri,  6 Oct 2017 14:31:39 +0100
+Message-ID: <20171006133203.22803-13-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Add stall and pasid properties to iommu_fwspec, and fill them when
-dma-can-stall and pasid-bits properties are present in the device tree.
+On ARM systems, some platform devices behind an IOMMU may support stall
+and PASID features. Stall is the ability to recover from page faults and
+PASID offers multiple process address spaces to the device. Together they
+allow to do paging with a device. Let the firmware tell us when a device
+supports stall and PASID.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/of_iommu.c | 10 ++++++++++
- include/linux/iommu.h    |  2 ++
- 2 files changed, 12 insertions(+)
+ Documentation/devicetree/bindings/iommu/iommu.txt | 24 +++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 50947ebb6d17..345286bfdbfc 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -204,6 +204,16 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 			if (err)
- 				break;
- 		}
-+
-+		if (!err && dev->iommu_fwspec) {
-+			const __be32 *prop;
-+			if (of_get_property(master_np, "dma-can-stall", NULL))
-+				dev->iommu_fwspec->can_stall = true;
-+
-+			prop = of_get_property(master_np, "pasid-bits", NULL);
-+			if (prop)
-+				dev->iommu_fwspec->num_pasid_bits = be32_to_cpu(*prop);
-+		}
- 	}
+diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+index 5a8b4624defc..c589b75f7277 100644
+--- a/Documentation/devicetree/bindings/iommu/iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+@@ -86,6 +86,30 @@ have a means to turn off translation. But it is invalid in such cases to
+ disable the IOMMU's device tree node in the first place because it would
+ prevent any driver from properly setting up the translations.
  
- 	/*
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a6d417785c7b..2eb65d4724bb 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -535,6 +535,8 @@ struct iommu_fwspec {
- 	struct fwnode_handle	*iommu_fwnode;
- 	void			*iommu_priv;
- 	unsigned int		num_ids;
-+	unsigned int		num_pasid_bits;
-+	bool			can_stall;
- 	u32			ids[1];
- };
++Optional properties:
++--------------------
++- dma-can-stall: When present, the master can wait for a transaction to
++  complete for an indefinite amount of time. Upon translation fault some
++  IOMMUs, instead of aborting the translation immediately, may first
++  notify the driver and keep the transaction in flight. This allows the OS
++  to inspect the fault and, for example, make physical pages resident
++  before updating the mappings and completing the transaction. Such IOMMU
++  accepts a limited number of simultaneous stalled transactions before
++  having to either put back-pressure on the master, or abort new faulting
++  transactions.
++
++  Firmware has to opt-in stalling, because most buses and masters don't
++  support it. In particular it isn't compatible with PCI, where
++  transactions have to complete before a time limit. More generally it
++  won't work in systems and masters that haven't been designed for
++  stalling. For example the OS, in order to handle a stalled transaction,
++  may attempt to retrieve pages from secondary storage in a stalled
++  domain, leading to a deadlock.
++
++- pasid-bits: Some masters support multiple address spaces for DMA. By
++  tagging DMA transactions with an address space identifier. By default,
++  this is 0, which means that the device only has one address space.
++
  
+ Notes:
+ ======
 -- 
 2.13.3
+
