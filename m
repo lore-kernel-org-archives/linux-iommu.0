@@ -1,333 +1,117 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFCv2 PATCH 35/36] iommu/arm-smmu-v3: Add support for PRI
-Date: Fri,  6 Oct 2017 14:32:02 +0100
-Message-ID: <20171006133203.22803-36-jean-philippe.brucker@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v9 0/4] iommu/smmu-v3: Workaround for hisilicon 161010801 erratum(reserve HW MSI)
+Date: Fri, 6 Oct 2017 15:04:46 +0100
+Message-ID: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, gabriele.paoloni@huawei.com
+Cc: john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-For PCI devices that support it, enable the PRI capability and handle
-PRI Page Requests with the generic fault handler.
+On certain HiSilicon platforms (hip06/hip07) the GIC ITS and PCIe RC
+deviates from the standard implementation and this breaks PCIe MSI
+functionality when SMMU is enabled.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 176 ++++++++++++++++++++++++++++++--------------
- 1 file changed, 122 insertions(+), 54 deletions(-)
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the MSI
+payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index f008b4617cd4..852714f35010 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -272,6 +272,7 @@
- #define STRTAB_STE_1_S1COR_SHIFT	4
- #define STRTAB_STE_1_S1CSH_SHIFT	6
+This patch implements an ACPI and DT based quirk to reserve the hw msi
+regions in the smmu-v3 driver which means these address regions will
+not be translated and will be excluded from iova allocations.
+
+To implement this quirk, the following changes are incorporated:
+1. Added a generic helper function to IORT code to retrieve the
+   associated ITS base address from a device IORT node.
+2. Added a generic helper function to of iommu code to retrieve the
+   associated msi controller base address from for a PCI RC
+   msi-mapping and also platform device msi-parent.
+3. Blacklisted HiSilicon PCIe controllers on DT based hip06/hip07
+   platforms when SMMUv3 is enabled as there is no DT based solution
+   for this as of now.
+
+Changelog:
+
+v8 --> v9
+-Thanks to Marc, fixed IORT helper function to reserve the ITS 
+ translater region only.
+-Removed the DT support for MSI reservation and blacklisted
+ HiSilicon PCIe controllers on DT based systems when SMMUv3 is
+ enabled.
+
+v7 --> v8
+Addressed comments from Rob and Lorenzo:
+ -Modified to use DT compatible string for errata.
+ -Changed logic to retrieve the msi-parent for DT case.
+
+v6 --> v7
+Addressed request from Will to add DT support for the erratum:
+ - added bt binding
+ - add of_iommu_msi_get_resv_regions()
+New arm64 silicon errata entry
+Rename iort_iommu_{its->msi}_get_resv_regions
+
+v5 --> v6
+Addressed comments from Robin and Lorenzo:
+-No change to patch#1 .
+-Reverted v5 patch#2 as this might break the platforms where this quirk
+  is not applicable. Provided a generic function in iommu code and added
+  back the quirk implementation in SMMU v3 driver(patch#3)
  
-+#define STRTAB_STE_1_PPAR		(1UL << 18)
- #define STRTAB_STE_1_S1STALLD		(1UL << 27)
- 
- #define STRTAB_STE_1_EATS_ABT		0UL
-@@ -426,9 +427,9 @@
- #define CMDQ_PRI_1_GRPID_SHIFT		0
- #define CMDQ_PRI_1_GRPID_MASK		0x1ffUL
- #define CMDQ_PRI_1_RESP_SHIFT		12
--#define CMDQ_PRI_1_RESP_DENY		(0UL << CMDQ_PRI_1_RESP_SHIFT)
--#define CMDQ_PRI_1_RESP_FAIL		(1UL << CMDQ_PRI_1_RESP_SHIFT)
--#define CMDQ_PRI_1_RESP_SUCC		(2UL << CMDQ_PRI_1_RESP_SHIFT)
-+#define CMDQ_PRI_1_RESP_FAILURE		(0UL << CMDQ_PRI_1_RESP_SHIFT)
-+#define CMDQ_PRI_1_RESP_INVALID		(1UL << CMDQ_PRI_1_RESP_SHIFT)
-+#define CMDQ_PRI_1_RESP_SUCCESS		(2UL << CMDQ_PRI_1_RESP_SHIFT)
- 
- #define CMDQ_RESUME_0_SID_SHIFT		32
- #define CMDQ_RESUME_0_SID_MASK		0xffffffffUL
-@@ -504,6 +505,7 @@
- 
- /* Flags for iommu_data in iommu_fault */
- #define ARM_SMMU_FAULT_STALL		(1 << 0)
-+#define ARM_SMMU_FAULT_RESP_PASID	(1 << 1);
- 
- /* Until ACPICA headers cover IORT rev. C */
- #ifndef ACPI_IORT_SMMU_HISILICON_HI161X
-@@ -524,12 +526,6 @@ module_param_named(disable_ats_check, disable_ats_check, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_ats_check,
- 	"By default, the SMMU checks whether each incoming transaction marked as translated is allowed by the stream configuration. This option disables the check.");
- 
--enum pri_resp {
--	PRI_RESP_DENY,
--	PRI_RESP_FAIL,
--	PRI_RESP_SUCC,
--};
--
- enum arm_smmu_msi_index {
- 	EVTQ_MSI_INDEX,
- 	GERROR_MSI_INDEX,
-@@ -613,7 +609,7 @@ struct arm_smmu_cmdq_ent {
- 			u32			sid;
- 			u32			ssid;
- 			u16			grpid;
--			enum pri_resp		resp;
-+			enum iommu_fault_status	resp;
- 		} pri;
- 
- 		#define CMDQ_OP_RESUME		0x44
-@@ -720,6 +716,7 @@ struct arm_smmu_strtab_ent {
- 	struct arm_smmu_s2_cfg		*s2_cfg;
- 
- 	bool				can_stall;
-+	bool				prg_resp_needs_ssid;
- };
- 
- struct arm_smmu_strtab_cfg {
-@@ -1078,14 +1075,14 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		cmd[0] |= (u64)ent->pri.sid << CMDQ_PRI_0_SID_SHIFT;
- 		cmd[1] |= ent->pri.grpid << CMDQ_PRI_1_GRPID_SHIFT;
- 		switch (ent->pri.resp) {
--		case PRI_RESP_DENY:
--			cmd[1] |= CMDQ_PRI_1_RESP_DENY;
-+		case IOMMU_FAULT_STATUS_FAILURE:
-+			cmd[1] |= CMDQ_PRI_1_RESP_FAILURE;
- 			break;
--		case PRI_RESP_FAIL:
--			cmd[1] |= CMDQ_PRI_1_RESP_FAIL;
-+		case IOMMU_FAULT_STATUS_INVALID:
-+			cmd[1] |= CMDQ_PRI_1_RESP_INVALID;
- 			break;
--		case PRI_RESP_SUCC:
--			cmd[1] |= CMDQ_PRI_1_RESP_SUCC;
-+		case IOMMU_FAULT_STATUS_HANDLED:
-+			cmd[1] |= CMDQ_PRI_1_RESP_SUCCESS;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -1214,8 +1211,13 @@ static int arm_smmu_fault_response(struct iommu_domain *domain,
- 		cmd.resume.stag		= fault->id;
- 		cmd.resume.resp		= resp;
- 	} else {
--		/* TODO: put PRI response here */
--		return -EINVAL;
-+		cmd.opcode		= CMDQ_OP_PRI_RESP;
-+		cmd.substream_valid	= fault->iommu_data &
-+					  ARM_SMMU_FAULT_RESP_PASID;
-+		cmd.pri.sid		= sid;
-+		cmd.pri.ssid		= fault->pasid;
-+		cmd.pri.grpid		= fault->id;
-+		cmd.pri.resp		= resp;
- 	}
- 
- 	arm_smmu_cmdq_issue_cmd(smmu_domain->smmu, &cmd);
-@@ -1631,6 +1633,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 			  STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1) <<
- 			 STRTAB_STE_1_STRW_SHIFT);
- 
-+		if (ste->prg_resp_needs_ssid)
-+			dst[1] |= STRTAB_STE_1_PPAR;
-+
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
- 		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE) &&
- 		   !ste->can_stall)
-@@ -1856,40 +1861,42 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 
- static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
- {
--	u32 sid, ssid;
--	u16 grpid;
--	bool ssv, last;
--
--	sid = evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK;
--	ssv = evt[0] & PRIQ_0_SSID_V;
--	ssid = ssv ? evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK : 0;
--	last = evt[0] & PRIQ_0_PRG_LAST;
--	grpid = evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK;
--
--	dev_info(smmu->dev, "unexpected PRI request received:\n");
--	dev_info(smmu->dev,
--		 "\tsid 0x%08x.0x%05x: [%u%s] %sprivileged %s%s%s access at iova 0x%016llx\n",
--		 sid, ssid, grpid, last ? "L" : "",
--		 evt[0] & PRIQ_0_PERM_PRIV ? "" : "un",
--		 evt[0] & PRIQ_0_PERM_READ ? "R" : "",
--		 evt[0] & PRIQ_0_PERM_WRITE ? "W" : "",
--		 evt[0] & PRIQ_0_PERM_EXEC ? "X" : "",
--		 evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT);
-+	u32 sid = evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK;
- 
--	if (last) {
--		struct arm_smmu_cmdq_ent cmd = {
--			.opcode			= CMDQ_OP_PRI_RESP,
--			.substream_valid	= ssv,
--			.pri			= {
--				.sid	= sid,
--				.ssid	= ssid,
--				.grpid	= grpid,
--				.resp	= PRI_RESP_DENY,
--			},
--		};
-+	struct arm_smmu_master_data *master;
-+	struct iommu_domain *domain;
-+	struct iommu_fault fault = {
-+		.pasid		= evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK,
-+		.id		= evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK,
-+		.address	= evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT,
-+		.flags		= IOMMU_FAULT_GROUP | IOMMU_FAULT_RECOVERABLE,
-+	};
- 
--		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
--	}
-+	if (evt[0] & PRIQ_0_SSID_V)
-+		fault.flags |= IOMMU_FAULT_PASID;
-+	if (evt[0] & PRIQ_0_PRG_LAST)
-+		fault.flags |= IOMMU_FAULT_LAST;
-+	if (evt[0] & PRIQ_0_PERM_READ)
-+		fault.flags |= IOMMU_FAULT_READ;
-+	if (evt[0] & PRIQ_0_PERM_WRITE)
-+		fault.flags |= IOMMU_FAULT_WRITE;
-+	if (evt[0] & PRIQ_0_PERM_EXEC)
-+		fault.flags |= IOMMU_FAULT_EXEC;
-+	if (evt[0] & PRIQ_0_PERM_PRIV)
-+		fault.flags |= IOMMU_FAULT_PRIV;
-+
-+	master = arm_smmu_find_master(smmu, sid);
-+	if (WARN_ON(!master))
-+		return;
-+
-+	if (fault.flags & IOMMU_FAULT_PASID && master->ste.prg_resp_needs_ssid)
-+		fault.iommu_data |= ARM_SMMU_FAULT_RESP_PASID;
-+
-+	domain = iommu_get_domain_for_dev(master->dev);
-+	if (WARN_ON(!domain))
-+		return;
-+
-+	handle_iommu_fault(domain, master->dev, &fault);
- }
- 
- static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
-@@ -1967,7 +1974,8 @@ static int arm_smmu_flush_queues(struct notifier_block *nb,
- 	if (master) {
- 		if (master->ste.can_stall)
- 			arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
--		/* TODO: add support for PRI */
-+		else if (master->can_fault)
-+			arm_smmu_flush_queue(smmu, &smmu->priq.q, "priq");
- 		return 0;
- 	}
- 
-@@ -2933,6 +2941,46 @@ static int arm_smmu_enable_ats(struct arm_smmu_master_data *master)
- 	return 0;
- }
- 
-+static int arm_smmu_enable_pri(struct arm_smmu_master_data *master)
-+{
-+	int ret, pos;
-+	struct pci_dev *pdev;
-+	/*
-+	 * TODO: find a good inflight PPR number. We should divide the PRI queue
-+	 * by the number of PRI-capable devices, but it's impossible to know
-+	 * about current and future (hotplugged) devices. So we're at risk of
-+	 * dropping PPRs (and leaking pending requests in the FQ).
-+	 */
-+	size_t max_inflight_pprs = 16;
-+	struct arm_smmu_device *smmu = master->smmu;
-+
-+	if (!(smmu->features & ARM_SMMU_FEAT_PRI) || !dev_is_pci(master->dev))
-+		return -ENOSYS;
-+
-+	pdev = to_pci_dev(master->dev);
-+
-+	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-+	if (!pos)
-+		return -ENOSYS;
-+
-+	ret = pci_reset_pri(pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = pci_enable_pri(pdev, max_inflight_pprs);
-+	if (ret) {
-+		dev_err(master->dev, "cannot enable PRI: %d\n", ret);
-+		return ret;
-+	}
-+
-+	master->can_fault = true;
-+	master->ste.prg_resp_needs_ssid = pci_prg_resp_requires_prefix(pdev);
-+
-+	dev_dbg(master->dev, "enabled PRI");
-+
-+	return 0;
-+}
-+
- static void arm_smmu_disable_ats(struct arm_smmu_master_data *master)
- {
- 	struct pci_dev *pdev;
-@@ -2948,6 +2996,22 @@ static void arm_smmu_disable_ats(struct arm_smmu_master_data *master)
- 	pci_disable_ats(pdev);
- }
- 
-+static void arm_smmu_disable_pri(struct arm_smmu_master_data *master)
-+{
-+	struct pci_dev *pdev;
-+
-+	if (!dev_is_pci(master->dev))
-+		return;
-+
-+	pdev = to_pci_dev(master->dev);
-+
-+	if (!pdev->pri_enabled)
-+		return;
-+
-+	pci_disable_pri(pdev);
-+	master->can_fault = false;
-+}
-+
- static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 				  struct arm_smmu_master_data *master)
- {
-@@ -3070,12 +3134,13 @@ static int arm_smmu_add_device(struct device *dev)
- 		master->ste.can_stall = true;
- 	}
- 
--	arm_smmu_enable_ats(master);
-+	if (!arm_smmu_enable_ats(master))
-+		arm_smmu_enable_pri(master);
- 
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group)) {
- 		ret = PTR_ERR(group);
--		goto err_disable_ats;
-+		goto err_disable_pri;
- 	}
- 
- 	iommu_group_put(group);
-@@ -3084,7 +3149,8 @@ static int arm_smmu_add_device(struct device *dev)
- 
- 	return 0;
- 
--err_disable_ats:
-+err_disable_pri:
-+	arm_smmu_disable_pri(master);
- 	arm_smmu_disable_ats(master);
- 
- 	return ret;
-@@ -3104,6 +3170,8 @@ static void arm_smmu_remove_device(struct device *dev)
- 	if (master && master->ste.assigned)
- 		arm_smmu_detach_dev(dev);
- 	arm_smmu_remove_master(smmu, master);
-+
-+	arm_smmu_disable_pri(master);
- 	arm_smmu_disable_ats(master);
- 
- 	iommu_group_remove_device(dev);
+v4 --> v5
+Addressed comments from Robin and Lorenzo:
+-Added a comment to make it clear that, for now, only straightforward 
+  HW topologies are handled while reserving ITS regions(patch #1).
+
+v3 --> v4
+Rebased on 4.13-rc1.
+Addressed comments from Robin, Will and Lorenzo:
+-As suggested by Robin, moved the ITS msi reservation into 
+  iommu_dma_get_resv_regions().
+-Added its_count != resv region failure case(patch #1).
+
+v2 --> v3
+Addressed comments from Lorenzo and Robin:
+-Removed dev_is_pci() check in smmuV3 driver.
+-Don't treat device not having an ITS mapping as an error in
+  iort helper function.
+
+v1 --> v2
+-patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+
+RFCv2 -->PATCH
+-Incorporated Lorenzo's review comments.
+
+RFC v1 --> RFC v2
+Based on Robin's review comments,
+-Removed  the generic erratum framework.
+-Using IORT/MADT tables to retrieve the ITS base addr instead  of vendor specific CSRT table.
+
+
+Shameer Kolothum (4):
+  ACPI/IORT: Add msi address regions reservation helper
+  iommu/dma: Add a helper function to reserve HW MSI address regions for
+    IOMMU drivers
+  iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
+  PCI: hisi: blacklist hip06/hip07 controllers behind SMMUv3
+
+ drivers/acpi/arm64/iort.c        | 97 ++++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/arm-smmu-v3.c      | 27 ++++++++---
+ drivers/iommu/dma-iommu.c        | 20 +++++++++
+ drivers/irqchip/irq-gic-v3-its.c |  3 +-
+ drivers/pci/dwc/pcie-hisi.c      | 12 +++++
+ include/linux/acpi_iort.h        |  7 ++-
+ include/linux/dma-iommu.h        |  7 +++
+ 7 files changed, 163 insertions(+), 10 deletions(-)
+
 -- 
-2.13.3
+1.9.1
+
+
