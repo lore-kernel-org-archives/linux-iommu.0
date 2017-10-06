@@ -1,243 +1,399 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Fri,  6 Oct 2017 14:31:27 +0100
-Message-ID: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
+Date: Fri,  6 Oct 2017 14:31:28 +0100
+Message-ID: <20171006133203.22803-2-jean-philippe.brucker@arm.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Following discussions at plumbers and elsewhere, it seems like we need to
-unify some of the Shared Virtual Memory (SVM) code, in order to define
-clear semantics for the SVM API.
+IOMMU drivers need a way to bind Linux processes to devices. This is used
+for Shared Virtual Memory (SVM), where devices support paging. In that
+mode, DMA can directly target virtual addresses of a process.
 
-My previous RFC [1] was centered on the SMMUv3, but some of this code will
-need to be reused by the SMMUv2 and virtio-iommu drivers. This second
-proposal focuses on abstracting a little more into the core IOMMU API, and
-also trying to find common ground for all SVM-capable IOMMUs.
+Introduce boilerplate code for allocating process structures and binding
+them to devices. Four operations are added to IOMMU drivers:
 
-SVM is, in the context of the IOMMU, sharing page tables between a process
-and a device. Traditionally it requires IO Page Fault and Process Address
-Space ID capabilities in device and IOMMU.
+* process_alloc, process_free: to create an iommu_process structure and
+  perform architecture-specific operations required to grab the process
+  (for instance on ARM SMMU, pin down the CPU ASID). There is a single
+  iommu_process structure per Linux process.
 
-* A device driver can bind a process to a device, with iommu_process_bind.
-  Internally we hold on to the mm and get notified of its activity with an
-  mmu_notifier. The bond is removed by exit_mm, by a call to
-  iommu_process_unbind or iommu_detach_device.
+* process_attach: attach a process to a device. The IOMMU driver checks
+  that the device is capable of sharing an address space with this
+  process, and writes the PASID table entry to install the process page
+  directory.
 
-* iommu_process_bind returns a 20-bit PASID (PCI terminology) to the
-  device driver, which programs it into the device to access the process
-  address space.
+  Some IOMMU drivers (e.g. ARM SMMU and virtio-iommu) will have a single
+  PASID table per domain, for convenience. Other can implement it
+  differently but to help these drivers, process_attach and process_detach
+  take a 'first' or 'last' parameter telling whether they need to
+  install/remove the PASID entry or only send the required TLB
+  invalidations.
 
-* The device and the IOMMU support recoverable page faults. This can be
-  either ATS+PRI for PCI, or platform-specific mechanisms such as Stall
-  for SMMU.
+* process_detach: detach a process from a device. The IOMMU driver removes
+  the PASID table entry and invalidates the IOTLBs.
 
-Ideally systems wanting to use SVM have to support these three features,
-but in practice we'll see implementations supporting just a subset of
-them, especially in validation environments. So even if this particular
-patchset assumes all three capabilities, it should also be possible to
-support PASID without IOPF (by pinning everything, see non-system SVM in
-OpenCL), or IOPF without PASID (sharing the single device address space
-with a process, could be useful for DPDK+VFIO).
+process_attach and process_detach operations are serialized with a
+spinlock. At the moment it is global, but if we try to optimize it, the
+core should at least prevent concurrent attach/detach on the same domain.
+(so multi-level PASID table code can allocate tables lazily without having
+to go through the io-pgtable concurrency nightmare). process_alloc can
+sleep, but process_free must not (because we'll have to call it from
+call_srcu.)
 
-Implementing both these cases would enable PT sharing alone. Some people
-would also like IOPF alone without SVM (covered by this series) or process
-management without shared PT (not covered). Using these features
-individually is also important for testing, as SVM is in its infancy and
-providing easy ways to test is essential to reduce the number of quirks
-down the line.
+At the moment we use an IDR for allocating PASIDs and retrieving contexts.
+We also use a single spinlock. These can be refined and optimized later (a
+custom allocator will be needed for top-down PASID allocation).
 
-  Process management
-  ==================
-
-The first part of this series introduces boilerplate code for managing
-PASIDs and processes bound to devices. It's something any IOMMU driver
-that wants to support bind/unbind will have to do, and it is difficult to
-get right.
-
-Patches
-1: iommu_process and PASID allocation, attach and release
-2: process_exit callback for device drivers
-3: iommu_process search by PASID
-4: track process changes with an MMU notifiers
-5: bind and unbind operations
-
-My proposal uses the following model:
-
-* The PASID space is system-wide. This means that a Linux process will
-  have a single PASID. I introduce the iommu_process structure and a
-  global IDR to manage this.
-
-* An iommu_process can be bound to multiple domains, and a domain can have
-  multiple iommu_process.
-
-* IOMMU groups share same PASID table. IOMMU groups are a convenient way
-  to cover various hardware weaknesses that prevent a group of device to
-  be isolated by the IOMMU (untrusted bridge, for instance). It's foolish
-  to assume that all PASID implementations will perfectly isolate devices
-  within a bus and functions within a device, so let's assume all devices
-  within an IOMMU group have to share PASID traffic as well. In general
-  there will be a single device per group.
-
-* It's up to the driver implementation to decide where to implement the
-  PASID tables. For SMMU it's more convenient to have a single PASID table
-  per domain. And I think the model fits better with the existing IOMMU
-  API: IOVA traffic is shared by all devices in a domain, so should PASID
-  traffic.
-
-  This isn't a hard requirement though, an implementation can still have a
-  PASID table for each device.
-
-  Fault handling
-  ==============
-
-The second part adds a few helpers for distributing recoverable and
-unrecoverable faults to other parts of the kernel:
-
-* to the mm subsystem, when process page tables are shared with a device,
-* to VFIO allowing it to forward translation faults to guests, and let
-  them to recover from it,
-* to device drivers that need to do something a bit more complex than just
-  displaying a fault on dmesg.
-
-You'll notice that this overlaps the work carried out by Jacob Pan for
-vSVM fault reporting (published a few hours ago! [2]), which goes in the
-same direction. For iommu_fault definition and handler registration it's
-probably best to go with his more complete patchset, but I needed some
-code to present the full solution and a way to describe both PRI and stall
-data.
-
-Patches
-6: a new fault handler registration for device drivers (see also [2])
-7: report faults to device drivers or add them to a workqueue (ditto)
-8: call handle_mm_fault for recoverable faults
-9: allow device driver to register blocking handlers
-
-For the moment the interactions between process and fault queue are the
-following. Hopefully it should be sufficient.
-
-* When unbinding a process, the fault queue has to be flushed to ensure
-  that no old fault will hit a future process that obtains the same PASID.
-
-* When handling a fault, find a process by PASID and handle the fault on
-  its mm. The process structure is refcounted, so releasing it in the
-  fault handler might free the process.
-
-Patch 10 adds a VFIO interface for binding a device owned by a userspace
-driver to processes. I didn't add capability detection now, leaving that
-discussion for later (also needed by vSVM).
-
-  ARM SMMUv3 support
-  ==================
-
-The third part adds an example user, the SMMUv3 driver. A lot of
-preparatory work is still needed to support these features, I only
-extracted a small part of the previous series to make it common.
-
-If you don't care about SMMU I advise to look at patches 21, which uses
-the new process management interface. Patches 27, 29 and 35 use the new
-fault queue for PRI and Stall.
-
-Patches:
-11:     track domain-master links (for ATS and CD invalidation)
-12-13   add stall and PASID properties to the device tree
-     -> New.
-14-15:  add SSID support to the SMMU
-     -> Now initializes the CD tables from the value found in DT.
-16-20:  share ASID and page tables part 1
-21:     implement iommu-process operations
-     -> New.
-22-26:  share ASID and page tables part 2
-27:     use the new fault queue
-     -> New.
-28:     find masters by SID
-     -> New.
-29:     add stall support
-     -> New.
-30-36:  add PCI ATS, PRI and PASID
-     -> Now uses mostly core code
-
-This series is available on my svm/rfc2 branch [3]. It is based on v4.14
-with Yisheng's stall fix [4]. Patch 8 also requires mmput_async which
-should be added back soon enough [5]. Updates and fixes will go on
-branch svm/current until next version.
-
-Hoping this helps,
-Jean
-
-[1] https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020599.html
-[2] https://patchwork.kernel.org/patch/9988089/
-[3] git://linux-arm.org/linux-jpb svm/rfc2
-[4] https://patchwork.kernel.org/patch/9963863/
-[5] https://patchwork.kernel.org/patch/9952257/
-
-Jean-Philippe Brucker (36):
-  iommu: Keep track of processes and PASIDs
-  iommu: Add a process_exit callback for device drivers
-  iommu/process: Add public function to search for a process
-  iommu/process: Track process changes with an mmu_notifier
-  iommu/process: Bind and unbind process to and from devices
-  iommu: Extend fault reporting
-  iommu: Add a fault handler
-  iommu/fault: Handle mm faults
-  iommu/fault: Allow blocking fault handlers
-  vfio: Add support for Shared Virtual Memory
-  iommu/arm-smmu-v3: Link domains and devices
-  dt-bindings: document stall and PASID properties for IOMMU masters
-  iommu/of: Add stall and pasid properties to iommu_fwspec
-  iommu/arm-smmu-v3: Add support for Substream IDs
-  iommu/arm-smmu-v3: Add second level of context descriptor table
-  iommu/arm-smmu-v3: Add support for VHE
-  iommu/arm-smmu-v3: Support broadcast TLB maintenance
-  iommu/arm-smmu-v3: Add SVM feature checking
-  arm64: mm: Pin down ASIDs for sharing contexts with devices
-  iommu/arm-smmu-v3: Track ASID state
-  iommu/arm-smmu-v3: Implement process operations
-  iommu/io-pgtable-arm: Factor out ARM LPAE register defines
-  iommu/arm-smmu-v3: Share process page tables
-  iommu/arm-smmu-v3: Steal private ASID from a domain
-  iommu/arm-smmu-v3: Use shared ASID set
-  iommu/arm-smmu-v3: Add support for Hardware Translation Table Update
-  iommu/arm-smmu-v3: Register fault workqueue
-  iommu/arm-smmu-v3: Maintain a SID->device structure
-  iommu/arm-smmu-v3: Add stall support for platform devices
-  ACPI/IORT: Check ATS capability in root complex nodes
-  iommu/arm-smmu-v3: Add support for PCI ATS
-  iommu/arm-smmu-v3: Hook ATC invalidation to process ops
-  iommu/arm-smmu-v3: Disable tagged pointers
-  PCI: Make "PRG Response PASID Required" handling common
-  iommu/arm-smmu-v3: Add support for PRI
-  iommu/arm-smmu-v3: Add support for PCI PASID
-
- Documentation/devicetree/bindings/iommu/iommu.txt |   24 +
- MAINTAINERS                                       |    1 +
- arch/arm64/include/asm/mmu.h                      |    1 +
- arch/arm64/include/asm/mmu_context.h              |   11 +-
- arch/arm64/mm/context.c                           |   80 +-
- drivers/acpi/arm64/iort.c                         |   11 +
- drivers/iommu/Kconfig                             |   19 +
- drivers/iommu/Makefile                            |    2 +
- drivers/iommu/amd_iommu.c                         |   19 +-
- drivers/iommu/arm-smmu-v3.c                       | 1990 ++++++++++++++++++---
- drivers/iommu/io-pgfault.c                        |  421 +++++
- drivers/iommu/io-pgtable-arm.c                    |   48 +-
- drivers/iommu/io-pgtable-arm.h                    |   67 +
- drivers/iommu/iommu-process.c                     |  604 +++++++
- drivers/iommu/iommu.c                             |  113 ++
- drivers/iommu/of_iommu.c                          |   10 +
- drivers/pci/ats.c                                 |   17 +
- drivers/vfio/vfio_iommu_type1.c                   |  243 ++-
- include/linux/iommu.h                             |  254 ++-
- include/linux/pci-ats.h                           |    8 +
- include/uapi/linux/pci_regs.h                     |    1 +
- include/uapi/linux/vfio.h                         |   69 +
- 22 files changed, 3690 insertions(+), 323 deletions(-)
- create mode 100644 drivers/iommu/io-pgfault.c
- create mode 100644 drivers/iommu/io-pgtable-arm.h
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/Kconfig         |  10 ++
+ drivers/iommu/Makefile        |   1 +
+ drivers/iommu/iommu-process.c | 225 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c         |   1 +
+ include/linux/iommu.h         |  24 +++++
+ 5 files changed, 261 insertions(+)
  create mode 100644 drivers/iommu/iommu-process.c
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f3a21343e636..1ea5c90e37be 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -74,6 +74,16 @@ config IOMMU_DMA
+ 	select IOMMU_IOVA
+ 	select NEED_SG_DMA_LENGTH
+ 
++config IOMMU_PROCESS
++	bool "Process management API for the IOMMU"
++	select IOMMU_API
++	help
++	  Enable process management for the IOMMU API. In systems that support
++	  it, device drivers can bind processes to devices and share their page
++	  tables using this API.
++
++	  If unsure, say N here.
++
+ config FSL_PAMU
+ 	bool "Freescale IOMMU support"
+ 	depends on PCI
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index b910aea813a1..a2832edbfaa2 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -1,6 +1,7 @@
+ obj-$(CONFIG_IOMMU_API) += iommu.o
+ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
++obj-$(CONFIG_IOMMU_PROCESS) += iommu-process.o
+ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+diff --git a/drivers/iommu/iommu-process.c b/drivers/iommu/iommu-process.c
+new file mode 100644
+index 000000000000..a7e5a1c94305
+--- /dev/null
++++ b/drivers/iommu/iommu-process.c
+@@ -0,0 +1,225 @@
++/*
++ * Track processes bound to devices
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published
++ * by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
++ *
++ * Copyright (C) 2017 ARM Ltd.
++ *
++ * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
++ */
++
++#include <linux/idr.h>
++#include <linux/iommu.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++
++/* Link between a domain and a process */
++struct iommu_context {
++	struct iommu_process	*process;
++	struct iommu_domain	*domain;
++
++	struct list_head	process_head;
++	struct list_head	domain_head;
++
++	/* Number of devices that use this context */
++	refcount_t		ref;
++};
++
++/*
++ * Because we're using an IDR, PASIDs are limited to 31 bits (the sign bit is
++ * used for returning errors). In practice implementations will use at most 20
++ * bits, which is the PCI limit.
++ */
++static DEFINE_IDR(iommu_process_idr);
++
++/*
++ * For the moment this is an all-purpose lock. It serializes
++ * access/modifications to contexts (process-domain links), access/modifications
++ * to the PASID IDR, and changes to process refcount as well.
++ */
++static DEFINE_SPINLOCK(iommu_process_lock);
++
++/*
++ * Allocate a iommu_process structure for the given task.
++ *
++ * Ideally we shouldn't need the domain parameter, since iommu_process is
++ * system-wide, but we use it to retrieve the driver's allocation ops and a
++ * PASID range.
++ */
++static struct iommu_process *
++iommu_process_alloc(struct iommu_domain *domain, struct task_struct *task)
++{
++	int err;
++	int pasid;
++	struct iommu_process *process;
++
++	if (WARN_ON(!domain->ops->process_alloc || !domain->ops->process_free))
++		return ERR_PTR(-ENODEV);
++
++	process = domain->ops->process_alloc(task);
++	if (IS_ERR(process))
++		return process;
++	if (!process)
++		return ERR_PTR(-ENOMEM);
++
++	process->pid		= get_task_pid(task, PIDTYPE_PID);
++	process->release	= domain->ops->process_free;
++	INIT_LIST_HEAD(&process->domains);
++	kref_init(&process->kref);
++
++	if (!process->pid) {
++		err = -EINVAL;
++		goto err_free_process;
++	}
++
++	idr_preload(GFP_KERNEL);
++	spin_lock(&iommu_process_lock);
++	pasid = idr_alloc_cyclic(&iommu_process_idr, process, domain->min_pasid,
++				 domain->max_pasid + 1, GFP_ATOMIC);
++	process->pasid = pasid;
++	spin_unlock(&iommu_process_lock);
++	idr_preload_end();
++
++	if (pasid < 0) {
++		err = pasid;
++		goto err_put_pid;
++	}
++
++	return process;
++
++err_put_pid:
++	put_pid(process->pid);
++
++err_free_process:
++	domain->ops->process_free(process);
++
++	return ERR_PTR(err);
++}
++
++static void iommu_process_release(struct kref *kref)
++{
++	struct iommu_process *process;
++	void (*release)(struct iommu_process *);
++
++	assert_spin_locked(&iommu_process_lock);
++
++	process = container_of(kref, struct iommu_process, kref);
++	release = process->release;
++
++	WARN_ON(!list_empty(&process->domains));
++
++	idr_remove(&iommu_process_idr, process->pasid);
++	put_pid(process->pid);
++	release(process);
++}
++
++/*
++ * Returns non-zero if a reference to the process was successfully taken.
++ * Returns zero if the process is being freed and should not be used.
++ */
++static int iommu_process_get_locked(struct iommu_process *process)
++{
++	assert_spin_locked(&iommu_process_lock);
++
++	if (process)
++		return kref_get_unless_zero(&process->kref);
++
++	return 0;
++}
++
++static void iommu_process_put_locked(struct iommu_process *process)
++{
++	assert_spin_locked(&iommu_process_lock);
++
++	kref_put(&process->kref, iommu_process_release);
++}
++
++static int iommu_process_attach(struct iommu_domain *domain, struct device *dev,
++				struct iommu_process *process)
++{
++	int err;
++	int pasid = process->pasid;
++	struct iommu_context *context;
++
++	if (WARN_ON(!domain->ops->process_attach || !domain->ops->process_detach))
++		return -ENODEV;
++
++	if (pasid > domain->max_pasid || pasid < domain->min_pasid)
++		return -ENOSPC;
++
++	context = kzalloc(sizeof(*context), GFP_KERNEL);
++	if (!context)
++		return -ENOMEM;
++
++	context->process	= process;
++	context->domain		= domain;
++	refcount_set(&context->ref, 1);
++
++	spin_lock(&iommu_process_lock);
++	err = domain->ops->process_attach(domain, dev, process, true);
++	if (err) {
++		kfree(context);
++		spin_unlock(&iommu_process_lock);
++		return err;
++	}
++
++	list_add(&context->process_head, &process->domains);
++	list_add(&context->domain_head, &domain->processes);
++	spin_unlock(&iommu_process_lock);
++
++	return 0;
++}
++
++static void iommu_context_free(struct iommu_context *context)
++{
++	assert_spin_locked(&iommu_process_lock);
++
++	if (WARN_ON(!context->process || !context->domain))
++		return;
++
++	list_del(&context->process_head);
++	list_del(&context->domain_head);
++	iommu_process_put_locked(context->process);
++
++	kfree(context);
++}
++
++/* Attach an existing context to the device */
++static int iommu_process_attach_locked(struct iommu_context *context,
++				       struct device *dev)
++{
++	assert_spin_locked(&iommu_process_lock);
++
++	refcount_inc(&context->ref);
++	return context->domain->ops->process_attach(context->domain, dev,
++						    context->process, false);
++}
++
++/* Detach device from context and release it if necessary */
++static void iommu_process_detach_locked(struct iommu_context *context,
++					struct device *dev)
++{
++	bool last = false;
++	struct iommu_domain *domain = context->domain;
++
++	assert_spin_locked(&iommu_process_lock);
++
++	if (refcount_dec_and_test(&context->ref))
++		last = true;
++
++	domain->ops->process_detach(domain, dev, context->process, last);
++
++	if (last)
++		iommu_context_free(context);
++}
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3de5c0bcb5cc..b2b34cf7c978 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1264,6 +1264,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+ 	domain->type = type;
+ 	/* Assume all sizes by default; the driver may override this later */
+ 	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
++	INIT_LIST_HEAD(&domain->processes);
+ 
+ 	return domain;
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 41b8c5757859..3978dc094706 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -94,6 +94,19 @@ struct iommu_domain {
+ 	void *handler_token;
+ 	struct iommu_domain_geometry geometry;
+ 	void *iova_cookie;
++
++	unsigned int min_pasid, max_pasid;
++	struct list_head processes;
++};
++
++struct iommu_process {
++	struct pid		*pid;
++	int			pasid;
++	struct list_head	domains;
++	struct kref		kref;
++
++	/* Release callback for this process */
++	void (*release)(struct iommu_process *process);
+ };
+ 
+ enum iommu_cap {
+@@ -164,6 +177,11 @@ struct iommu_resv_region {
+  * @domain_free: free iommu domain
+  * @attach_dev: attach device to an iommu domain
+  * @detach_dev: detach device from an iommu domain
++ * @process_alloc: allocate iommu process
++ * @process_free: free iommu process
++ * @process_attach: attach iommu process to a domain
++ * @process_detach: detach iommu process from a domain. Remove PASID entry and
++ *                  flush associated TLB entries.
+  * @map: map a physically contiguous memory region to an iommu domain
+  * @unmap: unmap a physically contiguous memory region from an iommu domain
+  * @map_sg: map a scatter-gather list of physically contiguous memory chunks
+@@ -197,6 +215,12 @@ struct iommu_ops {
+ 
+ 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+ 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
++	struct iommu_process *(*process_alloc)(struct task_struct *task);
++	void (*process_free)(struct iommu_process *process);
++	int (*process_attach)(struct iommu_domain *domain, struct device *dev,
++			      struct iommu_process *process, bool first);
++	void (*process_detach)(struct iommu_domain *domain, struct device *dev,
++			       struct iommu_process *process, bool last);
+ 	int (*map)(struct iommu_domain *domain, unsigned long iova,
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
 -- 
 2.13.3
-
