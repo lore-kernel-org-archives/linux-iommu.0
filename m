@@ -1,342 +1,85 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFCv2 PATCH 29/36] iommu/arm-smmu-v3: Add stall support for platform
-	devices
-Date: Fri,  6 Oct 2017 14:31:56 +0100
-Message-ID: <20171006133203.22803-30-jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 30/36] ACPI/IORT: Check ATS capability in root complex nodes
+Date: Fri,  6 Oct 2017 14:31:57 +0100
+Message-ID: <20171006133203.22803-31-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The SMMU provides a Stall model for handling page faults in platform
-devices. It is similar to PCI PRI, but doesn't require devices to have
-their own translation cache. Instead, faulting transactions are parked and
-the OS is given a chance to fix the page tables and retry the transaction.
+Root complex node in IORT has a bit telling whether it supports ATS or
+not. Store this bit in the IOMMU fwspec when setting up a device, so it
+can be accessed later by an IOMMU driver.
 
-Enable stall for devices that support it (opt-in by firmware). When an
-event corresponds to a translation error, call the IOMMU fault handler. If
-the fault is recoverable, it will call us back to terminate or continue
-the stall.
+Use the negative version at the moment because it's not clear if/how the
+bit needs to be integrated in other firmare descriptions. The SMMU has a
+feature bit telling if it supports ATS, which might be sufficient in most
+systems for deciding whether or not we should enable the ATS capability in
+endpoints.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 176 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 172 insertions(+), 4 deletions(-)
+ drivers/acpi/arm64/iort.c | 11 +++++++++++
+ include/linux/iommu.h     |  4 ++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4e915e649643..48a1da0934b4 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -418,6 +418,15 @@
- #define CMDQ_PRI_1_RESP_FAIL		(1UL << CMDQ_PRI_1_RESP_SHIFT)
- #define CMDQ_PRI_1_RESP_SUCC		(2UL << CMDQ_PRI_1_RESP_SHIFT)
- 
-+#define CMDQ_RESUME_0_SID_SHIFT		32
-+#define CMDQ_RESUME_0_SID_MASK		0xffffffffUL
-+#define CMDQ_RESUME_0_ACTION_SHIFT	12
-+#define CMDQ_RESUME_0_ACTION_TERM	(0UL << CMDQ_RESUME_0_ACTION_SHIFT)
-+#define CMDQ_RESUME_0_ACTION_RETRY	(1UL << CMDQ_RESUME_0_ACTION_SHIFT)
-+#define CMDQ_RESUME_0_ACTION_ABORT	(2UL << CMDQ_RESUME_0_ACTION_SHIFT)
-+#define CMDQ_RESUME_1_STAG_SHIFT	0
-+#define CMDQ_RESUME_1_STAG_MASK		0xffffUL
-+
- #define CMDQ_SYNC_0_CS_SHIFT		12
- #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
- #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
-@@ -429,6 +438,31 @@
- #define EVTQ_0_ID_SHIFT			0
- #define EVTQ_0_ID_MASK			0xffUL
- 
-+#define EVT_ID_TRANSLATION_FAULT	0x10
-+#define EVT_ID_ADDR_SIZE_FAULT		0x11
-+#define EVT_ID_ACCESS_FAULT		0x12
-+#define EVT_ID_PERMISSION_FAULT		0x13
-+
-+#define EVTQ_0_SSV			(1UL << 11)
-+#define EVTQ_0_SSID_SHIFT		12
-+#define EVTQ_0_SSID_MASK		0xfffffUL
-+#define EVTQ_0_SID_SHIFT		32
-+#define EVTQ_0_SID_MASK			0xffffffffUL
-+#define EVTQ_1_STAG_SHIFT		0
-+#define EVTQ_1_STAG_MASK		0xffffUL
-+#define EVTQ_1_STALL			(1UL << 31)
-+#define EVTQ_1_PRIV			(1UL << 33)
-+#define EVTQ_1_EXEC			(1UL << 34)
-+#define EVTQ_1_READ			(1UL << 35)
-+#define EVTQ_1_S2			(1UL << 39)
-+#define EVTQ_1_CLASS_SHIFT		40
-+#define EVTQ_1_CLASS_MASK		0x3UL
-+#define EVTQ_1_TT_READ			(1UL << 44)
-+#define EVTQ_2_ADDR_SHIFT		0
-+#define EVTQ_2_ADDR_MASK		0xffffffffffffffffUL
-+#define EVTQ_3_IPA_SHIFT		12
-+#define EVTQ_3_IPA_MASK			0xffffffffffUL
-+
- /* PRI queue */
- #define PRIQ_ENT_DWORDS			2
- #define PRIQ_MAX_SZ_SHIFT		8
-@@ -456,6 +490,9 @@
- #define MSI_IOVA_BASE			0x8000000
- #define MSI_IOVA_LENGTH			0x100000
- 
-+/* Flags for iommu_data in iommu_fault */
-+#define ARM_SMMU_FAULT_STALL		(1 << 0)
-+
- /* Until ACPICA headers cover IORT rev. C */
- #ifndef ACPI_IORT_SMMU_HISILICON_HI161X
- #define ACPI_IORT_SMMU_HISILICON_HI161X		0x1
-@@ -552,6 +589,13 @@ struct arm_smmu_cmdq_ent {
- 			enum pri_resp		resp;
- 		} pri;
- 
-+		#define CMDQ_OP_RESUME		0x44
-+		struct {
-+			u32			sid;
-+			u16			stag;
-+			enum iommu_fault_status	resp;
-+		} resume;
-+
- 		#define CMDQ_OP_CMD_SYNC	0x46
- 	};
- };
-@@ -625,6 +669,7 @@ struct arm_smmu_s1_cfg {
- 	};
- 
- 	size_t				num_contexts;
-+	bool				can_stall;
- 
- 	struct arm_smmu_ctx_desc	cd; /* Default context (SSID0) */
- };
-@@ -646,6 +691,8 @@ struct arm_smmu_strtab_ent {
- 	bool				assigned;
- 	struct arm_smmu_s1_cfg		*s1_cfg;
- 	struct arm_smmu_s2_cfg		*s2_cfg;
-+
-+	bool				can_stall;
- };
- 
- struct arm_smmu_strtab_cfg {
-@@ -1009,6 +1056,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 			return -EINVAL;
- 		}
- 		break;
-+	case CMDQ_OP_RESUME:
-+		switch (ent->resume.resp) {
-+		case IOMMU_FAULT_STATUS_FAILURE:
-+		case IOMMU_FAULT_STATUS_INVALID:
-+			cmd[0] |= CMDQ_RESUME_0_ACTION_ABORT;
-+			break;
-+		case IOMMU_FAULT_STATUS_HANDLED:
-+			cmd[0] |= CMDQ_RESUME_0_ACTION_RETRY;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		cmd[0] |= (u64)ent->resume.sid << CMDQ_RESUME_0_SID_SHIFT;
-+		cmd[1] |= ent->resume.stag << CMDQ_RESUME_1_STAG_SHIFT;
-+		break;
- 	case CMDQ_OP_CMD_SYNC:
- 		cmd[0] |= CMDQ_SYNC_0_CS_SEV;
- 		break;
-@@ -1093,6 +1155,32 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
- 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 9565d572f8dd..b94eac8ed21e 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -768,6 +768,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+ 	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
  }
  
-+static int arm_smmu_fault_response(struct iommu_domain *domain,
-+				   struct device *dev,
-+				   struct iommu_fault *fault,
-+				   enum iommu_fault_status resp)
++static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
 +{
-+	int sid = dev->iommu_fwspec->ids[0];
-+	struct arm_smmu_cmdq_ent cmd = {0};
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct acpi_iort_root_complex *pci_rc;
 +
-+	if (fault->iommu_data & ARM_SMMU_FAULT_STALL) {
-+		cmd.opcode		= CMDQ_OP_RESUME;
-+		cmd.resume.sid		= sid;
-+		cmd.resume.stag		= fault->id;
-+		cmd.resume.resp		= resp;
-+	} else {
-+		/* TODO: put PRI response here */
-+		return -EINVAL;
-+	}
-+
-+	arm_smmu_cmdq_issue_cmd(smmu_domain->smmu, &cmd);
-+	cmd.opcode = CMDQ_OP_CMD_SYNC;
-+	arm_smmu_cmdq_issue_cmd(smmu_domain->smmu, &cmd);
-+
-+	return 0;
++	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
++	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
 +}
 +
- /* Context descriptor manipulation functions */
- static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain, u32 ssid,
- 			     bool leaf)
-@@ -1283,7 +1371,8 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
- 		      CTXDESC_CD_0_V;
+ /**
+  * iort_iommu_configure - Set-up IOMMU configuration for a device.
+  *
+@@ -803,6 +811,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 		info.node = node;
+ 		err = pci_for_each_dma_alias(to_pci_dev(dev),
+ 					     iort_pci_iommu_init, &info);
++
++		if (!err && !iort_pci_rc_supports_ats(node))
++			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_NO_ATS;
+ 	} else {
+ 		int i = 0;
  
- 		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
--		if (smmu_domain->smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-+		if ((smmu_domain->smmu->features & ARM_SMMU_FEAT_STALL_FORCE) ||
-+		    (ssid && smmu_domain->s1_cfg.can_stall))
- 			val |= CTXDESC_CD_0_S;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2eb65d4724bb..661031aed0c4 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -534,12 +534,16 @@ struct iommu_fwspec {
+ 	const struct iommu_ops	*ops;
+ 	struct fwnode_handle	*iommu_fwnode;
+ 	void			*iommu_priv;
++	u32			flags;
+ 	unsigned int		num_ids;
+ 	unsigned int		num_pasid_bits;
+ 	bool			can_stall;
+ 	u32			ids[1];
+ };
  
- 		cdptr[0] = cpu_to_le64(val);
-@@ -1503,7 +1592,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 			 STRTAB_STE_1_STRW_SHIFT);
- 
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
--		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
-+		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE) &&
-+		   !ste->can_stall)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
- 		val |= (s1ctxptr & STRTAB_STE_0_S1CTXPTR_MASK
-@@ -1606,10 +1696,72 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
- 	return master;
- }
- 
-+static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
-+{
-+	struct iommu_domain *domain;
-+	struct arm_smmu_master_data *master;
-+	u8 type = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
-+	u32 sid = evt[0] >> EVTQ_0_SID_SHIFT & EVTQ_0_SID_MASK;
++/* Firmware disabled ATS in the root complex */
++#define IOMMU_FWSPEC_PCI_NO_ATS			(1 << 0)
 +
-+	struct iommu_fault fault = {
-+		.id		= evt[1] >> EVTQ_1_STAG_SHIFT & EVTQ_1_STAG_MASK,
-+		.address	= evt[2] >> EVTQ_2_ADDR_SHIFT & EVTQ_2_ADDR_MASK,
-+		.iommu_data	= ARM_SMMU_FAULT_STALL,
-+	};
-+
-+	switch (type) {
-+	case EVT_ID_TRANSLATION_FAULT:
-+	case EVT_ID_ADDR_SIZE_FAULT:
-+	case EVT_ID_ACCESS_FAULT:
-+	case EVT_ID_PERMISSION_FAULT:
-+		break;
-+	default:
-+		return -EFAULT;
-+	}
-+
-+	/* Stage-2 is always pinned at the moment */
-+	if (evt[1] & EVTQ_1_S2)
-+		return -EFAULT;
-+
-+	master = arm_smmu_find_master(smmu, sid);
-+	if (!master)
-+		return -EINVAL;
-+
-+	/*
-+	 * The domain is valid until the fault returns, because detach() flushes
-+	 * the fault queue.
-+	 */
-+	domain = iommu_get_domain_for_dev(master->dev);
-+	if (!domain)
-+		return -EINVAL;
-+
-+	if (evt[1] & EVTQ_1_STALL)
-+		fault.flags |= IOMMU_FAULT_RECOVERABLE;
-+
-+	if (evt[1] & EVTQ_1_READ)
-+		fault.flags |= IOMMU_FAULT_READ;
-+	else
-+		fault.flags |= IOMMU_FAULT_WRITE;
-+
-+	if (evt[1] & EVTQ_1_EXEC)
-+		fault.flags |= IOMMU_FAULT_EXEC;
-+
-+	if (evt[1] & EVTQ_1_PRIV)
-+		fault.flags |= IOMMU_FAULT_PRIV;
-+
-+	if (evt[0] & EVTQ_0_SSV) {
-+		fault.flags |= IOMMU_FAULT_PASID;
-+		fault.pasid = evt[0] >> EVTQ_0_SSID_SHIFT & EVTQ_0_SSID_MASK;
-+	}
-+
-+	/* Report to device driver or populate the page tables */
-+	return handle_iommu_fault(domain, master->dev, &fault);
-+}
-+
- /* IRQ and event handlers */
- static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- {
--	int i;
-+	int i, ret;
- 	int num_handled = 0;
- 	struct arm_smmu_device *smmu = dev;
- 	struct arm_smmu_queue *q = &smmu->evtq.q;
-@@ -1621,12 +1773,19 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 		while (!queue_remove_raw(q, evt)) {
- 			u8 id = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
- 
-+			spin_unlock(&q->wq.lock);
-+			ret = arm_smmu_handle_evt(smmu, evt);
-+			spin_lock(&q->wq.lock);
-+
- 			if (++num_handled == queue_size) {
- 				q->batch++;
- 				wake_up_locked(&q->wq);
- 				num_handled = 0;
- 			}
- 
-+			if (!ret)
-+				continue;
-+
- 			dev_info(smmu->dev, "event 0x%02x received:\n", id);
- 			for (i = 0; i < ARRAY_SIZE(evt); ++i)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
-@@ -1762,7 +1921,9 @@ static int arm_smmu_flush_queues(struct notifier_block *nb,
- 		master = dev->iommu_fwspec->iommu_priv;
- 
- 	if (master) {
--		/* TODO: add support for PRI and Stall */
-+		if (master->ste.can_stall)
-+			arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
-+		/* TODO: add support for PRI */
- 		return 0;
- 	}
- 
-@@ -2110,6 +2271,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
- 			domain->max_pasid = master->num_ssids - 1;
- 			smmu_domain->s1_cfg.num_contexts = master->num_ssids;
- 		}
-+		smmu_domain->s1_cfg.can_stall = master->ste.can_stall;
- 		break;
- 	case ARM_SMMU_DOMAIN_NESTED:
- 	case ARM_SMMU_DOMAIN_S2:
-@@ -2707,6 +2869,11 @@ static int arm_smmu_add_device(struct device *dev)
- 		master->num_ssids = 1 << min(smmu->ssid_bits,
- 					     fwspec->num_pasid_bits);
- 
-+	if (fwspec->can_stall && smmu->features & ARM_SMMU_FEAT_STALLS) {
-+		master->can_fault = true;
-+		master->ste.can_stall = true;
-+	}
-+
- 	group = iommu_group_get_for_dev(dev);
- 	if (!IS_ERR(group)) {
- 		arm_smmu_insert_master(smmu, master);
-@@ -2845,6 +3012,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.process_detach		= arm_smmu_process_detach,
- 	.process_invalidate	= arm_smmu_process_invalidate,
- 	.process_exit		= arm_smmu_process_exit,
-+	.fault_response		= arm_smmu_fault_response,
- 	.map			= arm_smmu_map,
- 	.unmap			= arm_smmu_unmap,
- 	.map_sg			= default_iommu_map_sg,
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 		      const struct iommu_ops *ops);
+ void iommu_fwspec_free(struct device *dev);
 -- 
 2.13.3
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
