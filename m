@@ -1,80 +1,45 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Ensure we sync STE when only changing
-	config field
-Date: Fri, 6 Oct 2017 09:46:47 +0200
-Message-ID: <59075e5e-56d5-9a93-8c01-c602be996982@redhat.com>
-References: <1507222158-4151-1-git-send-email-will.deacon@arm.com>
-	<7e9ef711-b1d7-ee70-b740-5d03a4fc61f6@arm.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 09/16] driver core: add iommu device fault reporting
+ data
+Date: Fri, 6 Oct 2017 10:26:03 +0200
+Message-ID: <20171006082603.GA3836@kroah.com>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1507244624-39189-10-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20171006071145.GA24354@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7e9ef711-b1d7-ee70-b740-5d03a4fc61f6-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20171006071145.GA24354@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Lan Tianyu <tianyu.lan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Fri, Oct 06, 2017 at 12:11:45AM -0700, Christoph Hellwig wrote:
+> On Thu, Oct 05, 2017 at 04:03:37PM -0700, Jacob Pan wrote:
+> > DMA faults can be detected by IOMMU at device level. Adding a pointer
+> > to struct device allows IOMMU subsystem to report relevant faults
+> > back to the device driver for further handling.
+> > For direct assigned device (or user space drivers), guest OS holds
+> > responsibility to handle and respond per device IOMMU fault.
+> > Therefore we need fault reporting mechanism to propagate faults beyond
+> > IOMMU subsystem.
+> 
+> We use struct device all over the system, and I don't think we should
+> bloat it for fringe case IOMMU bits.
+> 
+> Someone really needs to take a step back and figure out how to move
+> this into a structure that's only allocated for device that actually
+> can do physical DMA (and/or have an iommu attached)
+> 
+> This is the 3rd iommu field, in addition to 8 dma-specific fields
+> that we carry around for each struct device.
 
-On 05/10/2017 18:54, Robin Murphy wrote:
-> On 05/10/17 17:49, Will Deacon wrote:
->> The SMMUv3 architecture permits caching of data structures deemed to be
->> "reachable" by the SMU, which includes STEs marked as invalid. When
->> transitioning an STE to a bypass/fault configuration at init or detach
->> time, we mistakenly elide the CMDQ_OP_CFGI_STE operation in some cases,
->> therefore potentially leaving the old STE state cached in the SMMU.
->>
->> This patch fixes the problem by ensuring that we perform the
->> CMDQ_OP_CFGI_STE operation irrespective of the validity of the previous
->> STE.
-> 
-> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Ick, 8?  Yeah, it's getting big...  How about just a single pointer for
+iommu and dma-specific stuff that you all can hang crap like this off
+of if needed?
 
-Thanks
+thanks,
 
-Eric
-
-> 
->> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Reported-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 7 +++++--
->>  1 file changed, 5 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 47f52b1ab838..91fdabdb4de6 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -1085,8 +1085,11 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
->>  		dst[1] = cpu_to_le64(STRTAB_STE_1_SHCFG_INCOMING
->>  			 << STRTAB_STE_1_SHCFG_SHIFT);
->>  		dst[2] = 0; /* Nuke the VMID */
->> -		if (ste_live)
->> -			arm_smmu_sync_ste_for_sid(smmu, sid);
->> +		/*
->> +		 * The SMMU can perform negative caching, so we must sync
->> +		 * the STE regardless of whether the old value was live.
->> +		 */
->> +		arm_smmu_sync_ste_for_sid(smmu, sid);
->>  		return;
->>  	}
->>  
->>
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+greg k-h
