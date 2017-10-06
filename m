@@ -1,179 +1,94 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFCv2 PATCH 22/36] iommu/io-pgtable-arm: Factor out ARM LPAE register defines
-Date: Fri,  6 Oct 2017 14:31:49 +0100
-Message-ID: <20171006133203.22803-23-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFCv2 PATCH 23/36] iommu/arm-smmu-v3: Share process page tables
+Date: Fri,  6 Oct 2017 14:31:50 +0100
+Message-ID: <20171006133203.22803-24-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-For SVM, we'll need to extract CPU page table information and mirror it in
-the substream setup. Move relevant defines to a common header.
+Copy the content of TCR, MAIR and TTBR of a given task into a context
+descriptor.
 
-Fix TCR_SZ_MASK while we're at it.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- MAINTAINERS                    |  1 +
- drivers/iommu/io-pgtable-arm.c | 48 +-----------------------------
- drivers/iommu/io-pgtable-arm.h | 67 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 69 insertions(+), 47 deletions(-)
- create mode 100644 drivers/iommu/io-pgtable-arm.h
+ drivers/iommu/arm-smmu-v3.c | 38 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 65b0c88d5ee0..cff90315c2ec 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1089,6 +1089,7 @@ S:	Maintained
- F:	drivers/iommu/arm-smmu.c
- F:	drivers/iommu/arm-smmu-v3.c
- F:	drivers/iommu/io-pgtable-arm.c
-+F:	drivers/iommu/io-pgtable-arm.h
- F:	drivers/iommu/io-pgtable-arm-v7s.c
- 
- ARM SUB-ARCHITECTURES
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index e8018a308868..443234a564a6 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -31,6 +31,7 @@
- #include <asm/barrier.h>
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index c86a1182c137..293f260782c2 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -43,6 +43,7 @@
+ #include <linux/amba/bus.h>
  
  #include "io-pgtable.h"
 +#include "io-pgtable-arm.h"
  
- #define ARM_LPAE_MAX_ADDR_BITS		48
- #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
-@@ -118,53 +119,6 @@
- #define ARM_LPAE_PTE_MEMATTR_DEV	(((arm_lpae_iopte)0x1) << 2)
+ /* MMIO registers */
+ #define ARM_SMMU_IDR0			0x0
+@@ -2170,13 +2171,46 @@ static int arm_smmu_process_init_pgtable(struct arm_smmu_process *smmu_process,
+ 					 struct mm_struct *mm)
+ {
+ 	int asid;
++	unsigned long tcr;
++	unsigned long reg, par;
++	struct arm_smmu_ctx_desc *cfg = &smmu_process->ctx_desc;
  
- /* Register bits */
--#define ARM_32_LPAE_TCR_EAE		(1 << 31)
--#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
--
--#define ARM_LPAE_TCR_EPD1		(1 << 23)
--
--#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
--#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
--#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
--
--#define ARM_LPAE_TCR_SH0_SHIFT		12
--#define ARM_LPAE_TCR_SH0_MASK		0x3
--#define ARM_LPAE_TCR_SH_NS		0
--#define ARM_LPAE_TCR_SH_OS		2
--#define ARM_LPAE_TCR_SH_IS		3
--
--#define ARM_LPAE_TCR_ORGN0_SHIFT	10
--#define ARM_LPAE_TCR_IRGN0_SHIFT	8
--#define ARM_LPAE_TCR_RGN_MASK		0x3
--#define ARM_LPAE_TCR_RGN_NC		0
--#define ARM_LPAE_TCR_RGN_WBWA		1
--#define ARM_LPAE_TCR_RGN_WT		2
--#define ARM_LPAE_TCR_RGN_WB		3
--
--#define ARM_LPAE_TCR_SL0_SHIFT		6
--#define ARM_LPAE_TCR_SL0_MASK		0x3
--
--#define ARM_LPAE_TCR_T0SZ_SHIFT		0
--#define ARM_LPAE_TCR_SZ_MASK		0xf
--
--#define ARM_LPAE_TCR_PS_SHIFT		16
--#define ARM_LPAE_TCR_PS_MASK		0x7
--
--#define ARM_LPAE_TCR_IPS_SHIFT		32
--#define ARM_LPAE_TCR_IPS_MASK		0x7
--
--#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
--#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
--#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
--#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
--#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
--#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
--
--#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
--#define ARM_LPAE_MAIR_ATTR_MASK		0xff
--#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
--#define ARM_LPAE_MAIR_ATTR_NC		0x44
--#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
- #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
- #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
- #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
-diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
-new file mode 100644
-index 000000000000..cb31314971ac
---- /dev/null
-+++ b/drivers/iommu/io-pgtable-arm.h
-@@ -0,0 +1,67 @@
-+/*
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ *
-+ * Copyright (C) 2017 ARM Limited
-+ */
-+#ifndef __IO_PGTABLE_ARM_H
-+#define __IO_PGTABLE_ARM_H
+ 	asid = mm_context_get(mm);
+ 	if (!asid)
+ 		return -ENOSPC;
+ 
+-	smmu_process->ctx_desc.asid = asid;
+-	/* TODO: init the rest */
++	tcr = TCR_T0SZ(VA_BITS) | TCR_IRGN0_WBWA | TCR_ORGN0_WBWA |
++		TCR_SH0_INNER | ARM_LPAE_TCR_EPD1;
 +
-+#define ARM_32_LPAE_TCR_EAE		(1 << 31)
-+#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
++	switch (PAGE_SIZE) {
++		case SZ_4K:
++			tcr |= TCR_TG0_4K;
++			break;
++		case SZ_16K:
++			tcr |= TCR_TG0_16K;
++			break;
++		case SZ_64K:
++			tcr |= TCR_TG0_64K;
++			break;
++		default:
++			WARN_ON(1);
++			return -EFAULT;
++	}
 +
-+#define ARM_LPAE_TCR_EPD1		(1 << 23)
++	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
++	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
++	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
 +
-+#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
-+#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
-+#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
++	tcr |= TCR_TBI0;
 +
-+#define ARM_LPAE_TCR_SH0_SHIFT		12
-+#define ARM_LPAE_TCR_SH0_MASK		0x3
-+#define ARM_LPAE_TCR_SH_NS		0
-+#define ARM_LPAE_TCR_SH_OS		2
-+#define ARM_LPAE_TCR_SH_IS		3
-+
-+#define ARM_LPAE_TCR_ORGN0_SHIFT	10
-+#define ARM_LPAE_TCR_IRGN0_SHIFT	8
-+#define ARM_LPAE_TCR_RGN_MASK		0x3
-+#define ARM_LPAE_TCR_RGN_NC		0
-+#define ARM_LPAE_TCR_RGN_WBWA		1
-+#define ARM_LPAE_TCR_RGN_WT		2
-+#define ARM_LPAE_TCR_RGN_WB		3
-+
-+#define ARM_LPAE_TCR_SL0_SHIFT		6
-+#define ARM_LPAE_TCR_SL0_MASK		0x3
-+
-+#define ARM_LPAE_TCR_T0SZ_SHIFT		0
-+#define ARM_LPAE_TCR_SZ_MASK		0x3f
-+
-+#define ARM_LPAE_TCR_PS_SHIFT		16
-+#define ARM_LPAE_TCR_PS_MASK		0x7
-+
-+#define ARM_LPAE_TCR_IPS_SHIFT		32
-+#define ARM_LPAE_TCR_IPS_MASK		0x7
-+
-+#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
-+#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
-+#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
-+#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
-+#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
-+#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
-+
-+#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
-+#define ARM_LPAE_MAIR_ATTR_MASK		0xff
-+#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
-+#define ARM_LPAE_MAIR_ATTR_NC		0x44
-+#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
-+
-+#endif /* __IO_PGTABLE_ARM_H */
++	cfg->asid       = asid;
++	cfg->ttbr       = virt_to_phys(mm->pgd);
++	/*
++	 * MAIR value is pretty much constant and global, so we can just get it
++	 * from the current CPU register
++	 */
++	cfg->mair       = read_sysreg(mair_el1);
++	cfg->tcr        = tcr;
+ 
+ 	return 0;
+ }
 -- 
 2.13.3
-
