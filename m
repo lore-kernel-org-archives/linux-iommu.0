@@ -1,7 +1,7 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v9 3/4] iommu/arm-smmu-v3:Enable ACPI based HiSilicon erratum 161010801
-Date: Fri, 6 Oct 2017 15:04:49 +0100
-Message-ID: <20171006140450.89652-4-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers behind SMMUv3
+Date: Fri, 6 Oct 2017 15:04:50 +0100
+Message-ID: <20171006140450.89652-5-shameerali.kolothum.thodi@huawei.com>
 References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,80 +12,53 @@ To: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, will.
 Cc: john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-platforms Hip06/Hip07 to support the SMMU mappings for MSI transactions.
+The HiSilicon erratum 161010801 describes the limitation of
+HiSilicon platforms hip06/hip07 to support the SMMUv3 mappings
+for MSI transactions.
 
-On these platforms GICv3 ITS translator is presented with the deviceID
-by extending the MSI payload data to 64 bits to include the deviceID.
-Hence, the PCIe controller on this platforms has to differentiate the
-MSI payload against other DMA payload and has to modify the MSI payload.
-This basically makes it difficult for this platforms to have a SMMU
-translation for MSI.
-
-This patch implements a ACPI table based quirk to reserve the hw msi
-regions in the smmu-v3 driver which means these address regions will
-not be translated and will be excluded from iova allocations.
+PCIe controller on these platforms has to differentiate the MSI
+payload against other DMA payload and has to modify the MSI
+payload. This basically makes it difficult for this platforms to
+have a SMMU translation for MSI. In order to workaround this, ARM
+SMMUv3 driver requires a quirk to treat the MSI regions separately.
+Such a quirk is currently missing for DT based systems and therefore
+we need to blacklist the hip06/hip07 PCIe controllers.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+ drivers/pci/dwc/pcie-hisi.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e67ba6c..dd42ae9 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -608,6 +608,7 @@ struct arm_smmu_device {
+diff --git a/drivers/pci/dwc/pcie-hisi.c b/drivers/pci/dwc/pcie-hisi.c
+index a201791..6800747 100644
+--- a/drivers/pci/dwc/pcie-hisi.c
++++ b/drivers/pci/dwc/pcie-hisi.c
+@@ -270,6 +270,12 @@ static int hisi_pcie_probe(struct platform_device *pdev)
+ 	struct resource *reg;
+ 	int ret;
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
- #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
-+#define ARM_SMMU_OPT_RESV_HW_MSI	(1 << 2)
- 	u32				options;
- 
- 	struct arm_smmu_cmdq		cmdq;
-@@ -1934,14 +1935,29 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 				      struct list_head *head)
- {
- 	struct iommu_resv_region *region;
-+	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-+	struct arm_smmu_device *smmu = master->smmu;
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+	int resv = 0;
- 
--	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_SW_MSI);
--	if (!region)
--		return;
-+	if ((smmu->options & ARM_SMMU_OPT_RESV_HW_MSI)) {
- 
--	list_add_tail(&region->list, head);
-+		resv = iommu_dma_get_msi_resv_regions(dev, head);
-+
-+		if (resv < 0) {
-+			dev_warn(dev, "HW MSI region resv failed: %d\n", resv);
-+			return;
-+		}
++	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
++			of_property_read_bool(dev->of_node, "iommu-map")) {
++		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting PCIe controllers behind SMMUv3\n");
++		return -ENODEV;
 +	}
 +
-+	if (!resv) {
-+		region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+						 prot, IOMMU_RESV_SW_MSI);
-+		if (!region)
-+			return;
-+
-+		list_add_tail(&region->list, head);
-+	}
+ 	hisi_pcie = devm_kzalloc(dev, sizeof(*hisi_pcie), GFP_KERNEL);
+ 	if (!hisi_pcie)
+ 		return -ENOMEM;
+@@ -340,6 +346,12 @@ static int hisi_pcie_almost_ecam_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct pci_ecam_ops *ops;
  
- 	iommu_dma_get_resv_regions(dev, head);
++	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
++			of_property_read_bool(dev->of_node, "iommu-map")) {
++		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting PCIe controllers behind SMMUv3\n");
++		return -ENODEV;
++	}
++
+ 	ops = (struct pci_ecam_ops *)of_device_get_match_data(dev);
+ 	return pci_host_common_probe(pdev, ops);
  }
-@@ -2667,6 +2683,7 @@ static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
- 		break;
- 	case ACPI_IORT_SMMU_HISILICON_HI161X:
- 		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-+		smmu->options |= ARM_SMMU_OPT_RESV_HW_MSI;
- 		break;
- 	}
- 
 -- 
 1.9.1
 
