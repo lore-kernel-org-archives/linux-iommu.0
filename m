@@ -1,146 +1,179 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFCv2 PATCH 20/36] iommu/arm-smmu-v3: Track ASID state
-Date: Fri,  6 Oct 2017 14:31:47 +0100
-Message-ID: <20171006133203.22803-21-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 22/36] iommu/io-pgtable-arm: Factor out ARM LPAE register defines
+Date: Fri,  6 Oct 2017 14:31:49 +0100
+Message-ID: <20171006133203.22803-23-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-At the moment each SMMU has a 8- or 16-bit ASID set and allocates one ASID
-per device via a bitmap. ASIDs are used to differentiate address spaces in
-SMMU TLB entries. With SVM, sharing process address spaces with the SMMU,
-we need to use CPU ASIDs in SMMU contexts, to ensure that broadcast TLB
-invalidations reach the right IOTLB entries.
+For SVM, we'll need to extract CPU page table information and mirror it in
+the substream setup. Move relevant defines to a common header.
 
-When binding a process address space to a device, we become slaves to the
-arch ASID allocator. We have to use whatever ASID they give us. If a
-domain is currently using it, then we'll either abort or steal that ASID.
+Fix TCR_SZ_MASK while we're at it.
 
-To make matters worse, tasks are global, while domains are per-SMMU. SMMU
-ASIDs can be aliased across different SMMUs, but the CPU ASID space is
-unique across the whole system.
-
-Introduce an IDR for SMMU ASID allocation. It allows to keep information
-about an ASID, for instance which domain it is assigned to or how many
-devices are using it.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 53 +++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 44 insertions(+), 9 deletions(-)
+ MAINTAINERS                    |  1 +
+ drivers/iommu/io-pgtable-arm.c | 48 +-----------------------------
+ drivers/iommu/io-pgtable-arm.h | 67 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 47 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-arm.h
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 96347aad605f..71fc3a2c8a95 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -640,6 +640,10 @@ struct arm_smmu_strtab_cfg {
- 	u32				strtab_base_cfg;
- };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 65b0c88d5ee0..cff90315c2ec 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1089,6 +1089,7 @@ S:	Maintained
+ F:	drivers/iommu/arm-smmu.c
+ F:	drivers/iommu/arm-smmu-v3.c
+ F:	drivers/iommu/io-pgtable-arm.c
++F:	drivers/iommu/io-pgtable-arm.h
+ F:	drivers/iommu/io-pgtable-arm-v7s.c
  
-+struct arm_smmu_asid_state {
-+	struct arm_smmu_domain		*domain;
-+};
-+
- /* An SMMUv3 instance */
- struct arm_smmu_device {
- 	struct device			*dev;
-@@ -681,7 +685,8 @@ struct arm_smmu_device {
+ ARM SUB-ARCHITECTURES
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index e8018a308868..443234a564a6 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -31,6 +31,7 @@
+ #include <asm/barrier.h>
  
- #define ARM_SMMU_MAX_ASIDS		(1 << 16)
- 	unsigned int			asid_bits;
--	DECLARE_BITMAP(asid_map, ARM_SMMU_MAX_ASIDS);
-+	struct idr			asid_idr;
-+	spinlock_t			asid_lock;
+ #include "io-pgtable.h"
++#include "io-pgtable-arm.h"
  
- #define ARM_SMMU_MAX_VMIDS		(1 << 16)
- 	unsigned int			vmid_bits;
-@@ -1828,7 +1833,11 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
- 		if (cfg->num_contexts) {
- 			arm_smmu_free_cd_tables(smmu_domain);
--			arm_smmu_bitmap_free(smmu->asid_map, cfg->cd.asid);
-+
-+			spin_lock(&smmu->asid_lock);
-+			kfree(idr_find(&smmu->asid_idr, cfg->cd.asid));
-+			idr_remove(&smmu->asid_idr, cfg->cd.asid);
-+			spin_unlock(&smmu->asid_lock);
- 		}
- 	} else {
- 		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
-@@ -1844,25 +1853,48 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- {
- 	int ret;
- 	int asid;
-+	struct arm_smmu_asid_state *asid_state;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+ #define ARM_LPAE_MAX_ADDR_BITS		48
+ #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
+@@ -118,53 +119,6 @@
+ #define ARM_LPAE_PTE_MEMATTR_DEV	(((arm_lpae_iopte)0x1) << 2)
  
--	asid = arm_smmu_bitmap_alloc(smmu->asid_map, smmu->asid_bits);
--	if (asid < 0)
--		return asid;
+ /* Register bits */
+-#define ARM_32_LPAE_TCR_EAE		(1 << 31)
+-#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
 -
- 	ret = arm_smmu_alloc_cd_tables(smmu_domain);
- 	if (ret)
--		goto out_free_asid;
-+		return ret;
+-#define ARM_LPAE_TCR_EPD1		(1 << 23)
+-
+-#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
+-#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
+-#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
+-
+-#define ARM_LPAE_TCR_SH0_SHIFT		12
+-#define ARM_LPAE_TCR_SH0_MASK		0x3
+-#define ARM_LPAE_TCR_SH_NS		0
+-#define ARM_LPAE_TCR_SH_OS		2
+-#define ARM_LPAE_TCR_SH_IS		3
+-
+-#define ARM_LPAE_TCR_ORGN0_SHIFT	10
+-#define ARM_LPAE_TCR_IRGN0_SHIFT	8
+-#define ARM_LPAE_TCR_RGN_MASK		0x3
+-#define ARM_LPAE_TCR_RGN_NC		0
+-#define ARM_LPAE_TCR_RGN_WBWA		1
+-#define ARM_LPAE_TCR_RGN_WT		2
+-#define ARM_LPAE_TCR_RGN_WB		3
+-
+-#define ARM_LPAE_TCR_SL0_SHIFT		6
+-#define ARM_LPAE_TCR_SL0_MASK		0x3
+-
+-#define ARM_LPAE_TCR_T0SZ_SHIFT		0
+-#define ARM_LPAE_TCR_SZ_MASK		0xf
+-
+-#define ARM_LPAE_TCR_PS_SHIFT		16
+-#define ARM_LPAE_TCR_PS_MASK		0x7
+-
+-#define ARM_LPAE_TCR_IPS_SHIFT		32
+-#define ARM_LPAE_TCR_IPS_MASK		0x7
+-
+-#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
+-#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
+-#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
+-#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
+-#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
+-#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
+-
+-#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
+-#define ARM_LPAE_MAIR_ATTR_MASK		0xff
+-#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
+-#define ARM_LPAE_MAIR_ATTR_NC		0x44
+-#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
+ #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
+ #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
+ #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
+diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
+new file mode 100644
+index 000000000000..cb31314971ac
+--- /dev/null
++++ b/drivers/iommu/io-pgtable-arm.h
+@@ -0,0 +1,67 @@
++/*
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ * Copyright (C) 2017 ARM Limited
++ */
++#ifndef __IO_PGTABLE_ARM_H
++#define __IO_PGTABLE_ARM_H
 +
-+	asid_state = kzalloc(sizeof(*asid_state), GFP_KERNEL);
-+	if (!asid_state) {
-+		ret = -ENOMEM;
-+		goto out_free_tables;
-+	}
++#define ARM_32_LPAE_TCR_EAE		(1 << 31)
++#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
 +
-+	asid_state->domain = smmu_domain;
++#define ARM_LPAE_TCR_EPD1		(1 << 23)
 +
-+	idr_preload(GFP_KERNEL);
-+	spin_lock(&smmu->asid_lock);
-+	asid = idr_alloc_cyclic(&smmu->asid_idr, asid_state, 0,
-+				1 << smmu->asid_bits, GFP_ATOMIC);
- 
- 	cfg->cd.asid	= (u16)asid;
- 	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
- 	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
- 	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
++#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
++#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
++#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
 +
-+	spin_unlock(&smmu->asid_lock);
-+	idr_preload_end();
++#define ARM_LPAE_TCR_SH0_SHIFT		12
++#define ARM_LPAE_TCR_SH0_MASK		0x3
++#define ARM_LPAE_TCR_SH_NS		0
++#define ARM_LPAE_TCR_SH_OS		2
++#define ARM_LPAE_TCR_SH_IS		3
 +
-+	if (asid < 0) {
-+		ret = asid;
-+		goto out_free_asid_state;
-+	}
++#define ARM_LPAE_TCR_ORGN0_SHIFT	10
++#define ARM_LPAE_TCR_IRGN0_SHIFT	8
++#define ARM_LPAE_TCR_RGN_MASK		0x3
++#define ARM_LPAE_TCR_RGN_NC		0
++#define ARM_LPAE_TCR_RGN_WBWA		1
++#define ARM_LPAE_TCR_RGN_WT		2
++#define ARM_LPAE_TCR_RGN_WB		3
 +
- 	return 0;
- 
--out_free_asid:
--	arm_smmu_bitmap_free(smmu->asid_map, asid);
-+out_free_asid_state:
-+	kfree(asid_state);
++#define ARM_LPAE_TCR_SL0_SHIFT		6
++#define ARM_LPAE_TCR_SL0_MASK		0x3
 +
-+out_free_tables:
-+	arm_smmu_free_cd_tables(smmu_domain);
++#define ARM_LPAE_TCR_T0SZ_SHIFT		0
++#define ARM_LPAE_TCR_SZ_MASK		0x3f
 +
- 	return ret;
- }
- 
-@@ -2506,6 +2538,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- {
- 	int ret;
- 
-+	spin_lock_init(&smmu->asid_lock);
-+	idr_init(&smmu->asid_idr);
++#define ARM_LPAE_TCR_PS_SHIFT		16
++#define ARM_LPAE_TCR_PS_MASK		0x7
 +
- 	ret = arm_smmu_init_queues(smmu);
- 	if (ret)
- 		return ret;
++#define ARM_LPAE_TCR_IPS_SHIFT		32
++#define ARM_LPAE_TCR_IPS_MASK		0x7
++
++#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
++#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
++#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
++#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
++#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
++#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
++
++#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
++#define ARM_LPAE_MAIR_ATTR_MASK		0xff
++#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
++#define ARM_LPAE_MAIR_ATTR_NC		0x44
++#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
++
++#endif /* __IO_PGTABLE_ARM_H */
 -- 
 2.13.3
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
