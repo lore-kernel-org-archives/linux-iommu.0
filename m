@@ -1,319 +1,146 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFCv2 PATCH 21/36] iommu/arm-smmu-v3: Implement process operations
-Date: Fri,  6 Oct 2017 14:31:48 +0100
-Message-ID: <20171006133203.22803-22-jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 20/36] iommu/arm-smmu-v3: Track ASID state
+Date: Fri,  6 Oct 2017 14:31:47 +0100
+Message-ID: <20171006133203.22803-21-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hook process operations to support PASID and page table sharing with the
-SMMUv3:
+At the moment each SMMU has a 8- or 16-bit ASID set and allocates one ASID
+per device via a bitmap. ASIDs are used to differentiate address spaces in
+SMMU TLB entries. With SVM, sharing process address spaces with the SMMU,
+we need to use CPU ASIDs in SMMU contexts, to ensure that broadcast TLB
+invalidations reach the right IOTLB entries.
 
-* process_allocate pins down its ASID and initializes the context
-  descriptor fields.
-* process_free releases the ASID.
-* process_attach checks device capabilities and writes the context
-  descriptor. More work is required to ensure that the process' ASID isn't
-  being used for io-pgtables.
-* process_detach clears the context descriptor and sends required
-  invalidations.
-* process_invalidate sends required invalidations.
-* process_exit stops us of the PASID, clears the context descriptor and
-  performs required invalidations.
+When binding a process address space to a device, we become slaves to the
+arch ASID allocator. We have to use whatever ASID they give us. If a
+domain is currently using it, then we'll either abort or steal that ASID.
+
+To make matters worse, tasks are global, while domains are per-SMMU. SMMU
+ASIDs can be aliased across different SMMUs, but the CPU ASID space is
+unique across the whole system.
+
+Introduce an IDR for SMMU ASID allocation. It allows to keep information
+about an ASID, for instance which domain it is assigned to or how many
+devices are using it.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 207 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 207 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 53 +++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 44 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 71fc3a2c8a95..c86a1182c137 100644
+index 96347aad605f..71fc3a2c8a95 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -29,6 +29,7 @@
- #include <linux/interrupt.h>
- #include <linux/iommu.h>
- #include <linux/iopoll.h>
-+#include <linux/mmu_context.h>
- #include <linux/module.h>
- #include <linux/msi.h>
- #include <linux/of.h>
-@@ -37,6 +38,7 @@
- #include <linux/of_platform.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
-+#include <linux/sched/mm.h>
- 
- #include <linux/amba/bus.h>
- 
-@@ -642,6 +644,7 @@ struct arm_smmu_strtab_cfg {
- 
- struct arm_smmu_asid_state {
- 	struct arm_smmu_domain		*domain;
-+	unsigned long			refs;
+@@ -640,6 +640,10 @@ struct arm_smmu_strtab_cfg {
+ 	u32				strtab_base_cfg;
  };
  
- /* An SMMUv3 instance */
-@@ -712,6 +715,9 @@ struct arm_smmu_master_data {
- 	struct device			*dev;
- 
- 	size_t				num_ssids;
-+	bool				can_fault;
-+	/* Number of processes attached */
-+	int				processes;
- };
- 
- /* SMMU private data for an IOMMU domain */
-@@ -740,6 +746,11 @@ struct arm_smmu_domain {
- 	spinlock_t			devices_lock;
- };
- 
-+struct arm_smmu_process {
-+	struct iommu_process		process;
-+	struct arm_smmu_ctx_desc	ctx_desc;
++struct arm_smmu_asid_state {
++	struct arm_smmu_domain		*domain;
 +};
 +
- struct arm_smmu_option_prop {
- 	u32 opt;
- 	const char *prop;
-@@ -766,6 +777,11 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
- 	return container_of(dom, struct arm_smmu_domain, domain);
- }
+ /* An SMMUv3 instance */
+ struct arm_smmu_device {
+ 	struct device			*dev;
+@@ -681,7 +685,8 @@ struct arm_smmu_device {
  
-+static struct arm_smmu_process *to_smmu_process(struct iommu_process *process)
-+{
-+	return container_of(process, struct arm_smmu_process, process);
-+}
+ #define ARM_SMMU_MAX_ASIDS		(1 << 16)
+ 	unsigned int			asid_bits;
+-	DECLARE_BITMAP(asid_map, ARM_SMMU_MAX_ASIDS);
++	struct idr			asid_idr;
++	spinlock_t			asid_lock;
+ 
+ #define ARM_SMMU_MAX_VMIDS		(1 << 16)
+ 	unsigned int			vmid_bits;
+@@ -1828,7 +1833,11 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+ 		if (cfg->num_contexts) {
+ 			arm_smmu_free_cd_tables(smmu_domain);
+-			arm_smmu_bitmap_free(smmu->asid_map, cfg->cd.asid);
 +
- static void parse_driver_options(struct arm_smmu_device *smmu)
++			spin_lock(&smmu->asid_lock);
++			kfree(idr_find(&smmu->asid_idr, cfg->cd.asid));
++			idr_remove(&smmu->asid_idr, cfg->cd.asid);
++			spin_unlock(&smmu->asid_lock);
+ 		}
+ 	} else {
+ 		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+@@ -1844,25 +1853,48 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
  {
- 	int i = 0;
-@@ -2032,6 +2048,13 @@ static void arm_smmu_detach_dev(struct device *dev)
- 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
- 	struct arm_smmu_domain *smmu_domain = master->domain;
- 
-+	/*
-+	 * Core is preventing concurrent calls between attach and bind, so this
-+	 * read only races with process_exit (FIXME).
-+	 */
-+	if (master->processes)
-+		__iommu_process_unbind_dev_all(&smmu_domain->domain, dev);
-+
- 	if (smmu_domain) {
- 		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 		list_del(&master->list);
-@@ -2143,6 +2166,184 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- 	return ops->iova_to_phys(ops, iova);
- }
- 
-+static int arm_smmu_process_init_pgtable(struct arm_smmu_process *smmu_process,
-+					 struct mm_struct *mm)
-+{
-+	int asid;
-+
-+	asid = mm_context_get(mm);
-+	if (!asid)
-+		return -ENOSPC;
-+
-+	smmu_process->ctx_desc.asid = asid;
-+	/* TODO: init the rest */
-+
-+	return 0;
-+}
-+
-+static struct iommu_process *arm_smmu_process_alloc(struct task_struct *task)
-+{
-+	int ret;
-+	struct mm_struct *mm;
-+	struct arm_smmu_process *smmu_process;
-+
-+	smmu_process = kzalloc(sizeof(*smmu_process), GFP_KERNEL);
-+
-+	mm = get_task_mm(task);
-+	if (!mm) {
-+		kfree(smmu_process);
-+		return NULL;
-+	}
-+
-+	ret = arm_smmu_process_init_pgtable(smmu_process, mm);
-+	mmput(mm);
-+	if (ret) {
-+		kfree(smmu_process);
-+		return NULL;
-+	}
-+
-+	return &smmu_process->process;
-+}
-+
-+static void arm_smmu_process_free(struct iommu_process *process)
-+{
-+	struct arm_smmu_process *smmu_process = to_smmu_process(process);
-+
-+	/* Unpin ASID */
-+	mm_context_put(process->mm);
-+
-+	kfree(smmu_process);
-+}
-+
-+static int arm_smmu_process_share(struct arm_smmu_domain *smmu_domain,
-+				  struct arm_smmu_process *smmu_process)
-+{
-+	int asid, ret;
+ 	int ret;
+ 	int asid;
 +	struct arm_smmu_asid_state *asid_state;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+
-+	asid = smmu_process->ctx_desc.asid;
-+
-+	asid_state = idr_find(&smmu->asid_idr, asid);
-+	if (asid_state && asid_state->domain) {
-+		return -EEXIST;
-+	} else if (asid_state) {
-+		asid_state->refs++;
-+		return 0;
-+	}
-+
-+	asid_state = kzalloc(sizeof(*asid_state), GFP_ATOMIC);
-+	asid_state->refs = 1;
-+
-+	if (!asid_state)
-+		return -ENOMEM;
-+
-+	ret = idr_alloc(&smmu->asid_idr, asid_state, asid, asid + 1, GFP_ATOMIC);
-+	return ret < 0 ? ret : 0;
-+}
-+
-+static int arm_smmu_process_attach(struct iommu_domain *domain,
-+				   struct device *dev,
-+				   struct iommu_process *process, bool first)
-+{
-+	int ret;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_process *smmu_process = to_smmu_process(process);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-+
-+	if (!(smmu->features & ARM_SMMU_FEAT_SVM))
-+		return -ENODEV;
-+
-+	/* TODO: process->no_pasid */
-+	if (process->pasid >= master->num_ssids)
-+		return -ENODEV;
-+
-+	/* TODO: process->no_need_for_pri_ill_pin_everything */
-+	if (!master->can_fault)
-+		return -ENODEV;
-+
-+	master->processes++;
-+
-+	if (!first)
-+		return 0;
-+
-+	spin_lock(&smmu->asid_lock);
-+	ret = arm_smmu_process_share(smmu_domain, smmu_process);
-+	spin_unlock(&smmu->asid_lock);
-+	if (ret)
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+ 
+-	asid = arm_smmu_bitmap_alloc(smmu->asid_map, smmu->asid_bits);
+-	if (asid < 0)
+-		return asid;
+-
+ 	ret = arm_smmu_alloc_cd_tables(smmu_domain);
+ 	if (ret)
+-		goto out_free_asid;
 +		return ret;
 +
-+	arm_smmu_write_ctx_desc(smmu_domain, process->pasid, &smmu_process->ctx_desc);
-+
-+	return 0;
-+}
-+
-+static void arm_smmu_process_detach(struct iommu_domain *domain,
-+				    struct device *dev,
-+				    struct iommu_process *process, bool last)
-+{
-+	struct arm_smmu_asid_state *asid_state;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_process *smmu_process = to_smmu_process(process);
-+	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+
-+	master->processes--;
-+
-+	if (last) {
-+		spin_lock(&smmu->asid_lock);
-+		asid_state = idr_find(&smmu->asid_idr, smmu_process->ctx_desc.asid);
-+		if (--asid_state->refs == 0) {
-+			idr_remove(&smmu->asid_idr, smmu_process->ctx_desc.asid);
-+			kfree(asid_state);
-+		}
-+		spin_unlock(&smmu->asid_lock);
-+
-+		arm_smmu_write_ctx_desc(smmu_domain, process->pasid, NULL);
++	asid_state = kzalloc(sizeof(*asid_state), GFP_KERNEL);
++	if (!asid_state) {
++		ret = -ENOMEM;
++		goto out_free_tables;
 +	}
 +
-+	/* TODO: Invalidate ATC. */
-+	/* TODO: Invalidate all mappings if last and not DVM. */
-+}
++	asid_state->domain = smmu_domain;
 +
-+static void arm_smmu_process_invalidate(struct iommu_domain *domain,
-+					struct iommu_process *process,
-+					unsigned long iova, size_t size)
-+{
-+	/*
-+	 * TODO: Invalidate ATC.
-+	 * TODO: Invalidate mapping if not DVM
-+	 */
-+}
-+
-+static void arm_smmu_process_exit(struct iommu_domain *domain,
-+				  struct iommu_process *process)
-+{
-+	struct arm_smmu_master_data *master;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (!domain->process_exit)
-+		return;
-+
-+	spin_lock(&smmu_domain->devices_lock);
-+	list_for_each_entry(master, &smmu_domain->devices, list) {
-+		if (!master->processes)
-+			continue;
-+
-+		master->processes--;
-+		domain->process_exit(domain, master->dev, process->pasid,
-+				     domain->process_exit_token);
-+
-+		/* TODO: inval ATC */
-+	}
-+	spin_unlock(&smmu_domain->devices_lock);
-+
-+	arm_smmu_write_ctx_desc(smmu_domain, process->pasid, NULL);
-+
-+	/* TODO: Invalidate all mappings if not DVM */
-+}
-+
- static struct platform_driver arm_smmu_driver;
++	idr_preload(GFP_KERNEL);
++	spin_lock(&smmu->asid_lock);
++	asid = idr_alloc_cyclic(&smmu->asid_idr, asid_state, 0,
++				1 << smmu->asid_bits, GFP_ATOMIC);
  
- static int arm_smmu_match_node(struct device *dev, void *data)
-@@ -2351,6 +2552,12 @@ static struct iommu_ops arm_smmu_ops = {
- 	.domain_alloc		= arm_smmu_domain_alloc,
- 	.domain_free		= arm_smmu_domain_free,
- 	.attach_dev		= arm_smmu_attach_dev,
-+	.process_alloc		= arm_smmu_process_alloc,
-+	.process_free		= arm_smmu_process_free,
-+	.process_attach		= arm_smmu_process_attach,
-+	.process_detach		= arm_smmu_process_detach,
-+	.process_invalidate	= arm_smmu_process_invalidate,
-+	.process_exit		= arm_smmu_process_exit,
- 	.map			= arm_smmu_map,
- 	.unmap			= arm_smmu_unmap,
- 	.map_sg			= default_iommu_map_sg,
+ 	cfg->cd.asid	= (u16)asid;
+ 	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ 	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+ 	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
++
++	spin_unlock(&smmu->asid_lock);
++	idr_preload_end();
++
++	if (asid < 0) {
++		ret = asid;
++		goto out_free_asid_state;
++	}
++
+ 	return 0;
+ 
+-out_free_asid:
+-	arm_smmu_bitmap_free(smmu->asid_map, asid);
++out_free_asid_state:
++	kfree(asid_state);
++
++out_free_tables:
++	arm_smmu_free_cd_tables(smmu_domain);
++
+ 	return ret;
+ }
+ 
+@@ -2506,6 +2538,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+ 
++	spin_lock_init(&smmu->asid_lock);
++	idr_init(&smmu->asid_idr);
++
+ 	ret = arm_smmu_init_queues(smmu);
+ 	if (ret)
+ 		return ret;
 -- 
 2.13.3
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
