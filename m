@@ -1,41 +1,106 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Fri, 6 Oct 2017 16:43:09 +0200
-Message-ID: <20171006144309.GA30803@8bytes.org>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
- <1507035334.29211.105.camel@infradead.org>
- <db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
+From: Jordan Crouse <jcrouse@codeaurora.org>
+Subject: Re: Task based virtual address spaces
+Date: Fri, 6 Oct 2017 08:51:51 -0600
+Message-ID: <20171006145151.GA4884@jcrouse-lnx.qualcomm.com>
+References: <20171004194327.GA25346@jcrouse-lnx.qualcomm.com>
+ <dc2eabcc-0aba-89ce-cf03-b220fd5c2132@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-crypto-owner@vger.kernel.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
-Sender: linux-crypto-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, leedom@chelsio.com, Harsh@chelsio.com, herbert@gondor.apana.org.au, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <dc2eabcc-0aba-89ce-cf03-b220fd5c2132@arm.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org, arnd@arndb.de, ssusheel@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 03, 2017 at 07:05:17PM +0100, Robin Murphy wrote:
-> Now, there are indeed plenty of drivers and subsystems which do work on
-> lists of explicitly single pages - anything doing some variant of
-> "addr = kmap_atomic(sg_page(sg)) + sg->offset;" is easy to spot - but I
-> don't think DMA API implementations are in a position to make any kind
-> of assumption; nearly all of them just shut up and handle sg->length
-> bytes from sg_phys(sg) without questioning the caller, and I reckon
-> that's exactly what they should be doing.
+On Thu, Oct 05, 2017 at 11:08:12AM +0100, Jean-Philippe Brucker wrote:
+> Hi Jordan,
+> 
+> On 04/10/17 20:43, Jordan Crouse wrote:
+> > Trying to start back up the conversation about multiple address
+> > spaces for IOMMU devices. If you will remember Jean-Philippe posted
+> > some patches back in February for SVM on arm-smmu-v3.
+> > 
+> > For quite some time the downstream Snapdragon kernels have supported
+> > something we call "per-process" page tables for the GPU. As with full SVM
+> > this involves creating a virtual address space per task but unlike SVM
+> > we don't automatically share the page table from the CPU. Instead we
+> > want to create a new page table and explicitly map/unmap address ranges
+> > into it. We provide the physical address of the page table to the GPU and
+> > it goes through the mechanics of programming the TTBR0 and invalidating
+> > the TLB when starts executing a submission for a given task.
+> 
+> Why does the GPU need the pgd? Does it implement its own MMU specifically
+> for process contexts? I understand you don't use PASIDs/SSIDs to isolate
+> process PT but context switch instead?
 
-I agree with that, it is not explicitly forbidden to have an
-sg->offset > PAGE_SIZE and most IOMMU drivers handle this case.
+The GPU uses the same SSID for all transactions. On the Snapdragon the
+GPU has access to some of the context bank registers for the IOMMU. The kernel
+driver writes the address of the pagetable for the subsequent submission into a
+special opcode.  When the GPU starts executing that submission it executes a
+complicated process of stalling the bus and writing the physical address of the
+new pagetable directly to the TTBR0 register. It is as messy as it sounds but
+it works given the restrictions on hardware. 
 
-So this is a problem I'd like to see resolved in the VT-d driver too. If
-nobody comes up with a correct fix soon I'll apply this one and rip out
-the large-page support from __domain_mapping() to make it work.
+> > As with all things IOMMU this discussion needs to be split into two parts -
+> > the API and the implementation. I want to focus on the generic API for this
+> > email. Shortly after Jean-Philippe posted his patches I sent out a rough
+> > prototype of how the downstream solution worked [1]:
+> > 
+> > +-----------------+       +------------------+
+> > | "master" domain |  ---> | "dynamic" domain |
+> > +-----------------+  \    +------------------+
+> >                       \                    
+> >                        \  +------------------+
+> >                         - | "dynamic" domain |
+> >                           +------------------+
+> 
+> I also considered using hierarchical domains in my first prototype, but it
+> didn't seem to fit the IOMMU API. In the RFC that I intend to post this
+> week, I propose an iommu_process structure for everything process related.
+> 
+> I'm not sure if my new proposal fits your model since I didn't intend
+> iommu_process to be controllable externally with an IOMMU map/unmap
+> interface (the meat of the bind/unbind API is really page table sharing).
+> In v2 bind/unbind still only returns a PASID, not the process structure,
+> but I'll Cc you so we can work something out.
 
-Speaking of __domain_mapping(), this function is a big unmaintainable
-mess which should be split and rewritten. A clean and maintainable
-rewrite can alse re-add the large-page support.
+I saw your CC today - I'll look and see what you've come up with.
 
+> > Given a "master" domain (created in the normal way) we can create any number
+> > of "dynamic" domains which share the same configuration as the master (table
+> > format, context bank, quirks, etc). When the dynamic domain is allocated/
+> > attached it creates a new page table - for all intents and purposes this is
+> > a "real" domain except that it doesn't actually touch the hardware. We can
+> > use this domain with iommu_map() / iommu_unmap() as usual and then pass the
+> > physical address (acquired through a IOMMU domain attribute) to the GPU and
+> > everything works.
+> > 
+> > The main goal for this approach was to try to use the iommu API instead of
+> > teaching the GPU driver how to deal with several generations of page table
+> > formats and IOMMU devices. Shoehorning it into the domain struct was a
+> > path of least resistance that has served Snapdragon well but it was never
+> > really anything we considered to be a generic solution.
+> > 
+> > In the SVM patches, Jean-Philippe introduces iommu_bind_task():
+> > https://patchwork.codeaurora.org/patch/184777/. Given a struct task and
+> > a bit of other stuff it goes off and does SVM magic.
+> > 
+> > My proposal would be to extend this slightly and return a iommu_task
+> > struct from iommu_bind_task:
+> > 
+> > struct iommu_task *iommu_bind_task(struct device *dev, strut task_strut *task,
+> > 	int *pasid, int flags, void *priv);
+> 
+> Since the GPU driver acts as a proxy and the PT are not shared, I suppose
+> you don't need the task_struct at all? Or maybe just for cleaning up on
+> process exit?
 
-Regards,
+Right - we just use it as a handy unique token.
 
-	Joerg
+Jordan
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
