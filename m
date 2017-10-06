@@ -1,94 +1,128 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFCv2 PATCH 23/36] iommu/arm-smmu-v3: Share process page tables
-Date: Fri,  6 Oct 2017 14:31:50 +0100
-Message-ID: <20171006133203.22803-24-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 24/36] iommu/arm-smmu-v3: Steal private ASID from a domain
+Date: Fri,  6 Oct 2017 14:31:51 +0100
+Message-ID: <20171006133203.22803-25-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Copy the content of TCR, MAIR and TTBR of a given task into a context
-descriptor.
+The SMMU only has one ASID space, so the process allocator competes with
+the domain allocator for ASIDs. Process ASIDs are allocated by the arch
+allocator and shared with CPUs, whereas domain ASIDs are private to the
+SMMU, and not affected by broadcast TLB invalidations.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+When the process allocator pins an mm_context and gets an ASID that is
+already in use by the SMMU, it belongs to a domain. At the moment we
+simply abort the bind, but we can try one step further. Attempt to assign
+a new private ASID to the domain, and steal the old one for our process.
+
+Use the smmu-wide ASID lock to prevent racing with attach_dev over the
+foreign domain. We now need to also take this lock when modifying entry 0
+of the context table. Concurrent modifications of a given context table
+used to be prevented by group->mutex but in this patch we modify the CD of
+another group.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 38 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 36 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 53 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 49 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c86a1182c137..293f260782c2 100644
+index 293f260782c2..e89e6d1263d9 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -43,6 +43,7 @@
- #include <linux/amba/bus.h>
- 
- #include "io-pgtable.h"
-+#include "io-pgtable-arm.h"
- 
- /* MMIO registers */
- #define ARM_SMMU_IDR0			0x0
-@@ -2170,13 +2171,46 @@ static int arm_smmu_process_init_pgtable(struct arm_smmu_process *smmu_process,
- 					 struct mm_struct *mm)
+@@ -1731,7 +1731,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 		cmd.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
+ 				  CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID;
+-		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
++		cmd.tlbi.asid	= READ_ONCE(smmu_domain->s1_cfg.cd.asid);
+ 		cmd.tlbi.vmid	= 0;
+ 	} else {
+ 		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
+@@ -1757,7 +1757,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 		cmd.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
+ 				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
+-		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
++		cmd.tlbi.asid	= READ_ONCE(smmu_domain->s1_cfg.cd.asid);
+ 	} else {
+ 		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
+ 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+@@ -2119,7 +2119,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 		ste->s1_cfg = &smmu_domain->s1_cfg;
+ 		ste->s2_cfg = NULL;
++		spin_lock(&smmu->asid_lock);
+ 		arm_smmu_write_ctx_desc(smmu_domain, 0, &ste->s1_cfg->cd);
++		spin_unlock(&smmu->asid_lock);
+ 	} else {
+ 		ste->s1_cfg = NULL;
+ 		ste->s2_cfg = &smmu_domain->s2_cfg;
+@@ -2253,14 +2255,57 @@ static int arm_smmu_process_share(struct arm_smmu_domain *smmu_domain,
+ 				  struct arm_smmu_process *smmu_process)
  {
- 	int asid;
-+	unsigned long tcr;
-+	unsigned long reg, par;
-+	struct arm_smmu_ctx_desc *cfg = &smmu_process->ctx_desc;
+ 	int asid, ret;
+-	struct arm_smmu_asid_state *asid_state;
++	struct arm_smmu_asid_state *asid_state, *new_state;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
  
- 	asid = mm_context_get(mm);
- 	if (!asid)
- 		return -ENOSPC;
+ 	asid = smmu_process->ctx_desc.asid;
  
--	smmu_process->ctx_desc.asid = asid;
--	/* TODO: init the rest */
-+	tcr = TCR_T0SZ(VA_BITS) | TCR_IRGN0_WBWA | TCR_ORGN0_WBWA |
-+		TCR_SH0_INNER | ARM_LPAE_TCR_EPD1;
+ 	asid_state = idr_find(&smmu->asid_idr, asid);
+ 	if (asid_state && asid_state->domain) {
+-		return -EEXIST;
++		struct arm_smmu_domain *smmu_domain = asid_state->domain;
++		struct arm_smmu_cmdq_ent cmd = {
++			.opcode = smmu->features & ARM_SMMU_FEAT_E2H ?
++				CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID,
++		};
 +
-+	switch (PAGE_SIZE) {
-+		case SZ_4K:
-+			tcr |= TCR_TG0_4K;
-+			break;
-+		case SZ_16K:
-+			tcr |= TCR_TG0_16K;
-+			break;
-+		case SZ_64K:
-+			tcr |= TCR_TG0_64K;
-+			break;
-+		default:
-+			WARN_ON(1);
-+			return -EFAULT;
-+	}
++		new_state = kzalloc(sizeof(*new_state), GFP_ATOMIC);
++		if (!new_state)
++			return -ENOMEM;
 +
-+	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
-+	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
-+	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
++		new_state->domain = smmu_domain;
 +
-+	tcr |= TCR_TBI0;
++		ret = idr_alloc_cyclic(&smmu->asid_idr, new_state, 0,
++				       1 << smmu->asid_bits, GFP_ATOMIC);
++		if (ret < 0) {
++			kfree(new_state);
++			return ret;
++		}
 +
-+	cfg->asid       = asid;
-+	cfg->ttbr       = virt_to_phys(mm->pgd);
-+	/*
-+	 * MAIR value is pretty much constant and global, so we can just get it
-+	 * from the current CPU register
-+	 */
-+	cfg->mair       = read_sysreg(mair_el1);
-+	cfg->tcr        = tcr;
- 
- 	return 0;
- }
++		/*
++		 * Race with unmap; TLB invalidations will start targeting the
++		 * new ASID, which isn't assigned yet. We'll do an
++		 * invalidate-all on the old ASID later, so it doesn't matter.
++		 */
++		WRITE_ONCE(smmu_domain->s1_cfg.cd.asid, ret);
++
++		/*
++		 * Update ASID and invalidate CD in all associated masters.
++		 * There will be some overlapping between use of both ASIDs,
++		 * until we invalidate the TLB.
++		 */
++		arm_smmu_write_ctx_desc(smmu_domain, 0, &smmu_domain->s1_cfg.cd);
++
++		/* Invalidate TLB entries previously associated with that domain */
++		cmd.tlbi.asid = asid;
++		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++		cmd.opcode = CMDQ_OP_CMD_SYNC;
++		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++
++		asid_state->domain = NULL;
++		asid_state->refs = 1;
++
++		return 0;
++
+ 	} else if (asid_state) {
+ 		asid_state->refs++;
+ 		return 0;
 -- 
 2.13.3
+
