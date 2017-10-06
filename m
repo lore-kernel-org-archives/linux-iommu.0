@@ -1,13 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu/amd: Add align parameter to alloc_irq_index()
-Date: Fri,  6 Oct 2017 13:34:11 +0200
-Message-ID: <1507289652-30166-2-git-send-email-joro@8bytes.org>
-References: <1507289652-30166-1-git-send-email-joro@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: the imfamous asix ax88179 iommu error
+Date: Fri, 6 Oct 2017 13:14:14 +0100
+Message-ID: <73af1113-86de-25f0-d688-d39e8cfc2c77@arm.com>
+References: <20170929095807.6b02085b@nibenay.lan>
+	<20171006111942.773eb515@nibenay.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1507289652-30166-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20171006111942.773eb515-727xTIJhoIXhXIiyNabO3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,77 +19,144 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Trives <renevant-CkBdp7X+a1oIQCUVoCVjmQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Will,
 
-For multi-MSI IRQ ranges the IRQ index needs to be aligned
-to the power-of-two of the requested IRQ count. Extend the
-alloc_irq_index() function to allow such an allocation.
+On 06/10/17 01:19, Will Trives wrote:
+> Hello,
+> 
+> Just reporting that it looks like this patch may fix the error (so
+> people having issues with VIA controller hosts may also want to try it):
+> 
+> https://lists.linuxfoundation.org/pipermail/iommu/2017-September/024371.html
+> 
+> It appears that my ax88179 is working just fine now with the vendor
+> driver. So perhaps it's possible to revert the old commit in the linux
+> kernel and allow the use of scatter gather ? (perhaps for non-intel
+> hosts ? I'm not sure if this device is effected by intel xhci errata)
 
-Reported-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Fixes: 2b324506341cb ('iommu/amd: Add routines to manage irq remapping tables')
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
+Thanks for the tip-off - as luck would have it I have an AX88179 dongle
+to hand! Does the out-of-tree driver behave significantly differently to
+the mainline driver (CONFIG_USB_NET_AX88179_178A)?
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 51f8215..2d4ee25 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3660,11 +3660,11 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
- 	return table;
- }
- 
--static int alloc_irq_index(u16 devid, int count)
-+static int alloc_irq_index(u16 devid, int count, bool align)
- {
- 	struct irq_remap_table *table;
-+	int index, c, alignment = 1;
- 	unsigned long flags;
--	int index, c;
- 	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
- 
- 	if (!iommu)
-@@ -3674,16 +3674,22 @@ static int alloc_irq_index(u16 devid, int count)
- 	if (!table)
- 		return -ENODEV;
- 
-+	if (align)
-+		alignment = roundup_pow_of_two(count);
-+
- 	spin_lock_irqsave(&table->lock, flags);
- 
- 	/* Scan table for free entries */
--	for (c = 0, index = table->min_index;
-+	for (index = ALIGN(table->min_index, alignment), c = 0;
- 	     index < MAX_IRQS_PER_TABLE;
--	     ++index) {
--		if (!iommu->irte_ops->is_allocated(table, index))
-+	     index++) {
-+		if (!iommu->irte_ops->is_allocated(table, index)) {
- 			c += 1;
--		else
--			c = 0;
-+		} else {
-+			c     = 0;
-+			index = ALIGN(index, alignment);
-+			continue;
-+		}
- 
- 		if (c == count)	{
- 			for (; c != 0; --c)
-@@ -4096,7 +4102,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		else
- 			ret = -ENOMEM;
- 	} else {
--		index = alloc_irq_index(devid, nr_irqs);
-+		index = alloc_irq_index(devid, nr_irqs, false);
- 	}
- 	if (index < 0) {
- 		pr_warn("Failed to allocate IRTE\n");
--- 
-2.7.4
+I stuck a PCIe USB3 card into my arm64 dev board and brought up the ASIX
+dongle with 4.14-rc3 and the mainline driver - with some added debug
+checks it's definitely not hitting the same sg->offset > PAGE_SIZE case
+as the crypto drivers which prompted the above patch, but I *do* see an
+out-of-bounds DMA access under network load which looks a lot like a
+buffer overrun from the XHCI controller:
+
+[   41.324904] arm-smmu 2b500000.iommu: Unhandled context fault:
+fsr=0x2, iova=0xfff49000, fsynr=0x183, cb=0
+
+This is fairly easy to reproduce with iperf, so I'll dig in and see how
+it's related.
+
+Cheers,
+Robin.
+
+> commit: e2ed511400d41e0d136089d5a55ceab57c6a2426
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e2ed511400d41e0d136089d5a55ceab57c6a2426
+> 
+> 
+> ethtool -k enp2s0u1u4
+> Features for enp2s0u1u4:
+> Cannot get device udp-fragmentation-offload settings: Operation not supported
+> rx-checksumming: off [fixed]
+> tx-checksumming: on
+> 	tx-checksum-ipv4: on
+> 	tx-checksum-ip-generic: off [fixed]
+> 	tx-checksum-ipv6: on
+> 	tx-checksum-fcoe-crc: off [fixed]
+> 	tx-checksum-sctp: off [fixed]
+> scatter-gather: on
+> 	tx-scatter-gather: on
+> 	tx-scatter-gather-fraglist: off [fixed]
+> tcp-segmentation-offload: on
+> 	tx-tcp-segmentation: on
+> 	tx-tcp-ecn-segmentation: off [fixed]
+> 	tx-tcp-mangleid-segmentation: off
+> 	tx-tcp6-segmentation: off [fixed]
+> udp-fragmentation-offload: off
+> generic-segmentation-offload: on
+> generic-receive-offload: on
+> large-receive-offload: off [fixed]
+> rx-vlan-offload: off [fixed]
+> tx-vlan-offload: off [fixed]
+> ntuple-filters: off [fixed]
+> receive-hashing: off [fixed]
+> highdma: off [fixed]
+> rx-vlan-filter: off [fixed]
+> vlan-challenged: off [fixed]
+> tx-lockless: off [fixed]
+> netns-local: off [fixed]
+> tx-gso-robust: off [fixed]
+> tx-fcoe-segmentation: off [fixed]
+> tx-gre-segmentation: off [fixed]
+> tx-gre-csum-segmentation: off [fixed]
+> tx-ipxip4-segmentation: off [fixed]
+> tx-ipxip6-segmentation: off [fixed]
+> tx-udp_tnl-segmentation: off [fixed]
+> tx-udp_tnl-csum-segmentation: off [fixed]
+> tx-gso-partial: off [fixed]
+> tx-sctp-segmentation: off [fixed]
+> tx-esp-segmentation: off [fixed]
+> fcoe-mtu: off [fixed]
+> tx-nocache-copy: off
+> loopback: off [fixed]
+> rx-fcs: off [fixed]
+> rx-all: off [fixed]
+> tx-vlan-stag-hw-insert: off [fixed]
+> rx-vlan-stag-hw-parse: off [fixed]
+> rx-vlan-stag-filter: off [fixed]
+> l2-fwd-offload: off [fixed]
+> hw-tc-offload: off [fixed]
+> esp-hw-offload: off [fixed]
+> esp-tx-csum-hw-offload: off [fixed]
+> rx-udp_tunnel-port-offload: off [fixed]
+> 
+> 
+> Regards,
+> 
+> 
+> Will 
+> 
+> On Fri, 29 Sep 2017 09:58:07 +1000
+> Will Trives <renevant-CkBdp7X+a1oIQCUVoCVjmQ@public.gmane.org> wrote:
+> 
+>> Hello,
+>>
+>> I just saw a post about VIA controllers triggering IOMMU errors.
+>>
+>>
+>> Just want to also point out that the ax88179 will also trigger PTE
+>> read errors when using the vendor's driver.
+>>
+>> I'm nowhere near an expert but I remember seeing that 'TD fragment' is
+>> supported now or some such, which I take to mean that sg/tso should be
+>> supported with usbnet ?
+>>
+>> I'm unclear on whether it can ever work with intel hosts because of an
+>> errata ?
+>>
+>> Anyway for anyone that wants to see the error you can grab the vendor
+>> driver:
+>>
+>> http://www.asix.com.tw/FrootAttach/driver/AX88179_178A_LINUX_DRIVER_v1.18.0_SOURCE.tar.bz2
+>>
+>>
+>> This driver was working recently-ish perhaps around the same time the
+>> VIA controllers starting having iommu issues.
+>>
+>>
+>> Regards,
+>>
+>>
+>> Will
+>>
+>>
+> 
