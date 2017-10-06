@@ -1,42 +1,42 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/2] iommu/amd: Correctly Align Multiple MSI IRQs
-Date: Fri,  6 Oct 2017 13:34:10 +0200
-Message-ID: <1507289652-30166-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 2/2] iommu/amd: Enforce alignment for MSI IRQs
+Date: Fri,  6 Oct 2017 13:34:12 +0200
+Message-ID: <1507289652-30166-3-git-send-email-joro@8bytes.org>
+References: <1507289652-30166-1-git-send-email-joro@8bytes.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1507289652-30166-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel@suse.de>
 
-Thomas made me recently aware of the fact that the IRQ
-remapping code in the AMD IOMMU driver does not enforce the
-required alignment of IRQ indexes for multiple MSI IRQs.
+Make use of the new alignment capability of
+alloc_irq_index() to enforce IRQ index alignment
+for MSI.
 
-This patch-set adds the correct alignment for these IRQs.
+Reported-by: Thomas Gleixner <tglx@linutronix.de>
+Fixes: 2b324506341cb ('iommu/amd: Add routines to manage irq remapping tables')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Regards,
-
-	Joerg
-
-Joerg Roedel (2):
-  iommu/amd: Add align parameter to alloc_irq_index()
-  iommu/amd: Enforce alignment for MSI IRQs
-
- drivers/iommu/amd_iommu.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 2d4ee25..cb7c531 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -4102,7 +4102,9 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 		else
+ 			ret = -ENOMEM;
+ 	} else {
+-		index = alloc_irq_index(devid, nr_irqs, false);
++		bool align = (info->type == X86_IRQ_ALLOC_TYPE_MSI);
++
++		index = alloc_irq_index(devid, nr_irqs, align);
+ 	}
+ 	if (index < 0) {
+ 		pr_warn("Failed to allocate IRTE\n");
 -- 
 2.7.4
