@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFCv2 PATCH 26/36] iommu/arm-smmu-v3: Add support for Hardware Translation Table Update
-Date: Fri,  6 Oct 2017 14:31:53 +0100
-Message-ID: <20171006133203.22803-27-jean-philippe.brucker@arm.com>
+Subject: [RFCv2 PATCH 27/36] iommu/arm-smmu-v3: Register fault workqueue
+Date: Fri,  6 Oct 2017 14:31:54 +0100
+Message-ID: <20171006133203.22803-28-jean-philippe.brucker@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
 Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
@@ -10,107 +10,213 @@ To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@
 Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-If the SMMU supports it and the kernel was built with HTTU support, enable
-hardware update of access and dirty flags. This is essential for shared
-page tables, to reduce the number of access faults on the fault queue.
+When using PRI or Stall, the PRI or event handler enqueues faults into the
+core fault queue. Register it based on the SMMU features.
+
+When the core stops using a PASID, it notifies the SMMU to flush all
+instances of this PASID from the PRI queue. Add a way to flush the PRI and
+event queue. PRI and event thread now take a spinlock while processing the
+queue. The flush handler takes this lock to inspect the queue state.
+We avoid livelock, where the SMMU adds fault to the queue faster than we
+can consume them, by incrementing a 'batch' number on every cycle so the
+flush handler only has to wait a complete cycle (two batch increments.)
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 32 ++++++++++++++++++++++++++++----
- 1 file changed, 28 insertions(+), 4 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 104 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 102 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index b7355630526a..2b2e2be03de7 100644
+index 2b2e2be03de7..7d68c6aecb14 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -67,6 +67,8 @@
- #define IDR0_ASID16			(1 << 12)
- #define IDR0_ATS			(1 << 10)
- #define IDR0_HYP			(1 << 9)
-+#define IDR0_HD				(1 << 7)
-+#define IDR0_HA				(1 << 6)
- #define IDR0_BTM			(1 << 5)
- #define IDR0_COHACC			(1 << 4)
- #define IDR0_TTF_SHIFT			2
-@@ -342,7 +344,16 @@
- #define ARM64_TCR_TBI0_SHIFT		37
- #define ARM64_TCR_TBI0_MASK		0x1UL
+@@ -570,6 +570,10 @@ struct arm_smmu_queue {
  
-+#define ARM64_TCR_HA_SHIFT		39
-+#define ARM64_TCR_HA_MASK		0x1UL
-+#define ARM64_TCR_HD_SHIFT		40
-+#define ARM64_TCR_HD_MASK		0x1UL
+ 	u32 __iomem			*prod_reg;
+ 	u32 __iomem			*cons_reg;
 +
- #define CTXDESC_CD_0_AA64		(1UL << 41)
-+#define CTXDESC_CD_0_TCR_HD_SHIFT	42
-+#define CTXDESC_CD_0_TCR_HA_SHIFT	43
-+#define CTXDESC_CD_0_HD			(1UL << CTXDESC_CD_0_TCR_HD_SHIFT)
-+#define CTXDESC_CD_0_HA			(1UL << CTXDESC_CD_0_TCR_HA_SHIFT)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
- #define CTXDESC_CD_0_A			(1UL << 46)
-@@ -670,6 +681,8 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_E2H		(1 << 14)
- #define ARM_SMMU_FEAT_BTM		(1 << 15)
- #define ARM_SMMU_FEAT_SVM		(1 << 16)
-+#define ARM_SMMU_FEAT_HA		(1 << 17)
-+#define ARM_SMMU_FEAT_HD		(1 << 18)
- 	u32				features;
++	/* Event and PRI */
++	u64				batch;
++	wait_queue_head_t		wq;
+ };
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1157,7 +1170,7 @@ static __u64 *arm_smmu_get_cd_ptr(struct arm_smmu_domain *smmu_domain, u32 ssid)
- 	return l1_desc->cdptr + idx * CTXDESC_CD_DWORDS;
- }
+ struct arm_smmu_cmdq {
+@@ -716,6 +720,9 @@ struct arm_smmu_device {
  
--static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
-+static u64 arm_smmu_cpu_tcr_to_cd(struct arm_smmu_device *smmu, u64 tcr)
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
++
++	/* Notifier for the fault queue */
++	struct notifier_block		faultq_nb;
+ };
+ 
+ /* SMMU private data for each master */
+@@ -1568,19 +1575,27 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
  {
- 	u64 val = 0;
+ 	int i;
++	int num_handled = 0;
+ 	struct arm_smmu_device *smmu = dev;
+ 	struct arm_smmu_queue *q = &smmu->evtq.q;
++	size_t queue_size = 1 << q->max_n_shift;
+ 	u64 evt[EVTQ_ENT_DWORDS];
  
-@@ -1172,6 +1185,12 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- 	val |= ARM_SMMU_TCR2CD(tcr, IPS);
- 	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
++	spin_lock(&q->wq.lock);
+ 	do {
+ 		while (!queue_remove_raw(q, evt)) {
+ 			u8 id = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
  
-+	if (smmu->features & ARM_SMMU_FEAT_HA)
-+		val |= ARM_SMMU_TCR2CD(tcr, HA);
++			if (++num_handled == queue_size) {
++				q->batch++;
++				wake_up_locked(&q->wq);
++				num_handled = 0;
++			}
 +
-+	if (smmu->features & ARM_SMMU_FEAT_HD)
-+		val |= ARM_SMMU_TCR2CD(tcr, HD);
+ 			dev_info(smmu->dev, "event 0x%02x received:\n", id);
+ 			for (i = 0; i < ARRAY_SIZE(evt); ++i)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+ 					 (unsigned long long)evt[i]);
+-
+ 		}
+ 
+ 		/*
+@@ -1593,6 +1608,11 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 
+ 	/* Sync our overflow flag, as we believe we're up to speed */
+ 	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
 +
- 	return val;
++	q->batch++;
++	wake_up_locked(&q->wq);
++	spin_unlock(&q->wq.lock);
++
+ 	return IRQ_HANDLED;
  }
  
-@@ -1235,7 +1254,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
- 			 */
- 			arm_smmu_sync_cd(smmu_domain, ssid, true);
+@@ -1636,13 +1656,24 @@ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
  
--		val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
-+		val = arm_smmu_cpu_tcr_to_cd(smmu_domain->smmu, cd->tcr) |
- #ifdef __BIG_ENDIAN
- 		      CTXDESC_CD_0_ENDI |
- #endif
-@@ -2203,8 +2222,7 @@ static int arm_smmu_process_init_pgtable(struct arm_smmu_process *smmu_process,
- 	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
- 	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
- 	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
--
--	tcr |= TCR_TBI0;
-+	tcr |= TCR_TBI0 | TCR_HA | TCR_HD;
+ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ {
++	int num_handled = 0;
+ 	struct arm_smmu_device *smmu = dev;
+ 	struct arm_smmu_queue *q = &smmu->priq.q;
++	size_t queue_size = 1 << q->max_n_shift;
+ 	u64 evt[PRIQ_ENT_DWORDS];
  
- 	cfg->asid       = asid;
- 	cfg->ttbr       = virt_to_phys(mm->pgd);
-@@ -3275,6 +3293,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			smmu->features |= ARM_SMMU_FEAT_E2H;
- 	}
++	spin_lock(&q->wq.lock);
+ 	do {
+-		while (!queue_remove_raw(q, evt))
++		while (!queue_remove_raw(q, evt)) {
++			spin_unlock(&q->wq.lock);
+ 			arm_smmu_handle_ppr(smmu, evt);
++			spin_lock(&q->wq.lock);
++			if (++num_handled == queue_size) {
++				q->batch++;
++				wake_up_locked(&q->wq);
++				num_handled = 0;
++			}
++		}
  
-+	if (IS_ENABLED(CONFIG_ARM64_HW_AFDBM) && (reg & (IDR0_HA | IDR0_HD))) {
-+		smmu->features |= ARM_SMMU_FEAT_HA;
-+		if (reg & IDR0_HD)
-+			smmu->features |= ARM_SMMU_FEAT_HD;
+ 		if (queue_sync_prod(q) == -EOVERFLOW)
+ 			dev_err(smmu->dev, "PRIQ overflow detected -- requests lost\n");
+@@ -1650,9 +1681,65 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ 
+ 	/* Sync our overflow flag, as we believe we're up to speed */
+ 	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
++
++	q->batch++;
++	wake_up_locked(&q->wq);
++	spin_unlock(&q->wq.lock);
++
+ 	return IRQ_HANDLED;
+ }
+ 
++/*
++ * arm_smmu_flush_queue - wait until all events/PRIs currently in the queue have
++ * been consumed.
++ *
++ * Wait until the queue thread finished a batch, or until the queue is empty.
++ * Note that we don't handle overflows on q->batch. If it occurs, just wait for
++ * the queue to be empty.
++ */
++static int arm_smmu_flush_queue(struct arm_smmu_device *smmu,
++				struct arm_smmu_queue *q, const char *name)
++{
++	int ret;
++	u64 batch;
++
++	spin_lock(&q->wq.lock);
++	if (queue_sync_prod(q) == -EOVERFLOW)
++		dev_err(smmu->dev, "%s overflow detected -- requests lost\n", name);
++
++	batch = q->batch;
++	ret = wait_event_interruptible_locked(q->wq, queue_empty(q) ||
++					      q->batch >= batch + 2);
++	spin_unlock(&q->wq.lock);
++
++	return ret;
++}
++
++static int arm_smmu_flush_queues(struct notifier_block *nb,
++				 unsigned long action, void *data)
++{
++	struct arm_smmu_device *smmu = container_of(nb, struct arm_smmu_device,
++						    faultq_nb);
++	struct device *dev = data;
++	struct arm_smmu_master_data *master = NULL;
++
++	if (dev)
++		master = dev->iommu_fwspec->iommu_priv;
++
++	if (master) {
++		/* TODO: add support for PRI and Stall */
++		return 0;
 +	}
 +
- 	/*
- 	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
- 	 * will create TLB entries for NH-EL1 world and will miss the
++	/* No target device, flush all queues. */
++	if (smmu->features & ARM_SMMU_FEAT_STALLS)
++		arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
++	if (smmu->features & ARM_SMMU_FEAT_PRI)
++		arm_smmu_flush_queue(smmu, &smmu->priq.q, "priq");
++
++	return 0;
++}
++
+ static irqreturn_t arm_smmu_cmdq_sync_handler(int irq, void *dev)
+ {
+ 	/* We don't actually use CMD_SYNC interrupts for anything */
+@@ -2697,6 +2784,10 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 		     << Q_BASE_LOG2SIZE_SHIFT;
+ 
+ 	q->prod = q->cons = 0;
++
++	init_waitqueue_head(&q->wq);
++	q->batch = 0;
++
+ 	return 0;
+ }
+ 
+@@ -3594,6 +3685,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (smmu->features & (ARM_SMMU_FEAT_STALLS | ARM_SMMU_FEAT_PRI)) {
++		smmu->faultq_nb.notifier_call = arm_smmu_flush_queues;
++		ret = iommu_fault_queue_register(&smmu->faultq_nb);
++		if (ret)
++			return ret;
++	}
++
+ 	/* And we're up. Go go go! */
+ 	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+ 				     "smmu3.%pa", &ioaddr);
+@@ -3636,6 +3734,8 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
++	iommu_fault_queue_unregister(&smmu->faultq_nb);
++
+ 	arm_smmu_device_disable(smmu);
+ 
+ 	return 0;
 -- 
 2.13.3
