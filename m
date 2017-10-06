@@ -1,48 +1,38 @@
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: [PATCH] iommu/vt-d: only attempt to cleanup svm page request irq if one assigned
-Date: Thu,  5 Oct 2017 16:30:03 -0700
-Message-ID: <20171005233003.12153-1-jsnitsel@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v2 09/16] driver core: add iommu device fault reporting
+	data
+Date: Fri, 6 Oct 2017 07:43:16 +0200
+Message-ID: <20171006054316.GA11608@kroah.com>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1507244624-39189-10-git-send-email-jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1507244624-39189-10-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Only try to clean up the svm page request irq if one has
-been assigned. Also clear pr_irq in the error path if irq request
-fails.
+On Thu, Oct 05, 2017 at 04:03:37PM -0700, Jacob Pan wrote:
+> DMA faults can be detected by IOMMU at device level. Adding a pointer
+> to struct device allows IOMMU subsystem to report relevant faults
+> back to the device driver for further handling.
+> For direct assigned device (or user space drivers), guest OS holds
+> responsibility to handle and respond per device IOMMU fault.
+> Therefore we need fault reporting mechanism to propagate faults beyond
+> IOMMU subsystem.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
----
- drivers/iommu/intel-svm.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index f6697e55c2d4..003b4a4d4b78 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -129,6 +129,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
- 		pr_err("IOMMU: %s: Failed to request IRQ for page request queue\n",
- 		       iommu->name);
- 		dmar_free_hwirq(irq);
-+		iommu->pr_irq = 0;
- 		goto err;
- 	}
- 	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
-@@ -144,9 +145,11 @@ int intel_svm_finish_prq(struct intel_iommu *iommu)
- 	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
- 	dmar_writeq(iommu->reg + DMAR_PQA_REG, 0ULL);
- 
--	free_irq(iommu->pr_irq, iommu);
--	dmar_free_hwirq(iommu->pr_irq);
--	iommu->pr_irq = 0;
-+	if (iommu->pr_irq) {
-+		free_irq(iommu->pr_irq, iommu);
-+		dmar_free_hwirq(iommu->pr_irq);
-+		iommu->pr_irq = 0;
-+	}
- 
- 	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
- 	iommu->prq = NULL;
--- 
-2.13.0.rc0.45.ge2cb6ab84
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
