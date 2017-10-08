@@ -1,124 +1,144 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 2/2] lib: Improve a size determination in seven functions
-Date: Sat, 7 Oct 2017 19:50:15 +0200
-Message-ID: <3a32f0e7-75a2-857e-c63c-10d4b5942622@users.sourceforge.net>
-References: <9a81d82d-fb1b-38d3-1dbf-31e6bf4ff677@users.sourceforge.net>
+From: Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH v8 1/2] iommu: up-level sg_num_pages() from amd-iommu
+Date: Sat, 07 Oct 2017 21:02:45 -0700
+Message-ID: <150743535284.13602.15352862726070248486.stgit@dwillia2-desk3.amr.corp.intel.com>
+References: <150732937720.22363.1037155753760964267.stgit@dwillia2-desk3.amr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <9a81d82d-fb1b-38d3-1dbf-31e6bf4ff677@users.sourceforge.net>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, kasan-dev@googlegroups.com, Alexander Potapenko <glider@google.com>, Andrew Morton <akpm@linux-foundation.org>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Christoph Hellwig <hch@lst.de>, Daniel Mentz <danielmentz@google.com>, Dmitry Vyukov <dvyukov@google.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Lars Ellenberg <lars.ellenberg@linbit.com>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Philipp Reisner <philipp.reisner@linbit.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-fsdevel-owner@vger.kernel.org>
+In-Reply-To: <150732937720.22363.1037155753760964267.stgit@dwillia2-desk3.amr.corp.intel.com>
+Sender: linux-fsdevel-owner@vger.kernel.org
+To: linux-nvdimm@lists.01.org
+Cc: linux-rdma@vger.kernel.org, linux-api@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, linux-xfs@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 7 Oct 2017 19:19:45 +0200
+iommu_sg_num_pages() is a helper that walks a scattlerlist and counts
+pages taking segment boundaries and iommu_num_pages() into account.
+Up-level it for determining the IOVA range that dma_map_ops established
+at dma_map_sg() time. The intent is to iommu_unmap() the IOVA range in
+advance of freeing IOVA range.
 
-Replace the specification of data structures by pointer dereferences
-as the parameter for the operator "sizeof" to make the corresponding size
-determination a bit safer according to the Linux coding style convention.
-
-This issue was detected by using the Coccinelle software.
-
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+Cc: Joerg Roedel <joro@8bytes.org>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 ---
- lib/dma-debug.c                 | 2 +-
- lib/flex_array.c                | 4 ++--
- lib/genalloc.c                  | 2 +-
- lib/lru_cache.c                 | 2 +-
- lib/reed_solomon/reed_solomon.c | 2 +-
- lib/test_kmod.c                 | 2 +-
- 6 files changed, 7 insertions(+), 7 deletions(-)
+New patch in v8.
 
-diff --git a/lib/dma-debug.c b/lib/dma-debug.c
-index ea4cc3dde4f1..8b5c8fc76f8a 100644
---- a/lib/dma-debug.c
-+++ b/lib/dma-debug.c
-@@ -993,7 +993,7 @@ void dma_debug_add_bus(struct bus_type *bus)
- 	if (dma_debug_disabled())
- 		return;
+ drivers/iommu/amd_iommu.c |   30 ++----------------------------
+ drivers/iommu/iommu.c     |   27 +++++++++++++++++++++++++++
+ include/linux/iommu.h     |    2 ++
+ 3 files changed, 31 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index c8e1a45af182..4795b0823469 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2459,32 +2459,6 @@ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+ 	__unmap_single(dma_dom, dma_addr, size, dir);
+ }
  
--	nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
-+	nb = kzalloc(sizeof(*nb), GFP_KERNEL);
- 	if (nb == NULL) {
- 		pr_err("dma_debug_add_bus: out of memory\n");
- 		return;
-diff --git a/lib/flex_array.c b/lib/flex_array.c
-index 2eed22fa507c..ebe0f366b6cb 100644
---- a/lib/flex_array.c
-+++ b/lib/flex_array.c
-@@ -102,7 +102,7 @@ struct flex_array *flex_array_alloc(int element_size, unsigned int total,
- 	/* max_size will end up 0 if element_size > PAGE_SIZE */
- 	if (total > max_size)
- 		return NULL;
--	ret = kzalloc(sizeof(struct flex_array), flags);
-+	ret = kzalloc(sizeof(*ret), flags);
- 	if (!ret)
- 		return NULL;
- 	ret->element_size = element_size;
-@@ -167,7 +167,7 @@ __fa_get_part(struct flex_array *fa, int part_nr, gfp_t flags)
+-static int sg_num_pages(struct device *dev,
+-			struct scatterlist *sglist,
+-			int nelems)
+-{
+-	unsigned long mask, boundary_size;
+-	struct scatterlist *s;
+-	int i, npages = 0;
+-
+-	mask          = dma_get_seg_boundary(dev);
+-	boundary_size = mask + 1 ? ALIGN(mask + 1, PAGE_SIZE) >> PAGE_SHIFT :
+-				   1UL << (BITS_PER_LONG - PAGE_SHIFT);
+-
+-	for_each_sg(sglist, s, nelems, i) {
+-		int p, n;
+-
+-		s->dma_address = npages << PAGE_SHIFT;
+-		p = npages % boundary_size;
+-		n = iommu_num_pages(sg_phys(s), s->length, PAGE_SIZE);
+-		if (p + n > boundary_size)
+-			npages += boundary_size - p;
+-		npages += n;
+-	}
+-
+-	return npages;
+-}
+-
+ /*
+  * The exported map_sg function for dma_ops (handles scatter-gather
+  * lists).
+@@ -2507,7 +2481,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+ 	dma_dom  = to_dma_ops_domain(domain);
+ 	dma_mask = *dev->dma_mask;
+ 
+-	npages = sg_num_pages(dev, sglist, nelems);
++	npages = iommu_sg_num_pages(dev, sglist, nelems);
+ 
+ 	address = dma_ops_alloc_iova(dev, dma_dom, npages, dma_mask);
+ 	if (address == AMD_IOMMU_MAPPING_ERROR)
+@@ -2585,7 +2559,7 @@ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 	startaddr = sg_dma_address(sglist) & PAGE_MASK;
+ 	dma_dom   = to_dma_ops_domain(domain);
+-	npages    = sg_num_pages(dev, sglist, nelems);
++	npages    = iommu_sg_num_pages(dev, sglist, nelems);
+ 
+ 	__unmap_single(dma_dom, startaddr, npages << PAGE_SHIFT, dir);
+ }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3de5c0bcb5cc..cfe6eeea3578 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -33,6 +33,7 @@
+ #include <linux/bitops.h>
+ #include <linux/property.h>
+ #include <trace/events/iommu.h>
++#include <linux/iommu-helper.h>
+ 
+ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+@@ -1631,6 +1632,32 @@ size_t iommu_unmap_fast(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap_fast);
+ 
++int iommu_sg_num_pages(struct device *dev, struct scatterlist *sglist,
++		int nelems)
++{
++	unsigned long mask, boundary_size;
++	struct scatterlist *s;
++	int i, npages = 0;
++
++	mask = dma_get_seg_boundary(dev);
++	boundary_size = mask + 1 ? ALIGN(mask + 1, PAGE_SIZE) >> PAGE_SHIFT
++		: 1UL << (BITS_PER_LONG - PAGE_SHIFT);
++
++	for_each_sg(sglist, s, nelems, i) {
++		int p, n;
++
++		s->dma_address = npages << PAGE_SHIFT;
++		p = npages % boundary_size;
++		n = iommu_num_pages(sg_phys(s), s->length, PAGE_SIZE);
++		if (p + n > boundary_size)
++			npages += boundary_size - p;
++		npages += n;
++	}
++
++	return npages;
++}
++EXPORT_SYMBOL_GPL(iommu_sg_num_pages);
++
+ size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 			 struct scatterlist *sg, unsigned int nents, int prot)
  {
- 	struct flex_array_part *part = fa->parts[part_nr];
- 	if (!part) {
--		part = kmalloc(sizeof(struct flex_array_part), flags);
-+		part = kmalloc(sizeof(*part), flags);
- 		if (!part)
- 			return NULL;
- 		if (!(flags & __GFP_ZERO))
-diff --git a/lib/genalloc.c b/lib/genalloc.c
-index 144fe6b1a03e..696cf1236b6c 100644
---- a/lib/genalloc.c
-+++ b/lib/genalloc.c
-@@ -153,7 +153,7 @@ struct gen_pool *gen_pool_create(int min_alloc_order, int nid)
- {
- 	struct gen_pool *pool;
- 
--	pool = kmalloc_node(sizeof(struct gen_pool), GFP_KERNEL, nid);
-+	pool = kmalloc_node(sizeof(*pool), GFP_KERNEL, nid);
- 	if (pool != NULL) {
- 		spin_lock_init(&pool->lock);
- 		INIT_LIST_HEAD(&pool->chunks);
-diff --git a/lib/lru_cache.c b/lib/lru_cache.c
-index 28ba40b99337..4882ed22a8ce 100644
---- a/lib/lru_cache.c
-+++ b/lib/lru_cache.c
-@@ -116,7 +116,7 @@ struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
- 	if (e_count > LC_MAX_ACTIVE)
- 		return NULL;
- 
--	slot = kcalloc(e_count, sizeof(struct hlist_head), GFP_KERNEL);
-+	slot = kcalloc(e_count, sizeof(*slot), GFP_KERNEL);
- 	if (!slot)
- 		goto out_fail;
- 	element = kzalloc(e_count * sizeof(struct lc_element *), GFP_KERNEL);
-diff --git a/lib/reed_solomon/reed_solomon.c b/lib/reed_solomon/reed_solomon.c
-index 06d04cfa9339..2d0ec9f84322 100644
---- a/lib/reed_solomon/reed_solomon.c
-+++ b/lib/reed_solomon/reed_solomon.c
-@@ -70,7 +70,7 @@ static struct rs_control *rs_init(int symsize, int gfpoly, int (*gffunc)(int),
- 	int i, j, sr, root, iprim;
- 
- 	/* Allocate the control structure */
--	rs = kmalloc(sizeof (struct rs_control), GFP_KERNEL);
-+	rs = kmalloc(sizeof(*rs), GFP_KERNEL);
- 	if (rs == NULL)
- 		return NULL;
- 
-diff --git a/lib/test_kmod.c b/lib/test_kmod.c
-index 337f408b4de6..57f3337f2482 100644
---- a/lib/test_kmod.c
-+++ b/lib/test_kmod.c
-@@ -1086,7 +1086,7 @@ static struct kmod_test_device *alloc_test_dev_kmod(int idx)
- 	struct kmod_test_device *test_dev;
- 	struct miscdevice *misc_dev;
- 
--	test_dev = vzalloc(sizeof(struct kmod_test_device));
-+	test_dev = vzalloc(sizeof(*test_dev));
- 	if (!test_dev)
- 		goto err_out;
- 
--- 
-2.14.2
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a7f2ac689d29..5b2d20e1475a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -303,6 +303,8 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			  size_t size);
+ extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size);
++extern int iommu_sg_num_pages(struct device *dev, struct scatterlist *sglist,
++		int nelems);
+ extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 				struct scatterlist *sg,unsigned int nents,
+ 				int prot);
