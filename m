@@ -1,112 +1,122 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH] iommu/exynos: Remove initconst attribute to avoid
- potential kernel oops
-Date: Mon, 9 Oct 2017 14:42:26 +0200
-Message-ID: <CAJKOXPf2uq7FsfzW9bQyN78ikLMLnuaZdK_zCJNgu1zrgjc6gw@mail.gmail.com>
-References: <CGME20171009114035eucas1p102089b889ad374b33c3302f1ad84e783@eucas1p1.samsung.com>
- <20171009114023.3427-1-m.szyprowski@samsung.com>
+From: Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Don't register bus-notifier under
+Date: Mon, 9 Oct 2017 18:58:13 +0200
+Message-ID: <2ee59dfe-0a02-05b6-8115-5846b49bc053@siemens.com>
+References: <4e9f9665-38f7-c5f0-2a9d-13bb3a00aab2@siemens.com>
+	<6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
+	<82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
+	<20171006130823.a4rtzhusjpbgo3ar@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20171009114023.3427-1-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171006130823.a4rtzhusjpbgo3ar-l3A5Bk7waGM@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 9, 2017 at 1:40 PM, Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
-> Exynos SYSMMU registers standard platform device with sysmmu_of_match
-> table, what means that this table is accessed every time a new platform
-> device is registered in a system. This might happen also after the boot,
-> so the table must not be attributed as initconst to avoid potential kernel
-> oops caused by access to freed memory.
->
-> Fixes: 6b21a5db3642 ("iommu/exynos: Support for device tree")
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+On 2017-10-06 15:08, Joerg Roedel wrote:
+> Hey Jan,
+> 
+> On Wed, Sep 27, 2017 at 04:19:15PM +0200, Jan Kiszka wrote:
+>> If we could drop the dmar_global_lock around bus_register_notifier in
+>> dmar_dev_scope_init, the issue above would likely be resolved.
+> 
+> That is true. Can you please try this patch?
+> 
+>>From dd7685f84d3954f9361bfb4290fb8a0dd033097a Mon Sep 17 00:00:00 2001
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Date: Fri, 6 Oct 2017 15:00:53 +0200
+> Subject: [PATCH] iommu/vt-d: Don't register bus-notifier under
+>  dmar_global_lock
+> 
+> The notifier function will take the dmar_global_lock too, so
+> lockdep complains about inverse locking order when the
+> notifier is registered under the dmar_global_lock.
+> 
+> Reported-by: Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>
+> Fixes: 59ce0515cdaf ('iommu/vt-d: Update DRHD/RMRR/ATSR device scope caches when PCI hotplug happens')
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > ---
-> Hi!
->
-> This issue was there from the beggining of the device tree
-> support, I'm really surprised that it has not been noticed it till
-> now. This patch fixes the following hard-to-debug kernel issue:
->
-> Unable to handle kernel paging request at virtual address ffffff80090fb018
-> Mem abort info:
->   Exception class = DABT (current EL), IL = 32 bits
->   SET = 0, FnV = 0
->   EA = 0, S1PTW = 0
-> Data abort info:
->   ISV = 0, ISS = 0x00000007
->   CM = 0, WnR = 0
-> swapper pgtable: 4k pages, 39-bit VAs, pgd = ffffff80097f9000
-> [ffffff80090fb018] *pgd=00000008ffffe003, *pud=00000008ffffe003, *pmd=00000008ffffb003, *pte=0000000000000000
-> Internal error: Oops: 96000007 [#1] PREEMPT SMP
-> Modules linked in:
-> CPU: 7 PID: 102 Comm: kworker/7:1 Tainted: G S              4.14.0-rc1+ #4572
-> Hardware name: Samsung DREAMLTE EUR rev10 board based on EXYNOS8895 (DT)
-> Workqueue: events deferred_probe_work_func
-> task: ffffffc87a7f1b00 task.stack: ffffff8009b88000
-> PC is at __of_match_node+0x24/0x7c
-> LR is at of_match_node+0x38/0x5c
-> pc : [<ffffff800871ac6c>] lr : [<ffffff800871acfc>] pstate: a00001c5
-> sp : ffffff8009b8bba0
-> x29: ffffff8009b8bba0 x28: ffffffc87ff8fc00
-> x27: ffffff80095c7000 x26: ffffff80096e76e0
-> x25: ffffff8008f1e7a0 x24: ffffff800965d000
-> x23: ffffff800977d008 x22: 0000000000000000
-> x21: ffffffc87ffcd598 x20: 0000000000000000
-> x19: ffffff80090fb018 x18: 0000000000000000
-> x17: 0000000000000000 x16: 0000000000000000
-> x15: 0000000000000008 x14: 0000000000000000
-> x13: 0000000000000040 x12: 0000000000000038
-> x11: 0000000000000001 x10: 0101010101010101
-> x9 : 06fefeff01fefeff x8 : 7f7f7f7f7f7f7f7f
-> x7 : 2f2f2f2f382f3030 x6 : 4354571454455d5d
-> x5 : 5d5d455414575443 x4 : ffffff8009b8c000
-> x3 : ffffff8009b88000 x2 : 0000000000000000
-> x1 : ffffffc87ffcd598 x0 : ffffff80090fb018
-> Process kworker/7:1 (pid: 102, stack limit = 0xffffff8009b88000)
-> Call trace:
-> Exception stack(0xffffff8009b8ba60 to 0xffffff8009b8bba0)
-> ba60: ffffff80090fb018 ffffffc87ffcd598 0000000000000000 ffffff8009b88000
-> ba80: ffffff8009b8c000 5d5d455414575443 4354571454455d5d 2f2f2f2f382f3030
-> baa0: 7f7f7f7f7f7f7f7f 06fefeff01fefeff 0101010101010101 0000000000000001
-> bac0: 0000000000000038 0000000000000040 0000000000000000 0000000000000008
-> bae0: 0000000000000000 0000000000000000 0000000000000000 ffffff80090fb018
-> bb00: 0000000000000000 ffffffc87ffcd598 0000000000000000 ffffff800977d008
-> bb20: ffffff800965d000 ffffff8008f1e7a0 ffffff80096e76e0 ffffff80095c7000
-> bb40: ffffffc87ff8fc00 ffffff8009b8bba0 ffffff800871acfc ffffff8009b8bba0
-> bb60: ffffff800871ac6c 00000000a00001c5 ffffffc800000000 ffffff800871acec
-> bb80: ffffffffffffffff ffffff800871acec ffffff8009b8bba0 ffffff800871ac6c
-> [<ffffff800871ac6c>] __of_match_node+0x24/0x7c
-> [<ffffff800871acfc>] of_match_node+0x38/0x5c
-> [<ffffff800871c5d0>] of_match_device+0x18/0x28
-> [<ffffff80085031c0>] platform_match+0x4c/0xc8
-> [<ffffff8008500c68>] __device_attach_driver+0x3c/0x138
-> [<ffffff80084fe7a0>] bus_for_each_drv+0x54/0x94
-> [<ffffff8008500510>] __device_attach+0xc4/0x154
-> [<ffffff8008500d74>] device_initial_probe+0x10/0x18
-> [<ffffff80084ff844>] bus_probe_device+0x90/0x98
-> [<ffffff80084ffdf8>] deferred_probe_work_func+0x64/0x18c
-> [<ffffff80080b5f24>] process_one_work+0x150/0x3dc
-> [<ffffff80080b6208>] worker_thread+0x58/0x3b8
-> [<ffffff80080bbbc4>] kthread+0x104/0x130
-> [<ffffff8008085340>] ret_from_fork+0x10/0x20
-> Code: aa0103f5 b40002a0 52800014 d2800016 (39400264)
-> ---[ end trace 4a748776163027e1 ]---
->
-> I'm not sure however if it makes sense to add the above kernel log to the
-> commit message as it doesn't directly point to the code fixed by this patch.
->
-> Best regards
-> Marek Szyprowski
-> Samsung R&D Institute Poland
-> ---
->  drivers/iommu/exynos-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iommu/dmar.c        |  7 +++++--
+>  drivers/iommu/intel-iommu.c | 10 ++++++++++
+>  include/linux/dmar.h        |  1 +
+>  3 files changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index 57c920c1372d..1ea7cd537873 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -801,13 +801,16 @@ int __init dmar_dev_scope_init(void)
+>  				dmar_free_pci_notify_info(info);
+>  			}
+>  		}
+> -
+> -		bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
+>  	}
+>  
+>  	return dmar_dev_scope_status;
+>  }
+>  
+> +void dmar_register_bus_notifier(void)
+> +{
+> +	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
+> +}
+> +
+>  
+>  int __init dmar_table_init(void)
+>  {
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6784a05dd6b2..934cef924461 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4752,6 +4752,16 @@ int __init intel_iommu_init(void)
+>  		goto out_free_dmar;
+>  	}
+>  
+> +	up_write(&dmar_global_lock);
+> +
+> +	/*
+> +	 * The bus notifier takes the dmar_global_lock, so lockdep will
+> +	 * complain later when we register it under the lock.
+> +	 */
+> +	dmar_register_bus_notifier();
+> +
+> +	down_write(&dmar_global_lock);
+> +
+>  	if (no_iommu || dmar_disabled) {
+>  		/*
+>  		 * We exit the function here to ensure IOMMU's remapping and
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> index e8ffba1052d3..e2433bc50210 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -112,6 +112,7 @@ static inline bool dmar_rcu_check(void)
+>  
+>  extern int dmar_table_init(void);
+>  extern int dmar_dev_scope_init(void);
+> +extern void dmar_register_bus_notifier(void);
+>  extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+>  				struct dmar_dev_scope **devices, u16 segment);
+>  extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
+> 
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Silences the warning, but locking in the init paths still smells fishy
+to me.
 
-Best regards,
-Krzysztof
+Thanks,
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
