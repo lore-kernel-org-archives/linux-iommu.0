@@ -1,17 +1,15 @@
-From: Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Don't register bus-notifier under
-Date: Mon, 9 Oct 2017 18:58:13 +0200
-Message-ID: <2ee59dfe-0a02-05b6-8115-5846b49bc053@siemens.com>
-References: <4e9f9665-38f7-c5f0-2a9d-13bb3a00aab2@siemens.com>
-	<6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
-	<82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
-	<20171006130823.a4rtzhusjpbgo3ar@suse.de>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 10/16] iommu: introduce device fault report API
+Date: Mon, 9 Oct 2017 11:50:45 -0700
+Message-ID: <20171009115045.17c9f031@jacob-builder>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1507244624-39189-11-git-send-email-jacob.jun.pan@linux.intel.com>
+	<5103e49c-d74c-c697-b5f7-e5c54edce595@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171006130823.a4rtzhusjpbgo3ar-l3A5Bk7waGM@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <5103e49c-d74c-c697-b5f7-e5c54edce595-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,102 +19,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017-10-06 15:08, Joerg Roedel wrote:
-> Hey Jan,
-> 
-> On Wed, Sep 27, 2017 at 04:19:15PM +0200, Jan Kiszka wrote:
->> If we could drop the dmar_global_lock around bus_register_notifier in
->> dmar_dev_scope_init, the issue above would likely be resolved.
-> 
-> That is true. Can you please try this patch?
-> 
->>From dd7685f84d3954f9361bfb4290fb8a0dd033097a Mon Sep 17 00:00:00 2001
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Date: Fri, 6 Oct 2017 15:00:53 +0200
-> Subject: [PATCH] iommu/vt-d: Don't register bus-notifier under
->  dmar_global_lock
-> 
-> The notifier function will take the dmar_global_lock too, so
-> lockdep complains about inverse locking order when the
-> notifier is registered under the dmar_global_lock.
-> 
-> Reported-by: Jan Kiszka <jan.kiszka-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>
-> Fixes: 59ce0515cdaf ('iommu/vt-d: Update DRHD/RMRR/ATSR device scope caches when PCI hotplug happens')
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/dmar.c        |  7 +++++--
->  drivers/iommu/intel-iommu.c | 10 ++++++++++
->  include/linux/dmar.h        |  1 +
->  3 files changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index 57c920c1372d..1ea7cd537873 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -801,13 +801,16 @@ int __init dmar_dev_scope_init(void)
->  				dmar_free_pci_notify_info(info);
->  			}
->  		}
-> -
-> -		bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
->  	}
->  
->  	return dmar_dev_scope_status;
->  }
->  
-> +void dmar_register_bus_notifier(void)
-> +{
-> +	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
-> +}
-> +
->  
->  int __init dmar_table_init(void)
->  {
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 6784a05dd6b2..934cef924461 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4752,6 +4752,16 @@ int __init intel_iommu_init(void)
->  		goto out_free_dmar;
->  	}
->  
-> +	up_write(&dmar_global_lock);
-> +
-> +	/*
-> +	 * The bus notifier takes the dmar_global_lock, so lockdep will
-> +	 * complain later when we register it under the lock.
-> +	 */
-> +	dmar_register_bus_notifier();
-> +
-> +	down_write(&dmar_global_lock);
-> +
->  	if (no_iommu || dmar_disabled) {
->  		/*
->  		 * We exit the function here to ensure IOMMU's remapping and
-> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-> index e8ffba1052d3..e2433bc50210 100644
-> --- a/include/linux/dmar.h
-> +++ b/include/linux/dmar.h
-> @@ -112,6 +112,7 @@ static inline bool dmar_rcu_check(void)
->  
->  extern int dmar_table_init(void);
->  extern int dmar_dev_scope_init(void);
-> +extern void dmar_register_bus_notifier(void);
->  extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
->  				struct dmar_dev_scope **devices, u16 segment);
->  extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
-> 
+On Fri, 6 Oct 2017 10:36:02 +0100
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-Silences the warning, but locking in the init paths still smells fishy
-to me.
+> Hi Jacob,
+> 
+> On 06/10/17 00:03, Jacob Pan wrote:
+> > Traditionally, device specific faults are detected and handled
+> > within their own device drivers. When IOMMU is enabled, faults such
+> > as DMA related transactions are detected by IOMMU. There is no
+> > generic reporting mechanism to report faults back to the in-kernel
+> > device driver or the guest OS in case of assigned devices.
+> > 
+> > Faults detected by IOMMU is based on the transaction's source ID
+> > which can be reported at per device basis, regardless of the device
+> > type is a PCI device or not.
+> > 
+> > The fault types include recoverable (e.g. page request) and
+> > unrecoverable faults(e.g. access error). In most cases, faults can
+> > be handled by IOMMU drivers internally. The primary use cases are as
+> > follows:
+> > 1. page request fault originated from an SVM capable device that is
+> > assigned to guest via vIOMMU. In this case, the first level page
+> > tables are owned by the guest. Page request must be propagated to
+> > the guest to let guest OS fault in the pages then send page
+> > response. In this mechanism, the direct receiver of IOMMU fault
+> > notification is VFIO, which can relay notification events to QEMU
+> > or other user space software.
+> > 
+> > 2. faults need more subtle handling by device drivers. Other than
+> > simply invoke reset function, there are needs to let device driver
+> > handle the fault with a smaller impact.
+> > 
+> > This patchset is intended to create a generic fault report API such
+> > that it can scale as follows:
+> > - all IOMMU types
+> > - PCI and non-PCI devices
+> > - recoverable and unrecoverable faults
+> > - VFIO and other other in kernel users
+> > - DMA & IRQ remapping (TBD)
+> > The original idea was brought up by David Woodhouse and discussions
+> > summarized at https://lwn.net/Articles/608914/.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---  
+> [...]
+> > +int iommu_register_device_fault_handler(struct device *dev,
+> > +					iommu_dev_fault_handler_t
+> > handler) +{
+> > +	if (dev->iommu_fault_param)
+> > +		return -EBUSY;
+> > +	get_device(dev);
+> > +	dev->iommu_fault_param =
+> > +		kzalloc(sizeof(struct iommu_fault_param),
+> > GFP_KERNEL);
+> > +	if (!dev->iommu_fault_param)
+> > +		return -ENOMEM;
+> > +	dev->iommu_fault_param->dev_fault_handler = handler;  
+> 
+> Since the handler is owned by a device driver, you also need to clean
+> it up when switching the driver (native->VFIO and VFIO->native), in
+> iommu_attach_device I suppose.
+> 
+I was thinking the driver who registered fault handler shall be held
+accountable to unregister. e.g. User must unbind driver (unregister
+fault handler included) before assigning device to vfio-pci. Otherwise,
+VFIO call to register handler would fail.
+I am assuming VFIO needs to have a separate device fault handler of its
+own.
 
-Thanks,
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Jacob
