@@ -1,59 +1,43 @@
-From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers
-	behind SMMUv3
-Date: Mon, 9 Oct 2017 19:15:42 -0500
-Message-ID: <20171010001542.GR25517@bhelgaas-glaptop.roam.corp.google.com>
-References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
-	<20171006140450.89652-5-shameerali.kolothum.thodi@huawei.com>
-	<20171009235452.GP25517@bhelgaas-glaptop.roam.corp.google.com>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH] iommu/vt-d: Don't register bus-notifier under
+Date: Tue, 10 Oct 2017 09:21:41 +0200
+Message-ID: <20171010072141.57vbnmg4crpsk6ip@suse.de>
+References: <4e9f9665-38f7-c5f0-2a9d-13bb3a00aab2@siemens.com>
+ <6ed4183a-b2eb-b8d3-c54c-fb0c4fd7a813@siemens.com>
+ <82afec06-4eb9-7b91-7b19-c442b77b5769@siemens.com>
+ <20171006130823.a4rtzhusjpbgo3ar@suse.de>
+ <2ee59dfe-0a02-05b6-8115-5846b49bc053@siemens.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171009235452.GP25517-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org
+In-Reply-To: <2ee59dfe-0a02-05b6-8115-5846b49bc053@siemens.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 09, 2017 at 06:54:52PM -0500, Bjorn Helgaas wrote:
-> Please change subject line:
+On Mon, Oct 09, 2017 at 06:58:13PM +0200, Jan Kiszka wrote:
+> >  extern int dmar_table_init(void);
+> >  extern int dmar_dev_scope_init(void);
+> > +extern void dmar_register_bus_notifier(void);
+> >  extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+> >  				struct dmar_dev_scope **devices, u16 segment);
+> >  extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
+> > 
 > 
-> -  PCI: hisi: blacklist hip06/hip07 controllers behind SMMUv3
-> +  PCI: hisi: Blacklist hip06/hip07 controllers behind SMMUv3
-> 
-> On Fri, Oct 06, 2017 at 03:04:50PM +0100, Shameer Kolothum wrote:
-> > The HiSilicon erratum 161010801 describes the limitation of
-> > HiSilicon platforms hip06/hip07 to support the SMMUv3 mappings
-> > for MSI transactions.
-> 
-> I don't suppose there's a URL for this erratum, is there?
-> 
-> > PCIe controller on these platforms has to differentiate the MSI
-> > payload against other DMA payload and has to modify the MSI
-> > payload. This basically makes it difficult for this platforms to
-> > have a SMMU translation for MSI. In order to workaround this, ARM
-> > SMMUv3 driver requires a quirk to treat the MSI regions separately.
-> > Such a quirk is currently missing for DT based systems and therefore
-> > we need to blacklist the hip06/hip07 PCIe controllers.
-> 
-> I don't understand the DT connection here.  If this is a hardware
-> erratum, I assume the a quirk would be required whether the system
-> uses DT, ACPI, etc.
-> 
-> > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> 
-> I assume this will go via some non-PCI tree.  If I were applying this,
-> I would look for an ack from Zhou or Gabriele in addition to mine.
+> Silences the warning, but locking in the init paths still smells fishy
+> to me.
 
-Never mind about this part; I see they already have acked it.  I really
-need to learn to read the whole thread before responding :)
+Yes, its certainly not optimal, but the code that runs in there also
+runs at iommu hotplug time, so we can't just remove the locking there
+entirely.
+
+On the other side the warning you reported is a false-positive, it can
+never dead-lock because the reverse lock-order happens only at
+initialization time, but I don't know how to silence it otherwise.
+
+
+Regards,
+
+	Joerg
