@@ -1,83 +1,39 @@
-From: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v8 06/14] xfs: wire up MAP_DIRECT
-Date: Tue, 10 Oct 2017 19:12:50 -0700
-Message-ID: <CAPcyv4jXRUFA1b7+7DMhZn2BZnxq_zfQ0vH-hQ8pKzKyaN4qag@mail.gmail.com>
-References: <150764693502.16882.15848797003793552156.stgit@dwillia2-desk3.amr.corp.intel.com>
- <150764697001.16882.13486539828150761233.stgit@dwillia2-desk3.amr.corp.intel.com>
- <20171011010922.GY3666@dastard>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH] iommu/exynos: Remove initconst attribute to avoid
+ potential kernel oops
+Date: Wed, 11 Oct 2017 07:49:05 +0200
+Message-ID: <655ae123-dee4-9001-682d-4581070b77ba@samsung.com>
+References: <CGME20171009114035eucas1p102089b889ad374b33c3302f1ad84e783@eucas1p1.samsung.com>
+        <20171009114023.3427-1-m.szyprowski@samsung.com>
+        <20171010121359.kb7b22regypsg2vd@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-nvdimm-bounces-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org>
-In-Reply-To: <20171011010922.GY3666@dastard>
-List-Unsubscribe: <https://lists.01.org/mailman/options/linux-nvdimm>,
- <mailto:linux-nvdimm-request-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.01.org/pipermail/linux-nvdimm/>
-List-Post: <mailto:linux-nvdimm-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org>
-List-Help: <mailto:linux-nvdimm-request-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.01.org/mailman/listinfo/linux-nvdimm>,
- <mailto:linux-nvdimm-request-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org?subject=subscribe>
-Errors-To: linux-nvdimm-bounces-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org
-Sender: "Linux-nvdimm" <linux-nvdimm-bounces-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org>
-To: Dave Chinner <david-FqsqvQoI3Ljby3iVrkZq2A@public.gmane.org>
-Cc: "J. Bruce Fields" <bfields-uC3wQj2KruNg9hUCZPvPmw@public.gmane.org>, Jan Kara <jack-AlSwsSmVLrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "Darrick J. Wong" <darrick.wong-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux API <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-nvdimm-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org" <linux-nvdimm-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org>, linux-xfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alexander Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, linux-fsdevel <linux-fsdevel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jeff Layton <jlayton-vpEMnDpepFuMZCB2o+C8xQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <20171010121359.kb7b22regypsg2vd@8bytes.org>
+Content-language: en-US
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 10, 2017 at 6:09 PM, Dave Chinner <david-FqsqvQoI3Ljby3iVrkZq2A@public.gmane.org> wrote:
-> On Tue, Oct 10, 2017 at 07:49:30AM -0700, Dan Williams wrote:
->> @@ -1009,6 +1019,22 @@ xfs_file_llseek(
->>  }
+Hi Joerg,
+
+On 2017-10-10 14:13, Joerg Roedel wrote:
+> On Mon, Oct 09, 2017 at 01:40:23PM +0200, Marek Szyprowski wrote:
+>> Exynos SYSMMU registers standard platform device with sysmmu_of_match
+>> table, what means that this table is accessed every time a new platform
+>> device is registered in a system. This might happen also after the boot,
+>> so the table must not be attributed as initconst to avoid potential kernel
+>> oops caused by access to freed memory.
 >>
->>  /*
->> + * MAP_DIRECT faults can only be serviced while the FL_LAYOUT lease is
->> + * valid. See map_direct_invalidate.
->> + */
->> +static int
->> +xfs_can_fault_direct(
->> +     struct vm_area_struct   *vma)
->> +{
->> +     if (!xfs_vma_is_direct(vma))
->> +             return 0;
->> +
->> +     if (!test_map_direct_valid(vma->vm_private_data))
->> +             return VM_FAULT_SIGBUS;
->> +     return 0;
->> +}
->
-> Better, but I'm going to be an annoying pedant here: a "can
-> <something>" check should return a boolean true/false.
->
-> Also, it's a bit jarring to see that a non-direct VMA that /can't/
-> do direct faults returns the same thing as a direct-vma that /can/
-> do direct faults, so a couple of extra comments for people who will
-> quickly forget how this code works (i.e. me) will be helpful. Say
-> something like this:
->
-> /*
->  * MAP_DIRECT faults can only be serviced while the FL_LAYOUT lease is
->  * valid. See map_direct_invalidate.
->  */
-> static bool
-> xfs_vma_has_direct_lease(
->         struct vm_area_struct   *vma)
-> {
->         /* Non MAP_DIRECT vmas do not require layout leases */
->         if (!xfs_vma_is_direct(vma))
->                 return true;
->
->         if (!test_map_direct_valid(vma->vm_private_data))
->                 return false;
->
->         /* We have a valid lease */
->         return true;
-> }
->
-> .....
->         if (!xfs_vma_has_direct_lease(vma)) {
->                 ret = VM_FAULT_SIGBUS;
->                 goto out_unlock;
->         }
-> ....
+>> Fixes: 6b21a5db3642 ("iommu/exynos: Support for device tree")
+>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Applied, thanks.
 
+Could you also apply it to v4.14-fixes, or is it too late for that?
 
-Looks good to me.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
