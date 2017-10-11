@@ -1,54 +1,64 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH] xhci: Set DMA parameters appropriately
-Date: Wed, 11 Oct 2017 14:56:56 +0100
-Message-ID: <347776be09eb0ca947c1c8ced46ee3ca92d92e28.1507730115.git.robin.murphy@arm.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] iommu/io-pgtable-arm: hide unused ipmmu_iotlb_sync
+Date: Wed, 11 Oct 2017 15:59:06 +0200
+Message-ID: <20171011135919.3653302-1-arnd@arndb.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: mathias.nyman@intel.com, gregkh@linuxfoundation.org
-Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Magnus Damm <damm+renesas@opensource.se>, Robin Murphy <robin.murphy@arm.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-xHCI requires that data buffers do not cross 64KB boundaries (and are
-thus at most 64KB long as well) - whilst xhci_queue_{bulk,isoc}_tx()
-already split their input buffers into individual TRBs as necessary,
-it's still a good idea to advertise the limitations via the standard DMA
-API mechanism, so that most producers like the block layer and the DMA
-mapping implementations can lay things out correctly to begin with.
+There are two sets of iommu_ops in this driver, and only
+one of them contains a reference to the ipmmu_iotlb_sync
+function. This leads to a compiler warning when these
+operations are not in use:
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+drivers/iommu/ipmmu-vmsa.c:622:13: error: 'ipmmu_iotlb_sync' defined but not used [-Werror=unused-function]
+
+We either want to use the function in both operations, or
+we should hide it. Without having additional information
+which approach is correct, I'm picking the second one here,
+which avoids the build error.
+
+Fixes: 32b124492bdf ("iommu/io-pgtable-arm: Convert to IOMMU API TLB sync")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/usb/host/xhci.c | 4 ++++
- drivers/usb/host/xhci.h | 3 +++
- 2 files changed, 7 insertions(+)
+ drivers/iommu/ipmmu-vmsa.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index 74b4500641c2..1e7e1e3d8c48 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -4883,6 +4883,10 @@ int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks)
- 		dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index af8140054273..bdd0d0d20925 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -619,14 +619,6 @@ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
+ 	return domain->iop->unmap(domain->iop, iova, size);
+ }
+ 
+-static void ipmmu_iotlb_sync(struct iommu_domain *io_domain)
+-{
+-	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+-
+-	if (domain->mmu)
+-		ipmmu_tlb_flush_all(domain);
+-}
+-
+ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
+ 				      dma_addr_t iova)
+ {
+@@ -810,6 +802,14 @@ static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
  	}
+ }
  
-+	dev->dma_parms = &xhci->dma_parms;
-+	dma_set_max_seg_size(dev, SZ_64K);
-+	dma_set_seg_boundary(dev, SZ_64K - 1);
++static void ipmmu_iotlb_sync(struct iommu_domain *io_domain)
++{
++	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
 +
- 	xhci_dbg(xhci, "Calling HCD init\n");
- 	/* Initialize HCD and host controller data structures. */
- 	retval = xhci_init(hcd);
-diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
-index 7ef69ea0b480..afcae4cc908d 100644
---- a/drivers/usb/host/xhci.h
-+++ b/drivers/usb/host/xhci.h
-@@ -1767,6 +1767,9 @@ struct xhci_hcd {
- 	struct dma_pool	*small_streams_pool;
- 	struct dma_pool	*medium_streams_pool;
- 
-+	/* DMA alignment restrictions */
-+	struct device_dma_parameters dma_parms;
++	if (domain->mmu)
++		ipmmu_tlb_flush_all(domain);
++}
 +
- 	/* Host controller watchdog timer structures */
- 	unsigned int		xhc_state;
- 
+ static int ipmmu_add_device_dma(struct device *dev)
+ {
+ 	struct iommu_group *group;
 -- 
-2.13.4.dirty
+2.9.0
