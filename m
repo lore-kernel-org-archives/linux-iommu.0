@@ -1,53 +1,87 @@
-From: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v8 13/14] IB/core: use MAP_DIRECT to fix / enable RDMA to
-	DAX mappings
-Date: Wed, 11 Oct 2017 09:01:25 -0700
-Message-ID: <CAA9_cmdN4N8nDdyhgn61A2_vwuTP3LJTgDCEHMQLoaFZg=DtHw@mail.gmail.com>
-References: <150764693502.16882.15848797003793552156.stgit@dwillia2-desk3.amr.corp.intel.com>
-	<150764701194.16882.9682569707416653741.stgit@dwillia2-desk3.amr.corp.intel.com>
-	<20171011115410.GF30803@8bytes.org>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v2 10/16] iommu: introduce device fault report API
+Date: Wed, 11 Oct 2017 10:21:22 -0700
+Message-ID: <20171011102122.773a6c8c@jacob-builder>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1507244624-39189-11-git-send-email-jacob.jun.pan@linux.intel.com>
+        <20171010134054.5gjzvznhzddc2cn7@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171011115410.GF30803-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "J. Bruce Fields" <bfields-uC3wQj2KruNg9hUCZPvPmw@public.gmane.org>, Doug Ledford <dledford-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jan Kara <jack-AlSwsSmVLrQ@public.gmane.org>, "Darrick J. Wong" <darrick.wong-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux API <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-nvdimm-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org" <linux-nvdimm-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org>, Dave Chinner <david-FqsqvQoI3Ljby3iVrkZq2A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hal Rosenstock <hal.rosenstock-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-xfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Jeff Moyer <jmoyer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jeff Layton <jlayton-vpEMnDpepFuMZCB2o+C8xQ@public.gmane.org>, Ross Zwisler <ross.zwisler-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-fsdevel <linux-fsdevel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sean Hefty <sean.hefty-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171010134054.5gjzvznhzddc2cn7@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 11, 2017 at 4:54 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> On Tue, Oct 10, 2017 at 07:50:12AM -0700, Dan Williams wrote:
->> +static void ib_umem_lease_break(void *__umem)
->> +{
->> +     struct ib_umem *umem = umem;
->> +     struct ib_device *idev = umem->context->device;
->> +     struct device *dev = idev->dma_device;
->> +     struct scatterlist *sgl = umem->sg_head.sgl;
->> +
->> +     iommu_unmap(umem->iommu, sg_dma_address(sgl) & PAGE_MASK,
->> +                     iommu_sg_num_pages(dev, sgl, umem->npages));
->> +}
->
-> This looks like an invitation to break your code by random iommu-driver
-> changes. There is no guarantee that an iommu-backed dma-api
-> implemenation will map exactly iommu_sg_num_pages() pages for a given
-> sg-list. In other words, you are mixing the use of the IOMMU-API and the
-> DMA-API in an incompatible way that only works because you know the
-> internals of the iommu-drivers.
->
-> I've seen in another patch that your changes strictly require an IOMMU,
-> so you what you should do instead is to switch from the DMA-API to the
-> IOMMU-API and do the address-space management yourself.
->
+On Tue, 10 Oct 2017 15:40:54 +0200
+Joerg Roedel <joro@8bytes.org> wrote:
 
-Ok, I'll switch over completely to the iommu api for this. It will
-also address Robin's concern.
+> On Thu, Oct 05, 2017 at 04:03:38PM -0700, Jacob Pan wrote:
+> > Traditionally, device specific faults are detected and handled
+> > within their own device drivers. When IOMMU is enabled, faults such
+> > as DMA related transactions are detected by IOMMU. There is no
+> > generic reporting mechanism to report faults back to the in-kernel
+> > device driver or the guest OS in case of assigned devices.
+> > 
+> > Faults detected by IOMMU is based on the transaction's source ID
+> > which can be reported at per device basis, regardless of the device
+> > type is a PCI device or not.
+> > 
+> > The fault types include recoverable (e.g. page request) and
+> > unrecoverable faults(e.g. access error). In most cases, faults can
+> > be handled by IOMMU drivers internally. The primary use cases are as
+> > follows:
+> > 1. page request fault originated from an SVM capable device that is
+> > assigned to guest via vIOMMU. In this case, the first level page
+> > tables are owned by the guest. Page request must be propagated to
+> > the guest to let guest OS fault in the pages then send page
+> > response. In this mechanism, the direct receiver of IOMMU fault
+> > notification is VFIO, which can relay notification events to QEMU
+> > or other user space software.
+> > 
+> > 2. faults need more subtle handling by device drivers. Other than
+> > simply invoke reset function, there are needs to let device driver
+> > handle the fault with a smaller impact.
+> > 
+> > This patchset is intended to create a generic fault report API such
+> > that it can scale as follows:
+> > - all IOMMU types
+> > - PCI and non-PCI devices
+> > - recoverable and unrecoverable faults
+> > - VFIO and other other in kernel users
+> > - DMA & IRQ remapping (TBD)
+> > The original idea was brought up by David Woodhouse and discussions
+> > summarized at https://lwn.net/Articles/608914/.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > ---
+> >  drivers/iommu/iommu.c | 56
+> > ++++++++++++++++++++++++++++++++++++++++++++++++++-
+> > include/linux/iommu.h | 23 +++++++++++++++++++++ 2 files changed,
+> > 78 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 5a14154..0b058e2 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -554,9 +554,15 @@ int iommu_group_add_device(struct iommu_group
+> > *group, struct device *dev) 
+> >  	device->dev = dev;
+> >  
+> > +	dev->iommu_fault_param = kzalloc(sizeof(struct
+> > iommu_fault_param), GFP_KERNEL);
+> > +	if (!dev->iommu_fault_param) {
+> > +		ret = -ENOMEM;
+> > +		goto err_free_device;
+> > +	}
+> > +  
+> 
+> This looks like some left-over from a previous version, because
+> allocation of that structure is done in
+> iommu_register_device_fault_handler()
+> 
+you are right! I later changed it to do allocation at the
+handler registration time.
