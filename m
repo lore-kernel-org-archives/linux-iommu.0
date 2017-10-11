@@ -1,97 +1,50 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
-Date: Tue, 10 Oct 2017 15:09:53 -0700
-Message-ID: <20171010150953.4095a045@jacob-builder>
-References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1507244624-39189-4-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20171010133542.juag7cwbivlb56sl@8bytes.org>
+From: Dave Chinner <david@fromorbit.com>
+Subject: Re: [PATCH v8 04/14] xfs: prepare xfs_break_layouts() for reuse with
+ MAP_DIRECT
+Date: Wed, 11 Oct 2017 11:46:31 +1100
+Message-ID: <20171011004631.GX3666@dastard>
+References: <150764693502.16882.15848797003793552156.stgit@dwillia2-desk3.amr.corp.intel.com>
+ <150764695771.16882.9179160793491582514.stgit@dwillia2-desk3.amr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171010133542.juag7cwbivlb56sl@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, Liu@8bytes.org, jacob.jun.pan@linux.intel.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <150764695771.16882.9179160793491582514.stgit@dwillia2-desk3.amr.corp.intel.com>
+Sender: owner-linux-mm@kvack.org
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: linux-nvdimm@lists.01.org, Jan Kara <jack@suse.cz>, "Darrick J. Wong" <darrick.wong@oracle.com>, linux-rdma@vger.kernel.org, linux-api@vger.kernel.org, iommu@lists.linux-foundation.org, linux-xfs@vger.kernel.org, linux-mm@kvack.org, Jeff Moyer <jmoyer@redhat.com>, linux-fsdevel@vger.kernel.org, Ross Zwisler <ross.zwisler@linux.intel.com>, Christoph Hellwig <hch@lst.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 10 Oct 2017 15:35:42 +0200
-Joerg Roedel <joro@8bytes.org> wrote:
+On Tue, Oct 10, 2017 at 07:49:17AM -0700, Dan Williams wrote:
+> Move xfs_break_layouts() to its own compilation unit so that it can be
+> used for both pnfs layouts and MAP_DIRECT mappings.
+.....
+> diff --git a/fs/xfs/xfs_pnfs.h b/fs/xfs/xfs_pnfs.h
+> index b587cb99b2b7..4135b2482697 100644
+> --- a/fs/xfs/xfs_pnfs.h
+> +++ b/fs/xfs/xfs_pnfs.h
+> @@ -1,19 +1,13 @@
+>  #ifndef _XFS_PNFS_H
+>  #define _XFS_PNFS_H 1
+>  
+> +#include "xfs_layout.h"
+> +
 
-> On Thu, Oct 05, 2017 at 04:03:31PM -0700, Jacob Pan wrote:
-> > +int iommu_invalidate(struct iommu_domain *domain,
-> > +		struct device *dev, struct tlb_invalidate_info
-> > *inv_info)  
-> 
-> This name is way too generic, it should at least be called
-> iommu_svm_invalidate() or something like that. With the name above it
-> is easily confused with the other TLB invalidation functions of the
-> IOMMU-API.
-> 
-Good point. I was calling it iommu_passdown_invalidate() originally.
-The invalidation request comes from guest or user space instead of
-in-kernel unmap kind of calls.
-> > +enum iommu_inv_granularity {
-> > +	IOMMU_INV_GRANU_GLOBAL,		/* all TLBs
-> > invalidated */  
-> 
-> Is that needed? We certainly don't want to give userspace/guests that
-> fine-grained control about IOMMU cache invalidations.
-> 
-> In the end a guest issues flush-global command does not translate to a
-> flush-global on the host, but to separate flushes for the domains the
-> guest uses.
-> 
-Right, guest should not go beyond its own domain.
-> > +	IOMMU_INV_GRANU_DOMAIN,		/* all TLBs
-> > associated with a domain */
-> > +	IOMMU_INV_GRANU_DEVICE,		/* caching
-> > structure associated with a
-> > +					 * device ID  
-> 
-> What is the difference between a DOMAIN and a DEVICE flush?
-> 
-Those are based on vt-d context cache flush granularity, domain
-selective flushes all context caches associated with a domain ID.
-Device selective flush flushes context caches of a source ID.
-But like you pointed out below, since context cache flush will come in
-as unbind call, there is no need to do passdown invalidate. I can
-remove that.
+I missed this the first time through - we try not to put includes
+in header files, and instead make sure each C file has all the
+includes they require. Can you move this to all the C files that
+need layouts and remove the include of the xfs_pnfs.h include from
+them?
 
-Here I am trying to use all generic definitions, which is a superset of
-all vendor models. I am likely missing out some non-vt-d cases.
+Cheers,
 
-> > +	IOMMU_INV_GRANU_DOMAN_PAGE,	/* address range with a
-> > domain */
-> > +	IOMMU_INV_GRANU_ALL_PASID,	/* cache of a given
-> > PASID */
-> > +	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate
-> > specified PASID */ +
-> > +	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within
-> > all PASIDs */
-> > +	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a
-> > PASIDs */
-> > +	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective
-> > within a PASID */
-> > +	IOMMU_INV_NR_GRANU,
-> > +};
-> > +
-> > +enum iommu_inv_type {
-> > +	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
-> > +	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure cache
-> > */
-> > +	IOMMU_INV_TYPE_PASID,	/* PASID cache */
-> > +	IOMMU_INV_TYPE_CONTEXT,	/* device context entry
-> > cache */  
-> 
-> Is that really needed? When the guest updates it context-entry
-> equivalent it translates to bind_pasid_table/unbind_pasid_table calls,
-> no?
-> 
-Right no need to passdown context cache invalidation for VT-d. I just
-wasn't sure it is the same for all models. Again, trying to have a
-superset of generic fields.
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
 
-Thanks!
-
-Jacob
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
