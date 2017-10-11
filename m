@@ -1,129 +1,45 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
-Date: Wed, 11 Oct 2017 07:54:32 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439AF5F37@SHSMSX104.ccr.corp.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v2 01/16] iommu: introduce bind_pasid_table API function
+Date: Wed, 11 Oct 2017 10:17:24 +0100
+Message-ID: <a8a6079a-5a58-8c1c-af3d-ab709ee02219@arm.com>
 References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1507244624-39189-4-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20171010133542.juag7cwbivlb56sl@8bytes.org>
-	<20171010150953.4095a045@jacob-builder>
+ <1507244624-39189-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <59945b24-ace9-f0c1-d68d-ccd929e1fe28@arm.com>
+ <20171010144218.735d1f58@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171010150953.4095a045@jacob-builder>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171010144218.735d1f58@jacob-builder>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu,
-	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Liu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <Liu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
-	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Yi L <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On 10/10/17 22:42, Jacob Pan wrote:
+[...]
+>>> +/**
+>>> + * PASID table data used to bind guest PASID table to the host
+>>> IOMMU. This will
+>>> + * enable guest managed first level page tables.
+>>> + * @version: for future extensions and identification of the data
+>>> format
+>>> + * @bytes: size of this structure
+>>> + * @base_ptr:	PASID table pointer
+>>> + * @pasid_bits:	number of bits supported in the guest PASID
+>>> table, must be less
+>>> + *		or equal than the host table size.  
+>>
+>> "host table size" is a bit confusing in this context, especially if
+>> using multi-level tables. Perhaps it's clear enough that @pasid_bits
+>> must be smaller or equal than the PASID size supported by the IOMMU,
+>> and we can remove that second part?
+>>
+> Not sure what is the second part?
 
-> On Tue, 10 Oct 2017 15:35:42 +0200
-> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> 
-> > On Thu, Oct 05, 2017 at 04:03:31PM -0700, Jacob Pan wrote:
-> > > +int iommu_invalidate(struct iommu_domain *domain,
-> > > +		struct device *dev, struct tlb_invalidate_info
-> > > *inv_info)
-> >
-> > This name is way too generic, it should at least be called
-> > iommu_svm_invalidate() or something like that. With the name above it
-> > is easily confused with the other TLB invalidation functions of the
-> > IOMMU-API.
-> >
-> Good point. I was calling it iommu_passdown_invalidate() originally.
-> The invalidation request comes from guest or user space instead of in-kernel unmap
-> kind of calls.
-
-[Liu, Yi L] I agree that iommu_invalidate() is too generic. Additionally, also better to avoid
-making it svm specific.
-
-The reason we introduce this API is in vSVM case is that guest owns the first level page
-table(vtd). If we use similar mechanism for vIOVA, then we also need to passdown guest's
-vIOVA tlb flush.
-
-Since it is to expose an API for iommu tlb flushes requests from userspace/guest which is out
-of iommu. How about naming it as iommu_tlb_external_invalidate()?
-
-> > > +enum iommu_inv_granularity {
-> > > +	IOMMU_INV_GRANU_GLOBAL,		/* all TLBs
-> > > invalidated */
-> >
-> > Is that needed? We certainly don't want to give userspace/guests that
-> > fine-grained control about IOMMU cache invalidations.
-> >
-> > In the end a guest issues flush-global command does not translate to a
-> > flush-global on the host, but to separate flushes for the domains the
-> > guest uses.
-> >
-> Right, guest should not go beyond its own domain.
-
-[Liu, Yi L] So far, for virtualization, we would not allow any guest to flush all the
-physical iommu tlb. Hypervisor will limit it even if guest issues invalidate with global
-granularity. Jacob just wants to show all the possible granularity. Actually, global gran
-can be a big hammer to clear cache, maybe there is usage somehow. For now, I think
-we may just remove it.	
+"must be less or equal than the host table size", is confusing to me when
+you're talking about max PASID bits
 
 Thanks,
-Yi L
-
-> > > +	IOMMU_INV_GRANU_DOMAIN,		/* all TLBs
-> > > associated with a domain */
-> > > +	IOMMU_INV_GRANU_DEVICE,		/* caching
-> > > structure associated with a
-> > > +					 * device ID
-> >
-> > What is the difference between a DOMAIN and a DEVICE flush?
-> >
-> Those are based on vt-d context cache flush granularity, domain selective flushes all
-> context caches associated with a domain ID.
-> Device selective flush flushes context caches of a source ID.
-> But like you pointed out below, since context cache flush will come in as unbind call,
-> there is no need to do passdown invalidate. I can remove that.
-> 
-> Here I am trying to use all generic definitions, which is a superset of all vendor
-> models. I am likely missing out some non-vt-d cases.
-> 
-> > > +	IOMMU_INV_GRANU_DOMAN_PAGE,	/* address range with a
-> > > domain */
-> > > +	IOMMU_INV_GRANU_ALL_PASID,	/* cache of a given
-> > > PASID */
-> > > +	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate
-> > > specified PASID */ +
-> > > +	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within
-> > > all PASIDs */
-> > > +	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a
-> > > PASIDs */
-> > > +	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective
-> > > within a PASID */
-> > > +	IOMMU_INV_NR_GRANU,
-> > > +};
-> > > +
-> > > +enum iommu_inv_type {
-> > > +	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
-> > > +	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure cache
-> > > */
-> > > +	IOMMU_INV_TYPE_PASID,	/* PASID cache */
-> > > +	IOMMU_INV_TYPE_CONTEXT,	/* device context entry
-> > > cache */
-> >
-> > Is that really needed? When the guest updates it context-entry
-> > equivalent it translates to bind_pasid_table/unbind_pasid_table calls,
-> > no?
-> >
-> Right no need to passdown context cache invalidation for VT-d. I just wasn't sure it is
-> the same for all models. Again, trying to have a superset of generic fields.
-> 
-> Thanks!
-> 
-> Jacob
+Jean
