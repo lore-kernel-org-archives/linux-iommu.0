@@ -1,49 +1,55 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v8 13/14] IB/core: use MAP_DIRECT to fix / enable RDMA to
- DAX mappings
-Date: Wed, 11 Oct 2017 13:54:10 +0200
-Message-ID: <20171011115410.GF30803@8bytes.org>
-References: <150764693502.16882.15848797003793552156.stgit@dwillia2-desk3.amr.corp.intel.com>
- <150764701194.16882.9682569707416653741.stgit@dwillia2-desk3.amr.corp.intel.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
+Date: Wed, 11 Oct 2017 11:54:52 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439AF61F5@SHSMSX104.ccr.corp.intel.com>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1507244624-39189-4-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20171010133542.juag7cwbivlb56sl@8bytes.org>
+ <20171010150953.4095a045@jacob-builder>
+ <A2975661238FB949B60364EF0F2C257439AF5F37@SHSMSX104.ccr.corp.intel.com>
+ <20171011095126.GD30803@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <150764701194.16882.9682569707416653741.stgit@dwillia2-desk3.amr.corp.intel.com>
-Sender: owner-linux-mm@kvack.org
-To: Dan Williams <dan.j.williams@intel.com>
-Cc: linux-nvdimm@lists.01.org, Sean Hefty <sean.hefty@intel.com>, linux-xfs@vger.kernel.org, Jan Kara <jack@suse.cz>, Ashok Raj <ashok.raj@intel.com>, "Darrick J. Wong" <darrick.wong@oracle.com>, linux-rdma@vger.kernel.org, linux-api@vger.kernel.org, Dave Chinner <david@fromorbit.com>, Jeff Moyer <jmoyer@redhat.com>, iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>, "J. Bruce Fields" <bfields@fieldses.org>, linux-mm@kvack.org, Doug Ledford <dledford@redhat.com>, Ross Zwisler <ross.zwisler@linux.intel.com>, linux-fsdevel@vger.kernel.org, Jeff Layton <jlayton@poochiereds.net>, David Woodhouse <dwmw2@infradead.org>, Hal Rosenstock <hal.rosenstock@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171011095126.GD30803@8bytes.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 10, 2017 at 07:50:12AM -0700, Dan Williams wrote:
-> +static void ib_umem_lease_break(void *__umem)
-> +{
-> +	struct ib_umem *umem = umem;
-> +	struct ib_device *idev = umem->context->device;
-> +	struct device *dev = idev->dma_device;
-> +	struct scatterlist *sgl = umem->sg_head.sgl;
-> +
-> +	iommu_unmap(umem->iommu, sg_dma_address(sgl) & PAGE_MASK,
-> +			iommu_sg_num_pages(dev, sgl, umem->npages));
-> +}
+> On Wed, Oct 11, 2017 at 07:54:32AM +0000, Liu, Yi L wrote:
+> > I agree that iommu_invalidate() is too generic. Additionally, also
+> > better to avoid making it svm specific.
+> 
+> I also don't like to name the functions after the Intel feature, but I failed to come up
+> with a better alternative so far. The only one I can come up with for now would be
+> 'iovm', so the function name would be iommu_iovm_invalidate().
 
-This looks like an invitation to break your code by random iommu-driver
-changes. There is no guarantee that an iommu-backed dma-api
-implemenation will map exactly iommu_sg_num_pages() pages for a given
-sg-list. In other words, you are mixing the use of the IOMMU-API and the
-DMA-API in an incompatible way that only works because you know the
-internals of the iommu-drivers.
+[Liu, Yi L] Actually, I'm not against 'SVM' terms. Just want to make it be compatible
+with future usage in non-SVM scenario.
 
-I've seen in another patch that your changes strictly require an IOMMU,
-so you what you should do instead is to switch from the DMA-API to the
-IOMMU-API and do the address-space management yourself.
+> On the other side, the ARM guys also already call the feature set 'SVM', despite it
+> being ambiguous and Intel specific. I don't have a strong opinion on the naming.
+> 
+> > The reason we introduce this API is in vSVM case is that guest owns
+> > the first level page table(vtd). If we use similar mechanism for
+> > vIOVA, then we also need to passdown guest's vIOVA tlb flush.
+> >
+> > Since it is to expose an API for iommu tlb flushes requests from
+> > userspace/guest which is out of iommu. How about naming it as
+> > iommu_tlb_external_invalidate()?
+> 
+> If you only read the function name, 'external' could mean everything. It is not clear
 
-Regards,
+[Liu, Yi L] Agree, 'external' is also unclear.
 
-	Joerg
+> from the name when to use this function. So something like
+> iommu_iovm_invalidate() is better.
+> 
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+[Liu, Yi L] I didn't quite get 'iovm' mean. Can you explain a bit about the idea?
+
+Thanks,
+Yi L
