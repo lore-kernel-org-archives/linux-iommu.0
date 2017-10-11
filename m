@@ -1,130 +1,129 @@
-From: Jan Kara <jack-AlSwsSmVLrQ@public.gmane.org>
-Subject: Re: [PATCH v8 01/14] mm: introduce MAP_SHARED_VALIDATE, a mechanism
- to safely define new mmap flags
-Date: Wed, 11 Oct 2017 09:43:20 +0200
-Message-ID: <20171011074320.GG3667@quack2.suse.cz>
-References: <150764693502.16882.15848797003793552156.stgit@dwillia2-desk3.amr.corp.intel.com>
- <150764694114.16882.5128952296874418457.stgit@dwillia2-desk3.amr.corp.intel.com>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
+Date: Wed, 11 Oct 2017 07:54:32 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439AF5F37@SHSMSX104.ccr.corp.intel.com>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1507244624-39189-4-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20171010133542.juag7cwbivlb56sl@8bytes.org>
+	<20171010150953.4095a045@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <150764694114.16882.5128952296874418457.stgit-p8uTFz9XbKj2zm6wflaqv1nYeNYlB/vhral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: linux-nvdimm-hn68Rpc1hR1g9hUCZPvPmw@public.gmane.org, Jan Kara <jack-AlSwsSmVLrQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-fsdevel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171010150953.4095a045@jacob-builder>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu,
+	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Liu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <Liu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
+	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue 10-10-17 07:49:01, Dan Williams wrote:
-> The mmap(2) syscall suffers from the ABI anti-pattern of not validating
-> unknown flags. However, proposals like MAP_SYNC and MAP_DIRECT need a
-> mechanism to define new behavior that is known to fail on older kernels
-> without the support. Define a new MAP_SHARED_VALIDATE flag pattern that
-> is guaranteed to fail on all legacy mmap implementations.
-> 
-> It is worth noting that the original proposal was for a standalone
-> MAP_VALIDATE flag. However, when that  could not be supported by all
-> archs Linus observed:
-> 
->     I see why you *think* you want a bitmap. You think you want
->     a bitmap because you want to make MAP_VALIDATE be part of MAP_SYNC
->     etc, so that people can do
-> 
->     ret = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED
-> 		    | MAP_SYNC, fd, 0);
-> 
->     and "know" that MAP_SYNC actually takes.
-> 
->     And I'm saying that whole wish is bogus. You're fundamentally
->     depending on special semantics, just make it explicit. It's already
->     not portable, so don't try to make it so.
-> 
->     Rename that MAP_VALIDATE as MAP_SHARED_VALIDATE, make it have a value
->     of 0x3, and make people do
-> 
->     ret = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED_VALIDATE
-> 		    | MAP_SYNC, fd, 0);
-> 
->     and then the kernel side is easier too (none of that random garbage
->     playing games with looking at the "MAP_VALIDATE bit", but just another
->     case statement in that map type thing.
-> 
->     Boom. Done.
-> 
-> Similar to ->fallocate() we also want the ability to validate the
-> support for new flags on a per ->mmap() 'struct file_operations'
-> instance basis.  Towards that end arrange for flags to be generically
-> validated against a mmap_supported_mask exported by 'struct
-> file_operations'. By default all existing flags are implicitly
-> supported, but new flags require MAP_SHARED_VALIDATE and
-> per-instance-opt-in.
-> 
-> Cc: Jan Kara <jack-AlSwsSmVLrQ@public.gmane.org>
-> Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> Cc: Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-> Suggested-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> Suggested-by: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-> Signed-off-by: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  arch/alpha/include/uapi/asm/mman.h           |    1 +
->  arch/mips/include/uapi/asm/mman.h            |    1 +
->  arch/mips/kernel/vdso.c                      |    2 +
->  arch/parisc/include/uapi/asm/mman.h          |    1 +
->  arch/tile/mm/elf.c                           |    3 +-
->  arch/xtensa/include/uapi/asm/mman.h          |    1 +
->  include/linux/fs.h                           |    2 +
->  include/linux/mm.h                           |    2 +
->  include/linux/mman.h                         |   39 ++++++++++++++++++++++++++
->  include/uapi/asm-generic/mman-common.h       |    1 +
->  mm/mmap.c                                    |   21 ++++++++++++--
->  tools/include/uapi/asm-generic/mman-common.h |    1 +
->  12 files changed, 69 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
-> index 3b26cc62dadb..92823f24890b 100644
-> --- a/arch/alpha/include/uapi/asm/mman.h
-> +++ b/arch/alpha/include/uapi/asm/mman.h
-> @@ -14,6 +14,7 @@
->  #define MAP_TYPE	0x0f		/* Mask for type of mapping (OSF/1 is _wrong_) */
->  #define MAP_FIXED	0x100		/* Interpret addr exactly */
->  #define MAP_ANONYMOUS	0x10		/* don't use a file */
-> +#define MAP_SHARED_VALIDATE 0x3		/* share + validate extension flags */
 
-Just a nit but I'd put definition of MAP_SHARED_VALIDATE close to the
-definition of MAP_SHARED and MAP_PRIVATE where it logically belongs (for
-all archs).
+> On Tue, 10 Oct 2017 15:35:42 +0200
+> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> 
+> > On Thu, Oct 05, 2017 at 04:03:31PM -0700, Jacob Pan wrote:
+> > > +int iommu_invalidate(struct iommu_domain *domain,
+> > > +		struct device *dev, struct tlb_invalidate_info
+> > > *inv_info)
+> >
+> > This name is way too generic, it should at least be called
+> > iommu_svm_invalidate() or something like that. With the name above it
+> > is easily confused with the other TLB invalidation functions of the
+> > IOMMU-API.
+> >
+> Good point. I was calling it iommu_passdown_invalidate() originally.
+> The invalidation request comes from guest or user space instead of in-kernel unmap
+> kind of calls.
 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index f8c10d336e42..5c4c98e4adc9 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -2133,7 +2133,7 @@ extern unsigned long get_unmapped_area(struct file *, unsigned long, unsigned lo
->  
->  extern unsigned long mmap_region(struct file *file, unsigned long addr,
->  	unsigned long len, vm_flags_t vm_flags, unsigned long pgoff,
-> -	struct list_head *uf);
-> +	struct list_head *uf, unsigned long map_flags);
->  extern unsigned long do_mmap(struct file *file, unsigned long addr,
->  	unsigned long len, unsigned long prot, unsigned long flags,
->  	vm_flags_t vm_flags, unsigned long pgoff, unsigned long *populate,
+[Liu, Yi L] I agree that iommu_invalidate() is too generic. Additionally, also better to avoid
+making it svm specific.
 
-I have to say I'm not very keen on passing down both vm_flags and map_flags
-- vm_flags are almost a subset of map_flags but not quite and the ambiguity
-which needs to be used for a particular check seems to open a space for
-errors. Granted you currently only care about MAP_DIRECT in ->mmap_validate
-and just pass map_flags through mmap_region() so there's no space for
-confusion but future checks could do something different. But OTOH I don't
-see a cleaner way of avoiding the need to allocate vma flag for something
-you need to check down in ->mmap_validate so I guess I'll live with that
-and if problems really happen, we may have cleaner idea what needs to be
-done.
+The reason we introduce this API is in vSVM case is that guest owns the first level page
+table(vtd). If we use similar mechanism for vIOVA, then we also need to passdown guest's
+vIOVA tlb flush.
 
-So overall feel free to add:
+Since it is to expose an API for iommu tlb flushes requests from userspace/guest which is out
+of iommu. How about naming it as iommu_tlb_external_invalidate()?
 
-Reviewed-by: Jan Kara <jack-AlSwsSmVLrQ@public.gmane.org>
+> > > +enum iommu_inv_granularity {
+> > > +	IOMMU_INV_GRANU_GLOBAL,		/* all TLBs
+> > > invalidated */
+> >
+> > Is that needed? We certainly don't want to give userspace/guests that
+> > fine-grained control about IOMMU cache invalidations.
+> >
+> > In the end a guest issues flush-global command does not translate to a
+> > flush-global on the host, but to separate flushes for the domains the
+> > guest uses.
+> >
+> Right, guest should not go beyond its own domain.
 
-								Honza
--- 
-Jan Kara <jack-IBi9RG/b67k@public.gmane.org>
-SUSE Labs, CR
+[Liu, Yi L] So far, for virtualization, we would not allow any guest to flush all the
+physical iommu tlb. Hypervisor will limit it even if guest issues invalidate with global
+granularity. Jacob just wants to show all the possible granularity. Actually, global gran
+can be a big hammer to clear cache, maybe there is usage somehow. For now, I think
+we may just remove it.	
+
+Thanks,
+Yi L
+
+> > > +	IOMMU_INV_GRANU_DOMAIN,		/* all TLBs
+> > > associated with a domain */
+> > > +	IOMMU_INV_GRANU_DEVICE,		/* caching
+> > > structure associated with a
+> > > +					 * device ID
+> >
+> > What is the difference between a DOMAIN and a DEVICE flush?
+> >
+> Those are based on vt-d context cache flush granularity, domain selective flushes all
+> context caches associated with a domain ID.
+> Device selective flush flushes context caches of a source ID.
+> But like you pointed out below, since context cache flush will come in as unbind call,
+> there is no need to do passdown invalidate. I can remove that.
+> 
+> Here I am trying to use all generic definitions, which is a superset of all vendor
+> models. I am likely missing out some non-vt-d cases.
+> 
+> > > +	IOMMU_INV_GRANU_DOMAN_PAGE,	/* address range with a
+> > > domain */
+> > > +	IOMMU_INV_GRANU_ALL_PASID,	/* cache of a given
+> > > PASID */
+> > > +	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate
+> > > specified PASID */ +
+> > > +	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within
+> > > all PASIDs */
+> > > +	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a
+> > > PASIDs */
+> > > +	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective
+> > > within a PASID */
+> > > +	IOMMU_INV_NR_GRANU,
+> > > +};
+> > > +
+> > > +enum iommu_inv_type {
+> > > +	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
+> > > +	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure cache
+> > > */
+> > > +	IOMMU_INV_TYPE_PASID,	/* PASID cache */
+> > > +	IOMMU_INV_TYPE_CONTEXT,	/* device context entry
+> > > cache */
+> >
+> > Is that really needed? When the guest updates it context-entry
+> > equivalent it translates to bind_pasid_table/unbind_pasid_table calls,
+> > no?
+> >
+> Right no need to passdown context cache invalidation for VT-d. I just wasn't sure it is
+> the same for all models. Again, trying to have a superset of generic fields.
+> 
+> Thanks!
+> 
+> Jacob
