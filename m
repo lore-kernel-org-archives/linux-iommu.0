@@ -1,46 +1,80 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
-Date: Wed, 11 Oct 2017 11:51:26 +0200
-Message-ID: <20171011095126.GD30803@8bytes.org>
-References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1507244624-39189-4-git-send-email-jacob.jun.pan@linux.intel.com>
- <20171010133542.juag7cwbivlb56sl@8bytes.org>
- <20171010150953.4095a045@jacob-builder>
- <A2975661238FB949B60364EF0F2C257439AF5F37@SHSMSX104.ccr.corp.intel.com>
+Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to
+ and from devices
+Date: Wed, 11 Oct 2017 13:33:48 +0200
+Message-ID: <20171011113348.GE30803@8bytes.org>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-6-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439AF5F37@SHSMSX104.ccr.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, "Liu@8bytes.org" <Liu@8bytes.org>
+In-Reply-To: <20171006133203.22803-6-jean-philippe.brucker@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 11, 2017 at 07:54:32AM +0000, Liu, Yi L wrote:
-> I agree that iommu_invalidate() is too generic. Additionally, also
-> better to avoid making it svm specific.
+Hi Jean-Philipe,
 
-I also don't like to name the functions after the Intel feature, but I
-failed to come up with a better alternative so far. The only one I can
-come up with for now would be 'iovm', so the function name would be
-iommu_iovm_invalidate().
+Thanks for your patches, this is definitly a step in the right direction
+to get generic support for IO virtual memory into the IOMMU core code.
 
-On the other side, the ARM guys also already call the feature set
-'SVM', despite it being ambiguous and Intel specific. I don't have a
-strong opinion on the naming.
+But I see an issue with the design around task_struct, please see
+below.
 
-> The reason we introduce this API is in vSVM case is that guest owns
-> the first level page table(vtd). If we use similar mechanism for
-> vIOVA, then we also need to passdown guest's vIOVA tlb flush.
-> 
-> Since it is to expose an API for iommu tlb flushes requests from
-> userspace/guest which is out of iommu. How about naming it as
-> iommu_tlb_external_invalidate()?
+On Fri, Oct 06, 2017 at 02:31:32PM +0100, Jean-Philippe Brucker wrote:
+> +int iommu_process_bind_device(struct device *dev, struct task_struct *task,
+> +			      int *pasid, int flags)
 
-If you only read the function name, 'external' could mean everything. It
-is not clear from the name when to use this function. So something like
-iommu_iovm_invalidate() is better.
+I just took this patch as an example, it is in the other patches as
+well. The code is designed around 'struct task_struct' while it should
+really be designed around 'struct mm_struct'. You are not attaching a
+specific process to a device, but the address-space of one or more
+processes. And that should be reflected in the design.
 
+There are several bad implications of building it around task_struct,
+one is the life-time of the binding. If the address space is detached
+from the device when the process exits, only the thread that did the
+setup can can safely make use of the device, because if the device is
+accessed from another thread it will crash when the setup-thread exits.
+
+There are other benefits of using mm_struct, for example that you can
+use mmu_notifiers to exit-handling.
+
+Here is how I think the base API should look like:
+
+	* iommu_iovm_device_init(struct device *dev);
+	  iommu_iovm_device_shutdown(struct device *dev);
+
+	  These two functions do the device specific setup/shutdown. For
+	  PCI this would include enabling the PRI, PASID, and ATS
+	  capabilities and setting up a PASID table for the device.
+
+	* iommu_iovm_bind_mm(struct device *dev, struct mm_struct *mm,
+			     iovm_shutdown_cb *cb);
+	  iommu_iovm_unbind_mm(struct device *dev, struct mm_struct *mm);
+
+	  These functions add and delete the entries in the PASID table
+	  for the device and setup mmu_notifiers for the mm_struct to
+	  keep IOMMU TLBs in sync with the CPU TLBs.
+
+	  The shutdown_cb is invoked by the IOMMU core code when the
+	  mm_struct goes away, for example because the process
+	  segfaults.
+
+	The PASID handling is best done these functions as well, unless
+	there is a strong reason to allow device drivers to do the
+	handling themselves.
+
+The context data can be stored directly in mm_struct, including the
+PASID for that mm.
+
+There is of course more functionality needed, the above only outlines
+the very basic needs.
+
+
+Regards,
 
 	Joerg
+
