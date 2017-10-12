@@ -1,81 +1,68 @@
-From: Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH for-next 2/4] RDMA/hns: Add IOMMU enable support in hip08
-Date: Thu, 12 Oct 2017 17:54:20 +0300
-Message-ID: <20171012145420.GQ2106@mtr-leonro.local>
-References: <1506763741-81429-1-git-send-email-xavier.huwei@huawei.com>
- <1506763741-81429-3-git-send-email-xavier.huwei@huawei.com>
- <20170930161023.GI2965@mtr-leonro.local>
- <59DF60A3.7080803@huawei.com>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
+Date: Thu, 12 Oct 2017 09:28:03 -0600
+Message-ID: <20171012152803.GA3027@jcrouse-lnx.qualcomm.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
+ <0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
+ <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
+ <8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="kZU6r8y0YpRwyDfh"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <59DF60A3.7080803@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Wei Hu (Xavier)" <xavier.huwei@huawei.com>
-Cc: dledford@redhat.com, linux-rdma@vger.kernel.org, lijun_nudt@163.com, oulijun@huawei.com, charles.chenxin@huawei.com, liuyixian@huawei.com, linux-mm@kvack.org, zhangxiping3@huawei.com, xavier.huwei@tom.com, linuxarm@huawei.com, linux-kernel@vger.kernel.org, shaobo.xu@intel.com, shaoboxu@tom.com, leizhen 00275356 <thunder.leizhen@huawei.com>, joro@8bytes.org, iommu@lists.linux-foundation.org
+In-Reply-To: <8a1e090d-22e8-0295-a53f-bc3b5b7d7971-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, dwmw2@infradea
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Oct 12, 2017 at 01:55:32PM +0100, Jean-Philippe Brucker wrote:
+> On 12/10/17 13:05, Yisheng Xie wrote:
+> [...]
+> >>>> * An iommu_process can be bound to multiple domains, and a domain can have
+> >>>>   multiple iommu_process.
+> >>> when bind a task to device, can we create a single domain for it? I am thinking
+> >>> about process management without shared PT(for some device only support PASID
+> >>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
+> >>> Do you have any idea about this?
+> >>
+> >> A device always has to be in a domain, as far as I know. Not supporting
+> >> PRI forces you to pin down all user mappings (or just the ones you use for
+> >> DMA) but you should sill be able to share PT. Now if you don't support
+> >> shared PT either, but only PASID, then you'll have to use io-pgtable and a
+> >> new map/unmap API on an iommu_process. I don't understand your concern
+> >> though, how would the link between process and domains prevent this use-case?
+> >>
+> > So you mean that if an iommu_process bind to multiple devices it should create
+> > multiple io-pgtables? or just share the same io-pgtable?
+> 
+> I don't know to be honest, I haven't thought much about the io-pgtable
+> case, I'm all about sharing the mm :)
+> 
+> It really depends on what the user (GPU driver I assume) wants. I think
+> that if you're not sharing an mm with the device, then you're trying to
+> hide parts of the process to the device, so you'd also want the
+> flexibility of having different io-pgtables between devices. Different
+> devices accessing isolated parts of the process requires separate io-pgtables.
 
---kZU6r8y0YpRwyDfh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In our specific Snapdragon use case the GPU is the only entity that cares about
+process specific io-pgtables.  Everything else (display, video, camera) is happy
+using a global io-ptgable.  The reasoning is that the GPU is programmable from
+user space and can be easily used to copy data whereas the other use cases have
+mostly fixed functions.
 
-On Thu, Oct 12, 2017 at 08:31:31PM +0800, Wei Hu (Xavier) wrote:
->
->
-> On 2017/10/1 0:10, Leon Romanovsky wrote:
-> > On Sat, Sep 30, 2017 at 05:28:59PM +0800, Wei Hu (Xavier) wrote:
-> > > If the IOMMU is enabled, the length of sg obtained from
-> > > __iommu_map_sg_attrs is not 4kB. When the IOVA is set with the sg
-> > > dma address, the IOVA will not be page continuous. and the VA
-> > > returned from dma_alloc_coherent is a vmalloc address. However,
-> > > the VA obtained by the page_address is a discontinuous VA. Under
-> > > these circumstances, the IOVA should be calculated based on the
-> > > sg length, and record the VA returned from dma_alloc_coherent
-> > > in the struct of hem.
-> > >
-> > > Signed-off-by: Wei Hu (Xavier) <xavier.huwei@huawei.com>
-> > > Signed-off-by: Shaobo Xu <xushaobo2@huawei.com>
-> > > Signed-off-by: Lijun Ou <oulijun@huawei.com>
-> > > ---
-> > Doug,
-> >
-> > I didn't invest time in reviewing it, but having "is_vmalloc_addr" in
-> > driver code to deal with dma_alloc_coherent is most probably wrong.
-> >
-> > Thanks
-> Hi,  Leon & Doug
->     We refered the function named __ttm_dma_alloc_page in the kernel code as
-> below:
->     And there are similar methods in bch_bio_map and mem_to_page functions
-> in current 4.14-rcx.
+Even if different devices did want to have a process specific io-pgtable I doubt
+we would share them.  Every device uses the IOMMU differently and the magic
+needed to share a io-pgtable between (for example) a GPU and a DSP would be
+prohibitively complicated.
 
-Let's put aside TTM, I don't know the rationale behind their implementation,
-but both mem_to_page and bch_bio_map are don't operate on DMA addresses
-and don't belong to HW driver code.
+Jordan
 
-Thanks
-
---kZU6r8y0YpRwyDfh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEkhr/r4Op1/04yqaB5GN7iDZyWKcFAlnfghwACgkQ5GN7iDZy
-WKfnThAAkCAcg/gWetYtOCp2APtHDSYURzJFAsyQ3tk4q5WJKXHWNGp+BDn/EVdo
-5XyF/anfFiZSh7fQytyXrWDwwfuLeJhR0zBX3N2OnywXImA1+x05Y3UkNb5HZRbR
-rYxOkthJgvw7fydhPxcg+NOvZFF28Fgb8JrRF/WbaXPU+fC6363zpTENzAGjdkXv
-BoFHQhBne0SpmgZgooC2Twuk6NJP4ITCNt67q09kd1nojMfWwqBuXvsqi9QmCZAh
-vY+Yt2UkJxvuTD/46lppqhRil9EhTOENGGZtgBU6nmzOIbZR/lZd+OQr1qpsMWL5
-KqSUyuWNRoL+hpDQ584lW8dKT/3OfUnCF4ec4O7SfDwfxOlSiZB1RLb3LlZFBrKc
-7L18ZS5MPJev9fjXNUq1dD2t9dLUZ8KJU+2NFQdF8X/BYZZcFO8UxfTJN6a1rkLn
-DnDGlMJ0RmuJ0N9evJuM2Jd/eEpxmCfERSL+3tykkcZln1CJsAwHJ5L5C9igpwg+
-+1W9eZcrUdn7VgF/7NkG0kYr0DKmSL3k1R/t5BykGvIf5fHIwsWCPBE80bV3CNXm
-Mb4JdmFimeDKpscU86C0s29e079lftQMvMWG4TIyV8pBVJ8Tibj9W+NKjNuR8sTs
-sC8d+BythwvjzNa9wfmF+3imQCti8r8waoX+UavmbhPKMoaNnfE=
-=y/UZ
------END PGP SIGNATURE-----
-
---kZU6r8y0YpRwyDfh--
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
