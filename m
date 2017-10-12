@@ -1,106 +1,281 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Thu, 12 Oct 2017 13:55:32 +0100
-Message-ID: <8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
- <0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
- <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH for-next 2/4] RDMA/hns: Add IOMMU enable support in hip08
+Date: Thu, 12 Oct 2017 13:59:11 +0100
+Message-ID: <5fe5f9b9-2c2b-ab3c-dafa-3e2add051bbb@arm.com>
+References: <1506763741-81429-1-git-send-email-xavier.huwei@huawei.com>
+ <1506763741-81429-3-git-send-email-xavier.huwei@huawei.com>
+ <20170930161023.GI2965@mtr-leonro.local> <59DF60A3.7080803@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <59DF60A3.7080803-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Yisheng Xie <xieyisheng1@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, nwatters@cod
+Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Wei Hu (Xavier)" <xavier.huwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Leon Romanovsky <leon-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: shaobo.xu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, xavier.huwei-WVlzvzqoTvw@public.gmane.org, lijun_nudt-9Onoh4P/yGk@public.gmane.org, oulijun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, charles.chenxin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, dledford-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, liuyixian-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, zhangxiping3-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, shaoboxu-WVlzvzqoTvw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/10/17 13:05, Yisheng Xie wrote:
-[...]
->>>> * An iommu_process can be bound to multiple domains, and a domain can have
->>>>   multiple iommu_process.
->>> when bind a task to device, can we create a single domain for it? I am thinking
->>> about process management without shared PT(for some device only support PASID
->>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
->>> Do you have any idea about this?
->>
->> A device always has to be in a domain, as far as I know. Not supporting
->> PRI forces you to pin down all user mappings (or just the ones you use for
->> DMA) but you should sill be able to share PT. Now if you don't support
->> shared PT either, but only PASID, then you'll have to use io-pgtable and a
->> new map/unmap API on an iommu_process. I don't understand your concern
->> though, how would the link between process and domains prevent this use-case?
->>
-> So you mean that if an iommu_process bind to multiple devices it should create
-> multiple io-pgtables? or just share the same io-pgtable?
-
-I don't know to be honest, I haven't thought much about the io-pgtable
-case, I'm all about sharing the mm :)
-
-It really depends on what the user (GPU driver I assume) wants. I think
-that if you're not sharing an mm with the device, then you're trying to
-hide parts of the process to the device, so you'd also want the
-flexibility of having different io-pgtables between devices. Different
-devices accessing isolated parts of the process requires separate io-pgtables.
-
->>>> * IOMMU groups share same PASID table. IOMMU groups are a convenient way
->>>>   to cover various hardware weaknesses that prevent a group of device to
->>>>   be isolated by the IOMMU (untrusted bridge, for instance). It's foolish
->>>>   to assume that all PASID implementations will perfectly isolate devices
->>>>   within a bus and functions within a device, so let's assume all devices
->>>>   within an IOMMU group have to share PASID traffic as well. In general
->>>>   there will be a single device per group.
->>>>
->>>> * It's up to the driver implementation to decide where to implement the
->>>>   PASID tables. For SMMU it's more convenient to have a single PASID table
->>>>   per domain. And I think the model fits better with the existing IOMMU
->>>>   API: IOVA traffic is shared by all devices in a domain, so should PASID
->>>>   traffic.
->>> What's the meaning of "share PASID traffic"? PASID space is system-wide,
->>> and a domain can have multiple iommu_process , so a domain can have multiple
->>> PASIDs , one PASID for a iommu_process, right?
-> I get what your mean now, thanks for your explain.
+On 12/10/17 13:31, Wei Hu (Xavier) wrote:
 > 
->>
->> Yes, I meant that if a device can access mappings for a specific PASID,
->> then other devices in that same domain are also able to access them.
->>
->> A few reasons for this choice in the SMMU:
->> * As all devices in an IOMMU group will be in the same domain and share
->> the same PASID traffic, it encompasses that case. Groups are the smallest
->> isolation granularity, then users are free to choose to put different
->> IOMMU groups in different domains.
->> * For architectures that can have both non-PASID and PASID traffic
->> simultaneously, like the SMMU, it is simpler to reason about PASID tables
->> being a domain, rather than sharing PASID0 within the domain and handling
->> all others per device.
->> * It's the same principle as non-PASID mappings (iommu_map/unmap is on a
->> domain).
->> * It implement the classic example of IOMMU architectures where multiple
->> device descriptors point to the same PASID tables.
->> * It may be desirable for drivers to share PASIDs within a domain, if they
->> are actually using domains for conveniently sharing address spaces between
->> devices. I'm not sure how much this is used as a feature. It does model a
->> shared bus where each device can snoop DMA, so it may be useful.
->>
 > 
-> I get another question about this design, thinking about the following case:
+> On 2017/10/1 0:10, Leon Romanovsky wrote:
+>> On Sat, Sep 30, 2017 at 05:28:59PM +0800, Wei Hu (Xavier) wrote:
+>>> If the IOMMU is enabled, the length of sg obtained from
+>>> __iommu_map_sg_attrs is not 4kB. When the IOVA is set with the sg
+>>> dma address, the IOVA will not be page continuous. and the VA
+>>> returned from dma_alloc_coherent is a vmalloc address. However,
+>>> the VA obtained by the page_address is a discontinuous VA. Under
+>>> these circumstances, the IOVA should be calculated based on the
+>>> sg length, and record the VA returned from dma_alloc_coherent
+>>> in the struct of hem.
+>>>
+>>> Signed-off-by: Wei Hu (Xavier) <xavier.huwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>>> Signed-off-by: Shaobo Xu <xushaobo2-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>>> Signed-off-by: Lijun Ou <oulijun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>>> ---
+>> Doug,
+>>
+>> I didn't invest time in reviewing it, but having "is_vmalloc_addr" in
+>> driver code to deal with dma_alloc_coherent is most probably wrong.
+>>
+>> Thanks
+> Hi,  Leon & Doug
+>     We refered the function named __ttm_dma_alloc_page in the kernel
+> code as below:
+>     And there are similar methods in bch_bio_map and mem_to_page
+> functions in current 4.14-rcx.
 > 
-> If a platform device with PASID ability, e.g. accelerator, which have multiple
-> accelerator process units(APUs), it may create multiple virtual devices, one
-> virtual device represent for an APU, with the same sid.
+>         static struct dma_page *__ttm_dma_alloc_page(struct dma_pool *pool)
+>         {
+>             struct dma_page *d_page;
 > 
-> They can be in different groups, however must be in the same domain as this
-> design, for domain held the PASID table, right? So how could they be used by
-> different guest OS?
+>             d_page = kmalloc(sizeof(struct dma_page), GFP_KERNEL);
+>             if (!d_page)
+>                 return NULL;
+> 
+>             d_page->vaddr = dma_alloc_coherent(pool->dev, pool->size,
+>                                &d_page->dma,
+>                                    pool->gfp_flags);
+>             if (d_page->vaddr) {
+>                 if (is_vmalloc_addr(d_page->vaddr))
+>                     d_page->p = vmalloc_to_page(d_page->vaddr);
+>                 else
+>                     d_page->p = virt_to_page(d_page->vaddr);
 
-If they have the same SID, they will be in the same group as there will be
-a single entry in the SMMU stream table. Otherwise, if the virtual devices
-can be properly isolated from each other (in the same way as PCI SR-IOV),
-they will each have their own SID, can each be in a different IOMMU group
-and can be assigned to different guests.
+There are cases on various architectures where neither of those is
+right. Whether those actually intersect with TTM or RDMA use-cases is
+another matter, of course.
 
-Thanks,
-Jean
+What definitely is a problem is if you ever take that page and end up
+accessing it through any virtual address other than the one explicitly
+returned by dma_alloc_coherent(). That can blow the coherency wide open
+and invite data loss, right up to killing the whole system with a
+machine check on certain architectures.
+
+Robin.
+
+>             } else {
+>                 kfree(d_page);
+>                 d_page = NULL;
+>             }
+>             return d_page;
+>         }
+> 
+>     Regards
+> Wei Hu
+>>
+>>>   drivers/infiniband/hw/hns/hns_roce_alloc.c |  5 ++++-
+>>>   drivers/infiniband/hw/hns/hns_roce_hem.c   | 30
+>>> +++++++++++++++++++++++++++---
+>>>   drivers/infiniband/hw/hns/hns_roce_hem.h   |  6 ++++++
+>>>   drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 22 +++++++++++++++-------
+>>>   4 files changed, 52 insertions(+), 11 deletions(-)
+>>>
+>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>> b/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>> index 3e4c525..a69cd4b 100644
+>>> --- a/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>> +++ b/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>> @@ -243,7 +243,10 @@ int hns_roce_buf_alloc(struct hns_roce_dev
+>>> *hr_dev, u32 size, u32 max_direct,
+>>>                   goto err_free;
+>>>
+>>>               for (i = 0; i < buf->nbufs; ++i)
+>>> -                pages[i] = virt_to_page(buf->page_list[i].buf);
+>>> +                pages[i] =
+>>> +                    is_vmalloc_addr(buf->page_list[i].buf) ?
+>>> +                    vmalloc_to_page(buf->page_list[i].buf) :
+>>> +                    virt_to_page(buf->page_list[i].buf);
+>>>
+>>>               buf->direct.buf = vmap(pages, buf->nbufs, VM_MAP,
+>>>                              PAGE_KERNEL);
+>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>> b/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>> index 8388ae2..4a3d1d4 100644
+>>> --- a/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>> +++ b/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>> @@ -200,6 +200,7 @@ static struct hns_roce_hem
+>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>                              gfp_t gfp_mask)
+>>>   {
+>>>       struct hns_roce_hem_chunk *chunk = NULL;
+>>> +    struct hns_roce_vmalloc *vmalloc;
+>>>       struct hns_roce_hem *hem;
+>>>       struct scatterlist *mem;
+>>>       int order;
+>>> @@ -227,6 +228,7 @@ static struct hns_roce_hem
+>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>               sg_init_table(chunk->mem, HNS_ROCE_HEM_CHUNK_LEN);
+>>>               chunk->npages = 0;
+>>>               chunk->nsg = 0;
+>>> +            memset(chunk->vmalloc, 0, sizeof(chunk->vmalloc));
+>>>               list_add_tail(&chunk->list, &hem->chunk_list);
+>>>           }
+>>>
+>>> @@ -243,7 +245,15 @@ static struct hns_roce_hem
+>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>           if (!buf)
+>>>               goto fail;
+>>>
+>>> -        sg_set_buf(mem, buf, PAGE_SIZE << order);
+>>> +        if (is_vmalloc_addr(buf)) {
+>>> +            vmalloc = &chunk->vmalloc[chunk->npages];
+>>> +            vmalloc->is_vmalloc_addr = true;
+>>> +            vmalloc->vmalloc_addr = buf;
+>>> +            sg_set_page(mem, vmalloc_to_page(buf),
+>>> +                    PAGE_SIZE << order, offset_in_page(buf));
+>>> +        } else {
+>>> +            sg_set_buf(mem, buf, PAGE_SIZE << order);
+>>> +        }
+>>>           WARN_ON(mem->offset);
+>>>           sg_dma_len(mem) = PAGE_SIZE << order;
+>>>
+>>> @@ -262,17 +272,25 @@ static struct hns_roce_hem
+>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>   void hns_roce_free_hem(struct hns_roce_dev *hr_dev, struct
+>>> hns_roce_hem *hem)
+>>>   {
+>>>       struct hns_roce_hem_chunk *chunk, *tmp;
+>>> +    void *cpu_addr;
+>>>       int i;
+>>>
+>>>       if (!hem)
+>>>           return;
+>>>
+>>>       list_for_each_entry_safe(chunk, tmp, &hem->chunk_list, list) {
+>>> -        for (i = 0; i < chunk->npages; ++i)
+>>> +        for (i = 0; i < chunk->npages; ++i) {
+>>> +            if (chunk->vmalloc[i].is_vmalloc_addr)
+>>> +                cpu_addr = chunk->vmalloc[i].vmalloc_addr;
+>>> +            else
+>>> +                cpu_addr =
+>>> +                   lowmem_page_address(sg_page(&chunk->mem[i]));
+>>> +
+>>>               dma_free_coherent(hr_dev->dev,
+>>>                      chunk->mem[i].length,
+>>> -                   lowmem_page_address(sg_page(&chunk->mem[i])),
+>>> +                   cpu_addr,
+>>>                      sg_dma_address(&chunk->mem[i]));
+>>> +        }
+>>>           kfree(chunk);
+>>>       }
+>>>
+>>> @@ -774,6 +792,12 @@ void *hns_roce_table_find(struct hns_roce_dev
+>>> *hr_dev,
+>>>
+>>>               if (chunk->mem[i].length > (u32)offset) {
+>>>                   page = sg_page(&chunk->mem[i]);
+>>> +                if (chunk->vmalloc[i].is_vmalloc_addr) {
+>>> +                    mutex_unlock(&table->mutex);
+>>> +                    return page ?
+>>> +                        chunk->vmalloc[i].vmalloc_addr
+>>> +                        + offset : NULL;
+>>> +                }
+>>>                   goto out;
+>>>               }
+>>>               offset -= chunk->mem[i].length;
+>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>> b/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>> index af28bbf..62d712a 100644
+>>> --- a/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>> +++ b/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>> @@ -72,11 +72,17 @@ enum {
+>>>        HNS_ROCE_HEM_PAGE_SIZE  = 1 << HNS_ROCE_HEM_PAGE_SHIFT,
+>>>   };
+>>>
+>>> +struct hns_roce_vmalloc {
+>>> +    bool    is_vmalloc_addr;
+>>> +    void    *vmalloc_addr;
+>>> +};
+>>> +
+>>>   struct hns_roce_hem_chunk {
+>>>       struct list_head     list;
+>>>       int             npages;
+>>>       int             nsg;
+>>>       struct scatterlist     mem[HNS_ROCE_HEM_CHUNK_LEN];
+>>> +    struct hns_roce_vmalloc     vmalloc[HNS_ROCE_HEM_CHUNK_LEN];
+>>>   };
+>>>
+>>>   struct hns_roce_hem {
+>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>> b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>> index b99d70a..9e19bf1 100644
+>>> --- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>> +++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>> @@ -1093,9 +1093,11 @@ static int hns_roce_v2_write_mtpt(void
+>>> *mb_buf, struct hns_roce_mr *mr,
+>>>   {
+>>>       struct hns_roce_v2_mpt_entry *mpt_entry;
+>>>       struct scatterlist *sg;
+>>> +    u64 page_addr = 0;
+>>>       u64 *pages;
+>>> +    int i = 0, j = 0;
+>>> +    int len = 0;
+>>>       int entry;
+>>> -    int i;
+>>>
+>>>       mpt_entry = mb_buf;
+>>>       memset(mpt_entry, 0, sizeof(*mpt_entry));
+>>> @@ -1153,14 +1155,20 @@ static int hns_roce_v2_write_mtpt(void
+>>> *mb_buf, struct hns_roce_mr *mr,
+>>>
+>>>       i = 0;
+>>>       for_each_sg(mr->umem->sg_head.sgl, sg, mr->umem->nmap, entry) {
+>>> -        pages[i] = ((u64)sg_dma_address(sg)) >> 6;
+>>> -
+>>> -        /* Record the first 2 entry directly to MTPT table */
+>>> -        if (i >= HNS_ROCE_V2_MAX_INNER_MTPT_NUM - 1)
+>>> -            break;
+>>> -        i++;
+>>> +        len = sg_dma_len(sg) >> PAGE_SHIFT;
+>>> +        for (j = 0; j < len; ++j) {
+>>> +            page_addr = sg_dma_address(sg) +
+>>> +                    (j << mr->umem->page_shift);
+>>> +            pages[i] = page_addr >> 6;
+>>> +
+>>> +            /* Record the first 2 entry directly to MTPT table */
+>>> +            if (i >= HNS_ROCE_V2_MAX_INNER_MTPT_NUM - 1)
+>>> +                goto found;
+>>> +            i++;
+>>> +        }
+>>>       }
+>>>
+>>> +found:
+>>>       mpt_entry->pa0_l = cpu_to_le32(lower_32_bits(pages[0]));
+>>>       roce_set_field(mpt_entry->byte_56_pa0_h, V2_MPT_BYTE_56_PA0_H_M,
+>>>                  V2_MPT_BYTE_56_PA0_H_S,
+>>> -- 
+>>> 1.9.1
+>>>
+> 
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
