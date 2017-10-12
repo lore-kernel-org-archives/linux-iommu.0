@@ -1,68 +1,145 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Thu, 12 Oct 2017 09:28:03 -0600
-Message-ID: <20171012152803.GA3027@jcrouse-lnx.qualcomm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
- <0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
- <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
- <8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <8a1e090d-22e8-0295-a53f-bc3b5b7d7971-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, dwmw2@infradea
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] drivers: Flag buses which demand DMA configuration
+Date: Thu, 12 Oct 2017 16:56:14 +0100
+Message-ID: <bd1c6061a6a16f720e992a0f12933bdee6591aea.1507823375.git.robin.murphy@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: gregkh@linuxfoundation.org, hch@lst.de, robh+dt@kernel.org
+Cc: m.szyprowski@samsung.com, mperttunen@nvidia.com, jonathanh@nvidia.com, thierry.reding@gmail.com, kishon@ti.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 12, 2017 at 01:55:32PM +0100, Jean-Philippe Brucker wrote:
-> On 12/10/17 13:05, Yisheng Xie wrote:
-> [...]
-> >>>> * An iommu_process can be bound to multiple domains, and a domain can have
-> >>>>   multiple iommu_process.
-> >>> when bind a task to device, can we create a single domain for it? I am thinking
-> >>> about process management without shared PT(for some device only support PASID
-> >>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
-> >>> Do you have any idea about this?
-> >>
-> >> A device always has to be in a domain, as far as I know. Not supporting
-> >> PRI forces you to pin down all user mappings (or just the ones you use for
-> >> DMA) but you should sill be able to share PT. Now if you don't support
-> >> shared PT either, but only PASID, then you'll have to use io-pgtable and a
-> >> new map/unmap API on an iommu_process. I don't understand your concern
-> >> though, how would the link between process and domains prevent this use-case?
-> >>
-> > So you mean that if an iommu_process bind to multiple devices it should create
-> > multiple io-pgtables? or just share the same io-pgtable?
-> 
-> I don't know to be honest, I haven't thought much about the io-pgtable
-> case, I'm all about sharing the mm :)
-> 
-> It really depends on what the user (GPU driver I assume) wants. I think
-> that if you're not sharing an mm with the device, then you're trying to
-> hide parts of the process to the device, so you'd also want the
-> flexibility of having different io-pgtables between devices. Different
-> devices accessing isolated parts of the process requires separate io-pgtables.
+We do not want the common dma_configure() pathway to apply
+indiscriminately to all devices, since there are plenty of buses which
+do not have DMA capability, and if their child devices were used for
+DMA API calls it would only be indicative of a driver bug. However,
+there are a number of buses for which DMA is implicitly expected even
+when not described by firmware - those we whitelist with an automatic
+opt-in to dma_configure(), assuming that the DMA address space and the
+physical address space are equivalent if not otherwise specified.
 
-In our specific Snapdragon use case the GPU is the only entity that cares about
-process specific io-pgtables.  Everything else (display, video, camera) is happy
-using a global io-ptgable.  The reasoning is that the GPU is programmable from
-user space and can be easily used to copy data whereas the other use cases have
-mostly fixed functions.
+Commit 723288836628 ("of: restrict DMA configuration") introduced a
+short-term fix by comparing explicit bus types, but this approach is far
+from pretty, doesn't scale well, and fails to cope at all with bus
+drivers which may be built as modules, like host1x. Let's refine things
+by making that opt-in a property of the bus type, which neatly addresses
+those problems and lets the decision of whether firmware description of
+DMA capability should be optional or mandatory stay internal to the bus
+drivers themselves.
 
-Even if different devices did want to have a process specific io-pgtable I doubt
-we would share them.  Every device uses the IOMMU differently and the magic
-needed to share a io-pgtable between (for example) a GPU and a DSP would be
-prohibitively complicated.
+Acked-by: Thierry Reding <treding@nvidia.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-Jordan
+I've not included the pci_epf change here as it's dubious whether that's
+doing the right thing to begin with.
 
+Robin.
+
+ drivers/amba/bus.c       | 1 +
+ drivers/base/platform.c  | 1 +
+ drivers/gpu/host1x/bus.c | 1 +
+ drivers/of/device.c      | 8 +-------
+ drivers/pci/pci-driver.c | 1 +
+ include/linux/device.h   | 4 ++++
+ 6 files changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index e0f74ddc22b7..594c228d2f02 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -195,6 +195,7 @@ struct bus_type amba_bustype = {
+ 	.match		= amba_match,
+ 	.uevent		= amba_uevent,
+ 	.pm		= &amba_pm,
++	.force_dma	= true,
+ };
+ 
+ static int __init amba_init(void)
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index d1bd99271066..9c95c8db00f8 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1142,6 +1142,7 @@ struct bus_type platform_bus_type = {
+ 	.match		= platform_match,
+ 	.uevent		= platform_uevent,
+ 	.pm		= &platform_dev_pm_ops,
++	.force_dma	= true,
+ };
+ EXPORT_SYMBOL_GPL(platform_bus_type);
+ 
+diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
+index f9cde03030fd..ed03b3243195 100644
+--- a/drivers/gpu/host1x/bus.c
++++ b/drivers/gpu/host1x/bus.c
+@@ -320,6 +320,7 @@ struct bus_type host1x_bus_type = {
+ 	.name = "host1x",
+ 	.match = host1x_device_match,
+ 	.pm = &host1x_device_pm_ops,
++	.force_dma = true,
+ };
+ 
+ static void __host1x_device_del(struct host1x_device *device)
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 64b710265d39..25bddf9c9fe1 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -9,9 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/slab.h>
+-#include <linux/pci.h>
+ #include <linux/platform_device.h>
+-#include <linux/amba/bus.h>
+ 
+ #include <asm/errno.h>
+ #include "of_private.h"
+@@ -101,11 +99,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
+ 		 * DMA configuration regardless of whether "dma-ranges" is
+ 		 * correctly specified or not.
+ 		 */
+-		if (!dev_is_pci(dev) &&
+-#ifdef CONFIG_ARM_AMBA
+-		    dev->bus != &amba_bustype &&
+-#endif
+-		    dev->bus != &platform_bus_type)
++		if (!dev->bus->force_dma)
+ 			return ret == -ENODEV ? 0 : ret;
+ 
+ 		dma_addr = offset = 0;
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 11bd267fc137..38bdb97b6dc6 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -1466,6 +1466,7 @@ struct bus_type pci_bus_type = {
+ 	.drv_groups	= pci_drv_groups,
+ 	.pm		= PCI_PM_OPS_PTR,
+ 	.num_vf		= pci_bus_num_vf,
++	.force_dma	= true,
+ };
+ EXPORT_SYMBOL(pci_bus_type);
+ 
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 1d2607923a24..357982fb85eb 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -97,6 +97,8 @@ extern void bus_remove_file(struct bus_type *, struct bus_attribute *);
+  * @p:		The private data of the driver core, only the driver core can
+  *		touch this.
+  * @lock_key:	Lock class key for use by the lock validator
++ * @force_dma:	Assume devices on this bus should be set up by dma_configure()
++ * 		even if DMA capability is not explicitly described by firmware.
+  *
+  * A bus is a channel between the processor and one or more devices. For the
+  * purposes of the device model, all devices are connected via a bus, even if
+@@ -135,6 +137,8 @@ struct bus_type {
+ 
+ 	struct subsys_private *p;
+ 	struct lock_class_key lock_key;
++
++	bool force_dma;
+ };
+ 
+ extern int __must_check bus_register(struct bus_type *bus);
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.13.4.dirty
