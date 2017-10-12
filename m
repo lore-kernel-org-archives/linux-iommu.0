@@ -1,108 +1,106 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to
- and from devices
-Date: Thu, 12 Oct 2017 14:47:38 +0200
-Message-ID: <20171012124738.r5lihlxaedwkw4oq@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
+Date: Thu, 12 Oct 2017 13:55:32 +0100
+Message-ID: <8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-6-jean-philippe.brucker@arm.com>
- <20171011113348.GE30803@8bytes.org>
- <ee7f80e3-ca30-0ee7-53f3-3e57b2b58df6@arm.com>
+ <0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
+ <0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
+ <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <ee7f80e3-ca30-0ee7-53f3-3e57b2b58df6-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas@goog>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Yisheng Xie <xieyisheng1@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, nwatters@cod
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
+On 12/10/17 13:05, Yisheng Xie wrote:
+[...]
+>>>> * An iommu_process can be bound to multiple domains, and a domain can have
+>>>>   multiple iommu_process.
+>>> when bind a task to device, can we create a single domain for it? I am thinking
+>>> about process management without shared PT(for some device only support PASID
+>>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
+>>> Do you have any idea about this?
+>>
+>> A device always has to be in a domain, as far as I know. Not supporting
+>> PRI forces you to pin down all user mappings (or just the ones you use for
+>> DMA) but you should sill be able to share PT. Now if you don't support
+>> shared PT either, but only PASID, then you'll have to use io-pgtable and a
+>> new map/unmap API on an iommu_process. I don't understand your concern
+>> though, how would the link between process and domains prevent this use-case?
+>>
+> So you mean that if an iommu_process bind to multiple devices it should create
+> multiple io-pgtables? or just share the same io-pgtable?
 
-On Thu, Oct 12, 2017 at 12:13:20PM +0100, Jean-Philippe Brucker wrote:
-> On 11/10/17 12:33, Joerg Roedel wrote:
-> > Here is how I think the base API should look like:
-> > 
-> > 	* iommu_iovm_device_init(struct device *dev);
-> > 	  iommu_iovm_device_shutdown(struct device *dev);
-> > 
-> > 	  These two functions do the device specific setup/shutdown. For
-> > 	  PCI this would include enabling the PRI, PASID, and ATS
-> > 	  capabilities and setting up a PASID table for the device.
+I don't know to be honest, I haven't thought much about the io-pgtable
+case, I'm all about sharing the mm :)
+
+It really depends on what the user (GPU driver I assume) wants. I think
+that if you're not sharing an mm with the device, then you're trying to
+hide parts of the process to the device, so you'd also want the
+flexibility of having different io-pgtables between devices. Different
+devices accessing isolated parts of the process requires separate io-pgtables.
+
+>>>> * IOMMU groups share same PASID table. IOMMU groups are a convenient way
+>>>>   to cover various hardware weaknesses that prevent a group of device to
+>>>>   be isolated by the IOMMU (untrusted bridge, for instance). It's foolish
+>>>>   to assume that all PASID implementations will perfectly isolate devices
+>>>>   within a bus and functions within a device, so let's assume all devices
+>>>>   within an IOMMU group have to share PASID traffic as well. In general
+>>>>   there will be a single device per group.
+>>>>
+>>>> * It's up to the driver implementation to decide where to implement the
+>>>>   PASID tables. For SMMU it's more convenient to have a single PASID table
+>>>>   per domain. And I think the model fits better with the existing IOMMU
+>>>>   API: IOVA traffic is shared by all devices in a domain, so should PASID
+>>>>   traffic.
+>>> What's the meaning of "share PASID traffic"? PASID space is system-wide,
+>>> and a domain can have multiple iommu_process , so a domain can have multiple
+>>> PASIDs , one PASID for a iommu_process, right?
+> I get what your mean now, thanks for your explain.
 > 
-> Ok. On SMMU the PASID table also hosts the non-PASID page table pointer,
-> so the table and capability cannot be setup later than attach_device (and
-> we'll probably have to enable PASID in add_device). But I suppose it's an
-> implementation detail.
-
-Right, when the capabilities are enabled is an implementation detail of
-the iommu-drivers. 
-
-> Some device drivers will want to use ATS alone, for accelerating IOVA
-> traffic. Should we enable it automatically, or provide device drivers with
-> a way to enable it manually? According to the PCI spec, PASID has to be
-> enabled before ATS, so device_init would have to first disable ATS in that
-> case.
-
-Yes, driver can enable ATS for normal use of a device, and
-disable/re-enable it when the driver requests PASID/PRI functionality.
-That is also an implementation detail. You should probably also document
-that the init/shutdown functions may interrupt device operation, so that
-driver writers are aware of that.
-
+>>
+>> Yes, I meant that if a device can access mappings for a specific PASID,
+>> then other devices in that same domain are also able to access them.
+>>
+>> A few reasons for this choice in the SMMU:
+>> * As all devices in an IOMMU group will be in the same domain and share
+>> the same PASID traffic, it encompasses that case. Groups are the smallest
+>> isolation granularity, then users are free to choose to put different
+>> IOMMU groups in different domains.
+>> * For architectures that can have both non-PASID and PASID traffic
+>> simultaneously, like the SMMU, it is simpler to reason about PASID tables
+>> being a domain, rather than sharing PASID0 within the domain and handling
+>> all others per device.
+>> * It's the same principle as non-PASID mappings (iommu_map/unmap is on a
+>> domain).
+>> * It implement the classic example of IOMMU architectures where multiple
+>> device descriptors point to the same PASID tables.
+>> * It may be desirable for drivers to share PASIDs within a domain, if they
+>> are actually using domains for conveniently sharing address spaces between
+>> devices. I'm not sure how much this is used as a feature. It does model a
+>> shared bus where each device can snoop DMA, so it may be useful.
+>>
 > 
-> > 	* iommu_iovm_bind_mm(struct device *dev, struct mm_struct *mm,
-> > 			     iovm_shutdown_cb *cb);
-> > 	  iommu_iovm_unbind_mm(struct device *dev, struct mm_struct *mm);
-> > 
-> > 	  These functions add and delete the entries in the PASID table
-> > 	  for the device and setup mmu_notifiers for the mm_struct to
-> > 	  keep IOMMU TLBs in sync with the CPU TLBs.
-> > 
-> > 	  The shutdown_cb is invoked by the IOMMU core code when the
-> > 	  mm_struct goes away, for example because the process
-> > 	  segfaults.
-> > 
-> > 	The PASID handling is best done these functions as well, unless
-> > 	there is a strong reason to allow device drivers to do the
-> > 	handling themselves.
-> > 
-> > The context data can be stored directly in mm_struct, including the
-> > PASID for that mm.
+> I get another question about this design, thinking about the following case:
 > 
-> Changing mm_struct probably isn't required at the moment, since the mm
-> subsystem won't use the context data or the PASID. Outside of
-> drivers/iommu/, only the caller of bind_mm needs the PASID in order to
-> program it into the device. The only advantage I see would be slightly
-> faster bind(), when finding out if a mm is already bound to devices. But
-> we don't really need fast bind(), so I don't think we'd have enough
-> material to argue for a change in mm_struct.
+> If a platform device with PASID ability, e.g. accelerator, which have multiple
+> accelerator process units(APUs), it may create multiple virtual devices, one
+> virtual device represent for an APU, with the same sid.
+> 
+> They can be in different groups, however must be in the same domain as this
+> design, for domain held the PASID table, right? So how could they be used by
+> different guest OS?
 
-The idea behind storing the PASID in mm_struct is that we have a
-system-wide PASID-allocator and only one PASID per address space, even
-when accessed from multiple devices.
+If they have the same SID, they will be in the same group as there will be
+a single entry in the SMMU stream table. Otherwise, if the virtual devices
+can be properly isolated from each other (in the same way as PCI SR-IOV),
+they will each have their own SID, can each be in a different IOMMU group
+and can be assigned to different guests.
 
-There will be hardware implemenations where this is required, afaik. It
-doesn't mean that it _needs_ to be part of mm_struct, but it is
-certainly easier than tracking this 1-1 relation separatly.
-
-> We do need to allocate a separate "iommu_mm_struct" wrapper to store the
-> mmu_notifier. Maybe bind() could return this structure (that contains the
-> PASID), and unbind() would take this iommu_mm_struct as argument?
-
-I'd like to track this iommu_mm_struct only in iommu-code, otherwise
-drivers need to track the pointer somewhere. And we need to track the
-mm_struct->iommu_mm_struct relation anyway in core-code to handle events
-like segfaults, when the whole mm_struct goes away under us. So when we
-track this in core code, there is no need to track this again in the
-device drivers.
-
-
-Regards,
-
-	Joerg
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+Jean
