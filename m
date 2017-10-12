@@ -1,122 +1,105 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
-Date: Thu, 12 Oct 2017 10:33:17 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439AF6BCD@SHSMSX104.ccr.corp.intel.com>
-References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1507244624-39189-4-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20171010133542.juag7cwbivlb56sl@8bytes.org>
-	<20171010150953.4095a045@jacob-builder>
-	<A2975661238FB949B60364EF0F2C257439AF5F37@SHSMSX104.ccr.corp.intel.com>
-	<20171011095126.GD30803@8bytes.org>
-	<A2975661238FB949B60364EF0F2C257439AF61F5@SHSMSX104.ccr.corp.intel.com>
-	<20171011121534.GG30803@8bytes.org>
-	<3cdbce19-9264-b2d0-745b-8d32d5b8cfe7@arm.com>
-	<541498d5-0478-0b9a-6c01-12f7dc30ebf3@huawei.com>
-	<A2975661238FB949B60364EF0F2C257439AF6AFB@SHSMSX104.ccr.corp.intel.com>
-	<5cc5b52c-27da-7bb5-4968-e46ed6d44fc0@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to and
+ from devices
+Date: Thu, 12 Oct 2017 12:13:20 +0100
+Message-ID: <ee7f80e3-ca30-0ee7-53f3-3e57b2b58df6@arm.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-6-jean-philippe.brucker@arm.com>
+ <20171011113348.GE30803@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5cc5b52c-27da-7bb5-4968-e46ed6d44fc0-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171011113348.GE30803@8bytes.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Liu,
-	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
-	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@goog>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Joerg,
 
-> -----Original Message-----
-> From: Bob Liu [mailto:liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org]
-> Sent: Thursday, October 12, 2017 6:08 PM
-> To: Liu, Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Jean-Philippe Brucker <jean-
-> philippe.brucker-5wv7dgnIgG8@public.gmane.org>; Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Lan, Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>; Greg
-> Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Wysocki, Rafael J
-> <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Subject: Re: [PATCH v2 03/16] iommu: introduce iommu invalidate API function
+On 11/10/17 12:33, Joerg Roedel wrote:
+> Hi Jean-Philipe,
 > 
-> On 2017/10/12 17:50, Liu, Yi L wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Bob Liu [mailto:liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org]
-> >> Sent: Thursday, October 12, 2017 5:39 PM
-> >> To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>; Joerg
-> >> Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Liu, Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> >> Cc: Lan, Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Liu, Yi L
-> >> <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>; Greg Kroah-Hartman
-> >> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Wysocki, Rafael J
-> >> <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>;
-> >> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; David Woodhouse
-> >> <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> >> Subject: Re: [PATCH v2 03/16] iommu: introduce iommu invalidate API
-> >> function
-> >>
-> >> On 2017/10/11 20:48, Jean-Philippe Brucker wrote:
-> >>> On 11/10/17 13:15, Joerg Roedel wrote:
-> >>>> On Wed, Oct 11, 2017 at 11:54:52AM +0000, Liu, Yi L wrote:
-> >>>>> I didn't quite get 'iovm' mean. Can you explain a bit about the idea?
-> >>>>
-> >>>> It's short for IO Virtual Memory, basically a replacement term for 'svm'
-> >>>> that is not ambiguous (afaik) and not specific to Intel.
-> >>>
-> >>> I wonder if SVM originated in OpenCL first, rather than intel?
-> >>> That's why I'm using it, but it is ambiguous. I'm not sure IOVM is
-> >>> precise enough though, since the name could as well be used without
-> >>> shared tables, for classical map/unmap and IOVAs. Kevin Tian
-> >>> suggested SVA "Shared Virtual Addressing" last time, which is a
-> >>> little more clear than SVM and isn't used elsewhere in the kernel either.
-> >>>
-> >>
-> >> The process "vaddr" can be the same as "IOVA" by using the classical
-> >> map/unmap way.
-> >> This is also a kind of share virtual memory/address(except have to
-> >> pin physical memory).
-> >> How to distinguish these two different implementation of "share
-> >> virtual memory/address"?
-> >>
-> > [Liu, Yi L] Not sure if I get your idea well. Process "vaddr" is owned
-> > by process and maintained by mmu, while "IOVA" is maintained by iommu.
-> > So they are different in the way they are maintained. Since process
-> > "vaddr" is maintained by mmu and then used by iommu, so we call it shared virtual
-> memory/address. This is how "shared" term comes.
+> Thanks for your patches, this is definitly a step in the right direction
+> to get generic support for IO virtual memory into the IOMMU core code.
 > 
-> I think from the view of application, the share virtual memory/address(or Nvidia-
-> CUDA unify virtual address) is like this:
+> But I see an issue with the design around task_struct, please see
+> below.
 > 
-> 1. vaddr = malloc(); e.g vaddr=0x10000
-> 2. device can get the same data(accessing the same physical memory) through same
-> address e.g 0x10000, and don't care about it's a vaddr or IOVA..
-> (actually in Nvidia-cuda case, the data will be migrated between system-ddr and gpu-
-> memory, but the vaddr is always the same for CPU and GPU).
+> On Fri, Oct 06, 2017 at 02:31:32PM +0100, Jean-Philippe Brucker wrote:
+>> +int iommu_process_bind_device(struct device *dev, struct task_struct *task,
+>> +			      int *pasid, int flags)
 > 
-> So there are two ways(beside Nvidia way) to implement this requirement:
-> 1)
-> get the physical memory of vaddr;
-> dma_map the paddr to iova;
-> If we appoint iova = vaddr (e.g iova can be controlled by the user space driver
-> through vfio DMA_MAP), This can also be called share virtual address between CPU
-> process and device..
+> I just took this patch as an example, it is in the other patches as
+> well. The code is designed around 'struct task_struct' while it should
+> really be designed around 'struct mm_struct'. You are not attaching a
+> specific process to a device, but the address-space of one or more
+> processes. And that should be reflected in the design.
 
-[Liu, Yi L] I see. Thx for raising it. I think this is a software way to get data shared between
-process and device. However, it's not sharing the virtual address space since device would
-still use iova to do access memory. So it should be another story.
+Agreed. The task struct is only really needed for obtaining the mm in my
+code. It also keeps hold of a pid, but that's wrong and easy to remove.
 
-Regards,
-Yi L
-
-> 2)
-> The second way is what this RFC did.
+> There are several bad implications of building it around task_struct,
+> one is the life-time of the binding. If the address space is detached
+> from the device when the process exits, only the thread that did the
+> setup can can safely make use of the device, because if the device is
+> accessed from another thread it will crash when the setup-thread exits.
 > 
+> There are other benefits of using mm_struct, for example that you can
+> use mmu_notifiers to exit-handling.
+> 
+> Here is how I think the base API should look like:
+> 
+> 	* iommu_iovm_device_init(struct device *dev);
+> 	  iommu_iovm_device_shutdown(struct device *dev);
+> 
+> 	  These two functions do the device specific setup/shutdown. For
+> 	  PCI this would include enabling the PRI, PASID, and ATS
+> 	  capabilities and setting up a PASID table for the device.
+
+Ok. On SMMU the PASID table also hosts the non-PASID page table pointer,
+so the table and capability cannot be setup later than attach_device (and
+we'll probably have to enable PASID in add_device). But I suppose it's an
+implementation detail.
+
+Some device drivers will want to use ATS alone, for accelerating IOVA
+traffic. Should we enable it automatically, or provide device drivers with
+a way to enable it manually? According to the PCI spec, PASID has to be
+enabled before ATS, so device_init would have to first disable ATS in that
+case.
+
+> 	* iommu_iovm_bind_mm(struct device *dev, struct mm_struct *mm,
+> 			     iovm_shutdown_cb *cb);
+> 	  iommu_iovm_unbind_mm(struct device *dev, struct mm_struct *mm);
+> 
+> 	  These functions add and delete the entries in the PASID table
+> 	  for the device and setup mmu_notifiers for the mm_struct to
+> 	  keep IOMMU TLBs in sync with the CPU TLBs.
+> 
+> 	  The shutdown_cb is invoked by the IOMMU core code when the
+> 	  mm_struct goes away, for example because the process
+> 	  segfaults.
+> 
+> 	The PASID handling is best done these functions as well, unless
+> 	there is a strong reason to allow device drivers to do the
+> 	handling themselves.
+> 
+> The context data can be stored directly in mm_struct, including the
+> PASID for that mm.
+
+Changing mm_struct probably isn't required at the moment, since the mm
+subsystem won't use the context data or the PASID. Outside of
+drivers/iommu/, only the caller of bind_mm needs the PASID in order to
+program it into the device. The only advantage I see would be slightly
+faster bind(), when finding out if a mm is already bound to devices. But
+we don't really need fast bind(), so I don't think we'd have enough
+material to argue for a change in mm_struct.
+
+We do need to allocate a separate "iommu_mm_struct" wrapper to store the
+mmu_notifier. Maybe bind() could return this structure (that contains the
+PASID), and unbind() would take this iommu_mm_struct as argument?
+
+Thanks
+Jean
