@@ -1,8 +1,8 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 3/6] iommu/vt-d: Add Intel IOMMU debugfs to show extended
-	context internals
-Date: Thu, 12 Oct 2017 17:03:39 -0700
-Message-ID: <1507853022-136228-4-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH 5/6] iommu/vt-d: Add debugfs extension to show Pasid table
+	contents
+Date: Thu, 12 Oct 2017 17:03:41 -0700
+Message-ID: <1507853022-136228-6-git-send-email-sohil.mehta@intel.com>
 References: <1507853022-136228-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,28 +24,25 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Debugfs extension to dump internals such as extended context table
-entries for each IOMMU to the userspace.
+Debugfs extension to dump the internals such as pasid table entries for
+each IOMMU to the userspace.
+
+Example of such dump in Kabylake:
 
 root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/intel_iommu_ctx
 
-IOMMU dmar1: Extended Root Table Addr:4558a1800
+IOMMU dmar0: Extended Root Table Addr:4310c4800
 Extended Root tbl entries:
-Bus 0 L: 4558a6001 H: 0
+Bus 0 L: 3ff5a8001 H: 0
 Lower Context table entries for Bus: 0
 [entry] DID :B :D .F    Low             High
-[16]    0000:00:02.00   4558a5005       102
+[80]    0000:00:0a.00   3ff5a9a05       102
 Higher Context tbl entries for Bus: 0
-[16]    0000:00:02.00   401b0000c       401400000
-
-IOMMU dmar0: Extended Root Table Addr:4558a2800
-Extended Root tbl entries:
-Bus 0 L: 4016f4001 H: 0
-Lower Context table entries for Bus: 0
-[entry] DID :B :D .F    Low             High
-[80]    0000:00:0a.00   4016f3a05       102
-Higher Context tbl entries for Bus: 0
-[80]    0000:00:0a.00   40150000c       671b80000000
+[80]    0000:00:0a.00   40160000c       725140000000
+Pasid Table Addr : ffff8db2c1600000
+Pasid table entries for domain: 0000
+[Entry]         Contents
+[0]             26a609801
 
 Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
@@ -53,61 +50,106 @@ Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu-debug.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ drivers/iommu/intel-iommu-debug.c | 33 +++++++++++++++++++++++++++++++++
+ drivers/iommu/intel-svm.c         |  8 --------
+ include/linux/intel-svm.h         |  8 ++++++++
+ 3 files changed, 41 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-index 90872ed..ef46820 100644
+index 295cadc..2de4f1b 100644
 --- a/drivers/iommu/intel-iommu-debug.c
 +++ b/drivers/iommu/intel-iommu-debug.c
-@@ -33,6 +33,38 @@
- 
+@@ -34,6 +34,32 @@
  #define TOTAL_BUS_NR (256) /* full bus range 256 */
  
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
-+				   struct intel_iommu *iommu, int bus, int ctx,
-+				   struct context_entry *context, bool new_ext)
+ #ifdef CONFIG_INTEL_IOMMU_SVM
++static void pasid_tbl_entry_show(struct seq_file *m, void *unused,
++				 struct intel_iommu *iommu)
 +{
-+	u64 ctx_lo;
++	int pasid_size = 0, i;
 +
-+	if (new_ext) {
-+		seq_printf(m, "Higher Context tbl entries for Bus: %d\n", bus);
-+		ctx_lo = context[0].lo;
++	if (ecap_pasid(iommu->ecap)) {
++		pasid_size = intel_iommu_get_pts(iommu);
++		seq_printf(m, "Pasid Table Addr : %llx\n", (unsigned long long)
++			   iommu->pasid_table);
 +
-+		if (!(ctx_lo & CONTEXT_PASIDE)) {
-+			context[1].hi = (u64)virt_to_phys(
-+					iommu->pasid_state_table);
-+			context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
-+					intel_iommu_get_pts(iommu);
++		if (iommu->pasid_table) {
++			seq_printf(m, "Pasid table entries for domain %d:\n",
++				   iommu->segment);
++			seq_printf(m, "%2s\t\t%4s\n", "[Entry]", "Contents");
++
++			/* Publish the pasid table entries here */
++			for (i = 0; i < pasid_size; i++) {
++				if (!iommu->pasid_table[i].val)
++					continue;
++				seq_printf(m, "[%d]\t%04llx\n", i,
++					   iommu->pasid_table[i].val);
++			}
 +		}
-+
-+		seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n", ctx,
-+			   iommu->segment, bus, PCI_SLOT(ctx), PCI_FUNC(ctx),
-+			   context[1].lo, context[1].hi);
 +	}
 +}
-+#else /* CONFIG_INTEL_IOMMU_SVM */
-+static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
-+				   struct intel_iommu *iommu, int bus, int ctx,
-+				   struct context_entry *context, bool new_ext)
++
+ static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
+ 				   struct intel_iommu *iommu, int bus, int ctx,
+ 				   struct context_entry *context, bool new_ext)
+@@ -57,6 +83,12 @@ static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
+ 	}
+ }
+ #else /* CONFIG_INTEL_IOMMU_SVM */
++static void pasid_tbl_entry_show(struct seq_file *m, void *unused,
++				 struct intel_iommu *iommu)
 +{
 +	return;
 +}
-+#endif /* CONFIG_INTEL_IOMMU_SVM */
 +
- static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
- 			       struct intel_iommu *iommu, int bus, bool ext,
- 			       bool new_ext)
-@@ -56,6 +88,9 @@ static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
- 			seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n",
- 				   ctx, iommu->segment, bus, PCI_SLOT(ctx),
- 				   PCI_FUNC(ctx), context[0].lo, context[0].hi);
-+
-+			ext_ctx_tbl_entry_show(m, unused, iommu, bus, ctx,
-+					       context, new_ext);
+ static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
+ 				   struct intel_iommu *iommu, int bus, int ctx,
+ 				   struct context_entry *context, bool new_ext)
+@@ -93,6 +125,7 @@ static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
+ 					       context, new_ext);
  		}
  	}
++	pasid_tbl_entry_show(m, unused, iommu);
  out:
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index f6697e5..2003f23 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -28,14 +28,6 @@
+ 
+ static irqreturn_t prq_event_thread(int irq, void *d);
+ 
+-struct pasid_entry {
+-	u64 val;
+-};
+-
+-struct pasid_state_entry {
+-	u64 val;
+-};
+-
+ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+ {
+ 	struct page *pages;
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 733eaf9..a8abad6 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -18,6 +18,14 @@
+ 
+ struct device;
+ 
++struct pasid_entry {
++	u64 val;
++};
++
++struct pasid_state_entry {
++	u64 val;
++};
++
+ struct svm_dev_ops {
+ 	void (*fault_cb)(struct device *dev, int pasid, u64 address,
+ 			 u32 private, int rwxp, int response);
 -- 
 2.7.4
