@@ -1,52 +1,83 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 0/4] SMMUv3 CMD_SYNC optimisation
-Date: Fri, 13 Oct 2017 20:05:22 +0100
-Message-ID: <20171013190521.GD30572@arm.com>
-References: <cover.1504182142.git.robin.murphy@arm.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu: Defer TLB flush in case of unmap
+ op
+Date: Fri, 13 Oct 2017 20:08:19 +0100
+Message-ID: <20171013190819.GE30572@arm.com>
+References: <CAFp+6iF=6W_X7Aq=Z4T+HuQT2x4sO+L3wCHuCOu8tQqK2QeTkQ@mail.gmail.com>
+ <1504676255-15980-1-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1504182142.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1504676255-15980-1-git-send-email-vivek.gautam@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: robin.murphy@arm.com, robdclark@gmail.com, stanimir.varbanov@linaro.org, sboyd@codeaurora.org, sricharan@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Thu, Aug 31, 2017 at 02:44:24PM +0100, Robin Murphy wrote:
-> Since Nate reported a reasonable performance boost from the out-of-line
-> MSI polling in v1 [1], I've now implemented the equivalent for cons
-> polling as well - that has been boot-tested on D05 with some trivial I/O
-> and at least doesn't seem to lock up or explode. There's also a little
-> cosmetic tweaking to make the patches a bit cleaner as a series.
+On Wed, Sep 06, 2017 at 11:07:35AM +0530, Vivek Gautam wrote:
+> We don't want to touch the TLB when smmu is suspended, so
+> defer the TLB maintenance until smmu is resumed.
+> On resume, we issue arm_smmu_device_reset() to restore the
+> configuration and flush the TLBs.
 > 
-> Robin.
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> ---
 > 
-> [1] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg19657.html
+> Hi Robin,
 > 
-> Robin Murphy (5):
->   iommu/arm-smmu-v3: Specialise CMD_SYNC handling
->   iommu/arm-smmu-v3: Forget about cmdq-sync interrupt
->   iommu/arm-smmu-v3: Use CMD_SYNC completion interrupt
->   iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq lock
->   iommu/arm-smmu-v3: Use burst-polling for sync completion
+> This patch comes after the discussion[1] we had about defering the
+> physical TLB maintenance for an unmap request if the SMMU is
+> suspended. Sorry for the delay in sending the updated version
+> of the patch.
+> 
+> As discussed, this patch now checks the PM state of smmu in
+> .tlb_add_flush and .tlb_sync page-table ops and return if smmu
+> is suspended. On resume without assuming that the TLBs state is
+> preserved, we issue a arm_smmu_device_reset() which is the safest
+> thing to do.
+> 
+> Alternatively, without going into the TLB defer thing, we can simply
+> avoid calling pm_runtime_get/put() in case of atomic context, as we
+> discussed in the other thread[3]. This will look something like this:
+> 
+>       static size_t arm_smmu_unmap(struct iommu_domain *domain, ....)
+>       {
+>       <snip>
+> 
+>      -       return ops->unmap(ops, iova, size);
+>      +       if (!in_atomic())
+>      +              pm_runtime_get_sync(smmu_domain->smmu->dev);
+>      +       ret = ops->unmap(ops, iova, size);
+>      +       if (!in_atomic())
+>      +              pm_runtime_put_sync(smmu_domain->smmu->dev);
+>      +
+>      +       return ret;
+>       }
+> 
+> Let me know which approach should work.
+> 
+> One other concern that we were discussing was of distributed SMMU
+> configuration.
+> "Say the GPU and its local TBU are in the same clock domain - if the GPU has
+> just gone idle and we've clock-gated it, but "the SMMU" (i.e. the TCU)
+> is still active servicing other devices, we will assume we can happily
+> unmap GPU buffers and issue TLBIs, but what happens with entries held in
+> the unclocked TBU's micro-TLB?"
+> 
+> In such scenerio, when master is clock gated and TCU is still running:
+>  -> If TCU and TBU are in same clock/power domain, then we can still
+>     issue TLBIs as long as the smmu is clocked.
+>  -> If TCU and TBU are in separate clock/power domains, then we better
+>     check the power state for TBUs and defer TLB maintenance if TBUs are
+>     clock gated.
+>     In such scenerio will it make sense to represent a distributed smmu
+>     as TCU device with multiple TBU child devices?
 
-What's this final mythical patch about? I don't see it in the series.
-
-Anyway, the first two patches look fine to me, but this doesn't apply
-on top of my iommu/devel branch so they will need rebasing.
-
-Cheers,
+This is one of the cases that *really* worries me, particular if we can
+end up freeing parts of the page table before the TLB maintenance has
+been completed. Speculative table walks from the TCU could lead to all
+sorts of horribly system behaviour, such as deadlock and/or data
+corruption so I'm really not happy with this approach.
 
 Will
