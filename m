@@ -1,18 +1,16 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] iommu/tegra: gart: Optionally check for
-	overwriting of page mappings
-Date: Fri, 13 Oct 2017 10:38:49 +0200
-Message-ID: <20171013083848.GA29513@8bytes.org>
-References: <cover.1507078770.git.digetx@gmail.com>
-	<7eea4a30b0f4fdbe14351cf2c6cf537365080d2d.1507078770.git.digetx@gmail.com>
-	<20171010095342.jyvzl2zex2pynqvv@8bytes.org>
-	<7dc66d59-3904-d1f8-3941-f9a534ff899a@gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] xhci: Set DMA parameters appropriately
+Date: Fri, 13 Oct 2017 11:48:50 +0100
+Message-ID: <6b85dd6d-9728-e4f7-30f2-55d9f6f10372@arm.com>
+References: <CGME20171011135703epcas1p246932a3a94ed2f137c0187bdab883ad8@epcas1p2.samsung.com>
+	<347776be09eb0ca947c1c8ced46ee3ca92d92e28.1507730115.git.robin.murphy@arm.com>
+	<1cde45f2-cdd5-6210-dc00-49637132b897@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <7dc66d59-3904-d1f8-3941-f9a534ff899a-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1cde45f2-cdd5-6210-dc00-49637132b897-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,21 +20,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 12, 2017 at 05:27:26PM +0300, Dmitry Osipenko wrote:
-> I'm not talking about any specific bug, but in general if allocator re-maps
-> already mapped region or unmaps the wrong-and-used region. I had those bug-cases
-> during of development of the 'scattered' graphics allocations for Tegra20.
-
-The dma-iommu code does not re-map already mapped regions and it doesn't
-unmap wrong regions. If it does it should be reported and fixed.
-
-So if you hit any bug there, please report it so that it can be fixed.
-
-
-Thanks,
-
-	Joerg
+SGkgTWFyZWssCgpPbiAxMy8xMC8xNyAwOToxNSwgTWFyZWsgU3p5cHJvd3NraSB3cm90ZToKPiBI
+aSBSb2JpbiwKPiAKPiBPbiAyMDE3LTEwLTExIDE1OjU2LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+
+IHhIQ0kgcmVxdWlyZXMgdGhhdCBkYXRhIGJ1ZmZlcnMgZG8gbm90IGNyb3NzIDY0S0IgYm91bmRh
+cmllcyAoYW5kIGFyZQo+PiB0aHVzIGF0IG1vc3QgNjRLQiBsb25nIGFzIHdlbGwpIC0gd2hpbHN0
+IHhoY2lfcXVldWVfe2J1bGssaXNvY31fdHgoKQo+PiBhbHJlYWR5IHNwbGl0IHRoZWlyIGlucHV0
+IGJ1ZmZlcnMgaW50byBpbmRpdmlkdWFsIFRSQnMgYXMgbmVjZXNzYXJ5LAo+PiBpdCdzIHN0aWxs
+IGEgZ29vZCBpZGVhIHRvIGFkdmVydGlzZSB0aGUgbGltaXRhdGlvbnMgdmlhIHRoZSBzdGFuZGFy
+ZCBETUEKPj4gQVBJIG1lY2hhbmlzbSwgc28gdGhhdCBtb3N0IHByb2R1Y2VycyBsaWtlIHRoZSBi
+bG9jayBsYXllciBhbmQgdGhlIERNQQo+PiBtYXBwaW5nIGltcGxlbWVudGF0aW9ucyBjYW4gbGF5
+IHRoaW5ncyBvdXQgY29ycmVjdGx5IHRvIGJlZ2luIHdpdGguCj4+Cj4+IFNpZ25lZC1vZmYtYnk6
+IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+IC0tLQo+PiDCoCBkcml2ZXJz
+L3VzYi9ob3N0L3hoY2kuYyB8IDQgKysrKwo+PiDCoCBkcml2ZXJzL3VzYi9ob3N0L3hoY2kuaCB8
+IDMgKysrCj4+IMKgIDIgZmlsZXMgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspCj4+Cj4+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL3VzYi9ob3N0L3hoY2kuYyBiL2RyaXZlcnMvdXNiL2hvc3QveGhjaS5j
+Cj4+IGluZGV4IDc0YjQ1MDA2NDFjMi4uMWU3ZTFlM2Q4YzQ4IDEwMDY0NAo+PiAtLS0gYS9kcml2
+ZXJzL3VzYi9ob3N0L3hoY2kuYwo+PiArKysgYi9kcml2ZXJzL3VzYi9ob3N0L3hoY2kuYwo+PiBA
+QCAtNDg4Myw2ICs0ODgzLDEwIEBAIGludCB4aGNpX2dlbl9zZXR1cChzdHJ1Y3QgdXNiX2hjZCAq
+aGNkLAo+PiB4aGNpX2dldF9xdWlya3NfdCBnZXRfcXVpcmtzKQo+PiDCoMKgwqDCoMKgwqDCoMKg
+wqAgZG1hX3NldF9jb2hlcmVudF9tYXNrKGRldiwgRE1BX0JJVF9NQVNLKDMyKSk7Cj4+IMKgwqDC
+oMKgwqAgfQo+PiDCoCArwqDCoMKgIGRldi0+ZG1hX3Bhcm1zID0gJnhoY2ktPmRtYV9wYXJtczsK
+Pj4gK8KgwqDCoCBkbWFfc2V0X21heF9zZWdfc2l6ZShkZXYsIFNaXzY0Syk7Cj4+ICvCoMKgwqAg
+ZG1hX3NldF9zZWdfYm91bmRhcnkoZGV2LCBTWl82NEsgLSAxKTsKPj4gKwo+PiDCoMKgwqDCoMKg
+IHhoY2lfZGJnKHhoY2ksICJDYWxsaW5nIEhDRCBpbml0XG4iKTsKPj4gwqDCoMKgwqDCoCAvKiBJ
+bml0aWFsaXplIEhDRCBhbmQgaG9zdCBjb250cm9sbGVyIGRhdGEgc3RydWN0dXJlcy4gKi8KPj4g
+wqDCoMKgwqDCoCByZXR2YWwgPSB4aGNpX2luaXQoaGNkKTsKPj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvdXNiL2hvc3QveGhjaS5oIGIvZHJpdmVycy91c2IvaG9zdC94aGNpLmgKPj4gaW5kZXggN2Vm
+NjllYTBiNDgwLi5hZmNhZTRjYzkwOGQgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvdXNiL2hvc3Qv
+eGhjaS5oCj4+ICsrKyBiL2RyaXZlcnMvdXNiL2hvc3QveGhjaS5oCj4+IEBAIC0xNzY3LDYgKzE3
+NjcsOSBAQCBzdHJ1Y3QgeGhjaV9oY2Qgewo+PiDCoMKgwqDCoMKgIHN0cnVjdCBkbWFfcG9vbMKg
+wqDCoCAqc21hbGxfc3RyZWFtc19wb29sOwo+PiDCoMKgwqDCoMKgIHN0cnVjdCBkbWFfcG9vbMKg
+wqDCoCAqbWVkaXVtX3N0cmVhbXNfcG9vbDsKPj4gwqAgK8KgwqDCoCAvKiBETUEgYWxpZ25tZW50
+IHJlc3RyaWN0aW9ucyAqLwo+PiArwqDCoMKgIHN0cnVjdCBkZXZpY2VfZG1hX3BhcmFtZXRlcnMg
+ZG1hX3Bhcm1zOwo+PiArCj4+IMKgwqDCoMKgwqAgLyogSG9zdCBjb250cm9sbGVyIHdhdGNoZG9n
+IHRpbWVyIHN0cnVjdHVyZXMgKi8KPj4gwqDCoMKgwqDCoCB1bnNpZ25lZCBpbnTCoMKgwqDCoMKg
+wqDCoCB4aGNfc3RhdGU7Cj4+IMKgIAo+IAo+IEFyZSB5b3Ugc3VyZSB0aGF0IHhoY2lfaGNkIGxp
+ZmUgdGltZSBpcyBwcm9wZXIgdG8ga2VlcCBkbWFfcGFybXM/IEl0IGxvb2tzCj4gdGhhdCB3aGVu
+IGRyaXZlciBnZXRzIHJlbW92ZWQgYW5kIHhoY2lfaGNkIGlzIGZyZWVkLCB0aGUgZG1hX3Bhcm1z
+IHdpbGwKPiBwb2ludCB0byBmcmVlZCBtZW1vcnkuIE1heWJlIGl0IHdvdWxkIG1ha2Ugc2Vuc2Ug
+dG8gY2xlYXIgZGV2LT5kbWFfcGFybXMKPiBzb21ld2hlcmUgb3IgZGVmaW5pdGVseSBjaGFuZ2Ug
+dGhlIHdheSBkbWFfcGFybXMgYXJlIGFsbG9jYXRlZD8KCkFGQUlDUyBpdCBsaXZlcyB1bnRpbCB0
+aGUgbGFzdCB1c2JfcHV0X2hjZCgpIGNhbGwsIHdoaWNoIGlzIHByZXR0eSBtdWNoCnRoZSBsYXN0
+IHRoaW5nIGluIHRoZSBkcml2ZXJzJyAucmVtb3ZlIHBhdGhzLCBzbyBpdCBsb29rcyB0byBmb2xs
+b3cgdGhlCnN0YW5kYXJkIHBhcmFkaWdtIGV2aWRlbmNlZCBieSBvdGhlciBkbWFfcGFybXMgdXNl
+cnMuIEFueSBkYW5nbGluZwpwb2ludGVyIGFmdGVyIHRoZSBkcml2ZXIgaGFzIGJlZW4gdW5ib3Vu
+ZCB3aWxsIGJlIHJlaW5pdGlhbGlzZWQgYnkgYQpzdWJzZXF1ZW50IHByb2JlLCBhbmQgYW55b25l
+IHVzaW5nIGFuIHVuYm91bmQgZGV2aWNlIGZvciBETUEgQVBJIGNhbGxzCmlzIHZlcnkgd3Jvbmcg
+YW55d2F5LgoKPiBPbiB0aGUgb3RoZXIgaGFuZCA2NEsgaXMgdGhlIGRlZmF1bHQgc2VnbWVudCBz
+aXplIGlmIG5vIGRtYV9wYXJtcyBhcmUKPiBwcm92aWRlZCwgc28gdGhlcmUgaXMgdmVyeSBsaXR0
+bGUgdmFsdWUgYWRkZWQgYnkgdGhpcyBwYXRjaC4KCkkgcHJlZmVyIHRvIGV4cGxpY2l0bHkgc2V0
+IHRoZSBzZWdtZW50IHNpemUgZm9yIGNsZWFubGluZXNzIGFuZCB0bwplbXBoYXNpemUgdGhlIGRp
+ZmZlcmVuY2UgYmV0d2VlbiAid2hhdGV2ZXIgdGhlIGRlZmF1bHQgdmFsdWUgaXMgaXMgZmluZSIK
+YW5kICJ3ZSBoYXZlIGEgcmVhbCBoYXJkd2FyZSBsaW1pdCBvZiA2NEsiLiBXaGF0IHJlYWxseSBt
+YXR0ZXJzIGhlcmUKdGhvdWdoIGlzIHRoZSBub24tZGVmYXVsdCBzZWdtZW50IGJvdW5kYXJ5IG1h
+c2sgLSB0aGF0J3MgdGhlIG1vdGl2aWF0aW9uCmZvciB0aGUgcGF0Y2guCgpSb2Jpbi4KX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
