@@ -1,175 +1,177 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 4/4] iommu/ipmmu-vmsa: Unify ipmmu_ops
-Date: Fri, 13 Oct 2017 19:23:42 +0100
-Message-ID: <449928aa04c858ca906bbdd1bcd2060bfd9cb0c5.1507918320.git.robin.murphy@arm.com>
-References: <cover.1507918320.git.robin.murphy@arm.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <cover.1507918320.git.robin.murphy@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, arnd@arndb.de, laurent.pinchart+renesas@ideasonboard.com, magnus.damm@gmail.com, geert+renesas@glider.be, linux-arm-kernel@lists.infradead.org, linux-renesas-soc@vger.kernel.org
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 3/4] iommu/arm-smmu-v3: Use CMD_SYNC completion MSI
+Date: Fri, 13 Oct 2017 19:32:38 +0100
+Message-ID: <20171013183237.GA30572@arm.com>
+References: <cover.1504182142.git.robin.murphy@arm.com>
+	<dbf0ce00f8e249c64f3d2041acd8d91818178e52.1504182142.git.robin.murphy@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <dbf0ce00f8e249c64f3d2041acd8d91818178e52.1504182142.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The remaining difference between the ARM-specific and iommu-dma ops is
-in the {add,remove}_device implementations, but even those have some
-overlap and duplication. By stubbing out the few arm_iommu_*() calls,
-we can get rid of the rest of the inline #ifdeffery to both simplify the
-code and improve build coverage.
+Hi Robin,
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/ipmmu-vmsa.c | 69 +++++++++++++---------------------------------
- 1 file changed, 19 insertions(+), 50 deletions(-)
+This mostly looks good. Just a few comments below.
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 4d69c08145a1..2005aad09f2f 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -27,6 +27,11 @@
- #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- #include <asm/dma-iommu.h>
- #include <asm/pgalloc.h>
-+#else
-+#define arm_iommu_create_mapping(...)	NULL
-+#define arm_iommu_attach_device(...)	-ENODEV
-+#define arm_iommu_release_mapping(...)	do {} while (0)
-+#define arm_iommu_detach_device(...)	do {} while (0)
- #endif
- 
- #include "io-pgtable.h"
-@@ -678,26 +683,17 @@ static int ipmmu_of_xlate(struct device *dev,
- 	return ipmmu_init_platform_device(dev, spec);
- }
- 
--#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
--
--static int ipmmu_add_device(struct device *dev)
-+static int ipmmu_init_arm_mapping(struct device *dev)
- {
- 	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
- 	struct iommu_group *group;
- 	int ret;
- 
--	/*
--	 * Only let through devices that have been verified in xlate()
--	 */
--	if (!mmu)
--		return -ENODEV;
--
- 	/* Create a device group and add the device to it. */
- 	group = iommu_group_alloc();
- 	if (IS_ERR(group)) {
- 		dev_err(dev, "Failed to allocate IOMMU group\n");
--		ret = PTR_ERR(group);
--		goto error;
-+		return PTR_ERR(group);
- 	}
- 
- 	ret = iommu_group_add_device(group, dev);
-@@ -705,8 +701,7 @@ static int ipmmu_add_device(struct device *dev)
- 
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to add device to IPMMU group\n");
--		group = NULL;
--		goto error;
-+		return ret;
- 	}
- 
- 	/*
-@@ -742,41 +737,14 @@ static int ipmmu_add_device(struct device *dev)
- 	return 0;
- 
- error:
--	if (mmu)
-+	iommu_group_remove_device(dev);
-+	if (mmu->mapping)
- 		arm_iommu_release_mapping(mmu->mapping);
- 
--	if (!IS_ERR_OR_NULL(group))
--		iommu_group_remove_device(dev);
--
- 	return ret;
- }
- 
--static void ipmmu_remove_device(struct device *dev)
--{
--	arm_iommu_detach_device(dev);
--	iommu_group_remove_device(dev);
--}
--
--static const struct iommu_ops ipmmu_ops = {
--	.domain_alloc = ipmmu_domain_alloc,
--	.domain_free = ipmmu_domain_free,
--	.attach_dev = ipmmu_attach_device,
--	.detach_dev = ipmmu_detach_device,
--	.map = ipmmu_map,
--	.unmap = ipmmu_unmap,
--	.map_sg = default_iommu_map_sg,
--	.iova_to_phys = ipmmu_iova_to_phys,
--	.add_device = ipmmu_add_device,
--	.remove_device = ipmmu_remove_device,
--	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
--	.of_xlate = ipmmu_of_xlate,
--};
--
--#endif /* !CONFIG_ARM && CONFIG_IOMMU_DMA */
--
--#ifdef CONFIG_IOMMU_DMA
--
--static int ipmmu_add_device_dma(struct device *dev)
-+static int ipmmu_add_device(struct device *dev)
- {
- 	struct iommu_group *group;
- 
-@@ -786,15 +754,20 @@ static int ipmmu_add_device_dma(struct device *dev)
- 	if (!to_ipmmu(dev))
- 		return -ENODEV;
- 
-+	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA))
-+		return ipmmu_init_arm_mapping(dev);
-+
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
-+	iommu_group_put(group);
- 	return 0;
- }
- 
--static void ipmmu_remove_device_dma(struct device *dev)
-+static void ipmmu_remove_device(struct device *dev)
- {
-+	arm_iommu_detach_device(dev);
- 	iommu_group_remove_device(dev);
- }
- 
-@@ -824,15 +797,13 @@ static const struct iommu_ops ipmmu_ops = {
- 	.iotlb_sync = ipmmu_iotlb_sync,
- 	.map_sg = default_iommu_map_sg,
- 	.iova_to_phys = ipmmu_iova_to_phys,
--	.add_device = ipmmu_add_device_dma,
--	.remove_device = ipmmu_remove_device_dma,
-+	.add_device = ipmmu_add_device,
-+	.remove_device = ipmmu_remove_device,
- 	.device_group = ipmmu_find_group,
- 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
- 	.of_xlate = ipmmu_of_xlate,
- };
- 
--#endif /* CONFIG_IOMMU_DMA */
--
- /* -----------------------------------------------------------------------------
-  * Probe/remove and init
-  */
-@@ -929,9 +900,7 @@ static int ipmmu_remove(struct platform_device *pdev)
- 	iommu_device_sysfs_remove(&mmu->iommu);
- 	iommu_device_unregister(&mmu->iommu);
- 
--#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- 	arm_iommu_release_mapping(mmu->mapping);
--#endif
- 
- 	ipmmu_device_reset(mmu);
- 
--- 
-2.13.4.dirty
+On Thu, Aug 31, 2017 at 02:44:27PM +0100, Robin Murphy wrote:
+> As an IRQ, the CMD_SYNC interrupt is not particularly useful, not least
+> because we often need to wait for sync completion within someone else's
+> IRQ handler anyway. However, when the SMMU is both coherent and supports
+> MSIs, we can have a lot more fun by not using it as an interrupt at all.
+> Following the example suggested in the architecture and using a write
+> targeting normal memory, we can let callers wait on a status variable
+> outside the lock instead of having to stall the entire queue or even
+> touch MMIO registers. Since multiple sync commands are guaranteed to
+> complete in order, a simple incrementing sequence count is all we need
+> to unambiguously support any realistic number of overlapping waiters.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> v2: Remove redundant 'bool msi' command member, other cosmetic tweaks
+> 
+>  drivers/iommu/arm-smmu-v3.c | 47 +++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 45 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index f066725298cd..311f482b93d5 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -377,7 +377,16 @@
+>  
+>  #define CMDQ_SYNC_0_CS_SHIFT		12
+>  #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
+> +#define CMDQ_SYNC_0_CS_IRQ		(1UL << CMDQ_SYNC_0_CS_SHIFT)
+>  #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
+> +#define CMDQ_SYNC_0_MSH_SHIFT		22
+> +#define CMDQ_SYNC_0_MSH_ISH		(3UL << CMDQ_SYNC_0_MSH_SHIFT)
+> +#define CMDQ_SYNC_0_MSIATTR_SHIFT	24
+> +#define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
+> +#define CMDQ_SYNC_0_MSIDATA_SHIFT	32
+> +#define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
+> +#define CMDQ_SYNC_1_MSIADDR_SHIFT	0
+> +#define CMDQ_SYNC_1_MSIADDR_MASK	0xffffffffffffcUL
+>  
+>  /* Event queue */
+>  #define EVTQ_ENT_DWORDS			4
+> @@ -409,6 +418,7 @@
+>  /* High-level queue structures */
+>  #define ARM_SMMU_POLL_TIMEOUT_US	100
+>  #define ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US	1000000 /* 1s! */
+> +#define ARM_SMMU_SYNC_TIMEOUT_US	1000000 /* 1s! */
+
+We only ever do this when waiting for the queue to drain, so may as well
+just reuse the drain timeout.
+
+>  #define MSI_IOVA_BASE			0x8000000
+>  #define MSI_IOVA_LENGTH			0x100000
+> @@ -504,6 +514,10 @@ struct arm_smmu_cmdq_ent {
+>  		} pri;
+>  
+>  		#define CMDQ_OP_CMD_SYNC	0x46
+> +		struct {
+> +			u32			msidata;
+> +			u64			msiaddr;
+> +		} sync;
+>  	};
+>  };
+>  
+> @@ -617,6 +631,9 @@ struct arm_smmu_device {
+>  	int				gerr_irq;
+>  	int				combined_irq;
+>  
+> +	atomic_t			sync_nr;
+> +	u32				sync_count;
+
+It's probably worth sticking these in separate cachelines so we don't
+get spurious wakeups when sync_nr is incremented. (yes, I know it should
+be the ERG, but that can be unreasonably huge!).
+
+> +
+>  	unsigned long			ias; /* IPA */
+>  	unsigned long			oas; /* PA */
+>  	unsigned long			pgsize_bitmap;
+> @@ -878,7 +895,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  		}
+>  		break;
+>  	case CMDQ_OP_CMD_SYNC:
+> -		cmd[0] |= CMDQ_SYNC_0_CS_SEV;
+> +		if (ent->sync.msiaddr)
+> +			cmd[0] |= CMDQ_SYNC_0_CS_IRQ;
+> +		else
+> +			cmd[0] |= CMDQ_SYNC_0_CS_SEV;
+> +		cmd[0] |= CMDQ_SYNC_0_MSH_ISH | CMDQ_SYNC_0_MSIATTR_OIWB;
+> +		cmd[0] |= (u64)ent->sync.msidata << CMDQ_SYNC_0_MSIDATA_SHIFT;
+> +		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+>  		break;
+>  	default:
+>  		return -ENOENT;
+> @@ -964,21 +987,40 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+>  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>  }
+>  
+> +static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+> +{
+> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_SYNC_TIMEOUT_US);
+> +	u32 val = smp_cond_load_acquire(&smmu->sync_count,
+> +					(int)(VAL - sync_idx) >= 0 ||
+> +					!ktime_before(ktime_get(), timeout));
+> +
+> +	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
+
+There are some theoretical overflow issues here which I don't think will
+ever occur in practice, but deserve at least a comment to explain why.
+
+> +}
+> +
+>  static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+>  {
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+>  	unsigned long flags;
+>  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+> +	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
+> +		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
+
+I don't think this is sufficient for the case where we fail to setup MSIs
+and fall back on legacy IRQs.
+
+>  	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+>  	int ret;
+>  
+> +	if (msi) {
+> +		ent.sync.msidata = atomic_inc_return(&smmu->sync_nr);
+
+I don't think you need barrier semantics here.
+
+> +		ent.sync.msiaddr = virt_to_phys(&smmu->sync_count);
+> +	}
+>  	arm_smmu_cmdq_build_cmd(cmd, &ent);
+>  
+>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+>  	arm_smmu_cmdq_insert_cmd(smmu, cmd);
+> -	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
+> +	if (!msi)
+> +		ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
+>  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>  
+> +	if (msi)
+> +		ret = arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
+
+This looks like the queue polling should be wrapped up in a function that
+returns with the spinlock released.
+
+Will
