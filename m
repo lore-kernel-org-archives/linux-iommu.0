@@ -1,106 +1,37 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v9 2/4] iommu/dma: Add a helper function to reserve HW
- MSI address regions for IOMMU drivers
-Date: Fri, 13 Oct 2017 20:23:50 +0100
-Message-ID: <20171013192350.GA32130@arm.com>
-References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
- <20171006140450.89652-3-shameerali.kolothum.thodi@huawei.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH 0/4] ipmmu-vmsa cleanup
+Date: Fri, 13 Oct 2017 21:54:47 +0200
+Message-ID: <CAK8P3a2oCaFuuAuLVaVnepryKDKFzemK8CO9W+dTZSpmvzxQhw@mail.gmail.com>
+References: <cover.1507918320.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171006140450.89652-3-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Cc: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1507918320.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 06, 2017 at 03:04:48PM +0100, Shameer Kolothum wrote:
-> IOMMU drivers can use this to implement their .get_resv_regions callback
-> for HW MSI specific reservations(e.g. ARM GICv3 ITS MSI region).
-> 
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> ---
->  drivers/iommu/dma-iommu.c | 20 ++++++++++++++++++++
->  include/linux/dma-iommu.h |  7 +++++++
->  2 files changed, 27 insertions(+)
+On Fri, Oct 13, 2017 at 8:23 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> Arnd reports a build warning[1] thanks to me missing ipmmu-vmsa's second
+> set of ops when converting io-pgtable-arm users to the new iommu_iotlb_*
+> callbacks. Rather than just treat the symptom with a point fix, this
+> seemed like a good excuse to clean up the messy #ifdeffery and
+> duplication in the driver that led to the oversight in the first place.
+>
+> Build-tested successfully for arm64, ARM, and ARM + CONFIG_IOMMU_DMA.
 
-I'd like to see Robin's Ack on this, because this is his code and he had
-ideas on ways to solve this problem properly.
+Very nice. I looked over the patches and while I only understood half of
+what you do and why it was different to start with, I very much welcome
+the end result.
 
-Will
-
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 9d1cebe..bae677e 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -19,6 +19,7 @@
->   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
->   */
->  
-> +#include <linux/acpi_iort.h>
->  #include <linux/device.h>
->  #include <linux/dma-iommu.h>
->  #include <linux/gfp.h>
-> @@ -27,6 +28,7 @@
->  #include <linux/iova.h>
->  #include <linux/irq.h>
->  #include <linux/mm.h>
-> +#include <linux/of_iommu.h>
->  #include <linux/pci.h>
->  #include <linux/scatterlist.h>
->  #include <linux/vmalloc.h>
-> @@ -198,6 +200,24 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
->  }
->  EXPORT_SYMBOL(iommu_dma_get_resv_regions);
->  
-> +/**
-> + * iommu_dma_get_msi_resv_regions - Reserved region driver helper
-> + * @dev: Device from iommu_get_resv_regions()
-> + * @list: Reserved region list from iommu_get_resv_regions()
-> + *
-> + * IOMMU drivers can use this to implement their .get_resv_regions
-> + * callback for HW MSI specific reservations. For now, this only
-> + * covers ITS MSI region reservation using ACPI IORT helper function.
-> + */
-> +int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list)
-> +{
-> +	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
-> +		return iort_iommu_msi_get_resv_regions(dev, list);
-> +
-> +	return -ENODEV;
-> +}
-> +EXPORT_SYMBOL(iommu_dma_get_msi_resv_regions);
-> +
->  static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
->  		phys_addr_t start, phys_addr_t end)
->  {
-> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> index 92f2083..6062ef0 100644
-> --- a/include/linux/dma-iommu.h
-> +++ b/include/linux/dma-iommu.h
-> @@ -74,6 +74,8 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
->  void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
->  void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
->  
-> +int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list);
-> +
->  #else
->  
->  struct iommu_domain;
-> @@ -107,6 +109,11 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
->  {
->  }
->  
-> +static inline int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head *list)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  #endif	/* CONFIG_IOMMU_DMA */
->  #endif	/* __KERNEL__ */
->  #endif	/* __DMA_IOMMU_H */
-> -- 
-> 1.9.1
-> 
-> 
+       Arnd
