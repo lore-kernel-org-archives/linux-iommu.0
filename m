@@ -1,144 +1,137 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/4] iommu/ipmmu-vmsa: Unify domain alloc/free
-Date: Fri, 13 Oct 2017 19:23:39 +0100
-Message-ID: <764101fdd58e798686186e094e7574c41379c942.1507918320.git.robin.murphy@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH 2/4] iommu/ipmmu-vmsa: Simplify group allocation
+Date: Fri, 13 Oct 2017 19:23:40 +0100
+Message-ID: <c3abc3bea25735556b5c24aaf29edf919d52fc75.1507918320.git.robin.murphy@arm.com>
 References: <cover.1507918320.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1507918320.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <cover.1507918320.git.robin.murphy@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, arnd@arndb.de, laurent.pinchart+renesas@ideasonboard.com, magnus.damm@gmail.com, geert+renesas@glider.be, linux-arm-kernel@lists.infradead.org, linux-renesas-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-We have two implementations for ipmmu_ops->alloc depending on
-CONFIG_IOMMU_DMA, the difference being whether they accept the
-IOMMU_DOMAIN_DMA type or not. However, iommu_dma_get_cookie() is
-guaranteed to return an error when !CONFIG_IOMMU_DMA, so if
-ipmmu_domain_alloc_dma() was actually checking and handling the return
-value correctly, it would behave the same as ipmmu_domain_alloc()
-anyway.
+We go through quite the merry dance in order to find masters behind the
+same IPMMU instance, so that we can ensure they are grouped together.
+None of which is really necessary, since the master's private data
+already points to the particular IPMMU it is associated with, and that
+IPMMU instance data is the perfect place to keep track of a per-instance
+group directly.
 
-Similarly for freeing; iommu_put_dma_cookie() is robust by design.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 65 +++++++++++++++++-----------------------------
- 1 file changed, 24 insertions(+), 41 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 53 ++++++++--------------------------------------
+ 1 file changed, 9 insertions(+), 44 deletions(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 0bef160de7dd..dedb386fa81d 100644
+index dedb386fa81d..d8c9bd4dc657 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -528,6 +528,27 @@ static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
- 	return &domain->io_domain;
+@@ -43,6 +43,7 @@ struct ipmmu_vmsa_device {
+ 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+ 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
+ 
++	struct iommu_group *group;
+ 	struct dma_iommu_mapping *mapping;
+ };
+ 
+@@ -59,8 +60,6 @@ struct ipmmu_vmsa_domain {
+ 
+ struct ipmmu_vmsa_iommu_priv {
+ 	struct ipmmu_vmsa_device *mmu;
+-	struct device *dev;
+-	struct list_head list;
+ };
+ 
+ static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
+@@ -674,7 +673,6 @@ static int ipmmu_init_platform_device(struct device *dev,
+ 		return -ENOMEM;
+ 
+ 	priv->mmu = platform_get_drvdata(ipmmu_pdev);
+-	priv->dev = dev;
+ 	dev->iommu_fwspec->iommu_priv = priv;
+ 	return 0;
  }
+@@ -790,9 +788,6 @@ static const struct iommu_ops ipmmu_ops = {
  
-+static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
-+{
-+	struct iommu_domain *io_domain = NULL;
-+
-+	switch (type) {
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		io_domain = __ipmmu_domain_alloc(type);
-+		break;
-+
-+	case IOMMU_DOMAIN_DMA:
-+		io_domain = __ipmmu_domain_alloc(type);
-+		if (io_domain && iommu_get_dma_cookie(io_domain)) {
-+			kfree(io_domain);
-+			io_domain = NULL;
-+		}
-+		break;
-+	}
-+
-+	return io_domain;
-+}
-+
- static void ipmmu_domain_free(struct iommu_domain *io_domain)
- {
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
-@@ -536,6 +557,7 @@ static void ipmmu_domain_free(struct iommu_domain *io_domain)
- 	 * Free the domain resources. We assume that all devices have already
- 	 * been detached.
- 	 */
-+	iommu_put_dma_cookie(io_domain);
- 	ipmmu_domain_destroy_context(domain);
- 	free_io_pgtable_ops(domain->iop);
- 	kfree(domain);
-@@ -671,14 +693,6 @@ static int ipmmu_of_xlate(struct device *dev,
+ #ifdef CONFIG_IOMMU_DMA
  
- #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- 
--static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
--{
--	if (type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
--
--	return __ipmmu_domain_alloc(type);
--}
--
- static int ipmmu_add_device(struct device *dev)
- {
- 	struct ipmmu_vmsa_device *mmu = NULL;
-@@ -779,37 +793,6 @@ static const struct iommu_ops ipmmu_ops = {
- static DEFINE_SPINLOCK(ipmmu_slave_devices_lock);
- static LIST_HEAD(ipmmu_slave_devices);
- 
--static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
--{
--	struct iommu_domain *io_domain = NULL;
--
--	switch (type) {
--	case IOMMU_DOMAIN_UNMANAGED:
--		io_domain = __ipmmu_domain_alloc(type);
--		break;
--
--	case IOMMU_DOMAIN_DMA:
--		io_domain = __ipmmu_domain_alloc(type);
--		if (io_domain)
--			iommu_get_dma_cookie(io_domain);
--		break;
--	}
--
--	return io_domain;
--}
--
--static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
--{
--	switch (io_domain->type) {
--	case IOMMU_DOMAIN_DMA:
--		iommu_put_dma_cookie(io_domain);
--		/* fall-through */
--	default:
--		ipmmu_domain_free(io_domain);
--		break;
--	}
--}
+-static DEFINE_SPINLOCK(ipmmu_slave_devices_lock);
+-static LIST_HEAD(ipmmu_slave_devices);
 -
  static int ipmmu_add_device_dma(struct device *dev)
  {
  	struct iommu_group *group;
-@@ -878,8 +861,8 @@ static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
+@@ -807,55 +802,25 @@ static int ipmmu_add_device_dma(struct device *dev)
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+ 
+-	spin_lock(&ipmmu_slave_devices_lock);
+-	list_add(&to_priv(dev)->list, &ipmmu_slave_devices);
+-	spin_unlock(&ipmmu_slave_devices_lock);
+ 	return 0;
  }
  
- static const struct iommu_ops ipmmu_ops = {
--	.domain_alloc = ipmmu_domain_alloc_dma,
--	.domain_free = ipmmu_domain_free_dma,
-+	.domain_alloc = ipmmu_domain_alloc,
-+	.domain_free = ipmmu_domain_free,
- 	.attach_dev = ipmmu_attach_device,
- 	.detach_dev = ipmmu_detach_device,
- 	.map = ipmmu_map,
+ static void ipmmu_remove_device_dma(struct device *dev)
+ {
+-	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
+-
+-	spin_lock(&ipmmu_slave_devices_lock);
+-	list_del(&priv->list);
+-	spin_unlock(&ipmmu_slave_devices_lock);
+-
+ 	iommu_group_remove_device(dev);
+ }
+ 
+-static struct device *ipmmu_find_sibling_device(struct device *dev)
++static struct iommu_group *ipmmu_find_group(struct device *dev)
+ {
+ 	struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
+-	struct ipmmu_vmsa_iommu_priv *sibling_priv = NULL;
+-	bool found = false;
+-
+-	spin_lock(&ipmmu_slave_devices_lock);
+-
+-	list_for_each_entry(sibling_priv, &ipmmu_slave_devices, list) {
+-		if (priv == sibling_priv)
+-			continue;
+-		if (sibling_priv->mmu == priv->mmu) {
+-			found = true;
+-			break;
+-		}
+-	}
+-
+-	spin_unlock(&ipmmu_slave_devices_lock);
+-
+-	return found ? sibling_priv->dev : NULL;
+-}
+-
+-static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
+-{
+ 	struct iommu_group *group;
+-	struct device *sibling;
+ 
+-	sibling = ipmmu_find_sibling_device(dev);
+-	if (sibling)
+-		group = iommu_group_get(sibling);
+-	if (!sibling || IS_ERR(group))
+-		group = generic_device_group(dev);
++	if (priv->mmu->group)
++		return iommu_group_ref_get(priv->mmu->group);
++
++	group = iommu_group_alloc();
++	if (!IS_ERR(group))
++		priv->mmu->group = group;
+ 
+ 	return group;
+ }
+@@ -873,7 +838,7 @@ static const struct iommu_ops ipmmu_ops = {
+ 	.iova_to_phys = ipmmu_iova_to_phys,
+ 	.add_device = ipmmu_add_device_dma,
+ 	.remove_device = ipmmu_remove_device_dma,
+-	.device_group = ipmmu_find_group_dma,
++	.device_group = ipmmu_find_group,
+ 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+ 	.of_xlate = ipmmu_of_xlate,
+ };
 -- 
 2.13.4.dirty
