@@ -1,171 +1,185 @@
-From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 4/6] iommu/vt-d: Add debugfs extension to show register
-	contents
-Date: Thu, 12 Oct 2017 17:03:40 -0700
-Message-ID: <1507853022-136228-5-git-send-email-sohil.mehta@intel.com>
+From: Sohil Mehta <sohil.mehta@intel.com>
+Subject: [PATCH 6/6] iommu/vt-d: Debugfs support for Intel IOMMU Interrupt remapping
+Date: Thu, 12 Oct 2017 17:03:42 -0700
+Message-ID: <1507853022-136228-7-git-send-email-sohil.mehta@intel.com>
 References: <1507853022-136228-1-git-send-email-sohil.mehta@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1507853022-136228-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1507853022-136228-1-git-send-email-sohil.mehta@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Ashok Raj <ashok.raj@intel.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Debugfs extension for Intel IOMMU to dump Interrupt remapping table
+entries for Interrupt remapping and Interrupt posting.
 
-Debugfs extension to dump all the register contents for each IOMMU
-device to the user space via debugfs.
+The file /sys/kernel/debug/intel_iommu/intel_iommu_interrupt_remap
+provides detailed information, such as Index, Source Id, Destination Id,
+Vector and the raw values for entries with the present bit set, in the
+format shown.
 
-example:
-root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/intel_iommu_regset
+Remapped Interrupt supported on IOMMU: dmar5
+ IR table address:ffff93e09d54c310
+-----------------------------------------------------------
+ Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low
+ 1      3a00 00000600 2c  0000000000043a00 00000600002c0009
+ 111    4301 00000900 a2  0000000000044301 0000090000a20009
 
-DMAR: dmar1: reg_base_addr fed90000
-Name         Offset     Contents
-VER          0x00       0x0000000000000010
-CAP          0x08       0x01c0000c40660462
-ECAP         0x10       0x0000019e2ff0505e
-GCMD         0x18       0x0000000000000000
-GSTS         0x1c       0x00000000c7000000
-RTADDR       0x20       0x00000004558d6800
-CCMD         0x28       0x0800000000000000
-FSTS         0x34       0x0000000000000000
-FECTL        0x38       0x0000000000000000
-FEDATA       0x3c       0xfee0100c00004141
+Posted Interrupt supported on IOMMU: dmar5
+ IR table address:ffff93e09d54c310
+--------------------------------------------------------------------
+ Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low
+ 4      4300 00000010 40c7c880 41  0000001000044300 40c7c88000418001
+ 5      4300 00000010 40c7c880 51  0000001000044300 40c7c88000518001
 
-Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Gayatri Kammela <gayatri.kammela@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Sohil Mehta <sohil.mehta@intel.com>
 ---
- drivers/iommu/intel-iommu-debug.c | 97 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 97 insertions(+)
+ drivers/iommu/intel-iommu-debug.c | 115 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 115 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-index ef46820..295cadc 100644
+index 2de4f1b..102aca6 100644
 --- a/drivers/iommu/intel-iommu-debug.c
 +++ b/drivers/iommu/intel-iommu-debug.c
-@@ -161,6 +161,94 @@ static const struct file_operations intel_iommu_debug_fops = {
- 	.owner		= THIS_MODULE,
+@@ -12,6 +12,7 @@
+  *
+  * Authors: Gayatri Kammela <gayatri.kammela@intel.com>
+  *          Jacob Pan <jacob.jun.pan@linux.intel.com>
++ *          Sohil Mehta <sohil.mehta@intel.com>
+  *
+  */
+ 
+@@ -282,6 +283,111 @@ static const struct file_operations intel_iommu_regs_fops = {
+ 	.release	= single_release,
  };
  
-+static int intel_iommu_debugfs_regs_show(struct seq_file *m, void *unused)
++#ifdef CONFIG_IRQ_REMAP
++static void ir_tbl_remap_entry_show(struct seq_file *m, void *unused,
++			       struct intel_iommu *iommu)
++{
++	int idx;
++	struct irte *ri_entry;
++
++	/* Print the header only once */
++	seq_printf(m, " Index  SID  Dest_ID  Vct"
++		   " Raw_value_high   Raw_value_low\n");
++
++	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
++		ri_entry = &iommu->ir_table->base[idx];
++		if (!ri_entry->present || ri_entry->p_pst)
++			continue;
++		seq_printf(m,
++			   " %d\t%04x %08x %02x  %016llx %016llx\n",
++			   idx, ri_entry->sid,
++			   ri_entry->dest_id, ri_entry->vector,
++			   ri_entry->high, ri_entry->low);
++	}
++}
++
++static void ir_tbl_posted_entry_show(struct seq_file *m, void *unused,
++				struct intel_iommu *iommu)
++{
++	int idx;
++	struct irte *pi_entry;
++
++	/* Print the header only once */
++	seq_printf(m, " Index  SID  PDA_high PDA_low  Vct"
++		   " Raw_value_high   Raw_value_low\n");
++
++	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
++		pi_entry = &iommu->ir_table->base[idx];
++		if (!pi_entry->present || !pi_entry->p_pst)
++			continue;
++		seq_printf(m,
++			   " %d\t%04x %08x %08x %02x  %016llx %016llx\n",
++			   idx, pi_entry->sid,
++			   pi_entry->pda_h, (pi_entry->pda_l)<<6,
++			   pi_entry->vector, pi_entry->high,
++			   pi_entry->low);
++	}
++}
++
++/*
++ * For active IOMMUs go through the Interrupt remapping
++ * table and print valid entries in a table format for
++ * Remapped and Posted Interrupts.
++ */
++static int intel_iommu_ir_show(struct seq_file *m, void *unused)
 +{
 +	struct dmar_drhd_unit *drhd;
 +	struct intel_iommu *iommu;
-+	unsigned long long base;
-+	int i;
-+	struct regset {
-+		int offset;
-+		char *regs;
-+	};
-+
-+	static const struct regset regstr[] = {{DMAR_VER_REG, "VER"},
-+					       {DMAR_CAP_REG, "CAP"},
-+					       {DMAR_ECAP_REG, "ECAP"},
-+					       {DMAR_GCMD_REG, "GCMD"},
-+					       {DMAR_GSTS_REG, "GSTS"},
-+					       {DMAR_RTADDR_REG, "RTADDR"},
-+					       {DMAR_CCMD_REG, "CCMD"},
-+					       {DMAR_FSTS_REG, "FSTS"},
-+					       {DMAR_FECTL_REG, "FECTL"},
-+					       {DMAR_FEDATA_REG, "FEDATA"},
-+					       {DMAR_FEADDR_REG, "FEADDR"},
-+					       {DMAR_FEUADDR_REG, "FEUADDR"},
-+					       {DMAR_AFLOG_REG, "AFLOG"},
-+					       {DMAR_PMEN_REG, "PMEN"},
-+					       {DMAR_PLMBASE_REG, "PLMBASE"},
-+					       {DMAR_PLMLIMIT_REG, "PLMLIMIT"},
-+					       {DMAR_PHMBASE_REG, "PHMBASE"},
-+					       {DMAR_PHMLIMIT_REG,  "PHMLIMIT"},
-+					       {DMAR_IQH_REG, "IQH"},
-+					       {DMAR_IQT_REG, "IQT"},
-+					       {DMAR_IQ_SHIFT, "IQ"},
-+					       {DMAR_IQA_REG, "IQA"},
-+					       {DMAR_ICS_REG, "ICS"},
-+					       {DMAR_IRTA_REG, "IRTA"},
-+					       {DMAR_PQH_REG, "PQH"},
-+					       {DMAR_PQT_REG, "PQT"},
-+					       {DMAR_PQA_REG, "PQA"},
-+					       {DMAR_PRS_REG, "PRS"},
-+					       {DMAR_PECTL_REG, "PECTL"},
-+					       {DMAR_PEDATA_REG, "PEDATA"},
-+					       {DMAR_PEADDR_REG, "PEADDR"},
-+					       {DMAR_PEUADDR_REG, "PEUADDR"} };
 +
 +	rcu_read_lock();
 +	for_each_active_iommu(iommu, drhd) {
-+		if (iommu) {
-+			if (!drhd->reg_base_addr) {
-+				seq_printf(m, "IOMMU: Invalid base address\n");
-+				rcu_read_unlock();
-+				return -EINVAL;
-+			}
++		if (!iommu || !ecap_ir_support(iommu->ecap))
++			continue;
 +
-+			base = drhd->reg_base_addr;
-+			seq_printf(m, "\nDMAR: %s: reg_base_addr %llx\n",
-+				   iommu->name, base);
-+			seq_printf(m, "%-12s %2s\t%8s\n", "Name", "Offset",
-+				   "Contents");
-+			/*
-+			 * Publish the contents of the 64-bit hardware registers
-+			 * by adding the offset to the pointer(virtual addr)
-+			 */
-+			for (i = 0 ; i < ARRAY_SIZE(regstr); i++) {
-+				seq_printf(m, "%-12s 0x%02x\t0x%016lx\n",
-+					   regstr[i].regs, regstr[i].offset,
-+					   readq(iommu->reg + regstr[i].offset)
-+					  );
-+			}
-+		}
++		seq_printf(m,
++			   "\nRemapped Interrupt supported on IOMMU: %s"
++			   "\n IR table address:%llx\n",
++			   iommu->name, (long long)iommu->ir_table);
++
++		seq_printf(m, "---------------------------------------"
++			   "--------------------\n");
++		ir_tbl_remap_entry_show(m, unused, iommu);
 +	}
 +
++	seq_printf(m, "\n****\t****\t****\t****\t****\t****\t****\t****\n");
++
++	for_each_active_iommu(iommu, drhd) {
++		if (!iommu || !cap_pi_support(iommu->cap))
++			continue;
++
++		seq_printf(m,
++			   "\nPosted Interrupt supported on IOMMU: %s"
++			   "\n IR table address:%llx\n",
++			   iommu->name, (long long)iommu->ir_table);
++
++		seq_printf(m, "---------------------------------------"
++			   "-----------------------------\n");
++		ir_tbl_posted_entry_show(m, unused, iommu);
++	}
 +	rcu_read_unlock();
++
 +	return 0;
 +}
 +
-+static int intel_iommu_regs_open(struct inode *inode, struct file *file)
++static int intel_iommu_ir_open(struct inode *inode, struct file *file)
 +{
-+	return single_open(file, intel_iommu_debugfs_regs_show,
-+			   inode->i_private);
++	return single_open(file, intel_iommu_ir_show, inode->i_private);
 +}
 +
-+static const struct file_operations intel_iommu_regs_fops = {
-+	.open		= intel_iommu_regs_open,
++static const struct file_operations intel_iommu_ir_fops = {
++	.open		= intel_iommu_ir_open,
 +	.read		= seq_read,
 +	.llseek		= seq_lseek,
 +	.release	= single_release,
++	.owner		= THIS_MODULE,
 +};
++#endif
 +
  void __init intel_iommu_debugfs_init(void)
  {
  	struct dentry *iommu_debug_root;
-@@ -178,6 +266,15 @@ void __init intel_iommu_debugfs_init(void)
+@@ -306,6 +412,15 @@ void __init intel_iommu_debugfs_init(void)
  		goto err;
  	}
  
-+	if (!debugfs_create_file("intel_iommu_regset", S_IRUGO,
-+				 iommu_debug_root, NULL, &intel_iommu_regs_fops
-+				)) {
-+		pr_err("Can't create intel_iommu_regset file\n");
++#ifdef CONFIG_IRQ_REMAP
++	if (!debugfs_create_file("intel_iommu_interrupt_remap", S_IRUGO,
++				 iommu_debug_root, NULL,
++				 &intel_iommu_ir_fops)) {
++		pr_err("Can't create intel_iommu_interrupt_remap file\n");
 +		goto err;
 +	}
++#endif
 +
-+	return;
-+
- err:
- 	debugfs_remove_recursive(iommu_debug_root);
+ 	return;
  
+ err:
 -- 
 2.7.4
