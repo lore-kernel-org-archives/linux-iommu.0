@@ -1,79 +1,73 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 12/36] dt-bindings: document stall and PASID
-	properties for IOMMU masters
-Date: Fri, 13 Oct 2017 14:10:51 -0500
-Message-ID: <20171013191051.lgxbcobkzzj5guhv@rob-hp-laptop>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-13-jean-philippe.brucker@arm.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers
+ behind SMMUv3
+Date: Fri, 13 Oct 2017 20:22:10 +0100
+Message-ID: <20171013192209.GH30572@arm.com>
+References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
+ <20171006140450.89652-5-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171006133203.22803-13-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+In-Reply-To: <20171006140450.89652-5-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: lorenzo.pieralisi@arm.com, marc.zyngier@arm.com, sudeep.holla@arm.com, robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com, gabriele.paoloni@huawei.com, john.garry@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, devel@acpica.org, linuxarm@huawei.com, wangzhou1@hisilicon.com, guohanjun@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 06, 2017 at 02:31:39PM +0100, Jean-Philippe Brucker wrote:
-> On ARM systems, some platform devices behind an IOMMU may support stall
-> and PASID features. Stall is the ability to recover from page faults and
-> PASID offers multiple process address spaces to the device. Together they
-> allow to do paging with a device. Let the firmware tell us when a device
-> supports stall and PASID.
-
-Can't these be implied by the compatible string of the devices?
-
+On Fri, Oct 06, 2017 at 03:04:50PM +0100, Shameer Kolothum wrote:
+> The HiSilicon erratum 161010801 describes the limitation of
+> HiSilicon platforms hip06/hip07 to support the SMMUv3 mappings
+> for MSI transactions.
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> PCIe controller on these platforms has to differentiate the MSI
+> payload against other DMA payload and has to modify the MSI
+> payload. This basically makes it difficult for this platforms to
+> have a SMMU translation for MSI. In order to workaround this, ARM
+> SMMUv3 driver requires a quirk to treat the MSI regions separately.
+> Such a quirk is currently missing for DT based systems and therefore
+> we need to blacklist the hip06/hip07 PCIe controllers.
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 > ---
->  Documentation/devicetree/bindings/iommu/iommu.txt | 24 +++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
+>  drivers/pci/dwc/pcie-hisi.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
-> index 5a8b4624defc..c589b75f7277 100644
-> --- a/Documentation/devicetree/bindings/iommu/iommu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
-> @@ -86,6 +86,30 @@ have a means to turn off translation. But it is invalid in such cases to
->  disable the IOMMU's device tree node in the first place because it would
->  prevent any driver from properly setting up the translations.
+> diff --git a/drivers/pci/dwc/pcie-hisi.c b/drivers/pci/dwc/pcie-hisi.c
+> index a201791..6800747 100644
+> --- a/drivers/pci/dwc/pcie-hisi.c
+> +++ b/drivers/pci/dwc/pcie-hisi.c
+> @@ -270,6 +270,12 @@ static int hisi_pcie_probe(struct platform_device *pdev)
+>  	struct resource *reg;
+>  	int ret;
 >  
-> +Optional properties:
-> +--------------------
-> +- dma-can-stall: When present, the master can wait for a transaction to
-> +  complete for an indefinite amount of time. Upon translation fault some
-> +  IOMMUs, instead of aborting the translation immediately, may first
-> +  notify the driver and keep the transaction in flight. This allows the OS
-> +  to inspect the fault and, for example, make physical pages resident
-> +  before updating the mappings and completing the transaction. Such IOMMU
-> +  accepts a limited number of simultaneous stalled transactions before
-> +  having to either put back-pressure on the master, or abort new faulting
-> +  transactions.
+> +	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
+> +			of_property_read_bool(dev->of_node, "iommu-map")) {
+> +		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting PCIe controllers behind SMMUv3\n");
+> +		return -ENODEV;
+> +	}
 > +
-> +  Firmware has to opt-in stalling, because most buses and masters don't
-> +  support it. In particular it isn't compatible with PCI, where
-> +  transactions have to complete before a time limit. More generally it
-> +  won't work in systems and masters that haven't been designed for
-> +  stalling. For example the OS, in order to handle a stalled transaction,
-> +  may attempt to retrieve pages from secondary storage in a stalled
-> +  domain, leading to a deadlock.
-> +
-> +- pasid-bits: Some masters support multiple address spaces for DMA. By
-> +  tagging DMA transactions with an address space identifier. By default,
-> +  this is 0, which means that the device only has one address space.
-> +
+>  	hisi_pcie = devm_kzalloc(dev, sizeof(*hisi_pcie), GFP_KERNEL);
+>  	if (!hisi_pcie)
+>  		return -ENOMEM;
+> @@ -340,6 +346,12 @@ static int hisi_pcie_almost_ecam_probe(struct platform_device *pdev)
+>  	struct device *dev = &pdev->dev;
+>  	struct pci_ecam_ops *ops;
 >  
->  Notes:
->  ======
-> -- 
-> 2.13.3
-> 
+> +	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
+> +			of_property_read_bool(dev->of_node, "iommu-map")) {
+> +		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting PCIe controllers behind SMMUv3\n");
+> +		return -ENODEV;
+> +	}
+
+This isn't the right way to solve this problem. I was really hoping you'd
+come up with a solution for DT, and I know you've been trying, so I suppose
+for now we'll just have to go with the ACPI workaround you have and leave DT
+in the balance. I'm not at all happy with that, but I don't think this patch
+really improves things.
+
+What I think you should do is remove the relevant smmu/iommu-map entries
+from the .dts files that are available for these platforms (i.e. comment
+them out with a description as to why).
+
+Will
