@@ -1,15 +1,16 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 3/4] iommu/arm-smmu-v3: Use CMD_SYNC completion MSI
-Date: Fri, 13 Oct 2017 19:32:38 +0100
-Message-ID: <20171013183237.GA30572@arm.com>
+Subject: Re: [PATCH v2 4/4] iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq
+	lock
+Date: Fri, 13 Oct 2017 19:59:17 +0100
+Message-ID: <20171013185917.GB30572@arm.com>
 References: <cover.1504182142.git.robin.murphy@arm.com>
-	<dbf0ce00f8e249c64f3d2041acd8d91818178e52.1504182142.git.robin.murphy@arm.com>
+	<ff239173e47dfa0fc76eaa2a25b3cbcfe8dce5e6.1504182142.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <dbf0ce00f8e249c64f3d2041acd8d91818178e52.1504182142.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <ff239173e47dfa0fc76eaa2a25b3cbcfe8dce5e6.1504182142.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,153 +26,176 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
-This mostly looks good. Just a few comments below.
+Some of my comments on patch 3 are addressed here, but I'm really struggling
+to convince myself that this algorithm is correct. My preference would
+be to leave the code as it is for SMMUs that don't implement MSIs, but
+comments below anyway because it's an interesting idea.
 
-On Thu, Aug 31, 2017 at 02:44:27PM +0100, Robin Murphy wrote:
-> As an IRQ, the CMD_SYNC interrupt is not particularly useful, not least
-> because we often need to wait for sync completion within someone else's
-> IRQ handler anyway. However, when the SMMU is both coherent and supports
-> MSIs, we can have a lot more fun by not using it as an interrupt at all.
-> Following the example suggested in the architecture and using a write
-> targeting normal memory, we can let callers wait on a status variable
-> outside the lock instead of having to stall the entire queue or even
-> touch MMIO registers. Since multiple sync commands are guaranteed to
-> complete in order, a simple incrementing sequence count is all we need
-> to unambiguously support any realistic number of overlapping waiters.
+On Thu, Aug 31, 2017 at 02:44:28PM +0100, Robin Murphy wrote:
+> Even without the MSI trick, we can still do a lot better than hogging
+> the entire queue while it drains. All we actually need to do for the
+> necessary guarantee of completion is wait for our particular command to
+> have been consumed, and as long as we keep track of where it is there is
+> no need to block other CPUs from adding further commands in the
+> meantime. There is one theoretical (but incredibly unlikely) edge case
+> to avoid, where cons has wrapped twice to still appear 'behind' the sync
+> position - this is easily disambiguated by adding a generation count to
+> the queue to indicate when prod wraps, since cons cannot wrap twice
+> without prod having wrapped at least once.
 > 
 > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
 > 
-> v2: Remove redundant 'bool msi' command member, other cosmetic tweaks
+> v2: New
 > 
->  drivers/iommu/arm-smmu-v3.c | 47 +++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 45 insertions(+), 2 deletions(-)
+>  drivers/iommu/arm-smmu-v3.c | 81 ++++++++++++++++++++++++++++++++-------------
+>  1 file changed, 58 insertions(+), 23 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index f066725298cd..311f482b93d5 100644
+> index 311f482b93d5..f5c5da553803 100644
 > --- a/drivers/iommu/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -377,7 +377,16 @@
+> @@ -417,7 +417,6 @@
 >  
->  #define CMDQ_SYNC_0_CS_SHIFT		12
->  #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
-> +#define CMDQ_SYNC_0_CS_IRQ		(1UL << CMDQ_SYNC_0_CS_SHIFT)
->  #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
-> +#define CMDQ_SYNC_0_MSH_SHIFT		22
-> +#define CMDQ_SYNC_0_MSH_ISH		(3UL << CMDQ_SYNC_0_MSH_SHIFT)
-> +#define CMDQ_SYNC_0_MSIATTR_SHIFT	24
-> +#define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
-> +#define CMDQ_SYNC_0_MSIDATA_SHIFT	32
-> +#define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
-> +#define CMDQ_SYNC_1_MSIADDR_SHIFT	0
-> +#define CMDQ_SYNC_1_MSIADDR_MASK	0xffffffffffffcUL
->  
->  /* Event queue */
->  #define EVTQ_ENT_DWORDS			4
-> @@ -409,6 +418,7 @@
 >  /* High-level queue structures */
 >  #define ARM_SMMU_POLL_TIMEOUT_US	100
->  #define ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US	1000000 /* 1s! */
-> +#define ARM_SMMU_SYNC_TIMEOUT_US	1000000 /* 1s! */
-
-We only ever do this when waiting for the queue to drain, so may as well
-just reuse the drain timeout.
-
->  #define MSI_IOVA_BASE			0x8000000
->  #define MSI_IOVA_LENGTH			0x100000
-> @@ -504,6 +514,10 @@ struct arm_smmu_cmdq_ent {
->  		} pri;
+> -#define ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US	1000000 /* 1s! */
+>  #define ARM_SMMU_SYNC_TIMEOUT_US	1000000 /* 1s! */
 >  
->  		#define CMDQ_OP_CMD_SYNC	0x46
-> +		struct {
-> +			u32			msidata;
-> +			u64			msiaddr;
-> +		} sync;
->  	};
+>  #define MSI_IOVA_BASE			0x8000000
+> @@ -540,6 +539,7 @@ struct arm_smmu_queue {
+>  struct arm_smmu_cmdq {
+>  	struct arm_smmu_queue		q;
+>  	spinlock_t			lock;
+> +	int				generation;
 >  };
 >  
-> @@ -617,6 +631,9 @@ struct arm_smmu_device {
->  	int				gerr_irq;
->  	int				combined_irq;
->  
-> +	atomic_t			sync_nr;
-> +	u32				sync_count;
-
-It's probably worth sticking these in separate cachelines so we don't
-get spurious wakeups when sync_nr is incremented. (yes, I know it should
-be the ERG, but that can be unreasonably huge!).
-
-> +
->  	unsigned long			ias; /* IPA */
->  	unsigned long			oas; /* PA */
->  	unsigned long			pgsize_bitmap;
-> @@ -878,7 +895,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->  		}
->  		break;
->  	case CMDQ_OP_CMD_SYNC:
-> -		cmd[0] |= CMDQ_SYNC_0_CS_SEV;
-> +		if (ent->sync.msiaddr)
-> +			cmd[0] |= CMDQ_SYNC_0_CS_IRQ;
-> +		else
-> +			cmd[0] |= CMDQ_SYNC_0_CS_SEV;
-> +		cmd[0] |= CMDQ_SYNC_0_MSH_ISH | CMDQ_SYNC_0_MSIATTR_OIWB;
-> +		cmd[0] |= (u64)ent->sync.msidata << CMDQ_SYNC_0_MSIDATA_SHIFT;
-> +		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
->  		break;
->  	default:
->  		return -ENOENT;
-> @@ -964,21 +987,40 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>  struct arm_smmu_evtq {
+> @@ -770,21 +770,12 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+>  	writel(q->prod, q->prod_reg);
 >  }
 >  
-> +static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+> -/*
+> - * Wait for the SMMU to consume items. If drain is true, wait until the queue
+> - * is empty. Otherwise, wait until there is at least one free slot.
+> - */
+> -static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+> +/* Wait for the SMMU to consume items, until there is at least one free slot */
+> +static int queue_poll_cons(struct arm_smmu_queue *q, bool wfe)
+>  {
+> -	ktime_t timeout;
+> -	unsigned int delay = 1;
+> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
+>  
+> -	/* Wait longer if it's queue drain */
+> -	timeout = ktime_add_us(ktime_get(), drain ?
+> -					    ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US :
+> -					    ARM_SMMU_POLL_TIMEOUT_US);
+> -
+> -	while (queue_sync_cons(q), (drain ? !queue_empty(q) : queue_full(q))) {
+> +	while (queue_sync_cons(q), queue_full(q)) {
+>  		if (ktime_compare(ktime_get(), timeout) > 0)
+>  			return -ETIMEDOUT;
+>  
+> @@ -792,8 +783,7 @@ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+>  			wfe();
+>  		} else {
+>  			cpu_relax();
+> -			udelay(delay);
+> -			delay *= 2;
+> +			udelay(1);
+>  		}
+>  	}
+>  
+> @@ -959,15 +949,20 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>  	queue_write(Q_ENT(q, cons), cmd, q->ent_dwords);
+>  }
+>  
+> -static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
+> +static u32 arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
+>  {
+>  	struct arm_smmu_queue *q = &smmu->cmdq.q;
+>  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+>  
+>  	while (queue_insert_raw(q, cmd) == -ENOSPC) {
+> -		if (queue_poll_cons(q, false, wfe))
+> +		if (queue_poll_cons(q, wfe))
+>  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+>  	}
+> +
+> +	if (Q_IDX(q, q->prod) == 0)
+> +		smmu->cmdq.generation++;
+
+The readers of generation are using READ_ONCE, so you're missing something
+here.
+
+> +
+> +	return q->prod;
+>  }
+>  
+>  static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+> @@ -997,15 +992,54 @@ static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+>  	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
+>  }
+>  
+> +static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
+> +				   int sync_gen)
 > +{
 > +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_SYNC_TIMEOUT_US);
-> +	u32 val = smp_cond_load_acquire(&smmu->sync_count,
-> +					(int)(VAL - sync_idx) >= 0 ||
-> +					!ktime_before(ktime_get(), timeout));
+> +	struct arm_smmu_queue *q = &smmu->cmdq.q;
+> +	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+> +	unsigned int delay = 1;
 > +
-> +	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
+> +	do {
+> +		queue_sync_cons(q);
+> +		/*
+> +		 * If we see updates quickly enough, cons has passed sync_idx,
+> +		 * but not yet wrapped. At worst, cons might have actually
+> +		 * wrapped an even number of times, but that still guarantees
+> +		 * the original sync must have been consumed.
+> +		 */
+> +		if (Q_IDX(q, q->cons) >= Q_IDX(q, sync_idx) &&
+> +		    Q_WRP(q, sync_idx) == Q_WRP(q, q->cons))
 
-There are some theoretical overflow issues here which I don't think will
-ever occur in practice, but deserve at least a comment to explain why.
+Can you move this into a separate function please, like we have for
+queue_full and queue_empty?
 
-> +}
+> +			return 0;
+> +		/*
+> +		 * Otherwise, cons may have passed sync_idx and wrapped one or
+> +		 * more times to appear behind it again, but in that case prod
+> +		 * must also be one or more generations ahead.
+> +		 */
+> +		if (Q_IDX(q, q->cons) < Q_IDX(q, sync_idx) &&
+> +		    READ_ONCE(smmu->cmdq.generation) != sync_gen)
+
+There's another daft overflow case here which deserves a comment (and even
+if it *did* happen, we'll recover gracefully).
+
+> +			return 0;
 > +
->  static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
->  {
->  	u64 cmd[CMDQ_ENT_DWORDS];
->  	unsigned long flags;
->  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
-> +	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
-> +		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
+> +		if (wfe) {
+> +			wfe();
 
-I don't think this is sufficient for the case where we fail to setup MSIs
-and fall back on legacy IRQs.
+This is a bit scary... if we miss a generation update, just due to store
+propagation latency (maybe it's buffered by the updater), I think we can
+end up going into wfe when there's not an event pending. Using xchg
+everywhere might work, but there's still a race on having somebody update
+generation. The ordering here just looks generally suspicious to me because
+you have the generation writer in arm_smmu_cmdq_insert_cmd effectively
+doing:
 
->  	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
->  	int ret;
->  
-> +	if (msi) {
-> +		ent.sync.msidata = atomic_inc_return(&smmu->sync_nr);
+  Write prod
+  Write generation
 
-I don't think you need barrier semantics here.
+and the reader in arm_smmu_sync_poll_cons doing:
 
-> +		ent.sync.msiaddr = virt_to_phys(&smmu->sync_count);
-> +	}
->  	arm_smmu_cmdq_build_cmd(cmd, &ent);
->  
->  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
->  	arm_smmu_cmdq_insert_cmd(smmu, cmd);
-> -	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
-> +	if (!msi)
-> +		ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
->  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
->  
-> +	if (msi)
-> +		ret = arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
+  Read cons
+  Read generation
 
-This looks like the queue polling should be wrapped up in a function that
-returns with the spinlock released.
+so I can't see anything that gives you order to guarantee that the
+generation is seen to be up-to-date.
+
+But it's also Friday evening and my brain is pretty fried ;)
 
 Will
