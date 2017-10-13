@@ -1,107 +1,89 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on
-	driver init.
-Date: Fri, 13 Oct 2017 16:48:45 +0100
-Message-ID: <938d213c-f207-218e-554f-08035eaa1e6d@arm.com>
-References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
-	<20170920141352.29377-1-Liviu.Dudau@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.14-rc4
+Date: Fri, 13 Oct 2017 17:51:57 +0200
+Message-ID: <20171013155153.lo3mqqf46zav4jhg@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170920141352.29377-1-Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, IOMMU ML <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="7g3poemjknrexsny"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
 
-On 20/09/17 15:13, Liviu Dudau wrote:
-> If the IPMMU driver is compiled in the kernel it will replace the
-> platform bus IOMMU ops on running the ipmmu_init() function, regardless
-> if there is any IPMMU hardware present or not. This screws up systems
-> that just want to build a generic kernel that runs on multiple platforms
-> and use a different IOMMU implementation.
-> 
-> Move the bus_set_iommu() call at the end of the ipmmu_probe() function
-> when we know that hardware is present. With current IOMMU framework it
-> should be safe (at least for OF case).
-> 
-> Now that the ipmmu_init() and ipmmu_exit() functions are simple calls to
-> platform_driver_register() and platform_driver_unregister(), replace
-> them with the module_platform_driver() macro call.
+--7g3poemjknrexsny
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Are you OK with taking this patch as a fix for 4.14, or would you rather
-have something that can safely backport past 4.12 without implicit
-dependencies? This is a config/link-order dependent thing that's been
-lurking since the beginning, but only coming to light now that other
-drivers are changing their behaviour, so I don't think there's really a
-single Fixes: commit that can be singled out.
+Hi Linus,
 
-Robin.
+The following changes since commit 8a5776a5f49812d29fe4b2d0a2d71675c3facf3f:
 
-> Signed-off-by: Liviu Dudau <Liviu.Dudau-5wv7dgnIgG8@public.gmane.org>
-> Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 29 +++++------------------------
->  1 file changed, 5 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 195d6e93ac718..31912997bffdf 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -966,10 +966,11 @@ static int ipmmu_probe(struct platform_device *pdev)
->  		return ret;
->  
->  	/*
-> -	 * We can't create the ARM mapping here as it requires the bus to have
-> -	 * an IOMMU, which only happens when bus_set_iommu() is called in
-> -	 * ipmmu_init() after the probe function returns.
-> +	 * Now that we have validated the presence of the hardware, set
-> +	 * the bus IOMMU ops to enable future domain and device setup.
->  	 */
-> +	if (!iommu_present(&platform_bus_type))
-> +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
->  
->  	platform_set_drvdata(pdev, mmu);
->  
-> @@ -1006,27 +1007,7 @@ static struct platform_driver ipmmu_driver = {
->  	.remove	= ipmmu_remove,
->  };
->  
-> -static int __init ipmmu_init(void)
-> -{
-> -	int ret;
-> -
-> -	ret = platform_driver_register(&ipmmu_driver);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	if (!iommu_present(&platform_bus_type))
-> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> -
-> -	return 0;
-> -}
-> -
-> -static void __exit ipmmu_exit(void)
-> -{
-> -	return platform_driver_unregister(&ipmmu_driver);
-> -}
-> -
-> -subsys_initcall(ipmmu_init);
-> -module_exit(ipmmu_exit);
-> +module_platform_driver(ipmmu_driver);
->  
->  MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
->  MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
-> 
+  Linux 4.14-rc4 (2017-10-08 20:53:29 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.14-rc4
+
+for you to fetch changes up to ce76353f169a6471542d999baf3d29b121dce9c0:
+
+  iommu/amd: Finish TLB flush in amd_iommu_unmap() (2017-10-13 17:32:19 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.14-rc4
+
+Three fixes:
+
+	- Keep an important data structure in the Exynos driver around
+	  after kernel-init to fix a kernel-oops
+
+	- Keep SWIOTLB enabled when SME is active in the AMD IOMMU
+	  driver
+
+	- Add a missing IOTLB sync to the AMD IOMMU driver
+
+----------------------------------------------------------------
+Joerg Roedel (1):
+      iommu/amd: Finish TLB flush in amd_iommu_unmap()
+
+Marek Szyprowski (1):
+      iommu/exynos: Remove initconst attribute to avoid potential kernel oops
+
+Tom Lendacky (1):
+      iommu/amd: Do not disable SWIOTLB if SME is active
+
+ drivers/iommu/amd_iommu.c    | 11 +++++++----
+ drivers/iommu/exynos-iommu.c |  2 +-
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--7g3poemjknrexsny
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZ4OEZAAoJECvwRC2XARrjLlIP/iir6P/L36zQXoTn0M9k4MGJ
+YRzlkp+K29v1mzkoT5S3VUPlMpecXOuPVAlCYGrMLC5p0pxp5Jda3u4yhcQwbIBn
+2LuXdpNn6nDNQg/AUq/IBQrGhXXMJDoZGDoFT10SA55XQldUJY692rC9jhT/RljK
+TFVP5l4FokDVvpFkjBHfZUJaamZASRqgQ/dR7xi69+M9D1mvc16KXD7Q+CDVLM1P
+2erIe+vSqYCgz72tLa6B2YN21kWQPDjMeXAIMLQCI0KmnFiW7a+ohJq3i++KwPiv
+qWgw/H4Du+T+bPIDvBgX+R1W16y6AqrMNTOVPbcbGjw3vHso6CBLnP0MlLrNGxUG
+I6jd6+61kmZE+C03tOv085KnycBYorJM//9OdCiwNlWXKhTZhOrgDkO710qXlQ7Z
+0A6Ax2Uie3oEeI1vWxd4pJaTniU50h7CRRsTizU/igeuubCDUKT0ih2WmuO3x0s2
+kGZO0ma/idSZGJS9bFDPbr3IK5riXuNY8JeTXgDvSGiuxPWmp8iTCOnQFQkwd2EU
+maIw21Z/RbeHta2hKk9EwUTetf3U8USfUklAeHQrXrfg7ukw2jU38TV3q/68JaNb
+rch1CrLVCGj82wy7TvtdcFhaYxuN1QRqSX3dUZ6WE/mbVIoV0lUm0EIDpLk1hVXt
+73OxFIcwf/UMhJhX1vHX
+=GN4P
+-----END PGP SIGNATURE-----
+
+--7g3poemjknrexsny--
