@@ -1,11 +1,12 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/6] iommu/vt-d: Add debugfs support for Intel IOMMU internals
-Date: Thu, 12 Oct 2017 17:03:37 -0700
-Message-ID: <1507853022-136228-2-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH 2/6] iommu/vt-d: Add Intel IOMMU debugfs to show context
+	internals
+Date: Thu, 12 Oct 2017 17:03:38 -0700
+Message-ID: <1507853022-136228-3-git-send-email-sohil.mehta@intel.com>
 References: <1507853022-136228-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1507853022-136228-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -21,177 +22,123 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-
-Enable Intel IOMMU debug to export Intel IOMMU internals in debugfs
-
-Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/Kconfig       | 10 ++++++++++
- drivers/iommu/intel-iommu.c | 31 +++----------------------------
- include/linux/intel-iommu.h | 32 ++++++++++++++++++++++++++++++++
- include/linux/intel-svm.h   |  2 +-
- 4 files changed, 46 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f3a2134..d7588ee 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -152,6 +152,16 @@ config INTEL_IOMMU
- 	  and include PCI device scope covered by these DMA
- 	  remapping devices.
- 
-+config INTEL_IOMMU_DEBUG
-+	bool "Export Intel IOMMU internals in DebugFS"
-+	depends on INTEL_IOMMU && DEBUG_FS
-+	default n
-+	help
-+	  IOMMU internal states such as context, PASID tables can be seen via
-+	  debugfs. Select this option if you want to export these internals.
-+
-+	  Say Y if you need this.
-+
- config INTEL_IOMMU_SVM
- 	bool "Support for Shared Virtual Memory with Intel IOMMU"
- 	depends on INTEL_IOMMU && X86
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6784a05..419a559 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -185,16 +185,6 @@ static int rwbf_quirk;
- static int force_on = 0;
- int intel_iommu_tboot_noforce;
- 
--/*
-- * 0: Present
-- * 1-11: Reserved
-- * 12-63: Context Ptr (12 - (haw-1))
-- * 64-127: Reserved
-- */
--struct root_entry {
--	u64	lo;
--	u64	hi;
--};
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
- 
- /*
-@@ -220,21 +210,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
- 
- 	return re->hi & VTD_PAGE_MASK;
- }
--/*
-- * low 64 bits:
-- * 0: present
-- * 1: fault processing disable
-- * 2-3: translation type
-- * 12-63: address space root
-- * high 64 bits:
-- * 0-2: address width
-- * 3-6: aval
-- * 8-23: domain id
-- */
--struct context_entry {
--	u64 lo;
--	u64 hi;
--};
- 
- static inline void context_clear_pasid_enable(struct context_entry *context)
- {
-@@ -261,7 +236,7 @@ static inline bool __context_present(struct context_entry *context)
- 	return (context->lo & 1);
- }
- 
--static inline bool context_present(struct context_entry *context)
-+bool context_present(struct context_entry *context)
- {
- 	return context_pasid_enabled(context) ?
- 	     __context_present(context) :
-@@ -821,7 +796,7 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
- 	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
- }
- 
--static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
-+struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
- 						       u8 bus, u8 devfn, int alloc)
- {
- 	struct root_entry *root = &iommu->root_entry[bus];
-@@ -5200,7 +5175,7 @@ static void intel_iommu_put_resv_regions(struct device *dev,
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- #define MAX_NR_PASID_BITS (20)
--static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
-+unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
- {
- 	/*
- 	 * Convert ecap_pss to extend context entry pts encoding, also
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 485a5b4..defbc32 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -382,6 +382,33 @@ struct pasid_entry;
- struct pasid_state_entry;
- struct page_req_dsc;
- 
-+/*
-+ * 0: Present
-+ * 1-11: Reserved
-+ * 12-63: Context Ptr (12 - (haw-1))
-+ * 64-127: Reserved
-+ */
-+struct root_entry {
-+	u64     lo;
-+	u64     hi;
-+};
-+
-+/*
-+ * low 64 bits:
-+ * 0: present
-+ * 1: fault processing disable
-+ * 2-3: translation type
-+ * 12-63: address space root
-+ * high 64 bits:
-+ * 0-2: address width
-+ * 3-6: aval
-+ * 8-23: domain id
-+ */
-+struct context_entry {
-+	u64 lo;
-+	u64 hi;
-+};
-+
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
- 	u64 		reg_phys; /* physical address of hw register set */
-@@ -487,8 +514,13 @@ struct intel_svm {
- 
- extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
- extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
-+extern unsigned long intel_iommu_get_pts(struct intel_iommu *iommu);
- #endif
- 
- extern const struct attribute_group *intel_iommu_groups[];
-+extern void intel_iommu_debugfs_init(void);
-+extern bool context_present(struct context_entry *context);
-+extern struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
-+						u8 bus, u8 devfn, int alloc);
- 
- #endif
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index 99bc5b3..733eaf9 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -130,7 +130,7 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	BUG();
- }
- 
--static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
-+static inline int intel_svm_is_pasid_valid(struct device *dev, int pasid)
- {
- 	return -EINVAL;
- }
--- 
-2.7.4
+RnJvbTogR2F5YXRyaSBLYW1tZWxhIDxnYXlhdHJpLmthbW1lbGFAaW50ZWwuY29tPgoKSU9NTVUg
+aW50ZXJuYWxzIHN0YXRlcyBzdWNoIGFzIHJvb3QgYW5kIGNvbnRleHQgY2FuIGJlIGV4cG9ydGVk
+IHRvIHRoZQp1c2Vyc3BhY2UuCgpFeGFtcGxlIG9mIHN1Y2ggZHVtcCBpbiBLYWJ5bGFrZToKCnJv
+b3RAT1RDLUtCTEgtMDE6fiMgY2F0IC9zeXMva2VybmVsL2RlYnVnL2ludGVsX2lvbW11L2ludGVs
+X2lvbW11X2N0eAoKSU9NTVUgZG1hcjI6ICAgIFJvb3QgVGFibGUgQWRkcjo0NTU4YTMwMDAKIFJv
+b3QgdGJsIGVudHJpZXM6CkJ1cyAwIEw6IDQ1NThhYTAwMSBIOiAwCiBDb250ZXh0IHRhYmxlIGVu
+dHJpZXMgZm9yIEJ1czogMApbZW50cnldIERJRCA6QiA6RCAuRiAgICBMb3cgICAgICAgICAgICAg
+SGlnaApbMTYwXSAgIDAwMDA6MDA6MTQuMDAgICA0NTU4YTkwMDEgICAgICAgMTAyClsxODRdICAg
+MDAwMDowMDoxNy4wMCAgIDQwMGVhYzAwMSAgICAgICAzMDIKWzI0OF0gICAwMDAwOjAwOjFmLjAw
+ICAgNDU1OGFmMDAxICAgICAgIDIwMgpbMjUxXSAgIDAwMDA6MDA6MWYuMDMgICA0MDA3MGUwMDEg
+ICAgICAgNTAyClsyNTRdICAgMDAwMDowMDoxZi4wNiAgIDQ0NjdjOTAwMSAgICAgICA2MDIKIFJv
+b3QgdGJsIGVudHJpZXM6CkJ1cyAxIEw6IDNmYzhjMjAwMSBIOiAwCiBDb250ZXh0IHRhYmxlIGVu
+dHJpZXMgZm9yIEJ1czogMQpbZW50cnldIERJRCA6QiA6RCAuRiAgICBMb3cgICAgICAgICAgICAg
+SGlnaApbMF0gICAgIDAwMDA6MDE6MDAuMDAgICAzZmM4YzMwMDEgICAgICAgNDAyCgpDYzogU29o
+aWwgTWVodGEgPHNvaGlsLm1laHRhQGludGVsLmNvbT4KQ2M6IEZlbmdodWEgWXUgPGZlbmdodWEu
+eXVAaW50ZWwuY29tPgpDYzogQXNob2sgUmFqIDxhc2hvay5yYWpAaW50ZWwuY29tPgpTaWduZWQt
+b2ZmLWJ5OiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPgpTaWduZWQt
+b2ZmLWJ5OiBHYXlhdHJpIEthbW1lbGEgPGdheWF0cmkua2FtbWVsYUBpbnRlbC5jb20+Ci0tLQog
+ZHJpdmVycy9pb21tdS9NYWtlZmlsZSAgICAgICAgICAgIHwgICAxICsKIGRyaXZlcnMvaW9tbXUv
+aW50ZWwtaW9tbXUtZGVidWcuYyB8IDE0OSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKwogZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jICAgICAgIHwgICA0ICsKIDMgZmls
+ZXMgY2hhbmdlZCwgMTU0IGluc2VydGlvbnMoKykKIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJz
+L2lvbW11L2ludGVsLWlvbW11LWRlYnVnLmMKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L01h
+a2VmaWxlIGIvZHJpdmVycy9pb21tdS9NYWtlZmlsZQppbmRleCBiOTEwYWVhLi4zNjMxODg0IDEw
+MDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L01ha2VmaWxlCisrKyBiL2RyaXZlcnMvaW9tbXUvTWFr
+ZWZpbGUKQEAgLTE0LDYgKzE0LDcgQEAgb2JqLSQoQ09ORklHX0FSTV9TTU1VKSArPSBhcm0tc21t
+dS5vCiBvYmotJChDT05GSUdfQVJNX1NNTVVfVjMpICs9IGFybS1zbW11LXYzLm8KIG9iai0kKENP
+TkZJR19ETUFSX1RBQkxFKSArPSBkbWFyLm8KIG9iai0kKENPTkZJR19JTlRFTF9JT01NVSkgKz0g
+aW50ZWwtaW9tbXUubworb2JqLSQoQ09ORklHX0lOVEVMX0lPTU1VX0RFQlVHKSArPSBpbnRlbC1p
+b21tdS1kZWJ1Zy5vCiBvYmotJChDT05GSUdfSU5URUxfSU9NTVVfU1ZNKSArPSBpbnRlbC1zdm0u
+bwogb2JqLSQoQ09ORklHX0lQTU1VX1ZNU0EpICs9IGlwbW11LXZtc2Eubwogb2JqLSQoQ09ORklH
+X0lSUV9SRU1BUCkgKz0gaW50ZWxfaXJxX3JlbWFwcGluZy5vIGlycV9yZW1hcHBpbmcubwpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS1kZWJ1Zy5jIGIvZHJpdmVycy9pb21t
+dS9pbnRlbC1pb21tdS1kZWJ1Zy5jCm5ldyBmaWxlIG1vZGUgMTAwNjQ0CmluZGV4IDAwMDAwMDAu
+LjkwODcyZWQKLS0tIC9kZXYvbnVsbAorKysgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LWRl
+YnVnLmMKQEAgLTAsMCArMSwxNDkgQEAKKy8qCisgKiBDb3B5cmlnaHQgwqkgMjAxNyBJbnRlbCBD
+b3Jwb3JhdGlvbi4KKyAqCisgKiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNh
+biByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdAorICogdW5kZXIgdGhlIHRlcm1zIGFu
+ZCBjb25kaXRpb25zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSwKKyAqIHZlcnNp
+b24gMiwgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCisgKgor
+ICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIGl0IHdpbGwgYmUgdXNl
+ZnVsLCBidXQgV0lUSE9VVAorICogQU5ZIFdBUlJBTlRZOyB3aXRob3V0IGV2ZW4gdGhlIGltcGxp
+ZWQgd2FycmFudHkgb2YgTUVSQ0hBTlRBQklMSVRZIG9yCisgKiBGSVRORVNTIEZPUiBBIFBBUlRJ
+Q1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yCisg
+KiBtb3JlIGRldGFpbHMuCisgKgorICogQXV0aG9yczogR2F5YXRyaSBLYW1tZWxhIDxnYXlhdHJp
+LmthbW1lbGFAaW50ZWwuY29tPgorICogICAgICAgICAgSmFjb2IgUGFuIDxqYWNvYi5qdW4ucGFu
+QGxpbnV4LmludGVsLmNvbT4KKyAqCisgKi8KKworI2RlZmluZSBwcl9mbXQoZm10KSAgICAgIklO
+VEVMX0lPTU1VOiAiIGZtdAorI2luY2x1ZGUgPGxpbnV4L2Vyci5oPgorI2luY2x1ZGUgPGxpbnV4
+L2lvLmg+CisjaW5jbHVkZSA8bGludXgvc2xhYi5oPgorI2luY2x1ZGUgPGxpbnV4L3VhY2Nlc3Mu
+aD4KKyNpbmNsdWRlIDxsaW51eC9wbV9ydW50aW1lLmg+CisjaW5jbHVkZSA8bGludXgvZGVidWdm
+cy5oPgorI2luY2x1ZGUgPGxpbnV4L3BjaS5oPgorI2luY2x1ZGUgPGxpbnV4L2lvbW11Lmg+Cisj
+aW5jbHVkZSA8bGludXgvaW50ZWwtaW9tbXUuaD4KKyNpbmNsdWRlIDxsaW51eC9pbnRlbC1zdm0u
+aD4KKyNpbmNsdWRlIDxsaW51eC9kbWFyLmg+CisjaW5jbHVkZSA8bGludXgvc3BpbmxvY2suaD4K
+KworI2luY2x1ZGUgImlycV9yZW1hcHBpbmcuaCIKKworI2RlZmluZSBUT1RBTF9CVVNfTlIgKDI1
+NikgLyogZnVsbCBidXMgcmFuZ2UgMjU2ICovCisKK3N0YXRpYyB2b2lkIGN0eF90YmxfZW50cnlf
+c2hvdyhzdHJ1Y3Qgc2VxX2ZpbGUgKm0sIHZvaWQgKnVudXNlZCwKKwkJCSAgICAgICBzdHJ1Y3Qg
+aW50ZWxfaW9tbXUgKmlvbW11LCBpbnQgYnVzLCBib29sIGV4dCwKKwkJCSAgICAgICBib29sIG5l
+d19leHQpCit7CisJc3RydWN0IGNvbnRleHRfZW50cnkgKmNvbnRleHQ7CisJaW50IGN0eDsKKwl1
+bnNpZ25lZCBsb25nIGZsYWdzOworCisJc2VxX3ByaW50ZihtLCAiJXMgQ29udGV4dCB0YWJsZSBl
+bnRyaWVzIGZvciBCdXM6ICVkXG4iLAorCQkgICBleHQgPyAiTG93ZXIiIDogIiIsIGJ1cyk7CisJ
+c2VxX3ByaW50ZihtLCAiW2VudHJ5XVx0RElEIDpCIDpEIC5GXHRMb3dcdFx0SGlnaFxuIik7CisK
+KwlzcGluX2xvY2tfaXJxc2F2ZSgmaW9tbXUtPmxvY2ssIGZsYWdzKTsKKworCS8qIFB1Ymxpc2gg
+ZWl0aGVyIGNvbnRleHQgZW50cmllcyBvciBleHRlbmRlZCBjb250ZW54dCBlbnRyaWVzICovCisJ
+Zm9yIChjdHggPSAwOyBjdHggPCAoZXh0ID8gMTI4IDogMjU2KTsgY3R4KyspIHsKKwkJY29udGV4
+dCA9IGlvbW11X2NvbnRleHRfYWRkcihpb21tdSwgYnVzLCBjdHgsIDApOworCQlpZiAoIWNvbnRl
+eHQpCisJCQlnb3RvIG91dDsKKwkJaWYgKGNvbnRleHRfcHJlc2VudChjb250ZXh0KSkgeworCQkJ
+c2VxX3ByaW50ZihtLCAiWyVkXVx0JTA0eDolMDJ4OiUwMnguJTAyeFx0JWxseFx0JWxseFxuIiwK
+KwkJCQkgICBjdHgsIGlvbW11LT5zZWdtZW50LCBidXMsIFBDSV9TTE9UKGN0eCksCisJCQkJICAg
+UENJX0ZVTkMoY3R4KSwgY29udGV4dFswXS5sbywgY29udGV4dFswXS5oaSk7CisJCX0KKwl9Citv
+dXQ6CisJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmaW9tbXUtPmxvY2ssIGZsYWdzKTsKK30KKwor
+c3RhdGljIHZvaWQgcm9vdF90YmxfZW50cnlfc2hvdyhzdHJ1Y3Qgc2VxX2ZpbGUgKm0sIHZvaWQg
+KnVudXNlZCwKKwkJCQlzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LCB1NjQgcnRhZGRyX3JlZywK
+KwkJCQlib29sIGV4dCwgYm9vbCBuZXdfZXh0KQoreworCWludCBidXM7CisKKwlzZXFfcHJpbnRm
+KG0sICJcbklPTU1VICVzOiAlMnMgUm9vdCBUYWJsZSBBZGRyOiVsbHhcbiIsIGlvbW11LT5uYW1l
+LAorCQkgICBleHQgPyAiRXh0ZW5kZWQiIDogIiIsIHJ0YWRkcl9yZWcpOworCS8qIFB1Ymxpc2gg
+ZXh0ZW5kZWQgcm9vdCB0YWJsZSBlbnRyaWVzIG9yIHJvb3QgdGFibGUgZW50cmllcyBoZXJlICov
+CisJZm9yIChidXMgPSAwOyBidXMgPCBUT1RBTF9CVVNfTlI7IGJ1cysrKSB7CisJCWlmICghaW9t
+bXUtPnJvb3RfZW50cnlbYnVzXS5sbykKKwkJCWNvbnRpbnVlOworCisJCXNlcV9wcmludGYobSwg
+IiVzIFJvb3QgdGJsIGVudHJpZXM6XG4iLCBleHQgPyAiRXh0ZW5kZWQiIDogIiIpOworCQlzZXFf
+cHJpbnRmKG0sICJCdXMgJWQgTDogJWxseCBIOiAlbGx4XG4iLCBidXMsCisJCQkgICBpb21tdS0+
+cm9vdF9lbnRyeVtidXNdLmxvLCBpb21tdS0+cm9vdF9lbnRyeVtidXNdLmhpCisJCQkgICk7CisK
+KwkJY3R4X3RibF9lbnRyeV9zaG93KG0sIHVudXNlZCwgaW9tbXUsIGJ1cywgZXh0LCBuZXdfZXh0
+KTsKKwl9Cit9CisKK3N0YXRpYyBpbnQgaW50ZWxfaW9tbXVfZGVidWdfc2hvdyhzdHJ1Y3Qgc2Vx
+X2ZpbGUgKm0sIHZvaWQgKnVudXNlZCkKK3sKKwlzdHJ1Y3QgZG1hcl9kcmhkX3VuaXQgKmRyaGQ7
+CisJc3RydWN0IGludGVsX2lvbW11ICppb21tdTsKKwl1NjQgcnRhZGRyX3JlZzsKKwlib29sIG5l
+d19leHQsIGV4dDsKKworCXJjdV9yZWFkX2xvY2soKTsKKwlmb3JfZWFjaF9hY3RpdmVfaW9tbXUo
+aW9tbXUsIGRyaGQpIHsKKwkJaWYgKGlvbW11KSB7CisJCQkvKiBDaGVjayBpZiByb290IHRhYmxl
+IHR5cGUgaXMgc2V0ICovCisJCQlydGFkZHJfcmVnID0gZG1hcl9yZWFkcShpb21tdS0+cmVnICsg
+RE1BUl9SVEFERFJfUkVHKTsKKwkJCWV4dCAgICAgICAgPSAhIShydGFkZHJfcmVnICYgRE1BX1JU
+QUREUl9SVFQpOworCQkJbmV3X2V4dCAgICA9ICEhZWNhcF9lY3MoaW9tbXUtPmVjYXApOworCQkJ
+aWYgKG5ld19leHQgIT0gZXh0KSB7CisJCQkJc2VxX3ByaW50ZihtLCAiSU9NTVUgJXM6IGludmFs
+aWQgZWNzXG4iLAorCQkJCQkgICBpb21tdS0+bmFtZSk7CisJCQkJcmN1X3JlYWRfdW5sb2NrKCk7
+CisJCQkJcmV0dXJuIC1FSU5WQUw7CisJCQl9CisJCQlyb290X3RibF9lbnRyeV9zaG93KG0sIHVu
+dXNlZCwgaW9tbXUsIHJ0YWRkcl9yZWcsIGV4dCwKKwkJCQkJICAgIG5ld19leHQpOworCQl9CisJ
+fQorCXJjdV9yZWFkX3VubG9jaygpOworCisJcmV0dXJuIDA7Cit9CisKK3N0YXRpYyBpbnQgaW50
+ZWxfaW9tbXVfZGVidWdfb3BlbihzdHJ1Y3QgaW5vZGUgKmlub2RlLCBzdHJ1Y3QgZmlsZSAqZmls
+ZSkKK3sKKwlyZXR1cm4gc2luZ2xlX29wZW4oZmlsZSwgaW50ZWxfaW9tbXVfZGVidWdfc2hvdywg
+aW5vZGUtPmlfcHJpdmF0ZSk7Cit9CisKK3N0YXRpYyBjb25zdCBzdHJ1Y3QgZmlsZV9vcGVyYXRp
+b25zIGludGVsX2lvbW11X2RlYnVnX2ZvcHMgPSB7CisJLm9wZW4JCT0gaW50ZWxfaW9tbXVfZGVi
+dWdfb3BlbiwKKwkucmVhZAkJPSBzZXFfcmVhZCwKKwkubGxzZWVrCQk9IHNlcV9sc2VlaywKKwku
+cmVsZWFzZQk9IHNpbmdsZV9yZWxlYXNlLAorCS5vd25lcgkJPSBUSElTX01PRFVMRSwKK307CisK
+K3ZvaWQgX19pbml0IGludGVsX2lvbW11X2RlYnVnZnNfaW5pdCh2b2lkKQoreworCXN0cnVjdCBk
+ZW50cnkgKmlvbW11X2RlYnVnX3Jvb3Q7CisKKwlpb21tdV9kZWJ1Z19yb290ID0gZGVidWdmc19j
+cmVhdGVfZGlyKCJpbnRlbF9pb21tdSIsIE5VTEwpOworCisJaWYgKCFpb21tdV9kZWJ1Z19yb290
+KSB7CisJCXByX2VycigiY2FuJ3QgY3JlYXRlIGRlYnVnZnMgZGlyXG4iKTsKKwkJZ290byBlcnI7
+CisJfQorCisJaWYgKCFkZWJ1Z2ZzX2NyZWF0ZV9maWxlKCJpbnRlbF9pb21tdV9jdHgiLCBTX0lS
+VUdPLCBpb21tdV9kZWJ1Z19yb290LAorCQkJCSBOVUxMLCAmaW50ZWxfaW9tbXVfZGVidWdfZm9w
+cykpIHsKKwkJcHJfZXJyKCJDYW4ndCBjcmVhdGUgaW50ZWxfaW9tbXVfY3R4IGZpbGVcbiIpOwor
+CQlnb3RvIGVycjsKKwl9CisKK2VycjoKKwlkZWJ1Z2ZzX3JlbW92ZV9yZWN1cnNpdmUoaW9tbXVf
+ZGVidWdfcm9vdCk7CisKK30KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUu
+YyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwppbmRleCA0MTlhNTU5Li43Nzk0ZTBjIDEw
+MDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKKysrIGIvZHJpdmVycy9pb21t
+dS9pbnRlbC1pb21tdS5jCkBAIC00Nzk3LDYgKzQ3OTcsMTAgQEAgaW50IF9faW5pdCBpbnRlbF9p
+b21tdV9pbml0KHZvaWQpCiAJCQkgIGludGVsX2lvbW11X2NwdV9kZWFkKTsKIAlpbnRlbF9pb21t
+dV9lbmFibGVkID0gMTsKIAorI2lmZGVmIENPTkZJR19JTlRFTF9JT01NVV9ERUJVRworCWludGVs
+X2lvbW11X2RlYnVnZnNfaW5pdCgpOworI2VuZGlmCisKIAlyZXR1cm4gMDsKIAogb3V0X2ZyZWVf
+cmVzZXJ2ZWRfcmFuZ2U6Ci0tIAoyLjcuNAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2lvbW11
