@@ -1,129 +1,208 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v5 01/09] iommu/ipmmu-vmsa: Introduce features, break out alias
-Date: Mon, 16 Oct 2017 21:29:25 +0900
-Message-ID: <150815696545.32763.9995173870577980534.sendpatchset@little-apple>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH v5 02/09] iommu/ipmmu-vmsa: Add optional root device feature
+Date: Mon, 16 Oct 2017 21:29:36 +0900
+Message-ID: <150815697605.32763.17929024813073986910.sendpatchset@little-apple>
 References: <150815695455.32763.1660214306749693609.sendpatchset@little-apple>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <150815695455.32763.1660214306749693609.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Introduce struct ipmmu_features to track various hardware
-and software implementation changes inside the driver for
-different kinds of IPMMU hardware. Add use_ns_alias_offset
-as a first example of a feature to control if the secure
-register bank offset should be used or not.
+Add root device handling to the IPMMU driver by allowing certain
+DT compat strings to enable has_cache_leaf_nodes that in turn will
+support both root devices with interrupts and leaf devices that
+face the actual IPMMU consumer devices.
 
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- Changes since V4:
- - None
+ Changes since V4: (Many thanks to Robin for feedback)
+ - Put the root pointer under struct ipmmu_vmsa_device
+ - Drop is_leaf flag
+ - Use driver_for_each_device instead of local list of devices
+ - Return -EPROBE_DEFER to hook up root device first
 
  Changes since V3:
- - Use of_device_get_match_data(), thanks Robin!
-
+ - Reworked root finding code to make it easier to follow, thanks Geert!
+ 
  Changes since V2:
- - None
+ - Fixed a bug in ipmmu_find_root() when only leaf devices are present
+ - Broke out __ipmmu_find_root() to allow ->xlate() check for root devices
 
  Changes since V1:
- - Moved patch to front of the series
+ - Moved patch to earlier in the series
+ - Updated code to work with recent changes in:
+   [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
 
+ drivers/iommu/ipmmu-vmsa.c |   90 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 73 insertions(+), 17 deletions(-)
 
- drivers/iommu/ipmmu-vmsa.c |   31 ++++++++++++++++++++++++-------
- 1 file changed, 24 insertions(+), 7 deletions(-)
-
---- 0001/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-10-12 15:16:43.510607110 +0900
-@@ -19,6 +19,7 @@
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
-@@ -33,11 +34,15 @@
+--- 0009/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-10-16 19:43:27.020607110 +0900
+@@ -36,12 +36,14 @@
  
- #define IPMMU_CTX_MAX 1
+ struct ipmmu_features {
+ 	bool use_ns_alias_offset;
++	bool has_cache_leaf_nodes;
+ };
  
-+struct ipmmu_features {
-+	bool use_ns_alias_offset;
-+};
-+
  struct ipmmu_vmsa_device {
  	struct device *dev;
  	void __iomem *base;
  	struct iommu_device iommu;
--
-+	const struct ipmmu_features *features;
++	struct ipmmu_vmsa_device *root;
+ 	const struct ipmmu_features *features;
  	unsigned int num_utlbs;
  	spinlock_t lock;			/* Protects ctx and domains[] */
- 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-@@ -910,6 +915,21 @@ static void ipmmu_device_reset(struct ip
- 		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+@@ -199,6 +201,36 @@ static struct ipmmu_vmsa_iommu_priv *to_
+ #define IMUASID_ASID0_SHIFT		0
+ 
+ /* -----------------------------------------------------------------------------
++ * Root device handling
++ */
++
++static struct platform_driver ipmmu_driver;
++
++static bool ipmmu_is_root(struct ipmmu_vmsa_device *mmu)
++{
++	return mmu->root == mmu;
++}
++
++static int __ipmmu_check_device(struct device *dev, void *data)
++{
++	struct ipmmu_vmsa_device *mmu = dev_get_drvdata(dev);
++	struct ipmmu_vmsa_device **rootp = data;
++
++	if (ipmmu_is_root(mmu))
++		*rootp = mmu;
++
++	return 0;
++}
++
++static struct ipmmu_vmsa_device *ipmmu_find_root(void)
++{
++	struct ipmmu_vmsa_device *root = NULL;
++
++	return driver_for_each_device(&ipmmu_driver.driver, NULL, &root,
++				      __ipmmu_check_device) == 0 ? root : NULL;
++}
++
++/* -----------------------------------------------------------------------------
+  * Read/Write Access
+  */
+ 
+@@ -215,13 +247,15 @@ static void ipmmu_write(struct ipmmu_vms
+ 
+ static u32 ipmmu_ctx_read(struct ipmmu_vmsa_domain *domain, unsigned int reg)
+ {
+-	return ipmmu_read(domain->mmu, domain->context_id * IM_CTX_SIZE + reg);
++	return ipmmu_read(domain->mmu->root,
++			  domain->context_id * IM_CTX_SIZE + reg);
  }
  
-+static const struct ipmmu_features ipmmu_features_default = {
-+	.use_ns_alias_offset = true,
-+};
-+
-+static const struct of_device_id ipmmu_of_ids[] = {
-+	{
-+		.compatible = "renesas,ipmmu-vmsa",
-+		.data = &ipmmu_features_default,
-+	}, {
-+		/* Terminator */
-+	},
-+};
-+
-+MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
-+
- static int ipmmu_probe(struct platform_device *pdev)
+ static void ipmmu_ctx_write(struct ipmmu_vmsa_domain *domain, unsigned int reg,
+ 			    u32 data)
  {
- 	struct ipmmu_vmsa_device *mmu;
-@@ -927,6 +947,7 @@ static int ipmmu_probe(struct platform_d
- 	mmu->num_utlbs = 32;
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
-+	mmu->features = of_device_get_match_data(&pdev->dev);
+-	ipmmu_write(domain->mmu, domain->context_id * IM_CTX_SIZE + reg, data);
++	ipmmu_write(domain->mmu->root,
++		    domain->context_id * IM_CTX_SIZE + reg, data);
+ }
  
- 	/* Map I/O memory and request IRQ. */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -946,7 +967,8 @@ static int ipmmu_probe(struct platform_d
- 	 * Offset the registers base unconditionally to point to the non-secure
- 	 * alias space for now.
+ /* -----------------------------------------------------------------------------
+@@ -369,12 +403,12 @@ static int ipmmu_domain_init_context(str
+ 	 * TODO: Add support for coherent walk through CCI with DVM and remove
+ 	 * cache handling. For now, delegate it to the io-pgtable code.
  	 */
--	mmu->base += IM_NS_ALIAS_OFFSET;
-+	if (mmu->features->use_ns_alias_offset)
-+		mmu->base += IM_NS_ALIAS_OFFSET;
+-	domain->cfg.iommu_dev = domain->mmu->dev;
++	domain->cfg.iommu_dev = domain->mmu->root->dev;
+ 
+ 	/*
+ 	 * Find an unused context.
+ 	 */
+-	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
++	ret = ipmmu_domain_allocate_context(domain->mmu->root, domain);
+ 	if (ret == IPMMU_CTX_MAX)
+ 		return -EBUSY;
+ 
+@@ -383,7 +417,8 @@ static int ipmmu_domain_init_context(str
+ 	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
+ 					   domain);
+ 	if (!domain->iop) {
+-		ipmmu_domain_free_context(domain->mmu, domain->context_id);
++		ipmmu_domain_free_context(domain->mmu->root,
++					  domain->context_id);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -437,7 +472,7 @@ static void ipmmu_domain_destroy_context
+ 	 */
+ 	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
+ 	ipmmu_tlb_sync(domain);
+-	ipmmu_domain_free_context(domain->mmu, domain->context_id);
++	ipmmu_domain_free_context(domain->mmu->root, domain->context_id);
+ }
+ 
+ /* -----------------------------------------------------------------------------
+@@ -917,6 +952,7 @@ static void ipmmu_device_reset(struct ip
+ 
+ static const struct ipmmu_features ipmmu_features_default = {
+ 	.use_ns_alias_offset = true,
++	.has_cache_leaf_nodes = false,
+ };
+ 
+ static const struct of_device_id ipmmu_of_ids[] = {
+@@ -971,19 +1007,39 @@ static int ipmmu_probe(struct platform_d
+ 		mmu->base += IM_NS_ALIAS_OFFSET;
  
  	irq = platform_get_irq(pdev, 0);
- 	if (irq < 0) {
-@@ -1002,11 +1024,6 @@ static int ipmmu_remove(struct platform_
- 	return 0;
- }
+-	if (irq < 0) {
+-		dev_err(&pdev->dev, "no IRQ found\n");
+-		return irq;
+-	}
  
--static const struct of_device_id ipmmu_of_ids[] = {
--	{ .compatible = "renesas,ipmmu-vmsa", },
--	{ }
--};
--
- static struct platform_driver ipmmu_driver = {
- 	.driver = {
- 		.name = "ipmmu-vmsa",
+-	ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
+-			       dev_name(&pdev->dev), mmu);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
+-		return ret;
+-	}
++	/*
++	 * Determine if this IPMMU instance is a root device by checking for
++	 * the lack of has_cache_leaf_nodes flag or renesas,ipmmu-main property.
++	 */
++	if (!mmu->features->has_cache_leaf_nodes ||
++	    !of_find_property(pdev->dev.of_node, "renesas,ipmmu-main", NULL))
++		mmu->root = mmu;
++	else
++		mmu->root = ipmmu_find_root();
++
++	/*
++	 * Wait until the root device has been registered for sure.
++	 */
++	if (!mmu->root)
++		return -EPROBE_DEFER;
++
++	/* Root devices have mandatory IRQs */
++	if (ipmmu_is_root(mmu)) {
++		if (irq < 0) {
++			dev_err(&pdev->dev, "no IRQ found\n");
++			return irq;
++		}
+ 
+-	ipmmu_device_reset(mmu);
++		ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
++				       dev_name(&pdev->dev), mmu);
++		if (ret < 0) {
++			dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
++			return ret;
++		}
++
++		ipmmu_device_reset(mmu);
++	}
+ 
+ 	ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
+ 				     dev_name(&pdev->dev));
