@@ -1,47 +1,144 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH v5 05/09] iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master
-Date: Mon, 16 Oct 2017 21:30:07 +0900
-Message-ID: <150815700766.32763.4264924157922538405.sendpatchset@little-apple>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v5 04/09] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
+Date: Mon, 16 Oct 2017 21:29:57 +0900
+Message-ID: <150815699719.32763.12935676055004739612.sendpatchset@little-apple>
 References: <150815695455.32763.1660214306749693609.sendpatchset@little-apple>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <150815695455.32763.1660214306749693609.sendpatchset@little-apple>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas@opensource.se>
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-The r8a7795 IPMMU supports 40-bit bus mastering. Both
-the coherent DMA mask and the streaming DMA mask are
-set to unlock the 40-bit address space for coherent
-allocations and streaming operations.
+Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
+is enabled. The only current supported case for 32-bit ARM
+is disabled, however for 64-bit ARM usage of OF is required.
 
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V4:
- - None
+ - Use ipmmu_is_root() instead of now removed is_leaf flag
 
  Changes since V3:
- - None
+ - Reworked to fit on top of
+   [PATCH 00/04] iommu/ipmmu-vmsa: 32-bit ARM update
 
  Changes since V2:
- - Updated the code and commit message to use 40 bits instead of 64 bits
+ - Reworked registration code to make use of recently introduced:
+     iommu_device_register()
+     iommu_device_set_ops()
+     iommu_device_set_fwnode()
 
  Changes since V1:
- - Updated the commit message
+ - Reworked slightly to fit updated patch order and
+   [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
 
- drivers/iommu/ipmmu-vmsa.c |    1 +
- 1 file changed, 1 insertion(+)
 
---- 0012/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-10-16 20:37:31.480607110 +0900
-@@ -996,6 +996,7 @@ static int ipmmu_probe(struct platform_d
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
- 	mmu->features = of_device_get_match_data(&pdev->dev);
-+	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
+ drivers/iommu/ipmmu-vmsa.c |   50 ++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 41 insertions(+), 9 deletions(-)
+
+--- 0014/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-10-16 19:59:42.700607110 +0900
+@@ -20,6 +20,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/of_iommu.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+@@ -1055,17 +1056,30 @@ static int ipmmu_probe(struct platform_d
+ 		ipmmu_device_reset(mmu);
+ 	}
  
- 	/* Map I/O memory and request IRQ. */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
+-				     dev_name(&pdev->dev));
+-	if (ret)
+-		return ret;
++	/*
++	 * Register the IPMMU to the IOMMU subsystem in the following cases:
++	 * - R-Car Gen2 IPMMU (all devices registered)
++	 * - R-Car Gen3 IPMMU (leaf devices only - skip root IPMMU-MM device)
++	 */
++	if (!mmu->features->has_cache_leaf_nodes || !ipmmu_is_root(mmu)) {
++		ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL,
++					     dev_name(&pdev->dev));
++		if (ret)
++			return ret;
+ 
+-	iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
+-	iommu_device_set_fwnode(&mmu->iommu, &pdev->dev.of_node->fwnode);
++		iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
++		iommu_device_set_fwnode(&mmu->iommu,
++					&pdev->dev.of_node->fwnode);
+ 
+-	ret = iommu_device_register(&mmu->iommu);
+-	if (ret)
+-		return ret;
++		ret = iommu_device_register(&mmu->iommu);
++		if (ret)
++			return ret;
++
++#if defined(CONFIG_IOMMU_DMA)
++		if (!iommu_present(&platform_bus_type))
++			bus_set_iommu(&platform_bus_type, &ipmmu_ops);
++#endif
++	}
+ 
+ 	/*
+ 	 * We can't create the ARM mapping here as it requires the bus to have
+@@ -1105,15 +1119,22 @@ static struct platform_driver ipmmu_driv
+ 
+ static int __init ipmmu_init(void)
+ {
++	static bool setup_done;
+ 	int ret;
+ 
++	if (setup_done)
++		return 0;
++
+ 	ret = platform_driver_register(&ipmmu_driver);
+ 	if (ret < 0)
+ 		return ret;
+ 
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
++#endif
+ 
++	setup_done = true;
+ 	return 0;
+ }
+ 
+@@ -1125,6 +1146,17 @@ static void __exit ipmmu_exit(void)
+ subsys_initcall(ipmmu_init);
+ module_exit(ipmmu_exit);
+ 
++#ifdef CONFIG_IOMMU_DMA
++static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
++{
++	ipmmu_init();
++	return 0;
++}
++
++IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
++		 ipmmu_vmsa_iommu_of_setup);
++#endif
++
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+ MODULE_LICENSE("GPL v2");
