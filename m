@@ -1,98 +1,44 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: Re: CONFIG_DMA_NOOP_OPS breaks ARM arch
-Date: Mon, 16 Oct 2017 09:12:26 +0100
-Message-ID: <001f1d21-e85c-21c6-726b-9a69b43d4ca6@arm.com>
-References: <CAM3PiRyBpa7vipUfzEYqvYzeLu=tkUWCo+_G79BXrgG0zG3asg@mail.gmail.com>
- <960157c0-13ee-9953-d654-9891465c987d@infradead.org>
- <ffa1481b-de82-f163-6cc9-fbb24615572f@infradead.org>
- <04535c78-d418-b2b2-89db-ab4732a05984@infradead.org>
- <CAM3PiRxEC7uqqxL_Z__a7T06-Cqyq0Go5n1Sn2TDmWkVjypbww@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFCv2 PATCH 12/36] dt-bindings: document stall and PASID
+ properties for IOMMU masters
+Date: Mon, 16 Oct 2017 11:23:02 +0100
+Message-ID: <e7288f51-1cfa-44ce-e3ce-e9f3daf91579@arm.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-13-jean-philippe.brucker@arm.com>
+ <20171013191051.lgxbcobkzzj5guhv@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAM3PiRxEC7uqqxL_Z__a7T06-Cqyq0Go5n1Sn2TDmWkVjypbww@mail.gmail.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marian Mihailescu <marian.mihailescu@adelaide.edu.au>, Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-kernel@vger.kernel.org, Bart Van Assche <bart.vanassche@sandisk.com>, iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171013191051.lgxbcobkzzj5guhv@rob-hp-laptop>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "joro@8bytes.org" <joro@8bytes.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-+ Robin and Christoph
-
-On 16/10/17 06:27, Marian Mihailescu wrote:
-> I am using 4.14-rc4 with a patch on top that includes
-> arch/arm/include/asm/dma-mapping.h in a module.
+On 13/10/17 20:10, Rob Herring wrote:
+> On Fri, Oct 06, 2017 at 02:31:39PM +0100, Jean-Philippe Brucker wrote:
+>> On ARM systems, some platform devices behind an IOMMU may support stall
+>> and PASID features. Stall is the ability to recover from page faults and
+>> PASID offers multiple process address spaces to the device. Together they
+>> allow to do paging with a device. Let the firmware tell us when a device
+>> supports stall and PASID.
 > 
-> I have MMU enabled, so
-> select DMA_NOOP_OPS if !MMU
-> does nothing for me, and I get a compile error because dma_noop_ops is unknown.
+> Can't these be implied by the compatible string of the devices?
 
-Can you post an error message here, please?
+I think that PASID capacity can be deduced from the compatible string but
+don't know how these devices will be implemented (the only known example
+being a software model for testing). In any case implementing PASID based
+on the compatible string is tricky, because the IOMMU driver needs to know
+PASID capacity before the device driver has had time to probe the device.
+Maybe we could get away with a static table associating compatible string
+to PASID capacity, but it's not very nice.
 
-> 
-> Maybe I should include linux/dma-mapping.h?
+For stall it's a property of the integration between device and IOMMU,
+much like the "iommus" property, so it can't be deduced only from the
+compatible string. It's crucial that the firmware validates that stalling
+is safe, because we don't have any other way to discover it.
 
-Where to include? In your driver or what?
-
-> 
-> Thanks for the quick reply.
-
-with CONFIG_MMU compiler should optimise out dma_noop_ops in:
-
-return IS_ENABLED(CONFIG_MMU) ? &arm_dma_ops : &dma_noop_ops;
-
-What toolchain are you using?
-
-Cheers
-Vladimir
-
-> 
-> 
-> On Mon, Oct 16, 2017 at 2:28 PM, Randy Dunlap <rdunlap@infradead.org> wrote:
->> On 10/15/17 20:29, Randy Dunlap wrote:
->>> On 10/15/17 20:27, Randy Dunlap wrote:
->>>> On 10/15/17 19:27, Marian Mihailescu wrote:
->>>>> After commit 7844572c633964c864d9f32dc3f2a8ffe5d70371, dma_noop_ops
->>>>> are built only for architectures that use it.
->>>>>
->>>>> For ARM architecture, CONFIG_DMA_NOOP_OPS is not selected, and cannot
->>>>> be selected.
->>
->> What kernel version are you looking at?
->> I see that it is selected:
->>
->> --- a/arch/arm/Kconfig
->> +++ b/arch/arm/Kconfig
->> @@ -22,6 +22,7 @@ config ARM
->>         select CLONE_BACKWARDS
->>         select CPU_PM if (SUSPEND || CPU_IDLE)
->>         select DCACHE_WORD_ACCESS if HAVE_EFFICIENT_UNALIGNED_ACCESS
->> +       select DMA_NOOP_OPS if !MMU
->>         select EDAC_SUPPORT
->>         select EDAC_ATOMIC_SCRUB
->>         select GENERIC_ALLOCATOR
->>
->>
->> That's in commit ID 1c51c429f30ea10428337f3a33c12059ba59f668 from May 24, 2017.
->>
->>>>> However, arch/arm/include/asm/dma-mapping.h is referencing dma_noop_ops:
->>>>>
->>>>> static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
->>>>> {
->>>>> return IS_ENABLED(CONFIG_MMU) ? &arm_dma_ops : &dma_noop_ops;
->>>>> }
->>>>>
->>>>> I will let a maintainer suggest the best resolution for this :)
->>>>>
->>>>
->>>> add Bart and iommu mailing list.
->>>>
->>>
->>> and add Vladimir.
->>>
->>>
->>
->>
->> --
->> ~Randy
+Thanks,
+Jean
