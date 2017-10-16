@@ -1,284 +1,254 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH v4 02/09] iommu/ipmmu-vmsa: Add optional root device feature
-Date: Mon, 16 Oct 2017 21:47:58 +0900
-Message-ID: <CANqRtoTa+f=Gg-dDk3NaY8mVPod7yTRwK-cyz3-5Aku_XfQk6Q@mail.gmail.com>
-References: <149786362527.14868.2143461703972595839.sendpatchset@little-apple>
- <149786364660.14868.13384595731879361399.sendpatchset@little-apple> <8ba73c68-1e82-e7d3-3764-398fa4f2f706@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 4/4] iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq
+	lock
+Date: Mon, 16 Oct 2017 14:12:23 +0100
+Message-ID: <495d0124-f5e4-04a4-f6e7-d0934bd38196@arm.com>
+References: <cover.1504182142.git.robin.murphy@arm.com>
+	<ff239173e47dfa0fc76eaa2a25b3cbcfe8dce5e6.1504182142.git.robin.murphy@arm.com>
+	<20171013185917.GB30572@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <8ba73c68-1e82-e7d3-3764-398fa4f2f706@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, linux-kernel <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, iommu@lists.linux-foundation.org, Simon Horman <horms+renesas@verge.net.au>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171013185917.GB30572-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On 13/10/17 19:59, Will Deacon wrote:
+> Hi Robin,
+> 
+> Some of my comments on patch 3 are addressed here, but I'm really struggling
+> to convince myself that this algorithm is correct. My preference would
+> be to leave the code as it is for SMMUs that don't implement MSIs, but
+> comments below anyway because it's an interesting idea.
 
-On Tue, Jun 20, 2017 at 2:19 AM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 19/06/17 10:14, Magnus Damm wrote:
->> From: Magnus Damm <damm+renesas@opensource.se>
+>From scrounging up boot logs I can see that neither the Cavium nor
+HiSilicon SMMUv3 implementations have MSI support (the one in D05
+doesn't even have WFE), so there is a real motivation to improve
+scalability on current systems - it's not *just* a cool feature!
+
+> On Thu, Aug 31, 2017 at 02:44:28PM +0100, Robin Murphy wrote:
+>> Even without the MSI trick, we can still do a lot better than hogging
+>> the entire queue while it drains. All we actually need to do for the
+>> necessary guarantee of completion is wait for our particular command to
+>> have been consumed, and as long as we keep track of where it is there is
+>> no need to block other CPUs from adding further commands in the
+>> meantime. There is one theoretical (but incredibly unlikely) edge case
+>> to avoid, where cons has wrapped twice to still appear 'behind' the sync
+>> position - this is easily disambiguated by adding a generation count to
+>> the queue to indicate when prod wraps, since cons cannot wrap twice
+>> without prod having wrapped at least once.
 >>
->> Add root device handling to the IPMMU driver by allowing certain
->> DT compat strings to enable has_cache_leaf_nodes that in turn will
->> support both root devices with interrupts and leaf devices that
->> face the actual IPMMU consumer devices.
->>
->> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 >> ---
 >>
->>  Changes since V3:
->>  - Reworked root finding code to make it easier to follow, thanks Geert!
+>> v2: New
 >>
->>  Changes since V2:
->>  - Fixed a bug in ipmmu_find_root() when only leaf devices are present
->>  - Broke out __ipmmu_find_root() to allow ->xlate() check for root devices
+>>  drivers/iommu/arm-smmu-v3.c | 81 ++++++++++++++++++++++++++++++++-------------
+>>  1 file changed, 58 insertions(+), 23 deletions(-)
 >>
->>  Changes since V1:
->>  - Moved patch to earlier in the series
->>  - Updated code to work with recent changes in:
->>    [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
->>
->>  drivers/iommu/ipmmu-vmsa.c |   95 ++++++++++++++++++++++++++++++++++++--------
->>  1 file changed, 78 insertions(+), 17 deletions(-)
->>
->> --- 0015/drivers/iommu/ipmmu-vmsa.c
->> +++ work/drivers/iommu/ipmmu-vmsa.c   2017-06-19 13:59:41.050607110 +0900
->> @@ -36,6 +36,7 @@
->>
->>  struct ipmmu_features {
->>       bool use_ns_alias_offset;
->> +     bool has_cache_leaf_nodes;
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 311f482b93d5..f5c5da553803 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -417,7 +417,6 @@
+>>  
+>>  /* High-level queue structures */
+>>  #define ARM_SMMU_POLL_TIMEOUT_US	100
+>> -#define ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US	1000000 /* 1s! */
+>>  #define ARM_SMMU_SYNC_TIMEOUT_US	1000000 /* 1s! */
+>>  
+>>  #define MSI_IOVA_BASE			0x8000000
+>> @@ -540,6 +539,7 @@ struct arm_smmu_queue {
+>>  struct arm_smmu_cmdq {
+>>  	struct arm_smmu_queue		q;
+>>  	spinlock_t			lock;
+>> +	int				generation;
 >>  };
->>
->>  struct ipmmu_vmsa_device {
->> @@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
->>       struct iommu_device iommu;
->>       struct list_head list;
->>       const struct ipmmu_features *features;
->> +     bool is_leaf;
->>       unsigned int num_utlbs;
->>       spinlock_t lock;                        /* Protects ctx and domains[] */
->>       DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
->> @@ -54,6 +56,7 @@ struct ipmmu_vmsa_device {
->>
->>  struct ipmmu_vmsa_domain {
->>       struct ipmmu_vmsa_device *mmu;
->> +     struct ipmmu_vmsa_device *root;
->
-> Would it not make more sense for this to be a property of the
-> ipmmu_device itself, rather than per ipmmu_domain? I may of course have
-> got the wrong idea of the topology here, but it seems as if mmu->is_leaf
-> could be expressed as mmu->root == mmu vs. mmu->root == some_other_mmu,
-> at which point there's one less thing to worry about in the domain.
-
-Yes, you are right! Please have a look at patch 2 in V5 that is doing that.
-
->>       struct iommu_domain io_domain;
->>
->>       struct io_pgtable_cfg cfg;
->> @@ -203,6 +206,44 @@ static struct ipmmu_vmsa_iommu_priv *to_
->>  #define IMUASID_ASID0_SHIFT          0
->>
->>  /* -----------------------------------------------------------------------------
->> + * Root device handling
->> + */
->> +
->> +static bool ipmmu_is_root(struct ipmmu_vmsa_device *mmu)
->> +{
->> +     if (mmu->features->has_cache_leaf_nodes)
->> +             return mmu->is_leaf ? false : true> +   else
->> +             return true; /* older IPMMU hardware treated as single root */
->> +}
->> +
->> +static struct ipmmu_vmsa_device *__ipmmu_find_root(void)
->> +{
->> +     struct ipmmu_vmsa_device *mmu;
->> +     struct ipmmu_vmsa_device *root = NULL;
->> +
->> +     spin_lock(&ipmmu_devices_lock);
->> +
->> +     list_for_each_entry(mmu, &ipmmu_devices, list) {
->> +             if (ipmmu_is_root(mmu)) {
->> +                     root = mmu;
->> +                     break;
->> +             }
->> +     }
->> +
->> +     spin_unlock(&ipmmu_devices_lock);
->> +     return root;
->> +}
->
-> I wonder if it might be tidier to use driver_for_each_device() for this,
-> and remove the local list at the same time as its previous user.
-
-Yep, also included in V5.
-
-> Either way, what happens if things end up hapening in this order:
->
-> 1: probe leaf IPMMU B
-> 2: probe device X behind IPMMU B
-> 3: create and attach default domain for device X
-> 4: probe root IPMMU A
->
-> We know X will defer if B isn't ready, but it doesn't seem (at a glance,
-> admittedly) that there's anything to enforce the expected probe ordering
-> between A and B. This seems like another argument for moving the
-> root/leaf association up to the device level, such that B can look up A
-> once in its own probe routine, and defer itself if necessary.
-
-There used to be code to check for presence of root device inside
-xlate() in "[PATCH v4 09/09] iommu/ipmmu-vmsa: Hook up r8a7795 DT
-matching code" however in V5 I'm deferring probe of non-root devices
-to handle this.
-
->> +
->> +static struct ipmmu_vmsa_device *ipmmu_find_root(struct ipmmu_vmsa_device *leaf)
->> +{
->> +     if (ipmmu_is_root(leaf))
->> +             return leaf;
->> +     else
->> +             return __ipmmu_find_root();
->
-> Well actually, looking at that, I think what we have here is a very
-> long-winded way of implementing this:
->
-> static ipmmu_vmsa_device *root;
->
-> Yuck.
-
-The code has been reworked a bit in V5 but I did not go all the way to
-single global variable.
-
->> +}
->> +
->> +/* -----------------------------------------------------------------------------
->>   * Read/Write Access
->>   */
->>
->> @@ -219,13 +260,13 @@ static void ipmmu_write(struct ipmmu_vms
->>
->>  static u32 ipmmu_ctx_read(struct ipmmu_vmsa_domain *domain, unsigned int reg)
->>  {
->> -     return ipmmu_read(domain->mmu, domain->context_id * IM_CTX_SIZE + reg);
->> +     return ipmmu_read(domain->root, domain->context_id * IM_CTX_SIZE + reg);
+>>  
+>>  struct arm_smmu_evtq {
+>> @@ -770,21 +770,12 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+>>  	writel(q->prod, q->prod_reg);
 >>  }
->>
->>  static void ipmmu_ctx_write(struct ipmmu_vmsa_domain *domain, unsigned int reg,
->>                           u32 data)
+>>  
+>> -/*
+>> - * Wait for the SMMU to consume items. If drain is true, wait until the queue
+>> - * is empty. Otherwise, wait until there is at least one free slot.
+>> - */
+>> -static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+>> +/* Wait for the SMMU to consume items, until there is at least one free slot */
+>> +static int queue_poll_cons(struct arm_smmu_queue *q, bool wfe)
 >>  {
->> -     ipmmu_write(domain->mmu, domain->context_id * IM_CTX_SIZE + reg, data);
->> +     ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
+>> -	ktime_t timeout;
+>> -	unsigned int delay = 1;
+>> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
+>>  
+>> -	/* Wait longer if it's queue drain */
+>> -	timeout = ktime_add_us(ktime_get(), drain ?
+>> -					    ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US :
+>> -					    ARM_SMMU_POLL_TIMEOUT_US);
+>> -
+>> -	while (queue_sync_cons(q), (drain ? !queue_empty(q) : queue_full(q))) {
+>> +	while (queue_sync_cons(q), queue_full(q)) {
+>>  		if (ktime_compare(ktime_get(), timeout) > 0)
+>>  			return -ETIMEDOUT;
+>>  
+>> @@ -792,8 +783,7 @@ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+>>  			wfe();
+>>  		} else {
+>>  			cpu_relax();
+>> -			udelay(delay);
+>> -			delay *= 2;
+>> +			udelay(1);
+>>  		}
+>>  	}
+>>  
+>> @@ -959,15 +949,20 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>>  	queue_write(Q_ENT(q, cons), cmd, q->ent_dwords);
 >>  }
->>
->>  /* -----------------------------------------------------------------------------
->> @@ -360,7 +401,7 @@ static int ipmmu_domain_init_context(str
->>        * TODO: Add support for coherent walk through CCI with DVM and remove
->>        * cache handling. For now, delegate it to the io-pgtable code.
->>        */
->> -     domain->cfg.iommu_dev = domain->mmu->dev;
->> +     domain->cfg.iommu_dev = domain->root->dev;
->>
->>       domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
->>                                          domain);
->> @@ -370,7 +411,7 @@ static int ipmmu_domain_init_context(str
->>       /*
->>        * Find an unused context.
->>        */
->> -     ret = ipmmu_domain_allocate_context(domain->mmu, domain);
->> +     ret = ipmmu_domain_allocate_context(domain->root, domain);
->>       if (ret == IPMMU_CTX_MAX) {
->>               free_io_pgtable_ops(domain->iop);
->>               return -EBUSY;
->> @@ -441,7 +482,7 @@ static void ipmmu_domain_destroy_context
->>        */
->>       ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
->>       ipmmu_tlb_sync(domain);
->> -     ipmmu_domain_free_context(domain->mmu, domain->context_id);
->> +     ipmmu_domain_free_context(domain->root, domain->context_id);
->>  }
->>
->>  /* -----------------------------------------------------------------------------
->> @@ -555,7 +596,7 @@ static int ipmmu_attach_device(struct io
+>>  
+>> -static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
+>> +static u32 arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
 >>  {
->>       struct ipmmu_vmsa_iommu_priv *priv = to_priv(dev);
->>       struct iommu_fwspec *fwspec = dev->iommu_fwspec;
->> -     struct ipmmu_vmsa_device *mmu = priv->mmu;
->> +     struct ipmmu_vmsa_device *root, *mmu = priv->mmu;
->>       struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
->>       unsigned long flags;
->>       unsigned int i;
->> @@ -566,11 +607,18 @@ static int ipmmu_attach_device(struct io
->>               return -ENXIO;
->>       }
->>
->> +     root = ipmmu_find_root(priv->mmu);
->> +     if (!root) {
->> +             dev_err(dev, "Unable to locate root IPMMU\n");
->> +             return -EAGAIN;
->> +     }
+>>  	struct arm_smmu_queue *q = &smmu->cmdq.q;
+>>  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+>>  
+>>  	while (queue_insert_raw(q, cmd) == -ENOSPC) {
+>> -		if (queue_poll_cons(q, false, wfe))
+>> +		if (queue_poll_cons(q, wfe))
+>>  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+>>  	}
 >> +
->>       spin_lock_irqsave(&domain->lock, flags);
->>
->>       if (!domain->mmu) {
->>               /* The domain hasn't been used yet, initialize it. */
->>               domain->mmu = mmu;
->> +             domain->root = root;
->>               ret = ipmmu_domain_init_context(domain);
->>       } else if (domain->mmu != mmu) {
->>               /*
->> @@ -911,6 +959,7 @@ static void ipmmu_device_reset(struct ip
->>
->>  static const struct ipmmu_features ipmmu_features_default = {
->>       .use_ns_alias_offset = true,
->> +     .has_cache_leaf_nodes = false,
->>  };
->>
->>  static const struct of_device_id ipmmu_of_ids[] = {
->> @@ -965,19 +1014,31 @@ static int ipmmu_probe(struct platform_d
->>               mmu->base += IM_NS_ALIAS_OFFSET;
->>
->>       irq = platform_get_irq(pdev, 0);
->> -     if (irq < 0) {
->> -             dev_err(&pdev->dev, "no IRQ found\n");
->> -             return irq;
->> -     }
->>
->> -     ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
->> -                            dev_name(&pdev->dev), mmu);
->> -     if (ret < 0) {
->> -             dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
->> -             return ret;
->> -     }
->> +     /*
->> +      * Determine if this IPMMU instance is a leaf device by checking
->> +      * if the renesas,ipmmu-main property exists or not.
->> +      */
->> +     if (mmu->features->has_cache_leaf_nodes &&
->> +         of_find_property(pdev->dev.of_node, "renesas,ipmmu-main", NULL))
->> +             mmu->is_leaf = true;
->
-> Given my previous comments:
->
->         if (mmu->features->has_cache_leaf_nodes) {
->                 root_np = of_parse_phandle(pdev->dev.of_node,
->                                         "renesas,ipmmu-main", 0)
->                 if (root_np) {
->                         root_pdev = of_find_device_by_phandle(root_np);
->                         mmu->root = platform_get_drvdata(root_pdev);
->                 } else {
->                         mmu->root = mmu;
->                 }
->         }
->
-> or something along those lines?
+>> +	if (Q_IDX(q, q->prod) == 0)
+>> +		smmu->cmdq.generation++;
+> 
+> The readers of generation are using READ_ONCE, so you're missing something
+> here.
 
-When ditching the is_leaf variable and using deferred probing I
-reworked to code above. Getting the phandle like you are pointing out
-above looks promising. I also need to have a look at your series
-"[PATCH 0/4] ipmmu-vmsa cleanup", hopefully I can find some time next
-week in between talks at ELC. Hope to see you there!
+Yeah, I was a bit back-and-forth on this. The readers want a READ_ONCE
+if only to prevent it being hoisted out of the polling loop, but as long
+as the update of generation is single-copy-atomic, the exact point at
+which it occurs shouldn't matter so much, since it's only written under
+the cmdq lock. I guess it depends how much we trust GCC's claim of the
+atomicity of int - I have no great objection to
 
-Cheers,
+	smmu->cmdq.generation = WRITE_ONCE(smmu->cmdq.generation + 1);
 
-/ magnus
+other than it being really long.
+
+>> +
+>> +	return q->prod;
+>>  }
+>>  
+>>  static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+>> @@ -997,15 +992,54 @@ static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+>>  	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
+>>  }
+>>  
+>> +static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
+>> +				   int sync_gen)
+>> +{
+>> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_SYNC_TIMEOUT_US);
+>> +	struct arm_smmu_queue *q = &smmu->cmdq.q;
+>> +	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+>> +	unsigned int delay = 1;
+>> +
+>> +	do {
+>> +		queue_sync_cons(q);
+>> +		/*
+>> +		 * If we see updates quickly enough, cons has passed sync_idx,
+>> +		 * but not yet wrapped. At worst, cons might have actually
+>> +		 * wrapped an even number of times, but that still guarantees
+>> +		 * the original sync must have been consumed.
+>> +		 */
+>> +		if (Q_IDX(q, q->cons) >= Q_IDX(q, sync_idx) &&
+>> +		    Q_WRP(q, sync_idx) == Q_WRP(q, q->cons))
+> 
+> Can you move this into a separate function please, like we have for
+> queue_full and queue_empty?
+
+OK, but given that it's only half of the "has cons moved past this
+index" operation, I'm not really sure what it could be called -
+queue_ahead_not_wrapped() comes to mind, but still seems a bit cryptic.
+
+>> +			return 0;
+>> +		/*
+>> +		 * Otherwise, cons may have passed sync_idx and wrapped one or
+>> +		 * more times to appear behind it again, but in that case prod
+>> +		 * must also be one or more generations ahead.
+>> +		 */
+>> +		if (Q_IDX(q, q->cons) < Q_IDX(q, sync_idx) &&
+>> +		    READ_ONCE(smmu->cmdq.generation) != sync_gen)
+> 
+> There's another daft overflow case here which deserves a comment (and even
+> if it *did* happen, we'll recover gracefully).
+
+You mean exactly 2^32 queue generations passing between polls? Yeah, not
+happening :P
+
+>> +			return 0;
+>> +
+>> +		if (wfe) {
+>> +			wfe();
+> 
+> This is a bit scary... if we miss a generation update, just due to store
+> propagation latency (maybe it's buffered by the updater), I think we can
+> end up going into wfe when there's not an event pending. Using xchg
+> everywhere might work, but there's still a race on having somebody update
+> generation. The ordering here just looks generally suspicious to me because
+> you have the generation writer in arm_smmu_cmdq_insert_cmd effectively
+> doing:
+> 
+>   Write prod
+>   Write generation
+> 
+> and the reader in arm_smmu_sync_poll_cons doing:
+> 
+>   Read cons
+>   Read generation
+> 
+> so I can't see anything that gives you order to guarantee that the
+> generation is seen to be up-to-date.
+
+On reflection I'm pretty sure the below should suffice, to piggy-back
+off the DSB implicit in queue_insert_raw(). The readers only care about
+the generation *after* cons has been observed to go backwards, so the
+exact order of the generation and prod updates makes no practical
+difference other than closing that race window.
+
+Robin
+
+----->8-----
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 12cdc5e50675..78ba8269c44c 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -959,14 +959,14 @@ static u32 arm_smmu_cmdq_insert_cmd(struct
+arm_smmu_device *smmu, u64 *cmd)
+ 	struct arm_smmu_queue *q = &smmu->cmdq.q;
+ 	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+
++	if (Q_IDX(q, q->prod + 1) == 0)
++		smmu->cmdq.generation++;
++
+ 	while (queue_insert_raw(q, cmd) == -ENOSPC) {
+ 		if (queue_poll_cons(q, wfe))
+ 			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+ 	}
+
+-	if (Q_IDX(q, q->prod) == 0)
+-		smmu->cmdq.generation++;
+-
+ 	return q->prod;
+ }
