@@ -1,39 +1,37 @@
-From: Jim Quinlan <jim2101024@gmail.com>
-Subject: Re: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound traffic
-Date: Tue, 17 Oct 2017 12:11:55 -0400
-Message-ID: <CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
-References: <1507761269-7017-1-git-send-email-jim2101024@gmail.com>
- <1507761269-7017-6-git-send-email-jim2101024@gmail.com> <589c04cb-061b-a453-3188-79324a02388e@arm.com>
- <20171017081422.GA19475@lst.de>
+From: Gary R Hook <gary.hook@amd.com>
+Subject: [PATCH] iommu: Limit the IOVA page range to the specified addresses
+Date: Tue, 17 Oct 2017 16:22:01 -0500
+Message-ID: <150827532101.76237.2380796046683480798.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171017081422.GA19475@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-mips@linux-mips.org, Florian Fainelli <f.fainelli@gmail.com>, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Rob Herring <robh+dt@kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Gregory Fong <gregory.0xf0@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Brian Norris <computersforpeace@gmail.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org
+To: iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 17, 2017 at 4:14 AM, Christoph Hellwig <hch@lst.de> wrote:
-> Just took a quick look over this and I basically agree with the comments
-> from Robin.
->
-> What I don't understand is why you're even trying to do all these
-> hacky things.
->
-> It seems like the controller should simply set dma_pfn_offset for
-> each device hanging off it, and all the supported architectures
-> should be updated to obey that if they don't do so yet, and
-> you're done without needing this giant mess.
+From: amd <amd@sosxen2.amd.com>
 
-My understanding is that dma_pfn_offset is that it is a single
-constant offset from RAM, in our case, to map to PCIe space.  But in
-my commit message I detail how our PCIe controller presents memory
-with multiple regions with multiple different offsets. If an EP device
-maps to a region on the host memory, yes we can set the dma_pfn_offset
-for that device for that location within that range,.  But if the
-device then unmaps and allocates from another region with a different
-offset, it won't work.  If  I set dma_pfn_offset I have to assume that
-the device is using only one region of memory only, not more than one,
-and that it is not unmapping that region and mapping another (with a
-different offset).  Can I make those assumptions?
+The extent of pages specified when applying a reserved region should
+include up to the last page of the range, but not the page following
+the range.
+
+Signed-off-by: Gary R Hook <gary.hook@amd.com>
+---
+ drivers/iommu/amd_iommu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 27eb0d6fcdc2..bb3ef33e3784 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3271,7 +3271,7 @@ static void amd_iommu_apply_resv_region(struct device *dev,
+ 	unsigned long start, end;
+ 
+ 	start = IOVA_PFN(region->start);
+-	end   = IOVA_PFN(region->start + region->length);
++	end   = IOVA_PFN(region->start + region->length - 1);
+ 
+ 	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
+ }
