@@ -1,36 +1,39 @@
-From: Wei Yongjun <weiyongjun1@huawei.com>
-Subject: [PATCH -next] iommu/ipmmu-vmsa: Fix return value check in ipmmu_find_group_dma()
-Date: Tue, 17 Oct 2017 12:11:22 +0000
-Message-ID: <1508242282-73764-1-git-send-email-weiyongjun1@huawei.com>
+From: Jim Quinlan <jim2101024@gmail.com>
+Subject: Re: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound traffic
+Date: Tue, 17 Oct 2017 12:11:55 -0400
+Message-ID: <CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
+References: <1507761269-7017-1-git-send-email-jim2101024@gmail.com>
+ <1507761269-7017-6-git-send-email-jim2101024@gmail.com> <589c04cb-061b-a453-3188-79324a02388e@arm.com>
+ <20171017081422.GA19475@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171017081422.GA19475@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Wei Yongjun <weiyongjun1@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-mips@linux-mips.org, Florian Fainelli <f.fainelli@gmail.com>, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Rob Herring <robh+dt@kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Gregory Fong <gregory.0xf0@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Brian Norris <computersforpeace@gmail.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-In case of error, the function iommu_group_get() returns NULL pointer
-not ERR_PTR(). The IS_ERR() test in the return value check should be
-replaced with NULL test.
+On Tue, Oct 17, 2017 at 4:14 AM, Christoph Hellwig <hch@lst.de> wrote:
+> Just took a quick look over this and I basically agree with the comments
+> from Robin.
+>
+> What I don't understand is why you're even trying to do all these
+> hacky things.
+>
+> It seems like the controller should simply set dma_pfn_offset for
+> each device hanging off it, and all the supported architectures
+> should be updated to obey that if they don't do so yet, and
+> you're done without needing this giant mess.
 
-Fixes: 3ae47292024f ("iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/iommu/ipmmu-vmsa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index af81400..00e88a8 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -871,7 +871,7 @@ static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
- 	sibling = ipmmu_find_sibling_device(dev);
- 	if (sibling)
- 		group = iommu_group_get(sibling);
--	if (!sibling || IS_ERR(group))
-+	if (!sibling || !group)
- 		group = generic_device_group(dev);
- 
- 	return group;
+My understanding is that dma_pfn_offset is that it is a single
+constant offset from RAM, in our case, to map to PCIe space.  But in
+my commit message I detail how our PCIe controller presents memory
+with multiple regions with multiple different offsets. If an EP device
+maps to a region on the host memory, yes we can set the dma_pfn_offset
+for that device for that location within that range,.  But if the
+device then unmaps and allocates from another region with a different
+offset, it won't work.  If  I set dma_pfn_offset I have to assume that
+the device is using only one region of memory only, not more than one,
+and that it is not unmapping that region and mapping another (with a
+different offset).  Can I make those assumptions?
