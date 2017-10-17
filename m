@@ -1,148 +1,72 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: RE: [PATCH v9 2/4] iommu/dma: Add a helper function to reserve HW
- MSI address regions for IOMMU drivers
-Date: Mon, 16 Oct 2017 16:09:36 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA83844672A@FRAEML521-MBX.china.huawei.com>
-References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
- <20171006140450.89652-3-shameerali.kolothum.thodi@huawei.com>
- <20171013192350.GA32130@arm.com>
+From: jglisse@redhat.com
+Subject: [PATCH 0/2] Optimize mmu_notifier->invalidate_range callback
+Date: Mon, 16 Oct 2017 23:10:01 -0400
+Message-ID: <20171017031003.7481-1-jglisse@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171013192350.GA32130@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, John Garry <john.garry@huawei.com>, "Guohanjun
- (Hanjun Guo)" <guohanjun@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
+To: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Donnellan <andrew.donnellan@au1.ibm.com>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+From: Jérôme Glisse <jglisse@redhat.com>
 
-> -----Original Message-----
-> From: Will Deacon [mailto:will.deacon@arm.com]
-> Sent: Friday, October 13, 2017 8:24 PM
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
-> sudeep.holla@arm.com; robin.murphy@arm.com; joro@8bytes.org;
-> bhelgaas@google.com; Gabriele Paoloni <gabriele.paoloni@huawei.com>;
-> John Garry <john.garry@huawei.com>; iommu@lists.linux-foundation.org;
-> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org; linux-
-> pci@vger.kernel.org; devel@acpica.org; Linuxarm <linuxarm@huawei.com>;
-> Wangzhou (B) <wangzhou1@hisilicon.com>; Guohanjun (Hanjun Guo)
-> <guohanjun@huawei.com>
-> Subject: Re: [PATCH v9 2/4] iommu/dma: Add a helper function to reserve HW
-> MSI address regions for IOMMU drivers
-> 
-> On Fri, Oct 06, 2017 at 03:04:48PM +0100, Shameer Kolothum wrote:
-> > IOMMU drivers can use this to implement their .get_resv_regions callback
-> > for HW MSI specific reservations(e.g. ARM GICv3 ITS MSI region).
-> >
-> > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> > ---
-> >  drivers/iommu/dma-iommu.c | 20 ++++++++++++++++++++
-> >  include/linux/dma-iommu.h |  7 +++++++
-> >  2 files changed, 27 insertions(+)
-> 
-> I'd like to see Robin's Ack on this, because this is his code and he had
-> ideas on ways to solve this problem properly.
+(Andrew you already have v1 in your queue of patch 1, patch 2 is new,
+ i think you can drop it patch 1 v1 for v2, v2 is bit more conservative
+ and i fixed typos)
 
-Please let us know if it is ok to go ahead with ACPI support for now.
-It will help our customers to start using pass-through for PCIe.
+All this only affect user of invalidate_range callback (at this time
+CAPI arch/powerpc/platforms/powernv/npu-dma.c, IOMMU ATS/PASID in
+drivers/iommu/amd_iommu_v2.c|intel-svm.c)
 
-Thanks,
-Shameer
+This patchset remove useless double call to mmu_notifier->invalidate_range
+callback wherever it is safe to do so. The first patch just remove useless
+call and add documentation explaining why it is safe to do so. The second
+patch go further by introducing mmu_notifier_invalidate_range_only_end()
+which skip callback to invalidate_range this can be done when clearing a
+pte, pmd or pud with notification which call invalidate_range right after
+clearing under the page table lock.
 
-> 
-> Will
-> 
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index 9d1cebe..bae677e 100644
-> > --- a/drivers/iommu/dma-iommu.c
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -19,6 +19,7 @@
-> >   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-> >   */
-> >
-> > +#include <linux/acpi_iort.h>
-> >  #include <linux/device.h>
-> >  #include <linux/dma-iommu.h>
-> >  #include <linux/gfp.h>
-> > @@ -27,6 +28,7 @@
-> >  #include <linux/iova.h>
-> >  #include <linux/irq.h>
-> >  #include <linux/mm.h>
-> > +#include <linux/of_iommu.h>
-> >  #include <linux/pci.h>
-> >  #include <linux/scatterlist.h>
-> >  #include <linux/vmalloc.h>
-> > @@ -198,6 +200,24 @@ void iommu_dma_get_resv_regions(struct device
-> *dev, struct list_head *list)
-> >  }
-> >  EXPORT_SYMBOL(iommu_dma_get_resv_regions);
-> >
-> > +/**
-> > + * iommu_dma_get_msi_resv_regions - Reserved region driver helper
-> > + * @dev: Device from iommu_get_resv_regions()
-> > + * @list: Reserved region list from iommu_get_resv_regions()
-> > + *
-> > + * IOMMU drivers can use this to implement their .get_resv_regions
-> > + * callback for HW MSI specific reservations. For now, this only
-> > + * covers ITS MSI region reservation using ACPI IORT helper function.
-> > + */
-> > +int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head
-> *list)
-> > +{
-> > +	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
-> > +		return iort_iommu_msi_get_resv_regions(dev, list);
-> > +
-> > +	return -ENODEV;
-> > +}
-> > +EXPORT_SYMBOL(iommu_dma_get_msi_resv_regions);
-> > +
-> >  static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
-> >  		phys_addr_t start, phys_addr_t end)
-> >  {
-> > diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> > index 92f2083..6062ef0 100644
-> > --- a/include/linux/dma-iommu.h
-> > +++ b/include/linux/dma-iommu.h
-> > @@ -74,6 +74,8 @@ void iommu_dma_unmap_resource(struct device *dev,
-> dma_addr_t handle,
-> >  void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
-> >  void iommu_dma_get_resv_regions(struct device *dev, struct list_head
-> *list);
-> >
-> > +int iommu_dma_get_msi_resv_regions(struct device *dev, struct list_head
-> *list);
-> > +
-> >  #else
-> >
-> >  struct iommu_domain;
-> > @@ -107,6 +109,11 @@ static inline void
-> iommu_dma_get_resv_regions(struct device *dev, struct list_he
-> >  {
-> >  }
-> >
-> > +static inline int iommu_dma_get_msi_resv_regions(struct device *dev,
-> struct list_head *list)
-> > +{
-> > +	return -ENODEV;
-> > +}
-> > +
-> >  #endif	/* CONFIG_IOMMU_DMA */
-> >  #endif	/* __KERNEL__ */
-> >  #endif	/* __DMA_IOMMU_H */
-> > --
-> > 1.9.1
-> >
-> >
+It should improve performances but i am lacking hardware and benchmarks
+which might show an improvement. Maybe folks in cc can help here.
+
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Alistair Popple <alistair@popple.id.au>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Andrew Donnellan <andrew.donnellan@au1.ibm.com>
+Cc: iommu@lists.linux-foundation.org
+Cc: linuxppc-dev@lists.ozlabs.org
+
+Jérôme Glisse (2):
+  mm/mmu_notifier: avoid double notification when it is useless v2
+  mm/mmu_notifier: avoid call to invalidate_range() in range_end()
+
+ Documentation/vm/mmu_notifier.txt | 93 +++++++++++++++++++++++++++++++++++++++
+ fs/dax.c                          |  9 +++-
+ include/linux/mmu_notifier.h      | 20 +++++++--
+ mm/huge_memory.c                  | 66 ++++++++++++++++++++++++---
+ mm/hugetlb.c                      | 16 +++++--
+ mm/ksm.c                          | 15 ++++++-
+ mm/memory.c                       |  6 ++-
+ mm/migrate.c                      | 15 +++++--
+ mm/mmu_notifier.c                 | 11 ++++-
+ mm/rmap.c                         | 59 ++++++++++++++++++++++---
+ 10 files changed, 281 insertions(+), 29 deletions(-)
+ create mode 100644 Documentation/vm/mmu_notifier.txt
+
+-- 
+2.13.6
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
