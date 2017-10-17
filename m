@@ -1,278 +1,89 @@
-From: jglisse@redhat.com
-Subject: [PATCH 2/2] mm/mmu_notifier: avoid call to invalidate_range() in range_end()
-Date: Mon, 16 Oct 2017 23:10:03 -0400
-Message-ID: <20171017031003.7481-3-jglisse@redhat.com>
-References: <20171017031003.7481-1-jglisse@redhat.com>
+From: Nick Sarnie <commendsarnex@gmail.com>
+Subject: Re: AMD Ryzen KVM/NPT/IOMMU issue
+Date: Tue, 17 Oct 2017 00:16:13 -0400
+Message-ID: <CAOcCaLYmNe=wPSD-UkUJYZsbrEDjwf9anKH4_XU7-+f2VCfATA@mail.gmail.com>
+References: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1@markju.com>
+ <CAOcCaLbdi9KZoXiV5htjShc_mYvZ5jK2B3Ot7NeM=3v_ZA39aA@mail.gmail.com>
+ <20170505112706.7785948c@t450s.home> <CAOcCaLbAS0FkRrG8YZNM5rYUtCFeUGkdgdy=4o16Njufdy8Gag@mail.gmail.com>
+ <545f19a3-4923-cdec-4ce9-2a4155a04f6a@amd.com> <CAK8d-aJ+XHi+5sr6bHj3D2BaG94v6Lyk1C_ZuA4erDVhEyp-uQ@mail.gmail.com>
+ <5d2ea709-8f90-bfaa-975d-48aed39e75ad@amd.com> <20170628130855.76c2b700@w520.home>
+ <BN6PR12MB1348B4850D77192356D960E9E8DD0@BN6PR12MB1348.namprd12.prod.outlook.com>
+ <BN6PR12MB13481A39CD3EA714754FEE49E8DD0@BN6PR12MB1348.namprd12.prod.outlook.com>
+ <CAEk7i1-Ar0ES8ekmSGiRrrWzTz8gFb2RDTW6KsbuNdDubVerww@mail.gmail.com>
+ <ecfb6f20-6f74-3d46-b3fb-696d36ab4008@redhat.com> <CAOcCaLao_Y-8KP60baoSehtCu7C5CVnuuZNEom-zi54Fa2h+sQ@mail.gmail.com>
+ <CAAq2Xdpu_rv7FgVfGCv-nYttGzH6hZujqdYvcf4qgXetkOGLzw@mail.gmail.com>
+ <CAAq2XdppNcKcmbJhPQ9WfTowKSmp76jhDa9JHM1rc92Enx=1Zg@mail.gmail.com>
+ <CAOcCaLbs8UPNUDus7hQoVez0gu_7CJCT1sZArdDjiqDGXAT44Q@mail.gmail.com> <CAAq2XdqHMNJ_R8diSHUatBw9p2-SH7v9us9StmP+obTOAc8-FQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20171017031003.7481-1-jglisse@redhat.com>
-Sender: owner-linux-mm@kvack.org
-To: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Donnellan <andrew.donnellan@au1.ibm.com>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <CAAq2XdqHMNJ_R8diSHUatBw9p2-SH7v9us9StmP+obTOAc8-FQ@mail.gmail.com>
+Sender: kvm-owner@vger.kernel.org
+To: Suravee.Suthikulpanit@amd.com
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Bridgman, John" <John.Bridgman@amd.com>, Jerome Glisse <jglisse@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jérôme Glisse <jglisse@redhat.com>
+On Wed, Jun 28, 2017 at 2:53 PM, Suravee Suthikulpanit
+<Suravee.Suthikulpanit@amd.com> wrote:
+>
+>
+> On 6/29/17 00:26, Steven Walter wrote:
+>>>
+>>> So, I'm trying to reproduce this issue on the Ryzen system w/ the
+>>> following
+>>> setup:
+>>>
+>>>   * Host kernel v4.11 (with this patch
+>>> https://lkml.org/lkml/2017/6/23/295)
+>>>
+>>>   * guest VM RHEL7.3
+>>>
+>>>   * guest graphic driver = radeon
+>>>
+>>>   * qemu-system-x86_64 --version
+>>>     QEMU emulator version 2.9.50 (v2.9.0-1659-g577caa2-dirty)
+>>>
+>>>   * kvm-amd npt=1
+>>>
+>>>   * dGPU is 08:00.0 VGA compatible controller: Advanced Micro Devices,
+>>> Inc.
+>>> [AMD/ATI] Tobago PRO [Radeon R7 360 / R9 360 OEM] (rev 81)
+>>>
+>>>   * qemu-system-x86_64 -smp 4 -enable-kvm -M q35 -m 4096 -cpu host -bios
+>>> /usr/share/qemu/bios.bin -device
+>>> ioh3420,bus=pcie.0,addr=1c.0,multifunction=on,port=1,chassis=1,id=root.1
+>>> -drive file=/sandbox/vm-images/rhel7.3.qcow2,if=virtio,id=disk0 -net none
+>>> -vga none -nodefaults -device
+>>>
+>>> vfio-pci,host=08:00.0,x-vga=on,addr=0.0,multifunction=on,bus=root.1,romfile=/sandbox/vm-images/vbios.rom
+>>> -usb -device usb-host,hostbus=3,hostport=1 -device
+>>> usb-host,hostbus=3,hostport=3 -device vfio-pci,host=0000:08:00.1 -device
+>>> vfio-pci,host=0000:09:00.0
+>>>
+>>> With this setup, I am able to pass-through the dGPU and run the following
+>>> test:
+>>>   * Starting up the guest w/ full GNOME GUI on the attached monitor.
+>>>   * glxgears (running @ 60 FPS)
+>>>   * Playing 1080p HD video on Youtube
+>>>
+>>> I am not noticing issues here. What kind of test are you running in the
+>>> guest VM?
+>>
+>> Try running the open source game "torcs" inside the VM.  I think
+>> you'll find that there's a very noticeable performance different
+>> between npt=1 and npt=0
+>
+>
+> Hm.. actually torcs seems to be running fine w/ npt=1 setup. Although I
+> think my driving skill is ~20% worse :(
+>
+> S
 
-This is an optimization patch that only affect mmu_notifier users which
-rely on the invalidate_range() callback. This patch avoids calling that
-callback twice in a row from inside __mmu_notifier_invalidate_range_end
+Hi Suravee,
 
-Existing pattern (before this patch):
-    mmu_notifier_invalidate_range_start()
-        pte/pmd/pud_clear_flush_notify()
-            mmu_notifier_invalidate_range()
-    mmu_notifier_invalidate_range_end()
-        mmu_notifier_invalidate_range()
+Did you get a chance to test this again with a more graphically
+intense program such as the Unigine Heaven benchmark? This is still a
+massive issue in the community.
 
-New pattern (after this patch):
-    mmu_notifier_invalidate_range_start()
-        pte/pmd/pud_clear_flush_notify()
-            mmu_notifier_invalidate_range()
-    mmu_notifier_invalidate_range_only_end()
-
-We call the invalidate_range callback after clearing the page table under
-the page table lock and we skip the call to invalidate_range inside the
-__mmu_notifier_invalidate_range_end() function.
-
-Idea from Andrea Arcangeli
-
-Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Alistair Popple <alistair@popple.id.au>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Andrew Donnellan <andrew.donnellan@au1.ibm.com>
-
-Cc: iommu@lists.linux-foundation.org
-Cc: linuxppc-dev@lists.ozlabs.org
----
- include/linux/mmu_notifier.h | 17 ++++++++++++++--
- mm/huge_memory.c             | 46 ++++++++++++++++++++++++++++++++++++++++----
- mm/memory.c                  |  6 +++++-
- mm/migrate.c                 | 15 ++++++++++++---
- mm/mmu_notifier.c            | 11 +++++++++--
- 5 files changed, 83 insertions(+), 12 deletions(-)
-
-diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
-index 49c925c96b8a..6665c4624287 100644
---- a/include/linux/mmu_notifier.h
-+++ b/include/linux/mmu_notifier.h
-@@ -213,7 +213,8 @@ extern void __mmu_notifier_change_pte(struct mm_struct *mm,
- extern void __mmu_notifier_invalidate_range_start(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end);
- extern void __mmu_notifier_invalidate_range_end(struct mm_struct *mm,
--				  unsigned long start, unsigned long end);
-+				  unsigned long start, unsigned long end,
-+				  bool only_end);
- extern void __mmu_notifier_invalidate_range(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end);
- 
-@@ -267,7 +268,14 @@ static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end)
- {
- 	if (mm_has_notifiers(mm))
--		__mmu_notifier_invalidate_range_end(mm, start, end);
-+		__mmu_notifier_invalidate_range_end(mm, start, end, false);
-+}
-+
-+static inline void mmu_notifier_invalidate_range_only_end(struct mm_struct *mm,
-+				  unsigned long start, unsigned long end)
-+{
-+	if (mm_has_notifiers(mm))
-+		__mmu_notifier_invalidate_range_end(mm, start, end, true);
- }
- 
- static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
-@@ -438,6 +446,11 @@ static inline void mmu_notifier_invalidate_range_end(struct mm_struct *mm,
- {
- }
- 
-+static inline void mmu_notifier_invalidate_range_only_end(struct mm_struct *mm,
-+				  unsigned long start, unsigned long end)
-+{
-+}
-+
- static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
- 				  unsigned long start, unsigned long end)
- {
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index ff5bc647b51d..b2912305994f 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -1220,7 +1220,12 @@ static int do_huge_pmd_wp_page_fallback(struct vm_fault *vmf, pmd_t orig_pmd,
- 	page_remove_rmap(page, true);
- 	spin_unlock(vmf->ptl);
- 
--	mmu_notifier_invalidate_range_end(vma->vm_mm, mmun_start, mmun_end);
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback as
-+	 * the above pmdp_huge_clear_flush_notify() did already call it.
-+	 */
-+	mmu_notifier_invalidate_range_only_end(vma->vm_mm, mmun_start,
-+						mmun_end);
- 
- 	ret |= VM_FAULT_WRITE;
- 	put_page(page);
-@@ -1369,7 +1374,12 @@ int do_huge_pmd_wp_page(struct vm_fault *vmf, pmd_t orig_pmd)
- 	}
- 	spin_unlock(vmf->ptl);
- out_mn:
--	mmu_notifier_invalidate_range_end(vma->vm_mm, mmun_start, mmun_end);
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback as
-+	 * the above pmdp_huge_clear_flush_notify() did already call it.
-+	 */
-+	mmu_notifier_invalidate_range_only_end(vma->vm_mm, mmun_start,
-+					       mmun_end);
- out:
- 	return ret;
- out_unlock:
-@@ -2021,7 +2031,12 @@ void __split_huge_pud(struct vm_area_struct *vma, pud_t *pud,
- 
- out:
- 	spin_unlock(ptl);
--	mmu_notifier_invalidate_range_end(mm, haddr, haddr + HPAGE_PUD_SIZE);
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback as
-+	 * the above pudp_huge_clear_flush_notify() did already call it.
-+	 */
-+	mmu_notifier_invalidate_range_only_end(mm, haddr, haddr +
-+					       HPAGE_PUD_SIZE);
- }
- #endif /* CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
- 
-@@ -2096,6 +2111,15 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		add_mm_counter(mm, MM_FILEPAGES, -HPAGE_PMD_NR);
- 		return;
- 	} else if (is_huge_zero_pmd(*pmd)) {
-+		/*
-+		 * FIXME: Do we want to invalidate secondary mmu by calling
-+		 * mmu_notifier_invalidate_range() see comments below inside
-+		 * __split_huge_pmd() ?
-+		 *
-+		 * We are going from a zero huge page write protected to zero
-+		 * small page also write protected so it does not seems useful
-+		 * to invalidate secondary mmu at this time.
-+		 */
- 		return __split_huge_zero_page_pmd(vma, haddr, pmd);
- 	}
- 
-@@ -2231,7 +2255,21 @@ void __split_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 	__split_huge_pmd_locked(vma, pmd, haddr, freeze);
- out:
- 	spin_unlock(ptl);
--	mmu_notifier_invalidate_range_end(mm, haddr, haddr + HPAGE_PMD_SIZE);
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback.
-+	 * They are 3 cases to consider inside __split_huge_pmd_locked():
-+	 *  1) pmdp_huge_clear_flush_notify() call invalidate_range() obvious
-+	 *  2) __split_huge_zero_page_pmd() read only zero page and any write
-+	 *    fault will trigger a flush_notify before pointing to a new page
-+	 *    (it is fine if the secondary mmu keeps pointing to the old zero
-+	 *    page in the meantime)
-+	 *  3) Split a huge pmd into pte pointing to the same page. No need
-+	 *     to invalidate secondary tlb entry they are all still valid.
-+	 *     any further changes to individual pte will notify. So no need
-+	 *     to call mmu_notifier->invalidate_range()
-+	 */
-+	mmu_notifier_invalidate_range_only_end(mm, haddr, haddr +
-+					       HPAGE_PMD_SIZE);
- }
- 
- void split_huge_pmd_address(struct vm_area_struct *vma, unsigned long address,
-diff --git a/mm/memory.c b/mm/memory.c
-index 47cdf4e85c2d..8a0c410037d2 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -2555,7 +2555,11 @@ static int wp_page_copy(struct vm_fault *vmf)
- 		put_page(new_page);
- 
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
--	mmu_notifier_invalidate_range_end(mm, mmun_start, mmun_end);
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback as
-+	 * the above ptep_clear_flush_notify() did already call it.
-+	 */
-+	mmu_notifier_invalidate_range_only_end(mm, mmun_start, mmun_end);
- 	if (old_page) {
- 		/*
- 		 * Don't let another task, with possibly unlocked vma,
-diff --git a/mm/migrate.c b/mm/migrate.c
-index e00814ca390e..2f0f8190cb6f 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -2088,7 +2088,11 @@ int migrate_misplaced_transhuge_page(struct mm_struct *mm,
- 	set_page_owner_migrate_reason(new_page, MR_NUMA_MISPLACED);
- 
- 	spin_unlock(ptl);
--	mmu_notifier_invalidate_range_end(mm, mmun_start, mmun_end);
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback as
-+	 * the above pmdp_huge_clear_flush_notify() did already call it.
-+	 */
-+	mmu_notifier_invalidate_range_only_end(mm, mmun_start, mmun_end);
- 
- 	/* Take an "isolate" reference and put new page on the LRU. */
- 	get_page(new_page);
-@@ -2804,9 +2808,14 @@ static void migrate_vma_pages(struct migrate_vma *migrate)
- 			migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
- 	}
- 
-+	/*
-+	 * No need to double call mmu_notifier->invalidate_range() callback as
-+	 * the above ptep_clear_flush_notify() inside migrate_vma_insert_page()
-+	 * did already call it.
-+	 */
- 	if (notified)
--		mmu_notifier_invalidate_range_end(mm, mmu_start,
--						  migrate->end);
-+		mmu_notifier_invalidate_range_only_end(mm, mmu_start,
-+						       migrate->end);
- }
- 
- /*
-diff --git a/mm/mmu_notifier.c b/mm/mmu_notifier.c
-index 314285284e6e..96edb33fd09a 100644
---- a/mm/mmu_notifier.c
-+++ b/mm/mmu_notifier.c
-@@ -190,7 +190,9 @@ void __mmu_notifier_invalidate_range_start(struct mm_struct *mm,
- EXPORT_SYMBOL_GPL(__mmu_notifier_invalidate_range_start);
- 
- void __mmu_notifier_invalidate_range_end(struct mm_struct *mm,
--				  unsigned long start, unsigned long end)
-+					 unsigned long start,
-+					 unsigned long end,
-+					 bool only_end)
- {
- 	struct mmu_notifier *mn;
- 	int id;
-@@ -204,8 +206,13 @@ void __mmu_notifier_invalidate_range_end(struct mm_struct *mm,
- 		 * subsystem registers either invalidate_range_start()/end() or
- 		 * invalidate_range(), so this will be no additional overhead
- 		 * (besides the pointer check).
-+		 *
-+		 * We skip call to invalidate_range() if we know it is safe ie
-+		 * call site use mmu_notifier_invalidate_range_only_end() which
-+		 * is safe to do when we know that a call to invalidate_range()
-+		 * already happen under page table lock.
- 		 */
--		if (mn->ops->invalidate_range)
-+		if (!only_end && mn->ops->invalidate_range)
- 			mn->ops->invalidate_range(mn, mm, start, end);
- 		if (mn->ops->invalidate_range_end)
- 			mn->ops->invalidate_range_end(mn, mm, start, end);
--- 
-2.13.6
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Thanks,
+Sarnex
