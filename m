@@ -1,212 +1,153 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
- stream tables and comamnd queues
-Date: Wed, 18 Oct 2017 14:36:03 +0100
-Message-ID: <c14854ea-2f58-2d30-1b6c-153a7f3e24a6@arm.com>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
- <20170921085922.11659-4-ganapatrao.kulkarni@cavium.com>
- <db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
- <CAKTKpr508ArR1RUSY8HnaOkp==zPZ2=P_6gcXOAfi9hJq6XcqA@mail.gmail.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers
+ behind SMMUv3
+Date: Wed, 18 Oct 2017 14:45:16 +0100
+Message-ID: <20171018134515.GC21820@arm.com>
+References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
+ <20171006140450.89652-5-shameerali.kolothum.thodi@huawei.com>
+ <20171013192209.GH30572@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA838437676@FRAEML521-MBS.china.huawei.com>
+ <20171018105145.GC11669@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA838448830@FRAEML521-MBX.china.huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <CAKTKpr508ArR1RUSY8HnaOkp==zPZ2=P_6gcXOAfi9hJq6XcqA@mail.gmail.com>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Ganapatrao Kulkarni <gklkml16@gmail.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Joerg Roedel <joro@8bytes.org>, vbabka@suse.cz, akpm@linux-foundation.org, mhocko@suse.com, Tomasz.Nowicki@cavium.com, Robert.Richter@cavium.com, jnair@caviumnetworks.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838448830@FRAEML521-MBX.china.huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "bhelgaas@google.com" <bhelgaas@google.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, Guohanjun (Hanjun Guo)
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/10/17 14:53, Ganapatrao Kulkarni wrote:
-> Hi Robin,
+On Wed, Oct 18, 2017 at 12:25:09PM +0000, Shameerali Kolothum Thodi wrote:
+> Hi Will,
 > 
+> > -----Original Message-----
+> > From: Will Deacon [mailto:will.deacon@arm.com]
+> > Sent: Wednesday, October 18, 2017 11:52 AM
+> > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> > Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
+> > sudeep.holla@arm.com; robin.murphy@arm.com; joro@8bytes.org;
+> > bhelgaas@google.com; Gabriele Paoloni <gabriele.paoloni@huawei.com>;
+> > John Garry <john.garry@huawei.com>; iommu@lists.linux-foundation.org;
+> > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org; linux-
+> > pci@vger.kernel.org; devel@acpica.org; Linuxarm <linuxarm@huawei.com>;
+> > Wangzhou (B) <wangzhou1@hisilicon.com>; Guohanjun (Hanjun Guo)
+> > <guohanjun@huawei.com>
+> > Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers behind
+> > SMMUv3
+> > 
+> > On Sun, Oct 15, 2017 at 07:46:34AM +0000, Shameerali Kolothum Thodi wrote:
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Will Deacon [mailto:will.deacon@arm.com]
+> > > > Sent: Friday, October 13, 2017 8:22 PM
+> > > > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> > > > Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
+> > > > sudeep.holla@arm.com; robin.murphy@arm.com; joro@8bytes.org;
+> > > > bhelgaas@google.com; Gabriele Paoloni <gabriele.paoloni@huawei.com>;
+> > > > John Garry <john.garry@huawei.com>; iommu@lists.linux-foundation.org;
+> > > > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org; linux-
+> > > > pci@vger.kernel.org; devel@acpica.org; Linuxarm
+> > <linuxarm@huawei.com>;
+> > > > Wangzhou (B) <wangzhou1@hisilicon.com>; Guohanjun (Hanjun Guo)
+> > > > <guohanjun@huawei.com>
+> > > > Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers
+> > behind
+> > > > SMMUv3
+> > > >
+> > > > On Fri, Oct 06, 2017 at 03:04:50PM +0100, Shameer Kolothum wrote:
+> > > > > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
+> > > > > platforms hip06/hip07 to support the SMMUv3 mappings for MSI
+> > > > > transactions.
+> > > > >
+> > > > > PCIe controller on these platforms has to differentiate the MSI
+> > > > > payload against other DMA payload and has to modify the MSI payload.
+> > > > > This basically makes it difficult for this platforms to have a SMMU
+> > > > > translation for MSI. In order to workaround this, ARM
+> > > > > SMMUv3 driver requires a quirk to treat the MSI regions separately.
+> > > > > Such a quirk is currently missing for DT based systems and therefore
+> > > > > we need to blacklist the hip06/hip07 PCIe controllers.
+> > > > >
+> > > > > Signed-off-by: Shameer Kolothum
+> > > > <shameerali.kolothum.thodi@huawei.com>
+> > > > > ---
+> > > > >  drivers/pci/dwc/pcie-hisi.c | 12 ++++++++++++
+> > > > >  1 file changed, 12 insertions(+)
+> > > > >
+> > > > > diff --git a/drivers/pci/dwc/pcie-hisi.c b/drivers/pci/dwc/pcie-hisi.c
+> > > > > index a201791..6800747 100644
+> > > > > --- a/drivers/pci/dwc/pcie-hisi.c
+> > > > > +++ b/drivers/pci/dwc/pcie-hisi.c
+> > > > > @@ -270,6 +270,12 @@ static int hisi_pcie_probe(struct platform_device
+> > > > *pdev)
+> > > > >  	struct resource *reg;
+> > > > >  	int ret;
+> > > > >
+> > > > > +	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
+> > > > > +			of_property_read_bool(dev->of_node, "iommu-
+> > > > map")) {
+> > > > > +		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting
+> > > > PCIe controllers behind SMMUv3\n");
+> > > > > +		return -ENODEV;
+> > > > > +	}
+> > > > > +
+> > > > >  	hisi_pcie = devm_kzalloc(dev, sizeof(*hisi_pcie), GFP_KERNEL);
+> > > > >  	if (!hisi_pcie)
+> > > > >  		return -ENOMEM;
+> > > > > @@ -340,6 +346,12 @@ static int hisi_pcie_almost_ecam_probe(struct
+> > > > platform_device *pdev)
+> > > > >  	struct device *dev = &pdev->dev;
+> > > > >  	struct pci_ecam_ops *ops;
+> > > > >
+> > > > > +	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
+> > > > > +			of_property_read_bool(dev->of_node, "iommu-
+> > > > map")) {
+> > > > > +		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting
+> > > > PCIe controllers behind SMMUv3\n");
+> > > > > +		return -ENODEV;
+> > > > > +	}
+> > > >
+> > > > This isn't the right way to solve this problem. I was really hoping you'd
+> > come
+> > > > up with a solution for DT, and I know you've been trying, so I suppose for
+> > > > now we'll just have to go with the ACPI workaround you have and leave DT
+> > in
+> > > > the balance. I'm not at all happy with that, but I don't think this patch really
+> > > > improves things.
+> > >
+> > > Yes Will, this is to get the ACPI support enabled for now.
+> > >
+> > > > What I think you should do is remove the relevant smmu/iommu-map
+> > > > entries from the .dts files that are available for these platforms (i.e.
+> > > > comment them out with a description as to why).
+> > >
+> > > We don't have any smmu/iommu-map entries for these platforms in the
+> > > .dts files [1][2]. We are not aiming for any official DT support for these
+> > platforms.
+> > > This patch is to enforce the non-support.
+> > 
+> > Understood, but this has dragged on for a while and I don't think this patch
+> > is the right way to enforce things. The best approach might actually be to
+> > add the SMMU to the DTs, but commented out with a comment explaining why
+> > it's not a good idea to enable it.
 > 
-> On Thu, Sep 21, 2017 at 5:28 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->> [+Christoph and Marek]
->>
->> On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
->>> Introduce smmu_alloc_coherent and smmu_free_coherent functions to
->>> allocate/free dma coherent memory from NUMA node associated with SMMU.
->>> Replace all calls of dmam_alloc_coherent with smmu_alloc_coherent
->>> for SMMU stream tables and command queues.
->>
->> This doesn't work - not only do you lose the 'managed' aspect and risk
->> leaking various tables on probe failure or device removal, but more
->> importantly, unless you add DMA syncs around all the CPU accesses to the
->> tables, you lose the critical 'coherent' aspect, and that's a horribly
->> invasive change that I really don't want to make.
-> 
-> this implementation is similar to function used to allocate memory for
-> translation tables.
+> Ok. Just to clarify, you would like to replace this patch with another 
+> one with smmu entries in dts and commenting/disabling them with explanation.
+> Or you would like to have that in addition to this one?
 
-The concept is similar, yes, and would work if implemented *correctly*
-with the aforementioned comprehensive and hugely invasive changes. The
-implementation as presented in this patch, however, is incomplete and
-badly broken.
+Yes, I'm saying let's do that instead. My preference is still that we would
+have all of this working for DT, but it's clear that isn't going to happen
+and so I'm trying to unblock the ACPI bits whilst not having subtle breakage
+with DT.
 
-By way of comparison, the io-pgtable implementations contain all the
-necessary dma_sync_* calls, never relied on devres, and only have one
-DMA direction to worry about (hint: the queues don't all work
-identically). There are also a couple of practical reasons for using
-streaming mappings with the DMA == phys restriction there - tracking
-both the CPU and DMA addresses for each table would significantly
-increase the memory overhead, and using the cacheable linear map address
-in all cases sidesteps any potential problems with the atomic PTE
-updates. Neither of those concerns apply to the SMMUv3 data structures,
-which are textbook coherent DMA allocations (being tied to the lifetime
-of the device, rather than transient).
+> +	/** HiSilicon erratum 161010801: Please make sure that
+> +	 *  the smmu (pcie) node on hip06 is disabled as this will
+> +	 *  break the PCIe functionality when iommu-map entry
+> +	 *  is used along with the PCIe node.
 
-> why do you see it affects to stream tables and not to page tables.
-> at runtime, both tables are accessed by SMMU only.
-> 
-> As said in cover letter, having stream table from respective NUMA node
-> is yielding
-> around 30% performance!
-> please suggest, if there is any better way to address this issue?
+It would be good to have a better description of what is broken and why,
+along with a link to the mailing link discussion.
 
-I fully agree that NUMA-aware allocations are a worthwhile thing that we
-want. I just don't like the idea of going around individual drivers
-replacing coherent API usage with bodged-up streaming mappings - I
-really think it's worth making the effort to to tackle it once, in the
-proper place, in a way that benefits all users together.
-
-Robin.
-
->>
->> Christoph, Marek; how reasonable do you think it is to expect
->> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
->> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
->> allocation case; I'm not sure it's even worth it for bounce-buffering),
->> but the likes of CMA might be a little trickier...
->>
->> Robin.
->>
->>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
->>> ---
->>>  drivers/iommu/arm-smmu-v3.c | 57 ++++++++++++++++++++++++++++++++++++++++-----
->>>  1 file changed, 51 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>> index e67ba6c..bc4ba1f 100644
->>> --- a/drivers/iommu/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm-smmu-v3.c
->>> @@ -1158,6 +1158,50 @@ static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
->>>       }
->>>  }
->>>
->>> +static void *smmu_alloc_coherent(struct arm_smmu_device *smmu, size_t size,
->>> +             dma_addr_t *dma_handle, gfp_t gfp)
->>> +{
->>> +     struct device *dev = smmu->dev;
->>> +     void *pages;
->>> +     dma_addr_t dma;
->>> +     int numa_node = dev_to_node(dev);
->>> +
->>> +     pages = alloc_pages_exact_nid(numa_node, size, gfp | __GFP_ZERO);
->>> +     if (!pages)
->>> +             return NULL;
->>> +
->>> +     if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY)) {
->>> +             dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
->>> +             if (dma_mapping_error(dev, dma))
->>> +                     goto out_free;
->>> +             /*
->>> +              * We depend on the SMMU being able to work with any physical
->>> +              * address directly, so if the DMA layer suggests otherwise by
->>> +              * translating or truncating them, that bodes very badly...
->>> +              */
->>> +             if (dma != virt_to_phys(pages))
->>> +                     goto out_unmap;
->>> +     }
->>> +
->>> +     *dma_handle = (dma_addr_t)virt_to_phys(pages);
->>> +     return pages;
->>> +
->>> +out_unmap:
->>> +     dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
->>> +     dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
->>> +out_free:
->>> +     free_pages_exact(pages, size);
->>> +     return NULL;
->>> +}
->>> +
->>> +static void smmu_free_coherent(struct arm_smmu_device *smmu, size_t size,
->>> +             void *pages, dma_addr_t dma_handle)
->>> +{
->>> +     if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
->>> +             dma_unmap_single(smmu->dev, dma_handle, size, DMA_TO_DEVICE);
->>> +     free_pages_exact(pages, size);
->>> +}
->>> +
->>>  static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->>>  {
->>>       size_t size;
->>> @@ -1172,7 +1216,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->>>       strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
->>>
->>>       desc->span = STRTAB_SPLIT + 1;
->>> -     desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
->>> +     desc->l2ptr = smmu_alloc_coherent(smmu, size, &desc->l2ptr_dma,
->>>                                         GFP_KERNEL | __GFP_ZERO);
->>>       if (!desc->l2ptr) {
->>>               dev_err(smmu->dev,
->>> @@ -1487,7 +1531,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
->>>               struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
->>>
->>>               if (cfg->cdptr) {
->>> -                     dmam_free_coherent(smmu_domain->smmu->dev,
->>> +                     smmu_free_coherent(smmu,
->>>                                          CTXDESC_CD_DWORDS << 3,
->>>                                          cfg->cdptr,
->>>                                          cfg->cdptr_dma);
->>> @@ -1515,7 +1559,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->>>       if (asid < 0)
->>>               return asid;
->>>
->>> -     cfg->cdptr = dmam_alloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
->>> +     cfg->cdptr = smmu_alloc_coherent(smmu, CTXDESC_CD_DWORDS << 3,
->>>                                        &cfg->cdptr_dma,
->>>                                        GFP_KERNEL | __GFP_ZERO);
->>>       if (!cfg->cdptr) {
->>> @@ -1984,7 +2028,7 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->>>  {
->>>       size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
->>>
->>> -     q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma, GFP_KERNEL);
->>> +     q->base = smmu_alloc_coherent(smmu, qsz, &q->base_dma, GFP_KERNEL);
->>>       if (!q->base) {
->>>               dev_err(smmu->dev, "failed to allocate queue (0x%zx bytes)\n",
->>>                       qsz);
->>> @@ -2069,7 +2113,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
->>>                        size, smmu->sid_bits);
->>>
->>>       l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
->>> -     strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
->>> +     strtab = smmu_alloc_coherent(smmu, l1size, &cfg->strtab_dma,
->>>                                    GFP_KERNEL | __GFP_ZERO);
->>>       if (!strtab) {
->>>               dev_err(smmu->dev,
->>> @@ -2097,8 +2141,9 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
->>>       u32 size;
->>>       struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
->>>
->>> +
->>>       size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
->>> -     strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
->>> +     strtab = smmu_alloc_coherent(smmu, size, &cfg->strtab_dma,
->>>                                    GFP_KERNEL | __GFP_ZERO);
->>>       if (!strtab) {
->>>               dev_err(smmu->dev,
->>>
->>
-> 
-> thanks
-> Ganapat
-> 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Will
