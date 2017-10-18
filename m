@@ -1,153 +1,173 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers
- behind SMMUv3
-Date: Wed, 18 Oct 2017 14:45:16 +0100
-Message-ID: <20171018134515.GC21820@arm.com>
-References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
- <20171006140450.89652-5-shameerali.kolothum.thodi@huawei.com>
- <20171013192209.GH30572@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA838437676@FRAEML521-MBS.china.huawei.com>
- <20171018105145.GC11669@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA838448830@FRAEML521-MBX.china.huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v3 1/3] iommu/arm-smmu-v3: Use CMD_SYNC completion MSI
+Date: Wed, 18 Oct 2017 15:04:26 +0100
+Message-ID: <e3b7c629f3156f65cc682945ec57c11a098daa71.1508334262.git.robin.murphy@arm.com>
+References: <cover.1508334262.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838448830@FRAEML521-MBX.china.huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "bhelgaas@google.com" <bhelgaas@google.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, John Garry <john.garry@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devel@acpica.org" <devel@acpica.org>, Linuxarm <linuxarm@huawei.com>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, Guohanjun (Hanjun Guo)
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1508334262.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 18, 2017 at 12:25:09PM +0000, Shameerali Kolothum Thodi wrote:
-> Hi Will,
-> 
-> > -----Original Message-----
-> > From: Will Deacon [mailto:will.deacon@arm.com]
-> > Sent: Wednesday, October 18, 2017 11:52 AM
-> > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> > Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
-> > sudeep.holla@arm.com; robin.murphy@arm.com; joro@8bytes.org;
-> > bhelgaas@google.com; Gabriele Paoloni <gabriele.paoloni@huawei.com>;
-> > John Garry <john.garry@huawei.com>; iommu@lists.linux-foundation.org;
-> > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org; linux-
-> > pci@vger.kernel.org; devel@acpica.org; Linuxarm <linuxarm@huawei.com>;
-> > Wangzhou (B) <wangzhou1@hisilicon.com>; Guohanjun (Hanjun Guo)
-> > <guohanjun@huawei.com>
-> > Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers behind
-> > SMMUv3
-> > 
-> > On Sun, Oct 15, 2017 at 07:46:34AM +0000, Shameerali Kolothum Thodi wrote:
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Will Deacon [mailto:will.deacon@arm.com]
-> > > > Sent: Friday, October 13, 2017 8:22 PM
-> > > > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> > > > Cc: lorenzo.pieralisi@arm.com; marc.zyngier@arm.com;
-> > > > sudeep.holla@arm.com; robin.murphy@arm.com; joro@8bytes.org;
-> > > > bhelgaas@google.com; Gabriele Paoloni <gabriele.paoloni@huawei.com>;
-> > > > John Garry <john.garry@huawei.com>; iommu@lists.linux-foundation.org;
-> > > > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org; linux-
-> > > > pci@vger.kernel.org; devel@acpica.org; Linuxarm
-> > <linuxarm@huawei.com>;
-> > > > Wangzhou (B) <wangzhou1@hisilicon.com>; Guohanjun (Hanjun Guo)
-> > > > <guohanjun@huawei.com>
-> > > > Subject: Re: [PATCH v9 4/4] PCI: hisi: blacklist hip06/hip07 controllers
-> > behind
-> > > > SMMUv3
-> > > >
-> > > > On Fri, Oct 06, 2017 at 03:04:50PM +0100, Shameer Kolothum wrote:
-> > > > > The HiSilicon erratum 161010801 describes the limitation of HiSilicon
-> > > > > platforms hip06/hip07 to support the SMMUv3 mappings for MSI
-> > > > > transactions.
-> > > > >
-> > > > > PCIe controller on these platforms has to differentiate the MSI
-> > > > > payload against other DMA payload and has to modify the MSI payload.
-> > > > > This basically makes it difficult for this platforms to have a SMMU
-> > > > > translation for MSI. In order to workaround this, ARM
-> > > > > SMMUv3 driver requires a quirk to treat the MSI regions separately.
-> > > > > Such a quirk is currently missing for DT based systems and therefore
-> > > > > we need to blacklist the hip06/hip07 PCIe controllers.
-> > > > >
-> > > > > Signed-off-by: Shameer Kolothum
-> > > > <shameerali.kolothum.thodi@huawei.com>
-> > > > > ---
-> > > > >  drivers/pci/dwc/pcie-hisi.c | 12 ++++++++++++
-> > > > >  1 file changed, 12 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/pci/dwc/pcie-hisi.c b/drivers/pci/dwc/pcie-hisi.c
-> > > > > index a201791..6800747 100644
-> > > > > --- a/drivers/pci/dwc/pcie-hisi.c
-> > > > > +++ b/drivers/pci/dwc/pcie-hisi.c
-> > > > > @@ -270,6 +270,12 @@ static int hisi_pcie_probe(struct platform_device
-> > > > *pdev)
-> > > > >  	struct resource *reg;
-> > > > >  	int ret;
-> > > > >
-> > > > > +	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
-> > > > > +			of_property_read_bool(dev->of_node, "iommu-
-> > > > map")) {
-> > > > > +		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting
-> > > > PCIe controllers behind SMMUv3\n");
-> > > > > +		return -ENODEV;
-> > > > > +	}
-> > > > > +
-> > > > >  	hisi_pcie = devm_kzalloc(dev, sizeof(*hisi_pcie), GFP_KERNEL);
-> > > > >  	if (!hisi_pcie)
-> > > > >  		return -ENOMEM;
-> > > > > @@ -340,6 +346,12 @@ static int hisi_pcie_almost_ecam_probe(struct
-> > > > platform_device *pdev)
-> > > > >  	struct device *dev = &pdev->dev;
-> > > > >  	struct pci_ecam_ops *ops;
-> > > > >
-> > > > > +	if ((IS_BUILTIN(CONFIG_ARM_SMMU_V3)) &&
-> > > > > +			of_property_read_bool(dev->of_node, "iommu-
-> > > > map")) {
-> > > > > +		dev_warn(dev, "HiSilicon erratum 161010801: blacklisting
-> > > > PCIe controllers behind SMMUv3\n");
-> > > > > +		return -ENODEV;
-> > > > > +	}
-> > > >
-> > > > This isn't the right way to solve this problem. I was really hoping you'd
-> > come
-> > > > up with a solution for DT, and I know you've been trying, so I suppose for
-> > > > now we'll just have to go with the ACPI workaround you have and leave DT
-> > in
-> > > > the balance. I'm not at all happy with that, but I don't think this patch really
-> > > > improves things.
-> > >
-> > > Yes Will, this is to get the ACPI support enabled for now.
-> > >
-> > > > What I think you should do is remove the relevant smmu/iommu-map
-> > > > entries from the .dts files that are available for these platforms (i.e.
-> > > > comment them out with a description as to why).
-> > >
-> > > We don't have any smmu/iommu-map entries for these platforms in the
-> > > .dts files [1][2]. We are not aiming for any official DT support for these
-> > platforms.
-> > > This patch is to enforce the non-support.
-> > 
-> > Understood, but this has dragged on for a while and I don't think this patch
-> > is the right way to enforce things. The best approach might actually be to
-> > add the SMMU to the DTs, but commented out with a comment explaining why
-> > it's not a good idea to enable it.
-> 
-> Ok. Just to clarify, you would like to replace this patch with another 
-> one with smmu entries in dts and commenting/disabling them with explanation.
-> Or you would like to have that in addition to this one?
+As an IRQ, the CMD_SYNC interrupt is not particularly useful, not least
+because we often need to wait for sync completion within someone else's
+IRQ handler anyway. However, when the SMMU is both coherent and supports
+MSIs, we can have a lot more fun by not using it as an interrupt at all.
+Following the example suggested in the architecture and using a write
+targeting normal memory, we can let callers wait on a status variable
+outside the lock instead of having to stall the entire queue or even
+touch MMIO registers. Since multiple sync commands are guaranteed to
+complete in order, a simple incrementing sequence count is all we need
+to unambiguously support any realistic number of overlapping waiters.
 
-Yes, I'm saying let's do that instead. My preference is still that we would
-have all of this working for DT, but it's clear that isn't going to happen
-and so I'm trying to unblock the ACPI bits whilst not having subtle breakage
-with DT.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-> +	/** HiSilicon erratum 161010801: Please make sure that
-> +	 *  the smmu (pcie) node on hip06 is disabled as this will
-> +	 *  break the PCIe functionality when iommu-map entry
-> +	 *  is used along with the PCIe node.
+v3:
+ - Give sync_nr and sync_count some spatial separation
+ - Document the non-overflow assumption
+ - Use relaxed atomic increment
 
-It would be good to have a better description of what is broken and why,
-along with a link to the mailing link discussion.
+ drivers/iommu/arm-smmu-v3.c | 51 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 2 deletions(-)
 
-Will
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d8c2759ba9f2..83b76404e882 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -377,7 +377,16 @@
+ 
+ #define CMDQ_SYNC_0_CS_SHIFT		12
+ #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
++#define CMDQ_SYNC_0_CS_IRQ		(1UL << CMDQ_SYNC_0_CS_SHIFT)
+ #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
++#define CMDQ_SYNC_0_MSH_SHIFT		22
++#define CMDQ_SYNC_0_MSH_ISH		(3UL << CMDQ_SYNC_0_MSH_SHIFT)
++#define CMDQ_SYNC_0_MSIATTR_SHIFT	24
++#define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
++#define CMDQ_SYNC_0_MSIDATA_SHIFT	32
++#define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
++#define CMDQ_SYNC_1_MSIADDR_SHIFT	0
++#define CMDQ_SYNC_1_MSIADDR_MASK	0xffffffffffffcUL
+ 
+ /* Event queue */
+ #define EVTQ_ENT_DWORDS			4
+@@ -409,6 +418,7 @@
+ /* High-level queue structures */
+ #define ARM_SMMU_POLL_TIMEOUT_US	100
+ #define ARM_SMMU_CMDQ_DRAIN_TIMEOUT_US	1000000 /* 1s! */
++#define ARM_SMMU_SYNC_TIMEOUT_US	1000000 /* 1s! */
+ 
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+@@ -504,6 +514,10 @@ struct arm_smmu_cmdq_ent {
+ 		} pri;
+ 
+ 		#define CMDQ_OP_CMD_SYNC	0x46
++		struct {
++			u32			msidata;
++			u64			msiaddr;
++		} sync;
+ 	};
+ };
+ 
+@@ -616,6 +630,7 @@ struct arm_smmu_device {
+ 
+ 	int				gerr_irq;
+ 	int				combined_irq;
++	atomic_t			sync_nr;
+ 
+ 	unsigned long			ias; /* IPA */
+ 	unsigned long			oas; /* PA */
+@@ -634,6 +649,8 @@ struct arm_smmu_device {
+ 
+ 	struct arm_smmu_strtab_cfg	strtab_cfg;
+ 
++	u32				sync_count;
++
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
+ };
+@@ -878,7 +895,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 		}
+ 		break;
+ 	case CMDQ_OP_CMD_SYNC:
+-		cmd[0] |= CMDQ_SYNC_0_CS_SEV;
++		if (ent->sync.msiaddr)
++			cmd[0] |= CMDQ_SYNC_0_CS_IRQ;
++		else
++			cmd[0] |= CMDQ_SYNC_0_CS_SEV;
++		cmd[0] |= CMDQ_SYNC_0_MSH_ISH | CMDQ_SYNC_0_MSIATTR_OIWB;
++		cmd[0] |= (u64)ent->sync.msidata << CMDQ_SYNC_0_MSIDATA_SHIFT;
++		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+ 		break;
+ 	default:
+ 		return -ENOENT;
+@@ -964,21 +987,44 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+ 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+ }
+ 
++/*
++ * The difference between val and sync_idx is bounded by the maximum size of
++ * a queue at 2^20 entries, so 32 bits is plenty for wrap-safe arithmetic.
++ */
++static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
++{
++	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_SYNC_TIMEOUT_US);
++	u32 val = smp_cond_load_acquire(&smmu->sync_count,
++					(int)(VAL - sync_idx) >= 0 ||
++					!ktime_before(ktime_get(), timeout));
++
++	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
++}
++
+ static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+ {
+ 	u64 cmd[CMDQ_ENT_DWORDS];
+ 	unsigned long flags;
+ 	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
++	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
++		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
+ 	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+ 	int ret;
+ 
++	if (msi) {
++		ent.sync.msidata = atomic_inc_return_relaxed(&smmu->sync_nr);
++		ent.sync.msiaddr = virt_to_phys(&smmu->sync_count);
++	}
+ 	arm_smmu_cmdq_build_cmd(cmd, &ent);
+ 
+ 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+ 	arm_smmu_cmdq_insert_cmd(smmu, cmd);
+-	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
++	if (!msi)
++		ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
+ 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+ 
++	if (msi)
++		ret = arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
+ 	if (ret)
+ 		dev_err_ratelimited(smmu->dev, "CMD_SYNC timeout\n");
+ }
+@@ -2156,6 +2202,7 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+ 
++	atomic_set(&smmu->sync_nr, 0);
+ 	ret = arm_smmu_init_queues(smmu);
+ 	if (ret)
+ 		return ret;
+-- 
+2.13.4.dirty
