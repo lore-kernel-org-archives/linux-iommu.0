@@ -1,108 +1,88 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 1/2] x86: don't include asm/x86_init.h in asm/setup.h
-Date: Thu, 19 Oct 2017 12:53:02 +0200
-Message-ID: <20171019105451.2892046-1-arnd@arndb.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
-Cc: y2038@lists.linaro.org, Arnd Bergmann <arnd@arndb.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH 1/2] mmc: renesas_sdhi: fix swiotlb buffer is full
+Date: Thu, 19 Oct 2017 11:39:08 +0000
+Message-ID: <TY1PR06MB09928E11C2AFFD55EF68961CD8420@TY1PR06MB0992.apcprd06.prod.outlook.com>
+References: <1508225421-25405-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1508225421-25405-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdXyY-gvQGn2UxhUDsdhdWUMmTA80z73PF14otvcKuTMaw@mail.gmail.com>
+ <20171019002412.GA14493@localhost.localdomain>
+ <CAMuHMdUs+dLq8LJTJoUQEUzJAKXCfD0JBtVnHPyN6XdppVy5qQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdUs+dLq8LJTJoUQEUzJAKXCfD0JBtVnHPyN6XdppVy5qQ@mail.gmail.com>
+Content-Language: ja-JP
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Konrad Rzeszutek Wilk <konrad@darnok.org>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Wolfram Sang <wsa+renesas@sang-engineering.com>, Ulf Hansson <ulf.hansson@linaro.org>, Linux MMC List <linux-mmc@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is a preparation to allow using 'struct timespec64' in the
-asm/x86_init.h.  Unfortunately, we can't use a forward declaration
-for timespec64 since it is defined as a macro on 64-bit architectures,
-and including linux/time64.h breaks compilation of arch/x86/boot/,
-which runs in realmode and can't use many of the regular kernel
-headers.
-
-As a workaround, I stop including asm/x86_init.h. This works fine
-for the realmode boot code since it does not require any of the
-x86_init.h contents, and setup.h doesn't either. However, a couple
-of other files that do need x86_init.h used to rely on it being
-included indirectly, so I have to put an explicit include in there
-now.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/x86/include/asm/setup.h            | 1 -
- arch/x86/kernel/platform-quirks.c       | 1 +
- arch/x86/platform/ce4100/ce4100.c       | 1 +
- arch/x86/platform/intel-mid/intel-mid.c | 1 +
- arch/x86/platform/olpc/olpc.c           | 1 +
- drivers/iommu/dmar.c                    | 1 +
- 6 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
-index a65cf544686a..deed84119a22 100644
---- a/arch/x86/include/asm/setup.h
-+++ b/arch/x86/include/asm/setup.h
-@@ -27,7 +27,6 @@
- 
- #ifndef __ASSEMBLY__
- #include <asm/bootparam.h>
--#include <asm/x86_init.h>
- 
- extern u64 relocated_ramdisk;
- 
-diff --git a/arch/x86/kernel/platform-quirks.c b/arch/x86/kernel/platform-quirks.c
-index 502a77d0adb0..d900c7b176f0 100644
---- a/arch/x86/kernel/platform-quirks.c
-+++ b/arch/x86/kernel/platform-quirks.c
-@@ -3,6 +3,7 @@
- 
- #include <asm/setup.h>
- #include <asm/bios_ebda.h>
-+#include <asm/x86_init.h>
- 
- void __init x86_early_init_platform_quirks(void)
- {
-diff --git a/arch/x86/platform/ce4100/ce4100.c b/arch/x86/platform/ce4100/ce4100.c
-index ce4b06733c09..885196300927 100644
---- a/arch/x86/platform/ce4100/ce4100.c
-+++ b/arch/x86/platform/ce4100/ce4100.c
-@@ -22,6 +22,7 @@
- #include <asm/io.h>
- #include <asm/io_apic.h>
- #include <asm/emergency-restart.h>
-+#include <asm/x86_init.h>
- 
- /*
-  * The CE4100 platform has an internal 8051 Microcontroller which is
-diff --git a/arch/x86/platform/intel-mid/intel-mid.c b/arch/x86/platform/intel-mid/intel-mid.c
-index 86676cec99a1..c6322263610a 100644
---- a/arch/x86/platform/intel-mid/intel-mid.c
-+++ b/arch/x86/platform/intel-mid/intel-mid.c
-@@ -35,6 +35,7 @@
- #include <asm/intel_scu_ipc.h>
- #include <asm/apb_timer.h>
- #include <asm/reboot.h>
-+#include <asm/x86_init.h>
- 
- #include "intel_mid_weak_decls.h"
- 
-diff --git a/arch/x86/platform/olpc/olpc.c b/arch/x86/platform/olpc/olpc.c
-index 7c3077e58fa0..11a54f386911 100644
---- a/arch/x86/platform/olpc/olpc.c
-+++ b/arch/x86/platform/olpc/olpc.c
-@@ -26,6 +26,7 @@
- #include <asm/setup.h>
- #include <asm/olpc.h>
- #include <asm/olpc_ofw.h>
-+#include <asm/x86_init.h>
- 
- struct olpc_platform_t olpc_platform_info;
- EXPORT_SYMBOL_GPL(olpc_platform_info);
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 1ea7cd537873..e9304d6247e1 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -41,6 +41,7 @@
- #include <linux/iommu.h>
- #include <asm/irq_remapping.h>
- #include <asm/iommu_table.h>
-+#include <asm/x86_init.h>
- 
- #include "irq_remapping.h"
- 
--- 
-2.9.0
+SGkgR2VlcnQtc2FuLCBLb25yYWQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwg
+U2VudDogVGh1cnNkYXksIE9jdG9iZXIgMTksIDIwMTcgNTozNCBQTQ0KPiANCj4gSGkgS29ucmFk
+LA0KPiANCj4gT24gVGh1LCBPY3QgMTksIDIwMTcgYXQgMjoyNCBBTSwgS29ucmFkIFJ6ZXN6dXRl
+ayBXaWxrDQo+IDxrb25yYWRAZGFybm9rLm9yZz4gd3JvdGU6DQo+ID4gT24gVHVlLCBPY3QgMTcs
+IDIwMTcgYXQgMTA6MDI6NTBBTSArMDIwMCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOg0KPiA+
+PiBPbiBUdWUsIE9jdCAxNywgMjAxNyBhdCA5OjMwIEFNLCBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA+
+PiA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+IHdyb3RlOg0KPiA+PiA+IFNpbmNl
+IHRoZSBjb21taXQgZGUzZWU5OWIwOTdkICgibW1jOiBEZWxldGUgYm91bmNlIGJ1ZmZlciBoYW5k
+bGluZyIpDQo+ID4+ID4gZGVsZXRlcyB0aGUgYm91bmNlIGJ1ZmZlciBoYW5kbGluZywgYSByZXF1
+ZXN0IGRhdGEgc2l6ZSB3aWxsIGJlIHJlZmVycmVkDQo+ID4+ID4gdG8gbWF4X3tyZXEsc2VnfV9z
+aXplIGluc3RlYWQgb2YgTU1DX1FVRVVFX0JPVU5DRVNaICg2NGsgYnl0ZXMpLg0KPiA+PiA+DQo+
+ID4+ID4gSW4gb3RoZXIgaGFuZCwgcmVuZXNhc19zZGhpX2ludGVybmFsX2RtYWMuYyB3aWxsIHNl
+dCB2ZXJ5IGJpZyB2YWx1ZSBvZg0KPiA+PiA+IG1heF97cmVxLHNlZ31fc2l6ZSBiZWNhdXNlIHRo
+ZSBtYXhfYmxrX2NvdW50IGlzIHNldCB0byAweGZmZmZmZmZmLg0KPiA+PiA+IEFuZCB0aGVuLCAi
+c3dpb3RsYiBidWZmZXIgaXMgZnVsbCIgaGFwcGVucyBiZWNhdXNlIHN3aW90bGIgY2FuIGhhbmRs
+ZQ0KPiA+PiA+IGEgbWVtb3J5IHNpemUgdXAgdG8gMjU2ayBieXRlcyBvbmx5IChJT19UTEJfU0VH
+U0laRSA9IDEyOCBhbmQNCj4gPj4gPiBJT19UTEJfU0hJRlQgPSAxMSkuDQo+ID4+ID4NCj4gPj4g
+PiBTbywgdGhpcyBwYXRjaCBmaXhlcyB0aGUgaXNzdWUgdG8gc2V0IG1heF9ibGtfY291bnQgdG8g
+NTEyLiBUaGVuLA0KPiA+PiA+IHRoZSBtYXhfe3JlcSxzZWd9X3NpemUgd2lsbCBiZSBzZXQgdG8g
+MjU2ayBieXRlcy4NCj4gPj4gPg0KPiA+PiA+IFJlcG9ydGVkLWJ5OiBEaXJrIEJlaG1lIDxkaXJr
+LmJlaG1lQGRlLmJvc2NoLmNvbT4NCj4gPj4gPiBTaWduZWQtb2ZmLWJ5OiBZb3NoaWhpcm8gU2hp
+bW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+DQo+ID4+DQo+ID4+IFRoYW5r
+cyBmb3IgeW91ciBwYXRjaCENCj4gPj4NCj4gPj4gPiAtLS0NCj4gPj4gPiAgZHJpdmVycy9tbWMv
+aG9zdC9yZW5lc2FzX3NkaGlfaW50ZXJuYWxfZG1hYy5jIHwgNSArKystLQ0KPiA+PiA+ICAxIGZp
+bGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiA+PiA+DQo+ID4+
+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbW1jL2hvc3QvcmVuZXNhc19zZGhpX2ludGVybmFsX2Rt
+YWMuYyBiL2RyaXZlcnMvbW1jL2hvc3QvcmVuZXNhc19zZGhpX2ludGVybmFsX2RtYWMuYw0KPiA+
+PiA+IGluZGV4IGY5MDVmMjMuLjZjOWI0YjIgMTAwNjQ0DQo+ID4+ID4gLS0tIGEvZHJpdmVycy9t
+bWMvaG9zdC9yZW5lc2FzX3NkaGlfaW50ZXJuYWxfZG1hYy5jDQo+ID4+ID4gKysrIGIvZHJpdmVy
+cy9tbWMvaG9zdC9yZW5lc2FzX3NkaGlfaW50ZXJuYWxfZG1hYy5jDQo+ID4+ID4gQEAgLTgwLDgg
+KzgwLDkgQEANCj4gPj4gPiAgICAgICAgIC5zY2Nfb2Zmc2V0ICAgICA9IDB4MTAwMCwNCj4gPj4g
+PiAgICAgICAgIC50YXBzICAgICAgICAgICA9IHJjYXJfZ2VuM19zY2NfdGFwcywNCj4gPj4gPiAg
+ICAgICAgIC50YXBzX251bSAgICAgICA9IEFSUkFZX1NJWkUocmNhcl9nZW4zX3NjY190YXBzKSwN
+Cj4gPj4gPiAtICAgICAgIC8qIEdlbjMgU0RISSBETUFDIGNhbiBoYW5kbGUgMHhmZmZmZmZmZiBi
+bGsgY291bnQsIGJ1dCBzZWcgPSAxICovDQo+ID4+ID4gLSAgICAgICAubWF4X2Jsa19jb3VudCAg
+PSAweGZmZmZmZmZmLA0KPiA+PiA+ICsgICAgICAgLyogVGhlIHN3aW90bGIgY2FuIGhhbmRsZSBt
+ZW1vcnkgc2l6ZSB1cCB0byAyNTYga2J5dGVzIGZvciBub3cuICovDQo+ID4+ID4gKyAgICAgICAu
+bWF4X2Jsa19jb3VudCAgPSA1MTIsDQo+ID4+DQo+ID4+IEZpeGluZyB0aGlzIGluIHRoZSBpbmRp
+dmlkdWFsIGRyaXZlcnMgZmVlbHMgbGlrZSB0aGUgd3Jvbmcgc29sdXRpb24gdG8gbWUuDQo+ID4+
+DQo+ID4+IGlvbW11OiBJcyB0aGVyZSBhIGJldHRlciAoZ2VuZXJpYykgd2F5IHRvIGhhbmRsZSB0
+aGlzPw0KPiA+DQo+ID4gWWVzLiBTZWUgNzQ1M2M1NDlmNWY2NDg1YzBkNzljYWQ3ODQ0ODcwZGNj
+N2QxYjM0ZCwgYWthIHN3aW90bGJfbWF4X3NlZ21lbnQNCj4gDQo+IFRoYW5rcyBmb3IgdGhlIHBv
+aW50ZXIhDQo+IA0KPiBXaGlsZSBJIGFncmVlIHRoaXMgY2FuIGJlIHVzZWQgdG8gYXZvaWQgdGhl
+IHN3aW90bGIgYnVmZmVyIGZ1bGwgaXNzdWUsDQo+IEkgYmVsaWV2ZSBpdCBpcyBhIHN1Ym9wdGlt
+YWwgc29sdXRpb24gaWYgdGhlIGRldmljZSBhY3R1YWxseSB1c2VzIGFuIElPTU1VLg0KPiBJdCBs
+aW1pdHMgdGhlIG1hcHBpbmcgc2l6ZSBpZiBDT05GSUdfU1dJT1RMQj15LCB3aGljaCBpcyBhbHdh
+eXMgdGhlDQo+IGNhc2UgZm9yIGFybS9hcm02NCB0aGVzZSBkYXlzLg0KDQpJJ20gYWZyYWlkIGJ1
+dCBJIG1pc3VuZGVyc3Rvb2QgdGhpcyBBUEkncyBzcGVjIHdoZW4gSSByZWFkIGl0IGF0IGZpcnN0
+Lg0KQWZ0ZXIgSSB0cmllZCB0byB1c2UgaXQsIEkgZm91bmQgdGhlIEFQSSBjYW5ub3QgYmUgdXNl
+ZCBmb3IgYSB3b3JrYXJvdW5kIGJlY2F1c2UNCnRoaXMgQVBJIHJldHVybnMgdG90YWwgc2l6ZSBv
+ZiBzd2lvdGxiLg0KDQpGb3IgZXhhbXBsZToNCiAtIFRoZSBzd2lvdGxiX21heF9zZWdtZW50KCkg
+cmV0dXJucyA2NE0gYnl0ZXMgZnJvbSB0aGUgQVBJIHdoZW4gYSBkZWZhdWx0IHNldHRpbmcuDQog
+IC0gSW4gdGhpcyBjYXNlLCB0aGUgbWF4aW11bSBzaXplIHBlciBhIG1hcCBpcyAyNTZrIGJ5dGVz
+Lg0KIC0gVGhlIHN3aW90bGJfbWF4X3NlZ21lbnQoKSByZXR1cm5zIDEyOE0gYnl0ZXMgZnJvbSB0
+aGUgQVBJIHdoZW4gSSBhZGRlZCBzd2lvdGxiPTY1NTM2DQogICBpbnRvIHRoZSBrZXJuZWwgcGFy
+YW1ldGVyIG9uIGFybTY0Lg0KICAtIEluIHRoaXMgY2FzZSwgdGhlIG1heGltdW0gc2l6ZSBwZXIg
+YSBtYXAgaXMgc3RpbGwgMjU2ayBieXRlcyBiZWNhdXNlDQogICAgdGhlIHN3aW90bGIgaGFzIGhh
+cmRjb2RlZCB0aGUgc2l6ZSBieSB0aGUgZm9sbG93aW5nIGNvZGU6DQogICAgIGh0dHBzOi8vZ2l0
+Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC90
+cmVlL2xpYi9zd2lvdGxiLmM/aD12NC4xNC1yYzUjbjI1NA0KDQpTbywgaG93IGRvIHdlIGhhbmRs
+ZSB0byByZXNvbHZlIChvciBhdm9pZCkgdGhlIGlzc3VlPw0KDQpCZXN0IHJlZ2FyZHMsDQpZb3No
+aWhpcm8gU2hpbW9kYQ0KDQo+IEdye29ldGplLGVldGluZ31zLA0KPiANCj4gICAgICAgICAgICAg
+ICAgICAgICAgICAgR2VlcnQNCj4gDQo+IC0tDQo+IEdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVy
+ZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcNCj4g
+DQo+IEluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNh
+bGwgbXlzZWxmIGEgaGFja2VyLiBCdXQNCj4gd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0
+cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzDQo=
