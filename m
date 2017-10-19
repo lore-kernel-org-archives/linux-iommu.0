@@ -1,16 +1,17 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 1/2] mmc: renesas_sdhi: fix swiotlb buffer is full
-Date: Thu, 19 Oct 2017 10:34:02 +0200
-Message-ID: <CAMuHMdUs+dLq8LJTJoUQEUzJAKXCfD0JBtVnHPyN6XdppVy5qQ@mail.gmail.com>
-References: <1508225421-25405-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1508225421-25405-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<CAMuHMdXyY-gvQGn2UxhUDsdhdWUMmTA80z73PF14otvcKuTMaw@mail.gmail.com>
-	<20171019002412.GA14493@localhost.localdomain>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 1/3] iommu/arm-smmu-v3: put off the execution of TLBI*
+	to reduce lock confliction
+Date: Thu, 19 Oct 2017 10:12:26 +0100
+Message-ID: <20171019091225.GA29762@arm.com>
+References: <1505221238-9428-1-git-send-email-thunder.leizhen@huawei.com>
+	<1505221238-9428-2-git-send-email-thunder.leizhen@huawei.com>
+	<20171018125849.GD4077@arm.com> <59E8155D.2070102@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171019002412.GA14493-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <59E8155D.2070102-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,72 +21,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
-Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux MMC List <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Wolfram Sang <wsa+renesas-jBu1N2QxHDJrcw3mvpCnnVaTQe2KTcn/@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Kefeng Wang <wangkefeng.wang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jinyue Li <lijinyue-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Konrad,
+On Thu, Oct 19, 2017 at 11:00:45AM +0800, Leizhen (ThunderTown) wrote:
+> 
+> 
+> On 2017/10/18 20:58, Will Deacon wrote:
+> > Hi Thunder,
+> > 
+> > On Tue, Sep 12, 2017 at 09:00:36PM +0800, Zhen Lei wrote:
+> >> Because all TLBI commands should be followed by a SYNC command, to make
+> >> sure that it has been completely finished. So we can just add the TLBI
+> >> commands into the queue, and put off the execution until meet SYNC or
+> >> other commands. To prevent the followed SYNC command waiting for a long
+> >> time because of too many commands have been delayed, restrict the max
+> >> delayed number.
+> >>
+> >> According to my test, I got the same performance data as I replaced writel
+> >> with writel_relaxed in queue_inc_prod.
+> >>
+> >> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> >> ---
+> >>  drivers/iommu/arm-smmu-v3.c | 42 +++++++++++++++++++++++++++++++++++++-----
+> >>  1 file changed, 37 insertions(+), 5 deletions(-)
+> > 
+> > If we want to go down the route of explicit command batching, I'd much
+> > rather do it by implementing the iotlb_range_add callback in the driver,
+> > and have a fixed-length array of batched ranges on the domain. We could
+> I think even if iotlb_range_add callback is implemented, this patch is still valuable. The main purpose
+> of this patch is to reduce dsb operation. So in the scenario with iotlb_range_add implemented:
+> .iotlb_range_add:
+> spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> ...
+> add tlbi range-1 to cmq-queue
+> ...
+> add tlbi range-n to cmq-queue			//n
+> dsb
+> ...
+> spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+> 
+> .iotlb_sync
+> spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> ...
+> add cmd_sync to cmq-queue
+> dsb
+> ...
+> spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+> 
+> Although iotlb_range_add can reduce n-1 dsb operations, but there are
+> still 1 left. If n is not large enough, this patch is helpful.
 
-On Thu, Oct 19, 2017 at 2:24 AM, Konrad Rzeszutek Wilk
-<konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org> wrote:
-> On Tue, Oct 17, 2017 at 10:02:50AM +0200, Geert Uytterhoeven wrote:
->> On Tue, Oct 17, 2017 at 9:30 AM, Yoshihiro Shimoda
->> <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org> wrote:
->> > Since the commit de3ee99b097d ("mmc: Delete bounce buffer handling")
->> > deletes the bounce buffer handling, a request data size will be referred
->> > to max_{req,seg}_size instead of MMC_QUEUE_BOUNCESZ (64k bytes).
->> >
->> > In other hand, renesas_sdhi_internal_dmac.c will set very big value of
->> > max_{req,seg}_size because the max_blk_count is set to 0xffffffff.
->> > And then, "swiotlb buffer is full" happens because swiotlb can handle
->> > a memory size up to 256k bytes only (IO_TLB_SEGSIZE = 128 and
->> > IO_TLB_SHIFT = 11).
->> >
->> > So, this patch fixes the issue to set max_blk_count to 512. Then,
->> > the max_{req,seg}_size will be set to 256k bytes.
->> >
->> > Reported-by: Dirk Behme <dirk.behme-V5te9oGctAVWk0Htik3J/w@public.gmane.org>
->> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
->>
->> Thanks for your patch!
->>
->> > ---
->> >  drivers/mmc/host/renesas_sdhi_internal_dmac.c | 5 +++--
->> >  1 file changed, 3 insertions(+), 2 deletions(-)
->> >
->> > diff --git a/drivers/mmc/host/renesas_sdhi_internal_dmac.c b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
->> > index f905f23..6c9b4b2 100644
->> > --- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
->> > +++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
->> > @@ -80,8 +80,9 @@
->> >         .scc_offset     = 0x1000,
->> >         .taps           = rcar_gen3_scc_taps,
->> >         .taps_num       = ARRAY_SIZE(rcar_gen3_scc_taps),
->> > -       /* Gen3 SDHI DMAC can handle 0xffffffff blk count, but seg = 1 */
->> > -       .max_blk_count  = 0xffffffff,
->> > +       /* The swiotlb can handle memory size up to 256 kbytes for now. */
->> > +       .max_blk_count  = 512,
->>
->> Fixing this in the individual drivers feels like the wrong solution to me.
->>
->> iommu: Is there a better (generic) way to handle this?
->
-> Yes. See 7453c549f5f6485c0d79cad7844870dcc7d1b34d, aka swiotlb_max_segment
+Then pick an n that is large enough, based on the compatible string.
 
-Thanks for the pointer!
-
-While I agree this can be used to avoid the swiotlb buffer full issue,
-I believe it is a suboptimal solution if the device actually uses an IOMMU.
-It limits the mapping size if CONFIG_SWIOTLB=y, which is always the
-case for arm/arm64 these days.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Will
