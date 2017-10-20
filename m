@@ -1,49 +1,70 @@
-From: Jim Quinlan <jim2101024@gmail.com>
-Subject: Re: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound traffic
-Date: Fri, 20 Oct 2017 11:27:41 -0400
-Message-ID: <CANCKTBtxp9gSdndKAZ7xGA+VozQsn2PX_-9P8A22_5Matbb7-w@mail.gmail.com>
-References: <1507761269-7017-6-git-send-email-jim2101024@gmail.com>
- <589c04cb-061b-a453-3188-79324a02388e@arm.com> <20171017081422.GA19475@lst.de>
- <CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
- <20171018065316.GA11183@lst.de> <CANCKTBv+yiCNsrnx3m+W9wPqC4NdKPZ2p=zLtSa8fX6v1rPcYQ@mail.gmail.com>
- <20171019091644.GA14983@lst.de> <CANCKTBuaTD29My77QfOeUmtZfLAmmJXUYe6QvBW+uoH2Kb+tAQ@mail.gmail.com>
- <20171020073730.GA12937@lst.de> <CANCKTBsRRkwNMrxWjtgxbyZqT6NOxPX0NHDbnEO2BMjj8oVtpg@mail.gmail.com>
- <20171020145752.GA4694@lst.de>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.15
+Date: Fri, 20 Oct 2017 17:11:54 +0100
+Message-ID: <20171020161154.GA7287@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171020145752.GA4694@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Linux-MIPS <linux-mips@linux-mips.org>, Florian Fainelli <f.fainelli@gmail.com>, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Rob Herring <robh+dt@kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Gregory Fong <gregory.0xf0@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Brian Norris <computersforpeace@gmail.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 20, 2017 at 10:57 AM, Christoph Hellwig <hch@lst.de> wrote:
-> On Fri, Oct 20, 2017 at 10:41:56AM -0400, Jim Quinlan wrote:
->> I am not sure I understand your comment -- the size of the request
->> shouldn't be a factor.  Let's look at your example of the DMA request
->> of 3fffff00 to 4000000f (physical memory).  Lets say it is for 15
->> pages.  If we block out  the last page [0x3ffff000..0x3fffffff] from
->> what is available, there is no 15 page span that can happen across the
->> 0x40000000 boundary.  For SG, there can be no merge that connects a
->> page from one region to another region.  Can you give an example of
->> the scenario you are thinking of?
->
-> What prevents a merge from say the regions of
-> 0....3fffffff and 40000000....7fffffff?
+Hi Joerg,
 
-Huh? [0x3ffff000...x3ffffff] is not available to be used. Drawing from
-the original example, we now have to tell Linux that these are now our
-effective memory regions:
+Please pull these ARM SMMU updates for 4.15. The main improvement here is
+that we now drop the command queue lock when waiting for a CMD_SYNC to
+complete on implementations that support MSIs into cacheable memory.
+There are also some minor fixes and cleanups.
 
-      memc0-a@[        0....3fffefff] <=> pci@[        0....3fffefff]
-      memc0-b@[100000000...13fffefff] <=> pci@[ 40000000....7fffefff]
-      memc1-a@[ 40000000....7fffefff] <=> pci@[ 80000000....bfffefff]
-      memc1-b@[300000000...33fffefff] <=> pci@[ c0000000....ffffefff]
-      memc2-a@[ 80000000....bfffefff] <=> pci@[100000000...13fffefff]
-      memc2-b@[c00000000...c3fffffff] <=> pci@[140000000...17fffffff]
+Cheers,
 
-This leaves a one-page gap between phsyical memory regions which would
-normally be contiguous. One cannot have a dma alloc that spans any two
-regions.  This is a drastic step, but I don't see an alternative.
-Perhaps  I may be missing what you are saying...
+Will
+
+--->8
+
+The following changes since commit 2bd6bf03f4c1c59381d62c61d03f6cc3fe71f66e:
+
+  Linux 4.14-rc1 (2017-09-16 15:47:51 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 8ff0f72371709889349a706e19bb38d9f71b1669:
+
+  iommu/arm-smmu-v3: Use burst-polling for sync completion (2017-10-20 16:55:10 +0100)
+
+----------------------------------------------------------------
+Feng Kan (1):
+      iommu/arm-smmu: Enable bypass transaction caching for ARM SMMU 500
+
+Robin Murphy (6):
+      iommu/arm-smmu: Remove ACPICA workarounds
+      iommu/arm-smmu-v3: Correct COHACC override message
+      iommu/arm-smmu-v3: Specialise CMD_SYNC handling
+      iommu/arm-smmu-v3: Forget about cmdq-sync interrupt
+      iommu/arm-smmu-v3: Use CMD_SYNC completion MSI
+      iommu/arm-smmu-v3: Use burst-polling for sync completion
+
+Will Deacon (3):
+      iommu/arm-smmu-v3: Ensure we sync STE when only changing config field
+      iommu/arm-smmu-v3: Split arm_smmu_cmdq_issue_sync in half
+      iommu/arm-smmu-v3: Consolidate identical timeouts
+
+Yisheng Xie (1):
+      iommu/arm-smmu-v3: Avoid ILLEGAL setting of STE.S1STALLD and CD.S
+
+ drivers/iommu/arm-smmu-v3.c | 204 ++++++++++++++++++++++++++++++--------------
+ drivers/iommu/arm-smmu.c    |  11 +--
+ 2 files changed, 141 insertions(+), 74 deletions(-)
