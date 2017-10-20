@@ -1,62 +1,71 @@
-From: Jim Quinlan <jim2101024@gmail.com>
-Subject: Re: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound traffic
-Date: Thu, 19 Oct 2017 18:47:45 -0400
-Message-ID: <CANCKTBuaTD29My77QfOeUmtZfLAmmJXUYe6QvBW+uoH2Kb+tAQ@mail.gmail.com>
-References: <1507761269-7017-1-git-send-email-jim2101024@gmail.com>
- <1507761269-7017-6-git-send-email-jim2101024@gmail.com> <589c04cb-061b-a453-3188-79324a02388e@arm.com>
- <20171017081422.GA19475@lst.de> <CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
- <20171018065316.GA11183@lst.de> <CANCKTBv+yiCNsrnx3m+W9wPqC4NdKPZ2p=zLtSa8fX6v1rPcYQ@mail.gmail.com>
- <20171019091644.GA14983@lst.de>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 1/3] iommu/vt-d: Missing checks for pasid tables if
+	allocation fails
+Date: Fri, 20 Oct 2017 08:48:55 +0800
+Message-ID: <59E947F7.4030402@linux.intel.com>
+References: <1508373556-5340-1-git-send-email-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439AFB902@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20171019091644.GA14983@lst.de>
-Sender: linux-pci-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, linux-mips@linux-mips.org, Florian Fainelli <f.fainelli@gmail.com>, devicetree@vger.kernel.org, linux-pci <linux-pci@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Rob Herring <robh+dt@kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Gregory Fong <gregory.0xf0@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Brian Norris <computersforpeace@gmail.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439AFB902-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 19, 2017 at 5:16 AM, Christoph Hellwig <hch@lst.de> wrote:
-> On Wed, Oct 18, 2017 at 10:41:17AM -0400, Jim Quinlan wrote:
->> That's what brcm_to_{pci,cpu} are for -- they keep a list of the
->> dma-ranges given in the PCIe DT node, and translate from system memory
->> addresses to pci-space addresses, and vice versa.  As long as people
->> are using the DMA API it should work.  It works for all of the ARM,
->> ARM64, and MIPS Broadcom systems I've tested, using eight different EP
->> devices.  Note that I am not thrilled to be advocating this mechanism
->> but it seemed the best alternative.
->
-> Say we are using your original example ranges:
->
->  memc0-a@[        0....3fffffff] <=> pci@[        0....3fffffff]
->  memc0-b@[100000000...13fffffff] <=> pci@[ 40000000....7fffffff]
->  memc1-a@[ 40000000....7fffffff] <=> pci@[ 80000000....bfffffff]
->  memc1-b@[300000000...33fffffff] <=> pci@[ c0000000....ffffffff]
->  memc2-a@[ 80000000....bfffffff] <=> pci@[100000000...13fffffff]
->  memc2-b@[c00000000...c3fffffff] <=> pci@[140000000...17fffffff]
->
-> and now you get a dma mapping request for physical addresses
-> 3fffff00 to 4000000f, which would span two of your ranges.  How
-> is this going to work?
+Hi Yi,
 
-The only way to prevent this is to reserve a single page at the end of
-the first memory region of any pair that are adjacent in physical
-memory.  A hack, yes, but I don't see an easier way out of this.  Many
-if not most of our boards do not have adjacent regions and would not
-need this.
-
-Overriding phys_to_dma/dma_to_phys comes with the same overlap problem
-(MIPS solution and possible ARM/ARM64 solution).
-
+On 10/19/2017 02:40 PM, Liu, Yi L wrote:
 >
->> I would prefer that the same code work for all three architectures.
->> What I would like from ARM/ARM64 is the ability to override
->> phys_to_dma() and dma_to_phys(); I thought the chances of that being
->> accepted would be slim.  But you are right, I should ask the
->> maintainers.
+>> -----Original Message-----
+>> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+>> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Lu Baolu
+>> Sent: Thursday, October 19, 2017 8:39 AM
+>> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+>> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> Subject: [PATCH 1/3] iommu/vt-d: Missing checks for pasid tables if allocation fails
+>>
+>> intel_svm_alloc_pasid_tables() might return an error but never be checked by the
+>> callers. Later when intel_svm_bind_mm() is called, there are no checks for valid pasid
+>> tables before enabling them.
+>>
+>> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> ---
+>>  drivers/iommu/intel-svm.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c index
+>> f6697e5..43280ca 100644
+>> --- a/drivers/iommu/intel-svm.c
+>> +++ b/drivers/iommu/intel-svm.c
+>> @@ -292,7 +292,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int
+>> flags, struct svm_dev_
+>>  	int pasid_max;
+>>  	int ret;
+>>
+>> -	if (WARN_ON(!iommu))
+>> +	if (WARN_ON(!iommu || !iommu->pasid_table))
+> [Liu, Yi L] Hi Baolu, I guess there also need a check to iommu->ecap , see if the pasid bit
+> is reported. thoughts?
 >
-> It is still better than trying to stack dma ops, which is a receipe
-> for problems down the road.
 
-Let me send out V2 of my patchset and also send it to the ARM/ARM64
-maintainers as you suggested; perhaps there is an alternative.
+If pasid bit is not set in ecap register, iommu->pasid_table won't be set.
+
+We did this by:
+
+                if (pasid_enabled(iommu))
+                        intel_svm_alloc_pasid_tables(iommu);
+
+Best regards,
+Lu Baolu
