@@ -1,88 +1,115 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 1/3] iommu/vt-d: Missing checks for pasid tables if
-	allocation fails
-Date: Fri, 20 Oct 2017 06:32:26 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439AFC5B8@SHSMSX104.ccr.corp.intel.com>
-References: <1508373556-5340-1-git-send-email-baolu.lu@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439AFB902@SHSMSX104.ccr.corp.intel.com>
-	<59E947F7.4030402@linux.intel.com>
+From: Yisheng Xie <xieyisheng1@huawei.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Avoid ILLEGAL setting of
+ STE.S1STALLD and CD.S
+Date: Fri, 20 Oct 2017 15:00:01 +0800
+Message-ID: <7eb1db90-9a30-b70c-c3d1-71bbca41502d@huawei.com>
+References: <1505997367-51569-1-git-send-email-xieyisheng1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <59E947F7.4030402-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1505997367-51569-1-git-send-email-xieyisheng1@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: will.deacon@arm.com, jean-philippe.brucker@arm.com, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, liubo95@huawei.com, chenjiankang1@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Will & Jean,
 
+Any comment about this version?
 
-> -----Original Message-----
-> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> Sent: Friday, October 20, 2017 8:49 AM
-> To: Liu, Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH 1/3] iommu/vt-d: Missing checks for pasid tables if allocation
-> fails
-> 
-> Hi Yi,
-> 
-> On 10/19/2017 02:40 PM, Liu, Yi L wrote:
-> >
-> >> -----Original Message-----
-> >> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> >> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Lu Baolu
-> >> Sent: Thursday, October 19, 2017 8:39 AM
-> >> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-> >> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> >> Subject: [PATCH 1/3] iommu/vt-d: Missing checks for pasid tables if
-> >> allocation fails
-> >>
-> >> intel_svm_alloc_pasid_tables() might return an error but never be
-> >> checked by the callers. Later when intel_svm_bind_mm() is called,
-> >> there are no checks for valid pasid tables before enabling them.
-> >>
-> >> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> >> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/intel-svm.c | 2 +-
-> >>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> >> index f6697e5..43280ca 100644
-> >> --- a/drivers/iommu/intel-svm.c
-> >> +++ b/drivers/iommu/intel-svm.c
-> >> @@ -292,7 +292,7 @@ int intel_svm_bind_mm(struct device *dev, int
-> >> *pasid, int flags, struct svm_dev_
-> >>  	int pasid_max;
-> >>  	int ret;
-> >>
-> >> -	if (WARN_ON(!iommu))
-> >> +	if (WARN_ON(!iommu || !iommu->pasid_table))
-> > [Liu, Yi L] Hi Baolu, I guess there also need a check to iommu->ecap ,
-> > see if the pasid bit is reported. thoughts?
-> >
-> 
-> If pasid bit is not set in ecap register, iommu->pasid_table won't be set.
-> 
-> We did this by:
-> 
->                 if (pasid_enabled(iommu))
->                         intel_svm_alloc_pasid_tables(iommu);
+Thanks
+Yisheng Xie
 
-[Liu, Yi L] Sounds good. thx.
-
-Reviewed-by: Liu, Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-
-Regards,
-Yi L
+On 2017/9/21 20:36, Yisheng Xie wrote:
+> According to Spec, it is ILLEGAL to set STE.S1STALLD if STALL_MODEL
+> is not 0b00, which means we should not disable stall mode if stall
+> or terminate mode is not configuable.
+> 
+> Meanwhile, it is also ILLEGAL when STALL_MODEL==0b10 && CD.S==0 which
+> means if stall mode is force we should always set CD.S.
+> 
+> As Jean-Philippe's suggestion, this patch introduce a feature bit
+> ARM_SMMU_FEAT_STALL_FORCE, which means smmu only supports stall force.
+> Therefore, we can avoid the ILLEGAL setting of STE.S1STALLD.by checking
+> ARM_SMMU_FEAT_STALL_FORCE.
+> 
+> This patch keeps the ARM_SMMU_FEAT_STALLS as the meaning of stall supported
+> (force or configuable) to easy to expand the future function, i.e. we can
+> only use ARM_SMMU_FEAT_STALLS to check whether we should register fault
+> handle or enable master can_stall, etc to supporte platform SVM.
+> 
+> The feature bit, STE.S1STALLD and CD.S setting will be like:
+> 
+> STALL_MODEL  FEATURE                                         S1STALLD CD.S
+> 0b00         ARM_SMMU_FEAT_STALLS                                 0b1 0b0
+> 0b01         !ARM_SMMU_FEAT_STALLS && !ARM_SMMU_FEAT_STALL_FORCE  0b0 0b0
+> 0b10         ARM_SMMU_FEAT_STALLS && ARM_SMMU_FEAT_STALL_FORCE    0b0 0b1
+> 
+> after apply this patch.
+> 
+> Signed-off-by: Yisheng Xie <xieyisheng1@huawei.com>
+> ---
+> v2:
+>  * Keep the feature bits backward compatible and add new one at the end
+>  * Avoid ILLEGAL of CD.S - both as Jean's suggestion.
+> 
+>  drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index e67ba6c..22a6b08 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -316,6 +316,7 @@
+>  #define ARM64_TCR_TBI0_MASK		0x1UL
+>  
+>  #define CTXDESC_CD_0_AA64		(1UL << 41)
+> +#define CTXDESC_CD_0_S			(1UL << 44)
+>  #define CTXDESC_CD_0_R			(1UL << 45)
+>  #define CTXDESC_CD_0_A			(1UL << 46)
+>  #define CTXDESC_CD_0_ASET_SHIFT		47
+> @@ -604,6 +605,7 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
+>  #define ARM_SMMU_FEAT_STALLS		(1 << 11)
+>  #define ARM_SMMU_FEAT_HYP		(1 << 12)
+> +#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
+>  	u32				features;
+>  
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> @@ -996,6 +998,11 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
+>  	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET_PRIVATE |
+>  	      CTXDESC_CD_0_AA64 | (u64)cfg->cd.asid << CTXDESC_CD_0_ASID_SHIFT |
+>  	      CTXDESC_CD_0_V;
+> +
+> +	/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
+> +	if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+> +		val |= CTXDESC_CD_0_S;
+> +
+>  	cfg->cdptr[0] = cpu_to_le64(val);
+>  
+>  	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK << CTXDESC_CD_1_TTB0_SHIFT;
+> @@ -1112,7 +1119,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+>  #endif
+>  			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
+>  
+> -		if (smmu->features & ARM_SMMU_FEAT_STALLS)
+> +		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+> +		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+>  			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+>  
+>  		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
+> @@ -2536,9 +2544,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>  			 coherent ? "true" : "false");
+>  
+>  	switch (reg & IDR0_STALL_MODEL_MASK << IDR0_STALL_MODEL_SHIFT) {
+> -	case IDR0_STALL_MODEL_STALL:
+> -		/* Fallthrough */
+>  	case IDR0_STALL_MODEL_FORCE:
+> +		smmu->features |= ARM_SMMU_FEAT_STALL_FORCE;
+> +		/* Fallthrough */
+> +	case IDR0_STALL_MODEL_STALL:
+>  		smmu->features |= ARM_SMMU_FEAT_STALLS;
+>  	}
+>  
+> 
