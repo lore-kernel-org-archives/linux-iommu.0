@@ -1,16 +1,14 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v2 08/16] iommu: introduce device fault data
-Date: Fri, 20 Oct 2017 10:07:43 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439AFC86D@SHSMSX104.ccr.corp.intel.com>
-References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1507244624-39189-9-git-send-email-jacob.jun.pan@linux.intel.com>
-	<439401c0-a9ff-a69a-dc10-12d72f7abbab@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v2 0/8] MT2712 IOMMU SUPPORT
+Date: Fri, 20 Oct 2017 18:12:54 +0800
+Message-ID: <1508494374.15871.6.camel@mhfsdcap03>
+References: <1503313221-26453-1-git-send-email-yong.wu@mediatek.com>
+	<20170822143836.ac3faa7wcwfjtvjc@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <439401c0-a9ff-a69a-dc10-12d72f7abbab-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20170822143836.ac3faa7wcwfjtvjc-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,240 +18,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki, Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: K Zhang =?UTF-8?Q?=28=E5=BC=A0=E5=87=AF=29?= <K.Zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "cloud.zhou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <cloud.zhou-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, 2017-08-22 at 22:38 +0800, Joerg Roedel wrote:
+> On Mon, Aug 21, 2017 at 07:00:13PM +0800, Yong Wu wrote:
+> > Yong Wu (8):
+> >   dt-bindings: mediatek: Add binding for mt2712 IOMMU and SMI
+> >   iommu/mediatek: Move MTK_M4U_TO_LARB/PORT into mtk_iommu.c
+> >   iommu/mediatek: Add mt2712 IOMMU support
+> >   iommu/mediatek: Merge 2 M4U HWs into one iommu domain
+> >   iommu/mediatek: Move pgtable allocation into domain_alloc
+> >   iommu/mediatek: Disable iommu clock when system suspend
+> >   iommu/mediatek: Enlarge the validate PA range for 4GB mode
+> >   memory: mtk-smi: Degrade SMI init to module_init
+> 
+> Applied patches 2-7. Patch 1 is something for Matthias.
 
+gentle ping.
 
-> -----Original Message-----
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Wednesday, October 11, 2017 3:29 AM
-> To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>; Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; David
-> Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>; Greg Kroah-Hartman
-> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Wysocki, Rafael J <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Liu, Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Lan, Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Tian, Kevin
-> <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Raj, Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Alex Williamson
-> <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Subject: Re: [PATCH v2 08/16] iommu: introduce device fault data
-> 
-> On 06/10/17 00:03, Jacob Pan wrote:
-> > Device faults detected by IOMMU can be reported outside IOMMU
-> > subsystem. This patch intends to provide a generic device fault data
-> > such that device drivers can communicate IOMMU faults without model
-> > specific knowledge.
-> >
-> > The assumption is that model specific IOMMU driver can filter and
-> > handle most of the IOMMU faults if the cause is within IOMMU driver
-> > control. Therefore, the fault reasons can be reported are grouped and
-> > generalized based common specifications such as PCI ATS.
-> >
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> >  include/linux/iommu.h | 69
-> > +++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 69 insertions(+)
-> >
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h index
-> > 4af1820..3f9b367 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -49,6 +49,7 @@ struct bus_type;
-> >  struct device;
-> >  struct iommu_domain;
-> >  struct notifier_block;
-> > +struct iommu_fault_event;
-> >
-> >  /* iommu fault flags */
-> >  #define IOMMU_FAULT_READ	0x0
-> > @@ -56,6 +57,7 @@ struct notifier_block;
-> >
-> >  typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
-> >  			struct device *, unsigned long, int, void *);
-> > +typedef int (*iommu_dev_fault_handler_t)(struct device *, struct
-> > +iommu_fault_event *);
-> >
-> >  struct iommu_domain_geometry {
-> >  	dma_addr_t aperture_start; /* First address that can be mapped    */
-> > @@ -264,6 +266,60 @@ struct iommu_device {
-> >  	struct device *dev;
-> >  };
-> >
-> > +enum iommu_model {
-> > +	IOMMU_MODEL_INTEL = 1,
-> > +	IOMMU_MODEL_AMD,
-> > +	IOMMU_MODEL_SMMU3,
-> > +};
-> 
-> Now unused, I guess?
-> 
-> > +
-> > +/*  Generic fault types, can be expanded IRQ remapping fault */ enum
-> > +iommu_fault_type {
-> > +	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
-> > +	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
-> > +};
-> > +
-> > +enum iommu_fault_reason {
-> > +	IOMMU_FAULT_REASON_CTX = 1,
-> 
-> If I read the VT-d spec right, this is a fault encountered while fetching the PASID table
-> pointer?
-> 
-> > +	IOMMU_FAULT_REASON_ACCESS,
-> 
-> And this a pgd or pte access fault?
-> 
-> > +	IOMMU_FAULT_REASON_INVALIDATE,
-> 
-> What would this be?
-> 
-> > +	IOMMU_FAULT_REASON_UNKNOWN,
-> > +};
-> 
-> I'm currently doing the same exploratory work for virtio-iommu, and I'd be tempted
-> to report reasons as detailed as possible to guest or device driver, but it's not clear
-> what they need, how they would use this information. I'd like to discuss this some
-> more.
+Hi Matthias,
 
-[Liu, Yi L] In fact, it's not necessary to pass the detailed unrecoverable fault to guest in
-virtualization case. Unrecoverable fault happened on native indicates fault during native
-IOMMU address translation. If the fault is not due to guest IOMMU page table setting,
-then it is not necessary to inject the fault to guest. And hypervisor should be able to
-deduce it by walking the guest IOMMU page table with the fault address. So I think for
-virtualization case, pass the fault address is enough. If hypervisor doesn't see any issue
-after checking the guest IOMMU translation hierarchy, no use to let guest know it. Hypervisor
-can either throw error log or stop the guest. If hypervisor see any error in the guest
-iommu translation hierarchy, then inject the error to guest with a proper fault type.
-
-But for device driver or other user-space driver, I'm not sure if they need detailed fault
-info. In fact, it is enough to pass the possible info which would help them to deduce whether
-the unrecoverable fault is due to them. This need more inputs from device driver reviewers.
-
-> For unrecoverable faults I guess CTX means "the host IOMMU driver is broken", since
-> the device tables are invalid. In which case there is no use continuing, trying to
-> shutdown the device cleanly is really all the guest/device driver can do.
-
-[Liu, Yi L] Not sure about what device table mean here. But I agree that if host IOMMU
-driver has no valid CTX for the device, then this kind of error should result in a shutdown to
-the device.
-
-> For ACCESS the error is the device driver's or guest's fault, since the device driver
-> triggered DMA on unmapped buffers, or the guest didn't install the right page tables.
-> This can be repaired without shutting down, it may even just be one execution
-> stream that failed in the device while the others continued normally. It's not as
-> recoverable as a PRI Page Request, but the device driver may still be able to isolate
-> the problem (e.g. by killing the process responsible) and the device to recover from it.
-> 
-> So maybe ACCESS would benefit from more details, for example differentiating
-> faults encountered while fetching the pgd from those encountered while fetching a
-> second-level table or pte. The former is a lot less recoverable than the latter (bug in
-> the guest IOMMU driver vs.
-> bug in the device driver).
-> 
-> Generalizing this maybe we should differentiate each step of the translation in
-> fault_reason:
-> 
-> * Device entry (context) fetch -> host IOMMU driver's fault
-> * PASID table fetch -> guest IOMMU driver or host userspace's fault
-> * pgd fetch -> guest IOMMU driver's fault
-> * pte fetch, including validity and access check -> device driver's fault
-
-[Liu, Yi L] It's a good summary here. BTW. why pte fetch is due to device driver's fault?
-
-> It's probably not worth mentioning intermediate table levels (pmd, etc).
-> Thoughts?
-
-[Liu, Yi L] As my comments above, the info passed to guest/userspace driver/driver should
-be able to deduce if the fault is due to it. 
-
-> > +/**
-> > + * struct iommu_fault_event - Generic per device fault data
-> > + *
-> > + * - PCI and non-PCI devices
-> > + * - Recoverable faults (e.g. page request), information based on PCI
-> > +ATS
-> > + * and PASID spec.
-> > + * - Un-recoverable faults of device interest
-> > + * - DMA remapping and IRQ remapping faults
-> > +
-> > + * @type contains fault type.
-> > + * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver
-> internal
-> > + *         faults are not reported
-> > + * @paddr: tells the offending page address
-> > + * @pasid: contains process address space ID, used in shared virtual
-> > + memory(SVM)
-> > + * @rid: requestor ID> + * @page_req_group_id: page request group
-> > + index
-> > + * @last_req: last request in a page request group
-> > + * @pasid_valid: indicates if the PRQ has a valid PASID
-> > + * @prot: page access protection flag, e.g. IOMMU_READ, IOMMU_WRITE
-> > + * @private_data: uniquely identify device-specific private data for an
-> > + *                individual page request
-> 
-> I understand this is for the streaming extension on VT-d, is it IOMMU-specific or
-[Liu, Yi L] yes, it's the streaming extension on VT-d.
-
-> specific to the faulting endpoint? Could the device driver receiving the fault attempt
-> to decode or modify this field before sending the page response?
-[Liu, Yi L] IOMMU driver need to include it when sending the page response.
-
-Regards,
-Yi L
-
-> 
-> > + */
-> > +struct iommu_fault_event {
-> > +	enum iommu_fault_type type;
-> > +	enum iommu_fault_reason reason;
-> > +	u64 paddr;
-> > +	u32 pasid;
-> > +	u32 rid:16;
-> 
-> I think this is redundant, since you already pass the struct device to the fault handler.
-> Otherwise it should probably be extended to 32 bits, for non-PCI or multiple PCI
-> domains.
->
-> > +	u32 page_req_group_id : 9;> +	u32 last_req : 1;
-> > +	u32 pasid_valid : 1;
-> > +	u32 prot;
-> > +	u32 private_data;
-> > +};
-> > +
-> >  int  iommu_device_register(struct iommu_device *iommu);  void
-> > iommu_device_unregister(struct iommu_device *iommu);  int
-> > iommu_device_sysfs_add(struct iommu_device *iommu, @@ -425,6 +481,18
-> > @@ struct iommu_fwspec {
-> >  	u32			ids[1];
-> >  };
-> >
-> > +/**
-> > + * struct iommu_fault_param - per-device IOMMU runtime data
-> > + * @dev_fault_handler: Callback function to handle IOMMU faults at
-> > +device level
-> > + * @pasid_tbl_bound: Device PASID table is bound to a guest
-> > + *
-> > + */
-> > +struct iommu_fault_param {
-> > +	iommu_dev_fault_handler_t dev_fault_handler;
-> > +	bool pasid_tbl_bound:1;
-> > +	bool pasid_tbl_shadowed:1;
-> 
-> I guess you can remove this?
-> 
-> Thanks,
-> Jean
-> 
-> > +};
-> > +
-> >  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
-> >  		      const struct iommu_ops *ops);  void iommu_fwspec_free(struct
-> > device *dev); @@ -437,6 +505,7 @@ struct iommu_ops {};  struct
-> > iommu_group {};  struct iommu_fwspec {};  struct iommu_device {};
-> > +struct iommu_fault_param {};
-> >
-> >  static inline bool iommu_present(struct bus_type *bus)
-> >  {
-> >
+    Could you help review the binding patch[1/8]? if it's ok for you
+too, Could you help apply it through your branch with Rob's ACK.
+Thanks.
