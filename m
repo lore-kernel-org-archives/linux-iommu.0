@@ -1,23 +1,43 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Avoid ILLEGAL setting of
- STE.S1STALLD and CD.S
-Date: Fri, 20 Oct 2017 09:36:54 +0100
-Message-ID: <20171020083653.GA17938@arm.com>
-References: <1505997367-51569-1-git-send-email-xieyisheng1@huawei.com>
- <7eb1db90-9a30-b70c-c3d1-71bbca41502d@huawei.com>
+From: Sakari Ailus <sakari.ailus@iki.fi>
+Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Fri, 20 Oct 2017 12:09:50 +0300
+Message-ID: <20171020090949.nhv74sfb5jjrtxhx@valkosipuli.retiisi.org.uk>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-media-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <7eb1db90-9a30-b70c-c3d1-71bbca41502d@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yisheng Xie <xieyisheng1@huawei.com>
-Cc: jean-philippe.brucker@arm.com, robin.murphy@arm.com, joro@8bytes.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, liubo95@huawei.com, chenjiankang1@huawei.com
+In-Reply-To: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+Sender: linux-media-owner@vger.kernel.org
+To: Yong Zhi <yong.zhi@intel.com>
+Cc: linux-media@vger.kernel.org, sakari.ailus@linux.intel.com, jian.xu.zheng@intel.com, rajmohan.mani@intel.com, tuukka.toivonen@intel.com, jerry.w.hu@intel.com, arnd@arndb.de, hch@lst.de, robin.murphy@arm.com, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 20, 2017 at 03:00:01PM +0800, Yisheng Xie wrote:
-> Any comment about this version?
+Hi Yong,
 
-I have it queued up and plan to send a pull request to Joerg today for 4.15.
+On Tue, Oct 17, 2017 at 10:46:48PM -0500, Yong Zhi wrote:
+> This patchset adds support for the Intel IPU3 (Image Processing Unit)
+> ImgU which is essentially a modern memory-to-memory ISP. It implements
+> raw Bayer to YUV image format conversion as well as a large number of
+> other pixel processing algorithms for improving the image quality.
+> 
+> Meta data formats are defined for image statistics (3A, i.e. automatic
+> white balance, exposure and focus, histogram and local area contrast
+> enhancement) as well as for the pixel processing algorithm parameters.
+> The documentation for these formats is currently not included in the
+> patchset but will be added in a future version of this set.
+> 
+> The algorithm parameters need to be considered specific to a given frame
+> and typically a large number of these parameters change on frame to frame
+> basis. Additionally, the parameters are highly structured (and not a flat
+> space of independent configuration primitives). They also reflect the
+> data structures used by the firmware and the hardware. On top of that,
+> the algorithms require highly specialized user space to make meaningful
+> use of them. For these reasons it has been chosen video buffers to pass
 
-Will
+Do you have a to-do list for this patchset? I think it would be useful to
+maintain one, in case not all the comments have been addressed.
+
+-- 
+Sakari Ailus
+e-mail: sakari.ailus@iki.fi
