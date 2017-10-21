@@ -1,395 +1,467 @@
-From: Balbir Singh <bsingharora-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Jerome Glisse <jglisse@redhat.com>
 Subject: Re: [PATCH 1/2] mm/mmu_notifier: avoid double notification when it
-	is useless v2
-Date: Sat, 21 Oct 2017 16:54:40 +1100
-Message-ID: <1508565280.5662.6.camel@gmail.com>
+ is useless v2
+Date: Sat, 21 Oct 2017 11:47:03 -0400
+Message-ID: <20171021154703.GA30458@redhat.com>
 References: <20171017031003.7481-1-jglisse@redhat.com>
-	<20171017031003.7481-2-jglisse@redhat.com>
-	<20171019140426.21f51957@MiWiFi-R3-srv>
-	<20171019032811.GC5246@redhat.com>
-	<CAKTCnz=5GL_Bbu=kqywgW98uxpvYqCo2+KyzzGb67BmnKju3bw@mail.gmail.com>
-	<20171019165823.GA3044@redhat.com>
+ <20171017031003.7481-2-jglisse@redhat.com>
+ <20171019140426.21f51957@MiWiFi-R3-srv>
+ <20171019032811.GC5246@redhat.com>
+ <CAKTCnz=5GL_Bbu=kqywgW98uxpvYqCo2+KyzzGb67BmnKju3bw@mail.gmail.com>
+ <20171019165823.GA3044@redhat.com>
+ <1508565280.5662.6.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171019165823.GA3044-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Andrew Donnellan <andrew.donnellan-8fk3Idey6ehBDgjK7y7TUQ@public.gmane.org>, "open
-	list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-next <linux-next-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Alistair Popple <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-next-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1508565280.5662.6.camel@gmail.com>
+Sender: linux-next-owner@vger.kernel.org
+To: Balbir Singh <bsingharora@gmail.com>
+Cc: linux-mm <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrea Arcangeli <aarcange@redhat.com>, Nadav Amit <nadav.amit@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Donnellan <andrew.donnellan@au1.ibm.com>, iommu@lists.linux-foundation.org, "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev@lists.ozlabs.org>, linux-next <linux-next@vger.kernel.>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAyMDE3LTEwLTE5IGF0IDEyOjU4IC0wNDAwLCBKZXJvbWUgR2xpc3NlIHdyb3RlOgo+
-IE9uIFRodSwgT2N0IDE5LCAyMDE3IGF0IDA5OjUzOjExUE0gKzExMDAsIEJhbGJpciBTaW5naCB3
-cm90ZToKPiA+IE9uIFRodSwgT2N0IDE5LCAyMDE3IGF0IDI6MjggUE0sIEplcm9tZSBHbGlzc2Ug
-PGpnbGlzc2VAcmVkaGF0LmNvbT4gd3JvdGU6Cj4gPiA+IE9uIFRodSwgT2N0IDE5LCAyMDE3IGF0
-IDAyOjA0OjI2UE0gKzExMDAsIEJhbGJpciBTaW5naCB3cm90ZToKPiA+ID4gPiBPbiBNb24sIDE2
-IE9jdCAyMDE3IDIzOjEwOjAyIC0wNDAwCj4gPiA+ID4gamdsaXNzZUByZWRoYXQuY29tIHdyb3Rl
-Ogo+ID4gPiA+IAo+ID4gPiA+ID4gRnJvbTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhh
-dC5jb20+Cj4gPiA+ID4gPiAKPiA+ID4gPiA+ICsgICAgICAgICAgIC8qCj4gPiA+ID4gPiArICAg
-ICAgICAgICAgKiBObyBuZWVkIHRvIGNhbGwgbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2Uo
-KSBhcyB3ZSBhcmUKPiA+ID4gPiA+ICsgICAgICAgICAgICAqIGRvd25ncmFkaW5nIHBhZ2UgdGFi
-bGUgcHJvdGVjdGlvbiBub3QgY2hhbmdpbmcgaXQgdG8gcG9pbnQKPiA+ID4gPiA+ICsgICAgICAg
-ICAgICAqIHRvIGEgbmV3IHBhZ2UuCj4gPiA+ID4gPiArICAgICAgICAgICAgKgo+ID4gPiA+ID4g
-KyAgICAgICAgICAgICogU2VlIERvY3VtZW50YXRpb24vdm0vbW11X25vdGlmaWVyLnR4dAo+ID4g
-PiA+ID4gKyAgICAgICAgICAgICovCj4gPiA+ID4gPiAgICAgICAgICAgICBpZiAocG1kcCkgewo+
-ID4gPiA+ID4gICNpZmRlZiBDT05GSUdfRlNfREFYX1BNRAo+ID4gPiA+ID4gICAgICAgICAgICAg
-ICAgICAgICBwbWRfdCBwbWQ7Cj4gPiA+ID4gPiBAQCAtNjI4LDcgKzYzNSw2IEBAIHN0YXRpYyB2
-b2lkIGRheF9tYXBwaW5nX2VudHJ5X21rY2xlYW4oc3RydWN0IGFkZHJlc3Nfc3BhY2UgKm1hcHBp
-bmcsCj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgIHBtZCA9IHBtZF93cnByb3RlY3QocG1k
-KTsKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgcG1kID0gcG1kX21rY2xlYW4ocG1kKTsK
-PiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgc2V0X3BtZF9hdCh2bWEtPnZtX21tLCBhZGRy
-ZXNzLCBwbWRwLCBwbWQpOwo+ID4gPiA+ID4gLSAgICAgICAgICAgICAgICAgICBtbXVfbm90aWZp
-ZXJfaW52YWxpZGF0ZV9yYW5nZSh2bWEtPnZtX21tLCBzdGFydCwgZW5kKTsKPiA+ID4gPiAKPiA+
-ID4gPiBDb3VsZCB0aGUgc2Vjb25kYXJ5IFRMQiBzdGlsbCBzZWUgdGhlIG1hcHBpbmcgYXMgZGly
-dHkgYW5kIHByb3BhZ2F0ZSB0aGUgZGlydHkgYml0IGJhY2s/Cj4gPiA+IAo+ID4gPiBJIGFtIGFz
-c3VtaW5nIGhhcmR3YXJlIGRvZXMgc2FuZSB0aGluZyBvZiBzZXR0aW5nIHRoZSBkaXJ0eSBiaXQg
-b25seQo+ID4gPiB3aGVuIHdhbGtpbmcgdGhlIENQVSBwYWdlIHRhYmxlIHdoZW4gZGV2aWNlIGRv
-ZXMgYSB3cml0ZSBmYXVsdCBpZQo+ID4gPiBvbmNlIHRoZSBkZXZpY2UgZ2V0IGEgd3JpdGUgVExC
-IGVudHJ5IHRoZSBkaXJ0eSBpcyBzZXQgYnkgdGhlIElPTU1VCj4gPiA+IHdoZW4gd2Fsa2luZyB0
-aGUgcGFnZSB0YWJsZSBiZWZvcmUgcmV0dXJuaW5nIHRoZSBsb29rdXAgcmVzdWx0IHRvIHRoZQo+
-ID4gPiBkZXZpY2UgYW5kIHRoYXQgaXQgd29uJ3QgYmUgc2V0IGFnYWluIGxhdHRlciAoaWUgcHJv
-cGFnYXRlZCBiYWNrCj4gPiA+IGxhdHRlcikuCj4gPiA+IAo+ID4gCj4gPiBUaGUgb3RoZXIgcG9z
-c2liaWxpdHkgaXMgdGhhdCB0aGUgaGFyZHdhcmUgdGhpbmdzIHRoZSBwYWdlIGlzIHdyaXRhYmxl
-Cj4gPiBhbmQgYWxyZWFkeQo+ID4gbWFya2VkIGRpcnR5LiBJdCBhbGxvd3Mgd3JpdGVzIGFuZCBk
-b2VzIG5vdCBzZXQgdGhlIGRpcnR5IGJpdD8KPiAKPiBJIHRob3VnaHQgYWJvdXQgdGhpcyBzb21l
-IG1vcmUgYW5kIHRoZSBwYXRjaCBjYW4gbm90IHJlZ3Jlc3MgYW55dGhpbmcKPiB0aGF0IGlzIG5v
-dCBicm9rZW4gdG9kYXkuIFNvIGlmIHdlIGFzc3VtZSB0aGF0IGRldmljZSBjYW4gcHJvcGFnYXRl
-Cj4gZGlydHkgYml0IGJlY2F1c2UgaXQgY2FuIGNhY2hlIHRoZSB3cml0ZSBwcm90ZWN0aW9uIHRo
-YW4gYWxsIGN1cnJlbnQKPiBjb2RlIGlzIGJyb2tlbiBmb3IgdHdvIHJlYXNvbnM6Cj4gCj4gRmly
-c3Qgb25lIGlzIGN1cnJlbnQgY29kZSBjbGVhciBwdGUgZW50cnksIGJ1aWxkIGEgbmV3IHB0ZSB2
-YWx1ZSB3aXRoCj4gd3JpdGUgcHJvdGVjdGlvbiBhbmQgdXBkYXRlIHB0ZSBlbnRyeSB3aXRoIG5l
-dyBwdGUgdmFsdWUuIFNvIGFueSBQQVNJRC8KPiBBVFMgcGxhdGZvcm0gdGhhdCBhbGxvd3MgZGV2
-aWNlIHRvIGNhY2hlIHRoZSB3cml0ZSBiaXQgYW5kIHNldCBkaXJ0eQo+IGJpdCBhbnl0aW1lIGFm
-dGVyIHRoYXQgY2FuIHJhY2UgZHVyaW5nIHRoYXQgd2luZG93IGFuZCB5b3Ugd291bGQgbG9vc2UK
-PiB0aGUgZGlydHkgYml0IG9mIHRoZSBkZXZpY2UuIFRoYXQgaXMgbm90IHRoYXQgYmFkIGFzIHlv
-dSBhcmUgZ29ubmEKPiBwcm9wYWdhdGUgdGhlIGRpcnR5IGJpdCB0byB0aGUgc3RydWN0IHBhZ2Uu
-CgpCdXQgdGhleSBzdGF5IGNvbnNpc3RlbnQgd2l0aCB0aGUgbm90aWZpZXJzLCBzbyBmcm9tIHRo
-ZSBPUyBwZXJzcGVjdGl2ZQppdCBub3RpZmllcyBvZiBhbnkgUFRFIGNoYW5nZXMgYXMgdGhleSBo
-YXBwZW4uIFdoZW4gdGhlIEFUUyBwbGF0Zm9ybSBzZWVzCmludmFsaWRhdGlvbiwgaXQgaW52YWxp
-ZGF0ZXMgaXQncyBQVEUncyBhcyB3ZWxsLgoKSSB3YXMgc3BlYWtpbmcgb2YgdGhlIGNhc2Ugd2hl
-cmUgdGhlIEFUUyBwbGF0Zm9ybSBjb3VsZCBhc3N1bWUgaXQgaGFzCndyaXRlIGFjY2VzcyBhbmQg
-aGFzIG5vdCBzZWVuIGFueSBpbnZhbGlkYXRpb24sIHRoZSBPUyBjb3VsZCByZXR1cm4KYmFjayB0
-byB1c2VyIHNwYWNlIG9yIHRoZSBjYWxsZXIgd2l0aCB3cml0ZSBiaXQgY2xlYXIsIGJ1dCB0aGUg
-QVRTCnBsYXRmb3JtIGNvdWxkIHN0aWxsIGRvIGEgd3JpdGUgc2luY2UgaXQncyBub3Qgc2VlbiB0
-aGUgaW52YWxpZGF0aW9uLgoKPiAKPiBTZWNvbmQgb25lIGlzIGlmIHRoZSBkaXJ0eSBiaXQgaXMg
-cHJvcGFnYXRlZCBiYWNrIHRvIHRoZSBuZXcgd3JpdGUKPiBwcm90ZWN0ZWQgcHRlLiBRdWljayBs
-b29rIGF0IGNvZGUgaXQgc2VlbXMgdGhhdCB3aGVuIHdlIHphcCBwdGUgb3IKPiBvciBta2NsZWFu
-IHdlIGRvbid0IGNoZWNrIHRoYXQgdGhlIHB0ZSBoYXMgd3JpdGUgcGVybWlzc2lvbiBidXQgb25s
-eQo+IGNhcmUgYWJvdXQgdGhlIGRpcnR5IGJpdC4gU28gaXQgc2hvdWxkIG5vdCBoYXZlIGFueSBi
-YWQgY29uc2VxdWVuY2UuCj4gCj4gQWZ0ZXIgdGhpcyBwYXRjaCBvbmx5IHRoZSBzZWNvbmQgd2lu
-ZG93IGlzIGJpZ2dlciBhbmQgdGh1cyBtb3JlIGxpa2VseQo+IHRvIGhhcHBlbi4gQnV0IG5vdGhp
-bmcgc2luaXN0ZXIgc2hvdWxkIGhhcHBlbiBmcm9tIHRoYXQuCj4gCj4gCj4gPiAKPiA+ID4gSSBz
-aG91bGQgcHJvYmFibHkgaGF2ZSBzcGVsbCB0aGF0IG91dCBhbmQgbWF5YmUgc29tZSBvZiB0aGUg
-QVRTL1BBU0lECj4gPiA+IGltcGxlbWVudGVyIGRpZCBub3QgZG8gdGhhdC4KPiA+ID4gCj4gPiA+
-ID4gCj4gPiA+ID4gPiAgdW5sb2NrX3BtZDoKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAg
-c3Bpbl91bmxvY2socHRsKTsKPiA+ID4gPiA+ICAjZW5kaWYKPiA+ID4gPiA+IEBAIC02NDMsNyAr
-NjQ5LDYgQEAgc3RhdGljIHZvaWQgZGF4X21hcHBpbmdfZW50cnlfbWtjbGVhbihzdHJ1Y3QgYWRk
-cmVzc19zcGFjZSAqbWFwcGluZywKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgcHRlID0g
-cHRlX3dycHJvdGVjdChwdGUpOwo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICBwdGUgPSBw
-dGVfbWtjbGVhbihwdGUpOwo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICBzZXRfcHRlX2F0
-KHZtYS0+dm1fbW0sIGFkZHJlc3MsIHB0ZXAsIHB0ZSk7Cj4gPiA+ID4gPiAtICAgICAgICAgICAg
-ICAgICAgIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKHZtYS0+dm1fbW0sIHN0YXJ0LCBl
-bmQpOwo+ID4gPiA+IAo+ID4gPiA+IERpdHRvCj4gPiA+ID4gCj4gPiA+ID4gPiAgdW5sb2NrX3B0
-ZToKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgcHRlX3VubWFwX3VubG9jayhwdGVwLCBw
-dGwpOwo+ID4gPiA+ID4gICAgICAgICAgICAgfQo+ID4gPiA+ID4gZGlmZiAtLWdpdCBhL2luY2x1
-ZGUvbGludXgvbW11X25vdGlmaWVyLmggYi9pbmNsdWRlL2xpbnV4L21tdV9ub3RpZmllci5oCj4g
-PiA+ID4gPiBpbmRleCA2ODY2ZTgxMjY5ODIuLjQ5YzkyNWM5NmI4YSAxMDA2NDQKPiA+ID4gPiA+
-IC0tLSBhL2luY2x1ZGUvbGludXgvbW11X25vdGlmaWVyLmgKPiA+ID4gPiA+ICsrKyBiL2luY2x1
-ZGUvbGludXgvbW11X25vdGlmaWVyLmgKPiA+ID4gPiA+IEBAIC0xNTUsNyArMTU1LDggQEAgc3Ry
-dWN0IG1tdV9ub3RpZmllcl9vcHMgewo+ID4gPiA+ID4gICAgICAqIHNoYXJlZCBwYWdlLXRhYmxl
-cywgaXQgbm90IG5lY2Vzc2FyeSB0byBpbXBsZW1lbnQgdGhlCj4gPiA+ID4gPiAgICAgICogaW52
-YWxpZGF0ZV9yYW5nZV9zdGFydCgpL2VuZCgpIG5vdGlmaWVycywgYXMKPiA+ID4gPiA+ICAgICAg
-KiBpbnZhbGlkYXRlX3JhbmdlKCkgYWxyZWFkIGNhdGNoZXMgdGhlIHBvaW50cyBpbiB0aW1lIHdo
-ZW4gYW4KPiA+ID4gPiA+IC0gICAgKiBleHRlcm5hbCBUTEIgcmFuZ2UgbmVlZHMgdG8gYmUgZmx1
-c2hlZC4KPiA+ID4gPiA+ICsgICAgKiBleHRlcm5hbCBUTEIgcmFuZ2UgbmVlZHMgdG8gYmUgZmx1
-c2hlZC4gRm9yIG1vcmUgaW4gZGVwdGgKPiA+ID4gPiA+ICsgICAgKiBkaXNjdXNzaW9uIG9uIHRo
-aXMgc2VlIERvY3VtZW50YXRpb24vdm0vbW11X25vdGlmaWVyLnR4dAo+ID4gPiA+ID4gICAgICAq
-Cj4gPiA+ID4gPiAgICAgICogVGhlIGludmFsaWRhdGVfcmFuZ2UoKSBmdW5jdGlvbiBpcyBjYWxs
-ZWQgdW5kZXIgdGhlIHB0bAo+ID4gPiA+ID4gICAgICAqIHNwaW4tbG9jayBhbmQgbm90IGFsbG93
-ZWQgdG8gc2xlZXAuCj4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvbW0vaHVnZV9tZW1vcnkuYyBiL21t
-L2h1Z2VfbWVtb3J5LmMKPiA+ID4gPiA+IGluZGV4IGMwMzdkM2QzNDk1MC4uZmY1YmM2NDdiNTFk
-IDEwMDY0NAo+ID4gPiA+ID4gLS0tIGEvbW0vaHVnZV9tZW1vcnkuYwo+ID4gPiA+ID4gKysrIGIv
-bW0vaHVnZV9tZW1vcnkuYwo+ID4gPiA+ID4gQEAgLTExODYsOCArMTE4NiwxNSBAQCBzdGF0aWMg
-aW50IGRvX2h1Z2VfcG1kX3dwX3BhZ2VfZmFsbGJhY2soc3RydWN0IHZtX2ZhdWx0ICp2bWYsIHBt
-ZF90IG9yaWdfcG1kLAo+ID4gPiA+ID4gICAgICAgICAgICAgZ290byBvdXRfZnJlZV9wYWdlczsK
-PiA+ID4gPiA+ICAgICBWTV9CVUdfT05fUEFHRSghUGFnZUhlYWQocGFnZSksIHBhZ2UpOwo+ID4g
-PiA+ID4gCj4gPiA+ID4gPiArICAgLyoKPiA+ID4gPiA+ICsgICAgKiBMZWF2ZSBwbWQgZW1wdHkg
-dW50aWwgcHRlIGlzIGZpbGxlZCBub3RlIHdlIG11c3Qgbm90aWZ5IGhlcmUgYXMKPiA+ID4gPiA+
-ICsgICAgKiBjb25jdXJyZW50IENQVSB0aHJlYWQgbWlnaHQgd3JpdGUgdG8gbmV3IHBhZ2UgYmVm
-b3JlIHRoZSBjYWxsIHRvCj4gPiA+ID4gPiArICAgICogbW11X25vdGlmaWVyX2ludmFsaWRhdGVf
-cmFuZ2VfZW5kKCkgaGFwcGVucyB3aGljaCBjYW4gbGVhZCB0byBhCj4gPiA+ID4gPiArICAgICog
-ZGV2aWNlIHNlZWluZyBtZW1vcnkgd3JpdGUgaW4gZGlmZmVyZW50IG9yZGVyIHRoYW4gQ1BVLgo+
-ID4gPiA+ID4gKyAgICAqCj4gPiA+ID4gPiArICAgICogU2VlIERvY3VtZW50YXRpb24vdm0vbW11
-X25vdGlmaWVyLnR4dAo+ID4gPiA+ID4gKyAgICAqLwo+ID4gPiA+ID4gICAgIHBtZHBfaHVnZV9j
-bGVhcl9mbHVzaF9ub3RpZnkodm1hLCBoYWRkciwgdm1mLT5wbWQpOwo+ID4gPiA+ID4gLSAgIC8q
-IGxlYXZlIHBtZCBlbXB0eSB1bnRpbCBwdGUgaXMgZmlsbGVkICovCj4gPiA+ID4gPiAKPiA+ID4g
-PiA+ICAgICBwZ3RhYmxlID0gcGd0YWJsZV90cmFuc19odWdlX3dpdGhkcmF3KHZtYS0+dm1fbW0s
-IHZtZi0+cG1kKTsKPiA+ID4gPiA+ICAgICBwbWRfcG9wdWxhdGUodm1hLT52bV9tbSwgJl9wbWQs
-IHBndGFibGUpOwo+ID4gPiA+ID4gQEAgLTIwMjYsOCArMjAzMywxNSBAQCBzdGF0aWMgdm9pZCBf
-X3NwbGl0X2h1Z2VfemVyb19wYWdlX3BtZChzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwKPiA+
-ID4gPiA+ICAgICBwbWRfdCBfcG1kOwo+ID4gPiA+ID4gICAgIGludCBpOwo+ID4gPiA+ID4gCj4g
-PiA+ID4gPiAtICAgLyogbGVhdmUgcG1kIGVtcHR5IHVudGlsIHB0ZSBpcyBmaWxsZWQgKi8KPiA+
-ID4gPiA+IC0gICBwbWRwX2h1Z2VfY2xlYXJfZmx1c2hfbm90aWZ5KHZtYSwgaGFkZHIsIHBtZCk7
-Cj4gPiA+ID4gPiArICAgLyoKPiA+ID4gPiA+ICsgICAgKiBMZWF2ZSBwbWQgZW1wdHkgdW50aWwg
-cHRlIGlzIGZpbGxlZCBub3RlIHRoYXQgaXQgaXMgZmluZSB0byBkZWxheQo+ID4gPiA+ID4gKyAg
-ICAqIG5vdGlmaWNhdGlvbiB1bnRpbCBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZV9lbmQo
-KSBhcyB3ZSBhcmUKPiA+ID4gPiA+ICsgICAgKiByZXBsYWNpbmcgYSB6ZXJvIHBtZCB3cml0ZSBw
-cm90ZWN0ZWQgcGFnZSB3aXRoIGEgemVybyBwdGUgd3JpdGUKPiA+ID4gPiA+ICsgICAgKiBwcm90
-ZWN0ZWQgcGFnZS4KPiA+ID4gPiA+ICsgICAgKgo+ID4gPiA+ID4gKyAgICAqIFNlZSBEb2N1bWVu
-dGF0aW9uL3ZtL21tdV9ub3RpZmllci50eHQKPiA+ID4gPiA+ICsgICAgKi8KPiA+ID4gPiA+ICsg
-ICBwbWRwX2h1Z2VfY2xlYXJfZmx1c2godm1hLCBoYWRkciwgcG1kKTsKPiA+ID4gPiAKPiA+ID4g
-PiBTaG91bGRuJ3QgdGhlIHNlY29uZGFyeSBUTEIga25vdyBpZiB0aGUgcGFnZSBzaXplIGNoYW5n
-ZWQ/Cj4gPiA+IAo+ID4gPiBJdCBzaG91bGQgbm90IG1hdHRlciwgd2UgYXJlIHRhbGtpbmcgdmly
-dHVhbCB0byBwaHlzaWNhbCBvbiBiZWhhbGYKPiA+ID4gb2YgYSBkZXZpY2UgYWdhaW5zdCBhIHBy
-b2Nlc3MgYWRkcmVzcyBzcGFjZS4gU28gdGhlIGhhcmR3YXJlIHNob3VsZAo+ID4gPiBub3QgY2Fy
-ZSBhYm91dCB0aGUgcGFnZSBzaXplLgo+ID4gPiAKPiA+IAo+ID4gRG9lcyB0aGF0IG5vdCBpbmRp
-Y2F0ZSBob3cgbXVjaCB0aGUgZGV2aWNlIGNhbiBhY2Nlc3M/IENvdWxkIGl0IHRyeQo+ID4gdG8g
-YWNjZXNzIG1vcmUgdGhhbiB3aGF0IGlzIG1hcHBlZD8KPiAKPiBBc3N1bWluZyBkZXZpY2UgaGFz
-IGh1Z2UgVExCIGFuZCAyTUIgaHVnZSBwYWdlIHdpdGggNEsgc21hbGwgcGFnZS4KPiBZb3UgYXJl
-IGdvaW5nIGZyb20gb25lIDEgVExCIGNvdmVyaW5nIGEgMk1CIHplcm8gcGFnZSB0byA1MTIgVExC
-Cj4gZWFjaCBjb3ZlcmluZyA0Sy4gQm90aCBjYXNlIGlzIHJlYWQgb25seSBhbmQgYm90aCBjYXNl
-IGFyZSBwb2ludGluZwo+IHRvIHNhbWUgZGF0YSAoaWUgemVybykuCj4gCj4gSXQgaXMgZmluZSB0
-byBkZWxheSB0aGUgVExCIGludmFsaWRhdGUgb24gdGhlIGRldmljZSB0byB0aGUgY2FsbCBvZgo+
-IG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlX2VuZCgpLiBUaGUgZGV2aWNlIHdpbGwga2Vl
-cCB1c2luZyB0aGUKPiBodWdlIFRMQiBmb3IgYSBsaXR0bGUgbG9uZ2VyIGJ1dCBib3RoIENQVSBh
-bmQgZGV2aWNlIGFyZSBsb29raW5nIGF0Cj4gc2FtZSBkYXRhLgo+IAo+IE5vdyBpZiB0aGVyZSBp
-cyBhIHJhY2luZyB0aHJlYWQgdGhhdCByZXBsYWNlIG9uZSBvZiB0aGUgNTEyIHplb3IgcGFnZQo+
-IGFmdGVyIHRoZSBzcGxpdCBidXQgYmVmb3JlIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3Jhbmdl
-X2VuZCgpIHRoYXQKPiBjb2RlIHBhdGggd291bGQgY2FsbCBtbXVfbm90aWZpZXJfaW52YWxpZGF0
-ZV9yYW5nZSgpIGJlZm9yZSBjaGFuZ2luZwo+IHRoZSBwdGUgdG8gcG9pbnQgdG8gc29tZXRoaW5n
-IGVsc2UuIFdoaWNoIHNob3VsZCBzaG9vdCBkb3duIHRoZSBkZXZpY2UKPiBUTEIgKGl0IHdvdWxk
-IGJlIGEgc2VyaW91cyBkZXZpY2UgYnVnIGlmIHRoaXMgZGlkIG5vdCB3b3JrKS4KCk9LLi4gVGhp
-cyBzZWVtcyByZWFzb25hYmxlLCBidXQgSSdkIHJlYWxseSBsaWtlIHRvIHNlZSBpZiBpdCBjYW4g
-YmUKdGVzdGVkCgo+IAo+IAo+ID4gCj4gPiA+IE1vcmVvdmVyIGlmIGFueSBvZiB0aGUgbmV3IDUx
-MiAoYXNzdW1pbmcgMk1CIGh1Z2UgYW5kIDRLIHBhZ2VzKSB6ZXJvCj4gPiA+IDRLIHBhZ2VzIGlz
-IHJlcGxhY2UgYnkgc29tZXRoaW5nIG5ldyB0aGVuIGEgZGV2aWNlIFRMQiBzaG9vdGRvd24gd2ls
-bAo+ID4gPiBoYXBwZW4gYmVmb3JlIHRoZSBuZXcgcGFnZSBpcyBzZXQuCj4gPiA+IAo+ID4gPiBP
-bmx5IGlzc3VlIGkgY2FuIHRoaW5rIG9mIGlzIGlmIHRoZSBJT01NVSBUTEIgKGlmIHRoZXJlIGlz
-IG9uZSkgb3IKPiA+ID4gdGhlIGRldmljZSBUTEIgKHlvdSBkbyBleHBlY3QgdGhhdCB0aGVyZSBp
-cyBvbmUpIGRvZXMgbm90IGludmFsaWRhdGUKPiA+ID4gVExCIGVudHJ5IGlmIHRoZSBUTEIgc2hv
-b3Rkb3duIGlzIHNtYWxsZXIgdGhhbiB0aGUgVExCIGVudHJ5LiBUaGF0Cj4gPiA+IHdvdWxkIGJl
-IGlkaW90aWMgYnV0IHllcyBpIGtub3cgaGFyZHdhcmUgYnVnLgo+ID4gPiAKPiA+ID4gCj4gPiA+
-ID4gCj4gPiA+ID4gPiAKPiA+ID4gPiA+ICAgICBwZ3RhYmxlID0gcGd0YWJsZV90cmFuc19odWdl
-X3dpdGhkcmF3KG1tLCBwbWQpOwo+ID4gPiA+ID4gICAgIHBtZF9wb3B1bGF0ZShtbSwgJl9wbWQs
-IHBndGFibGUpOwo+ID4gPiA+ID4gZGlmZiAtLWdpdCBhL21tL2h1Z2V0bGIuYyBiL21tL2h1Z2V0
-bGIuYwo+ID4gPiA+ID4gaW5kZXggMTc2OGVmYTRjNTAxLi42M2E2M2YxYjUzNmMgMTAwNjQ0Cj4g
-PiA+ID4gPiAtLS0gYS9tbS9odWdldGxiLmMKPiA+ID4gPiA+ICsrKyBiL21tL2h1Z2V0bGIuYwo+
-ID4gPiA+ID4gQEAgLTMyNTQsOSArMzI1NCwxNCBAQCBpbnQgY29weV9odWdldGxiX3BhZ2VfcmFu
-Z2Uoc3RydWN0IG1tX3N0cnVjdCAqZHN0LCBzdHJ1Y3QgbW1fc3RydWN0ICpzcmMsCj4gPiA+ID4g
-PiAgICAgICAgICAgICAgICAgICAgIHNldF9odWdlX3N3YXBfcHRlX2F0KGRzdCwgYWRkciwgZHN0
-X3B0ZSwgZW50cnksIHN6KTsKPiA+ID4gPiA+ICAgICAgICAgICAgIH0gZWxzZSB7Cj4gPiA+ID4g
-PiAgICAgICAgICAgICAgICAgICAgIGlmIChjb3cpIHsKPiA+ID4gPiA+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAvKgo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAq
-IE5vIG5lZWQgdG8gbm90aWZ5IGFzIHdlIGFyZSBkb3duZ3JhZGluZyBwYWdlCj4gPiA+ID4gPiAr
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICogdGFibGUgcHJvdGVjdGlvbiBub3QgY2hhbmdp
-bmcgaXQgdG8gcG9pbnQKPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgKiB0
-byBhIG5ldyBwYWdlLgo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAqCj4g
-PiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICogU2VlIERvY3VtZW50YXRpb24v
-dm0vbW11X25vdGlmaWVyLnR4dAo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAqLwo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIGh1Z2VfcHRlcF9zZXRf
-d3Jwcm90ZWN0KHNyYywgYWRkciwgc3JjX3B0ZSk7Cj4gPiA+ID4gCj4gPiA+ID4gT0suLiBzbyB3
-ZSBjb3VsZCBnZXQgd3JpdGUgZmF1bHRzIG9uIHdyaXRlIGFjY2Vzc2VzIGZyb20gdGhlIGRldmlj
-ZS4KPiA+ID4gPiAKPiA+ID4gPiA+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICBtbXVfbm90
-aWZpZXJfaW52YWxpZGF0ZV9yYW5nZShzcmMsIG1tdW5fc3RhcnQsCj4gPiA+ID4gPiAtICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBt
-bXVuX2VuZCk7Cj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgIH0KPiA+ID4gPiA+ICAgICAg
-ICAgICAgICAgICAgICAgZW50cnkgPSBodWdlX3B0ZXBfZ2V0KHNyY19wdGUpOwo+ID4gPiA+ID4g
-ICAgICAgICAgICAgICAgICAgICBwdGVwYWdlID0gcHRlX3BhZ2UoZW50cnkpOwo+ID4gPiA+ID4g
-QEAgLTQyODgsNyArNDI5MywxMiBAQCB1bnNpZ25lZCBsb25nIGh1Z2V0bGJfY2hhbmdlX3Byb3Rl
-Y3Rpb24oc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCj4gPiA+ID4gPiAgICAgICogYW5kIHRo
-YXQgcGFnZSB0YWJsZSBiZSByZXVzZWQgYW5kIGZpbGxlZCB3aXRoIGp1bmsuCj4gPiA+ID4gPiAg
-ICAgICovCj4gPiA+ID4gPiAgICAgZmx1c2hfaHVnZXRsYl90bGJfcmFuZ2Uodm1hLCBzdGFydCwg
-ZW5kKTsKPiA+ID4gPiA+IC0gICBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZShtbSwgc3Rh
-cnQsIGVuZCk7Cj4gPiA+ID4gPiArICAgLyoKPiA+ID4gPiA+ICsgICAgKiBObyBuZWVkIHRvIGNh
-bGwgbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UoKSB3ZSBhcmUgZG93bmdyYWRpbmcKPiA+
-ID4gPiA+ICsgICAgKiBwYWdlIHRhYmxlIHByb3RlY3Rpb24gbm90IGNoYW5naW5nIGl0IHRvIHBv
-aW50IHRvIGEgbmV3IHBhZ2UuCj4gPiA+ID4gPiArICAgICoKPiA+ID4gPiA+ICsgICAgKiBTZWUg
-RG9jdW1lbnRhdGlvbi92bS9tbXVfbm90aWZpZXIudHh0Cj4gPiA+ID4gPiArICAgICovCj4gPiA+
-ID4gPiAgICAgaV9tbWFwX3VubG9ja193cml0ZSh2bWEtPnZtX2ZpbGUtPmZfbWFwcGluZyk7Cj4g
-PiA+ID4gPiAgICAgbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2VfZW5kKG1tLCBzdGFydCwg
-ZW5kKTsKPiA+ID4gPiA+IAo+ID4gPiA+ID4gZGlmZiAtLWdpdCBhL21tL2tzbS5jIGIvbW0va3Nt
-LmMKPiA+ID4gPiA+IGluZGV4IDZjYjYwZjQ2Y2NlNS4uYmU4ZjQ1NzZmODQyIDEwMDY0NAo+ID4g
-PiA+ID4gLS0tIGEvbW0va3NtLmMKPiA+ID4gPiA+ICsrKyBiL21tL2tzbS5jCj4gPiA+ID4gPiBA
-QCAtMTA1Miw4ICsxMDUyLDEzIEBAIHN0YXRpYyBpbnQgd3JpdGVfcHJvdGVjdF9wYWdlKHN0cnVj
-dCB2bV9hcmVhX3N0cnVjdCAqdm1hLCBzdHJ1Y3QgcGFnZSAqcGFnZSwKPiA+ID4gPiA+ICAgICAg
-ICAgICAgICAqIFNvIHdlIGNsZWFyIHRoZSBwdGUgYW5kIGZsdXNoIHRoZSB0bGIgYmVmb3JlIHRo
-ZSBjaGVjawo+ID4gPiA+ID4gICAgICAgICAgICAgICogdGhpcyBhc3N1cmUgdXMgdGhhdCBubyBP
-X0RJUkVDVCBjYW4gaGFwcGVuIGFmdGVyIHRoZSBjaGVjawo+ID4gPiA+ID4gICAgICAgICAgICAg
-ICogb3IgaW4gdGhlIG1pZGRsZSBvZiB0aGUgY2hlY2suCj4gPiA+ID4gPiArICAgICAgICAgICAg
-Kgo+ID4gPiA+ID4gKyAgICAgICAgICAgICogTm8gbmVlZCB0byBub3RpZnkgYXMgd2UgYXJlIGRv
-d25ncmFkaW5nIHBhZ2UgdGFibGUgdG8gcmVhZAo+ID4gPiA+ID4gKyAgICAgICAgICAgICogb25s
-eSBub3QgY2hhbmdpbmcgaXQgdG8gcG9pbnQgdG8gYSBuZXcgcGFnZS4KPiA+ID4gPiA+ICsgICAg
-ICAgICAgICAqCj4gPiA+ID4gPiArICAgICAgICAgICAgKiBTZWUgRG9jdW1lbnRhdGlvbi92bS9t
-bXVfbm90aWZpZXIudHh0Cj4gPiA+ID4gPiAgICAgICAgICAgICAgKi8KPiA+ID4gPiA+IC0gICAg
-ICAgICAgIGVudHJ5ID0gcHRlcF9jbGVhcl9mbHVzaF9ub3RpZnkodm1hLCBwdm13LmFkZHJlc3Ms
-IHB2bXcucHRlKTsKPiA+ID4gPiA+ICsgICAgICAgICAgIGVudHJ5ID0gcHRlcF9jbGVhcl9mbHVz
-aCh2bWEsIHB2bXcuYWRkcmVzcywgcHZtdy5wdGUpOwo+ID4gPiA+ID4gICAgICAgICAgICAgLyoK
-PiA+ID4gPiA+ICAgICAgICAgICAgICAqIENoZWNrIHRoYXQgbm8gT19ESVJFQ1Qgb3Igc2ltaWxh
-ciBJL08gaXMgaW4gcHJvZ3Jlc3Mgb24gdGhlCj4gPiA+ID4gPiAgICAgICAgICAgICAgKiBwYWdl
-Cj4gPiA+ID4gPiBAQCAtMTEzNiw3ICsxMTQxLDEzIEBAIHN0YXRpYyBpbnQgcmVwbGFjZV9wYWdl
-KHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLCBzdHJ1Y3QgcGFnZSAqcGFnZSwKPiA+ID4gPiA+
-ICAgICB9Cj4gPiA+ID4gPiAKPiA+ID4gPiA+ICAgICBmbHVzaF9jYWNoZV9wYWdlKHZtYSwgYWRk
-ciwgcHRlX3BmbigqcHRlcCkpOwo+ID4gPiA+ID4gLSAgIHB0ZXBfY2xlYXJfZmx1c2hfbm90aWZ5
-KHZtYSwgYWRkciwgcHRlcCk7Cj4gPiA+ID4gPiArICAgLyoKPiA+ID4gPiA+ICsgICAgKiBObyBu
-ZWVkIHRvIG5vdGlmeSBhcyB3ZSBhcmUgcmVwbGFjaW5nIGEgcmVhZCBvbmx5IHBhZ2Ugd2l0aCBh
-bm90aGVyCj4gPiA+ID4gPiArICAgICogcmVhZCBvbmx5IHBhZ2Ugd2l0aCB0aGUgc2FtZSBjb250
-ZW50Lgo+ID4gPiA+ID4gKyAgICAqCj4gPiA+ID4gPiArICAgICogU2VlIERvY3VtZW50YXRpb24v
-dm0vbW11X25vdGlmaWVyLnR4dAo+ID4gPiA+ID4gKyAgICAqLwo+ID4gPiA+ID4gKyAgIHB0ZXBf
-Y2xlYXJfZmx1c2godm1hLCBhZGRyLCBwdGVwKTsKPiA+ID4gPiA+ICAgICBzZXRfcHRlX2F0X25v
-dGlmeShtbSwgYWRkciwgcHRlcCwgbmV3cHRlKTsKPiA+ID4gPiA+IAo+ID4gPiA+ID4gICAgIHBh
-Z2VfcmVtb3ZlX3JtYXAocGFnZSwgZmFsc2UpOwo+ID4gPiA+ID4gZGlmZiAtLWdpdCBhL21tL3Jt
-YXAuYyBiL21tL3JtYXAuYwo+ID4gPiA+ID4gaW5kZXggMDYxODI2Mjc4NTIwLi42YjVhMGYyMTlh
-YzAgMTAwNjQ0Cj4gPiA+ID4gPiAtLS0gYS9tbS9ybWFwLmMKPiA+ID4gPiA+ICsrKyBiL21tL3Jt
-YXAuYwo+ID4gPiA+ID4gQEAgLTkzNywxMCArOTM3LDE1IEBAIHN0YXRpYyBib29sIHBhZ2VfbWtj
-bGVhbl9vbmUoc3RydWN0IHBhZ2UgKnBhZ2UsIHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLAo+
-ID4gPiA+ID4gICNlbmRpZgo+ID4gPiA+ID4gICAgICAgICAgICAgfQo+ID4gPiA+ID4gCj4gPiA+
-ID4gPiAtICAgICAgICAgICBpZiAocmV0KSB7Cj4gPiA+ID4gPiAtICAgICAgICAgICAgICAgICAg
-IG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKHZtYS0+dm1fbW0sIGNzdGFydCwgY2VuZCk7
-Cj4gPiA+ID4gPiArICAgICAgICAgICAvKgo+ID4gPiA+ID4gKyAgICAgICAgICAgICogTm8gbmVl
-ZCB0byBjYWxsIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3JhbmdlKCkgYXMgd2UgYXJlCj4gPiA+
-ID4gPiArICAgICAgICAgICAgKiBkb3duZ3JhZGluZyBwYWdlIHRhYmxlIHByb3RlY3Rpb24gbm90
-IGNoYW5naW5nIGl0IHRvIHBvaW50Cj4gPiA+ID4gPiArICAgICAgICAgICAgKiB0byBhIG5ldyBw
-YWdlLgo+ID4gPiA+ID4gKyAgICAgICAgICAgICoKPiA+ID4gPiA+ICsgICAgICAgICAgICAqIFNl
-ZSBEb2N1bWVudGF0aW9uL3ZtL21tdV9ub3RpZmllci50eHQKPiA+ID4gPiA+ICsgICAgICAgICAg
-ICAqLwo+ID4gPiA+ID4gKyAgICAgICAgICAgaWYgKHJldCkKPiA+ID4gPiA+ICAgICAgICAgICAg
-ICAgICAgICAgKCpjbGVhbmVkKSsrOwo+ID4gPiA+ID4gLSAgICAgICAgICAgfQo+ID4gPiA+ID4g
-ICAgIH0KPiA+ID4gPiA+IAo+ID4gPiA+ID4gICAgIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3Jh
-bmdlX2VuZCh2bWEtPnZtX21tLCBzdGFydCwgZW5kKTsKPiA+ID4gPiA+IEBAIC0xNDI0LDYgKzE0
-MjksMTAgQEAgc3RhdGljIGJvb2wgdHJ5X3RvX3VubWFwX29uZShzdHJ1Y3QgcGFnZSAqcGFnZSwg
-c3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAg
-IGlmIChwdGVfc29mdF9kaXJ0eShwdGV2YWwpKQo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIHN3cF9wdGUgPSBwdGVfc3dwX21rc29mdF9kaXJ0eShzd3BfcHRlKTsKPiA+ID4g
-PiA+ICAgICAgICAgICAgICAgICAgICAgc2V0X3B0ZV9hdChtbSwgcHZtdy5hZGRyZXNzLCBwdm13
-LnB0ZSwgc3dwX3B0ZSk7Cj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgIC8qCj4gPiA+ID4g
-PiArICAgICAgICAgICAgICAgICAgICAqIE5vIG5lZWQgdG8gaW52YWxpZGF0ZSBoZXJlIGl0IHdp
-bGwgc3luY2hyb25pemUgb24KPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICogYWdhaW5z
-dCB0aGUgc3BlY2lhbCBzd2FwIG1pZ3JhdGlvbiBwdGUuCj4gPiA+ID4gPiArICAgICAgICAgICAg
-ICAgICAgICAqLwo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICBnb3RvIGRpc2NhcmQ7Cj4g
-PiA+ID4gPiAgICAgICAgICAgICB9Cj4gPiA+ID4gPiAKPiA+ID4gPiA+IEBAIC0xNDgxLDYgKzE0
-OTAsOSBAQCBzdGF0aWMgYm9vbCB0cnlfdG9fdW5tYXBfb25lKHN0cnVjdCBwYWdlICpwYWdlLCBz
-dHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAg
-ICogd2lsbCB0YWtlIGNhcmUgb2YgdGhlIHJlc3QuCj4gPiA+ID4gPiAgICAgICAgICAgICAgICAg
-ICAgICAqLwo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICBkZWNfbW1fY291bnRlcihtbSwg
-bW1fY291bnRlcihwYWdlKSk7Cj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgIC8qIFdlIGhh
-dmUgdG8gaW52YWxpZGF0ZSBhcyB3ZSBjbGVhcmVkIHRoZSBwdGUgKi8KPiA+ID4gPiA+ICsgICAg
-ICAgICAgICAgICAgICAgbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UobW0sIGFkZHJlc3Ms
-Cj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIGFkZHJlc3MgKyBQQUdFX1NJWkUpOwo+ID4gPiA+ID4gICAgICAgICAgICAgfSBlbHNlIGlm
-IChJU19FTkFCTEVEKENPTkZJR19NSUdSQVRJT04pICYmCj4gPiA+ID4gPiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgKGZsYWdzICYgKFRUVV9NSUdSQVRJT058VFRVX1NQTElUX0ZSRUVaRSkp
-KSB7Cj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgIHN3cF9lbnRyeV90IGVudHJ5Owo+ID4g
-PiA+ID4gQEAgLTE0OTYsNiArMTUwOCwxMCBAQCBzdGF0aWMgYm9vbCB0cnlfdG9fdW5tYXBfb25l
-KHN0cnVjdCBwYWdlICpwYWdlLCBzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwKPiA+ID4gPiA+
-ICAgICAgICAgICAgICAgICAgICAgaWYgKHB0ZV9zb2Z0X2RpcnR5KHB0ZXZhbCkpCj4gPiA+ID4g
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3dwX3B0ZSA9IHB0ZV9zd3BfbWtzb2Z0X2Rp
-cnR5KHN3cF9wdGUpOwo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICBzZXRfcHRlX2F0KG1t
-LCBhZGRyZXNzLCBwdm13LnB0ZSwgc3dwX3B0ZSk7Cj4gPiA+ID4gPiArICAgICAgICAgICAgICAg
-ICAgIC8qCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAqIE5vIG5lZWQgdG8gaW52YWxp
-ZGF0ZSBoZXJlIGl0IHdpbGwgc3luY2hyb25pemUgb24KPiA+ID4gPiA+ICsgICAgICAgICAgICAg
-ICAgICAgICogYWdhaW5zdCB0aGUgc3BlY2lhbCBzd2FwIG1pZ3JhdGlvbiBwdGUuCj4gPiA+ID4g
-PiArICAgICAgICAgICAgICAgICAgICAqLwo+ID4gPiA+ID4gICAgICAgICAgICAgfSBlbHNlIGlm
-IChQYWdlQW5vbihwYWdlKSkgewo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICBzd3BfZW50
-cnlfdCBlbnRyeSA9IHsgLnZhbCA9IHBhZ2VfcHJpdmF0ZShzdWJwYWdlKSB9Owo+ID4gPiA+ID4g
-ICAgICAgICAgICAgICAgICAgICBwdGVfdCBzd3BfcHRlOwo+ID4gPiA+ID4gQEAgLTE1MDcsNiAr
-MTUyMyw4IEBAIHN0YXRpYyBib29sIHRyeV90b191bm1hcF9vbmUoc3RydWN0IHBhZ2UgKnBhZ2Us
-IHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLAo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIFdBUk5fT05fT05DRSgxKTsKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICByZXQgPSBmYWxzZTsKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAvKiBXZSBoYXZlIHRvIGludmFsaWRhdGUgYXMgd2UgY2xlYXJlZCB0aGUgcHRlICovCj4gPiA+
-ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgbW11X25vdGlmaWVyX2ludmFsaWRhdGVf
-cmFuZ2UobW0sIGFkZHJlc3MsCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgYWRkcmVzcyArIFBBR0VfU0laRSk7Cj4gPiA+ID4gPiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgcGFnZV92bWFfbWFwcGVkX3dhbGtfZG9uZSgmcHZt
-dyk7Cj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7Cj4gPiA+ID4g
-PiAgICAgICAgICAgICAgICAgICAgIH0KPiA+ID4gPiA+IEBAIC0xNTE0LDYgKzE1MzIsOSBAQCBz
-dGF0aWMgYm9vbCB0cnlfdG9fdW5tYXBfb25lKHN0cnVjdCBwYWdlICpwYWdlLCBzdHJ1Y3Qgdm1f
-YXJlYV9zdHJ1Y3QgKnZtYSwKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgLyogTUFEVl9G
-UkVFIHBhZ2UgY2hlY2sgKi8KPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgaWYgKCFQYWdl
-U3dhcEJhY2tlZChwYWdlKSkgewo+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGlmICghUGFnZURpcnR5KHBhZ2UpKSB7Cj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAvKiBJbnZhbGlkYXRlIGFzIHdlIGNsZWFyZWQgdGhlIHB0ZSAqLwo+ID4g
-PiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbW11X25vdGlmaWVyX2lu
-dmFsaWRhdGVfcmFuZ2UobW0sCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIGFkZHJlc3MsIGFkZHJlc3MgKyBQQUdFX1NJWkUpOwo+ID4gPiA+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGVjX21tX2NvdW50ZXIobW0sIE1N
-X0FOT05QQUdFUyk7Cj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBnb3RvIGRpc2NhcmQ7Cj4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfQo+
-ID4gPiA+ID4gQEAgLTE1NDcsMTMgKzE1NjgsMzkgQEAgc3RhdGljIGJvb2wgdHJ5X3RvX3VubWFw
-X29uZShzdHJ1Y3QgcGFnZSAqcGFnZSwgc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCj4gPiA+
-ID4gPiAgICAgICAgICAgICAgICAgICAgIGlmIChwdGVfc29mdF9kaXJ0eShwdGV2YWwpKQo+ID4g
-PiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN3cF9wdGUgPSBwdGVfc3dwX21rc29m
-dF9kaXJ0eShzd3BfcHRlKTsKPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgc2V0X3B0ZV9h
-dChtbSwgYWRkcmVzcywgcHZtdy5wdGUsIHN3cF9wdGUpOwo+ID4gPiA+ID4gLSAgICAgICAgICAg
-fSBlbHNlCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgIC8qIEludmFsaWRhdGUgYXMgd2Ug
-Y2xlYXJlZCB0aGUgcHRlICovCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgIG1tdV9ub3Rp
-Zmllcl9pbnZhbGlkYXRlX3JhbmdlKG1tLCBhZGRyZXNzLAo+ID4gPiA+ID4gKyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhZGRyZXNzICsgUEFHRV9TSVpF
-KTsKPiA+ID4gPiA+ICsgICAgICAgICAgIH0gZWxzZSB7Cj4gPiA+ID4gPiArICAgICAgICAgICAg
-ICAgICAgIC8qCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAqIFdlIHNob3VsZCBub3Qg
-bmVlZCB0byBub3RpZnkgaGVyZSBhcyB3ZSByZWFjaCB0aGlzCj4gPiA+ID4gPiArICAgICAgICAg
-ICAgICAgICAgICAqIGNhc2Ugb25seSBmcm9tIGZyZWV6ZV9wYWdlKCkgaXRzZWxmIG9ubHkgY2Fs
-bCBmcm9tCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAqIHNwbGl0X2h1Z2VfcGFnZV90
-b19saXN0KCkgc28gZXZlcnl0aGluZyBiZWxvdyBtdXN0Cj4gPiA+ID4gPiArICAgICAgICAgICAg
-ICAgICAgICAqIGJlIHRydWU6Cj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAqICAgLSBw
-YWdlIGlzIG5vdCBhbm9ueW1vdXMKPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICogICAt
-IHBhZ2UgaXMgbG9ja2VkCj4gPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAqCj4gPiA+ID4g
-PiArICAgICAgICAgICAgICAgICAgICAqIFNvIGFzIGl0IGlzIGEgbG9ja2VkIGZpbGUgYmFjayBw
-YWdlIHRodXMgaXQgY2FuIG5vdAo+ID4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgKiBiZSBy
-ZW1vdmUgZnJvbSB0aGUgcGFnZSBjYWNoZSBhbmQgcmVwbGFjZSBieSBhIG5ldwo+ID4gPiA+ID4g
-KyAgICAgICAgICAgICAgICAgICAgKiBwYWdlIGJlZm9yZSBtbXVfbm90aWZpZXJfaW52YWxpZGF0
-ZV9yYW5nZV9lbmQgc28gbm8KPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICogY29uY3Vy
-cmVudCB0aHJlYWQgbWlnaHQgdXBkYXRlIGl0cyBwYWdlIHRhYmxlIHRvCj4gPiA+ID4gPiArICAg
-ICAgICAgICAgICAgICAgICAqIHBvaW50IGF0IG5ldyBwYWdlIHdoaWxlIGEgZGV2aWNlIHN0aWxs
-IGlzIHVzaW5nIHRoaXMKPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICogcGFnZS4KPiA+
-ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICoKPiA+ID4gPiA+ICsgICAgICAgICAgICAgICAg
-ICAgICogU2VlIERvY3VtZW50YXRpb24vdm0vbW11X25vdGlmaWVyLnR4dAo+ID4gPiA+ID4gKyAg
-ICAgICAgICAgICAgICAgICAgKi8KPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgZGVjX21t
-X2NvdW50ZXIobW0sIG1tX2NvdW50ZXJfZmlsZShwYWdlKSk7Cj4gPiA+ID4gPiArICAgICAgICAg
-ICB9Cj4gPiA+ID4gPiAgZGlzY2FyZDoKPiA+ID4gPiA+ICsgICAgICAgICAgIC8qCj4gPiA+ID4g
-PiArICAgICAgICAgICAgKiBObyBuZWVkIHRvIGNhbGwgbW11X25vdGlmaWVyX2ludmFsaWRhdGVf
-cmFuZ2UoKSBpdCBoYXMgYmUKPiA+ID4gPiA+ICsgICAgICAgICAgICAqIGRvbmUgYWJvdmUgZm9y
-IGFsbCBjYXNlcyByZXF1aXJpbmcgaXQgdG8gaGFwcGVuIHVuZGVyIHBhZ2UKPiA+ID4gPiA+ICsg
-ICAgICAgICAgICAqIHRhYmxlIGxvY2sgYmVmb3JlIG1tdV9ub3RpZmllcl9pbnZhbGlkYXRlX3Jh
-bmdlX2VuZCgpCj4gPiA+ID4gPiArICAgICAgICAgICAgKgo+ID4gPiA+ID4gKyAgICAgICAgICAg
-ICogU2VlIERvY3VtZW50YXRpb24vdm0vbW11X25vdGlmaWVyLnR4dAo+ID4gPiA+ID4gKyAgICAg
-ICAgICAgICovCj4gPiA+ID4gPiAgICAgICAgICAgICBwYWdlX3JlbW92ZV9ybWFwKHN1YnBhZ2Us
-IFBhZ2VIdWdlKHBhZ2UpKTsKPiA+ID4gPiA+ICAgICAgICAgICAgIHB1dF9wYWdlKHBhZ2UpOwo+
-ID4gPiA+ID4gLSAgICAgICAgICAgbW11X25vdGlmaWVyX2ludmFsaWRhdGVfcmFuZ2UobW0sIGFk
-ZHJlc3MsCj4gPiA+ID4gPiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBhZGRyZXNzICsgUEFHRV9TSVpFKTsKPiA+ID4gPiA+ICAgICB9Cj4gPiA+ID4gPiAKPiA+ID4g
-PiA+ICAgICBtbXVfbm90aWZpZXJfaW52YWxpZGF0ZV9yYW5nZV9lbmQodm1hLT52bV9tbSwgc3Rh
-cnQsIGVuZCk7Cj4gPiA+ID4gCj4gPiA+ID4gTG9va2luZyBhdCB0aGUgcGF0Y2hzZXQsIEkgdW5k
-ZXJzdGFuZCB0aGUgZWZmaWNpZW5jeSwgYnV0IEkgYW0gY29uY2VybmVkCj4gPiA+ID4gd2l0aCBj
-b3JyZWN0bmVzcy4KPiA+ID4gCj4gPiA+IEkgYW0gZmluZSBpbiBob2xkaW5nIHRoaXMgb2ZmIGZy
-b20gcmVhY2hpbmcgTGludXMgYnV0IG9ubHkgd2F5IHRvIGZsdXNoIHRoaXMKPiA+ID4gaXNzdWVz
-IG91dCBpZiBhbnkgaXMgdG8gaGF2ZSB0aGlzIHBhdGNoIGluIGxpbnV4LW5leHQgb3Igc29tZXdo
-ZXJlIHdlcmUgdGhleQo+ID4gPiBnZXQgYSBjaGFuY2Ugb2YgYmVpbmcgdGVzdGVkLgo+ID4gPiAK
-PiA+IAo+ID4gWWVwLCBJIHdvdWxkIGxpa2UgdG8gc2VlIHNvbWUgYWRkaXRpb25hbCB0ZXN0aW5n
-IGFyb3VuZCBucHUgYW5kIGdldCBBbGlzdGFpcgo+ID4gUG9wcGxlIHRvIGNvbW1lbnQgYXMgd2Vs
-bAo+IAo+IEkgdGhpbmsgdGhpcyBwYXRjaCBpcyBmaW5lLiBUaGUgb25seSBvbmUgcmFjZSB3aW5k
-b3cgdGhhdCBpdCBtaWdodCBtYWtlCj4gYmlnZ2VyIHNob3VsZCBoYXZlIG5vIGJhZCBjb25zZXF1
-ZW5jZXMuCj4gCj4gPiAKPiA+ID4gTm90ZSB0aGF0IHRoZSBzZWNvbmQgcGF0Y2ggaXMgYWx3YXlz
-IHNhZmUuIEkgYWdyZWUgdGhhdCB0aGlzIG9uZSBtaWdodAo+ID4gPiBub3QgYmUgaWYgaGFyZHdh
-cmUgaW1wbGVtZW50YXRpb24gaXMgaWRpb3RpYyAod2VsbCB0aGF0IHdvdWxkIGJlIG15Cj4gPiA+
-IG9waW5pb24gYW5kIGFueSBvcGluaW9uL3BvaW50IG9mIHZpZXcgY2FuIGJlIGNoYWxsZW5nZSA6
-KSkKPiA+IAo+ID4gCj4gPiBZb3UgbWVhbiB0aGUgb25seV9lbmQgdmFyaWFudCB0aGF0IGF2b2lk
-cyBzaG9vdGRvd24gYWZ0ZXIgcG1kL3B0ZSBjaGFuZ2VzCj4gPiB0aGF0IGF2b2lkIHRoZSBfc3Rh
-cnQvX2VuZCBhbmQgaGF2ZSBqdXN0IHRoZSBvbmx5X2VuZCB2YXJpYW50PyBUaGF0IHNlZW1lZAo+
-ID4gcmVhc29uYWJsZSB0byBtZSwgYnV0IEkndmUgbm90IHRlc3RlZCBpdCBvciBldmFsdWF0ZWQg
-aXQgaW4gZGVwdGgKPiAKPiBZZXMsIHBhdGNoIDIvMiBpbiB0aGlzIHNlcmllIGlzIGRlZmluaXRs
-eSBmaW5lLiBJdCBpbnZhbGlkYXRlIHRoZSBkZXZpY2UKPiBUTEIgcmlnaHQgYWZ0ZXIgY2xlYXJp
-bmcgcHRlIGVudHJ5IGFuZCBhdm9pZCBsYXR0ZXIgdW5lY2Vzc2FyeSBpbnZhbGlkYXRpb24KPiBv
-ZiBzYW1lIFRMQi4KPiAKPiBKw6lyw7RtZQoKQmFsYmlyIFNpbmdoLgoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Sat, Oct 21, 2017 at 04:54:40PM +1100, Balbir Singh wrote:
+> On Thu, 2017-10-19 at 12:58 -0400, Jerome Glisse wrote:
+> > On Thu, Oct 19, 2017 at 09:53:11PM +1100, Balbir Singh wrote:
+> > > On Thu, Oct 19, 2017 at 2:28 PM, Jerome Glisse <jglisse@redhat.com> wrote:
+> > > > On Thu, Oct 19, 2017 at 02:04:26PM +1100, Balbir Singh wrote:
+> > > > > On Mon, 16 Oct 2017 23:10:02 -0400
+> > > > > jglisse@redhat.com wrote:
+> > > > > 
+> > > > > > From: Jérôme Glisse <jglisse@redhat.com>
+> > > > > > 
+> > > > > > +           /*
+> > > > > > +            * No need to call mmu_notifier_invalidate_range() as we are
+> > > > > > +            * downgrading page table protection not changing it to point
+> > > > > > +            * to a new page.
+> > > > > > +            *
+> > > > > > +            * See Documentation/vm/mmu_notifier.txt
+> > > > > > +            */
+> > > > > >             if (pmdp) {
+> > > > > >  #ifdef CONFIG_FS_DAX_PMD
+> > > > > >                     pmd_t pmd;
+> > > > > > @@ -628,7 +635,6 @@ static void dax_mapping_entry_mkclean(struct address_space *mapping,
+> > > > > >                     pmd = pmd_wrprotect(pmd);
+> > > > > >                     pmd = pmd_mkclean(pmd);
+> > > > > >                     set_pmd_at(vma->vm_mm, address, pmdp, pmd);
+> > > > > > -                   mmu_notifier_invalidate_range(vma->vm_mm, start, end);
+> > > > > 
+> > > > > Could the secondary TLB still see the mapping as dirty and propagate the dirty bit back?
+> > > > 
+> > > > I am assuming hardware does sane thing of setting the dirty bit only
+> > > > when walking the CPU page table when device does a write fault ie
+> > > > once the device get a write TLB entry the dirty is set by the IOMMU
+> > > > when walking the page table before returning the lookup result to the
+> > > > device and that it won't be set again latter (ie propagated back
+> > > > latter).
+> > > > 
+> > > 
+> > > The other possibility is that the hardware things the page is writable
+> > > and already
+> > > marked dirty. It allows writes and does not set the dirty bit?
+> > 
+> > I thought about this some more and the patch can not regress anything
+> > that is not broken today. So if we assume that device can propagate
+> > dirty bit because it can cache the write protection than all current
+> > code is broken for two reasons:
+> > 
+> > First one is current code clear pte entry, build a new pte value with
+> > write protection and update pte entry with new pte value. So any PASID/
+> > ATS platform that allows device to cache the write bit and set dirty
+> > bit anytime after that can race during that window and you would loose
+> > the dirty bit of the device. That is not that bad as you are gonna
+> > propagate the dirty bit to the struct page.
+> 
+> But they stay consistent with the notifiers, so from the OS perspective
+> it notifies of any PTE changes as they happen. When the ATS platform sees
+> invalidation, it invalidates it's PTE's as well.
+> 
+> I was speaking of the case where the ATS platform could assume it has
+> write access and has not seen any invalidation, the OS could return
+> back to user space or the caller with write bit clear, but the ATS
+> platform could still do a write since it's not seen the invalidation.
+
+I understood what you said and what is above apply. I am removing only
+one of the invalidation not both. So with that patch the invalidation
+is delayed after the page table lock drop but before dax/page_mkclean
+returns. Hence any further activity will be read only on any device too
+once we exit those functions.
+
+The only difference is the window during which device can report dirty
+pte. Before that patch the 2 "~bogus~" window were small:
+  First window between pmd/pte_get_clear_flush and set_pte/pmd
+  Second window between set_pte/pmd and mmu_notifier_invalidate_range
+
+The first window stay the same, the second window is bigger, potentialy
+lot bigger if thread is prempted before mmu_notifier_invalidate_range_end
+
+But that is fine as in that case the page is reported as dirty and thus
+we are not missing anything and the kernel code does not care about
+seeing read only pte mark as dirty.
+
+> 
+> > 
+> > Second one is if the dirty bit is propagated back to the new write
+> > protected pte. Quick look at code it seems that when we zap pte or
+> > or mkclean we don't check that the pte has write permission but only
+> > care about the dirty bit. So it should not have any bad consequence.
+> > 
+> > After this patch only the second window is bigger and thus more likely
+> > to happen. But nothing sinister should happen from that.
+> > 
+> > 
+> > > 
+> > > > I should probably have spell that out and maybe some of the ATS/PASID
+> > > > implementer did not do that.
+> > > > 
+> > > > > 
+> > > > > >  unlock_pmd:
+> > > > > >                     spin_unlock(ptl);
+> > > > > >  #endif
+> > > > > > @@ -643,7 +649,6 @@ static void dax_mapping_entry_mkclean(struct address_space *mapping,
+> > > > > >                     pte = pte_wrprotect(pte);
+> > > > > >                     pte = pte_mkclean(pte);
+> > > > > >                     set_pte_at(vma->vm_mm, address, ptep, pte);
+> > > > > > -                   mmu_notifier_invalidate_range(vma->vm_mm, start, end);
+> > > > > 
+> > > > > Ditto
+> > > > > 
+> > > > > >  unlock_pte:
+> > > > > >                     pte_unmap_unlock(ptep, ptl);
+> > > > > >             }
+> > > > > > diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
+> > > > > > index 6866e8126982..49c925c96b8a 100644
+> > > > > > --- a/include/linux/mmu_notifier.h
+> > > > > > +++ b/include/linux/mmu_notifier.h
+> > > > > > @@ -155,7 +155,8 @@ struct mmu_notifier_ops {
+> > > > > >      * shared page-tables, it not necessary to implement the
+> > > > > >      * invalidate_range_start()/end() notifiers, as
+> > > > > >      * invalidate_range() alread catches the points in time when an
+> > > > > > -    * external TLB range needs to be flushed.
+> > > > > > +    * external TLB range needs to be flushed. For more in depth
+> > > > > > +    * discussion on this see Documentation/vm/mmu_notifier.txt
+> > > > > >      *
+> > > > > >      * The invalidate_range() function is called under the ptl
+> > > > > >      * spin-lock and not allowed to sleep.
+> > > > > > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> > > > > > index c037d3d34950..ff5bc647b51d 100644
+> > > > > > --- a/mm/huge_memory.c
+> > > > > > +++ b/mm/huge_memory.c
+> > > > > > @@ -1186,8 +1186,15 @@ static int do_huge_pmd_wp_page_fallback(struct vm_fault *vmf, pmd_t orig_pmd,
+> > > > > >             goto out_free_pages;
+> > > > > >     VM_BUG_ON_PAGE(!PageHead(page), page);
+> > > > > > 
+> > > > > > +   /*
+> > > > > > +    * Leave pmd empty until pte is filled note we must notify here as
+> > > > > > +    * concurrent CPU thread might write to new page before the call to
+> > > > > > +    * mmu_notifier_invalidate_range_end() happens which can lead to a
+> > > > > > +    * device seeing memory write in different order than CPU.
+> > > > > > +    *
+> > > > > > +    * See Documentation/vm/mmu_notifier.txt
+> > > > > > +    */
+> > > > > >     pmdp_huge_clear_flush_notify(vma, haddr, vmf->pmd);
+> > > > > > -   /* leave pmd empty until pte is filled */
+> > > > > > 
+> > > > > >     pgtable = pgtable_trans_huge_withdraw(vma->vm_mm, vmf->pmd);
+> > > > > >     pmd_populate(vma->vm_mm, &_pmd, pgtable);
+> > > > > > @@ -2026,8 +2033,15 @@ static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
+> > > > > >     pmd_t _pmd;
+> > > > > >     int i;
+> > > > > > 
+> > > > > > -   /* leave pmd empty until pte is filled */
+> > > > > > -   pmdp_huge_clear_flush_notify(vma, haddr, pmd);
+> > > > > > +   /*
+> > > > > > +    * Leave pmd empty until pte is filled note that it is fine to delay
+> > > > > > +    * notification until mmu_notifier_invalidate_range_end() as we are
+> > > > > > +    * replacing a zero pmd write protected page with a zero pte write
+> > > > > > +    * protected page.
+> > > > > > +    *
+> > > > > > +    * See Documentation/vm/mmu_notifier.txt
+> > > > > > +    */
+> > > > > > +   pmdp_huge_clear_flush(vma, haddr, pmd);
+> > > > > 
+> > > > > Shouldn't the secondary TLB know if the page size changed?
+> > > > 
+> > > > It should not matter, we are talking virtual to physical on behalf
+> > > > of a device against a process address space. So the hardware should
+> > > > not care about the page size.
+> > > > 
+> > > 
+> > > Does that not indicate how much the device can access? Could it try
+> > > to access more than what is mapped?
+> > 
+> > Assuming device has huge TLB and 2MB huge page with 4K small page.
+> > You are going from one 1 TLB covering a 2MB zero page to 512 TLB
+> > each covering 4K. Both case is read only and both case are pointing
+> > to same data (ie zero).
+> > 
+> > It is fine to delay the TLB invalidate on the device to the call of
+> > mmu_notifier_invalidate_range_end(). The device will keep using the
+> > huge TLB for a little longer but both CPU and device are looking at
+> > same data.
+> > 
+> > Now if there is a racing thread that replace one of the 512 zeor page
+> > after the split but before mmu_notifier_invalidate_range_end() that
+> > code path would call mmu_notifier_invalidate_range() before changing
+> > the pte to point to something else. Which should shoot down the device
+> > TLB (it would be a serious device bug if this did not work).
+> 
+> OK.. This seems reasonable, but I'd really like to see if it can be
+> tested
+
+Well hard to test, many factors first each device might react differently.
+Device that only store TLB at 4k granularity are fine. Clever device that
+can store TLB for 4k, 2M, ... can ignore an invalidation that is smaller
+than their TLB entry ie getting a 4K invalidation would not invalidate a
+2MB TLB entry in the device. I consider this as buggy. I will go look at
+the PCIE ATS specification one more time and see if there is any wording
+related that. I might bring up a question to the PCIE standard body if not.
+
+Second factor is that it is a race between split zero and a write fault.
+I can probably do a crappy patch that msleep if split happens against a
+given mm to increase the race window. But i would be testing against one
+device (right now i can only access AMD IOMMUv2 devices with discret ATS
+GPU)
+
+
+> 
+> > 
+> > 
+> > > 
+> > > > Moreover if any of the new 512 (assuming 2MB huge and 4K pages) zero
+> > > > 4K pages is replace by something new then a device TLB shootdown will
+> > > > happen before the new page is set.
+> > > > 
+> > > > Only issue i can think of is if the IOMMU TLB (if there is one) or
+> > > > the device TLB (you do expect that there is one) does not invalidate
+> > > > TLB entry if the TLB shootdown is smaller than the TLB entry. That
+> > > > would be idiotic but yes i know hardware bug.
+> > > > 
+> > > > 
+> > > > > 
+> > > > > > 
+> > > > > >     pgtable = pgtable_trans_huge_withdraw(mm, pmd);
+> > > > > >     pmd_populate(mm, &_pmd, pgtable);
+> > > > > > diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> > > > > > index 1768efa4c501..63a63f1b536c 100644
+> > > > > > --- a/mm/hugetlb.c
+> > > > > > +++ b/mm/hugetlb.c
+> > > > > > @@ -3254,9 +3254,14 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+> > > > > >                     set_huge_swap_pte_at(dst, addr, dst_pte, entry, sz);
+> > > > > >             } else {
+> > > > > >                     if (cow) {
+> > > > > > +                           /*
+> > > > > > +                            * No need to notify as we are downgrading page
+> > > > > > +                            * table protection not changing it to point
+> > > > > > +                            * to a new page.
+> > > > > > +                            *
+> > > > > > +                            * See Documentation/vm/mmu_notifier.txt
+> > > > > > +                            */
+> > > > > >                             huge_ptep_set_wrprotect(src, addr, src_pte);
+> > > > > 
+> > > > > OK.. so we could get write faults on write accesses from the device.
+> > > > > 
+> > > > > > -                           mmu_notifier_invalidate_range(src, mmun_start,
+> > > > > > -                                                              mmun_end);
+> > > > > >                     }
+> > > > > >                     entry = huge_ptep_get(src_pte);
+> > > > > >                     ptepage = pte_page(entry);
+> > > > > > @@ -4288,7 +4293,12 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
+> > > > > >      * and that page table be reused and filled with junk.
+> > > > > >      */
+> > > > > >     flush_hugetlb_tlb_range(vma, start, end);
+> > > > > > -   mmu_notifier_invalidate_range(mm, start, end);
+> > > > > > +   /*
+> > > > > > +    * No need to call mmu_notifier_invalidate_range() we are downgrading
+> > > > > > +    * page table protection not changing it to point to a new page.
+> > > > > > +    *
+> > > > > > +    * See Documentation/vm/mmu_notifier.txt
+> > > > > > +    */
+> > > > > >     i_mmap_unlock_write(vma->vm_file->f_mapping);
+> > > > > >     mmu_notifier_invalidate_range_end(mm, start, end);
+> > > > > > 
+> > > > > > diff --git a/mm/ksm.c b/mm/ksm.c
+> > > > > > index 6cb60f46cce5..be8f4576f842 100644
+> > > > > > --- a/mm/ksm.c
+> > > > > > +++ b/mm/ksm.c
+> > > > > > @@ -1052,8 +1052,13 @@ static int write_protect_page(struct vm_area_struct *vma, struct page *page,
+> > > > > >              * So we clear the pte and flush the tlb before the check
+> > > > > >              * this assure us that no O_DIRECT can happen after the check
+> > > > > >              * or in the middle of the check.
+> > > > > > +            *
+> > > > > > +            * No need to notify as we are downgrading page table to read
+> > > > > > +            * only not changing it to point to a new page.
+> > > > > > +            *
+> > > > > > +            * See Documentation/vm/mmu_notifier.txt
+> > > > > >              */
+> > > > > > -           entry = ptep_clear_flush_notify(vma, pvmw.address, pvmw.pte);
+> > > > > > +           entry = ptep_clear_flush(vma, pvmw.address, pvmw.pte);
+> > > > > >             /*
+> > > > > >              * Check that no O_DIRECT or similar I/O is in progress on the
+> > > > > >              * page
+> > > > > > @@ -1136,7 +1141,13 @@ static int replace_page(struct vm_area_struct *vma, struct page *page,
+> > > > > >     }
+> > > > > > 
+> > > > > >     flush_cache_page(vma, addr, pte_pfn(*ptep));
+> > > > > > -   ptep_clear_flush_notify(vma, addr, ptep);
+> > > > > > +   /*
+> > > > > > +    * No need to notify as we are replacing a read only page with another
+> > > > > > +    * read only page with the same content.
+> > > > > > +    *
+> > > > > > +    * See Documentation/vm/mmu_notifier.txt
+> > > > > > +    */
+> > > > > > +   ptep_clear_flush(vma, addr, ptep);
+> > > > > >     set_pte_at_notify(mm, addr, ptep, newpte);
+> > > > > > 
+> > > > > >     page_remove_rmap(page, false);
+> > > > > > diff --git a/mm/rmap.c b/mm/rmap.c
+> > > > > > index 061826278520..6b5a0f219ac0 100644
+> > > > > > --- a/mm/rmap.c
+> > > > > > +++ b/mm/rmap.c
+> > > > > > @@ -937,10 +937,15 @@ static bool page_mkclean_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >  #endif
+> > > > > >             }
+> > > > > > 
+> > > > > > -           if (ret) {
+> > > > > > -                   mmu_notifier_invalidate_range(vma->vm_mm, cstart, cend);
+> > > > > > +           /*
+> > > > > > +            * No need to call mmu_notifier_invalidate_range() as we are
+> > > > > > +            * downgrading page table protection not changing it to point
+> > > > > > +            * to a new page.
+> > > > > > +            *
+> > > > > > +            * See Documentation/vm/mmu_notifier.txt
+> > > > > > +            */
+> > > > > > +           if (ret)
+> > > > > >                     (*cleaned)++;
+> > > > > > -           }
+> > > > > >     }
+> > > > > > 
+> > > > > >     mmu_notifier_invalidate_range_end(vma->vm_mm, start, end);
+> > > > > > @@ -1424,6 +1429,10 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >                     if (pte_soft_dirty(pteval))
+> > > > > >                             swp_pte = pte_swp_mksoft_dirty(swp_pte);
+> > > > > >                     set_pte_at(mm, pvmw.address, pvmw.pte, swp_pte);
+> > > > > > +                   /*
+> > > > > > +                    * No need to invalidate here it will synchronize on
+> > > > > > +                    * against the special swap migration pte.
+> > > > > > +                    */
+> > > > > >                     goto discard;
+> > > > > >             }
+> > > > > > 
+> > > > > > @@ -1481,6 +1490,9 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >                      * will take care of the rest.
+> > > > > >                      */
+> > > > > >                     dec_mm_counter(mm, mm_counter(page));
+> > > > > > +                   /* We have to invalidate as we cleared the pte */
+> > > > > > +                   mmu_notifier_invalidate_range(mm, address,
+> > > > > > +                                                 address + PAGE_SIZE);
+> > > > > >             } else if (IS_ENABLED(CONFIG_MIGRATION) &&
+> > > > > >                             (flags & (TTU_MIGRATION|TTU_SPLIT_FREEZE))) {
+> > > > > >                     swp_entry_t entry;
+> > > > > > @@ -1496,6 +1508,10 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >                     if (pte_soft_dirty(pteval))
+> > > > > >                             swp_pte = pte_swp_mksoft_dirty(swp_pte);
+> > > > > >                     set_pte_at(mm, address, pvmw.pte, swp_pte);
+> > > > > > +                   /*
+> > > > > > +                    * No need to invalidate here it will synchronize on
+> > > > > > +                    * against the special swap migration pte.
+> > > > > > +                    */
+> > > > > >             } else if (PageAnon(page)) {
+> > > > > >                     swp_entry_t entry = { .val = page_private(subpage) };
+> > > > > >                     pte_t swp_pte;
+> > > > > > @@ -1507,6 +1523,8 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >                             WARN_ON_ONCE(1);
+> > > > > >                             ret = false;
+> > > > > >                             /* We have to invalidate as we cleared the pte */
+> > > > > > +                           mmu_notifier_invalidate_range(mm, address,
+> > > > > > +                                                   address + PAGE_SIZE);
+> > > > > >                             page_vma_mapped_walk_done(&pvmw);
+> > > > > >                             break;
+> > > > > >                     }
+> > > > > > @@ -1514,6 +1532,9 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >                     /* MADV_FREE page check */
+> > > > > >                     if (!PageSwapBacked(page)) {
+> > > > > >                             if (!PageDirty(page)) {
+> > > > > > +                                   /* Invalidate as we cleared the pte */
+> > > > > > +                                   mmu_notifier_invalidate_range(mm,
+> > > > > > +                                           address, address + PAGE_SIZE);
+> > > > > >                                     dec_mm_counter(mm, MM_ANONPAGES);
+> > > > > >                                     goto discard;
+> > > > > >                             }
+> > > > > > @@ -1547,13 +1568,39 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+> > > > > >                     if (pte_soft_dirty(pteval))
+> > > > > >                             swp_pte = pte_swp_mksoft_dirty(swp_pte);
+> > > > > >                     set_pte_at(mm, address, pvmw.pte, swp_pte);
+> > > > > > -           } else
+> > > > > > +                   /* Invalidate as we cleared the pte */
+> > > > > > +                   mmu_notifier_invalidate_range(mm, address,
+> > > > > > +                                                 address + PAGE_SIZE);
+> > > > > > +           } else {
+> > > > > > +                   /*
+> > > > > > +                    * We should not need to notify here as we reach this
+> > > > > > +                    * case only from freeze_page() itself only call from
+> > > > > > +                    * split_huge_page_to_list() so everything below must
+> > > > > > +                    * be true:
+> > > > > > +                    *   - page is not anonymous
+> > > > > > +                    *   - page is locked
+> > > > > > +                    *
+> > > > > > +                    * So as it is a locked file back page thus it can not
+> > > > > > +                    * be remove from the page cache and replace by a new
+> > > > > > +                    * page before mmu_notifier_invalidate_range_end so no
+> > > > > > +                    * concurrent thread might update its page table to
+> > > > > > +                    * point at new page while a device still is using this
+> > > > > > +                    * page.
+> > > > > > +                    *
+> > > > > > +                    * See Documentation/vm/mmu_notifier.txt
+> > > > > > +                    */
+> > > > > >                     dec_mm_counter(mm, mm_counter_file(page));
+> > > > > > +           }
+> > > > > >  discard:
+> > > > > > +           /*
+> > > > > > +            * No need to call mmu_notifier_invalidate_range() it has be
+> > > > > > +            * done above for all cases requiring it to happen under page
+> > > > > > +            * table lock before mmu_notifier_invalidate_range_end()
+> > > > > > +            *
+> > > > > > +            * See Documentation/vm/mmu_notifier.txt
+> > > > > > +            */
+> > > > > >             page_remove_rmap(subpage, PageHuge(page));
+> > > > > >             put_page(page);
+> > > > > > -           mmu_notifier_invalidate_range(mm, address,
+> > > > > > -                                         address + PAGE_SIZE);
+> > > > > >     }
+> > > > > > 
+> > > > > >     mmu_notifier_invalidate_range_end(vma->vm_mm, start, end);
+> > > > > 
+> > > > > Looking at the patchset, I understand the efficiency, but I am concerned
+> > > > > with correctness.
+> > > > 
+> > > > I am fine in holding this off from reaching Linus but only way to flush this
+> > > > issues out if any is to have this patch in linux-next or somewhere were they
+> > > > get a chance of being tested.
+> > > > 
+> > > 
+> > > Yep, I would like to see some additional testing around npu and get Alistair
+> > > Popple to comment as well
+> > 
+> > I think this patch is fine. The only one race window that it might make
+> > bigger should have no bad consequences.
+> > 
+> > > 
+> > > > Note that the second patch is always safe. I agree that this one might
+> > > > not be if hardware implementation is idiotic (well that would be my
+> > > > opinion and any opinion/point of view can be challenge :))
+> > > 
+> > > 
+> > > You mean the only_end variant that avoids shootdown after pmd/pte changes
+> > > that avoid the _start/_end and have just the only_end variant? That seemed
+> > > reasonable to me, but I've not tested it or evaluated it in depth
+> > 
+> > Yes, patch 2/2 in this serie is definitly fine. It invalidate the device
+> > TLB right after clearing pte entry and avoid latter unecessary invalidation
+> > of same TLB.
+> > 
+> > Jérôme
+> 
+> Balbir Singh.
+> 
