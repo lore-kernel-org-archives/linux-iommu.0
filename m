@@ -1,44 +1,80 @@
-From: Colin King <colin.king@canonical.com>
-Subject: [PATCH] iommu/amd: remove unused variable flush_addr
-Date: Sun, 22 Oct 2017 13:49:45 +0200
-Message-ID: <20171022114945.1479-1-colin.king@canonical.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Parental Leave and IOMMU Maintenance
+Date: Sun, 22 Oct 2017 15:06:05 +0200
+Message-ID: <20171022130604.343fqhqb6ca4g3vj@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============7148817395717208392=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Colin Ian King <colin.king@canonical.com>
 
-Variable flush_addr is being assigned but is never read; it
-is redundant and can be removed. Cleans up the clang warning:
+--===============7148817395717208392==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2fu23gh4ctfhv3oc"
+Content-Disposition: inline
 
-drivers/iommu/amd_iommu.c:2388:2: warning: Value stored to 'flush_addr'
-is never read
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/iommu/amd_iommu.c | 2 --
- 1 file changed, 2 deletions(-)
+--2fu23gh4ctfhv3oc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 5a72f40d6532..a99d41fc3a1d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2382,11 +2382,9 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
- 			   size_t size,
- 			   int dir)
- {
--	dma_addr_t flush_addr;
- 	dma_addr_t i, start;
- 	unsigned int pages;
- 
--	flush_addr = dma_addr;
- 	pages = iommu_num_pages(dma_addr, size, PAGE_SIZE);
- 	dma_addr &= PAGE_MASK;
- 	start = dma_addr;
--- 
-2.14.1
+Hi,
+
+after the birth of my second son last week I am taking a parental leave
+until the end of the year. During this time Alex Williamson will take
+over the maintenance of the IOMMU-code in the Linux kernel.
+
+I will be back in January 2018. Until then please send all iommu patches
+and fixes to Alex. He will review them and decide what is ready to go
+upstream. And don't send anything to him that you wouldn't send me ;)
+
+Bye bye and see you all next year!
+
+Regards,
+
+	Joerg
+
+
+--2fu23gh4ctfhv3oc
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJZ7Je8AAoJECvwRC2XARrjzcwP/23EQgi+Qexnw1lSocY55UMH
+imFsljIJNM5WnrRlaKSaLtiV0doTGBDntwRu/UCAErJoqXg76w4QkfdqV8AEmQSh
+cJ7GiKoc6YMkR2RiVHlnDvbzYPHXcJz0aWC7lmIMQ2xU5YXEoo32HmKqaRyPzR55
++xCwaHdjZcEvM5Hf2TI7Z+XtH/6zufxggI3uCEK2ZInbnfYvnOXMbMBDhaA7BSkj
+WnwvaDFhcq/Tm+ygSzA/FvblVTNChTlp57dMvayGF40spPmMAXAoS3UtHCnuv214
+eaSzC1LvSdSrFpahQG8hMyvn/Zs08b/nZ0pZkfxGzOqbchIojuepnQEVgQ0fNlJf
+MaXze/pNEi1ZG2pInDZJuNR2QxKz1g0Guwc0nN0wb17lT74rk8CcviqrdPudFH8L
+p0lMhZB5yuuyzh3zLYBaiduy8xtWpa4db/0jBdJVG7/8iWsGClQaOJZFKyhd9OJQ
+zOgytPRkDf/z2SHEy5/9hDefhbURogqRrCy9XXB7y1EBa9ScH08edm2g/c8CxLMA
+ONdmK6U/ATX8Nh4ue4xF8/vckATWomeM34onAIhrmbHbrYqwf3XoHCFwXCzU4R55
+PKuZScCxWTJ0gangeuPcwkSfDq7nKBMwvsOVKwVQzl74jI3U3j/FIqQmDVQi7jkX
+ba6MwHvswn3lUraMYekG
+=3ISI
+-----END PGP SIGNATURE-----
+
+--2fu23gh4ctfhv3oc--
+
+--===============7148817395717208392==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7148817395717208392==--
