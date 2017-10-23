@@ -1,136 +1,121 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Mon, 23 Oct 2017 14:00:07 +0100
-Message-ID: <8539601d-ef7a-8dd0-2fc7-51240c292678@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
-	<0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
-	<c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
-	<8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
-	<20171012152803.GA3027@jcrouse-lnx.qualcomm.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [PATCH 1/2] mm/mmu_notifier: avoid double notification when it
+ is useless v2
+Date: Mon, 23 Oct 2017 16:35:01 -0400
+Message-ID: <20171023203501.GA9371@redhat.com>
+References: <20171017031003.7481-1-jglisse@redhat.com>
+ <20171017031003.7481-2-jglisse@redhat.com>
+ <20171019140426.21f51957@MiWiFi-R3-srv>
+ <20171019032811.GC5246@redhat.com>
+ <CAKTCnz=5GL_Bbu=kqywgW98uxpvYqCo2+KyzzGb67BmnKju3bw@mail.gmail.com>
+ <20171019165823.GA3044@redhat.com>
+ <1508565280.5662.6.camel@gmail.com>
+ <20171021154703.GA30458@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171012152803.GA3027-9PYrDHPZ2Orvke4nUoYGnHL1okKdlPRT@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-next-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20171021154703.GA30458@redhat.com>
+Sender: linux-next-owner@vger.kernel.org
+To: Balbir Singh <bsingharora@gmail.com>
+Cc: linux-mm <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrea Arcangeli <aarcange@redhat.com>, Nadav Amit <nadav.amit@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Donnellan <andrew.donnellan@au1.ibm.com>, iommu@lists.linux-foundation.org, "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev@lists.ozlabs.org>, linux-next <linux-next@vger.kernel.>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jordan,
+On Sat, Oct 21, 2017 at 11:47:03AM -0400, Jerome Glisse wrote:
+> On Sat, Oct 21, 2017 at 04:54:40PM +1100, Balbir Singh wrote:
+> > On Thu, 2017-10-19 at 12:58 -0400, Jerome Glisse wrote:
+> > > On Thu, Oct 19, 2017 at 09:53:11PM +1100, Balbir Singh wrote:
+> > > > On Thu, Oct 19, 2017 at 2:28 PM, Jerome Glisse <jglisse@redhat.com> wrote:
+> > > > > On Thu, Oct 19, 2017 at 02:04:26PM +1100, Balbir Singh wrote:
+> > > > > > On Mon, 16 Oct 2017 23:10:02 -0400
+> > > > > > jglisse@redhat.com wrote:
+> > > > > > > From: Jérôme Glisse <jglisse@redhat.com>
 
-[Lots of IOMMU people have been dropped from Cc, I've tried to add them back]
+[...]
 
-On 12/10/17 16:28, Jordan Crouse wrote:
-> On Thu, Oct 12, 2017 at 01:55:32PM +0100, Jean-Philippe Brucker wrote:
->> On 12/10/17 13:05, Yisheng Xie wrote:
->> [...]
->>>>>> * An iommu_process can be bound to multiple domains, and a domain can have
->>>>>>   multiple iommu_process.
->>>>> when bind a task to device, can we create a single domain for it? I am thinking
->>>>> about process management without shared PT(for some device only support PASID
->>>>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
->>>>> Do you have any idea about this?
->>>>
->>>> A device always has to be in a domain, as far as I know. Not supporting
->>>> PRI forces you to pin down all user mappings (or just the ones you use for
->>>> DMA) but you should sill be able to share PT. Now if you don't support
->>>> shared PT either, but only PASID, then you'll have to use io-pgtable and a
->>>> new map/unmap API on an iommu_process. I don't understand your concern
->>>> though, how would the link between process and domains prevent this use-case?
->>>>
->>> So you mean that if an iommu_process bind to multiple devices it should create
->>> multiple io-pgtables? or just share the same io-pgtable?
->>
->> I don't know to be honest, I haven't thought much about the io-pgtable
->> case, I'm all about sharing the mm :)
->>
->> It really depends on what the user (GPU driver I assume) wants. I think
->> that if you're not sharing an mm with the device, then you're trying to
->> hide parts of the process to the device, so you'd also want the
->> flexibility of having different io-pgtables between devices. Different
->> devices accessing isolated parts of the process requires separate io-pgtables.
+> > > > > > > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> > > > > > > index c037d3d34950..ff5bc647b51d 100644
+> > > > > > > --- a/mm/huge_memory.c
+> > > > > > > +++ b/mm/huge_memory.c
+> > > > > > > @@ -1186,8 +1186,15 @@ static int do_huge_pmd_wp_page_fallback(struct vm_fault *vmf, pmd_t orig_pmd,
+> > > > > > >             goto out_free_pages;
+> > > > > > >     VM_BUG_ON_PAGE(!PageHead(page), page);
+> > > > > > > 
+> > > > > > > +   /*
+> > > > > > > +    * Leave pmd empty until pte is filled note we must notify here as
+> > > > > > > +    * concurrent CPU thread might write to new page before the call to
+> > > > > > > +    * mmu_notifier_invalidate_range_end() happens which can lead to a
+> > > > > > > +    * device seeing memory write in different order than CPU.
+> > > > > > > +    *
+> > > > > > > +    * See Documentation/vm/mmu_notifier.txt
+> > > > > > > +    */
+> > > > > > >     pmdp_huge_clear_flush_notify(vma, haddr, vmf->pmd);
+> > > > > > > -   /* leave pmd empty until pte is filled */
+> > > > > > > 
+> > > > > > >     pgtable = pgtable_trans_huge_withdraw(vma->vm_mm, vmf->pmd);
+> > > > > > >     pmd_populate(vma->vm_mm, &_pmd, pgtable);
+> > > > > > > @@ -2026,8 +2033,15 @@ static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
+> > > > > > >     pmd_t _pmd;
+> > > > > > >     int i;
+> > > > > > > 
+> > > > > > > -   /* leave pmd empty until pte is filled */
+> > > > > > > -   pmdp_huge_clear_flush_notify(vma, haddr, pmd);
+> > > > > > > +   /*
+> > > > > > > +    * Leave pmd empty until pte is filled note that it is fine to delay
+> > > > > > > +    * notification until mmu_notifier_invalidate_range_end() as we are
+> > > > > > > +    * replacing a zero pmd write protected page with a zero pte write
+> > > > > > > +    * protected page.
+> > > > > > > +    *
+> > > > > > > +    * See Documentation/vm/mmu_notifier.txt
+> > > > > > > +    */
+> > > > > > > +   pmdp_huge_clear_flush(vma, haddr, pmd);
+> > > > > > 
+> > > > > > Shouldn't the secondary TLB know if the page size changed?
+> > > > > 
+> > > > > It should not matter, we are talking virtual to physical on behalf
+> > > > > of a device against a process address space. So the hardware should
+> > > > > not care about the page size.
+> > > > > 
+> > > > 
+> > > > Does that not indicate how much the device can access? Could it try
+> > > > to access more than what is mapped?
+> > > 
+> > > Assuming device has huge TLB and 2MB huge page with 4K small page.
+> > > You are going from one 1 TLB covering a 2MB zero page to 512 TLB
+> > > each covering 4K. Both case is read only and both case are pointing
+> > > to same data (ie zero).
+> > > 
+> > > It is fine to delay the TLB invalidate on the device to the call of
+> > > mmu_notifier_invalidate_range_end(). The device will keep using the
+> > > huge TLB for a little longer but both CPU and device are looking at
+> > > same data.
+> > > 
+> > > Now if there is a racing thread that replace one of the 512 zeor page
+> > > after the split but before mmu_notifier_invalidate_range_end() that
+> > > code path would call mmu_notifier_invalidate_range() before changing
+> > > the pte to point to something else. Which should shoot down the device
+> > > TLB (it would be a serious device bug if this did not work).
+> > 
+> > OK.. This seems reasonable, but I'd really like to see if it can be
+> > tested
 > 
-> In our specific Snapdragon use case the GPU is the only entity that cares about
-> process specific io-pgtables.  Everything else (display, video, camera) is happy
-> using a global io-ptgable.  The reasoning is that the GPU is programmable from
-> user space and can be easily used to copy data whereas the other use cases have
-> mostly fixed functions.
-> 
-> Even if different devices did want to have a process specific io-pgtable I doubt
-> we would share them.  Every device uses the IOMMU differently and the magic
-> needed to share a io-pgtable between (for example) a GPU and a DSP would be
-> prohibitively complicated.
-> 
-> Jordan
+> Well hard to test, many factors first each device might react differently.
+> Device that only store TLB at 4k granularity are fine. Clever device that
+> can store TLB for 4k, 2M, ... can ignore an invalidation that is smaller
+> than their TLB entry ie getting a 4K invalidation would not invalidate a
+> 2MB TLB entry in the device. I consider this as buggy. I will go look at
+> the PCIE ATS specification one more time and see if there is any wording
+> related that. I might bring up a question to the PCIE standard body if not.
 
+So inside PCIE ATS there is the definition of "minimum translation or
+invalidate size" which says 4096 bytes. So my understanding is that
+hardware must support 4K invalidation in all the case and thus we shoud
+be safe from possible hazard above.
 
+But none the less i will repost without the optimization for huge page
+to be more concervative as anyway we want to be correct before we care
+about last bit of optimization.
 
-More context here:
-https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg20368.html
-
-So to summarize the Snapdragon case, if I understand correctly you need
-two additional features:
-
-(1) A way to create process address spaces, that are not bound to an mm
-but to a separate io-pgtable. And a way to map/unmap these contexts.
-
-(2) A way to obtain the PGD in order to program it into the GPU. And also
-the ASID I suppose? What about TCR and MAIR?
-
-For (1), I can see some value in isolating process contexts with
-io-pgtable without going all the way and sharing the mm. The IOVA=VA
-use-case feels a bit weak. But it does provide better isolation than
-dma_map/unmap, if the GPU is in charge of PASIDs then two processes that
-execute code on the GPU cannot access each others' DMA buffers. Maybe
-other users will want that feature (but they really should be using bind_mm!).
-
-In next version I'm going to replace iommu_process_bind by something like
-iommu_sva_bind_mm, which reduces the scope of the API I'm introducing and
-doesn't fit your case anymore. What you need is a shortcut into the PASID
-allocator, a way to allocate a private PASID with io-pgtables instead of
-one backed by an mm. Something like:
-
-iommu_sva_alloc_pasid(domain, dev) -> pasid
-iommu_sva_map(pasid, iova, size, flags)
-iommu_sva_unmap(pasid, iova, size)
-iommu_sva_free_pasid(domain, pasid)
-
-Then for (2) the GPU is tightly integrated into the SMMU and can switch
-contexts. I might be wrong but I don't see this case becoming standard as
-new implementations move to PASIDs, we shouldn't spend too much time
-making it generic. But to make it fit into the PASID API, how about the
-following.
-
-We provide a backdoor to the GPU driver, allowing it to register PASID ops
-into SMMUv2 driver:
-
-struct smmuv2_pasid_ops {
-	int (*install_pasid)(struct iommu_domain, int pasid, ttbr, asid
-			     and whatnot);
-	void (*remove_pasid)(struct iommu_domain, int pasid);
-}
-
-On PASID-capable IOMMUs, iommu_sva_alloc_pasid would install a context
-descriptor into the PASID tables (owned by the IOMMU), pointing to the
-io-pgtable. As SMMUv2 doesn't support PASID, iommu_sva_alloc_pasid
-wouldn't actually install a context descriptor but instead call back into
-the GPU driver with install_pasid. The GPU can then do its thing, call
-sva_map/unmap, and switch contexts.
-
-The good thing is that (1) and (2) are separate, so you get the same
-callbacks if you're using iommu_sva_bind_mm instead of the private pasid
-thing.
-
-Thanks,
-Jean
+Cheers,
+Jérôme
