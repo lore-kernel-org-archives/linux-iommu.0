@@ -1,73 +1,54 @@
-From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
-Subject: RE: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound traffic
-Date: Mon, 23 Oct 2017 09:06:03 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6DD009F05A@AcuExch.aculab.com>
-References: <1507761269-7017-6-git-send-email-jim2101024@gmail.com>
-	<589c04cb-061b-a453-3188-79324a02388e@arm.com>
-	<20171017081422.GA19475@lst.de>
-	<CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
-	<20171018065316.GA11183@lst.de>
-	<CANCKTBv+yiCNsrnx3m+W9wPqC4NdKPZ2p=zLtSa8fX6v1rPcYQ@mail.gmail.com>
-	<20171019091644.GA14983@lst.de>
-	<CANCKTBuaTD29My77QfOeUmtZfLAmmJXUYe6QvBW+uoH2Kb+tAQ@mail.gmail.com>
-	<20171020073730.GA12937@lst.de>
-	<CANCKTBsRRkwNMrxWjtgxbyZqT6NOxPX0NHDbnEO2BMjj8oVtpg@mail.gmail.com>
-	<20171020145752.GA4694@lst.de>
-	<CANCKTBtxp9gSdndKAZ7xGA+VozQsn2PX_-9P8A22_5Matbb7-w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CANCKTBtxp9gSdndKAZ7xGA+VozQsn2PX_-9P8A22_5Matbb7-w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Jim Quinlan' <jim2101024-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Linux-MIPS <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Gregory Fong <gregory.0xf0-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFC] virtio-iommu version 0.5
+Date: Mon, 23 Oct 2017 10:32:41 +0100
+Message-ID: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
+Return-path: <kvm-owner@vger.kernel.org>
+Sender: kvm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, bharat.bhushan@nxp.com, peterx@redhat.com, kevin.tian@intel.com, Jayachandran.Nair@cavium.com, ashok.raj@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jim Quinlan
-> Sent: 20 October 2017 16:28
-> On Fri, Oct 20, 2017 at 10:57 AM, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
-> > On Fri, Oct 20, 2017 at 10:41:56AM -0400, Jim Quinlan wrote:
-> >> I am not sure I understand your comment -- the size of the request
-> >> shouldn't be a factor.  Let's look at your example of the DMA request
-> >> of 3fffff00 to 4000000f (physical memory).  Lets say it is for 15
-> >> pages.  If we block out  the last page [0x3ffff000..0x3fffffff] from
-> >> what is available, there is no 15 page span that can happen across the
-> >> 0x40000000 boundary.  For SG, there can be no merge that connects a
-> >> page from one region to another region.  Can you give an example of
-> >> the scenario you are thinking of?
-> >
-> > What prevents a merge from say the regions of
-> > 0....3fffffff and 40000000....7fffffff?
-> 
-> Huh? [0x3ffff000...x3ffffff] is not available to be used. Drawing from
-> the original example, we now have to tell Linux that these are now our
-> effective memory regions:
-> 
->       memc0-a@[        0....3fffefff] <=> pci@[        0....3fffefff]
->       memc0-b@[100000000...13fffefff] <=> pci@[ 40000000....7fffefff]
->       memc1-a@[ 40000000....7fffefff] <=> pci@[ 80000000....bfffefff]
->       memc1-b@[300000000...33fffefff] <=> pci@[ c0000000....ffffefff]
->       memc2-a@[ 80000000....bfffefff] <=> pci@[100000000...13fffefff]
->       memc2-b@[c00000000...c3fffffff] <=> pci@[140000000...17fffffff]
-> 
-> This leaves a one-page gap between phsyical memory regions which would
-> normally be contiguous. One cannot have a dma alloc that spans any two
-> regions.  This is a drastic step, but I don't see an alternative.
-> Perhaps  I may be missing what you are saying...
+This is version 0.5 of the virtio-iommu specification, the paravirtualized
+IOMMU. This version addresses feedback from v0.4 and adds an event virtqueue.
+Please find the specification, LaTeX sources and pdf, at:
+git://linux-arm.org/virtio-iommu.git viommu/v0.5
+http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.5/virtio-iommu-v0.5.pdf
 
-Isn't this all unnecessary?
-Both kmalloc() and dma_alloc() are constrained to allocate memory
-that doesn't cross an address boundary that is larger than the size.
-So if you allocate 16k it won't cross a 16k physical address boundary.
+A detailed changelog since v0.4 follows. You can find the pdf diff at:
+http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/diffs/virtio-iommu-pdf-diff-v0.4-v0.5.pdf
 
-	David
+* Add an event virtqueue for the device to report translation faults to
+  the driver. For the moment only unrecoverable faults are available but
+  future versions will extend it.
+* Simplify PROBE request by removing the ack part, and flattening RESV
+  properties.
+* Rename "address space" to "domain". The change might seem futile but
+  allows to introduce PASIDs and other features cleanly in the next
+  versions. In the same vein, the few remaining "device" occurrences were
+  replaced by "endpoint", to avoid any confusion with "the device"
+  referring to the virtio device across the document.
+* Add implementation notes for RESV_MEM properties.
+* Update ACPI table definition.
+* Fix typos and clarify a few things.
+
+I will publish the Linux driver for v0.5 shortly. Then for next versions
+I'll focus on optimizations and adding support for hardware acceleration.
+
+Existing implementations are simple and can certainly be optimized, even
+without architectural changes. But the architecture itself can also be
+improved in a number of ways. Currently it is designed to work well with
+VFIO. However, having explicit MAP requests is less efficient* than page
+tables for emulated and PV endpoints, and the current architecture doesn't
+address this. Binding page tables is an obvious way to improve throughput
+in that case, but we can explore cleverer (and possibly simpler) ways to
+do it.
+
+So first we'll work on getting the base device and driver merged, then
+we'll analyze and compare several ideas for improving performance.
+
+Thanks,
+Jean
+
+* I have yet to study this behaviour, and would be interested in any
+prior art on the subject of analyzing devices DMA patterns (virtio and
+others)
