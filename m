@@ -1,121 +1,73 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [PATCH 1/2] mm/mmu_notifier: avoid double notification when it
- is useless v2
-Date: Mon, 23 Oct 2017 16:35:01 -0400
-Message-ID: <20171023203501.GA9371@redhat.com>
-References: <20171017031003.7481-1-jglisse@redhat.com>
- <20171017031003.7481-2-jglisse@redhat.com>
- <20171019140426.21f51957@MiWiFi-R3-srv>
- <20171019032811.GC5246@redhat.com>
- <CAKTCnz=5GL_Bbu=kqywgW98uxpvYqCo2+KyzzGb67BmnKju3bw@mail.gmail.com>
- <20171019165823.GA3044@redhat.com>
- <1508565280.5662.6.camel@gmail.com>
- <20171021154703.GA30458@redhat.com>
+From: "Zhi, Yong" <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Mon, 23 Oct 2017 21:24:50 +0000
+Message-ID: <C193D76D23A22742993887E6D207B54D1AE2BC75@ORSMSX106.amr.corp.intel.com>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+	<20171020090949.nhv74sfb5jjrtxhx@valkosipuli.retiisi.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-next-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171021154703.GA30458@redhat.com>
-Sender: linux-next-owner@vger.kernel.org
-To: Balbir Singh <bsingharora@gmail.com>
-Cc: linux-mm <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Andrea Arcangeli <aarcange@redhat.com>, Nadav Amit <nadav.amit@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel <jroedel@suse.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse <dwmw2@infradead.org>, Alistair Popple <alistair@popple.id.au>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Donnellan <andrew.donnellan@au1.ibm.com>, iommu@lists.linux-foundation.org, "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev@lists.ozlabs.org>, linux-next <linux-next@vger.kernel.>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171020090949.nhv74sfb5jjrtxhx-S+BSfZ9RZZmRSg0ZkenSGLdO1Tsj/99ntUK59QYPAWc@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sakari Ailus <sakari.ailus-X3B1VOXEql0@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "Hu, Jerry W" <jerry.w.hu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Mani,
+	Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Oct 21, 2017 at 11:47:03AM -0400, Jerome Glisse wrote:
-> On Sat, Oct 21, 2017 at 04:54:40PM +1100, Balbir Singh wrote:
-> > On Thu, 2017-10-19 at 12:58 -0400, Jerome Glisse wrote:
-> > > On Thu, Oct 19, 2017 at 09:53:11PM +1100, Balbir Singh wrote:
-> > > > On Thu, Oct 19, 2017 at 2:28 PM, Jerome Glisse <jglisse@redhat.com> wrote:
-> > > > > On Thu, Oct 19, 2017 at 02:04:26PM +1100, Balbir Singh wrote:
-> > > > > > On Mon, 16 Oct 2017 23:10:02 -0400
-> > > > > > jglisse@redhat.com wrote:
-> > > > > > > From: Jérôme Glisse <jglisse@redhat.com>
+Hi, Sakari,
 
-[...]
-
-> > > > > > > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> > > > > > > index c037d3d34950..ff5bc647b51d 100644
-> > > > > > > --- a/mm/huge_memory.c
-> > > > > > > +++ b/mm/huge_memory.c
-> > > > > > > @@ -1186,8 +1186,15 @@ static int do_huge_pmd_wp_page_fallback(struct vm_fault *vmf, pmd_t orig_pmd,
-> > > > > > >             goto out_free_pages;
-> > > > > > >     VM_BUG_ON_PAGE(!PageHead(page), page);
-> > > > > > > 
-> > > > > > > +   /*
-> > > > > > > +    * Leave pmd empty until pte is filled note we must notify here as
-> > > > > > > +    * concurrent CPU thread might write to new page before the call to
-> > > > > > > +    * mmu_notifier_invalidate_range_end() happens which can lead to a
-> > > > > > > +    * device seeing memory write in different order than CPU.
-> > > > > > > +    *
-> > > > > > > +    * See Documentation/vm/mmu_notifier.txt
-> > > > > > > +    */
-> > > > > > >     pmdp_huge_clear_flush_notify(vma, haddr, vmf->pmd);
-> > > > > > > -   /* leave pmd empty until pte is filled */
-> > > > > > > 
-> > > > > > >     pgtable = pgtable_trans_huge_withdraw(vma->vm_mm, vmf->pmd);
-> > > > > > >     pmd_populate(vma->vm_mm, &_pmd, pgtable);
-> > > > > > > @@ -2026,8 +2033,15 @@ static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
-> > > > > > >     pmd_t _pmd;
-> > > > > > >     int i;
-> > > > > > > 
-> > > > > > > -   /* leave pmd empty until pte is filled */
-> > > > > > > -   pmdp_huge_clear_flush_notify(vma, haddr, pmd);
-> > > > > > > +   /*
-> > > > > > > +    * Leave pmd empty until pte is filled note that it is fine to delay
-> > > > > > > +    * notification until mmu_notifier_invalidate_range_end() as we are
-> > > > > > > +    * replacing a zero pmd write protected page with a zero pte write
-> > > > > > > +    * protected page.
-> > > > > > > +    *
-> > > > > > > +    * See Documentation/vm/mmu_notifier.txt
-> > > > > > > +    */
-> > > > > > > +   pmdp_huge_clear_flush(vma, haddr, pmd);
-> > > > > > 
-> > > > > > Shouldn't the secondary TLB know if the page size changed?
-> > > > > 
-> > > > > It should not matter, we are talking virtual to physical on behalf
-> > > > > of a device against a process address space. So the hardware should
-> > > > > not care about the page size.
-> > > > > 
-> > > > 
-> > > > Does that not indicate how much the device can access? Could it try
-> > > > to access more than what is mapped?
-> > > 
-> > > Assuming device has huge TLB and 2MB huge page with 4K small page.
-> > > You are going from one 1 TLB covering a 2MB zero page to 512 TLB
-> > > each covering 4K. Both case is read only and both case are pointing
-> > > to same data (ie zero).
-> > > 
-> > > It is fine to delay the TLB invalidate on the device to the call of
-> > > mmu_notifier_invalidate_range_end(). The device will keep using the
-> > > huge TLB for a little longer but both CPU and device are looking at
-> > > same data.
-> > > 
-> > > Now if there is a racing thread that replace one of the 512 zeor page
-> > > after the split but before mmu_notifier_invalidate_range_end() that
-> > > code path would call mmu_notifier_invalidate_range() before changing
-> > > the pte to point to something else. Which should shoot down the device
-> > > TLB (it would be a serious device bug if this did not work).
-> > 
-> > OK.. This seems reasonable, but I'd really like to see if it can be
-> > tested
+> -----Original Message-----
+> From: linux-media-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:linux-media-
+> owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Sakari Ailus
+> Sent: Friday, October 20, 2017 2:10 AM
+> To: Zhi, Yong <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org; Zheng, Jian
+> Xu <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Mani, Rajmohan
+> <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Toivonen, Tuukka
+> <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Hu, Jerry W <jerry.w.hu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>;
+> arnd-r2nGTMty4D4@public.gmane.org; hch-jcswGhMUV9g@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org
+> Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
 > 
-> Well hard to test, many factors first each device might react differently.
-> Device that only store TLB at 4k granularity are fine. Clever device that
-> can store TLB for 4k, 2M, ... can ignore an invalidation that is smaller
-> than their TLB entry ie getting a 4K invalidation would not invalidate a
-> 2MB TLB entry in the device. I consider this as buggy. I will go look at
-> the PCIE ATS specification one more time and see if there is any wording
-> related that. I might bring up a question to the PCIE standard body if not.
+> Hi Yong,
+> 
+> On Tue, Oct 17, 2017 at 10:46:48PM -0500, Yong Zhi wrote:
+> > This patchset adds support for the Intel IPU3 (Image Processing Unit)
+> > ImgU which is essentially a modern memory-to-memory ISP. It implements
+> > raw Bayer to YUV image format conversion as well as a large number of
+> > other pixel processing algorithms for improving the image quality.
+> >
+> > Meta data formats are defined for image statistics (3A, i.e. automatic
+> > white balance, exposure and focus, histogram and local area contrast
+> > enhancement) as well as for the pixel processing algorithm parameters.
+> > The documentation for these formats is currently not included in the
+> > patchset but will be added in a future version of this set.
+> >
+> > The algorithm parameters need to be considered specific to a given
+> > frame and typically a large number of these parameters change on frame
+> > to frame basis. Additionally, the parameters are highly structured
+> > (and not a flat space of independent configuration primitives). They
+> > also reflect the data structures used by the firmware and the
+> > hardware. On top of that, the algorithms require highly specialized
+> > user space to make meaningful use of them. For these reasons it has
+> > been chosen video buffers to pass
+> 
+> Do you have a to-do list for this patchset? I think it would be useful to
+> maintain one, in case not all the comments have been addressed.
+> 
 
-So inside PCIE ATS there is the definition of "minimum translation or
-invalidate size" which says 4096 bytes. So my understanding is that
-hardware must support 4K invalidation in all the case and thus we shoud
-be safe from possible hazard above.
+Sure, will add in next update.
 
-But none the less i will repost without the optimization for huge page
-to be more concervative as anyway we want to be correct before we care
-about last bit of optimization.
-
-Cheers,
-Jérôme
+> --
+> Sakari Ailus
+> e-mail: sakari.ailus-X3B1VOXEql0@public.gmane.org
