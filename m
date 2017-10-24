@@ -1,125 +1,74 @@
-From: Linu Cherian <linu.cherian@cavium.com>
-Subject: Re: [RFC] virtio-iommu version 0.5
-Date: Tue, 24 Oct 2017 22:28:59 +0530
-Message-ID: <20171024165859.GA24369@virtx40>
-References: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
- <20171024062704.GA23141@virtx40>
- <b878c366-6e43-aacc-c7f6-cabb3f91211e@arm.com>
+From: Jim Quinlan <jim2101024-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound traffic
+Date: Tue, 24 Oct 2017 14:08:12 -0400
+Message-ID: <CANCKTBu6H6thuK9F_6HBGhStaXSto7fwWv4V5oH8EdWQD0-1kQ@mail.gmail.com>
+References: <1507761269-7017-6-git-send-email-jim2101024@gmail.com>
+ <589c04cb-061b-a453-3188-79324a02388e@arm.com> <20171017081422.GA19475@lst.de>
+ <CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
+ <20171018065316.GA11183@lst.de> <CANCKTBv+yiCNsrnx3m+W9wPqC4NdKPZ2p=zLtSa8fX6v1rPcYQ@mail.gmail.com>
+ <20171019091644.GA14983@lst.de> <CANCKTBuaTD29My77QfOeUmtZfLAmmJXUYe6QvBW+uoH2Kb+tAQ@mail.gmail.com>
+ <20171020073730.GA12937@lst.de> <CANCKTBsRRkwNMrxWjtgxbyZqT6NOxPX0NHDbnEO2BMjj8oVtpg@mail.gmail.com>
+ <20171020145752.GA4694@lst.de> <CANCKTBtxp9gSdndKAZ7xGA+VozQsn2PX_-9P8A22_5Matbb7-w@mail.gmail.com>
+ <063D6719AE5E284EB5DD2968C1650D6DD009F05A@AcuExch.aculab.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <kvm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <b878c366-6e43-aacc-c7f6-cabb3f91211e@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Linu Cherian <linuc.decode@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, kevin.tian@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <063D6719AE5E284EB5DD2968C1650D6DD009F05A-VkEWCZq2GCInGFn1LkZF6NBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: David Laight <David.Laight-JxhZ9S5GRejQT0dZR+AlfA@public.gmane.org>
+Cc: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Linux-MIPS <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Gregory Fong <gregory.0xf0-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
-Thanks for your reply.
+On Mon, Oct 23, 2017 at 5:06 AM, David Laight <David.Laight-JxhZ9S5GRejQT0dZR+AlfA@public.gmane.org> wrote:
+> From: Jim Quinlan
+>> Sent: 20 October 2017 16:28
+>> On Fri, Oct 20, 2017 at 10:57 AM, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
+>> > On Fri, Oct 20, 2017 at 10:41:56AM -0400, Jim Quinlan wrote:
+>> >> I am not sure I understand your comment -- the size of the request
+>> >> shouldn't be a factor.  Let's look at your example of the DMA request
+>> >> of 3fffff00 to 4000000f (physical memory).  Lets say it is for 15
+>> >> pages.  If we block out  the last page [0x3ffff000..0x3fffffff] from
+>> >> what is available, there is no 15 page span that can happen across the
+>> >> 0x40000000 boundary.  For SG, there can be no merge that connects a
+>> >> page from one region to another region.  Can you give an example of
+>> >> the scenario you are thinking of?
+>> >
+>> > What prevents a merge from say the regions of
+>> > 0....3fffffff and 40000000....7fffffff?
+>>
+>> Huh? [0x3ffff000...x3ffffff] is not available to be used. Drawing from
+>> the original example, we now have to tell Linux that these are now our
+>> effective memory regions:
+>>
+>>       memc0-a@[        0....3fffefff] <=> pci@[        0....3fffefff]
+>>       memc0-b@[100000000...13fffefff] <=> pci@[ 40000000....7fffefff]
+>>       memc1-a@[ 40000000....7fffefff] <=> pci@[ 80000000....bfffefff]
+>>       memc1-b@[300000000...33fffefff] <=> pci@[ c0000000....ffffefff]
+>>       memc2-a@[ 80000000....bfffefff] <=> pci@[100000000...13fffefff]
+>>       memc2-b@[c00000000...c3fffffff] <=> pci@[140000000...17fffffff]
+>>
+>> This leaves a one-page gap between phsyical memory regions which would
+>> normally be contiguous. One cannot have a dma alloc that spans any two
+>> regions.  This is a drastic step, but I don't see an alternative.
+>> Perhaps  I may be missing what you are saying...
+>
+> Isn't this all unnecessary?
+> Both kmalloc() and dma_alloc() are constrained to allocate memory
+> that doesn't cross an address boundary that is larger than the size.
+> So if you allocate 16k it won't cross a 16k physical address boundary.
+>
+>         David
+>
+Hi David,  Christoph was also concerned about this:
 
-On Tue Oct 24, 2017 at 09:37:12AM +0100, Jean-Philippe Brucker wrote:
-> Hi Linu,
-> 
-> On 24/10/17 07:27, Linu Cherian wrote:
-> > Hi Jean,
-> > 
-> > On Mon Oct 23, 2017 at 10:32:41AM +0100, Jean-Philippe Brucker wrote:
-> >> This is version 0.5 of the virtio-iommu specification, the paravirtualized
-> >> IOMMU. This version addresses feedback from v0.4 and adds an event virtqueue.
-> >> Please find the specification, LaTeX sources and pdf, at:
-> >> git://linux-arm.org/virtio-iommu.git viommu/v0.5
-> >> http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.5/virtio-iommu-v0.5.pdf
-> >>
-> >> A detailed changelog since v0.4 follows. You can find the pdf diff at:
-> >> http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/diffs/virtio-iommu-pdf-diff-v0.4-v0.5.pdf
-> >>
-> >> * Add an event virtqueue for the device to report translation faults to
-> >>   the driver. For the moment only unrecoverable faults are available but
-> >>   future versions will extend it.
-> >> * Simplify PROBE request by removing the ack part, and flattening RESV
-> >>   properties.
-> >> * Rename "address space" to "domain". The change might seem futile but
-> >>   allows to introduce PASIDs and other features cleanly in the next
-> >>   versions. In the same vein, the few remaining "device" occurrences were
-> >>   replaced by "endpoint", to avoid any confusion with "the device"
-> >>   referring to the virtio device across the document.
-> >> * Add implementation notes for RESV_MEM properties.
-> >> * Update ACPI table definition.
-> >> * Fix typos and clarify a few things.
-> >>
-> >> I will publish the Linux driver for v0.5 shortly. Then for next versions
-> >> I'll focus on optimizations and adding support for hardware acceleration.
-> >>
-> >> Existing implementations are simple and can certainly be optimized, even
-> >> without architectural changes. But the architecture itself can also be
-> >> improved in a number of ways. Currently it is designed to work well with
-> >> VFIO. However, having explicit MAP requests is less efficient* than page
-> >> tables for emulated and PV endpoints, and the current architecture doesn't
-> >> address this. Binding page tables is an obvious way to improve throughput
-> >> in that case, but we can explore cleverer (and possibly simpler) ways to
-> >> do it.
-> >>
-> >> So first we'll work on getting the base device and driver merged, then
-> >> we'll analyze and compare several ideas for improving performance.
-> >>
-> >> Thanks,
-> >> Jean
-> >>
-> >> * I have yet to study this behaviour, and would be interested in any
-> >> prior art on the subject of analyzing devices DMA patterns (virtio and
-> >> others)
-> > 
-> > 
-> > From the spec,
-> > Under future extensions.
-> > 
-> > "Page Table Handover, to allow guests to manage their own page tables and share them with the MMU"
-> > 
-> > Had few questions on this.
-> > 
-> > 1. Did you mean SVM support for vfio-pci devices attached to guest processes here.
-> 
-> Yes, using the VFIO BIND and INVALIDATE ioctls that Intel is working on,
-> and adding requests in pretty much the same format to virtio-iommu.
-> 
-> > 2. Can you give some hints on how this is going to work , since virtio-iommu guest kernel 
-> >    driver need to create stage 1 page table as required by hardware which is not the case now. 
-> >    CMIIW. 
-> 
-> The virtio-iommu device advertises which PASID/page table format is
-> supported by the host (obtained via sysfs and communicated in the PROBE
-> request), then the guest binds page tables or PASID tables to a domain and
-> populates it. Binding page tables alone is easy because we already have
-> the required drivers in the guest (io-pgtable or arch/* for SVM) and code
-> in the host to manage PASID tables. But since the PASID table pointer is
-> translated by stage-2, it would requires a little more work in the host
-> for obtaining GPA buffers from the guest on demand.
-  Is this for resolving PCI PRI requests ?. 
-  IIUC, PCI PRI requests for devices owned by guest need to be resolved
-  by guest itself.
+"For the block world take a look at __blk_segment_map_sg which does the merging
+of contiguous pages into a single SG segment.  You'd have to override
+BIOVEC_PHYS_MERGEABLE to prevent this from happening in your supported
+architectures for the block layer."
 
-
- In addition the BIND
-> ioctl is different from the one used by VT-d, so this solution didn't get
-> much appreciation.
-
-Could you please share the links on this ?
-
-> 
-> The alternative is to bind PASID tables. 
-
-Sorry, i didnt get the difference here.
-
-It requires to factor the guest
-> PASID handling code into a library, which is difficult for SMMU. Luckily
-> I'm still working on adding PASID code for SMMUv3, so extracting it out of
-> the driver isn't a big overhead. The good thing about this solution is
-> that it reuses any specification work done for VFIO (and vice versa) and
-> any host driver change made for vSMMU/VT-d emulations.
-> 
-> Thanks,
-> Jean
-
--- 
-Linu cherian
+Do you consider this a non-issue as well or can this happen and span
+memory regions?
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
