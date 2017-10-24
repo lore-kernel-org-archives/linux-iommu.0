@@ -1,14 +1,14 @@
-From: geoff--- via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: AMD Ryzen KVM/NPT/IOMMU issue
-Date: Tue, 24 Oct 2017 16:15:24 +1100
-Message-ID: <cb2b1ee0a3b705e668ac3cf19cfa1ecc@hostfission.com>
-References: <b88fc14b230d7ecac6066bdd9e95be19@hostfission.com>
-Reply-To: geoff-9M2dFRIgpjGrDvn5mFPilA@public.gmane.org
+From: Linu Cherian <linuc.decode-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC] virtio-iommu version 0.5
+Date: Tue, 24 Oct 2017 11:57:04 +0530
+Message-ID: <20171024062704.GA23141@virtx40>
+References: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <b88fc14b230d7ecac6066bdd9e95be19-9M2dFRIgpjGrDvn5mFPilA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20171023093241.20113-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,71 +18,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, Jayachandran.Nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sunil.goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Further to this I have verified that IOMMU is working fine, traces and
-additional printk's added to the kernel module were used to check. All
-accesses are successful and hit the correct addresses.
+Hi Jean,
 
-However profiling under Windows shows there might be an issue with IRQs
-not reaching the guest. When FluidMark is running at 5fps I still see
-excellent system responsiveness with the CPU 90% idle and the GPU load
-at 6%.
+On Mon Oct 23, 2017 at 10:32:41AM +0100, Jean-Philippe Brucker wrote:
+> This is version 0.5 of the virtio-iommu specification, the paravirtualized
+> IOMMU. This version addresses feedback from v0.4 and adds an event virtqueue.
+> Please find the specification, LaTeX sources and pdf, at:
+> git://linux-arm.org/virtio-iommu.git viommu/v0.5
+> http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.5/virtio-iommu-v0.5.pdf
+> 
+> A detailed changelog since v0.4 follows. You can find the pdf diff at:
+> http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/diffs/virtio-iommu-pdf-diff-v0.4-v0.5.pdf
+> 
+> * Add an event virtqueue for the device to report translation faults to
+>   the driver. For the moment only unrecoverable faults are available but
+>   future versions will extend it.
+> * Simplify PROBE request by removing the ack part, and flattening RESV
+>   properties.
+> * Rename "address space" to "domain". The change might seem futile but
+>   allows to introduce PASIDs and other features cleanly in the next
+>   versions. In the same vein, the few remaining "device" occurrences were
+>   replaced by "endpoint", to avoid any confusion with "the device"
+>   referring to the virtio device across the document.
+> * Add implementation notes for RESV_MEM properties.
+> * Update ACPI table definition.
+> * Fix typos and clarify a few things.
+> 
+> I will publish the Linux driver for v0.5 shortly. Then for next versions
+> I'll focus on optimizations and adding support for hardware acceleration.
+> 
+> Existing implementations are simple and can certainly be optimized, even
+> without architectural changes. But the architecture itself can also be
+> improved in a number of ways. Currently it is designed to work well with
+> VFIO. However, having explicit MAP requests is less efficient* than page
+> tables for emulated and PV endpoints, and the current architecture doesn't
+> address this. Binding page tables is an obvious way to improve throughput
+> in that case, but we can explore cleverer (and possibly simpler) ways to
+> do it.
+> 
+> So first we'll work on getting the base device and driver merged, then
+> we'll analyze and compare several ideas for improving performance.
+> 
+> Thanks,
+> Jean
+> 
+> * I have yet to study this behaviour, and would be interested in any
+> prior art on the subject of analyzing devices DMA patterns (virtio and
+> others)
 
-When switching PhysX to CPU mode the GPU enters low power mode,
-indicating that the card is no longer in use. This would seem to
-confirm that the GPU is indeed in use by the PhysX API correctly.
 
-My assumption now is that the IRQs from the video card are getting lost.
+>From the spec,
+Under future extensions.
 
-I could be completely off base here but at this point it seems like the
-best way to proceed unless someone cares to comment.
+"Page Table Handover, to allow guests to manage their own page tables and share them with the MMU"
 
--Geoff
+Had few questions on this.
+
+1. Did you mean SVM support for vfio-pci devices attached to guest processes here.
+
+2. Can you give some hints on how this is going to work , since virtio-iommu guest kernel 
+   driver need to create stage 1 page table as required by hardware which is not the case now. 
+   CMIIW. 
 
 
-On 2017-10-24 10:49, geoff-9M2dFRIgpjGrDvn5mFPilA@public.gmane.org wrote:
-> Hi,
-> 
-> I realize this is an older thread but I have spent much of today trying 
-> to
-> diagnose the problem.
-> 
-> I have discovered how to reliably reproduce the problem with very 
-> little effort.
-> It seems that reproducing the issue has been hit and miss for people as 
-> it seems
-> to primarily affect games/programs that make use of nVidia PhysX. My
-> understanding of npt's inner workings is quite primitive but I have 
-> still spent
-> much of my time trying to diagnose the fault and identify the cause.
-> 
-> Using the free program FluidMark[1] it is possible to reproduce the 
-> issue, where
-> on a GTX 1080Ti the rendering rate drops to around 4 fps with npt 
-> turned on, but
-> if turned off the render rate is in excess of 60fps.
-> 
-> I have produced traces for with and without ntp enabled during these 
-> tests which
-> I can provide if it will help. So far I have been digging through how 
-> npt works
-> and trying to glean as much information as I can from the source and 
-> the AMD
-> specifications but much of this and how mmu works is very new to me so 
-> progress
-> is slow.
-> 
-> If anyone else has looked into this and has more information to share I 
-> would be
-> very interested.
-> 
-> Kind Regards,
-> Geoffrey McRae
-> HostFission
-> https://hostfission.com
-> 
-> 
-> [1]:
-> http://www.geeks3d.com/20130308/fluidmark-1-5-1-physx-benchmark-fluid-sph-simulation-opengl-download/
+-- 
+Linu cherian
