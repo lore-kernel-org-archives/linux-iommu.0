@@ -1,20 +1,16 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Wed, 25 Oct 2017 14:20:15 -0600
-Message-ID: <20171025202015.GA6159@jcrouse-lnx.qualcomm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
-	<0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
-	<c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
-	<8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
-	<20171012152803.GA3027@jcrouse-lnx.qualcomm.com>
-	<8539601d-ef7a-8dd0-2fc7-51240c292678@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v10] vfio: platform: reset: Add Broadcom FlexRM reset
+	module
+Date: Wed, 25 Oct 2017 23:37:30 +0200
+Message-ID: <20171025233730.797371a9@t450s.home>
+References: <1507008464-27236-1-git-send-email-anup.patel@broadcom.com>
+	<1507008464-27236-2-git-send-email-anup.patel@broadcom.com>
+	<CAALAos94pJsMorSOtBFCV_VyDYBBJwAqLQS_nY6o=e4G_Bs9qA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <8539601d-ef7a-8dd0-2fc7-51240c292678-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAALAos94pJsMorSOtBFCV_VyDYBBJwAqLQS_nY6o=e4G_Bs9qA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,137 +20,189 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 23, 2017 at 02:00:07PM +0100, Jean-Philippe Brucker wrote:
-> Hi Jordan,
+On Wed, 25 Oct 2017 11:19:21 +0530
+Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+
+> On Tue, Oct 3, 2017 at 10:57 AM, Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+> > This patch adds Broadcom FlexRM low-level reset for
+> > VFIO platform.
+> >
+> > It will do the following:
+> > 1. Disable/Deactivate each FlexRM ring
+> > 2. Flush each FlexRM ring
+> >
+> > The cleanup sequence for FlexRM rings is adapted from
+> > Broadcom FlexRM mailbox driver.
+> >
+> > Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> > Reviewed-by: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> > Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> > Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/vfio/platform/reset/Kconfig                |   9 ++
+> >  drivers/vfio/platform/reset/Makefile               |   1 +
+> >  .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 113 +++++++++++++++++++++
+> >  3 files changed, 123 insertions(+)
+> >  create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> >
+> > diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+> > index 70cccc5..392e3c0 100644
+> > --- a/drivers/vfio/platform/reset/Kconfig
+> > +++ b/drivers/vfio/platform/reset/Kconfig
+> > @@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
+> >           Enables the VFIO platform driver to handle reset for AMD XGBE
+> >
+> >           If you don't know what to do here, say N.
+> > +
+> > +config VFIO_PLATFORM_BCMFLEXRM_RESET
+> > +       tristate "VFIO support for Broadcom FlexRM reset"
+> > +       depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
+> > +       default ARCH_BCM_IPROC
+> > +       help
+> > +         Enables the VFIO platform driver to handle reset for Broadcom FlexRM
+> > +
+> > +         If you don't know what to do here, say N.
+> > diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
+> > index 93f4e23..8d9874b 100644
+> > --- a/drivers/vfio/platform/reset/Makefile
+> > +++ b/drivers/vfio/platform/reset/Makefile
+> > @@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
+> >
+> >  obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
+> >  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
+> > +obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
+> > diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> > new file mode 100644
+> > index 0000000..d45c3be
+> > --- /dev/null
+> > +++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
+> > @@ -0,0 +1,113 @@
+> > +/*
+> > + * Copyright (C) 2017 Broadcom
+> > + *
+> > + * This program is free software; you can redistribute it and/or
+> > + * modify it under the terms of the GNU General Public License as
+> > + * published by the Free Software Foundation version 2.
+> > + *
+> > + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+> > + * kind, whether express or implied; without even the implied warranty
+> > + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > + * GNU General Public License for more details.
+> > + */
+> > +
+> > +/*
+> > + * This driver provides reset support for Broadcom FlexRM ring manager
+> > + * to VFIO platform.
+> > + */
+> > +
+> > +#include <linux/delay.h>
+> > +#include <linux/device.h>
+> > +#include <linux/init.h>
+> > +#include <linux/io.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +
+> > +#include "vfio_platform_private.h"
+> > +
+> > +/* FlexRM configuration */
+> > +#define RING_REGS_SIZE                                 0x10000
+> > +#define RING_VER_MAGIC                                 0x76303031
+> > +
+> > +/* Per-Ring register offsets */
+> > +#define RING_VER                                       0x000
+> > +#define RING_CONTROL                                   0x034
+> > +#define RING_FLUSH_DONE                                        0x038
+> > +
+> > +/* Register RING_CONTROL fields */
+> > +#define CONTROL_FLUSH_SHIFT                            5
+> > +
+> > +/* Register RING_FLUSH_DONE fields */
+> > +#define FLUSH_DONE_MASK                                        0x1
+> > +
+> > +static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
+> > +{
+> > +       unsigned int timeout;
+> > +
+> > +       /* Disable/inactivate ring */
+> > +       writel_relaxed(0x0, ring + RING_CONTROL);
+> > +
+> > +       /* Set ring flush state */
+> > +       timeout = 1000; /* timeout of 1s */
+> > +       writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
+> > +       do {
+> > +               if (readl_relaxed(ring + RING_FLUSH_DONE) &
+> > +                   FLUSH_DONE_MASK)
+> > +                       break;
+> > +               mdelay(1);
+> > +       } while (--timeout);
+> > +       if (!timeout)
+> > +               return -ETIMEDOUT;
+> > +
+> > +       /* Clear ring flush state */
+> > +       timeout = 1000; /* timeout of 1s */
+> > +       writel_relaxed(0x0, ring + RING_CONTROL);
+> > +       do {
+> > +               if (!(readl_relaxed(ring + RING_FLUSH_DONE) &
+> > +                     FLUSH_DONE_MASK))
+> > +                       break;
+> > +               mdelay(1);
+> > +       } while (--timeout);
+> > +       if (!timeout)
+> > +               return -ETIMEDOUT;
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
+> > +{
+> > +       void __iomem *ring;
+> > +       int rc = 0, ret = 0, ring_num = 0;
+> > +       struct vfio_platform_region *reg = &vdev->regions[0];
+> > +
+> > +       /* Map FlexRM ring registers if not mapped */
+> > +       if (!reg->ioaddr) {
+> > +               reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
+> > +               if (!reg->ioaddr)
+> > +                       return -ENOMEM;
+> > +       }
+> > +
+> > +       /* Discover and shutdown each FlexRM ring */
+> > +       for (ring = reg->ioaddr;
+> > +            ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
+> > +               if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC) {
+> > +                       rc = vfio_platform_bcmflexrm_shutdown(ring);
+> > +                       if (rc) {
+> > +                               dev_warn(vdev->device,
+> > +                                        "FlexRM ring%d shutdown error %d\n",
+> > +                                        ring_num, rc);
+> > +                               ret |= rc;
+> > +                       }
+> > +                       ring_num++;
+> > +               }
+> > +       }
+> > +
+> > +       return ret;
+> > +}
+> > +
+> > +module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
+> > +                         vfio_platform_bcmflexrm_reset);
+> > +
+> > +MODULE_LICENSE("GPL v2");
+> > +MODULE_AUTHOR("Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>");
+> > +MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
+> > --
+> > 2.7.4
+> >  
 > 
-> [Lots of IOMMU people have been dropped from Cc, I've tried to add them back]
+> Hi All,
 > 
-> On 12/10/17 16:28, Jordan Crouse wrote:
-> > On Thu, Oct 12, 2017 at 01:55:32PM +0100, Jean-Philippe Brucker wrote:
-> >> On 12/10/17 13:05, Yisheng Xie wrote:
-> >> [...]
-> >>>>>> * An iommu_process can be bound to multiple domains, and a domain can have
-> >>>>>>   multiple iommu_process.
-> >>>>> when bind a task to device, can we create a single domain for it? I am thinking
-> >>>>> about process management without shared PT(for some device only support PASID
-> >>>>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
-> >>>>> Do you have any idea about this?
-> >>>>
-> >>>> A device always has to be in a domain, as far as I know. Not supporting
-> >>>> PRI forces you to pin down all user mappings (or just the ones you use for
-> >>>> DMA) but you should sill be able to share PT. Now if you don't support
-> >>>> shared PT either, but only PASID, then you'll have to use io-pgtable and a
-> >>>> new map/unmap API on an iommu_process. I don't understand your concern
-> >>>> though, how would the link between process and domains prevent this use-case?
-> >>>>
-> >>> So you mean that if an iommu_process bind to multiple devices it should create
-> >>> multiple io-pgtables? or just share the same io-pgtable?
-> >>
-> >> I don't know to be honest, I haven't thought much about the io-pgtable
-> >> case, I'm all about sharing the mm :)
-> >>
-> >> It really depends on what the user (GPU driver I assume) wants. I think
-> >> that if you're not sharing an mm with the device, then you're trying to
-> >> hide parts of the process to the device, so you'd also want the
-> >> flexibility of having different io-pgtables between devices. Different
-> >> devices accessing isolated parts of the process requires separate io-pgtables.
-> > 
-> > In our specific Snapdragon use case the GPU is the only entity that cares about
-> > process specific io-pgtables.  Everything else (display, video, camera) is happy
-> > using a global io-ptgable.  The reasoning is that the GPU is programmable from
-> > user space and can be easily used to copy data whereas the other use cases have
-> > mostly fixed functions.
-> > 
-> > Even if different devices did want to have a process specific io-pgtable I doubt
-> > we would share them.  Every device uses the IOMMU differently and the magic
-> > needed to share a io-pgtable between (for example) a GPU and a DSP would be
-> > prohibitively complicated.
-> > 
-> > Jordan
-> 
-> 
-> 
-> More context here:
-> https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg20368.html
-> 
-> So to summarize the Snapdragon case, if I understand correctly you need
-> two additional features:
-> 
-> (1) A way to create process address spaces, that are not bound to an mm
-> but to a separate io-pgtable. And a way to map/unmap these contexts.
+> Any comments on this one ?
 
-Correct.
+Seems ok to me and you've already got Eric's review, applied to
+vfio/platform branch for v4.15.  Thanks,
 
-> (2) A way to obtain the PGD in order to program it into the GPU. And also
-> the ASID I suppose? What about TCR and MAIR?
->
-PGD and ASID.  Not the TCR and MAIR, at least not in the current iteration.
-
-> For (1), I can see some value in isolating process contexts with
-> io-pgtable without going all the way and sharing the mm. The IOVA=VA
-> use-case feels a bit weak. But it does provide better isolation than
-> dma_map/unmap, if the GPU is in charge of PASIDs then two processes that
-> execute code on the GPU cannot access each others' DMA buffers. Maybe
-> other users will want that feature (but they really should be using bind_mm!).
-
-That is exactly the use case.  A real-world attach vector in the mobile GPU
-world is a malicious app that knows that knows that if have a banking app
-active and copies the surfaces or at the very least scribbles over everything
-and is very rude.
-
-> In next version I'm going to replace iommu_process_bind by something like
-> iommu_sva_bind_mm, which reduces the scope of the API I'm introducing and
-> doesn't fit your case anymore. What you need is a shortcut into the PASID
-> allocator, a way to allocate a private PASID with io-pgtables instead of
-> one backed by an mm. Something like:
-> 
-> iommu_sva_alloc_pasid(domain, dev) -> pasid
-> iommu_sva_map(pasid, iova, size, flags)
-> iommu_sva_unmap(pasid, iova, size)
-> iommu_sva_free_pasid(domain, pasid)
-
-Yep, that matches up with my thinking.
-
-> Then for (2) the GPU is tightly integrated into the SMMU and can switch
-> contexts. I might be wrong but I don't see this case becoming standard as
-> new implementations move to PASIDs, we shouldn't spend too much time
-> making it generic.
-
-Agreed. This is rather specific use case.
-
-> But to make it fit into the PASID API, how about the following.
-
-
-> We provide a backdoor to the GPU driver, allowing it to register PASID ops
-> into SMMUv2 driver:
-> 
-> struct smmuv2_pasid_ops {
-> 	int (*install_pasid)(struct iommu_domain, int pasid, ttbr, asid
-> 			     and whatnot);
-> 	void (*remove_pasid)(struct iommu_domain, int pasid);
-> }
-> 
-> On PASID-capable IOMMUs, iommu_sva_alloc_pasid would install a context
-> descriptor into the PASID tables (owned by the IOMMU), pointing to the
-> io-pgtable. As SMMUv2 doesn't support PASID, iommu_sva_alloc_pasid
-> wouldn't actually install a context descriptor but instead call back into
-> the GPU driver with install_pasid. The GPU can then do its thing, call
-> sva_map/unmap, and switch contexts.
-> 
-> The good thing is that (1) and (2) are separate, so you get the same
-> callbacks if you're using iommu_sva_bind_mm instead of the private pasid
-> thing.
-
-This sounds ideal. It seems to scratch all the right itches that we have. 
-
-Thanks for thinking about this use case. I appreciate your time.
-
-Jordan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Alex
