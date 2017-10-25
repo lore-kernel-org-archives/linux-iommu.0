@@ -1,7 +1,7 @@
 From: Rob Clark <robdclark@gmail.com>
-Subject: [PATCH] iommu: qcom: wire up fault handler
-Date: Wed, 25 Oct 2017 11:25:34 -0400
-Message-ID: <20171025152543.1202-1-robdclark@gmail.com>
+Subject: [PATCH v2] iommu: qcom: wire up fault handler
+Date: Wed, 25 Oct 2017 11:30:32 -0400
+Message-ID: <20171025153034.9676-1-robdclark@gmail.com>
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
 Sender: linux-arm-msm-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
@@ -15,11 +15,13 @@ let us do something more clever.
 
 Signed-off-by: Rob Clark <robdclark@gmail.com>
 ---
- drivers/iommu/qcom_iommu.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+v2: add back a hunk that was lost when rebasing
+
+ drivers/iommu/qcom_iommu.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index c8a587d034b0..3c6866d94e64 100644
+index c8a587d034b0..eeed1ce0cdde 100644
 --- a/drivers/iommu/qcom_iommu.c
 +++ b/drivers/iommu/qcom_iommu.c
 @@ -66,6 +66,7 @@ struct qcom_iommu_ctx {
@@ -50,7 +52,14 @@ index c8a587d034b0..3c6866d94e64 100644
  
  	return IRQ_HANDLED;
  }
-@@ -280,6 +284,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+@@ -274,12 +278,14 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 
+ 		/* SCTLR */
+ 		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE |
+-			SCTLR_M | SCTLR_S1_ASIDPNE;
++			SCTLR_M | SCTLR_S1_ASIDPNE | SCTLR_CFCFG;
+ 
+ 		if (IS_ENABLED(CONFIG_BIG_ENDIAN))
  			reg |= SCTLR_E;
  
  		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, reg);
