@@ -1,191 +1,138 @@
-From: Anup Patel <anup.patel@broadcom.com>
-Subject: Re: [PATCH v10] vfio: platform: reset: Add Broadcom FlexRM reset module
-Date: Wed, 25 Oct 2017 11:19:21 +0530
-Message-ID: <CAALAos94pJsMorSOtBFCV_VyDYBBJwAqLQS_nY6o=e4G_Bs9qA@mail.gmail.com>
-References: <1507008464-27236-1-git-send-email-anup.patel@broadcom.com> <1507008464-27236-2-git-send-email-anup.patel@broadcom.com>
+From: Linu Cherian <linu.cherian@cavium.com>
+Subject: Re: [RFC] virtio-iommu version 0.5
+Date: Wed, 25 Oct 2017 12:37:04 +0530
+Message-ID: <20171025070704.GA10689@virtx40>
+References: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
+ <20171024062704.GA23141@virtx40>
+ <b878c366-6e43-aacc-c7f6-cabb3f91211e@arm.com>
+ <20171024165859.GA24369@virtx40>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1507008464-27236-2-git-send-email-anup.patel@broadcom.com>
+Content-Disposition: inline
+In-Reply-To: <20171024165859.GA24369@virtx40>
 Sender: kvm-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Baptiste Reynal <b.reynal@virtualopensystems.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Scott Branden <sbranden@broadcom.com>, Linux Kernel <linux-kernel@vger.kernel.org>, Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, kvm@vger.kernel.org, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, Anup Patel <anup.patel@broadcom.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Linu Cherian <linuc.decode@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, kevin.tian@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 3, 2017 at 10:57 AM, Anup Patel <anup.patel@broadcom.com> wrote:
-> This patch adds Broadcom FlexRM low-level reset for
-> VFIO platform.
->
-> It will do the following:
-> 1. Disable/Deactivate each FlexRM ring
-> 2. Flush each FlexRM ring
->
-> The cleanup sequence for FlexRM rings is adapted from
-> Broadcom FlexRM mailbox driver.
->
-> Signed-off-by: Anup Patel <anup.patel@broadcom.com>
-> Reviewed-by: Oza Oza <oza.oza@broadcom.com>
-> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> ---
->  drivers/vfio/platform/reset/Kconfig                |   9 ++
->  drivers/vfio/platform/reset/Makefile               |   1 +
->  .../vfio/platform/reset/vfio_platform_bcmflexrm.c  | 113 +++++++++++++++++++++
->  3 files changed, 123 insertions(+)
->  create mode 100644 drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
->
-> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
-> index 70cccc5..392e3c0 100644
-> --- a/drivers/vfio/platform/reset/Kconfig
-> +++ b/drivers/vfio/platform/reset/Kconfig
-> @@ -13,3 +13,12 @@ config VFIO_PLATFORM_AMDXGBE_RESET
->           Enables the VFIO platform driver to handle reset for AMD XGBE
->
->           If you don't know what to do here, say N.
-> +
-> +config VFIO_PLATFORM_BCMFLEXRM_RESET
-> +       tristate "VFIO support for Broadcom FlexRM reset"
-> +       depends on VFIO_PLATFORM && (ARCH_BCM_IPROC || COMPILE_TEST)
-> +       default ARCH_BCM_IPROC
-> +       help
-> +         Enables the VFIO platform driver to handle reset for Broadcom FlexRM
-> +
-> +         If you don't know what to do here, say N.
-> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
-> index 93f4e23..8d9874b 100644
-> --- a/drivers/vfio/platform/reset/Makefile
-> +++ b/drivers/vfio/platform/reset/Makefile
-> @@ -5,3 +5,4 @@ ccflags-y += -Idrivers/vfio/platform
->
->  obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
->  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
-> +obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
-> diff --git a/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-> new file mode 100644
-> index 0000000..d45c3be
-> --- /dev/null
-> +++ b/drivers/vfio/platform/reset/vfio_platform_bcmflexrm.c
-> @@ -0,0 +1,113 @@
-> +/*
-> + * Copyright (C) 2017 Broadcom
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License as
-> + * published by the Free Software Foundation version 2.
-> + *
-> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> + * kind, whether express or implied; without even the implied warranty
-> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +/*
-> + * This driver provides reset support for Broadcom FlexRM ring manager
-> + * to VFIO platform.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/init.h>
-> +#include <linux/io.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +
-> +#include "vfio_platform_private.h"
-> +
-> +/* FlexRM configuration */
-> +#define RING_REGS_SIZE                                 0x10000
-> +#define RING_VER_MAGIC                                 0x76303031
-> +
-> +/* Per-Ring register offsets */
-> +#define RING_VER                                       0x000
-> +#define RING_CONTROL                                   0x034
-> +#define RING_FLUSH_DONE                                        0x038
-> +
-> +/* Register RING_CONTROL fields */
-> +#define CONTROL_FLUSH_SHIFT                            5
-> +
-> +/* Register RING_FLUSH_DONE fields */
-> +#define FLUSH_DONE_MASK                                        0x1
-> +
-> +static int vfio_platform_bcmflexrm_shutdown(void __iomem *ring)
-> +{
-> +       unsigned int timeout;
-> +
-> +       /* Disable/inactivate ring */
-> +       writel_relaxed(0x0, ring + RING_CONTROL);
-> +
-> +       /* Set ring flush state */
-> +       timeout = 1000; /* timeout of 1s */
-> +       writel_relaxed(BIT(CONTROL_FLUSH_SHIFT), ring + RING_CONTROL);
-> +       do {
-> +               if (readl_relaxed(ring + RING_FLUSH_DONE) &
-> +                   FLUSH_DONE_MASK)
-> +                       break;
-> +               mdelay(1);
-> +       } while (--timeout);
-> +       if (!timeout)
-> +               return -ETIMEDOUT;
-> +
-> +       /* Clear ring flush state */
-> +       timeout = 1000; /* timeout of 1s */
-> +       writel_relaxed(0x0, ring + RING_CONTROL);
-> +       do {
-> +               if (!(readl_relaxed(ring + RING_FLUSH_DONE) &
-> +                     FLUSH_DONE_MASK))
-> +                       break;
-> +               mdelay(1);
-> +       } while (--timeout);
-> +       if (!timeout)
-> +               return -ETIMEDOUT;
-> +
-> +       return 0;
-> +}
-> +
-> +static int vfio_platform_bcmflexrm_reset(struct vfio_platform_device *vdev)
-> +{
-> +       void __iomem *ring;
-> +       int rc = 0, ret = 0, ring_num = 0;
-> +       struct vfio_platform_region *reg = &vdev->regions[0];
-> +
-> +       /* Map FlexRM ring registers if not mapped */
-> +       if (!reg->ioaddr) {
-> +               reg->ioaddr = ioremap_nocache(reg->addr, reg->size);
-> +               if (!reg->ioaddr)
-> +                       return -ENOMEM;
-> +       }
-> +
-> +       /* Discover and shutdown each FlexRM ring */
-> +       for (ring = reg->ioaddr;
-> +            ring < (reg->ioaddr + reg->size); ring += RING_REGS_SIZE) {
-> +               if (readl_relaxed(ring + RING_VER) == RING_VER_MAGIC) {
-> +                       rc = vfio_platform_bcmflexrm_shutdown(ring);
-> +                       if (rc) {
-> +                               dev_warn(vdev->device,
-> +                                        "FlexRM ring%d shutdown error %d\n",
-> +                                        ring_num, rc);
-> +                               ret |= rc;
-> +                       }
-> +                       ring_num++;
-> +               }
-> +       }
-> +
-> +       return ret;
-> +}
-> +
-> +module_vfio_reset_handler("brcm,iproc-flexrm-mbox",
-> +                         vfio_platform_bcmflexrm_reset);
-> +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_AUTHOR("Anup Patel <anup.patel@broadcom.com>");
-> +MODULE_DESCRIPTION("Reset support for Broadcom FlexRM VFIO platform device");
-> --
-> 2.7.4
+Hi Jean,
+
+On Tue Oct 24, 2017 at 10:28:59PM +0530, Linu Cherian wrote:
+> Hi Jean,
+> Thanks for your reply.
+> 
+> On Tue Oct 24, 2017 at 09:37:12AM +0100, Jean-Philippe Brucker wrote:
+> > Hi Linu,
+> > 
+> > On 24/10/17 07:27, Linu Cherian wrote:
+> > > Hi Jean,
+> > > 
+> > > On Mon Oct 23, 2017 at 10:32:41AM +0100, Jean-Philippe Brucker wrote:
+> > >> This is version 0.5 of the virtio-iommu specification, the paravirtualized
+> > >> IOMMU. This version addresses feedback from v0.4 and adds an event virtqueue.
+> > >> Please find the specification, LaTeX sources and pdf, at:
+> > >> git://linux-arm.org/virtio-iommu.git viommu/v0.5
+> > >> http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/v0.5/virtio-iommu-v0.5.pdf
+> > >>
+> > >> A detailed changelog since v0.4 follows. You can find the pdf diff at:
+> > >> http://linux-arm.org/git?p=virtio-iommu.git;a=blob;f=dist/diffs/virtio-iommu-pdf-diff-v0.4-v0.5.pdf
+> > >>
+> > >> * Add an event virtqueue for the device to report translation faults to
+> > >>   the driver. For the moment only unrecoverable faults are available but
+> > >>   future versions will extend it.
+> > >> * Simplify PROBE request by removing the ack part, and flattening RESV
+> > >>   properties.
+> > >> * Rename "address space" to "domain". The change might seem futile but
+> > >>   allows to introduce PASIDs and other features cleanly in the next
+> > >>   versions. In the same vein, the few remaining "device" occurrences were
+> > >>   replaced by "endpoint", to avoid any confusion with "the device"
+> > >>   referring to the virtio device across the document.
+> > >> * Add implementation notes for RESV_MEM properties.
+> > >> * Update ACPI table definition.
+> > >> * Fix typos and clarify a few things.
+> > >>
+> > >> I will publish the Linux driver for v0.5 shortly. Then for next versions
+> > >> I'll focus on optimizations and adding support for hardware acceleration.
+> > >>
+> > >> Existing implementations are simple and can certainly be optimized, even
+> > >> without architectural changes. But the architecture itself can also be
+> > >> improved in a number of ways. Currently it is designed to work well with
+> > >> VFIO. However, having explicit MAP requests is less efficient* than page
+> > >> tables for emulated and PV endpoints, and the current architecture doesn't
+> > >> address this. Binding page tables is an obvious way to improve throughput
+> > >> in that case, but we can explore cleverer (and possibly simpler) ways to
+> > >> do it.
+> > >>
+> > >> So first we'll work on getting the base device and driver merged, then
+> > >> we'll analyze and compare several ideas for improving performance.
+> > >>
+> > >> Thanks,
+> > >> Jean
+> > >>
+> > >> * I have yet to study this behaviour, and would be interested in any
+> > >> prior art on the subject of analyzing devices DMA patterns (virtio and
+> > >> others)
+> > > 
+> > > 
+> > > From the spec,
+> > > Under future extensions.
+> > > 
+> > > "Page Table Handover, to allow guests to manage their own page tables and share them with the MMU"
+> > > 
+> > > Had few questions on this.
+> > > 
+> > > 1. Did you mean SVM support for vfio-pci devices attached to guest processes here.
+> > 
+> > Yes, using the VFIO BIND and INVALIDATE ioctls that Intel is working on,
+> > and adding requests in pretty much the same format to virtio-iommu.
+> > 
+> > > 2. Can you give some hints on how this is going to work , since virtio-iommu guest kernel 
+> > >    driver need to create stage 1 page table as required by hardware which is not the case now. 
+> > >    CMIIW. 
+> > 
+> > The virtio-iommu device advertises which PASID/page table format is
+> > supported by the host (obtained via sysfs and communicated in the PROBE
+> > request), then the guest binds page tables or PASID tables to a domain and
+> > populates it. Binding page tables alone is easy because we already have
+> > the required drivers in the guest (io-pgtable or arch/* for SVM) and code
+> > in the host to manage PASID tables. But since the PASID table pointer is
+> > translated by stage-2, it would requires a little more work in the host
+> > for obtaining GPA buffers from the guest on demand.
+>   Is this for resolving PCI PRI requests ?. 
+>   IIUC, PCI PRI requests for devices owned by guest need to be resolved
+>   by guest itself.
+> 
+> 
+>  In addition the BIND
+> > ioctl is different from the one used by VT-d, so this solution didn't get
+> > much appreciation.
+> 
+> Could you please share the links on this ?
+> 
+> > 
+> > The alternative is to bind PASID tables. 
+> 
+> Sorry, i didnt get the difference here.
 >
 
-Hi All,
+Also does this solution intend to cover the page table sharing of non SVM 
+cases. For example, if we need to share the IOMMU page table for 
+a device used in guest kernel, so that map/unmap gets directly handled by the guest
+and only TLB invalidates happens through a virtio-iommu channel.
+ 
+> It requires to factor the guest
+> > PASID handling code into a library, which is difficult for SMMU. Luckily
+> > I'm still working on adding PASID code for SMMUv3, so extracting it out of
+> > the driver isn't a big overhead. The good thing about this solution is
+> > that it reuses any specification work done for VFIO (and vice versa) and
+> > any host driver change made for vSMMU/VT-d emulations.
+> > 
+> > Thanks,
+> > Jean
+> 
+> -- 
+> Linu cherian
 
-Any comments on this one ?
-
-Regards,
-Anup
+-- 
+Linu cherian
