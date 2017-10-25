@@ -1,48 +1,72 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH 5/9] PCI: host: brcmstb: add dma-ranges for inbound
- traffic
-Date: Wed, 25 Oct 2017 09:36:37 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6DD00A24FC@AcuExch.aculab.com>
-References: <1507761269-7017-6-git-send-email-jim2101024@gmail.com>
- <589c04cb-061b-a453-3188-79324a02388e@arm.com>
- <20171017081422.GA19475@lst.de>
- <CANCKTBsCB+x2XgrND9AhRtxPkCXfps1nA+YymkZjKHOUZfjSHQ@mail.gmail.com>
- <20171018065316.GA11183@lst.de>
- <CANCKTBv+yiCNsrnx3m+W9wPqC4NdKPZ2p=zLtSa8fX6v1rPcYQ@mail.gmail.com>
- <20171019091644.GA14983@lst.de>
- <CANCKTBuaTD29My77QfOeUmtZfLAmmJXUYe6QvBW+uoH2Kb+tAQ@mail.gmail.com>
- <20171020073730.GA12937@lst.de>
- <CANCKTBsRRkwNMrxWjtgxbyZqT6NOxPX0NHDbnEO2BMjj8oVtpg@mail.gmail.com>
- <20171020145752.GA4694@lst.de>
- <CANCKTBtxp9gSdndKAZ7xGA+VozQsn2PX_-9P8A22_5Matbb7-w@mail.gmail.com>
- <063D6719AE5E284EB5DD2968C1650D6DD009F05A@AcuExch.aculab.com>
- <CANCKTBu6H6thuK9F_6HBGhStaXSto7fwWv4V5oH8EdWQD0-1kQ@mail.gmail.com>
+From: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH] x86, calgary: Convert timers to use timer_setup()
+Date: Wed, 25 Oct 2017 03:34:09 -0700
+Message-ID: <20171025103409.GA146095@beast>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CANCKTBu6H6thuK9F_6HBGhStaXSto7fwWv4V5oH8EdWQD0-1kQ@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: 'Jim Quinlan' <jim2101024@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux-MIPS <linux-mips@linux-mips.org>, Florian Fainelli <f.fainelli@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, Kevin Cernekee <cernekee@gmail.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Rob Herring <robh+dt@kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Gregory Fong <gregory.0xf0@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Brian Norris <computersforpeace@gmail.com>, linux-arm-kernel@lists.infradead
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogSmltIFF1aW5sYQ0KPiBTZW50OiAyNCBPY3RvYmVyIDIwMTcgMTk6MDgNCi4uLg0KPiBI
-aSBEYXZpZCwgIENocmlzdG9waCB3YXMgYWxzbyBjb25jZXJuZWQgYWJvdXQgdGhpczoNCj4gDQo+
-ICJGb3IgdGhlIGJsb2NrIHdvcmxkIHRha2UgYSBsb29rIGF0IF9fYmxrX3NlZ21lbnRfbWFwX3Nn
-IHdoaWNoIGRvZXMgdGhlIG1lcmdpbmcNCj4gb2YgY29udGlndW91cyBwYWdlcyBpbnRvIGEgc2lu
-Z2xlIFNHIHNlZ21lbnQuICBZb3UnZCBoYXZlIHRvIG92ZXJyaWRlDQo+IEJJT1ZFQ19QSFlTX01F
-UkdFQUJMRSB0byBwcmV2ZW50IHRoaXMgZnJvbSBoYXBwZW5pbmcgaW4geW91ciBzdXBwb3J0ZWQN
-Cj4gYXJjaGl0ZWN0dXJlcyBmb3IgdGhlIGJsb2NrIGxheWVyLiINCj4gDQo+IERvIHlvdSBjb25z
-aWRlciB0aGlzIGEgbm9uLWlzc3VlIGFzIHdlbGwgb3IgY2FuIHRoaXMgaGFwcGVuIGFuZCBzcGFu
-DQo+IG1lbW9yeSByZWdpb25zPw0KDQpQcm9iYWJseSBlYXNpZXN0IHRvIGhhdmUgYW4gYXJjaGl0
-ZWN0dXJlIGxpbWl0IG9uIHRoZSBhZGRyZXNzZXMgdGhhdA0KY2FuIGJlIG1lcmdlZC4NCg0KTXkg
-Z3Vlc3MgaXMgdGhhdCB0aGlzIGNvZGUgb25seSByZWFsbHkgZXZlciBtZXJnZXMgcGFnZXMgdGhh
-dCB3ZXJlDQphbGxvY2F0ZWQgY29udGlndW91c2x5LCBidXQgaGF2ZSBnb3QgY29udmVydGVkIHRv
-IGEgbGlzdCBvZiBWQS4NClNvIHN0b3BwaW5nIG1lcmdpbmcgb3ZlciBldmVuIDFNQiBib3VuZGFy
-aWVzIHdvdWxkIGhhdmUgbWluaW1hbCBlZmZlY3QNCihldmVuIGlmIGRvbmUgdW5jb25kaXRpb25h
-bGx5KS4NCg0KSSBldmVuIHdvbmRlciBpZiB0aGUgbWVyZ2luZyBpcyBhY3R1YWxseSB3b3J0aHdo
-aWxlIGF0IGFsbD8NCk1heWJlIGlmIGFueSBjb2RlIGhhcyBsaW1pdHMgb24gdGhlIFNHIGxpc3Qg
-bGVuZ3RoLg0KKG9yIHJlZHVjaW5nIHRoZSBudW1iZXIgb2YgY2FjaGUgbGluZXMgdGhlIGdldCBk
-aXJ0aWVkLi4uKQ0KDQoJRGF2aWQNCg0KDQoNCg==
+In preparation for unconditionally passing the struct timer_list pointer to
+all timer callbacks, switch to using the new timer_setup() and from_timer()
+to pass the timer pointer explicitly.
+
+Cc: Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>
+Cc: Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Signed-off-by: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ arch/x86/kernel/pci-calgary_64.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
+index 5286a4a92cf7..35c461f21815 100644
+--- a/arch/x86/kernel/pci-calgary_64.c
++++ b/arch/x86/kernel/pci-calgary_64.c
+@@ -898,10 +898,9 @@ static void calioc2_dump_error_regs(struct iommu_table *tbl)
+ 	       PHB_ROOT_COMPLEX_STATUS);
+ }
+ 
+-static void calgary_watchdog(unsigned long data)
++static void calgary_watchdog(struct timer_list *t)
+ {
+-	struct pci_dev *dev = (struct pci_dev *)data;
+-	struct iommu_table *tbl = pci_iommu(dev->bus);
++	struct iommu_table *tbl = from_timer(tbl, t, watchdog_timer);
+ 	void __iomem *bbar = tbl->bbar;
+ 	u32 val32;
+ 	void __iomem *target;
+@@ -1016,8 +1015,7 @@ static void __init calgary_enable_translation(struct pci_dev *dev)
+ 	writel(cpu_to_be32(val32), target);
+ 	readl(target); /* flush */
+ 
+-	setup_timer(&tbl->watchdog_timer, &calgary_watchdog,
+-		    (unsigned long)dev);
++	timer_setup(&tbl->watchdog_timer, calgary_watchdog, 0);
+ 	mod_timer(&tbl->watchdog_timer, jiffies);
+ }
+ 
+-- 
+2.7.4
+
+
+-- 
+Kees Cook
+Pixel Security
