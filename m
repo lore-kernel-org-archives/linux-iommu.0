@@ -1,114 +1,55 @@
-From: "Lukoshkov, Maksim" <maksim.lukoshkov@intel.com>
-Subject: Re: [v2,04/16] iommu/vt-d: support flushing more TLB types
-Date: Thu, 26 Oct 2017 14:02:13 +0100
-Message-ID: <c7d32ea1-fc82-fdef-c275-d4e29d428094@intel.com>
-References: <1507244624-39189-5-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Warn about missing IRQs
+Date: Fri, 27 Oct 2017 14:08:16 +0100
+Message-ID: <f03a7c9f0be2f0af461b61d18fff3c931da77ebb.1509109598.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1507244624-39189-5-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTAvNi8yMDE3IDAwOjAzLCBKYWNvYiBQYW4gd3JvdGU6Cj4gU2lnbmVkLW9mZi1ieTogSmFj
-b2IgUGFuIDxqYWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbT4KPiAtLS0KPiAgIGRyaXZlcnMv
-aW9tbXUvZG1hci5jICAgICAgICB8IDUzICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKy0tLQo+ICAgZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIHwgIDMgKystCj4g
-ICBpbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmggfCAxMCArKysrKysrLS0KPiAgIDMgZmlsZXMg
-Y2hhbmdlZCwgNjAgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9pb21tdS9kbWFyLmMgYi9kcml2ZXJzL2lvbW11L2RtYXIuYwo+IGluZGV4IDU3
-YzkyMGMuLjJmYmZmOGIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9kbWFyLmMKPiArKysg
-Yi9kcml2ZXJzL2lvbW11L2RtYXIuYwo+IEBAIC0xMzM2LDExICsxMzM2LDI1IEBAIHZvaWQgcWlf
-Zmx1c2hfaW90bGIoc3RydWN0IGludGVsX2lvbW11ICppb21tdSwgdTE2IGRpZCwgdTY0IGFkZHIs
-Cj4gICAJcWlfc3VibWl0X3N5bmMoJmRlc2MsIGlvbW11KTsKPiAgIH0KPiAgIAo+IC12b2lkIHFp
-X2ZsdXNoX2Rldl9pb3RsYihzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LCB1MTYgc2lkLCB1MTYg
-cWRlcCwKPiAtCQkJdTY0IGFkZHIsIHVuc2lnbmVkIG1hc2spCj4gK3ZvaWQgcWlfZmx1c2hfZWlv
-dGxiKHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUsIHUxNiBkaWQsIHU2NCBhZGRyLCB1MzIgcGFz
-aWQsCj4gKwkJdW5zaWduZWQgaW50IHNpemVfb3JkZXIsIHU2NCBncmFudSwgYm9vbCBnbG9iYWwp
-Cj4gICB7Cj4gICAJc3RydWN0IHFpX2Rlc2MgZGVzYzsKPiAgIAo+ICsJZGVzYy5sb3cgPSBRSV9F
-SU9UTEJfUEFTSUQocGFzaWQpIHwgUUlfRUlPVExCX0RJRChkaWQpIHwKPiArCQlRSV9FSU9UTEJf
-R1JBTihncmFudSkgfCBRSV9FSU9UTEJfVFlQRTsKPiArCWRlc2MuaGlnaCA9IFFJX0VJT1RMQl9B
-RERSKGFkZHIpIHwgUUlfRUlPVExCX0dMKGdsb2JhbCkgfAo+ICsJCVFJX0VJT1RMQl9JSCgwKSB8
-IFFJX0VJT1RMQl9BTShzaXplX29yZGVyKTsKPiArCXFpX3N1Ym1pdF9zeW5jKCZkZXNjLCBpb21t
-dSk7Cj4gK30KPiArCj4gK3ZvaWQgcWlfZmx1c2hfZGV2X2lvdGxiKHN0cnVjdCBpbnRlbF9pb21t
-dSAqaW9tbXUsIHUxNiBzaWQsIHUxNiBwZnNpZCwKPiArCQkJdTE2IHFkZXAsIHU2NCBhZGRyLCB1
-bnNpZ25lZCBtYXNrKQo+ICt7Cj4gKwlzdHJ1Y3QgcWlfZGVzYyBkZXNjOwo+ICsKPiArCXByX2Rl
-YnVnX3JhdGVsaW1pdGVkKCIlczogc2lkICVkLCBwZnNpZCAlZCwgcWRlcCAlZCwgYWRkciAlbGx4
-LCBtYXNrICVkXG4iLAo+ICsJCV9fZnVuY19fLCBzaWQsIHBmc2lkLCBxZGVwLCBhZGRyLCBtYXNr
-KTsKPiAgIAlpZiAobWFzaykgewo+ICAgCQlCVUdfT04oYWRkciAmICgoMSA8PCAoVlREX1BBR0Vf
-U0hJRlQgKyBtYXNrKSkgLSAxKSk7Cj4gICAJCWFkZHIgfD0gKDFVTEwgPDwgKFZURF9QQUdFX1NI
-SUZUICsgbWFzayAtIDEpKSAtIDE7Cj4gQEAgLTEzNTIsNyArMTM2Niw0MCBAQCB2b2lkIHFpX2Zs
-dXNoX2Rldl9pb3RsYihzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LCB1MTYgc2lkLCB1MTYgcWRl
-cCwKPiAgIAkJcWRlcCA9IDA7Cj4gICAKPiAgIAlkZXNjLmxvdyA9IFFJX0RFVl9JT1RMQl9TSUQo
-c2lkKSB8IFFJX0RFVl9JT1RMQl9RREVQKHFkZXApIHwKPiAtCQkgICBRSV9ESU9UTEJfVFlQRTsK
-PiArCQkgICBRSV9ESU9UTEJfVFlQRSB8IFFJX0RFVl9JT1RMQl9TSUQocGZzaWQpOwpTbyB0aGlz
-IGNoYW5nZSBqdXN0IGNvbWJpbmluZyBzaWQgYW5kIHBmc2lkIHRvZ2V0aGVyLCBpLmUuIChzaWQg
-fCAKcGZzaWQpPyBXaGF0IGlmIGJvdGggb2YgdGhlbSBhcmUgbm90IHplcm8/Cj4gKwo+ICsJcWlf
-c3VibWl0X3N5bmMoJmRlc2MsIGlvbW11KTsKPiArfQo+ICsKPiArdm9pZCBxaV9mbHVzaF9kZXZf
-ZWlvdGxiKHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUsIHUxNiBzaWQsIHUxNiBwZnNpZCwKPiAr
-CQkJdTMyIHBhc2lkLCAgdTE2IHFkZXAsIHU2NCBhZGRyLCB1bnNpZ25lZCBzaXplKQo+ICt7Cj4g
-KwlzdHJ1Y3QgcWlfZGVzYyBkZXNjOwo+ICsKPiArCWRlc2MubG93ID0gUUlfREVWX0VJT1RMQl9Q
-QVNJRChwYXNpZCkgfCBRSV9ERVZfRUlPVExCX1NJRChzaWQpIHwKPiArCQlRSV9ERVZfRUlPVExC
-X1FERVAocWRlcCkgfCBRSV9ERUlPVExCX1RZUEUgfAo+ICsJCVFJX0RFVl9FSU9UTEJfUEZTSUQo
-cGZzaWQpOwo+ICsKPiArCS8qIElmIFMgYml0IGlzIDAsIHdlIG9ubHkgZmx1c2ggYSBzaW5nbGUg
-cGFnZS4gSWYgUyBiaXQgaXMgc2V0LAo+ICsJICogVGhlIGxlYXN0IHNpZ25pZmljYW50IHplcm8g
-Yml0IGluZGljYXRlcyB0aGUgc2l6ZS4gVlQtZCBzcGVjCj4gKwkgKiA2LjUuMi42Cj4gKwkgKi8K
-PiArCWlmICghc2l6ZSkKPiArCQlkZXNjLmhpZ2ggPSBRSV9ERVZfRUlPVExCX0FERFIoYWRkcikg
-JiB+UUlfREVWX0VJT1RMQl9TSVpFOwo+ICsJZWxzZSB7Cj4gKwkJdW5zaWduZWQgbG9uZyBtYXNr
-ID0gMVVMIDw8IChWVERfUEFHRV9TSElGVCArIHNpemUpOwo+ICsKPiArCQlkZXNjLmhpZ2ggPSBR
-SV9ERVZfRUlPVExCX0FERFIoYWRkciAmIH5tYXNrKSB8IFFJX0RFVl9FSU9UTEJfU0laRTsKPiAr
-CX0KPiArCXFpX3N1Ym1pdF9zeW5jKCZkZXNjLCBpb21tdSk7Cj4gK30KPiArCj4gK3ZvaWQgcWlf
-Zmx1c2hfcGFzaWQoc3RydWN0IGludGVsX2lvbW11ICppb21tdSwgdTE2IGRpZCwgdTY0IGdyYW51
-LCBpbnQgcGFzaWQpCj4gK3sKPiArCXN0cnVjdCBxaV9kZXNjIGRlc2M7Cj4gKwo+ICsJZGVzYy5o
-aWdoID0gMDsKPiArCWRlc2MubG93ID0gUUlfUENfVFlQRSB8IFFJX1BDX0RJRChkaWQpIHwgUUlf
-UENfR1JBTihncmFudSkgfCBRSV9QQ19QQVNJRChwYXNpZCk7Cj4gICAKPiAgIAlxaV9zdWJtaXRf
-c3luYygmZGVzYywgaW9tbXUpOwo+ICAgfQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lu
-dGVsLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPiBpbmRleCA3YWU1Njlj
-Li42ODMyZjczIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ICsr
-KyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+IEBAIC0xNTY3LDcgKzE1NjcsOCBAQCBz
-dGF0aWMgdm9pZCBpb21tdV9mbHVzaF9kZXZfaW90bGIoc3RydWN0IGRtYXJfZG9tYWluICpkb21h
-aW4sCj4gICAKPiAgIAkJc2lkID0gaW5mby0+YnVzIDw8IDggfCBpbmZvLT5kZXZmbjsKPiAgIAkJ
-cWRlcCA9IGluZm8tPmF0c19xZGVwOwo+IC0JCXFpX2ZsdXNoX2Rldl9pb3RsYihpbmZvLT5pb21t
-dSwgc2lkLCBxZGVwLCBhZGRyLCBtYXNrKTsKPiArCQlxaV9mbHVzaF9kZXZfaW90bGIoaW5mby0+
-aW9tbXUsIHNpZCwgaW5mby0+cGZzaWQsCj4gKwkJCQlxZGVwLCBhZGRyLCBtYXNrKTsKPiAgIAl9
-Cj4gICAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmZGV2aWNlX2RvbWFpbl9sb2NrLCBmbGFncyk7
-Cj4gICB9Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCBiL2luY2x1
-ZGUvbGludXgvaW50ZWwtaW9tbXUuaAo+IGluZGV4IDQ4NWE1YjQuLmU0MmQzMTcgMTAwNjQ0Cj4g
-LS0tIGEvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCj4gKysrIGIvaW5jbHVkZS9saW51eC9p
-bnRlbC1pb21tdS5oCj4gQEAgLTMwNSw2ICszMDUsNyBAQCBlbnVtIHsKPiAgICNkZWZpbmUgUUlf
-REVWX0VJT1RMQl9QQVNJRChwKQkoKCh1NjQpcCkgPDwgMzIpCj4gICAjZGVmaW5lIFFJX0RFVl9F
-SU9UTEJfU0lEKHNpZCkJKCh1NjQpKChzaWQpICYgMHhmZmZmKSA8PCAxNikKPiAgICNkZWZpbmUg
-UUlfREVWX0VJT1RMQl9RREVQKHFkKQkoKHU2NCkoKHFkKSAmIDB4MWYpIDw8IDQpCj4gKyNkZWZp
-bmUgUUlfREVWX0VJT1RMQl9QRlNJRChwZnNpZCkgKCgodTY0KShwZnNpZCAmIDB4ZikgPDwgMTIp
-IHwgKCh1NjQpKHBmc2lkICYgMHhmZjApIDw8IDQ4KSkKPiAgICNkZWZpbmUgUUlfREVWX0VJT1RM
-Ql9NQVhfSU5WUwkzMgo+ICAgCj4gICAjZGVmaW5lIFFJX1BHUlBfSURYKGlkeCkJKCgodTY0KShp
-ZHgpKSA8PCA1NSkKPiBAQCAtNDUwLDggKzQ1MSwxMyBAQCBleHRlcm4gdm9pZCBxaV9mbHVzaF9j
-b250ZXh0KHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUsIHUxNiBkaWQsIHUxNiBzaWQsCj4gICAJ
-CQkgICAgIHU4IGZtLCB1NjQgdHlwZSk7Cj4gICBleHRlcm4gdm9pZCBxaV9mbHVzaF9pb3RsYihz
-dHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LCB1MTYgZGlkLCB1NjQgYWRkciwKPiAgIAkJCSAgdW5z
-aWduZWQgaW50IHNpemVfb3JkZXIsIHU2NCB0eXBlKTsKPiAtZXh0ZXJuIHZvaWQgcWlfZmx1c2hf
-ZGV2X2lvdGxiKHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUsIHUxNiBzaWQsIHUxNiBxZGVwLAo+
-IC0JCQkgICAgICAgdTY0IGFkZHIsIHVuc2lnbmVkIG1hc2spOwo+ICtleHRlcm4gdm9pZCBxaV9m
-bHVzaF9laW90bGIoc3RydWN0IGludGVsX2lvbW11ICppb21tdSwgdTE2IGRpZCwgdTY0IGFkZHIs
-Cj4gKwkJCXUzMiBwYXNpZCwgdW5zaWduZWQgaW50IHNpemVfb3JkZXIsIHU2NCB0eXBlLCBib29s
-IGdsb2JhbCk7Cj4gK2V4dGVybiB2b2lkIHFpX2ZsdXNoX2Rldl9pb3RsYihzdHJ1Y3QgaW50ZWxf
-aW9tbXUgKmlvbW11LCB1MTYgc2lkLCB1MTYgcGZzaWQsCj4gKwkJCXUxNiBxZGVwLCB1NjQgYWRk
-ciwgdW5zaWduZWQgbWFzayk7Cj4gK2V4dGVybiB2b2lkIHFpX2ZsdXNoX2Rldl9laW90bGIoc3Ry
-dWN0IGludGVsX2lvbW11ICppb21tdSwgdTE2IHNpZCwgdTE2IHBmc2lkLAo+ICsJCQkJdTMyIHBh
-c2lkLCB1MTYgcWRlcCwgdTY0IGFkZHIsIHVuc2lnbmVkIHNpemUpOwo+ICtleHRlcm4gdm9pZCBx
-aV9mbHVzaF9wYXNpZChzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LCB1MTYgZGlkLCB1NjQgZ3Jh
-bnUsIGludCBwYXNpZCk7Cj4gICAKPiAgIGV4dGVybiBpbnQgcWlfc3VibWl0X3N5bmMoc3RydWN0
-IHFpX2Rlc2MgKmRlc2MsIHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUpOwo+ICAgCj4gCgotLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LQpJbnRlbCBSZXNlYXJjaCBhbmQgRGV2ZWxvcG1lbnQgSXJlbGFuZCBMaW1pdGVkClJlZ2lzdGVy
-ZWQgaW4gSXJlbGFuZApSZWdpc3RlcmVkIE9mZmljZTogQ29sbGluc3Rvd24gSW5kdXN0cmlhbCBQ
-YXJrLCBMZWl4bGlwLCBDb3VudHkgS2lsZGFyZQpSZWdpc3RlcmVkIE51bWJlcjogMzA4MjYzCgoK
-VGhpcyBlLW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBtYXkgY29udGFpbiBjb25maWRlbnRpYWwg
-bWF0ZXJpYWwgZm9yIHRoZSBzb2xlCnVzZSBvZiB0aGUgaW50ZW5kZWQgcmVjaXBpZW50KHMpLiBB
-bnkgcmV2aWV3IG9yIGRpc3RyaWJ1dGlvbiBieSBvdGhlcnMgaXMKc3RyaWN0bHkgcHJvaGliaXRl
-ZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIGNvbnRhY3Qg
-dGhlCnNlbmRlciBhbmQgZGVsZXRlIGFsbCBjb3BpZXMuCg==
+It is annoyingly non-obvious when DMA transactions silently go missing
+due to undetected SMMU faults. Help skip the first few debugging steps
+in those situations by making it clear when we have neither wired IRQs
+nor MSIs with which to raise error conditions.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index e67ba6c40faf..1a374c5c9507 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2263,6 +2263,8 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ 						"arm-smmu-v3-evtq", smmu);
+ 		if (ret < 0)
+ 			dev_warn(smmu->dev, "failed to enable evtq irq\n");
++	} else {
++		dev_warn(smmu->dev, "no evtq irq - events will not be reported!\n");
+ 	}
+ 
+ 	irq = smmu->cmdq.q.irq;
+@@ -2280,6 +2282,8 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ 				       0, "arm-smmu-v3-gerror", smmu);
+ 		if (ret < 0)
+ 			dev_warn(smmu->dev, "failed to enable gerror irq\n");
++	} else {
++		dev_warn(smmu->dev, "no gerr irq - errors will not be reported!\n");
+ 	}
+ 
+ 	if (smmu->features & ARM_SMMU_FEAT_PRI) {
+-- 
+2.13.4.dirty
