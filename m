@@ -1,73 +1,40 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
-Date: Mon, 30 Oct 2017 10:28:05 +0000
-Message-ID: <5c48f76c-d139-76a5-c4e5-ac40cf2bd5ea@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-2-jean-philippe.brucker@arm.com>
-	<A2975661238FB949B60364EF0F2C257439AFD88A@SHSMSX104.ccr.corp.intel.com>
-	<7aaf9851-9546-f34d-1496-cbeea404abbd@arm.com>
-	<20171025180546.GA12356@otc-nc-03>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171025180546.GA12356@otc-nc-03>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH] iommu/mediatek: Fix driver name
+Date: Mon, 30 Oct 2017 12:37:55 +0100
+Message-ID: <20171030113755.32408-1-matthias.bgg@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, sean.wang@mediatek.com, honghui.zhang@mediatek.com
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/10/17 19:05, Raj, Ashok wrote:
-> Hi Jean
-> 
-> On Mon, Oct 23, 2017 at 01:17:07PM +0100, Jean-Philippe Brucker wrote:
->> On 23/10/17 12:04, Liu, Yi L wrote:
->>>> +	idr_preload(GFP_KERNEL);
->>>> +	spin_lock(&iommu_process_lock);
->>>> +	pasid = idr_alloc_cyclic(&iommu_process_idr, process, domain->min_pasid,
->>>> +				 domain->max_pasid + 1, GFP_ATOMIC);
->>>> +	process->pasid = pasid;
->>>
->>> [Liu, Yi L] If I'm understanding well, here is managing the pasid allocation in iommu
->>> layer instead of vendor iommu driver? Is there strong reason here? I think pasid
->>> management may be better within vendor iommu driver as pasid management
->>> could differ from vendor to vendor.
->>
->> But that's the thing, we're trying to abstract PASID and process
->> management to have it in the core, because there shouldn't be many
->> differences from vendor to vendor. This way we have the allocation code in
->> one place and vendor drivers don't have to copy paste it from other drivers.
-> 
-> I think this makes sense for the native case and also in the vIOMMU
-> if the PASID tables and allocation are completely managed by the guest.
-> 
-> If the vIOMMU requires any co-ordination in how the PASID's are allocated
-> for guest devices there might need to be some control on how these are 
-> allocated that ultimately need to be managed by VMM/Physical IOMMU. For 
-> instance if the PASID space is sparse for e.g
+There exist two Mediatek iommu drivers for the two different
+generations of the device. But both drivers have the same name
+"mtk-iommu". This breaks the registration of the second driver:
 
-(I don't have your example)
+Error: Driver 'mtk-iommu' is already registered, aborting...
 
-> if we make the PASID allocation as one of the ops, the IOMMU implementation
-> will choose the default function, or if it choose a differnt mechanism it would
-> have that flexibility.
-> 
-> Does this make sense?
+Fix this by changing the name for first generation to
+"mtk-iommu-v1".
 
-If the PASID space is sparse, maybe we can add a firmware or probe
-mechanism to declare reserved PASIDs, like we have for reserved IOVAs,
-that feeds into the core IOMMU driver. But I agree that we can always let
-vendor drivers implement their own allocator if they need one in the
-future. For the moment it can stay generic.
+Fixes: b17336c55d89 ("iommu/mediatek: add support for mtk iommu generation one HW")
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+---
+ drivers/iommu/mtk_iommu_v1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Jean
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index bc1efbfb9ddf..542930cd183d 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -708,7 +708,7 @@ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+ 	.remove	= mtk_iommu_remove,
+ 	.driver	= {
+-		.name = "mtk-iommu",
++		.name = "mtk-iommu-v1",
+ 		.of_match_table = mtk_iommu_of_ids,
+ 		.pm = &mtk_iommu_pm_ops,
+ 	}
+-- 
+2.14.2
