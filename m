@@ -1,90 +1,341 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [v2,04/16] iommu/vt-d: support flushing more TLB types
-Date: Tue, 31 Oct 2017 13:39:52 -0700
-Message-ID: <20171031133952.03105b04@jacob-builder>
-References: <1507244624-39189-5-git-send-email-jacob.jun.pan@linux.intel.com>
-	<c7d32ea1-fc82-fdef-c275-d4e29d428094@intel.com>
+From: "Wei Hu (Xavier)" <xavier.huwei@huawei.com>
+Subject: Re: [PATCH for-next 2/4] RDMA/hns: Add IOMMU enable support in hip08
+Date: Wed, 1 Nov 2017 15:46:06 +0800
+Message-ID: <59F97BBE.5070207@huawei.com>
+References: <1506763741-81429-1-git-send-email-xavier.huwei@huawei.com>
+ <1506763741-81429-3-git-send-email-xavier.huwei@huawei.com>
+ <20170930161023.GI2965@mtr-leonro.local> <59DF60A3.7080803@huawei.com>
+ <5fe5f9b9-2c2b-ab3c-dafa-3e2add051bbb@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c7d32ea1-fc82-fdef-c275-d4e29d428094-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Lukoshkov, Maksim" <maksim.lukoshkov-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <5fe5f9b9-2c2b-ab3c-dafa-3e2add051bbb@arm.com>
+Sender: owner-linux-mm@kvack.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Leon Romanovsky <leon@kernel.org>, shaobo.xu@intel.com, xavier.huwei@tom.com, lijun_nudt@163.com, oulijun@huawei.com, linux-rdma@vger.kernel.org, charles.chenxin@huawei.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, dledford@redhat.com, liuyixian@huawei.com, zhangxiping3@huawei.com, shaoboxu@tom.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 26 Oct 2017 14:02:13 +0100
-"Lukoshkov, Maksim" <maksim.lukoshkov-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
-> On 10/6/2017 00:03, Jacob Pan wrote:
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> >   drivers/iommu/dmar.c        | 53
-> > ++++++++++++++++++++++++++++++++++++++++++---
-> > drivers/iommu/intel-iommu.c |  3 ++- include/linux/intel-iommu.h |
-> > 10 +++++++-- 3 files changed, 60 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> > index 57c920c..2fbff8b 100644
-> > --- a/drivers/iommu/dmar.c
-> > +++ b/drivers/iommu/dmar.c
-> > @@ -1336,11 +1336,25 @@ void qi_flush_iotlb(struct intel_iommu
-> > *iommu, u16 did, u64 addr, qi_submit_sync(&desc, iommu);
-> >   }
-> >   
-> > -void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16
-> > qdep,
-> > -			u64 addr, unsigned mask)
-> > +void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-> > u32 pasid,
-> > +		unsigned int size_order, u64 granu, bool global)
-> >   {
-> >   	struct qi_desc desc;
-> >   
-> > +	desc.low = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
-> > +		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
-> > +	desc.high = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_GL(global) |
-> > +		QI_EIOTLB_IH(0) | QI_EIOTLB_AM(size_order);
-> > +	qi_submit_sync(&desc, iommu);
-> > +}
-> > +
-> > +void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16
-> > pfsid,
-> > +			u16 qdep, u64 addr, unsigned mask)
-> > +{
-> > +	struct qi_desc desc;
-> > +
-> > +	pr_debug_ratelimited("%s: sid %d, pfsid %d, qdep %d, addr
-> > %llx, mask %d\n",
-> > +		__func__, sid, pfsid, qdep, addr, mask);
-> >   	if (mask) {
-> >   		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) -
-> > 1)); addr |= (1ULL << (VTD_PAGE_SHIFT + mask - 1)) - 1;
-> > @@ -1352,7 +1366,40 @@ void qi_flush_dev_iotlb(struct intel_iommu
-> > *iommu, u16 sid, u16 qdep, qdep = 0;
-> >   
-> >   	desc.low = QI_DEV_IOTLB_SID(sid) |
-> > QI_DEV_IOTLB_QDEP(qdep) |
-> > -		   QI_DIOTLB_TYPE;
-> > +		   QI_DIOTLB_TYPE | QI_DEV_IOTLB_SID(pfsid);  
-> So this change just combining sid and pfsid together, i.e. (sid | 
-> pfsid)? What if both of them are not zero?
-I made a mistake here, it should be:
-	   QI_DIOTLB_TYPE | QI_DEV_IOTLB_PFSID(pfsid);
 
-Thanks for the catch.
+On 2017/10/12 20:59, Robin Murphy wrote:
+> On 12/10/17 13:31, Wei Hu (Xavier) wrote:
+>>
+>> On 2017/10/1 0:10, Leon Romanovsky wrote:
+>>> On Sat, Sep 30, 2017 at 05:28:59PM +0800, Wei Hu (Xavier) wrote:
+>>>> If the IOMMU is enabled, the length of sg obtained from
+>>>> __iommu_map_sg_attrs is not 4kB. When the IOVA is set with the sg
+>>>> dma address, the IOVA will not be page continuous. and the VA
+>>>> returned from dma_alloc_coherent is a vmalloc address. However,
+>>>> the VA obtained by the page_address is a discontinuous VA. Under
+>>>> these circumstances, the IOVA should be calculated based on the
+>>>> sg length, and record the VA returned from dma_alloc_coherent
+>>>> in the struct of hem.
+>>>>
+>>>> Signed-off-by: Wei Hu (Xavier) <xavier.huwei@huawei.com>
+>>>> Signed-off-by: Shaobo Xu <xushaobo2@huawei.com>
+>>>> Signed-off-by: Lijun Ou <oulijun@huawei.com>
+>>>> ---
+>>> Doug,
+>>>
+>>> I didn't invest time in reviewing it, but having "is_vmalloc_addr" in
+>>> driver code to deal with dma_alloc_coherent is most probably wrong.
+>>>
+>>> Thanks
+>> Hi,  Leon & Doug
+>>     We refered the function named __ttm_dma_alloc_page in the kernel
+>> code as below:
+>>     And there are similar methods in bch_bio_map and mem_to_page
+>> functions in current 4.14-rcx.
+>>
+>>         static struct dma_page *__ttm_dma_alloc_page(struct dma_pool *pool)
+>>         {
+>>             struct dma_page *d_page;
+>>
+>>             d_page = kmalloc(sizeof(struct dma_page), GFP_KERNEL);
+>>             if (!d_page)
+>>                 return NULL;
+>>
+>>             d_page->vaddr = dma_alloc_coherent(pool->dev, pool->size,
+>>                                &d_page->dma,
+>>                                    pool->gfp_flags);
+>>             if (d_page->vaddr) {
+>>                 if (is_vmalloc_addr(d_page->vaddr))
+>>                     d_page->p = vmalloc_to_page(d_page->vaddr);
+>>                 else
+>>                     d_page->p = virt_to_page(d_page->vaddr);
+> There are cases on various architectures where neither of those is
+> right. Whether those actually intersect with TTM or RDMA use-cases is
+> another matter, of course.
+>
+> What definitely is a problem is if you ever take that page and end up
+> accessing it through any virtual address other than the one explicitly
+> returned by dma_alloc_coherent(). That can blow the coherency wide open
+> and invite data loss, right up to killing the whole system with a
+> machine check on certain architectures.
+>
+> Robin.
+Hi, Robin
+    Thanks for your comment.
 
-Jacob
->  [...]  
-> 
+    We have one problem and the related code as below.
+    1. call dma_alloc_coherent function  serval times to alloc memory.
+    2. vmap the allocated memory pages.
+    3. software access memory by using the return virt addr of vmap
+        and hardware using the dma addr of dma_alloc_coherent.
+ 
+    When IOMMU is disabled in ARM64 architecture, we use virt_to_page()
+    before vmap(), it works. And when IOMMU is enabled using
+    virt_to_page() will cause calltrace later, we found the return
+    addr of dma_alloc_coherent is vmalloc addr, so we add the
+    condition judgement statement as below, it works. 
+        for (i = 0; i < buf->nbufs; ++i)
+                pages[i] =
+                    is_vmalloc_addr(buf->page_list[i].buf) ?
+                    vmalloc_to_page(buf->page_list[i].buf) :
+                    virt_to_page(buf->page_list[i].buf);
+    Can you give us suggestion? better method?
 
-[Jacob Pan]
+    The related code as below:
+        buf->page_list = kcalloc(buf->nbufs, sizeof(*buf->page_list),
+                     GFP_KERNEL);
+        if (!buf->page_list)
+            return -ENOMEM;
+
+        for (i = 0; i < buf->nbufs; ++i) {
+            buf->page_list[i].buf = dma_alloc_coherent(dev,
+                                  page_size, &t,
+                                  GFP_KERNEL);
+            if (!buf->page_list[i].buf)
+                goto err_free;
+
+            buf->page_list[i].map = t;
+            memset(buf->page_list[i].buf, 0, page_size);
+        }
+
+        pages = kmalloc_array(buf->nbufs, sizeof(*pages),
+                          GFP_KERNEL);
+        if (!pages)
+                goto err_free;
+
+        for (i = 0; i < buf->nbufs; ++i)
+                pages[i] =
+                    is_vmalloc_addr(buf->page_list[i].buf) ?
+                    vmalloc_to_page(buf->page_list[i].buf) :
+                    virt_to_page(buf->page_list[i].buf);
+
+        buf->direct.buf = vmap(pages, buf->nbufs, VM_MAP,
+                           PAGE_KERNEL);
+        kfree(pages);
+        if (!buf->direct.buf)
+                goto err_free;
+
+    Regards
+Wei Hu
+>>             } else {
+>>                 kfree(d_page);
+>>                 d_page = NULL;
+>>             }
+>>             return d_page;
+>>         }
+>>
+>>     Regards
+>> Wei Hu
+>>>>   drivers/infiniband/hw/hns/hns_roce_alloc.c |  5 ++++-
+>>>>   drivers/infiniband/hw/hns/hns_roce_hem.c   | 30
+>>>> +++++++++++++++++++++++++++---
+>>>>   drivers/infiniband/hw/hns/hns_roce_hem.h   |  6 ++++++
+>>>>   drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 22 +++++++++++++++-------
+>>>>   4 files changed, 52 insertions(+), 11 deletions(-)
+>>>>
+>>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>>> b/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>>> index 3e4c525..a69cd4b 100644
+>>>> --- a/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>>> +++ b/drivers/infiniband/hw/hns/hns_roce_alloc.c
+>>>> @@ -243,7 +243,10 @@ int hns_roce_buf_alloc(struct hns_roce_dev
+>>>> *hr_dev, u32 size, u32 max_direct,
+>>>>                   goto err_free;
+>>>>
+>>>>               for (i = 0; i < buf->nbufs; ++i)
+>>>> -                pages[i] = virt_to_page(buf->page_list[i].buf);
+>>>> +                pages[i] =
+>>>> +                    is_vmalloc_addr(buf->page_list[i].buf) ?
+>>>> +                    vmalloc_to_page(buf->page_list[i].buf) :
+>>>> +                    virt_to_page(buf->page_list[i].buf);
+>>>>
+>>>>               buf->direct.buf = vmap(pages, buf->nbufs, VM_MAP,
+>>>>                              PAGE_KERNEL);
+>>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>>> b/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>>> index 8388ae2..4a3d1d4 100644
+>>>> --- a/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>>> +++ b/drivers/infiniband/hw/hns/hns_roce_hem.c
+>>>> @@ -200,6 +200,7 @@ static struct hns_roce_hem
+>>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>>                              gfp_t gfp_mask)
+>>>>   {
+>>>>       struct hns_roce_hem_chunk *chunk = NULL;
+>>>> +    struct hns_roce_vmalloc *vmalloc;
+>>>>       struct hns_roce_hem *hem;
+>>>>       struct scatterlist *mem;
+>>>>       int order;
+>>>> @@ -227,6 +228,7 @@ static struct hns_roce_hem
+>>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>>               sg_init_table(chunk->mem, HNS_ROCE_HEM_CHUNK_LEN);
+>>>>               chunk->npages = 0;
+>>>>               chunk->nsg = 0;
+>>>> +            memset(chunk->vmalloc, 0, sizeof(chunk->vmalloc));
+>>>>               list_add_tail(&chunk->list, &hem->chunk_list);
+>>>>           }
+>>>>
+>>>> @@ -243,7 +245,15 @@ static struct hns_roce_hem
+>>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>>           if (!buf)
+>>>>               goto fail;
+>>>>
+>>>> -        sg_set_buf(mem, buf, PAGE_SIZE << order);
+>>>> +        if (is_vmalloc_addr(buf)) {
+>>>> +            vmalloc = &chunk->vmalloc[chunk->npages];
+>>>> +            vmalloc->is_vmalloc_addr = true;
+>>>> +            vmalloc->vmalloc_addr = buf;
+>>>> +            sg_set_page(mem, vmalloc_to_page(buf),
+>>>> +                    PAGE_SIZE << order, offset_in_page(buf));
+>>>> +        } else {
+>>>> +            sg_set_buf(mem, buf, PAGE_SIZE << order);
+>>>> +        }
+>>>>           WARN_ON(mem->offset);
+>>>>           sg_dma_len(mem) = PAGE_SIZE << order;
+>>>>
+>>>> @@ -262,17 +272,25 @@ static struct hns_roce_hem
+>>>> *hns_roce_alloc_hem(struct hns_roce_dev *hr_dev,
+>>>>   void hns_roce_free_hem(struct hns_roce_dev *hr_dev, struct
+>>>> hns_roce_hem *hem)
+>>>>   {
+>>>>       struct hns_roce_hem_chunk *chunk, *tmp;
+>>>> +    void *cpu_addr;
+>>>>       int i;
+>>>>
+>>>>       if (!hem)
+>>>>           return;
+>>>>
+>>>>       list_for_each_entry_safe(chunk, tmp, &hem->chunk_list, list) {
+>>>> -        for (i = 0; i < chunk->npages; ++i)
+>>>> +        for (i = 0; i < chunk->npages; ++i) {
+>>>> +            if (chunk->vmalloc[i].is_vmalloc_addr)
+>>>> +                cpu_addr = chunk->vmalloc[i].vmalloc_addr;
+>>>> +            else
+>>>> +                cpu_addr =
+>>>> +                   lowmem_page_address(sg_page(&chunk->mem[i]));
+>>>> +
+>>>>               dma_free_coherent(hr_dev->dev,
+>>>>                      chunk->mem[i].length,
+>>>> -                   lowmem_page_address(sg_page(&chunk->mem[i])),
+>>>> +                   cpu_addr,
+>>>>                      sg_dma_address(&chunk->mem[i]));
+>>>> +        }
+>>>>           kfree(chunk);
+>>>>       }
+>>>>
+>>>> @@ -774,6 +792,12 @@ void *hns_roce_table_find(struct hns_roce_dev
+>>>> *hr_dev,
+>>>>
+>>>>               if (chunk->mem[i].length > (u32)offset) {
+>>>>                   page = sg_page(&chunk->mem[i]);
+>>>> +                if (chunk->vmalloc[i].is_vmalloc_addr) {
+>>>> +                    mutex_unlock(&table->mutex);
+>>>> +                    return page ?
+>>>> +                        chunk->vmalloc[i].vmalloc_addr
+>>>> +                        + offset : NULL;
+>>>> +                }
+>>>>                   goto out;
+>>>>               }
+>>>>               offset -= chunk->mem[i].length;
+>>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>>> b/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>>> index af28bbf..62d712a 100644
+>>>> --- a/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>>> +++ b/drivers/infiniband/hw/hns/hns_roce_hem.h
+>>>> @@ -72,11 +72,17 @@ enum {
+>>>>        HNS_ROCE_HEM_PAGE_SIZE  = 1 << HNS_ROCE_HEM_PAGE_SHIFT,
+>>>>   };
+>>>>
+>>>> +struct hns_roce_vmalloc {
+>>>> +    bool    is_vmalloc_addr;
+>>>> +    void    *vmalloc_addr;
+>>>> +};
+>>>> +
+>>>>   struct hns_roce_hem_chunk {
+>>>>       struct list_head     list;
+>>>>       int             npages;
+>>>>       int             nsg;
+>>>>       struct scatterlist     mem[HNS_ROCE_HEM_CHUNK_LEN];
+>>>> +    struct hns_roce_vmalloc     vmalloc[HNS_ROCE_HEM_CHUNK_LEN];
+>>>>   };
+>>>>
+>>>>   struct hns_roce_hem {
+>>>> diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>>> b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>>> index b99d70a..9e19bf1 100644
+>>>> --- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>>> +++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+>>>> @@ -1093,9 +1093,11 @@ static int hns_roce_v2_write_mtpt(void
+>>>> *mb_buf, struct hns_roce_mr *mr,
+>>>>   {
+>>>>       struct hns_roce_v2_mpt_entry *mpt_entry;
+>>>>       struct scatterlist *sg;
+>>>> +    u64 page_addr = 0;
+>>>>       u64 *pages;
+>>>> +    int i = 0, j = 0;
+>>>> +    int len = 0;
+>>>>       int entry;
+>>>> -    int i;
+>>>>
+>>>>       mpt_entry = mb_buf;
+>>>>       memset(mpt_entry, 0, sizeof(*mpt_entry));
+>>>> @@ -1153,14 +1155,20 @@ static int hns_roce_v2_write_mtpt(void
+>>>> *mb_buf, struct hns_roce_mr *mr,
+>>>>
+>>>>       i = 0;
+>>>>       for_each_sg(mr->umem->sg_head.sgl, sg, mr->umem->nmap, entry) {
+>>>> -        pages[i] = ((u64)sg_dma_address(sg)) >> 6;
+>>>> -
+>>>> -        /* Record the first 2 entry directly to MTPT table */
+>>>> -        if (i >= HNS_ROCE_V2_MAX_INNER_MTPT_NUM - 1)
+>>>> -            break;
+>>>> -        i++;
+>>>> +        len = sg_dma_len(sg) >> PAGE_SHIFT;
+>>>> +        for (j = 0; j < len; ++j) {
+>>>> +            page_addr = sg_dma_address(sg) +
+>>>> +                    (j << mr->umem->page_shift);
+>>>> +            pages[i] = page_addr >> 6;
+>>>> +
+>>>> +            /* Record the first 2 entry directly to MTPT table */
+>>>> +            if (i >= HNS_ROCE_V2_MAX_INNER_MTPT_NUM - 1)
+>>>> +                goto found;
+>>>> +            i++;
+>>>> +        }
+>>>>       }
+>>>>
+>>>> +found:
+>>>>       mpt_entry->pa0_l = cpu_to_le32(lower_32_bits(pages[0]));
+>>>>       roce_set_field(mpt_entry->byte_56_pa0_h, V2_MPT_BYTE_56_PA0_H_M,
+>>>>                  V2_MPT_BYTE_56_PA0_H_S,
+>>>> -- 
+>>>> 1.9.1
+>>>>
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
+> .
+>
+
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
