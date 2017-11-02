@@ -1,165 +1,78 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
-Date: Thu, 2 Nov 2017 16:20:44 +0000
-Message-ID: <bc535e79-bb07-70bc-07d2-2c86c9009239@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to and
+	from devices
+Date: Thu, 2 Nov 2017 16:21:17 +0000
+Message-ID: <146ab3f9-6031-fba8-6aea-86e392ad7ec5@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-2-jean-philippe.brucker@arm.com>
- <29100eb4-ab8a-a10e-f23b-356658d9a925@codeaurora.org>
+	<20171006133203.22803-6-jean-philippe.brucker@arm.com>
+	<683a518d-0e22-c855-2416-2e097ec3291d@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <29100eb4-ab8a-a10e-f23b-356658d9a925@codeaurora.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <683a518d-0e22-c855-2416-2e097ec3291d-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Sinan Kaya <okaya@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, gabriele.paoloni@huawe
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sinan,
-
-Sorry for the delay, thanks for reviewing this!
-
-On 21/10/17 00:32, Sinan Kaya wrote:
-> few nits below.
+On 21/10/17 16:47, Sinan Kaya wrote:
+> Just some improvement suggestions.
 > 
->> +/*
->> + * Allocate a iommu_process structure for the given task.
->> + *
->> + * Ideally we shouldn't need the domain parameter, since iommu_process is
->> + * system-wide, but we use it to retrieve the driver's allocation ops and a
->> + * PASID range.
->> + */
->> +static struct iommu_process *
->> +iommu_process_alloc(struct iommu_domain *domain, struct task_struct *task)
->> +{
->> +	int err;
->> +	int pasid;
->> +	struct iommu_process *process;
->> +
->> +	if (WARN_ON(!domain->ops->process_alloc || !domain->ops->process_free))
->> +		return ERR_PTR(-ENODEV);
->> +
->> +	process = domain->ops->process_alloc(task);
->> +	if (IS_ERR(process))
->> +		return process;
->> +	if (!process)
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	process->pid		= get_task_pid(task, PIDTYPE_PID);
->> +	process->release	= domain->ops->process_free;
->> +	INIT_LIST_HEAD(&process->domains);
->> +	kref_init(&process->kref);
->> +
-> nit, I think you should place this check right after the pid assignment.
-
-Sure
-
->> +	if (!process->pid) {
->> +		err = -EINVAL;
->> +		goto err_free_process;
->> +	}
->> +
->> +	idr_preload(GFP_KERNEL);
+> On 10/6/2017 9:31 AM, Jean-Philippe Brucker wrote:
 >> +	spin_lock(&iommu_process_lock);
->> +	pasid = idr_alloc_cyclic(&iommu_process_idr, process, domain->min_pasid,
->> +				 domain->max_pasid + 1, GFP_ATOMIC);
->> +	process->pasid = pasid;
->> +	spin_unlock(&iommu_process_lock);
->> +	idr_preload_end();
->> +
+>> +	idr_for_each_entry(&iommu_process_idr, process, i) {
+>> +		if (process->pid != pid)
+>> +			continue;
+> if you see this construct a lot, this could be a for_each_iommu_process.
 > 
-> nit, You can maybe return here if pasid is not negative.
-
-Ok
-
->> +	if (pasid < 0) {
->> +		err = pasid;
->> +		goto err_put_pid;
+>> +
+>> +		if (!iommu_process_get_locked(process)) {
+>> +			/* Process is defunct, create a new one */
+>> +			process = NULL;
+>> +			break;
+>> +		}
+>> +
+>> +		/* Great, is it also bound to this domain? */
+>> +		list_for_each_entry(cur_context, &process->domains,
+>> +				    process_head) {
+>> +			if (cur_context->domain != domain)
+>> +				continue;
+> if you see this construct a lot, this could be a for_each_iommu_process_domain.
+> 
+>> +
+>> +			context = cur_context;
+>> +			*pasid = process->pasid;
+>> +
+>> +			/* Splendid, tell the driver and increase the ref */
+>> +			err = iommu_process_attach_locked(context, dev);
+>> +			if (err)
+>> +				iommu_process_put_locked(process);
+>> +
+>> +			break;
+>> +		}
+>> +		break;
 >> +	}
+>> +	spin_unlock(&iommu_process_lock);
+>> +	put_pid(pid);
 >> +
->> +	return process;
->> +
->> +err_put_pid:
->> +	put_pid(process->pid);
->> +
->> +err_free_process:
->> +	domain->ops->process_free(process);
->> +
->> +	return ERR_PTR(err);
->> +}
->> +
->> +static void iommu_process_release(struct kref *kref)
->> +{
->> +	struct iommu_process *process;
->> +	void (*release)(struct iommu_process *);
->> +
->> +	assert_spin_locked(&iommu_process_lock);
->> +
->> +	process = container_of(kref, struct iommu_process, kref);
+>> +	if (context)
+>> +		return err;
 > 
-> if we are concerned about things going wrong (assert above), we should
-> also add some pointer check here (WARN) for process and release pointers as well.
+> I think you should make the section above a independent function and return here when the
+> context is found.
 
-We can probably get rid of this assert, as any external users releasing
-the process will have to go through iommu_process_put() which takes the
-lock. process_alloc() ensures that release isn't NULL, and process should
-always be valid here since we're being called from kref_put, but I should
-check the value in process_put.
-
->> +	release = process->release;
->> +
->> +	WARN_ON(!list_empty(&process->domains));
->> +
->> +	idr_remove(&iommu_process_idr, process->pasid);
->> +	put_pid(process->pid);
->> +	release(process);
->> +}
->> +
->> +/*
->> + * Returns non-zero if a reference to the process was successfully taken.
->> + * Returns zero if the process is being freed and should not be used.
->> + */
->> +static int iommu_process_get_locked(struct iommu_process *process)
->> +{
->> +	assert_spin_locked(&iommu_process_lock);
->> +
->> +	if (process)
->> +		return kref_get_unless_zero(&process->kref);
->> +
->> +	return 0;
->> +}
->> +
->> +static void iommu_process_put_locked(struct iommu_process *process)
->> +{
->> +	assert_spin_locked(&iommu_process_lock);
->> +
->> +	kref_put(&process->kref, iommu_process_release);
->> +}
->> +
->> +static int iommu_process_attach(struct iommu_domain *domain, struct device *dev,
->> +				struct iommu_process *process)
->> +{
->> +	int err;
->> +	int pasid = process->pasid;
->> +	struct iommu_context *context;
->> +
->> +	if (WARN_ON(!domain->ops->process_attach || !domain->ops->process_detach))
->> +		return -ENODEV;
->> +
->> +	if (pasid > domain->max_pasid || pasid < domain->min_pasid)
->> +		return -ENOSPC;
->> +
->> +	context = kzalloc(sizeof(*context), GFP_KERNEL);
->> +	if (!context)
->> +		return -ENOMEM;
->> +
-> 
-> devm_kzalloc maybe?
-
-I don't think we can ever leak contexts. Before the device is released, it
-has to detach() from the domain, which will unbind from any process (call
-unbind_dev_all()).
+Hopefully this code will only be needed for bind(), but moving it to a
+separate function should look better.
 
 Thanks,
 Jean
