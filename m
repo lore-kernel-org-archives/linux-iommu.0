@@ -1,104 +1,165 @@
-From: Jean-Philippe Brucker <Jean-Philippe.Brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for Substream
- IDs
-Date: Thu, 2 Nov 2017 15:51:53 +0000
-Message-ID: <20171102155152.GA11899@e106794-lin.localdomain>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
+Date: Thu, 2 Nov 2017 16:20:44 +0000
+Message-ID: <bc535e79-bb07-70bc-07d2-2c86c9009239@arm.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-15-jean-philippe.brucker@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA838454887@FRAEML521-MBX.china.huawei.com>
+ <20171006133203.22803-2-jean-philippe.brucker@arm.com>
+ <29100eb4-ab8a-a10e-f23b-356658d9a925@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838454887@FRAEML521-MBX.china.huawei.com>
+In-Reply-To: <29100eb4-ab8a-a10e-f23b-356658d9a925@codeaurora.org>
+Content-Language: en-US
 Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Mark Rutland <Mark.Rutland@arm.com>, "xieyisheng (A)" <xieyisheng1@huawei.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>, joro@8bytes.org
+To: Sinan Kaya <okaya@codeaurora.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, gabriele.paoloni@huawe
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Shameer,
+Hi Sinan,
 
-On Thu, Nov 02, 2017 at 12:49:32PM +0000, Shameerali Kolothum Thodi wrote:
-> We had a go with this series on HiSIlicon D05 platform which doesn't have
-> support for ssids/ATS/PRI, to make sure it generally works.
-> 
-> But observed the below crash on boot,
-> 
-> [   16.009084] WARNING: CPU: 59 PID: 391 at mm/page_alloc.c:3883 __alloc_pages_nodemask+0x19c/0xc48
-> [   16.026797] Modules linked in:
-> [   16.032944] CPU: 59 PID: 391 Comm: kworker/59:1 Not tainted 4.14.0-rc1-159539-ge42aca3 #236
-> [...]
-> [   16.068206] Workqueue: events deferred_probe_work_func
-> [   16.078557] task: ffff8017d38a0000 task.stack: ffff00000b198000
-> [   16.090486] PC is at __alloc_pages_nodemask+0x19c/0xc48
-> [   16.101013] LR is at __alloc_pages_nodemask+0xe0/0xc48
-> [   16.469220] [<ffff000008186b94>] __alloc_pages_nodemask+0x19c/0xc48
-> [   16.481854] [<ffff0000081d65b0>] alloc_pages_current+0x80/0xcc
-> [   16.493607] [<ffff000008182be8>] __get_free_pages+0xc/0x38
-> [   16.504661] [<ffff0000083c4d58>] swiotlb_alloc_coherent+0x64/0x190
-> [   16.517117] [<ffff00000809824c>] __dma_alloc+0x110/0x204
-> [   16.527820] [<ffff00000858e850>] dmam_alloc_coherent+0x88/0xf0
-> [   16.539575] [<ffff000008568884>] arm_smmu_domain_finalise_s1+0x60/0x248
-> [   16.552909] [<ffff00000856c104>] arm_smmu_attach_dev+0x264/0x300
-> [   16.565013] [<ffff00000855d40c>] __iommu_attach_device+0x48/0x5c
-> [   16.577117] [<ffff00000855e698>] iommu_group_add_device+0x144/0x3a4
-> [   16.589746] [<ffff00000855ed18>] iommu_group_get_for_dev+0x70/0xf8
-> [   16.602201] [<ffff00000856a314>] arm_smmu_add_device+0x1a4/0x418
-> [   16.614308] [<ffff00000849dfcc>] iort_iommu_configure+0xf0/0x16c
-> [   16.626416] [<ffff000008468c50>] acpi_dma_configure+0x30/0x70
-> [   16.637994] [<ffff00000858f00c>] dma_configure+0xa8/0xd4
-> [   16.648695] [<ffff00000857706c>] driver_probe_device+0x1a4/0x2dc
-> [   16.673081] [<ffff0000085752c8>] bus_for_each_drv+0x54/0x94
-> [   16.684307] [<ffff000008576db0>] __device_attach+0xc4/0x12c
-> [   16.695533] [<ffff000008577350>] device_initial_probe+0x10/0x18
-> [   16.707462] [<ffff0000085762b4>] bus_probe_device+0x90/0x98
-> 
-> After a bit of debug it looks like on platforms where ssid is not supported,
-> s1_cfg.num_contexts is set to zero and it eventually results in this crash 
-> in,
-> arm_smmu_domain_finalise_s1() -->arm_smmu_alloc_cd_tables()-->
-> arm_smmu_alloc_cd_leaf_table() as num_leaf_entries is zero.
-> 
-> With the below fix, it works on D05 now,
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 8ad90e2..51f5821 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2433,7 +2433,10 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
->                         domain->min_pasid = 1;
->                         domain->max_pasid = master->num_ssids - 1;
->                         smmu_domain->s1_cfg.num_contexts = master->num_ssids;
-> +               } else {
-> +                       smmu_domain->s1_cfg.num_contexts = 1;
->                 }
-> +
->                 smmu_domain->s1_cfg.can_stall = master->ste.can_stall;
->                 break;
->         case ARM_SMMU_DOMAIN_NESTED:
-> 
-> 
-> I am not sure this is right place do this. Please take a look.
+Sorry for the delay, thanks for reviewing this!
 
-Thanks for testing the series and reporting the bug. I added the
-following patch to branch svm/current, does it work for you?
+On 21/10/17 00:32, Sinan Kaya wrote:
+> few nits below.
+> 
+>> +/*
+>> + * Allocate a iommu_process structure for the given task.
+>> + *
+>> + * Ideally we shouldn't need the domain parameter, since iommu_process is
+>> + * system-wide, but we use it to retrieve the driver's allocation ops and a
+>> + * PASID range.
+>> + */
+>> +static struct iommu_process *
+>> +iommu_process_alloc(struct iommu_domain *domain, struct task_struct *task)
+>> +{
+>> +	int err;
+>> +	int pasid;
+>> +	struct iommu_process *process;
+>> +
+>> +	if (WARN_ON(!domain->ops->process_alloc || !domain->ops->process_free))
+>> +		return ERR_PTR(-ENODEV);
+>> +
+>> +	process = domain->ops->process_alloc(task);
+>> +	if (IS_ERR(process))
+>> +		return process;
+>> +	if (!process)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	process->pid		= get_task_pid(task, PIDTYPE_PID);
+>> +	process->release	= domain->ops->process_free;
+>> +	INIT_LIST_HEAD(&process->domains);
+>> +	kref_init(&process->kref);
+>> +
+> nit, I think you should place this check right after the pid assignment.
+
+Sure
+
+>> +	if (!process->pid) {
+>> +		err = -EINVAL;
+>> +		goto err_free_process;
+>> +	}
+>> +
+>> +	idr_preload(GFP_KERNEL);
+>> +	spin_lock(&iommu_process_lock);
+>> +	pasid = idr_alloc_cyclic(&iommu_process_idr, process, domain->min_pasid,
+>> +				 domain->max_pasid + 1, GFP_ATOMIC);
+>> +	process->pasid = pasid;
+>> +	spin_unlock(&iommu_process_lock);
+>> +	idr_preload_end();
+>> +
+> 
+> nit, You can maybe return here if pasid is not negative.
+
+Ok
+
+>> +	if (pasid < 0) {
+>> +		err = pasid;
+>> +		goto err_put_pid;
+>> +	}
+>> +
+>> +	return process;
+>> +
+>> +err_put_pid:
+>> +	put_pid(process->pid);
+>> +
+>> +err_free_process:
+>> +	domain->ops->process_free(process);
+>> +
+>> +	return ERR_PTR(err);
+>> +}
+>> +
+>> +static void iommu_process_release(struct kref *kref)
+>> +{
+>> +	struct iommu_process *process;
+>> +	void (*release)(struct iommu_process *);
+>> +
+>> +	assert_spin_locked(&iommu_process_lock);
+>> +
+>> +	process = container_of(kref, struct iommu_process, kref);
+> 
+> if we are concerned about things going wrong (assert above), we should
+> also add some pointer check here (WARN) for process and release pointers as well.
+
+We can probably get rid of this assert, as any external users releasing
+the process will have to go through iommu_process_put() which takes the
+lock. process_alloc() ensures that release isn't NULL, and process should
+always be valid here since we're being called from kref_put, but I should
+check the value in process_put.
+
+>> +	release = process->release;
+>> +
+>> +	WARN_ON(!list_empty(&process->domains));
+>> +
+>> +	idr_remove(&iommu_process_idr, process->pasid);
+>> +	put_pid(process->pid);
+>> +	release(process);
+>> +}
+>> +
+>> +/*
+>> + * Returns non-zero if a reference to the process was successfully taken.
+>> + * Returns zero if the process is being freed and should not be used.
+>> + */
+>> +static int iommu_process_get_locked(struct iommu_process *process)
+>> +{
+>> +	assert_spin_locked(&iommu_process_lock);
+>> +
+>> +	if (process)
+>> +		return kref_get_unless_zero(&process->kref);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void iommu_process_put_locked(struct iommu_process *process)
+>> +{
+>> +	assert_spin_locked(&iommu_process_lock);
+>> +
+>> +	kref_put(&process->kref, iommu_process_release);
+>> +}
+>> +
+>> +static int iommu_process_attach(struct iommu_domain *domain, struct device *dev,
+>> +				struct iommu_process *process)
+>> +{
+>> +	int err;
+>> +	int pasid = process->pasid;
+>> +	struct iommu_context *context;
+>> +
+>> +	if (WARN_ON(!domain->ops->process_attach || !domain->ops->process_detach))
+>> +		return -ENODEV;
+>> +
+>> +	if (pasid > domain->max_pasid || pasid < domain->min_pasid)
+>> +		return -ENOSPC;
+>> +
+>> +	context = kzalloc(sizeof(*context), GFP_KERNEL);
+>> +	if (!context)
+>> +		return -ENOMEM;
+>> +
+> 
+> devm_kzalloc maybe?
+
+I don't think we can ever leak contexts. Before the device is released, it
+has to detach() from the domain, which will unbind from any process (call
+unbind_dev_all()).
 
 Thanks,
 Jean
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 42c8378624ed..edda466adc81 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -3169,9 +3169,7 @@ static int arm_smmu_add_device(struct device *dev)
-                }
-        }
-
--       if (smmu->ssid_bits)
--               master->num_ssids = 1 << min(smmu->ssid_bits,
--                                            fwspec->num_pasid_bits);
-+       master->num_ssids = 1 << min(smmu->ssid_bits, fwspec->num_pasid_bits);
-
-        if (fwspec->can_stall && smmu->features & ARM_SMMU_FEAT_STALLS) {
-                master->can_fault = true;
-
