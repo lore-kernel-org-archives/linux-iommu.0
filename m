@@ -1,78 +1,119 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to and
-	from devices
-Date: Thu, 2 Nov 2017 16:21:17 +0000
-Message-ID: <146ab3f9-6031-fba8-6aea-86e392ad7ec5@arm.com>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for
+ Substream IDs
+Date: Thu, 2 Nov 2017 17:02:27 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA838454A9B@FRAEML521-MBX.china.huawei.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-6-jean-philippe.brucker@arm.com>
-	<683a518d-0e22-c855-2416-2e097ec3291d@codeaurora.org>
+ <20171006133203.22803-15-jean-philippe.brucker@arm.com>
+ <5FC3163CFD30C246ABAA99954A238FA838454887@FRAEML521-MBX.china.huawei.com>
+ <20171102155152.GA11899@e106794-lin.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <683a518d-0e22-c855-2416-2e097ec3291d-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171102155152.GA11899@e106794-lin.localdomain>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Jean-Philippe Brucker <Jean-Philippe.Brucker@arm.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Mark Rutland <Mark.Rutland@arm.com>, "xieyisheng (A)" <xieyisheng1@huawei.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>, joro@8bytes.or
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/10/17 16:47, Sinan Kaya wrote:
-> Just some improvement suggestions.
-> 
-> On 10/6/2017 9:31 AM, Jean-Philippe Brucker wrote:
->> +	spin_lock(&iommu_process_lock);
->> +	idr_for_each_entry(&iommu_process_idr, process, i) {
->> +		if (process->pid != pid)
->> +			continue;
-> if you see this construct a lot, this could be a for_each_iommu_process.
-> 
->> +
->> +		if (!iommu_process_get_locked(process)) {
->> +			/* Process is defunct, create a new one */
->> +			process = NULL;
->> +			break;
->> +		}
->> +
->> +		/* Great, is it also bound to this domain? */
->> +		list_for_each_entry(cur_context, &process->domains,
->> +				    process_head) {
->> +			if (cur_context->domain != domain)
->> +				continue;
-> if you see this construct a lot, this could be a for_each_iommu_process_domain.
-> 
->> +
->> +			context = cur_context;
->> +			*pasid = process->pasid;
->> +
->> +			/* Splendid, tell the driver and increase the ref */
->> +			err = iommu_process_attach_locked(context, dev);
->> +			if (err)
->> +				iommu_process_put_locked(process);
->> +
->> +			break;
->> +		}
->> +		break;
->> +	}
->> +	spin_unlock(&iommu_process_lock);
->> +	put_pid(pid);
->> +
->> +	if (context)
->> +		return err;
-> 
-> I think you should make the section above a independent function and return here when the
-> context is found.
-
-Hopefully this code will only be needed for bind(), but moving it to a
-separate function should look better.
-
-Thanks,
-Jean
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmVhbi1QaGlsaXBwZSBC
+cnVja2VyIFttYWlsdG86SmVhbi1QaGlsaXBwZS5CcnVja2VyQGFybS5jb21dDQo+IFNlbnQ6IFRo
+dXJzZGF5LCBOb3ZlbWJlciAwMiwgMjAxNyAzOjUyIFBNDQo+IFRvOiBTaGFtZWVyYWxpIEtvbG90
+aHVtIFRob2RpIDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+DQo+IENjOiBs
+aW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LXBjaUB2Z2VyLmtlcm5l
+bC5vcmc7IGxpbnV4LQ0KPiBhY3BpQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtl
+cm5lbC5vcmc7IGlvbW11QGxpc3RzLmxpbnV4LQ0KPiBmb3VuZGF0aW9uLm9yZzsgTWFyayBSdXRs
+YW5kIDxNYXJrLlJ1dGxhbmRAYXJtLmNvbT47IHhpZXlpc2hlbmcgKEEpDQo+IDx4aWV5aXNoZW5n
+MUBodWF3ZWkuY29tPjsgR2FicmllbGUgUGFvbG9uaQ0KPiA8Z2FicmllbGUucGFvbG9uaUBodWF3
+ZWkuY29tPjsgQ2F0YWxpbiBNYXJpbmFzDQo+IDxDYXRhbGluLk1hcmluYXNAYXJtLmNvbT47IFdp
+bGwgRGVhY29uIDxXaWxsLkRlYWNvbkBhcm0uY29tPjsNCj4gb2theWFAY29kZWF1cm9yYS5vcmc7
+IHlpLmwubGl1QGludGVsLmNvbTsgTG9yZW56byBQaWVyYWxpc2kNCj4gPExvcmVuem8uUGllcmFs
+aXNpQGFybS5jb20+OyBhc2hvay5yYWpAaW50ZWwuY29tOyB0bkBzZW1paGFsZi5jb207DQo+IGpv
+cm9AOGJ5dGVzLm9yZzsgcmZyYW56QGNhdml1bS5jb207IGxlbmJAa2VybmVsLm9yZzsNCj4gamFj
+b2IuanVuLnBhbkBsaW51eC5pbnRlbC5jb207IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tOw0K
+PiByb2JoK2R0QGtlcm5lbC5vcmc7IExlaXpoZW4gKFRodW5kZXJUb3duKSA8dGh1bmRlci5sZWl6
+aGVuQGh1YXdlaS5jb20+Ow0KPiBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBkd213MkBpbmZyYWRlYWQu
+b3JnOyBsaXVibyAoQ1UpDQo+IDxsaXVibzk1QGh1YXdlaS5jb20+OyByandAcmp3eXNvY2tpLm5l
+dDsgcm9iZGNsYXJrQGdtYWlsLmNvbTsNCj4gaGFuanVuLmd1b0BsaW5hcm8ub3JnOyBTdWRlZXAg
+SG9sbGEgPFN1ZGVlcC5Ib2xsYUBhcm0uY29tPjsgUm9iaW4NCj4gTXVycGh5IDxSb2Jpbi5NdXJw
+aHlAYXJtLmNvbT47IG53YXR0ZXJzQGNvZGVhdXJvcmEub3JnOyBMaW51eGFybQ0KPiA8bGludXhh
+cm1AaHVhd2VpLmNvbT4NCj4gU3ViamVjdDogUmU6IFtSRkN2MiBQQVRDSCAxNC8zNl0gaW9tbXUv
+YXJtLXNtbXUtdjM6IEFkZCBzdXBwb3J0IGZvcg0KPiBTdWJzdHJlYW0gSURzDQo+IA0KPiBIaSBT
+aGFtZWVyLA0KPiANCj4gT24gVGh1LCBOb3YgMDIsIDIwMTcgYXQgMTI6NDk6MzJQTSArMDAwMCwg
+U2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSB3cm90ZToNCj4gPiBXZSBoYWQgYSBnbyB3aXRoIHRo
+aXMgc2VyaWVzIG9uIEhpU0lsaWNvbiBEMDUgcGxhdGZvcm0gd2hpY2ggZG9lc24ndCBoYXZlDQo+
+ID4gc3VwcG9ydCBmb3Igc3NpZHMvQVRTL1BSSSwgdG8gbWFrZSBzdXJlIGl0IGdlbmVyYWxseSB3
+b3Jrcy4NCj4gPg0KPiA+IEJ1dCBvYnNlcnZlZCB0aGUgYmVsb3cgY3Jhc2ggb24gYm9vdCwNCj4g
+Pg0KPiA+IFsgICAxNi4wMDkwODRdIFdBUk5JTkc6IENQVTogNTkgUElEOiAzOTEgYXQgbW0vcGFn
+ZV9hbGxvYy5jOjM4ODMNCj4gX19hbGxvY19wYWdlc19ub2RlbWFzaysweDE5Yy8weGM0OA0KPiA+
+IFsgICAxNi4wMjY3OTddIE1vZHVsZXMgbGlua2VkIGluOg0KPiA+IFsgICAxNi4wMzI5NDRdIENQ
+VTogNTkgUElEOiAzOTEgQ29tbToga3dvcmtlci81OToxIE5vdCB0YWludGVkIDQuMTQuMC1yYzEt
+DQo+IDE1OTUzOS1nZTQyYWNhMyAjMjM2DQo+ID4gWy4uLl0NCj4gPiBbICAgMTYuMDY4MjA2XSBX
+b3JrcXVldWU6IGV2ZW50cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMNCj4gPiBbICAgMTYuMDc4
+NTU3XSB0YXNrOiBmZmZmODAxN2QzOGEwMDAwIHRhc2suc3RhY2s6IGZmZmYwMDAwMGIxOTgwMDAN
+Cj4gPiBbICAgMTYuMDkwNDg2XSBQQyBpcyBhdCBfX2FsbG9jX3BhZ2VzX25vZGVtYXNrKzB4MTlj
+LzB4YzQ4DQo+ID4gWyAgIDE2LjEwMTAxM10gTFIgaXMgYXQgX19hbGxvY19wYWdlc19ub2RlbWFz
+aysweGUwLzB4YzQ4DQo+ID4gWyAgIDE2LjQ2OTIyMF0gWzxmZmZmMDAwMDA4MTg2Yjk0Pl0gX19h
+bGxvY19wYWdlc19ub2RlbWFzaysweDE5Yy8weGM0OA0KPiA+IFsgICAxNi40ODE4NTRdIFs8ZmZm
+ZjAwMDAwODFkNjViMD5dIGFsbG9jX3BhZ2VzX2N1cnJlbnQrMHg4MC8weGNjDQo+ID4gWyAgIDE2
+LjQ5MzYwN10gWzxmZmZmMDAwMDA4MTgyYmU4Pl0gX19nZXRfZnJlZV9wYWdlcysweGMvMHgzOA0K
+PiA+IFsgICAxNi41MDQ2NjFdIFs8ZmZmZjAwMDAwODNjNGQ1OD5dIHN3aW90bGJfYWxsb2NfY29o
+ZXJlbnQrMHg2NC8weDE5MA0KPiA+IFsgICAxNi41MTcxMTddIFs8ZmZmZjAwMDAwODA5ODI0Yz5d
+IF9fZG1hX2FsbG9jKzB4MTEwLzB4MjA0DQo+ID4gWyAgIDE2LjUyNzgyMF0gWzxmZmZmMDAwMDA4
+NThlODUwPl0gZG1hbV9hbGxvY19jb2hlcmVudCsweDg4LzB4ZjANCj4gPiBbICAgMTYuNTM5NTc1
+XSBbPGZmZmYwMDAwMDg1Njg4ODQ+XQ0KPiBhcm1fc21tdV9kb21haW5fZmluYWxpc2VfczErMHg2
+MC8weDI0OA0KPiA+IFsgICAxNi41NTI5MDldIFs8ZmZmZjAwMDAwODU2YzEwND5dIGFybV9zbW11
+X2F0dGFjaF9kZXYrMHgyNjQvMHgzMDANCj4gPiBbICAgMTYuNTY1MDEzXSBbPGZmZmYwMDAwMDg1
+NWQ0MGM+XSBfX2lvbW11X2F0dGFjaF9kZXZpY2UrMHg0OC8weDVjDQo+ID4gWyAgIDE2LjU3NzEx
+N10gWzxmZmZmMDAwMDA4NTVlNjk4Pl0gaW9tbXVfZ3JvdXBfYWRkX2RldmljZSsweDE0NC8weDNh
+NA0KPiA+IFsgICAxNi41ODk3NDZdIFs8ZmZmZjAwMDAwODU1ZWQxOD5dIGlvbW11X2dyb3VwX2dl
+dF9mb3JfZGV2KzB4NzAvMHhmOA0KPiA+IFsgICAxNi42MDIyMDFdIFs8ZmZmZjAwMDAwODU2YTMx
+ND5dIGFybV9zbW11X2FkZF9kZXZpY2UrMHgxYTQvMHg0MTgNCj4gPiBbICAgMTYuNjE0MzA4XSBb
+PGZmZmYwMDAwMDg0OWRmY2M+XSBpb3J0X2lvbW11X2NvbmZpZ3VyZSsweGYwLzB4MTZjDQo+ID4g
+WyAgIDE2LjYyNjQxNl0gWzxmZmZmMDAwMDA4NDY4YzUwPl0gYWNwaV9kbWFfY29uZmlndXJlKzB4
+MzAvMHg3MA0KPiA+IFsgICAxNi42Mzc5OTRdIFs8ZmZmZjAwMDAwODU4ZjAwYz5dIGRtYV9jb25m
+aWd1cmUrMHhhOC8weGQ0DQo+ID4gWyAgIDE2LjY0ODY5NV0gWzxmZmZmMDAwMDA4NTc3MDZjPl0g
+ZHJpdmVyX3Byb2JlX2RldmljZSsweDFhNC8weDJkYw0KPiA+IFsgICAxNi42NzMwODFdIFs8ZmZm
+ZjAwMDAwODU3NTJjOD5dIGJ1c19mb3JfZWFjaF9kcnYrMHg1NC8weDk0DQo+ID4gWyAgIDE2LjY4
+NDMwN10gWzxmZmZmMDAwMDA4NTc2ZGIwPl0gX19kZXZpY2VfYXR0YWNoKzB4YzQvMHgxMmMNCj4g
+PiBbICAgMTYuNjk1NTMzXSBbPGZmZmYwMDAwMDg1NzczNTA+XSBkZXZpY2VfaW5pdGlhbF9wcm9i
+ZSsweDEwLzB4MTgNCj4gPiBbICAgMTYuNzA3NDYyXSBbPGZmZmYwMDAwMDg1NzYyYjQ+XSBidXNf
+cHJvYmVfZGV2aWNlKzB4OTAvMHg5OA0KPiA+DQo+ID4gQWZ0ZXIgYSBiaXQgb2YgZGVidWcgaXQg
+bG9va3MgbGlrZSBvbiBwbGF0Zm9ybXMgd2hlcmUgc3NpZCBpcyBub3Qgc3VwcG9ydGVkLA0KPiA+
+IHMxX2NmZy5udW1fY29udGV4dHMgaXMgc2V0IHRvIHplcm8gYW5kIGl0IGV2ZW50dWFsbHkgcmVz
+dWx0cyBpbiB0aGlzIGNyYXNoDQo+ID4gaW4sDQo+ID4gYXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNl
+X3MxKCkgLS0+YXJtX3NtbXVfYWxsb2NfY2RfdGFibGVzKCktLT4NCj4gPiBhcm1fc21tdV9hbGxv
+Y19jZF9sZWFmX3RhYmxlKCkgYXMgbnVtX2xlYWZfZW50cmllcyBpcyB6ZXJvLg0KPiA+DQo+ID4g
+V2l0aCB0aGUgYmVsb3cgZml4LCBpdCB3b3JrcyBvbiBEMDUgbm93LA0KPiA+DQo+ID4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNt
+bXUtdjMuYw0KPiA+IGluZGV4IDhhZDkwZTIuLjUxZjU4MjEgMTAwNjQ0DQo+ID4gLS0tIGEvZHJp
+dmVycy9pb21tdS9hcm0tc21tdS12My5jDQo+ID4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0tc21t
+dS12My5jDQo+ID4gQEAgLTI0MzMsNyArMjQzMywxMCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2Rv
+bWFpbl9maW5hbGlzZShzdHJ1Y3QNCj4gaW9tbXVfZG9tYWluICpkb21haW4sDQo+ID4gICAgICAg
+ICAgICAgICAgICAgICAgICAgZG9tYWluLT5taW5fcGFzaWQgPSAxOw0KPiA+ICAgICAgICAgICAg
+ICAgICAgICAgICAgIGRvbWFpbi0+bWF4X3Bhc2lkID0gbWFzdGVyLT5udW1fc3NpZHMgLSAxOw0K
+PiA+ICAgICAgICAgICAgICAgICAgICAgICAgIHNtbXVfZG9tYWluLT5zMV9jZmcubnVtX2NvbnRl
+eHRzID0gbWFzdGVyLT5udW1fc3NpZHM7DQo+ID4gKyAgICAgICAgICAgICAgIH0gZWxzZSB7DQo+
+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgc21tdV9kb21haW4tPnMxX2NmZy5udW1fY29udGV4
+dHMgPSAxOw0KPiA+ICAgICAgICAgICAgICAgICB9DQo+ID4gKw0KPiA+ICAgICAgICAgICAgICAg
+ICBzbW11X2RvbWFpbi0+czFfY2ZnLmNhbl9zdGFsbCA9IG1hc3Rlci0+c3RlLmNhbl9zdGFsbDsN
+Cj4gPiAgICAgICAgICAgICAgICAgYnJlYWs7DQo+ID4gICAgICAgICBjYXNlIEFSTV9TTU1VX0RP
+TUFJTl9ORVNURUQ6DQo+ID4NCj4gPg0KPiA+IEkgYW0gbm90IHN1cmUgdGhpcyBpcyByaWdodCBw
+bGFjZSBkbyB0aGlzLiBQbGVhc2UgdGFrZSBhIGxvb2suDQo+IA0KPiBUaGFua3MgZm9yIHRlc3Rp
+bmcgdGhlIHNlcmllcyBhbmQgcmVwb3J0aW5nIHRoZSBidWcuIEkgYWRkZWQgdGhlDQo+IGZvbGxv
+d2luZyBwYXRjaCB0byBicmFuY2ggc3ZtL2N1cnJlbnQsIGRvZXMgaXQgd29yayBmb3IgeW91Pw0K
+DQpZZXMsIGl0IGRvZXMuDQoNClRoYW5rcywNClNoYW1lZXINCiANCj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYw0K
+PiBpbmRleCA0MmM4Mzc4NjI0ZWQuLmVkZGE0NjZhZGM4MSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
+cy9pb21tdS9hcm0tc21tdS12My5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMu
+Yw0KPiBAQCAtMzE2OSw5ICszMTY5LDcgQEAgc3RhdGljIGludCBhcm1fc21tdV9hZGRfZGV2aWNl
+KHN0cnVjdCBkZXZpY2UgKmRldikNCj4gICAgICAgICAgICAgICAgIH0NCj4gICAgICAgICB9DQo+
+IA0KPiAtICAgICAgIGlmIChzbW11LT5zc2lkX2JpdHMpDQo+IC0gICAgICAgICAgICAgICBtYXN0
+ZXItPm51bV9zc2lkcyA9IDEgPDwgbWluKHNtbXUtPnNzaWRfYml0cywNCj4gLSAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZndzcGVjLT5udW1fcGFzaWRfYml0cyk7
+DQo+ICsgICAgICAgbWFzdGVyLT5udW1fc3NpZHMgPSAxIDw8IG1pbihzbW11LT5zc2lkX2JpdHMs
+IGZ3c3BlYy0NCj4gPm51bV9wYXNpZF9iaXRzKTsNCj4gDQo+ICAgICAgICAgaWYgKGZ3c3BlYy0+
+Y2FuX3N0YWxsICYmIHNtbXUtPmZlYXR1cmVzICYgQVJNX1NNTVVfRkVBVF9TVEFMTFMpIHsNCj4g
+ICAgICAgICAgICAgICAgIG1hc3Rlci0+Y2FuX2ZhdWx0ID0gdHJ1ZTsNCg0K
