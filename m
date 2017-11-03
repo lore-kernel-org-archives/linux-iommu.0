@@ -1,150 +1,160 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for Substream
- IDs
-Date: Fri, 3 Nov 2017 09:37:02 +0000
-Message-ID: <0d607058-9dd7-6564-316d-ebada8bff960@arm.com>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for
+ Substream IDs
+Date: Fri, 3 Nov 2017 09:39:11 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA8384550DA@FRAEML521-MBX.china.huawei.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
  <20171006133203.22803-15-jean-philippe.brucker@arm.com>
  <5FC3163CFD30C246ABAA99954A238FA838454887@FRAEML521-MBX.china.huawei.com>
  <20171102155152.GA11899@e106794-lin.localdomain>
  <5FC3163CFD30C246ABAA99954A238FA838454A9B@FRAEML521-MBX.china.huawei.com>
  <37a82eaa-dc9d-af98-6cb8-941ca925b838@huawei.com>
+ <0d607058-9dd7-6564-316d-ebada8bff960@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <37a82eaa-dc9d-af98-6cb8-941ca925b838@huawei.com>
+In-Reply-To: <0d607058-9dd7-6564-316d-ebada8bff960@arm.com>
 Content-Language: en-US
 Sender: linux-acpi-owner@vger.kernel.org
-To: Yisheng Xie <xieyisheng1@huawei.com>, Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "xieyisheng (A)" <xieyisheng1@huawei.com>
 Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Mark Rutland <Mark.Rutland@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>, "joro@8bytes.org" <joro@8bytes.org>, "rfranz@cavium.com" <rf>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/11/17 05:45, Yisheng Xie wrote:
-> Hi Jean,
-> 
-> On 2017/11/3 1:02, Shameerali Kolothum Thodi wrote:
->>
->>
->>> -----Original Message-----
->>> From: Jean-Philippe Brucker [mailto:Jean-Philippe.Brucker@arm.com]
->>> Sent: Thursday, November 02, 2017 3:52 PM
->>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
->>> Cc: linux-arm-kernel@lists.infradead.org; linux-pci@vger.kernel.org; linux-
->>> acpi@vger.kernel.org; devicetree@vger.kernel.org; iommu@lists.linux-
->>> foundation.org; Mark Rutland <Mark.Rutland@arm.com>; xieyisheng (A)
->>> <xieyisheng1@huawei.com>; Gabriele Paoloni
->>> <gabriele.paoloni@huawei.com>; Catalin Marinas
->>> <Catalin.Marinas@arm.com>; Will Deacon <Will.Deacon@arm.com>;
->>> okaya@codeaurora.org; yi.l.liu@intel.com; Lorenzo Pieralisi
->>> <Lorenzo.Pieralisi@arm.com>; ashok.raj@intel.com; tn@semihalf.com;
->>> joro@8bytes.org; rfranz@cavium.com; lenb@kernel.org;
->>> jacob.jun.pan@linux.intel.com; alex.williamson@redhat.com;
->>> robh+dt@kernel.org; Leizhen (ThunderTown) <thunder.leizhen@huawei.com>;
->>> bhelgaas@google.com; dwmw2@infradead.org; liubo (CU)
->>> <liubo95@huawei.com>; rjw@rjwysocki.net; robdclark@gmail.com;
->>> hanjun.guo@linaro.org; Sudeep Holla <Sudeep.Holla@arm.com>; Robin
->>> Murphy <Robin.Murphy@arm.com>; nwatters@codeaurora.org; Linuxarm
->>> <linuxarm@huawei.com>
->>> Subject: Re: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for
->>> Substream IDs
->>>
->>> Hi Shameer,
->>>
->>> On Thu, Nov 02, 2017 at 12:49:32PM +0000, Shameerali Kolothum Thodi wrote:
->>>> We had a go with this series on HiSIlicon D05 platform which doesn't have
->>>> support for ssids/ATS/PRI, to make sure it generally works.
->>>>
->>>> But observed the below crash on boot,
->>>>
->>>> [   16.009084] WARNING: CPU: 59 PID: 391 at mm/page_alloc.c:3883
->>> __alloc_pages_nodemask+0x19c/0xc48
->>>> [   16.026797] Modules linked in:
->>>> [   16.032944] CPU: 59 PID: 391 Comm: kworker/59:1 Not tainted 4.14.0-rc1-
->>> 159539-ge42aca3 #236
->>>> [...]
->>>> [   16.068206] Workqueue: events deferred_probe_work_func
->>>> [   16.078557] task: ffff8017d38a0000 task.stack: ffff00000b198000
->>>> [   16.090486] PC is at __alloc_pages_nodemask+0x19c/0xc48
->>>> [   16.101013] LR is at __alloc_pages_nodemask+0xe0/0xc48
->>>> [   16.469220] [<ffff000008186b94>] __alloc_pages_nodemask+0x19c/0xc48
->>>> [   16.481854] [<ffff0000081d65b0>] alloc_pages_current+0x80/0xcc
->>>> [   16.493607] [<ffff000008182be8>] __get_free_pages+0xc/0x38
->>>> [   16.504661] [<ffff0000083c4d58>] swiotlb_alloc_coherent+0x64/0x190
->>>> [   16.517117] [<ffff00000809824c>] __dma_alloc+0x110/0x204
->>>> [   16.527820] [<ffff00000858e850>] dmam_alloc_coherent+0x88/0xf0
->>>> [   16.539575] [<ffff000008568884>]
->>> arm_smmu_domain_finalise_s1+0x60/0x248
->>>> [   16.552909] [<ffff00000856c104>] arm_smmu_attach_dev+0x264/0x300
->>>> [   16.565013] [<ffff00000855d40c>] __iommu_attach_device+0x48/0x5c
->>>> [   16.577117] [<ffff00000855e698>] iommu_group_add_device+0x144/0x3a4
->>>> [   16.589746] [<ffff00000855ed18>] iommu_group_get_for_dev+0x70/0xf8
->>>> [   16.602201] [<ffff00000856a314>] arm_smmu_add_device+0x1a4/0x418
->>>> [   16.614308] [<ffff00000849dfcc>] iort_iommu_configure+0xf0/0x16c
->>>> [   16.626416] [<ffff000008468c50>] acpi_dma_configure+0x30/0x70
->>>> [   16.637994] [<ffff00000858f00c>] dma_configure+0xa8/0xd4
->>>> [   16.648695] [<ffff00000857706c>] driver_probe_device+0x1a4/0x2dc
->>>> [   16.673081] [<ffff0000085752c8>] bus_for_each_drv+0x54/0x94
->>>> [   16.684307] [<ffff000008576db0>] __device_attach+0xc4/0x12c
->>>> [   16.695533] [<ffff000008577350>] device_initial_probe+0x10/0x18
->>>> [   16.707462] [<ffff0000085762b4>] bus_probe_device+0x90/0x98
->>>>
->>>> After a bit of debug it looks like on platforms where ssid is not supported,
->>>> s1_cfg.num_contexts is set to zero and it eventually results in this crash
->>>> in,
->>>> arm_smmu_domain_finalise_s1() -->arm_smmu_alloc_cd_tables()-->
->>>> arm_smmu_alloc_cd_leaf_table() as num_leaf_entries is zero.
->>>>
->>>> With the below fix, it works on D05 now,
->>>>
->>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>>> index 8ad90e2..51f5821 100644
->>>> --- a/drivers/iommu/arm-smmu-v3.c
->>>> +++ b/drivers/iommu/arm-smmu-v3.c
->>>> @@ -2433,7 +2433,10 @@ static int arm_smmu_domain_finalise(struct
->>> iommu_domain *domain,
->>>>                         domain->min_pasid = 1;
->>>>                         domain->max_pasid = master->num_ssids - 1;
->>>>                         smmu_domain->s1_cfg.num_contexts = master->num_ssids;
->>>> +               } else {
->>>> +                       smmu_domain->s1_cfg.num_contexts = 1;
->>>>                 }
->>>> +
->>>>                 smmu_domain->s1_cfg.can_stall = master->ste.can_stall;
->>>>                 break;
->>>>         case ARM_SMMU_DOMAIN_NESTED:
->>>>
->>>>
->>>> I am not sure this is right place do this. Please take a look.
->>>
->>> Thanks for testing the series and reporting the bug. I added the
->>> following patch to branch svm/current, does it work for you?
->>
->> Yes, it does.
->>
->> Thanks,
->> Shameer
->>  
->>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>> index 42c8378624ed..edda466adc81 100644
->>> --- a/drivers/iommu/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm-smmu-v3.c
->>> @@ -3169,9 +3169,7 @@ static int arm_smmu_add_device(struct device *dev)
->>>                 }
->>>         }
->>>
->>> -       if (smmu->ssid_bits)
->>> -               master->num_ssids = 1 << min(smmu->ssid_bits,
->>> -                                            fwspec->num_pasid_bits);
->>> +       master->num_ssids = 1 << min(smmu->ssid_bits, fwspec-
->>>> num_pasid_bits);
-> 
-> If fwspec->num_pasid_bits = 0, then master have _one_ num_ssids ?
-
-Yes, the context table allocator always needs to allocate at least one
-entry, even if the master or SMMU doesn't support SSID. I think an earlier
-version called this field "num_contexts", maybe we should got back to that
-name for clarity?
-
-Thanks,
-Jean
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmVhbi1QaGlsaXBwZSBC
+cnVja2VyIFttYWlsdG86amVhbi1waGlsaXBwZS5icnVja2VyQGFybS5jb21dDQo+IFNlbnQ6IEZy
+aWRheSwgTm92ZW1iZXIgMDMsIDIwMTcgOTozNyBBTQ0KPiBUbzogeGlleWlzaGVuZyAoQSkgPHhp
+ZXlpc2hlbmcxQGh1YXdlaS5jb20+OyBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2RpDQo+IDxzaGFt
+ZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+DQo+IENjOiBsaW51eC1hcm0ta2VybmVs
+QGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0K
+PiBhY3BpQHZnZXIua2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7IGlvbW11
+QGxpc3RzLmxpbnV4LQ0KPiBmb3VuZGF0aW9uLm9yZzsgTWFyayBSdXRsYW5kIDxNYXJrLlJ1dGxh
+bmRAYXJtLmNvbT47IEdhYnJpZWxlIFBhb2xvbmkNCj4gPGdhYnJpZWxlLnBhb2xvbmlAaHVhd2Vp
+LmNvbT47IENhdGFsaW4gTWFyaW5hcw0KPiA8Q2F0YWxpbi5NYXJpbmFzQGFybS5jb20+OyBXaWxs
+IERlYWNvbiA8V2lsbC5EZWFjb25AYXJtLmNvbT47DQo+IG9rYXlhQGNvZGVhdXJvcmEub3JnOyB5
+aS5sLmxpdUBpbnRlbC5jb207IExvcmVuem8gUGllcmFsaXNpDQo+IDxMb3JlbnpvLlBpZXJhbGlz
+aUBhcm0uY29tPjsgYXNob2sucmFqQGludGVsLmNvbTsgdG5Ac2VtaWhhbGYuY29tOw0KPiBqb3Jv
+QDhieXRlcy5vcmc7IHJmcmFuekBjYXZpdW0uY29tOyBsZW5iQGtlcm5lbC5vcmc7DQo+IGphY29i
+Lmp1bi5wYW5AbGludXguaW50ZWwuY29tOyBhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbTsNCj4g
+cm9iaCtkdEBrZXJuZWwub3JnOyBMZWl6aGVuIChUaHVuZGVyVG93bikgPHRodW5kZXIubGVpemhl
+bkBodWF3ZWkuY29tPjsNCj4gYmhlbGdhYXNAZ29vZ2xlLmNvbTsgZHdtdzJAaW5mcmFkZWFkLm9y
+ZzsgbGl1Ym8gKENVKQ0KPiA8bGl1Ym85NUBodWF3ZWkuY29tPjsgcmp3QHJqd3lzb2NraS5uZXQ7
+IHJvYmRjbGFya0BnbWFpbC5jb207DQo+IGhhbmp1bi5ndW9AbGluYXJvLm9yZzsgU3VkZWVwIEhv
+bGxhIDxTdWRlZXAuSG9sbGFAYXJtLmNvbT47IFJvYmluDQo+IE11cnBoeSA8Um9iaW4uTXVycGh5
+QGFybS5jb20+OyBud2F0dGVyc0Bjb2RlYXVyb3JhLm9yZzsgTGludXhhcm0NCj4gPGxpbnV4YXJt
+QGh1YXdlaS5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUkZDdjIgUEFUQ0ggMTQvMzZdIGlvbW11L2Fy
+bS1zbW11LXYzOiBBZGQgc3VwcG9ydCBmb3INCj4gU3Vic3RyZWFtIElEcw0KPiANCj4gT24gMDMv
+MTEvMTcgMDU6NDUsIFlpc2hlbmcgWGllIHdyb3RlOg0KPiA+IEhpIEplYW4sDQo+ID4NCj4gPiBP
+biAyMDE3LzExLzMgMTowMiwgU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSB3cm90ZToNCj4gPj4N
+Cj4gPj4NCj4gPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+PiBGcm9tOiBKZWFu
+LVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpKZWFuLVBoaWxpcHBlLkJydWNrZXJAYXJtLmNvbV0N
+Cj4gPj4+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciAwMiwgMjAxNyAzOjUyIFBNDQo+ID4+PiBU
+bzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaQ0KPiA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9k
+aUBodWF3ZWkuY29tPg0KPiA+Pj4gQ2M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFk
+Lm9yZzsgbGludXgtcGNpQHZnZXIua2VybmVsLm9yZzsgbGludXgtDQo+ID4+PiBhY3BpQHZnZXIu
+a2VybmVsLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc7IGlvbW11QGxpc3RzLmxpbnV4
+LQ0KPiA+Pj4gZm91bmRhdGlvbi5vcmc7IE1hcmsgUnV0bGFuZCA8TWFyay5SdXRsYW5kQGFybS5j
+b20+OyB4aWV5aXNoZW5nIChBKQ0KPiA+Pj4gPHhpZXlpc2hlbmcxQGh1YXdlaS5jb20+OyBHYWJy
+aWVsZSBQYW9sb25pDQo+ID4+PiA8Z2FicmllbGUucGFvbG9uaUBodWF3ZWkuY29tPjsgQ2F0YWxp
+biBNYXJpbmFzDQo+ID4+PiA8Q2F0YWxpbi5NYXJpbmFzQGFybS5jb20+OyBXaWxsIERlYWNvbiA8
+V2lsbC5EZWFjb25AYXJtLmNvbT47DQo+ID4+PiBva2F5YUBjb2RlYXVyb3JhLm9yZzsgeWkubC5s
+aXVAaW50ZWwuY29tOyBMb3JlbnpvIFBpZXJhbGlzaQ0KPiA+Pj4gPExvcmVuem8uUGllcmFsaXNp
+QGFybS5jb20+OyBhc2hvay5yYWpAaW50ZWwuY29tOyB0bkBzZW1paGFsZi5jb207DQo+ID4+PiBq
+b3JvQDhieXRlcy5vcmc7IHJmcmFuekBjYXZpdW0uY29tOyBsZW5iQGtlcm5lbC5vcmc7DQo+ID4+
+PiBqYWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbTsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5j
+b207DQo+ID4+PiByb2JoK2R0QGtlcm5lbC5vcmc7IExlaXpoZW4gKFRodW5kZXJUb3duKQ0KPiA8
+dGh1bmRlci5sZWl6aGVuQGh1YXdlaS5jb20+Ow0KPiA+Pj4gYmhlbGdhYXNAZ29vZ2xlLmNvbTsg
+ZHdtdzJAaW5mcmFkZWFkLm9yZzsgbGl1Ym8gKENVKQ0KPiA+Pj4gPGxpdWJvOTVAaHVhd2VpLmNv
+bT47IHJqd0Byand5c29ja2kubmV0OyByb2JkY2xhcmtAZ21haWwuY29tOw0KPiA+Pj4gaGFuanVu
+Lmd1b0BsaW5hcm8ub3JnOyBTdWRlZXAgSG9sbGEgPFN1ZGVlcC5Ib2xsYUBhcm0uY29tPjsgUm9i
+aW4NCj4gPj4+IE11cnBoeSA8Um9iaW4uTXVycGh5QGFybS5jb20+OyBud2F0dGVyc0Bjb2RlYXVy
+b3JhLm9yZzsgTGludXhhcm0NCj4gPj4+IDxsaW51eGFybUBodWF3ZWkuY29tPg0KPiA+Pj4gU3Vi
+amVjdDogUmU6IFtSRkN2MiBQQVRDSCAxNC8zNl0gaW9tbXUvYXJtLXNtbXUtdjM6IEFkZCBzdXBw
+b3J0IGZvcg0KPiA+Pj4gU3Vic3RyZWFtIElEcw0KPiA+Pj4NCj4gPj4+IEhpIFNoYW1lZXIsDQo+
+ID4+Pg0KPiA+Pj4gT24gVGh1LCBOb3YgMDIsIDIwMTcgYXQgMTI6NDk6MzJQTSArMDAwMCwgU2hh
+bWVlcmFsaSBLb2xvdGh1bSBUaG9kaQ0KPiB3cm90ZToNCj4gPj4+PiBXZSBoYWQgYSBnbyB3aXRo
+IHRoaXMgc2VyaWVzIG9uIEhpU0lsaWNvbiBEMDUgcGxhdGZvcm0gd2hpY2ggZG9lc24ndCBoYXZl
+DQo+ID4+Pj4gc3VwcG9ydCBmb3Igc3NpZHMvQVRTL1BSSSwgdG8gbWFrZSBzdXJlIGl0IGdlbmVy
+YWxseSB3b3Jrcy4NCj4gPj4+Pg0KPiA+Pj4+IEJ1dCBvYnNlcnZlZCB0aGUgYmVsb3cgY3Jhc2gg
+b24gYm9vdCwNCj4gPj4+Pg0KPiA+Pj4+IFsgICAxNi4wMDkwODRdIFdBUk5JTkc6IENQVTogNTkg
+UElEOiAzOTEgYXQgbW0vcGFnZV9hbGxvYy5jOjM4ODMNCj4gPj4+IF9fYWxsb2NfcGFnZXNfbm9k
+ZW1hc2srMHgxOWMvMHhjNDgNCj4gPj4+PiBbICAgMTYuMDI2Nzk3XSBNb2R1bGVzIGxpbmtlZCBp
+bjoNCj4gPj4+PiBbICAgMTYuMDMyOTQ0XSBDUFU6IDU5IFBJRDogMzkxIENvbW06IGt3b3JrZXIv
+NTk6MSBOb3QgdGFpbnRlZCA0LjE0LjAtDQo+IHJjMS0NCj4gPj4+IDE1OTUzOS1nZTQyYWNhMyAj
+MjM2DQo+ID4+Pj4gWy4uLl0NCj4gPj4+PiBbICAgMTYuMDY4MjA2XSBXb3JrcXVldWU6IGV2ZW50
+cyBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMNCj4gPj4+PiBbICAgMTYuMDc4NTU3XSB0YXNrOiBm
+ZmZmODAxN2QzOGEwMDAwIHRhc2suc3RhY2s6IGZmZmYwMDAwMGIxOTgwMDANCj4gPj4+PiBbICAg
+MTYuMDkwNDg2XSBQQyBpcyBhdCBfX2FsbG9jX3BhZ2VzX25vZGVtYXNrKzB4MTljLzB4YzQ4DQo+
+ID4+Pj4gWyAgIDE2LjEwMTAxM10gTFIgaXMgYXQgX19hbGxvY19wYWdlc19ub2RlbWFzaysweGUw
+LzB4YzQ4DQo+ID4+Pj4gWyAgIDE2LjQ2OTIyMF0gWzxmZmZmMDAwMDA4MTg2Yjk0Pl0NCj4gX19h
+bGxvY19wYWdlc19ub2RlbWFzaysweDE5Yy8weGM0OA0KPiA+Pj4+IFsgICAxNi40ODE4NTRdIFs8
+ZmZmZjAwMDAwODFkNjViMD5dIGFsbG9jX3BhZ2VzX2N1cnJlbnQrMHg4MC8weGNjDQo+ID4+Pj4g
+WyAgIDE2LjQ5MzYwN10gWzxmZmZmMDAwMDA4MTgyYmU4Pl0gX19nZXRfZnJlZV9wYWdlcysweGMv
+MHgzOA0KPiA+Pj4+IFsgICAxNi41MDQ2NjFdIFs8ZmZmZjAwMDAwODNjNGQ1OD5dIHN3aW90bGJf
+YWxsb2NfY29oZXJlbnQrMHg2NC8weDE5MA0KPiA+Pj4+IFsgICAxNi41MTcxMTddIFs8ZmZmZjAw
+MDAwODA5ODI0Yz5dIF9fZG1hX2FsbG9jKzB4MTEwLzB4MjA0DQo+ID4+Pj4gWyAgIDE2LjUyNzgy
+MF0gWzxmZmZmMDAwMDA4NThlODUwPl0gZG1hbV9hbGxvY19jb2hlcmVudCsweDg4LzB4ZjANCj4g
+Pj4+PiBbICAgMTYuNTM5NTc1XSBbPGZmZmYwMDAwMDg1Njg4ODQ+XQ0KPiA+Pj4gYXJtX3NtbXVf
+ZG9tYWluX2ZpbmFsaXNlX3MxKzB4NjAvMHgyNDgNCj4gPj4+PiBbICAgMTYuNTUyOTA5XSBbPGZm
+ZmYwMDAwMDg1NmMxMDQ+XQ0KPiBhcm1fc21tdV9hdHRhY2hfZGV2KzB4MjY0LzB4MzAwDQo+ID4+
+Pj4gWyAgIDE2LjU2NTAxM10gWzxmZmZmMDAwMDA4NTVkNDBjPl0gX19pb21tdV9hdHRhY2hfZGV2
+aWNlKzB4NDgvMHg1Yw0KPiA+Pj4+IFsgICAxNi41NzcxMTddIFs8ZmZmZjAwMDAwODU1ZTY5OD5d
+DQo+IGlvbW11X2dyb3VwX2FkZF9kZXZpY2UrMHgxNDQvMHgzYTQNCj4gPj4+PiBbICAgMTYuNTg5
+NzQ2XSBbPGZmZmYwMDAwMDg1NWVkMTg+XQ0KPiBpb21tdV9ncm91cF9nZXRfZm9yX2RldisweDcw
+LzB4ZjgNCj4gPj4+PiBbICAgMTYuNjAyMjAxXSBbPGZmZmYwMDAwMDg1NmEzMTQ+XQ0KPiBhcm1f
+c21tdV9hZGRfZGV2aWNlKzB4MWE0LzB4NDE4DQo+ID4+Pj4gWyAgIDE2LjYxNDMwOF0gWzxmZmZm
+MDAwMDA4NDlkZmNjPl0gaW9ydF9pb21tdV9jb25maWd1cmUrMHhmMC8weDE2Yw0KPiA+Pj4+IFsg
+ICAxNi42MjY0MTZdIFs8ZmZmZjAwMDAwODQ2OGM1MD5dIGFjcGlfZG1hX2NvbmZpZ3VyZSsweDMw
+LzB4NzANCj4gPj4+PiBbICAgMTYuNjM3OTk0XSBbPGZmZmYwMDAwMDg1OGYwMGM+XSBkbWFfY29u
+ZmlndXJlKzB4YTgvMHhkNA0KPiA+Pj4+IFsgICAxNi42NDg2OTVdIFs8ZmZmZjAwMDAwODU3NzA2
+Yz5dIGRyaXZlcl9wcm9iZV9kZXZpY2UrMHgxYTQvMHgyZGMNCj4gPj4+PiBbICAgMTYuNjczMDgx
+XSBbPGZmZmYwMDAwMDg1NzUyYzg+XSBidXNfZm9yX2VhY2hfZHJ2KzB4NTQvMHg5NA0KPiA+Pj4+
+IFsgICAxNi42ODQzMDddIFs8ZmZmZjAwMDAwODU3NmRiMD5dIF9fZGV2aWNlX2F0dGFjaCsweGM0
+LzB4MTJjDQo+ID4+Pj4gWyAgIDE2LjY5NTUzM10gWzxmZmZmMDAwMDA4NTc3MzUwPl0gZGV2aWNl
+X2luaXRpYWxfcHJvYmUrMHgxMC8weDE4DQo+ID4+Pj4gWyAgIDE2LjcwNzQ2Ml0gWzxmZmZmMDAw
+MDA4NTc2MmI0Pl0gYnVzX3Byb2JlX2RldmljZSsweDkwLzB4OTgNCj4gPj4+Pg0KPiA+Pj4+IEFm
+dGVyIGEgYml0IG9mIGRlYnVnIGl0IGxvb2tzIGxpa2Ugb24gcGxhdGZvcm1zIHdoZXJlIHNzaWQg
+aXMgbm90IHN1cHBvcnRlZCwNCj4gPj4+PiBzMV9jZmcubnVtX2NvbnRleHRzIGlzIHNldCB0byB6
+ZXJvIGFuZCBpdCBldmVudHVhbGx5IHJlc3VsdHMgaW4gdGhpcyBjcmFzaA0KPiA+Pj4+IGluLA0K
+PiA+Pj4+IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZV9zMSgpIC0tPmFybV9zbW11X2FsbG9jX2Nk
+X3RhYmxlcygpLS0+DQo+ID4+Pj4gYXJtX3NtbXVfYWxsb2NfY2RfbGVhZl90YWJsZSgpIGFzIG51
+bV9sZWFmX2VudHJpZXMgaXMgemVyby4NCj4gPj4+Pg0KPiA+Pj4+IFdpdGggdGhlIGJlbG93IGZp
+eCwgaXQgd29ya3Mgb24gRDA1IG5vdywNCj4gPj4+Pg0KPiA+Pj4+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL2lvbW11L2FybS1zbW11LXYzLmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LQ0KPiB2My5j
+DQo+ID4+Pj4gaW5kZXggOGFkOTBlMi4uNTFmNTgyMSAxMDA2NDQNCj4gPj4+PiAtLS0gYS9kcml2
+ZXJzL2lvbW11L2FybS1zbW11LXYzLmMNCj4gPj4+PiArKysgYi9kcml2ZXJzL2lvbW11L2FybS1z
+bW11LXYzLmMNCj4gPj4+PiBAQCAtMjQzMyw3ICsyNDMzLDEwIEBAIHN0YXRpYyBpbnQgYXJtX3Nt
+bXVfZG9tYWluX2ZpbmFsaXNlKHN0cnVjdA0KPiA+Pj4gaW9tbXVfZG9tYWluICpkb21haW4sDQo+
+ID4+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgZG9tYWluLT5taW5fcGFzaWQgPSAxOw0KPiA+
+Pj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGRvbWFpbi0+bWF4X3Bhc2lkID0gbWFzdGVyLT5u
+dW1fc3NpZHMgLSAxOw0KPiA+Pj4+ICAgICAgICAgICAgICAgICAgICAgICAgIHNtbXVfZG9tYWlu
+LT5zMV9jZmcubnVtX2NvbnRleHRzID0gbWFzdGVyLQ0KPiA+bnVtX3NzaWRzOw0KPiA+Pj4+ICsg
+ICAgICAgICAgICAgICB9IGVsc2Ugew0KPiA+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgIHNt
+bXVfZG9tYWluLT5zMV9jZmcubnVtX2NvbnRleHRzID0gMTsNCj4gPj4+PiAgICAgICAgICAgICAg
+ICAgfQ0KPiA+Pj4+ICsNCj4gPj4+PiAgICAgICAgICAgICAgICAgc21tdV9kb21haW4tPnMxX2Nm
+Zy5jYW5fc3RhbGwgPSBtYXN0ZXItPnN0ZS5jYW5fc3RhbGw7DQo+ID4+Pj4gICAgICAgICAgICAg
+ICAgIGJyZWFrOw0KPiA+Pj4+ICAgICAgICAgY2FzZSBBUk1fU01NVV9ET01BSU5fTkVTVEVEOg0K
+PiA+Pj4+DQo+ID4+Pj4NCj4gPj4+PiBJIGFtIG5vdCBzdXJlIHRoaXMgaXMgcmlnaHQgcGxhY2Ug
+ZG8gdGhpcy4gUGxlYXNlIHRha2UgYSBsb29rLg0KPiA+Pj4NCj4gPj4+IFRoYW5rcyBmb3IgdGVz
+dGluZyB0aGUgc2VyaWVzIGFuZCByZXBvcnRpbmcgdGhlIGJ1Zy4gSSBhZGRlZCB0aGUNCj4gPj4+
+IGZvbGxvd2luZyBwYXRjaCB0byBicmFuY2ggc3ZtL2N1cnJlbnQsIGRvZXMgaXQgd29yayBmb3Ig
+eW91Pw0KPiA+Pg0KPiA+PiBZZXMsIGl0IGRvZXMuDQo+ID4+DQo+ID4+IFRoYW5rcywNCj4gPj4g
+U2hhbWVlcg0KPiA+Pg0KPiA+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUt
+djMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtDQo+IHYzLmMNCj4gPj4+IGluZGV4IDQyYzgz
+Nzg2MjRlZC4uZWRkYTQ2NmFkYzgxIDEwMDY0NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9h
+cm0tc21tdS12My5jDQo+ID4+PiArKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMNCj4g
+Pj4+IEBAIC0zMTY5LDkgKzMxNjksNyBAQCBzdGF0aWMgaW50IGFybV9zbW11X2FkZF9kZXZpY2Uo
+c3RydWN0IGRldmljZQ0KPiAqZGV2KQ0KPiA+Pj4gICAgICAgICAgICAgICAgIH0NCj4gPj4+ICAg
+ICAgICAgfQ0KPiA+Pj4NCj4gPj4+IC0gICAgICAgaWYgKHNtbXUtPnNzaWRfYml0cykNCj4gPj4+
+IC0gICAgICAgICAgICAgICBtYXN0ZXItPm51bV9zc2lkcyA9IDEgPDwgbWluKHNtbXUtPnNzaWRf
+Yml0cywNCj4gPj4+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IGZ3c3BlYy0+bnVtX3Bhc2lkX2JpdHMpOw0KPiA+Pj4gKyAgICAgICBtYXN0ZXItPm51bV9zc2lk
+cyA9IDEgPDwgbWluKHNtbXUtPnNzaWRfYml0cywgZndzcGVjLQ0KPiA+Pj4+IG51bV9wYXNpZF9i
+aXRzKTsNCj4gPg0KPiA+IElmIGZ3c3BlYy0+bnVtX3Bhc2lkX2JpdHMgPSAwLCB0aGVuIG1hc3Rl
+ciBoYXZlIF9vbmVfIG51bV9zc2lkcyA/DQo+IA0KPiBZZXMsIHRoZSBjb250ZXh0IHRhYmxlIGFs
+bG9jYXRvciBhbHdheXMgbmVlZHMgdG8gYWxsb2NhdGUgYXQgbGVhc3Qgb25lDQo+IGVudHJ5LCBl
+dmVuIGlmIHRoZSBtYXN0ZXIgb3IgU01NVSBkb2Vzbid0IHN1cHBvcnQgU1NJRC4gSSB0aGluayBh
+biBlYXJsaWVyDQo+IHZlcnNpb24gY2FsbGVkIHRoaXMgZmllbGQgIm51bV9jb250ZXh0cyIsIG1h
+eWJlIHdlIHNob3VsZCBnb3QgYmFjayB0byB0aGF0DQo+IG5hbWUgZm9yIGNsYXJpdHk/DQoNCisx
+IGZvciB0aGF0LiBBcyBzc2lkIGNhbiBiZSB6ZXJvIGFzIHBlciB0aGUgc3BlYywgbnVtX3NzaWRz
+PTEgd2lsbCBiZSBzbGlnaHRseSBtaXNsZWFkaW5nLg0KDQpUaGFua3MsDQpTaGFtZWVyDQoNCg==
