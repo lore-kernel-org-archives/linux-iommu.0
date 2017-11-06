@@ -1,43 +1,94 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 0/4] ipmmu-vmsa cleanup
-Date: Mon, 6 Nov 2017 13:06:34 -0700
-Message-ID: <20171106130634.4a42e18a@t450s.home>
-References: <cover.1507918320.git.robin.murphy@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/iova: Use raw_cpu_ptr() instead of
+	get_cpu_ptr() for ->fq
+Date: Mon, 6 Nov 2017 13:07:26 -0700
+Message-ID: <20171106130726.0685da5b@t450s.home>
+References: <20170906103459.oi2nn7jondjqdo5m@linutronix.de>
+	<20170919094119.bibxslqyeefbx7gf@8bytes.org>
+	<20170921152140.grayy3a7ok2im7xa@linutronix.de>
+	<20171102173349.btd3b2xfklcfopmz@breakpoint.cc>
+	<20171106084334.639512ea@t450s.home>
+	<5653117e-7708-de28-f349-ffe5ebf4481d@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <cover.1507918320.git.robin.murphy@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, arnd@arndb.de, geert+renesas@glider.be, magnus.damm@gmail.com, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5653117e-7708-de28-f349-ffe5ebf4481d-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 13 Oct 2017 19:23:38 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> Arnd reports a build warning[1] thanks to me missing ipmmu-vmsa's second
-> set of ops when converting io-pgtable-arm users to the new iommu_iotlb_*
-> callbacks. Rather than just treat the symptom with a point fix, this
-> seemed like a good excuse to clean up the messy #ifdeffery and
-> duplication in the driver that led to the oversight in the first place.
-> 
-> Build-tested successfully for arm64, ARM, and ARM + CONFIG_IOMMU_DMA.
-> 
-> Robin.
-> 
-> [1]:https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1510423.html
-> 
-> Robin Murphy (4):
->   iommu/ipmmu-vmsa: Unify domain alloc/free
->   iommu/ipmmu-vmsa: Simplify group allocation
->   iommu/ipmmu-vmsa: Clean up struct ipmmu_vmsa_iommu_priv
->   iommu/ipmmu-vmsa: Unify ipmmu_ops
-> 
->  drivers/iommu/ipmmu-vmsa.c | 251 ++++++++++++++-------------------------------
->  1 file changed, 78 insertions(+), 173 deletions(-)
-> 
-
-Applied to iommu/ipmmu-vmsa for v4.15.  Thanks,
-
-Alex
+T24gTW9uLCA2IE5vdiAyMDE3IDE2OjQ1OjExICswMDAwClJvYmluIE11cnBoeSA8cm9iaW4ubXVy
+cGh5QGFybS5jb20+IHdyb3RlOgoKPiBPbiAwNi8xMS8xNyAxNTo0MywgQWxleCBXaWxsaWFtc29u
+IHdyb3RlOgo+ID4gW2NjICtyb2Jpbl0KPiA+IAo+ID4gT24gVGh1LCAyIE5vdiAyMDE3IDE4OjMz
+OjUwICswMTAwCj4gPiBTZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIDxiaWdlYXN5QGxpbnV0cm9u
+aXguZGU+IHdyb3RlOgo+ID4gICAKPiA+PiBPbiAyMDE3LTA5LTIxIDE3OjIxOjQwIFsrMDIwMF0s
+IFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3Igd3JvdGU6ICAKPiA+Pj4gZ2V0X2NwdV9wdHIoKSBk
+aXNhYmxlZCBwcmVlbXB0aW9uIGFuZCByZXR1cm5zIHRoZSAtPmZxIG9iamVjdCBvZiB0aGUKPiA+
+Pj4gY3VycmVudCBDUFUuIHJhd19jcHVfcHRyKCkgZG9lcyB0aGUgc2FtZSBleGNlcHQgdGhhdCBp
+dCBub3QgZGlzYWJsZQo+ID4+PiBwcmVlbXB0aW9uIHdoaWNoIG1lYW5zIHRoZSBzY2hlZHVsZXIg
+Y2FuIG1vdmUgaXQgdG8gYW5vdGhlciBDUFUgYWZ0ZXIgaXQKPiA+Pj4gb2J0YWluZWQgdGhlIHBl
+ci1DUFUgb2JqZWN0Lgo+ID4+PiBJbiB0aGlzIGNhc2UgdGhpcyBpcyBub3QgYmFkIGJlY2F1c2Ug
+dGhlIGRhdGEgc3RydWN0dXJlIGl0c2VsZiBpcwo+ID4+PiBwcm90ZWN0ZWQgd2l0aCBhIHNwaW5f
+bG9jay4gVGhpcyBjaGFuZ2Ugc2hvdWxkbid0IG1hdHRlciBob3dldmVyIG9uIFJUCj4gPj4+IGl0
+IGRvZXMgYmVjYXVzZSB0aGUgc2xlZXBpbmcgbG9jayBjYW4ndCBiZSBhY2Nlc3NlZCB3aXRoIGRp
+c2FibGVkCj4gPj4+IHByZWVtcHRpb24uICAgIAo+ID4+Cj4gPj4gRGlkIHRoaXMgbWFrZSB0byB5
+b3VyIHRyZWUgSsO2cmc/ICAKPiA+IAo+ID4gSGkgU2ViYXN0aWFuLAo+ID4gCj4gPiBKb2VyZyBp
+cyBvdXQgb24gcGF0ZXJuaXR5IGxlYXZlIHRocm91Z2ggdGhlIGVuZCBvZiB0aGUgeWVhciwgSSdt
+Cj4gPiBmaWxsaW5nIGluIGluIHRoZSBpbnRlcmltLiAgSSBoYWRuJ3QgbG9va2VkIGZvciBwYXRj
+aGVzIHRoaXMgZmFyIGJhY2ssCj4gPiBzbyB0aGFua3MgZm9yIHBvaW50aW5nIGl0IG91dC4gIFJv
+YmluLCBhbnkgY29tbWVudHM/ICBUaGFua3MsICAKPiAKPiBUaGUgcmVhc29uaW5nIHNlZW1zIHNv
+dW5kIC0gYXNzdW1pbmcgd2UgY2FuJ3QgZ2V0IHByZWVtcHRlZCBvbmNlIHRoZQo+IGxvY2sgaXMg
+YWN0dWFsbHkgdGFrZW4sIHRoZSB3b3JzdCBzaWRlLWVmZmVjdCBvZiBnZXR0aW5nIG1vdmVkIHRv
+Cj4gYW5vdGhlciBDUFUgaW4gdGhhdCBzbGltIHdpbmRvdyBsb29rcyB0byBiZSBhIGxpdHRsZSBi
+aXQgb2YgbG9jawo+IGNvbnRlbnRpb24uIE9wZXJhdGluZyBvbiAic29tZW9uZSBlbHNlJ3MiIHF1
+ZXVlIHNob3VsZCBoYXZlIG5vCj4gY29ycmVjdG5lc3MgaW1wYWN0LCBhbmQgdGhlIGNtcHhjaGcg
+YWZ0ZXIgdGhlIGxvY2sgaXMgcmVsZWFzZWQgaXNuJ3QKPiBldmVuIHdvcmtpbmcgb24gcGVyY3B1
+IGRhdGEgc28gZG9lc24ndCByZWFsbHkgY2FyZSBhbnl3YXkuCj4gCj4gQUZBSUNTIGl0J3MgbW9y
+ZSBvciBsZXNzIHRoZSBkaXJlY3QgZXF1aXZhbGVudCBvZiBhYWZmYWE4YTNiNTkKPiAoImlvbW11
+L2lvdmE6IERvbid0IGRpc2FibGUgcHJlZW1wdCBhcm91bmQgdGhpc19jcHVfcHRyKCkiKSwgd2hp
+Y2ggc2VlbXMKPiB0byBoYXZlIGJlZW4gd29ya2luZyBvdXQgT0suCgpHcmVhdCwgdGhhbmtzIFJv
+YmluLgoKQXBwbGllZCB0byBpb21tdS9pb3ZhIGZvciB2NC4xNS4gIFRoYW5rcywKCkFsZXgKICAK
+PiA+Pj4gQ2M6IEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgo+ID4+PiBDYzogaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiA+Pj4gUmVwb3J0ZWQtYnk6IHZpbmFkaHlAZ21h
+aWwuY29tCj4gPj4+IFNpZ25lZC1vZmYtYnk6IFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3IgPGJp
+Z2Vhc3lAbGludXRyb25peC5kZT4KPiA+Pj4gLS0tCj4gPj4+IE9uIDIwMTctMDktMTkgMTE6NDE6
+MTkgWyswMjAwXSwgSm9lcmcgUm9lZGVsIHdyb3RlOiAgICAKPiA+Pj4+IEhpIFNlYmFzdGlhbiwg
+ICAgCj4gPj4+IEhpIErDtnJnLAo+ID4+PiAgICAgCj4gPj4+PiBJIG1vdmVkIHRoZSBmbHVzaGlu
+ZyB0byBkcml2ZXIvaW9tbXUvaW92YS5jIHRvIHNoYXJlIGl0IHdpdGggdGhlIEludGVsCj4gPj4+
+PiBJT01NVSBhbmQgcG9zc2libHkgb3RoZXIgZHJpdmVycyB0b28sIHNvIHRoaXMgcGF0Y2ggZG9l
+cyBubyBsb25nZXIgYXBwbHkKPiA+Pj4+IHRvIHY0LjE0LXJjMS4gQ2FuIHlvdSB1cGRhdGUgdGhl
+IHBhdGNoIHRvIHRoZXNlIGNoYW5nZXM/ICAgIAo+ID4+Pgo+ID4+PiBTdXJlLgo+ID4+Pgo+ID4+
+PiB2MeKApnYyOiBtb3ZlIHRoZSBjaGFuZ2UgZnJvbSBhbWRfaW9tbXUuYyB0byBpb3ZhLmMKPiA+
+Pj4KPiA+Pj4gIGRyaXZlcnMvaW9tbXUvaW92YS5jIHwgNCArLS0tCj4gPj4+ICAxIGZpbGUgY2hh
+bmdlZCwgMSBpbnNlcnRpb24oKyksIDMgZGVsZXRpb25zKC0pCj4gPj4+Cj4gPj4+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2lvbW11L2lvdmEuYyBiL2RyaXZlcnMvaW9tbXUvaW92YS5jCj4gPj4+IGlu
+ZGV4IDMzZWRmYTc5NGFlOS4uYjMwOTAwMDI1YzYyIDEwMDY0NAo+ID4+PiAtLS0gYS9kcml2ZXJz
+L2lvbW11L2lvdmEuYwo+ID4+PiArKysgYi9kcml2ZXJzL2lvbW11L2lvdmEuYwo+ID4+PiBAQCAt
+NTcwLDcgKzU3MCw3IEBAIHZvaWQgcXVldWVfaW92YShzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFk
+LAo+ID4+PiAgCQl1bnNpZ25lZCBsb25nIHBmbiwgdW5zaWduZWQgbG9uZyBwYWdlcywKPiA+Pj4g
+IAkJdW5zaWduZWQgbG9uZyBkYXRhKQo+ID4+PiAgewo+ID4+PiAtCXN0cnVjdCBpb3ZhX2ZxICpm
+cSA9IGdldF9jcHVfcHRyKGlvdmFkLT5mcSk7Cj4gPj4+ICsJc3RydWN0IGlvdmFfZnEgKmZxID0g
+cmF3X2NwdV9wdHIoaW92YWQtPmZxKTsKPiA+Pj4gIAl1bnNpZ25lZCBsb25nIGZsYWdzOwo+ID4+
+PiAgCXVuc2lnbmVkIGlkeDsKPiA+Pj4gIAo+ID4+PiBAQCAtNjAwLDggKzYwMCw2IEBAIHZvaWQg
+cXVldWVfaW92YShzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkLAo+ID4+PiAgCWlmIChhdG9taWNf
+Y21weGNoZygmaW92YWQtPmZxX3RpbWVyX29uLCAwLCAxKSA9PSAwKQo+ID4+PiAgCQltb2RfdGlt
+ZXIoJmlvdmFkLT5mcV90aW1lciwKPiA+Pj4gIAkJCSAgamlmZmllcyArIG1zZWNzX3RvX2ppZmZp
+ZXMoSU9WQV9GUV9USU1FT1VUKSk7Cj4gPj4+IC0KPiA+Pj4gLQlwdXRfY3B1X3B0cihpb3ZhZC0+
+ZnEpOwo+ID4+PiAgfQo+ID4+PiAgRVhQT1JUX1NZTUJPTF9HUEwocXVldWVfaW92YSk7Cj4gPj4+
+ICAKPiA+Pj4gLS0gCj4gPj4+IDIuMTQuMQo+ID4+PiAgICAgCj4gPj4KPiA+PiBTZWJhc3RpYW4K
+PiA+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+ID4+
+IGlvbW11IG1haWxpbmcgbGlzdAo+ID4+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+Cj4gPj4gaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
+aW9tbXUgIAo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
