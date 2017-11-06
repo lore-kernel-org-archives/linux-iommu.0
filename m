@@ -1,61 +1,43 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH -next] iommu/ipmmu-vmsa: Fix return value check in
-	ipmmu_find_group_dma()
-Date: Mon, 6 Nov 2017 13:05:31 -0700
-Message-ID: <20171106130531.7e577178@t450s.home>
-References: <1508242282-73764-1-git-send-email-weiyongjun1@huawei.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH 0/4] ipmmu-vmsa cleanup
+Date: Mon, 6 Nov 2017 13:06:34 -0700
+Message-ID: <20171106130634.4a42e18a@t450s.home>
+References: <cover.1507918320.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1508242282-73764-1-git-send-email-weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wei Yongjun <weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <cover.1507918320.git.robin.murphy@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, arnd@arndb.de, geert+renesas@glider.be, magnus.damm@gmail.com, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 17 Oct 2017 12:11:22 +0000
-Wei Yongjun <weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
+On Fri, 13 Oct 2017 19:23:38 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-> In case of error, the function iommu_group_get() returns NULL pointer
-> not ERR_PTR(). The IS_ERR() test in the return value check should be
-> replaced with NULL test.
+> Arnd reports a build warning[1] thanks to me missing ipmmu-vmsa's second
+> set of ops when converting io-pgtable-arm users to the new iommu_iotlb_*
+> callbacks. Rather than just treat the symptom with a point fix, this
+> seemed like a good excuse to clean up the messy #ifdeffery and
+> duplication in the driver that led to the oversight in the first place.
 > 
-> Fixes: 3ae47292024f ("iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops")
-> Signed-off-by: Wei Yongjun <weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Build-tested successfully for arm64, ARM, and ARM + CONFIG_IOMMU_DMA.
 > 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index af81400..00e88a8 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -871,7 +871,7 @@ static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
->  	sibling = ipmmu_find_sibling_device(dev);
->  	if (sibling)
->  		group = iommu_group_get(sibling);
-> -	if (!sibling || IS_ERR(group))
-> +	if (!sibling || !group)
->  		group = generic_device_group(dev);
->  
->  	return group;
+> Robin.
+> 
+> [1]:https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1510423.html
+> 
+> Robin Murphy (4):
+>   iommu/ipmmu-vmsa: Unify domain alloc/free
+>   iommu/ipmmu-vmsa: Simplify group allocation
+>   iommu/ipmmu-vmsa: Clean up struct ipmmu_vmsa_iommu_priv
+>   iommu/ipmmu-vmsa: Unify ipmmu_ops
+> 
+>  drivers/iommu/ipmmu-vmsa.c | 251 ++++++++++++++-------------------------------
+>  1 file changed, 78 insertions(+), 173 deletions(-)
+> 
 
-
-Applied to iommu/ipmmu-vmsa for v4.15.
-
-Note that Robin's patch series[1] reworks this code, removing the call
-to iommu_group_get(), but it seems correct in case anyone wants to
-cherry pick it for backports.  Thanks,
+Applied to iommu/ipmmu-vmsa for v4.15.  Thanks,
 
 Alex
-
-[1]https://www.spinics.net/lists/linux-renesas-soc/msg19228.html
