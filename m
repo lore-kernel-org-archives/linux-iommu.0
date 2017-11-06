@@ -1,162 +1,228 @@
-From: Yisheng Xie <xieyisheng1@huawei.com>
-Subject: Re: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for Substream
- IDs
-Date: Mon, 6 Nov 2017 08:50:29 +0800
-Message-ID: <cf27accd-1830-d887-657c-0dcecddc1cb9@huawei.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-15-jean-philippe.brucker@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA838454887@FRAEML521-MBX.china.huawei.com>
- <20171102155152.GA11899@e106794-lin.localdomain>
- <5FC3163CFD30C246ABAA99954A238FA838454A9B@FRAEML521-MBX.china.huawei.com>
- <37a82eaa-dc9d-af98-6cb8-941ca925b838@huawei.com>
- <0d607058-9dd7-6564-316d-ebada8bff960@arm.com>
+From: Ganapatrao Kulkarni <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu-v3: Use NUMA memory allocations for
+	stream tables and comamnd queues
+Date: Mon, 6 Nov 2017 14:34:52 +0530
+Message-ID: <CAKTKpr7OEDC+Yn=qnK3j50ddrexjyYkYhzoMe1-_G342z1=1Kg@mail.gmail.com>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+	<20170921085922.11659-4-ganapatrao.kulkarni@cavium.com>
+	<db28d6ff-77e5-ed59-c1b8-57c917564a68@arm.com>
+	<CAKTKpr508ArR1RUSY8HnaOkp==zPZ2=P_6gcXOAfi9hJq6XcqA@mail.gmail.com>
+	<c14854ea-2f58-2d30-1b6c-153a7f3e24a6@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <0d607058-9dd7-6564-316d-ebada8bff960@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Mark Rutland <Mark.Rutland@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>, "joro@8bytes.org" <joro@8bytes.org>, "rfranz@cavium.com" <rf>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <c14854ea-2f58-2d30-1b6c-153a7f3e24a6-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robert Richter <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2017/11/3 17:37, Jean-Philippe Brucker wrote:
-> On 03/11/17 05:45, Yisheng Xie wrote:
->> Hi Jean,
+On Wed, Oct 18, 2017 at 7:06 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 04/10/17 14:53, Ganapatrao Kulkarni wrote:
+>> Hi Robin,
 >>
->> On 2017/11/3 1:02, Shameerali Kolothum Thodi wrote:
+>>
+>> On Thu, Sep 21, 2017 at 5:28 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>>> [+Christoph and Marek]
 >>>
+>>> On 21/09/17 09:59, Ganapatrao Kulkarni wrote:
+>>>> Introduce smmu_alloc_coherent and smmu_free_coherent functions to
+>>>> allocate/free dma coherent memory from NUMA node associated with SMMU.
+>>>> Replace all calls of dmam_alloc_coherent with smmu_alloc_coherent
+>>>> for SMMU stream tables and command queues.
 >>>
->>>> -----Original Message-----
->>>> From: Jean-Philippe Brucker [mailto:Jean-Philippe.Brucker@arm.com]
->>>> Sent: Thursday, November 02, 2017 3:52 PM
->>>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
->>>> Cc: linux-arm-kernel@lists.infradead.org; linux-pci@vger.kernel.org; linux-
->>>> acpi@vger.kernel.org; devicetree@vger.kernel.org; iommu@lists.linux-
->>>> foundation.org; Mark Rutland <Mark.Rutland@arm.com>; xieyisheng (A)
->>>> <xieyisheng1@huawei.com>; Gabriele Paoloni
->>>> <gabriele.paoloni@huawei.com>; Catalin Marinas
->>>> <Catalin.Marinas@arm.com>; Will Deacon <Will.Deacon@arm.com>;
->>>> okaya@codeaurora.org; yi.l.liu@intel.com; Lorenzo Pieralisi
->>>> <Lorenzo.Pieralisi@arm.com>; ashok.raj@intel.com; tn@semihalf.com;
->>>> joro@8bytes.org; rfranz@cavium.com; lenb@kernel.org;
->>>> jacob.jun.pan@linux.intel.com; alex.williamson@redhat.com;
->>>> robh+dt@kernel.org; Leizhen (ThunderTown) <thunder.leizhen@huawei.com>;
->>>> bhelgaas@google.com; dwmw2@infradead.org; liubo (CU)
->>>> <liubo95@huawei.com>; rjw@rjwysocki.net; robdclark@gmail.com;
->>>> hanjun.guo@linaro.org; Sudeep Holla <Sudeep.Holla@arm.com>; Robin
->>>> Murphy <Robin.Murphy@arm.com>; nwatters@codeaurora.org; Linuxarm
->>>> <linuxarm@huawei.com>
->>>> Subject: Re: [RFCv2 PATCH 14/36] iommu/arm-smmu-v3: Add support for
->>>> Substream IDs
+>>> This doesn't work - not only do you lose the 'managed' aspect and risk
+>>> leaking various tables on probe failure or device removal, but more
+>>> importantly, unless you add DMA syncs around all the CPU accesses to the
+>>> tables, you lose the critical 'coherent' aspect, and that's a horribly
+>>> invasive change that I really don't want to make.
+>>
+>> this implementation is similar to function used to allocate memory for
+>> translation tables.
+>
+> The concept is similar, yes, and would work if implemented *correctly*
+> with the aforementioned comprehensive and hugely invasive changes. The
+> implementation as presented in this patch, however, is incomplete and
+> badly broken.
+>
+> By way of comparison, the io-pgtable implementations contain all the
+> necessary dma_sync_* calls, never relied on devres, and only have one
+> DMA direction to worry about (hint: the queues don't all work
+> identically). There are also a couple of practical reasons for using
+> streaming mappings with the DMA == phys restriction there - tracking
+> both the CPU and DMA addresses for each table would significantly
+> increase the memory overhead, and using the cacheable linear map address
+> in all cases sidesteps any potential problems with the atomic PTE
+> updates. Neither of those concerns apply to the SMMUv3 data structures,
+> which are textbook coherent DMA allocations (being tied to the lifetime
+> of the device, rather than transient).
+>
+>> why do you see it affects to stream tables and not to page tables.
+>> at runtime, both tables are accessed by SMMU only.
+>>
+>> As said in cover letter, having stream table from respective NUMA node
+>> is yielding
+>> around 30% performance!
+>> please suggest, if there is any better way to address this issue?
+>
+> I fully agree that NUMA-aware allocations are a worthwhile thing that we
+> want. I just don't like the idea of going around individual drivers
+> replacing coherent API usage with bodged-up streaming mappings - I
+> really think it's worth making the effort to to tackle it once, in the
+> proper place, in a way that benefits all users together.
+>
+> Robin.
+>
+>>>
+>>> Christoph, Marek; how reasonable do you think it is to expect
+>>> dma_alloc_coherent() to be inherently NUMA-aware on NUMA-capable
+>>> systems? SWIOTLB looks fairly straightforward to fix up (for the simple
+>>> allocation case; I'm not sure it's even worth it for bounce-buffering),
+>>> but the likes of CMA might be a little trickier...
+
+IIUC, having DMA allocation per node may become issue for 32 bit PCI
+devices connected on NODE 1 on IOMMU less platforms.
+most of the platforms may have NODE 1 RAM located beyond 4GB and
+having DMA allocation beyond 32bit for NODE1(and above) devices may
+make 32 bit pci devices not usable.
+
+DMA/IOMMU experts, please advise?
+
+>>>
+>>> Robin.
+>>>
+>>>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>>>> ---
+>>>>  drivers/iommu/arm-smmu-v3.c | 57 ++++++++++++++++++++++++++++++++++++++++-----
+>>>>  1 file changed, 51 insertions(+), 6 deletions(-)
 >>>>
->>>> Hi Shameer,
->>>>
->>>> On Thu, Nov 02, 2017 at 12:49:32PM +0000, Shameerali Kolothum Thodi wrote:
->>>>> We had a go with this series on HiSIlicon D05 platform which doesn't have
->>>>> support for ssids/ATS/PRI, to make sure it generally works.
->>>>>
->>>>> But observed the below crash on boot,
->>>>>
->>>>> [   16.009084] WARNING: CPU: 59 PID: 391 at mm/page_alloc.c:3883
->>>> __alloc_pages_nodemask+0x19c/0xc48
->>>>> [   16.026797] Modules linked in:
->>>>> [   16.032944] CPU: 59 PID: 391 Comm: kworker/59:1 Not tainted 4.14.0-rc1-
->>>> 159539-ge42aca3 #236
->>>>> [...]
->>>>> [   16.068206] Workqueue: events deferred_probe_work_func
->>>>> [   16.078557] task: ffff8017d38a0000 task.stack: ffff00000b198000
->>>>> [   16.090486] PC is at __alloc_pages_nodemask+0x19c/0xc48
->>>>> [   16.101013] LR is at __alloc_pages_nodemask+0xe0/0xc48
->>>>> [   16.469220] [<ffff000008186b94>] __alloc_pages_nodemask+0x19c/0xc48
->>>>> [   16.481854] [<ffff0000081d65b0>] alloc_pages_current+0x80/0xcc
->>>>> [   16.493607] [<ffff000008182be8>] __get_free_pages+0xc/0x38
->>>>> [   16.504661] [<ffff0000083c4d58>] swiotlb_alloc_coherent+0x64/0x190
->>>>> [   16.517117] [<ffff00000809824c>] __dma_alloc+0x110/0x204
->>>>> [   16.527820] [<ffff00000858e850>] dmam_alloc_coherent+0x88/0xf0
->>>>> [   16.539575] [<ffff000008568884>]
->>>> arm_smmu_domain_finalise_s1+0x60/0x248
->>>>> [   16.552909] [<ffff00000856c104>] arm_smmu_attach_dev+0x264/0x300
->>>>> [   16.565013] [<ffff00000855d40c>] __iommu_attach_device+0x48/0x5c
->>>>> [   16.577117] [<ffff00000855e698>] iommu_group_add_device+0x144/0x3a4
->>>>> [   16.589746] [<ffff00000855ed18>] iommu_group_get_for_dev+0x70/0xf8
->>>>> [   16.602201] [<ffff00000856a314>] arm_smmu_add_device+0x1a4/0x418
->>>>> [   16.614308] [<ffff00000849dfcc>] iort_iommu_configure+0xf0/0x16c
->>>>> [   16.626416] [<ffff000008468c50>] acpi_dma_configure+0x30/0x70
->>>>> [   16.637994] [<ffff00000858f00c>] dma_configure+0xa8/0xd4
->>>>> [   16.648695] [<ffff00000857706c>] driver_probe_device+0x1a4/0x2dc
->>>>> [   16.673081] [<ffff0000085752c8>] bus_for_each_drv+0x54/0x94
->>>>> [   16.684307] [<ffff000008576db0>] __device_attach+0xc4/0x12c
->>>>> [   16.695533] [<ffff000008577350>] device_initial_probe+0x10/0x18
->>>>> [   16.707462] [<ffff0000085762b4>] bus_probe_device+0x90/0x98
->>>>>
->>>>> After a bit of debug it looks like on platforms where ssid is not supported,
->>>>> s1_cfg.num_contexts is set to zero and it eventually results in this crash
->>>>> in,
->>>>> arm_smmu_domain_finalise_s1() -->arm_smmu_alloc_cd_tables()-->
->>>>> arm_smmu_alloc_cd_leaf_table() as num_leaf_entries is zero.
->>>>>
->>>>> With the below fix, it works on D05 now,
->>>>>
->>>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>>>> index 8ad90e2..51f5821 100644
->>>>> --- a/drivers/iommu/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm-smmu-v3.c
->>>>> @@ -2433,7 +2433,10 @@ static int arm_smmu_domain_finalise(struct
->>>> iommu_domain *domain,
->>>>>                         domain->min_pasid = 1;
->>>>>                         domain->max_pasid = master->num_ssids - 1;
->>>>>                         smmu_domain->s1_cfg.num_contexts = master->num_ssids;
->>>>> +               } else {
->>>>> +                       smmu_domain->s1_cfg.num_contexts = 1;
->>>>>                 }
->>>>> +
->>>>>                 smmu_domain->s1_cfg.can_stall = master->ste.can_stall;
->>>>>                 break;
->>>>>         case ARM_SMMU_DOMAIN_NESTED:
->>>>>
->>>>>
->>>>> I am not sure this is right place do this. Please take a look.
->>>>
->>>> Thanks for testing the series and reporting the bug. I added the
->>>> following patch to branch svm/current, does it work for you?
->>>
->>> Yes, it does.
->>>
->>> Thanks,
->>> Shameer
->>>  
 >>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>>> index 42c8378624ed..edda466adc81 100644
+>>>> index e67ba6c..bc4ba1f 100644
 >>>> --- a/drivers/iommu/arm-smmu-v3.c
 >>>> +++ b/drivers/iommu/arm-smmu-v3.c
->>>> @@ -3169,9 +3169,7 @@ static int arm_smmu_add_device(struct device *dev)
->>>>                 }
->>>>         }
+>>>> @@ -1158,6 +1158,50 @@ static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
+>>>>       }
+>>>>  }
 >>>>
->>>> -       if (smmu->ssid_bits)
->>>> -               master->num_ssids = 1 << min(smmu->ssid_bits,
->>>> -                                            fwspec->num_pasid_bits);
->>>> +       master->num_ssids = 1 << min(smmu->ssid_bits, fwspec-
->>>>> num_pasid_bits);
+>>>> +static void *smmu_alloc_coherent(struct arm_smmu_device *smmu, size_t size,
+>>>> +             dma_addr_t *dma_handle, gfp_t gfp)
+>>>> +{
+>>>> +     struct device *dev = smmu->dev;
+>>>> +     void *pages;
+>>>> +     dma_addr_t dma;
+>>>> +     int numa_node = dev_to_node(dev);
+>>>> +
+>>>> +     pages = alloc_pages_exact_nid(numa_node, size, gfp | __GFP_ZERO);
+>>>> +     if (!pages)
+>>>> +             return NULL;
+>>>> +
+>>>> +     if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY)) {
+>>>> +             dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+>>>> +             if (dma_mapping_error(dev, dma))
+>>>> +                     goto out_free;
+>>>> +             /*
+>>>> +              * We depend on the SMMU being able to work with any physical
+>>>> +              * address directly, so if the DMA layer suggests otherwise by
+>>>> +              * translating or truncating them, that bodes very badly...
+>>>> +              */
+>>>> +             if (dma != virt_to_phys(pages))
+>>>> +                     goto out_unmap;
+>>>> +     }
+>>>> +
+>>>> +     *dma_handle = (dma_addr_t)virt_to_phys(pages);
+>>>> +     return pages;
+>>>> +
+>>>> +out_unmap:
+>>>> +     dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
+>>>> +     dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
+>>>> +out_free:
+>>>> +     free_pages_exact(pages, size);
+>>>> +     return NULL;
+>>>> +}
+>>>> +
+>>>> +static void smmu_free_coherent(struct arm_smmu_device *smmu, size_t size,
+>>>> +             void *pages, dma_addr_t dma_handle)
+>>>> +{
+>>>> +     if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
+>>>> +             dma_unmap_single(smmu->dev, dma_handle, size, DMA_TO_DEVICE);
+>>>> +     free_pages_exact(pages, size);
+>>>> +}
+>>>> +
+>>>>  static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+>>>>  {
+>>>>       size_t size;
+>>>> @@ -1172,7 +1216,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+>>>>       strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
+>>>>
+>>>>       desc->span = STRTAB_SPLIT + 1;
+>>>> -     desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
+>>>> +     desc->l2ptr = smmu_alloc_coherent(smmu, size, &desc->l2ptr_dma,
+>>>>                                         GFP_KERNEL | __GFP_ZERO);
+>>>>       if (!desc->l2ptr) {
+>>>>               dev_err(smmu->dev,
+>>>> @@ -1487,7 +1531,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+>>>>               struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+>>>>
+>>>>               if (cfg->cdptr) {
+>>>> -                     dmam_free_coherent(smmu_domain->smmu->dev,
+>>>> +                     smmu_free_coherent(smmu,
+>>>>                                          CTXDESC_CD_DWORDS << 3,
+>>>>                                          cfg->cdptr,
+>>>>                                          cfg->cdptr_dma);
+>>>> @@ -1515,7 +1559,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+>>>>       if (asid < 0)
+>>>>               return asid;
+>>>>
+>>>> -     cfg->cdptr = dmam_alloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
+>>>> +     cfg->cdptr = smmu_alloc_coherent(smmu, CTXDESC_CD_DWORDS << 3,
+>>>>                                        &cfg->cdptr_dma,
+>>>>                                        GFP_KERNEL | __GFP_ZERO);
+>>>>       if (!cfg->cdptr) {
+>>>> @@ -1984,7 +2028,7 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+>>>>  {
+>>>>       size_t qsz = ((1 << q->max_n_shift) * dwords) << 3;
+>>>>
+>>>> -     q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma, GFP_KERNEL);
+>>>> +     q->base = smmu_alloc_coherent(smmu, qsz, &q->base_dma, GFP_KERNEL);
+>>>>       if (!q->base) {
+>>>>               dev_err(smmu->dev, "failed to allocate queue (0x%zx bytes)\n",
+>>>>                       qsz);
+>>>> @@ -2069,7 +2113,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+>>>>                        size, smmu->sid_bits);
+>>>>
+>>>>       l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+>>>> -     strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
+>>>> +     strtab = smmu_alloc_coherent(smmu, l1size, &cfg->strtab_dma,
+>>>>                                    GFP_KERNEL | __GFP_ZERO);
+>>>>       if (!strtab) {
+>>>>               dev_err(smmu->dev,
+>>>> @@ -2097,8 +2141,9 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+>>>>       u32 size;
+>>>>       struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+>>>>
+>>>> +
+>>>>       size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
+>>>> -     strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
+>>>> +     strtab = smmu_alloc_coherent(smmu, size, &cfg->strtab_dma,
+>>>>                                    GFP_KERNEL | __GFP_ZERO);
+>>>>       if (!strtab) {
+>>>>               dev_err(smmu->dev,
+>>>>
+>>>
 >>
->> If fwspec->num_pasid_bits = 0, then master have _one_ num_ssids ?
-> 
-> Yes, the context table allocator always needs to allocate at least one
-> entry, even if the master or SMMU doesn't support SSID. I think an earlier
-> version called this field "num_contexts", maybe we should got back to that
-> name for clarity?
-> 
-Yes, it will be more clear.
+>> thanks
+>> Ganapat
+>>
+>
 
-Thanks
-Yisheng
-
-> Thanks,
-> Jean
-> 
-> .
-> 
-
+thanks
+Ganapat
