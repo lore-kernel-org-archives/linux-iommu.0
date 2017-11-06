@@ -1,45 +1,61 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 0/2] iommu/ipmmu-vmsa: r8a779(70|95) support
-Date: Mon, 6 Nov 2017 12:22:01 -0700
-Message-ID: <20171106122201.77d640e5@t450s.home>
-References: <20171101103423.7334-1-horms+renesas@verge.net.au>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH -next] iommu/ipmmu-vmsa: Fix return value check in
+	ipmmu_find_group_dma()
+Date: Mon, 6 Nov 2017 13:05:31 -0700
+Message-ID: <20171106130531.7e577178@t450s.home>
+References: <1508242282-73764-1-git-send-email-weiyongjun1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20171101103423.7334-1-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Magnus Damm <magnus.damm@gmail.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1508242282-73764-1-git-send-email-weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Wei Yongjun <weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed,  1 Nov 2017 11:34:21 +0100
-Simon Horman <horms+renesas@verge.net.au> wrote:
+On Tue, 17 Oct 2017 12:11:22 +0000
+Wei Yongjun <weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
 
-> Update Update the IPMMU DT binding documentation and driver implementation
-> to support the r8a77970 (R-Car V3M) and r8a77995 (R-Car D3).
+> In case of error, the function iommu_group_get() returns NULL pointer
+> not ERR_PTR(). The IS_ERR() test in the return value check should be
+> replaced with NULL test.
 > 
-> Based on work for r8a7796 by Magnus Damm.
+> Fixes: 3ae47292024f ("iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops")
+> Signed-off-by: Wei Yongjun <weiyongjun1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/ipmmu-vmsa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Patches based on:
-> * iommu/next
-> * [PATCH v5 00/09] iommu/ipmmu-vmsa: r8a7795 support V5
-> * [PATCH v4 0/3] iommu/ipmmu-vmsa: r8a7796 support V4
->   (fuzz when applying 3/3)
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index af81400..00e88a8 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -871,7 +871,7 @@ static struct iommu_group *ipmmu_find_group_dma(struct device *dev)
+>  	sibling = ipmmu_find_sibling_device(dev);
+>  	if (sibling)
+>  		group = iommu_group_get(sibling);
+> -	if (!sibling || IS_ERR(group))
+> +	if (!sibling || !group)
+>  		group = generic_device_group(dev);
+>  
+>  	return group;
 
-This last dependent patch series hasn't had any comments or updates
-since June.  Do I take it from Simon's new patches here that it's still
-relevant and desired?  Perhaps it was simply missed and nobody bothered
-to re-send it?  Thanks,
+
+Applied to iommu/ipmmu-vmsa for v4.15.
+
+Note that Robin's patch series[1] reworks this code, removing the call
+to iommu_group_get(), but it seems correct in case anyone wants to
+cherry pick it for backports.  Thanks,
 
 Alex
 
- 
-> Simon Horman (2):
->   iommu/ipmmu-vmsa: Add r8a779(70|95) DT bindings
->   iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT matching code
-> 
->  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt         |  2 ++
->  drivers/iommu/ipmmu-vmsa.c                                   | 12 ++++++++++++
->  2 files changed, 14 insertions(+)
-> 
+[1]https://www.spinics.net/lists/linux-renesas-soc/msg19228.html
