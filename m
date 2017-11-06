@@ -1,74 +1,58 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v5 00/09] iommu/ipmmu-vmsa: r8a7795 support V5
-Date: Mon, 6 Nov 2017 13:08:24 -0700
-Message-ID: <20171106130824.6e8ecde4@t450s.home>
-References: <150815695455.32763.1660214306749693609.sendpatchset@little-apple>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/mediatek: Fix driver name
+Date: Mon, 6 Nov 2017 13:09:46 -0700
+Message-ID: <20171106130946.46a05132@t450s.home>
+References: <20171030113755.32408-1-matthias.bgg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <150815695455.32763.1660214306749693609.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: joro@8bytes.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171030113755.32408-1-matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 16 Oct 2017 21:29:14 +0900
-Magnus Damm <magnus.damm@gmail.com> wrote:
+On Mon, 30 Oct 2017 12:37:55 +0100
+Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-> iommu/ipmmu-vmsa: r8a7795 support V5
+> There exist two Mediatek iommu drivers for the two different
+> generations of the device. But both drivers have the same name
+> "mtk-iommu". This breaks the registration of the second driver:
 > 
-> [PATCH v5 01/09] iommu/ipmmu-vmsa: Introduce features, break out alias
-> [PATCH v5 02/09] iommu/ipmmu-vmsa: Add optional root device feature
-> [PATCH v5 03/09] iommu/ipmmu-vmsa: Enable multi context support
-> [PATCH v5 04/09] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
-> [PATCH v5 05/09] iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master
-> [PATCH v5 06/09] iommu/ipmmu-vmsa: Write IMCTR twice
-> [PATCH v5 07/09] iommu/ipmmu-vmsa: Make IMBUSCTR setup optional
-> [PATCH v5 08/09] iommu/ipmmu-vmsa: Allow two bit SL0
-> [PATCH v5 09/09] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
+> Error: Driver 'mtk-iommu' is already registered, aborting...
 > 
-> This is V5 of r8a7795 IPMMU driver where the series has been rebased
-> and reworked to fit on next-20171013 that includes:
-> [PATCH v2 00/05] iommu/ipmmu-vmsa: 32-bit ARM update V2
-> [PATCH] iommu/ipmmu-vmsa: Use iommu_device_sysfs_add()/remove()
+> Fix this by changing the name for first generation to
+> "mtk-iommu-v1".
 > 
-> The major feature change is in patch 2/9 that now gets by without
-> using a local list of registered IPMMU devices and instead relies
-> on driver_for_each_device(). Thanks to Robin Murphy for his support.
-> 
-> The DT binding for r8a7795 has been accepted for upstream merge
-> and this series implements support following such format:
-> 
-> d4e42e7 iommu/ipmmu-vmsa: Add r8a7795 DT binding
-> 
-> The r8a7795 IPMMU is almost register compatible with earlier devices
-> like r8a7790-r8a7794, however some bitfields have been shifted
-> slightly. On a grander scale topology has been added and interrupts
-> have been reworked. So now there are several "cache" IPMMU units
-> without interrupt that somehow communicate with IPMMU-MM that
-> is the only instance that supports interrupts. The code refers to
-> IPMMU-MM as a "root" device and the other ones as "leaf" nodes.
-> 
-> Changes since V4:
->  - Rebased on top of [PATCH v2 00/05] iommu/ipmmu-vmsa: 32-bit ARM update V2
->  - Reworked root device handling to make use of driver_for_each_device()
->  - Added deferred probing to make sure root device always is present
-> 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> Fixes: b17336c55d89 ("iommu/mediatek: add support for mtk iommu generation one HW")
+> Signed-off-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
+>  drivers/iommu/mtk_iommu_v1.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->  Developed on top of next-20171013
->  Also applies to renesas-drivers-2017-10-03-v4.14-rc3
->  Tested on top of renesas-drivers on r8a7796-m3ulcb using /dev/ttySC1
->   - [PATCH v4 0/3] iommu/ipmmu-vmsa: r8a7796 support V4
->   - local /dev/ttySC1 enablement for testing purpose
->   - local DTS changes to hook up SYS-DMAC and IPMMU DS0, DS1 and MM
->   - local whitelist code to enable "e7310000.dma-controller"
->  
->  drivers/iommu/ipmmu-vmsa.c |  310 ++++++++++++++++++++++++++++++++++----------
->  1 file changed, 244 insertions(+), 66 deletions(-)
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index bc1efbfb9ddf..542930cd183d 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -708,7 +708,7 @@ static struct platform_driver mtk_iommu_driver = {
+>  	.probe	= mtk_iommu_probe,
+>  	.remove	= mtk_iommu_remove,
+>  	.driver	= {
+> -		.name = "mtk-iommu",
+> +		.name = "mtk-iommu-v1",
+>  		.of_match_table = mtk_iommu_of_ids,
+>  		.pm = &mtk_iommu_pm_ops,
+>  	}
 
-Applied to iommu/ipmmu-vmsa for v4.15.  Thanks,
+Applied to iommu/updates for v4.15.  Thanks,
 
 Alex
