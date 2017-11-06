@@ -1,16 +1,17 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Mon, 6 Nov 2017 10:47:09 -0800
-Message-ID: <20171106104709.06b38f7c@jacob-builder>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
-	<1507035334.29211.105.camel@infradead.org>
-	<db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
-	<20171006144309.GA30803@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 08/16] iommu: introduce device fault data
+Date: Mon, 6 Nov 2017 19:01:54 +0000
+Message-ID: <09d451dc-c0e9-1fa2-8f85-45a9b1185d48@arm.com>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1507244624-39189-9-git-send-email-jacob.jun.pan@linux.intel.com>
+	<439401c0-a9ff-a69a-dc10-12d72f7abbab@arm.com>
+	<A2975661238FB949B60364EF0F2C257439AFC86D@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171006144309.GA30803-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439AFC86D-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,82 +21,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org, herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki, Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 6 Oct 2017 16:43:09 +0200
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+Hi Yi,
 
-> On Tue, Oct 03, 2017 at 07:05:17PM +0100, Robin Murphy wrote:
-> > Now, there are indeed plenty of drivers and subsystems which do
-> > work on lists of explicitly single pages - anything doing some
-> > variant of "addr = kmap_atomic(sg_page(sg)) + sg->offset;" is easy
-> > to spot - but I don't think DMA API implementations are in a
-> > position to make any kind of assumption; nearly all of them just
-> > shut up and handle sg->length bytes from sg_phys(sg) without
-> > questioning the caller, and I reckon that's exactly what they
-> > should be doing.  
+Sorry for the late reply, I seem to have missed this.
+
+On 20/10/17 11:07, Liu, Yi L wrote:
+[...]
+>>> +
+>>> +/*  Generic fault types, can be expanded IRQ remapping fault */ enum
+>>> +iommu_fault_type {
+>>> +	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
+>>> +	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
+>>> +};
+>>> +
+>>> +enum iommu_fault_reason {
+>>> +	IOMMU_FAULT_REASON_CTX = 1,
+>>
+>> If I read the VT-d spec right, this is a fault encountered while fetching the PASID table
+>> pointer?
+>>
+>>> +	IOMMU_FAULT_REASON_ACCESS,
+>>
+>> And this a pgd or pte access fault?
+>>
+>>> +	IOMMU_FAULT_REASON_INVALIDATE,
+>>
+>> What would this be?
+>>
+>>> +	IOMMU_FAULT_REASON_UNKNOWN,
+>>> +};
+>>
+>> I'm currently doing the same exploratory work for virtio-iommu, and I'd be tempted
+>> to report reasons as detailed as possible to guest or device driver, but it's not clear
+>> what they need, how they would use this information. I'd like to discuss this some
+>> more.
 > 
-> I agree with that, it is not explicitly forbidden to have an
-> sg->offset > PAGE_SIZE and most IOMMU drivers handle this case.
+> [Liu, Yi L] In fact, it's not necessary to pass the detailed unrecoverable fault to guest in
+> virtualization case. Unrecoverable fault happened on native indicates fault during native
+> IOMMU address translation. If the fault is not due to guest IOMMU page table setting,
+> then it is not necessary to inject the fault to guest. And hypervisor should be able to
+> deduce it by walking the guest IOMMU page table with the fault address.
+
+I'm not sure the hypervisor should go and inspect the guest's page tables.
+The pIOMMU already did the walk and reported the fault, so the hypervisor
+knows that they are invalid. I thought VT-d and other pIOMMUs provide
+enough information in the fault report to tell if the error was due to
+invalid page tables?
+
+> So I think for
+> virtualization case, pass the fault address is enough. If hypervisor doesn't see any issue
+> after checking the guest IOMMU translation hierarchy, no use to let guest know it. Hypervisor
+> can either throw error log or stop the guest. If hypervisor see any error in the guest
+> iommu translation hierarchy, then inject the error to guest with a proper fault type.>
+> But for device driver or other user-space driver, I'm not sure if they need detailed fault
+> info. In fact, it is enough to pass the possible info which would help them to deduce whether
+> the unrecoverable fault is due to them. This need more inputs from device driver reviewers.
+
+Agreed, though I'm not sure how to reach them.
+
+At the moment, the only users of report_iommu_fault, the existing fault
+reporting mechanism, are ARM-based IOMMU drivers and there are only four
+device drivers that register a handler with iommu_set_fault_handler. Two
+of them simply print the fault, one resets the offending device, and the
+last one (msm GPU) wants to provide more detailed debugging information
+about the device state.
+
+>> For unrecoverable faults I guess CTX means "the host IOMMU driver is broken", since
+>> the device tables are invalid. In which case there is no use continuing, trying to
+>> shutdown the device cleanly is really all the guest/device driver can do.
 > 
-> So this is a problem I'd like to see resolved in the VT-d driver too.
-> If nobody comes up with a correct fix soon I'll apply this one and
-> rip out the large-page support from __domain_mapping() to make it
-> work.
+> [Liu, Yi L] Not sure about what device table mean here. But I agree that if host IOMMU
+> driver has no valid CTX for the device, then this kind of error should result in a shutdown to
+> the device.
+
+Yes by device table I meant VT-d's root table and context tables.
+>> For ACCESS the error is the device driver's or guest's fault, since the device driver
+>> triggered DMA on unmapped buffers, or the guest didn't install the right page tables.
+>> This can be repaired without shutting down, it may even just be one execution
+>> stream that failed in the device while the others continued normally. It's not as
+>> recoverable as a PRI Page Request, but the device driver may still be able to isolate
+>> the problem (e.g. by killing the process responsible) and the device to recover from it.
+>>
+>> So maybe ACCESS would benefit from more details, for example differentiating
+>> faults encountered while fetching the pgd from those encountered while fetching a
+>> second-level table or pte. The former is a lot less recoverable than the latter (bug in
+>> the guest IOMMU driver vs.
+>> bug in the device driver).
+>>
+>> Generalizing this maybe we should differentiate each step of the translation in
+>> fault_reason:
+>>
+>> * Device entry (context) fetch -> host IOMMU driver's fault
+>> * PASID table fetch -> guest IOMMU driver or host userspace's fault
+>> * pgd fetch -> guest IOMMU driver's fault
+>> * pte fetch, including validity and access check -> device driver's fault
 > 
-Hi All,
+> [Liu, Yi L] It's a good summary here. BTW. why pte fetch is due to device driver's fault?
 
-Just to give an update on the offline debugging of this issue. With
-Robin's patch applied, I was able to reproduce the failure with
-similar configuration that Jain helped to set up.
-
-I added trace prints just to see the map/unmap activities leading to
-the DMAR fault. When fault occurs, the trace shows there is an unmap to
-the offending iova pfn. So I think this is a separate problem than
-Robin's patch is fixing. I think we should move forward to merge this
-patch upstream and stable. The remaining problem is likely a race
-condition between unmap and DMA activities.
-
-Here a brief extracted log, ee3d7 is the iova pfn in question.
-#1. map sg pfn ee3d7
-          <idle>-0     [076] 74124.154254: bprint:               __domain_mapping: vpfn:ee3d7, pgoff=2126, np:1, da:ee3d784e, len:1464
-, ppfn:1849c9c                                                                                                                        
-
-#2. unmap ee3d7000
-         <idle>-0     [054] 74124.154301: bprint:               intel_unmap: Device 0000:18:00.4 unmapping: pfn ee3d7-ee3d7          
-         <idle>-0     [076] 74124.154301: bprint:               __domain_mapping: lvlpg:1, nrpg 0, vpfn:ec2ff, ppfn:183221a, sg_res:0
-         <idle>-0     [059] 74124.154302: bprint:               __domain_mapping: lvlpg:1, nrpg 0, vpfn:ee719, ppfn:c3e4dd, sg_res:0 
-         <idle>-0     [076] 74124.154302: bprint:               __domain_mapping: vpfn:f183b, pgoff=78, np:1, da:f183b04e, len:1464, 
-
-#3. DMA to unmapped address ee3d7000, DMAR fault raised.
-  +2.952861] dmar_fault: 6 callbacks suppressed                                                                                   
-  +0.000002] DMAR: DRHD: handling fault status reg 2                                                                              
-  +0.005588] turning tracing off                                                                                                  
-  +0.003592] DMAR: [DMA Write] Request device [18:00.4] fault addr ee3d7000 [fault reason 05] PTE Write access is not set         
-                                                                                                                                  
-                                                                                                                                                                                                                                                               
-         <idle>-0     [000] 74124.156906: bputs:
-         0xffffffffb259916bs: turning tracing off     
-
+Mmh, not necessarily the device driver's fault, but the most likely cause
+is that the device driver didn't call map() before triggering the DMA.
+Another less likely cause is a programming error in the vIOMMU driver,
+where it failed to perform the map() or populate the page tables properly.
 
 Thanks,
-
-Jacob
-
-> Speaking of __domain_mapping(), this function is a big unmaintainable
-> mess which should be split and rewritten. A clean and maintainable
-> rewrite can alse re-add the large-page support.
-> 
-> 
-> Regards,
-> 
-> 	Joerg
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-[Jacob Pan]
+Jean
