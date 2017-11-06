@@ -1,19 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/iova: Use raw_cpu_ptr() instead of get_cpu_ptr()
-	for ->fq
-Date: Mon, 6 Nov 2017 16:45:11 +0000
-Message-ID: <5653117e-7708-de28-f349-ffe5ebf4481d@arm.com>
-References: <20170906103459.oi2nn7jondjqdo5m@linutronix.de>
-	<20170919094119.bibxslqyeefbx7gf@8bytes.org>
-	<20170921152140.grayy3a7ok2im7xa@linutronix.de>
-	<20171102173349.btd3b2xfklcfopmz@breakpoint.cc>
-	<20171106084334.639512ea@t450s.home>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Mon, 6 Nov 2017 10:47:09 -0800
+Message-ID: <20171106104709.06b38f7c@jacob-builder>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+	<1507035334.29211.105.camel@infradead.org>
+	<db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
+	<20171006144309.GA30803@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171106084334.639512ea-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <20171006144309.GA30803-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,67 +20,82 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org, herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDYvMTEvMTcgMTU6NDMsIEFsZXggV2lsbGlhbXNvbiB3cm90ZToKPiBbY2MgK3JvYmluXQo+
-IAo+IE9uIFRodSwgMiBOb3YgMjAxNyAxODozMzo1MCArMDEwMAo+IFNlYmFzdGlhbiBBbmRyemVq
-IFNpZXdpb3IgPGJpZ2Vhc3lAbGludXRyb25peC5kZT4gd3JvdGU6Cj4gCj4+IE9uIDIwMTctMDkt
-MjEgMTc6MjE6NDAgWyswMjAwXSwgU2ViYXN0aWFuIEFuZHJ6ZWogU2lld2lvciB3cm90ZToKPj4+
-IGdldF9jcHVfcHRyKCkgZGlzYWJsZWQgcHJlZW1wdGlvbiBhbmQgcmV0dXJucyB0aGUgLT5mcSBv
-YmplY3Qgb2YgdGhlCj4+PiBjdXJyZW50IENQVS4gcmF3X2NwdV9wdHIoKSBkb2VzIHRoZSBzYW1l
-IGV4Y2VwdCB0aGF0IGl0IG5vdCBkaXNhYmxlCj4+PiBwcmVlbXB0aW9uIHdoaWNoIG1lYW5zIHRo
-ZSBzY2hlZHVsZXIgY2FuIG1vdmUgaXQgdG8gYW5vdGhlciBDUFUgYWZ0ZXIgaXQKPj4+IG9idGFp
-bmVkIHRoZSBwZXItQ1BVIG9iamVjdC4KPj4+IEluIHRoaXMgY2FzZSB0aGlzIGlzIG5vdCBiYWQg
-YmVjYXVzZSB0aGUgZGF0YSBzdHJ1Y3R1cmUgaXRzZWxmIGlzCj4+PiBwcm90ZWN0ZWQgd2l0aCBh
-IHNwaW5fbG9jay4gVGhpcyBjaGFuZ2Ugc2hvdWxkbid0IG1hdHRlciBob3dldmVyIG9uIFJUCj4+
-PiBpdCBkb2VzIGJlY2F1c2UgdGhlIHNsZWVwaW5nIGxvY2sgY2FuJ3QgYmUgYWNjZXNzZWQgd2l0
-aCBkaXNhYmxlZAo+Pj4gcHJlZW1wdGlvbi4gIAo+Pgo+PiBEaWQgdGhpcyBtYWtlIHRvIHlvdXIg
-dHJlZSBKw7ZyZz8KPiAKPiBIaSBTZWJhc3RpYW4sCj4gCj4gSm9lcmcgaXMgb3V0IG9uIHBhdGVy
-bml0eSBsZWF2ZSB0aHJvdWdoIHRoZSBlbmQgb2YgdGhlIHllYXIsIEknbQo+IGZpbGxpbmcgaW4g
-aW4gdGhlIGludGVyaW0uICBJIGhhZG4ndCBsb29rZWQgZm9yIHBhdGNoZXMgdGhpcyBmYXIgYmFj
-aywKPiBzbyB0aGFua3MgZm9yIHBvaW50aW5nIGl0IG91dC4gIFJvYmluLCBhbnkgY29tbWVudHM/
-ICBUaGFua3MsCgpUaGUgcmVhc29uaW5nIHNlZW1zIHNvdW5kIC0gYXNzdW1pbmcgd2UgY2FuJ3Qg
-Z2V0IHByZWVtcHRlZCBvbmNlIHRoZQpsb2NrIGlzIGFjdHVhbGx5IHRha2VuLCB0aGUgd29yc3Qg
-c2lkZS1lZmZlY3Qgb2YgZ2V0dGluZyBtb3ZlZCB0bwphbm90aGVyIENQVSBpbiB0aGF0IHNsaW0g
-d2luZG93IGxvb2tzIHRvIGJlIGEgbGl0dGxlIGJpdCBvZiBsb2NrCmNvbnRlbnRpb24uIE9wZXJh
-dGluZyBvbiAic29tZW9uZSBlbHNlJ3MiIHF1ZXVlIHNob3VsZCBoYXZlIG5vCmNvcnJlY3RuZXNz
-IGltcGFjdCwgYW5kIHRoZSBjbXB4Y2hnIGFmdGVyIHRoZSBsb2NrIGlzIHJlbGVhc2VkIGlzbid0
-CmV2ZW4gd29ya2luZyBvbiBwZXJjcHUgZGF0YSBzbyBkb2Vzbid0IHJlYWxseSBjYXJlIGFueXdh
-eS4KCkFGQUlDUyBpdCdzIG1vcmUgb3IgbGVzcyB0aGUgZGlyZWN0IGVxdWl2YWxlbnQgb2YgYWFm
-ZmFhOGEzYjU5CigiaW9tbXUvaW92YTogRG9uJ3QgZGlzYWJsZSBwcmVlbXB0IGFyb3VuZCB0aGlz
-X2NwdV9wdHIoKSIpLCB3aGljaCBzZWVtcwp0byBoYXZlIGJlZW4gd29ya2luZyBvdXQgT0suCgpS
-b2Jpbi4KCj4gQWxleAo+IAo+Pj4gQ2M6IEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgo+
-Pj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+PiBSZXBvcnRlZC1ieTog
-dmluYWRoeUBnbWFpbC5jb20KPj4+IFNpZ25lZC1vZmYtYnk6IFNlYmFzdGlhbiBBbmRyemVqIFNp
-ZXdpb3IgPGJpZ2Vhc3lAbGludXRyb25peC5kZT4KPj4+IC0tLQo+Pj4gT24gMjAxNy0wOS0xOSAx
-MTo0MToxOSBbKzAyMDBdLCBKb2VyZyBSb2VkZWwgd3JvdGU6ICAKPj4+PiBIaSBTZWJhc3RpYW4s
-ICAKPj4+IEhpIErDtnJnLAo+Pj4gICAKPj4+PiBJIG1vdmVkIHRoZSBmbHVzaGluZyB0byBkcml2
-ZXIvaW9tbXUvaW92YS5jIHRvIHNoYXJlIGl0IHdpdGggdGhlIEludGVsCj4+Pj4gSU9NTVUgYW5k
-IHBvc3NpYmx5IG90aGVyIGRyaXZlcnMgdG9vLCBzbyB0aGlzIHBhdGNoIGRvZXMgbm8gbG9uZ2Vy
-IGFwcGx5Cj4+Pj4gdG8gdjQuMTQtcmMxLiBDYW4geW91IHVwZGF0ZSB0aGUgcGF0Y2ggdG8gdGhl
-c2UgY2hhbmdlcz8gIAo+Pj4KPj4+IFN1cmUuCj4+Pgo+Pj4gdjHigKZ2MjogbW92ZSB0aGUgY2hh
-bmdlIGZyb20gYW1kX2lvbW11LmMgdG8gaW92YS5jCj4+Pgo+Pj4gIGRyaXZlcnMvaW9tbXUvaW92
-YS5jIHwgNCArLS0tCj4+PiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAzIGRlbGV0
-aW9ucygtKQo+Pj4KPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvdmEuYyBiL2RyaXZl
-cnMvaW9tbXUvaW92YS5jCj4+PiBpbmRleCAzM2VkZmE3OTRhZTkuLmIzMDkwMDAyNWM2MiAxMDA2
-NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW92YS5jCj4+PiArKysgYi9kcml2ZXJzL2lvbW11
-L2lvdmEuYwo+Pj4gQEAgLTU3MCw3ICs1NzAsNyBAQCB2b2lkIHF1ZXVlX2lvdmEoc3RydWN0IGlv
-dmFfZG9tYWluICppb3ZhZCwKPj4+ICAJCXVuc2lnbmVkIGxvbmcgcGZuLCB1bnNpZ25lZCBsb25n
-IHBhZ2VzLAo+Pj4gIAkJdW5zaWduZWQgbG9uZyBkYXRhKQo+Pj4gIHsKPj4+IC0Jc3RydWN0IGlv
-dmFfZnEgKmZxID0gZ2V0X2NwdV9wdHIoaW92YWQtPmZxKTsKPj4+ICsJc3RydWN0IGlvdmFfZnEg
-KmZxID0gcmF3X2NwdV9wdHIoaW92YWQtPmZxKTsKPj4+ICAJdW5zaWduZWQgbG9uZyBmbGFnczsK
-Pj4+ICAJdW5zaWduZWQgaWR4Owo+Pj4gIAo+Pj4gQEAgLTYwMCw4ICs2MDAsNiBAQCB2b2lkIHF1
-ZXVlX2lvdmEoc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCwKPj4+ICAJaWYgKGF0b21pY19jbXB4
-Y2hnKCZpb3ZhZC0+ZnFfdGltZXJfb24sIDAsIDEpID09IDApCj4+PiAgCQltb2RfdGltZXIoJmlv
-dmFkLT5mcV90aW1lciwKPj4+ICAJCQkgIGppZmZpZXMgKyBtc2Vjc190b19qaWZmaWVzKElPVkFf
-RlFfVElNRU9VVCkpOwo+Pj4gLQo+Pj4gLQlwdXRfY3B1X3B0cihpb3ZhZC0+ZnEpOwo+Pj4gIH0K
-Pj4+ICBFWFBPUlRfU1lNQk9MX0dQTChxdWV1ZV9pb3ZhKTsKPj4+ICAKPj4+IC0tIAo+Pj4gMi4x
-NC4xCj4+PiAgIAo+Pgo+PiBTZWJhc3RpYW4KPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KPj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4+IGlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+On Fri, 6 Oct 2017 16:43:09 +0200
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+
+> On Tue, Oct 03, 2017 at 07:05:17PM +0100, Robin Murphy wrote:
+> > Now, there are indeed plenty of drivers and subsystems which do
+> > work on lists of explicitly single pages - anything doing some
+> > variant of "addr = kmap_atomic(sg_page(sg)) + sg->offset;" is easy
+> > to spot - but I don't think DMA API implementations are in a
+> > position to make any kind of assumption; nearly all of them just
+> > shut up and handle sg->length bytes from sg_phys(sg) without
+> > questioning the caller, and I reckon that's exactly what they
+> > should be doing.  
+> 
+> I agree with that, it is not explicitly forbidden to have an
+> sg->offset > PAGE_SIZE and most IOMMU drivers handle this case.
+> 
+> So this is a problem I'd like to see resolved in the VT-d driver too.
+> If nobody comes up with a correct fix soon I'll apply this one and
+> rip out the large-page support from __domain_mapping() to make it
+> work.
+> 
+Hi All,
+
+Just to give an update on the offline debugging of this issue. With
+Robin's patch applied, I was able to reproduce the failure with
+similar configuration that Jain helped to set up.
+
+I added trace prints just to see the map/unmap activities leading to
+the DMAR fault. When fault occurs, the trace shows there is an unmap to
+the offending iova pfn. So I think this is a separate problem than
+Robin's patch is fixing. I think we should move forward to merge this
+patch upstream and stable. The remaining problem is likely a race
+condition between unmap and DMA activities.
+
+Here a brief extracted log, ee3d7 is the iova pfn in question.
+#1. map sg pfn ee3d7
+          <idle>-0     [076] 74124.154254: bprint:               __domain_mapping: vpfn:ee3d7, pgoff=2126, np:1, da:ee3d784e, len:1464
+, ppfn:1849c9c                                                                                                                        
+
+#2. unmap ee3d7000
+         <idle>-0     [054] 74124.154301: bprint:               intel_unmap: Device 0000:18:00.4 unmapping: pfn ee3d7-ee3d7          
+         <idle>-0     [076] 74124.154301: bprint:               __domain_mapping: lvlpg:1, nrpg 0, vpfn:ec2ff, ppfn:183221a, sg_res:0
+         <idle>-0     [059] 74124.154302: bprint:               __domain_mapping: lvlpg:1, nrpg 0, vpfn:ee719, ppfn:c3e4dd, sg_res:0 
+         <idle>-0     [076] 74124.154302: bprint:               __domain_mapping: vpfn:f183b, pgoff=78, np:1, da:f183b04e, len:1464, 
+
+#3. DMA to unmapped address ee3d7000, DMAR fault raised.
+  +2.952861] dmar_fault: 6 callbacks suppressed                                                                                   
+  +0.000002] DMAR: DRHD: handling fault status reg 2                                                                              
+  +0.005588] turning tracing off                                                                                                  
+  +0.003592] DMAR: [DMA Write] Request device [18:00.4] fault addr ee3d7000 [fault reason 05] PTE Write access is not set         
+                                                                                                                                  
+                                                                                                                                                                                                                                                               
+         <idle>-0     [000] 74124.156906: bputs:
+         0xffffffffb259916bs: turning tracing off     
+
+
+Thanks,
+
+Jacob
+
+> Speaking of __domain_mapping(), this function is a big unmaintainable
+> mess which should be split and rewritten. A clean and maintainable
+> rewrite can alse re-add the large-page support.
+> 
+> 
+> Regards,
+> 
+> 	Joerg
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+[Jacob Pan]
