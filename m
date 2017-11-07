@@ -1,119 +1,213 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: RE: [PATCH v9 2/4] iommu/dma: Add a helper function to reserve HW
- MSI address regions for IOMMU drivers
-Date: Tue, 7 Nov 2017 09:37:35 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA83845828E@FRAEML521-MBX.china.huawei.com>
-References: <20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com>
- <20171006140450.89652-3-shameerali.kolothum.thodi@huawei.com>
- <20171013192350.GA32130@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA83844672A@FRAEML521-MBX.china.huawei.com>
- <1d49243a-4746-f189-7c5d-4b98937115fb@arm.com>
- <5FC3163CFD30C246ABAA99954A238FA83844FE04@FRAEML521-MBX.china.huawei.com>
- <20171103113503.GB29434@red-moon>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 08/16] iommu: introduce device fault data
+Date: Tue, 7 Nov 2017 11:38:50 +0000
+Message-ID: <e95ce88b-7e88-5b1c-3a68-9ac40773a8f6@arm.com>
+References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1507244624-39189-9-git-send-email-jacob.jun.pan@linux.intel.com>
+	<439401c0-a9ff-a69a-dc10-12d72f7abbab@arm.com>
+	<A2975661238FB949B60364EF0F2C257439AFC86D@SHSMSX104.ccr.corp.intel.com>
+	<09d451dc-c0e9-1fa2-8f85-45a9b1185d48@arm.com>
+	<A2975661238FB949B60364EF0F2C257439B06809@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171103113503.GB29434@red-moon>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439B06809-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Gabriele Paoloni <gabriele.paoloni@huawei.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, John Garry <john.garry@huawei.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, Linuxarm <linuxarm@huawei.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wangzhou (B)" <wangzhou1@hisilicon.com>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devel@acpica.org" <devel@acpica.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki, Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTG9yZW56byBQaWVyYWxp
-c2kgW21haWx0bzpsb3JlbnpvLnBpZXJhbGlzaUBhcm0uY29tXQ0KPiBTZW50OiBGcmlkYXksIE5v
-dmVtYmVyIDAzLCAyMDE3IDExOjM1IEFNDQo+IFRvOiBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2Rp
-IDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+DQo+IENjOiBSb2JpbiBNdXJw
-aHkgPHJvYmluLm11cnBoeUBhcm0uY29tPjsgV2lsbCBEZWFjb24NCj4gPHdpbGwuZGVhY29uQGFy
-bS5jb20+OyBHYWJyaWVsZSBQYW9sb25pIDxnYWJyaWVsZS5wYW9sb25pQGh1YXdlaS5jb20+Ow0K
-PiBtYXJjLnp5bmdpZXJAYXJtLmNvbTsgbGludXgtcGNpQHZnZXIua2VybmVsLm9yZzsgam9yb0A4
-Ynl0ZXMub3JnOyBKb2huDQo+IEdhcnJ5IDxqb2huLmdhcnJ5QGh1YXdlaS5jb20+OyBHdW9oYW5q
-dW4gKEhhbmp1biBHdW8pDQo+IDxndW9oYW5qdW5AaHVhd2VpLmNvbT47IExpbnV4YXJtIDxsaW51
-eGFybUBodWF3ZWkuY29tPjsgbGludXgtDQo+IGFjcGlAdmdlci5rZXJuZWwub3JnOyBpb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgV2FuZ3pob3UgKEIpDQo+IDx3YW5nemhvdTFAaGlz
-aWxpY29uLmNvbT47IHN1ZGVlcC5ob2xsYUBhcm0uY29tOyBiaGVsZ2Fhc0Bnb29nbGUuY29tOw0K
-PiBsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGRldmVsQGFjcGljYS5vcmcN
-Cj4gU3ViamVjdDogUmU6IFtQQVRDSCB2OSAyLzRdIGlvbW11L2RtYTogQWRkIGEgaGVscGVyIGZ1
-bmN0aW9uIHRvIHJlc2VydmUgSFcNCj4gTVNJIGFkZHJlc3MgcmVnaW9ucyBmb3IgSU9NTVUgZHJp
-dmVycw0KPiANCj4gT24gVGh1LCBPY3QgMjYsIDIwMTcgYXQgMTA6MTE6NThBTSArMDAwMCwgU2hh
-bWVlcmFsaSBLb2xvdGh1bSBUaG9kaSB3cm90ZToNCj4gDQpbLi5dDQoNCj4gPg0KPiA+IEFzIHdl
-IHN0aWxsIGRvbuKAmXQgaGF2ZSBhIGNsZWFyIHJlc29sdXRpb24gb24gaG93IHRvIGludm9rZSB0
-aGUNCj4gPiBpb3J0X2lvbW11X21zaV9nZXRfcmVzdl9yZWdpb25zKCksIEkgaGF2ZSBnb25lIGJh
-Y2sgYW5kIGF0dGVtcHRlZCB0bw0KPiA+IG1vdmUgdGhlIHNtbXUgbW9kZWwgY2hlY2sgaW5zaWRl
-IHRoZSBpb3J0IGNvZGUuIFRoaXMgbWVhbnMgdGhlDQo+ID4gZnVuY3Rpb24gd2lsbCBzZWxlY3Rp
-dmVseSBhcHBseSBIVyBNU0kgcmVzZXJ2YXRpb24gYmFzZWQgb24gdGhlDQo+ID4gcGxhdGZvcm0g
-YW5kIGFsc28gdGhlIGZ1bmN0aW9uIGNhbiBiZSBpbnZva2VkIGZyb20gdGhlDQo+IGlvbW11X2Rt
-YV9nZXRfcmVzdl9yZWdpb25zKCkgZGlyZWN0bHkuDQo+ID4NCj4gPiBDb3VsZCB5b3UgcGxlYXNl
-IHRha2UgYSBsb29rIGF0IHRoZSBiZWxvdyBzbmlwcGV0IGFuZCBsZXQgbWUga25vdyB5b3VyDQo+
-IGZlZWRiYWNrLg0KPiA+IEhvcGUgd2UgY2FuIG1ha2Ugc29tZSBwcm9ncmVzcyBvbiB0aGlzIHNl
-cmllcy4NCj4gPg0KPiA+IFRoYW5rcywNCj4gPiBTaGFtZWVyDQo+ID4NCj4gPiAtLT44LS0NCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYyBiL2RyaXZlcnMvYWNwaS9h
-cm02NC9pb3J0LmMNCj4gPiBpbmRleCA4NzZjMGUxLi5hMjcyMzNkIDEwMDY0NA0KPiA+IC0tLSBh
-L2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMNCj4gPiArKysgYi9kcml2ZXJzL2FjcGkvYXJtNjQv
-aW9ydC5jDQo+ID4gQEAgLTYxOSw2ICs2MTksMzkgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNl
-ZCBfX2dldF9wY2lfcmlkKHN0cnVjdA0KPiBwY2lfZGV2ICpwZGV2LCB1MTYgYWxpYXMsDQo+ID4g
-IAlyZXR1cm4gMDsNCj4gPiAgfQ0KPiA+DQo+ID4gK3N0YXRpYyBib29sIF9fbWF5YmVfdW51c2Vk
-IGlvcnRfaHdfbXNpX3Jlc3ZfZW5hYmxlKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gPiArCQkJCQlz
-dHJ1Y3QgYWNwaV9pb3J0X25vZGUgKm5vZGUpDQo+ID4gK3sNCj4gPiArCXN0cnVjdCBhY3BpX2lv
-cnRfbm9kZSAqaW9tbXUgPSBOVUxMOw0KPiA+ICsJaW50IGk7DQo+ID4gKw0KPiA+ICsJaWYgKGRl
-dl9pc19wY2koZGV2KSkgew0KPiA+ICsJCXUzMiByaWQ7DQo+ID4gKw0KPiA+ICsJCXBjaV9mb3Jf
-ZWFjaF9kbWFfYWxpYXModG9fcGNpX2RldihkZXYpLCBfX2dldF9wY2lfcmlkLCAmcmlkKTsNCj4g
-PiArCQlpb21tdSA9IGlvcnRfbm9kZV9tYXBfaWQobm9kZSwgcmlkLCBOVUxMLA0KPiBJT1JUX0lP
-TU1VX1RZUEUpOw0KPiA+ICsJfSBlbHNlIHsNCj4gPiArCQlmb3IgKGkgPSAwOyBpIDwgbm9kZS0+
-bWFwcGluZ19jb3VudDsgaSsrKSB7DQo+ID4gKwkJCWlvbW11ID0gaW9ydF9ub2RlX21hcF9wbGF0
-Zm9ybV9pZChub2RlLCBOVUxMLA0KPiA+ICsJCQkJCQkJSU9SVF9JT01NVV9UWVBFLA0KPiBpKTsN
-Cj4gPiArCQkJaWYgKGlvbW11KQ0KPiA+ICsJCQkJYnJlYWs7DQo+ID4gKwkJfQ0KPiA+ICsJfQ0K
-PiANCj4gWW91IGRvIG5vdCBuZWVkIChhbmQgSSBkbyBub3Qgd2FudCB0aGlzIGNvZGUpIHRvIGRv
-IHRoZSBtYXBwaW5nIGFnYWluLg0KPiANCj4gWW91IGhhdmUgdGhlIGZ3bm9kZSAoaWUgZGV2LT5p
-b21tdV9md3NwZWMpIGNvcnJlc3BvbmRpbmcgdG8gdGhlIElPTU1VLA0KPiB5b3UgY2FuIHJldHJp
-ZXZlIHRoZSBTTU1VIElPUlQgbm9kZSBieSBhIHNpbXBsZSBsb29rLXVwIGFuZCBjYXJyeSBvdXQg
-dGhlDQo+IGNoZWNrIGJlbG93Lg0KDQpPay4gVW5kZXJzdG9vZC4gSSB3aWxsIHJld29yayB0aGlz
-IHBhcnQgdGhlbi4NCg0KPiBJdCB3b3VsZCBiZSBzaW1wbGVyIHRvIHNldCBhbiBvcHRpb24gaW4g
-dGhlIFNNTVV2MyBkcml2ZXIgYnV0IHRoZW4geW91IGdvIGJhY2sNCj4gdG8gc3F1YXJlIG9uZSB3
-aXRoIERUL0FDUEkgU01NVXYzIGRyaXZlciBhd2FyZW5lc3Mgc28sIGlmLCB3aXRoIHRoZSBjaGFu
-Z2UNCj4gYWJvdmUgdGhpcyBjYW4gbWFrZSB0aGUgZ2VuZXJpYyBhcHByb2FjaCB3b3JrIChpZSBS
-b2JpbiBpcyBoYXBweSB3aXRoIGl0KSBJIGFtDQo+IGZpbmUgd2l0aCB0aGlzIElPUlQgdXBkYXRl
-IGFzIHdlbGwuDQoNClRoYW5rcyBMb3JlbnpvLiBJIHdpbGwgcmViYXNlIG9uIHRvcCBvZiByYzEg
-YW5kIHByZXBhcmUgdjEwIHdpdGggdGhlc2UgY2hhbmdlcw0KYW5kIHNlbnQgaXQgb3V0Lg0KDQpT
-aGFtZWVyIA0KDQo+ID4gKw0KPiA+ICsJaWYgKGlvbW11ICYmIChpb21tdS0+dHlwZSA9PSBBQ1BJ
-X0lPUlRfTk9ERV9TTU1VX1YzKSkgew0KPiA+ICsJCXN0cnVjdCBhY3BpX2lvcnRfc21tdV92MyAq
-c21tdTsNCj4gPiArDQo+ID4gKwkJc21tdSA9IChzdHJ1Y3QgYWNwaV9pb3J0X3NtbXVfdjMgKilp
-b21tdS0+bm9kZV9kYXRhOw0KPiA+ICsJCWlmIChzbW11LT5tb2RlbCA9PQ0KPiBBQ1BJX0lPUlRf
-U01NVV9WM19ISVNJTElDT05fSEkxNjFYKSB7DQo+ID4gKwkJCWRldl9ub3RpY2UoZGV2LCAiRW5h
-YmxpbmcgSGlTaWxpY29uIGVycmF0dW0NCj4gMTYxMDEwODAxXG4iKTsNCj4gPiArCQkJcmV0dXJu
-IHRydWU7DQo+ID4gKwkJfQ0KPiA+ICsJfQ0KPiA+ICsNCj4gPiArCXJldHVybiBmYWxzZTsNCj4g
-PiArfQ0KPiA+ICsNCj4gPiAgc3RhdGljIGludCBhcm1fc21tdV9pb3J0X3hsYXRlKHN0cnVjdCBk
-ZXZpY2UgKmRldiwgdTMyIHN0cmVhbWlkLA0KPiA+ICAJCQkgICAgICAgc3RydWN0IGZ3bm9kZV9o
-YW5kbGUgKmZ3bm9kZSwNCj4gPiAgCQkJICAgICAgIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9w
-cykgQEAgLTY4Miw2ICs3MTUsOQ0KPiBAQCBpbnQNCj4gPiBpb3J0X2lvbW11X21zaV9nZXRfcmVz
-dl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZA0KPiAqaGVhZCkN
-Cj4gPiAgCWlmICghbm9kZSkNCj4gPiAgCQlyZXR1cm4gLUVOT0RFVjsNCj4gPg0KPiA+ICsJaWYg
-KCFpb3J0X2h3X21zaV9yZXN2X2VuYWJsZShkZXYsIG5vZGUpKQ0KPiA+ICsJCXJldHVybiAwOw0K
-PiA+ICsNCj4gPiAgCS8qDQo+ID4gIAkgKiBDdXJyZW50IGxvZ2ljIHRvIHJlc2VydmUgSVRTIHJl
-Z2lvbnMgcmVsaWVzIG9uIEhXIHRvcG9sb2dpZXMNCj4gPiAgCSAqIHdoZXJlIGEgZ2l2ZW4gUENJ
-IG9yIG5hbWVkIGNvbXBvbmVudCBtYXBzIGl0cyBJRHMgdG8gb25seSBvbmUNCj4gPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvZG1hLWlvbW11
-LmMNCj4gPiBpbmRleCA5ZDFjZWJlLi42N2M2ZTMwIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMv
-aW9tbXUvZG1hLWlvbW11LmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jDQo+
-ID4gQEAgLTE5LDYgKzE5LDcgQEANCj4gPiAgICogYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0uICBJ
-ZiBub3QsIHNlZSA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzLz4uDQo+ID4gICAqLw0KPiA+
-DQo+ID4gKyNpbmNsdWRlIDxsaW51eC9hY3BpX2lvcnQuaD4NCj4gPiAgI2luY2x1ZGUgPGxpbnV4
-L2RldmljZS5oPg0KPiA+ICAjaW5jbHVkZSA8bGludXgvZG1hLWlvbW11Lmg+DQo+ID4gICNpbmNs
-dWRlIDxsaW51eC9nZnAuaD4NCj4gPiBAQCAtMTc0LDYgKzE3NSwxMCBAQCB2b2lkIGlvbW11X2Rt
-YV9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UNCj4gKmRldiwgc3RydWN0IGxpc3RfaGVh
-ZCAqbGlzdCkNCj4gPiAgCXN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZTsNCj4gPiAgCXN0
-cnVjdCByZXNvdXJjZV9lbnRyeSAqd2luZG93Ow0KPiA+DQo+ID4gKwlpZiAoIWlzX29mX25vZGUo
-ZGV2LT5pb21tdV9md3NwZWMtPmlvbW11X2Z3bm9kZSkgJiYNCj4gPiArCQlpb3J0X2lvbW11X21z
-aV9nZXRfcmVzdl9yZWdpb25zKGRldiwgbGlzdCkgPCAwKQ0KPiA+ICsJCXJldHVybjsNCj4gPiAr
-DQo+ID4gIAlpZiAoIWRldl9pc19wY2koZGV2KSkNCj4gPiAgCQlyZXR1cm47DQo+ID4NCj4gPiBk
-aWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9hY3BpX2lvcnQuaCBiL2luY2x1ZGUvbGludXgvYWNw
-aV9pb3J0LmgNCj4gPiBpbmRleCAxODJhNTc3Li44OGYxN2M5IDEwMDY0NA0KPiA+IC0tLSBhL2lu
-Y2x1ZGUvbGludXgvYWNwaV9pb3J0LmgNCj4gPiArKysgYi9pbmNsdWRlL2xpbnV4L2FjcGlfaW9y
-dC5oDQo+ID4gQEAgLTU2LDcgKzU2LDcgQEAgY29uc3Qgc3RydWN0IGlvbW11X29wcyAqaW9ydF9p
-b21tdV9jb25maWd1cmUoc3RydWN0DQo+ID4gZGV2aWNlICpkZXYpICB7IHJldHVybiBOVUxMOyB9
-ICBzdGF0aWMgaW5saW5lICBpbnQNCj4gPiBpb3J0X2lvbW11X21zaV9nZXRfcmVzdl9yZWdpb25z
-KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZA0KPiA+ICpoZWFkKSAteyByZXR1
-cm4gLUVOT0RFVjsgfQ0KPiA+ICt7IHJldHVybiAwOyB9DQo+ID4gICNlbmRpZg0KPiA+DQo+ID4g
-ICNlbmRpZiAvKiBfX0FDUElfSU9SVF9IX18gKi8NCj4gPg0KPiA+IC0tPjgtLQ0KPiA+DQo+ID4N
-Cj4gPg0K
+On 07/11/17 08:40, Liu, Yi L wrote:
+[...]
+>>>>> +
+>>>>> +/*  Generic fault types, can be expanded IRQ remapping fault */
+>>>>> +enum iommu_fault_type {
+>>>>> +	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
+>>>>> +	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
+>>>>> +};
+>>>>> +
+>>>>> +enum iommu_fault_reason {
+>>>>> +	IOMMU_FAULT_REASON_CTX = 1,
+>>>>
+>>>> If I read the VT-d spec right, this is a fault encountered while
+>>>> fetching the PASID table pointer?
+>>>>
+>>>>> +	IOMMU_FAULT_REASON_ACCESS,
+>>>>
+>>>> And this a pgd or pte access fault?
+>>>>
+>>>>> +	IOMMU_FAULT_REASON_INVALIDATE,
+>>>>
+>>>> What would this be?
+>>>>
+>>>>> +	IOMMU_FAULT_REASON_UNKNOWN,
+>>>>> +};
+>>>>
+>>>> I'm currently doing the same exploratory work for virtio-iommu, and
+>>>> I'd be tempted to report reasons as detailed as possible to guest or
+>>>> device driver, but it's not clear what they need, how they would use
+>>>> this information. I'd like to discuss this some more.
+>>>
+>>> [Liu, Yi L] In fact, it's not necessary to pass the detailed
+>>> unrecoverable fault to guest in virtualization case. Unrecoverable
+>>> fault happened on native indicates fault during native IOMMU address
+>>> translation. If the fault is not due to guest IOMMU page table
+>>> setting, then it is not necessary to inject the fault to guest. And hypervisor should
+>> be able to deduce it by walking the guest IOMMU page table with the fault address.
+>>
+>> I'm not sure the hypervisor should go and inspect the guest's page tables.
+> 
+> [Liu, Yi L] I think hypervisor needs to do it to make sure reporting fault to guest
+> correctly. If not, hypervisor may report some fault to guest and make guest
+> confused. e.g. pIOMMU walks page table and failed during walking root table(VT-d)
+> or device table(SMMU). such fault is due to no valid programming in host, guest
+> has no duty on it and neither has knowledge to fix it. it would make guest to
+> believe that it has programmed the root table or device table in the wrong way
+> while the fact is not.
+> 
+>> The pIOMMU already did the walk and reported the fault, so the hypervisor knows
+>> that they are invalid. I thought VT-d and other pIOMMUs provide enough
+>> information in the fault report to tell if the error was due to invalid page tables?
+> 
+> [Liu, Yi L] yes, pIOMMU did walk and get the fault info, but it's not sure who is
+> responsible to the fault. With inspecting the guest table, hypervisor may know who
+> should be responsible to the fault.
+
+The SMMU adds information about the origin of the fault in its reports,
+for example:
+
+* bad streamid, bad ste, ste fetch, stream disabled: the device tables are
+invalid, and the SMMU wasn't able to reach the PASID table.
+* bad substreamid, CD fetch, bad CD: the PASID tables are invalid, and the
+SMMU wasn't able to reach the page directory.
+* walk external abort, translation, addr size, access, permission: the
+page tables are invalid
+
+If the pIOMMU driver receives this kind of information already, walking
+the page table won't tell us anything more. Wouldn't you get a similar
+reason granularity on VT-d?
+
+>>> So I think for
+>>> virtualization case, pass the fault address is enough. If hypervisor
+>>> doesn't see any issue after checking the guest IOMMU translation
+>>> hierarchy, no use to let guest know it. Hypervisor can either throw
+>>> error log or stop the guest. If hypervisor see any error in the guest
+>>> iommu translation hierarchy, then inject the error to guest with a
+>>> proper fault type.> But for device driver or other user-space driver,
+>>> I'm not sure if they need detailed fault info. In fact, it is enough to pass the
+>> possible info which would help them to deduce whether the unrecoverable fault is
+>> due to them. This need more inputs from device driver reviewers.
+>>
+>> Agreed, though I'm not sure how to reach them.
+> 
+> [Liu, Yi L] I'd like to supplement my words here. Except the fault address, we may also
+> need to provide the BDF and PASID if it is there.
+
+I think the IOMMU should pass the struct device associated to the BDF to
+the fault handler. The fault handler can then deduce the BDF from struct
+device if it needs to. This also allows to support faults from non-PCI
+devices, where the BDF or deviceID is specific to the IOMMU and doesn't
+mean anything to the device driver.
+
+I agree that we should provide the PASID if present.
+
+>> At the moment, the only users of report_iommu_fault, the existing fault reporting
+>> mechanism, are ARM-based IOMMU drivers and there are only four device drivers
+>> that register a handler with iommu_set_fault_handler. Two of them simply print the
+>> fault, one resets the offending device, and the last one (msm GPU) wants to provide
+>> more detailed debugging information about the device state.
+> 
+> [Liu, Yi L] Well, it looks like device driver may not try to fix the fault, instead, it would
+> more likely do kind of clean up after un-recoverable fault. If so, it may be enough to
+> have a notification to device driver.
+
+Yes, and reporting faulting address and PASID can help the device driver
+decide what to do. For example a GPU driver might share the device between
+multiple processes, and an unrecoverable fault might simply be that one of
+the process tried to DMA outside its boundaries. In that case you'd want
+to kill the process, not reset the device.
+
+>>>> For unrecoverable faults I guess CTX means "the host IOMMU driver is
+>>>> broken", since the device tables are invalid. In which case there is
+>>>> no use continuing, trying to shutdown the device cleanly is really all the
+>> guest/device driver can do.
+>>>
+>>> [Liu, Yi L] Not sure about what device table mean here. But I agree
+>>> that if host IOMMU driver has no valid CTX for the device, then this
+>>> kind of error should result in a shutdown to the device.
+>>
+>> Yes by device table I meant VT-d's root table and context tables.
+> [Liu, Yi L] I see.
+> 
+>>>> For ACCESS the error is the device driver's or guest's fault, since
+>>>> the device driver triggered DMA on unmapped buffers, or the guest didn't install
+>> the right page tables.
+>>>> This can be repaired without shutting down, it may even just be one
+>>>> execution stream that failed in the device while the others continued
+>>>> normally. It's not as recoverable as a PRI Page Request, but the
+>>>> device driver may still be able to isolate the problem (e.g. by killing the process
+>> responsible) and the device to recover from it.
+>>>>
+>>>> So maybe ACCESS would benefit from more details, for example
+>>>> differentiating faults encountered while fetching the pgd from those
+>>>> encountered while fetching a second-level table or pte. The former is
+>>>> a lot less recoverable than the latter (bug in the guest IOMMU driver vs.
+>>>> bug in the device driver).
+>>>>
+>>>> Generalizing this maybe we should differentiate each step of the
+>>>> translation in
+>>>> fault_reason:
+>>>>
+>>>> * Device entry (context) fetch -> host IOMMU driver's fault
+
+Actually this could also be that the device simply isn't allowed to DMA,
+so not necessarily the pIOMMU driver misprogramming its tables. So the
+host IOMMU driver should notify the device driver when encountering an
+invalid device entry, telling it to reset the device.
+
+>>>> * PASID table fetch -> guest IOMMU driver or host userspace's fault
+
+Another reason I missed before is "invalid PASID". This means that the
+device driver used a PASID that wasn't reserved or that's outside of the
+PASID table, so is really the device drivers's fault. It should probably
+be distinguished from "pgd fetch error" below, which is the vIOMMU driver
+misprogramming the PASID table.
+
+>>>> * pgd fetch -> guest IOMMU driver's fault
+>>>> * pte fetch, including validity and access check -> device driver's
+>>>> fault
+>>>
+>>> [Liu, Yi L] It's a good summary here. BTW. why pte fetch is due to device driver's
+>> fault?
+>>
+>> Mmh, not necessarily the device driver's fault, but the most likely cause is that the
+>> device driver didn't call map() before triggering the DMA.
+>> Another less likely cause is a programming error in the vIOMMU driver, where it
+>> failed to perform the map() or populate the page tables properly.
+> 
+> [Liu, Yi L] Yes, I think for fault during iova(host iova or GPA) translation, the most likely
+> reason would be no calling of map() since we are using synchronized map API.
+> 
+> Besides the four reasons you listed above, I think there is still other reasons like
+> no present bit, invalid programming or so. And also, we have several tables which may
+> be referenced in an address translation. e.g. VT-d, we have root table, CTX table, pasid
+> table, translation page table(1st level, 2nd level). I think AMD-iommu and SMMU should
+> have similar stuffs?
+
+Yes but the four (now five) reasons listed above attempt to synthesize
+these reasons into a vendor-agnostic format. For example what I called
+"Invalid device entry" is "invalid root or ctx table" on VT-d, "Invalid
+STE" on SMMU, "illegal dev table entry" on AMD.
+
+Thanks,
+Jean
