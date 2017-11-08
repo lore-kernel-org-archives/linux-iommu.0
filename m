@@ -1,67 +1,73 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Wed, 8 Nov 2017 10:50:56 +0000
-Message-ID: <8734355c-d0c8-a02a-ab47-46803700c467@arm.com>
+From: Bharat Kumar Gogada <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Subject: RE: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
+Date: Wed, 8 Nov 2017 17:50:40 +0000
+Message-ID: <BLUPR0201MB150538FDD455F6042803B54FA5560@BLUPR0201MB1505.namprd02.prod.outlook.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
- <0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
- <c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
- <8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
- <79f3610e-e522-29ad-8a93-be7e05df2973@huawei.com>
+	<20171006133203.22803-2-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <79f3610e-e522-29ad-8a93-be7e05df2973@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171006133203.22803-2-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Bob Liu <liubo95@huawei.com>, Yisheng Xie <xieyisheng1@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, "nwatters@codeaurora.org" <nwatters@codeaurora.org>, ok
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Liubo,
+Hi Jean,
 
-On 08/11/17 01:21, Bob Liu wrote:
-> Hi Jean,
-> 
-> On 2017/10/12 20:55, Jean-Philippe Brucker wrote:
->> On 12/10/17 13:05, Yisheng Xie wrote:
->> [...]
->>>>>> * An iommu_process can be bound to multiple domains, and a domain can have
->>>>>>   multiple iommu_process.
->>>>> when bind a task to device, can we create a single domain for it? I am thinking
->>>>> about process management without shared PT(for some device only support PASID
->>>>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
->>>>> Do you have any idea about this?
->>>>
->>>> A device always has to be in a domain, as far as I know. Not supporting
->>>> PRI forces you to pin down all user mappings (or just the ones you use for
->>>> DMA) but you should sill be able to share PT. Now if you don't support
->>>> shared PT either, but only PASID, then you'll have to use io-pgtable and a
->>>> new map/unmap API on an iommu_process. I don't understand your concern
->>>> though, how would the link between process and domains prevent this use-case?
->>>>
->>> So you mean that if an iommu_process bind to multiple devices it should create
->>> multiple io-pgtables? or just share the same io-pgtable?
->>
->> I don't know to be honest, I haven't thought much about the io-pgtable
->> case, I'm all about sharing the mm :)
->>
-> 
-> Sorry to get back to this thread, but traditional DMA_MAP use case may also want to
-> enable Substreamid/PASID.
-> As a general framework, you may also consider SubStreamid/Pasid support for dma map/io-pgtable.
-> 
-> We're considering make io-pgtables per SubStreamid/Pasid, but haven't decide put all 
-> io-pgtables into a single domain or iommu_process.
++static struct iommu_process *
++iommu_process_alloc(struct iommu_domain *domain, struct task_struct 
++*task) {
++	int err;
++	int pasid;
++	struct iommu_process *process;
++
++	if (WARN_ON(!domain->ops->process_alloc || !domain->ops->process_free))
++		return ERR_PTR(-ENODEV);
++
++	process = domain->ops->process_alloc(task);
++	if (IS_ERR(process))
++		return process;
++	if (!process)
++		return ERR_PTR(-ENOMEM);
++
++	process->pid		= get_task_pid(task, PIDTYPE_PID);
++	process->release	= domain->ops->process_free;
++	INIT_LIST_HEAD(&process->domains);
++	kref_init(&process->kref);
++
++	if (!process->pid) {
++		err = -EINVAL;
++		goto err_free_process;
++	}
++
++	idr_preload(GFP_KERNEL);
++	spin_lock(&iommu_process_lock);
++	pasid = idr_alloc_cyclic(&iommu_process_idr, process, domain->min_pasid,
++				 domain->max_pasid + 1, GFP_ATOMIC);
+If EP supports only one pasid; domain->min_pasid=1 and domain->max_pasid=0.
+When idr_alloc_cyclic is called it invokes idr_get_free_cmn function where we have following condition. (Based on kernel 4.14-rc6)
+	if (!radix_tree_tagged(root, IDR_FREE)) 
+                start = max(start, maxindex + 1);
+              if (start > max) 
+		return ERR_PTR(-ENOSPC);
+Here max is being assigned zero by the time this function is invoked, this value is based on domain->max_pasid.
+This condition fails and ENOSPC is returned.
+	
+In this case even though hardware supports PASID, BIND flow fails.
+Any reason why pasid allocation moved to idr allocations rather than bitmap allocations as in v1 patches ?
 
-Yes they should be in a single domain, see also my other reply here:
-http://www.spinics.net/lists/arm-kernel/msg613586.html
++	process->pasid = pasid;
 
-I've only been thinking about the IOMMU API for the moment, but I guess
-the VFIO API would use this extension? I suppose it would be a new PASID
-field to DMA_MAP along with a flag. The PASID would probably be allocated
-with BIND + some special flag.
-
-Thanks,
-Jean
+Regards,
+Bharat
