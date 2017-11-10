@@ -1,44 +1,43 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 0/2] iommu/ipmmu-vmsa: r8a779(70|95) support
-Date: Fri, 10 Nov 2017 09:38:07 +0100
-Message-ID: <20171110083807.biz6txghquop7lr2@verge.net.au>
-References: <20171101103423.7334-1-horms+renesas@verge.net.au>
- <20171106122201.77d640e5@t450s.home>
+From: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: [PATCH 0/2] iommu/ipmmu-vmsa: Add r8a779(6|70|95) DT bindings
+Date: Fri, 10 Nov 2017 13:15:18 +0100
+Message-ID: <20171110121520.23437-1-horms+renesas@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171106122201.77d640e5@t450s.home>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Magnus Damm <magnus.damm@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 06, 2017 at 12:22:01PM -0700, Alex Williamson wrote:
-> On Wed,  1 Nov 2017 11:34:21 +0100
-> Simon Horman <horms+renesas@verge.net.au> wrote:
-> 
-> > Update Update the IPMMU DT binding documentation and driver implementation
-> > to support the r8a77970 (R-Car V3M) and r8a77995 (R-Car D3).
-> > 
-> > Based on work for r8a7796 by Magnus Damm.
-> > 
-> > Patches based on:
-> > * iommu/next
-> > * [PATCH v5 00/09] iommu/ipmmu-vmsa: r8a7795 support V5
-> > * [PATCH v4 0/3] iommu/ipmmu-vmsa: r8a7796 support V4
-> >   (fuzz when applying 3/3)
-> 
-> This last dependent patch series hasn't had any comments or updates
-> since June.  Do I take it from Simon's new patches here that it's still
-> relevant and desired?  Perhaps it was simply missed and nobody bothered
-> to re-send it?  Thanks,
+Update the IPMMU DT binding documentation to include r8a7796 (R-Car M3-W),
+r8a77970 (R-Car V3M) and r8a77995 (R-Car D3) compat strings.
 
-Hi Alex,
+This patch-set is comprised of patches previously included in
+* [PATCH v4 0/3] iommu/ipmmu-vmsa: r8a7796 support V4
+* [PATCH 0/2] iommu/ipmmu-vmsa: r8a779(70|95) support
 
-I spoke with Magnus about this and we feel that its a little early
-to merge the driver portion of both "[PATCH v4 0/3] iommu/ipmmu-vmsa:
-r8a7796 support V4" and this patchset.
+Those series also include driver updates to implement the bindings,
+however, it while it is felt that the bindings themselves are ready
+to be merged we feel that the driver updates are not at that stage yet.
 
-We would, however, like to see the bindings updates merged as they seem
-ready. I will repost them separately as that should be easiest for you.
+Magnus Damm (1):
+  iommu/ipmmu-vmsa: Add r8a7796 DT binding
+
+Simon Horman (1):
+  iommu/ipmmu-vmsa: Add r8a779(70|95) DT bindings
+
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+-- 
+2.11.0
