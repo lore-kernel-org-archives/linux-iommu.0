@@ -1,64 +1,48 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2 08/16] iommu: introduce device fault data
-Date: Fri, 10 Nov 2017 16:00:36 -0800
-Message-ID: <20171110160036.147d064e@jacob-builder>
-References: <1507244624-39189-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1507244624-39189-9-git-send-email-jacob.jun.pan@linux.intel.com>
-	<439401c0-a9ff-a69a-dc10-12d72f7abbab@arm.com>
-	<A2975661238FB949B60364EF0F2C257439AFC86D@SHSMSX104.ccr.corp.intel.com>
-	<09d451dc-c0e9-1fa2-8f85-45a9b1185d48@arm.com>
-	<A2975661238FB949B60364EF0F2C257439B06809@SHSMSX104.ccr.corp.intel.com>
-	<e95ce88b-7e88-5b1c-3a68-9ac40773a8f6@arm.com>
-	<20171109113629.6a9251a4@jacob-builder>
-	<0ed3e52b-2ca7-e378-817b-34b517a392da@arm.com>
+From: Bharat Kumar Gogada <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
+Subject: RE: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
+Date: Mon, 13 Nov 2017 11:06:51 +0000
+Message-ID: <SN1PR0201MB1518765CCEDD9B75119D6C63A52B0@SN1PR0201MB1518.namprd02.prod.outlook.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-2-jean-philippe.brucker@arm.com>
+ <BLUPR0201MB150538FDD455F6042803B54FA5560@BLUPR0201MB1505.namprd02.prod.outlook.com>
+ <16b6ba80-b15b-b278-0d06-350ae0201e82@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0ed3e52b-2ca7-e378-817b-34b517a392da-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
-	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <16b6ba80-b15b-b278-0d06-350ae0201e82-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, gabriele.pao
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 10 Nov 2017 13:54:59 +0000
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+>       =20
+> In this case even though hardware supports PASID, BIND flow fails.
 
-> /*
->  * Note: I tried to synthesize what I believe would be useful to
-> device
->  * drivers and guests, with regards to the kind of faults that the ARM
->  * SMMU is capable of reporting. Other IOMMUs may report more or less
->  * fault reasons, and I guess one should try to associate the faults
->  * reason that matches best a generic one when reporting a fault.
->  *
->  * Finer reason granularity is probably not useful to anyone, and
->  * coarser granularity would require more work from intermediate
->  * components processing the fault to figure out what happened, whose
->  * fault it actually is and where to route it (process vs. device
-> driver
->  * vs. vIOMMU driver misprogamming tables).
->  */
-> enum iommu_fault_reason {
-> 	IOMMU_FAULT_REASON_UNKNOWN = 0,
-> 
-can we add one for iommu internal error, the specifics may not be
-useful for the device drivers, but it is good to know iommu is
-faulting, perhaps can take action that inform driver users.
-i.e.
-	/* IOMMU internal error, no specific reason to report out */
-	IOMMU_FAULT_REASON_INTERNAL,
+It should fail, since we're reserving PASID 0 for non-PASID transactions wi=
+th S1DSS=3D0b10. In addition, the SMMUv3 specification does not allow using=
+ PASID with a single entry. See the description of S1CDMax in 5.2 Stream Ta=
+ble Entry:
 
-> 	/* Could not access the PASID table */
-> 	IOMMU_FAULT_REASON_PASID_FETCH,
+"when this field is 0, the substreams of the STE are disabled and one CD is=
+ available. (The minimum useful number of substreams is 2.) Any transaction=
+ with a SubstreamID will be terminated with an abort and a C_BAD_SUBSTREAMI=
+D event recorded."
 
-[Jacob Pan]
+> Any reason why pasid allocation moved to idr allocations rather than=20
+> bitmap allocations as in v1 patches ?
+
+Yes, idr provides a convenient way to quickly retrieve the context associat=
+ed with a PASID, when handling a fault. v1 had the allocation in a bitmap a=
+nd storing in a rb-tree. By using an idr we combine both and rely on a well=
+-tested infrastructure.
+
+Note that in the future we might need to go back to handcrafting the PASID =
+allocation, but it will probably still be based on idr.
+
+Thanks for the clarification, Jean.=20
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
