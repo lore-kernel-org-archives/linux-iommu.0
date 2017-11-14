@@ -1,51 +1,66 @@
 From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH/RFT v5 0/3] iommu/ipmmu-vmsa: r8a779(6|70|95) support
-Date: Tue, 14 Nov 2017 09:34:48 +0100
-Message-ID: <20171114083451.4052-1-horms+renesas@verge.net.au>
+Subject: [PATCH/RFT v5 3/3] iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT matching code
+Date: Tue, 14 Nov 2017 09:34:51 +0100
+Message-ID: <20171114083451.4052-4-horms+renesas@verge.net.au>
+References: <20171114083451.4052-1-horms+renesas@verge.net.au>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20171114083451.4052-1-horms+renesas@verge.net.au>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>
 Cc: Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
 List-Id: iommu@lists.linux-foundation.org
 
-This series adds r8a7796 (R-Car M3-W), r8a77970 (R-Car V3M) and
-r8a77995 (R-Car D3) support to the IPMMU driver.
+Support the r8a77970 (R-Car V3M) and r8a77995 (R-Car D3) IPMMUs by sharing
+feature flags with r8a7795 (R-Car H3) and r8a7796 (R-Car M3-W). Also update
+IOMMU_OF_DECLARE to hook up the compat strings.
 
-The maximum number of micro-TLBs are increased and the driver is adjusted
-to match on the new DT bindings posted separately.
+Based on work for the r8a7796 by Magnus Damm
 
-Changes since V4:
- - Marked as RFC as I believe more consideration of driver support
-   for these SoCs is required
- - Moved DT bindings documentation into separate patch-set
-   "[PATCH 0/2] iommu/ipmmu-vmsa: Add r8a779(6|70|95) DT bindings"
-   as I believe these are ready to be merged
- - Rebased
- - Collected driver updates for r8a7796, and r8a77970 and r8a77995 SoCs
-   into a single patchset.
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+v2
+* Add reviewed-by tag from Geert Uytterhoeven
+---
+ drivers/iommu/ipmmu-vmsa.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Changes since V3:
- - Rebased on top of [PATCH v4 00/09] iommu/ipmmu-vmsa: r8a7795 support V4
- - Patch 3/3 updated with Reviewed-by - thanks Geert!
-
-Changes since V2:
- - Patch 2/3 updated with an outer set of () - thanks Ramesh!
- - Patch 2/3 updated with Reviewed-by - thanks Geert!
- - Patch 3/3 updated to include white list support
-
-Changes since V1:
- - Patch 1/3 updated with more Acked-by tags
- - Patch 2/3 updated with high I/O register range support
-
-Magnus Damm (2):
-  iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-  iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
-
-Simon Horman (1):
-  iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT matching code
-
- drivers/iommu/ipmmu-vmsa.c | 36 +++++++++++++++++++++++++++++-------
- 1 file changed, 29 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index f936f834984a..49c6fc0c1ae6 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -763,6 +763,8 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+ static const struct soc_device_attribute soc_rcar_gen3[] = {
+ 	{ .soc_id = "r8a7795", },
+ 	{ .soc_id = "r8a7796", },
++	{ .soc_id = "r8a77970", },
++	{ .soc_id = "r8a77995", },
+ 	{ /* sentinel */ }
+ };
+ 
+@@ -943,6 +945,12 @@ static const struct of_device_id ipmmu_of_ids[] = {
+ 		.compatible = "renesas,ipmmu-r8a7796",
+ 		.data = &ipmmu_features_rcar_gen3,
+ 	}, {
++		.compatible = "renesas,ipmmu-r8a77970",
++		.data = &ipmmu_features_rcar_gen3,
++	}, {
++		.compatible = "renesas,ipmmu-r8a77995",
++		.data = &ipmmu_features_rcar_gen3,
++	}, {
+ 		/* Terminator */
+ 	},
+ };
+@@ -1129,6 +1137,10 @@ IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
+ 		 ipmmu_vmsa_iommu_of_setup);
+ IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796",
+ 		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a77970_iommu_of, "renesas,ipmmu-r8a77970",
++		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a77995_iommu_of, "renesas,ipmmu-r8a77995",
++		 ipmmu_vmsa_iommu_of_setup);
+ #endif
+ 
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
 -- 
 2.11.0
