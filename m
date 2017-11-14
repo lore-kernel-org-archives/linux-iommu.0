@@ -1,88 +1,66 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [RFC PATCH] drivers: base: dma-coherent: find free region
- without alignment
-Date: Tue, 14 Nov 2017 12:07:25 +0100
-Message-ID: <94f35456-b661-908a-bdc0-ddd74cbaf9ec@samsung.com>
-References: <CGME20171114084234epcas2p44ac00494b49aa798f709c5bbdf92127a@epcas2p4.samsung.com>
-	<20171114084229.13512-1-jaewon31.kim@samsung.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/ipmmu-vmsa: Add r8a779(70|95) DT bindings
+Date: Tue, 14 Nov 2017 14:11:03 +0100
+Message-ID: <CAMuHMdU4ZM22iyeO0_Ub+XsOdoUCHUkTqTQiaRZUzgPZAnhGJQ@mail.gmail.com>
+References: <20171110121520.23437-1-horms+renesas@verge.net.au>
+	<20171110121520.23437-3-horms+renesas@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-reply-to: <20171114084229.13512-1-jaewon31.kim@samsung.com>
-Content-language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Jaewon Kim <jaewon31.kim@samsung.com>, hch@lst.de, robin.murphy@arm.com, gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org
-Cc: akpm@linux-foundation.org, mhocko@suse.com, vbabka@suse.cz, linux-mm@kvack.org, linux-kernel@vger.kernel.org, jaewon31.kim@gmail.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171110121520.23437-3-horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Cc: Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jaewon,
+Hi Simon,
 
-On 2017-11-14 09:42, Jaewon Kim wrote:
-> dma-coherent uses bitmap API which internally consider align based on the
-> requested size. Depending on some usage pattern, using align, I think, may
-> be good for fast search and anti-fragmentation. But with the align, an
-> allocation may be failed.
+On Fri, Nov 10, 2017 at 1:15 PM, Simon Horman
+<horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org> wrote:
+> Update the IPMMU DT binding documentation to include the
+> r8a77970 (R-Car V3M) and r8a77995 (R-Car D3) compat strings.
 >
-> This is a example, total size is 30MB, only few memory at front is being
-> used, and 9MB is being requsted. Then 9MB will be aligned to 16MB. The
-> first try on offset 0MB will be failed because of others already using. The
-> second try on offset 16MB will be failed because of ouf of bound.
+> Based on work for r8a7796 by Magnus Damm.
 >
-> So if the align is not necessary on dma-coherent, this patch removes the
-> align policy to allow allocation without increasing the total size.
-
-You are right that keeping strict alignment is waste of memory for large
-allocations. However for the smaller ones, typically under 1MiB, it helps
-to reduce memory fragmentation. The alignment of the allocated buffers is
-de-facto guaranteed by the memory management framework in Linux kernel
-and there are drivers that depends on this feature.
-
-Maybe it would make sense to keep alignment for buffers smaller than some
-predefined value (like 1MiB), something similar to config
-ARM_DMA_IOMMU_ALIGNMENT in arch/arm/Kconfig. Otherwise I would expect that
-some drivers will be broken by this patch.
-
-> Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
+> Signed-off-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 > ---
->   drivers/base/dma-coherent.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> diff --git a/drivers/base/dma-coherent.c b/drivers/base/dma-coherent.c
-> index 744f64f43454..b86a96d0cd07 100644
-> --- a/drivers/base/dma-coherent.c
-> +++ b/drivers/base/dma-coherent.c
-> @@ -162,7 +162,7 @@ EXPORT_SYMBOL(dma_mark_declared_memory_occupied);
->   static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
->   		ssize_t size, dma_addr_t *dma_handle)
->   {
-> -	int order = get_order(size);
-> +	int nr_page = PAGE_ALIGN(size) >> PAGE_SHIFT;
->   	unsigned long flags;
->   	int pageno;
->   	void *ret;
-> @@ -172,9 +172,11 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
->   	if (unlikely(size > (mem->size << PAGE_SHIFT)))
->   		goto err;
->   
-> -	pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
-> -	if (unlikely(pageno < 0))
-> +	pageno = bitmap_find_next_zero_area(mem->bitmap, mem->size, 0,
-> +					    nr_page, 0);
-> +	if (unlikely(pageno >= mem->size)) {
->   		goto err;
-> +	bitmap_set(mem->bitmap, pageno, nr_page);
->   
->   	/*
->   	 * Memory was found in the coherent area.
+> diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> index 98ae900a7a76..9efa87dbcfdc 100644
+> --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> @@ -17,6 +17,8 @@ Required Properties:
+>      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+>      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+>      - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+> +    - "renesas,ipmmu-r8a77970" for the R8A7770 (R-Car V3M) IPMMU.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+s/7770/77970/
+
+> +    - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
+>      - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+>
+>    - reg: Base address and size of the IPMMU registers.
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 --
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
