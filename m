@@ -1,159 +1,123 @@
-From: Jaewon Kim <jaewon31.kim@samsung.com>
-Subject: Re: [RFC PATCH] drivers: base: dma-coherent: find free region
- without alignment
-Date: Thu, 16 Nov 2017 02:04:17 +0900
-Message-ID: <5A0C7391.3090801@samsung.com>
-References: <CGME20171114084234epcas2p44ac00494b49aa798f709c5bbdf92127a@epcas2p4.samsung.com>
-	<20171114084229.13512-1-jaewon31.kim@samsung.com>
-	<94f35456-b661-908a-bdc0-ddd74cbaf9ec@samsung.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Wed, 15 Nov 2017 15:54:56 -0800
+Message-ID: <20171115155456.141a6dc8@jacob-builder>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+	<1507035334.29211.105.camel@infradead.org>
+	<db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
+	<20171006144309.GA30803@8bytes.org>
+	<20171106104709.06b38f7c@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <owner-linux-mm@kvack.org>
-In-reply-to: <94f35456-b661-908a-bdc0-ddd74cbaf9ec@samsung.com>
-Sender: owner-linux-mm@kvack.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, hch@lst.de, robin.murphy@arm.com, gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org
-Cc: akpm@linux-foundation.org, mhocko@suse.com, vbabka@suse.cz, linux-mm@kvack.org, linux-kernel@vger.kernel.org, jaewon31.kim@gmail.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171106104709.06b38f7c@jacob-builder>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org, herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Marek
+Hi Alex and all,
 
-On 2017년 11월 14일 20:07, Marek Szyprowski wrote:
-> Hi Jaewon,
->
-> On 2017-11-14 09:42, Jaewon Kim wrote:
->> dma-coherent uses bitmap API which internally consider align based on the
->> requested size. Depending on some usage pattern, using align, I think, may
->> be good for fast search and anti-fragmentation. But with the align, an
->> allocation may be failed.
->>
->> This is a example, total size is 30MB, only few memory at front is being
->> used, and 9MB is being requsted. Then 9MB will be aligned to 16MB. The
->> first try on offset 0MB will be failed because of others already using. The
->> second try on offset 16MB will be failed because of ouf of bound.
->>
->> So if the align is not necessary on dma-coherent, this patch removes the
->> align policy to allow allocation without increasing the total size.
->
-> You are right that keeping strict alignment is waste of memory for large
-> allocations. However for the smaller ones, typically under 1MiB, it helps
-> to reduce memory fragmentation. The alignment of the allocated buffers is
-> de-facto guaranteed by the memory management framework in Linux kernel
-> and there are drivers that depends on this feature.
->
-> Maybe it would make sense to keep alignment for buffers smaller than some
-> predefined value (like 1MiB), something similar to config
-> ARM_DMA_IOMMU_ALIGNMENT in arch/arm/Kconfig. Otherwise I would expect that
-> some drivers will be broken by this patch.
-Thank you for your comment.
+Just wondering if you could merge Robin's patch for the next rc. From
+all our testing, this seems to be a solid fix and should be included in
+the stable releases as well.
 
-I looked ARM_DMA_IOMMU_ALIGNMENT in ARM, it looks similar but it is using
-bitmap_find_next_zero_area rather than bitmap_find_free_region. bitmap_find_next_zero_area
-apply aligning only onto offset but not onto size. So I think ARM_DMA_IOMMU_ALIGNMENT way
-is not perfect on this dma-coherent APIs which tries to align even on size.
+Thanks,
 
-Let me say another way where each reserved_mem from device tree can decide if it wants aligning.
-This could be implemented like below. I need to change other dma-coherent APIs though.
-I will wait for your comment on this.
+Jacob
 
---- a/drivers/base/dma-coherent.c
-+++ b/drivers/base/dma-coherent.c
-@@ -17,6 +17,7 @@ struct dma_coherent_mem {
-        unsigned long   *bitmap;
-        spinlock_t      spinlock;
-        bool            use_dev_dma_pfn_offset;
-+       bool            no_align;
- };
- 
- static struct dma_coherent_mem *dma_coherent_default_memory __ro_after_init;
-@@ -162,7 +163,6 @@ EXPORT_SYMBOL(dma_mark_declared_memory_occupied);
- static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
-                ssize_t size, dma_addr_t *dma_handle)
- {
--       int order = get_order(size);
-        unsigned long flags;
-        int pageno;
-        void *ret;
-@@ -172,9 +172,21 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
-        if (unlikely(size > (mem->size << PAGE_SHIFT)))
-                goto err;
- 
--       pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
--       if (unlikely(pageno < 0))
--               goto err;
-+       if (mem->no_align) {
-+               int nr_page = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+
-+               pageno = bitmap_find_next_zero_area(mem->bitmap, mem->size, 0,
-+                                                   nr_page, 0);
-+               if (unlikely(pageno >= mem->size))
-+                       goto err;
-+               bitmap_set(mem->bitmap, pageno, nr_page);
-+       } else {
-+               int order = get_order(size);
-+
-+               pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
-+               if (unlikely(pageno < 0))
-+                       goto err;
-+       }
- 
-        /*
-         * Memory was found in the coherent area.
-@@ -346,6 +358,7 @@ static struct reserved_mem *dma_reserved_default_memory __initdata;
- static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
- {
-        struct dma_coherent_mem *mem = rmem->priv;
-+       unsigned long node = rmem->fdt_node;
-        int ret;
- 
-        if (!mem) {
-@@ -360,6 +373,8 @@ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
-        }
-        mem->use_dev_dma_pfn_offset = true;
-        rmem->priv = mem;
-+       if (of_get_flat_dt_prop(node, "no-align", NULL))
-+               mem->no_align = true;
-        dma_assign_coherent_memory(dev, mem);
-        return 0;
- }
+On Mon, 6 Nov 2017 10:47:09 -0800
+Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
+> On Fri, 6 Oct 2017 16:43:09 +0200
+> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> 
+> > On Tue, Oct 03, 2017 at 07:05:17PM +0100, Robin Murphy wrote:  
+> > > Now, there are indeed plenty of drivers and subsystems which do
+> > > work on lists of explicitly single pages - anything doing some
+> > > variant of "addr = kmap_atomic(sg_page(sg)) + sg->offset;" is easy
+> > > to spot - but I don't think DMA API implementations are in a
+> > > position to make any kind of assumption; nearly all of them just
+> > > shut up and handle sg->length bytes from sg_phys(sg) without
+> > > questioning the caller, and I reckon that's exactly what they
+> > > should be doing.    
+> > 
+> > I agree with that, it is not explicitly forbidden to have an
+> > sg->offset > PAGE_SIZE and most IOMMU drivers handle this case.
+> > 
+> > So this is a problem I'd like to see resolved in the VT-d driver
+> > too. If nobody comes up with a correct fix soon I'll apply this one
+> > and rip out the large-page support from __domain_mapping() to make
+> > it work.
+> >   
+> Hi All,
+> 
+> Just to give an update on the offline debugging of this issue. With
+> Robin's patch applied, I was able to reproduce the failure with
+> similar configuration that Jain helped to set up.
+> 
+> I added trace prints just to see the map/unmap activities leading to
+> the DMAR fault. When fault occurs, the trace shows there is an unmap
+> to the offending iova pfn. So I think this is a separate problem than
+> Robin's patch is fixing. I think we should move forward to merge this
+> patch upstream and stable. The remaining problem is likely a race
+> condition between unmap and DMA activities.
+> 
+> Here a brief extracted log, ee3d7 is the iova pfn in question.
+> #1. map sg pfn ee3d7
+>           <idle>-0     [076] 74124.154254: bprint:
+> __domain_mapping: vpfn:ee3d7, pgoff=2126, np:1, da:ee3d784e,
+> len:1464 ,
+> ppfn:1849c9c                                                                                                                        
+> 
+> #2. unmap ee3d7000
+>          <idle>-0     [054] 74124.154301: bprint:
+> intel_unmap: Device 0000:18:00.4 unmapping: pfn ee3d7-ee3d7
+> <idle>-0     [076] 74124.154301: bprint:
+> __domain_mapping: lvlpg:1, nrpg 0, vpfn:ec2ff, ppfn:183221a, sg_res:0
+> <idle>-0     [059] 74124.154302: bprint:
+> __domain_mapping: lvlpg:1, nrpg 0, vpfn:ee719, ppfn:c3e4dd, sg_res:0
+> <idle>-0     [076] 74124.154302: bprint:
+> __domain_mapping: vpfn:f183b, pgoff=78, np:1, da:f183b04e, len:1464, 
+> 
+> #3. DMA to unmapped address ee3d7000, DMAR fault raised.
+>   +2.952861] dmar_fault: 6 callbacks
+> suppressed +0.000002] DMAR: DRHD: handling fault status reg
+> 2 +0.005588] turning tracing
+> off +0.003592] DMAR: [DMA Write] Request device [18:00.4] fault addr
+> ee3d7000 [fault reason 05] PTE Write access is not set 
+>                                                                                                                                                                                                                                                                
+>          <idle>-0     [000] 74124.156906: bputs:
+>          0xffffffffb259916bs: turning tracing off     
+> 
+> 
+> Thanks,
+> 
+> Jacob
+> 
+> > Speaking of __domain_mapping(), this function is a big
+> > unmaintainable mess which should be split and rewritten. A clean
+> > and maintainable rewrite can alse re-add the large-page support.
+> > 
+> > 
+> > Regards,
+> > 
+> > 	Joerg
+> > 
+> > _______________________________________________
+> > iommu mailing list
+> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/iommu  
+> 
+> [Jacob Pan]
 
->
->> Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
->> ---
->>   drivers/base/dma-coherent.c | 8 +++++---
->>   1 file changed, 5 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/base/dma-coherent.c b/drivers/base/dma-coherent.c
->> index 744f64f43454..b86a96d0cd07 100644
->> --- a/drivers/base/dma-coherent.c
->> +++ b/drivers/base/dma-coherent.c
->> @@ -162,7 +162,7 @@ EXPORT_SYMBOL(dma_mark_declared_memory_occupied);
->>   static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
->>           ssize_t size, dma_addr_t *dma_handle)
->>   {
->> -    int order = get_order(size);
->> +    int nr_page = PAGE_ALIGN(size) >> PAGE_SHIFT;
->>       unsigned long flags;
->>       int pageno;
->>       void *ret;
->> @@ -172,9 +172,11 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
->>       if (unlikely(size > (mem->size << PAGE_SHIFT)))
->>           goto err;
->>   -    pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
->> -    if (unlikely(pageno < 0))
->> +    pageno = bitmap_find_next_zero_area(mem->bitmap, mem->size, 0,
->> +                        nr_page, 0);
->> +    if (unlikely(pageno >= mem->size)) {
->>           goto err;
->> +    bitmap_set(mem->bitmap, pageno, nr_page);
->>         /*
->>        * Memory was found in the coherent area.
->
-> Best regards
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+[Jacob Pan]
