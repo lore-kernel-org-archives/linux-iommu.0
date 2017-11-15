@@ -1,107 +1,70 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [GIT PULL] dma-mapping updates for Linux 4.15
-Date: Tue, 14 Nov 2017 21:59:40 +0200
-Message-ID: <20171114195940.mqin47tr3t7zkopq@infradead.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC v2 2/2] base: dma-mapping: Postpone page_to_pfn() on mmap()
+Date: Wed, 15 Nov 2017 13:38:23 +0000
+Message-ID: <ea4f2d82-6a27-a7c1-091f-6230cfd988a3@arm.com>
+References: <1510679286-6988-1-git-send-email-jacopo+renesas@jmondi.org>
+ <1510679286-6988-3-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1510679286-6988-3-git-send-email-jacopo+renesas@jmondi.org>
+Content-Language: en-GB
+Sender: linux-sh-owner@vger.kernel.org
+To: Jacopo Mondi <jacopo+renesas@jmondi.org>, ysato@users.sourceforge.jp, dalias@libc.org, laurent.pinchart@ideasonboard.com, geert@linux-m68k.org
+Cc: linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Linus,
+On 14/11/17 17:08, Jacopo Mondi wrote:
+> On SH4 architecture, with SPARSEMEM memory model, translating page to
+> pfn hangs the CPU. Post-pone translation to pfn after
+> dma_mmap_from_dev_coherent() function call as it succeeds and make page
+> translation not necessary.
+> 
+> This patch was suggested by Laurent Pinchart and he's working to submit
+> a proper fix mainline. Not sending for inclusion at the moment.
 
-please pull these dma-mapping updates:
+Y'know, I think this patch does have some merit by itself - until we 
+know that cpu_addr *doesn't* represent some device-private memory which 
+is not guaranteed to be backed by a struct page, calling virt_to_page() 
+on it is arguably semantically incorrect, even if it might happen to be 
+benign in most cases.
 
+Robin.
 
-The following changes since commit 33d930e59a98fa10a0db9f56c7fa2f21a4aef9b9:
-
-  Linux 4.14-rc5 (2017-10-15 21:01:12 -0400)
-
-are available in the git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.15
-
-for you to fetch changes up to c9eb6172c328dde7e14812f94f8da87b691e41b5:
-
-  dma-mapping: turn dma_cache_sync into a dma_map_ops method (2017-10-19 16:37:49 +0200)
-
-----------------------------------------------------------------
-A couple of dma-mapping updates:
-
- - turn dma_cache_sync into a dma_map_ops instance and remove
-   implementation that purely are dead because the architecture
-   doesn't support noncoherent allocations
- - add a flag for busses that need DMA configuration (Robin Murphy)
-
-----------------------------------------------------------------
-Christoph Hellwig (11):
-      floppy: consolidate the dummy fd_cacheflush definition
-      x86: make dma_cache_sync a no-op
-      frv: make dma_cache_sync a no-op
-      ia64: make dma_cache_sync a no-op
-      microblaze: make dma_cache_sync a no-op
-      mn10300: make dma_cache_sync a no-op
-      powerpc: make dma_cache_sync a no-op
-      unicore32: make dma_cache_sync a no-op
-      xtensa: make dma_cache_sync a no-op
-      sh: make dma_cache_sync a no-op
-      dma-mapping: turn dma_cache_sync into a dma_map_ops method
-
-Robin Murphy (1):
-      drivers: flag buses which demand DMA configuration
-
- arch/alpha/include/asm/dma-mapping.h      |  2 --
- arch/alpha/include/asm/floppy.h           |  2 --
- arch/cris/include/asm/dma-mapping.h       |  6 -----
- arch/frv/include/asm/dma-mapping.h        |  7 ------
- arch/hexagon/include/asm/dma-mapping.h    |  3 ---
- arch/ia64/include/asm/dma-mapping.h       | 11 ---------
- arch/m32r/include/asm/dma-mapping.h       |  5 ----
- arch/m68k/include/asm/dma-mapping.h       |  6 -----
- arch/metag/include/asm/dma-mapping.h      | 10 --------
- arch/microblaze/include/asm/dma-mapping.h | 39 -------------------------------
- arch/microblaze/kernel/dma.c              | 17 ++++++++++++++
- arch/mips/include/asm/dma-mapping.h       |  3 ---
- arch/mips/mm/dma-default.c                |  7 +++---
- arch/mn10300/include/asm/dma-mapping.h    | 10 --------
- arch/nios2/include/asm/dma-mapping.h      |  9 -------
- arch/parisc/include/asm/dma-mapping.h     |  8 -------
- arch/parisc/kernel/pci-dma.c              |  8 +++++++
- arch/powerpc/include/asm/dma-mapping.h    |  7 ------
- arch/powerpc/include/asm/floppy.h         |  2 --
- arch/s390/include/asm/dma-mapping.h       |  5 ----
- arch/sh/include/asm/dma-mapping.h         |  7 +++---
- arch/sh/kernel/dma-nommu.c                | 17 +++++++-------
- arch/sh/mm/consistent.c                   |  6 ++---
- arch/sparc/include/asm/dma-mapping.h      |  8 -------
- arch/sparc/include/asm/floppy_32.h        |  1 -
- arch/sparc/include/asm/floppy_64.h        |  1 -
- arch/tile/include/asm/dma-mapping.h       |  9 -------
- arch/unicore32/include/asm/cacheflush.h   |  9 -------
- arch/unicore32/include/asm/dma-mapping.h  | 22 -----------------
- arch/unicore32/mm/proc-syms.c             |  3 ---
- arch/x86/include/asm/dma-mapping.h        |  7 ------
- arch/xtensa/include/asm/dma-mapping.h     |  3 ---
- arch/xtensa/kernel/pci-dma.c              | 23 ------------------
- drivers/amba/bus.c                        |  1 +
- drivers/base/platform.c                   |  1 +
- drivers/block/floppy.c                    |  4 ++++
- drivers/gpu/host1x/bus.c                  |  1 +
- drivers/of/device.c                       |  8 +------
- drivers/pci/pci-driver.c                  |  1 +
- drivers/sh/maple/maple.c                  |  5 ++--
- include/linux/device.h                    |  4 ++++
- include/linux/dma-mapping.h               | 13 +++++++++++
- 42 files changed, 71 insertions(+), 250 deletions(-)
+> Suggested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+> ---
+>   drivers/base/dma-mapping.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+> index e584edd..73d64d3 100644
+> --- a/drivers/base/dma-mapping.c
+> +++ b/drivers/base/dma-mapping.c
+> @@ -227,8 +227,8 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+>   #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
+>   	unsigned long user_count = vma_pages(vma);
+>   	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+>   	unsigned long off = vma->vm_pgoff;
+> +	unsigned long pfn;
+> 
+>   	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> 
+> @@ -236,6 +236,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+>   		return ret;
+> 
+>   	if (off < count && user_count <= (count - off)) {
+> +		pfn = page_to_pfn(virt_to_page(cpu_addr));
+>   		ret = remap_pfn_range(vma, vma->vm_start,
+>   				      pfn + off,
+>   				      user_count << PAGE_SHIFT,
+> --
+> 2.7.4
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
