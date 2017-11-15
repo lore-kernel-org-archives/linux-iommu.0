@@ -1,77 +1,159 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFT v5 3/3] iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT
- matching code
-Date: Wed, 15 Nov 2017 15:19:50 +0100
-Message-ID: <CAMuHMdWbpJ-EOyogaY+cWFozwp2QSmpbNoe6VtAPV6r3NjXTKA@mail.gmail.com>
-References: <20171114083451.4052-1-horms+renesas@verge.net.au> <20171114083451.4052-4-horms+renesas@verge.net.au>
+From: Jaewon Kim <jaewon31.kim@samsung.com>
+Subject: Re: [RFC PATCH] drivers: base: dma-coherent: find free region
+ without alignment
+Date: Thu, 16 Nov 2017 02:04:17 +0900
+Message-ID: <5A0C7391.3090801@samsung.com>
+References: <CGME20171114084234epcas2p44ac00494b49aa798f709c5bbdf92127a@epcas2p4.samsung.com>
+	<20171114084229.13512-1-jaewon31.kim@samsung.com>
+	<94f35456-b661-908a-bdc0-ddd74cbaf9ec@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20171114083451.4052-4-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <owner-linux-mm@kvack.org>
+In-reply-to: <94f35456-b661-908a-bdc0-ddd74cbaf9ec@samsung.com>
+Sender: owner-linux-mm@kvack.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, hch@lst.de, robin.murphy@arm.com, gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org
+Cc: akpm@linux-foundation.org, mhocko@suse.com, vbabka@suse.cz, linux-mm@kvack.org, linux-kernel@vger.kernel.org, jaewon31.kim@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Simon,
+Hello Marek
 
-On Tue, Nov 14, 2017 at 9:34 AM, Simon Horman
-<horms+renesas@verge.net.au> wrote:
-> Support the r8a77970 (R-Car V3M) and r8a77995 (R-Car D3) IPMMUs by sharing
-> feature flags with r8a7795 (R-Car H3) and r8a7796 (R-Car M3-W). Also update
-> IOMMU_OF_DECLARE to hook up the compat strings.
+On 2017년 11월 14일 20:07, Marek Szyprowski wrote:
+> Hi Jaewon,
 >
-> Based on work for the r8a7796 by Magnus Damm
+> On 2017-11-14 09:42, Jaewon Kim wrote:
+>> dma-coherent uses bitmap API which internally consider align based on the
+>> requested size. Depending on some usage pattern, using align, I think, may
+>> be good for fast search and anti-fragmentation. But with the align, an
+>> allocation may be failed.
+>>
+>> This is a example, total size is 30MB, only few memory at front is being
+>> used, and 9MB is being requsted. Then 9MB will be aligned to 16MB. The
+>> first try on offset 0MB will be failed because of others already using. The
+>> second try on offset 16MB will be failed because of ouf of bound.
+>>
+>> So if the align is not necessary on dma-coherent, this patch removes the
+>> align policy to allow allocation without increasing the total size.
 >
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> v2
-> * Add reviewed-by tag from Geert Uytterhoeven
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
+> You are right that keeping strict alignment is waste of memory for large
+> allocations. However for the smaller ones, typically under 1MiB, it helps
+> to reduce memory fragmentation. The alignment of the allocated buffers is
+> de-facto guaranteed by the memory management framework in Linux kernel
+> and there are drivers that depends on this feature.
 >
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index f936f834984a..49c6fc0c1ae6 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -763,6 +763,8 @@ static bool ipmmu_slave_whitelist(struct device *dev)
->  static const struct soc_device_attribute soc_rcar_gen3[] = {
->         { .soc_id = "r8a7795", },
->         { .soc_id = "r8a7796", },
-> +       { .soc_id = "r8a77970", },
-> +       { .soc_id = "r8a77995", },
+> Maybe it would make sense to keep alignment for buffers smaller than some
+> predefined value (like 1MiB), something similar to config
+> ARM_DMA_IOMMU_ALIGNMENT in arch/arm/Kconfig. Otherwise I would expect that
+> some drivers will be broken by this patch.
+Thank you for your comment.
 
-This array starts becoming a mirror of most entries in ipmmu_of_ids[].
-As long as you don't need to match against a specific SoC revision, you could
-store the whitelist check flag in struct ipmmu_features, as pointed to by
-ipmmu_of_ids.data.
+I looked ARM_DMA_IOMMU_ALIGNMENT in ARM, it looks similar but it is using
+bitmap_find_next_zero_area rather than bitmap_find_free_region. bitmap_find_next_zero_area
+apply aligning only onto offset but not onto size. So I think ARM_DMA_IOMMU_ALIGNMENT way
+is not perfect on this dma-coherent APIs which tries to align even on size.
 
->         { /* sentinel */ }
->  };
+Let me say another way where each reserved_mem from device tree can decide if it wants aligning.
+This could be implemented like below. I need to change other dma-coherent APIs though.
+I will wait for your comment on this.
+
+--- a/drivers/base/dma-coherent.c
++++ b/drivers/base/dma-coherent.c
+@@ -17,6 +17,7 @@ struct dma_coherent_mem {
+        unsigned long   *bitmap;
+        spinlock_t      spinlock;
+        bool            use_dev_dma_pfn_offset;
++       bool            no_align;
+ };
+ 
+ static struct dma_coherent_mem *dma_coherent_default_memory __ro_after_init;
+@@ -162,7 +163,6 @@ EXPORT_SYMBOL(dma_mark_declared_memory_occupied);
+ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+                ssize_t size, dma_addr_t *dma_handle)
+ {
+-       int order = get_order(size);
+        unsigned long flags;
+        int pageno;
+        void *ret;
+@@ -172,9 +172,21 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+        if (unlikely(size > (mem->size << PAGE_SHIFT)))
+                goto err;
+ 
+-       pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
+-       if (unlikely(pageno < 0))
+-               goto err;
++       if (mem->no_align) {
++               int nr_page = PAGE_ALIGN(size) >> PAGE_SHIFT;
++
++               pageno = bitmap_find_next_zero_area(mem->bitmap, mem->size, 0,
++                                                   nr_page, 0);
++               if (unlikely(pageno >= mem->size))
++                       goto err;
++               bitmap_set(mem->bitmap, pageno, nr_page);
++       } else {
++               int order = get_order(size);
++
++               pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
++               if (unlikely(pageno < 0))
++                       goto err;
++       }
+ 
+        /*
+         * Memory was found in the coherent area.
+@@ -346,6 +358,7 @@ static struct reserved_mem *dma_reserved_default_memory __initdata;
+ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
+ {
+        struct dma_coherent_mem *mem = rmem->priv;
++       unsigned long node = rmem->fdt_node;
+        int ret;
+ 
+        if (!mem) {
+@@ -360,6 +373,8 @@ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
+        }
+        mem->use_dev_dma_pfn_offset = true;
+        rmem->priv = mem;
++       if (of_get_flat_dt_prop(node, "no-align", NULL))
++               mem->no_align = true;
+        dma_assign_coherent_memory(dev, mem);
+        return 0;
+ }
+
+
 >
-> @@ -943,6 +945,12 @@ static const struct of_device_id ipmmu_of_ids[] = {
->                 .compatible = "renesas,ipmmu-r8a7796",
->                 .data = &ipmmu_features_rcar_gen3,
->         }, {
-> +               .compatible = "renesas,ipmmu-r8a77970",
-> +               .data = &ipmmu_features_rcar_gen3,
-> +       }, {
-> +               .compatible = "renesas,ipmmu-r8a77995",
-> +               .data = &ipmmu_features_rcar_gen3,
-> +       }, {
->                 /* Terminator */
->         },
-
-
-Gr{oetje,eeting}s,
-
-                        Geert
+>> Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
+>> ---
+>>   drivers/base/dma-coherent.c | 8 +++++---
+>>   1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/base/dma-coherent.c b/drivers/base/dma-coherent.c
+>> index 744f64f43454..b86a96d0cd07 100644
+>> --- a/drivers/base/dma-coherent.c
+>> +++ b/drivers/base/dma-coherent.c
+>> @@ -162,7 +162,7 @@ EXPORT_SYMBOL(dma_mark_declared_memory_occupied);
+>>   static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+>>           ssize_t size, dma_addr_t *dma_handle)
+>>   {
+>> -    int order = get_order(size);
+>> +    int nr_page = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>>       unsigned long flags;
+>>       int pageno;
+>>       void *ret;
+>> @@ -172,9 +172,11 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+>>       if (unlikely(size > (mem->size << PAGE_SHIFT)))
+>>           goto err;
+>>   -    pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
+>> -    if (unlikely(pageno < 0))
+>> +    pageno = bitmap_find_next_zero_area(mem->bitmap, mem->size, 0,
+>> +                        nr_page, 0);
+>> +    if (unlikely(pageno >= mem->size)) {
+>>           goto err;
+>> +    bitmap_set(mem->bitmap, pageno, nr_page);
+>>         /*
+>>        * Memory was found in the coherent area.
+>
+> Best regards
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
