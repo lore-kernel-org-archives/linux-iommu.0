@@ -1,107 +1,63 @@
-From: <miles.chen@mediatek.com>
-Subject: [PATCH v4] dma-debug: fix incorrect pfn calculation
-Date: Fri, 17 Nov 2017 06:56:12 +0800
-Message-ID: <1510872972-23919-1-git-send-email-miles.chen@mediatek.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: Intel-iommu: Possible memory corruption due to deferred iommu
+	flush
+Date: Thu, 16 Nov 2017 14:52:26 -0800
+Message-ID: <20171116225226.GA53404@otc-nc-03>
+References: <CAGkh+XfVC0Ki0T88qdKke4Hsp2nyAZewRupEOLTds+1i4eBQYQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <owner-linux-mm@kvack.org>
-Sender: owner-linux-mm@kvack.org
-To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, wsd_upstream@mediatek.com, linux-mediatek@lists.infradead.org, iommu@lists.linux-foundation.org, Miles Chen <miles.chen@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAGkh+XfVC0Ki0T88qdKke4Hsp2nyAZewRupEOLTds+1i4eBQYQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: nick klingsman <nick.klingsman-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Miles Chen <miles.chen@mediatek.com>
+On Thu, Nov 16, 2017 at 12:20:47PM +0200, nick klingsman wrote:
+> * Note: Please 'CC'/Reply my email as I'm not subscribed to the list yet.
+> 
+> Hi,
+> 
+> During __iommu_flush_iotlb() we set the WD (WriteDrain) bit if the
+> iommu supports cap_write_drain(). This part of the logic exists from
+> day one of the code and later even added to QI logic.
+> 
+> Back than, when we dma_unmap_xxx() we 'synchronically' did the
+> iommu_flush() and within it the the Write-Drain logic.
+> 
+> However, today, we do a batch-flush  which means that all/most calls
+> to dma_unmap() don't perform the Write-Drain.
+> 
+> Questions:
+> 
+> 1. If WD is a must, how come the batch-flush doesn't cause any memory
+> corruption ? For example:
+>    a. dma_map_page(100, from_device)
+>    b. Device writes data to device
+>    c. dma_unmap_page() -> batched and not sync-flushed
+>    d. Possible BUG ? Data read before the write is drained can be stale ?
 
-dma-debug reports the following warning:
+__iommu_flush_iotlb() will do DMA_TLB_WRITE_DRAIN.. so that's actually 
+done even in the batched more.
 
-[name:panic&]WARNING: CPU: 3 PID: 298 at kernel-4.4/lib/dma-debug.c:604
-debug _dma_assert_idle+0x1a8/0x230()
-DMA-API: cpu touching an active dma mapped cacheline [cln=0x00000882300]
-CPU: 3 PID: 298 Comm: vold Tainted: G        W  O    4.4.22+ #1
-Hardware name: MT6739 (DT)
-Call trace:
-[<ffffff800808acd0>] dump_backtrace+0x0/0x1d4
-[<ffffff800808affc>] show_stack+0x14/0x1c
-[<ffffff800838019c>] dump_stack+0xa8/0xe0
-[<ffffff80080a0594>] warn_slowpath_common+0xf4/0x11c
-[<ffffff80080a061c>] warn_slowpath_fmt+0x60/0x80
-[<ffffff80083afe24>] debug_dma_assert_idle+0x1a8/0x230
-[<ffffff80081dca9c>] wp_page_copy.isra.96+0x118/0x520
-[<ffffff80081de114>] do_wp_page+0x4fc/0x534
-[<ffffff80081e0a14>] handle_mm_fault+0xd4c/0x1310
-[<ffffff8008098798>] do_page_fault+0x1c8/0x394
-[<ffffff800808231c>] do_mem_abort+0x50/0xec
-
-I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
-assume that dma_alloc_coherent() always returns a linear address.  However
-it's possible that dma_alloc_coherent() returns a non-linear address.  In
-this case, page_to_pfn(virt_to_page(virt)) will return an incorrect pfn.
-If the pfn is valid and mapped as a COW page, we will hit the warning when
-doing wp_page_copy().
-
-Fix this by calculating pfn for linear and non-linear addresses.
-
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
----
- lib/dma-debug.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/lib/dma-debug.c b/lib/dma-debug.c
-index ea4cc3d..1b34d21 100644
---- a/lib/dma-debug.c
-+++ b/lib/dma-debug.c
-@@ -1495,14 +1495,22 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 	if (!entry)
- 		return;
- 
-+	/* handle vmalloc and linear addresses */
-+	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
-+		return;
-+
- 	entry->type      = dma_debug_coherent;
- 	entry->dev       = dev;
--	entry->pfn	 = page_to_pfn(virt_to_page(virt));
- 	entry->offset	 = offset_in_page(virt);
- 	entry->size      = size;
- 	entry->dev_addr  = dma_addr;
- 	entry->direction = DMA_BIDIRECTIONAL;
- 
-+	if (is_vmalloc_addr(virt))
-+		entry->pfn = vmalloc_to_pfn(virt);
-+	else
-+		entry->pfn = page_to_pfn(virt_to_page(virt));
-+
- 	add_dma_entry(entry);
- }
- EXPORT_SYMBOL(debug_dma_alloc_coherent);
-@@ -1513,13 +1521,21 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 	struct dma_debug_entry ref = {
- 		.type           = dma_debug_coherent,
- 		.dev            = dev,
--		.pfn		= page_to_pfn(virt_to_page(virt)),
- 		.offset		= offset_in_page(virt),
- 		.dev_addr       = addr,
- 		.size           = size,
- 		.direction      = DMA_BIDIRECTIONAL,
- 	};
- 
-+	/* handle vmalloc and linear addresses */
-+	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
-+		return;
-+
-+	if (is_vmalloc_addr(virt))
-+		ref.pfn = vmalloc_to_pfn(virt);
-+	else
-+		ref.pfn = page_to_pfn(virt_to_page(virt));
-+
- 	if (unlikely(dma_debug_disabled()))
- 		return;
- 
--- 
-1.9.1
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+> 
+> 2. If WD is not needed, why do we do it ? Why do we effect IOMMU work
+> with unneeded actions (in the most critical fast path of map/unmap) ?
+> 
+> 
+> Thanks,
+> Nick
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
