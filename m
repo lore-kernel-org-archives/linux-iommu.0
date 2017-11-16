@@ -1,67 +1,107 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Thu, 16 Nov 2017 13:09:33 -0800
-Message-ID: <20171116210933.GA53016@otc-nc-03>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
-	<1507035334.29211.105.camel@infradead.org>
-	<db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
-	<20171006144309.GA30803@8bytes.org>
-	<20171106104709.06b38f7c@jacob-builder>
-	<20171115155456.141a6dc8@jacob-builder>
-	<20171116143244.2583d044@t450s.home>
+From: <miles.chen@mediatek.com>
+Subject: [PATCH v4] dma-debug: fix incorrect pfn calculation
+Date: Fri, 17 Nov 2017 06:56:12 +0800
+Message-ID: <1510872972-23919-1-git-send-email-miles.chen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20171116143244.2583d044-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org, herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org
+Content-Type: text/plain
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
+To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, wsd_upstream@mediatek.com, linux-mediatek@lists.infradead.org, iommu@lists.linux-foundation.org, Miles Chen <miles.chen@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex
+From: Miles Chen <miles.chen@mediatek.com>
 
-On Thu, Nov 16, 2017 at 02:32:44PM -0700, Alex Williamson wrote:
-> On Wed, 15 Nov 2017 15:54:56 -0800
-> Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-> 
-> > Hi Alex and all,
-> > 
-> > Just wondering if you could merge Robin's patch for the next rc. From
-> > all our testing, this seems to be a solid fix and should be included in
-> > the stable releases as well.
-> 
-> Hi Jacob,
-> 
-> Sorry, this wasn't on my radar, I only scanned for patches back through
-> about when Joerg refreshed his next branch (others on the list speak up
-> if I didn't pickup your patches for the v4.15 merge window).
-> 
-> This patch makes sense to me and I'm glad you were able to work through
-> the anomaly Harsh saw in testing as an unrelated issue, but...
-> 
-> 
-> What do we do about this?  I certainly can't rip out large page support
-> and put a stable tag on the patch.  I'm not really spotting what's
-> wrong with large page support here, other than the comment about it
-> being a mess.  Suggestions?  Thanks,
-> 
+dma-debug reports the following warning:
 
-Largepage seems to work and i don't think we need to rip it out. When
-Harsh tested it at one point we thought disabling super-page seemed to make
-the problem go away. Jacob tested and we still saw the need for Robin's patch.
+[name:panic&]WARNING: CPU: 3 PID: 298 at kernel-4.4/lib/dma-debug.c:604
+debug _dma_assert_idle+0x1a8/0x230()
+DMA-API: cpu touching an active dma mapped cacheline [cln=0x00000882300]
+CPU: 3 PID: 298 Comm: vold Tainted: G        W  O    4.4.22+ #1
+Hardware name: MT6739 (DT)
+Call trace:
+[<ffffff800808acd0>] dump_backtrace+0x0/0x1d4
+[<ffffff800808affc>] show_stack+0x14/0x1c
+[<ffffff800838019c>] dump_stack+0xa8/0xe0
+[<ffffff80080a0594>] warn_slowpath_common+0xf4/0x11c
+[<ffffff80080a061c>] warn_slowpath_fmt+0x60/0x80
+[<ffffff80083afe24>] debug_dma_assert_idle+0x1a8/0x230
+[<ffffff80081dca9c>] wp_page_copy.isra.96+0x118/0x520
+[<ffffff80081de114>] do_wp_page+0x4fc/0x534
+[<ffffff80081e0a14>] handle_mm_fault+0xd4c/0x1310
+[<ffffff8008098798>] do_page_fault+0x1c8/0x394
+[<ffffff800808231c>] do_mem_abort+0x50/0xec
 
-Yes, the function looks humongous but i don't think we should wait for that 
-before this merge.
+I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
+assume that dma_alloc_coherent() always returns a linear address.  However
+it's possible that dma_alloc_coherent() returns a non-linear address.  In
+this case, page_to_pfn(virt_to_page(virt)) will return an incorrect pfn.
+If the pfn is valid and mapped as a COW page, we will hit the warning when
+doing wp_page_copy().
 
-Cheers,
-Ashok
+Fix this by calculating pfn for linear and non-linear addresses.
+
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+---
+ lib/dma-debug.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+index ea4cc3d..1b34d21 100644
+--- a/lib/dma-debug.c
++++ b/lib/dma-debug.c
+@@ -1495,14 +1495,22 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+ 	if (!entry)
+ 		return;
+ 
++	/* handle vmalloc and linear addresses */
++	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
++		return;
++
+ 	entry->type      = dma_debug_coherent;
+ 	entry->dev       = dev;
+-	entry->pfn	 = page_to_pfn(virt_to_page(virt));
+ 	entry->offset	 = offset_in_page(virt);
+ 	entry->size      = size;
+ 	entry->dev_addr  = dma_addr;
+ 	entry->direction = DMA_BIDIRECTIONAL;
+ 
++	if (is_vmalloc_addr(virt))
++		entry->pfn = vmalloc_to_pfn(virt);
++	else
++		entry->pfn = page_to_pfn(virt_to_page(virt));
++
+ 	add_dma_entry(entry);
+ }
+ EXPORT_SYMBOL(debug_dma_alloc_coherent);
+@@ -1513,13 +1521,21 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
+ 	struct dma_debug_entry ref = {
+ 		.type           = dma_debug_coherent,
+ 		.dev            = dev,
+-		.pfn		= page_to_pfn(virt_to_page(virt)),
+ 		.offset		= offset_in_page(virt),
+ 		.dev_addr       = addr,
+ 		.size           = size,
+ 		.direction      = DMA_BIDIRECTIONAL,
+ 	};
+ 
++	/* handle vmalloc and linear addresses */
++	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
++		return;
++
++	if (is_vmalloc_addr(virt))
++		ref.pfn = vmalloc_to_pfn(virt);
++	else
++		ref.pfn = page_to_pfn(virt_to_page(virt));
++
+ 	if (unlikely(dma_debug_disabled()))
+ 		return;
+ 
+-- 
+1.9.1
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
