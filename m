@@ -1,73 +1,68 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 31/36] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Thu, 16 Nov 2017 15:03:00 +0000
-Message-ID: <673fda01-2ae0-87e4-637e-fe27096b6be0@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-32-jean-philippe.brucker@arm.com>
-	<BLUPR0201MB150565029F9260A528739ACBA52E0@BLUPR0201MB1505.namprd02.prod.outlook.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Thu, 16 Nov 2017 14:32:44 -0700
+Message-ID: <20171116143244.2583d044@t450s.home>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+        <1507035334.29211.105.camel@infradead.org>
+        <db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
+        <20171006144309.GA30803@8bytes.org>
+        <20171106104709.06b38f7c@jacob-builder>
+        <20171115155456.141a6dc8@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <BLUPR0201MB150565029F9260A528739ACBA52E0-hRBPhS1iNj/g9tdZWAsUFxrHTHEw16jenBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bharat Kumar Gogada <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-crypto-owner@vger.kernel.org>
+In-Reply-To: <20171115155456.141a6dc8@jacob-builder>
+Sender: linux-crypto-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, leedom@chelsio.com, herbert@gondor.apana.org.au, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, Harsh@chelsio.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bharat,
+On Wed, 15 Nov 2017 15:54:56 -0800
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 
-On 16/11/17 14:19, Bharat Kumar Gogada wrote:
-> Hi Jean,
+> Hi Alex and all,
 > 
-> +static size_t
-> +arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
-> +			unsigned long iova, size_t size)
-> +{
-> +	unsigned long flags;
-> +	struct arm_smmu_cmdq_ent cmd;
-> +	struct arm_smmu_master_data *master;
-> +
-> +	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
-> +
-> +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +	list_for_each_entry(master, &smmu_domain->devices, list)
-> +		arm_smmu_atc_inv_master(master, &cmd);
-> +	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> +
-> +	return size;
-> +}
-> +
->  /* IOMMU API */
->  static bool arm_smmu_capable(enum iommu_cap cap)  { @@ -2361,6 +2506,8 @@ static void arm_smmu_detach_dev(struct device *dev)
->  		__iommu_process_unbind_dev_all(&smmu_domain->domain, dev);
->  
->  	if (smmu_domain) {
-> +		arm_smmu_atc_inv_master_all(master, 0);
-> +
-> In BIND flow, when VFIO_IOMMU_UNBIND is invoked invalidation is sent on allocated PASID for this application.
-> When vfio group fd is closed after UNBIND,  arm_smmu_detach_dev is invoked now invalidation is being sent on ssid zero.
-> Why  invalidation needs to be sent on ssid zero ?
+> Just wondering if you could merge Robin's patch for the next rc. From
+> all our testing, this seems to be a solid fix and should be included in
+> the stable releases as well.
 
-It's possible to use bind/unbind and map/unmap APIs at the same time on a
-domain. map/unmap modifies non-ssid mappings as usual, for context
-descriptor 0. Note that SSID 0 is converted to "no SSID" by
-arm_smmu_atc_inv_to_cmd.
+Hi Jacob,
 
-That said, I think VFIO cleans all DMA mappings when the VFIO group fd is
-closed, which will send individual ATC invalidation for each mapping. But
-VFIO may not be the only user of this API, and future users may be less
-careful. It's safer to send this global invalidation whenever we detach
-the domain, to ensure we're not leaving stale ATC entries for the next user.
+Sorry, this wasn't on my radar, I only scanned for patches back through
+about when Joerg refreshed his next branch (others on the list speak up
+if I didn't pickup your patches for the v4.15 merge window).
 
-Thanks,
-Jean
+This patch makes sense to me and I'm glad you were able to work through
+the anomaly Harsh saw in testing as an unrelated issue, but...
+
+> On Mon, 6 Nov 2017 10:47:09 -0800
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> 
+> > On Fri, 6 Oct 2017 16:43:09 +0200
+> > Joerg Roedel <joro@8bytes.org> wrote:
+> >   
+> > > On Tue, Oct 03, 2017 at 07:05:17PM +0100, Robin Murphy wrote:    
+> > > > Now, there are indeed plenty of drivers and subsystems which do
+> > > > work on lists of explicitly single pages - anything doing some
+> > > > variant of "addr = kmap_atomic(sg_page(sg)) + sg->offset;" is easy
+> > > > to spot - but I don't think DMA API implementations are in a
+> > > > position to make any kind of assumption; nearly all of them just
+> > > > shut up and handle sg->length bytes from sg_phys(sg) without
+> > > > questioning the caller, and I reckon that's exactly what they
+> > > > should be doing.      
+> > > 
+> > > I agree with that, it is not explicitly forbidden to have an
+> > > sg->offset > PAGE_SIZE and most IOMMU drivers handle this case.
+> > > 
+> > > So this is a problem I'd like to see resolved in the VT-d driver
+> > > too. If nobody comes up with a correct fix soon I'll apply this one
+> > > and rip out the large-page support from __domain_mapping() to make
+> > > it work.
+
+What do we do about this?  I certainly can't rip out large page support
+and put a stable tag on the patch.  I'm not really spotting what's
+wrong with large page support here, other than the comment about it
+being a mess.  Suggestions?  Thanks,
+
+Alex
