@@ -1,52 +1,74 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
-Date: Fri, 17 Nov 2017 10:09:23 -0800
-Message-ID: <20171117100923.4d9175b5@jacob-builder>
-References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
-	<1507035334.29211.105.camel@infradead.org>
-	<db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
-	<20171006144309.GA30803@8bytes.org>
-	<20171106104709.06b38f7c@jacob-builder>
-	<20171115155456.141a6dc8@jacob-builder>
-	<20171116143244.2583d044@t450s.home>
-	<20171116210933.GA53016@otc-nc-03>
-	<20171117091814.6673aecf@t450s.home>
-	<20171117154833.GA56337@otc-nc-03>
-	<SN1PR12MB035214EF471935B6F4220E36C82F0@SN1PR12MB0352.namprd12.prod.outlook.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <SN1PR12MB035214EF471935B6F4220E36C82F0-z7L1TMIYDg4e2a8M8f4RFAdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Atul Gupta <atul.gupta-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Harsh Jain <Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, "herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org" <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH v2 0/5] Add virtio-iommu driver
+Date: Fri, 17 Nov 2017 18:52:06 +0000
+Message-ID: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, devel@acpica.org, linux-acpi@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: jasowang@redhat.com, mst@redhat.com, lv.zheng@intel.com, robert.moore@intel.com, joro@8bytes.org, alex.williamson@redhat.com, sudeep.holla@arm.com, hanjun.guo@linaro.org, lorenzo.pieralisi@arm.com, lenb@kernel.org, rjw@rjwysocki.net, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, eric.auger@redhat.com, bharat.bhushan@nxp.com, Jayachandran.Nair@cavium.com, ashok.raj@intel.com, peterx@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 17 Nov 2017 17:44:57 +0000
-Casey Leedom <leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org> wrote:
+Implement the virtio-iommu driver following version 0.5 of the
+specification [1]. Previous version of this code was sent back in April
+[2], implementing the first public RFC. Since then there has been lots of
+progress and discussion on the specification side, and I think the driver
+is in a good shape now.
 
-> | From: Raj, Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> | Sent: Friday, November 17, 2017 7:48 AM
-> | 
-> | Reported by: Harsh <harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-> | Reviewed by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> | Tested by: Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> Thanks everyone!  I've updated our internal bug on this issue
-> and noted that we need to track down the remaining problems
-> which may be in our own code.
-> 
-All sounds good to me, let me know if you need further assistance on
-vt-d driver.
+The reason patches 1-3 are only RFC is that I'm waiting on feedback from
+the Virtio TC to reserve a device ID.
 
-Jacob
-> Casey
+List of changes since previous RFC:
+* Add per-endpoint probe request, for hardware MSI and reserved regions.
+* Add a virtqueue for the device to report translation faults. Only
+  non-recoverable ones at the moment.
+* Removed the iommu_map_sg specialization for now, because none of the
+  device drivers I use for testing (virtio, ixgbe and internal DMA
+  engines) seem to use map_sg. This kind of feature is a lot more
+  interesting when accompanied by benchmark numbers, and can be added back
+  during future optimization work.
+* Many fixes and cleanup
+
+The driver works out of the box on DT-based systems, but ACPI support
+still needs to be tested and discussed. In the specification I proposed
+IORT tables as a nice candidate for describing the virtual topology.
+Patches 4 and 5 propose small changes to the IORT driver for
+instantiating a paravirtualized IOMMU. The IORT node is described in the
+specification [1]. x86 support will also require some hacks since the
+driver is based on the IOMMU DMA ops, that x86 doesn't use.
+
+Eric's latest QEMU device [3] works with v0.4. For the moment you can use
+the kvmtool device [4] to test v0.5 on arm64, and inject arbitrary fault
+with the debug tool. The driver can also be pulled from my Linux tree [5].
+
+[1] https://www.spinics.net/lists/kvm/msg157402.html
+[2] https://patchwork.kernel.org/patch/9670273/
+[3] https://lists.gnu.org/archive/html/qemu-arm/2017-09/msg00413.html
+[4] git://linux-arm.org/kvmtool-jpb.git virtio-iommu/base
+[5] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.5-dev
+
+Jean-Philippe Brucker (5):
+  iommu: Add virtio-iommu driver
+  iommu/virtio-iommu: Add probe request
+  iommu/virtio-iommu: Add event queue
+  ACPI/IORT: Support paravirtualized IOMMU
+  ACPI/IORT: Move IORT to the ACPI folder
+
+ drivers/acpi/Kconfig              |    3 +
+ drivers/acpi/Makefile             |    1 +
+ drivers/acpi/arm64/Kconfig        |    3 -
+ drivers/acpi/arm64/Makefile       |    1 -
+ drivers/acpi/{arm64 => }/iort.c   |   95 ++-
+ drivers/iommu/Kconfig             |   12 +
+ drivers/iommu/Makefile            |    1 +
+ drivers/iommu/virtio-iommu.c      | 1219 +++++++++++++++++++++++++++++++++++++
+ include/acpi/actbl2.h             |   18 +-
+ include/uapi/linux/virtio_ids.h   |    1 +
+ include/uapi/linux/virtio_iommu.h |  195 ++++++
+ 11 files changed, 1537 insertions(+), 12 deletions(-)
+ rename drivers/acpi/{arm64 => }/iort.c (92%)
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
+
+-- 
+2.14.3
+
