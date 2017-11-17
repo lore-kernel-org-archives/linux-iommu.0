@@ -1,11 +1,15 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 0/2] Reduce IOTLB flush when pass-through dGPU devices
-Date: Fri, 17 Nov 2017 15:11:18 -0600
-Message-ID: <1510953080-5619-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] vfio/type1: Adopt fast IOTLB flush interface when
+	unmap IOVAs
+Date: Fri, 17 Nov 2017 14:51:52 -0700
+Message-ID: <20171117145152.41fae930@t450s.home>
+References: <1510953080-5619-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1510953080-5619-2-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1510953080-5619-2-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,31 +19,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+On Fri, 17 Nov 2017 15:11:19 -0600
+Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org> wrote:
 
-Currently, when pass-through dGPU to a guest VM, there are thousands
-of IOTLB flush commands sent from IOMMU to end-point-device. This cause
-performance issue when launching new VMs, and could cause IOTLB invalidate
-time-out issue on certain dGPUs.
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> 
+> VFIO IOMMU type1 currently upmaps IOVA pages synchronously, which requires
+> IOTLB flushing for every unmapping. This results in large IOTLB flushing
+> overhead when handling pass-through devices with a large number of mapped
+> IOVAs (e.g. GPUs).
 
-This can be avoided by adopting the new fast IOTLB flush APIs.
+Of course the type of device is really irrelevant, QEMU maps the entire
+VM address space for any assigned device.
 
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> This can be avoided by using the new IOTLB flushing interface.
+> 
+> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 92155cc..28a7ab6 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -698,10 +698,12 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  				break;
+>  		}
+>  
+> -		unmapped = iommu_unmap(domain->domain, iova, len);
+> +		unmapped = iommu_unmap_fast(domain->domain, iova, len);
+>  		if (WARN_ON(!unmapped))
+>  			break;
+>  
+> +		iommu_tlb_range_add(domain->domain, iova, len);
+> +
 
-Suravee Suthikulpanit (2):
-  vfio/type1: Adopt fast IOTLB flush interface when unmap IOVAs
-  iommu/amd: Add support for fast IOTLB flushing
+We should only add @unmapped, not @len, right?
 
- drivers/iommu/amd_iommu.c       | 77 ++++++++++++++++++++++++++++++++++++++++-
- drivers/iommu/amd_iommu_init.c  |  2 --
- drivers/iommu/amd_iommu_types.h |  2 ++
- drivers/vfio/vfio_iommu_type1.c | 12 +++++--
- 4 files changed, 87 insertions(+), 6 deletions(-)
-
--- 
-1.8.3.1
+>  		unlocked += vfio_unpin_pages_remote(dma, iova,
+>  						    phys >> PAGE_SHIFT,
+>  						    unmapped >> PAGE_SHIFT,
+> @@ -710,6 +712,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  
+>  		cond_resched();
+>  	}
+> +	iommu_tlb_sync(domain->domain);
+>  
+>  	dma->iommu_mapped = false;
+>  	if (do_accounting) {
+> @@ -884,8 +887,11 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+>  			break;
+>  	}
+>  
+> -	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
+> -		iommu_unmap(domain->domain, iova, PAGE_SIZE);
+> +	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE) {
+> +		iommu_unmap_fast(domain->domain, iova, PAGE_SIZE);
+> +		iommu_tlb_range_add(domain->domain, iova, PAGE_SIZE);
+> +	}
+> +	iommu_tlb_sync(domain->domain);
+>  
+>  	return ret;
+>  }
