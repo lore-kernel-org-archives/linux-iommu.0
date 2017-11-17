@@ -1,16 +1,14 @@
-From: nick klingsman <nick.klingsman-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Intel-iommu: Possible memory corruption due to deferred iommu
-	flush
-Date: Fri, 17 Nov 2017 01:57:19 +0200
-Message-ID: <CAGkh+Xd-mwYT75-sFWbjxKCOu5H0QhZFBKNELZxBytWpnORnZw@mail.gmail.com>
-References: <CAGkh+XfVC0Ki0T88qdKke4Hsp2nyAZewRupEOLTds+1i4eBQYQ@mail.gmail.com>
-	<20171116225226.GA53404@otc-nc-03>
-	<CAGkh+XesX-yFnU_3q2=t6Zcju_zE3wN7EZoBswQnfc_cZ9qZxQ@mail.gmail.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH kernel] vfio/spapr: Add trace points for map/unmap
+Date: Thu, 16 Nov 2017 17:13:01 -0700
+Message-ID: <20171116171301.6552869b@t450s.home>
+References: <20171027030008.17200-1-aik@ozlabs.ru>
+	<8c58fcaa-dedc-e6be-44bf-2cb349ef9e38@ozlabs.ru>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAGkh+XesX-yFnU_3q2=t6Zcju_zE3wN7EZoBswQnfc_cZ9qZxQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <8c58fcaa-dedc-e6be-44bf-2cb349ef9e38-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,63 +18,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shuah Khan <shuahkh-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 17 November 2017 at 01:54, nick klingsman <nick.klingsman-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> Hi Ashok,
->
-> On 17 November 2017 at 00:52, Raj, Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
->> On Thu, Nov 16, 2017 at 12:20:47PM +0200, nick klingsman wrote:
->>> * Note: Please 'CC'/Reply my email as I'm not subscribed to the list yet.
->>>
->>> Hi,
->>>
->>> During __iommu_flush_iotlb() we set the WD (WriteDrain) bit if the
->>> iommu supports cap_write_drain(). This part of the logic exists from
->>> day one of the code and later even added to QI logic.
->>>
->>> Back than, when we dma_unmap_xxx() we 'synchronically' did the
->>> iommu_flush() and within it the the Write-Drain logic.
->>>
->>> However, today, we do a batch-flush  which means that all/most calls
->>> to dma_unmap() don't perform the Write-Drain.
->>>
->>> Questions:
->>>
->>> 1. If WD is a must, how come the batch-flush doesn't cause any memory
->>> corruption ? For example:
->>>    a. dma_map_page(100, from_device)
->>>    b. Device writes data to device
->>>    c. dma_unmap_page() -> batched and not sync-flushed
->>>    d. Possible BUG ? Data read before the write is drained can be stale ?
->>
->> __iommu_flush_iotlb() will do DMA_TLB_WRITE_DRAIN.. so that's actually
->> done even in the batched more.
->
->
-> That's the point.. this is not 'batched' mode. Its "deferred" mode.
-> the flush occurs *async* to the dma_unmap() call by the driver.
->
-> In my example, after the dma_unmap() @ 'c', the flush didn't yet
-> occured and so is the Write Drain request.
->
+On Tue, 14 Nov 2017 10:47:12 +1100
+Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org> wrote:
 
-Oh - now I understand the confusion. Although the subject said 'deferred'
-I used the word 'Batched' in the email body. I meant 'deferred'. Not batching.
-If it was only batching, than it would make sens as 'Ashok' pointed out.
+> On 27/10/17 14:00, Alexey Kardashevskiy wrote:
+> > This adds trace_map/trace_unmap tracepoints to spapr driver. Type1 already
+> > uses these via the IOMMU API (iommu_map/__iommu_unmap).
+> > 
+> > Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>  
 
->
->>
->>>
->>> 2. If WD is not needed, why do we do it ? Why do we effect IOMMU work
->>> with unneeded actions (in the most critical fast path of map/unmap) ?
->>>
->>>
->>> Thanks,
->>> Nick
->>> _______________________________________________
->>> iommu mailing list
->>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Is this really legitimate to include tracepoints from a different
+subsystem?  The vfio type1 backend gets these trace points by virtue of
+it actually using the IOMMU API, it doesn't call them itself.  I'm kind
+of surprised these are actually available to be called from a module.
+I suspect the way to do this is probably to define our own tracepoints
+in the vfio/spapr backend or insert tracepoints into the IOMMU layers
+that that code calls into rather than masquerading as tracepoints from
+a different subsystem.  Right?  Thanks,
+
+Alex
+
+> > ---
+> > 
+> > Example:
+> >  qemu-system-ppc-8655  [096]   724.662740: unmap:                IOMMU: iova=0x000000003ffff000 size=4096 unmapped_size=4096
+> >  qemu-system-ppc-8656  [104]   724.970912: map:                  IOMMU: iova=0x0800000000000000 paddr=0x00007ffef7ff0000 size=65536
+> > ---
+> >  drivers/vfio/vfio_iommu_spapr_tce.c | 12 ++++++++++--
+> >  1 file changed, 10 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/vfio/vfio_iommu_spapr_tce.c b/drivers/vfio/vfio_iommu_spapr_tce.c
+> > index 63112c36ab2d..4531486c77c6 100644
+> > --- a/drivers/vfio/vfio_iommu_spapr_tce.c
+> > +++ b/drivers/vfio/vfio_iommu_spapr_tce.c
+> > @@ -22,6 +22,7 @@
+> >  #include <linux/vmalloc.h>
+> >  #include <linux/sched/mm.h>
+> >  #include <linux/sched/signal.h>
+> > +#include <trace/events/iommu.h>
+> >  
+> >  #include <asm/iommu.h>
+> >  #include <asm/tce.h>
+> > @@ -502,17 +503,19 @@ static int tce_iommu_clear(struct tce_container *container,
+> >  		struct iommu_table *tbl,
+> >  		unsigned long entry, unsigned long pages)
+> >  {
+> > -	unsigned long oldhpa;
+> > +	unsigned long oldhpa, unmapped, firstentry = entry, totalpages = pages;
+> >  	long ret;
+> >  	enum dma_data_direction direction;
+> >  
+> > -	for ( ; pages; --pages, ++entry) {
+> > +	for (unmapped = 0; pages; --pages, ++entry) {
+> >  		direction = DMA_NONE;
+> >  		oldhpa = 0;
+> >  		ret = iommu_tce_xchg(tbl, entry, &oldhpa, &direction);
+> >  		if (ret)
+> >  			continue;
+> >  
+> > +		++unmapped;
+> > +
+> >  		if (direction == DMA_NONE)
+> >  			continue;
+> >  
+> > @@ -523,6 +526,9 @@ static int tce_iommu_clear(struct tce_container *container,
+> >  
+> >  		tce_iommu_unuse_page(container, oldhpa);
+> >  	}
+> > +	trace_unmap(firstentry << tbl->it_page_shift,
+> > +			totalpages << tbl->it_page_shift,
+> > +			unmapped << tbl->it_page_shift);
+> >  
+> >  	return 0;
+> >  }
+> > @@ -965,6 +971,8 @@ static long tce_iommu_ioctl(void *iommu_data,
+> >  					direction);
+> >  
+> >  		iommu_flush_tce(tbl);
+> > +		if (!ret)
+> > +			trace_map(param.iova, param.vaddr, param.size);
+> >  
+> >  		return ret;
+> >  	}
+> >   
+> 
+> 
