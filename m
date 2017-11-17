@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v3 16/16] iommu/vt-d: add intel iommu page response function
-Date: Fri, 17 Nov 2017 10:55:14 -0800
-Message-ID: <1510944914-54430-17-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 15/16] iommu: introduce page response function
+Date: Fri, 17 Nov 2017 10:55:13 -0800
+Message-ID: <1510944914-54430-16-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,62 +21,122 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <li
 Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds page response support for Intel VT-d.
-Generic response data is taken from the IOMMU API
-then parsed into VT-d specific response descriptor format.
+When nested translation is turned on and guest owns the
+first level page tables, device page request can be forwared
+to the guest for handling faults. As the page response returns
+by the guest, IOMMU driver on the host need to process the
+response which informs the device and completes the page request
+transaction.
+
+This patch introduces generic API function for page response
+passing from the guest or other in-kernel users. The definitions of
+the generic data is based on PCI ATS specification not limited to
+any vendor.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ drivers/iommu/iommu.c | 14 ++++++++++++++
+ include/linux/iommu.h | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e1bd219..7f95827 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5171,6 +5171,35 @@ static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
- 	return ret;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 97b7990..7aefb40 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1416,6 +1416,20 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
  }
+ EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
  
-+int intel_iommu_page_response(struct iommu_domain *domain, struct device *dev,
++int iommu_page_response(struct iommu_domain *domain, struct device *dev,
 +			struct page_response_msg *msg)
 +{
-+	struct qi_desc resp;
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
++	int ret = 0;
 +
-+	/* TODO: sanitize response message */
-+	if (msg->last_req) {
-+		/* Page Group Response */
-+		resp.low = QI_PGRP_PASID(msg->pasid) |
-+			QI_PGRP_DID(msg->did) |
-+			QI_PGRP_PASID_P(msg->pasid_present) |
-+			QI_PGRP_RESP_TYPE;
-+		/* REVISIT: allow private data passing from device prq */
-+		resp.high = QI_PGRP_IDX(msg->page_req_group_id) |
-+			QI_PGRP_PRIV(msg->private_data) | QI_PGRP_RESP_CODE(msg->resp_code);
-+	} else {
-+		/* Page Stream Response */
-+		resp.low = QI_PSTRM_IDX(msg->page_req_group_id) |
-+			QI_PSTRM_PRIV(msg->private_data) | QI_PSTRM_BUS(PCI_BUS_NUM(msg->did)) |
-+			QI_PSTRM_PASID(msg->pasid) | QI_PSTRM_RESP_TYPE;
-+		resp.high = QI_PSTRM_ADDR(msg->paddr) | QI_PSTRM_DEVFN(msg->did & 0xff) |
-+			QI_PSTRM_RESP_CODE(msg->resp_code);
-+	}
-+	qi_submit_sync(&resp, iommu);
++	if (unlikely(!domain->ops->page_response))
++		return -ENODEV;
 +
-+	return 0;
++	ret = domain->ops->page_response(domain, dev, msg);
++
++	return ret;
 +}
++EXPORT_SYMBOL_GPL(iommu_page_response);
 +
- static int intel_iommu_map(struct iommu_domain *domain,
- 			   unsigned long iova, phys_addr_t hpa,
- 			   size_t size, int iommu_prot)
-@@ -5606,6 +5635,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.bind_pasid_table	= intel_iommu_bind_pasid_table,
- 	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
- 	.sva_invalidate		= intel_iommu_sva_invalidate,
-+	.page_response		= intel_iommu_page_response,
- #endif
- 	.map			= intel_iommu_map,
- 	.unmap			= intel_iommu_unmap,
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 3083796b..17f698b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -163,6 +163,43 @@ struct iommu_resv_region {
+ 
+ #ifdef CONFIG_IOMMU_API
+ 
++enum page_response_type {
++	IOMMU_PAGE_STREAM_RESP = 1,
++	IOMMU_PAGE_GROUP_RESP,
++};
++
++/**
++ * Generic page response information based on PCI ATS and PASID spec.
++ * @paddr: servicing page address
++ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
++ * @rid: requestor ID
++ * @did: destination device ID
++ * @last_req: last request in a page request group
++ * @resp_code: response code
++ * @page_req_group_id: page request group index
++ * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
++ * @type: group or stream response
++ * @private_data: uniquely identify device-specific private data for an
++ *                individual page response
++
++ */
++struct page_response_msg {
++	u64 paddr;
++	u32 pasid;
++	u32 rid:16;
++	u32 did:16;
++	u32 resp_code:4;
++	u32 last_req:1;
++	u32 pasid_present:1;
++#define IOMMU_PAGE_RESP_SUCCESS	0
++#define IOMMU_PAGE_RESP_INVALID	1
++#define IOMMU_PAGE_RESP_FAILURE	0xF
++	u32 page_req_group_id : 9;
++	u32 prot;
++	enum page_response_type type;
++	u32 private_data;
++};
++
+ /**
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
+@@ -196,6 +233,7 @@ struct iommu_resv_region {
+  * @bind_pasid_table: bind pasid table pointer for guest SVM
+  * @unbind_pasid_table: unbind pasid table pointer and restore defaults
+  * @sva_invalidate: invalidate translation caches of shared virtual address
++ * @page_response: handle page request response
+  */
+ struct iommu_ops {
+ 	bool (*capable)(enum iommu_cap);
+@@ -251,6 +289,8 @@ struct iommu_ops {
+ 				struct device *dev);
+ 	int (*sva_invalidate)(struct iommu_domain *domain,
+ 		struct device *dev, struct tlb_invalidate_info *inv_info);
++	int (*page_response)(struct iommu_domain *domain, struct device *dev,
++			struct page_response_msg *msg);
+ 
+ 	unsigned long pgsize_bitmap;
+ };
+@@ -472,6 +512,8 @@ extern int iommu_unregister_device_fault_handler(struct device *dev);
+ 
+ extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
+ 
++extern int iommu_page_response(struct iommu_domain *domain, struct device *dev,
++			struct page_response_msg *msg);
+ extern int iommu_group_id(struct iommu_group *group);
+ extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
 -- 
 2.7.4
