@@ -1,57 +1,132 @@
-From: Bharat Kumar Gogada <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [RFCv2 PATCH 31/36] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Fri, 17 Nov 2017 06:11:17 +0000
-Message-ID: <BLUPR0201MB1505BC86D3838D13F38665E7A52F0@BLUPR0201MB1505.namprd02.prod.outlook.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-32-jean-philippe.brucker@arm.com>
-	<BLUPR0201MB150565029F9260A528739ACBA52E0@BLUPR0201MB1505.namprd02.prod.outlook.com>
-	<673fda01-2ae0-87e4-637e-fe27096b6be0@arm.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: [PATCH kernel] vfio/spapr: Add trace points for map/unmap
+Date: Fri, 17 Nov 2017 17:58:32 +1100
+Message-ID: <52a19cfb-431f-522b-11de-c1c47f09a4c8@ozlabs.ru>
+References: <20171027030008.17200-1-aik@ozlabs.ru>
+ <8c58fcaa-dedc-e6be-44bf-2cb349ef9e38@ozlabs.ru>
+ <20171116171301.6552869b@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <673fda01-2ae0-87e4-637e-fe27096b6be0-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20171116171301.6552869b@t450s.home>
+Content-Language: en-AU
+Sender: kvm-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: linuxppc-dev@lists.ozlabs.org, David Gibson <david@gibson.dropbear.id.au>, kvm-ppc@vger.kernel.org, kvm@vger.kernel.org, Shuah Khan <shuahkh@osg.samsung.com>, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> +
-> +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +	list_for_each_entry(master, &smmu_domain->devices, list)
-> +		arm_smmu_atc_inv_master(master, &cmd);
-> +	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> +
-> +	return size;
-> +}
-> +
->  /* IOMMU API */
->  static bool arm_smmu_capable(enum iommu_cap cap)  { @@ -2361,6 +2506,8 @@ static void arm_smmu_detach_dev(struct device *dev)
->  		__iommu_process_unbind_dev_all(&smmu_domain->domain, dev);
->  
->  	if (smmu_domain) {
-> +		arm_smmu_atc_inv_master_all(master, 0);
-> +
-> In BIND flow, when VFIO_IOMMU_UNBIND is invoked invalidation is sent on allocated PASID for this application.
-> When vfio group fd is closed after UNBIND,  arm_smmu_detach_dev is invoked now invalidation is being sent on ssid zero.
-> Why  invalidation needs to be sent on ssid zero ?
+On 17/11/17 11:13, Alex Williamson wrote:
+> On Tue, 14 Nov 2017 10:47:12 +1100
+> Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+> 
+>> On 27/10/17 14:00, Alexey Kardashevskiy wrote:
+>>> This adds trace_map/trace_unmap tracepoints to spapr driver. Type1 already
+>>> uses these via the IOMMU API (iommu_map/__iommu_unmap).
+>>>
+>>> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>  
+> 
+> Is this really legitimate to include tracepoints from a different
+> subsystem?>  The vfio type1 backend gets these trace points by virtue of
+> it actually using the IOMMU API, it doesn't call them itself.  I'm kind
+> of surprised these are actually available to be called from a module.
 
-It's possible to use bind/unbind and map/unmap APIs at the same time on a domain. map/unmap modifies non-ssid mappings as usual, for context descriptor 0. Note that SSID 0 is converted to "no SSID" by arm_smmu_atc_inv_to_cmd.
+They are explicitly exported:
 
-That said, I think VFIO cleans all DMA mappings when the VFIO group fd is closed, which will send individual ATC invalidation for each mapping. But VFIO may not be the only user of this API, and future users may be less careful. It's safer to send this global invalidation whenever we detach the domain, to ensure we're not leaving stale ATC entries for the next user.
+EXPORT_TRACEPOINT_SYMBOL_GPL(map);
+EXPORT_TRACEPOINT_SYMBOL_GPL(unmap);
 
-Thanks Jean, I see that currently vfio_group_fops_open does not allow multiple instances. 
-If a device supports multiple PASID there might be different applications running parallel. 
-So why is multiple instances restricted ?
+I would think this is for things like drivers/vfio/vfio_iommu_spapr_tce.c ,
+why else?...
 
-Regards,
-Bharat
+
+> I suspect the way to do this is probably to define our own tracepoints
+> in the vfio/spapr backend or insert tracepoints into the IOMMU layers
+> that that code calls into rather than masquerading as tracepoints from
+> a different subsystem.  Right?
+
+This makes sense too. But it is going to be just cut-n-paste and some
+confusion -
+/sys/kernel/debug/tracing/events/iommu/map will still be present but
+won't work and
+/sys/kernel/debug/tracing/events/vfio/vfio_iommu_spapr_tce/map will.
+
+Judges? :)
+
+
+
+
+>  Thanks,
+> 
+> Alex
+> 
+>>> ---
+>>>
+>>> Example:
+>>>  qemu-system-ppc-8655  [096]   724.662740: unmap:                IOMMU: iova=0x000000003ffff000 size=4096 unmapped_size=4096
+>>>  qemu-system-ppc-8656  [104]   724.970912: map:                  IOMMU: iova=0x0800000000000000 paddr=0x00007ffef7ff0000 size=65536
+>>> ---
+>>>  drivers/vfio/vfio_iommu_spapr_tce.c | 12 ++++++++++--
+>>>  1 file changed, 10 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/vfio/vfio_iommu_spapr_tce.c b/drivers/vfio/vfio_iommu_spapr_tce.c
+>>> index 63112c36ab2d..4531486c77c6 100644
+>>> --- a/drivers/vfio/vfio_iommu_spapr_tce.c
+>>> +++ b/drivers/vfio/vfio_iommu_spapr_tce.c
+>>> @@ -22,6 +22,7 @@
+>>>  #include <linux/vmalloc.h>
+>>>  #include <linux/sched/mm.h>
+>>>  #include <linux/sched/signal.h>
+>>> +#include <trace/events/iommu.h>
+>>>  
+>>>  #include <asm/iommu.h>
+>>>  #include <asm/tce.h>
+>>> @@ -502,17 +503,19 @@ static int tce_iommu_clear(struct tce_container *container,
+>>>  		struct iommu_table *tbl,
+>>>  		unsigned long entry, unsigned long pages)
+>>>  {
+>>> -	unsigned long oldhpa;
+>>> +	unsigned long oldhpa, unmapped, firstentry = entry, totalpages = pages;
+>>>  	long ret;
+>>>  	enum dma_data_direction direction;
+>>>  
+>>> -	for ( ; pages; --pages, ++entry) {
+>>> +	for (unmapped = 0; pages; --pages, ++entry) {
+>>>  		direction = DMA_NONE;
+>>>  		oldhpa = 0;
+>>>  		ret = iommu_tce_xchg(tbl, entry, &oldhpa, &direction);
+>>>  		if (ret)
+>>>  			continue;
+>>>  
+>>> +		++unmapped;
+>>> +
+>>>  		if (direction == DMA_NONE)
+>>>  			continue;
+>>>  
+>>> @@ -523,6 +526,9 @@ static int tce_iommu_clear(struct tce_container *container,
+>>>  
+>>>  		tce_iommu_unuse_page(container, oldhpa);
+>>>  	}
+>>> +	trace_unmap(firstentry << tbl->it_page_shift,
+>>> +			totalpages << tbl->it_page_shift,
+>>> +			unmapped << tbl->it_page_shift);
+>>>  
+>>>  	return 0;
+>>>  }
+>>> @@ -965,6 +971,8 @@ static long tce_iommu_ioctl(void *iommu_data,
+>>>  					direction);
+>>>  
+>>>  		iommu_flush_tce(tbl);
+>>> +		if (!ret)
+>>> +			trace_map(param.iova, param.vaddr, param.size);
+>>>  
+>>>  		return ret;
+>>>  	}
+>>>   
+>>
+>>
+> 
+
+
+-- 
+Alexey
