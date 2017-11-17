@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v3 12/16] iommu/vt-d: report unrecoverable device faults
-Date: Fri, 17 Nov 2017 10:55:10 -0800
-Message-ID: <1510944914-54430-13-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 13/16] iommu/intel-svm: notify page request to guest
+Date: Fri, 17 Nov 2017 10:55:11 -0800
+Message-ID: <1510944914-54430-14-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,146 +18,148 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, when device DMA faults are detected by IOMMU the fault
-reasons are printed but the driver of the offending device is
-involved in fault handling.
-This patch uses per device fault reporting API to send fault event
-data for further processing.
-Offending device is identified by the source ID in VT-d fault reason
-report registers.
+If the source device of a page request has its PASID table pointer
+bond to a guest, the first level page tables are owned by the guest.
+In this case, we shall let guest OS to manage page fault.
 
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+This patch uses the IOMMU fault notification API to send notifications,
+possibly via VFIO, to the guest OS. Once guest pages are fault in, guest
+will issue page response which will be passed down via the invalidation
+passdown APIs.
+
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 94 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 93 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c | 80 ++++++++++++++++++++++++++++++++++++++++++-----
+ include/linux/iommu.h     |  1 +
+ 2 files changed, 74 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 38ee91b..b1f67fc2 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1555,6 +1555,31 @@ static const char *irq_remap_fault_reasons[] =
- 	"Blocked an interrupt request due to source-id verification failure",
- };
- 
-+/* fault data and status */
-+enum intel_iommu_fault_reason {
-+	INTEL_IOMMU_FAULT_REASON_SW,
-+	INTEL_IOMMU_FAULT_REASON_ROOT_NOT_PRESENT,
-+	INTEL_IOMMU_FAULT_REASON_CONTEXT_NOT_PRESENT,
-+	INTEL_IOMMU_FAULT_REASON_CONTEXT_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH,
-+	INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS,
-+	INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS,
-+	INTEL_IOMMU_FAULT_REASON_NEXT_PT_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_ROOT_ADDR_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_CONTEXT_PTR_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_RTP,
-+	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_CTP,
-+	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_PTE,
-+	NR_INTEL_IOMMU_FAULT_REASON,
-+};
-+
-+/* fault reasons that are allowed to be reported outside IOMMU subsystem */
-+#define INTEL_IOMMU_FAULT_REASON_ALLOWED			\
-+	((1ULL << INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH) |	\
-+		(1ULL << INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS) |	\
-+		(1ULL << INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS))
-+
-+
- static const char *dmar_get_fault_reason(u8 fault_reason, int *fault_type)
- {
- 	if (fault_reason >= 0x20 && (fault_reason - 0x20 <
-@@ -1635,6 +1660,69 @@ void dmar_msi_read(int irq, struct msi_msg *msg)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index f6697e5..77c25d8 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -555,6 +555,71 @@ static bool is_canonical_address(u64 addr)
+ 	return (((saddr << shift) >> shift) == saddr);
  }
  
-+static enum iommu_fault_reason to_iommu_fault_reason(u8 reason)
++static int prq_to_iommu_prot(struct page_req_dsc *req)
 +{
-+	if (reason >= NR_INTEL_IOMMU_FAULT_REASON) {
-+		pr_warn("unknown DMAR fault reason %d\n", reason);
-+		return IOMMU_FAULT_REASON_UNKNOWN;
-+	}
-+	switch (reason) {
-+	case INTEL_IOMMU_FAULT_REASON_SW:
-+	case INTEL_IOMMU_FAULT_REASON_ROOT_NOT_PRESENT:
-+	case INTEL_IOMMU_FAULT_REASON_CONTEXT_NOT_PRESENT:
-+	case INTEL_IOMMU_FAULT_REASON_CONTEXT_INVALID:
-+	case INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH:
-+	case INTEL_IOMMU_FAULT_REASON_ROOT_ADDR_INVALID:
-+	case INTEL_IOMMU_FAULT_REASON_CONTEXT_PTR_INVALID:
-+		return IOMMU_FAULT_REASON_INTERNAL;
-+	case INTEL_IOMMU_FAULT_REASON_NEXT_PT_INVALID:
-+	case INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS:
-+	case INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS:
-+		return IOMMU_FAULT_REASON_PERMISSION;
-+	default:
-+		return IOMMU_FAULT_REASON_UNKNOWN;
-+	}
++	int prot = 0;
++
++	if (req->rd_req)
++		prot |= IOMMU_FAULT_READ;
++	if (req->wr_req)
++		prot |= IOMMU_FAULT_WRITE;
++	if (req->exe_req)
++		prot |= IOMMU_FAULT_EXEC;
++	if (req->priv_req)
++		prot |= IOMMU_FAULT_PRIV;
++
++	return prot;
 +}
 +
-+static void report_fault_to_device(struct intel_iommu *iommu, u64 addr, int type,
-+				int fault_type, enum intel_iommu_fault_reason reason, u16 sid)
++static int intel_svm_prq_report(struct device *dev, struct page_req_dsc *desc)
 +{
++	int ret = 0;
 +	struct iommu_fault_event event;
 +	struct pci_dev *pdev;
-+	u8 bus, devfn;
 +
-+	/* check if fault reason is worth reporting outside IOMMU */
-+	if (!((1 << reason) & INTEL_IOMMU_FAULT_REASON_ALLOWED)) {
-+		pr_debug("Fault reason %d not allowed to report to device\n",
-+			reason);
-+		return;
++	/**
++	 * If caller does not provide struct device, this is the case where
++	 * guest PASID table is bound to the device. So we need to retrieve
++	 * struct device from the page request descriptor then proceed.
++	 */
++	if (!dev) {
++		pdev = pci_get_bus_and_slot(desc->bus, desc->devfn);
++		if (!pdev) {
++			pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
++				desc->bus, PCI_SLOT(desc->devfn),
++				PCI_FUNC(desc->devfn));
++			return -ENODEV;
++		}
++		dev = &pdev->dev;
++	} else if (dev_is_pci(dev)) {
++		pdev = to_pci_dev(dev);
++		pci_dev_get(pdev);
++	} else
++		return -ENODEV;
++
++	pr_debug("Notify PRQ device [%02x:%02x.%d]\n",
++		desc->bus, PCI_SLOT(desc->devfn),
++		PCI_FUNC(desc->devfn));
++
++	/* invoke device fault handler if registered */
++	if (iommu_has_device_fault_handler(dev)) {
++		/* Fill in event data for device specific processing */
++		event.type = IOMMU_FAULT_PAGE_REQ;
++		event.addr = desc->addr;
++		event.pasid = desc->pasid;
++		event.page_req_group_id = desc->prg_index;
++		event.prot = prq_to_iommu_prot(desc);
++		event.last_req = desc->lpig;
++		event.pasid_valid = 1;
++		event.iommu_private = desc->private;
++		ret = iommu_report_device_fault(&pdev->dev, &event);
 +	}
 +
-+	bus = PCI_BUS_NUM(sid);
-+	devfn = PCI_DEVFN(PCI_SLOT(sid), PCI_FUNC(sid));
-+	/*
-+	 * we need to check if the fault reporting is requested for the
-+	 * offending device.
-+	 */
-+	pdev = pci_get_bus_and_slot(bus, devfn);
-+	if (!pdev) {
-+		pr_warn("No PCI device found for source ID %x\n", sid);
-+		return;
-+	}
-+	/*
-+	 * unrecoverable fault is reported per IOMMU, notifier handler can
-+	 * resolve PCI device based on source ID.
-+	 */
-+	event.reason = to_iommu_fault_reason(reason);
-+	event.addr = addr;
-+	event.type = IOMMU_FAULT_DMA_UNRECOV;
-+	event.prot = type ? IOMMU_READ : IOMMU_WRITE;
-+	dev_warn(&pdev->dev, "report device unrecoverable fault: %d, %x, %d\n",
-+		event.reason, sid, event.type);
-+	iommu_report_device_fault(&pdev->dev, &event);
 +	pci_dev_put(pdev);
++
++	return ret;
 +}
 +
- static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 		u8 fault_reason, u16 source_id, unsigned long long addr)
+ static irqreturn_t prq_event_thread(int irq, void *d)
  {
-@@ -1648,11 +1736,15 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 			source_id >> 8, PCI_SLOT(source_id & 0xFF),
- 			PCI_FUNC(source_id & 0xFF), addr >> 48,
- 			fault_reason, reason);
--	else
-+	else {
- 		pr_err("[%s] Request device [%02x:%02x.%d] fault addr %llx [fault reason %02d] %s\n",
- 		       type ? "DMA Read" : "DMA Write",
- 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
- 		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
-+	}
-+	report_fault_to_device(iommu, addr, type, fault_type,
-+			fault_reason, source_id);
-+
- 	return 0;
- }
+ 	struct intel_iommu *iommu = d;
+@@ -578,7 +643,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		handled = 1;
  
+ 		req = &iommu->prq[head / sizeof(*req)];
+-
++		/**
++		 * If prq is to be handled outside iommu driver via receiver of
++		 * the fault notifiers, we skip the page response here.
++		 */
++		if (!intel_svm_prq_report(NULL, req))
++			goto prq_advance;
+ 		result = QI_RESP_FAILURE;
+ 		address = (u64)req->addr << VTD_PAGE_SHIFT;
+ 		if (!req->pasid_present) {
+@@ -649,11 +719,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		if (WARN_ON(&sdev->list == &svm->devs))
+ 			sdev = NULL;
+ 
+-		if (sdev && sdev->ops && sdev->ops->fault_cb) {
+-			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
+-				(req->exe_req << 1) | (req->priv_req);
+-			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
+-		}
++		intel_svm_prq_report(sdev->dev, req);
+ 		/* We get here in the error case where the PASID lookup failed,
+ 		   and these can be NULL. Do not use them below this point! */
+ 		sdev = NULL;
+@@ -679,7 +745,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 
+ 			qi_submit_sync(&resp, iommu);
+ 		}
+-
++	prq_advance:
+ 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
+ 	}
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 841c044..3083796b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -42,6 +42,7 @@
+  * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
++#define IOMMU_EXEC	(1 << 6)
+ 
+ struct iommu_ops;
+ struct iommu_group;
 -- 
 2.7.4
