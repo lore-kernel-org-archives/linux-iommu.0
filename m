@@ -1,88 +1,179 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFC PATCH v2 5/5] ACPI/IORT: Move IORT to the ACPI folder
-Date: Fri, 17 Nov 2017 18:52:11 +0000
-Message-ID: <20171117185211.32593-6-jean-philippe.brucker@arm.com>
-References: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: iommu@lists.linux-foundation.org, devel@acpica.org, linux-acpi@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
-Cc: Jayachandran.Nair@cavium.com, lorenzo.pieralisi@arm.com, ashok.raj@intel.com, mst@redhat.com, marc.zyngier@arm.com, will.deacon@arm.com, jasowang@redhat.com, rjw@rjwysocki.net, robert.moore@intel.com, alex.williamson@redhat.com, lv.zheng@intel.com, sudeep.holla@arm.com, lenb@kernel.org, robin.murphy@arm.com, joro@8bytes.org, hanjun.guo@linaro.org
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 03/16] iommu: introduce iommu invalidate API function
+Date: Fri, 17 Nov 2017 10:55:01 -0800
+Message-ID: <1510944914-54430-4-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, "Liu, Yi L" <yi.l.liu@linux.intel.com>, Liu@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-IORT can be used (by QEMU) to describe a virtual topology containing an
-architecture-agnostic paravirtualized device. The rationale behind this
-blasphemy is explained in patch 4/5.
+From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
 
-In order to build IORT for x86 systems, the driver has to be moved outside
-of arm64/. Since there is nothing specific to arm64 in the driver, it
-simply requires moving Makefile and Kconfig entries.
+When an SVM capable device is assigned to a guest, the first level page
+tables are owned by the guest and the guest PASID table pointer is
+linked to the device context entry of the physical IOMMU.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Host IOMMU driver has no knowledge of caching structure updates unless
+the guest invalidation activities are passed down to the host. The
+primary usage is derived from emulated IOMMU in the guest, where QEMU
+can trap invalidation activities before passing them down to the
+host/physical IOMMU.
+Since the invalidation data are obtained from user space and will be
+written into physical IOMMU, we must allow security check at various
+layers. Therefore, generic invalidation data format are proposed here,
+model specific IOMMU drivers need to convert them into their own format.
+
+Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/acpi/Kconfig            | 3 +++
- drivers/acpi/Makefile           | 1 +
- drivers/acpi/arm64/Kconfig      | 3 ---
- drivers/acpi/arm64/Makefile     | 1 -
- drivers/acpi/{arm64 => }/iort.c | 0
- 5 files changed, 4 insertions(+), 4 deletions(-)
- rename drivers/acpi/{arm64 => }/iort.c (100%)
+ drivers/iommu/iommu.c      | 14 +++++++++++
+ include/linux/iommu.h      | 12 +++++++++
+ include/uapi/linux/iommu.h | 62 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 88 insertions(+)
 
-diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index 5b1938f4b626..ce40275646c8 100644
---- a/drivers/acpi/Kconfig
-+++ b/drivers/acpi/Kconfig
-@@ -536,4 +536,7 @@ if ARM64
- source "drivers/acpi/arm64/Kconfig"
- endif
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index c7e0d64..829e9e9 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1341,6 +1341,20 @@ void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
  
-+config ACPI_IORT
-+	bool
++int iommu_sva_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct tlb_invalidate_info *inv_info)
++{
++	int ret = 0;
 +
- endif	# ACPI
-diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index cd1abc9bc325..689c470c013b 100644
---- a/drivers/acpi/Makefile
-+++ b/drivers/acpi/Makefile
-@@ -112,3 +112,4 @@ video-objs			+= acpi_video.o video_detect.o
- obj-y				+= dptf/
++	if (unlikely(!domain->ops->sva_invalidate))
++		return -ENODEV;
++
++	ret = domain->ops->sva_invalidate(domain, dev, inv_info);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
++
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 0f6f6c5..da684a7 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -190,6 +190,7 @@ struct iommu_resv_region {
+  * @pgsize_bitmap: bitmap of all possible supported page sizes
+  * @bind_pasid_table: bind pasid table pointer for guest SVM
+  * @unbind_pasid_table: unbind pasid table pointer and restore defaults
++ * @sva_invalidate: invalidate translation caches of shared virtual address
+  */
+ struct iommu_ops {
+ 	bool (*capable)(enum iommu_cap);
+@@ -243,6 +244,8 @@ struct iommu_ops {
+ 				struct pasid_table_config *pasidt_binfo);
+ 	void (*unbind_pasid_table)(struct iommu_domain *domain,
+ 				struct device *dev);
++	int (*sva_invalidate)(struct iommu_domain *domain,
++		struct device *dev, struct tlb_invalidate_info *inv_info);
  
- obj-$(CONFIG_ARM64)		+= arm64/
-+obj-$(CONFIG_ACPI_IORT) 	+= iort.o
-diff --git a/drivers/acpi/arm64/Kconfig b/drivers/acpi/arm64/Kconfig
-index 5a6f80fce0d6..403f917ab274 100644
---- a/drivers/acpi/arm64/Kconfig
-+++ b/drivers/acpi/arm64/Kconfig
-@@ -2,8 +2,5 @@
- # ACPI Configuration for ARM64
- #
+ 	unsigned long pgsize_bitmap;
+ };
+@@ -309,6 +312,9 @@ extern int iommu_bind_pasid_table(struct iommu_domain *domain,
+ 		struct device *dev, struct pasid_table_config *pasidt_binfo);
+ extern void iommu_unbind_pasid_table(struct iommu_domain *domain,
+ 				struct device *dev);
++extern int iommu_sva_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct tlb_invalidate_info *inv_info);
++
+ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+@@ -720,6 +726,12 @@ void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
+ {
+ }
  
--config ACPI_IORT
--	bool
--
- config ACPI_GTDT
- 	bool
-diff --git a/drivers/acpi/arm64/Makefile b/drivers/acpi/arm64/Makefile
-index 1017def2ea12..47925dc6cfc8 100644
---- a/drivers/acpi/arm64/Makefile
-+++ b/drivers/acpi/arm64/Makefile
-@@ -1,2 +1 @@
--obj-$(CONFIG_ACPI_IORT) 	+= iort.o
- obj-$(CONFIG_ACPI_GTDT) 	+= gtdt.o
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/iort.c
-similarity index 100%
-rename from drivers/acpi/arm64/iort.c
-rename to drivers/acpi/iort.c
++static inline int iommu_sva_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct tlb_invalidate_info *inv_info)
++{
++	return -EINVAL;
++}
++
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #endif /* __LINUX_IOMMU_H */
+diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+index 651ad5d..039ba36 100644
+--- a/include/uapi/linux/iommu.h
++++ b/include/uapi/linux/iommu.h
+@@ -36,4 +36,66 @@ struct pasid_table_config {
+ 	};
+ };
+ 
++enum iommu_inv_granularity {
++	IOMMU_INV_GRANU_GLOBAL,		/* all TLBs invalidated */
++	IOMMU_INV_GRANU_DOMAIN,		/* all TLBs associated with a domain */
++	IOMMU_INV_GRANU_DEVICE,		/* caching structure associated with a
++					 * device ID
++					 */
++	IOMMU_INV_GRANU_DOMAIN_PAGE,	/* address range with a domain */
++	IOMMU_INV_GRANU_ALL_PASID,	/* cache of a given PASID */
++	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate specified PASID */
++
++	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within all PASIDs */
++	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a PASIDs */
++	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective within a PASID */
++	IOMMU_INV_NR_GRANU,
++};
++
++enum iommu_inv_type {
++	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
++	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure cache */
++	IOMMU_INV_TYPE_PASID,	/* PASID cache */
++	IOMMU_INV_TYPE_CONTEXT,	/* device context entry cache */
++	IOMMU_INV_NR_TYPE
++};
++
++/**
++ * Translation cache invalidation header that contains mandatory meta data.
++ * @version:	info format version, expecting future extesions
++ * @type:	type of translation cache to be invalidated
++ */
++struct tlb_invalidate_hdr {
++	__u32 version;
++#define TLB_INV_HDR_VERSION_1 1
++	enum iommu_inv_type type;
++};
++
++/**
++ * Translation cache invalidation information, contains generic IOMMU
++ * data which can be parsed based on model ID by model specific drivers.
++ *
++ * @granularity:	requested invalidation granularity, type dependent
++ * @size:		2^size of 4K pages, 0 for 4k, 9 for 2MB, etc.
++ * @pasid:		processor address space ID value per PCI spec.
++ * @addr:		page address to be invalidated
++ * @flags	IOMMU_INVALIDATE_PASID_TAGGED: DMA with PASID tagged,
++ *						@pasid validity can be
++ *						deduced from @granularity
++ *		IOMMU_INVALIDATE_ADDR_LEAF: leaf paging entries
++ *		IOMMU_INVALIDATE_GLOBAL_PAGE: global pages
++ *
++ */
++struct tlb_invalidate_info {
++	struct tlb_invalidate_hdr	hdr;
++	enum iommu_inv_granularity	granularity;
++	__u32		flags;
++#define IOMMU_INVALIDATE_NO_PASID	(1 << 0)
++#define IOMMU_INVALIDATE_ADDR_LEAF	(1 << 1)
++#define IOMMU_INVALIDATE_GLOBAL_PAGE	(1 << 2)
++#define IOMMU_INVALIDATE_PASID_TAGGED	(1 << 3)
++	__u8		size;
++	__u32		pasid;
++	__u64		addr;
++};
+ #endif /* _UAPI_IOMMU_H */
 -- 
-2.14.3
+2.7.4
