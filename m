@@ -1,18 +1,20 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 31/36] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Fri, 17 Nov 2017 11:39:25 +0000
-Message-ID: <9da446e9-cf84-61ce-f3f5-32386387bc9f@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-32-jean-philippe.brucker@arm.com>
-	<BLUPR0201MB150565029F9260A528739ACBA52E0@BLUPR0201MB1505.namprd02.prod.outlook.com>
-	<673fda01-2ae0-87e4-637e-fe27096b6be0@arm.com>
-	<BLUPR0201MB1505BC86D3838D13F38665E7A52F0@BLUPR0201MB1505.namprd02.prod.outlook.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix scatterlist offset handling
+Date: Fri, 17 Nov 2017 09:18:14 -0700
+Message-ID: <20171117091814.6673aecf@t450s.home>
+References: <644c3e01654f8bd48d669c36e424959d6ef0e27e.1506607370.git.robin.murphy@arm.com>
+	<1507035334.29211.105.camel@infradead.org>
+	<db8c70d7-5978-20e8-d29a-91a4312f97dd@arm.com>
+	<20171006144309.GA30803@8bytes.org>
+	<20171106104709.06b38f7c@jacob-builder>
+	<20171115155456.141a6dc8@jacob-builder>
+	<20171116143244.2583d044@t450s.home>
+	<20171116210933.GA53016@otc-nc-03>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <BLUPR0201MB1505BC86D3838D13F38665E7A52F0-hRBPhS1iNj/g9tdZWAsUFxrHTHEw16jenBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20171116210933.GA53016@otc-nc-03>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,31 +24,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bharat Kumar Gogada <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
+To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: leedom-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org, herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/11/17 06:11, Bharat Kumar Gogada wrote:
-[...]
-> Thanks Jean, I see that currently vfio_group_fops_open does not allow multiple instances. 
-> If a device supports multiple PASID there might be different applications running parallel. 
-> So why is multiple instances restricted ?
+On Thu, 16 Nov 2017 13:09:33 -0800
+"Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
-You can't have multiple processes owning the same PCI device, it's
-unmanageable.
+> Hi Alex
+> 
+> On Thu, Nov 16, 2017 at 02:32:44PM -0700, Alex Williamson wrote:
+> > On Wed, 15 Nov 2017 15:54:56 -0800
+> > Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> >   
+> > > Hi Alex and all,
+> > > 
+> > > Just wondering if you could merge Robin's patch for the next rc. From
+> > > all our testing, this seems to be a solid fix and should be included in
+> > > the stable releases as well.  
+> > 
+> > Hi Jacob,
+> > 
+> > Sorry, this wasn't on my radar, I only scanned for patches back through
+> > about when Joerg refreshed his next branch (others on the list speak up
+> > if I didn't pickup your patches for the v4.15 merge window).
+> > 
+> > This patch makes sense to me and I'm glad you were able to work through
+> > the anomaly Harsh saw in testing as an unrelated issue, but...
+> > 
+> > 
+> > What do we do about this?  I certainly can't rip out large page support
+> > and put a stable tag on the patch.  I'm not really spotting what's
+> > wrong with large page support here, other than the comment about it
+> > being a mess.  Suggestions?  Thanks,
+> >   
+> 
+> Largepage seems to work and i don't think we need to rip it out. When
+> Harsh tested it at one point we thought disabling super-page seemed to make
+> the problem go away. Jacob tested and we still saw the need for Robin's patch.
+> 
+> Yes, the function looks humongous but i don't think we should wait for that 
+> before this merge.
 
-For using multiple PASIDs, my idea was that the userspace driver ("the
-server"), that owns the device, would have a way to partition it into
-smaller frames. It forks to create "clients" and assigns a PASID to each
-of them (by issuing VFIO_BIND(client_pid) -> pasid, then writing the PASID
-into a privileged MMIO frame that defines the partition properties). Each
-client accesses an unprivileged MMIO frame to use a device partition (or
-sends commands to the server via IPC), and can perform DMA on its own
-virtual memory.
+Ok.  Who wants to toss in review and testing sign-offs?  Clearly
+there's been a lot more eyes and effort on this patch than reflected in
+the original posting.  I'll add a stable cc.  Thanks,
 
-This is complete speculation of course, we have very little information on
-how PASID-capable devices will be designed, so I'm trying to imagine
-likely scenarios.
-
-Thanks,
-Jean
+Alex
