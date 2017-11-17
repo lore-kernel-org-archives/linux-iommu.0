@@ -1,13 +1,13 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v3 15/16] iommu: introduce page response function
-Date: Fri, 17 Nov 2017 10:55:13 -0800
-Message-ID: <1510944914-54430-16-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 2/2] iommu/amd: Add support for fast IOTLB flushing
+Date: Fri, 17 Nov 2017 15:11:20 -0600
+Message-ID: <1510953080-5619-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+References: <1510953080-5619-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1510944914-54430-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1510953080-5619-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,126 +17,174 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When nested translation is turned on and guest owns the
-first level page tables, device page request can be forwared
-to the guest for handling faults. As the page response returns
-by the guest, IOMMU driver on the host need to process the
-response which informs the device and completes the page request
-transaction.
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-This patch introduces generic API function for page response
-passing from the guest or other in-kernel users. The definitions of
-the generic data is based on PCI ATS specification not limited to
-any vendor.
+Implement the newly added IOTLB flushing interface by introducing
+per-protection-domain IOTLB flush list, which maintains a list of
+IOVAs to be invalidated (by INVALIDATE_IOTLB_PAGES command) during
+IOTLB sync.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 14 ++++++++++++++
- include/linux/iommu.h | 42 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
+ drivers/iommu/amd_iommu.c       | 77 ++++++++++++++++++++++++++++++++++++++++-
+ drivers/iommu/amd_iommu_init.c  |  2 --
+ drivers/iommu/amd_iommu_types.h |  2 ++
+ 3 files changed, 78 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 97b7990..7aefb40 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1416,6 +1416,20 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8e8874d..bf92809 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -130,6 +130,12 @@ struct dma_ops_domain {
+ static struct iova_domain reserved_iova_ranges;
+ static struct lock_class_key reserved_rbtree_key;
  
-+int iommu_page_response(struct iommu_domain *domain, struct device *dev,
-+			struct page_response_msg *msg)
-+{
-+	int ret = 0;
++struct iotlb_flush_entry {
++	struct list_head list;
++	unsigned long iova;
++	size_t size;
++};
 +
-+	if (unlikely(!domain->ops->page_response))
-+		return -ENODEV;
-+
-+	ret = domain->ops->page_response(domain, dev, msg);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_page_response);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
+ /****************************************************************************
+  *
+  * Helper functions
+@@ -2838,11 +2844,13 @@ static void protection_domain_free(struct protection_domain *domain)
+ static int protection_domain_init(struct protection_domain *domain)
  {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3083796b..17f698b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -163,6 +163,43 @@ struct iommu_resv_region {
+ 	spin_lock_init(&domain->lock);
++	spin_lock_init(&domain->iotlb_flush_list_lock);
+ 	mutex_init(&domain->api_lock);
+ 	domain->id = domain_id_alloc();
+ 	if (!domain->id)
+ 		return -ENOMEM;
+ 	INIT_LIST_HEAD(&domain->dev_list);
++	INIT_LIST_HEAD(&domain->iotlb_flush_list);
  
- #ifdef CONFIG_IOMMU_API
+ 	return 0;
+ }
+@@ -3047,7 +3055,6 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ 	unmap_size = iommu_unmap_page(domain, iova, page_size);
+ 	mutex_unlock(&domain->api_lock);
  
-+enum page_response_type {
-+	IOMMU_PAGE_STREAM_RESP = 1,
-+	IOMMU_PAGE_GROUP_RESP,
-+};
-+
-+/**
-+ * Generic page response information based on PCI ATS and PASID spec.
-+ * @paddr: servicing page address
-+ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
-+ * @rid: requestor ID
-+ * @did: destination device ID
-+ * @last_req: last request in a page request group
-+ * @resp_code: response code
-+ * @page_req_group_id: page request group index
-+ * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
-+ * @type: group or stream response
-+ * @private_data: uniquely identify device-specific private data for an
-+ *                individual page response
-+
-+ */
-+struct page_response_msg {
-+	u64 paddr;
-+	u32 pasid;
-+	u32 rid:16;
-+	u32 did:16;
-+	u32 resp_code:4;
-+	u32 last_req:1;
-+	u32 pasid_present:1;
-+#define IOMMU_PAGE_RESP_SUCCESS	0
-+#define IOMMU_PAGE_RESP_INVALID	1
-+#define IOMMU_PAGE_RESP_FAILURE	0xF
-+	u32 page_req_group_id : 9;
-+	u32 prot;
-+	enum page_response_type type;
-+	u32 private_data;
-+};
-+
- /**
-  * struct iommu_ops - iommu ops and capabilities
-  * @capable: check capability
-@@ -196,6 +233,7 @@ struct iommu_resv_region {
-  * @bind_pasid_table: bind pasid table pointer for guest SVM
-  * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-  * @sva_invalidate: invalidate translation caches of shared virtual address
-+ * @page_response: handle page request response
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -251,6 +289,8 @@ struct iommu_ops {
- 				struct device *dev);
- 	int (*sva_invalidate)(struct iommu_domain *domain,
- 		struct device *dev, struct tlb_invalidate_info *inv_info);
-+	int (*page_response)(struct iommu_domain *domain, struct device *dev,
-+			struct page_response_msg *msg);
+-	domain_flush_tlb_pde(domain);
+ 	domain_flush_complete(domain);
  
- 	unsigned long pgsize_bitmap;
+ 	return unmap_size;
+@@ -3167,6 +3174,71 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	return dev_data->defer_attach;
+ }
+ 
++static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	struct protection_domain *dom = to_pdomain(domain);
++
++	domain_flush_tlb_pde(dom);
++}
++
++static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
++				      unsigned long iova, size_t size)
++{
++	struct protection_domain *pdom = to_pdomain(domain);
++	struct iotlb_flush_entry *entry, *p;
++	unsigned long flags;
++	bool found = false;
++
++	spin_lock_irqsave(&pdom->iotlb_flush_list_lock, flags);
++	list_for_each_entry(p, &pdom->iotlb_flush_list, list) {
++		if (iova != p->iova)
++			continue;
++
++		if (size > p->size) {
++			p->size = size;
++			pr_debug("%s: update range: iova=%#lx, size = %#lx\n",
++				 __func__, p->iova, p->size);
++		}
++		found = true;
++		break;
++	}
++
++	if (!found) {
++		entry = kzalloc(sizeof(struct iotlb_flush_entry),
++				GFP_ATOMIC);
++		if (!entry)
++			return;
++
++		pr_debug("%s: new range: iova=%lx, size=%#lx\n",
++			 __func__, iova, size);
++
++		entry->iova = iova;
++		entry->size = size;
++		list_add(&entry->list, &pdom->iotlb_flush_list);
++	}
++	spin_unlock_irqrestore(&pdom->iotlb_flush_list_lock, flags);
++}
++
++static void amd_iommu_iotlb_sync(struct iommu_domain *domain)
++{
++	struct protection_domain *pdom = to_pdomain(domain);
++	struct iotlb_flush_entry *entry, *next;
++	unsigned long flags;
++
++	/* Note:
++	 * Currently, IOMMU driver just flushes the whole IO/TLB for
++	 * a given domain. So, just remove entries from the list here.
++	 */
++	spin_lock_irqsave(&pdom->iotlb_flush_list_lock, flags);
++	list_for_each_entry_safe(entry, next, &pdom->iotlb_flush_list, list) {
++		list_del(&entry->list);
++		kfree(entry);
++	}
++	spin_unlock_irqrestore(&pdom->iotlb_flush_list_lock, flags);
++
++	domain_flush_tlb_pde(pdom);
++}
++
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3185,6 +3257,9 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	.apply_resv_region = amd_iommu_apply_resv_region,
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
++	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
++	.iotlb_range_add = amd_iommu_iotlb_range_add,
++	.iotlb_sync = amd_iommu_iotlb_sync,
  };
-@@ -472,6 +512,8 @@ extern int iommu_unregister_device_fault_handler(struct device *dev);
  
- extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
+ /*****************************************************************************
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 6fe2d03..1659377 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2489,8 +2489,6 @@ static int __init early_amd_iommu_init(void)
+ 	 */
+ 	__set_bit(0, amd_iommu_pd_alloc_bitmap);
  
-+extern int iommu_page_response(struct iommu_domain *domain, struct device *dev,
-+			struct page_response_msg *msg);
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+-	spin_lock_init(&amd_iommu_pd_lock);
+-
+ 	/*
+ 	 * now the data structures are allocated and basically initialized
+ 	 * start the real acpi table scan
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index f6b24c7..30e1c68 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -462,9 +462,11 @@ struct amd_iommu_fault {
+ struct protection_domain {
+ 	struct list_head list;  /* for list of all protection domains */
+ 	struct list_head dev_list; /* List of all devices in this domain */
++	struct list_head iotlb_flush_list; /* store iovas for iotlb sync */
+ 	struct iommu_domain domain; /* generic domain handle used by
+ 				       iommu core code */
+ 	spinlock_t lock;	/* mostly used to lock the page table*/
++	spinlock_t iotlb_flush_list_lock; /* protect iova flush list */
+ 	struct mutex api_lock;	/* protect page tables in the iommu-api path */
+ 	u16 id;			/* the domain id written to the device table */
+ 	int mode;		/* paging mode (0-6 levels) */
 -- 
-2.7.4
+1.8.3.1
