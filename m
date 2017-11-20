@@ -1,122 +1,60 @@
-From: Liviu Dudau <Liviu.Dudau@arm.com>
-Subject: Re: [PATCH v2] iommu/ipmmu-vmsa: Do not replace bus IOMMU ops on
- driver init.
-Date: Mon, 20 Nov 2017 14:25:14 +0000
-Message-ID: <20171120142514.GI5165@e110455-lin.cambridge.arm.com>
-References: <20170918100444.21878-1-Liviu.Dudau@arm.com>
- <20170920141352.29377-1-Liviu.Dudau@arm.com>
- <938d213c-f207-218e-554f-08035eaa1e6d@arm.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: No check of the size passed to unmap_single in  swiotlb
+Date: Mon, 20 Nov 2017 11:26:52 -0500
+Message-ID: <20171120162652.GR24312@char.us.oracle.com>
+References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <938d213c-f207-218e-554f-08035eaa1e6d@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Shawn Lin <shawn.lin@rock-chips.com>, Magnus Damm <damm+renesas@opensource.se>, LKML <linux-kernel@vger.kernel.org>, IOMMU ML <iommu@lists.linux-foundation.org>
+In-Reply-To: <VI1PR04MB30715EA7212DC661481041438C220-mr6QIVyDiCFHIX2o+zdTns9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 13, 2017 at 04:48:45PM +0100, Robin Murphy wrote:
-> Hi Joerg,
+On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
+> Hi all,
 
-Hi,
+Hi!
+> 
+> During debug a  device only support 32bits DMA(Qualcomm Atheros AP) in our LS1043A 64bits ARM  SOC, we found that the invoke of dma_unmap_single --> swiotlb_tbl_unmap_single  will unmap the passed "size" anyway even when the "size" is incorrect.
+> 
+> If the size is larger than it should, the extra entries in io_tlb_orig_addr array will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce buffer copy not happen when the one who really used the mis-freed entries doing  DMA data transfers, and this will cause further unknow behaviors.
+> 
+> Here we just fix it temporarily by adding a judge of the "size" in the swiotlb_tbl_unmap_single, if it is larger than it deserves, just unmap the right size only. Like the code:
+
+Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring this issue as well?
 
 > 
-> On 20/09/17 15:13, Liviu Dudau wrote:
-> > If the IPMMU driver is compiled in the kernel it will replace the
-> > platform bus IOMMU ops on running the ipmmu_init() function, regardless
-> > if there is any IPMMU hardware present or not. This screws up systems
-> > that just want to build a generic kernel that runs on multiple platforms
-> > and use a different IOMMU implementation.
-> > 
-> > Move the bus_set_iommu() call at the end of the ipmmu_probe() function
-> > when we know that hardware is present. With current IOMMU framework it
-> > should be safe (at least for OF case).
-> > 
-> > Now that the ipmmu_init() and ipmmu_exit() functions are simple calls to
-> > platform_driver_register() and platform_driver_unregister(), replace
-> > them with the module_platform_driver() macro call.
+> [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c
+> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+> index ad1d2962d129..58c97ede9d78 100644
+> --- a/lib/swiotlb.c
+> +++ b/lib/swiotlb.c
+> @@ -591,7 +591,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+>                  */
+>                 for (i = index + nslots - 1; i >= index; i--) {
+>                         io_tlb_list[i] = ++count;
+> -                       io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+> +                      if(io_tlb_orig_addr[i]  != orig_addr)
+> +                          printk("======size wrong, ally down ally down!===\n");
+> +                      else
+> +                         io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+>                 }
+>                 /*
+>                  * Step 2: merge the returned slots with the preceding slots,
 > 
-> Are you OK with taking this patch as a fix for 4.14, or would you rather
-> have something that can safely backport past 4.12 without implicit
-> dependencies? This is a config/link-order dependent thing that's been
-> lurking since the beginning, but only coming to light now that other
-> drivers are changing their behaviour, so I don't think there's really a
-> single Fixes: commit that can be singled out.
-
-Can someone update me on the fate of this patch? Can someone queue it
-for the next release?
-
-Best regards,
-Liviu
-
+> Although pass a right size of DMA buffer is the responsibility of  the drivers, but Is it useful to add some size check code to prevent  real damage happen? 
 > 
-> Robin.
-> 
-> > Signed-off-by: Liviu Dudau <Liviu.Dudau@arm.com>
-> > Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> > ---
-> >  drivers/iommu/ipmmu-vmsa.c | 29 +++++------------------------
-> >  1 file changed, 5 insertions(+), 24 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index 195d6e93ac718..31912997bffdf 100644
-> > --- a/drivers/iommu/ipmmu-vmsa.c
-> > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -966,10 +966,11 @@ static int ipmmu_probe(struct platform_device *pdev)
-> >  		return ret;
-> >  
-> >  	/*
-> > -	 * We can't create the ARM mapping here as it requires the bus to have
-> > -	 * an IOMMU, which only happens when bus_set_iommu() is called in
-> > -	 * ipmmu_init() after the probe function returns.
-> > +	 * Now that we have validated the presence of the hardware, set
-> > +	 * the bus IOMMU ops to enable future domain and device setup.
-> >  	 */
-> > +	if (!iommu_present(&platform_bus_type))
-> > +		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> >  
-> >  	platform_set_drvdata(pdev, mmu);
-> >  
-> > @@ -1006,27 +1007,7 @@ static struct platform_driver ipmmu_driver = {
-> >  	.remove	= ipmmu_remove,
-> >  };
-> >  
-> > -static int __init ipmmu_init(void)
-> > -{
-> > -	int ret;
-> > -
-> > -	ret = platform_driver_register(&ipmmu_driver);
-> > -	if (ret < 0)
-> > -		return ret;
-> > -
-> > -	if (!iommu_present(&platform_bus_type))
-> > -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> > -
-> > -	return 0;
-> > -}
-> > -
-> > -static void __exit ipmmu_exit(void)
-> > -{
-> > -	return platform_driver_unregister(&ipmmu_driver);
-> > -}
-> > -
-> > -subsys_initcall(ipmmu_init);
-> > -module_exit(ipmmu_exit);
-> > +module_platform_driver(ipmmu_driver);
-> >  
-> >  MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
-> >  MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart@ideasonboard.com>");
-> > 
-> 
-
--- 
-====================
-| I would like to |
-| fix the world,  |
-| but they're not |
-| giving me the   |
- \ source code!  /
-  ---------------
-    ¯\_(ツ)_/¯
+> Regards,
+> Eric
