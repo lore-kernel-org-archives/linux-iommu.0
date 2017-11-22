@@ -1,8 +1,8 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 5/6] iommu/vt-d: Add debugfs extension to show Pasid table
-	contents
-Date: Wed, 22 Nov 2017 11:25:45 -0800
-Message-ID: <1511378746-109275-6-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH v2 6/6] iommu/vt-d: Add debugfs support for Intel IOMMU
+	Interrupt remapping
+Date: Wed, 22 Nov 2017 11:25:46 -0800
+Message-ID: <1511378746-109275-7-git-send-email-sohil.mehta@intel.com>
 References: <1511378746-109275-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,136 +22,187 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson
 Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Debugfs extension for Intel IOMMU to dump Interrupt remapping table
+entries for Interrupt remapping and Interrupt posting.
 
-Debugfs extension to dump the internals such as pasid table entries for
-each IOMMU to the userspace.
+The file /sys/kernel/debug/intel_iommu/intel_iommu_interrupt_remap
+provides detailed information, such as Index, Source Id, Destination Id,
+Vector and the raw values for entries with the present bit set, in the
+format shown.
 
-Example of such dump in Kabylake:
+Remapped Interrupt supported on IOMMU: dmar5
+ IR table address:ffff93e09d54c310
+-----------------------------------------------------------
+ Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low
+ 1      3a00 00000600 2c  0000000000043a00 00000600002c0009
+ 111    4301 00000900 a2  0000000000044301 0000090000a20009
 
-root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/intel_iommu_ctx
+Posted Interrupt supported on IOMMU: dmar5
+ IR table address:ffff93e09d54c310
+--------------------------------------------------------------------
+ Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low
+ 4      4300 00000010 40c7c880 41  0000001000044300 40c7c88000418001
+ 5      4300 00000010 40c7c880 51  0000001000044300 40c7c88000518001
 
-IOMMU dmar0: Extended Root Table Addr:4310c4800
-Extended Root tbl entries:
-Bus 0 L: 3ff5a8001 H: 0
-Lower Context table entries for Bus: 0
-[entry] DID :B :D .F    Low             High
-[80]    0000:00:0a.00   3ff5a9a05       102
-Higher Context tbl entries for Bus: 0
-[80]    0000:00:0a.00   40160000c       725140000000
-Pasid Table Addr : ffff8db2c1600000
-Pasid table entries for domain: 0000
-[Entry]         Contents
-[0]             26a609801
-
-Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
 
-v2: Fix seq_printf formatting
+v2: Handle the case when IR is not enabled. Fix seq_printf formatting
 
- drivers/iommu/intel-iommu-debug.c | 32 ++++++++++++++++++++++++++++++++
- drivers/iommu/intel-svm.c         |  8 --------
- include/linux/intel-svm.h         |  8 ++++++++
- 3 files changed, 40 insertions(+), 8 deletions(-)
+ drivers/iommu/intel-iommu-debug.c | 123 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 123 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-index 3e1ce7d..22a0683 100644
+index 22a0683..7fda862 100644
 --- a/drivers/iommu/intel-iommu-debug.c
 +++ b/drivers/iommu/intel-iommu-debug.c
-@@ -34,6 +34,31 @@
- #define TOTAL_BUS_NR (256) /* full bus range 256 */
+@@ -12,6 +12,7 @@
+  *
+  * Authors: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+  *          Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
++ *          Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+  *
+  */
  
- #ifdef CONFIG_INTEL_IOMMU_SVM
-+static void pasid_tbl_entry_show(struct seq_file *m, void *unused,
-+				 struct intel_iommu *iommu)
+@@ -280,6 +281,119 @@ static const struct file_operations intel_iommu_regs_fops = {
+ 	.release	= single_release,
+ };
+ 
++#ifdef CONFIG_IRQ_REMAP
++static void ir_tbl_remap_entry_show(struct seq_file *m, void *unused,
++			       struct intel_iommu *iommu)
 +{
-+	int pasid_size = 0, i;
++	int idx;
++	struct irte *ri_entry;
 +
-+	if (ecap_pasid(iommu->ecap)) {
-+		pasid_size = intel_iommu_get_pts(iommu);
-+		seq_printf(m, "Pasid Table Addr : %p\n", iommu->pasid_table);
++	/* Print the header only once */
++	seq_printf(m, " Index  SID  Dest_ID  Vct"
++		   " Raw_value_high   Raw_value_low\n");
 +
-+		if (iommu->pasid_table) {
-+			seq_printf(m, "Pasid table entries for domain %d:\n",
-+				   iommu->segment);
-+			seq_printf(m, "[Entry]\t\tContents\n");
-+
-+			/* Publish the pasid table entries here */
-+			for (i = 0; i < pasid_size; i++) {
-+				if (!iommu->pasid_table[i].val)
-+					continue;
-+				seq_printf(m, "[%d]\t\t%04llx\n", i,
-+					   iommu->pasid_table[i].val);
-+			}
-+		}
++	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
++		ri_entry = &iommu->ir_table->base[idx];
++		if (!ri_entry->present || ri_entry->p_pst)
++			continue;
++		seq_printf(m,
++			   " %d\t%04x %08x %02x  %016llx %016llx\n",
++			   idx, ri_entry->sid,
++			   ri_entry->dest_id, ri_entry->vector,
++			   ri_entry->high, ri_entry->low);
 +	}
 +}
 +
- static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
- 				   struct intel_iommu *iommu, int bus, int ctx,
- 				   struct context_entry *context, bool new_ext)
-@@ -57,6 +82,12 @@ static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
- 	}
- }
- #else /* CONFIG_INTEL_IOMMU_SVM */
-+static void pasid_tbl_entry_show(struct seq_file *m, void *unused,
-+				 struct intel_iommu *iommu)
++static void ir_tbl_posted_entry_show(struct seq_file *m, void *unused,
++				struct intel_iommu *iommu)
 +{
-+	return;
++	int idx;
++	struct irte *pi_entry;
++
++	/* Print the header only once */
++	seq_printf(m, " Index  SID  PDA_high PDA_low  Vct"
++		   " Raw_value_high   Raw_value_low\n");
++
++	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
++		pi_entry = &iommu->ir_table->base[idx];
++		if (!pi_entry->present || !pi_entry->p_pst)
++			continue;
++		seq_printf(m,
++			   " %d\t%04x %08x %08x %02x  %016llx %016llx\n",
++			   idx, pi_entry->sid,
++			   pi_entry->pda_h, (pi_entry->pda_l)<<6,
++			   pi_entry->vector, pi_entry->high,
++			   pi_entry->low);
++	}
 +}
 +
- static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
- 				   struct intel_iommu *iommu, int bus, int ctx,
- 				   struct context_entry *context, bool new_ext)
-@@ -93,6 +124,7 @@ static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
- 					       context, new_ext);
- 		}
- 	}
-+	pasid_tbl_entry_show(m, unused, iommu);
- out:
- 	spin_unlock_irqrestore(&iommu->lock, flags);
- }
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index f6697e5..2003f23 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -28,14 +28,6 @@
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--struct pasid_entry {
--	u64 val;
--};
--
--struct pasid_state_entry {
--	u64 val;
--};
--
- int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
++/*
++ * For active IOMMUs go through the Interrupt remapping
++ * table and print valid entries in a table format for
++ * Remapped and Posted Interrupts.
++ */
++static int intel_iommu_ir_show(struct seq_file *m, void *unused)
++{
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++
++	rcu_read_lock();
++	for_each_active_iommu(iommu, drhd) {
++		if (!iommu || !ecap_ir_support(iommu->ecap))
++			continue;
++
++		seq_printf(m,
++			   "\nRemapped Interrupt supported on IOMMU: %s\n"
++			   " IR table address:%p\n",
++			   iommu->name, iommu->ir_table);
++
++		seq_printf(m, "---------------------------------------"
++			   "--------------------\n");
++
++		if (iommu->ir_table)
++			ir_tbl_remap_entry_show(m, unused, iommu);
++		else
++			seq_printf(m, "Interrupt Remapping is not enabled\n");
++	}
++
++	seq_printf(m, "\n****\t****\t****\t****\t****\t****\t****\t****\n");
++
++	for_each_active_iommu(iommu, drhd) {
++		if (!iommu || !cap_pi_support(iommu->cap))
++			continue;
++
++		seq_printf(m,
++			   "\nPosted Interrupt supported on IOMMU: %s\n"
++			   " IR table address:%p\n",
++			   iommu->name, iommu->ir_table);
++
++		seq_printf(m, "---------------------------------------"
++			   "-----------------------------\n");
++
++		if (iommu->ir_table)
++			ir_tbl_posted_entry_show(m, unused, iommu);
++		else
++			seq_printf(m, "Interrupt Remapping is not enabled\n");
++	}
++	rcu_read_unlock();
++
++	return 0;
++}
++
++static int intel_iommu_ir_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, intel_iommu_ir_show, inode->i_private);
++}
++
++static const struct file_operations intel_iommu_ir_fops = {
++	.open		= intel_iommu_ir_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= single_release,
++	.owner		= THIS_MODULE,
++};
++#endif
++
+ void __init intel_iommu_debugfs_init(void)
  {
- 	struct page *pages;
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index 733eaf9..a8abad6 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -18,6 +18,14 @@
+ 	struct dentry *iommu_debug_root;
+@@ -304,6 +418,15 @@ void __init intel_iommu_debugfs_init(void)
+ 		goto err;
+ 	}
  
- struct device;
++#ifdef CONFIG_IRQ_REMAP
++	if (!debugfs_create_file("intel_iommu_interrupt_remap", S_IRUGO,
++				 iommu_debug_root, NULL,
++				 &intel_iommu_ir_fops)) {
++		pr_err("Can't create intel_iommu_interrupt_remap file\n");
++		goto err;
++	}
++#endif
++
+ 	return;
  
-+struct pasid_entry {
-+	u64 val;
-+};
-+
-+struct pasid_state_entry {
-+	u64 val;
-+};
-+
- struct svm_dev_ops {
- 	void (*fault_cb)(struct device *dev, int pasid, u64 address,
- 			 u32 private, int rwxp, int response);
+ err:
 -- 
 2.7.4
