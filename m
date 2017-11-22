@@ -1,114 +1,52 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: No check of the size passed to unmap_single in swiotlb
-Date: Wed, 22 Nov 2017 13:15:08 +0000
-Message-ID: <c678cf02-700d-48c0-4160-8ee248a26da5@arm.com>
-References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
-	<20171120162652.GR24312@char.us.oracle.com>
-	<VI1PR04MB3071FBA364C78317F3C3A25D8C200@VI1PR04MB3071.eurprd04.prod.outlook.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <VI1PR04MB3071FBA364C78317F3C3A25D8C200-mr6QIVyDiCFHIX2o+zdTns9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+From: Sohil Mehta <sohil.mehta@intel.com>
+Subject: [PATCH v2 0/6] Intel IOMMU debugfs support
+Date: Wed, 22 Nov 2017 11:25:40 -0800
+Message-ID: <1511378746-109275-1-git-send-email-sohil.mehta@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Andriy Shevchenko <andriy.shevchenko@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/11/17 03:23, Eric Yang wrote:
-> 
-> 
->> -----Original Message-----
->> From: Konrad Rzeszutek Wilk [mailto:konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org]
->> Sent: Tuesday, November 21, 2017 12:27 AM
->> To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Greg Kroah-Hartman
->> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>;
->> Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>; David Miller
->> <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Geert
->> Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>; Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>;
->> Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Daniel Borkmann
->> <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>
->> Subject: Re: No check of the size passed to unmap_single in swiotlb
->>
->> On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
->>> Hi all,
->>
->> Hi!
-> 
-> Hi  Konrad,
->>>
->>> During debug a  device only support 32bits DMA(Qualcomm Atheros AP) in our
->> LS1043A 64bits ARM  SOC, we found that the invoke of dma_unmap_single -->
->> swiotlb_tbl_unmap_single  will unmap the passed "size" anyway even when the
->> "size" is incorrect.
->>>
->>> If the size is larger than it should, the extra entries in io_tlb_orig_addr array
->> will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce buffer copy
->> not happen when the one who really used the mis-freed entries doing  DMA data
->> transfers, and this will cause further unknow behaviors.
->>>
->>> Here we just fix it temporarily by adding a judge of the "size" in the
->> swiotlb_tbl_unmap_single, if it is larger than it deserves, just unmap the right
->> size only. Like the code:
->>
->> Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring this issue as
->> well?
->>
-> 
-> I have just enabled this config and move off the kernel fix and test, there seems the debug API
-> has no output for this size incorrect issue. For I only enable the config and no other operations
-> and my kernel is 4.9, do I missed something?
-> 
-> I confirm that the debug API is working, for there are other drivers triggered its warning output
-> like:
->   
-> caam_jr 1710000.jr: DMA-API: device driver tries to free DMA memory it has not allocated
-> [device address=0x6800458400000000]
+Hi all,
 
-By default, dma-debug will only log the first error it sees - you can 
-adjust this with the "num_errors" or "all_errors" sysfs controls, and 
-use the driver filter to hide errors from other drivers if necessary.
+This series aims to add debugfs support for Intel IOMMU. It exposes IOMMU
+registers, internal context and dumps individual table entries to help debug
+Intel IOMMUs.
 
-Robin.
+The first patch does the ground work for the following patches by creating a new
+Kconfig option - INTEL_IOMMU_DEBUG. It also reorganizes some Intel IOMMU data
+structures. The next five patches add debugfs support for IOMMU context
+internals, extended context, register contents, PASID internals, and Interrupt
+remapping in that order. The information can be accessed in sysfs at
+'/sys/kernel/debug/intel_iommu/'.
 
->>>
->>> [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c diff --git
->>> a/lib/swiotlb.c b/lib/swiotlb.c index ad1d2962d129..58c97ede9d78
->>> 100644
->>> --- a/lib/swiotlb.c
->>> +++ b/lib/swiotlb.c
->>> @@ -591,7 +591,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev,
->> phys_addr_t tlb_addr,
->>>                   */
->>>                  for (i = index + nslots - 1; i >= index; i--) {
->>>                          io_tlb_list[i] = ++count;
->>> -                       io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
->>> +                      if(io_tlb_orig_addr[i]  != orig_addr)
->>> +                          printk("======size wrong, ally down ally down!===\n");
->>> +                      else
->>> +                         io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
->>>                  }
->>>                  /*
->>>                   * Step 2: merge the returned slots with the preceding
->>> slots,
->>>
->>> Although pass a right size of DMA buffer is the responsibility of  the drivers, but
->> Is it useful to add some size check code to prevent  real damage happen?
->>>
->>> Regards,
->>> Eric
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+Regards,
+Sohil
+
+Changes since v1:
+ - Fixed seq_printf formatting
+ - Handled the case when Interrupt remapping is not enabled
+
+Gayatri Kammela (5):
+  iommu/vt-d: Add debugfs support for Intel IOMMU internals
+  iommu/vt-d: Add Intel IOMMU debugfs to show context internals
+  iommu/vt-d: Add Intel IOMMU debugfs to show extended context internals
+  iommu/vt-d: Add debugfs extension to show register contents
+  iommu/vt-d: Add debugfs extension to show Pasid table contents
+
+Sohil Mehta (1):
+  iommu/vt-d: Add debugfs support for Intel IOMMU Interrupt remapping
+
+ drivers/iommu/Kconfig             |  10 +
+ drivers/iommu/Makefile            |   1 +
+ drivers/iommu/intel-iommu-debug.c | 435 ++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel-iommu.c       |  35 +--
+ drivers/iommu/intel-svm.c         |   8 -
+ include/linux/intel-iommu.h       |  32 +++
+ include/linux/intel-svm.h         |  10 +-
+ 7 files changed, 494 insertions(+), 37 deletions(-)
+ create mode 100644 drivers/iommu/intel-iommu-debug.c
+
+-- 
+2.7.4
