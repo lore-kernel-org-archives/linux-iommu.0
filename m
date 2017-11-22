@@ -1,12 +1,12 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 2/6] iommu/vt-d: Add Intel IOMMU debugfs to show context
-	internals
-Date: Wed, 22 Nov 2017 11:25:42 -0800
-Message-ID: <1511378746-109275-3-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH v2 3/6] iommu/vt-d: Add Intel IOMMU debugfs to show extended
+	context internals
+Date: Wed, 22 Nov 2017 11:25:43 -0800
+Message-ID: <1511378746-109275-4-git-send-email-sohil.mehta@intel.com>
 References: <1511378746-109275-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1511378746-109275-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -22,123 +22,95 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson
 Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogR2F5YXRyaSBLYW1tZWxhIDxnYXlhdHJpLmthbW1lbGFAaW50ZWwuY29tPgoKSU9NTVUg
-aW50ZXJuYWxzIHN0YXRlcyBzdWNoIGFzIHJvb3QgYW5kIGNvbnRleHQgY2FuIGJlIGV4cG9ydGVk
-IHRvIHRoZQp1c2Vyc3BhY2UuCgpFeGFtcGxlIG9mIHN1Y2ggZHVtcCBpbiBLYWJ5bGFrZToKCnJv
-b3RAT1RDLUtCTEgtMDE6fiMgY2F0IC9zeXMva2VybmVsL2RlYnVnL2ludGVsX2lvbW11L2ludGVs
-X2lvbW11X2N0eAoKSU9NTVUgZG1hcjI6ICAgIFJvb3QgVGFibGUgQWRkcjo0NTU4YTMwMDAKIFJv
-b3QgdGJsIGVudHJpZXM6CkJ1cyAwIEw6IDQ1NThhYTAwMSBIOiAwCiBDb250ZXh0IHRhYmxlIGVu
-dHJpZXMgZm9yIEJ1czogMApbZW50cnldIERJRCA6QiA6RCAuRiAgICBMb3cgICAgICAgICAgICAg
-SGlnaApbMTYwXSAgIDAwMDA6MDA6MTQuMDAgICA0NTU4YTkwMDEgICAgICAgMTAyClsxODRdICAg
-MDAwMDowMDoxNy4wMCAgIDQwMGVhYzAwMSAgICAgICAzMDIKWzI0OF0gICAwMDAwOjAwOjFmLjAw
-ICAgNDU1OGFmMDAxICAgICAgIDIwMgpbMjUxXSAgIDAwMDA6MDA6MWYuMDMgICA0MDA3MGUwMDEg
-ICAgICAgNTAyClsyNTRdICAgMDAwMDowMDoxZi4wNiAgIDQ0NjdjOTAwMSAgICAgICA2MDIKIFJv
-b3QgdGJsIGVudHJpZXM6CkJ1cyAxIEw6IDNmYzhjMjAwMSBIOiAwCiBDb250ZXh0IHRhYmxlIGVu
-dHJpZXMgZm9yIEJ1czogMQpbZW50cnldIERJRCA6QiA6RCAuRiAgICBMb3cgICAgICAgICAgICAg
-SGlnaApbMF0gICAgIDAwMDA6MDE6MDAuMDAgICAzZmM4YzMwMDEgICAgICAgNDAyCgpDYzogU29o
-aWwgTWVodGEgPHNvaGlsLm1laHRhQGludGVsLmNvbT4KQ2M6IEZlbmdodWEgWXUgPGZlbmdodWEu
-eXVAaW50ZWwuY29tPgpDYzogQXNob2sgUmFqIDxhc2hvay5yYWpAaW50ZWwuY29tPgpTaWduZWQt
-b2ZmLWJ5OiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPgpTaWduZWQt
-b2ZmLWJ5OiBHYXlhdHJpIEthbW1lbGEgPGdheWF0cmkua2FtbWVsYUBpbnRlbC5jb20+Ci0tLQoK
-djI6IE5vIGNoYW5nZQoKIGRyaXZlcnMvaW9tbXUvTWFrZWZpbGUgICAgICAgICAgICB8ICAgMSAr
-CiBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LWRlYnVnLmMgfCAxNDkgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysKIGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyAgICAg
-ICB8ICAgNCArCiAzIGZpbGVzIGNoYW5nZWQsIDE1NCBpbnNlcnRpb25zKCspCiBjcmVhdGUgbW9k
-ZSAxMDA2NDQgZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS1kZWJ1Zy5jCgpkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9pb21tdS9NYWtlZmlsZSBiL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUKaW5kZXggMWZi
-Njk1OC4uZmRiYWY0NiAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9NYWtlZmlsZQorKysgYi9k
-cml2ZXJzL2lvbW11L01ha2VmaWxlCkBAIC0xNSw2ICsxNSw3IEBAIG9iai0kKENPTkZJR19BUk1f
-U01NVSkgKz0gYXJtLXNtbXUubwogb2JqLSQoQ09ORklHX0FSTV9TTU1VX1YzKSArPSBhcm0tc21t
-dS12My5vCiBvYmotJChDT05GSUdfRE1BUl9UQUJMRSkgKz0gZG1hci5vCiBvYmotJChDT05GSUdf
-SU5URUxfSU9NTVUpICs9IGludGVsLWlvbW11Lm8KK29iai0kKENPTkZJR19JTlRFTF9JT01NVV9E
-RUJVRykgKz0gaW50ZWwtaW9tbXUtZGVidWcubwogb2JqLSQoQ09ORklHX0lOVEVMX0lPTU1VX1NW
-TSkgKz0gaW50ZWwtc3ZtLm8KIG9iai0kKENPTkZJR19JUE1NVV9WTVNBKSArPSBpcG1tdS12bXNh
-Lm8KIG9iai0kKENPTkZJR19JUlFfUkVNQVApICs9IGludGVsX2lycV9yZW1hcHBpbmcubyBpcnFf
-cmVtYXBwaW5nLm8KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUtZGVidWcu
-YyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUtZGVidWcuYwpuZXcgZmlsZSBtb2RlIDEwMDY0
-NAppbmRleCAwMDAwMDAwLi45MDg3MmVkCi0tLSAvZGV2L251bGwKKysrIGIvZHJpdmVycy9pb21t
-dS9pbnRlbC1pb21tdS1kZWJ1Zy5jCkBAIC0wLDAgKzEsMTQ5IEBACisvKgorICogQ29weXJpZ2h0
-IMKpIDIwMTcgSW50ZWwgQ29ycG9yYXRpb24uCisgKgorICogVGhpcyBwcm9ncmFtIGlzIGZyZWUg
-c29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQKKyAqIHVu
-ZGVyIHRoZSB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExp
-Y2Vuc2UsCisgKiB2ZXJzaW9uIDIsIGFzIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBG
-b3VuZGF0aW9uLgorICoKKyAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9w
-ZSBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQKKyAqIEFOWSBXQVJSQU5UWTsgd2l0aG91
-dCBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvcgorICogRklU
-TkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuICBTZWUgdGhlIEdOVSBHZW5lcmFsIFB1Ymxp
-YyBMaWNlbnNlIGZvcgorICogbW9yZSBkZXRhaWxzLgorICoKKyAqIEF1dGhvcnM6IEdheWF0cmkg
-S2FtbWVsYSA8Z2F5YXRyaS5rYW1tZWxhQGludGVsLmNvbT4KKyAqICAgICAgICAgIEphY29iIFBh
-biA8amFjb2IuanVuLnBhbkBsaW51eC5pbnRlbC5jb20+CisgKgorICovCisKKyNkZWZpbmUgcHJf
-Zm10KGZtdCkgICAgICJJTlRFTF9JT01NVTogIiBmbXQKKyNpbmNsdWRlIDxsaW51eC9lcnIuaD4K
-KyNpbmNsdWRlIDxsaW51eC9pby5oPgorI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KKyNpbmNsdWRl
-IDxsaW51eC91YWNjZXNzLmg+CisjaW5jbHVkZSA8bGludXgvcG1fcnVudGltZS5oPgorI2luY2x1
-ZGUgPGxpbnV4L2RlYnVnZnMuaD4KKyNpbmNsdWRlIDxsaW51eC9wY2kuaD4KKyNpbmNsdWRlIDxs
-aW51eC9pb21tdS5oPgorI2luY2x1ZGUgPGxpbnV4L2ludGVsLWlvbW11Lmg+CisjaW5jbHVkZSA8
-bGludXgvaW50ZWwtc3ZtLmg+CisjaW5jbHVkZSA8bGludXgvZG1hci5oPgorI2luY2x1ZGUgPGxp
-bnV4L3NwaW5sb2NrLmg+CisKKyNpbmNsdWRlICJpcnFfcmVtYXBwaW5nLmgiCisKKyNkZWZpbmUg
-VE9UQUxfQlVTX05SICgyNTYpIC8qIGZ1bGwgYnVzIHJhbmdlIDI1NiAqLworCitzdGF0aWMgdm9p
-ZCBjdHhfdGJsX2VudHJ5X3Nob3coc3RydWN0IHNlcV9maWxlICptLCB2b2lkICp1bnVzZWQsCisJ
-CQkgICAgICAgc3RydWN0IGludGVsX2lvbW11ICppb21tdSwgaW50IGJ1cywgYm9vbCBleHQsCisJ
-CQkgICAgICAgYm9vbCBuZXdfZXh0KQoreworCXN0cnVjdCBjb250ZXh0X2VudHJ5ICpjb250ZXh0
-OworCWludCBjdHg7CisJdW5zaWduZWQgbG9uZyBmbGFnczsKKworCXNlcV9wcmludGYobSwgIiVz
-IENvbnRleHQgdGFibGUgZW50cmllcyBmb3IgQnVzOiAlZFxuIiwKKwkJICAgZXh0ID8gIkxvd2Vy
-IiA6ICIiLCBidXMpOworCXNlcV9wcmludGYobSwgIltlbnRyeV1cdERJRCA6QiA6RCAuRlx0TG93
-XHRcdEhpZ2hcbiIpOworCisJc3Bpbl9sb2NrX2lycXNhdmUoJmlvbW11LT5sb2NrLCBmbGFncyk7
-CisKKwkvKiBQdWJsaXNoIGVpdGhlciBjb250ZXh0IGVudHJpZXMgb3IgZXh0ZW5kZWQgY29udGVu
-eHQgZW50cmllcyAqLworCWZvciAoY3R4ID0gMDsgY3R4IDwgKGV4dCA/IDEyOCA6IDI1Nik7IGN0
-eCsrKSB7CisJCWNvbnRleHQgPSBpb21tdV9jb250ZXh0X2FkZHIoaW9tbXUsIGJ1cywgY3R4LCAw
-KTsKKwkJaWYgKCFjb250ZXh0KQorCQkJZ290byBvdXQ7CisJCWlmIChjb250ZXh0X3ByZXNlbnQo
-Y29udGV4dCkpIHsKKwkJCXNlcV9wcmludGYobSwgIlslZF1cdCUwNHg6JTAyeDolMDJ4LiUwMnhc
-dCVsbHhcdCVsbHhcbiIsCisJCQkJICAgY3R4LCBpb21tdS0+c2VnbWVudCwgYnVzLCBQQ0lfU0xP
-VChjdHgpLAorCQkJCSAgIFBDSV9GVU5DKGN0eCksIGNvbnRleHRbMF0ubG8sIGNvbnRleHRbMF0u
-aGkpOworCQl9CisJfQorb3V0OgorCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmlvbW11LT5sb2Nr
-LCBmbGFncyk7Cit9CisKK3N0YXRpYyB2b2lkIHJvb3RfdGJsX2VudHJ5X3Nob3coc3RydWN0IHNl
-cV9maWxlICptLCB2b2lkICp1bnVzZWQsCisJCQkJc3RydWN0IGludGVsX2lvbW11ICppb21tdSwg
-dTY0IHJ0YWRkcl9yZWcsCisJCQkJYm9vbCBleHQsIGJvb2wgbmV3X2V4dCkKK3sKKwlpbnQgYnVz
-OworCisJc2VxX3ByaW50ZihtLCAiXG5JT01NVSAlczogJTJzIFJvb3QgVGFibGUgQWRkcjolbGx4
-XG4iLCBpb21tdS0+bmFtZSwKKwkJICAgZXh0ID8gIkV4dGVuZGVkIiA6ICIiLCBydGFkZHJfcmVn
-KTsKKwkvKiBQdWJsaXNoIGV4dGVuZGVkIHJvb3QgdGFibGUgZW50cmllcyBvciByb290IHRhYmxl
-IGVudHJpZXMgaGVyZSAqLworCWZvciAoYnVzID0gMDsgYnVzIDwgVE9UQUxfQlVTX05SOyBidXMr
-KykgeworCQlpZiAoIWlvbW11LT5yb290X2VudHJ5W2J1c10ubG8pCisJCQljb250aW51ZTsKKwor
-CQlzZXFfcHJpbnRmKG0sICIlcyBSb290IHRibCBlbnRyaWVzOlxuIiwgZXh0ID8gIkV4dGVuZGVk
-IiA6ICIiKTsKKwkJc2VxX3ByaW50ZihtLCAiQnVzICVkIEw6ICVsbHggSDogJWxseFxuIiwgYnVz
-LAorCQkJICAgaW9tbXUtPnJvb3RfZW50cnlbYnVzXS5sbywgaW9tbXUtPnJvb3RfZW50cnlbYnVz
-XS5oaQorCQkJICApOworCisJCWN0eF90YmxfZW50cnlfc2hvdyhtLCB1bnVzZWQsIGlvbW11LCBi
-dXMsIGV4dCwgbmV3X2V4dCk7CisJfQorfQorCitzdGF0aWMgaW50IGludGVsX2lvbW11X2RlYnVn
-X3Nob3coc3RydWN0IHNlcV9maWxlICptLCB2b2lkICp1bnVzZWQpCit7CisJc3RydWN0IGRtYXJf
-ZHJoZF91bml0ICpkcmhkOworCXN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXU7CisJdTY0IHJ0YWRk
-cl9yZWc7CisJYm9vbCBuZXdfZXh0LCBleHQ7CisKKwlyY3VfcmVhZF9sb2NrKCk7CisJZm9yX2Vh
-Y2hfYWN0aXZlX2lvbW11KGlvbW11LCBkcmhkKSB7CisJCWlmIChpb21tdSkgeworCQkJLyogQ2hl
-Y2sgaWYgcm9vdCB0YWJsZSB0eXBlIGlzIHNldCAqLworCQkJcnRhZGRyX3JlZyA9IGRtYXJfcmVh
-ZHEoaW9tbXUtPnJlZyArIERNQVJfUlRBRERSX1JFRyk7CisJCQlleHQgICAgICAgID0gISEocnRh
-ZGRyX3JlZyAmIERNQV9SVEFERFJfUlRUKTsKKwkJCW5ld19leHQgICAgPSAhIWVjYXBfZWNzKGlv
-bW11LT5lY2FwKTsKKwkJCWlmIChuZXdfZXh0ICE9IGV4dCkgeworCQkJCXNlcV9wcmludGYobSwg
-IklPTU1VICVzOiBpbnZhbGlkIGVjc1xuIiwKKwkJCQkJICAgaW9tbXUtPm5hbWUpOworCQkJCXJj
-dV9yZWFkX3VubG9jaygpOworCQkJCXJldHVybiAtRUlOVkFMOworCQkJfQorCQkJcm9vdF90Ymxf
-ZW50cnlfc2hvdyhtLCB1bnVzZWQsIGlvbW11LCBydGFkZHJfcmVnLCBleHQsCisJCQkJCSAgICBu
-ZXdfZXh0KTsKKwkJfQorCX0KKwlyY3VfcmVhZF91bmxvY2soKTsKKworCXJldHVybiAwOworfQor
-CitzdGF0aWMgaW50IGludGVsX2lvbW11X2RlYnVnX29wZW4oc3RydWN0IGlub2RlICppbm9kZSwg
-c3RydWN0IGZpbGUgKmZpbGUpCit7CisJcmV0dXJuIHNpbmdsZV9vcGVuKGZpbGUsIGludGVsX2lv
-bW11X2RlYnVnX3Nob3csIGlub2RlLT5pX3ByaXZhdGUpOworfQorCitzdGF0aWMgY29uc3Qgc3Ry
-dWN0IGZpbGVfb3BlcmF0aW9ucyBpbnRlbF9pb21tdV9kZWJ1Z19mb3BzID0geworCS5vcGVuCQk9
-IGludGVsX2lvbW11X2RlYnVnX29wZW4sCisJLnJlYWQJCT0gc2VxX3JlYWQsCisJLmxsc2VlawkJ
-PSBzZXFfbHNlZWssCisJLnJlbGVhc2UJPSBzaW5nbGVfcmVsZWFzZSwKKwkub3duZXIJCT0gVEhJ
-U19NT0RVTEUsCit9OworCit2b2lkIF9faW5pdCBpbnRlbF9pb21tdV9kZWJ1Z2ZzX2luaXQodm9p
-ZCkKK3sKKwlzdHJ1Y3QgZGVudHJ5ICppb21tdV9kZWJ1Z19yb290OworCisJaW9tbXVfZGVidWdf
-cm9vdCA9IGRlYnVnZnNfY3JlYXRlX2RpcigiaW50ZWxfaW9tbXUiLCBOVUxMKTsKKworCWlmICgh
-aW9tbXVfZGVidWdfcm9vdCkgeworCQlwcl9lcnIoImNhbid0IGNyZWF0ZSBkZWJ1Z2ZzIGRpclxu
-Iik7CisJCWdvdG8gZXJyOworCX0KKworCWlmICghZGVidWdmc19jcmVhdGVfZmlsZSgiaW50ZWxf
-aW9tbXVfY3R4IiwgU19JUlVHTywgaW9tbXVfZGVidWdfcm9vdCwKKwkJCQkgTlVMTCwgJmludGVs
-X2lvbW11X2RlYnVnX2ZvcHMpKSB7CisJCXByX2VycigiQ2FuJ3QgY3JlYXRlIGludGVsX2lvbW11
-X2N0eCBmaWxlXG4iKTsKKwkJZ290byBlcnI7CisJfQorCitlcnI6CisJZGVidWdmc19yZW1vdmVf
-cmVjdXJzaXZlKGlvbW11X2RlYnVnX3Jvb3QpOworCit9CmRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
-bW11L2ludGVsLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKaW5kZXggNDE5
-YTU1OS4uNzc5NGUwYyAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCisr
-KyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwpAQCAtNDc5Nyw2ICs0Nzk3LDEwIEBAIGlu
-dCBfX2luaXQgaW50ZWxfaW9tbXVfaW5pdCh2b2lkKQogCQkJICBpbnRlbF9pb21tdV9jcHVfZGVh
-ZCk7CiAJaW50ZWxfaW9tbXVfZW5hYmxlZCA9IDE7CiAKKyNpZmRlZiBDT05GSUdfSU5URUxfSU9N
-TVVfREVCVUcKKwlpbnRlbF9pb21tdV9kZWJ1Z2ZzX2luaXQoKTsKKyNlbmRpZgorCiAJcmV0dXJu
-IDA7CiAKIG91dF9mcmVlX3Jlc2VydmVkX3JhbmdlOgotLSAKMi43LjQKCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+Debugfs extension to dump internals such as extended context table
+entries for each IOMMU to the userspace.
+
+root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/intel_iommu_ctx
+
+IOMMU dmar1: Extended Root Table Addr:4558a1800
+Extended Root tbl entries:
+Bus 0 L: 4558a6001 H: 0
+Lower Context table entries for Bus: 0
+[entry] DID :B :D .F    Low             High
+[16]    0000:00:02.00   4558a5005       102
+Higher Context tbl entries for Bus: 0
+[16]    0000:00:02.00   401b0000c       401400000
+
+IOMMU dmar0: Extended Root Table Addr:4558a2800
+Extended Root tbl entries:
+Bus 0 L: 4016f4001 H: 0
+Lower Context table entries for Bus: 0
+[entry] DID :B :D .F    Low             High
+[80]    0000:00:0a.00   4016f3a05       102
+Higher Context tbl entries for Bus: 0
+[80]    0000:00:0a.00   40150000c       671b80000000
+
+Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+
+v2: No change
+
+ drivers/iommu/intel-iommu-debug.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
+index 90872ed..ef46820 100644
+--- a/drivers/iommu/intel-iommu-debug.c
++++ b/drivers/iommu/intel-iommu-debug.c
+@@ -33,6 +33,38 @@
+ 
+ #define TOTAL_BUS_NR (256) /* full bus range 256 */
+ 
++#ifdef CONFIG_INTEL_IOMMU_SVM
++static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
++				   struct intel_iommu *iommu, int bus, int ctx,
++				   struct context_entry *context, bool new_ext)
++{
++	u64 ctx_lo;
++
++	if (new_ext) {
++		seq_printf(m, "Higher Context tbl entries for Bus: %d\n", bus);
++		ctx_lo = context[0].lo;
++
++		if (!(ctx_lo & CONTEXT_PASIDE)) {
++			context[1].hi = (u64)virt_to_phys(
++					iommu->pasid_state_table);
++			context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
++					intel_iommu_get_pts(iommu);
++		}
++
++		seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n", ctx,
++			   iommu->segment, bus, PCI_SLOT(ctx), PCI_FUNC(ctx),
++			   context[1].lo, context[1].hi);
++	}
++}
++#else /* CONFIG_INTEL_IOMMU_SVM */
++static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
++				   struct intel_iommu *iommu, int bus, int ctx,
++				   struct context_entry *context, bool new_ext)
++{
++	return;
++}
++#endif /* CONFIG_INTEL_IOMMU_SVM */
++
+ static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
+ 			       struct intel_iommu *iommu, int bus, bool ext,
+ 			       bool new_ext)
+@@ -56,6 +88,9 @@ static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
+ 			seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n",
+ 				   ctx, iommu->segment, bus, PCI_SLOT(ctx),
+ 				   PCI_FUNC(ctx), context[0].lo, context[0].hi);
++
++			ext_ctx_tbl_entry_show(m, unused, iommu, bus, ctx,
++					       context, new_ext);
+ 		}
+ 	}
+ out:
+-- 
+2.7.4
