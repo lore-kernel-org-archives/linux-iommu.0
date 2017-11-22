@@ -1,13 +1,13 @@
-From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 6/6] iommu/vt-d: Add debugfs support for Intel IOMMU
-	Interrupt remapping
-Date: Wed, 22 Nov 2017 11:25:46 -0800
-Message-ID: <1511378746-109275-7-git-send-email-sohil.mehta@intel.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 0/6] Intel IOMMU debugfs support
+Date: Wed, 22 Nov 2017 10:47:33 -0800
+Message-ID: <20171122184733.GA199214@otc-nc-03>
 References: <1511378746-109275-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
 In-Reply-To: <1511378746-109275-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,191 +18,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Debugfs extension for Intel IOMMU to dump Interrupt remapping table
-entries for Interrupt remapping and Interrupt posting.
+Hi Alex
 
-The file /sys/kernel/debug/intel_iommu/intel_iommu_interrupt_remap
-provides detailed information, such as Index, Source Id, Destination Id,
-Vector and the raw values for entries with the present bit set, in the
-format shown.
+you can add for the whole series
 
-Remapped Interrupt supported on IOMMU: dmar5
- IR table address:ffff93e09d54c310
------------------------------------------------------------
- Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low
- 1      3a00 00000600 2c  0000000000043a00 00000600002c0009
- 111    4301 00000900 a2  0000000000044301 0000090000a20009
+Reviewed By: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Posted Interrupt supported on IOMMU: dmar5
- IR table address:ffff93e09d54c310
---------------------------------------------------------------------
- Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low
- 4      4300 00000010 40c7c880 41  0000001000044300 40c7c88000418001
- 5      4300 00000010 40c7c880 51  0000001000044300 40c7c88000518001
-
-Cc: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
-
-v2: Handle the case when IR is not enabled. Fix seq_printf formatting
-
- drivers/iommu/intel-iommu-debug.c | 123 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 123 insertions(+)
-
-diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-index 22a0683..7fda862 100644
---- a/drivers/iommu/intel-iommu-debug.c
-+++ b/drivers/iommu/intel-iommu-debug.c
-@@ -12,6 +12,7 @@
-  *
-  * Authors: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-  *          Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-+ *          Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-  *
-  */
- 
-@@ -280,6 +281,119 @@ static const struct file_operations intel_iommu_regs_fops = {
- 	.release	= single_release,
- };
- 
-+#ifdef CONFIG_IRQ_REMAP
-+static void ir_tbl_remap_entry_show(struct seq_file *m, void *unused,
-+			       struct intel_iommu *iommu)
-+{
-+	int idx;
-+	struct irte *ri_entry;
-+
-+	/* Print the header only once */
-+	seq_printf(m, " Index  SID  Dest_ID  Vct"
-+		   " Raw_value_high   Raw_value_low\n");
-+
-+	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
-+		ri_entry = &iommu->ir_table->base[idx];
-+		if (!ri_entry->present || ri_entry->p_pst)
-+			continue;
-+		seq_printf(m,
-+			   " %d\t%04x %08x %02x  %016llx %016llx\n",
-+			   idx, ri_entry->sid,
-+			   ri_entry->dest_id, ri_entry->vector,
-+			   ri_entry->high, ri_entry->low);
-+	}
-+}
-+
-+static void ir_tbl_posted_entry_show(struct seq_file *m, void *unused,
-+				struct intel_iommu *iommu)
-+{
-+	int idx;
-+	struct irte *pi_entry;
-+
-+	/* Print the header only once */
-+	seq_printf(m, " Index  SID  PDA_high PDA_low  Vct"
-+		   " Raw_value_high   Raw_value_low\n");
-+
-+	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
-+		pi_entry = &iommu->ir_table->base[idx];
-+		if (!pi_entry->present || !pi_entry->p_pst)
-+			continue;
-+		seq_printf(m,
-+			   " %d\t%04x %08x %08x %02x  %016llx %016llx\n",
-+			   idx, pi_entry->sid,
-+			   pi_entry->pda_h, (pi_entry->pda_l)<<6,
-+			   pi_entry->vector, pi_entry->high,
-+			   pi_entry->low);
-+	}
-+}
-+
-+/*
-+ * For active IOMMUs go through the Interrupt remapping
-+ * table and print valid entries in a table format for
-+ * Remapped and Posted Interrupts.
-+ */
-+static int intel_iommu_ir_show(struct seq_file *m, void *unused)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!iommu || !ecap_ir_support(iommu->ecap))
-+			continue;
-+
-+		seq_printf(m,
-+			   "\nRemapped Interrupt supported on IOMMU: %s\n"
-+			   " IR table address:%p\n",
-+			   iommu->name, iommu->ir_table);
-+
-+		seq_printf(m, "---------------------------------------"
-+			   "--------------------\n");
-+
-+		if (iommu->ir_table)
-+			ir_tbl_remap_entry_show(m, unused, iommu);
-+		else
-+			seq_printf(m, "Interrupt Remapping is not enabled\n");
-+	}
-+
-+	seq_printf(m, "\n****\t****\t****\t****\t****\t****\t****\t****\n");
-+
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!iommu || !cap_pi_support(iommu->cap))
-+			continue;
-+
-+		seq_printf(m,
-+			   "\nPosted Interrupt supported on IOMMU: %s\n"
-+			   " IR table address:%p\n",
-+			   iommu->name, iommu->ir_table);
-+
-+		seq_printf(m, "---------------------------------------"
-+			   "-----------------------------\n");
-+
-+		if (iommu->ir_table)
-+			ir_tbl_posted_entry_show(m, unused, iommu);
-+		else
-+			seq_printf(m, "Interrupt Remapping is not enabled\n");
-+	}
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
-+static int intel_iommu_ir_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, intel_iommu_ir_show, inode->i_private);
-+}
-+
-+static const struct file_operations intel_iommu_ir_fops = {
-+	.open		= intel_iommu_ir_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= single_release,
-+	.owner		= THIS_MODULE,
-+};
-+#endif
-+
- void __init intel_iommu_debugfs_init(void)
- {
- 	struct dentry *iommu_debug_root;
-@@ -304,6 +418,15 @@ void __init intel_iommu_debugfs_init(void)
- 		goto err;
- 	}
- 
-+#ifdef CONFIG_IRQ_REMAP
-+	if (!debugfs_create_file("intel_iommu_interrupt_remap", S_IRUGO,
-+				 iommu_debug_root, NULL,
-+				 &intel_iommu_ir_fops)) {
-+		pr_err("Can't create intel_iommu_interrupt_remap file\n");
-+		goto err;
-+	}
-+#endif
-+
- 	return;
- 
- err:
--- 
-2.7.4
+On Wed, Nov 22, 2017 at 11:25:40AM -0800, Mehta, Sohil wrote:
+> Hi all,
+> 
+> This series aims to add debugfs support for Intel IOMMU. It exposes IOMMU
+> registers, internal context and dumps individual table entries to help debug
+> Intel IOMMUs.
+> 
+> The first patch does the ground work for the following patches by creating a new
+> Kconfig option - INTEL_IOMMU_DEBUG. It also reorganizes some Intel IOMMU data
+> structures. The next five patches add debugfs support for IOMMU context
+> internals, extended context, register contents, PASID internals, and Interrupt
+> remapping in that order. The information can be accessed in sysfs at
+> '/sys/kernel/debug/intel_iommu/'.
+> 
+> Regards,
+> Sohil
+> 
+> Changes since v1:
+>  - Fixed seq_printf formatting
+>  - Handled the case when Interrupt remapping is not enabled
+> 
+> Gayatri Kammela (5):
+>   iommu/vt-d: Add debugfs support for Intel IOMMU internals
+>   iommu/vt-d: Add Intel IOMMU debugfs to show context internals
+>   iommu/vt-d: Add Intel IOMMU debugfs to show extended context internals
+>   iommu/vt-d: Add debugfs extension to show register contents
+>   iommu/vt-d: Add debugfs extension to show Pasid table contents
+> 
+> Sohil Mehta (1):
+>   iommu/vt-d: Add debugfs support for Intel IOMMU Interrupt remapping
+> 
+>  drivers/iommu/Kconfig             |  10 +
+>  drivers/iommu/Makefile            |   1 +
+>  drivers/iommu/intel-iommu-debug.c | 435 ++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/intel-iommu.c       |  35 +--
+>  drivers/iommu/intel-svm.c         |   8 -
+>  include/linux/intel-iommu.h       |  32 +++
+>  include/linux/intel-svm.h         |  10 +-
+>  7 files changed, 494 insertions(+), 37 deletions(-)
+>  create mode 100644 drivers/iommu/intel-iommu-debug.c
+> 
+> -- 
+> 2.7.4
+> 
