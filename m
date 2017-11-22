@@ -1,63 +1,85 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2 4/6] iommu/vt-d: Add debugfs extension to show
-	register contents
-Date: Wed, 22 Nov 2017 23:19:19 +0200
-Message-ID: <1511385559.25007.415.camel@linux.intel.com>
-References: <1511378746-109275-1-git-send-email-sohil.mehta@intel.com>
-	<1511378746-109275-5-git-send-email-sohil.mehta@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1511378746-109275-5-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: [PATCH V2 12/29] iommu/amd: deprecate pci_get_bus_and_slot()
+Date: Wed, 22 Nov 2017 17:49:07 -0500
+Message-ID: <1511390964-9979-13-git-send-email-okaya@codeaurora.org>
+References: <1511390964-9979-1-git-send-email-okaya@codeaurora.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1511390964-9979-1-git-send-email-okaya@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-pci@vger.kernel.org, timur@codeaurora.org
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, "open list:AMD IOMMU AMD-VI" <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2017-11-22 at 11:25 -0800, Sohil Mehta wrote:
-> From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
+where a PCI device is present. This restricts the device drivers to be
+reused for other domain numbers.
 
+Getting ready to remove pci_get_bus_and_slot() function in favor of
+pci_get_domain_bus_and_slot().
 
-> +static int intel_iommu_regs_open(struct inode *inode, struct file
-> *file)
-> +{
-> +	return single_open(file, intel_iommu_debugfs_regs_show,
-> +			   inode->i_private);
-> +}
-> +
-> +static const struct file_operations intel_iommu_regs_fops = {
-> +	.open		= intel_iommu_regs_open,
-> +	.read		= seq_read,
-> +	.llseek		= seq_lseek,
-> +	.release	= single_release,
-> +};
+Hard-code the domain number as 0 for the AMD IOMMU driver.
 
-Please, be consistent with file name and functions, i.e.
+Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+---
+ drivers/iommu/amd_iommu.c      | 3 ++-
+ drivers/iommu/amd_iommu_init.c | 9 +++++----
+ drivers/iommu/amd_iommu_v2.c   | 3 ++-
+ 3 files changed, 9 insertions(+), 6 deletions(-)
 
-intel_iommu_debugfs_regs_show -> intel_iommu_regset_show
-
-and so on.
-
-Moreover, see the patch I have just sent [1] and use same
-DEFINE_SHOW_ATTRIBUTE() macro here. In that case we would easily move it
-to seq_file.h for everyone to use in the future.
-
-> +	if (!debugfs_create_file("intel_iommu_regset", S_IRUGO,
-> +				 iommu_debug_root, NULL,
-> &intel_iommu_regs_fops
-
-[1]: https://marc.info/?l=linux-bluetooth&m=151138535801354&w=2
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8e8874d..2c3452f 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -528,7 +528,8 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+ 	struct iommu_dev_data *dev_data = NULL;
+ 	struct pci_dev *pdev;
  
-
+-	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
++	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
++					   devid & 0xff);
+ 	if (pdev)
+ 		dev_data = get_dev_data(&pdev->dev);
+ 
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 6fe2d03..4e4a615 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1697,8 +1697,8 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	u32 range, misc, low, high;
+ 	int ret;
+ 
+-	iommu->dev = pci_get_bus_and_slot(PCI_BUS_NUM(iommu->devid),
+-					  iommu->devid & 0xff);
++	iommu->dev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(iommu->devid),
++						 iommu->devid & 0xff);
+ 	if (!iommu->dev)
+ 		return -ENODEV;
+ 
+@@ -1764,8 +1764,9 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	if (is_rd890_iommu(iommu->dev)) {
+ 		int i, j;
+ 
+-		iommu->root_pdev = pci_get_bus_and_slot(iommu->dev->bus->number,
+-				PCI_DEVFN(0, 0));
++		iommu->root_pdev =
++			pci_get_domain_bus_and_slot(0, iommu->dev->bus->number,
++						    PCI_DEVFN(0, 0));
+ 
+ 		/*
+ 		 * Some rd890 systems may not be fully reconfigured by the
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 7d94e1d..8696382 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -564,7 +564,8 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
+ 	finish      = (iommu_fault->tag >> 9) & 1;
+ 
+ 	devid = iommu_fault->device_id;
+-	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
++	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
++					   devid & 0xff);
+ 	if (!pdev)
+ 		return -ENODEV;
+ 	dev_data = get_dev_data(&pdev->dev);
 -- 
-Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Intel Finland Oy
+1.9.1
