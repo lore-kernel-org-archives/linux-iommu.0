@@ -1,8 +1,8 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 1/6] iommu/vt-d: Add debugfs support for Intel IOMMU
-	internals
-Date: Wed, 22 Nov 2017 11:25:41 -0800
-Message-ID: <1511378746-109275-2-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH v2 4/6] iommu/vt-d: Add debugfs extension to show register
+	contents
+Date: Wed, 22 Nov 2017 11:25:44 -0800
+Message-ID: <1511378746-109275-5-git-send-email-sohil.mehta@intel.com>
 References: <1511378746-109275-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,178 +24,150 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Enable Intel IOMMU debug to export Intel IOMMU internals in debugfs
+Debugfs extension to dump all the register contents for each IOMMU
+device to the user space via debugfs.
+
+example:
+root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/intel_iommu_regset
+
+DMAR: dmar1: reg_base_addr fed90000
+Name         Offset     Contents
+VER          0x00       0x0000000000000010
+CAP          0x08       0x01c0000c40660462
+ECAP         0x10       0x0000019e2ff0505e
+GCMD         0x18       0x0000000000000000
+GSTS         0x1c       0x00000000c7000000
+RTADDR       0x20       0x00000004558d6800
+CCMD         0x28       0x0800000000000000
+FSTS         0x34       0x0000000000000000
+FECTL        0x38       0x0000000000000000
+FEDATA       0x3c       0xfee0100c00004141
 
 Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
 
-v2: No change
+v2: Fix seq_printf formatting
 
- drivers/iommu/Kconfig       | 10 ++++++++++
- drivers/iommu/intel-iommu.c | 31 +++----------------------------
- include/linux/intel-iommu.h | 32 ++++++++++++++++++++++++++++++++
- include/linux/intel-svm.h   |  2 +-
- 4 files changed, 46 insertions(+), 29 deletions(-)
+ drivers/iommu/intel-iommu-debug.c | 96 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 96 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f3a2134..d7588ee 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -152,6 +152,16 @@ config INTEL_IOMMU
- 	  and include PCI device scope covered by these DMA
- 	  remapping devices.
+diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
+index ef46820..3e1ce7d 100644
+--- a/drivers/iommu/intel-iommu-debug.c
++++ b/drivers/iommu/intel-iommu-debug.c
+@@ -161,6 +161,93 @@ static const struct file_operations intel_iommu_debug_fops = {
+ 	.owner		= THIS_MODULE,
+ };
  
-+config INTEL_IOMMU_DEBUG
-+	bool "Export Intel IOMMU internals in DebugFS"
-+	depends on INTEL_IOMMU && DEBUG_FS
-+	default n
-+	help
-+	  IOMMU internal states such as context, PASID tables can be seen via
-+	  debugfs. Select this option if you want to export these internals.
++static int intel_iommu_debugfs_regs_show(struct seq_file *m, void *unused)
++{
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++	unsigned long long base;
++	int i;
++	struct regset {
++		int offset;
++		char *regs;
++	};
 +
-+	  Say Y if you need this.
++	static const struct regset regstr[] = {{DMAR_VER_REG, "VER"},
++					       {DMAR_CAP_REG, "CAP"},
++					       {DMAR_ECAP_REG, "ECAP"},
++					       {DMAR_GCMD_REG, "GCMD"},
++					       {DMAR_GSTS_REG, "GSTS"},
++					       {DMAR_RTADDR_REG, "RTADDR"},
++					       {DMAR_CCMD_REG, "CCMD"},
++					       {DMAR_FSTS_REG, "FSTS"},
++					       {DMAR_FECTL_REG, "FECTL"},
++					       {DMAR_FEDATA_REG, "FEDATA"},
++					       {DMAR_FEADDR_REG, "FEADDR"},
++					       {DMAR_FEUADDR_REG, "FEUADDR"},
++					       {DMAR_AFLOG_REG, "AFLOG"},
++					       {DMAR_PMEN_REG, "PMEN"},
++					       {DMAR_PLMBASE_REG, "PLMBASE"},
++					       {DMAR_PLMLIMIT_REG, "PLMLIMIT"},
++					       {DMAR_PHMBASE_REG, "PHMBASE"},
++					       {DMAR_PHMLIMIT_REG,  "PHMLIMIT"},
++					       {DMAR_IQH_REG, "IQH"},
++					       {DMAR_IQT_REG, "IQT"},
++					       {DMAR_IQ_SHIFT, "IQ"},
++					       {DMAR_IQA_REG, "IQA"},
++					       {DMAR_ICS_REG, "ICS"},
++					       {DMAR_IRTA_REG, "IRTA"},
++					       {DMAR_PQH_REG, "PQH"},
++					       {DMAR_PQT_REG, "PQT"},
++					       {DMAR_PQA_REG, "PQA"},
++					       {DMAR_PRS_REG, "PRS"},
++					       {DMAR_PECTL_REG, "PECTL"},
++					       {DMAR_PEDATA_REG, "PEDATA"},
++					       {DMAR_PEADDR_REG, "PEADDR"},
++					       {DMAR_PEUADDR_REG, "PEUADDR"} };
 +
- config INTEL_IOMMU_SVM
- 	bool "Support for Shared Virtual Memory with Intel IOMMU"
- 	depends on INTEL_IOMMU && X86
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 6784a05..419a559 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -185,16 +185,6 @@ static int rwbf_quirk;
- static int force_on = 0;
- int intel_iommu_tboot_noforce;
- 
--/*
-- * 0: Present
-- * 1-11: Reserved
-- * 12-63: Context Ptr (12 - (haw-1))
-- * 64-127: Reserved
-- */
--struct root_entry {
--	u64	lo;
--	u64	hi;
--};
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
- 
- /*
-@@ -220,21 +210,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
- 
- 	return re->hi & VTD_PAGE_MASK;
- }
--/*
-- * low 64 bits:
-- * 0: present
-- * 1: fault processing disable
-- * 2-3: translation type
-- * 12-63: address space root
-- * high 64 bits:
-- * 0-2: address width
-- * 3-6: aval
-- * 8-23: domain id
-- */
--struct context_entry {
--	u64 lo;
--	u64 hi;
--};
- 
- static inline void context_clear_pasid_enable(struct context_entry *context)
- {
-@@ -261,7 +236,7 @@ static inline bool __context_present(struct context_entry *context)
- 	return (context->lo & 1);
- }
- 
--static inline bool context_present(struct context_entry *context)
-+bool context_present(struct context_entry *context)
- {
- 	return context_pasid_enabled(context) ?
- 	     __context_present(context) :
-@@ -821,7 +796,7 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
- 	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
- }
- 
--static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
-+struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
- 						       u8 bus, u8 devfn, int alloc)
- {
- 	struct root_entry *root = &iommu->root_entry[bus];
-@@ -5200,7 +5175,7 @@ static void intel_iommu_put_resv_regions(struct device *dev,
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- #define MAX_NR_PASID_BITS (20)
--static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
-+unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
- {
- 	/*
- 	 * Convert ecap_pss to extend context entry pts encoding, also
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 485a5b4..defbc32 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -382,6 +382,33 @@ struct pasid_entry;
- struct pasid_state_entry;
- struct page_req_dsc;
- 
-+/*
-+ * 0: Present
-+ * 1-11: Reserved
-+ * 12-63: Context Ptr (12 - (haw-1))
-+ * 64-127: Reserved
-+ */
-+struct root_entry {
-+	u64     lo;
-+	u64     hi;
++	rcu_read_lock();
++	for_each_active_iommu(iommu, drhd) {
++		if (iommu) {
++			if (!drhd->reg_base_addr) {
++				seq_printf(m, "IOMMU: Invalid base address\n");
++				rcu_read_unlock();
++				return -EINVAL;
++			}
++
++			base = drhd->reg_base_addr;
++			seq_printf(m, "\nDMAR: %s: reg_base_addr %llx\n",
++				   iommu->name, base);
++			seq_printf(m, "Name\t\t\tOffset\t\tContents\n");
++			/*
++			 * Publish the contents of the 64-bit hardware registers
++			 * by adding the offset to the pointer(virtual addr)
++			 */
++			for (i = 0 ; i < ARRAY_SIZE(regstr); i++) {
++				seq_printf(m, "%-8s\t\t0x%02x\t\t0x%016lx\n",
++					   regstr[i].regs, regstr[i].offset,
++					   readq(iommu->reg + regstr[i].offset)
++					  );
++			}
++		}
++	}
++
++	rcu_read_unlock();
++	return 0;
++}
++
++static int intel_iommu_regs_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, intel_iommu_debugfs_regs_show,
++			   inode->i_private);
++}
++
++static const struct file_operations intel_iommu_regs_fops = {
++	.open		= intel_iommu_regs_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= single_release,
 +};
 +
-+/*
-+ * low 64 bits:
-+ * 0: present
-+ * 1: fault processing disable
-+ * 2-3: translation type
-+ * 12-63: address space root
-+ * high 64 bits:
-+ * 0-2: address width
-+ * 3-6: aval
-+ * 8-23: domain id
-+ */
-+struct context_entry {
-+	u64 lo;
-+	u64 hi;
-+};
-+
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
- 	u64 		reg_phys; /* physical address of hw register set */
-@@ -487,8 +514,13 @@ struct intel_svm {
- 
- extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
- extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
-+extern unsigned long intel_iommu_get_pts(struct intel_iommu *iommu);
- #endif
- 
- extern const struct attribute_group *intel_iommu_groups[];
-+extern void intel_iommu_debugfs_init(void);
-+extern bool context_present(struct context_entry *context);
-+extern struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
-+						u8 bus, u8 devfn, int alloc);
- 
- #endif
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index 99bc5b3..733eaf9 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -130,7 +130,7 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	BUG();
- }
- 
--static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
-+static inline int intel_svm_is_pasid_valid(struct device *dev, int pasid)
+ void __init intel_iommu_debugfs_init(void)
  {
- 	return -EINVAL;
- }
+ 	struct dentry *iommu_debug_root;
+@@ -178,6 +265,15 @@ void __init intel_iommu_debugfs_init(void)
+ 		goto err;
+ 	}
+ 
++	if (!debugfs_create_file("intel_iommu_regset", S_IRUGO,
++				 iommu_debug_root, NULL, &intel_iommu_regs_fops
++				)) {
++		pr_err("Can't create intel_iommu_regset file\n");
++		goto err;
++	}
++
++	return;
++
+ err:
+ 	debugfs_remove_recursive(iommu_debug_root);
+ 
 -- 
 2.7.4
