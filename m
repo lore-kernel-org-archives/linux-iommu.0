@@ -1,62 +1,108 @@
-From: <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH] dma-debug: use virt_addr_valid() to check linear addresses
-Date: Wed, 22 Nov 2017 11:17:35 +0800
-Message-ID: <1511320655-22752-1-git-send-email-miles.chen@mediatek.com>
+From: Eric Yang <yu.yang_3@nxp.com>
+Subject: RE: No check of the size passed to unmap_single in  swiotlb
+Date: Wed, 22 Nov 2017 03:23:33 +0000
+Message-ID: <VI1PR04MB3071FBA364C78317F3C3A25D8C200@VI1PR04MB3071.eurprd04.prod.outlook.com>
+References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
+ <20171120162652.GR24312@char.us.oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wsd_upstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171120162652.GR24312@char.us.oracle.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Andrey Ryabinin <aryabinin@virtuozzo.com>, David Miller <davem@davemloft.net>, Ingo Molnar <mingo@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Al Viro <viro@zeniv.linux.org.uk>, Kees Cook <keescook@chromium.org>, Daniel Borkmann <daniel@iogearbox.net>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Coverity found that the commit 3aaabbf1c39e ("lib/dma-debug.c:
-fix incorrect pfn calculation") uses incorrect API to check
-if a given address is a linear address.
-The condition should be: (as discussed in Christoph's review)
-if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
-not
-if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
 
-Fix it by using virt_addr_valid() instead of virt_to_page().
+> -----Original Message-----
+> From: Konrad Rzeszutek Wilk [mailto:konrad.wilk@oracle.com]
+> Sent: Tuesday, November 21, 2017 12:27 AM
+> To: Eric Yang <yu.yang_3@nxp.com>; iommu@lists.linux-foundation.org
+> Cc: linux-kernel@vger.kernel.org; Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org>; Andrew Morton <akpm@linux-foundation.org>;
+> Andrey Ryabinin <aryabinin@virtuozzo.com>; David Miller
+> <davem@davemloft.net>; Ingo Molnar <mingo@kernel.org>; Geert
+> Uytterhoeven <geert+renesas@glider.be>; Al Viro <viro@zeniv.linux.org.uk>=
+;
+> Kees Cook <keescook@chromium.org>; Daniel Borkmann
+> <daniel@iogearbox.net>
+> Subject: Re: No check of the size passed to unmap_single in swiotlb
+>=20
+> On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
+> > Hi all,
+>=20
+> Hi!
 
-Signed-off-by: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- lib/dma-debug.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi  Konrad,
+> >
+> > During debug a  device only support 32bits DMA(Qualcomm Atheros AP) in =
+our
+> LS1043A 64bits ARM  SOC, we found that the invoke of dma_unmap_single -->
+> swiotlb_tbl_unmap_single  will unmap the passed "size" anyway even when t=
+he
+> "size" is incorrect.
+> >
+> > If the size is larger than it should, the extra entries in io_tlb_orig_=
+addr array
+> will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce buffe=
+r copy
+> not happen when the one who really used the mis-freed entries doing  DMA =
+data
+> transfers, and this will cause further unknow behaviors.
+> >
+> > Here we just fix it temporarily by adding a judge of the "size" in the
+> swiotlb_tbl_unmap_single, if it is larger than it deserves, just unmap th=
+e right
+> size only. Like the code:
+>=20
+> Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring this issue =
+as
+> well?
+>=20
 
-diff --git a/lib/dma-debug.c b/lib/dma-debug.c
-index 1b34d21..4c08eb6 100644
---- a/lib/dma-debug.c
-+++ b/lib/dma-debug.c
-@@ -1496,7 +1496,7 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 		return;
- 
- 	/* handle vmalloc and linear addresses */
--	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
-+	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
- 		return;
- 
- 	entry->type      = dma_debug_coherent;
-@@ -1528,7 +1528,7 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 	};
- 
- 	/* handle vmalloc and linear addresses */
--	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
-+	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
- 		return;
- 
- 	if (is_vmalloc_addr(virt))
--- 
-1.9.1
+I have just enabled this config and move off the kernel fix and test, there=
+ seems the debug API=20
+has no output for this size incorrect issue. For I only enable the config a=
+nd no other operations=20
+and my kernel is 4.9, do I missed something?
+
+I confirm that the debug API is working, for there are other drivers trigge=
+red its warning output=20
+like:
+=20
+caam_jr 1710000.jr: DMA-API: device driver tries to free DMA memory it has =
+not allocated=20
+[device address=3D0x6800458400000000]
+
+> >
+> > [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c diff --git
+> > a/lib/swiotlb.c b/lib/swiotlb.c index ad1d2962d129..58c97ede9d78
+> > 100644
+> > --- a/lib/swiotlb.c
+> > +++ b/lib/swiotlb.c
+> > @@ -591,7 +591,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev=
+,
+> phys_addr_t tlb_addr,
+> >                  */
+> >                 for (i =3D index + nslots - 1; i >=3D index; i--) {
+> >                         io_tlb_list[i] =3D ++count;
+> > -                       io_tlb_orig_addr[i] =3D INVALID_PHYS_ADDR;
+> > +                      if(io_tlb_orig_addr[i]  !=3D orig_addr)
+> > +                          printk("=3D=3D=3D=3D=3D=3Dsize wrong, ally d=
+own ally down!=3D=3D=3D\n");
+> > +                      else
+> > +                         io_tlb_orig_addr[i] =3D INVALID_PHYS_ADDR;
+> >                 }
+> >                 /*
+> >                  * Step 2: merge the returned slots with the preceding
+> > slots,
+> >
+> > Although pass a right size of DMA buffer is the responsibility of  the =
+drivers, but
+> Is it useful to add some size check code to prevent  real damage happen?
+> >
+> > Regards,
+> > Eric
