@@ -1,105 +1,114 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
-Date: Wed, 22 Nov 2017 13:04:22 +0000
-Message-ID: <42f815ee-2a9a-ac49-2392-5c03c1d4c809@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-2-jean-philippe.brucker@arm.com>
- <588ad6f0-e78a-63de-e27a-3da4de4ab2ab@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: No check of the size passed to unmap_single in swiotlb
+Date: Wed, 22 Nov 2017 13:15:08 +0000
+Message-ID: <c678cf02-700d-48c0-4160-8ee248a26da5@arm.com>
+References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
+	<20171120162652.GR24312@char.us.oracle.com>
+	<VI1PR04MB3071FBA364C78317F3C3A25D8C200@VI1PR04MB3071.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <588ad6f0-e78a-63de-e27a-3da4de4ab2ab@huawei.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Bob Liu <liubo95@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, nwat
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <VI1PR04MB3071FBA364C78317F3C3A25D8C200-mr6QIVyDiCFHIX2o+zdTns9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/11/17 03:15, Bob Liu wrote:
-> Hey Jean,
+On 22/11/17 03:23, Eric Yang wrote:
 > 
-> On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
->> IOMMU drivers need a way to bind Linux processes to devices. This is used
->> for Shared Virtual Memory (SVM), where devices support paging. In that
->> mode, DMA can directly target virtual addresses of a process.
+> 
+>> -----Original Message-----
+>> From: Konrad Rzeszutek Wilk [mailto:konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org]
+>> Sent: Tuesday, November 21, 2017 12:27 AM
+>> To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Greg Kroah-Hartman
+>> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>;
+>> Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>; David Miller
+>> <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Geert
+>> Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>; Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>;
+>> Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Daniel Borkmann
+>> <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>
+>> Subject: Re: No check of the size passed to unmap_single in swiotlb
 >>
->> Introduce boilerplate code for allocating process structures and binding
->> them to devices. Four operations are added to IOMMU drivers:
+>> On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
+>>> Hi all,
 >>
->> * process_alloc, process_free: to create an iommu_process structure and
->>   perform architecture-specific operations required to grab the process
->>   (for instance on ARM SMMU, pin down the CPU ASID). There is a single
->>   iommu_process structure per Linux process.
+>> Hi!
+> 
+> Hi  Konrad,
+>>>
+>>> During debug a  device only support 32bits DMA(Qualcomm Atheros AP) in our
+>> LS1043A 64bits ARM  SOC, we found that the invoke of dma_unmap_single -->
+>> swiotlb_tbl_unmap_single  will unmap the passed "size" anyway even when the
+>> "size" is incorrect.
+>>>
+>>> If the size is larger than it should, the extra entries in io_tlb_orig_addr array
+>> will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce buffer copy
+>> not happen when the one who really used the mis-freed entries doing  DMA data
+>> transfers, and this will cause further unknow behaviors.
+>>>
+>>> Here we just fix it temporarily by adding a judge of the "size" in the
+>> swiotlb_tbl_unmap_single, if it is larger than it deserves, just unmap the right
+>> size only. Like the code:
+>>
+>> Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring this issue as
+>> well?
 >>
 > 
-> I'm a bit confused here.
-> The original meaning of iommu_domain is a virtual addrspace defined by a set of io page table.
-> (fix me if I misunderstood).
+> I have just enabled this config and move off the kernel fix and test, there seems the debug API
+> has no output for this size incorrect issue. For I only enable the config and no other operations
+> and my kernel is 4.9, do I missed something?
+> 
+> I confirm that the debug API is working, for there are other drivers triggered its warning output
+> like:
+>   
+> caam_jr 1710000.jr: DMA-API: device driver tries to free DMA memory it has not allocated
+> [device address=0x6800458400000000]
 
-iommu_domain can also be seen as a logical partition of devices that share
-the same address spaces (the concept comes from AMD and Intel IOMMU
-domains, I believe). Without PASIDs it was a single address space, with
-PASIDs it can have multiple address spaces.
+By default, dma-debug will only log the first error it sees - you can 
+adjust this with the "num_errors" or "all_errors" sysfs controls, and 
+use the driver filter to hide errors from other drivers if necessary.
 
-> Then what's the meaning of iommu_domain and iommu_process after introducing iommu_process?
-> Could you consider document these concepts? 
+Robin.
 
-iommu_process is used to keep track of Linux process address spaces. I'll
-rename it to io_mm in next version, to make it clear that it doesn't
-represent a Linux task but an mm_struct instead. However the
-implementation stays pretty much identical. A domain can be associated to
-multiple io_mm, and an io_mm can be associated to multiple domains.
-
-In the IOMMU architectures I know, PASID is implemented like this. You
-have the device tables (stream tables on SMMU), pointing to PASID tables
-(context descriptor tables on SMMU). In the following diagram,
-
-                    .->+--------+
-                   / 0 |        |------ io_pgtable
-                  /    +--------+
-                 /   1 |        |------ io_mm->mm X
-    +--------+  /      +--------+
-  0 |      A |-'     2 |        |-.
-    +--------+         +--------+  \
-  1 |        |       3 |        |   \
-    +--------+         +--------+    -- io_mm->mm Y
-  2 |      B |--.     PASID tables  /
-    +--------+   \                 |
-  3 |      B |----+--->+--------+  |
-    +--------+   /   0 |        |- | -- io_pgtable
-  4 |      B |--'      +--------+  |
-    +--------+       1 |        |  |
-  Device tables        +--------+  |
-                     2 |        |--'
-                       +--------+
-                     3 |        |------ io_mm->priv io_pgtable
-                       +--------+
-                      PASID tables
-
-* Device 0 (e.g. PCI 0000:00:00.0) is in domain A.
-* Devices 2, 3 and 4 are in domain B.
-* Domain A has the top set of PASID tables.
-* Domain B has the bottom set of PASID tables.
-
-* Domain A is bound to process address space X.
-  -> Device 0 can access X with PASID 1.
-* Both domains A and B are bound to process address space Y.
-  -> Devices 0, 2, 3 and 4 can access Y with PASID 2
-
-* PASID 0 is special on Arm SMMU (with S1DSS=0b10). It will always be
-  reserved for classic DMA map/unmap. Even for hypothetical devices that
-  don't support non-pasid transactions, I'd like to keep this convention.
-  It should be quite useful for device drivers to have PASID 0 available
-  with DMA map/unmap.
-
-* When introducing "private" PASID address spaces (that many are asking
-  for), which are backed by a set of io-pgtable and map/unmap ops, I
-  suppose they would reuse the io_mm structure. In this example PASID 3 is
-  associated to a private address space and not backed by an mm. Since the
-  PASID space is global, PASID 3 won't be available for any other domain.
-
-Does this clarify the current design, or is it just more confusing?
-
-Thanks,
-Jean
+>>>
+>>> [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c diff --git
+>>> a/lib/swiotlb.c b/lib/swiotlb.c index ad1d2962d129..58c97ede9d78
+>>> 100644
+>>> --- a/lib/swiotlb.c
+>>> +++ b/lib/swiotlb.c
+>>> @@ -591,7 +591,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev,
+>> phys_addr_t tlb_addr,
+>>>                   */
+>>>                  for (i = index + nslots - 1; i >= index; i--) {
+>>>                          io_tlb_list[i] = ++count;
+>>> -                       io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+>>> +                      if(io_tlb_orig_addr[i]  != orig_addr)
+>>> +                          printk("======size wrong, ally down ally down!===\n");
+>>> +                      else
+>>> +                         io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+>>>                  }
+>>>                  /*
+>>>                   * Step 2: merge the returned slots with the preceding
+>>> slots,
+>>>
+>>> Although pass a right size of DMA buffer is the responsibility of  the drivers, but
+>> Is it useful to add some size check code to prevent  real damage happen?
+>>>
+>>> Regards,
+>>> Eric
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
