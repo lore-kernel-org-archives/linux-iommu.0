@@ -1,40 +1,62 @@
-From: Bob Liu <liubo95@huawei.com>
-Subject: Re: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
-Date: Wed, 22 Nov 2017 11:15:24 +0800
-Message-ID: <588ad6f0-e78a-63de-e27a-3da4de4ab2ab@huawei.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-2-jean-philippe.brucker@arm.com>
+From: <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH] dma-debug: use virt_addr_valid() to check linear addresses
+Date: Wed, 22 Nov 2017 11:17:35 +0800
+Message-ID: <1511320655-22752-1-git-send-email-miles.chen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20171006133203.22803-2-jean-philippe.brucker@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wsd_upstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Jean,
+From: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
-> IOMMU drivers need a way to bind Linux processes to devices. This is used
-> for Shared Virtual Memory (SVM), where devices support paging. In that
-> mode, DMA can directly target virtual addresses of a process.
-> 
-> Introduce boilerplate code for allocating process structures and binding
-> them to devices. Four operations are added to IOMMU drivers:
-> 
-> * process_alloc, process_free: to create an iommu_process structure and
->   perform architecture-specific operations required to grab the process
->   (for instance on ARM SMMU, pin down the CPU ASID). There is a single
->   iommu_process structure per Linux process.
-> 
+Coverity found that the commit 3aaabbf1c39e ("lib/dma-debug.c:
+fix incorrect pfn calculation") uses incorrect API to check
+if a given address is a linear address.
+The condition should be: (as discussed in Christoph's review)
+if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
+not
+if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
 
-I'm a bit confused here.
-The original meaning of iommu_domain is a virtual addrspace defined by a set of io page table.
-(fix me if I misunderstood).
-Then what's the meaning of iommu_domain and iommu_process after introducing iommu_process?
-Could you consider document these concepts? 
+Fix it by using virt_addr_valid() instead of virt_to_page().
 
-Thanks,
-Liubo
+Signed-off-by: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+---
+ lib/dma-debug.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+index 1b34d21..4c08eb6 100644
+--- a/lib/dma-debug.c
++++ b/lib/dma-debug.c
+@@ -1496,7 +1496,7 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+ 		return;
+ 
+ 	/* handle vmalloc and linear addresses */
+-	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
++	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
+ 		return;
+ 
+ 	entry->type      = dma_debug_coherent;
+@@ -1528,7 +1528,7 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
+ 	};
+ 
+ 	/* handle vmalloc and linear addresses */
+-	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
++	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
+ 		return;
+ 
+ 	if (is_vmalloc_addr(virt))
+-- 
+1.9.1
