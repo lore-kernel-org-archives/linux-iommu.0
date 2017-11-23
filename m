@@ -1,17 +1,17 @@
-From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Subject: Re: [PATCH kernel] vfio/spapr: Add trace points for map/unmap
-Date: Thu, 23 Nov 2017 15:13:37 +1100
-Message-ID: <d367b17a-6efa-26a8-821b-42080c90e16e@ozlabs.ru>
-References: <20171027030008.17200-1-aik@ozlabs.ru>
-	<8c58fcaa-dedc-e6be-44bf-2cb349ef9e38@ozlabs.ru>
-	<20171116171301.6552869b@t450s.home>
-	<52a19cfb-431f-522b-11de-c1c47f09a4c8@ozlabs.ru>
+From: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: No check of the size passed to unmap_single in swiotlb
+Date: Thu, 23 Nov 2017 07:47:40 +0000
+Message-ID: <VI1PR04MB30718EF84BD5305E67A5582A8C210@VI1PR04MB3071.eurprd04.prod.outlook.com>
+References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
+	<20171120162652.GR24312@char.us.oracle.com>
+	<VI1PR04MB3071FBA364C78317F3C3A25D8C200@VI1PR04MB3071.eurprd04.prod.outlook.com>
+	<c678cf02-700d-48c0-4160-8ee248a26da5@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <52a19cfb-431f-522b-11de-c1c47f09a4c8-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
-Content-Language: en-AU
+In-Reply-To: <c678cf02-700d-48c0-4160-8ee248a26da5-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,129 +21,135 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Shuah Khan <shuahkh-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, David Gibson <david-xT8FGy+AXnRB3Ne2BGzF6laj5H9X9Tb+@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/11/17 17:58, Alexey Kardashevskiy wrote:
-> On 17/11/17 11:13, Alex Williamson wrote:
->> On Tue, 14 Nov 2017 10:47:12 +1100
->> Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org> wrote:
->>
->>> On 27/10/17 14:00, Alexey Kardashevskiy wrote:
->>>> This adds trace_map/trace_unmap tracepoints to spapr driver. Type1 already
->>>> uses these via the IOMMU API (iommu_map/__iommu_unmap).
->>>>
->>>> Signed-off-by: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>  
->>
->> Is this really legitimate to include tracepoints from a different
->> subsystem?>  The vfio type1 backend gets these trace points by virtue of
->> it actually using the IOMMU API, it doesn't call them itself.  I'm kind
->> of surprised these are actually available to be called from a module.
-> 
-> They are explicitly exported:
-> 
-> EXPORT_TRACEPOINT_SYMBOL_GPL(map);
-> EXPORT_TRACEPOINT_SYMBOL_GPL(unmap);
-> 
-> I would think this is for things like drivers/vfio/vfio_iommu_spapr_tce.c ,
-> why else?...
-> 
-> 
->> I suspect the way to do this is probably to define our own tracepoints
->> in the vfio/spapr backend or insert tracepoints into the IOMMU layers
->> that that code calls into rather than masquerading as tracepoints from
->> a different subsystem.  Right?
-> 
-> This makes sense too. But it is going to be just cut-n-paste and some
-> confusion -
-> /sys/kernel/debug/tracing/events/iommu/map will still be present but
-> won't work and
-> /sys/kernel/debug/tracing/events/vfio/vfio_iommu_spapr_tce/map will.
-> 
-> Judges? :)
 
 
-Still nak? I discussed this locally, the conclusion was it is a matter of
-taste and this proposal is not that disgusting. Thanks.
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> Sent: Wednesday, November 22, 2017 9:15 PM
+> To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; Konrad Rzeszutek Wilk
+> <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>; Kees Cook
+> <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>;
+> Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Al Viro
+> <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>; Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>;
+> Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>; Ingo Molnar
+> <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Subject: Re: No check of the size passed to unmap_single in swiotlb
+> 
+> On 22/11/17 03:23, Eric Yang wrote:
+> >
+> >
+> >> -----Original Message-----
+> >> From: Konrad Rzeszutek Wilk [mailto:konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org]
+> >> Sent: Tuesday, November 21, 2017 12:27 AM
+> >> To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> >> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Greg Kroah-Hartman
+> >> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; Andrew Morton
+> >> <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>; Andrey Ryabinin
+> >> <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>; David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Ingo
+> >> Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Geert Uytterhoeven
+> >> <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>; Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>; Kees
+> >> Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>
+> >> Subject: Re: No check of the size passed to unmap_single in swiotlb
+> >>
+> >> On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
+> >>> Hi all,
+> >>
+> >> Hi!
+> >
+> > Hi  Konrad,
+> >>>
+> >>> During debug a  device only support 32bits DMA(Qualcomm Atheros AP)
+> >>> in our
+> >> LS1043A 64bits ARM  SOC, we found that the invoke of dma_unmap_single
+> >> --> swiotlb_tbl_unmap_single  will unmap the passed "size" anyway
+> >> even when the "size" is incorrect.
+> >>>
+> >>> If the size is larger than it should, the extra entries in
+> >>> io_tlb_orig_addr array
+> >> will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce
+> >> buffer copy not happen when the one who really used the mis-freed
+> >> entries doing  DMA data transfers, and this will cause further unknow
+> behaviors.
+> >>>
+> >>> Here we just fix it temporarily by adding a judge of the "size" in
+> >>> the
+> >> swiotlb_tbl_unmap_single, if it is larger than it deserves, just
+> >> unmap the right size only. Like the code:
+> >>
+> >> Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring this
+> >> issue as well?
+> >>
+> >
+> > I have just enabled this config and move off the kernel fix and test,
+> > there seems the debug API has no output for this size incorrect issue.
+> > For I only enable the config and no other operations and my kernel is 4.9, do I
+> missed something?
+> >
+> > I confirm that the debug API is working, for there are other drivers
+> > triggered its warning output
+> > like:
+> >
+> > caam_jr 1710000.jr: DMA-API: device driver tries to free DMA memory it
+> > has not allocated [device address=0x6800458400000000]
+> 
+> By default, dma-debug will only log the first error it sees - you can adjust this
+> with the "num_errors" or "all_errors" sysfs controls, and use the driver filter to
+> hide errors from other drivers if necessary.
+> 
+> Robin.
+> 
+Hi Robin,
 
+I've caught the size mismatch warning with the debug API, thanks a lot for the help.
 
-> 
-> 
-> 
->>  Thanks,
->>
->> Alex
->>
->>>> ---
->>>>
->>>> Example:
->>>>  qemu-system-ppc-8655  [096]   724.662740: unmap:                IOMMU: iova=0x000000003ffff000 size=4096 unmapped_size=4096
->>>>  qemu-system-ppc-8656  [104]   724.970912: map:                  IOMMU: iova=0x0800000000000000 paddr=0x00007ffef7ff0000 size=65536
->>>> ---
->>>>  drivers/vfio/vfio_iommu_spapr_tce.c | 12 ++++++++++--
->>>>  1 file changed, 10 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/vfio/vfio_iommu_spapr_tce.c b/drivers/vfio/vfio_iommu_spapr_tce.c
->>>> index 63112c36ab2d..4531486c77c6 100644
->>>> --- a/drivers/vfio/vfio_iommu_spapr_tce.c
->>>> +++ b/drivers/vfio/vfio_iommu_spapr_tce.c
->>>> @@ -22,6 +22,7 @@
->>>>  #include <linux/vmalloc.h>
->>>>  #include <linux/sched/mm.h>
->>>>  #include <linux/sched/signal.h>
->>>> +#include <trace/events/iommu.h>
->>>>  
->>>>  #include <asm/iommu.h>
->>>>  #include <asm/tce.h>
->>>> @@ -502,17 +503,19 @@ static int tce_iommu_clear(struct tce_container *container,
->>>>  		struct iommu_table *tbl,
->>>>  		unsigned long entry, unsigned long pages)
->>>>  {
->>>> -	unsigned long oldhpa;
->>>> +	unsigned long oldhpa, unmapped, firstentry = entry, totalpages = pages;
->>>>  	long ret;
->>>>  	enum dma_data_direction direction;
->>>>  
->>>> -	for ( ; pages; --pages, ++entry) {
->>>> +	for (unmapped = 0; pages; --pages, ++entry) {
->>>>  		direction = DMA_NONE;
->>>>  		oldhpa = 0;
->>>>  		ret = iommu_tce_xchg(tbl, entry, &oldhpa, &direction);
->>>>  		if (ret)
->>>>  			continue;
->>>>  
->>>> +		++unmapped;
->>>> +
->>>>  		if (direction == DMA_NONE)
->>>>  			continue;
->>>>  
->>>> @@ -523,6 +526,9 @@ static int tce_iommu_clear(struct tce_container *container,
->>>>  
->>>>  		tce_iommu_unuse_page(container, oldhpa);
->>>>  	}
->>>> +	trace_unmap(firstentry << tbl->it_page_shift,
->>>> +			totalpages << tbl->it_page_shift,
->>>> +			unmapped << tbl->it_page_shift);
->>>>  
->>>>  	return 0;
->>>>  }
->>>> @@ -965,6 +971,8 @@ static long tce_iommu_ioctl(void *iommu_data,
->>>>  					direction);
->>>>  
->>>>  		iommu_flush_tce(tbl);
->>>> +		if (!ret)
->>>> +			trace_map(param.iova, param.vaddr, param.size);
->>>>  
->>>>  		return ret;
->>>>  	}
->>>>   
->>>
->>>
->>
-> 
-> 
+Regards,
+Eric
 
-
--- 
-Alexey
+> >>>
+> >>> [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c diff --git
+> >>> a/lib/swiotlb.c b/lib/swiotlb.c index ad1d2962d129..58c97ede9d78
+> >>> 100644
+> >>> --- a/lib/swiotlb.c
+> >>> +++ b/lib/swiotlb.c
+> >>> @@ -591,7 +591,10 @@ void swiotlb_tbl_unmap_single(struct device
+> >>> *hwdev,
+> >> phys_addr_t tlb_addr,
+> >>>                   */
+> >>>                  for (i = index + nslots - 1; i >= index; i--) {
+> >>>                          io_tlb_list[i] = ++count;
+> >>> -                       io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+> >>> +                      if(io_tlb_orig_addr[i]  != orig_addr)
+> >>> +                          printk("======size wrong, ally down ally down!===\n");
+> >>> +                      else
+> >>> +                         io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
+> >>>                  }
+> >>>                  /*
+> >>>                   * Step 2: merge the returned slots with the
+> >>> preceding slots,
+> >>>
+> >>> Although pass a right size of DMA buffer is the responsibility of
+> >>> the drivers, but
+> >> Is it useful to add some size check code to prevent  real damage happen?
+> >>>
+> >>> Regards,
+> >>> Eric
+> > _______________________________________________
+> > iommu mailing list
+> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Flis
+> >
+> ts.linuxfoundation.org%2Fmailman%2Flistinfo%2Fiommu&data=02%7C01%7Cyu.
+> >
+> yang_3%40nxp.com%7Cf3851e3c8ae24f341b3608d531ab1165%7C686ea1d3bc
+> 2b4c6f
+> >
+> a92cd99c5c301635%7C0%7C0%7C636469533155971955&sdata=7PnqUlgRlJq2H
+> sXmTf
+> > CmEUuWaBfUhzSd33UoK4li1Ro%3D&reserved=0
+> >
