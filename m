@@ -1,11 +1,16 @@
-From: <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v5] dma-debug: fix incorrect pfn calculation
-Date: Thu, 23 Nov 2017 17:42:09 +0800
-Message-ID: <1511430129-4210-1-git-send-email-miles.chen@mediatek.com>
+From: Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 01/36] iommu: Keep track of processes and PASIDs
+Date: Thu, 23 Nov 2017 18:33:47 +0800
+Message-ID: <82690672-1746-b740-1471-1b136a457ac7@huawei.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+	<20171006133203.22803-2-jean-philippe.brucker@arm.com>
+	<588ad6f0-e78a-63de-e27a-3da4de4ab2ab@huawei.com>
+	<42f815ee-2a9a-ac49-2392-5c03c1d4c809@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <42f815ee-2a9a-ac49-2392-5c03c1d4c809-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,102 +20,98 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wsd_upstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+On 2017/11/22 21:04, Jean-Philippe Brucker wrote:
+> On 22/11/17 03:15, Bob Liu wrote:
+>> Hey Jean,
+>>
+>> On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
+>>> IOMMU drivers need a way to bind Linux processes to devices. This is used
+>>> for Shared Virtual Memory (SVM), where devices support paging. In that
+>>> mode, DMA can directly target virtual addresses of a process.
+>>>
+>>> Introduce boilerplate code for allocating process structures and binding
+>>> them to devices. Four operations are added to IOMMU drivers:
+>>>
+>>> * process_alloc, process_free: to create an iommu_process structure and
+>>>   perform architecture-specific operations required to grab the process
+>>>   (for instance on ARM SMMU, pin down the CPU ASID). There is a single
+>>>   iommu_process structure per Linux process.
+>>>
+>>
+>> I'm a bit confused here.
+>> The original meaning of iommu_domain is a virtual addrspace defined by a set of io page table.
+>> (fix me if I misunderstood).
+> 
+> iommu_domain can also be seen as a logical partition of devices that share
+> the same address spaces (the concept comes from AMD and Intel IOMMU
+> domains, I believe). Without PASIDs it was a single address space, with
+> PASIDs it can have multiple address spaces.
+> 
+>> Then what's the meaning of iommu_domain and iommu_process after introducing iommu_process?
+>> Could you consider document these concepts? 
+> 
+> iommu_process is used to keep track of Linux process address spaces. I'll
+> rename it to io_mm in next version, to make it clear that it doesn't
+> represent a Linux task but an mm_struct instead. However the
+> implementation stays pretty much identical. A domain can be associated to
+> multiple io_mm, and an io_mm can be associated to multiple domains.
+> 
+> In the IOMMU architectures I know, PASID is implemented like this. You
+> have the device tables (stream tables on SMMU), pointing to PASID tables
+> (context descriptor tables on SMMU). In the following diagram,
+> 
+>                     .->+--------+
+>                    / 0 |        |------ io_pgtable
+>                   /    +--------+
+>                  /   1 |        |------ io_mm->mm X
+>     +--------+  /      +--------+
+>   0 |      A |-'     2 |        |-.
+>     +--------+         +--------+  \
+>   1 |        |       3 |        |   \
+>     +--------+         +--------+    -- io_mm->mm Y
+>   2 |      B |--.     PASID tables  /
+>     +--------+   \                 |
+>   3 |      B |----+--->+--------+  |
+>     +--------+   /   0 |        |- | -- io_pgtable
+>   4 |      B |--'      +--------+  |
+>     +--------+       1 |        |  |
+>   Device tables        +--------+  |
+>                      2 |        |--'
+>                        +--------+
+>                      3 |        |------ io_mm->priv io_pgtable
+>                        +--------+
+>                       PASID tables
+> 
+> * Device 0 (e.g. PCI 0000:00:00.0) is in domain A.
+> * Devices 2, 3 and 4 are in domain B.
+> * Domain A has the top set of PASID tables.
+> * Domain B has the bottom set of PASID tables.
+> 
+> * Domain A is bound to process address space X.
+>   -> Device 0 can access X with PASID 1.
+> * Both domains A and B are bound to process address space Y.
+>   -> Devices 0, 2, 3 and 4 can access Y with PASID 2
+> 
+> * PASID 0 is special on Arm SMMU (with S1DSS=0b10). It will always be
+>   reserved for classic DMA map/unmap. Even for hypothetical devices that
+>   don't support non-pasid transactions, I'd like to keep this convention.
+>   It should be quite useful for device drivers to have PASID 0 available
+>   with DMA map/unmap.
+> 
+> * When introducing "private" PASID address spaces (that many are asking
+>   for), which are backed by a set of io-pgtable and map/unmap ops, I
+>   suppose they would reuse the io_mm structure. In this example PASID 3 is
+>   associated to a private address space and not backed by an mm. Since the
+>   PASID space is global, PASID 3 won't be available for any other domain.
+> 
+> Does this clarify the current design, or is it just more confusing?
+> 
 
-dma-debug reports the following warning:
+It's very helpful, thank you very much!
 
-[name:panic&]WARNING: CPU: 3 PID: 298 at kernel-4.4/lib/dma-debug.c:604
-debug _dma_assert_idle+0x1a8/0x230()
-DMA-API: cpu touching an active dma mapped cacheline [cln=0x00000882300]
-CPU: 3 PID: 298 Comm: vold Tainted: G        W  O    4.4.22+ #1
-Hardware name: MT6739 (DT)
-Call trace:
-[<ffffff800808acd0>] dump_backtrace+0x0/0x1d4
-[<ffffff800808affc>] show_stack+0x14/0x1c
-[<ffffff800838019c>] dump_stack+0xa8/0xe0
-[<ffffff80080a0594>] warn_slowpath_common+0xf4/0x11c
-[<ffffff80080a061c>] warn_slowpath_fmt+0x60/0x80
-[<ffffff80083afe24>] debug_dma_assert_idle+0x1a8/0x230
-[<ffffff80081dca9c>] wp_page_copy.isra.96+0x118/0x520
-[<ffffff80081de114>] do_wp_page+0x4fc/0x534
-[<ffffff80081e0a14>] handle_mm_fault+0xd4c/0x1310
-[<ffffff8008098798>] do_page_fault+0x1c8/0x394
-[<ffffff800808231c>] do_mem_abort+0x50/0xec
-
-I found that debug_dma_alloc_coherent() and debug_dma_free_coherent()
-assume that dma_alloc_coherent() always returns a linear address.  However
-it's possible that dma_alloc_coherent() returns a non-linear address.  In
-this case, page_to_pfn(virt_to_page(virt)) will return an incorrect pfn.
-If the pfn is valid and mapped as a COW page, we will hit the warning when
-doing wp_page_copy().
-
-Fix this by calculating pfn for linear and non-linear addresses.
-
-Some changes are added to this patch according to Christoph's comment
-in patch v3 and a bugfix in patch v4:
-a. use normal if/else statement for better readability
-b. exclude non-linear and non-vmalloc addresses
-c. use virt_addr_valid() to check linear addresses
-
-Signed-off-by: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- lib/dma-debug.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/lib/dma-debug.c b/lib/dma-debug.c
-index ea4cc3d..4c08eb6 100644
---- a/lib/dma-debug.c
-+++ b/lib/dma-debug.c
-@@ -1495,14 +1495,22 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 	if (!entry)
- 		return;
- 
-+	/* handle vmalloc and linear addresses */
-+	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
-+		return;
-+
- 	entry->type      = dma_debug_coherent;
- 	entry->dev       = dev;
--	entry->pfn	 = page_to_pfn(virt_to_page(virt));
- 	entry->offset	 = offset_in_page(virt);
- 	entry->size      = size;
- 	entry->dev_addr  = dma_addr;
- 	entry->direction = DMA_BIDIRECTIONAL;
- 
-+	if (is_vmalloc_addr(virt))
-+		entry->pfn = vmalloc_to_pfn(virt);
-+	else
-+		entry->pfn = page_to_pfn(virt_to_page(virt));
-+
- 	add_dma_entry(entry);
- }
- EXPORT_SYMBOL(debug_dma_alloc_coherent);
-@@ -1513,13 +1521,21 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 	struct dma_debug_entry ref = {
- 		.type           = dma_debug_coherent,
- 		.dev            = dev,
--		.pfn		= page_to_pfn(virt_to_page(virt)),
- 		.offset		= offset_in_page(virt),
- 		.dev_addr       = addr,
- 		.size           = size,
- 		.direction      = DMA_BIDIRECTIONAL,
- 	};
- 
-+	/* handle vmalloc and linear addresses */
-+	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
-+		return;
-+
-+	if (is_vmalloc_addr(virt))
-+		ref.pfn = vmalloc_to_pfn(virt);
-+	else
-+		ref.pfn = page_to_pfn(virt_to_page(virt));
-+
- 	if (unlikely(dma_debug_disabled()))
- 		return;
- 
--- 
-1.9.1
+Regards,
+Liubo
