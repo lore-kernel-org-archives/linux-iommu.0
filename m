@@ -1,52 +1,86 @@
-From: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: [PATCH v2 2/2] iommu/ipmmu-vmsa: Add r8a779(70|95) DT bindings
-Date: Fri, 24 Nov 2017 10:58:04 +0000
-Message-ID: <20171124105804.26924-3-horms+renesas@verge.net.au>
-References: <20171124105804.26924-1-horms+renesas@verge.net.au>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v3 08/16] iommu: introduce device fault data
+Date: Fri, 24 Nov 2017 12:03:33 +0000
+Message-ID: <65b76897-55b8-6f0c-e103-4337254041ca@arm.com>
+References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1510944914-54430-9-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171124105804.26924-1-horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1510944914-54430-9-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Lan Tianyu <tianyu.lan@intel.com>, Yi L <yi.l.liu@linux.intel.com>, "Liu@mail.linuxfoundation.org" <Liu@mail.linuxfoundation.org>, Jean Delvare <khali@linux-fr.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Update the IPMMU DT binding documentation to include the
-r8a77970 (R-Car V3M) and r8a77995 (R-Car D3) compat strings.
+Hi Jacob,
 
-Based on work for r8a7796 by Magnus Damm.
+On 17/11/17 18:55, Jacob Pan wrote:
+> Device faults detected by IOMMU can be reported outside IOMMU
+> subsystem for further processing. This patch intends to provide
+> a generic device fault data such that device drivers can be
+> communicated with IOMMU faults without model specific knowledge.
+> 
+> The proposed format is the result of discussion at:
+> https://lkml.org/lkml/2017/11/10/291
+> Part of the code is based on Jean-Philippe Brucker's patchset
+> (https://patchwork.kernel.org/patch/9989315/).
+> 
+> The assumption is that model specific IOMMU driver can filter and
+> handle most of the internal faults if the cause is within IOMMU driver
+> control. Therefore, the fault reasons can be reported are grouped
+> and generalized based common specifications such as PCI ATS.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 
-Signed-off-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
----
-v2
-* Correct typo: R8A7770 -> R8A77970
----
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 2 ++
- 1 file changed, 2 insertions(+)
+This looks good from my point of view. And since it's not UAPI, we can
+always update it if it turns out that device drivers need more information.
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-index 98ae900a7a76..8e4e89c1bd48 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-@@ -17,6 +17,8 @@ Required Properties:
-     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
-     - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
-     - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
-+    - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
-+    - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
-     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
- 
-   - reg: Base address and size of the IPMMU registers.
--- 
-2.11.0
+[...]
+> +/**
+> + * struct iommu_fault_event - Generic per device fault data
+> + *
+> + * - PCI and non-PCI devices
+> + * - Recoverable faults (e.g. page request), information based on PCI ATS
+> + * and PASID spec.
+> + * - Un-recoverable faults of device interest
+> + * - DMA remapping and IRQ remapping faults
+> +
+> + * @type contains fault type.
+> + * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
+> + *         faults are not reported
+> + * @addr: tells the offending page address
+> + * @pasid: contains process address space ID, used in shared virtual memory(SVM)
+> + * @rid: requestor ID
+
+This comment can be removed
+
+Thanks,
+Jean
+
+> + * @page_req_group_id: page request group index
+> + * @last_req: last request in a page request group
+> + * @pasid_valid: indicates if the PRQ has a valid PASID
+> + * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
+> + * @device_private: if present, uniquely identify device-specific
+> + *                  private data for an individual page request.
+> + * @iommu_private: used by the IOMMU driver for storing fault-specific
+> + *                 data. Users should not modify this field before
+> + *                 sending the fault response.
+> + */
+> +struct iommu_fault_event {
+> +	enum iommu_fault_type type;
+> +	enum iommu_fault_reason reason;
+> +	u64 addr;
+> +	u32 pasid;
+> +	u32 page_req_group_id : 9;
+> +	u32 last_req : 1;
+> +	u32 pasid_valid : 1;
+> +	u32 prot;
+> +	u64 device_private;
+> +	u64 iommu_private;
+> +};
