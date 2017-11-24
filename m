@@ -1,57 +1,47 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [RFC v2] dma-coherent: introduce no-align to avoid allocation
- failure and save memory
-Date: Fri, 24 Nov 2017 10:35:56 +0000
-Message-ID: <ac459cbf03c343ecad78450d89f340e7@AcuMS.aculab.com>
-References: <CGME20171124055811epcas1p364177b515eb072d25cd9f49573daef72@epcas1p3.samsung.com>
- <20171124055833.10998-1-jaewon31.kim@samsung.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFCv2 PATCH 10/36] vfio: Add support for Shared Virtual Memory
+Date: Fri, 24 Nov 2017 10:58:32 +0000
+Message-ID: <f297c4a8-559f-bf23-d5c2-219763bba289@arm.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-11-jean-philippe.brucker@arm.com>
+ <419afe22-816d-263f-9c85-1a9e28c723b7@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20171124055833.10998-1-jaewon31.kim@samsung.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <419afe22-816d-263f-9c85-1a9e28c723b7@huawei.com>
 Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: 'Jaewon Kim' <jaewon31.kim@samsung.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mhocko@suse.com" <mhocko@suse.com>, "vbabka@suse.cz" <vbabka@suse.cz>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "jaewon31.kim@gmail.com" <jaewon31.kim@gmail.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bob Liu <liubo95@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, nwat
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jaewon Kim
-> Sent: 24 November 2017 05:59
->=20
-> dma-coherent uses bitmap APIs which internally consider align based on th=
-e
-> requested size. If most of allocations are small size like KBs, using
-> alignment scheme seems to be good for anti-fragmentation. But if large
-> allocation are commonly used, then an allocation could be failed because
-> of the alignment. To avoid the allocation failure, we had to increase tot=
-al
-> size.
->=20
-> This is a example, total size is 30MB, only few memory at front is being
-> used, and 9MB is being requsted. Then 9MB will be aligned to 16MB. The
-> first try on offset 0MB will be failed because others already are using
-> them. The second try on offset 16MB will be failed because of ouf of boun=
-d.
->=20
-> So if the alignment is not necessary on a specific dma-coherent memory
-> region, we can set no-align property. Then dma-coherent will ignore the
-> alignment only for the memory region.
+On 24/11/17 08:23, Bob Liu wrote:
+> On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
+>> Add two new ioctl for VFIO containers. VFIO_DEVICE_BIND_PROCESS creates a
+>> bond between a container and a process address space, identified by a
+>> device-specific ID named PASID. This allows the device to target DMA
+>> transactions at the process virtual addresses without a need for mapping
+>> and unmapping buffers explicitly in the IOMMU. The process page tables are
+>> shared with the IOMMU, and mechanisms such as PCI ATS/PRI may be used to
+>> handle faults. VFIO_DEVICE_UNBIND_PROCESS removed a bond identified by a
+>> PASID.
+>> 
+> 
+> How about hide bind/unbind into ioctl(VFIO_SET_IOMMU)?
+> e.g always bind to current process in SET_IOMMU.
+> 
+> Not sure about the real use case.
 
-ISTM that the alignment needs to be a property of the request, not of the
-device. Certainly the device driver code is most likely to know the specifi=
-c
-alignment requirements of any specific allocation.
+I guess you could introduce a new VFIO IOMMU type for this. I think this
+would be useful for SVA without PASID: if the device supports I/O page
+faults, use SET_IOMMU with a VFIO_SVA_IOMMU type (for example) and the
+process is bound automatically to the default translation context of the
+device. This requires a new IOMMU type because the MAP/UNMAP ioctl won't
+work anymore.
 
-We've some hardware that would need large allocations to be 16k aligned.
-We actually use multiple 16k allocations because any large buffers are
-accessed directly from userspace (mmap and vm_iomap_memory) and the
-card has its own page tables (with 16k pages).
+I'm not keen on introducing loads of new features in the APIs at the
+moment, because I only have the IOMMU point of view, not many endpoint users.
 
-	David
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Thanks,
+Jean
