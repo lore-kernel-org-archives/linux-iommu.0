@@ -1,47 +1,36 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 10/36] vfio: Add support for Shared Virtual Memory
-Date: Fri, 24 Nov 2017 10:58:32 +0000
-Message-ID: <f297c4a8-559f-bf23-d5c2-219763bba289@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-11-jean-philippe.brucker@arm.com>
- <419afe22-816d-263f-9c85-1a9e28c723b7@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <419afe22-816d-263f-9c85-1a9e28c723b7@huawei.com>
-Content-Language: en-US
-Sender: linux-pci-owner@vger.kernel.org
-To: Bob Liu <liubo95@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, nwat
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH v2 0/2] iommu/ipmmu-vmsa: Add r8a779(6|70|95) DT bindings
+Date: Fri, 24 Nov 2017 10:58:02 +0000
+Message-ID: <20171124105804.26924-1-horms+renesas@verge.net.au>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Simon Horman <horms+renesas@verge.net.au>
 List-Id: iommu@lists.linux-foundation.org
 
-On 24/11/17 08:23, Bob Liu wrote:
-> On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
->> Add two new ioctl for VFIO containers. VFIO_DEVICE_BIND_PROCESS creates a
->> bond between a container and a process address space, identified by a
->> device-specific ID named PASID. This allows the device to target DMA
->> transactions at the process virtual addresses without a need for mapping
->> and unmapping buffers explicitly in the IOMMU. The process page tables are
->> shared with the IOMMU, and mechanisms such as PCI ATS/PRI may be used to
->> handle faults. VFIO_DEVICE_UNBIND_PROCESS removed a bond identified by a
->> PASID.
->> 
-> 
-> How about hide bind/unbind into ioctl(VFIO_SET_IOMMU)?
-> e.g always bind to current process in SET_IOMMU.
-> 
-> Not sure about the real use case.
+Update the IPMMU DT binding documentation to include r8a7796 (R-Car M3-W),
+r8a77970 (R-Car V3M) and r8a77995 (R-Car D3) compat strings.
 
-I guess you could introduce a new VFIO IOMMU type for this. I think this
-would be useful for SVA without PASID: if the device supports I/O page
-faults, use SET_IOMMU with a VFIO_SVA_IOMMU type (for example) and the
-process is bound automatically to the default translation context of the
-device. This requires a new IOMMU type because the MAP/UNMAP ioctl won't
-work anymore.
+This patch-set is comprised of patches previously included in
+* [PATCH v4 0/3] iommu/ipmmu-vmsa: r8a7796 support V4
+* [PATCH 0/2] iommu/ipmmu-vmsa: r8a779(70|95) support
 
-I'm not keen on introducing loads of new features in the APIs at the
-moment, because I only have the IOMMU point of view, not many endpoint users.
+Those series also include driver updates to implement the bindings,
+however, it while it is felt that the bindings themselves are ready
+to be merged we feel that the driver updates are not at that stage yet.
 
-Thanks,
-Jean
+Changes since v1:
+* Correct typo in r8a779(70|95) patch: R8A7770 -> R8A77970
+
+
+Magnus Damm (1):
+  iommu/ipmmu-vmsa: Add r8a7796 DT binding
+
+Simon Horman (1):
+  iommu/ipmmu-vmsa: Add r8a779(70|95) DT bindings
+
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+-- 
+2.11.0
