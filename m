@@ -1,52 +1,54 @@
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Subject: Re: No check of the size passed to unmap_single in swiotlb
-Date: Fri, 24 Nov 2017 08:33:43 -0500
-Message-ID: <20171124133341.GB16160@localhost.localdomain>
-References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
- <20171120162652.GR24312@char.us.oracle.com>
- <bb5a338c-4fd1-dbc4-e2be-663df0887504@arm.com>
- <VI1PR04MB30713D88BF08BE52B2C85D458C210@VI1PR04MB3071.eurprd04.prod.outlook.com>
+From: Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>
+Subject: [RFC 1/2] of: reserved_mem: check return value of_dma_configure
+Date: Sun, 26 Nov 2017 21:13:45 +0800
+Message-ID: <20171126131346.12532-1-peng.fan@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB30713D88BF08BE52B2C85D458C210@VI1PR04MB3071.eurprd04.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Yang <yu.yang_3@nxp.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Daniel Borkmann <daniel@iogearbox.net>, Kees Cook <keescook@chromium.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Andrew Morton <akpm@linux-foundation.org>, David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-..snip..
-> > There doesn't seem to be much good reason for SWIOTLB to be more special
-> > than other DMA API backends, and not all of them have enough internal state to
-> > be able to make such a check. It's also not necessarily possible to "prevent
-> > damage" anyway - if a driver does pass a bogus size for dma_unmap_single(...,
-> > DMA_FROM_DEVICE), SWIOTLB might be able to keep itself internally consistent,
-> > but it still can't prevent the arch code in the middle from invalidating the wrong
-> > cache lines and potentially corrupting adjacent memory.
-> > 
-> > In short, trying to work around broken drivers is a much worse idea than just
-> > fixing those drivers, and that's what we already have dma-debug for.
-> > 
-> > Robin.
-> 
-> Hi Robin,
-> 
-> I agree that hacking kernel to fix broken drivers is not acceptable, actually we spent days to fight driver supplier with  this, they do not want to change their code and want fix it directly in kernel. 
+In commit <7b07cbefb6>("iommu: of: Handle IOMMU lookup failure
+with deferred probing or error"), there is possibility that
+of_dma_configure may fail. So in of_reserved_mem_device_init_by_idx,
+also need to propagate the return value of_dma_configure to caller,
+when need to use reserved memory for a device which needs iommu.
 
-You could upstream the driver? That way it will be fixed.
+Signed-off-by: Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>
+---
+ drivers/of/of_reserved_mem.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-I am not sure if you are aware but there is a staging directory
-as well in Linux.
-> 
-> I tried Dma-debug yesterday, it works very well,  but I think only the size mismatch check may not be enough for the map entry corrupt situation, some run-time warning may be better when the real corruption happen.
-> 
-> For most of the dma-api backend, the size mismatch may do no harm at all, and even in SWIOTLB itself when the bounce buffer is not used, the size mismatch do no harm either. In our case, the same buggy driver works well when board has 2G DDR, but panic frequently in 4G DDR because of the use of bounce buffer and these corrupted map entries. it is hard to catch this kind of bugs, for when the corruption happen, the kernel has all kind of reasons to panic, but not even one may directly point to the real source.  
-> 
-> Add the warning messages is a big convenience for figure this kind of issues, at least to me and the AP driver supplier, such warnings may save weeks of hard debug time.
-
-I would prefer that all of those warning messages go in the DMA debug
-API - as you can have multiple DMA different backends.
-
-In other words, instead of being in one implementation it would make
-much more sense to be in the generic API layer.
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 22b75c82e377..61523819b50e 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -357,9 +357,12 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
+ 		/* ensure that dma_ops is set for virtual devices
+ 		 * using reserved memory
+ 		 */
+-		of_dma_configure(dev, np);
+-
+-		dev_info(dev, "assigned reserved memory node %s\n", rmem->name);
++		ret = of_dma_configure(dev, np);
++		if (ret)
++			of_reserved_mem_device_release(dev);
++		else
++			dev_info(dev, "assigned reserved memory node %s\n",
++				 rmem->name);
+ 	} else {
+ 		kfree(rd);
+ 	}
+-- 
+2.14.1
