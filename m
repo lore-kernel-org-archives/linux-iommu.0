@@ -1,68 +1,73 @@
-From: Jaewon Kim <jaewon31.kim@gmail.com>
-Subject: Re: [RFC v2] dma-coherent: introduce no-align to avoid allocation
- failure and save memory
-Date: Mon, 27 Nov 2017 22:47:57 +0900
-Message-ID: <CAJrd-UuEqwj9zcJzRTW-KvQxEEBedy8n6JGbZnmmAz=rtjgcVA@mail.gmail.com>
-References: <CGME20171124055811epcas1p364177b515eb072d25cd9f49573daef72@epcas1p3.samsung.com>
- <20171124055833.10998-1-jaewon31.kim@samsung.com> <ac459cbf03c343ecad78450d89f340e7@AcuMS.aculab.com>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: [PATCH V3 12/29] iommu/amd: deprecate
+	pci_get_bus_and_slot()
+Date: Mon, 27 Nov 2017 11:57:49 -0500
+Message-ID: <1511801886-6753-13-git-send-email-okaya@codeaurora.org>
+References: <1511801886-6753-1-git-send-email-okaya@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <ac459cbf03c343ecad78450d89f340e7@AcuMS.aculab.com>
-Sender: owner-linux-mm@kvack.org
-To: David Laight <David.Laight@aculab.com>
-Cc: Jaewon Kim <jaewon31.kim@samsung.com>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mhocko@suse.com" <mhocko@suse.com>, "vbabka@suse.cz" <vbabka@suse.cz>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1511801886-6753-1-git-send-email-okaya@codeaurora.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: linux-pci@vger.kernel.org, timur@codeaurora.org
+Cc: linux-arm-msm@vger.kernel.org, intel-gfx@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>, "open list:AMD IOMMU AMD-VI" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello
-
-2017-11-24 19:35 GMT+09:00 David Laight <David.Laight@aculab.com>:
-> From: Jaewon Kim
->> Sent: 24 November 2017 05:59
->>
->> dma-coherent uses bitmap APIs which internally consider align based on the
->> requested size. If most of allocations are small size like KBs, using
->> alignment scheme seems to be good for anti-fragmentation. But if large
->> allocation are commonly used, then an allocation could be failed because
->> of the alignment. To avoid the allocation failure, we had to increase total
->> size.
->>
->> This is a example, total size is 30MB, only few memory at front is being
->> used, and 9MB is being requsted. Then 9MB will be aligned to 16MB. The
->> first try on offset 0MB will be failed because others already are using
->> them. The second try on offset 16MB will be failed because of ouf of bound.
->>
->> So if the alignment is not necessary on a specific dma-coherent memory
->> region, we can set no-align property. Then dma-coherent will ignore the
->> alignment only for the memory region.
->
-> ISTM that the alignment needs to be a property of the request, not of the
-> device. Certainly the device driver code is most likely to know the specific
-> alignment requirements of any specific allocation.
->
-Sorry but I'm not fully understand on 'a property of the request'. Actually
-dma-coherent APIs does not get alignment through argument but it internally
-uses get_order to determine alignment according to a requested size.
-I think if you meant that dma-coherent APIs should work in that way
-because drivers
-calling to dma-coherent APIs have been assuming the alignment for a long time.
-
-I still think few memory region could be managed without alignment if author
-knows well and adds no-align into its device tree. But it's OK if open
-source community
-worried about the no-alignment.
-
-Thank you
-> We've some hardware that would need large allocations to be 16k aligned.
-> We actually use multiple 16k allocations because any large buffers are
-> accessed directly from userspace (mmap and vm_iomap_memory) and the
-> card has its own page tables (with 16k pages).
->
->         David
->
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+cGNpX2dldF9idXNfYW5kX3Nsb3QoKSBpcyByZXN0cmljdGl2ZSBzdWNoIHRoYXQgaXQgYXNzdW1l
+cyBkb21haW49MCBhcwp3aGVyZSBhIFBDSSBkZXZpY2UgaXMgcHJlc2VudC4gVGhpcyByZXN0cmlj
+dHMgdGhlIGRldmljZSBkcml2ZXJzIHRvIGJlCnJldXNlZCBmb3Igb3RoZXIgZG9tYWluIG51bWJl
+cnMuCgpHZXR0aW5nIHJlYWR5IHRvIHJlbW92ZSBwY2lfZ2V0X2J1c19hbmRfc2xvdCgpIGZ1bmN0
+aW9uIGluIGZhdm9yIG9mCnBjaV9nZXRfZG9tYWluX2J1c19hbmRfc2xvdCgpLgoKSGFyZC1jb2Rl
+IHRoZSBkb21haW4gbnVtYmVyIGFzIDAgZm9yIHRoZSBBTUQgSU9NTVUgZHJpdmVyLgoKU2lnbmVk
+LW9mZi1ieTogU2luYW4gS2F5YSA8b2theWFAY29kZWF1cm9yYS5vcmc+Ci0tLQogZHJpdmVycy9p
+b21tdS9hbWRfaW9tbXUuYyAgICAgIHwgMyArKy0KIGRyaXZlcnMvaW9tbXUvYW1kX2lvbW11X2lu
+aXQuYyB8IDkgKysrKystLS0tCiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jICAgfCAzICsr
+LQogMyBmaWxlcyBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCgpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lv
+bW11LmMKaW5kZXggOGU4ODc0ZC4uMmMzNDUyZiAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9h
+bWRfaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jCkBAIC01MjgsNyArNTI4
+LDggQEAgc3RhdGljIHZvaWQgYW1kX2lvbW11X3JlcG9ydF9wYWdlX2ZhdWx0KHUxNiBkZXZpZCwg
+dTE2IGRvbWFpbl9pZCwKIAlzdHJ1Y3QgaW9tbXVfZGV2X2RhdGEgKmRldl9kYXRhID0gTlVMTDsK
+IAlzdHJ1Y3QgcGNpX2RldiAqcGRldjsKIAotCXBkZXYgPSBwY2lfZ2V0X2J1c19hbmRfc2xvdChQ
+Q0lfQlVTX05VTShkZXZpZCksIGRldmlkICYgMHhmZik7CisJcGRldiA9IHBjaV9nZXRfZG9tYWlu
+X2J1c19hbmRfc2xvdCgwLCBQQ0lfQlVTX05VTShkZXZpZCksCisJCQkJCSAgIGRldmlkICYgMHhm
+Zik7CiAJaWYgKHBkZXYpCiAJCWRldl9kYXRhID0gZ2V0X2Rldl9kYXRhKCZwZGV2LT5kZXYpOwog
+CmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgYi9kcml2ZXJzL2lv
+bW11L2FtZF9pb21tdV9pbml0LmMKaW5kZXggNmZlMmQwMy4uNGU0YTYxNSAxMDA2NDQKLS0tIGEv
+ZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfaW5pdC5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lv
+bW11X2luaXQuYwpAQCAtMTY5Nyw4ICsxNjk3LDggQEAgc3RhdGljIGludCBpb21tdV9pbml0X3Bj
+aShzdHJ1Y3QgYW1kX2lvbW11ICppb21tdSkKIAl1MzIgcmFuZ2UsIG1pc2MsIGxvdywgaGlnaDsK
+IAlpbnQgcmV0OwogCi0JaW9tbXUtPmRldiA9IHBjaV9nZXRfYnVzX2FuZF9zbG90KFBDSV9CVVNf
+TlVNKGlvbW11LT5kZXZpZCksCi0JCQkJCSAgaW9tbXUtPmRldmlkICYgMHhmZik7CisJaW9tbXUt
+PmRldiA9IHBjaV9nZXRfZG9tYWluX2J1c19hbmRfc2xvdCgwLCBQQ0lfQlVTX05VTShpb21tdS0+
+ZGV2aWQpLAorCQkJCQkJIGlvbW11LT5kZXZpZCAmIDB4ZmYpOwogCWlmICghaW9tbXUtPmRldikK
+IAkJcmV0dXJuIC1FTk9ERVY7CiAKQEAgLTE3NjQsOCArMTc2NCw5IEBAIHN0YXRpYyBpbnQgaW9t
+bXVfaW5pdF9wY2koc3RydWN0IGFtZF9pb21tdSAqaW9tbXUpCiAJaWYgKGlzX3JkODkwX2lvbW11
+KGlvbW11LT5kZXYpKSB7CiAJCWludCBpLCBqOwogCi0JCWlvbW11LT5yb290X3BkZXYgPSBwY2lf
+Z2V0X2J1c19hbmRfc2xvdChpb21tdS0+ZGV2LT5idXMtPm51bWJlciwKLQkJCQlQQ0lfREVWRk4o
+MCwgMCkpOworCQlpb21tdS0+cm9vdF9wZGV2ID0KKwkJCXBjaV9nZXRfZG9tYWluX2J1c19hbmRf
+c2xvdCgwLCBpb21tdS0+ZGV2LT5idXMtPm51bWJlciwKKwkJCQkJCSAgICBQQ0lfREVWRk4oMCwg
+MCkpOwogCiAJCS8qCiAJCSAqIFNvbWUgcmQ4OTAgc3lzdGVtcyBtYXkgbm90IGJlIGZ1bGx5IHJl
+Y29uZmlndXJlZCBieSB0aGUKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3Yy
+LmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jCmluZGV4IDdkOTRlMWQuLjg2OTYzODIg
+MTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3YyLmMKKysrIGIvZHJpdmVycy9p
+b21tdS9hbWRfaW9tbXVfdjIuYwpAQCAtNTY0LDcgKzU2NCw4IEBAIHN0YXRpYyBpbnQgcHByX25v
+dGlmaWVyKHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIsIHVuc2lnbmVkIGxvbmcgZSwgdm9pZCAq
+ZGF0YSkKIAlmaW5pc2ggICAgICA9IChpb21tdV9mYXVsdC0+dGFnID4+IDkpICYgMTsKIAogCWRl
+dmlkID0gaW9tbXVfZmF1bHQtPmRldmljZV9pZDsKLQlwZGV2ID0gcGNpX2dldF9idXNfYW5kX3Ns
+b3QoUENJX0JVU19OVU0oZGV2aWQpLCBkZXZpZCAmIDB4ZmYpOworCXBkZXYgPSBwY2lfZ2V0X2Rv
+bWFpbl9idXNfYW5kX3Nsb3QoMCwgUENJX0JVU19OVU0oZGV2aWQpLAorCQkJCQkgICBkZXZpZCAm
+IDB4ZmYpOwogCWlmICghcGRldikKIAkJcmV0dXJuIC1FTk9ERVY7CiAJZGV2X2RhdGEgPSBnZXRf
+ZGV2X2RhdGEoJnBkZXYtPmRldik7Ci0tIAoxLjkuMQoKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhA
+bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
+YW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
