@@ -1,86 +1,75 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 1/2] vfio/type1: Adopt fast IOTLB flush interface when
-	unmap IOVAs
-Date: Mon, 27 Nov 2017 15:14:59 +0700
-Message-ID: <b26ed4cb-4c87-7357-e3e6-460545df5f03@amd.com>
-References: <1510953080-5619-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1510953080-5619-2-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20171117145152.41fae930@t450s.home>
-	<20171117212040.7f0921a0@t450s.home>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC 2/2] drivers: dma-mapping: parse per device reserved mem
+ at probe time
+Date: Mon, 27 Nov 2017 09:31:00 +0100
+Message-ID: <875c3a8c-a857-823e-0243-487d1dd9bee7@samsung.com>
+References: <20171126131346.12532-1-peng.fan@nxp.com>
+        <CGME20171126131432epcas4p23145c6f438f7f186545456960f284b91@epcas4p2.samsung.com>
+        <20171126131346.12532-2-peng.fan@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171117212040.7f0921a0-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-reply-to: <20171126131346.12532-2-peng.fan-3arQi8VN3Tc@public.gmane.org>
+Content-language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
+Hi
 
-On 11/18/17 11:20 AM, Alex Williamson wrote:
-> On Fri, 17 Nov 2017 14:51:52 -0700
-> Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>  wrote:
-> 
->> On Fri, 17 Nov 2017 15:11:19 -0600
->> Suravee Suthikulpanit<Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>  wrote:
->>
->>> From: Suravee Suthikulpanit<suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>>
->>> VFIO IOMMU type1 currently upmaps IOVA pages synchronously, which requires
->>> IOTLB flushing for every unmapping. This results in large IOTLB flushing
->>> overhead when handling pass-through devices with a large number of mapped
->>> IOVAs (e.g. GPUs).
->> Of course the type of device is really irrelevant, QEMU maps the entire
->> VM address space for any assigned device.
->>
->>> This can be avoided by using the new IOTLB flushing interface.
->>>
->>> Cc: Alex Williamson<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>> Cc: Joerg Roedel<jroedel-l3A5Bk7waGM@public.gmane.org>
->>> Signed-off-by: Suravee Suthikulpanit<suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>> ---
->>>   drivers/vfio/vfio_iommu_type1.c | 12 +++++++++---
->>>   1 file changed, 9 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->>> index 92155cc..28a7ab6 100644
->>> --- a/drivers/vfio/vfio_iommu_type1.c
->>> +++ b/drivers/vfio/vfio_iommu_type1.c
->>> @@ -698,10 +698,12 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
->>>   				break;
->>>   		}
->>>   
->>> -		unmapped = iommu_unmap(domain->domain, iova, len);
->>> +		unmapped = iommu_unmap_fast(domain->domain, iova, len);
->>>   		if (WARN_ON(!unmapped))
->>>   			break;
->>>   
->>> +		iommu_tlb_range_add(domain->domain, iova, len);
->>> +
->> We should only add @unmapped, not @len, right?
-> Actually, the problems are deeper than that, if we can't guarantee that
-> the above iommu_unmap_fast has removed the iommu mapping, then we can't
-> do the unpin below as that would potentially allow the device access to
-> unknown memory.  Thus, to support this, the unpinning would need to be
-> pushed until after the sync and we therefore need some mechanism of
-> remembering the phys addresses that we've unmapped.  Thanks,
-> 
-> Alex
+On 2017-11-26 14:13, Peng Fan wrote:
+> Invoke of_reserved_mem_device_init at dma_configure, then
+> there is no need to call of_reserved_mem_device_init in device
+> specific probe function.
+>
+> Signed-off-by: Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>
+
+This has been already tried long time ago, without success:
+http://patches.linaro.org/patch/33558/
+
+> ---
+>   drivers/base/dma-mapping.c | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+> index e584eddef0a7..55dca06a7b55 100644
+> --- a/drivers/base/dma-mapping.c
+> +++ b/drivers/base/dma-mapping.c
+> @@ -12,6 +12,7 @@
+>   #include <linux/export.h>
+>   #include <linux/gfp.h>
+>   #include <linux/of_device.h>
+> +#include <linux/of_reserved_mem.h>
+>   #include <linux/slab.h>
+>   #include <linux/vmalloc.h>
 >   
+> @@ -351,7 +352,9 @@ int dma_configure(struct device *dev)
+>   	}
+>   
+>   	if (dma_dev->of_node) {
+> -		ret = of_dma_configure(dev, dma_dev->of_node);
+> +		ret = of_reserved_mem_device_init(dev);
+> +		if (ret)
+> +			ret = of_dma_configure(dev, dma_dev->of_node);
+>   	} else if (has_acpi_companion(dma_dev)) {
+>   		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
+>   		if (attr != DEV_DMA_NOT_SUPPORTED)
+> @@ -367,5 +370,6 @@ int dma_configure(struct device *dev)
+>   void dma_deconfigure(struct device *dev)
+>   {
+>   	of_dma_deconfigure(dev);
+> +	of_reserved_mem_device_release(dev);
+>   	acpi_dma_deconfigure(dev);
+>   }
 
-If so, I am planning to use a list to temporary store information for 
-unmapped regions to be unpinned after sync.  Please lemme know if that 
-would be alright.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Suravee
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
