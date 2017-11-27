@@ -1,243 +1,190 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/2] iommu/tegra: Allow devices to be grouped
-Date: Mon, 27 Nov 2017 10:50:54 +0100
-Message-ID: <20171127095055.21486-2-thierry.reding@gmail.com>
+Subject: [PATCH 2/2] memory: tegra: Create SMMU display groups
+Date: Mon, 27 Nov 2017 10:50:55 +0100
+Message-ID: <20171127095055.21486-3-thierry.reding@gmail.com>
 References: <20171127095055.21486-1-thierry.reding@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20171127095055.21486-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Implement the ->device_group() and ->of_xlate() callbacks which are used
-in order to group devices. Each group can then share a single domain.
-
-This is implemented primarily in order to achieve the same semantics on
-Tegra210 and earlier as on Tegra186 where the Tegra SMMU was replaced by
-an ARM SMMU. Users of the IOMMU API can now use the same code to share
-domains between devices, whereas previously they used to attach each
-device individually.
+Create SMMU display groups for Tegra30, Tegra114, Tegra124 and Tegra210.
+This allows the display controllers on these devices to share the same
+IOMMU domain using the standard IOMMU group mechanism.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 124 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 120 insertions(+), 4 deletions(-)
+ drivers/memory/tegra/tegra114.c | 15 +++++++++++++++
+ drivers/memory/tegra/tegra124.c | 17 +++++++++++++++++
+ drivers/memory/tegra/tegra210.c | 15 +++++++++++++++
+ drivers/memory/tegra/tegra30.c  | 15 +++++++++++++++
+ include/soc/tegra/mc.h          |  9 +++++++++
+ 5 files changed, 71 insertions(+)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 3b6449e2cbf1..8885635d0a3b 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -20,6 +20,12 @@
- #include <soc/tegra/ahb.h>
- #include <soc/tegra/mc.h>
- 
-+struct tegra_smmu_group {
-+	struct list_head list;
-+	const struct tegra_smmu_group_soc *soc;
-+	struct iommu_group *group;
-+};
-+
- struct tegra_smmu {
- 	void __iomem *regs;
- 	struct device *dev;
-@@ -27,6 +33,8 @@ struct tegra_smmu {
- 	struct tegra_mc *mc;
- 	const struct tegra_smmu_soc *soc;
- 
-+	struct list_head groups;
-+
- 	unsigned long pfn_mask;
- 	unsigned long tlb_mask;
- 
-@@ -703,19 +711,47 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
- 	return mc->smmu;
- }
- 
-+static int tegra_smmu_configure(struct tegra_smmu *smmu, struct device *dev,
-+				struct of_phandle_args *args)
-+{
-+	const struct iommu_ops *ops = smmu->iommu.ops;
-+	int err;
-+
-+	err = iommu_fwspec_init(dev, &dev->of_node->fwnode, ops);
-+	if (err < 0) {
-+		dev_err(dev, "failed to initialize fwspec: %d\n", err);
-+		return err;
-+	}
-+
-+	err = ops->of_xlate(dev, args);
-+	if (err < 0) {
-+		dev_err(dev, "failed to parse SW group ID: %d\n", err);
-+		iommu_fwspec_free(dev);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int tegra_smmu_add_device(struct device *dev)
- {
- 	struct device_node *np = dev->of_node;
-+	struct tegra_smmu *smmu = NULL;
- 	struct iommu_group *group;
- 	struct of_phandle_args args;
- 	unsigned int index = 0;
-+	int err;
- 
- 	while (of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
- 					  &args) == 0) {
--		struct tegra_smmu *smmu;
--
- 		smmu = tegra_smmu_find(args.np);
- 		if (smmu) {
-+			err = tegra_smmu_configure(smmu, dev, &args);
-+			of_node_put(args.np);
-+
-+			if (err < 0)
-+				return err;
-+
- 			/*
- 			 * Only a single IOMMU master interface is currently
- 			 * supported by the Linux kernel, so abort after the
-@@ -728,9 +764,13 @@ static int tegra_smmu_add_device(struct device *dev)
- 			break;
- 		}
- 
-+		of_node_put(args.np);
- 		index++;
- 	}
- 
-+	if (!smmu)
-+		return -ENODEV;
-+
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
-@@ -751,6 +791,80 @@ static void tegra_smmu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
-+static const struct tegra_smmu_group_soc *
-+tegra_smmu_find_group(struct tegra_smmu *smmu, unsigned int swgroup)
-+{
-+	unsigned int i, j;
-+
-+	for (i = 0; i < smmu->soc->num_groups; i++)
-+		for (j = 0; j < smmu->soc->groups[i].num_swgroups; j++)
-+			if (smmu->soc->groups[i].swgroups[j] == swgroup)
-+				return &smmu->soc->groups[i];
-+
-+	return NULL;
-+}
-+
-+static struct iommu_group *tegra_smmu_group_get(struct tegra_smmu *smmu,
-+						unsigned int swgroup)
-+{
-+	const struct tegra_smmu_group_soc *soc;
-+	struct tegra_smmu_group *group;
-+
-+	soc = tegra_smmu_find_group(smmu, swgroup);
-+	if (!soc)
-+		return NULL;
-+
-+	mutex_lock(&smmu->lock);
-+
-+	list_for_each_entry(group, &smmu->groups, list)
-+		if (group->soc == soc) {
-+			mutex_unlock(&smmu->lock);
-+			return group->group;
-+		}
-+
-+	group = devm_kzalloc(smmu->dev, sizeof(*group), GFP_KERNEL);
-+	if (!group) {
-+		mutex_unlock(&smmu->lock);
-+		return NULL;
-+	}
-+
-+	INIT_LIST_HEAD(&group->list);
-+	group->soc = soc;
-+
-+	group->group = iommu_group_alloc();
-+	if (!group->group) {
-+		devm_kfree(smmu->dev, group);
-+		mutex_unlock(&smmu->lock);
-+		return NULL;
-+	}
-+
-+	list_add_tail(&group->list, &smmu->groups);
-+	mutex_unlock(&smmu->lock);
-+
-+	return group->group;
-+}
-+
-+static struct iommu_group *tegra_smmu_device_group(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct tegra_smmu *smmu = dev->archdata.iommu;
-+	struct iommu_group *group;
-+
-+	group = tegra_smmu_group_get(smmu, fwspec->ids[0]);
-+	if (!group)
-+		group = generic_device_group(dev);
-+
-+	return group;
-+}
-+
-+static int tegra_smmu_of_xlate(struct device *dev,
-+			       struct of_phandle_args *args)
-+{
-+	u32 id = args->args[0];
-+
-+	return iommu_fwspec_add_ids(dev, &id, 1);
-+}
-+
- static const struct iommu_ops tegra_smmu_ops = {
- 	.capable = tegra_smmu_capable,
- 	.domain_alloc = tegra_smmu_domain_alloc,
-@@ -759,12 +873,12 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.detach_dev = tegra_smmu_detach_dev,
- 	.add_device = tegra_smmu_add_device,
- 	.remove_device = tegra_smmu_remove_device,
--	.device_group = generic_device_group,
-+	.device_group = tegra_smmu_device_group,
- 	.map = tegra_smmu_map,
- 	.unmap = tegra_smmu_unmap,
- 	.map_sg = default_iommu_map_sg,
- 	.iova_to_phys = tegra_smmu_iova_to_phys,
--
-+	.of_xlate = tegra_smmu_of_xlate,
- 	.pgsize_bitmap = SZ_4K,
+diff --git a/drivers/memory/tegra/tegra114.c b/drivers/memory/tegra/tegra114.c
+index ba8fff3d66a6..b20e6e3e208e 100644
+--- a/drivers/memory/tegra/tegra114.c
++++ b/drivers/memory/tegra/tegra114.c
+@@ -912,11 +912,26 @@ static const struct tegra_smmu_swgroup tegra114_swgroups[] = {
+ 	{ .name = "tsec",      .swgroup = TEGRA_SWGROUP_TSEC,      .reg = 0x294 },
  };
  
-@@ -913,6 +1027,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	if (!smmu->asids)
- 		return ERR_PTR(-ENOMEM);
++static const unsigned int tegra114_group_display[] = {
++	TEGRA_SWGROUP_DC,
++	TEGRA_SWGROUP_DCB,
++};
++
++static const struct tegra_smmu_group_soc tegra114_groups[] = {
++	{
++		.name = "display",
++		.swgroups = tegra114_group_display,
++		.num_swgroups = ARRAY_SIZE(tegra114_group_display),
++	},
++};
++
+ static const struct tegra_smmu_soc tegra114_smmu_soc = {
+ 	.clients = tegra114_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra114_mc_clients),
+ 	.swgroups = tegra114_swgroups,
+ 	.num_swgroups = ARRAY_SIZE(tegra114_swgroups),
++	.groups = tegra114_groups,
++	.num_groups = ARRAY_SIZE(tegra114_groups),
+ 	.supports_round_robin_arbitration = false,
+ 	.supports_request_limit = false,
+ 	.num_tlb_lines = 32,
+diff --git a/drivers/memory/tegra/tegra124.c b/drivers/memory/tegra/tegra124.c
+index 5a58e440f4a7..8b6360eabb8a 100644
+--- a/drivers/memory/tegra/tegra124.c
++++ b/drivers/memory/tegra/tegra124.c
+@@ -999,12 +999,27 @@ static const struct tegra_smmu_swgroup tegra124_swgroups[] = {
+ 	{ .name = "vi",        .swgroup = TEGRA_SWGROUP_VI,        .reg = 0x280 },
+ };
  
-+	INIT_LIST_HEAD(&smmu->groups);
- 	mutex_init(&smmu->lock);
++static const unsigned int tegra124_group_display[] = {
++	TEGRA_SWGROUP_DC,
++	TEGRA_SWGROUP_DCB,
++};
++
++static const struct tegra_smmu_group_soc tegra124_groups[] = {
++	{
++		.name = "display",
++		.swgroups = tegra124_group_display,
++		.num_swgroups = ARRAY_SIZE(tegra124_group_display),
++	},
++};
++
+ #ifdef CONFIG_ARCH_TEGRA_124_SOC
+ static const struct tegra_smmu_soc tegra124_smmu_soc = {
+ 	.clients = tegra124_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra124_mc_clients),
+ 	.swgroups = tegra124_swgroups,
+ 	.num_swgroups = ARRAY_SIZE(tegra124_swgroups),
++	.groups = tegra124_groups,
++	.num_groups = ARRAY_SIZE(tegra124_groups),
+ 	.supports_round_robin_arbitration = true,
+ 	.supports_request_limit = true,
+ 	.num_tlb_lines = 32,
+@@ -1029,6 +1044,8 @@ static const struct tegra_smmu_soc tegra132_smmu_soc = {
+ 	.num_clients = ARRAY_SIZE(tegra124_mc_clients),
+ 	.swgroups = tegra124_swgroups,
+ 	.num_swgroups = ARRAY_SIZE(tegra124_swgroups),
++	.groups = tegra124_groups,
++	.num_groups = ARRAY_SIZE(tegra124_groups),
+ 	.supports_round_robin_arbitration = true,
+ 	.supports_request_limit = true,
+ 	.num_tlb_lines = 32,
+diff --git a/drivers/memory/tegra/tegra210.c b/drivers/memory/tegra/tegra210.c
+index 5e144abe4c18..d398bcd3fc57 100644
+--- a/drivers/memory/tegra/tegra210.c
++++ b/drivers/memory/tegra/tegra210.c
+@@ -1059,11 +1059,26 @@ static const struct tegra_smmu_swgroup tegra210_swgroups[] = {
+ 	{ .name = "tsecb",     .swgroup = TEGRA_SWGROUP_TSECB,     .reg = 0xad4 },
+ };
  
- 	smmu->regs = mc->regs;
-@@ -954,6 +1069,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 		return ERR_PTR(err);
++static const unsigned int tegra210_group_display[] = {
++	TEGRA_SWGROUP_DC,
++	TEGRA_SWGROUP_DCB,
++};
++
++static const struct tegra_smmu_group_soc tegra210_groups[] = {
++	{
++		.name = "display",
++		.swgroups = tegra210_group_display,
++		.num_swgroups = ARRAY_SIZE(tegra210_group_display),
++	},
++};
++
+ static const struct tegra_smmu_soc tegra210_smmu_soc = {
+ 	.clients = tegra210_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra210_mc_clients),
+ 	.swgroups = tegra210_swgroups,
+ 	.num_swgroups = ARRAY_SIZE(tegra210_swgroups),
++	.groups = tegra210_groups,
++	.num_groups = ARRAY_SIZE(tegra210_groups),
+ 	.supports_round_robin_arbitration = true,
+ 	.supports_request_limit = true,
+ 	.num_tlb_lines = 32,
+diff --git a/drivers/memory/tegra/tegra30.c b/drivers/memory/tegra/tegra30.c
+index b44737840e70..d756c837f23e 100644
+--- a/drivers/memory/tegra/tegra30.c
++++ b/drivers/memory/tegra/tegra30.c
+@@ -934,11 +934,26 @@ static const struct tegra_smmu_swgroup tegra30_swgroups[] = {
+ 	{ .name = "isp",  .swgroup = TEGRA_SWGROUP_ISP,  .reg = 0x258 },
+ };
  
- 	iommu_device_set_ops(&smmu->iommu, &tegra_smmu_ops);
-+	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
++static const unsigned int tegra30_group_display[] = {
++	TEGRA_SWGROUP_DC,
++	TEGRA_SWGROUP_DCB,
++};
++
++static const struct tegra_smmu_group_soc tegra30_groups[] = {
++	{
++		.name = "display",
++		.swgroups = tegra30_group_display,
++		.num_swgroups = ARRAY_SIZE(tegra30_group_display),
++	},
++};
++
+ static const struct tegra_smmu_soc tegra30_smmu_soc = {
+ 	.clients = tegra30_mc_clients,
+ 	.num_clients = ARRAY_SIZE(tegra30_mc_clients),
+ 	.swgroups = tegra30_swgroups,
+ 	.num_swgroups = ARRAY_SIZE(tegra30_swgroups),
++	.groups = tegra30_groups,
++	.num_groups = ARRAY_SIZE(tegra30_groups),
+ 	.supports_round_robin_arbitration = false,
+ 	.supports_request_limit = false,
+ 	.num_tlb_lines = 16,
+diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+index 44202ff897fd..233bae954970 100644
+--- a/include/soc/tegra/mc.h
++++ b/include/soc/tegra/mc.h
+@@ -51,6 +51,12 @@ struct tegra_smmu_swgroup {
+ 	unsigned int reg;
+ };
  
- 	err = iommu_device_register(&smmu->iommu);
- 	if (err) {
++struct tegra_smmu_group_soc {
++	const char *name;
++	const unsigned int *swgroups;
++	unsigned int num_swgroups;
++};
++
+ struct tegra_smmu_soc {
+ 	const struct tegra_mc_client *clients;
+ 	unsigned int num_clients;
+@@ -58,6 +64,9 @@ struct tegra_smmu_soc {
+ 	const struct tegra_smmu_swgroup *swgroups;
+ 	unsigned int num_swgroups;
+ 
++	const struct tegra_smmu_group_soc *groups;
++	unsigned int num_groups;
++
+ 	bool supports_round_robin_arbitration;
+ 	bool supports_request_limit;
+ 
 -- 
 2.15.0
