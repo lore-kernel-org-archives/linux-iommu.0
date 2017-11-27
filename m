@@ -1,78 +1,67 @@
-From: Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [RFC 1/2] of: reserved_mem: check return value of_dma_configure
-Date: Mon, 27 Nov 2017 04:15:55 +0000
-Message-ID: <DB6PR04MB32219685985135A408F39FFB88250@DB6PR04MB3221.eurprd04.prod.outlook.com>
-References: <20171126131346.12532-1-peng.fan@nxp.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH 1/2] vfio/type1: Adopt fast IOTLB flush interface when
+ unmap IOVAs
+Date: Mon, 27 Nov 2017 15:12:25 +0700
+Message-ID: <fd7a06db-0f40-c72a-532a-d946477fb19e@amd.com>
+References: <1510953080-5619-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1510953080-5619-2-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <20171117145152.41fae930@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171126131346.12532-1-peng.fan-3arQi8VN3Tc@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171117145152.41fae930@t450s.home>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Alex,
 
-
-> -----Original Message-----
-> From: Peng Fan
-> Sent: Sunday, November 26, 2017 9:14 PM
-> To: hch-jcswGhMUV9g@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org;
-> gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Peng Fan
-> <peng.fan-3arQi8VN3Tc@public.gmane.org>
-> Subject: [RFC 1/2] of: reserved_mem: check return value of_dma_configure
+On 11/18/17 4:51 AM, Alex Williamson wrote:
+> On Fri, 17 Nov 2017 15:11:19 -0600
+> Suravee Suthikulpanit<Suravee.Suthikulpanit@amd.com>  wrote:
 > 
-> In commit <7b07cbefb6>("iommu: of: Handle IOMMU lookup failure with
-> deferred probing or error"), there is possibility that of_dma_configure may fail.
-> So in of_reserved_mem_device_init_by_idx,
-> also need to propagate the return value of_dma_configure to caller, when
-> need to use reserved memory for a device which needs iommu.
+>> From: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>
+>>
+>> VFIO IOMMU type1 currently upmaps IOVA pages synchronously, which requires
+>> IOTLB flushing for every unmapping. This results in large IOTLB flushing
+>> overhead when handling pass-through devices with a large number of mapped
+>> IOVAs (e.g. GPUs).
+> Of course the type of device is really irrelevant, QEMU maps the entire
+> VM address space for any assigned device.
 
-Seems my understanding is wrong, with iommu enabled, reserved memory will not be used
-for devices with memory-region. Please still help review RFC 2/2.
+Right, in this case certain high performance dGPUs map large address space.
+
+> 
+>> This can be avoided by using the new IOTLB flushing interface.
+>>
+>> Cc: Alex Williamson<alex.williamson@redhat.com>
+>> Cc: Joerg Roedel<jroedel@suse.de>
+>> Signed-off-by: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>
+>> ---
+>>   drivers/vfio/vfio_iommu_type1.c | 12 +++++++++---
+>>   1 file changed, 9 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index 92155cc..28a7ab6 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>> @@ -698,10 +698,12 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>>   				break;
+>>   		}
+>>   
+>> -		unmapped = iommu_unmap(domain->domain, iova, len);
+>> +		unmapped = iommu_unmap_fast(domain->domain, iova, len);
+>>   		if (WARN_ON(!unmapped))
+>>   			break;
+>>   
+>> +		iommu_tlb_range_add(domain->domain, iova, len);
+>> +
+> We should only add @unmapped, not @len, right?
+
+Hm right, I will change this in V2.
 
 Thanks,
-Peng.
-
-> 
-> Signed-off-by: Peng Fan <peng.fan-3arQi8VN3Tc@public.gmane.org>
-> ---
->  drivers/of/of_reserved_mem.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> index 22b75c82e377..61523819b50e 100644
-> --- a/drivers/of/of_reserved_mem.c
-> +++ b/drivers/of/of_reserved_mem.c
-> @@ -357,9 +357,12 @@ int of_reserved_mem_device_init_by_idx(struct
-> device *dev,
->  		/* ensure that dma_ops is set for virtual devices
->  		 * using reserved memory
->  		 */
-> -		of_dma_configure(dev, np);
-> -
-> -		dev_info(dev, "assigned reserved memory node %s\n", rmem-
-> >name);
-> +		ret = of_dma_configure(dev, np);
-> +		if (ret)
-> +			of_reserved_mem_device_release(dev);
-> +		else
-> +			dev_info(dev, "assigned reserved memory node %s\n",
-> +				 rmem->name);
->  	} else {
->  		kfree(rd);
->  	}
-> --
-> 2.14.1
+Suravee
