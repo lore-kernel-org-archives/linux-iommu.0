@@ -1,17 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: No check of the size passed to unmap_single in swiotlb
-Date: Tue, 28 Nov 2017 14:18:03 +0000
-Message-ID: <c372988a-e7cb-fe47-aec4-538c8808c3be@arm.com>
-References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
-	<20171120162652.GR24312@char.us.oracle.com>
-	<bb5a338c-4fd1-dbc4-e2be-663df0887504@arm.com>
-	<VI1PR04MB30713D88BF08BE52B2C85D458C210@VI1PR04MB3071.eurprd04.prod.outlook.com>
+Subject: [PATCH 1/4] iommu/arm-smmu-v3: Clean up address masking
+Date: Tue, 28 Nov 2017 17:27:04 +0000
+Message-ID: <992f858619986284139dd002c67beba870b7d513.1511807303.git.robin.murphy@arm.com>
+References: <cover.1511807303.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <VI1PR04MB30713D88BF08BE52B2C85D458C210-mr6QIVyDiCFHIX2o+zdTns9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <cover.1511807303.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,153 +17,216 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
+Before trying to add the SMMUv3.1 support for 52-bit addresses, make
+things bearable by cleaning up the various address mask definitions to
+use GENMASK_ULL() consistently. The fact that doing so reveals (and
+fixes) a latent off-by-one in Q_BASE_ADDR_MASK only goes to show what a
+jolly good idea it is...
 
-On 23/11/17 09:08, Eric Yang wrote:
-> 
-> 
->> -----Original Message----- From: Robin Murphy
->> [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org] Sent: Tuesday, November 21, 2017
->> 12:50 AM To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>; Eric
->> Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org Cc:
->> Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>; Kees Cook 
->> <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Geert Uytterhoeven
->> <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>; Greg Kroah-Hartman
->> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; David
->> Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>;
->> Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>; Andrew Morton
->> <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>; Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> 
->> Subject: Re: No check of the size passed to unmap_single in
->> swiotlb
->> 
->> On 20/11/17 16:26, Konrad Rzeszutek Wilk wrote:
->>> On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
->>>> Hi all,
->>> 
->>> Hi!
->>>> 
->>>> During debug a  device only support 32bits DMA(Qualcomm Atheros
->>>> AP) in
->> our LS1043A 64bits ARM  SOC, we found that the invoke of
->> dma_unmap_single - -> swiotlb_tbl_unmap_single  will unmap the
->> passed "size" anyway even when the "size" is incorrect.
->>>> 
->>>> If the size is larger than it should, the extra entries in
->>>> io_tlb_orig_addr array
->> will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce
->> buffer copy not happen when the one who really used the mis-freed
->> entries doing  DMA data transfers, and this will cause further
->> unknow behaviors.
->>>> 
->>>> Here we just fix it temporarily by adding a judge of the "size"
->>>> in the
->> swiotlb_tbl_unmap_single, if it is larger than it deserves, just
->> unmap the right size only. Like the code:
->>> 
->>> Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring
->>> this issue
->> as well?
->>> 
->>>> 
->>>> [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c diff --git 
->>>> a/lib/swiotlb.c b/lib/swiotlb.c index
->>>> ad1d2962d129..58c97ede9d78 100644 --- a/lib/swiotlb.c +++
->>>> b/lib/swiotlb.c @@ -591,7 +591,10 @@ void
->>>> swiotlb_tbl_unmap_single(struct device
->> *hwdev, phys_addr_t tlb_addr,
->>>> */ for (i = index + nslots - 1; i >= index; i--) { 
->>>> io_tlb_list[i] = ++count; -
->>>> io_tlb_orig_addr[i] = INVALID_PHYS_ADDR; +
->>>> if(io_tlb_orig_addr[i]  != orig_addr) +
->>>> printk("======size wrong, ally down ally down!===\n"); +
->>>> else +                         io_tlb_orig_addr[i] =
->>>> INVALID_PHYS_ADDR; } /* * Step 2: merge the returned slots with
->>>> the preceding slots,
->>>> 
->>>> Although pass a right size of DMA buffer is the responsibility
->>>> of  the drivers,
->> but Is it useful to add some size check code to prevent  real
->> damage happen?
->> 
->> There doesn't seem to be much good reason for SWIOTLB to be more
->> special than other DMA API backends, and not all of them have
->> enough internal state to be able to make such a check. It's also
->> not necessarily possible to "prevent damage" anyway - if a driver
->> does pass a bogus size for dma_unmap_single(..., DMA_FROM_DEVICE),
->> SWIOTLB might be able to keep itself internally consistent, but it
->> still can't prevent the arch code in the middle from invalidating
->> the wrong cache lines and potentially corrupting adjacent memory.
->> 
->> In short, trying to work around broken drivers is a much worse idea
->> than just fixing those drivers, and that's what we already have
->> dma-debug for.
->> 
->> Robin.
-> 
-> Hi Robin,
-> 
-> I agree that hacking kernel to fix broken drivers is not acceptable,
-> actually we spent days to fight driver supplier with  this, they do
-> not want to change their code and want fix it directly in kernel.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 52 ++++++++++++++++++---------------------------
+ 1 file changed, 21 insertions(+), 31 deletions(-)
 
-So their code misuses an API in a manner which has never been correct, 
-and is *impossible* for many common implementations of that API to 
-validate, and they think it's upstream's job to work around it? Wow... 
-you have my sympathy :)
-
-> I tried Dma-debug yesterday, it works very well,  but I think only
-> the size mismatch check may not be enough for the map entry corrupt
-> situation, some run-time warning may be better when the real
-> corruption happen.
-> 
-> For most of the dma-api backend, the size mismatch may do no harm at
-> all, and even in SWIOTLB itself when the bounce buffer is not used,
-> the size mismatch do no harm either. In our case, the same buggy
-> driver works well when board has 2G DDR, but panic frequently in 4G
-> DDR because of the use of bounce buffer and these corrupted map
-> entries. it is hard to catch this kind of bugs, for when the
-> corruption happen, the kernel has all kind of reasons to panic, but
-> not even one may directly point to the real source.
-
-As I said, just because things appear to work for your test cases on 
-your system in the non-bounced case doesn't mean it's universally fine. 
-If this device can be integrated into non-cache-coherent systems, then 
-over-unmapping of device-writable buffers will eventually cause random 
-corruption and data loss to somebody, somewhere, by invalidating dirty 
-cache lines in the wrong place. If this device can be integrated behind 
-an IOMMU (and if it's available with a PCI/PCIe interface, assume that 
-it will be), then any over-unmapping will remove other devices' 
-translations and cause random DMA problems which can be even less 
-obvious to debug, and cannot be 'worked around' at all (certainly on the 
-arm64 and x86 implementations).
-
-> Add the warning messages is a big convenience for figure this kind of
-> issues, at least to me and the AP driver supplier, such warnings may
-> save weeks of hard debug time.
-
-I don't get it - if driver developers are writing buggy drivers and not 
-testing with basic well-established features like dma-debug, that's on 
-the driver developers. Optimising for the case where BSP developers 
-happen to get lucky with a particular configuration in which they might 
-see driver bugs tickle warnings elsewhere doesn't seem sensible. Yes, it 
-wouldn't be utterly unacceptable for SWIOTLB to print a warning when it 
-detects some (address,size) combination that looks like it may have gone 
-out-of-bounds, but at that point swiotlb_bounce() has presumably already 
-done the damage of overwriting something it shouldn't have with who 
-knows what, and it's still only one specific case - for instance, you 
-wouldn't detect if the size is too small and you haven't bounced 
-*enough* data, but that would still make your I/O misbehave.
-
-In the end, it comes down to the difference between a) I/O going wrong 
-and the system crashing, and b) the user *possibly* getting a warning 
-they can't do anything about before I/O going wrong and the system 
-crashing. Ultimately the driver developer still has to fix their bug, so 
-why add code to occasionally antagonise the user when a developer 
-feature tailor-made for catching such bugs immediately has existed for 
-nearly 9 years?
-
-Robin.
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index f122071688fd..89bcd39d213c 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -22,6 +22,7 @@
+ 
+ #include <linux/acpi.h>
+ #include <linux/acpi_iort.h>
++#include <linux/bitops.h>
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/err.h>
+@@ -158,8 +159,7 @@
+ 
+ #define ARM_SMMU_STRTAB_BASE		0x80
+ #define STRTAB_BASE_RA			(1UL << 62)
+-#define STRTAB_BASE_ADDR_SHIFT		6
+-#define STRTAB_BASE_ADDR_MASK		0x3ffffffffffUL
++#define STRTAB_BASE_ADDR_MASK		GENMASK_ULL(47, 6)
+ 
+ #define ARM_SMMU_STRTAB_BASE_CFG	0x88
+ #define STRTAB_BASE_CFG_LOG2SIZE_SHIFT	0
+@@ -190,8 +190,7 @@
+ #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+ 
+ /* Common MSI config fields */
+-#define MSI_CFG0_ADDR_SHIFT		2
+-#define MSI_CFG0_ADDR_MASK		0x3fffffffffffUL
++#define MSI_CFG0_ADDR_MASK		GENMASK_ULL(47, 2)
+ #define MSI_CFG2_SH_SHIFT		4
+ #define MSI_CFG2_SH_NSH			(0UL << MSI_CFG2_SH_SHIFT)
+ #define MSI_CFG2_SH_OSH			(2UL << MSI_CFG2_SH_SHIFT)
+@@ -207,8 +206,7 @@
+ 					 Q_IDX(q, p) * (q)->ent_dwords)
+ 
+ #define Q_BASE_RWA			(1UL << 62)
+-#define Q_BASE_ADDR_SHIFT		5
+-#define Q_BASE_ADDR_MASK		0xfffffffffffUL
++#define Q_BASE_ADDR_MASK		GENMASK_ULL(47, 5)
+ #define Q_BASE_LOG2SIZE_SHIFT		0
+ #define Q_BASE_LOG2SIZE_MASK		0x1fUL
+ 
+@@ -225,8 +223,7 @@
+ #define STRTAB_L1_DESC_DWORDS		1
+ #define STRTAB_L1_DESC_SPAN_SHIFT	0
+ #define STRTAB_L1_DESC_SPAN_MASK	0x1fUL
+-#define STRTAB_L1_DESC_L2PTR_SHIFT	6
+-#define STRTAB_L1_DESC_L2PTR_MASK	0x3ffffffffffUL
++#define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(47, 6)
+ 
+ #define STRTAB_STE_DWORDS		8
+ #define STRTAB_STE_0_V			(1UL << 0)
+@@ -239,8 +236,7 @@
+ 
+ #define STRTAB_STE_0_S1FMT_SHIFT	4
+ #define STRTAB_STE_0_S1FMT_LINEAR	(0UL << STRTAB_STE_0_S1FMT_SHIFT)
+-#define STRTAB_STE_0_S1CTXPTR_SHIFT	6
+-#define STRTAB_STE_0_S1CTXPTR_MASK	0x3ffffffffffUL
++#define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(47, 6)
+ #define STRTAB_STE_0_S1CDMAX_SHIFT	59
+ #define STRTAB_STE_0_S1CDMAX_MASK	0x1fUL
+ 
+@@ -278,8 +274,7 @@
+ #define STRTAB_STE_2_S2PTW		(1UL << 54)
+ #define STRTAB_STE_2_S2R		(1UL << 58)
+ 
+-#define STRTAB_STE_3_S2TTB_SHIFT	4
+-#define STRTAB_STE_3_S2TTB_MASK		0xfffffffffffUL
++#define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(47, 4)
+ 
+ /* Context descriptor (stage-1 only) */
+ #define CTXDESC_CD_DWORDS		8
+@@ -325,8 +320,7 @@
+ #define CTXDESC_CD_0_ASID_SHIFT		48
+ #define CTXDESC_CD_0_ASID_MASK		0xffffUL
+ 
+-#define CTXDESC_CD_1_TTB0_SHIFT		4
+-#define CTXDESC_CD_1_TTB0_MASK		0xfffffffffffUL
++#define CTXDESC_CD_1_TTB0_MASK		GENMASK_ULL(47, 4)
+ 
+ #define CTXDESC_CD_3_MAIR_SHIFT		0
+ 
+@@ -351,7 +345,7 @@
+ 
+ #define CMDQ_PREFETCH_0_SID_SHIFT	32
+ #define CMDQ_PREFETCH_1_SIZE_SHIFT	0
+-#define CMDQ_PREFETCH_1_ADDR_MASK	~0xfffUL
++#define CMDQ_PREFETCH_1_ADDR_MASK	GENMASK_ULL(63, 12)
+ 
+ #define CMDQ_CFGI_0_SID_SHIFT		32
+ #define CMDQ_CFGI_0_SID_MASK		0xffffffffUL
+@@ -362,8 +356,8 @@
+ #define CMDQ_TLBI_0_VMID_SHIFT		32
+ #define CMDQ_TLBI_0_ASID_SHIFT		48
+ #define CMDQ_TLBI_1_LEAF		(1UL << 0)
+-#define CMDQ_TLBI_1_VA_MASK		~0xfffUL
+-#define CMDQ_TLBI_1_IPA_MASK		0xfffffffff000UL
++#define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
++#define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(47, 12)
+ 
+ #define CMDQ_PRI_0_SSID_SHIFT		12
+ #define CMDQ_PRI_0_SSID_MASK		0xfffffUL
+@@ -386,8 +380,7 @@
+ #define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
+ #define CMDQ_SYNC_0_MSIDATA_SHIFT	32
+ #define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
+-#define CMDQ_SYNC_1_MSIADDR_SHIFT	0
+-#define CMDQ_SYNC_1_MSIADDR_MASK	0xffffffffffffcUL
++#define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(47, 2)
+ 
+ /* Event queue */
+ #define EVTQ_ENT_DWORDS			4
+@@ -413,8 +406,7 @@
+ 
+ #define PRIQ_1_PRG_IDX_SHIFT		0
+ #define PRIQ_1_PRG_IDX_MASK		0x1ffUL
+-#define PRIQ_1_ADDR_SHIFT		12
+-#define PRIQ_1_ADDR_MASK		0xfffffffffffffUL
++#define PRIQ_1_ADDR_MASK		GENMASK_ULL(63, 12)
+ 
+ /* High-level queue structures */
+ #define ARM_SMMU_POLL_TIMEOUT_US	100
+@@ -1093,7 +1085,7 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
+ 
+ 	cfg->cdptr[0] = cpu_to_le64(val);
+ 
+-	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK << CTXDESC_CD_1_TTB0_SHIFT;
++	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK;
+ 	cfg->cdptr[1] = cpu_to_le64(val);
+ 
+ 	cfg->cdptr[3] = cpu_to_le64(cfg->cd.mair << CTXDESC_CD_3_MAIR_SHIFT);
+@@ -1108,7 +1100,7 @@ arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_desc *desc)
+ 	val |= (desc->span & STRTAB_L1_DESC_SPAN_MASK)
+ 		<< STRTAB_L1_DESC_SPAN_SHIFT;
+ 	val |= desc->l2ptr_dma &
+-	       STRTAB_L1_DESC_L2PTR_MASK << STRTAB_L1_DESC_L2PTR_SHIFT;
++	       STRTAB_L1_DESC_L2PTR_MASK;
+ 
+ 	*dst = cpu_to_le64(val);
+ }
+@@ -1214,8 +1206,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+ 
+-		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
+-		        << STRTAB_STE_0_S1CTXPTR_SHIFT) |
++		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+ 			STRTAB_STE_0_CFG_S1_TRANS;
+ 	}
+ 
+@@ -1232,7 +1223,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 			 STRTAB_STE_2_S2R);
+ 
+ 		dst[3] = cpu_to_le64(ste->s2_cfg->vttbr &
+-			 STRTAB_STE_3_S2TTB_MASK << STRTAB_STE_3_S2TTB_SHIFT);
++			 STRTAB_STE_3_S2TTB_MASK);
+ 
+ 		val |= STRTAB_STE_0_CFG_S2_TRANS;
+ 	}
+@@ -1337,7 +1328,7 @@ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
+ 		 evt[0] & PRIQ_0_PERM_READ ? "R" : "",
+ 		 evt[0] & PRIQ_0_PERM_WRITE ? "W" : "",
+ 		 evt[0] & PRIQ_0_PERM_EXEC ? "X" : "",
+-		 evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT);
++		 evt[1] & PRIQ_1_ADDR_MASK);
+ 
+ 	if (last) {
+ 		struct arm_smmu_cmdq_ent cmd = {
+@@ -2093,7 +2084,7 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 	q->ent_dwords	= dwords;
+ 
+ 	q->q_base  = Q_BASE_RWA;
+-	q->q_base |= q->base_dma & Q_BASE_ADDR_MASK << Q_BASE_ADDR_SHIFT;
++	q->q_base |= q->base_dma & Q_BASE_ADDR_MASK;
+ 	q->q_base |= (q->max_n_shift & Q_BASE_LOG2SIZE_MASK)
+ 		     << Q_BASE_LOG2SIZE_SHIFT;
+ 
+@@ -2230,8 +2221,7 @@ static int arm_smmu_init_strtab(struct arm_smmu_device *smmu)
+ 		return ret;
+ 
+ 	/* Set the strtab base address */
+-	reg  = smmu->strtab_cfg.strtab_dma &
+-	       STRTAB_BASE_ADDR_MASK << STRTAB_BASE_ADDR_SHIFT;
++	reg  = smmu->strtab_cfg.strtab_dma & STRTAB_BASE_ADDR_MASK;
+ 	reg |= STRTAB_BASE_RA;
+ 	smmu->strtab_cfg.strtab_base = reg;
+ 
+@@ -2294,7 +2284,7 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+ 	phys_addr_t *cfg = arm_smmu_msi_cfg[desc->platform.msi_index];
+ 
+ 	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
+-	doorbell &= MSI_CFG0_ADDR_MASK << MSI_CFG0_ADDR_SHIFT;
++	doorbell &= MSI_CFG0_ADDR_MASK;
+ 
+ 	writeq_relaxed(doorbell, smmu->base + cfg[0]);
+ 	writel_relaxed(msg->data, smmu->base + cfg[1]);
+-- 
+2.13.4.dirty
