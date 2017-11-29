@@ -1,37 +1,42 @@
-From: Yisheng Xie <xieyisheng1@huawei.com>
-Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to and
- from devices
-Date: Wed, 29 Nov 2017 14:08:20 +0800
-Message-ID: <9c364147-12c4-5a8a-9cd9-0642a6b92555@huawei.com>
+From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 09/36] iommu/fault: Allow blocking fault handlers
+Date: Wed, 29 Nov 2017 14:15:58 +0800
+Message-ID: <7e1c8ea4-e568-1000-17de-62f8562c7169@huawei.com>
 References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-6-jean-philippe.brucker@arm.com>
+	<20171006133203.22803-10-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20171006133203.22803-6-jean-philippe.brucker@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: mark.rutland@arm.com, gabriele.paoloni@huawei.com, catalin.marinas@arm.com, will.deacon@arm.com, okaya@codeaurora.org, yi.l.liu@intel.com, lorenzo.pieralisi@arm.com, ashok.raj@intel.com, tn@semihalf.com, joro@8bytes.org, rfranz@cavium.com, lenb@kernel.org, jacob.jun.pan@linux.intel.com, alex.williamson@redhat.com, robh+dt@kernel.org, thunder.leizhen@huawei.com, bhelgaas@google.com, dwmw2@infradead.org, liubo95@huawei.com, rjw@rjwysocki.net, robdclark@gmail.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, nwatters@codeaurora.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171006133203.22803-10-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
+Hi Jean,
 
 On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
-> +int iommu_process_bind_device(struct device *dev, struct task_struct *task,
-> +			      int *pasid, int flags)
-> +{
-[..]
-> +			err = iommu_process_attach_locked(context, dev);
-> +			if (err)
-> +				iommu_process_put_locked(process);
-one ref for a context is enough right? so also need call iommu_process_put_locked()
-if attach ok, or will be leak if user call bind twice for the same device and task.
+> -	if (domain->ext_handler) {
+> +	if (domain->handler_flags & IOMMU_FAULT_HANDLER_ATOMIC) {
+> +		fault->flags |= IOMMU_FAULT_ATOMIC;
+
+Why remove the condition of domain->ext_handler? should it be much better like:
+  if ((domain->handler_flags & IOMMU_FAULT_HANDLER_ATOMIC) && domain->ext_handler)
+
+If domain->ext_handler is NULL, and (domain->handler_flags & IOMMU_FAULT_HANDLER_ATOMIC)
+is true. It will oops, right?
+
+>  		ret = domain->ext_handler(domain, dev, fault,
+>  					  domain->handler_token);
+
+Thanks
+Yisheng Xie
