@@ -1,45 +1,147 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [virtio-dev] [RFC PATCH v2 4/5] ACPI/IORT: Support
- paravirtualized IOMMU
-Date: Wed, 29 Nov 2017 15:17:55 +0000
-Message-ID: <aea995d0-333b-cfec-abe7-2e59ef37c19e@arm.com>
-References: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
- <20171117185211.32593-5-jean-philippe.brucker@arm.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH kernel] vfio/spapr: Add trace points for map/unmap
+Date: Wed, 29 Nov 2017 09:32:44 -0700
+Message-ID: <20171129093244.0849fd7c@t450s.home>
+References: <20171027030008.17200-1-aik@ozlabs.ru>
+        <8c58fcaa-dedc-e6be-44bf-2cb349ef9e38@ozlabs.ru>
+        <20171116171301.6552869b@t450s.home>
+        <52a19cfb-431f-522b-11de-c1c47f09a4c8@ozlabs.ru>
+        <d367b17a-6efa-26a8-821b-42080c90e16e@ozlabs.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171117185211.32593-5-jean-philippe.brucker@arm.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devel@acpica.org" <devel@acpica.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "lv.zheng@intel.com" <lv.zheng@intel.com>, "robert.moore@intel.com" <robert.moore@intel.com>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Sudeep Holla <Sudeep.Holla@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "lenb@kernel.org" <lenb@kernel.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "Jayachandran.Nair@cavium.com" <Jayachandran.Nair@cavium.com>, ashok.
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <d367b17a-6efa-26a8-821b-42080c90e16e@ozlabs.ru>
+Sender: kvm-owner@vger.kernel.org
+To: Alexey Kardashevskiy <aik@ozlabs.ru>
+Cc: linuxppc-dev@lists.ozlabs.org, David Gibson <david@gibson.dropbear.id.au>, kvm-ppc@vger.kernel.org, kvm@vger.kernel.org, Shuah Khan <shuahkh@osg.samsung.com>, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/11/17 18:52, Jean-Philippe Brucker wrote:
-> To describe the virtual topology in relation to a virtio-iommu device,
-> ACPI-based systems use a "paravirtualized IOMMU" IORT node. Add support
-> for it.
+On Thu, 23 Nov 2017 15:13:37 +1100
+Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+
+> On 17/11/17 17:58, Alexey Kardashevskiy wrote:
+> > On 17/11/17 11:13, Alex Williamson wrote:  
+> >> On Tue, 14 Nov 2017 10:47:12 +1100
+> >> Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+> >>  
+> >>> On 27/10/17 14:00, Alexey Kardashevskiy wrote:  
+> >>>> This adds trace_map/trace_unmap tracepoints to spapr driver. Type1 already
+> >>>> uses these via the IOMMU API (iommu_map/__iommu_unmap).
+> >>>>
+> >>>> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>    
+> >>
+> >> Is this really legitimate to include tracepoints from a different  
+> >> subsystem?>  The vfio type1 backend gets these trace points by virtue of  
+> >> it actually using the IOMMU API, it doesn't call them itself.  I'm kind
+> >> of surprised these are actually available to be called from a module.  
+> > 
+> > They are explicitly exported:
+> > 
+> > EXPORT_TRACEPOINT_SYMBOL_GPL(map);
+> > EXPORT_TRACEPOINT_SYMBOL_GPL(unmap);
+> > 
+> > I would think this is for things like drivers/vfio/vfio_iommu_spapr_tce.c ,
+> > why else?...
+> > 
+> >   
+> >> I suspect the way to do this is probably to define our own tracepoints
+> >> in the vfio/spapr backend or insert tracepoints into the IOMMU layers
+> >> that that code calls into rather than masquerading as tracepoints from
+> >> a different subsystem.  Right?  
+> > 
+> > This makes sense too. But it is going to be just cut-n-paste and some
+> > confusion -
+> > /sys/kernel/debug/tracing/events/iommu/map will still be present but
+> > won't work and
+> > /sys/kernel/debug/tracing/events/vfio/vfio_iommu_spapr_tce/map will.
+
+But iommu/map does work, it's just not called by the vfio spapr tce
+backend, which is absolutely correct.  In fact, that's part of my
+reservation about this approach is that it could be interpreted as
+implying a call path that doesn't exist on this arch.
+
+> > Judges? :)  
 > 
-> This is a RFC because the IORT specification doesn't describe the
-> paravirtualized node at the moment, it is only provided as an example in
-> the virtio-iommu spec. What we need to do first is confirm that x86
-> kernels are able to use the IORT driver with the virtio-iommu. There isn't
-> anything specific to arm64 in the driver but there might be other blockers
-> we're not aware of (I know for example that x86 also requires custom DMA
-> ops rather than iommu-dma ones, but it's unrelated) so this needs to be
-> tested on the x86 prototype.
+> 
+> Still nak? I discussed this locally, the conclusion was it is a matter of
+> taste and this proposal is not that disgusting. Thanks.
 
-I tested IORT with an x86 guest, putting a virtio-iommu on the PCI bus and
-it worked fine :)
+Is that our goal now, proposals that aren't too disgusting?  I think
+it's an opportunity to introduce our own tracing infrastructure and it
+feels a lot more correct to do that than to generalize existing trace
+points from other subsystems.  Thanks,
 
-x86 still requires additional code [1] for using the IOMMU DMA ops,
-and I'm not comfortable enough with x86 to write the patch, but for
-instantiating virtio-iommus and for enumerating endpoints/buses connected
-to them, IORT should suffice.
+Alex
 
-Thanks,
-Jean
 
-[1]
-http://www.linux-arm.org/git?p=linux-jpb.git;a=patch;h=e910e224b58712151dda06df595a53ff07edef63;hp=e7f9475480c24c5f973711984b30cf6746ff3ec8
+> >>>> ---
+> >>>>
+> >>>> Example:
+> >>>>  qemu-system-ppc-8655  [096]   724.662740: unmap:                IOMMU: iova=0x000000003ffff000 size=4096 unmapped_size=4096
+> >>>>  qemu-system-ppc-8656  [104]   724.970912: map:                  IOMMU: iova=0x0800000000000000 paddr=0x00007ffef7ff0000 size=65536
+> >>>> ---
+> >>>>  drivers/vfio/vfio_iommu_spapr_tce.c | 12 ++++++++++--
+> >>>>  1 file changed, 10 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/vfio/vfio_iommu_spapr_tce.c b/drivers/vfio/vfio_iommu_spapr_tce.c
+> >>>> index 63112c36ab2d..4531486c77c6 100644
+> >>>> --- a/drivers/vfio/vfio_iommu_spapr_tce.c
+> >>>> +++ b/drivers/vfio/vfio_iommu_spapr_tce.c
+> >>>> @@ -22,6 +22,7 @@
+> >>>>  #include <linux/vmalloc.h>
+> >>>>  #include <linux/sched/mm.h>
+> >>>>  #include <linux/sched/signal.h>
+> >>>> +#include <trace/events/iommu.h>
+> >>>>  
+> >>>>  #include <asm/iommu.h>
+> >>>>  #include <asm/tce.h>
+> >>>> @@ -502,17 +503,19 @@ static int tce_iommu_clear(struct tce_container *container,
+> >>>>  		struct iommu_table *tbl,
+> >>>>  		unsigned long entry, unsigned long pages)
+> >>>>  {
+> >>>> -	unsigned long oldhpa;
+> >>>> +	unsigned long oldhpa, unmapped, firstentry = entry, totalpages = pages;
+> >>>>  	long ret;
+> >>>>  	enum dma_data_direction direction;
+> >>>>  
+> >>>> -	for ( ; pages; --pages, ++entry) {
+> >>>> +	for (unmapped = 0; pages; --pages, ++entry) {
+> >>>>  		direction = DMA_NONE;
+> >>>>  		oldhpa = 0;
+> >>>>  		ret = iommu_tce_xchg(tbl, entry, &oldhpa, &direction);
+> >>>>  		if (ret)
+> >>>>  			continue;
+> >>>>  
+> >>>> +		++unmapped;
+> >>>> +
+> >>>>  		if (direction == DMA_NONE)
+> >>>>  			continue;
+> >>>>  
+> >>>> @@ -523,6 +526,9 @@ static int tce_iommu_clear(struct tce_container *container,
+> >>>>  
+> >>>>  		tce_iommu_unuse_page(container, oldhpa);
+> >>>>  	}
+> >>>> +	trace_unmap(firstentry << tbl->it_page_shift,
+> >>>> +			totalpages << tbl->it_page_shift,
+> >>>> +			unmapped << tbl->it_page_shift);
+> >>>>  
+> >>>>  	return 0;
+> >>>>  }
+> >>>> @@ -965,6 +971,8 @@ static long tce_iommu_ioctl(void *iommu_data,
+> >>>>  					direction);
+> >>>>  
+> >>>>  		iommu_flush_tce(tbl);
+> >>>> +		if (!ret)
+> >>>> +			trace_map(param.iova, param.vaddr, param.size);
+> >>>>  
+> >>>>  		return ret;
+> >>>>  	}
+> >>>>     
+> >>>
+> >>>  
+> >>  
+> > 
+> >   
+> 
+> 
