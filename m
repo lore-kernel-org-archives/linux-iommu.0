@@ -1,79 +1,33 @@
-From: Shuah Khan <shuahkh@osg.samsung.com>
-Subject: Re: [PATCH kernel] vfio/spapr: Add trace points for map/unmap
-Date: Wed, 29 Nov 2017 09:44:13 -0700
-Message-ID: <a009f8a2-d107-e121-6184-ad80591e45de@osg.samsung.com>
-References: <20171027030008.17200-1-aik@ozlabs.ru>
- <8c58fcaa-dedc-e6be-44bf-2cb349ef9e38@ozlabs.ru>
- <20171116171301.6552869b@t450s.home>
- <52a19cfb-431f-522b-11de-c1c47f09a4c8@ozlabs.ru>
- <d367b17a-6efa-26a8-821b-42080c90e16e@ozlabs.ru>
- <20171129093244.0849fd7c@t450s.home>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 08/16] iommu: introduce device fault data
+Date: Wed, 29 Nov 2017 13:55:53 -0800
+Message-ID: <20171129135553.6dd676a3@jacob-builder>
+References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1510944914-54430-9-git-send-email-jacob.jun.pan@linux.intel.com>
+	<65b76897-55b8-6f0c-e103-4337254041ca@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20171129093244.0849fd7c@t450s.home>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>, Alexey Kardashevskiy <aik@ozlabs.ru>
-Cc: linuxppc-dev@lists.ozlabs.org, David Gibson <david@gibson.dropbear.id.au>, kvm-ppc@vger.kernel.org, kvm@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, Shuah Khan <shuahkh@osg.samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <65b76897-55b8-6f0c-e103-4337254041ca-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org" <Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/29/2017 09:32 AM, Alex Williamson wrote:
-> On Thu, 23 Nov 2017 15:13:37 +1100
-> Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+On Fri, 24 Nov 2017 12:03:33 +0000
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+
+> > + * @rid: requestor ID  
 > 
->> On 17/11/17 17:58, Alexey Kardashevskiy wrote:
->>> On 17/11/17 11:13, Alex Williamson wrote:  
->>>> On Tue, 14 Nov 2017 10:47:12 +1100
->>>> Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
->>>>  
->>>>> On 27/10/17 14:00, Alexey Kardashevskiy wrote:  
->>>>>> This adds trace_map/trace_unmap tracepoints to spapr driver. Type1 already
->>>>>> uses these via the IOMMU API (iommu_map/__iommu_unmap).
->>>>>>
->>>>>> Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>    
->>>>
->>>> Is this really legitimate to include tracepoints from a different  
->>>> subsystem?>  The vfio type1 backend gets these trace points by virtue of  
->>>> it actually using the IOMMU API, it doesn't call them itself.  I'm kind
->>>> of surprised these are actually available to be called from a module.  
->>>
->>> They are explicitly exported:
->>>
->>> EXPORT_TRACEPOINT_SYMBOL_GPL(map);
->>> EXPORT_TRACEPOINT_SYMBOL_GPL(unmap);
+> This comment can be removed
 
-Tracepoints need to be exported as per the tracepoint sub-system
-requirements.
-
->>>
->>> I would think this is for things like drivers/vfio/vfio_iommu_spapr_tce.c ,
->>> why else?...
->>>
->>>   
->>>> I suspect the way to do this is probably to define our own tracepoints
->>>> in the vfio/spapr backend or insert tracepoints into the IOMMU layers
->>>> that that code calls into rather than masquerading as tracepoints from
->>>> a different subsystem.  Right?  
->>>
->>> This makes sense too. But it is going to be just cut-n-paste and some
->>> confusion -
->>> /sys/kernel/debug/tracing/events/iommu/map will still be present but
->>> won't work and
->>> /sys/kernel/debug/tracing/events/vfio/vfio_iommu_spapr_tce/map will.
-> 
-> But iommu/map does work, it's just not called by the vfio spapr tce
-> backend, which is absolutely correct.  In fact, that's part of my
-> reservation about this approach is that it could be interpreted as
-> implying a call path that doesn't exist on this arch.
-
-These tracepoints are intended to be called after a iommo/map/unmap
-calls from IOMMU API. It doesn't make any sense to call them from
-random places. It is totally useless to do so and makes it difficult
-to debug problems.
-
-As an author of these tracepoints - that is my opinion.
-
-thanks,
--- Shuah
+will do, thanks.
