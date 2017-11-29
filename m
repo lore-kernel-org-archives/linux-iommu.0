@@ -1,16 +1,12 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/4] iommu/io-pgtable-arm: Support 52-bit physical address
-Date: Wed, 29 Nov 2017 11:29:29 +0000
-Message-ID: <ed3e03ce-8758-7f1e-54ef-ac1dcdffbfc7@arm.com>
-References: <cover.1511807303.git.robin.murphy@arm.com>
-	<cd85affe1ad7c0fe880138c658baeeff59f5d1cd.1511807303.git.robin.murphy@arm.com>
-	<6bc37a80-5d65-0d64-e2ba-91732d45c3c7@codeaurora.org>
+From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v10 0/3] iommu/smmu-v3: Workaround for hisilicon 161010801
+	erratum(reserve HW MSI)
+Date: Wed, 29 Nov 2017 14:14:46 +0000
+Message-ID: <20171129141449.120316-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6bc37a80-5d65-0d64-e2ba-91732d45c3c7-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,155 +16,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
+To: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgTmF0ZSwKCk9uIDI5LzExLzE3IDA3OjA3LCBOYXRlIFdhdHRlcnNvbiB3cm90ZToKPiBIaSBS
-b2JpbiwKPiAKPiBPbiAxMS8yOC8yMDE3IDEyOjI3IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+
-IEJyaW5nIGlvLXBndGFibGUtYXJtIGluIGxpbmUgd2l0aCB0aGUgQVJNdjguMi1MUEEgZmVhdHVy
-ZSBhbGxvd2luZwo+PiA1Mi1iaXQgcGh5c2ljYWwgYWRkcmVzc2VzIHdoZW4gdXNpbmcgdGhlIDY0
-S0IgdHJhbnNsYXRpb24gZ3JhbnVsZS4KPj4gVGhpcyB3aWxsIGJlIHN1cHBvcnRlZCBieSBTTU1V
-djMuMS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJt
-LmNvbT4KPj4gLS0tCj4+IMKgIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYyB8IDY1IAo+
-PiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0KPj4gwqAgMSBmaWxl
-IGNoYW5nZWQsIDQ3IGluc2VydGlvbnMoKyksIDE4IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jIAo+PiBiL2RyaXZlcnMvaW9tbXUv
-aW8tcGd0YWJsZS1hcm0uYwo+PiBpbmRleCA1MWU1YzQzY2FlZDEuLjRkNDYwMTdiMzI2MiAxMDA2
-NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS5jCj4+ICsrKyBiL2RyaXZl
-cnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYwo+PiBAQCAtMjEsNiArMjEsNyBAQAo+PiDCoCAjZGVm
-aW5lIHByX2ZtdChmbXQpwqDCoMKgICJhcm0tbHBhZSBpby1wZ3RhYmxlOiAiIGZtdAo+PiDCoCAj
-aW5jbHVkZSA8bGludXgvYXRvbWljLmg+Cj4+ICsjaW5jbHVkZSA8bGludXgvYml0b3BzLmg+Cj4+
-IMKgICNpbmNsdWRlIDxsaW51eC9pb21tdS5oPgo+PiDCoCAjaW5jbHVkZSA8bGludXgva2VybmVs
-Lmg+Cj4+IMKgICNpbmNsdWRlIDxsaW51eC9zaXplcy5oPgo+PiBAQCAtMzIsNyArMzMsNyBAQAo+
-PiDCoCAjaW5jbHVkZSAiaW8tcGd0YWJsZS5oIgo+PiAtI2RlZmluZSBBUk1fTFBBRV9NQVhfQURE
-Ul9CSVRTwqDCoMKgwqDCoMKgwqAgNDgKPj4gKyNkZWZpbmUgQVJNX0xQQUVfTUFYX0FERFJfQklU
-U8KgwqDCoMKgwqDCoMKgIDUyCj4+IMKgICNkZWZpbmUgQVJNX0xQQUVfUzJfTUFYX0NPTkNBVF9Q
-QUdFU8KgwqDCoCAxNgo+PiDCoCAjZGVmaW5lIEFSTV9MUEFFX01BWF9MRVZFTFPCoMKgwqDCoMKg
-wqDCoCA0Cj4+IEBAIC04Niw2ICs4Nyw4IEBACj4+IMKgICNkZWZpbmUgQVJNX0xQQUVfUFRFX1RZ
-UEVfVEFCTEXCoMKgwqDCoMKgwqDCoCAzCj4+IMKgICNkZWZpbmUgQVJNX0xQQUVfUFRFX1RZUEVf
-UEFHRcKgwqDCoMKgwqDCoMKgIDMKPj4gKyNkZWZpbmUgQVJNX0xQQUVfUFRFX0FERFJfTUFTS8Kg
-wqDCoMKgwqDCoMKgIEdFTk1BU0tfVUxMKDQ3LDEyKQo+PiArCj4+IMKgICNkZWZpbmUgQVJNX0xQ
-QUVfUFRFX05TVEFCTEXCoMKgwqDCoMKgwqDCoCAoKChhcm1fbHBhZV9pb3B0ZSkxKSA8PCA2MykK
-Pj4gwqAgI2RlZmluZSBBUk1fTFBBRV9QVEVfWE7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgICgoKGFy
-bV9scGFlX2lvcHRlKTMpIDw8IDUzKQo+PiDCoCAjZGVmaW5lIEFSTV9MUEFFX1BURV9BRsKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgKCgoYXJtX2xwYWVfaW9wdGUpMSkgPDwgMTApCj4+IEBAIC0xNTks
-NiArMTYyLDcgQEAKPj4gwqAgI2RlZmluZSBBUk1fTFBBRV9UQ1JfUFNfNDJfQklUwqDCoMKgwqDC
-oMKgwqAgMHgzVUxMCj4+IMKgICNkZWZpbmUgQVJNX0xQQUVfVENSX1BTXzQ0X0JJVMKgwqDCoMKg
-wqDCoMKgIDB4NFVMTAo+PiDCoCAjZGVmaW5lIEFSTV9MUEFFX1RDUl9QU180OF9CSVTCoMKgwqDC
-oMKgwqDCoCAweDVVTEwKPj4gKyNkZWZpbmUgQVJNX0xQQUVfVENSX1BTXzUyX0JJVMKgwqDCoMKg
-wqDCoMKgIDB4NlVMTAo+PiDCoCAjZGVmaW5lIEFSTV9MUEFFX01BSVJfQVRUUl9TSElGVChuKcKg
-wqDCoCAoKG4pIDw8IDMpCj4+IMKgICNkZWZpbmUgQVJNX0xQQUVfTUFJUl9BVFRSX01BU0vCoMKg
-wqDCoMKgwqDCoCAweGZmCj4+IEBAIC0xNzAsOSArMTc0LDcgQEAKPj4gwqAgI2RlZmluZSBBUk1f
-TFBBRV9NQUlSX0FUVFJfSURYX0RFVsKgwqDCoCAyCj4+IMKgIC8qIElPUFRFIGFjY2Vzc29ycyAq
-Lwo+PiAtI2RlZmluZSBpb3B0ZV9kZXJlZihwdGUsZCnCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBcCj4+IC3CoMKgwqAgKF9fdmEoKHB0ZSkgJiAoKDFVTEwgPDwgQVJNX0xQ
-QUVfTUFYX0FERFJfQklUUykgLSAxKcKgwqDCoCBcCj4+IC3CoMKgwqAgJiB+KEFSTV9MUEFFX0dS
-QU5VTEUoZCkgLSAxVUxMKSkpCj4+ICsjZGVmaW5lIGlvcHRlX2RlcmVmKHB0ZSxkKSBfX3ZhKGlv
-cHRlX3RvX3BhZGRyKHB0ZSwgZCkpCj4+IMKgICNkZWZpbmUgaW9wdGVfdHlwZShwdGUsbCnCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBcCj4+IMKgwqDCoMKgwqAgKCgocHRl
-KSA+PiBBUk1fTFBBRV9QVEVfVFlQRV9TSElGVCkgJiBBUk1fTFBBRV9QVEVfVFlQRV9NQVNLKQo+
-PiBAQCAtMTg0LDEyICsxODYsNiBAQAo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgKGlvcHRlX3R5cGUo
-cHRlLGwpID09IEFSTV9MUEFFX1BURV9UWVBFX1BBR0UpIDrCoMKgwqAgXAo+PiDCoMKgwqDCoMKg
-wqDCoMKgwqAgKGlvcHRlX3R5cGUocHRlLGwpID09IEFSTV9MUEFFX1BURV9UWVBFX0JMT0NLKSkK
-Pj4gLSNkZWZpbmUgaW9wdGVfdG9fcGZuKHB0ZSxkKcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIFwKPj4gLcKgwqDCoCAoKChwdGUpICYgKCgxVUxMIDw8IEFSTV9MUEFFX01B
-WF9BRERSX0JJVFMpIC0gMSkpID4+IChkKS0+cGdfc2hpZnQpCj4+IC0KPj4gLSNkZWZpbmUgcGZu
-X3RvX2lvcHRlKHBmbixkKcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIFwK
-Pj4gLcKgwqDCoCAoKChwZm4pIDw8IChkKS0+cGdfc2hpZnQpICYgKCgxVUxMIDw8IEFSTV9MUEFF
-X01BWF9BRERSX0JJVFMpIC0gMSkpCj4+IC0KPj4gwqAgc3RydWN0IGFybV9scGFlX2lvX3BndGFi
-bGUgewo+PiDCoMKgwqDCoMKgIHN0cnVjdCBpb19wZ3RhYmxlwqDCoMKgIGlvcDsKPj4gQEAgLTIw
-Myw2ICsxOTksMjUgQEAgc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgewo+PiDCoCB0eXBlZGVm
-IHU2NCBhcm1fbHBhZV9pb3B0ZTsKPj4gK3N0YXRpYyBhcm1fbHBhZV9pb3B0ZSBwYWRkcl90b19p
-b3B0ZShwaHlzX2FkZHJfdCBwYWRkciwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEpCj4+ICt7Cj4+ICvC
-oMKgwqAgYXJtX2xwYWVfaW9wdGUgcHRlID0gcGFkZHI7Cj4+ICsKPj4gK8KgwqDCoCAvKiBPZiB0
-aGUgYml0cyB3aGljaCBvdmVybGFwLCBlaXRoZXIgNTE6NDggb3IgMTU6MTIgYXJlIGFsd2F5cyAK
-Pj4gUkVTMCAqLwo+PiArwqDCoMKgIHJldHVybiAocHRlIHwgKHB0ZSA+PiAzNikpICYgQVJNX0xQ
-QUVfUFRFX0FERFJfTUFTSzsKPj4gK30KPj4gKwo+PiArc3RhdGljIHBoeXNfYWRkcl90IGlvcHRl
-X3RvX3BhZGRyKGFybV9scGFlX2lvcHRlIHB0ZSwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEpCj4+ICt7Cj4+ICvC
-oMKgwqAgcGh5c19hZGRyX3QgcGFkZHIgPSBwdGUgJiBBUk1fTFBBRV9QVEVfQUREUl9NQVNLOwo+
-PiArwqDCoMKgIHBoeXNfYWRkcl90IHBhZGRyX2hpID0gcGFkZHIgJiAoQVJNX0xQQUVfR1JBTlVM
-RShkYXRhKSAtIDEpOwo+PiArCj4+ICvCoMKgwqAgLyogcGFkZHJfaGkgc3BhbnMgbm90aGluZyBm
-b3IgNEsgZ3JhbnVsZSwgYW5kIG9ubHkgUkVTMCBiaXRzIGZvciAKPj4gMTZLICovCj4+ICvCoMKg
-wqAgcmV0dXJuIChwYWRkciBeIHBhZGRyX2hpKSB8IChwYWRkcl9oaSA8PCAzNik7Cj4+ICt9Cj4+
-ICsKPj4gwqAgc3RhdGljIGJvb2wgc2VsZnRlc3RfcnVubmluZyA9IGZhbHNlOwo+PiDCoCBzdGF0
-aWMgZG1hX2FkZHJfdCBfX2FybV9scGFlX2RtYV9hZGRyKHZvaWQgKnBhZ2VzKQo+PiBAQCAtMjg3
-LDcgKzMwMiw3IEBAIHN0YXRpYyB2b2lkIF9fYXJtX2xwYWVfaW5pdF9wdGUoc3RydWN0IAo+PiBh
-cm1fbHBhZV9pb19wZ3RhYmxlICpkYXRhLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcHRlIHw9IEFS
-TV9MUEFFX1BURV9UWVBFX0JMT0NLOwo+PiDCoMKgwqDCoMKgIHB0ZSB8PSBBUk1fTFBBRV9QVEVf
-QUYgfCBBUk1fTFBBRV9QVEVfU0hfSVM7Cj4+IC3CoMKgwqAgcHRlIHw9IHBmbl90b19pb3B0ZShw
-YWRkciA+PiBkYXRhLT5wZ19zaGlmdCwgZGF0YSk7Cj4+ICvCoMKgwqAgcHRlIHw9IHBhZGRyX3Rv
-X2lvcHRlKHBhZGRyLCBkYXRhKTsKPj4gwqDCoMKgwqDCoCBfX2FybV9scGFlX3NldF9wdGUocHRl
-cCwgcHRlLCAmZGF0YS0+aW9wLmNmZyk7Cj4+IMKgIH0KPj4gQEAgLTUyOCw3ICs1NDMsNyBAQCBz
-dGF0aWMgaW50IGFybV9scGFlX3NwbGl0X2Jsa191bm1hcChzdHJ1Y3QgCj4+IGFybV9scGFlX2lv
-X3BndGFibGUgKmRhdGEsCj4+IMKgwqDCoMKgwqAgaWYgKHNpemUgPT0gc3BsaXRfc3opCj4+IMKg
-wqDCoMKgwqDCoMKgwqDCoCB1bm1hcF9pZHggPSBBUk1fTFBBRV9MVkxfSURYKGlvdmEsIGx2bCwg
-ZGF0YSk7Cj4+IC3CoMKgwqAgYmxrX3BhZGRyID0gaW9wdGVfdG9fcGZuKGJsa19wdGUsIGRhdGEp
-IDw8IGRhdGEtPnBnX3NoaWZ0Owo+PiArwqDCoMKgIGJsa19wYWRkciA9IGlvcHRlX3RvX3BhZGRy
-KGJsa19wdGUsIGRhdGEpOwo+PiDCoMKgwqDCoMKgIHB0ZSA9IGlvcHRlX3Byb3QoYmxrX3B0ZSk7
-Cj4+IMKgwqDCoMKgwqAgZm9yIChpID0gMDsgaSA8IHRhYmxlc3ogLyBzaXplb2YocHRlKTsgaSsr
-LCBibGtfcGFkZHIgKz0gCj4+IHNwbGl0X3N6KSB7Cj4+IEBAIC02NTIsMTIgKzY2NywxMyBAQCBz
-dGF0aWMgcGh5c19hZGRyX3QgYXJtX2xwYWVfaW92YV90b19waHlzKHN0cnVjdCAKPj4gaW9fcGd0
-YWJsZV9vcHMgKm9wcywKPj4gwqAgZm91bmRfdHJhbnNsYXRpb246Cj4+IMKgwqDCoMKgwqAgaW92
-YSAmPSAoQVJNX0xQQUVfQkxPQ0tfU0laRShsdmwsIGRhdGEpIC0gMSk7Cj4+IC3CoMKgwqAgcmV0
-dXJuICgocGh5c19hZGRyX3QpaW9wdGVfdG9fcGZuKHB0ZSxkYXRhKSA8PCBkYXRhLT5wZ19zaGlm
-dCkgfCAKPj4gaW92YTsKPj4gK8KgwqDCoCByZXR1cm4gaW9wdGVfdG9fcGFkZHIocHRlLCBkYXRh
-KSB8IGlvdmE7Cj4+IMKgIH0KPj4gwqAgc3RhdGljIHZvaWQgYXJtX2xwYWVfcmVzdHJpY3RfcGdz
-aXplcyhzdHJ1Y3QgaW9fcGd0YWJsZV9jZmcgKmNmZykKPj4gwqAgewo+PiAtwqDCoMKgIHVuc2ln
-bmVkIGxvbmcgZ3JhbnVsZTsKPj4gK8KgwqDCoCB1bnNpZ25lZCBsb25nIGdyYW51bGUsIHBhZ2Vf
-c2l6ZXM7Cj4+ICvCoMKgwqAgdW5zaWduZWQgaW50IG1heF9hZGRyX2JpdHMgPSA0ODsKPj4gwqDC
-oMKgwqDCoCAvKgo+PiDCoMKgwqDCoMKgwqAgKiBXZSBuZWVkIHRvIHJlc3RyaWN0IHRoZSBzdXBw
-b3J0ZWQgcGFnZSBzaXplcyB0byBtYXRjaCB0aGUKPj4gQEAgLTY3NywxNyArNjkzLDI0IEBAIHN0
-YXRpYyB2b2lkIGFybV9scGFlX3Jlc3RyaWN0X3Bnc2l6ZXMoc3RydWN0IAo+PiBpb19wZ3RhYmxl
-X2NmZyAqY2ZnKQo+PiDCoMKgwqDCoMKgIHN3aXRjaCAoZ3JhbnVsZSkgewo+PiDCoMKgwqDCoMKg
-IGNhc2UgU1pfNEs6Cj4+IC3CoMKgwqDCoMKgwqDCoCBjZmctPnBnc2l6ZV9iaXRtYXAgJj0gKFNa
-XzRLIHwgU1pfMk0gfCBTWl8xRyk7Cj4+ICvCoMKgwqDCoMKgwqDCoCBwYWdlX3NpemVzID0gKFNa
-XzRLIHwgU1pfMk0gfCBTWl8xRyk7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBicmVhazsKPj4gwqDC
-oMKgwqDCoCBjYXNlIFNaXzE2SzoKPj4gLcKgwqDCoMKgwqDCoMKgIGNmZy0+cGdzaXplX2JpdG1h
-cCAmPSAoU1pfMTZLIHwgU1pfMzJNKTsKPj4gK8KgwqDCoMKgwqDCoMKgIHBhZ2Vfc2l6ZXMgPSAo
-U1pfMTZLIHwgU1pfMzJNKTsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGJyZWFrOwo+PiDCoMKgwqDC
-oMKgIGNhc2UgU1pfNjRLOgo+PiAtwqDCoMKgwqDCoMKgwqAgY2ZnLT5wZ3NpemVfYml0bWFwICY9
-IChTWl82NEsgfCBTWl81MTJNKTsKPj4gK8KgwqDCoMKgwqDCoMKgIG1heF9hZGRyX2JpdHMgPSA1
-MjsKPj4gK8KgwqDCoMKgwqDCoMKgIHBhZ2Vfc2l6ZXMgPSAoU1pfNjRLIHwgU1pfNTEyTSk7Cj4+
-ICvCoMKgwqDCoMKgwqDCoCBpZiAoY2ZnLT5vYXMgPiA0OCkKPj4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgcGFnZV9zaXplcyB8PSAxVUxMIDw8IDQyOyAvKiA0VEIgKi8KPj4gwqDCoMKgwqDCoMKg
-wqDCoMKgIGJyZWFrOwo+PiDCoMKgwqDCoMKgIGRlZmF1bHQ6Cj4+IC3CoMKgwqDCoMKgwqDCoCBj
-ZmctPnBnc2l6ZV9iaXRtYXAgPSAwOwo+PiArwqDCoMKgwqDCoMKgwqAgcGFnZV9zaXplcyA9IDA7
-Cj4+IMKgwqDCoMKgwqAgfQo+PiArCj4+ICvCoMKgwqAgY2ZnLT5wZ3NpemVfYml0bWFwICY9IHBh
-Z2Vfc2l6ZXM7Cj4+ICvCoMKgwqAgY2ZnLT5pYXMgPSBtaW4oY2ZnLT5pYXMsIG1heF9hZGRyX2Jp
-dHMpOwo+PiArwqDCoMKgIGNmZy0+b2FzID0gbWluKGNmZy0+b2FzLCBtYXhfYWRkcl9iaXRzKTsK
-Pj4gwqAgfQo+PiDCoCBzdGF0aWMgc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgKgo+PiBAQCAt
-Nzg0LDYgKzgwNyw5IEBAIGFybV82NF9scGFlX2FsbG9jX3BndGFibGVfczEoc3RydWN0IGlvX3Bn
-dGFibGVfY2ZnIAo+PiAqY2ZnLCB2b2lkICpjb29raWUpCj4+IMKgwqDCoMKgwqAgY2FzZSA0ODoK
-Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIHJlZyB8PSAoQVJNX0xQQUVfVENSX1BTXzQ4X0JJVCA8PCBB
-Uk1fTFBBRV9UQ1JfSVBTX1NISUZUKTsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGJyZWFrOwo+PiAr
-wqDCoMKgIGNhc2UgNTI6Cj4+ICvCoMKgwqDCoMKgwqDCoCByZWcgfD0gKEFSTV9MUEFFX1RDUl9Q
-U181Ml9CSVQgPDwgQVJNX0xQQUVfVENSX1BTX1NISUZUKTsKPiBJIHRoaW5rIHlvdSBwcm9iYWJs
-eSBpbnRlbmRlZCB0byB1c2UgQVJNX0xQQUVfVENSX1tJXVBTX1NISUZUIGhlcmUuCj4gCj4gQXMg
-b3JpZ2luYWxseSB3cml0dGVuLCBJIHNlZSBGX0FERFJfU0laRSBmYXVsdHMgZm9yIHRyYW5zYWN0
-aW9ucyB3aG9zZQo+IG91dHB1dCBhZGRyZXNzIGV4Y2VlZHMgMzItYml0cyB3aGVuIHRlc3Rpbmcg
-b24gYSA1Mi1iaXQgY2FwYWJsZSBzeXN0ZW0uCj4gQmVjYXVzZSBvZiB0aGUgYXBwYXJlbnQgc2hp
-ZnQgdHlwbywgVENSW0lQU10gd2FzIGJlaW5nIGxlZnQgdW5jb25maWd1cmVkCj4gYW5kIHRoaXMg
-c2V0dGluZyB3YXMgaW4gdHVybiBjYXJyaWVkIGludG8gQ0RbSVBTXSBlZmZlY3RpdmVseSBsaW1p
-dGluZwo+IE9BUyB0byAzMi1iaXRzLgoKT29wcywgeW91J3JlIHF1aXRlIHJpZ2h0IC0gdGhpcyB3
-YXMgaW5kZWVkIGEgc2lsbHkgY29weS1wYXN0ZSBlcnJvci4gClBlcmhhcHMgSSBzaG91bGQgaGF2
-ZSBtZW50aW9uZWQgdGhhdCBJIGRvbid0IGhhdmUgYSBtb2RlbCBub3IgYW55IApoYXJkd2FyZSB3
-aGljaCBkb2VzIDUyLWJpdCwgc28gdGhpcyBpcyB3cml0dGVuIHRvIHNwZWMgYW5kIG9ubHkgCnJl
-Z3Jlc3Npb24tdGVzdGVkIGZvciA8PTQ4LWJpdC4KCj4gQWZ0ZXIgZml4aW5nIHRoZSBzaGlmdCB0
-eXBvLCB0aGluZ3Mgc2VlbSB0byBiZSB3b3JraW5nIGFzIGV4cGVjdGVkLgoKVGhhbmtzISBNYXkg
-SSB0YWtlIHRoYXQgYXMgYSBUZXN0ZWQtYnkgZm9yIHRoZSBzZXJpZXMgd2hlbiBJIHBvc3QgYSAK
-Y29ycmVjdGVkIHYyPwoKUm9iaW4uCgo+IAo+IC1OYXRlCj4+ICvCoMKgwqDCoMKgwqDCoCBicmVh
-azsKPj4gwqDCoMKgwqDCoCBkZWZhdWx0Ogo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBvdXRf
-ZnJlZV9kYXRhOwo+PiDCoMKgwqDCoMKgIH0KPj4gQEAgLTg5MSw2ICs5MTcsOSBAQCBhcm1fNjRf
-bHBhZV9hbGxvY19wZ3RhYmxlX3MyKHN0cnVjdCBpb19wZ3RhYmxlX2NmZyAKPj4gKmNmZywgdm9p
-ZCAqY29va2llKQo+PiDCoMKgwqDCoMKgIGNhc2UgNDg6Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBy
-ZWcgfD0gKEFSTV9MUEFFX1RDUl9QU180OF9CSVQgPDwgQVJNX0xQQUVfVENSX1BTX1NISUZUKTsK
-Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIGJyZWFrOwo+PiArwqDCoMKgIGNhc2UgNTI6Cj4+ICvCoMKg
-wqDCoMKgwqDCoCByZWcgfD0gKEFSTV9MUEFFX1RDUl9QU181Ml9CSVQgPDwgQVJNX0xQQUVfVENS
-X1BTX1NISUZUKTsKPj4gK8KgwqDCoMKgwqDCoMKgIGJyZWFrOwo+PiDCoMKgwqDCoMKgIGRlZmF1
-bHQ6Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIG91dF9mcmVlX2RhdGE7Cj4+IMKgwqDCoMKg
-wqAgfQo+Pgo+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
-cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On certain HiSilicon platforms (hip06/hip07) the GIC ITS and PCIe RC
+deviates from the standard implementation and this breaks PCIe MSI
+functionality when SMMU is enabled.
+
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the MSI
+payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
+
+This patch implements an ACPI based quirk to reserve the hw msi regions
+in the smmu-v3 driver which means these address regions will not be
+translated and will be excluded from iova allocations.
+
+To implement this quirk, the following changes are incorporated:
+1. Added a generic helper function to IORT code to retrieve and reserve
+   the associated ITS base address from a device IORT node. The function 
+   has a check for smmu model to determine whether the platform requires
+   the HW MSI reservation or not.
+2. Added smmu node entries and explicitly disabled them in hip06/hip07
+    dts files so that users are warned about the non-DT support for this
+    erratum.
+
+Changelog:
+
+v9 --> v10
+Addressed comments:
+-Moved smmu model check to iort helper function to selectively apply
+ the msi reservation which will make the fn call generic from iommu-dma.
+-Removed PCI blacklisting patch, instead added smmu nodes(disabled)
+ with comments to hip06/hip07 dts file. 
+
+v8 --> v9
+-Thanks to Marc, fixed IORT helper function to reserve the ITS
+ translater region only.
+-Removed the DT support for MSI reservation and blacklisted
+ HiSilicon PCIe controllers on DT based systems when SMMUv3 is
+ enabled.
+
+v7 --> v8
+Addressed comments from Rob and Lorenzo:
+ -Modified to use DT compatible string for errata.
+ -Changed logic to retrieve the msi-parent for DT case.
+
+v6 --> v7
+Addressed request from Will to add DT support for the erratum:
+ - added bt binding
+ - add of_iommu_msi_get_resv_regions()
+New arm64 silicon errata entry
+Rename iort_iommu_{its->msi}_get_resv_regions
+
+v5 --> v6
+Addressed comments from Robin and Lorenzo:
+-No change to patch#1 .
+-Reverted v5 patch#2 as this might break the platforms where this quirk
+  is not applicable. Provided a generic function in iommu code and added
+  back the quirk implementation in SMMU v3 driver(patch#3)
+
+v4 --> v5
+Addressed comments from Robin and Lorenzo:
+-Added a comment to make it clear that, for now, only straightforward 
+  HW topologies are handled while reserving ITS regions(patch #1).
+
+v3 --> v4
+Rebased on 4.13-rc1.
+Addressed comments from Robin, Will and Lorenzo:
+-As suggested by Robin, moved the ITS msi reservation into 
+  iommu_dma_get_resv_regions().
+-Added its_count != resv region failure case(patch #1).
+
+v2 --> v3
+Addressed comments from Lorenzo and Robin:
+-Removed dev_is_pci() check in smmuV3 driver.
+-Don't treat device not having an ITS mapping as an error in
+  iort helper function.
+
+v1 --> v2
+-patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+
+RFCv2 -->PATCH
+-Incorporated Lorenzo's review comments.
+
+RFC v1 --> RFC v2
+Based on Robin's review comments,
+-Removed  the generic erratum framework.
+-Using IORT/MADT tables to retrieve the ITS base addr instead  of vendor specific CSRT table.
+
+Shameer Kolothum (3):
+  ACPI/IORT: Add msi address regions reservation helper
+  iommu/dma: Add HW MSI(GICv3 ITS) address regions reservation
+  arm64:dts:hisilicon Disable hisilicon smmu node on hip06/hip07
+
+ arch/arm64/boot/dts/hisilicon/hip06.dtsi |  55 +++++++++++++
+ arch/arm64/boot/dts/hisilicon/hip07.dtsi |  24 ++++++
+ drivers/acpi/arm64/iort.c                | 133 ++++++++++++++++++++++++++++++-
+ drivers/iommu/dma-iommu.c                |   8 +-
+ drivers/irqchip/irq-gic-v3-its.c         |   3 +-
+ include/linux/acpi_iort.h                |   7 +-
+ 6 files changed, 224 insertions(+), 6 deletions(-)
+
+-- 
+1.9.1
