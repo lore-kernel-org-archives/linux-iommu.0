@@ -1,68 +1,41 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to and
- from devices
-Date: Thu, 30 Nov 2017 13:39:31 +0000
-Message-ID: <c4ba0a3d-ef11-6e1a-9c47-7c574233d4fb@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
- <20171006133203.22803-6-jean-philippe.brucker@arm.com>
- <9c364147-12c4-5a8a-9cd9-0642a6b92555@huawei.com>
- <3338635f-f2ba-4b78-a72b-2568645f7df3@arm.com>
- <7ba3d70a-2364-2a92-39a8-ed112807b83c@huawei.com>
+From: Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>
+Subject: Re: BSOD with [PATCH 00/13] mmu_notifier kill invalidate_page
+ callback
+Date: Thu, 30 Nov 2017 17:19:34 +0100
+Message-ID: <20171130161933.GB1606@flask>
+References: <20170829235447.10050-1-jglisse@redhat.com>
+ <20171130093320.66cxaoj45g2ttzoh@nora.maurer-it.com>
+ <39823aee-4918-f87c-8342-89eff622ee43@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <7ba3d70a-2364-2a92-39a8-ed112807b83c@huawei.com>
-Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Yisheng Xie <xieyisheng1@huawei.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Sudeep Holla <Sudeep.Holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, "gabriele.paoloni@huawei.com" <gabriele.paoloni@huawei.com>, nwatters@cod
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <39823aee-4918-f87c-8342-89eff622ee43@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Joerg Roedel <jroedel@suse.de>, Dan Williams <dan.j.williams@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Dimitri Sivanich <sivanich@sgi.com>, Jack Steiner <steiner@sgi.com>, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/11/17 01:11, Yisheng Xie wrote:
-> Hi, Jean,
+2017-11-30 12:20+0100, Paolo Bonzini:
+> On 30/11/2017 10:33, Fabian Grünbichler wrote:
+> > 
+> > It was reverted in 785373b4c38719f4af6775845df6be1dfaea120f after which
+> > the symptoms disappeared until this series was merged, which contains
+> > 
+> > 369ea8242c0fb5239b4ddf0dc568f694bd244de4 mm/rmap: update to new mmu_notifier semantic v2
+> > 
+> > We haven't bisected the individual commits of the series yet, but the
+> > commit immediately preceding its merge exhibits no problems, while
+> > everything after does. It is not known whether the bug is actually in
+> > the series itself, or whether increasing the likelihood of triggering it
+> > is just a side-effect. There is a similar report[2] concerning an
+> > upgrade from 4.12.12 to 4.12.13, which does not contain this series in
+> > any form AFAICT but might be worth another look as well.
 > 
-> On 2017/11/29 23:01, Jean-Philippe Brucker wrote:
->> On 29/11/17 06:08, Yisheng Xie wrote:
->>>
->>>
->>> On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
->>>> +int iommu_process_bind_device(struct device *dev, struct task_struct *task,
->>>> +			      int *pasid, int flags)
->>>> +{
->>> [..]
->>>> +			err = iommu_process_attach_locked(context, dev);
->>>> +			if (err)
->>>> +				iommu_process_put_locked(process);
->>> one ref for a context is enough right? so also need call iommu_process_put_locked()
->>> if attach ok, or will be leak if user call bind twice for the same device and task.
->>
->> I wasn't sure, I think I prefer taking one ref for each bind. If user
->> calls bind twice, it should call unbind twice as well (in case of leak we
->> free the context on process exit).
->>
->> Also with this implementation, user can call bind for two devices in the
->> same domain, which will share the same context structure. So we have to
->> take as many refs as bind() calls.
-> 
-> 
-> hmm, it has two ref, one for _context_ and the other for *process* (or maybe mm for
-> your next version), right? For each bind it will take a ref of context as present
-> design. but why also process ref need be taken for each bind? I mean it seems does
-> not break _user can call bind for two devices in the same domain_.
-> 
-> And if you really want to take a ref of *process* for echo bind, you should put it when
-> unbind, right? I just not find where you put the ref of process when unbind. But just put
-> the process ref when free context.
-> 
-> Maybe I just miss something.
+> I know of one issue in this series (invalidate_page was removed from KVM
+> without reimplementing it as invalidate_range).  I'll try to prioritize
+> the fix, but I don't think I can do it before Monday.
 
-No you're right I misunderstood, sorry about that. Each context has a
-single ref to a process, so we do need to drop the process ref here as you
-pointed out.
-
-I thought I exercised this path though, I'll update my test suite. Also
-attach_locked shouldn't take a context ref if attach fails...
-
-Thanks a lot,
-Jean
+The series also dropped the reloading of the APIC access page and we
+never had it in invalidate_range_start ... I'll look into it today.
