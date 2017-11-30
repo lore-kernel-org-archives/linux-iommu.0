@@ -1,199 +1,136 @@
-From: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: No check of the size passed to unmap_single in swiotlb
-Date: Thu, 30 Nov 2017 03:05:30 +0000
-Message-ID: <VI1PR04MB30713C640E14230CD666AD308C380@VI1PR04MB3071.eurprd04.prod.outlook.com>
-References: <VI1PR04MB30715EA7212DC661481041438C220@VI1PR04MB3071.eurprd04.prod.outlook.com>
-	<20171120162652.GR24312@char.us.oracle.com>
-	<bb5a338c-4fd1-dbc4-e2be-663df0887504@arm.com>
-	<VI1PR04MB30713D88BF08BE52B2C85D458C210@VI1PR04MB3071.eurprd04.prod.outlook.com>
-	<c372988a-e7cb-fe47-aec4-538c8808c3be@arm.com>
+From: Fabian =?iso-8859-1?Q?Gr=FCnbichler?= <f.gruenbichler@proxmox.com>
+Subject: BSOD with [PATCH 00/13] mmu_notifier kill invalidate_page callback
+Date: Thu, 30 Nov 2017 10:33:20 +0100
+Message-ID: <20171130093320.66cxaoj45g2ttzoh@nora.maurer-it.com>
+References: <20170829235447.10050-1-jglisse@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c372988a-e7cb-fe47-aec4-538c8808c3be-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170829235447.10050-1-jglisse@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Joerg Roedel <jroedel@suse.de>, Dan Williams <dan.j.williams@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Dimitri Sivanich <sivanich@sgi.com>, Jack Steiner <steiner@sgi.com>, Paolo Bonzini <pbonzini@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Tue, Aug 29, 2017 at 07:54:34PM -0400, Jérôme Glisse wrote:
+> (Sorry for so many list cross-posting and big cc)
 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> Sent: Tuesday, November 28, 2017 10:18 PM
-> To: Eric Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; Konrad Rzeszutek Wilk
-> <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>; Kees Cook
-> <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>;
-> Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Al Viro
-> <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>; Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>;
-> Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>; Ingo Molnar
-> <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Subject: Re: No check of the size passed to unmap_single in swiotlb
+Ditto (trimmed it a bit already, feel free to limit replies as you see
+fit).
+
 > 
-> Hi Eric,
-> 
-> On 23/11/17 09:08, Eric Yang wrote:
-> >
-> >
-> >> -----Original Message----- From: Robin Murphy
-> >> [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org] Sent: Tuesday, November 21, 2017
-> >> 12:50 AM To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>; Eric
-> >> Yang <yu.yang_3-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org Cc:
-> >> Daniel Borkmann <daniel-FeC+5ew28dpmcu3hnIyYJQ@public.gmane.org>; Kees Cook
-> >> <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; Geert Uytterhoeven
-> >> <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>; Greg Kroah-Hartman
-> >> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; linux- kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; David
-> >> Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>; Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>;
-> >> Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>; Andrew Morton
-> >> <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>; Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> >> Subject: Re: No check of the size passed to unmap_single in swiotlb
-> >>
-> >> On 20/11/17 16:26, Konrad Rzeszutek Wilk wrote:
-> >>> On Mon, Nov 20, 2017 at 08:17:14AM +0000, Eric Yang wrote:
-> >>>> Hi all,
-> >>>
-> >>> Hi!
-> >>>>
-> >>>> During debug a  device only support 32bits DMA(Qualcomm Atheros
-> >>>> AP) in
-> >> our LS1043A 64bits ARM  SOC, we found that the invoke of
-> >> dma_unmap_single - -> swiotlb_tbl_unmap_single  will unmap the passed
-> >> "size" anyway even when the "size" is incorrect.
-> >>>>
-> >>>> If the size is larger than it should, the extra entries in
-> >>>> io_tlb_orig_addr array
-> >> will be refilled by INVALID_PHYS_ADDR, and it will cause the bounce
-> >> buffer copy not happen when the one who really used the mis-freed
-> >> entries doing  DMA data transfers, and this will cause further unknow
-> >> behaviors.
-> >>>>
-> >>>> Here we just fix it temporarily by adding a judge of the "size"
-> >>>> in the
-> >> swiotlb_tbl_unmap_single, if it is larger than it deserves, just
-> >> unmap the right size only. Like the code:
-> >>>
-> >>> Did the DMA debug API (CONFIG_DMA_API_DEBUG) help in figuring this
-> >>> issue
-> >> as well?
-> >>>
-> >>>>
-> >>>> [yangyu@titan dash-lts]$ git diff ./lib/swiotlb.c diff --git
-> >>>> a/lib/swiotlb.c b/lib/swiotlb.c index
-> >>>> ad1d2962d129..58c97ede9d78 100644 --- a/lib/swiotlb.c +++
-> >>>> b/lib/swiotlb.c @@ -591,7 +591,10 @@ void
-> >>>> swiotlb_tbl_unmap_single(struct device
-> >> *hwdev, phys_addr_t tlb_addr,
-> >>>> */ for (i = index + nslots - 1; i >= index; i--) { io_tlb_list[i] =
-> >>>> ++count; - io_tlb_orig_addr[i] = INVALID_PHYS_ADDR; +
-> >>>> if(io_tlb_orig_addr[i]  != orig_addr) + printk("======size wrong,
-> >>>> ally down ally down!===\n"); +
-> >>>> else +                         io_tlb_orig_addr[i] =
-> >>>> INVALID_PHYS_ADDR; } /* * Step 2: merge the returned slots with the
-> >>>> preceding slots,
-> >>>>
-> >>>> Although pass a right size of DMA buffer is the responsibility of
-> >>>> the drivers,
-> >> but Is it useful to add some size check code to prevent  real damage
-> >> happen?
-> >>
-> >> There doesn't seem to be much good reason for SWIOTLB to be more
-> >> special than other DMA API backends, and not all of them have enough
-> >> internal state to be able to make such a check. It's also not
-> >> necessarily possible to "prevent damage" anyway - if a driver does
-> >> pass a bogus size for dma_unmap_single(..., DMA_FROM_DEVICE), SWIOTLB
-> >> might be able to keep itself internally consistent, but it still
-> >> can't prevent the arch code in the middle from invalidating the wrong
-> >> cache lines and potentially corrupting adjacent memory.
-> >>
-> >> In short, trying to work around broken drivers is a much worse idea
-> >> than just fixing those drivers, and that's what we already have
-> >> dma-debug for.
-> >>
-> >> Robin.
-> >
-> > Hi Robin,
-> >
-> > I agree that hacking kernel to fix broken drivers is not acceptable,
-> > actually we spent days to fight driver supplier with  this, they do
-> > not want to change their code and want fix it directly in kernel.
-> 
-> So their code misuses an API in a manner which has never been correct, and is
-> *impossible* for many common implementations of that API to validate, and
-> they think it's upstream's job to work around it? Wow...
-> you have my sympathy :)
+> Please help testing !
 > 
 
-Yeah, as a BSP supplier we are always the first suspect when anything happen :)
+Kernels 4.13 and 4.14 (which both contain these patch series in its
+final form) are affected by a bug triggering BSOD
+(CRITICAL_STRUCTURE_CORRUPTION) in Windows 10/2016 VMs in Qemu under
+certain conditions on certain hardware/microcode versions (see below for
+details).
 
+Testing this proved to be quite cumbersome, as only some systems are
+affected and it took a while to find a semi-reliable test setup. Some
+users reported that microcode updates made the problem disappear on some
+affected systems[1].
 
-> > I tried Dma-debug yesterday, it works very well,  but I think only the
-> > size mismatch check may not be enough for the map entry corrupt
-> > situation, some run-time warning may be better when the real
-> > corruption happen.
-> >
-> > For most of the dma-api backend, the size mismatch may do no harm at
-> > all, and even in SWIOTLB itself when the bounce buffer is not used,
-> > the size mismatch do no harm either. In our case, the same buggy
-> > driver works well when board has 2G DDR, but panic frequently in 4G
-> > DDR because of the use of bounce buffer and these corrupted map
-> > entries. it is hard to catch this kind of bugs, for when the
-> > corruption happen, the kernel has all kind of reasons to panic, but
-> > not even one may directly point to the real source.
-> 
-> As I said, just because things appear to work for your test cases on your system
-> in the non-bounced case doesn't mean it's universally fine.
-> If this device can be integrated into non-cache-coherent systems, then over-
-> unmapping of device-writable buffers will eventually cause random corruption
-> and data loss to somebody, somewhere, by invalidating dirty cache lines in the
-> wrong place. If this device can be integrated behind an IOMMU (and if it's
-> available with a PCI/PCIe interface, assume that it will be), then any over-
-> unmapping will remove other devices'
-> translations and cause random DMA problems which can be even less obvious to
-> debug, and cannot be 'worked around' at all (certainly on the
-> arm64 and x86 implementations).
-> 
+Bisecting the 4.13 release cycle first pointed to
 
-Yes, for the performance issue of swiotlb, we may be forced to enable SMMU, as you said the broken driver may not  workaround at all by kernel hack.
+aac2fea94f7a3df8ad1eeb477eb2643f81fd5393 rmap: do not call mmu_notifier_invalidate_page() under ptl
 
-> > Add the warning messages is a big convenience for figure this kind of
-> > issues, at least to me and the AP driver supplier, such warnings may
-> > save weeks of hard debug time.
-> 
-> I don't get it - if driver developers are writing buggy drivers and not testing with
-> basic well-established features like dma-debug, that's on the driver developers.
-> Optimising for the case where BSP developers happen to get lucky with a
-> particular configuration in which they might see driver bugs tickle warnings
-> elsewhere doesn't seem sensible. Yes, it wouldn't be utterly unacceptable for
-> SWIOTLB to print a warning when it detects some (address,size) combination
-> that looks like it may have gone out-of-bounds, but at that point
-> swiotlb_bounce() has presumably already done the damage of overwriting
-> something it shouldn't have with who knows what, and it's still only one specific
-> case - for instance, you wouldn't detect if the size is too small and you haven't
-> bounced
-> *enough* data, but that would still make your I/O misbehave.
-> 
-> In the end, it comes down to the difference between a) I/O going wrong and the
-> system crashing, and b) the user *possibly* getting a warning they can't do
-> anything about before I/O going wrong and the system crashing. Ultimately the
-> driver developer still has to fix their bug, so why add code to occasionally
-> antagonise the user when a developer feature tailor-made for catching such
-> bugs immediately has existed for nearly 9 years?
-> 
-> Robin.
+as likely culprit (although it was not possible to bisect exactly down
+to this commit).
 
-You are right. Thanks a lot for all the information and the time spent and also the patience.
+It was reverted in 785373b4c38719f4af6775845df6be1dfaea120f after which
+the symptoms disappeared until this series was merged, which contains
 
-Regards,
-Eric
+369ea8242c0fb5239b4ddf0dc568f694bd244de4 mm/rmap: update to new mmu_notifier semantic v2
+
+We haven't bisected the individual commits of the series yet, but the
+commit immediately preceding its merge exhibits no problems, while
+everything after does. It is not known whether the bug is actually in
+the series itself, or whether increasing the likelihood of triggering it
+is just a side-effect. There is a similar report[2] concerning an
+upgrade from 4.12.12 to 4.12.13, which does not contain this series in
+any form AFAICT but might be worth another look as well.
+
+Our test setup consists of the following:
+CPU: Intel(R) Xeon(R) CPU D-1528 @ 1.90GHz (single socket)
+Flags: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat
+pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb
+rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology
+nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx
+est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic
+movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm
+3dnowprefetch cpuid_fault epb cat_l3 cdp_l3 intel_ppin intel_pt
+tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2
+smep bmi2 erms invpcid rtm cqm rdt_a rdseed adx smap xsaveopt cqm_llc
+cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm arat pln pts
+microcode: 0x700000e
+Mainboard: Supermicro X10SDV-6C+-TLN4F
+RAM: 64G DDR4 [3]
+Swap: 8G on an LV
+Qemu: 2.9.1 with some patches on top ([4])
+OS: Debian Stretch based (PVE 5.1)
+KSM is enabled, but turning it off just increases the number of test
+iterations needed to trigger the bug.
+Kernel config: [5]
+
+VMs:
+A: Windows 2016 with virtio-blk disks, 6G RAM
+B: Windows 10 with (virtual) IDE disks, 6G RAM
+C: Debian Stretch, ~55G RAM
+
+fio config:
+[global]
+thread=2
+runtime=1800
+
+[write1]
+ioengine=windowsaio
+sync=0
+direct=0
+bs=4k
+size=30G
+rw=randwrite
+iodepth=16
+
+[read1]
+ioengine=windowsaio
+sync=0
+direct=0
+bs=4k
+size=30G
+rw=randread
+iodepth=16
+
+Test run:
+
+- Start all three VMs
+- run 'stress-ng --vm-bytes 1G --vm 52 -t 6000' in VM C
+- wait until swap is (almost) full and KSM starts to merge pages
+- start fio in VM A and B
+- stop stress-ng in VM C, power off VM C
+- run 'swapoff -av' on host
+- wait until swap content has been swapped in again (this takes a while)
+- observe BSOD in at least one of A / B around 30% of the time
+
+While this test case is pretty artifical, the BSOD issue does affect
+users in the wild running regular work loads (where it can take from
+multiple hours up to several days to trigger).
+
+We have reverted this patch series in our 4.13 based kernel for now,
+with positive feedback from users and our own testing. If more detailed
+traces or data from a test run on an affected system is needed, we will
+of course provide it.
+
+Any further input / pointers are highly appreciated!
+
+1: https://forum.proxmox.com/threads/blue-screen-with-5-1.37664/
+2: http://www.spinics.net/lists/kvm/msg159179.html
+https://bugs.launchpad.net/qemu/+bug/1728256
+https://bugzilla.kernel.org/show_bug.cgi?id=197951
+3: http://www.samsung.com/semiconductor/products/dram/server-dram/ddr4-registered-dimm/M393A2K40BB1?ia=2503
+5: https://git.proxmox.com/?p=pve-qemu.git;a=tree;f=debian/patches;h=2c516be8e69a033d14809b17e8a661b3808257f7;hb=8d4a2d3f5569817221c19a91f763964c40e00292
+6: https://gist.github.com/Fabian-Gruenbichler/5c3af22ac7e6faae46840bdcebd7df14
