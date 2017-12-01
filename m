@@ -1,9 +1,9 @@
 From: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
 Subject: [PATCH RT 12/15] iommu/amd: Use raw_cpu_ptr() instead of
 	get_cpu_ptr() for ->flush_queue
-Date: Fri, 01 Dec 2017 10:48:49 -0500
-Message-ID: <20171201154913.211774599@goodmis.org>
-References: <20171201154837.379265211@goodmis.org>
+Date: Fri, 01 Dec 2017 10:50:11 -0500
+Message-ID: <20171201155029.951684562@goodmis.org>
+References: <20171201154959.375846909@goodmis.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
