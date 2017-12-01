@@ -1,41 +1,294 @@
-From: Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>
-Subject: Re: BSOD with [PATCH 00/13] mmu_notifier kill invalidate_page
- callback
-Date: Thu, 30 Nov 2017 17:19:34 +0100
-Message-ID: <20171130161933.GB1606@flask>
-References: <20170829235447.10050-1-jglisse@redhat.com>
- <20171130093320.66cxaoj45g2ttzoh@nora.maurer-it.com>
- <39823aee-4918-f87c-8342-89eff622ee43@redhat.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC] virtio-iommu version 0.5
+Date: Fri, 1 Dec 2017 15:46:10 +0000
+Message-ID: <a70bca26-778a-c917-357f-0717466d843f@arm.com>
+References: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <virtio-dev-return-2735-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Content-Disposition: inline
-In-Reply-To: <39823aee-4918-f87c-8342-89eff622ee43@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paolo Bonzini <pbonzini@redhat.com>
-Cc: =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Joerg Roedel <jroedel@suse.de>, Dan Williams <dan.j.williams@intel.com>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, Dimitri Sivanich <sivanich@sgi.com>, Jack Steiner <steiner@sgi.com>, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, kvm@vger.kernel.org
+In-Reply-To: <20171023093241.20113-1-jean-philippe.brucker@arm.com>
+Content-Language: en-US
+To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "peterx@redhat.com" <peterx@redhat.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "Jayachandran.Nair@cavium.com" <Jayachandran.Nair@cavium.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-2017-11-30 12:20+0100, Paolo Bonzini:
-> On 30/11/2017 10:33, Fabian Grünbichler wrote:
-> > 
-> > It was reverted in 785373b4c38719f4af6775845df6be1dfaea120f after which
-> > the symptoms disappeared until this series was merged, which contains
-> > 
-> > 369ea8242c0fb5239b4ddf0dc568f694bd244de4 mm/rmap: update to new mmu_notifier semantic v2
-> > 
-> > We haven't bisected the individual commits of the series yet, but the
-> > commit immediately preceding its merge exhibits no problems, while
-> > everything after does. It is not known whether the bug is actually in
-> > the series itself, or whether increasing the likelihood of triggering it
-> > is just a side-effect. There is a similar report[2] concerning an
-> > upgrade from 4.12.12 to 4.12.13, which does not contain this series in
-> > any form AFAICT but might be worth another look as well.
-> 
-> I know of one issue in this series (invalidate_page was removed from KVM
-> without reimplementing it as invalidate_range).  I'll try to prioritize
-> the fix, but I don't think I can do it before Monday.
+Hello,
 
-The series also dropped the reloading of the APIC access page and we
-never had it in invalidate_range_start ... I'll look into it today.
+Since we still have time to introduce disruptive changes, I'm
+considering changing the UNMAP parameters slightly. Behavior stays the
+same, but instead of passing virt_addr and size, we pass virt_start and
+virt_end:
+
+struct virtio_iommu_req_unmap {
+        le32    domain;
+        le64    virt_start;
+        le64    virt_end;
+        le32    reserved;
+};
+
+And for symmetry, also change MAP:
+
+struct virtio_iommu_req_map {
+        le32    domain;
+        le64    phys_start;
+        le64    virt_start;
+        le64    virt_end;
+        le32    flags;
+};
+
+This would allow to express the full 64-bit range in MAP and UNMAP
+requests. Currently the MAP description dismisses this case with "just
+use VIRTIO_IOMMU_F_BYPASS if you need an identity mapping", and I think
+it still holds. But for UNMAP it can be useful to send a single request
+covering the full address space instead of lots of individual requests.
+
+I had this problem when implementing ATTACH/DETACH in kvmtool, because
+VFIO doesn't have an explicit unmap-all command (and kvmtool doesn't
+keep track of the mappings). When changing a device's domain, I had to
+send two unmap commands, one for each half of the address space. It's
+not a huge problem, just a bit inconvenient.
+
+I don't see how unmap-all would be useful for virtio-iommu at the moment
+(since detaching the domain unmaps all) but just like it turns out to be
+desirable in VFIO, I'm sure someone will need it in virtio-iommu one
+day.
+
+Alternatively we could change \field{reserved} of the unmap request into
+\field{flags} and add an UNMAP_ALL flag. This is backward-compatible and
+less invasive. Introducing a new UNMAP_ALL request would probably be
+cleaner though. In any case, I personally prefer start and end
+parameter, it looks nicer. The changeset below looks scary, but it's
+mostly reformatting.
+
+Please let me know if you have any objection, or other comment for 0.5.
+
+Thanks,
+Jean
+
+--- 8< ---
+Subject: [PATCH] Change MAP and UNMAP parameters
+
+Passing start/end instead of start/size to MAP and UNMAP offers more
+flexibility. UNMAP can now be used to unmap the whole address space in
+one go. UNMAP(domain, 0, ~0ULL) should now remove all mappings.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+---
+ device-operations.tex | 124 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 61 insertions(+), 63 deletions(-)
+
+diff --git a/device-operations.tex b/device-operations.tex
+index 9b35283..3ecafd3 100644
+--- a/device-operations.tex
++++ b/device-operations.tex
+@@ -21,15 +21,15 @@ types:
+   \texttt{attach(device = 0x104, domain = 1)}
+ \item Create a mapping between a range of guest-virtual and guest-physical
+   address. \\
+-  \texttt{map(domain = 1, virt = 0x1000, phys = 0xa000,
+-          size = 0x1000, flags = READ)}
++  \texttt{map(domain = 1, virt_start = 0x1000, virt_end = 0x1fff,
++          phys = 0xa000, flags = READ)}
+
+   Endpoint 0x104, for example a hardware PCI endpoint, can now read at
+   addresses 0x1000-0x1fff. These accesses are translated into
+   system-physical addresses by the IOMMU.
+
+ \item Remove the mapping.\\
+-  \texttt{unmap(domain = 1, virt = 0x1000, size = 0x1000)}
++  \texttt{unmap(domain = 1, virt_start= 0x1000, virt_end = 0x1fff)}
+
+   Any access to addresses 0x1000-0x1fff by endpoint 0x104 would now be
+   rejected.
+@@ -286,8 +286,9 @@ written to it, the driver SHOULD interpret it as a failure from the device
+ to parse the request.
+
+ If the VIRTIO_IOMMU_F_INPUT_RANGE feature is offered, the driver SHOULD
+-NOT send requests with \field{virt_addr} less than
+-\field{input_range.start} or greater than \field{input_range.end}.
++NOT send requests with \field{virt_start} less than
++\field{input_range.start} or \field{virt_end} greater than
++\field{input_range.end}.
+
+ If the VIRTIO_IOMMU_F_DOMAIN_BITS feature is offered, the driver SHOULD
+ NOT send requests with \field{domain} greater than the size described by
+@@ -321,7 +322,7 @@ The device MUST ignore reserved fields of the head and the tail of a
+ request.
+
+ If the VIRTIO_IOMMU_F_INPUT_RANGE feature is offered, the device MUST
+-truncate the range described by \field{virt_addr} and \field{size} in
++truncate the range described by \field{virt_start} and \field{virt_end} in
+ requests to fit in the range described by \field{input_range}.
+
+ If the VIRTIO_IOMMU_F_DOMAIN_BITS is offered, the device MUST ignore bits
+@@ -446,9 +447,9 @@ endpoint cannot access any mapping from that domain.
+ \begin{lstlisting}
+ struct virtio_iommu_req_map {
+ 	le32	domain;
+-	le64	phys_addr;
+-	le64	virt_addr;
+-	le64	size;
++	le64	phys_start;
++	le64	virt_start;
++	le64	virt_end;
+ 	le32	flags;
+ };
+
+@@ -461,30 +462,21 @@ struct virtio_iommu_req_map {
+ Map a range of virtually-contiguous addresses to a range of
+ physically-contiguous addresses of the same size. After the request
+ succeeds, all endpoints attached to this domain can access memory in the
+-range $[phys\_addr; phys\_addr + size[$. For example, if an endpoint
+-accesses address $VA \in [virt\_addr; virt\_addr + size[$, the device (or
+-the physical IOMMU) translates the address: $PA = VA - virt\_addr +
+-phys\_addr$. If the access parameters are compatible with \field{flags}
+-(for instance, the access is write and \field{flags} are
+-VIRTIO_IOMMU_MAP_F_READ | VIRTIO_IOMMU_MAP_F_WRITE) then the IOMMU allows
+-the access to reach $PA$.
+-
+-The range defined by (\field{virt_addr}, \field{size}) must be within the
+-limits specified by \field{input_range}. The range defined by
+-(\field{phys_addr}, \field{size}) must be within the guest-physical
+-address space. This includes upper and lower limits, as well as any
+-carving of guest-physical addresses for use by the host (for instance MSI
+-doorbells). Guest physical boundaries are set by the host using a firmware
+-mechanism outside the scope of this specification.
+-
+-\begin{note}
+-This format prevents from creating the identity mapping in a single
+-request \texttt{[0x0; 0xfff....fff] $\rightarrow$ [0x0; 0xfff...fff]},
+-since it would result in a size of zero. Hopefully allowing
+-VIRTIO_IOMMU_F_BYPASS eliminates the need for issuing such request. It
+-would also be unlikely to conform to the physical range restrictions
+-from the previous paragraph.
+-\end{note}
++range $[virt\_start; virt\_end]$. For example, if an endpoint accesses
++address $VA \in [virt\_start; virt\_end]$, the device (or the physical
++IOMMU) translates the address: $PA = VA - virt\_start + phys\_start$. If
++the access parameters are compatible with \field{flags} (for instance, the
++access is write and \field{flags} are VIRTIO_IOMMU_MAP_F_READ |
++VIRTIO_IOMMU_MAP_F_WRITE) then the IOMMU allows the access to reach $PA$.
++
++The range defined by \field{virt_start} and \field{virt_end} should be
++within the limits specified by \field{input_range}. Given $phys\_end =
++phys\_start + virt\_end - virt\_start$, the range defined by
++\field{phys_start} and phys_end should be within the guest-physical address
++space. This includes upper and lower limits, as well as any carving of
++guest-physical addresses for use by the host (for instance MSI doorbells).
++Guest physical boundaries are set by the host using a firmware mechanism
++outside the scope of this specification.
+
+ \begin{note}
+ On flags: it is unlikely that all possible combinations of flags will be
+@@ -503,11 +495,13 @@ negotiated.
+
+ The driver SHOULD set undefined \field{flags} bits to zero.
+
++\field{virt_end} MUST be strictly greater than \field{virt_start}.
++
+ \devicenormative{\paragraph}{MAP request}{Device Types / IOMMU Device / Device operations / MAP request}
+
+-If \field{virt_addr}, \field{phys_addr} or \field{size} is not aligned on
+-the page granularity, the device SHOULD set the request \field{status} to
+-VIRTIO_IOMMU_S_RANGE and SHOULD NOT create the mapping.
++If \field{virt_start}, \field{phys_start} or (\field{virt_end} + 1) is
++not aligned on the page granularity, the device SHOULD set the request
++\field{status} to VIRTIO_IOMMU_S_RANGE and SHOULD NOT create the mapping.
+
+ If the device doesn't recognize a \field{flags} bit, it SHOULD set the
+ request \field{status} to VIRTIO_IOMMU_S_INVAL. In this case the device
+@@ -524,45 +518,49 @@ If \field{domain} does not exist, the device SHOULD set the request
+ \begin{lstlisting}
+ struct virtio_iommu_req_unmap {
+ 	le32	domain;
+-	le64	virt_addr;
+-	le64	size;
++	le64	virt_start;
++	le64	virt_end;
+ 	le32	reserved;
+ };
+ \end{lstlisting}
+
+ Unmap a range of addresses mapped with VIRTIO_IOMMU_T_MAP. We define here
+ a mapping as a virtual region created with a single MAP request. All
+-mappings covered by the range $[virt\_addr; virt\_addr + size [$ are
+-removed.
++mappings covered by the range $[virt\_start; virt\_end]$ are removed.
+
+-The semantics of unmapping are specified below, and illustrated with the
+-following requests, assuming each example sequence starts with a blank
+-address space. We define two pseudocode functions \texttt{map(virt\_addr,
+-size) -> mapping} and \texttt{unmap(virt\_addr, size)}.
++The semantics of unmapping are specified in \ref{drivernormative:Device
++Types / IOMMU Device / Device operations / UNMAP request} and
++\ref{devicenormative:Device Types / IOMMU Device / Device operations /
++UNMAP request}, and illustrated with the following requests, assuming each
++example sequence starts with a blank address space. We define two
++pseudocode functions \texttt{map(virt_start, virt_end) -> mapping} and
++\texttt{unmap(virt_start, virt_end)}.
+
+ \begin{lstlisting}
+-(1) unmap(addr=0, size=5)        -> succeeds, doesn't unmap anything
++(1) unmap(virt_start=0,
++          virt_end=4)            -> succeeds, doesn't unmap anything
+
+-(2) a = map(addr=0, size=10);
+-    unmap(0, 10)                 -> succeeds, unmaps a
++(2) a = map(virt_start=0,
++            virt_end=9);
++    unmap(0, 9)                  -> succeeds, unmaps a
+
+-(3) a = map(0, 5);
+-    b = map(5, 5);
+-    unmap(0, 10)                 -> succeeds, unmaps a and b
++(3) a = map(0, 4);
++    b = map(5, 9);
++    unmap(0, 9)                  -> succeeds, unmaps a and b
+
+-(4) a = map(0, 10);
+-    unmap(0, 5)                  -> faults, doesn't unmap anything
++(4) a = map(0, 9);
++    unmap(0, 4)                  -> faults, doesn't unmap anything
+
+-(5) a = map(0, 5);
+-    b = map(5, 5);
+-    unmap(0, 5)                  -> succeeds, unmaps a
++(5) a = map(0, 4);
++    b = map(5, 9);
++    unmap(0, 4)                  -> succeeds, unmaps a
+
+-(6) a = map(0, 5);
+-    unmap(0, 10)                 -> succeeds, unmaps a
++(6) a = map(0, 4);
++    unmap(0, 9)                  -> succeeds, unmaps a
+
+-(7) a = map(0, 5);
+-    b = map(10, 5);
+-    unmap(0, 15)                 -> succeeds, unmaps a and b
++(7) a = map(0, 4);
++    b = map(10, 14);
++    unmap(0, 14)                 -> succeeds, unmaps a and b
+ \end{lstlisting}
+
+ This request is only available when VIRTIO_IOMMU_F_MAP_UNMAP has been
+@@ -572,9 +570,9 @@ negotiated.
+
+ The driver SHOULD set the \field{reserved} field to zero.
+
+-The range, defined by \field{virt_addr} and \field{size}, SHOULD cover one
+-or more contiguous mappings created with MAP requests. The range MAY spill
+-over unmapped virtual addresses.
++The range, defined by \field{virt_start} and \field{virt_end}, SHOULD
++cover one or more contiguous mappings created with MAP requests. The range
++MAY spill over unmapped virtual addresses.
+
+ The first address of a range SHOULD either be the first address of a
+ mapping or be outside any mapping. The last address of a range SHOULD
+--
+2.14.2
