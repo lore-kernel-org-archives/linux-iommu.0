@@ -1,15 +1,15 @@
-From: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
-Subject: [PATCH RT 11/15] iommu/amd: Use raw_cpu_ptr() instead of
-	get_cpu_ptr() for ->flush_queue
-Date: Fri, 01 Dec 2017 19:02:00 -0500
-Message-ID: <20171202000428.386884117@goodmis.org>
-References: <20171202000149.842718953@goodmis.org>
+From: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Invalidation in SMMU v3
+Date: Sun, 3 Dec 2017 19:26:31 +0530
+Message-ID: <c2c2c5b0-7533-632b-f69e-050f125bef06@gmail.com>
+References: <52a6fdbb-9a47-76c0-da59-89ac561b8ee3@gmail.com>
+	<8fd78f56-43ed-e480-1c98-5d1162452674@arm.com>
+	<e8effeac-bdfb-34dd-63e5-eb3fb08fd540@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline;
-	filename=0011-iommu-amd-Use-raw_cpu_ptr-instead-of-get_cpu_ptr-for.patch
+In-Reply-To: <e8effeac-bdfb-34dd-63e5-eb3fb08fd540-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,56 +19,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rt-users <linux-rt-users-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: tom.zanussi-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Daniel Wagner <daniel.wagner-kv7WeFo6aLtBDgjK7y7TUQ@public.gmane.org>, Julia Cartwright <julia-acOepvfBmUk@public.gmane.org>, stable-rt-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Vinod Adhikary <vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Carsten Emde <C.Emde-Q945KHDl0DbYtjvyW6yDsg@public.gmane.org>, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alex Shi <alex.shi-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, John Kacur <jkacur-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-4.9.65-rt57-rc2 stable review patch.
-If anyone has any objections, please let me know.
+Hi Jean,
 
-------------------
+In PASID flow arm_smmu_atc_inv_master_all is called where size and iova 
+of arm_smmu_atc_inv_to_cmd are zero and  no address is being filled in 
+struct arm_smmu_cmdq_ent->atc.addr.
+So how will smmu hardware know if there are any ats translations 
+requested or not ?
+How invalidation are carried out in PASID flow w.r.t address and size?
 
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 
-get_cpu_ptr() disabled preemption and returns the ->flush_queue object
-of the current CPU. raw_cpu_ptr() does the same except that it not
-disable preemption which means the scheduler can move it to another CPU
-after it obtained the per-CPU object.
-In this case this is not bad because the data structure itself is
-protected with a spin_lock. This change shouldn't matter however on RT
-it does because the sleeping lock can't be accessed with disabled
-preemption.
+Regards,
+Valmiki
 
-Cc: stable-rt-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Reported-by: Vinod Adhikary <vinadhy-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a88595b21111..ff5c2424eb9e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2283,7 +2283,7 @@ static void queue_add(struct dma_ops_domain *dma_dom,
- 	pages     = __roundup_pow_of_two(pages);
- 	address >>= PAGE_SHIFT;
- 
--	queue = get_cpu_ptr(&flush_queue);
-+	queue = raw_cpu_ptr(&flush_queue);
- 	spin_lock_irqsave(&queue->lock, flags);
- 
- 	if (queue->next == FLUSH_QUEUE_SIZE)
-@@ -2300,8 +2300,6 @@ static void queue_add(struct dma_ops_domain *dma_dom,
- 
- 	if (atomic_cmpxchg(&queue_timer_on, 0, 1) == 0)
- 		mod_timer(&queue_timer, jiffies + msecs_to_jiffies(10));
--
--	put_cpu_ptr(&flush_queue);
- }
- 
- 
--- 
-2.13.2
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
