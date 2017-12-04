@@ -1,44 +1,45 @@
-From: Jordan Crouse <jcrouse@codeaurora.org>
-Subject: [PATCH] iommu: Check the result of iommu_group_get() for NULL
-Date: Mon,  4 Dec 2017 10:22:10 -0700
-Message-ID: <1512408130-24833-1-git-send-email-jcrouse@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-arm-msm@vger.kernel.org
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH] iommu/amd - Record more information about unknown events
+Date: Mon, 04 Dec 2017 13:52:42 -0600
+Message-ID: <151241716233.31107.11094386543203626385.stgit@sosxen2.amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The result of iommu_group_get() was being blindly used in both
-attach and detach which results in a dereference when trying
-to work with an unknown device.
+When an unknown type event occurs, the default information written to
+the syslog should dump raw event data. This could provide insight into
+the event that occurred.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/amd_iommu.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3de5c0b..69fef99 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1303,6 +1303,9 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
- 	int ret;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 51f8215877f5..cb78933ef53f 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -617,7 +617,9 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 		       address, flags);
+ 		break;
+ 	default:
+-		printk(KERN_ERR "UNKNOWN type=0x%02x]\n", type);
++		printk(KERN_ERR "UNKNOWN type=0x%02x event[0]=0x%08x "
++		       "event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
++		       type, event[0], event[1], event[2], event[3]);
+ 	}
  
- 	group = iommu_group_get(dev);
-+	if (!group)
-+		return -ENODEV;
-+
- 	/*
- 	 * Lock the group to make sure the device-count doesn't
- 	 * change while we are attaching
-@@ -1341,6 +1344,8 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- 	struct iommu_group *group;
- 
- 	group = iommu_group_get(dev);
-+	if (!group)
-+		return;
- 
- 	mutex_lock(&group->mutex);
- 	if (iommu_group_device_count(group) != 1) {
--- 
-1.9.1
+ 	memset(__evt, 0, 4 * sizeof(u32));
