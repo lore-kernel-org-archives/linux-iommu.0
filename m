@@ -1,178 +1,156 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 13/16] iommu/intel-svm: notify page request to guest
-Date: Tue, 5 Dec 2017 15:37:23 +0800
-Message-ID: <5A264CB3.2060603@linux.intel.com>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1510944914-54430-14-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Hans Verkuil <hverkuil@xs4all.nl>
+Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Tue, 5 Dec 2017 08:46:06 +0100
+Message-ID: <440d2f56-82b1-d6de-68e8-4ac00e8449c6@xs4all.nl>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+ <6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
+ <ae6dbc33-d4e8-83c4-1d3d-e05bccc2113b@xs4all.nl>
+ <6F87890CF0F5204F892DEA1EF0D77A5972FD8ACC@FMSMSX114.amr.corp.intel.com>
+ <CAAFQd5AnoWyayibP2o+sXKh_2WsdT_E4Q1kxosy8ySP+D3Cf2w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1510944914-54430-14-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <CAAFQd5AnoWyayibP2o+sXKh_2WsdT_E4Q1kxosy8ySP+D3Cf2w@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-media-owner@vger.kernel.org
+To: Tomasz Figa <tfiga@google.com>, "Mani, Rajmohan" <rajmohan.mani@intel.com>
+Cc: "Zhi, Yong" <yong.zhi@intel.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "Hu, Jerry W" <jerry.w.hu@intel.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 12/05/2017 04:22 AM, Tomasz Figa wrote:
+> Hi Raj,
+> 
+> On Tue, Dec 5, 2017 at 9:13 AM, Mani, Rajmohan <rajmohan.mani@intel.com> wrote:
+>> Hi Hans,
+>>
+>> Thanks for your patience and sharing your thoughts on this.
+>>
+>>> Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+>>>
+>>> Hi Rajmohan,
+>>>
+>>> On 11/17/2017 03:58 AM, Mani, Rajmohan wrote:
+>>>> Hi Sakari and all,
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: Zhi, Yong
+>>>>> Sent: Tuesday, October 17, 2017 8:47 PM
+>>>>> To: linux-media@vger.kernel.org; sakari.ailus@linux.intel.com
+>>>>> Cc: Zheng, Jian Xu <jian.xu.zheng@intel.com>; Mani, Rajmohan
+>>>>> <rajmohan.mani@intel.com>; Toivonen, Tuukka
+>>>>> <tuukka.toivonen@intel.com>; Hu, Jerry W <jerry.w.hu@intel.com>;
+>>>>> arnd@arndb.de; hch@lst.de; robin.murphy@arm.com; iommu@lists.linux-
+>>>>> foundation.org; Zhi, Yong <yong.zhi@intel.com>
+>>>>> Subject: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+>>>>>
+>>>>> This patchset adds support for the Intel IPU3 (Image Processing Unit)
+>>>>> ImgU which is essentially a modern memory-to-memory ISP. It
+>>>>> implements raw Bayer to YUV image format conversion as well as a
+>>>>> large number of other pixel processing algorithms for improving the image
+>>> quality.
+>>>>>
+>>>>> Meta data formats are defined for image statistics (3A, i.e.
+>>>>> automatic white balance, exposure and focus, histogram and local area
+>>>>> contrast
+>>>>> enhancement) as well as for the pixel processing algorithm parameters.
+>>>>> The documentation for these formats is currently not included in the
+>>>>> patchset but will be added in a future version of this set.
+>>>>>
+>>>>
+>>>> Here is an update on the IPU3 documentation that we are currently working
+>>> on.
+>>>>
+>>>> Image processing in IPU3 relies on the following.
+>>>>
+>>>> 1) HW configuration to enable ISP and
+>>>> 2) setting customer specific 3A Tuning / Algorithm Parameters to achieve
+>>> desired image quality.
+>>>>
+>>>> We intend to provide documentation on ImgU driver programming interface
+>>> to help users of this driver to configure and enable ISP HW to meet their
+>>> needs.  This documentation will include details on complete V4L2 Kernel driver
+>>> interface and IO-Control parameters, except for the ISP internal algorithm and
+>>> its parameters (which is Intel proprietary IP).
+>>>>
+>>>> We will also provide an user space library in binary form to help users of this
+>>> driver, to convert the public 3A tuning parameters to IPU3 algorithm
+>>> parameters. This tool will be released under NDA to the users of this driver.
+>>>
+>>> So I discussed this situation with Sakari in Prague during the ELCE. I am not
+>>> happy with adding a driver to the kernel that needs an NDA to be usable. I
+>>> can't agree to that. It's effectively the same as firmware that's only available
+>>> under an NDA and we wouldn't accept such drivers either.
+>>>
+>>
+>> Ack
+>>
+>>> There are a few options:
+>>>
+>>> 1) Document the ISP parameters and that format they are stored in allowing
+>>> for
+>>>    open source implementations. While this is the ideal, I suspect that this is
+>>>    a no-go for Intel.
+>>>
+>>
+>> Ack
+>>
+>>> 2) The driver can be used without using these ISP parameters and still achieve
+>>>    'OK' quality. I.e., it's usable for basic webcam usage under normal lighting
+>>>    conditions. I'm not sure if this is possible at all, though.
+>>>
+>>
+>> This is something that we have tried and are able to do image capture with
+>> the default ISP parameters using ov5670 sensor.
+>> Additionally we had to set optimal values for the ov5670 sensor's exposure and
+>> gain settings.
+> 
+> Does it mean hardcoding some ov5670-specific settings in the ISP
+> driver? If not, I guess it might be good enough?
 
-On 11/18/2017 02:55 AM, Jacob Pan wrote:
-> If the source device of a page request has its PASID table pointer
-> bond to a guest, the first level page tables are owned by the guest.
-> In this case, we shall let guest OS to manage page fault.
->
-> This patch uses the IOMMU fault notification API to send notifications,
-> possibly via VFIO, to the guest OS. Once guest pages are fault in, guest
-> will issue page response which will be passed down via the invalidation
-> passdown APIs.
->
-> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/intel-svm.c | 80 ++++++++++++++++++++++++++++++++++++++++++-----
->  include/linux/iommu.h     |  1 +
->  2 files changed, 74 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> index f6697e5..77c25d8 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -555,6 +555,71 @@ static bool is_canonical_address(u64 addr)
->  	return (((saddr << shift) >> shift) == saddr);
->  }
->  
-> +static int prq_to_iommu_prot(struct page_req_dsc *req)
-> +{
-> +	int prot = 0;
-> +
-> +	if (req->rd_req)
-> +		prot |= IOMMU_FAULT_READ;
-> +	if (req->wr_req)
-> +		prot |= IOMMU_FAULT_WRITE;
-> +	if (req->exe_req)
-> +		prot |= IOMMU_FAULT_EXEC;
-> +	if (req->priv_req)
-> +		prot |= IOMMU_FAULT_PRIV;
-> +
-> +	return prot;
-> +}
-> +
-> +static int intel_svm_prq_report(struct device *dev, struct page_req_dsc *desc)
-> +{
-> +	int ret = 0;
+It doesn't look too bad, but it's hard to tell from just a single
+frame. I think you can work with Sakari on this, if he also thinks it's
+good enough, then I am happy with that.
 
-It seems that "ret" should be initialized as -EINVAL. Otherwise, this function
-will return 0 for devices which have no fault handlers, and all page requests
-will be ignored by iommu driver.
+> 
+>>
+>> Please see if the following image looks to meet the 'OK' quality.
+>>
+>> git clone https://github.com/RajmohanMani/ipu3-misc.git
+>> ipu3-misc/ov5670.jpg is the image file.
+>>
+>>> 3) Make the library available without requiring an NDA.
+>>>
+>>
+>> We are also actively exploring this option to see if this can be done.
+>>
+>>> 4) Provide a non-NDA library (ideally open source) that achieves at minimum
+>>>    the quality as described in 2: i.e. usable for basic webcam.
+>>>
+>>
+>> I see this is the same as option 3) + open sourcing the library.
+>> Open sourcing the library does not look to be an option.
+>> I will reconfirm this.
+> 
+> In my understanding, that could be quite different from option 3). The
+> open source library would not have to implement all of the
+> capabilities, just enough to get the "OK" quality and the implemented
+> part could use some simpler algorithms not covered by IP.
 
-> +	struct iommu_fault_event event;
-> +	struct pci_dev *pdev;
-> +
-> +	/**
-> +	 * If caller does not provide struct device, this is the case where
-> +	 * guest PASID table is bound to the device. So we need to retrieve
-> +	 * struct device from the page request descriptor then proceed.
-> +	 */
-> +	if (!dev) {
-> +		pdev = pci_get_bus_and_slot(desc->bus, desc->devfn);
-> +		if (!pdev) {
-> +			pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
-> +				desc->bus, PCI_SLOT(desc->devfn),
-> +				PCI_FUNC(desc->devfn));
-> +			return -ENODEV;
-> +		}
-> +		dev = &pdev->dev;
-> +	} else if (dev_is_pci(dev)) {
-> +		pdev = to_pci_dev(dev);
-> +		pci_dev_get(pdev);
-> +	} else
-> +		return -ENODEV;
-> +
-> +	pr_debug("Notify PRQ device [%02x:%02x.%d]\n",
-> +		desc->bus, PCI_SLOT(desc->devfn),
-> +		PCI_FUNC(desc->devfn));
-> +
-> +	/* invoke device fault handler if registered */
-> +	if (iommu_has_device_fault_handler(dev)) {
-> +		/* Fill in event data for device specific processing */
-> +		event.type = IOMMU_FAULT_PAGE_REQ;
-> +		event.addr = desc->addr;
-> +		event.pasid = desc->pasid;
-> +		event.page_req_group_id = desc->prg_index;
-> +		event.prot = prq_to_iommu_prot(desc);
-> +		event.last_req = desc->lpig;
-> +		event.pasid_valid = 1;
-> +		event.iommu_private = desc->private;
-> +		ret = iommu_report_device_fault(&pdev->dev, &event);
-> +	}
-> +
-> +	pci_dev_put(pdev);
-> +
-> +	return ret;
-> +}
-> +
->  static irqreturn_t prq_event_thread(int irq, void *d)
->  {
->  	struct intel_iommu *iommu = d;
-> @@ -578,7 +643,12 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  		handled = 1;
->  
->  		req = &iommu->prq[head / sizeof(*req)];
-> -
-> +		/**
-> +		 * If prq is to be handled outside iommu driver via receiver of
-> +		 * the fault notifiers, we skip the page response here.
-> +		 */
-> +		if (!intel_svm_prq_report(NULL, req))
-> +			goto prq_advance;
->  		result = QI_RESP_FAILURE;
->  		address = (u64)req->addr << VTD_PAGE_SHIFT;
->  		if (!req->pasid_present) {
-> @@ -649,11 +719,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  		if (WARN_ON(&sdev->list == &svm->devs))
->  			sdev = NULL;
->  
-> -		if (sdev && sdev->ops && sdev->ops->fault_cb) {
-> -			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
-> -				(req->exe_req << 1) | (req->priv_req);
-> -			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
-> -		}
-> +		intel_svm_prq_report(sdev->dev, req);
+That's correct.
 
-Do you mind explaining why we need to report this request twice?
+This also solves my concerns about long-term maintenance of closed source
+libraries which in my experience tend to suffer from bit-rot after the vendor
+no longer sells the hardware it was written for. An open source implementation,
+albeit not as powerful as the NDA version, can be added to e.g. the v4l-utils
+repo (or at least at a repo on linuxtv.org) and maintained much longer and
+independent of the vendor.
 
-Best regards,
-Lu Baolu
+Regards,
 
->  		/* We get here in the error case where the PASID lookup failed,
->  		   and these can be NULL. Do not use them below this point! */
->  		sdev = NULL;
-> @@ -679,7 +745,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  
->  			qi_submit_sync(&resp, iommu);
->  		}
-> -
-> +	prq_advance:
->  		head = (head + sizeof(*req)) & PRQ_RING_MASK;
->  	}
->  
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 841c044..3083796b 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -42,6 +42,7 @@
->   * if the IOMMU page table format is equivalent.
->   */
->  #define IOMMU_PRIV	(1 << 5)
-> +#define IOMMU_EXEC	(1 << 6)
->  
->  struct iommu_ops;
->  struct iommu_group;
+	Hans
+
+> 
+> Best regards,
+> Tomasz
+> 
