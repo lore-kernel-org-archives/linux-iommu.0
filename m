@@ -1,131 +1,379 @@
-From: Tomasz Figa <tfiga@google.com>
-Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
-Date: Tue, 5 Dec 2017 12:22:12 +0900
-Message-ID: <CAAFQd5AnoWyayibP2o+sXKh_2WsdT_E4Q1kxosy8ySP+D3Cf2w@mail.gmail.com>
-References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
- <6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
- <ae6dbc33-d4e8-83c4-1d3d-e05bccc2113b@xs4all.nl> <6F87890CF0F5204F892DEA1EF0D77A5972FD8ACC@FMSMSX114.amr.corp.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 06/16] iommu/vt-d: add svm/sva invalidate function
+Date: Tue, 5 Dec 2017 13:43:11 +0800
+Message-ID: <5A2631EF.1050109@linux.intel.com>
+References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1510944914-54430-7-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <6F87890CF0F5204F892DEA1EF0D77A5972FD8ACC@FMSMSX114.amr.corp.intel.com>
-Sender: linux-media-owner@vger.kernel.org
-To: "Mani, Rajmohan" <rajmohan.mani@intel.com>
-Cc: Hans Verkuil <hverkuil@xs4all.nl>, "Zhi, Yong" <yong.zhi@intel.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "Hu, Jerry W" <jerry.w.hu@intel.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1510944914-54430-7-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Liu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Raj,
+Hi,
 
-On Tue, Dec 5, 2017 at 9:13 AM, Mani, Rajmohan <rajmohan.mani@intel.com> wrote:
-> Hi Hans,
+On 11/18/2017 02:55 AM, Jacob Pan wrote:
+> This patch adds Intel VT-d specific function to implement
+> iommu passdown invalidate API for shared virtual address.
 >
-> Thanks for your patience and sharing your thoughts on this.
+> The use case is for supporting caching structure invalidation
+> of assigned SVM capable devices. Emulated IOMMU exposes queue
+> invalidation capability and passes down all descriptors from the guest
+> to the physical IOMMU.
 >
->> Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
->>
->> Hi Rajmohan,
->>
->> On 11/17/2017 03:58 AM, Mani, Rajmohan wrote:
->> > Hi Sakari and all,
->> >
->> >> -----Original Message-----
->> >> From: Zhi, Yong
->> >> Sent: Tuesday, October 17, 2017 8:47 PM
->> >> To: linux-media@vger.kernel.org; sakari.ailus@linux.intel.com
->> >> Cc: Zheng, Jian Xu <jian.xu.zheng@intel.com>; Mani, Rajmohan
->> >> <rajmohan.mani@intel.com>; Toivonen, Tuukka
->> >> <tuukka.toivonen@intel.com>; Hu, Jerry W <jerry.w.hu@intel.com>;
->> >> arnd@arndb.de; hch@lst.de; robin.murphy@arm.com; iommu@lists.linux-
->> >> foundation.org; Zhi, Yong <yong.zhi@intel.com>
->> >> Subject: [PATCH v4 00/12] Intel IPU3 ImgU patchset
->> >>
->> >> This patchset adds support for the Intel IPU3 (Image Processing Unit)
->> >> ImgU which is essentially a modern memory-to-memory ISP. It
->> >> implements raw Bayer to YUV image format conversion as well as a
->> >> large number of other pixel processing algorithms for improving the image
->> quality.
->> >>
->> >> Meta data formats are defined for image statistics (3A, i.e.
->> >> automatic white balance, exposure and focus, histogram and local area
->> >> contrast
->> >> enhancement) as well as for the pixel processing algorithm parameters.
->> >> The documentation for these formats is currently not included in the
->> >> patchset but will be added in a future version of this set.
->> >>
->> >
->> > Here is an update on the IPU3 documentation that we are currently working
->> on.
->> >
->> > Image processing in IPU3 relies on the following.
->> >
->> > 1) HW configuration to enable ISP and
->> > 2) setting customer specific 3A Tuning / Algorithm Parameters to achieve
->> desired image quality.
->> >
->> > We intend to provide documentation on ImgU driver programming interface
->> to help users of this driver to configure and enable ISP HW to meet their
->> needs.  This documentation will include details on complete V4L2 Kernel driver
->> interface and IO-Control parameters, except for the ISP internal algorithm and
->> its parameters (which is Intel proprietary IP).
->> >
->> > We will also provide an user space library in binary form to help users of this
->> driver, to convert the public 3A tuning parameters to IPU3 algorithm
->> parameters. This tool will be released under NDA to the users of this driver.
->>
->> So I discussed this situation with Sakari in Prague during the ELCE. I am not
->> happy with adding a driver to the kernel that needs an NDA to be usable. I
->> can't agree to that. It's effectively the same as firmware that's only available
->> under an NDA and we wouldn't accept such drivers either.
->>
+> The assumption is that guest to host device ID mapping should be
+> resolved prior to calling IOMMU driver. Based on the device handle,
+> host IOMMU driver can replace certain fields before submit to the
+> invalidation queue.
 >
-> Ack
+> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c | 200 +++++++++++++++++++++++++++++++++++++++++++-
+>  include/linux/intel-iommu.h |  17 +++-
+>  2 files changed, 211 insertions(+), 6 deletions(-)
 >
->> There are a few options:
->>
->> 1) Document the ISP parameters and that format they are stored in allowing
->> for
->>    open source implementations. While this is the ideal, I suspect that this is
->>    a no-go for Intel.
->>
->
-> Ack
->
->> 2) The driver can be used without using these ISP parameters and still achieve
->>    'OK' quality. I.e., it's usable for basic webcam usage under normal lighting
->>    conditions. I'm not sure if this is possible at all, though.
->>
->
-> This is something that we have tried and are able to do image capture with
-> the default ISP parameters using ov5670 sensor.
-> Additionally we had to set optimal values for the ov5670 sensor's exposure and
-> gain settings.
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 556bdd2..000b2b3 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -4981,6 +4981,183 @@ static void intel_iommu_detach_device(struct iommu_domain *domain,
+>  	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
+>  }
+>  
+> +/*
+> + * 3D array for converting IOMMU generic type-granularity to VT-d granularity
+> + * X indexed by enum iommu_inv_type
+> + * Y indicates request without and with PASID
+> + * Z indexed by enum enum iommu_inv_granularity
+> + *
+> + * For an example, if we want to find the VT-d granularity encoding for IOTLB
+> + * type, DMA request with PASID, and page selective. The look up indices are:
+> + * [1][1][8], where
+> + * 1: IOMMU_INV_TYPE_TLB
+> + * 1: with PASID
+> + * 8: IOMMU_INV_GRANU_PAGE_PASID
+> + *
+> + */
+> +const static int inv_type_granu_map[IOMMU_INV_NR_TYPE][2][IOMMU_INV_NR_GRANU] = {
+> +	/* extended dev IOTLBs, for dev-IOTLB, only global is valid,
+> +	   for dev-EXIOTLB, two valid granu */
+> +	{
+> +		{1},
+> +		{0, 0, 0, 0, 1, 1, 0, 0, 0}
+> +	},
+> +	/* IOTLB and EIOTLB */
+> +	{
+> +		{1, 1, 0, 1, 0, 0, 0, 0, 0},
+> +		{0, 0, 0, 0, 1, 0, 1, 1, 1}
+> +	},
+> +	/* PASID cache */
+> +	{
+> +		{0},
+> +		{0, 0, 0, 0, 1, 1, 0, 0, 0}
+> +	},
+> +	/* context cache */
+> +	{
+> +		{1, 1, 1}
+> +	}
+> +};
+> +
+> +const static u64 inv_type_granu_table[IOMMU_INV_NR_TYPE][2][IOMMU_INV_NR_GRANU] = {
+> +	/* extended dev IOTLBs, only global is valid */
+> +	{
+> +		{QI_DEV_IOTLB_GRAN_ALL},
+> +		{0, 0, 0, 0, QI_DEV_IOTLB_GRAN_ALL, QI_DEV_IOTLB_GRAN_PASID_SEL, 0, 0, 0}
+> +	},
+> +	/* IOTLB and EIOTLB */
+> +	{
+> +		{DMA_TLB_GLOBAL_FLUSH, DMA_TLB_DSI_FLUSH, 0, DMA_TLB_PSI_FLUSH},
+> +		{0, 0, 0, 0, QI_GRAN_ALL_ALL, 0, QI_GRAN_NONG_ALL, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID}
+> +	},
+> +	/* PASID cache */
+> +	{
+> +		{0},
+> +		{0, 0, 0, 0, QI_PC_ALL_PASIDS, QI_PC_PASID_SEL}
+> +	},
+> +	/* context cache */
+> +	{
+> +		{DMA_CCMD_GLOBAL_INVL, DMA_CCMD_DOMAIN_INVL, DMA_CCMD_DEVICE_INVL}
+> +	}
+> +};
+> +
+> +static inline int to_vtd_granularity(int type, int granu, int with_pasid, u64 *vtd_granu)
+> +{
+> +	if (type >= IOMMU_INV_NR_TYPE || granu >= IOMMU_INV_NR_GRANU || with_pasid > 1)
+> +		return -EINVAL;
+> +
+> +	if (inv_type_granu_map[type][with_pasid][granu] == 0)
+> +		return -EINVAL;
+> +
+> +	*vtd_granu = inv_type_granu_table[type][with_pasid][granu];
+> +
+> +	return 0;
+> +}
+> +
+> +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
+> +		struct device *dev, struct tlb_invalidate_info *inv_info)
+> +{
+> +	struct intel_iommu *iommu;
+> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> +	struct device_domain_info *info;
+> +	struct pci_dev *pdev;
+> +	u16 did, sid, pfsid;
+> +	u8 bus, devfn;
+> +	int ret = 0;
+> +	u64 granu;
+> +	unsigned long flags;
+> +
+> +	if (!inv_info || !dmar_domain)
+> +		return -EINVAL;
+> +
+> +	iommu = device_to_iommu(dev, &bus, &devfn);
+> +	if (!iommu)
+> +		return -ENODEV;
+> +
+> +	if (!dev || !dev_is_pci(dev))
+> +		return -ENODEV;
+> +
+> +	did = dmar_domain->iommu_did[iommu->seq_id];
+> +	sid = PCI_DEVID(bus, devfn);
+> +	ret = to_vtd_granularity(inv_info->hdr.type, inv_info->granularity,
+> +				!!(inv_info->flags & IOMMU_INVALIDATE_PASID_TAGGED), &granu);
+> +	if (ret) {
+> +		pr_err("Invalid range type %d, granu %d\n", inv_info->hdr.type,
+> +			inv_info->granularity);
+> +		return ret;
+> +	}
+> +
+> +	spin_lock(&iommu->lock);
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +
+> +	switch (inv_info->hdr.type) {
+> +	case IOMMU_INV_TYPE_CONTEXT:
+> +		iommu->flush.flush_context(iommu, did, sid,
+> +					DMA_CCMD_MASK_NOBIT, granu);
+> +		break;
+> +	case IOMMU_INV_TYPE_TLB:
+> +		/* We need to deal with two scenarios:
+> +		 * - IOTLB for request w/o PASID
+> +		 * - extended IOTLB for request with PASID.
+> +		 */
+> +		if (inv_info->size &&
+> +			(inv_info->addr & ((1 << (VTD_PAGE_SHIFT + inv_info->size)) - 1))) {
+> +			pr_err("Addr out of range, addr 0x%llx, size order %d\n",
+> +				inv_info->addr, inv_info->size);
+> +			ret = -ERANGE;
+> +			goto out_unlock;
+> +		}
+> +
+> +		if (inv_info->flags & IOMMU_INVALIDATE_PASID_TAGGED)
+> +			qi_flush_eiotlb(iommu, did, mm_to_dma_pfn(inv_info->addr),
+> +					inv_info->pasid,
+> +					inv_info->size, granu,
+> +					inv_info->flags & IOMMU_INVALIDATE_GLOBAL_PAGE);
+> +		else
+> +			qi_flush_iotlb(iommu, did, mm_to_dma_pfn(inv_info->addr),
+> +				inv_info->size, granu);
+> +		/* For SRIOV VF, invalidation of device IOTLB requires PFSID */
+> +		pdev = to_pci_dev(dev);
+> +		if (pdev && pdev->is_virtfn)
+> +			pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
+> +		else
+> +			pfsid = sid;
+> +
+> +		/**
+> +		 * Always flush device IOTLB if ATS is enabled since guest
+> +		 * vIOMMU exposes CM = 1, no device IOTLB flush will be passed
+> +		 * down.
+> +		 * TODO: check if device is VF, use PF ATS data if spec does not require
+> +		 * VF to include all PF capabilities,  VF qdep and VF ats_enabled.
+> +		 */
+> +		info = iommu_support_dev_iotlb(dmar_domain, iommu, bus, devfn);
+> +		if (info && info->ats_enabled) {
+> +			if (inv_info->flags & IOMMU_INVALIDATE_PASID_TAGGED)
+> +				qi_flush_dev_eiotlb(iommu, sid, info->pfsid,
+> +						inv_info->pasid, info->ats_qdep,
+> +						inv_info->addr, inv_info->size,
+> +						granu);
+> +			else
+> +				qi_flush_dev_iotlb(iommu, sid, info->pfsid,
+> +						info->ats_qdep, inv_info->addr,
+> +						inv_info->size);
+> +		}
+> +		break;
+> +	case IOMMU_INV_TYPE_PASID:
+> +		qi_flush_pasid(iommu, did, granu, inv_info->pasid);
+> +
+> +		break;
+> +	default:
+> +		dev_err(dev, "Unknown IOMMU invalidation type %d\n",
+> +			inv_info->hdr.type);
+> +		ret = -EINVAL;
+> +	}
+> +out_unlock:
+> +	spin_unlock(&iommu->lock);
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +
+> +	return ret;
+> +}
+> +
+>  static int intel_iommu_map(struct iommu_domain *domain,
+>  			   unsigned long iova, phys_addr_t hpa,
+>  			   size_t size, int iommu_prot)
+> @@ -5304,7 +5481,7 @@ static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
+>  	iommu = device_to_iommu(dev, &bus, &devfn);
+>  	if (!iommu)
+>  		return -ENODEV;
+> -	/* VT-d spec 9.4 says pasid table size is encoded as 2^(x+5) */
+> +	/* VT-d spec section 9.4 says pasid table size is encoded as 2^(x+5) */
+>  	host_table_pasid_bits = intel_iommu_get_pts(iommu) + MIN_NR_PASID_BITS;
+>  	if (!pasidt_binfo || pasidt_binfo->pasid_bits > host_table_pasid_bits ||
+>  		pasidt_binfo->pasid_bits < MIN_NR_PASID_BITS) {
+> @@ -5313,7 +5490,11 @@ static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
+>  			MIN_NR_PASID_BITS, host_table_pasid_bits);
+>  		return -ERANGE;
+>  	}
+> -
+> +	if (!ecap_nest(iommu->ecap)) {
+> +		dev_err(dev, "Cannot bind PASID table, no nested translation\n");
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
 
-Does it mean hardcoding some ov5670-specific settings in the ISP
-driver? If not, I guess it might be good enough?
-
->
-> Please see if the following image looks to meet the 'OK' quality.
->
-> git clone https://github.com/RajmohanMani/ipu3-misc.git
-> ipu3-misc/ov5670.jpg is the image file.
->
->> 3) Make the library available without requiring an NDA.
->>
->
-> We are also actively exploring this option to see if this can be done.
->
->> 4) Provide a non-NDA library (ideally open source) that achieves at minimum
->>    the quality as described in 2: i.e. usable for basic webcam.
->>
->
-> I see this is the same as option 3) + open sourcing the library.
-> Open sourcing the library does not look to be an option.
-> I will reconfirm this.
-
-In my understanding, that could be quite different from option 3). The
-open source library would not have to implement all of the
-capabilities, just enough to get the "OK" quality and the implemented
-part could use some simpler algorithms not covered by IP.
+This and some of below changes could be included in patch 02/16.
 
 Best regards,
-Tomasz
+Lu Baolu
+
+>  	pdev = to_pci_dev(dev);
+>  	sid = PCI_DEVID(bus, devfn);
+>  	info = dev->archdata.iommu;
+> @@ -5323,6 +5504,11 @@ static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
+>  		ret = -EINVAL;
+>  		goto out;
+>  	}
+> +	if (info->pasid_table_bound) {
+> +		dev_err(dev, "Device PASID table already bound\n");
+> +		ret = -EBUSY;
+> +		goto out;
+> +	}
+>  	if (!info->pasid_enabled) {
+>  		ret = pci_enable_pasid(pdev, info->pasid_supported & ~1);
+>  		if (ret) {
+> @@ -5363,7 +5549,7 @@ static int intel_iommu_bind_pasid_table(struct iommu_domain *domain,
+>  				DMA_CCMD_MASK_NOBIT,
+>  				DMA_CCMD_DEVICE_INVL);
+>  	iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
+> -
+> +	info->pasid_table_bound = 1;
+>  out_unlock:
+>  	spin_unlock_irqrestore(&iommu->lock, flags);
+>  out:
+> @@ -5375,8 +5561,14 @@ static void intel_iommu_unbind_pasid_table(struct iommu_domain *domain,
+>  {
+>  	struct intel_iommu *iommu;
+>  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+> +	struct device_domain_info *info;
+>  	u8 bus, devfn;
+>  
+> +	info = dev->archdata.iommu;
+> +	if (!info) {
+> +		dev_err(dev, "Invalid device domain info\n");
+> +		return;
+> +	}
+>  	assert_spin_locked(&device_domain_lock);
+>  	iommu = device_to_iommu(dev, &bus, &devfn);
+>  	if (!iommu) {
+> @@ -5387,6 +5579,7 @@ static void intel_iommu_unbind_pasid_table(struct iommu_domain *domain,
+>  	domain_context_clear(iommu, dev);
+>  
+>  	domain_context_mapping_one(dmar_domain, iommu, bus, devfn);
+> +	info->pasid_table_bound = 0;
+>  }
+>  #endif /* CONFIG_INTEL_IOMMU_SVM */
+>  
+> @@ -5399,6 +5592,7 @@ const struct iommu_ops intel_iommu_ops = {
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>  	.bind_pasid_table	= intel_iommu_bind_pasid_table,
+>  	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
+> +	.sva_invalidate		= intel_iommu_sva_invalidate,
+>  #endif
+>  	.map			= intel_iommu_map,
+>  	.unmap			= intel_iommu_unmap,
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 3c83f7e..7f05e36 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -258,6 +258,10 @@ enum {
+>  #define QI_PGRP_RESP_TYPE	0x9
+>  #define QI_PSTRM_RESP_TYPE	0xa
+>  
+> +#define QI_DID(did)		(((u64)did & 0xffff) << 16)
+> +#define QI_DID_MASK		GENMASK(31, 16)
+> +#define QI_TYPE_MASK		GENMASK(3, 0)
+> +
+>  #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+>  #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+>  #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
+> @@ -288,8 +292,9 @@ enum {
+>  #define QI_PC_DID(did)		(((u64)did) << 16)
+>  #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
+>  
+> -#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
+> -#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
+> +/* PC inv granu */
+> +#define QI_PC_ALL_PASIDS	0
+> +#define QI_PC_PASID_SEL		1
+>  
+>  #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
+>  #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
+> @@ -299,6 +304,10 @@ enum {
+>  #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
+>  #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
+>  
+> +/* QI Dev-IOTLB inv granu */
+> +#define QI_DEV_IOTLB_GRAN_ALL		0
+> +#define QI_DEV_IOTLB_GRAN_PASID_SEL	1
+> +
+>  #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
+>  #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+>  #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+> @@ -327,6 +336,7 @@ enum {
+>  #define QI_RESP_INVALID		0x1
+>  #define QI_RESP_FAILURE		0xf
+>  
+> +/* QI EIOTLB inv granu */
+>  #define QI_GRAN_ALL_ALL			0
+>  #define QI_GRAN_NONG_ALL		1
+>  #define QI_GRAN_NONG_PASID		2
+> @@ -471,6 +481,7 @@ struct device_domain_info {
+>  	u8 pri_enabled:1;
+>  	u8 ats_supported:1;
+>  	u8 ats_enabled:1;
+> +	u8 pasid_table_bound:1;
+>  	u8 ats_qdep;
+>  	u64 fault_mask;	/* selected IOMMU faults to be reported */
+>  	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+> @@ -502,7 +513,7 @@ extern void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+>  extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>  			u16 qdep, u64 addr, unsigned mask);
+>  extern void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+> -				u32 pasid, u16 qdep, u64 addr, unsigned size);
+> +			u32 pasid, u16 qdep, u64 addr, unsigned size, u64 granu);
+>  extern void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
+>  
+>  extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
