@@ -1,78 +1,101 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 15/16] iommu: introduce page response function
-Date: Mon, 4 Dec 2017 13:37:15 -0800
-Message-ID: <20171204133715.50c45136@jacob-builder>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1510944914-54430-16-git-send-email-jacob.jun.pan@linux.intel.com>
-	<93661c1c-2d3b-295f-0b9d-52e50ea9e1d0@arm.com>
+From: "Mani, Rajmohan" <rajmohan.mani@intel.com>
+Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Tue, 5 Dec 2017 00:13:16 +0000
+Message-ID: <6F87890CF0F5204F892DEA1EF0D77A5972FD8ACC@FMSMSX114.amr.corp.intel.com>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+ <6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
+ <ae6dbc33-d4e8-83c4-1d3d-e05bccc2113b@xs4all.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <93661c1c-2d3b-295f-0b9d-52e50ea9e1d0-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <ae6dbc33-d4e8-83c4-1d3d-e05bccc2113b@xs4all.nl>
+Content-Language: en-US
+Sender: linux-media-owner@vger.kernel.org
+To: Hans Verkuil <hverkuil@xs4all.nl>, "Zhi, Yong" <yong.zhi@intel.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>
+Cc: "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "Hu, Jerry W" <jerry.w.hu@intel.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 24 Nov 2017 12:03:50 +0000
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-
-> On 17/11/17 18:55, Jacob Pan wrote:
-> > When nested translation is turned on and guest owns the
-> > first level page tables, device page request can be forwared
-> > to the guest for handling faults. As the page response returns
-> > by the guest, IOMMU driver on the host need to process the
-> > response which informs the device and completes the page request
-> > transaction.
-> > 
-> > This patch introduces generic API function for page response
-> > passing from the guest or other in-kernel users. The definitions of
-> > the generic data is based on PCI ATS specification not limited to
-> > any vendor.>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> >  drivers/iommu/iommu.c | 14 ++++++++++++++
-> >  include/linux/iommu.h | 42
-> > ++++++++++++++++++++++++++++++++++++++++++ 2 files changed, 56
-> > insertions(+)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 97b7990..7aefb40 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -1416,6 +1416,20 @@ int iommu_sva_invalidate(struct iommu_domain
-> > *domain, }
-> >  EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
-> >  
-> > +int iommu_page_response(struct iommu_domain *domain, struct device
-> > *dev,
-> > +			struct page_response_msg *msg)  
-> 
-> I think it's simpler, both for IOMMU and device drivers, to pass the
-> exact structure received in the fault handler back to the IOMMU
-> driver, along with a separate response status. So maybe
-> 
-> int iommu_page_response(struct iommu_domain *domain, struct device
-> *dev, struct iommu_fault_event *event, u32 response)
-> 
-> And then you'd just need to define the IOMMU_PAGE_RESPONSE_* values.
-> 
-Apologize for the late response,
-
-I think the simpler interface works for in-kernel driver use case very
-well. But in case of VFIO, the callback function does not turn around
-send back page response. The page response comes from guest and qemu,
-where they don;t keep track of the the prq event data.
-> Thanks,
-> Jean
-
-[Jacob Pan]
+SGkgSGFucywNCg0KVGhhbmtzIGZvciB5b3VyIHBhdGllbmNlIGFuZCBzaGFyaW5nIHlvdXIgdGhv
+dWdodHMgb24gdGhpcy4NCg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHY0IDAwLzEyXSBJbnRlbCBJ
+UFUzIEltZ1UgcGF0Y2hzZXQNCj4gDQo+IEhpIFJham1vaGFuLA0KPiANCj4gT24gMTEvMTcvMjAx
+NyAwMzo1OCBBTSwgTWFuaSwgUmFqbW9oYW4gd3JvdGU6DQo+ID4gSGkgU2FrYXJpIGFuZCBhbGws
+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogWmhpLCBZ
+b25nDQo+ID4+IFNlbnQ6IFR1ZXNkYXksIE9jdG9iZXIgMTcsIDIwMTcgODo0NyBQTQ0KPiA+PiBU
+bzogbGludXgtbWVkaWFAdmdlci5rZXJuZWwub3JnOyBzYWthcmkuYWlsdXNAbGludXguaW50ZWwu
+Y29tDQo+ID4+IENjOiBaaGVuZywgSmlhbiBYdSA8amlhbi54dS56aGVuZ0BpbnRlbC5jb20+OyBN
+YW5pLCBSYWptb2hhbg0KPiA+PiA8cmFqbW9oYW4ubWFuaUBpbnRlbC5jb20+OyBUb2l2b25lbiwg
+VHV1a2thDQo+ID4+IDx0dXVra2EudG9pdm9uZW5AaW50ZWwuY29tPjsgSHUsIEplcnJ5IFcgPGpl
+cnJ5LncuaHVAaW50ZWwuY29tPjsNCj4gPj4gYXJuZEBhcm5kYi5kZTsgaGNoQGxzdC5kZTsgcm9i
+aW4ubXVycGh5QGFybS5jb207IGlvbW11QGxpc3RzLmxpbnV4LQ0KPiA+PiBmb3VuZGF0aW9uLm9y
+ZzsgWmhpLCBZb25nIDx5b25nLnpoaUBpbnRlbC5jb20+DQo+ID4+IFN1YmplY3Q6IFtQQVRDSCB2
+NCAwMC8xMl0gSW50ZWwgSVBVMyBJbWdVIHBhdGNoc2V0DQo+ID4+DQo+ID4+IFRoaXMgcGF0Y2hz
+ZXQgYWRkcyBzdXBwb3J0IGZvciB0aGUgSW50ZWwgSVBVMyAoSW1hZ2UgUHJvY2Vzc2luZyBVbml0
+KQ0KPiA+PiBJbWdVIHdoaWNoIGlzIGVzc2VudGlhbGx5IGEgbW9kZXJuIG1lbW9yeS10by1tZW1v
+cnkgSVNQLiBJdA0KPiA+PiBpbXBsZW1lbnRzIHJhdyBCYXllciB0byBZVVYgaW1hZ2UgZm9ybWF0
+IGNvbnZlcnNpb24gYXMgd2VsbCBhcyBhDQo+ID4+IGxhcmdlIG51bWJlciBvZiBvdGhlciBwaXhl
+bCBwcm9jZXNzaW5nIGFsZ29yaXRobXMgZm9yIGltcHJvdmluZyB0aGUgaW1hZ2UNCj4gcXVhbGl0
+eS4NCj4gPj4NCj4gPj4gTWV0YSBkYXRhIGZvcm1hdHMgYXJlIGRlZmluZWQgZm9yIGltYWdlIHN0
+YXRpc3RpY3MgKDNBLCBpLmUuDQo+ID4+IGF1dG9tYXRpYyB3aGl0ZSBiYWxhbmNlLCBleHBvc3Vy
+ZSBhbmQgZm9jdXMsIGhpc3RvZ3JhbSBhbmQgbG9jYWwgYXJlYQ0KPiA+PiBjb250cmFzdA0KPiA+
+PiBlbmhhbmNlbWVudCkgYXMgd2VsbCBhcyBmb3IgdGhlIHBpeGVsIHByb2Nlc3NpbmcgYWxnb3Jp
+dGhtIHBhcmFtZXRlcnMuDQo+ID4+IFRoZSBkb2N1bWVudGF0aW9uIGZvciB0aGVzZSBmb3JtYXRz
+IGlzIGN1cnJlbnRseSBub3QgaW5jbHVkZWQgaW4gdGhlDQo+ID4+IHBhdGNoc2V0IGJ1dCB3aWxs
+IGJlIGFkZGVkIGluIGEgZnV0dXJlIHZlcnNpb24gb2YgdGhpcyBzZXQuDQo+ID4+DQo+ID4NCj4g
+PiBIZXJlIGlzIGFuIHVwZGF0ZSBvbiB0aGUgSVBVMyBkb2N1bWVudGF0aW9uIHRoYXQgd2UgYXJl
+IGN1cnJlbnRseSB3b3JraW5nDQo+IG9uLg0KPiA+DQo+ID4gSW1hZ2UgcHJvY2Vzc2luZyBpbiBJ
+UFUzIHJlbGllcyBvbiB0aGUgZm9sbG93aW5nLg0KPiA+DQo+ID4gMSkgSFcgY29uZmlndXJhdGlv
+biB0byBlbmFibGUgSVNQIGFuZA0KPiA+IDIpIHNldHRpbmcgY3VzdG9tZXIgc3BlY2lmaWMgM0Eg
+VHVuaW5nIC8gQWxnb3JpdGhtIFBhcmFtZXRlcnMgdG8gYWNoaWV2ZQ0KPiBkZXNpcmVkIGltYWdl
+IHF1YWxpdHkuDQo+ID4NCj4gPiBXZSBpbnRlbmQgdG8gcHJvdmlkZSBkb2N1bWVudGF0aW9uIG9u
+IEltZ1UgZHJpdmVyIHByb2dyYW1taW5nIGludGVyZmFjZQ0KPiB0byBoZWxwIHVzZXJzIG9mIHRo
+aXMgZHJpdmVyIHRvIGNvbmZpZ3VyZSBhbmQgZW5hYmxlIElTUCBIVyB0byBtZWV0IHRoZWlyDQo+
+IG5lZWRzLiAgVGhpcyBkb2N1bWVudGF0aW9uIHdpbGwgaW5jbHVkZSBkZXRhaWxzIG9uIGNvbXBs
+ZXRlIFY0TDIgS2VybmVsIGRyaXZlcg0KPiBpbnRlcmZhY2UgYW5kIElPLUNvbnRyb2wgcGFyYW1l
+dGVycywgZXhjZXB0IGZvciB0aGUgSVNQIGludGVybmFsIGFsZ29yaXRobSBhbmQNCj4gaXRzIHBh
+cmFtZXRlcnMgKHdoaWNoIGlzIEludGVsIHByb3ByaWV0YXJ5IElQKS4NCj4gPg0KPiA+IFdlIHdp
+bGwgYWxzbyBwcm92aWRlIGFuIHVzZXIgc3BhY2UgbGlicmFyeSBpbiBiaW5hcnkgZm9ybSB0byBo
+ZWxwIHVzZXJzIG9mIHRoaXMNCj4gZHJpdmVyLCB0byBjb252ZXJ0IHRoZSBwdWJsaWMgM0EgdHVu
+aW5nIHBhcmFtZXRlcnMgdG8gSVBVMyBhbGdvcml0aG0NCj4gcGFyYW1ldGVycy4gVGhpcyB0b29s
+IHdpbGwgYmUgcmVsZWFzZWQgdW5kZXIgTkRBIHRvIHRoZSB1c2VycyBvZiB0aGlzIGRyaXZlci4N
+Cj4gDQo+IFNvIEkgZGlzY3Vzc2VkIHRoaXMgc2l0dWF0aW9uIHdpdGggU2FrYXJpIGluIFByYWd1
+ZSBkdXJpbmcgdGhlIEVMQ0UuIEkgYW0gbm90DQo+IGhhcHB5IHdpdGggYWRkaW5nIGEgZHJpdmVy
+IHRvIHRoZSBrZXJuZWwgdGhhdCBuZWVkcyBhbiBOREEgdG8gYmUgdXNhYmxlLiBJDQo+IGNhbid0
+IGFncmVlIHRvIHRoYXQuIEl0J3MgZWZmZWN0aXZlbHkgdGhlIHNhbWUgYXMgZmlybXdhcmUgdGhh
+dCdzIG9ubHkgYXZhaWxhYmxlDQo+IHVuZGVyIGFuIE5EQSBhbmQgd2Ugd291bGRuJ3QgYWNjZXB0
+IHN1Y2ggZHJpdmVycyBlaXRoZXIuDQo+IA0KDQpBY2sNCg0KPiBUaGVyZSBhcmUgYSBmZXcgb3B0
+aW9uczoNCj4gDQo+IDEpIERvY3VtZW50IHRoZSBJU1AgcGFyYW1ldGVycyBhbmQgdGhhdCBmb3Jt
+YXQgdGhleSBhcmUgc3RvcmVkIGluIGFsbG93aW5nDQo+IGZvcg0KPiAgICBvcGVuIHNvdXJjZSBp
+bXBsZW1lbnRhdGlvbnMuIFdoaWxlIHRoaXMgaXMgdGhlIGlkZWFsLCBJIHN1c3BlY3QgdGhhdCB0
+aGlzIGlzDQo+ICAgIGEgbm8tZ28gZm9yIEludGVsLg0KPiANCg0KQWNrDQoNCj4gMikgVGhlIGRy
+aXZlciBjYW4gYmUgdXNlZCB3aXRob3V0IHVzaW5nIHRoZXNlIElTUCBwYXJhbWV0ZXJzIGFuZCBz
+dGlsbCBhY2hpZXZlDQo+ICAgICdPSycgcXVhbGl0eS4gSS5lLiwgaXQncyB1c2FibGUgZm9yIGJh
+c2ljIHdlYmNhbSB1c2FnZSB1bmRlciBub3JtYWwgbGlnaHRpbmcNCj4gICAgY29uZGl0aW9ucy4g
+SSdtIG5vdCBzdXJlIGlmIHRoaXMgaXMgcG9zc2libGUgYXQgYWxsLCB0aG91Z2guDQo+IA0KDQpU
+aGlzIGlzIHNvbWV0aGluZyB0aGF0IHdlIGhhdmUgdHJpZWQgYW5kIGFyZSBhYmxlIHRvIGRvIGlt
+YWdlIGNhcHR1cmUgd2l0aA0KdGhlIGRlZmF1bHQgSVNQIHBhcmFtZXRlcnMgdXNpbmcgb3Y1Njcw
+IHNlbnNvci4NCkFkZGl0aW9uYWxseSB3ZSBoYWQgdG8gc2V0IG9wdGltYWwgdmFsdWVzIGZvciB0
+aGUgb3Y1NjcwIHNlbnNvcidzIGV4cG9zdXJlIGFuZA0KZ2FpbiBzZXR0aW5ncy4NCg0KUGxlYXNl
+IHNlZSBpZiB0aGUgZm9sbG93aW5nIGltYWdlIGxvb2tzIHRvIG1lZXQgdGhlICdPSycgcXVhbGl0
+eS4NCg0KZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9SYWptb2hhbk1hbmkvaXB1My1taXNj
+LmdpdA0KaXB1My1taXNjL292NTY3MC5qcGcgaXMgdGhlIGltYWdlIGZpbGUuDQoNCj4gMykgTWFr
+ZSB0aGUgbGlicmFyeSBhdmFpbGFibGUgd2l0aG91dCByZXF1aXJpbmcgYW4gTkRBLg0KPiANCg0K
+V2UgYXJlIGFsc28gYWN0aXZlbHkgZXhwbG9yaW5nIHRoaXMgb3B0aW9uIHRvIHNlZSBpZiB0aGlz
+IGNhbiBiZSBkb25lLg0KDQo+IDQpIFByb3ZpZGUgYSBub24tTkRBIGxpYnJhcnkgKGlkZWFsbHkg
+b3BlbiBzb3VyY2UpIHRoYXQgYWNoaWV2ZXMgYXQgbWluaW11bQ0KPiAgICB0aGUgcXVhbGl0eSBh
+cyBkZXNjcmliZWQgaW4gMjogaS5lLiB1c2FibGUgZm9yIGJhc2ljIHdlYmNhbS4NCj4gDQoNCkkg
+c2VlIHRoaXMgaXMgdGhlIHNhbWUgYXMgb3B0aW9uIDMpICsgb3BlbiBzb3VyY2luZyB0aGUgbGli
+cmFyeS4NCk9wZW4gc291cmNpbmcgdGhlIGxpYnJhcnkgZG9lcyBub3QgbG9vayB0byBiZSBhbiBv
+cHRpb24uDQpJIHdpbGwgcmVjb25maXJtIHRoaXMuDQoNCj4gNSkgT3RoZXIgc29sdXRpb25zIEkg
+ZGlkbid0IHRoaW5rIG9mPw0KPiANCj4gSSB0aGluayA0IG1pZ2h0IGJlIHRoZSBiZXN0IG9wdGlv
+biwgZXNwZWNpYWxseSBpZiBpdCBpcyBvcGVuIHNvdXJjZWQgYW5kIGp1c3QgdXNlcw0KPiBub24t
+SVAgM0EgYWxnb3JpdGhtcy4gSXQgY291bGQgZXZlbiBiZSBhZGRlZCB0byB0aGUgdjRsLXV0aWxz
+IGdpdCByZXBvLg0KPiANCj4gQSBjbG9zZWQgc291cmNlIG5vbi1OREEgbGlicmFyeSBtaWdodCBh
+bHNvIHdvcmssIGJ1dCB5b3Ugd2lsbCBuZWVkIHRvIGNoZWNrDQo+IHdoYXQgTWF1cm8gdGhpbmtz
+IGFib3V0IHRoYXQuDQoNCkkgYmVsaWV2ZSB0aGlzIGlzIG9wdGlvbiAzKSB0aGF0IHlvdSBhcmUg
+cmVmZXJyaW5nIGhlcmUuDQpEZXBlbmRpbmcgb24gdGhlIHByb2dyZXNzIHRoYXQgd2UgbWFrZSBv
+biBvcHRpb24gMyksIHdlIGNhbiB3b3JrIG9uIHRoZQ0KbmV4dCBzdGVwcy4NCg0KPiBNeSBwcm9i
+bGVtIGlzIHRoYXQgc3VjaCBsaWJyYXJpZXMgdGVuZCB0byBiZQ0KPiBhYmFuZG9uZWQgYWZ0ZXIg
+YSBmZXcgeWVhcnMgYW5kIHRoZW4gYml0LXJvdCBzZXRzIGluLiBBbiBvcGVuLXNvdXJjZSBzb2x1
+dGlvbg0KPiBpcyBtdWNoIGVhc2llciB0byBtYWludGFpbiBpbiB0aGUgbG9uZyB0ZXJtLg0KPiAN
+Cj4gUmVnYXJkcywNCj4gDQo+IAlIYW5zDQo+IA0KDQo=
