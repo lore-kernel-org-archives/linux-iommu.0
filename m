@@ -1,59 +1,130 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 26/36] iommu/arm-smmu-v3: Add support for Hardware
-	Translation Table Update
-Date: Wed, 6 Dec 2017 11:06:59 +0000
-Message-ID: <8bdba799-49ec-edc9-dbcf-9277424dea57@arm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<20171006133203.22803-27-jean-philippe.brucker@arm.com>
-	<d2ec2e61-f758-0394-41d2-555ae65feb0d@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <d2ec2e61-f758-0394-41d2-555ae65feb0d-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: [PATCH] iommu/vt-d: clean up pr_irq if request_threaded_irq fails
+Date: Wed,  6 Dec 2017 09:49:59 -0700
+Message-ID: <20171206164959.23794-1-jsnitsel@redhat.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/12/17 06:51, Yisheng Xie wrote:
-> Hi Jean,
-> 
-> On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
->> If the SMMU supports it and the kernel was built with HTTU support, enable
->> +	if (IS_ENABLED(CONFIG_ARM64_HW_AFDBM) && (reg & (IDR0_HA | IDR0_HD))) {
->> +		smmu->features |= ARM_SMMU_FEAT_HA;
->> +		if (reg & IDR0_HD)
->> +			smmu->features |= ARM_SMMU_FEAT_HD;
->> +	}
-> 
-> What is relationship of armv8.1 HW_AFDBM and SMMUv3 HTTU? I mean why we need
-> IS_ENABLED(CONFIG_ARM64_HW_AFDBM) ?
+It is unlikely request_threaded_irq will fail, but if it does for some
+reason we should clear iommu->pr_irq in the error path. Also
+intel_svm_finish_prq shouldn't try to clean up the page request
+interrupt if pr_irq is 0. Without these, if request_threaded_irq were
+to fail the following occurs:
 
-I think the reason we needed this was that, without CONFIG_ARM64_HW_AFDBM,
-the CPU wouldn't update the pte atomically and pte_dirty() wouldn't check
-the DBM bit 51 (only the SW dirty bit 55).
+fail with no fixes:
 
-Since af29678fe785 ("arm64: Remove the !CONFIG_ARM64_HW_AFDBM alternative
-code paths") removed lots of #ifdefs, I'll see if we can remove the above
-IS_ENABLED as well.
+[    0.683147] ------------[ cut here ]------------
+[    0.683148] NULL pointer, cannot free irq
+[    0.683158] WARNING: CPU: 1 PID: 1 at kernel/irq/irqdomain.c:1632 irq_domain_free_irqs+0x126/0x140
+[    0.683160] Modules linked in:
+[    0.683163] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 4.15.0-rc2 #3
+[    0.683165] Hardware name:                  /NUC7i3BNB, BIOS BNKBL357.86A.0036.2017.0105.1112 01/05/2017
+[    0.683168] RIP: 0010:irq_domain_free_irqs+0x126/0x140
+[    0.683169] RSP: 0000:ffffc90000037ce8 EFLAGS: 00010292
+[    0.683171] RAX: 000000000000001d RBX: ffff880276283c00 RCX: ffffffff81c5e5e8
+[    0.683172] RDX: 0000000000000001 RSI: 0000000000000096 RDI: 0000000000000246
+[    0.683174] RBP: ffff880276283c00 R08: 0000000000000000 R09: 000000000000023c
+[    0.683175] R10: 0000000000000007 R11: 0000000000000000 R12: 000000000000007a
+[    0.683176] R13: 0000000000000001 R14: 0000000000000000 R15: 0000010010000000
+[    0.683178] FS:  0000000000000000(0000) GS:ffff88027ec80000(0000) knlGS:0000000000000000
+[    0.683180] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.683181] CR2: 0000000000000000 CR3: 0000000001c09001 CR4: 00000000003606e0
+[    0.683182] Call Trace:
+[    0.683189]  intel_svm_finish_prq+0x3c/0x60
+[    0.683191]  free_dmar_iommu+0x1ac/0x1b0
+[    0.683195]  init_dmars+0xaaa/0xaea
+[    0.683200]  ? klist_next+0x19/0xc0
+[    0.683203]  ? pci_do_find_bus+0x50/0x50
+[    0.683205]  ? pci_get_dev_by_id+0x52/0x70
+[    0.683208]  intel_iommu_init+0x498/0x5c7
+[    0.683211]  pci_iommu_init+0x13/0x3c
+[    0.683214]  ? e820__memblock_setup+0x61/0x61
+[    0.683217]  do_one_initcall+0x4d/0x1a0
+[    0.683220]  kernel_init_freeable+0x186/0x20e
+[    0.683222]  ? set_debug_rodata+0x11/0x11
+[    0.683225]  ? rest_init+0xb0/0xb0
+[    0.683226]  kernel_init+0xa/0xff
+[    0.683229]  ret_from_fork+0x1f/0x30
+[    0.683259] Code: 89 ee 44 89 e7 e8 3b e8 ff ff 5b 5d 44 89 e7 44 89 ee 41 5c 41 5d 41 5e e9 a8 84 ff ff 48 c7 c7 a8 71 a7 81 31 c0 e8 6a d3 f9 ff <0f> ff 5b 5d 41 5c 41 5d 41 5
+e c3 0f 1f 44 00 00 66 2e 0f 1f 84
+[    0.683285] ---[ end trace f7650e42792627ca ]---
 
-> If CONFIG_ARM64_HW_AFDBM=y but the process do not support ARMv8.1, should it also
-> enable related feature for SMMUv3?
+with iommu->pr_irq = 0, but no check in intel_svm_finish_prq:
 
-Yes I think we can enable HTTU in the SMMU even if the CPU doesn't support
-it (though HTTU is only useful when sharing process address spaces). The
-mm code checks for both HW and SW bits even when the CPU doesn't support
-ARMv8.1
+[    0.669561] ------------[ cut here ]------------
+[    0.669563] Trying to free already-free IRQ 0
+[    0.669573] WARNING: CPU: 3 PID: 1 at kernel/irq/manage.c:1546 __free_irq+0xa4/0x2c0
+[    0.669574] Modules linked in:
+[    0.669577] CPU: 3 PID: 1 Comm: swapper/0 Not tainted 4.15.0-rc2 #4
+[    0.669579] Hardware name:                  /NUC7i3BNB, BIOS BNKBL357.86A.0036.2017.0105.1112 01/05/2017
+[    0.669581] RIP: 0010:__free_irq+0xa4/0x2c0
+[    0.669582] RSP: 0000:ffffc90000037cc0 EFLAGS: 00010082
+[    0.669584] RAX: 0000000000000021 RBX: 0000000000000000 RCX: ffffffff81c5e5e8
+[    0.669585] RDX: 0000000000000001 RSI: 0000000000000086 RDI: 0000000000000046
+[    0.669587] RBP: 0000000000000000 R08: 0000000000000000 R09: 000000000000023c
+[    0.669588] R10: 0000000000000007 R11: 0000000000000000 R12: ffff880276253960
+[    0.669589] R13: ffff8802762538a4 R14: ffff880276253800 R15: ffff880276283600
+[    0.669593] FS:  0000000000000000(0000) GS:ffff88027ed80000(0000) knlGS:0000000000000000
+[    0.669594] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.669596] CR2: 0000000000000000 CR3: 0000000001c09001 CR4: 00000000003606e0
+[    0.669602] Call Trace:
+[    0.669616]  free_irq+0x30/0x60
+[    0.669620]  intel_svm_finish_prq+0x34/0x60
+[    0.669623]  free_dmar_iommu+0x1ac/0x1b0
+[    0.669627]  init_dmars+0xaaa/0xaea
+[    0.669631]  ? klist_next+0x19/0xc0
+[    0.669634]  ? pci_do_find_bus+0x50/0x50
+[    0.669637]  ? pci_get_dev_by_id+0x52/0x70
+[    0.669639]  intel_iommu_init+0x498/0x5c7
+[    0.669642]  pci_iommu_init+0x13/0x3c
+[    0.669645]  ? e820__memblock_setup+0x61/0x61
+[    0.669648]  do_one_initcall+0x4d/0x1a0
+[    0.669651]  kernel_init_freeable+0x186/0x20e
+[    0.669653]  ? set_debug_rodata+0x11/0x11
+[    0.669656]  ? rest_init+0xb0/0xb0
+[    0.669658]  kernel_init+0xa/0xff
+[    0.669661]  ret_from_fork+0x1f/0x30
+[    0.669662] Code: 7a 08 75 0e e9 c3 01 00 00 4c 39 7b 08 74 57 48 89 da 48 8b 5a 18 48 85 db 75 ee 89 ee 48 c7 c7 78 67 a7 81 31 c0 e8 4c 37 fa ff <0f> ff 48 8b 34 24 4c 89 ef e
+8 0e 4c 68 00 49 8b 46 40 48 8b 80
+[    0.669688] ---[ end trace 58a470248700f2fc ]---
 
-Thanks,
-Jean
+Cc: Alex Williamson <alex.williamson@redhat.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+---
+ drivers/iommu/intel-svm.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index ed1cf7c5a43b..6643277e321e 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -129,6 +129,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
+ 		pr_err("IOMMU: %s: Failed to request IRQ for page request queue\n",
+ 		       iommu->name);
+ 		dmar_free_hwirq(irq);
++		iommu->pr_irq = 0;
+ 		goto err;
+ 	}
+ 	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
+@@ -144,9 +145,11 @@ int intel_svm_finish_prq(struct intel_iommu *iommu)
+ 	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
+ 	dmar_writeq(iommu->reg + DMAR_PQA_REG, 0ULL);
+ 
+-	free_irq(iommu->pr_irq, iommu);
+-	dmar_free_hwirq(iommu->pr_irq);
+-	iommu->pr_irq = 0;
++	if (iommu->pr_irq) {
++		free_irq(iommu->pr_irq, iommu);
++		dmar_free_hwirq(iommu->pr_irq);
++		iommu->pr_irq = 0;
++	}
+ 
+ 	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
+ 	iommu->prq = NULL;
+-- 
+2.14.3
