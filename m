@@ -1,8 +1,8 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
 Subject: Re: [PATCH v3 3/6] iommu/vt-d: Add Intel IOMMU debugfs to show
  extended context internals
-Date: Wed, 6 Dec 2017 16:17:55 +0800
-Message-ID: <5A27A7B3.1080108@linux.intel.com>
+Date: Wed, 6 Dec 2017 16:17:11 +0800
+Message-ID: <5A27A787.2060307@linux.intel.com>
 References: <1512531807-24268-1-git-send-email-sohil.mehta@intel.com>
  <1512531807-24268-4-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
@@ -42,13 +42,6 @@ On 12/06/2017 11:43 AM, Sohil Mehta wrote:
 > [entry] DID :B :D .F    Low             High
 > [80]    0000:00:0a.00   4016f3a05       102
 > Higher Context tbl entries for Bus: 0
-
-Do you mind changing "tbl entries" to "table entries" so that
-it could be consistent with above lower one?
-
-Best regards,
-Lu Baolu
-
 > [80]    0000:00:0a.00   40150000c       671b80000000
 >
 > Cc: Sohil Mehta <sohil.mehta@intel.com>
@@ -89,6 +82,9 @@ Lu Baolu
 > +					iommu->pasid_state_table);
 > +			context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
 > +					intel_iommu_get_pts(iommu);
+
+Why do you change the context entries here?
+
 > +		}
 > +
 > +		seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n", ctx,
@@ -115,6 +111,14 @@ Lu Baolu
 > +
 > +			ext_ctx_tbl_entry_show(m, unused, iommu, bus, ctx,
 > +					       context, new_ext);
->  		}
->  	}
->  out:
+
+How about
+
++			if (new_ext)
++				ext_ctx_tbl_entry_show(m, unused, iommu, bus, ctx, context);
+
+
+and remove checking new_ext in ext_ctx_tbl_entry_show()?
+ 
+Best regards,
+Lu Baolu
