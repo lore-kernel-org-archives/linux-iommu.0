@@ -1,124 +1,40 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 3/6] iommu/vt-d: Add Intel IOMMU debugfs to show
- extended context internals
-Date: Wed, 6 Dec 2017 16:17:11 +0800
-Message-ID: <5A27A787.2060307@linux.intel.com>
-References: <1512531807-24268-1-git-send-email-sohil.mehta@intel.com>
- <1512531807-24268-4-git-send-email-sohil.mehta@intel.com>
+From: Yisheng Xie <xieyisheng1@huawei.com>
+Subject: Re: [RFCv2 PATCH 26/36] iommu/arm-smmu-v3: Add support for Hardware
+ Translation Table Update
+Date: Wed, 6 Dec 2017 14:51:59 +0800
+Message-ID: <d2ec2e61-f758-0394-41d2-555ae65feb0d@huawei.com>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-27-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1512531807-24268-4-git-send-email-sohil.mehta@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sohil Mehta <sohil.mehta@intel.com>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Gayatri Kammela <gayatri.kammela@intel.com>, Andriy Shevchenko <andriy.shevchenko@intel.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20171006133203.22803-27-jean-philippe.brucker@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, okaya@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Jean,
 
-On 12/06/2017 11:43 AM, Sohil Mehta wrote:
-> From: Gayatri Kammela <gayatri.kammela@intel.com>
->
-> Debugfs extension to dump internals such as extended context table
-> entries for each IOMMU to the userspace.
->
-> root@OTC-KBLH-01:~# cat
-> /sys/kernel/debug/intel_iommu/dmar_translation_struct
->
-> IOMMU dmar1: Extended Root Table Addr:4558a1800
-> Extended Root tbl entries:
-> Bus 0 L: 4558a6001 H: 0
-> Lower Context table entries for Bus: 0
-> [entry] DID :B :D .F    Low             High
-> [16]    0000:00:02.00   4558a5005       102
-> Higher Context tbl entries for Bus: 0
-> [16]    0000:00:02.00   401b0000c       401400000
->
-> IOMMU dmar0: Extended Root Table Addr:4558a2800
-> Extended Root tbl entries:
-> Bus 0 L: 4016f4001 H: 0
-> Lower Context table entries for Bus: 0
-> [entry] DID :B :D .F    Low             High
-> [80]    0000:00:0a.00   4016f3a05       102
-> Higher Context tbl entries for Bus: 0
-> [80]    0000:00:0a.00   40150000c       671b80000000
->
-> Cc: Sohil Mehta <sohil.mehta@intel.com>
-> Cc: Fenghua Yu <fenghua.yu@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
-> ---
->
-> v3: No change
->
-> v2: No change
->
->  drivers/iommu/intel-iommu-debug.c | 35 +++++++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
->
-> diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-> index 8ae0c4d..8e7f5d2 100644
-> --- a/drivers/iommu/intel-iommu-debug.c
-> +++ b/drivers/iommu/intel-iommu-debug.c
-> @@ -46,6 +46,38 @@ static const struct file_operations __name ## _fops =			\
->  	.owner		= THIS_MODULE,					\
->  }
->  
-> +#ifdef CONFIG_INTEL_IOMMU_SVM
-> +static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
-> +				   struct intel_iommu *iommu, int bus, int ctx,
-> +				   struct context_entry *context, bool new_ext)
-> +{
-> +	u64 ctx_lo;
-> +
-> +	if (new_ext) {
-> +		seq_printf(m, "Higher Context tbl entries for Bus: %d\n", bus);
-> +		ctx_lo = context[0].lo;
-> +
-> +		if (!(ctx_lo & CONTEXT_PASIDE)) {
-> +			context[1].hi = (u64)virt_to_phys(
-> +					iommu->pasid_state_table);
-> +			context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
-> +					intel_iommu_get_pts(iommu);
-
-Why do you change the context entries here?
-
-> +		}
-> +
-> +		seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n", ctx,
-> +			   iommu->segment, bus, PCI_SLOT(ctx), PCI_FUNC(ctx),
-> +			   context[1].lo, context[1].hi);
+On 2017/10/6 21:31, Jean-Philippe Brucker wrote:
+> If the SMMU supports it and the kernel was built with HTTU support, enable
+> +	if (IS_ENABLED(CONFIG_ARM64_HW_AFDBM) && (reg & (IDR0_HA | IDR0_HD))) {
+> +		smmu->features |= ARM_SMMU_FEAT_HA;
+> +		if (reg & IDR0_HD)
+> +			smmu->features |= ARM_SMMU_FEAT_HD;
 > +	}
-> +}
-> +#else /* CONFIG_INTEL_IOMMU_SVM */
-> +static void ext_ctx_tbl_entry_show(struct seq_file *m, void *unused,
-> +				   struct intel_iommu *iommu, int bus, int ctx,
-> +				   struct context_entry *context, bool new_ext)
-> +{
-> +	return;
-> +}
-> +#endif /* CONFIG_INTEL_IOMMU_SVM */
+
+What is relationship of armv8.1 HW_AFDBM and SMMUv3 HTTU? I mean why we need
+IS_ENABLED(CONFIG_ARM64_HW_AFDBM) ?
+
+If CONFIG_ARM64_HW_AFDBM=y but the process do not support ARMv8.1, should it also
+enable related feature for SMMUv3?
+
+Thanks
+Yisheng Xie
 > +
->  static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
->  			       struct intel_iommu *iommu, int bus, bool ext,
->  			       bool new_ext)
-> @@ -69,6 +101,9 @@ static void ctx_tbl_entry_show(struct seq_file *m, void *unused,
->  			seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n",
->  				   ctx, iommu->segment, bus, PCI_SLOT(ctx),
->  				   PCI_FUNC(ctx), context[0].lo, context[0].hi);
-> +
-> +			ext_ctx_tbl_entry_show(m, unused, iommu, bus, ctx,
-> +					       context, new_ext);
-
-How about
-
-+			if (new_ext)
-+				ext_ctx_tbl_entry_show(m, unused, iommu, bus, ctx, context);
-
-
-and remove checking new_ext in ext_ctx_tbl_entry_show()?
- 
-Best regards,
-Lu Baolu
+>  	/*
+>  	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
+>  	 * will create TLB entries for NH-EL1 world and will miss the
+> 
