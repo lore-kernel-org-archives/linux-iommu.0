@@ -1,19 +1,18 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 15/16] iommu: introduce page response function
-Date: Thu, 7 Dec 2017 12:56:55 +0000
-Message-ID: <39fcbbd2-2e6a-f05a-8cb4-8e3ad4ead369@arm.com>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1510944914-54430-16-git-send-email-jacob.jun.pan@linux.intel.com>
-	<93661c1c-2d3b-295f-0b9d-52e50ea9e1d0@arm.com>
-	<20171204133715.50c45136@jacob-builder>
-	<a6cfc27a-6121-1e67-6e0d-f94a383bcd6f@arm.com>
-	<20171206112521.1edf8e9b@jacob-builder>
+From: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 2/6] iommu/vt-d: Add Intel IOMMU debugfs to show
+	context internals
+Date: Thu, 7 Dec 2017 20:19:42 +0000
+Message-ID: <1512678006.120652.17.camel@intel.com>
+References: <1512531807-24268-1-git-send-email-sohil.mehta@intel.com>
+	<1512531807-24268-3-git-send-email-sohil.mehta@intel.com>
+	<5A27A74C.9070201@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171206112521.1edf8e9b@jacob-builder>
+In-Reply-To: <5A27A74C.9070201-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Content-Language: en-US
+Content-ID: <6789F6564A7EF942B9F2480A49147EC7-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,62 +22,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "Yu, Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shevchenko,
+	Andriy" <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shankar,
+	Ravi V" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kammela,
+	Gayatri" <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/12/17 19:25, Jacob Pan wrote:
-[...]
->>   For SMMUv3, the stall buffer may be shared between devices on some
->>   implementations, in which case the guest could prevent other
->> devices to stall by letting the buffer fill up.
->>   -> We might have to keep track of stalls in the host driver and set
->> a credit or timeout to each stall, if it comes to that.
->>   -> In addition, send a terminate-all-stalls command when changing
->> the device's domain.
->>
-> We have the same situation in VT-d with shared queue which in turn may
-> affect other guests. Letting host driver maintain record of pending page
-> request seems the best way to go. VT-d has a way to drain PRQ per PASID
-> and RID combination. I guess this is the same as your
-> "terminate-all-stalls" but with finer control? Or
-> "terminate-all-stalls" only applies to a given device.
-
-That command terminates all stalls for a given device (for all PASIDs).
-It's a bit awkward to implement but should be enough to ensure that we
-don't leak any outstanding faults to the next VM.
-
-> Seems we can implement a generic timeout/credit mechanism in IOMMU
-> driver with model specific action to drain/terminate. The timeout value
-> can also be model specific.
-
-Sounds good. Timeout seems a bit complicated to implement (and how do we
-guess what timeout would work?), so maybe it's simpler to enforce a quota
-of outstanding faults per VM, for example half of the shared queue size
-(the number can be chosen by the IOMMU driver). If a VM has that many
-outstanding faults, then any new fault is immediately terminated by the
-host. A bit rough but it might be enough to mitigate the problem
-initially, and we can always tweak it later (for instance disable faulting
-if a guest doesn't ever reply).
-
-Seems like VFIO should enforce this quota, since the IOMMU layer doesn't
-know which device is assigned to which VM. If it's the IOMMU that enforces
-quotas per device and a VM has 15 devices assigned, then the guest can
-still DoS the IOMMU.
-
-[...]
->>> + * @type: group or stream response  
->>
->> The page request doesn't provide this information
->>
-> this is vt-d specific. it is in the vt-d page request descriptor and
-> response descriptors are different depending on the type.
-> Since we intend the generic data to be super set of models, I add this
-> field.
-
-But don't you need to add the stream type to enum iommu_fault_type, in
-patch 8? Otherwise the guest can't know what type to set in the response.
-
-Thanks,
-Jean
+T24gV2VkLCAyMDE3LTEyLTA2IGF0IDE2OjE2ICswODAwLCBMdSBCYW9sdSB3cm90ZToNCj4gSGks
+DQo+IA0KPiBPbiAxMi8wNi8yMDE3IDExOjQzIEFNLCBTb2hpbCBNZWh0YSB3cm90ZToNCj4gPiAN
+Cj4gPiBGcm9tOiBHYXlhdHJpIEthbW1lbGEgPGdheWF0cmkua2FtbWVsYUBpbnRlbC5jb20+DQo+
+ID4gDQo+ID7CoA0KPiA+ICsJc2VxX3ByaW50ZihtLCAiJXMgQ29udGV4dCB0YWJsZSBlbnRyaWVz
+IGZvciBCdXM6ICVkXG4iLA0KPiA+ICsJCcKgwqDCoGV4dCA/ICJMb3dlciIgOiAiIiwgYnVzKTsN
+Cj4gPiArCXNlcV9wcmludGYobSwgIltlbnRyeV1cdERJRCA6QiA6RCAuRlx0TG93XHRcdEhpZ2hc
+biIpOw0KPiBXQVJOSU5HOiBQcmVmZXIgc2VxX3B1dHMgdG8gc2VxX3ByaW50Zg0KPiAjMTE5OiBG
+SUxFOiBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LWRlYnVnLmM6NTk6DQo+ICvCoMKgwqDCoHNl
+cV9wcmludGYobSwgIltlbnRyeV1cdERJRCA6QiA6RCAuRlx0TG93XHRcdEhpZ2hcbiIpOw0KPiAN
+Cj4gKGNhdWdodCBieSBjaGVja3BhdGNoLnBsKQ0KPiANCg0KSGkgTHUsDQoNCldlJ2xsIGZpeCB0
+aGlzIGFuZCB0aGUgb3RoZXIgY2hlY2twYXRjaC5wbCB3YXJuaW5ncy4NCg0KDQo+ID4gKw0KPiA+
+ICtzdGF0aWMgdm9pZCByb290X3RibF9lbnRyeV9zaG93KHN0cnVjdCBzZXFfZmlsZSAqbSwgdm9p
+ZCAqdW51c2VkLA0KPiBXaHkgZG8geW91IGRlZmluZSB0aGUgInVudXNlZCIgcGFyYW1ldGVyIHdo
+aWNoIHdpbGwgbmV2ZXIgYmVlbiB1c2VkPw0KPiBUaGUgc2FtZSBxdWVzdGlvbnMgdG8gb3RoZXIg
+c2hvdyBmdW5jdGlvbnMuDQo+IA0KDQpTb21lIGZ1bmN0aW9ucyBpbiBvdXIgY29kZSB0aGF0IGFy
+ZSByZWdpc3RlcmVkIHdpdGggc2VxX2ZpbGUgbmVlZGVkIHRvDQpoYXZlIGFuIHVudXNlZCBwYXJh
+bWV0ZXIgc2luY2Ugc2VxX2ZpbGUuaCBkZWZpbmVzIHRoZSBzaG93IGZ1bmN0aW9uIGFzOg0KCWlu
+dCAoKnNob3cpIChzdHJ1Y3Qgc2VxX2ZpbGUgKm0sIHZvaWQgKnYpOw0KDQpCdXQgYSBsb3Qgb2Yg
+b3RoZXIgZnVuY3Rpb25zIGluY2x1ZGluZyB0aGUgb25lIHlvdSBwb2ludGVkIGRvbid0IG5lZWQN
+CnRvIGhhdmUgdGhlIHVudXNlZCBwYXJhbWV0ZXIuIFdlJ2xsIHJlbW92ZSBpdCBmcm9tIHRob3Nl
+Lg0KDQoNCj4gPiArdm9pZCBfX2luaXQgaW50ZWxfaW9tbXVfZGVidWdmc19pbml0KHZvaWQpDQo+
+ID4gK3sNCj4gPiArCXN0cnVjdCBkZW50cnkgKmlvbW11X2RlYnVnX3Jvb3Q7DQo+ID4gKw0KPiA+
+ICsJaW9tbXVfZGVidWdfcm9vdCA9IGRlYnVnZnNfY3JlYXRlX2RpcigiaW50ZWxfaW9tbXUiLA0K
+PiA+IE5VTEwpOw0KPiA+ICsNCj4gPiArCWlmICghaW9tbXVfZGVidWdfcm9vdCkgew0KPiA+ICsJ
+CXByX2VycigiY2FuJ3QgY3JlYXRlIGRlYnVnZnMgZGlyXG4iKTsNCj4gSSBkb24ndCB0aGluayB3
+ZSBuZWVkIGEgcHJfZXJyKCkgaGVyZS4gU3lzdGVtIHdvcmtzIHdlbGwgZXZlbg0KPiBkZWJ1Z2Zz
+X2NyZWF0ZV9kaXIoKSByZXR1cm5zIE5VTEwuDQo+IA0KPiBUaGlzIGlzIHNhbWUgdG8gYWxsIHBy
+X2VycigpIGluIHRoaXMgZmlsZS4NCj4gDQoNCldvdWxkIHRoZSByZWNvbW1lbmRhdGlvbiBiZSB0
+byB1c2UgcHJfd2FybiBpbnN0ZWFkIG9mIHByX2VyciBvciBzaG91bGQNCndlIGVudGlyZWx5IHNr
+aXAgdGhlIG1lc3NhZ2UgYWx0b2dldGhlcj8NCg0KVGhhbmtzLA0KU29oaWwKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
