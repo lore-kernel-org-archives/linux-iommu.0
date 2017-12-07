@@ -1,18 +1,18 @@
 From: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 2/6] iommu/vt-d: Add Intel IOMMU debugfs to show
-	context internals
-Date: Thu, 7 Dec 2017 20:19:42 +0000
-Message-ID: <1512678006.120652.17.camel@intel.com>
+Subject: Re: [PATCH v3 3/6] iommu/vt-d: Add Intel IOMMU debugfs to show
+	extended context internals
+Date: Thu, 7 Dec 2017 20:30:28 +0000
+Message-ID: <1512678653.120652.23.camel@intel.com>
 References: <1512531807-24268-1-git-send-email-sohil.mehta@intel.com>
-	<1512531807-24268-3-git-send-email-sohil.mehta@intel.com>
-	<5A27A74C.9070201@linux.intel.com>
+	<1512531807-24268-4-git-send-email-sohil.mehta@intel.com>
+	<5A27A787.2060307@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5A27A74C.9070201-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <5A27A787.2060307-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Content-Language: en-US
-Content-ID: <6789F6564A7EF942B9F2480A49147EC7-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-ID: <F396509BD8113841A12BCAE741B3C527-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,36 +29,28 @@ Cc: "Yu, Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shevche
 	Gayatri" <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCAyMDE3LTEyLTA2IGF0IDE2OjE2ICswODAwLCBMdSBCYW9sdSB3cm90ZToNCj4gSGks
-DQo+IA0KPiBPbiAxMi8wNi8yMDE3IDExOjQzIEFNLCBTb2hpbCBNZWh0YSB3cm90ZToNCj4gPiAN
-Cj4gPiBGcm9tOiBHYXlhdHJpIEthbW1lbGEgPGdheWF0cmkua2FtbWVsYUBpbnRlbC5jb20+DQo+
-ID4gDQo+ID7CoA0KPiA+ICsJc2VxX3ByaW50ZihtLCAiJXMgQ29udGV4dCB0YWJsZSBlbnRyaWVz
-IGZvciBCdXM6ICVkXG4iLA0KPiA+ICsJCcKgwqDCoGV4dCA/ICJMb3dlciIgOiAiIiwgYnVzKTsN
-Cj4gPiArCXNlcV9wcmludGYobSwgIltlbnRyeV1cdERJRCA6QiA6RCAuRlx0TG93XHRcdEhpZ2hc
-biIpOw0KPiBXQVJOSU5HOiBQcmVmZXIgc2VxX3B1dHMgdG8gc2VxX3ByaW50Zg0KPiAjMTE5OiBG
-SUxFOiBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LWRlYnVnLmM6NTk6DQo+ICvCoMKgwqDCoHNl
-cV9wcmludGYobSwgIltlbnRyeV1cdERJRCA6QiA6RCAuRlx0TG93XHRcdEhpZ2hcbiIpOw0KPiAN
-Cj4gKGNhdWdodCBieSBjaGVja3BhdGNoLnBsKQ0KPiANCg0KSGkgTHUsDQoNCldlJ2xsIGZpeCB0
-aGlzIGFuZCB0aGUgb3RoZXIgY2hlY2twYXRjaC5wbCB3YXJuaW5ncy4NCg0KDQo+ID4gKw0KPiA+
-ICtzdGF0aWMgdm9pZCByb290X3RibF9lbnRyeV9zaG93KHN0cnVjdCBzZXFfZmlsZSAqbSwgdm9p
-ZCAqdW51c2VkLA0KPiBXaHkgZG8geW91IGRlZmluZSB0aGUgInVudXNlZCIgcGFyYW1ldGVyIHdo
-aWNoIHdpbGwgbmV2ZXIgYmVlbiB1c2VkPw0KPiBUaGUgc2FtZSBxdWVzdGlvbnMgdG8gb3RoZXIg
-c2hvdyBmdW5jdGlvbnMuDQo+IA0KDQpTb21lIGZ1bmN0aW9ucyBpbiBvdXIgY29kZSB0aGF0IGFy
-ZSByZWdpc3RlcmVkIHdpdGggc2VxX2ZpbGUgbmVlZGVkIHRvDQpoYXZlIGFuIHVudXNlZCBwYXJh
-bWV0ZXIgc2luY2Ugc2VxX2ZpbGUuaCBkZWZpbmVzIHRoZSBzaG93IGZ1bmN0aW9uIGFzOg0KCWlu
-dCAoKnNob3cpIChzdHJ1Y3Qgc2VxX2ZpbGUgKm0sIHZvaWQgKnYpOw0KDQpCdXQgYSBsb3Qgb2Yg
-b3RoZXIgZnVuY3Rpb25zIGluY2x1ZGluZyB0aGUgb25lIHlvdSBwb2ludGVkIGRvbid0IG5lZWQN
-CnRvIGhhdmUgdGhlIHVudXNlZCBwYXJhbWV0ZXIuIFdlJ2xsIHJlbW92ZSBpdCBmcm9tIHRob3Nl
-Lg0KDQoNCj4gPiArdm9pZCBfX2luaXQgaW50ZWxfaW9tbXVfZGVidWdmc19pbml0KHZvaWQpDQo+
-ID4gK3sNCj4gPiArCXN0cnVjdCBkZW50cnkgKmlvbW11X2RlYnVnX3Jvb3Q7DQo+ID4gKw0KPiA+
-ICsJaW9tbXVfZGVidWdfcm9vdCA9IGRlYnVnZnNfY3JlYXRlX2RpcigiaW50ZWxfaW9tbXUiLA0K
-PiA+IE5VTEwpOw0KPiA+ICsNCj4gPiArCWlmICghaW9tbXVfZGVidWdfcm9vdCkgew0KPiA+ICsJ
-CXByX2VycigiY2FuJ3QgY3JlYXRlIGRlYnVnZnMgZGlyXG4iKTsNCj4gSSBkb24ndCB0aGluayB3
-ZSBuZWVkIGEgcHJfZXJyKCkgaGVyZS4gU3lzdGVtIHdvcmtzIHdlbGwgZXZlbg0KPiBkZWJ1Z2Zz
-X2NyZWF0ZV9kaXIoKSByZXR1cm5zIE5VTEwuDQo+IA0KPiBUaGlzIGlzIHNhbWUgdG8gYWxsIHBy
-X2VycigpIGluIHRoaXMgZmlsZS4NCj4gDQoNCldvdWxkIHRoZSByZWNvbW1lbmRhdGlvbiBiZSB0
-byB1c2UgcHJfd2FybiBpbnN0ZWFkIG9mIHByX2VyciBvciBzaG91bGQNCndlIGVudGlyZWx5IHNr
-aXAgdGhlIG1lc3NhZ2UgYWx0b2dldGhlcj8NCg0KVGhhbmtzLA0KU29oaWwKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, 2017-12-06 at 16:17 +0800, Lu Baolu wrote:
+> Hi,
+> 
+> On 12/06/2017 11:43 AM, Sohil Mehta wrote:
+> > 
+> > From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > 
+> > +
+> > +	if (new_ext) {
+> > +		seq_printf(m, "Higher Context tbl entries for Bus:
+> > %d\n", bus);
+> > +		ctx_lo = context[0].lo;
+> > +
+> > +		if (!(ctx_lo & CONTEXT_PASIDE)) {
+> > +			context[1].hi = (u64)virt_to_phys(
+> > +					iommu->pasid_state_table);
+> > +			context[1].lo = (u64)virt_to_phys(iommu-
+> > >pasid_table) |
+> > +					intel_iommu_get_pts(iommu)
+> > ;
+> Why do you change the context entries here?
+> 
+
+Thanks for catching this. The context entires were mistakenly getting
+changed. We'll remove it.
