@@ -1,85 +1,84 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [RFC 2/2] drivers: dma-mapping: parse per device reserved mem
- at probe time
-Date: Thu, 07 Dec 2017 13:01:45 +0100
-Message-ID: <c47720b4-17cf-200b-bac4-85653cd06700@samsung.com>
-References: <20171126131346.12532-1-peng.fan@nxp.com>
-        <CGME20171126131432epcas4p23145c6f438f7f186545456960f284b91@epcas4p2.samsung.com>
-        <20171126131346.12532-2-peng.fan@nxp.com>
-        <875c3a8c-a857-823e-0243-487d1dd9bee7@samsung.com>
-        <20171127083713.clh6oz5sgere4usq@linux-u7w5.ap.freescale.net>
-        <e44416ee-0f33-e310-d881-aaa3edfdf69e@samsung.com>
-        <20171127090409.posgikgumpoq4wdm@linux-u7w5.ap.freescale.net>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 15/16] iommu: introduce page response function
+Date: Thu, 7 Dec 2017 12:56:55 +0000
+Message-ID: <39fcbbd2-2e6a-f05a-8cb4-8e3ad4ead369@arm.com>
+References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1510944914-54430-16-git-send-email-jacob.jun.pan@linux.intel.com>
+	<93661c1c-2d3b-295f-0b9d-52e50ea9e1d0@arm.com>
+	<20171204133715.50c45136@jacob-builder>
+	<a6cfc27a-6121-1e67-6e0d-f94a383bcd6f@arm.com>
+	<20171206112521.1edf8e9b@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20171127090409.posgikgumpoq4wdm@linux-u7w5.ap.freescale.net>
-Content-language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peng Fan <van.freenix@gmail.com>
-Cc: Peng Fan <peng.fan@nxp.com>, hch@lst.de, robin.murphy@arm.com, gregkh@linuxfoundation.org, robh+dt@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171206112521.1edf8e9b@jacob-builder>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Peng,
-
-On 2017-11-27 10:04, Peng Fan wrote:
-> On Mon, Nov 27, 2017 at 09:44:20AM +0100, Marek Szyprowski wrote:
->> On 2017-11-27 09:37, Peng Fan wrote:
->>> On Mon, Nov 27, 2017 at 09:31:00AM +0100, Marek Szyprowski wrote:
->>>> On 2017-11-26 14:13, Peng Fan wrote:
->>>>> Invoke of_reserved_mem_device_init at dma_configure, then
->>>>> there is no need to call of_reserved_mem_device_init in device
->>>>> specific probe function.
->>>>>
->>>>> Signed-off-by: Peng Fan <peng.fan@nxp.com>
->>>> This has been already tried long time ago, without success:
->>>> http://patches.linaro.org/patch/33558/
->>> Thanks for the info. I should first search mail list before
->>> sending out patches.
->> It doesn't mean that I'm against such idea. I just pointed that I've
->> already tried. That time, however there was no dma_configure() function
->> yet, which seems to be better place for of_rmem_device_init().
+On 06/12/17 19:25, Jacob Pan wrote:
+[...]
+>>   For SMMUv3, the stall buffer may be shared between devices on some
+>>   implementations, in which case the guest could prevent other
+>> devices to stall by letting the buffer fill up.
+>>   -> We might have to keep track of stalls in the host driver and set
+>> a credit or timeout to each stall, if it comes to that.
+>>   -> In addition, send a terminate-all-stalls command when changing
+>> the device's domain.
 >>
->> I would however always call of_dma_configure(), even when reserved mem
->> node is there. IIRC on ARM64 that function configures dma_ops, without
->> which no dma is possible at all.
-> So, you prefer this?
-> 	if (dma_dev->of_node) {
-> +		of_reserved_mem_device_init(dev);
-> 		ret = of_dma_configure(dev, dma_dev->of_node);
->
-> However in of_reserved_mem_device, there is also an call to
-> of_dma_configure.
->
-> "
-> 	/* ensure that dma_ops is set for virtual devices
-> 	 * using reserved memory
-> 	 */
-> 	 ret = of_dma_configure(dev, np);
-> "
->
-> If always call of_dma_configure, of_dma_configure maybe called twice.
+> We have the same situation in VT-d with shared queue which in turn may
+> affect other guests. Letting host driver maintain record of pending page
+> request seems the best way to go. VT-d has a way to drain PRQ per PASID
+> and RID combination. I guess this is the same as your
+> "terminate-all-stalls" but with finer control? Or
+> "terminate-all-stalls" only applies to a given device.
 
-Right, I forgot about this.
+That command terminates all stalls for a given device (for all PASIDs).
+It's a bit awkward to implement but should be enough to ensure that we
+don't leak any outstanding faults to the next VM.
 
-> I just checked more. of_reserved_mem_device_init only handle the first
-> memory-region. To nodes which have multiple memory-region, seems 2nd and etc
-> could not be handled, such as drivers/media/platform/s5p-mfc/s5p_mfc.c.
+> Seems we can implement a generic timeout/credit mechanism in IOMMU
+> driver with model specific action to drain/terminate. The timeout value
+> can also be model specific.
 
-Well, maybe automatic assignment should be done only when there is only
-one reserved region set? In case more than one region assigned to a device,
-the driver has to create virtual child devices and configure DMA for them
-to be able to let dma-mapping API to use those reserved regions. It looks
-that the call to of_dma_configure(dev, np) can be moved back to the driver
-(it was not possible at the time that code was merged due to missing
-export symbols).
+Sounds good. Timeout seems a bit complicated to implement (and how do we
+guess what timeout would work?), so maybe it's simpler to enforce a quota
+of outstanding faults per VM, for example half of the shared queue size
+(the number can be chosen by the IOMMU driver). If a VM has that many
+outstanding faults, then any new fault is immediately terminated by the
+host. A bit rough but it might be enough to mitigate the problem
+initially, and we can always tweak it later (for instance disable faulting
+if a guest doesn't ever reply).
 
-Configuring more than one reserved memory region for given device might
-then moved to some helper function to have a common code for that across
-the drivers.
+Seems like VFIO should enforce this quota, since the IOMMU layer doesn't
+know which device is assigned to which VM. If it's the IOMMU that enforces
+quotas per device and a VM has 15 devices assigned, then the guest can
+still DoS the IOMMU.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+[...]
+>>> + * @type: group or stream response  
+>>
+>> The page request doesn't provide this information
+>>
+> this is vt-d specific. it is in the vt-d page request descriptor and
+> response descriptors are different depending on the type.
+> Since we intend the generic data to be super set of models, I add this
+> field.
+
+But don't you need to add the stream type to enum iommu_fault_type, in
+patch 8? Otherwise the guest can't know what type to set in the response.
+
+Thanks,
+Jean
