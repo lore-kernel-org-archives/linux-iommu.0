@@ -1,94 +1,149 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 15/16] iommu: introduce page response function
-Date: Fri, 8 Dec 2017 16:01:52 -0700
-Message-ID: <20171208160152.738b2ebd@t450s.home>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1510944914-54430-16-git-send-email-jacob.jun.pan@linux.intel.com>
-	<93661c1c-2d3b-295f-0b9d-52e50ea9e1d0@arm.com>
-	<20171204133715.50c45136@jacob-builder>
-	<a6cfc27a-6121-1e67-6e0d-f94a383bcd6f@arm.com>
-	<20171206112521.1edf8e9b@jacob-builder>
-	<20171207145121.23b3f26f@t450s.home>
-	<b0976bc9-68c8-f5c9-881b-5913a4ca1970@arm.com>
-	<20171208124017.519120c1@jacob-builder>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [PATCH v10 0/3] iommu/smmu-v3: Workaround for hisilicon
+ 161010801 erratum(reserve HW MSI)
+Date: Mon, 11 Dec 2017 09:17:08 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA838626230@FRAEML521-MBX.china.huawei.com>
+References: <20171129141449.120316-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20171208124017.519120c1@jacob-builder>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20171129141449.120316-1-shameerali.kolothum.thodi@huawei.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "joro@8bytes.org" <joro@8bytes.org>
+Cc: John Garry <john.garry@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linuxarm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 8 Dec 2017 12:40:17 -0800
-Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+Hi Lorenzo/Robin,
 
-> On Fri, 8 Dec 2017 13:52:00 +0000
-> Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-> 
-> > On 07/12/17 21:51, Alex Williamson wrote:  
-> > >> Agree, IOMMU driver cannot enforce it. I think VFIO layer can make
-> > >> sure page response come from the assigned device and its
-> > >> guest/container.    
-> > > 
-> > > Can we enforce it via the IOMMU/VFIO interface?  If the response is
-> > > for a struct device, and not an rid/did embedded in a structure,
-> > > then vfio can pass it through w/o worrying about it, ie. response
-> > > comes in via ioctl with association to vfio device fd -> struct
-> > > vfio_device -> struct device, iommu driver fills in rid/did.
-> > > Thanks,    
-> > 
-> > Yes that's probably the best way, reporting faults and receiving
-> > responses on the device fd.
-> >   
-> Just to put these ideas in to code. The IOMMU API used by VFIO has
-> struct device* (derived from fd), no did/rid (to be derived from
-> struct device by IOMMU driver.)
-> 
-> int intel_iommu_page_response(struct iommu_domain *domain, struct device *dev,
-> 			struct page_response_msg *msg)
-> 
-> IOMMU driver can further sanitize by checking whether this is a pending
-> page request for the device, and refcount outstanding PRQs.
-> 
-> Does it sound right?
+Any feedback on this series, please?
 
-Yep.  Thanks,
+This one has the platform check(smmu model) moved into iort
+code and invoking the helper fn from iommu_dma_get_resv_regions().
 
-Alex
- 
-> /**
->  * Generic page response information based on PCI ATS and PASID spec.
->  * @addr: servicing page address
->  * @pasid: contains process address space ID, used in shared virtual
-> memory(SVM)
->  * @resp_code: response code
->  * @page_req_group_id: page request group index
->  * @type: group or stream/single page response
->  * @private_data: uniquely identify device-specific private data for an
->  *                individual page response
+Thanks,
+Shameer
+
+> -----Original Message-----
+> From: Shameerali Kolothum Thodi
+> Sent: Wednesday, November 29, 2017 2:15 PM
+> To: lorenzo.pieralisi@arm.com; will.deacon@arm.com;
+> robin.murphy@arm.com; marc.zyngier@arm.com; joro@8bytes.org
+> Cc: John Garry <john.garry@huawei.com>; xuwei (O) <xuwei5@hisilicon.com>;
+> Guohanjun (Hanjun Guo) <guohanjun@huawei.com>; iommu@lists.linux-
+> foundation.org; linux-arm-kernel@lists.infradead.org; linux-
+> acpi@vger.kernel.org; devicetree@vger.kernel.org; Linuxarm
+> <linuxarm@huawei.com>; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>
+> Subject: [PATCH v10 0/3] iommu/smmu-v3: Workaround for hisilicon
+> 161010801 erratum(reserve HW MSI)
 > 
->  */
-> struct page_response_msg {
-> 	u64 addr;
-> 	u32 pasid;
-> 	u32 resp_code:4;
-> #define IOMMU_PAGE_RESP_SUCCESS	0
-> #define IOMMU_PAGE_RESP_INVALID	1
-> #define IOMMU_PAGE_RESP_FAILURE	0xF
+> On certain HiSilicon platforms (hip06/hip07) the GIC ITS and PCIe RC
+> deviates from the standard implementation and this breaks PCIe MSI
+> functionality when SMMU is enabled.
 > 
-> 	u32 pasid_present:1;
-> 	u32 page_req_group_id : 9;
-> 	enum page_response_type type;
-> 	u32 private_data;
-> };
+> The HiSilicon erratum 161010801 describes this limitation of certain
+> HiSilicon platforms to support the SMMU mappings for MSI transactions.
+> On these platforms GICv3 ITS translator is presented with the deviceID
+> by extending the MSI payload data to 64 bits to include the deviceID.
+> Hence, the PCIe controller on this platforms has to differentiate the MSI
+> payload against other DMA payload and has to modify the MSI payload.
+> This basically makes it difficult for this platforms to have a SMMU
+> translation for MSI.
+> 
+> This patch implements an ACPI based quirk to reserve the hw msi regions
+> in the smmu-v3 driver which means these address regions will not be
+> translated and will be excluded from iova allocations.
+> 
+> To implement this quirk, the following changes are incorporated:
+> 1. Added a generic helper function to IORT code to retrieve and reserve
+>    the associated ITS base address from a device IORT node. The function
+>    has a check for smmu model to determine whether the platform requires
+>    the HW MSI reservation or not.
+> 2. Added smmu node entries and explicitly disabled them in hip06/hip07
+>     dts files so that users are warned about the non-DT support for this
+>     erratum.
+> 
+> Changelog:
+> 
+> v9 --> v10
+> Addressed comments:
+> -Moved smmu model check to iort helper function to selectively apply
+>  the msi reservation which will make the fn call generic from iommu-dma.
+> -Removed PCI blacklisting patch, instead added smmu nodes(disabled)
+>  with comments to hip06/hip07 dts file.
+> 
+> v8 --> v9
+> -Thanks to Marc, fixed IORT helper function to reserve the ITS
+>  translater region only.
+> -Removed the DT support for MSI reservation and blacklisted
+>  HiSilicon PCIe controllers on DT based systems when SMMUv3 is
+>  enabled.
+> 
+> v7 --> v8
+> Addressed comments from Rob and Lorenzo:
+>  -Modified to use DT compatible string for errata.
+>  -Changed logic to retrieve the msi-parent for DT case.
+> 
+> v6 --> v7
+> Addressed request from Will to add DT support for the erratum:
+>  - added bt binding
+>  - add of_iommu_msi_get_resv_regions()
+> New arm64 silicon errata entry
+> Rename iort_iommu_{its->msi}_get_resv_regions
+> 
+> v5 --> v6
+> Addressed comments from Robin and Lorenzo:
+> -No change to patch#1 .
+> -Reverted v5 patch#2 as this might break the platforms where this quirk
+>   is not applicable. Provided a generic function in iommu code and added
+>   back the quirk implementation in SMMU v3 driver(patch#3)
+> 
+> v4 --> v5
+> Addressed comments from Robin and Lorenzo:
+> -Added a comment to make it clear that, for now, only straightforward
+>   HW topologies are handled while reserving ITS regions(patch #1).
+> 
+> v3 --> v4
+> Rebased on 4.13-rc1.
+> Addressed comments from Robin, Will and Lorenzo:
+> -As suggested by Robin, moved the ITS msi reservation into
+>   iommu_dma_get_resv_regions().
+> -Added its_count != resv region failure case(patch #1).
+> 
+> v2 --> v3
+> Addressed comments from Lorenzo and Robin:
+> -Removed dev_is_pci() check in smmuV3 driver.
+> -Don't treat device not having an ITS mapping as an error in
+>   iort helper function.
+> 
+> v1 --> v2
+> -patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+> 
+> RFCv2 -->PATCH
+> -Incorporated Lorenzo's review comments.
+> 
+> RFC v1 --> RFC v2
+> Based on Robin's review comments,
+> -Removed  the generic erratum framework.
+> -Using IORT/MADT tables to retrieve the ITS base addr instead  of vendor
+> specific CSRT table.
+> 
+> Shameer Kolothum (3):
+>   ACPI/IORT: Add msi address regions reservation helper
+>   iommu/dma: Add HW MSI(GICv3 ITS) address regions reservation
+>   arm64:dts:hisilicon Disable hisilicon smmu node on hip06/hip07
+> 
+>  arch/arm64/boot/dts/hisilicon/hip06.dtsi |  55 +++++++++++++
+>  arch/arm64/boot/dts/hisilicon/hip07.dtsi |  24 ++++++
+>  drivers/acpi/arm64/iort.c                | 133 ++++++++++++++++++++++++++++++-
+>  drivers/iommu/dma-iommu.c                |   8 +-
+>  drivers/irqchip/irq-gic-v3-its.c         |   3 +-
+>  include/linux/acpi_iort.h                |   7 +-
+>  6 files changed, 224 insertions(+), 6 deletions(-)
+> 
+> --
+> 1.9.1
+> 
+
