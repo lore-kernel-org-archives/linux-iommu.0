@@ -1,241 +1,181 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/tegra: Allow devices to be grouped
-Date: Tue, 12 Dec 2017 14:57:36 -0700
-Message-ID: <20171212145736.511b2031@t450s.home>
-References: <20171127095055.21486-1-thierry.reding@gmail.com>
-        <20171127095055.21486-2-thierry.reding@gmail.com>
+Subject: [PATCH] iommu/vt-d: Fix shift overflow in qi_flush_dev_iotlb
+Date: Tue, 12 Dec 2017 15:43:08 -0700
+Message-ID: <20171212224250.22173.74201.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171127095055.21486-2-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: tursulin-9sj9WOxYP5jR7s880joybQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 27 Nov 2017 10:50:54 +0100
-Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> Detected by ubsan:
+>
+>   UBSAN: Undefined behaviour in drivers/iommu/dmar.c:1345:3
+>   shift exponent 64 is too large for 32-bit type 'int'
+>   CPU: 2 PID: 1167 Comm: perf_pmu Not tainted 4.14.0-rc5+ #532
+>   Hardware name: LENOVO 80MX/Lenovo E31-80, BIOS DCCN34WW(V2.03) 12/01/2015
+>   Call Trace:
+>    <IRQ>
+>    dump_stack+0xab/0xfe
+>    ? _atomic_dec_and_lock+0x112/0x112
+>    ? get_unsigned_val+0x48/0x91
+>    ubsan_epilogue+0x9/0x49
+>    __ubsan_handle_shift_out_of_bounds+0x1ea/0x241
+>    ? __ubsan_handle_load_invalid_value+0x136/0x136
+>    ? _raw_spin_unlock_irqrestore+0x32/0x50
+>    ? qi_submit_sync+0x642/0x820
+>    ? qi_flush_dev_iotlb+0x158/0x1b0
+>    qi_flush_dev_iotlb+0x158/0x1b0
+>    ? qi_flush_iotlb+0x110/0x110
+>    ? do_raw_spin_lock+0x93/0x130
+>    iommu_flush_dev_iotlb+0xff/0x170
+>    iommu_flush_iova+0x168/0x220
+>    iova_domain_flush+0x2b/0x50
+>    fq_flush_timeout+0xa6/0x1e0
+>    ? fq_ring_free+0x260/0x260
+>    ? call_timer_fn+0xfd/0x600
+>    call_timer_fn+0x160/0x600
+>    ? fq_ring_free+0x260/0x260
+>    ? trace_timer_cancel+0x1d0/0x1d0
+>    ? _raw_spin_unlock_irq+0x29/0x40
+>    ? fq_ring_free+0x260/0x260
+>    ? fq_ring_free+0x260/0x260
+>    run_timer_softirq+0x3bb/0x9a0
+>    ? timer_fixup_init+0x30/0x30
+>    ? __lock_is_held+0x35/0x150
+>    ? sched_clock_cpu+0x14/0x180
+>    __do_softirq+0x159/0x9c7
+>    irq_exit+0x118/0x170
+>    smp_apic_timer_interrupt+0xda/0x530
+>    apic_timer_interrupt+0x9d/0xb0
+>    </IRQ>
+>   RIP: 0010:__asan_load4+0xa/0x80
+>   RSP: 0018:ffff88012f647380 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff10
+>   RAX: ffff7fffffffffff RBX: ffff88012f647548 RCX: ffffffff9a07ea01
+>   RDX: dffffc0000000000 RSI: ffff88012f647808 RDI: ffff88012f647548
+>   RBP: ffff88012f640000 R08: fffffbfff3b27e96 R09: fffffbfff3b27e95
+>   R10: ffffffff9d93f4ad R11: fffffbfff3b27e96 R12: ffff88012f648000
+>   R13: ffff88012f647558 R14: ffff88012f647550 R15: ffff88012f647808
+>    ? stack_access_ok+0x61/0x110
+>    stack_access_ok+0x6d/0x110
+>    deref_stack_reg+0x64/0x120
+>    ? __read_once_size_nocheck.constprop.3+0x50/0x50
+>    ? deref_stack_reg+0x120/0x120
+>    ? __kmalloc+0x13a/0x550
+>    unwind_next_frame+0xc04/0x14e0
+>    ? kasan_kmalloc+0xa0/0xd0
+>    ? __kmalloc+0x13a/0x550
+>    ? __kmalloc+0x13a/0x550
+>    ? deref_stack_reg+0x120/0x120
+>    ? unwind_next_frame+0xf3e/0x14e0
+>    ? i915_gem_do_execbuffer+0x4fd/0x2570 [i915]
+>    __save_stack_trace+0x7a/0x120
+>    ? __kmalloc+0x13a/0x550
+>    save_stack+0x33/0xa0
+>    ? save_stack+0x33/0xa0
+>    ? kasan_kmalloc+0xa0/0xd0
+>    ? _raw_spin_unlock+0x24/0x30
+>    ? deactivate_slab+0x650/0xb90
+>    ? ___slab_alloc+0x3e0/0x940
+>    ? ___slab_alloc+0x3e0/0x940
+>    ? i915_gem_do_execbuffer+0x4fd/0x2570 [i915]
+>    ? __lock_is_held+0x35/0x150
+>    ? mark_held_locks+0x33/0x130
+>    ? kasan_unpoison_shadow+0x30/0x40
+>    kasan_kmalloc+0xa0/0xd0
+>    __kmalloc+0x13a/0x550
+>    ? depot_save_stack+0x16a/0x7f0
+>    i915_gem_do_execbuffer+0x4fd/0x2570 [i915]
+>    ? save_stack+0x92/0xa0
+>    ? eb_relocate_slow+0x890/0x890 [i915]
+>    ? debug_check_no_locks_freed+0x200/0x200
+>    ? ___slab_alloc+0x3e0/0x940
+>    ? ___slab_alloc+0x3e0/0x940
+>    ? i915_gem_execbuffer2+0xdb/0x5f0 [i915]
+>    ? __lock_is_held+0x35/0x150
+>    ? i915_gem_execbuffer+0x580/0x580 [i915]
+>    i915_gem_execbuffer2+0x2c1/0x5f0 [i915]
+>    ? i915_gem_execbuffer+0x580/0x580 [i915]
+>    ? lock_downgrade+0x310/0x310
+>    ? i915_gem_execbuffer+0x580/0x580 [i915]
+>    drm_ioctl_kernel+0xdc/0x190
+>    drm_ioctl+0x46a/0x6e0
+>    ? i915_gem_execbuffer+0x580/0x580 [i915]
+>    ? drm_setversion+0x430/0x430
+>    ? lock_downgrade+0x310/0x310
+>    do_vfs_ioctl+0x138/0xbf0
+>    ? ioctl_preallocate+0x180/0x180
+>    ? do_raw_spin_unlock+0xf5/0x1d0
+>    ? do_raw_spin_trylock+0x90/0x90
+>    ? task_work_run+0x35/0x120
+>    ? mark_held_locks+0x33/0x130
+>    ? _raw_spin_unlock_irq+0x29/0x40
+>    ? mark_held_locks+0x33/0x130
+>    ? entry_SYSCALL_64_fastpath+0x5/0xad
+>    ? trace_hardirqs_on_caller+0x184/0x360
+>    SyS_ioctl+0x3b/0x70
+>    entry_SYSCALL_64_fastpath+0x18/0xad
+>   RIP: 0033:0x7fc0e1f0d587
+>   RSP: 002b:00007ffcfd9929f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+>   RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 00007fc0e1f0d587
+>   RDX: 00007ffcfd992a90 RSI: 0000000040406469 RDI: 0000000000000003
+>   RBP: 0000000000000003 R08: 00007ffcfd992a50 R09: 0000000000000000
+>   R10: 0000000000000073 R11: 0000000000000246 R12: 0000000000000001
+>   R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+>
+> Code is:
+>
+> void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+> 			u64 addr, unsigned mask)
+> {
+> 	struct qi_desc desc;
+>
+> 	if (mask) {
+> 		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
+>
+> ^^^ This last line is where the warning comes. Digging deeper
+> VTD_PAGE_SHIFT is 12 and the passed in mask comes from iommu_flush_iova
+> (via iommu_flush_dev_iotlb) as MAX_AGAW_PFN_WIDTH which is:
+>
+> #define MAX_AGAW_WIDTH 64
+> #define MAX_AGAW_PFN_WIDTH	(MAX_AGAW_WIDTH - VTD_PAGE_SHIFT)
+>
+> So mask is 64, which overflows the left shift in the BUG_ON.
 
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> 
-> Implement the ->device_group() and ->of_xlate() callbacks which are used
-> in order to group devices. Each group can then share a single domain.
-> 
-> This is implemented primarily in order to achieve the same semantics on
-> Tegra210 and earlier as on Tegra186 where the Tegra SMMU was replaced by
-> an ARM SMMU. Users of the IOMMU API can now use the same code to share
-> domains between devices, whereas previously they used to attach each
-> device individually.
-> 
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/tegra-smmu.c | 124 +++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 120 insertions(+), 4 deletions(-)
+The resulting shift is 64, mask itself is (64 - 12).  I assume the code
+is expecting the overflow to result in zero, so we assert that addr is
+64bit aligned, ie. zero.
 
+Reported-by: Tvrtko Ursulin <tursulin-9sj9WOxYP5jR7s880joybQ@public.gmane.org>
+Link: https://lkml.org/lkml/2017/10/20/752
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/dmar.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
-> 
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 3b6449e2cbf1..8885635d0a3b 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -20,6 +20,12 @@
->  #include <soc/tegra/ahb.h>
->  #include <soc/tegra/mc.h>
->  
-> +struct tegra_smmu_group {
-> +	struct list_head list;
-> +	const struct tegra_smmu_group_soc *soc;
-> +	struct iommu_group *group;
-> +};
-> +
->  struct tegra_smmu {
->  	void __iomem *regs;
->  	struct device *dev;
-> @@ -27,6 +33,8 @@ struct tegra_smmu {
->  	struct tegra_mc *mc;
->  	const struct tegra_smmu_soc *soc;
->  
-> +	struct list_head groups;
-> +
->  	unsigned long pfn_mask;
->  	unsigned long tlb_mask;
->  
-> @@ -703,19 +711,47 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
->  	return mc->smmu;
->  }
->  
-> +static int tegra_smmu_configure(struct tegra_smmu *smmu, struct device *dev,
-> +				struct of_phandle_args *args)
-> +{
-> +	const struct iommu_ops *ops = smmu->iommu.ops;
-> +	int err;
-> +
-> +	err = iommu_fwspec_init(dev, &dev->of_node->fwnode, ops);
-> +	if (err < 0) {
-> +		dev_err(dev, "failed to initialize fwspec: %d\n", err);
-> +		return err;
-> +	}
-> +
-> +	err = ops->of_xlate(dev, args);
-> +	if (err < 0) {
-> +		dev_err(dev, "failed to parse SW group ID: %d\n", err);
-> +		iommu_fwspec_free(dev);
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int tegra_smmu_add_device(struct device *dev)
->  {
->  	struct device_node *np = dev->of_node;
-> +	struct tegra_smmu *smmu = NULL;
->  	struct iommu_group *group;
->  	struct of_phandle_args args;
->  	unsigned int index = 0;
-> +	int err;
->  
->  	while (of_parse_phandle_with_args(np, "iommus", "#iommu-cells", index,
->  					  &args) == 0) {
-> -		struct tegra_smmu *smmu;
-> -
->  		smmu = tegra_smmu_find(args.np);
->  		if (smmu) {
-> +			err = tegra_smmu_configure(smmu, dev, &args);
-> +			of_node_put(args.np);
-> +
-> +			if (err < 0)
-> +				return err;
-> +
->  			/*
->  			 * Only a single IOMMU master interface is currently
->  			 * supported by the Linux kernel, so abort after the
-> @@ -728,9 +764,13 @@ static int tegra_smmu_add_device(struct device *dev)
->  			break;
->  		}
->  
-> +		of_node_put(args.np);
->  		index++;
->  	}
->  
-> +	if (!smmu)
-> +		return -ENODEV;
-> +
->  	group = iommu_group_get_for_dev(dev);
->  	if (IS_ERR(group))
->  		return PTR_ERR(group);
-> @@ -751,6 +791,80 @@ static void tegra_smmu_remove_device(struct device *dev)
->  	iommu_group_remove_device(dev);
->  }
->  
-> +static const struct tegra_smmu_group_soc *
-> +tegra_smmu_find_group(struct tegra_smmu *smmu, unsigned int swgroup)
-> +{
-> +	unsigned int i, j;
-> +
-> +	for (i = 0; i < smmu->soc->num_groups; i++)
-> +		for (j = 0; j < smmu->soc->groups[i].num_swgroups; j++)
-> +			if (smmu->soc->groups[i].swgroups[j] == swgroup)
-> +				return &smmu->soc->groups[i];
-> +
-> +	return NULL;
-> +}
-> +
-> +static struct iommu_group *tegra_smmu_group_get(struct tegra_smmu *smmu,
-> +						unsigned int swgroup)
-> +{
-> +	const struct tegra_smmu_group_soc *soc;
-> +	struct tegra_smmu_group *group;
-> +
-> +	soc = tegra_smmu_find_group(smmu, swgroup);
-> +	if (!soc)
-> +		return NULL;
-> +
-> +	mutex_lock(&smmu->lock);
-> +
-> +	list_for_each_entry(group, &smmu->groups, list)
-> +		if (group->soc == soc) {
-> +			mutex_unlock(&smmu->lock);
-> +			return group->group;
-> +		}
-> +
-> +	group = devm_kzalloc(smmu->dev, sizeof(*group), GFP_KERNEL);
-> +	if (!group) {
-> +		mutex_unlock(&smmu->lock);
-> +		return NULL;
-> +	}
-> +
-> +	INIT_LIST_HEAD(&group->list);
-> +	group->soc = soc;
-> +
-> +	group->group = iommu_group_alloc();
-> +	if (!group->group) {
-> +		devm_kfree(smmu->dev, group);
-> +		mutex_unlock(&smmu->lock);
-> +		return NULL;
-> +	}
-> +
-> +	list_add_tail(&group->list, &smmu->groups);
-> +	mutex_unlock(&smmu->lock);
-> +
-> +	return group->group;
-> +}
-> +
-> +static struct iommu_group *tegra_smmu_device_group(struct device *dev)
-> +{
-> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> +	struct tegra_smmu *smmu = dev->archdata.iommu;
-> +	struct iommu_group *group;
-> +
-> +	group = tegra_smmu_group_get(smmu, fwspec->ids[0]);
-> +	if (!group)
-> +		group = generic_device_group(dev);
-> +
-> +	return group;
-> +}
-> +
-> +static int tegra_smmu_of_xlate(struct device *dev,
-> +			       struct of_phandle_args *args)
-> +{
-> +	u32 id = args->args[0];
-> +
-> +	return iommu_fwspec_add_ids(dev, &id, 1);
-> +}
-> +
->  static const struct iommu_ops tegra_smmu_ops = {
->  	.capable = tegra_smmu_capable,
->  	.domain_alloc = tegra_smmu_domain_alloc,
-> @@ -759,12 +873,12 @@ static const struct iommu_ops tegra_smmu_ops = {
->  	.detach_dev = tegra_smmu_detach_dev,
->  	.add_device = tegra_smmu_add_device,
->  	.remove_device = tegra_smmu_remove_device,
-> -	.device_group = generic_device_group,
-> +	.device_group = tegra_smmu_device_group,
->  	.map = tegra_smmu_map,
->  	.unmap = tegra_smmu_unmap,
->  	.map_sg = default_iommu_map_sg,
->  	.iova_to_phys = tegra_smmu_iova_to_phys,
-> -
-> +	.of_xlate = tegra_smmu_of_xlate,
->  	.pgsize_bitmap = SZ_4K,
->  };
->  
-> @@ -913,6 +1027,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
->  	if (!smmu->asids)
->  		return ERR_PTR(-ENOMEM);
->  
-> +	INIT_LIST_HEAD(&smmu->groups);
->  	mutex_init(&smmu->lock);
->  
->  	smmu->regs = mc->regs;
-> @@ -954,6 +1069,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
->  		return ERR_PTR(err);
->  
->  	iommu_device_set_ops(&smmu->iommu, &tegra_smmu_ops);
-> +	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
->  
->  	err = iommu_device_register(&smmu->iommu);
->  	if (err) {
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9a7ffd13c7f0..87888b102057 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1345,7 +1345,9 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+ 	struct qi_desc desc;
+ 
+ 	if (mask) {
+-		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
++		BUG_ON((mask > MAX_AGAW_PFN_WIDTH) ||
++		       ((mask == MAX_AGAW_PFN_WIDTH) && addr) ||
++		       (addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1)));
+ 		addr |= (1ULL << (VTD_PAGE_SHIFT + mask - 1)) - 1;
+ 		desc.high = QI_DEV_IOTLB_ADDR(addr) | QI_DEV_IOTLB_SIZE;
+ 	} else
