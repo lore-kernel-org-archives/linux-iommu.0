@@ -1,60 +1,42 @@
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v11 2/3] iommu/dma: Add HW MSI(GICv3 ITS) address regions reservation
-Date: Wed, 13 Dec 2017 11:58:29 +0000
-Message-ID: <20171213115830.61872-3-shameerali.kolothum.thodi@huawei.com>
-References: <20171213115830.61872-1-shameerali.kolothum.thodi@huawei.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix shift overflow in qi_flush_dev_iotlb
+Date: Wed, 13 Dec 2017 08:58:47 -0700
+Message-ID: <20171213085847.3d3245c6@t450s.home>
+References: <20171212224250.22173.74201.stgit@gimli.home>
+        <20171213071355.GD7780@xz-mi>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20171213115830.61872-1-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: lorenzo.pieralisi@arm.com, robin.murphy@arm.com, marc.zyngier@arm.com, will.deacon@arm.com
-Cc: joro@8bytes.org, john.garry@huawei.com, xuwei5@hisilicon.com, guohanjun@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, linuxarm@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20171213071355.GD7780@xz-mi>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Xu <peterx@redhat.com>
+Cc: iommu@lists.linux-foundation.org, tursulin@ursulin.net, dwmw2@infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Modified iommu_dma_get_resv_regions() to include GICv3 ITS
-region on ACPI based ARM platfiorms which may require HW MSI
-reservations.
+On Wed, 13 Dec 2017 15:13:55 +0800
+Peter Xu <peterx@redhat.com> wrote:
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/dma-iommu.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+> On Tue, Dec 12, 2017 at 03:43:08PM -0700, Alex Williamson wrote:
+> 
+> [...]
+> 
+> > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> > index 9a7ffd13c7f0..87888b102057 100644
+> > --- a/drivers/iommu/dmar.c
+> > +++ b/drivers/iommu/dmar.c
+> > @@ -1345,7 +1345,9 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+> >  	struct qi_desc desc;
+> >  
+> >  	if (mask) {
+> > -		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
+> > +		BUG_ON((mask > MAX_AGAW_PFN_WIDTH) ||
+> > +		       ((mask == MAX_AGAW_PFN_WIDTH) && addr) ||
+> > +		       (addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1)));  
+> 
+> Could it work if we just use 1ULL instead of 1 here?  Thanks,
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 25914d3..f05f3cf 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -19,6 +19,7 @@
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  */
- 
-+#include <linux/acpi_iort.h>
- #include <linux/device.h>
- #include <linux/dma-iommu.h>
- #include <linux/gfp.h>
-@@ -167,13 +168,18 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
-  *
-  * IOMMU drivers can use this to implement their .get_resv_regions callback
-  * for general non-IOMMU-specific reservations. Currently, this covers host
-- * bridge windows for PCI devices.
-+ * bridge windows for PCI devices and GICv3 ITS region reservation on ACPI
-+ * based ARM platforms that may require HW MSI reservation.
-  */
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
- {
- 	struct pci_host_bridge *bridge;
- 	struct resource_entry *window;
- 
-+	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode) &&
-+		iort_iommu_msi_get_resv_regions(dev, list) < 0)
-+		return;
-+
- 	if (!dev_is_pci(dev))
- 		return;
- 
--- 
-1.9.1
+In either case we're talking about shifting off the end of the
+variable, which I understand to be undefined.  Right?  Thanks,
 
-
+Alex
