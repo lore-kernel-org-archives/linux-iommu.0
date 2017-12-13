@@ -1,15 +1,17 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd - Set the device table entry PPR bit for IOMMU
-	V2 devices
-Date: Tue, 12 Dec 2017 16:47:36 -0600
-Message-ID: <6174da98-169e-e766-f0d8-24fa7c456b7d@amd.com>
-References: <151241717281.31129.11796268388010226384.stgit@sosxen2.amd.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 2/6] iommu/vt-d: Add Intel IOMMU debugfs to show
+	context internals
+Date: Wed, 13 Dec 2017 10:28:45 +0800
+Message-ID: <5A30905D.9000303@linux.intel.com>
+References: <1512531807-24268-1-git-send-email-sohil.mehta@intel.com>
+	<1512531807-24268-3-git-send-email-sohil.mehta@intel.com>
+	<5A27A74C.9070201@linux.intel.com>
+	<1512678006.120652.17.camel@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <151241717281.31129.11796268388010226384.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1512678006.120652.17.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,111 +21,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Yu, Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shevchenko,
+	Andriy" <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shankar,
+	Ravi V" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kammela,
+	Gayatri" <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Please ignore. I've uncovered a problem and will re-submit.
+Hi,
 
-On 12/04/2017 01:52 PM, Gary R Hook wrote:
-> The AMD IOMMU specification Rev 3.00 (December 2016) introduces a
-> new Enhanced PPR Handling Support (EPHSup) bit in the MMIO register
-> offset 0030h (IOMMU Extended Feature Register).
-> 
-> When EPHSup=1, the IOMMU hardware requires the PPR bit of the
-> device table entry (DTE) to be set in order to support PPR for a
-> particular endpoint device.
-> 
-> Please see https://support.amd.com/TechDocs/48882_IOMMU.pdf for
-> this revision of the AMD IOMMU specification.
-> 
-> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-> ---
->   drivers/iommu/amd_iommu.c       |   20 +++++++++++++++-----
->   drivers/iommu/amd_iommu_types.h |    2 ++
->   2 files changed, 17 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index cb78933ef53f..329940ffb8c1 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -1818,7 +1818,8 @@ static bool dma_ops_domain(struct protection_domain *domain)
->   	return domain->flags & PD_DMA_OPS_MASK;
->   }
->   
-> -static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> +static void set_dte_entry(u16 devid, struct protection_domain *domain,
-> +			  bool ats, bool ppr)
->   {
->   	u64 pte_root = 0;
->   	u64 flags = 0;
-> @@ -1835,6 +1836,13 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
->   	if (ats)
->   		flags |= DTE_FLAG_IOTLB;
->   
-> +	if (ppr) {
-> +		struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-> +
-> +		if (iommu_feature(iommu, FEATURE_EPHSUP))
-> +			pte_root |= DEV_ENTRY_PPR;
-> +	}
-> +
->   	if (domain->flags & PD_IOMMUV2_MASK) {
->   		u64 gcr3 = iommu_virt_to_phys(domain->gcr3_tbl);
->   		u64 glx  = domain->glx;
-> @@ -1897,9 +1905,9 @@ static void do_attach(struct iommu_dev_data *dev_data,
->   	domain->dev_cnt                 += 1;
->   
->   	/* Update device table */
-> -	set_dte_entry(dev_data->devid, domain, ats);
-> +	set_dte_entry(dev_data->devid, domain, ats, dev_data->iommu_v2);
->   	if (alias != dev_data->devid)
-> -		set_dte_entry(alias, domain, ats);
-> +		set_dte_entry(alias, domain, ats, dev_data->iommu_v2);
->   
->   	device_flush_dte(dev_data);
->   }
-> @@ -2278,13 +2286,15 @@ static void update_device_table(struct protection_domain *domain)
->   	struct iommu_dev_data *dev_data;
->   
->   	list_for_each_entry(dev_data, &domain->dev_list, list) {
-> -		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
-> +		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled,
-> +			      dev_data->iommu_v2);
->   
->   		if (dev_data->devid == dev_data->alias)
->   			continue;
->   
->   		/* There is an alias, update device table entry for it */
-> -		set_dte_entry(dev_data->alias, domain, dev_data->ats.enabled);
-> +		set_dte_entry(dev_data->alias, domain, dev_data->ats.enabled,
-> +			      dev_data->iommu_v2);
->   	}
->   }
->   
-> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> index f6b24c7d8b70..6a877ebd058b 100644
-> --- a/drivers/iommu/amd_iommu_types.h
-> +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -98,6 +98,7 @@
->   #define FEATURE_HE		(1ULL<<8)
->   #define FEATURE_PC		(1ULL<<9)
->   #define FEATURE_GAM_VAPIC	(1ULL<<21)
-> +#define FEATURE_EPHSUP		(1ULL<<50)
->   
->   #define FEATURE_PASID_SHIFT	32
->   #define FEATURE_PASID_MASK	(0x1fULL << FEATURE_PASID_SHIFT)
-> @@ -192,6 +193,7 @@
->   /* macros and definitions for device table entries */
->   #define DEV_ENTRY_VALID         0x00
->   #define DEV_ENTRY_TRANSLATION   0x01
-> +#define DEV_ENTRY_PPR           0x34
->   #define DEV_ENTRY_IR            0x3d
->   #define DEV_ENTRY_IW            0x3e
->   #define DEV_ENTRY_NO_PAGE_FAULT	0x62
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+Sorry for late reply.
+
+On 12/08/2017 04:19 AM, Mehta, Sohil wrote:
+> On Wed, 2017-12-06 at 16:16 +0800, Lu Baolu wrote:
+>> Hi,
+>>
+>> On 12/06/2017 11:43 AM, Sohil Mehta wrote:
+>>> From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>>>
+>>>  
+>>> +	seq_printf(m, "%s Context table entries for Bus: %d\n",
+>>> +		   ext ? "Lower" : "", bus);
+>>> +	seq_printf(m, "[entry]\tDID :B :D .F\tLow\t\tHigh\n");
+>> WARNING: Prefer seq_puts to seq_printf
+>> #119: FILE: drivers/iommu/intel-iommu-debug.c:59:
+>> +    seq_printf(m, "[entry]\tDID :B :D .F\tLow\t\tHigh\n");
+>>
+>> (caught by checkpatch.pl)
+>>
+> Hi Lu,
+>
+> We'll fix this and the other checkpatch.pl warnings.
+>
+>
+>>> +
+>>> +static void root_tbl_entry_show(struct seq_file *m, void *unused,
+>> Why do you define the "unused" parameter which will never been used?
+>> The same questions to other show functions.
+>>
+> Some functions in our code that are registered with seq_file needed to
+> have an unused parameter since seq_file.h defines the show function as:
+> 	int (*show) (struct seq_file *m, void *v);
+>
+> But a lot of other functions including the one you pointed don't need
+> to have the unused parameter. We'll remove it from those.
+>
+>
+>>> +void __init intel_iommu_debugfs_init(void)
+>>> +{
+>>> +	struct dentry *iommu_debug_root;
+>>> +
+>>> +	iommu_debug_root = debugfs_create_dir("intel_iommu",
+>>> NULL);
+>>> +
+>>> +	if (!iommu_debug_root) {
+>>> +		pr_err("can't create debugfs dir\n");
+>> I don't think we need a pr_err() here. System works well even
+>> debugfs_create_dir() returns NULL.
+>>
+>> This is same to all pr_err() in this file.
+>>
+> Would the recommendation be to use pr_warn instead of pr_err or should
+> we entirely skip the message altogether?
+
+Greg ever educated me about the use of debugfs_ functions in
+this thread.
+
+https://spinics.net/lists/linux-usb/msg159384.html
+
+At least we should avoid the warning/error messages here.
+
+Best regards,
+Lu Baolu
