@@ -1,7 +1,7 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v12 1/3] ACPI/IORT: Add msi address regions reservation helper
-Date: Thu, 14 Dec 2017 16:09:55 +0000
-Message-ID: <20171214160957.13716-2-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v12 3/3] arm64:dts:hisilicon Disable hisilicon smmu node on hip06/hip07
+Date: Thu, 14 Dec 2017 16:09:57 +0000
+Message-ID: <20171214160957.13716-4-shameerali.kolothum.thodi@huawei.com>
 References: <20171214160957.13716-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,239 +12,143 @@ To: lorenzo.pieralisi@arm.com, robin.murphy@arm.com, marc.zyngier@arm.com, will.
 Cc: joro@8bytes.org, john.garry@huawei.com, xuwei5@hisilicon.com, guohanjun@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, linuxarm@huawei.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On some platforms msi parent address regions have to be excluded from
-normal IOVA allocation in that they are detected and decoded in a HW
-specific way by system components and so they cannot be considered normal
-IOVA address space.
+The HiSilicon erratum 161010801 describes the limitation of
+HiSilicon platforms hip06/hip07 to support the SMMUv3 mappings
+for MSI transactions.
 
-Add a helper function that retrieves ITS address regions - the msi
-parent - through IORT device <-> ITS mappings and reserves it so that
-these regions will not be translated by IOMMU and will be excluded from
-IOVA allocations. The function checks for the smmu model number and
-only applies the msi reservation if the platform requires it.
+PCIe controller on these platforms has to differentiate the
+MSI payload against other DMA payload and has to modify the
+MSI  payload. This makes it difficult for these platforms to
+have SMMU translation for MSI. In order to workaround this,
+ARM SMMUv3 driver requires a quirk to treat the MSI regions
+separately. Such a quirk is currently missing for DT based
+systems and therefore we need to explicitly disable the
+hip06/hip07 smmu entries in dts.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 ---
- drivers/acpi/arm64/iort.c        | 111 +++++++++++++++++++++++++++++++++++++--
- drivers/irqchip/irq-gic-v3-its.c |   3 +-
- include/linux/acpi_iort.h        |   7 ++-
- 3 files changed, 116 insertions(+), 5 deletions(-)
+ arch/arm64/boot/dts/hisilicon/hip06.dtsi | 56 ++++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/hisilicon/hip07.dtsi | 25 ++++++++++++++
+ 2 files changed, 81 insertions(+)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 95255ec..e2f7bdd 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -39,6 +39,7 @@
- struct iort_its_msi_chip {
- 	struct list_head	list;
- 	struct fwnode_handle	*fw_node;
-+	phys_addr_t		base_addr;
- 	u32			translation_id;
- };
+diff --git a/arch/arm64/boot/dts/hisilicon/hip06.dtsi b/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+index a049b64..35202eb 100644
+--- a/arch/arm64/boot/dts/hisilicon/hip06.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+@@ -291,6 +291,13 @@
+ 			#interrupt-cells = <2>;
+ 			num-pins = <128>;
+ 		};
++
++		mbigen_pcie0: intc_pcie0 {
++			msi-parent = <&its_dsa 0x40085>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			num-pins = <10>;
++		};
+ 	};
  
-@@ -161,14 +162,16 @@ typedef acpi_status (*iort_find_node_callback)
- static DEFINE_SPINLOCK(iort_msi_chip_lock);
+ 	mbigen_dsa@c0080000 {
+@@ -312,6 +319,31 @@
+ 		};
+ 	};
  
- /**
-- * iort_register_domain_token() - register domain token and related ITS ID
-- * to the list from where we can get it back later on.
-+ * iort_register_domain_token() - register domain token along with related
-+ * ITS ID and base address to the list from where we can get it back later on.
-  * @trans_id: ITS ID.
-+ * @base: ITS base address.
-  * @fw_node: Domain token.
-  *
-  * Returns: 0 on success, -ENOMEM if no memory when allocating list element
-  */
--int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
-+int iort_register_domain_token(int trans_id, phys_addr_t base,
-+			       struct fwnode_handle *fw_node)
- {
- 	struct iort_its_msi_chip *its_msi_chip;
- 
-@@ -178,6 +181,7 @@ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
- 
- 	its_msi_chip->fw_node = fw_node;
- 	its_msi_chip->translation_id = trans_id;
-+	its_msi_chip->base_addr = base;
- 
- 	spin_lock(&iort_msi_chip_lock);
- 	list_add(&its_msi_chip->list, &iort_msi_chip_list);
-@@ -581,6 +585,24 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
- 	return -ENODEV;
- }
- 
-+static int __maybe_unused iort_find_its_base(u32 its_id, phys_addr_t *base)
-+{
-+	struct iort_its_msi_chip *its_msi_chip;
-+	int ret = -ENODEV;
-+
-+	spin_lock(&iort_msi_chip_lock);
-+	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
-+		if (its_msi_chip->translation_id == its_id) {
-+			*base = its_msi_chip->base_addr;
-+			ret = 0;
-+			break;
-+		}
-+	}
-+	spin_unlock(&iort_msi_chip_lock);
-+
-+	return ret;
-+}
-+
- /**
-  * iort_dev_find_its_id() - Find the ITS identifier for a device
-  * @dev: The device.
-@@ -766,6 +788,24 @@ static inline bool iort_iommu_driver_enabled(u8 type)
- }
- 
- #ifdef CONFIG_IOMMU_API
-+static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
-+{
-+	struct acpi_iort_node *iommu;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+
-+	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
-+
-+	if (iommu && (iommu->type == ACPI_IORT_NODE_SMMU_V3)) {
-+		struct acpi_iort_smmu_v3 *smmu;
-+
-+		smmu = (struct acpi_iort_smmu_v3 *)iommu->node_data;
-+		if (smmu->model == ACPI_IORT_SMMU_V3_HISILICON_HI161X)
-+			return iommu;
-+	}
-+
-+	return NULL;
-+}
-+
- static inline const struct iommu_ops *iort_fwspec_iommu_ops(
- 				struct iommu_fwspec *fwspec)
- {
-@@ -782,6 +822,69 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
- 
- 	return err;
- }
-+
-+/**
-+ * iort_iommu_msi_get_resv_regions - Reserved region driver helper
-+ * @dev: Device from iommu_get_resv_regions()
-+ * @head: Reserved region list from iommu_get_resv_regions()
-+ *
-+ * Returns: Number of msi reserved regions on success (0 if platform
-+ *          doesn't require the reservation or no associated msi regions),
-+ *          appropriate error value otherwise. The ITS interrupt translation
-+ *          spaces (ITS_base + SZ_64K, SZ_64K) associated with the device
-+ *          are the msi reserved regions.
-+ */
-+int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+{
-+	struct acpi_iort_its_group *its;
-+	struct acpi_iort_node *iommu_node, *its_node = NULL;
-+	int i, resv = 0;
-+
-+	iommu_node = iort_get_msi_resv_iommu(dev);
-+	if (!iommu_node)
-+		return 0;
-+
-+	/*
-+	 * Current logic to reserve ITS regions relies on HW topologies
-+	 * where a given PCI or named component maps its IDs to only one
-+	 * ITS group; if a PCI or named component can map its IDs to
-+	 * different ITS groups through IORT mappings this function has
-+	 * to be reworked to ensure we reserve regions for all ITS groups
-+	 * a given PCI or named component may map IDs to.
++	/**
++	 *  HiSilicon erratum 161010801: This describes the limitation
++	 *  of HiSilicon platforms hip06/hip07 to support the SMMUv3
++	 *  mappings for PCIe MSI transactions.
++	 *  PCIe controller on these platforms has to differentiate the
++	 *  MSI payload against other DMA payload and has to modify the
++	 *  MSI payload. This makes it difficult for these platforms to
++	 *  have a SMMU translation for MSI. In order to workaround this,
++	 *  ARM SMMUv3 driver requires a quirk to treat the MSI regions
++	 *  separately. Such a quirk is currently missing for DT based
++	 *  systems. Hence please make sure that the smmu pcie node on
++	 *  hip06 is disabled as this will break the PCIe functionality
++	 *  when iommu-map entry is used along with the PCIe node.
++	 *  Refer:https://www.spinics.net/lists/arm-kernel/msg602812.html
 +	 */
++	smmu0: smmu_pcie {
++		compatible = "arm,smmu-v3";
++		reg = <0x0 0xa0040000 0x0 0x20000>;
++		#iommu-cells = <1>;
++		dma-coherent;
++		smmu-cb-memtype = <0x0 0x1>;
++		hisilicon,broken-prefetch-cmd;
++		status = "disabled";
++	};
 +
-+	for (i = 0; i < dev->iommu_fwspec->num_ids; i++) {
-+		its_node = iort_node_map_id(iommu_node,
-+					dev->iommu_fwspec->ids[i],
-+					NULL, IORT_MSI_TYPE);
-+		if (its_node)
-+			break;
-+	}
+ 	soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <2>;
+@@ -676,6 +708,30 @@
+ 				     <637 1>,<638 1>,<639 1>;
+ 			status = "disabled";
+ 		};
 +
-+	if (!its_node)
-+		return 0;
++		pcie0: pcie@a0090000 {
++			compatible = "hisilicon,hip06-pcie-ecam";
++			reg = <0 0xb0000000 0 0x2000000>,
++			      <0 0xa0090000 0 0x10000>;
++			bus-range = <0  31>;
++			msi-map = <0x0000 &its_dsa 0x0000 0x2000>;
++			msi-map-mask = <0xffff>;
++			#address-cells = <3>;
++			#size-cells = <2>;
++			device_type = "pci";
++			dma-coherent;
++			ranges = <0x02000000 0 0xb2000000 0x0 0xb2000000 0
++				 0x5ff0000 0x01000000 0 0 0 0xb7ff0000
++				 0 0x10000>;
++			#interrupt-cells = <1>;
++			interrupt-map-mask = <0xf800 0 0 7>;
++			interrupt-map = <0x0 0 0 1 &mbigen_pcie0 650 4
++					0x0 0 0 2 &mbigen_pcie0 650 4
++					0x0 0 0 3 &mbigen_pcie0 650 4
++					0x0 0 0 4 &mbigen_pcie0 650 4>;
++			status = "disabled";
++		};
 +
-+	/* Move to ITS specific data */
-+	its = (struct acpi_iort_its_group *)its_node->node_data;
-+
-+	for (i = 0; i < its->its_count; i++) {
-+		phys_addr_t base;
-+
-+		if (!iort_find_its_base(its->identifiers[i], &base)) {
-+			int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+			struct iommu_resv_region *region;
-+
-+			region = iommu_alloc_resv_region(base + SZ_64K, SZ_64K,
-+							 prot, IOMMU_RESV_MSI);
-+			if (region) {
-+				list_add_tail(&region->list, head);
-+				resv++;
-+			}
-+		}
-+	}
-+
-+	return (resv == its->its_count) ? resv : -ENODEV;
-+}
- #else
- static inline const struct iommu_ops *iort_fwspec_iommu_ops(
- 				struct iommu_fwspec *fwspec)
-@@ -789,6 +892,8 @@ static inline const struct iommu_ops *iort_fwspec_iommu_ops(
- static inline int iort_add_device_replay(const struct iommu_ops *ops,
- 					 struct device *dev)
- { return 0; }
-+int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+{ return 0; }
- #endif
+ 	};
  
- static int iort_iommu_xlate(struct device *dev, struct acpi_iort_node *node,
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 4039e64..d4cff12 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -3450,7 +3450,8 @@ static int __init gic_acpi_parse_madt_its(struct acpi_subtable_header *header,
- 		return -ENOMEM;
- 	}
+ };
+diff --git a/arch/arm64/boot/dts/hisilicon/hip07.dtsi b/arch/arm64/boot/dts/hisilicon/hip07.dtsi
+index 2c01a21..3e80bf3 100644
+--- a/arch/arm64/boot/dts/hisilicon/hip07.dtsi
++++ b/arch/arm64/boot/dts/hisilicon/hip07.dtsi
+@@ -1083,6 +1083,31 @@
+ 		};
+ 	};
  
--	err = iort_register_domain_token(its_entry->translation_id, dom_handle);
-+	err = iort_register_domain_token(its_entry->translation_id, res.start,
-+					 dom_handle);
- 	if (err) {
- 		pr_err("ITS@%pa: Unable to register GICv3 ITS domain token (ITS ID %d) to IORT\n",
- 		       &res.start, its_entry->translation_id);
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 2f7a292..38cd77b 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -26,7 +26,8 @@
- #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
- #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
- 
--int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
-+int iort_register_domain_token(int trans_id, phys_addr_t base,
-+			       struct fwnode_handle *fw_node);
- void iort_deregister_domain_token(int trans_id);
- struct fwnode_handle *iort_find_domain_token(int trans_id);
- #ifdef CONFIG_ACPI_IORT
-@@ -38,6 +39,7 @@
- /* IOMMU interface */
- void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *size);
- const struct iommu_ops *iort_iommu_configure(struct device *dev);
-+int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
- #else
- static inline void acpi_iort_init(void) { }
- static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
-@@ -52,6 +54,9 @@ static inline void iort_dma_setup(struct device *dev, u64 *dma_addr,
- static inline const struct iommu_ops *iort_iommu_configure(
- 				      struct device *dev)
- { return NULL; }
-+static inline
-+int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+{ return 0; }
- #endif
- 
- #endif /* __ACPI_IORT_H__ */
++	/**
++	 *  HiSilicon erratum 161010801: This describes the limitation
++	 *  of HiSilicon platforms hip06/hip07 to support the SMMUv3
++	 *  mappings for PCIe MSI transactions.
++	 *  PCIe controller on these platforms has to differentiate the
++	 *  MSI payload against other DMA payload and has to modify the
++	 *  MSI payload. This makes it difficult for these platforms to
++	 *  have a SMMU translation for MSI. In order to workaround this,
++	 *  ARM SMMUv3 driver requires a quirk to treat the MSI regions
++	 *  separately. Such a quirk is currently missing for DT based
++	 *  systems. Hence please make sure that the smmu pcie node on
++	 *  hip07 is disabled as this will break the PCIe functionality
++	 *  when iommu-map entry is used along with the PCIe node.
++	 *  Refer:https://www.spinics.net/lists/arm-kernel/msg602812.html
++	 */
++	smmu0: smmu_pcie {
++		compatible = "arm,smmu-v3";
++		reg = <0x0 0xa0040000 0x0 0x20000>;
++		#iommu-cells = <1>;
++		dma-coherent;
++		smmu-cb-memtype = <0x0 0x1>;
++		hisilicon,broken-prefetch-cmd;
++		status = "disabled";
++	};
++
+ 	soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <2>;
 -- 
 1.9.1
 
