@@ -1,54 +1,73 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 1/2] mm: Add kernel MMU notifier to manage IOTLB/DEVTLB
-Date: Thu, 14 Dec 2017 11:38:26 +0800
-Message-ID: <5A31F232.90901@linux.intel.com>
+Date: Thu, 14 Dec 2017 14:07:38 +0800
+Message-ID: <e7462b54-9d3a-abfd-8df2-2db3780de78d@huawei.com>
 References: <1513213366-22594-1-git-send-email-baolu.lu@linux.intel.com>
- <1513213366-22594-2-git-send-email-baolu.lu@linux.intel.com>
- <a98903c2-e67c-a0cc-3ad1-60b9aa4e4c93@huawei.com>
+	<1513213366-22594-2-git-send-email-baolu.lu@linux.intel.com>
+	<a98903c2-e67c-a0cc-3ad1-60b9aa4e4c93@huawei.com>
+	<5A31F232.90901@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a98903c2-e67c-a0cc-3ad1-60b9aa4e4c93@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bob Liu <liubo95@huawei.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: Rik van Riel <riel@redhat.com>, Michal Hocko <mhocko@suse.com>, Dave Jiang <dave.jiang@intel.com>, Dave Hansen <dave.hansen@intel.com>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Vegard Nossum <vegard.nossum@oracle.com>, Andy Lutomirski <luto@kernel.org>, Huang Ying <ying.huang@intel.com>, Matthew Wilcox <willy@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, "Paul E . McKenney" <paulmck@linux.vnet.ibm.com>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Kees Cook <keescook@chromium.org>, "xieyisheng (A)" <xieyisheng1@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5A31F232.90901-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Alex
+	Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Vegard Nossum <vegard.nossum-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Huang Ying <ying.huang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Matthew Wilcox <willy-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "Paul E . McKenney" <paulmck-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 2017/12/14 11:38, Lu Baolu wrote:
+> Hi,
+> 
+> On 12/14/2017 11:10 AM, Bob Liu wrote:
+>> On 2017/12/14 9:02, Lu Baolu wrote:
+>>>> From: Huang Ying <ying.huang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>>>>
+>>>> Shared Virtual Memory (SVM) allows a kernel memory mapping to be
+>>>> shared between CPU and and a device which requested a supervisor
+>>>> PASID. Both devices and IOMMU units have TLBs that cache entries
+>>>> from CPU's page tables. We need to get a chance to flush them at
+>>>> the same time when we flush the CPU TLBs.
+>>>>
+>>>> We already have an existing MMU notifiers for userspace updates,
+>>>> however we lack the same thing for kernel page table updates. To
+>> Sorry, I didn't get which situation need this notification.
+>> Could you please describe the full scenario?
+> 
+> Okay.
+> 
+> 1. When an SVM capable driver calls intel_svm_bind_mm() with
+>     SVM_FLAG_SUPERVISOR_MODE set in the @flags, the kernel
+>     memory page mappings will be shared between CPUs and
+>     the DMA remapping agent (a.k.a. IOMMU). The page table
+>     entries will also be cached in both IOTLB (located in IOMMU)
+>     and the DEVTLB (located in device).
+> 
 
-On 12/14/2017 11:10 AM, Bob Liu wrote:
-> On 2017/12/14 9:02, Lu Baolu wrote:
->> > From: Huang Ying <ying.huang@intel.com>
->> > 
->> > Shared Virtual Memory (SVM) allows a kernel memory mapping to be
->> > shared between CPU and and a device which requested a supervisor
->> > PASID. Both devices and IOMMU units have TLBs that cache entries
->> > from CPU's page tables. We need to get a chance to flush them at
->> > the same time when we flush the CPU TLBs.
->> > 
->> > We already have an existing MMU notifiers for userspace updates,
->> > however we lack the same thing for kernel page table updates. To
-> Sorry, I didn't get which situation need this notification.
-> Could you please describe the full scenario?
+But who/what kind of real device has the requirement to access a kernel VA?
+Looks like SVM_FLAG_SUPERVISOR_MODE is used by nobody?
 
-Okay.
+Cheers,
+Liubo
 
-1. When an SVM capable driver calls intel_svm_bind_mm() with
-    SVM_FLAG_SUPERVISOR_MODE set in the @flags, the kernel
-    memory page mappings will be shared between CPUs and
-    the DMA remapping agent (a.k.a. IOMMU). The page table
-    entries will also be cached in both IOTLB (located in IOMMU)
-    and the DEVTLB (located in device).
-
-2. When vmalloc/vfree interfaces are called, the page mappings
-    for kernel memory might get changed. And current code calls
-    flush_tlb_kernel_range() to flush CPU TLBs only. The IOTLB or
-    DevTLB will be stale compared to that on the cpu for kernel
-    mappings.
-
-We need a kernel mmu notification to flush TLBs in IOMMU and
-devices as well.
-
-Best regards,
-Lu Baolu
+> 2. When vmalloc/vfree interfaces are called, the page mappings
+>     for kernel memory might get changed. And current code calls
+>     flush_tlb_kernel_range() to flush CPU TLBs only. The IOTLB or
+>     DevTLB will be stale compared to that on the cpu for kernel
+>     mappings.
+> 
+> We need a kernel mmu notification to flush TLBs in IOMMU and
+> devices as well.
+> 
+> Best regards,
+> Lu Baolu
+> 
