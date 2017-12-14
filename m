@@ -1,56 +1,94 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu-v3: Don't free page table ops twice
-Date: Thu, 14 Dec 2017 11:03:01 +0000
-Message-ID: <20171214110301.2998-1-jean-philippe.brucker@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v11 1/3] ACPI/IORT: Add msi address regions reservation
+ helper
+Date: Thu, 14 Dec 2017 11:47:59 +0000
+Message-ID: <20171214114759.GA27117@e107981-ln.cambridge.arm.com>
+References: <20171213115830.61872-1-shameerali.kolothum.thodi@huawei.com>
+ <20171213115830.61872-2-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20171213115830.61872-2-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: robin.murphy@arm.com, marc.zyngier@arm.com, will.deacon@arm.com, joro@8bytes.org, john.garry@huawei.com, xuwei5@hisilicon.com, guohanjun@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Kasan reports a double free when finalise_stage_fn fails: the io_pgtable
-ops are freed by arm_smmu_domain_finalise and then again by
-arm_smmu_domain_free. Prevent this by leaving pgtbl_ops empty on failure.
+On Wed, Dec 13, 2017 at 11:58:28AM +0000, Shameer Kolothum wrote:
+> On some platforms msi parent address regions have to be excluded from
+> normal IOVA allocation in that they are detected and decoded in a HW
+> specific way by system components and so they cannot be considered normal
+> IOVA address space.
+> 
+> Add a helper function that retrieves ITS address regions - the msi
+> parent - through IORT device <-> ITS mappings and reserves it so that
+> these regions will not be translated by IOMMU and will be excluded from
+> IOVA allocations. The function checks for the smmu model number and
+> only applies the msi reservation if the platform requires it.
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/acpi/arm64/iort.c        | 112 +++++++++++++++++++++++++++++++++++++--
+>  drivers/irqchip/irq-gic-v3-its.c |   3 +-
+>  include/linux/acpi_iort.h        |   7 ++-
+>  3 files changed, 117 insertions(+), 5 deletions(-)
 
-Fixes: 48ec83bcbcf5 ("iommu/arm-smmu: Add initial driver support for ARM SMMUv3 devices")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+You need this additional hunk to make it compile on !CONFIG_IOMMU_API:
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index f122071688fd..db4281d0e269 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1698,13 +1698,15 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
- 	domain->geometry.aperture_end = (1UL << ias) - 1;
- 	domain->geometry.force_aperture = true;
--	smmu_domain->pgtbl_ops = pgtbl_ops;
- 
- 	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
--	if (ret < 0)
-+	if (ret < 0) {
- 		free_io_pgtable_ops(pgtbl_ops);
-+		return ret;
-+	}
- 
--	return ret;
-+	smmu_domain->pgtbl_ops = pgtbl_ops;
-+	return 0;
+-- >8 --
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 3e0ce652c3e8..e2f7bddf5522 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -762,25 +762,6 @@ static int __maybe_unused __get_pci_rid(struct pci_dev *pdev, u16 alias,
+ 	return 0;
  }
  
- static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
--- 
-2.14.3
+-static __maybe_unused struct acpi_iort_node *iort_get_msi_resv_iommu(
+-						struct device *dev)
+-{
+-	struct acpi_iort_node *iommu;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+-
+-	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
+-
+-	if (iommu && (iommu->type == ACPI_IORT_NODE_SMMU_V3)) {
+-		struct acpi_iort_smmu_v3 *smmu;
+-
+-		smmu = (struct acpi_iort_smmu_v3 *)iommu->node_data;
+-		if (smmu->model == ACPI_IORT_SMMU_V3_HISILICON_HI161X)
+-			return iommu;
+-	}
+-
+-	return NULL;
+-}
+-
+ static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
+ 			       struct fwnode_handle *fwnode,
+ 			       const struct iommu_ops *ops)
+@@ -807,6 +788,24 @@ static inline bool iort_iommu_driver_enabled(u8 type)
+ }
+ 
+ #ifdef CONFIG_IOMMU_API
++static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
++{
++	struct acpi_iort_node *iommu;
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++
++	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
++
++	if (iommu && (iommu->type == ACPI_IORT_NODE_SMMU_V3)) {
++		struct acpi_iort_smmu_v3 *smmu;
++
++		smmu = (struct acpi_iort_smmu_v3 *)iommu->node_data;
++		if (smmu->model == ACPI_IORT_SMMU_V3_HISILICON_HI161X)
++			return iommu;
++	}
++
++	return NULL;
++}
++
+ static inline const struct iommu_ops *iort_fwspec_iommu_ops(
+ 				struct iommu_fwspec *fwspec)
+ {
