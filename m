@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 2/4] iommu/io-pgtable-arm: Support 52-bit physical address
-Date: Thu, 14 Dec 2017 16:58:51 +0000
-Message-ID: <fde583dacee8099ed4e952dbf1c4dfb42070e9c5.1512038236.git.robin.murphy@arm.com>
+Subject: [PATCH v2 3/4] iommu/arm-smmu-v3: Support 52-bit physical address
+Date: Thu, 14 Dec 2017 16:58:52 +0000
+Message-ID: <9d2a2eb4527987aec520e112163a178d92fc946b.1512038236.git.robin.murphy@arm.com>
 References: <cover.1512038236.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,189 +21,155 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Bring io-pgtable-arm in line with the ARMv8.2-LPA feature allowing
-52-bit physical addresses when using the 64KB translation granule.
-This will be supported by SMMUv3.1.
+Implement SMMUv3.1 support for 52-bit physical addresses. Since a 52-bit
+OAS implies 64KB translation granule support, permitting level 1 block
+entries there is simple, and the rest is just extending address fields.
 
 Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
-v2: Fix TCR_PS/TCR_IPS copy-paste error
+v2: No change
 
- drivers/iommu/io-pgtable-arm.c | 65 ++++++++++++++++++++++++++++++------------
- 1 file changed, 47 insertions(+), 18 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 35 ++++++++++++++++++++---------------
+ 1 file changed, 20 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 51e5c43caed1..10d888b02948 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -21,6 +21,7 @@
- #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 52cad776b31b..c9c4e6132e27 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -101,6 +101,7 @@
+ #define IDR5_OAS_42_BIT			(3 << IDR5_OAS_SHIFT)
+ #define IDR5_OAS_44_BIT			(4 << IDR5_OAS_SHIFT)
+ #define IDR5_OAS_48_BIT			(5 << IDR5_OAS_SHIFT)
++#define IDR5_OAS_52_BIT			(6 << IDR5_OAS_SHIFT)
  
- #include <linux/atomic.h>
-+#include <linux/bitops.h>
- #include <linux/iommu.h>
- #include <linux/kernel.h>
- #include <linux/sizes.h>
-@@ -32,7 +33,7 @@
+ #define ARM_SMMU_CR0			0x20
+ #define CR0_CMDQEN			(1 << 3)
+@@ -159,7 +160,7 @@
  
- #include "io-pgtable.h"
+ #define ARM_SMMU_STRTAB_BASE		0x80
+ #define STRTAB_BASE_RA			(1UL << 62)
+-#define STRTAB_BASE_ADDR_MASK		GENMASK_ULL(47, 6)
++#define STRTAB_BASE_ADDR_MASK		GENMASK_ULL(51, 6)
  
--#define ARM_LPAE_MAX_ADDR_BITS		48
-+#define ARM_LPAE_MAX_ADDR_BITS		52
- #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
- #define ARM_LPAE_MAX_LEVELS		4
+ #define ARM_SMMU_STRTAB_BASE_CFG	0x88
+ #define STRTAB_BASE_CFG_LOG2SIZE_SHIFT	0
+@@ -190,7 +191,7 @@
+ #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
  
-@@ -86,6 +87,8 @@
- #define ARM_LPAE_PTE_TYPE_TABLE		3
- #define ARM_LPAE_PTE_TYPE_PAGE		3
+ /* Common MSI config fields */
+-#define MSI_CFG0_ADDR_MASK		GENMASK_ULL(47, 2)
++#define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
+ #define MSI_CFG2_SH_SHIFT		4
+ #define MSI_CFG2_SH_NSH			(0UL << MSI_CFG2_SH_SHIFT)
+ #define MSI_CFG2_SH_OSH			(2UL << MSI_CFG2_SH_SHIFT)
+@@ -206,7 +207,7 @@
+ 					 Q_IDX(q, p) * (q)->ent_dwords)
  
-+#define ARM_LPAE_PTE_ADDR_MASK		GENMASK_ULL(47,12)
-+
- #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
- #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
- #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
-@@ -159,6 +162,7 @@
- #define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
- #define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
- #define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
-+#define ARM_LPAE_TCR_PS_52_BIT		0x6ULL
+ #define Q_BASE_RWA			(1UL << 62)
+-#define Q_BASE_ADDR_MASK		GENMASK_ULL(47, 5)
++#define Q_BASE_ADDR_MASK		GENMASK_ULL(51, 5)
+ #define Q_BASE_LOG2SIZE_SHIFT		0
+ #define Q_BASE_LOG2SIZE_MASK		0x1fUL
  
- #define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
- #define ARM_LPAE_MAIR_ATTR_MASK		0xff
-@@ -170,9 +174,7 @@
- #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
+@@ -223,7 +224,7 @@
+ #define STRTAB_L1_DESC_DWORDS		1
+ #define STRTAB_L1_DESC_SPAN_SHIFT	0
+ #define STRTAB_L1_DESC_SPAN_MASK	0x1fUL
+-#define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(47, 6)
++#define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(51, 6)
  
- /* IOPTE accessors */
--#define iopte_deref(pte,d)					\
--	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
--	& ~(ARM_LPAE_GRANULE(d) - 1ULL)))
-+#define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+ #define STRTAB_STE_DWORDS		8
+ #define STRTAB_STE_0_V			(1UL << 0)
+@@ -236,7 +237,7 @@
  
- #define iopte_type(pte,l)					\
- 	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
-@@ -184,12 +186,6 @@
- 		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE) :	\
- 		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK))
+ #define STRTAB_STE_0_S1FMT_SHIFT	4
+ #define STRTAB_STE_0_S1FMT_LINEAR	(0UL << STRTAB_STE_0_S1FMT_SHIFT)
+-#define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(47, 6)
++#define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(51, 6)
+ #define STRTAB_STE_0_S1CDMAX_SHIFT	59
+ #define STRTAB_STE_0_S1CDMAX_MASK	0x1fUL
  
--#define iopte_to_pfn(pte,d)					\
--	(((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)) >> (d)->pg_shift)
+@@ -274,7 +275,7 @@
+ #define STRTAB_STE_2_S2PTW		(1UL << 54)
+ #define STRTAB_STE_2_S2R		(1UL << 58)
+ 
+-#define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(47, 4)
++#define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
+ 
+ /* Context descriptor (stage-1 only) */
+ #define CTXDESC_CD_DWORDS		8
+@@ -320,7 +321,7 @@
+ #define CTXDESC_CD_0_ASID_SHIFT		48
+ #define CTXDESC_CD_0_ASID_MASK		0xffffUL
+ 
+-#define CTXDESC_CD_1_TTB0_MASK		GENMASK_ULL(47, 4)
++#define CTXDESC_CD_1_TTB0_MASK		GENMASK_ULL(51, 4)
+ 
+ #define CTXDESC_CD_3_MAIR_SHIFT		0
+ 
+@@ -357,7 +358,7 @@
+ #define CMDQ_TLBI_0_ASID_SHIFT		48
+ #define CMDQ_TLBI_1_LEAF		(1UL << 0)
+ #define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
+-#define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(47, 12)
++#define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(51, 12)
+ 
+ #define CMDQ_PRI_0_SSID_SHIFT		12
+ #define CMDQ_PRI_0_SSID_MASK		0xfffffUL
+@@ -380,7 +381,7 @@
+ #define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
+ #define CMDQ_SYNC_0_MSIDATA_SHIFT	32
+ #define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
+-#define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(47, 2)
++#define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(51, 2)
+ 
+ /* Event queue */
+ #define EVTQ_ENT_DWORDS			4
+@@ -1686,7 +1687,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 		return -ENOMEM;
+ 
+ 	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+-	domain->geometry.aperture_end = (1UL << ias) - 1;
++	domain->geometry.aperture_end = (1UL << pgtbl_cfg.ias) - 1;
+ 	domain->geometry.force_aperture = true;
+ 	smmu_domain->pgtbl_ops = pgtbl_ops;
+ 
+@@ -2693,11 +2694,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	if (reg & IDR5_GRAN4K)
+ 		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
+ 
+-	if (arm_smmu_ops.pgsize_bitmap == -1UL)
+-		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
+-	else
+-		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
 -
--#define pfn_to_iopte(pfn,d)					\
--	(((pfn) << (d)->pg_shift) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1))
--
- struct arm_lpae_io_pgtable {
- 	struct io_pgtable	iop;
- 
-@@ -203,6 +199,25 @@ struct arm_lpae_io_pgtable {
- 
- typedef u64 arm_lpae_iopte;
- 
-+static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
-+				     struct arm_lpae_io_pgtable *data)
-+{
-+	arm_lpae_iopte pte = paddr;
-+
-+	/* Of the bits which overlap, either 51:48 or 15:12 are always RES0 */
-+	return (pte | (pte >> 36)) & ARM_LPAE_PTE_ADDR_MASK;
-+}
-+
-+static phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
-+				  struct arm_lpae_io_pgtable *data)
-+{
-+	phys_addr_t paddr = pte & ARM_LPAE_PTE_ADDR_MASK;
-+	phys_addr_t paddr_hi = paddr & (ARM_LPAE_GRANULE(data) - 1);
-+
-+	/* paddr_hi spans nothing for 4K granule, and only RES0 bits for 16K */
-+	return (paddr ^ paddr_hi) | (paddr_hi << 36);
-+}
-+
- static bool selftest_running = false;
- 
- static dma_addr_t __arm_lpae_dma_addr(void *pages)
-@@ -287,7 +302,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
- 
- 	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
--	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
-+	pte |= paddr_to_iopte(paddr, data);
- 
- 	__arm_lpae_set_pte(ptep, pte, &data->iop.cfg);
- }
-@@ -528,7 +543,7 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 	if (size == split_sz)
- 		unmap_idx = ARM_LPAE_LVL_IDX(iova, lvl, data);
- 
--	blk_paddr = iopte_to_pfn(blk_pte, data) << data->pg_shift;
-+	blk_paddr = iopte_to_paddr(blk_pte, data);
- 	pte = iopte_prot(blk_pte);
- 
- 	for (i = 0; i < tablesz / sizeof(pte); i++, blk_paddr += split_sz) {
-@@ -652,12 +667,13 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
- 
- found_translation:
- 	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
--	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
-+	return iopte_to_paddr(pte, data) | iova;
- }
- 
- static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
- {
--	unsigned long granule;
-+	unsigned long granule, page_sizes;
-+	unsigned int max_addr_bits = 48;
- 
- 	/*
- 	 * We need to restrict the supported page sizes to match the
-@@ -677,17 +693,24 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
- 
- 	switch (granule) {
- 	case SZ_4K:
--		cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
-+		page_sizes = (SZ_4K | SZ_2M | SZ_1G);
+ 	/* Output address size */
+ 	switch (reg & IDR5_OAS_MASK << IDR5_OAS_SHIFT) {
+ 	case IDR5_OAS_32_BIT:
+@@ -2715,6 +2711,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	case IDR5_OAS_44_BIT:
+ 		smmu->oas = 44;
  		break;
- 	case SZ_16K:
--		cfg->pgsize_bitmap &= (SZ_16K | SZ_32M);
-+		page_sizes = (SZ_16K | SZ_32M);
- 		break;
- 	case SZ_64K:
--		cfg->pgsize_bitmap &= (SZ_64K | SZ_512M);
-+		max_addr_bits = 52;
-+		page_sizes = (SZ_64K | SZ_512M);
-+		if (cfg->oas > 48)
-+			page_sizes |= 1ULL << 42; /* 4TB */
- 		break;
- 	default:
--		cfg->pgsize_bitmap = 0;
-+		page_sizes = 0;
- 	}
-+
-+	cfg->pgsize_bitmap &= page_sizes;
-+	cfg->ias = min(cfg->ias, max_addr_bits);
-+	cfg->oas = min(cfg->oas, max_addr_bits);
- }
- 
- static struct arm_lpae_io_pgtable *
-@@ -784,6 +807,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	case 48:
- 		reg |= (ARM_LPAE_TCR_PS_48_BIT << ARM_LPAE_TCR_IPS_SHIFT);
- 		break;
-+	case 52:
-+		reg |= (ARM_LPAE_TCR_PS_52_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++	case IDR5_OAS_52_BIT:
++		smmu->oas = 52;
++		smmu->pgsize_bitmap |= 1ULL << 42; /* 4TB */
 +		break;
  	default:
- 		goto out_free_data;
+ 		dev_info(smmu->dev,
+ 			"unknown output address size. Truncating to 48-bit\n");
+@@ -2723,6 +2723,11 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 		smmu->oas = 48;
  	}
-@@ -891,6 +917,9 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	case 48:
- 		reg |= (ARM_LPAE_TCR_PS_48_BIT << ARM_LPAE_TCR_PS_SHIFT);
- 		break;
-+	case 52:
-+		reg |= (ARM_LPAE_TCR_PS_52_BIT << ARM_LPAE_TCR_PS_SHIFT);
-+		break;
- 	default:
- 		goto out_free_data;
- 	}
+ 
++	if (arm_smmu_ops.pgsize_bitmap == -1UL)
++		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
++	else
++		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
++
+ 	/* Set the DMA mask for our table walker */
+ 	if (dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(smmu->oas)))
+ 		dev_warn(smmu->dev,
 -- 
 2.13.4.dirty
