@@ -1,130 +1,135 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v11 1/3] ACPI/IORT: Add msi address regions reservation
- helper
-Date: Thu, 14 Dec 2017 12:43:36 +0000
-Message-ID: <20171214124336.GC27348@e107981-ln.cambridge.arm.com>
-References: <20171213115830.61872-1-shameerali.kolothum.thodi@huawei.com>
- <20171213115830.61872-2-shameerali.kolothum.thodi@huawei.com>
- <20171214114759.GA27117@e107981-ln.cambridge.arm.com>
- <5FC3163CFD30C246ABAA99954A238FA838628CDD@FRAEML521-MBX.china.huawei.com>
+From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon 161010801
+	erratum(reserve HW MSI)
+Date: Thu, 14 Dec 2017 16:09:54 +0000
+Message-ID: <20171214160957.13716-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838628CDD@FRAEML521-MBX.china.huawei.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, John Garry <john.garry@huawei.com>, "xuwei (O)" <xuwei5@hisilicon.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linuxarm <linuxarm@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 14, 2017 at 12:17:50PM +0000, Shameerali Kolothum Thodi wrote:
-> Hi Lorenzo,
-> 
-> > -----Original Message-----
-> > From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
-> > Sent: Thursday, December 14, 2017 11:48 AM
-> > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> > Cc: robin.murphy@arm.com; marc.zyngier@arm.com; will.deacon@arm.com;
-> > joro@8bytes.org; John Garry <john.garry@huawei.com>; xuwei (O)
-> > <xuwei5@hisilicon.com>; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
-> > iommu@lists.linux-foundation.org; linux-arm-kernel@lists.infradead.org; linux-
-> > acpi@vger.kernel.org; devicetree@vger.kernel.org; Linuxarm
-> > <linuxarm@huawei.com>
-> > Subject: Re: [PATCH v11 1/3] ACPI/IORT: Add msi address regions reservation
-> > helper
-> > 
-> > On Wed, Dec 13, 2017 at 11:58:28AM +0000, Shameer Kolothum wrote:
-> > > On some platforms msi parent address regions have to be excluded from
-> > > normal IOVA allocation in that they are detected and decoded in a HW
-> > > specific way by system components and so they cannot be considered normal
-> > > IOVA address space.
-> > >
-> > > Add a helper function that retrieves ITS address regions - the msi
-> > > parent - through IORT device <-> ITS mappings and reserves it so that
-> > > these regions will not be translated by IOMMU and will be excluded from
-> > > IOVA allocations. The function checks for the smmu model number and
-> > > only applies the msi reservation if the platform requires it.
-> > >
-> > > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> > > ---
-> > >  drivers/acpi/arm64/iort.c        | 112
-> > +++++++++++++++++++++++++++++++++++++--
-> > >  drivers/irqchip/irq-gic-v3-its.c |   3 +-
-> > >  include/linux/acpi_iort.h        |   7 ++-
-> > >  3 files changed, 117 insertions(+), 5 deletions(-)
-> > 
-> > You need this additional hunk to make it compile on !CONFIG_IOMMU_API:
-> 
-> Oops..Sorry, missed that. If you are happy with the rest, I will make the below
-> change and sent out the v12(hopefully final).
+On certain HiSilicon platforms (hip06/hip07) the GIC ITS and PCIe RC
+deviates from the standard implementation and this breaks PCIe MSI
+functionality when SMMU is enabled.
 
-I am ok with it, yes.
+The HiSilicon erratum 161010801 describes this limitation of certain
+HiSilicon platforms to support the SMMU mappings for MSI transactions.
+On these platforms GICv3 ITS translator is presented with the deviceID
+by extending the MSI payload data to 64 bits to include the deviceID.
+Hence, the PCIe controller on this platforms has to differentiate the MSI
+payload against other DMA payload and has to modify the MSI payload.
+This basically makes it difficult for this platforms to have a SMMU
+translation for MSI.
 
-Thanks,
-Lorenzo
+This patch implements an ACPI based quirk to reserve the hw msi regions
+in the smmu-v3 driver which means these address regions will not be
+translated and will be excluded from iova allocations.
 
-> Please let me know.
-> 
-> Thanks,
-> Shameer
-> 
-> > 
-> > -- >8 --
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index 3e0ce652c3e8..e2f7bddf5522 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -762,25 +762,6 @@ static int __maybe_unused __get_pci_rid(struct
-> > pci_dev *pdev, u16 alias,
-> >  	return 0;
-> >  }
-> > 
-> > -static __maybe_unused struct acpi_iort_node *iort_get_msi_resv_iommu(
-> > -						struct device *dev)
-> > -{
-> > -	struct acpi_iort_node *iommu;
-> > -	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > -
-> > -	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
-> > -
-> > -	if (iommu && (iommu->type == ACPI_IORT_NODE_SMMU_V3)) {
-> > -		struct acpi_iort_smmu_v3 *smmu;
-> > -
-> > -		smmu = (struct acpi_iort_smmu_v3 *)iommu->node_data;
-> > -		if (smmu->model ==
-> > ACPI_IORT_SMMU_V3_HISILICON_HI161X)
-> > -			return iommu;
-> > -	}
-> > -
-> > -	return NULL;
-> > -}
-> > -
-> >  static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
-> >  			       struct fwnode_handle *fwnode,
-> >  			       const struct iommu_ops *ops)
-> > @@ -807,6 +788,24 @@ static inline bool iort_iommu_driver_enabled(u8 type)
-> >  }
-> > 
-> >  #ifdef CONFIG_IOMMU_API
-> > +static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
-> > +{
-> > +	struct acpi_iort_node *iommu;
-> > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > +
-> > +	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
-> > +
-> > +	if (iommu && (iommu->type == ACPI_IORT_NODE_SMMU_V3)) {
-> > +		struct acpi_iort_smmu_v3 *smmu;
-> > +
-> > +		smmu = (struct acpi_iort_smmu_v3 *)iommu->node_data;
-> > +		if (smmu->model ==
-> > ACPI_IORT_SMMU_V3_HISILICON_HI161X)
-> > +			return iommu;
-> > +	}
-> > +
-> > +	return NULL;
-> > +}
-> > +
-> >  static inline const struct iommu_ops *iort_fwspec_iommu_ops(
-> >  				struct iommu_fwspec *fwspec)
-> >  {
+To implement this quirk, the following changes are incorporated:
+1. Added a generic helper function to IORT code to retrieve and reserve
+   the associated ITS base address from a device IORT node. The function
+   has a check for smmu model to determine whether the platform requires
+   the HW MSI reservation or not.
+2. Added smmu node entries and explicitly disabled them in hip06/hip07
+    dts files so that users are warned about the non-DT support for this
+    erratum.
+
+Changelog:
+
+v11--> v12
+-Thanks to Lorenzo, Fixed !CONFIG_IOMMU_API compile error(patch #1).
+
+v10 --> v11
+-Addressed comments from Lorenzo(patch#1)
+-Added Robin's Reviewed-by to patch #2
+
+v9 --> v10
+Addressed comments:
+-Moved smmu model check to iort helper function to selectively apply
+ the msi reservation which will make the fn call generic from iommu-dma.
+-Removed PCI blacklisting patch, instead added smmu nodes(disabled)
+ with comments to hip06/hip07 dts file.
+
+v8 --> v9
+-Thanks to Marc, fixed IORT helper function to reserve the ITS
+ translater region only.
+-Removed the DT support for MSI reservation and blacklisted
+ HiSilicon PCIe controllers on DT based systems when SMMUv3 is
+ enabled.
+
+v7 --> v8
+Addressed comments from Rob and Lorenzo:
+ -Modified to use DT compatible string for errata.
+ -Changed logic to retrieve the msi-parent for DT case.
+
+v6 --> v7
+Addressed request from Will to add DT support for the erratum:
+ - added bt binding
+ - add of_iommu_msi_get_resv_regions()
+New arm64 silicon errata entry
+Rename iort_iommu_{its->msi}_get_resv_regions
+
+v5 --> v6
+Addressed comments from Robin and Lorenzo:
+-No change to patch#1 .
+-Reverted v5 patch#2 as this might break the platforms where this quirk
+  is not applicable. Provided a generic function in iommu code and added
+  back the quirk implementation in SMMU v3 driver(patch#3)
+
+v4 --> v5
+Addressed comments from Robin and Lorenzo:
+-Added a comment to make it clear that, for now, only straightforward
+  HW topologies are handled while reserving ITS regions(patch #1).
+
+v3 --> v4
+Rebased on 4.13-rc1.
+Addressed comments from Robin, Will and Lorenzo:
+-As suggested by Robin, moved the ITS msi reservation into
+  iommu_dma_get_resv_regions().
+-Added its_count != resv region failure case(patch #1).
+
+v2 --> v3
+Addressed comments from Lorenzo and Robin:
+-Removed dev_is_pci() check in smmuV3 driver.
+-Don't treat device not having an ITS mapping as an error in
+  iort helper function.
+
+v1 --> v2
+-patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+
+RFCv2 -->PATCH
+-Incorporated Lorenzo's review comments.
+
+RFC v1 --> RFC v2
+Based on Robin's review comments,
+-Removed  the generic erratum framework.
+-Using IORT/MADT tables to retrieve the ITS base addr instead
+ of vendor specific CSRT table.
+
+Shameer Kolothum (3):
+  ACPI/IORT: Add msi address regions reservation helper
+  iommu/dma: Add HW MSI(GICv3 ITS) address regions reservation
+  arm64:dts:hisilicon Disable hisilicon smmu node on hip06/hip07
+
+ arch/arm64/boot/dts/hisilicon/hip06.dtsi |  56 ++++++++++++++++
+ arch/arm64/boot/dts/hisilicon/hip07.dtsi |  25 +++++++
+ drivers/acpi/arm64/iort.c                | 111 ++++++++++++++++++++++++++++++-
+ drivers/iommu/dma-iommu.c                |   8 ++-
+ drivers/irqchip/irq-gic-v3-its.c         |   3 +-
+ include/linux/acpi_iort.h                |   7 +-
+ 6 files changed, 204 insertions(+), 6 deletions(-)
+
+-- 
+1.9.1
