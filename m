@@ -1,13 +1,18 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 4/4] iommu/arm-smmu-v3: Support 52-bit virtual address
-Date: Thu, 14 Dec 2017 16:58:53 +0000
-Message-ID: <15d196d9a8e160c5df0e0340e23a432482389f9f.1512038236.git.robin.murphy@arm.com>
-References: <cover.1512038236.git.robin.murphy@arm.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/2] mm: Add kernel MMU notifier to manage IOTLB/DEVTLB
+Date: Thu, 14 Dec 2017 19:08:54 -0800
+Message-ID: <20171215030854.GA69597@otc-nc-03>
+References: <1513213366-22594-1-git-send-email-baolu.lu@linux.intel.com>
+	<1513213366-22594-2-git-send-email-baolu.lu@linux.intel.com>
+	<a98903c2-e67c-a0cc-3ad1-60b9aa4e4c93@huawei.com>
+	<5A31F232.90901@linux.intel.com>
+	<e7462b54-9d3a-abfd-8df2-2db3780de78d@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1512038236.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <e7462b54-9d3a-abfd-8df2-2db3780de78d-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,62 +22,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
+To: Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Huang Ying <ying.huang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Matthew Wilcox <willy-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Paul E . McKenney" <paulmck-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Vegard Nossum <vegard.nossum-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stage 1 input addresses are effectively 64-bit in SMMUv3 anyway, so
-really all that's involved is letting io-pgtable know the appropriate
-upper bound for T0SZ.
+Hi Bob
 
-Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+On Thu, Dec 14, 2017 at 02:07:38PM +0800, Bob Liu wrote:
+> On 2017/12/14 11:38, Lu Baolu wrote:
 
-v2: No change
+> >>>> We already have an existing MMU notifiers for userspace updates,
+> >>>> however we lack the same thing for kernel page table updates. To
+> >> Sorry, I didn't get which situation need this notification.
+> >> Could you please describe the full scenario?
+> > 
+> > Okay.
+> > 
+> > 1. When an SVM capable driver calls intel_svm_bind_mm() with
+> >     SVM_FLAG_SUPERVISOR_MODE set in the @flags, the kernel
+> >     memory page mappings will be shared between CPUs and
+> >     the DMA remapping agent (a.k.a. IOMMU). The page table
+> >     entries will also be cached in both IOTLB (located in IOMMU)
+> >     and the DEVTLB (located in device).
+> > 
+> 
+> But who/what kind of real device has the requirement to access a kernel VA?
+> Looks like SVM_FLAG_SUPERVISOR_MODE is used by nobody?
 
- drivers/iommu/arm-smmu-v3.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+That's right, there is no inkernel user at the moment, but we certainly see
+them coming.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c9c4e6132e27..7059a0805bd1 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -102,6 +102,7 @@
- #define IDR5_OAS_44_BIT			(4 << IDR5_OAS_SHIFT)
- #define IDR5_OAS_48_BIT			(5 << IDR5_OAS_SHIFT)
- #define IDR5_OAS_52_BIT			(6 << IDR5_OAS_SHIFT)
-+#define IDR5_VAX			(1 << 10)
- 
- #define ARM_SMMU_CR0			0x20
- #define CR0_CMDQEN			(1 << 3)
-@@ -604,6 +605,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_STALLS		(1 << 11)
- #define ARM_SMMU_FEAT_HYP		(1 << 12)
- #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
-+#define ARM_SMMU_FEAT_VAX		(1 << 14)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1656,6 +1658,8 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	switch (smmu_domain->stage) {
- 	case ARM_SMMU_DOMAIN_S1:
- 		ias = VA_BITS;
-+		if (VA_BITS > 48 && !(smmu->features & ARM_SMMU_FEAT_VAX))
-+			ias = 48;
- 		oas = smmu->ias;
- 		fmt = ARM_64_LPAE_S1;
- 		finalise_stage_fn = arm_smmu_domain_finalise_s1;
-@@ -2694,6 +2698,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	if (reg & IDR5_GRAN4K)
- 		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
- 
-+	/* Input address size */
-+	if (reg & IDR5_VAX)
-+		smmu->features |= ARM_SMMU_FEAT_VAX;
-+
- 	/* Output address size */
- 	switch (reg & IDR5_OAS_MASK << IDR5_OAS_SHIFT) {
- 	case IDR5_OAS_32_BIT:
--- 
-2.13.4.dirty
+Maybe not the best example :-), but I'm told Lustre and some of the 
+modern NIC's also can benefit from SVM in kernel use.
+
+Not a hypothetical use case certainly!
+
+
+Cheers,
+Ashok
