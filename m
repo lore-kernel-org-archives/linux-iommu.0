@@ -1,128 +1,257 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix shift overflow in qi_flush_dev_iotlb
-Date: Fri, 15 Dec 2017 15:29:57 +0800
-Message-ID: <20171215072957.GJ7780@xz-mi>
-References: <20171212224250.22173.74201.stgit@gimli.home>
-	<20171213071355.GD7780@xz-mi> <20171213085847.3d3245c6@t450s.home>
-	<ae778a81-a500-d8d2-5c7e-10630fe42734@amd.com>
-	<20171213101518.7807ae4b@t450s.home>
-	<b8d7c8fd-8370-a0f0-e5db-f211423d7b9b@amd.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v12 1/3] ACPI/IORT: Add msi address regions reservation
+ helper
+Date: Fri, 15 Dec 2017 10:29:10 +0000
+Message-ID: <20171215102910.GA27941@red-moon>
+References: <20171214160957.13716-1-shameerali.kolothum.thodi@huawei.com>
+ <20171214160957.13716-2-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <b8d7c8fd-8370-a0f0-e5db-f211423d7b9b-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>
-Cc: tursulin-9sj9WOxYP5jR7s880joybQ@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20171214160957.13716-2-shameerali.kolothum.thodi@huawei.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: robin.murphy@arm.com, marc.zyngier@arm.com, will.deacon@arm.com, joro@8bytes.org, john.garry@huawei.com, xuwei5@hisilicon.com, guohanjun@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 13, 2017 at 11:31:02AM -0600, Hook, Gary wrote:
-> On 12/13/2017 11:15 AM, Alex Williamson wrote:
-> > On Wed, 13 Dec 2017 10:41:47 -0600
-> > "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org> wrote:
-> > 
-> > > On 12/13/2017 9:58 AM, Alex Williamson wrote:
-> > > > On Wed, 13 Dec 2017 15:13:55 +0800
-> > > > Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> > > > > On Tue, Dec 12, 2017 at 03:43:08PM -0700, Alex Williamson wrote:
-> > > > > 
-> > > > > [...]
-> > > > > > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> > > > > > index 9a7ffd13c7f0..87888b102057 100644
-> > > > > > --- a/drivers/iommu/dmar.c
-> > > > > > +++ b/drivers/iommu/dmar.c
-> > > > > > @@ -1345,7 +1345,9 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
-> > > > > >    	struct qi_desc desc;
-> > > > > >    	if (mask) {
-> > > > > > -		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
-> > > > > > +		BUG_ON((mask > MAX_AGAW_PFN_WIDTH) ||
-> > > > > > +		       ((mask == MAX_AGAW_PFN_WIDTH) && addr) ||
-> > > > > > +		       (addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1)));
-> > > > > 
-> > > > > Could it work if we just use 1ULL instead of 1 here?  Thanks,
-> > > > 
-> > > > In either case we're talking about shifting off the end of the
-> > > > variable, which I understand to be undefined.  Right?  Thanks,
-> > > 
-> > > How so? Bits fall off the left (MSB) end, zeroes fill in the right (LSB)
-> > > end. I believe that behavior is pretty set.
-> > 
-> > Maybe I'm relying too much on stackoverflow, but:
-> > 
-> > https://stackoverflow.com/questions/11270492/what-does-the-c-standard-say-about-bitshifting-more-bits-than-the-width-of-type
+On Thu, Dec 14, 2017 at 04:09:55PM +0000, Shameer Kolothum wrote:
+> On some platforms msi parent address regions have to be excluded from
+> normal IOVA allocation in that they are detected and decoded in a HW
+> specific way by system components and so they cannot be considered normal
+> IOVA address space.
 > 
-> No, probably not. I don't have my copy of c99 handy, so can't check it. But
-> it is beyond me why any compiler implementation would choose to use a rotate
-> instead of a shift... probably a performance issue.
+> Add a helper function that retrieves ITS address regions - the msi
+> parent - through IORT device <-> ITS mappings and reserves it so that
+> these regions will not be translated by IOMMU and will be excluded from
+> IOVA allocations. The function checks for the smmu model number and
+> only applies the msi reservation if the platform requires it.
 > 
-> So, yeah, when you have silly parameters, you get what you get.
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/acpi/arm64/iort.c        | 111 +++++++++++++++++++++++++++++++++++++--
+>  drivers/irqchip/irq-gic-v3-its.c |   3 +-
+>  include/linux/acpi_iort.h        |   7 ++-
+>  3 files changed, 116 insertions(+), 5 deletions(-)
+
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 95255ec..e2f7bdd 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -39,6 +39,7 @@
+>  struct iort_its_msi_chip {
+>  	struct list_head	list;
+>  	struct fwnode_handle	*fw_node;
+> +	phys_addr_t		base_addr;
+>  	u32			translation_id;
+>  };
+>  
+> @@ -161,14 +162,16 @@ typedef acpi_status (*iort_find_node_callback)
+>  static DEFINE_SPINLOCK(iort_msi_chip_lock);
+>  
+>  /**
+> - * iort_register_domain_token() - register domain token and related ITS ID
+> - * to the list from where we can get it back later on.
+> + * iort_register_domain_token() - register domain token along with related
+> + * ITS ID and base address to the list from where we can get it back later on.
+>   * @trans_id: ITS ID.
+> + * @base: ITS base address.
+>   * @fw_node: Domain token.
+>   *
+>   * Returns: 0 on success, -ENOMEM if no memory when allocating list element
+>   */
+> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
+> +int iort_register_domain_token(int trans_id, phys_addr_t base,
+> +			       struct fwnode_handle *fw_node)
+>  {
+>  	struct iort_its_msi_chip *its_msi_chip;
+>  
+> @@ -178,6 +181,7 @@ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node)
+>  
+>  	its_msi_chip->fw_node = fw_node;
+>  	its_msi_chip->translation_id = trans_id;
+> +	its_msi_chip->base_addr = base;
+>  
+>  	spin_lock(&iort_msi_chip_lock);
+>  	list_add(&its_msi_chip->list, &iort_msi_chip_list);
+> @@ -581,6 +585,24 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id)
+>  	return -ENODEV;
+>  }
+>  
+> +static int __maybe_unused iort_find_its_base(u32 its_id, phys_addr_t *base)
+> +{
+> +	struct iort_its_msi_chip *its_msi_chip;
+> +	int ret = -ENODEV;
+> +
+> +	spin_lock(&iort_msi_chip_lock);
+> +	list_for_each_entry(its_msi_chip, &iort_msi_chip_list, list) {
+> +		if (its_msi_chip->translation_id == its_id) {
+> +			*base = its_msi_chip->base_addr;
+> +			ret = 0;
+> +			break;
+> +		}
+> +	}
+> +	spin_unlock(&iort_msi_chip_lock);
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * iort_dev_find_its_id() - Find the ITS identifier for a device
+>   * @dev: The device.
+> @@ -766,6 +788,24 @@ static inline bool iort_iommu_driver_enabled(u8 type)
+>  }
+>  
+>  #ifdef CONFIG_IOMMU_API
+> +static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+> +{
+> +	struct acpi_iort_node *iommu;
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +
+> +	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
+> +
+> +	if (iommu && (iommu->type == ACPI_IORT_NODE_SMMU_V3)) {
+> +		struct acpi_iort_smmu_v3 *smmu;
+> +
+> +		smmu = (struct acpi_iort_smmu_v3 *)iommu->node_data;
+> +		if (smmu->model == ACPI_IORT_SMMU_V3_HISILICON_HI161X)
+> +			return iommu;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+>  static inline const struct iommu_ops *iort_fwspec_iommu_ops(
+>  				struct iommu_fwspec *fwspec)
+>  {
+> @@ -782,6 +822,69 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
+>  
+>  	return err;
+>  }
+> +
+> +/**
+> + * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+> + * @dev: Device from iommu_get_resv_regions()
+> + * @head: Reserved region list from iommu_get_resv_regions()
+> + *
+> + * Returns: Number of msi reserved regions on success (0 if platform
+> + *          doesn't require the reservation or no associated msi regions),
+> + *          appropriate error value otherwise. The ITS interrupt translation
+> + *          spaces (ITS_base + SZ_64K, SZ_64K) associated with the device
+> + *          are the msi reserved regions.
+> + */
+> +int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> +	struct acpi_iort_its_group *its;
+> +	struct acpi_iort_node *iommu_node, *its_node = NULL;
+> +	int i, resv = 0;
+> +
+> +	iommu_node = iort_get_msi_resv_iommu(dev);
+> +	if (!iommu_node)
+> +		return 0;
+> +
+> +	/*
+> +	 * Current logic to reserve ITS regions relies on HW topologies
+> +	 * where a given PCI or named component maps its IDs to only one
+> +	 * ITS group; if a PCI or named component can map its IDs to
+> +	 * different ITS groups through IORT mappings this function has
+> +	 * to be reworked to ensure we reserve regions for all ITS groups
+> +	 * a given PCI or named component may map IDs to.
+> +	 */
+> +
+> +	for (i = 0; i < dev->iommu_fwspec->num_ids; i++) {
+> +		its_node = iort_node_map_id(iommu_node,
+> +					dev->iommu_fwspec->ids[i],
+> +					NULL, IORT_MSI_TYPE);
+> +		if (its_node)
+> +			break;
+> +	}
+> +
+> +	if (!its_node)
+> +		return 0;
+> +
+> +	/* Move to ITS specific data */
+> +	its = (struct acpi_iort_its_group *)its_node->node_data;
+> +
+> +	for (i = 0; i < its->its_count; i++) {
+> +		phys_addr_t base;
+> +
+> +		if (!iort_find_its_base(its->identifiers[i], &base)) {
+> +			int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +			struct iommu_resv_region *region;
+> +
+> +			region = iommu_alloc_resv_region(base + SZ_64K, SZ_64K,
+> +							 prot, IOMMU_RESV_MSI);
+> +			if (region) {
+> +				list_add_tail(&region->list, head);
+> +				resv++;
+> +			}
+> +		}
+> +	}
+> +
+> +	return (resv == its->its_count) ? resv : -ENODEV;
+> +}
+>  #else
+>  static inline const struct iommu_ops *iort_fwspec_iommu_ops(
+>  				struct iommu_fwspec *fwspec)
+> @@ -789,6 +892,8 @@ static inline const struct iommu_ops *iort_fwspec_iommu_ops(
+>  static inline int iort_add_device_replay(const struct iommu_ops *ops,
+>  					 struct device *dev)
+>  { return 0; }
+> +int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+> +{ return 0; }
+>  #endif
+>  
+>  static int iort_iommu_xlate(struct device *dev, struct acpi_iort_node *node,
+> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> index 4039e64..d4cff12 100644
+> --- a/drivers/irqchip/irq-gic-v3-its.c
+> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> @@ -3450,7 +3450,8 @@ static int __init gic_acpi_parse_madt_its(struct acpi_subtable_header *header,
+>  		return -ENOMEM;
+>  	}
+>  
+> -	err = iort_register_domain_token(its_entry->translation_id, dom_handle);
+> +	err = iort_register_domain_token(its_entry->translation_id, res.start,
+> +					 dom_handle);
+>  	if (err) {
+>  		pr_err("ITS@%pa: Unable to register GICv3 ITS domain token (ITS ID %d) to IORT\n",
+>  		       &res.start, its_entry->translation_id);
+> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> index 2f7a292..38cd77b 100644
+> --- a/include/linux/acpi_iort.h
+> +++ b/include/linux/acpi_iort.h
+> @@ -26,7 +26,8 @@
+>  #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
+>  #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
+>  
+> -int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
+> +int iort_register_domain_token(int trans_id, phys_addr_t base,
+> +			       struct fwnode_handle *fw_node);
+>  void iort_deregister_domain_token(int trans_id);
+>  struct fwnode_handle *iort_find_domain_token(int trans_id);
+>  #ifdef CONFIG_ACPI_IORT
+> @@ -38,6 +39,7 @@
+>  /* IOMMU interface */
+>  void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *size);
+>  const struct iommu_ops *iort_iommu_configure(struct device *dev);
+> +int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+>  #else
+>  static inline void acpi_iort_init(void) { }
+>  static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+> @@ -52,6 +54,9 @@ static inline void iort_dma_setup(struct device *dev, u64 *dma_addr,
+>  static inline const struct iommu_ops *iort_iommu_configure(
+>  				      struct device *dev)
+>  { return NULL; }
+> +static inline
+> +int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+> +{ return 0; }
+>  #endif
+>  
+>  #endif /* __ACPI_IORT_H__ */
+> -- 
+> 1.9.1
 > 
-> I'll stick to my suggestion. Which seems unambiguous... but I could be
-> wrong.
-
-Hi, Alex, Hook,
-
-I did a quick test:
-
-xz-mi:tmp $ cat a.c
-#include <stdio.h>
-
-void main(void)
-{
-    unsigned long long val = 0x8000000000000001ULL;
-    int shift; 
-
-    printf("origin: 0x%llx\n", val);
-    shift = 1; printf("shl 1: 0x%llx\n", val << shift);
-    shift = 62; printf("shl 62: 0x%llx\n", val << shift);
-    shift = 63; printf("shl 63: 0x%llx\n", val << shift);
-    shift = 64; printf("shl 64: 0x%llx\n", val << shift);
-    shift = 65; printf("shl 65: 0x%llx\n", val << shift);
-}
-xz-mi:tmp $ gcc -std=c99 a.c
-xz-mi:tmp $ ./a.out 
-origin: 0x8000000000000001
-shl 1: 0x2
-shl 62: 0x4000000000000000
-shl 63: 0x8000000000000000
-shl 64: 0x8000000000000001
-shl 65: 0x2
-xz-mi:tmp $ objdump -d a.out | grep -A20 "<main>"
-00000000004004d7 <main>:
-  4004d7:       55                      push   %rbp
-  4004d8:       48 89 e5                mov    %rsp,%rbp
-  4004db:       48 83 ec 10             sub    $0x10,%rsp
-  4004df:       48 b8 01 00 00 00 00    movabs $0x8000000000000001,%rax
-  4004e6:       00 00 80 
-  4004e9:       48 89 45 f8             mov    %rax,-0x8(%rbp)
-  4004ed:       48 8b 45 f8             mov    -0x8(%rbp),%rax
-  4004f1:       48 89 c6                mov    %rax,%rsi
-  4004f4:       bf 60 06 40 00          mov    $0x400660,%edi
-  4004f9:       b8 00 00 00 00          mov    $0x0,%eax
-  4004fe:       e8 ed fe ff ff          callq  4003f0 <printf@plt>
-  400503:       c7 45 f4 01 00 00 00    movl   $0x1,-0xc(%rbp)
-  40050a:       8b 45 f4                mov    -0xc(%rbp),%eax
-  40050d:       48 8b 55 f8             mov    -0x8(%rbp),%rdx
-  400511:       89 c1                   mov    %eax,%ecx
-  400513:       48 d3 e2                shl    %cl,%rdx
-  400516:       48 89 d0                mov    %rdx,%rax
-  400519:       48 89 c6                mov    %rax,%rsi
-  40051c:       bf 70 06 40 00          mov    $0x400670,%edi
-  400521:       b8 00 00 00 00          mov    $0x0,%eax
-
-So it seems not really a rotation operation, but it looks more like
-convering a "shifting N" into "shifting N%64" when N>=64.  So now I
-agree with Alex's change.  Thanks all.
-
--- 
-Peter Xu
+> 
