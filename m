@@ -1,15 +1,12 @@
-From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v4 5/5] iommu/vt-d: Add debugfs support for Interrupt
-	remapping
-Date: Tue, 19 Dec 2017 23:30:20 +0200
-Message-ID: <1513719020.7000.234.camel@linux.intel.com>
-References: <1513717687-82420-1-git-send-email-sohil.mehta@intel.com>
-	<1513717687-82420-6-git-send-email-sohil.mehta@intel.com>
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH V2] iommu/amd - Set the device table entry PPR bit for IOMMU
+	V2 devices
+Date: Tue, 19 Dec 2017 16:15:41 -0600
+Message-ID: <151372174181.127118.3644062052273990281.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1513717687-82420-6-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,69 +16,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2017-12-19 at 13:08 -0800, Sohil Mehta wrote:
-> Debugfs extension for Intel IOMMU to dump Interrupt remapping table
-> entries for Interrupt remapping and Interrupt posting.
-> 
-> The file /sys/kernel/debug/intel_iommu/ir_translation_struct provides
-> detailed information, such as Index, Source Id, Destination Id, Vector
-> and the raw values for entries with the present bit set, in the format
-> shown.
-> 
-> Remapped Interrupt supported on IOMMU: dmar5
->  IR table address:ffff93e09d54c310
-> -----------------------------------------------------------
->  Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low
->  1      3a00 00000600 2c  0000000000043a00 00000600002c0009
->  111    4301 00000900 a2  0000000000044301 0000090000a20009
-> 
-> Posted Interrupt supported on IOMMU: dmar5
->  IR table address:ffff93e09d54c310
-> --------------------------------------------------------------------
->  Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low
->  4      4300 00000010 40c7c880 41  0000001000044300 40c7c88000418001
->  5      4300 00000010 40c7c880 51  0000001000044300 40c7c88000518001
-> 
-> 
+The AMD IOMMU specification Rev 3.00 (December 2016) introduces a
+new Enhanced PPR Handling Support (EPHSup) bit in the MMIO register
+offset 0030h (IOMMU Extended Feature Register).
 
-> +		seq_printf(m, "\nRemapped Interrupt supported on
-> IOMMU: %s\n"
+When EPHSup=1, the IOMMU hardware requires the PPR bit of the
+device table entry (DTE) to be set in order to support PPR for a
+particular endpoint device.
 
-Please, avoid leading \n.
+Please see https://support.amd.com/TechDocs/48882_IOMMU.pdf for
+this revision of the AMD IOMMU specification.
 
-> +			   " IR table address:%p\n", iommu->name,
-> +			   iommu->ir_table);
-> +
-> +		seq_puts(m, "--------------------------------------
-> ---------"
-> +			 "------------\n");
+Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+---
+ 0 files changed
 
-It's okay to use long string literal on one line. So, don't split (or
-for multi-line string literals, split by \n like you do above).
-
-> +	seq_puts(m,
-> "\n****\t****\t****\t****\t****\t****\t****\t****\n");
-
-Leading \n.
-
-> +		seq_printf(m, "\nPosted Interrupt supported on IOMMU:
-> %s\n"
-
-Ditto.
-
-> +			   " IR table address:%p\n", iommu->name,
-> +			   iommu->ir_table);
-> +
-> +		seq_puts(m, "--------------------------------------
-> ----------"
-> +			 "--------------------\n");
-
-Join back.
-
--- 
-Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Intel Finland Oy
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index cb78933ef53f..5f3da95ff6a0 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1818,7 +1818,8 @@ static bool dma_ops_domain(struct protection_domain *domain)
+ 	return domain->flags & PD_DMA_OPS_MASK;
+ }
+ 
+-static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
++static void set_dte_entry(u16 devid, struct protection_domain *domain,
++			  bool ats, bool ppr)
+ {
+ 	u64 pte_root = 0;
+ 	u64 flags = 0;
+@@ -1835,6 +1836,13 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 	if (ats)
+ 		flags |= DTE_FLAG_IOTLB;
+ 
++	if (ppr) {
++		struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
++
++		if (iommu_feature(iommu, FEATURE_EPHSUP))
++			pte_root |= 1ULL << DEV_ENTRY_PPR;
++	}
++
+ 	if (domain->flags & PD_IOMMUV2_MASK) {
+ 		u64 gcr3 = iommu_virt_to_phys(domain->gcr3_tbl);
+ 		u64 glx  = domain->glx;
+@@ -1897,9 +1905,9 @@ static void do_attach(struct iommu_dev_data *dev_data,
+ 	domain->dev_cnt                 += 1;
+ 
+ 	/* Update device table */
+-	set_dte_entry(dev_data->devid, domain, ats);
++	set_dte_entry(dev_data->devid, domain, ats, dev_data->iommu_v2);
+ 	if (alias != dev_data->devid)
+-		set_dte_entry(alias, domain, ats);
++		set_dte_entry(alias, domain, ats, dev_data->iommu_v2);
+ 
+ 	device_flush_dte(dev_data);
+ }
+@@ -2278,13 +2286,15 @@ static void update_device_table(struct protection_domain *domain)
+ 	struct iommu_dev_data *dev_data;
+ 
+ 	list_for_each_entry(dev_data, &domain->dev_list, list) {
+-		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
++		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled,
++			      dev_data->iommu_v2);
+ 
+ 		if (dev_data->devid == dev_data->alias)
+ 			continue;
+ 
+ 		/* There is an alias, update device table entry for it */
+-		set_dte_entry(dev_data->alias, domain, dev_data->ats.enabled);
++		set_dte_entry(dev_data->alias, domain, dev_data->ats.enabled,
++			      dev_data->iommu_v2);
+ 	}
+ }
+ 
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index f6b24c7d8b70..6a877ebd058b 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -98,6 +98,7 @@
+ #define FEATURE_HE		(1ULL<<8)
+ #define FEATURE_PC		(1ULL<<9)
+ #define FEATURE_GAM_VAPIC	(1ULL<<21)
++#define FEATURE_EPHSUP		(1ULL<<50)
+ 
+ #define FEATURE_PASID_SHIFT	32
+ #define FEATURE_PASID_MASK	(0x1fULL << FEATURE_PASID_SHIFT)
+@@ -192,6 +193,7 @@
+ /* macros and definitions for device table entries */
+ #define DEV_ENTRY_VALID         0x00
+ #define DEV_ENTRY_TRANSLATION   0x01
++#define DEV_ENTRY_PPR           0x34
+ #define DEV_ENTRY_IR            0x3d
+ #define DEV_ENTRY_IW            0x3e
+ #define DEV_ENTRY_NO_PAGE_FAULT	0x62
