@@ -1,15 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH V1 1/1] iommu: Make sure device's ID array elements are
-	unique
-Date: Tue, 19 Dec 2017 09:37:26 -0700
-Message-ID: <20171219093726.432e16e7@t450s.home>
-References: <1513696436-31834-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
-	<1513696821-32291-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
+From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 1/5] iommu/vt-d: Add debugfs support for Intel IOMMU
+	internals
+Date: Tue, 19 Dec 2017 13:08:03 -0800
+Message-ID: <1513717687-82420-2-git-send-email-sohil.mehta@intel.com>
+References: <1513717687-82420-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1513696821-32291-1-git-send-email-tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <1513717687-82420-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,82 +18,188 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: Jayachandran.Nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ganapatrao.Kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, mw-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andriy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 19 Dec 2017 16:20:21 +0100
-Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
+From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-> While iterating over DMA aliases for a PCI device, for some rare cases
-> (i.e. PCIe-to-PCI/X bridges) we may get exactly the same ID as initial child
-> device. In turn, the same ID may get registered for a device multiple times.
-> Eventually IOMMU  driver may try to configure the same ID within domain
-> multiple times too which for some IOMMU drivers is illegal and causes kernel
-> panic.
-> 
-> Rule out ID duplication prior to device ID array registration.
-> 
-> CC: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org	# v4.14+
+Enable Intel IOMMU debug to export Intel IOMMU internals in debugfs
 
-You've identified a release, is there a specific commit this fixes?
+Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
 
-> Signed-off-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 28 ++++++++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3de5c0b..9b2c138 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1945,6 +1945,31 @@ void iommu_fwspec_free(struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(iommu_fwspec_free);
->  
-> +static void iommu_fwspec_remove_ids_dup(struct device *dev, u32 *ids,
-> +					int *num_ids)
-> +{
-> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> +	int i, j, k, valid_ids = *num_ids;
-> +
-> +	for (i = 0; i < valid_ids; i++) {
-> +		for (j = 0; j < fwspec->num_ids; j++) {
-> +			if (ids[i] != fwspec->ids[j])
-> +				continue;
-> +
-> +			dev_info(dev, "found 0x%x ID duplication, skipped\n",
-> +				 ids[i]);
-> +
-> +			for (k = i + 1; k < valid_ids; k++)
-> +				ids[k - 1] = ids[k];
+v4: No change
 
-Use memmove()?
+v3: No change
 
-> +
-> +			valid_ids--;
-> +			break;
+v2: No change
 
-At this point ids[i] is not the ids[i] that we tested for dupes, it's
-what was ids[i + 1], but we're going to i++ on the next iteration and
-we therefore never test that entry.
+ drivers/iommu/Kconfig       | 10 ++++++++++
+ drivers/iommu/intel-iommu.c | 31 +++----------------------------
+ include/linux/intel-iommu.h | 32 ++++++++++++++++++++++++++++++++
+ include/linux/intel-svm.h   |  2 +-
+ 4 files changed, 46 insertions(+), 29 deletions(-)
 
-> +		}
-> +	}
-> +
-> +	*num_ids = valid_ids;
-> +}
-> +
->  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
->  {
->  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> @@ -1954,6 +1979,9 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
->  	if (!fwspec)
->  		return -EINVAL;
->  
-> +	/* Rule out IDs already registered */
-> +	iommu_fwspec_remove_ids_dup(dev, ids, &num_ids);
-> +
->  	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
->  	if (size > sizeof(*fwspec)) {
->  		fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f3a2134..d7588ee 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -152,6 +152,16 @@ config INTEL_IOMMU
+ 	  and include PCI device scope covered by these DMA
+ 	  remapping devices.
+ 
++config INTEL_IOMMU_DEBUG
++	bool "Export Intel IOMMU internals in DebugFS"
++	depends on INTEL_IOMMU && DEBUG_FS
++	default n
++	help
++	  IOMMU internal states such as context, PASID tables can be seen via
++	  debugfs. Select this option if you want to export these internals.
++
++	  Say Y if you need this.
++
+ config INTEL_IOMMU_SVM
+ 	bool "Support for Shared Virtual Memory with Intel IOMMU"
+ 	depends on INTEL_IOMMU && X86
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4a2de34..e05b8e0 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -183,16 +183,6 @@ static int rwbf_quirk;
+ static int force_on = 0;
+ int intel_iommu_tboot_noforce;
+ 
+-/*
+- * 0: Present
+- * 1-11: Reserved
+- * 12-63: Context Ptr (12 - (haw-1))
+- * 64-127: Reserved
+- */
+-struct root_entry {
+-	u64	lo;
+-	u64	hi;
+-};
+ #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+ 
+ /*
+@@ -218,21 +208,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
+ 
+ 	return re->hi & VTD_PAGE_MASK;
+ }
+-/*
+- * low 64 bits:
+- * 0: present
+- * 1: fault processing disable
+- * 2-3: translation type
+- * 12-63: address space root
+- * high 64 bits:
+- * 0-2: address width
+- * 3-6: aval
+- * 8-23: domain id
+- */
+-struct context_entry {
+-	u64 lo;
+-	u64 hi;
+-};
+ 
+ static inline void context_clear_pasid_enable(struct context_entry *context)
+ {
+@@ -259,7 +234,7 @@ static inline bool __context_present(struct context_entry *context)
+ 	return (context->lo & 1);
+ }
+ 
+-static inline bool context_present(struct context_entry *context)
++bool context_present(struct context_entry *context)
+ {
+ 	return context_pasid_enabled(context) ?
+ 	     __context_present(context) :
+@@ -819,7 +794,7 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ 	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
+ }
+ 
+-static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
++struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
+ 						       u8 bus, u8 devfn, int alloc)
+ {
+ 	struct root_entry *root = &iommu->root_entry[bus];
+@@ -5208,7 +5183,7 @@ static void intel_iommu_put_resv_regions(struct device *dev,
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ #define MAX_NR_PASID_BITS (20)
+-static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
++unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
+ {
+ 	/*
+ 	 * Convert ecap_pss to extend context entry pts encoding, also
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index f3274d9..b8591dc 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -383,6 +383,33 @@ struct pasid_entry;
+ struct pasid_state_entry;
+ struct page_req_dsc;
+ 
++/*
++ * 0: Present
++ * 1-11: Reserved
++ * 12-63: Context Ptr (12 - (haw-1))
++ * 64-127: Reserved
++ */
++struct root_entry {
++	u64     lo;
++	u64     hi;
++};
++
++/*
++ * low 64 bits:
++ * 0: present
++ * 1: fault processing disable
++ * 2-3: translation type
++ * 12-63: address space root
++ * high 64 bits:
++ * 0-2: address width
++ * 3-6: aval
++ * 8-23: domain id
++ */
++struct context_entry {
++	u64 lo;
++	u64 hi;
++};
++
+ struct intel_iommu {
+ 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
+ 	u64 		reg_phys; /* physical address of hw register set */
+@@ -488,8 +515,13 @@ struct intel_svm {
+ 
+ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
+ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
++extern unsigned long intel_iommu_get_pts(struct intel_iommu *iommu);
+ #endif
+ 
+ extern const struct attribute_group *intel_iommu_groups[];
++extern void intel_iommu_debugfs_init(void);
++extern bool context_present(struct context_entry *context);
++extern struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
++						u8 bus, u8 devfn, int alloc);
+ 
+ #endif
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 99bc5b3..733eaf9 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -130,7 +130,7 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 	BUG();
+ }
+ 
+-static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
++static inline int intel_svm_is_pasid_valid(struct device *dev, int pasid)
+ {
+ 	return -EINVAL;
+ }
+-- 
+2.7.4
