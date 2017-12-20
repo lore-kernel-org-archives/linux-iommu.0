@@ -1,13 +1,16 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd - Record more information about unknown events
-Date: Wed, 20 Dec 2017 12:02:54 -0700
-Message-ID: <20171220120254.5386169d@t450s.home>
-References: <151241716233.31107.11094386543203626385.stgit@sosxen2.amd.com>
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V2] iommu/amd - Set the device table entry PPR bit for
+	IOMMU V2 devices
+Date: Wed, 20 Dec 2017 13:50:47 -0600
+Message-ID: <29836570-5756-f55a-1d00-074d926ea1d1@amd.com>
+References: <151372174181.127118.3644062052273990281.stgit@sosxen2.amd.com>
+	<20171220120251.435ed475@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <151241716233.31107.11094386543203626385.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
+In-Reply-To: <20171220120251.435ed475-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,22 +20,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 04 Dec 2017 13:52:42 -0600
-Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org> wrote:
-
-> When an unknown type event occurs, the default information written to
-> the syslog should dump raw event data. This could provide insight into
-> the event that occurred.
+On 12/20/2017 01:02 PM, Alex Williamson wrote:
+> On Tue, 19 Dec 2017 16:15:41 -0600
+> Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org> wrote:
 > 
-> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu.c |    4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>> The AMD IOMMU specification Rev 3.00 (December 2016) introduces a
+>> new Enhanced PPR Handling Support (EPHSup) bit in the MMIO register
+>> offset 0030h (IOMMU Extended Feature Register).
+>>
+>> When EPHSup=1, the IOMMU hardware requires the PPR bit of the
+>> device table entry (DTE) to be set in order to support PPR for a
+>> particular endpoint device.
+>>
+>> Please see https://support.amd.com/TechDocs/48882_IOMMU.pdf for
+>> this revision of the AMD IOMMU specification.
+>>
+>> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>   0 files changed
+> 
+> Hmm, something funky there, but looks fine otherwise.  Applied to
+> v4.16-iommu/amd.  Thanks,
+> 
+> Alex
+> 
 
-Applied to v4.16-iommu/amd.  Thanks,
-
-Alex
+Thanks. I have no clue why it says "0 files changed". I just looked 
+again and it seems fine here.
