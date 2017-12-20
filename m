@@ -1,18 +1,16 @@
 From: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 5/5] iommu/vt-d: Add debugfs support for Interrupt
-	remapping
-Date: Wed, 20 Dec 2017 00:42:39 +0000
-Message-ID: <1513730591.31078.25.camel@intel.com>
+Subject: Re: [PATCH v4 0/5] Add Intel IOMMU debugfs support
+Date: Wed, 20 Dec 2017 01:47:13 +0000
+Message-ID: <1513734464.31078.33.camel@intel.com>
 References: <1513717687-82420-1-git-send-email-sohil.mehta@intel.com>
-	<1513717687-82420-6-git-send-email-sohil.mehta@intel.com>
-	<1513719020.7000.234.camel@linux.intel.com>
+	<1513718710.7000.230.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1513719020.7000.234.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1513718710.7000.230.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Content-Language: en-US
-Content-ID: <5330F53A44390D42ABB64BD64FF8AFD5-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-ID: <C9710C156439B74FA81910E3F520D89B-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,53 +21,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Yu, Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shankar,
-	Ravi V" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kammela,
+Cc: "Shankar, Ravi V" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kammela,
 	Gayatri" <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DQpPbiBUdWUsIDIwMTctMTItMTkgYXQgMjM6MzAgKzAyMDAsIEFuZHkgU2hldmNoZW5rbyB3cm90
-ZToNCj4gT24gVHVlLCAyMDE3LTEyLTE5IGF0IDEzOjA4IC0wODAwLCBTb2hpbCBNZWh0YSB3cm90
-ZToNCj4gPiANCj4gPiBEZWJ1Z2ZzIGV4dGVuc2lvbiBmb3IgSW50ZWwgSU9NTVUgdG8gZHVtcCBJ
-bnRlcnJ1cHQgcmVtYXBwaW5nIHRhYmxlDQo+ID4gZW50cmllcyBmb3IgSW50ZXJydXB0IHJlbWFw
-cGluZyBhbmQgSW50ZXJydXB0IHBvc3RpbmcuDQo+ID4gDQo+ID4gVGhlIGZpbGUgL3N5cy9rZXJu
-ZWwvZGVidWcvaW50ZWxfaW9tbXUvaXJfdHJhbnNsYXRpb25fc3RydWN0DQo+ID4gcHJvdmlkZXMN
-Cj4gPiBkZXRhaWxlZCBpbmZvcm1hdGlvbiwgc3VjaCBhcyBJbmRleCwgU291cmNlIElkLCBEZXN0
-aW5hdGlvbiBJZCwNCj4gPiBWZWN0b3INCj4gPiBhbmQgdGhlIHJhdyB2YWx1ZXMgZm9yIGVudHJp
-ZXMgd2l0aCB0aGUgcHJlc2VudCBiaXQgc2V0LCBpbiB0aGUNCj4gPiBmb3JtYXQNCj4gPiBzaG93
-bi4NCj4gPiANCj4gPiBSZW1hcHBlZCBJbnRlcnJ1cHQgc3VwcG9ydGVkIG9uIElPTU1VOiBkbWFy
-NQ0KPiA+IMKgSVIgdGFibGUgYWRkcmVzczpmZmZmOTNlMDlkNTRjMzEwDQo+ID4gLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gPiDC
-oEluZGV4wqDCoFNJRMKgwqBEZXN0X0lEwqDCoFZjdCBSYXdfdmFsdWVfaGlnaMKgwqDCoFJhd192
-YWx1ZV9sb3cNCj4gPiDCoDHCoMKgwqDCoMKgwqAzYTAwIDAwMDAwNjAwIDJjwqDCoDAwMDAwMDAw
-MDAwNDNhMDAgMDAwMDA2MDAwMDJjMDAwOQ0KPiA+IMKgMTExwqDCoMKgwqA0MzAxIDAwMDAwOTAw
-IGEywqDCoDAwMDAwMDAwMDAwNDQzMDEgMDAwMDA5MDAwMGEyMDAwOQ0KPiA+IA0KPiA+IFBvc3Rl
-ZCBJbnRlcnJ1cHQgc3VwcG9ydGVkIG9uIElPTU1VOiBkbWFyNQ0KPiA+IMKgSVIgdGFibGUgYWRk
-cmVzczpmZmZmOTNlMDlkNTRjMzEwDQo+ID4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gPiAtLS0NCj4gPiDCoEluZGV4
-wqDCoFNJRMKgwqBQREFfaGlnaCBQREFfbG93wqDCoFZjdCBSYXdfdmFsdWVfaGlnaMKgwqDCoFJh
-d192YWx1ZV9sb3cNCj4gPiDCoDTCoMKgwqDCoMKgwqA0MzAwIDAwMDAwMDEwIDQwYzdjODgwIDQx
-wqDCoDAwMDAwMDEwMDAwNDQzMDANCj4gPiA0MGM3Yzg4MDAwNDE4MDAxDQo+ID4gwqA1wqDCoMKg
-wqDCoMKgNDMwMCAwMDAwMDAxMCA0MGM3Yzg4MCA1McKgwqAwMDAwMDAxMDAwMDQ0MzAwDQo+ID4g
-NDBjN2M4ODAwMDUxODAwMQ0KPiA+IA0KPiA+IA0KPiA+IA0KPiA+ICsJCXNlcV9wcmludGYobSwg
-IlxuUmVtYXBwZWQgSW50ZXJydXB0IHN1cHBvcnRlZCBvbg0KPiA+IElPTU1VOiAlc1xuIg0KPiBQ
-bGVhc2UsIGF2b2lkIGxlYWRpbmcgXG4uDQoNClN1cmUuIEknbGwgYWRkIGEgc2VwYXJhdGUgc2Vx
-X3B1dHMobSwgIlxuIikgYWZ0ZXIgZWFjaCBvZiB0aGUgbG9vcHMgdG8NCmF2b2lkIGhhdmluZyB0
-aGUgbGVhZGluZyAnXG4ncy4NCg0KPiANCj4gPiANCj4gPiArCQkJwqDCoMKgIiBJUiB0YWJsZSBh
-ZGRyZXNzOiVwXG4iLCBpb21tdS0+bmFtZSwNCj4gPiArCQkJwqDCoMKgaW9tbXUtPmlyX3RhYmxl
-KTsNCj4gPiArDQo+ID4gKwkJc2VxX3B1dHMobSwgIi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0NCj4gPiAtDQo+ID4gLS0tLS0tLS0tIg0KPiA+ICsJCQnCoCItLS0tLS0tLS0t
-LS1cbiIpOw0KPiBJdCdzIG9rYXkgdG8gdXNlIGxvbmcgc3RyaW5nIGxpdGVyYWwgb24gb25lIGxp
-bmUuIFNvLCBkb24ndCBzcGxpdCAob3INCj4gZm9yIG11bHRpLWxpbmUgc3RyaW5nIGxpdGVyYWxz
-LCBzcGxpdCBieSBcbiBsaWtlIHlvdSBkbyBhYm92ZSkuDQo+IA0KVGhhbmtzLiBXaWxsIGZpeCB0
-aGlzIGFuZCB0aGUgb3RoZXIgb25lLg0KDQo+ID4gDQo+ID4gKwlzZXFfcHV0cyhtLA0KPiA+ICJc
-bioqKipcdCoqKipcdCoqKipcdCoqKipcdCoqKipcdCoqKipcdCoqKipcdCoqKipcbiIpOw0KPiBM
-ZWFkaW5nIFxuLg0KPiANCj4gPiANCj4gPiArCQlzZXFfcHJpbnRmKG0sICJcblBvc3RlZCBJbnRl
-cnJ1cHQgc3VwcG9ydGVkIG9uDQo+ID4gSU9NTVU6DQo+ID4gJXNcbiINCj4gRGl0dG8uDQo+IA0K
-PiA+IA0KPiA+ICsJCQnCoMKgwqAiIElSIHRhYmxlIGFkZHJlc3M6JXBcbiIsIGlvbW11LT5uYW1l
-LA0KPiA+ICsJCQnCoMKgwqBpb21tdS0+aXJfdGFibGUpOw0KPiA+ICsNCj4gPiArCQlzZXFfcHV0
-cyhtLCAiLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+IC0NCj4gPiAt
-LS0tLS0tLS0tIg0KPiA+ICsJCQnCoCItLS0tLS0tLS0tLS0tLS0tLS0tLVxuIik7DQo+IEpvaW4g
-YmFjay4NCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+T24gVHVlLCAyMDE3LTEyLTE5IGF0IDIzOjI1ICswMjAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+DQo+wqANCj4gUGVyaGFwcyB5b3UgbmVlZCB0byBzd2l0Y2ggdG8gU1BEWCBsaWNlbnNlIHBvaW50
+ZXIuDQo+IEkgZHVubm8gaWYgVGhvbWFzJyBwYXRjaCB3aXRoIGRvY3VtZW50YXRpb24gaG93IHRv
+IGRvIHRoaXMgbWFkZQ0KPiB1cHN0cmVhbQ0KPiDCoC8gbGludXgtbmV4dCB5ZXQuDQo+IA0KDQpU
+aGFua3MuIEkgZm91bmQgdGhlIGluZm9ybWF0aW9uIGF0wqBodHRwczovL3BhdGNod29yay5rZXJu
+ZWwub3JnL3BhdGNoLzENCjAwOTE2MDcvLsKgDQpJJ2xsIHJlcGxhY2UgdGhlIEdQTCAyLjAgbGlj
+ZW5zZSBpbmZvcm1hdGlvbiBpbiBpbnRlbC1pb21tdS1kZWJ1Zy5jDQp3aXRoIHRoZSB0YWc6DQov
+LyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KDQpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
+L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
