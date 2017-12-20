@@ -1,113 +1,101 @@
-From: Tomasz Nowicki <tn@semihalf.com>
-Subject: Re: [PATCH V1 0/1] Fix kernel panic caused by device ID duplication
- presented to the IOMMU
-Date: Wed, 20 Dec 2017 11:27:52 +0100
-Message-ID: <68279889-a16d-3c8d-3a01-6b5f992c5744@semihalf.com>
+From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH V1 1/1] iommu: Make sure device's ID array elements are
+	unique
+Date: Wed, 20 Dec 2017 11:28:29 +0100
+Message-ID: <668cc552-e37d-bdff-4d8e-e81516fb0ca0@semihalf.com>
 References: <1513696436-31834-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
- <7f7fca76-88f8-6ee7-c402-fe4300c62253@arm.com>
+	<1513696821-32291-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
+	<20171219093726.432e16e7@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <7f7fca76-88f8-6ee7-c402-fe4300c62253@arm.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171219093726.432e16e7-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 Content-Language: en-GB
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>, joro@8bytes.org, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bhelgaas@google.com
-Cc: Jayachandran.Nair@cavium.com, Ganapatrao.Kulkarni@cavium.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, mw@semihalf.com, stable@vger.kernel.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: Jayachandran.Nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ganapatrao.Kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, mw-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On 19.12.2017 17:34, Robin Murphy wrote:
-> Hi Tomasz,
+On 19.12.2017 17:37, Alex Williamson wrote:
+> On Tue, 19 Dec 2017 16:20:21 +0100
+> Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
 > 
-> On 19/12/17 15:13, Tomasz Nowicki wrote:
->> Here is my lspci output of ThunderX2 for which I am observing kernel 
->> panic coming from
->> SMMUv3 driver -> arm_smmu_write_strtab_ent() -> BUG_ON(ste_live):
+>> While iterating over DMA aliases for a PCI device, for some rare cases
+>> (i.e. PCIe-to-PCI/X bridges) we may get exactly the same ID as initial child
+>> device. In turn, the same ID may get registered for a device multiple times.
+>> Eventually IOMMU  driver may try to configure the same ID within domain
+>> multiple times too which for some IOMMU drivers is illegal and causes kernel
+>> panic.
 >>
->> # lspci -vt
->> -[0000:00]-+-00.0-[01-1f]--+ [...]
->>                             + [...]
->>                             \-00.0-[1e-1f]----00.0-[1f]----00.0  
->> ASPEED Technology, Inc. ASPEED Graphics Family
+>> Rule out ID duplication prior to device ID array registration.
 >>
->> ASP device -> 1f:00.0 VGA compatible controller: ASPEED Technology, 
->> Inc. ASPEED Graphics Family
->> PCI-Express to PCI/PCI-X Bridge -> 1e:00.0 PCI bridge: ASPEED 
->> Technology, Inc. AST1150 PCI-to-PCI Bridge
->> While setting up ASP device SID in IORT dirver:
->> iort_iommu_configure() -> pci_for_each_dma_alias()
->> we need to walk up and iterate over each device which alias 
->> transaction from
->> downstream devices.
+>> CC: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org	# v4.14+
+> 
+> You've identified a release, is there a specific commit this fixes?
+
+Yes, it was triggered by converting drm_pci_init() to 
+pci_register_driver() in ast_drv.c
+
+Fixes: 10631d724def ("drm/pci: Deprecate drm_pci_init/exit completely
+")
+
+> 
+>> Signed-off-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>> ---
+>>   drivers/iommu/iommu.c | 28 ++++++++++++++++++++++++++++
+>>   1 file changed, 28 insertions(+)
 >>
->> AST device (1f:00.0) gets BDF=0x1f00 and corresponding SID=0x1f00 from 
->> IORT.
->> Bridge (1e:00.0) is the first alias. Following PCI Express to 
->> PCI/PCI-X Bridge
->> spec: PCIe-to-PCI/X bridges alias transactions from downstream devices 
->> using
->> the subordinate bus number. For bridge (1e:00.0), the subordinate is 
->> equal
->> to 0x1f. This gives BDF=0x1f00 and SID=1f00 which is the same as 
->> downstream
->> device. So it is possible to have two identical SIDs. The question is 
->> what we
->> should do about such case. Presented patch prevents from registering 
->> the same
->> ID so that SMMUv3 is not complaining later on.
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 3de5c0b..9b2c138 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1945,6 +1945,31 @@ void iommu_fwspec_free(struct device *dev)
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_fwspec_free);
+>>   
+>> +static void iommu_fwspec_remove_ids_dup(struct device *dev, u32 *ids,
+>> +					int *num_ids)
+>> +{
+>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>> +	int i, j, k, valid_ids = *num_ids;
+>> +
+>> +	for (i = 0; i < valid_ids; i++) {
+>> +		for (j = 0; j < fwspec->num_ids; j++) {
+>> +			if (ids[i] != fwspec->ids[j])
+>> +				continue;
+>> +
+>> +			dev_info(dev, "found 0x%x ID duplication, skipped\n",
+>> +				 ids[i]);
+>> +
+>> +			for (k = i + 1; k < valid_ids; k++)
+>> +				ids[k - 1] = ids[k];
 > 
-> Ooh, subtle :( There is logic in arm_smmu_attach_device() to tolerate
-> grouped devices aliasing to the same ID, but I guess I overlooked the
-> distinction of a device sharing an alias ID with itself. I'm not sure
-> I really like trying to work around this in generic code, since
-> fwspec->ids is essentially opaque data in a driver-specific format - in
-> theory a driver is free to encode a single logical ID into multiple
-> fwspec elements (I think I did that in an early draft of SMMUv2 SMR
-> support), at which point this approach might corrupt things massively.
+> Use memmove()?
 
-I don't have strong favourite here, the fix in SMMUv3 driver would work 
-too. Initially we can fix things for SMMUv3 only and if ever face the 
-same issue for other IOMMU driver, then we can move it to generic layer.
+Right.
 
 > 
-> Does the (untested) diff below suffice?
+>> +
+>> +			valid_ids--;
+>> +			break;
 > 
-> Robin.
-> 
-> ----->8-----diff --git a/drivers/iommu/arm-smmu-v3.c 
-> b/drivers/iommu/arm-smmu-v3.c
-> index f122071688fd..d8a730d83401 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -1731,7 +1731,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct 
-> arm_smmu_device *smmu, u32 sid)
-> 
->   static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
->   {
-> -    int i;
-> +    int i, j;
->       struct arm_smmu_master_data *master = fwspec->iommu_priv;
->       struct arm_smmu_device *smmu = master->smmu;
-> 
-> @@ -1739,6 +1739,13 @@ static void arm_smmu_install_ste_for_dev(struct 
-> iommu_fwspec *fwspec)
->           u32 sid = fwspec->ids[i];
->           __le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
-> 
-> +        /* Bridged PCI devices may end up with duplicated IDs */
-> +        for (j = 0; j < i; j++)
-> +            if (fwspec->ids[j] == sid)
-> +                break;
-> +        if (j < i)
-> +            continue;
-> +
->           arm_smmu_write_strtab_ent(smmu, sid, step, &master->ste);
->       }
->   }
+> At this point ids[i] is not the ids[i] that we tested for dupes, it's
+> what was ids[i + 1], but we're going to i++ on the next iteration and
+> we therefore never test that entry.
 
-Yes, worked for me.
+Good point.
+
+Now the fundamental question is where we should put the patch, here or 
+in SMMUv3 driver as per Robin suggestion.
 
 Thanks,
 Tomasz
