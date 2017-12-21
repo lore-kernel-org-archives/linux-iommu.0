@@ -1,75 +1,77 @@
-From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 4/4] iommu/vt-d: Enable 5-level paging mode in the PASID entry
-Date: Wed, 20 Dec 2017 11:59:27 -0800
-Message-ID: <1513799967-22454-5-git-send-email-sohil.mehta@intel.com>
-References: <1513799967-22454-1-git-send-email-sohil.mehta@intel.com>
+From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v2 1/2] PCI: mediatek: Clear IRQ status after IRQ dispatched to avoid reentry
+Date: Thu, 21 Dec 2017 10:08:49 +0800
+Message-ID: <1513822130-18213-2-git-send-email-honghui.zhang@mediatek.com>
+References: <1513822130-18213-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1513799967-22454-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kirill Shutemov <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1513822130-18213-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-If the CPU has support for 5-level paging enabled and the IOMMU also
-supports 5-level paging then enable the 5-level paging mode for first-
-level translations - used when SVM is enabled.
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+There maybe a same IRQ reentry scenario after IRQ received in current
+IRQ handle flow:
+	EP device		PCIe host driver	EP driver
+1. issue an IRQ
+			2. received IRQ
+			3. clear IRQ status
+			4. dispatch IRQ
+						5. clear IRQ source
+The IRQ status was not successfully cleared at step 2 since the IRQ
+source was not cleared yet. So the PCIe host driver may receive the
+same IRQ after step 5. Then there's an IRQ reentry occurred.
+Even worse, if the reentry IRQ was not an IRQ that EP driver expected,
+it may not handle the IRQ. Then we may run into the infinite loop from
+step 2 to step 4.
+Clear the IRQ status after IRQ have been dispatched to avoid the IRQ
+reentry.
+
+Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Acked-by: Ryder Lee <ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/intel-svm.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/pci/host/pcie-mediatek.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 4072a18..d7095dd 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -26,6 +26,10 @@
- #include <linux/interrupt.h>
- #include <asm/page.h>
+diff --git a/drivers/pci/host/pcie-mediatek.c b/drivers/pci/host/pcie-mediatek.c
+index db93efd..3248771 100644
+--- a/drivers/pci/host/pcie-mediatek.c
++++ b/drivers/pci/host/pcie-mediatek.c
+@@ -605,11 +605,11 @@ static irqreturn_t mtk_pcie_intr_handler(int irq, void *data)
  
-+#define PASID_ENTRY_P		BIT_ULL(0)
-+#define PASID_ENTRY_FLPM_5LP	BIT_ULL(9)
-+#define PASID_ENTRY_SRE		BIT_ULL(11)
-+
- static irqreturn_t prq_event_thread(int irq, void *d);
+ 	while ((status = readl(port->base + PCIE_INT_STATUS)) & INTX_MASK) {
+ 		for_each_set_bit_from(bit, &status, PCI_NUM_INTX + INTX_SHIFT) {
+-			/* Clear the INTx */
+-			writel(1 << bit, port->base + PCIE_INT_STATUS);
+ 			virq = irq_find_mapping(port->irq_domain,
+ 						bit - INTX_SHIFT);
+ 			generic_handle_irq(virq);
++			/* Clear the INTx */
++			writel(1 << bit, port->base + PCIE_INT_STATUS);
+ 		}
+ 	}
  
- struct pasid_entry {
-@@ -297,6 +301,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 	struct intel_svm_dev *sdev;
- 	struct intel_svm *svm = NULL;
- 	struct mm_struct *mm = NULL;
-+	u64 pasid_entry_val;
- 	int pasid_max;
- 	int ret;
+@@ -619,10 +619,10 @@ static irqreturn_t mtk_pcie_intr_handler(int irq, void *data)
  
-@@ -403,9 +408,15 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 				kfree(sdev);
- 				goto out;
+ 			while ((imsi_status = readl(port->base + PCIE_IMSI_STATUS))) {
+ 				for_each_set_bit(bit, &imsi_status, MTK_MSI_IRQS_NUM) {
+-					/* Clear the MSI */
+-					writel(1 << bit, port->base + PCIE_IMSI_STATUS);
+ 					virq = irq_find_mapping(port->msi_domain, bit);
+ 					generic_handle_irq(virq);
++					/* Clear the MSI */
++					writel(1 << bit, port->base + PCIE_IMSI_STATUS);
+ 				}
  			}
--			iommu->pasid_table[svm->pasid].val = (u64)__pa(mm->pgd) | 1;
-+			pasid_entry_val = (u64)__pa(mm->pgd) | PASID_ENTRY_P;
- 		} else
--			iommu->pasid_table[svm->pasid].val = (u64)__pa(init_mm.pgd) | 1 | (1ULL << 11);
-+			pasid_entry_val = (u64)__pa(init_mm.pgd) |
-+					  PASID_ENTRY_P | PASID_ENTRY_SRE;
-+		if (cpu_feature_enabled(X86_FEATURE_LA57))
-+			pasid_entry_val |= PASID_ENTRY_FLPM_5LP;
-+
-+		iommu->pasid_table[svm->pasid].val = pasid_entry_val;
-+
- 		wmb();
- 		/* In caching mode, we still have to flush with PASID 0 when
- 		 * a PASID table entry becomes present. Not entirely clear
+ 			/* Clear MSI interrupt status */
 -- 
-2.7.4
+2.6.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
