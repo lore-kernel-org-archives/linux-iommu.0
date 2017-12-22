@@ -1,251 +1,115 @@
-From: Sohil Mehta <sohil.mehta@intel.com>
-Subject: [PATCH v5 2/5] iommu/vt-d: Add debugfs support to show context internals
-Date: Thu, 21 Dec 2017 16:32:37 -0800
-Message-ID: <1513902760-45605-3-git-send-email-sohil.mehta@intel.com>
-References: <1513902760-45605-1-git-send-email-sohil.mehta@intel.com>
+From: Tomasz Nowicki <tn@semihalf.com>
+Subject: Re: [PATCH V1 0/1] Fix kernel panic caused by device ID duplication
+ presented to the IOMMU
+Date: Fri, 22 Dec 2017 12:29:08 +0100
+Message-ID: <15883568-4cf6-b88c-8ee9-cf643c5e96f2@semihalf.com>
+References: <1513696436-31834-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
+ <7f7fca76-88f8-6ee7-c402-fe4300c62253@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1513902760-45605-1-git-send-email-sohil.mehta@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Andy Shevchenko <andriy.shevchenko@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <7f7fca76-88f8-6ee7-c402-fe4300c62253@arm.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>, joro@8bytes.org, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bhelgaas@google.com
+Cc: Jayachandran.Nair@cavium.com, Ganapatrao.Kulkarni@cavium.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, mw@semihalf.com, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Gayatri Kammela <gayatri.kammela@intel.com>
+Hi Robin,
 
-IOMMU internals states such as root and context can be exported to the
-userspace.
+On 19.12.2017 17:34, Robin Murphy wrote:
+> Hi Tomasz,
+> 
+> On 19/12/17 15:13, Tomasz Nowicki wrote:
+>> Here is my lspci output of ThunderX2 for which I am observing kernel 
+>> panic coming from
+>> SMMUv3 driver -> arm_smmu_write_strtab_ent() -> BUG_ON(ste_live):
+>>
+>> # lspci -vt
+>> -[0000:00]-+-00.0-[01-1f]--+ [...]
+>>                             + [...]
+>>                             \-00.0-[1e-1f]----00.0-[1f]----00.0  
+>> ASPEED Technology, Inc. ASPEED Graphics Family
+>>
+>> ASP device -> 1f:00.0 VGA compatible controller: ASPEED Technology, 
+>> Inc. ASPEED Graphics Family
+>> PCI-Express to PCI/PCI-X Bridge -> 1e:00.0 PCI bridge: ASPEED 
+>> Technology, Inc. AST1150 PCI-to-PCI Bridge
+>> While setting up ASP device SID in IORT dirver:
+>> iort_iommu_configure() -> pci_for_each_dma_alias()
+>> we need to walk up and iterate over each device which alias 
+>> transaction from
+>> downstream devices.
+>>
+>> AST device (1f:00.0) gets BDF=0x1f00 and corresponding SID=0x1f00 from 
+>> IORT.
+>> Bridge (1e:00.0) is the first alias. Following PCI Express to 
+>> PCI/PCI-X Bridge
+>> spec: PCIe-to-PCI/X bridges alias transactions from downstream devices 
+>> using
+>> the subordinate bus number. For bridge (1e:00.0), the subordinate is 
+>> equal
+>> to 0x1f. This gives BDF=0x1f00 and SID=1f00 which is the same as 
+>> downstream
+>> device. So it is possible to have two identical SIDs. The question is 
+>> what we
+>> should do about such case. Presented patch prevents from registering 
+>> the same
+>> ID so that SMMUv3 is not complaining later on.
+> 
+> Ooh, subtle :( There is logic in arm_smmu_attach_device() to tolerate
+> grouped devices aliasing to the same ID, but I guess I overlooked the
+> distinction of a device sharing an alias ID with itself. I'm not sure
+> I really like trying to work around this in generic code, since
+> fwspec->ids is essentially opaque data in a driver-specific format - in
+> theory a driver is free to encode a single logical ID into multiple
+> fwspec elements (I think I did that in an early draft of SMMUv2 SMR
+> support), at which point this approach might corrupt things massively.
+> 
+> Does the (untested) diff below suffice?
+> 
+> Robin.
+> 
+> ----->8-----diff --git a/drivers/iommu/arm-smmu-v3.c 
+> b/drivers/iommu/arm-smmu-v3.c
+> index f122071688fd..d8a730d83401 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -1731,7 +1731,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct 
+> arm_smmu_device *smmu, u32 sid)
+> 
+>   static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+>   {
+> -    int i;
+> +    int i, j;
+>       struct arm_smmu_master_data *master = fwspec->iommu_priv;
+>       struct arm_smmu_device *smmu = master->smmu;
+> 
+> @@ -1739,6 +1739,13 @@ static void arm_smmu_install_ste_for_dev(struct 
+> iommu_fwspec *fwspec)
+>           u32 sid = fwspec->ids[i];
+>           __le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
+> 
+> +        /* Bridged PCI devices may end up with duplicated IDs */
+> +        for (j = 0; j < i; j++)
+> +            if (fwspec->ids[j] == sid)
+> +                break;
+> +        if (j < i)
+> +            continue;
+> +
+>           arm_smmu_write_strtab_ent(smmu, sid, step, &master->ste);
+>       }
+>   }
 
-Example of such dump in Kabylake:
+The patch works for me:
 
-root@OTC-KBLH-01:~# cat
-/sys/kernel/debug/intel_iommu/dmar_translation_struct
+Tested-by: Tomasz Nowicki <Tomasz.Nowicki@cavium.com>
 
-IOMMU dmar0: Extended Root Table Addr:402b9e800
-Extended Root table entries:
-Bus 0 L: 402150001 H: 0
-Lower Context table entries for Bus: 0
-[entry] DID :B :D .F    Low             High
-[80]    0000:00:0a.00   40214fa05       102
-Higher Context table entries for Bus: 0
-[80]    0000:00:0a.00   40260000c       0
+The bug causes a regression on our platform and would be nice to fix it 
+for 4.15. Since no more comments so far, IMO we can put the fix to 
+SMMUv3 driver. Do you prefer to send patch yourself or would you like me 
+to do it?
 
-IOMMU dmar1:    Root Table Addr:4558a3000
- Root tbl entries:
-Bus 0 L: 4558aa001 H: 0
- Context table entries for Bus: 0
-[entry] DID :B :D .F    Low             High
-[160]   0000:00:14.00   4558a9001       102
-[184]   0000:00:17.00   400eac001       302
-[248]   0000:00:1f.00   4558af001       202
-[251]   0000:00:1f.03   40070e001       502
-[254]   0000:00:1f.06   4467c9001       602
- Root tbl entries:
-Bus 1 L: 3fc8c2001 H: 0
- Context table entries for Bus: 1
-[entry] DID :B :D .F    Low             High
-[0]     0000:01:00.00   3fc8c3001       402
-
-Cc: Sohil Mehta <sohil.mehta@intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>
-Cc: Ashok Raj <ashok.raj@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
----
-
-v5: Change to a SPDX license tag
-    Fix seq_printf formatting
-
-v4: Remove the unused function parameter
-    Fix checkpatch.pl warnings
-    Remove error reporting for debugfs_create_file function
-    Fix unnecessary reprogramming of the context entries
-    Simplify and merge the show context and extended context patch into one
-    Remove redundant IOMMU null check under for_each_active_iommu
-
-v3: Add a macro for seq file operations 
-    Change the intel_iommu_ctx file name to dmar_translation_struct
-
-v2: No change
-
- drivers/iommu/Makefile            |   1 +
- drivers/iommu/intel-iommu-debug.c | 138 ++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-iommu.c       |   4 ++
- 3 files changed, 143 insertions(+)
- create mode 100644 drivers/iommu/intel-iommu-debug.c
-
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 1fb6958..fdbaf46 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -15,6 +15,7 @@ obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
- obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
- obj-$(CONFIG_DMAR_TABLE) += dmar.o
- obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o
-+obj-$(CONFIG_INTEL_IOMMU_DEBUG) += intel-iommu-debug.o
- obj-$(CONFIG_INTEL_IOMMU_SVM) += intel-svm.o
- obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
- obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
-diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-new file mode 100644
-index 0000000..94d710c
---- /dev/null
-+++ b/drivers/iommu/intel-iommu-debug.c
-@@ -0,0 +1,138 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright © 2017 Intel Corporation.
-+ *
-+ * Authors: Gayatri Kammela <gayatri.kammela@intel.com>
-+ *          Jacob Pan <jacob.jun.pan@linux.intel.com>
-+ *
-+ */
-+
-+#define pr_fmt(fmt)     "INTEL_IOMMU: " fmt
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/debugfs.h>
-+#include <linux/pci.h>
-+#include <linux/iommu.h>
-+#include <linux/intel-iommu.h>
-+#include <linux/intel-svm.h>
-+#include <linux/dmar.h>
-+#include <linux/spinlock.h>
-+
-+#include "irq_remapping.h"
-+
-+#define TOTAL_BUS_NR (256) /* full bus range 256 */
-+#define DEFINE_SHOW_ATTRIBUTE(__name)					\
-+static int __name ## _open(struct inode *inode, struct file *file)	\
-+{									\
-+	return single_open(file, __name ## _show, inode->i_private);	\
-+}									\
-+static const struct file_operations __name ## _fops =			\
-+{									\
-+	.open		= __name ## _open,				\
-+	.read		= seq_read,					\
-+	.llseek		= seq_lseek,					\
-+	.release	= single_release,				\
-+	.owner		= THIS_MODULE,					\
-+}
-+
-+static void ctx_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu,
-+			       int bus, bool ext, bool new_ext)
-+{
-+	struct context_entry *context;
-+	int ctx;
-+	unsigned long flags;
-+
-+	seq_printf(m, "%s Context table entries for Bus: %d\n",
-+		   ext ? "Lower" : "", bus);
-+	seq_puts(m, "[entry]\tDID :B :D .F\tLow\t\tHigh\n");
-+
-+	spin_lock_irqsave(&iommu->lock, flags);
-+
-+	/* Publish either context entries or extended contenxt entries */
-+	for (ctx = 0; ctx < (ext ? 128 : 256); ctx++) {
-+		context = iommu_context_addr(iommu, bus, ctx, 0);
-+		if (!context)
-+			goto out;
-+		if (context_present(context)) {
-+			seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n",
-+				   ctx, iommu->segment, bus, PCI_SLOT(ctx),
-+				   PCI_FUNC(ctx), context[0].lo, context[0].hi);
-+
-+			if (new_ext) {
-+				seq_printf(m, "Higher Context table entries for Bus: %d\n",
-+					   bus);
-+				seq_printf(m, "[%d]\t%04x:%02x:%02x.%02x\t%llx\t%llx\n",
-+					   ctx, iommu->segment, bus,
-+					   PCI_SLOT(ctx), PCI_FUNC(ctx),
-+					   context[1].lo, context[1].hi);
-+			}
-+		}
-+	}
-+out:
-+	spin_unlock_irqrestore(&iommu->lock, flags);
-+}
-+
-+static void root_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu,
-+				u64 rtaddr_reg, bool ext, bool new_ext)
-+{
-+	int bus;
-+
-+	seq_printf(m, "\nIOMMU %s: %2s Root Table Addr:%llx\n", iommu->name,
-+		   ext ? "Extended" : "", rtaddr_reg);
-+	/* Publish extended root table entries or root table entries here */
-+	for (bus = 0; bus < TOTAL_BUS_NR; bus++) {
-+		if (!iommu->root_entry[bus].lo)
-+			continue;
-+
-+		seq_printf(m, "%s Root table entries:\n",
-+			   ext ? "Extended" : "");
-+		seq_printf(m, "Bus %d L: %llx H: %llx\n",
-+			   bus, iommu->root_entry[bus].lo,
-+			   iommu->root_entry[bus].hi);
-+
-+		ctx_tbl_entry_show(m, iommu, bus, ext, new_ext);
-+	}
-+}
-+
-+static int dmar_translation_struct_show(struct seq_file *m, void *unused)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	u64 rtaddr_reg;
-+	bool new_ext, ext;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		/* Check if root table type is set */
-+		rtaddr_reg = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-+		ext        = !!(rtaddr_reg & DMA_RTADDR_RTT);
-+		new_ext    = !!ecap_ecs(iommu->ecap);
-+		if (new_ext != ext) {
-+			seq_printf(m, "IOMMU %s: invalid ecs\n", iommu->name);
-+			rcu_read_unlock();
-+			return -EINVAL;
-+		}
-+		root_tbl_entry_show(m, iommu, rtaddr_reg, ext, new_ext);
-+	}
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(dmar_translation_struct);
-+
-+void __init intel_iommu_debugfs_init(void)
-+{
-+	struct dentry *iommu_debug_root;
-+
-+	iommu_debug_root = debugfs_create_dir("intel_iommu", NULL);
-+
-+	if (!iommu_debug_root)
-+		return;
-+
-+	debugfs_create_file("dmar_translation_struct", 0444, iommu_debug_root,
-+			    NULL, &dmar_translation_struct_fops);
-+}
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e05b8e0..351d4d9 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4806,6 +4806,10 @@ int __init intel_iommu_init(void)
- 			  intel_iommu_cpu_dead);
- 	intel_iommu_enabled = 1;
- 
-+#ifdef CONFIG_INTEL_IOMMU_DEBUG
-+	intel_iommu_debugfs_init();
-+#endif
-+
- 	return 0;
- 
- out_free_reserved_range:
--- 
-2.7.4
+Thanks,
+Tomasz
