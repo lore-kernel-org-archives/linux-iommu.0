@@ -1,115 +1,101 @@
-From: Tomasz Nowicki <tn@semihalf.com>
-Subject: Re: [PATCH V1 0/1] Fix kernel panic caused by device ID duplication
- presented to the IOMMU
-Date: Fri, 22 Dec 2017 12:29:08 +0100
-Message-ID: <15883568-4cf6-b88c-8ee9-cf643c5e96f2@semihalf.com>
-References: <1513696436-31834-1-git-send-email-tomasz.nowicki@caviumnetworks.com>
- <7f7fca76-88f8-6ee7-c402-fe4300c62253@arm.com>
+From: "Mani, Rajmohan" <rajmohan.mani@intel.com>
+Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Tue, 26 Dec 2017 22:30:31 +0000
+Message-ID: <6F87890CF0F5204F892DEA1EF0D77A5972FECBB2@FMSMSX114.amr.corp.intel.com>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+        <6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
+ <20171220115744.591a12e2@vento.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <7f7fca76-88f8-6ee7-c402-fe4300c62253@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <20171220115744.591a12e2@vento.lan>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>, joro@8bytes.org, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bhelgaas@google.com
-Cc: Jayachandran.Nair@cavium.com, Ganapatrao.Kulkarni@cavium.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, mw@semihalf.com, stable@vger.kernel.org
+Sender: linux-media-owner@vger.kernel.org
+To: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+Cc: "Zhi, Yong" <yong.zhi@intel.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "Hu, Jerry W" <jerry.w.hu@intel.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Mauro,
 
-On 19.12.2017 17:34, Robin Murphy wrote:
-> Hi Tomasz,
+> -----Original Message-----
+> From: Mauro Carvalho Chehab [mailto:mchehab@s-opensource.com]
+> Sent: Wednesday, December 20, 2017 5:58 AM
+> To: Mani, Rajmohan <rajmohan.mani@intel.com>
+> Cc: Zhi, Yong <yong.zhi@intel.com>; linux-media@vger.kernel.org;
+> sakari.ailus@linux.intel.com; Zheng, Jian Xu <jian.xu.zheng@intel.com>;
+> Toivonen, Tuukka <tuukka.toivonen@intel.com>; Hu, Jerry W
+> <jerry.w.hu@intel.com>; arnd@arndb.de; hch@lst.de;
+> robin.murphy@arm.com; iommu@lists.linux-foundation.org
+> Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
 > 
-> On 19/12/17 15:13, Tomasz Nowicki wrote:
->> Here is my lspci output of ThunderX2 for which I am observing kernel 
->> panic coming from
->> SMMUv3 driver -> arm_smmu_write_strtab_ent() -> BUG_ON(ste_live):
->>
->> # lspci -vt
->> -[0000:00]-+-00.0-[01-1f]--+ [...]
->>                             + [...]
->>                             \-00.0-[1e-1f]----00.0-[1f]----00.0  
->> ASPEED Technology, Inc. ASPEED Graphics Family
->>
->> ASP device -> 1f:00.0 VGA compatible controller: ASPEED Technology, 
->> Inc. ASPEED Graphics Family
->> PCI-Express to PCI/PCI-X Bridge -> 1e:00.0 PCI bridge: ASPEED 
->> Technology, Inc. AST1150 PCI-to-PCI Bridge
->> While setting up ASP device SID in IORT dirver:
->> iort_iommu_configure() -> pci_for_each_dma_alias()
->> we need to walk up and iterate over each device which alias 
->> transaction from
->> downstream devices.
->>
->> AST device (1f:00.0) gets BDF=0x1f00 and corresponding SID=0x1f00 from 
->> IORT.
->> Bridge (1e:00.0) is the first alias. Following PCI Express to 
->> PCI/PCI-X Bridge
->> spec: PCIe-to-PCI/X bridges alias transactions from downstream devices 
->> using
->> the subordinate bus number. For bridge (1e:00.0), the subordinate is 
->> equal
->> to 0x1f. This gives BDF=0x1f00 and SID=1f00 which is the same as 
->> downstream
->> device. So it is possible to have two identical SIDs. The question is 
->> what we
->> should do about such case. Presented patch prevents from registering 
->> the same
->> ID so that SMMUv3 is not complaining later on.
+> Hi,
 > 
-> Ooh, subtle :( There is logic in arm_smmu_attach_device() to tolerate
-> grouped devices aliasing to the same ID, but I guess I overlooked the
-> distinction of a device sharing an alias ID with itself. I'm not sure
-> I really like trying to work around this in generic code, since
-> fwspec->ids is essentially opaque data in a driver-specific format - in
-> theory a driver is free to encode a single logical ID into multiple
-> fwspec elements (I think I did that in an early draft of SMMUv2 SMR
-> support), at which point this approach might corrupt things massively.
+> Em Fri, 17 Nov 2017 02:58:56 +0000
+> "Mani, Rajmohan" <rajmohan.mani@intel.com> escreveu:
 > 
-> Does the (untested) diff below suffice?
+> > Here is an update on the IPU3 documentation that we are currently working
+> on.
+> >
+> > Image processing in IPU3 relies on the following.
+> >
+> > 1) HW configuration to enable ISP and
+> > 2) setting customer specific 3A Tuning / Algorithm Parameters to achieve
+> desired image quality.
+> >
+> > We intend to provide documentation on ImgU driver programming interface
+> to help users of this driver to configure and enable ISP HW to meet their
+> needs.  This documentation will include details on complete V4L2 Kernel driver
+> interface and IO-Control parameters, except for the ISP internal algorithm and
+> its parameters (which is Intel proprietary IP).
 > 
-> Robin.
+> Sakari asked me to take a look on this thread, specifically on this email. I took a
+> look on the other e-mails from this thread that are discussing about this IP
+> block.
 > 
-> ----->8-----diff --git a/drivers/iommu/arm-smmu-v3.c 
-> b/drivers/iommu/arm-smmu-v3.c
-> index f122071688fd..d8a730d83401 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -1731,7 +1731,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct 
-> arm_smmu_device *smmu, u32 sid)
+> I understand that Intel wants to keep their internal 3A algorithm protected,
+> just like other vendors protect their own algos. It was never a requirement to
+> open whatever algorithm are used inside a hardware (or firmware). The only
+> requirement is that firmwares should be licensed with redistribution
+> permission, ideally merged at linux-firmware git tree.
 > 
->   static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
->   {
-> -    int i;
-> +    int i, j;
->       struct arm_smmu_master_data *master = fwspec->iommu_priv;
->       struct arm_smmu_device *smmu = master->smmu;
+> Yet, what I don't understand is why Intel also wants to also protect the
+> interface for such 3A hardware/firmware algorithm. The parameters that are
+> passed from an userspace application to Intel ISP logic doesn't contain the
+> algorithm itself. What's the issue of documenting the meaning of each
+> parameter?
 > 
-> @@ -1739,6 +1739,13 @@ static void arm_smmu_install_ste_for_dev(struct 
-> iommu_fwspec *fwspec)
->           u32 sid = fwspec->ids[i];
->           __le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
-> 
-> +        /* Bridged PCI devices may end up with duplicated IDs */
-> +        for (j = 0; j < i; j++)
-> +            if (fwspec->ids[j] == sid)
-> +                break;
-> +        if (j < i)
-> +            continue;
-> +
->           arm_smmu_write_strtab_ent(smmu, sid, step, &master->ste);
->       }
->   }
 
-The patch works for me:
+Thanks for looking into this.
 
-Tested-by: Tomasz Nowicki <Tomasz.Nowicki@cavium.com>
+To achieve improved image quality using IPU3, 3A (Auto White balance, Auto Focus
+and Auto Exposure) Tuning parameters specific to a given camera sensor module,
+are converted to Intel ISP algorithm parameters in user space camera HAL using
+AIC (Automatic ISP Configuration) library.
 
-The bug causes a regression on our platform and would be nice to fix it 
-for 4.15. Since no more comments so far, IMO we can put the fix to 
-SMMUv3 driver. Do you prefer to send patch yourself or would you like me 
-to do it?
+As a unique design of Intel ISP, it exposes very detailed algorithm parameters
+(~ 10000 parameters) to configure ISP's image processing algorithm per each
+image fame in runtime. Typical Camera SW developers (including those at Intel)
+are not expected to fully understand and directly set these parameters to
+configure the ISP algorithm blocks. Due to the above, a user space AIC library
+(in binary form) is provided to generate ISP Algorithm specific parameters, for
+a given set of 3A tuning parameters. It significantly reduces the efforts of SW
+development in ISP HW configuration.
 
-Thanks,
-Tomasz
+On the other hand, the ISP algorithm details could be deduced readily through
+these detailed parameters by other ISP experts outside Intel. This is the reason
+that we want to keep these parameter definitions as Intel proprietary IP.
+
+We are fully aware of your concerns on how to enable open source developers
+to use Intel ISP through up-streamed Kernel Driver. Internally, we are working
+on the license for this AIC library release now (as Hans said NDA license is not
+acceptable). We believe this will be more efficient way to help open source
+developers.
+
+This AIC library release would be a binary-only release. This AIC library does
+not use any kernel uAPIs directly. The user space Camera HAL that uses kernel
+uAPIs is available at 
+https://chromium.googlesource.com/chromiumos/platform/arc-camera/+/master
+
+Thanks
+Raj
