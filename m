@@ -1,101 +1,58 @@
-From: "Mani, Rajmohan" <rajmohan.mani@intel.com>
-Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
-Date: Tue, 26 Dec 2017 22:30:31 +0000
-Message-ID: <6F87890CF0F5204F892DEA1EF0D77A5972FECBB2@FMSMSX114.amr.corp.intel.com>
-References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
-        <6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
- <20171220115744.591a12e2@vento.lan>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [RFC PATCH v2 0/2] Reduce IOTLB flush when pass-through dGPU devices
+Date: Wed, 27 Dec 2017 04:20:33 -0500
+Message-ID: <1514366435-12723-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <20171220115744.591a12e2@vento.lan>
-Content-Language: en-US
-Sender: linux-media-owner@vger.kernel.org
-To: Mauro Carvalho Chehab <mchehab@s-opensource.com>
-Cc: "Zhi, Yong" <yong.zhi@intel.com>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>, "Zheng, Jian Xu" <jian.xu.zheng@intel.com>, "Toivonen, Tuukka" <tuukka.toivonen@intel.com>, "Hu, Jerry W" <jerry.w.hu@intel.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Suravee Suthikulpanit <ssuthiku-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Mauro,
+From: Suravee Suthikulpanit <ssuthiku-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-> -----Original Message-----
-> From: Mauro Carvalho Chehab [mailto:mchehab@s-opensource.com]
-> Sent: Wednesday, December 20, 2017 5:58 AM
-> To: Mani, Rajmohan <rajmohan.mani@intel.com>
-> Cc: Zhi, Yong <yong.zhi@intel.com>; linux-media@vger.kernel.org;
-> sakari.ailus@linux.intel.com; Zheng, Jian Xu <jian.xu.zheng@intel.com>;
-> Toivonen, Tuukka <tuukka.toivonen@intel.com>; Hu, Jerry W
-> <jerry.w.hu@intel.com>; arnd@arndb.de; hch@lst.de;
-> robin.murphy@arm.com; iommu@lists.linux-foundation.org
-> Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
-> 
-> Hi,
-> 
-> Em Fri, 17 Nov 2017 02:58:56 +0000
-> "Mani, Rajmohan" <rajmohan.mani@intel.com> escreveu:
-> 
-> > Here is an update on the IPU3 documentation that we are currently working
-> on.
-> >
-> > Image processing in IPU3 relies on the following.
-> >
-> > 1) HW configuration to enable ISP and
-> > 2) setting customer specific 3A Tuning / Algorithm Parameters to achieve
-> desired image quality.
-> >
-> > We intend to provide documentation on ImgU driver programming interface
-> to help users of this driver to configure and enable ISP HW to meet their
-> needs.  This documentation will include details on complete V4L2 Kernel driver
-> interface and IO-Control parameters, except for the ISP internal algorithm and
-> its parameters (which is Intel proprietary IP).
-> 
-> Sakari asked me to take a look on this thread, specifically on this email. I took a
-> look on the other e-mails from this thread that are discussing about this IP
-> block.
-> 
-> I understand that Intel wants to keep their internal 3A algorithm protected,
-> just like other vendors protect their own algos. It was never a requirement to
-> open whatever algorithm are used inside a hardware (or firmware). The only
-> requirement is that firmwares should be licensed with redistribution
-> permission, ideally merged at linux-firmware git tree.
-> 
-> Yet, what I don't understand is why Intel also wants to also protect the
-> interface for such 3A hardware/firmware algorithm. The parameters that are
-> passed from an userspace application to Intel ISP logic doesn't contain the
-> algorithm itself. What's the issue of documenting the meaning of each
-> parameter?
-> 
+Currently, when pass-through dGPU to a guest VM, there are thousands
+of IOTLB flush commands sent from IOMMU to end-point-device. This cause
+performance issue when launching new VMs, and could cause IOTLB invalidate
+time-out issue on certain dGPUs.
 
-Thanks for looking into this.
+This can be avoided by adopting the new fast IOTLB flush APIs.
 
-To achieve improved image quality using IPU3, 3A (Auto White balance, Auto Focus
-and Auto Exposure) Tuning parameters specific to a given camera sensor module,
-are converted to Intel ISP algorithm parameters in user space camera HAL using
-AIC (Automatic ISP Configuration) library.
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-As a unique design of Intel ISP, it exposes very detailed algorithm parameters
-(~ 10000 parameters) to configure ISP's image processing algorithm per each
-image fame in runtime. Typical Camera SW developers (including those at Intel)
-are not expected to fully understand and directly set these parameters to
-configure the ISP algorithm blocks. Due to the above, a user space AIC library
-(in binary form) is provided to generate ISP Algorithm specific parameters, for
-a given set of 3A tuning parameters. It significantly reduces the efforts of SW
-development in ISP HW configuration.
+Changes from V1: (https://lkml.org/lkml/2017/11/17/764)
 
-On the other hand, the ISP algorithm details could be deduced readily through
-these detailed parameters by other ISP experts outside Intel. This is the reason
-that we want to keep these parameter definitions as Intel proprietary IP.
+  * Rebased on top of v4.15-rc5
 
-We are fully aware of your concerns on how to enable open source developers
-to use Intel ISP through up-streamed Kernel Driver. Internally, we are working
-on the license for this AIC library release now (as Hans said NDA license is not
-acceptable). We believe this will be more efficient way to help open source
-developers.
+  * Patch 1/2: Fix iommu_tlb_range_add() size parameter to use unmapped
+    instead of len. (per Alex)
 
-This AIC library release would be a binary-only release. This AIC library does
-not use any kernel uAPIs directly. The user space Camera HAL that uses kernel
-uAPIs is available at 
-https://chromium.googlesource.com/chromiumos/platform/arc-camera/+/master
+  * Patch 1/2: Use a list to keep track unmapped IOVAs for VFIO remote
+    unpinning. Although, I am still not sure if using a list is the best
+    way to keep track the IOVAs. (per Alex)
 
-Thanks
-Raj
+  * Patch 2/2: Fix logic due to missing spin unlock. (per Tom)
+     
+Suravee Suthikulpanit (2):
+  vfio/type1: Adopt fast IOTLB flush interface when unmap IOVAs
+  iommu/amd: Add support for fast IOTLB flushing
+
+ drivers/iommu/amd_iommu.c       | 73 ++++++++++++++++++++++++++++++++-
+ drivers/iommu/amd_iommu_init.c  |  7 ++++
+ drivers/iommu/amd_iommu_types.h |  7 ++++
+ drivers/vfio/vfio_iommu_type1.c | 89 +++++++++++++++++++++++++++++++++++------
+ 4 files changed, 163 insertions(+), 13 deletions(-)
+
+-- 
+1.8.3.1
