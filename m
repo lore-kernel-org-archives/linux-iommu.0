@@ -1,15 +1,15 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 2/5] iommu/vt-d: Add debugfs support to show context
-	internals
-Date: Thu, 28 Dec 2017 10:51:58 +0200
-Message-ID: <1514451118.7000.308.camel@linux.intel.com>
+Subject: Re: [PATCH v5 5/5] iommu/vt-d: Add debugfs support for Interrupt
+	remapping
+Date: Thu, 28 Dec 2017 10:54:40 +0200
+Message-ID: <1514451280.7000.310.camel@linux.intel.com>
 References: <1513902760-45605-1-git-send-email-sohil.mehta@intel.com>
-	<1513902760-45605-3-git-send-email-sohil.mehta@intel.com>
+	<1513902760-45605-6-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1513902760-45605-3-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1513902760-45605-6-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,46 +24,14 @@ Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fen
 List-Id: iommu@lists.linux-foundation.org
 
 On Thu, 2017-12-21 at 16:32 -0800, Sohil Mehta wrote:
-> From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> IOMMU internals states such as root and context can be exported to the
-> userspace.
-> 
-> Example of such dump in Kabylake:
 
-> v5: Change to a SPDX license tag
->     Fix seq_printf formatting
-> 
-> 
+> +		seq_puts(m, "\n");
 
-> +#define pr_fmt(fmt)     "INTEL_IOMMU: " fmt
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/slab.h>
-> +#include <linux/uaccess.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/debugfs.h>
-> +#include <linux/pci.h>
-> +#include <linux/iommu.h>
-> +#include <linux/intel-iommu.h>
-> +#include <linux/intel-svm.h>
-> +#include <linux/dmar.h>
-> +#include <linux/spinlock.h>
+seq_putc()
 
-It might make sense to keep above ordered alphabetically.
+> +		seq_puts(m, "\n");
 
-> +static void root_tbl_entry_show(struct seq_file *m, struct
-> intel_iommu *iommu,
-> +				u64 rtaddr_reg, bool ext, bool
-> new_ext)
-> +{
-> +	int bus;
-> +
-> +	seq_printf(m, "\nIOMMU %s: %2s Root Table Addr:%llx\n",
-> iommu->name,
-> +		   ext ? "Extended" : "", rtaddr_reg);
-
-Still leading '\n'...
+Ditto.
 
 -- 
 Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
