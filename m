@@ -1,61 +1,45 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 27/67] dma-direct: add dma address sanity checks
-Date: Fri, 29 Dec 2017 15:12:25 +0100
-Message-ID: <CAMuHMdWg3PnTXezMCcr3oGf-83-cjvcj4wGiPk7j2pY1Tgzo9Q@mail.gmail.com>
-References: <20171229081911.2802-1-hch@lst.de> <20171229081911.2802-28-hch@lst.de>
+From: =?UTF-8?q?Hugh=20Sipi=C3=A8re?= <hgsipiere@gmail.com>
+Subject: [PATCH] iommu: Place spaces after if for coding style
+Date: Fri, 29 Dec 2017 18:36:49 +0000
+Message-ID: <20171229183649.8833-1-hgsipiere@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20171229081911.2802-28-hch@lst.de>
-Sender: linux-alpha-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Linux MIPS Mailing List <linux-mips@linux-mips.org>, linux-ia64@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, adi-buildroot-devel@lists.sourceforge.net, linux-m68k <linux-m68k@lists.linux-m68k.org>, patches@groups.riscv.org, "open list:METAG ARCHITECTURE" <linux-metag@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, Parisc
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, =?UTF-8?q?Hugh=20Sipi=C3=A8re?= <hgsipiere@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+The code style states to use a space after if so I'm putting a space
+between the if and open bracket in these two cases.
 
-On Fri, Dec 29, 2017 at 9:18 AM, Christoph Hellwig <hch@lst.de> wrote:
-> Roughly based on the x86 pci-nommu implementation.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Hugh Sipière <hgsipiere@gmail.com>
+---
+ drivers/iommu/intel-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks for your patch!
-
-> --- a/lib/dma-direct.c
-> +++ b/lib/dma-direct.c
-> @@ -9,6 +9,24 @@
->  #include <linux/scatterlist.h>
->  #include <linux/pfn.h>
->
-> +#define DIRECT_MAPPING_ERROR           0
-> +
-> +static bool
-> +check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
-> +               const char *caller)
-> +{
-> +       if (unlikely(dev && !dma_capable(dev, dma_addr, size))) {
-> +               if (*dev->dma_mask >= DMA_BIT_MASK(32)) {
-> +                       dev_err(dev,
-> +                               "%s: overflow %llx+%zu of device mask %llx\n",
-
-Please use "%pad" to format dma_addr_t ...
-
-> +                               caller, (long long)dma_addr, size,
-
-... and use &dma_addr.
-
-> +                               (long long)*dev->dma_mask);
-
-This cast is not needed, as u64 is unsigned long long in kernelspace on
-all architectures.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4a2de34895ec..8d836d2e1b52 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4469,7 +4469,7 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+ 				((void *)rmrr) + rmrr->header.length,
+ 				rmrr->segment, rmrru->devices,
+ 				rmrru->devices_cnt);
+-			if(ret < 0)
++			if (ret < 0)
+ 				return ret;
+ 		} else if (info->event == BUS_NOTIFY_REMOVED_DEVICE) {
+ 			dmar_remove_dev_scope(info, rmrr->segment,
+@@ -4489,7 +4489,7 @@ int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
+ 					atsru->devices_cnt);
+ 			if (ret > 0)
+ 				break;
+-			else if(ret < 0)
++			else if (ret < 0)
+ 				return ret;
+ 		} else if (info->event == BUS_NOTIFY_REMOVED_DEVICE) {
+ 			if (dmar_remove_dev_scope(info, atsr->segment,
+-- 
+2.15.1
