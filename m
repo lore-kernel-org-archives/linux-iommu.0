@@ -1,15 +1,17 @@
-From: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Cope with duplicated Stream IDs
-Date: Tue, 2 Jan 2018 10:42:19 -0800
-Message-ID: <20180102184218.GA7161@jc-sabre>
-References: <13744c7ba2af61bc39b68e9ab05ab8482f928334.1514896042.git.robin.murphy@arm.com>
-	<20180102130036.GB6613@arm.com>
+From: "Kammela, Gayatri" <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v5 2/5] iommu/vt-d: Add debugfs support to show context
+	internals
+Date: Tue, 2 Jan 2018 21:01:23 +0000
+Message-ID: <2824B99DC70CE746926327C52CA42F7648404FBF@ORSMSX111.amr.corp.intel.com>
+References: <1513902760-45605-1-git-send-email-sohil.mehta@intel.com>
+	<1513902760-45605-3-git-send-email-sohil.mehta@intel.com>
+	<1514451118.7000.308.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180102130036.GB6613-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1514451118.7000.308.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,40 +21,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Shankar, Ravi V" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Yu,
+	Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 02, 2018 at 01:00:36PM +0000, Will Deacon wrote:
-> On Tue, Jan 02, 2018 at 12:33:14PM +0000, Robin Murphy wrote:
-> > For PCI devices behind an aliasing PCIe-to-PCI/X bridge, the bridge
-> > alias to DevFn 0.0 on the subordinate bus may match the original RID of
-> > the device, resulting in the same SID being present in the device's
-> > fwspec twice. This causes trouble later in arm_smmu_write_strtab_ent()
-> > when we wind up visiting the STE a second time and find it already live.
-> > 
-> > Avoid the issue by giving arm_smmu_install_ste_for_dev() the cleverness
-> > to skip over duplicates. It seems mildly counterintuitive compared to
-> > preventing the duplicates from existing in the first place, but since
-> > the DT and ACPI probe paths build their fwspecs differently, this is
-> > actually the cleanest and most self-contained way to deal with it.
-> > 
-> > Fixes: 8f78515425da ("iommu/arm-smmu: Implement of_xlate() for SMMUv3")
-> > Reported-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> > Tested-by: Tomasz Nowicki <Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> > Tested-by: Jayachandran C. <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > ---
-> >  drivers/iommu/arm-smmu-v3.c | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
+
+
+> -----Original Message-----
+> From: Andy Shevchenko [mailto:andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+> Sent: Thursday, December 28, 2017 12:52 AM
+> To: Mehta, Sohil <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>;
+> Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>; Raj, Ashok
+> <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>; Kammela,
+> Gayatri <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Shankar, Ravi V
+> <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>; Yu, Fenghua
+> <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Subject: Re: [PATCH v5 2/5] iommu/vt-d: Add debugfs support to show context
+> internals
 > 
-> Cheers, Robin. I'll pick this up and send to Alex later this week along with
-> a couple of other fixes I have kicking around.
-
-Thanks. Even though the Fixes: tag points to an older commit, we
-really need the fix in 4.14 where another commit (10631d724def drm/pci:
-Deprecate drm_pci_init/exit completely) exposed the issue.
-
-It it is not already planned, can you please cc stable?
-
-JC.
+> On Thu, 2017-12-21 at 16:32 -0800, Sohil Mehta wrote:
+> > From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> >
+> > IOMMU internals states such as root and context can be exported to the
+> > userspace.
+> >
+> > Example of such dump in Kabylake:
+> 
+> > v5: Change to a SPDX license tag
+> >     Fix seq_printf formatting
+> >
+> >
+> 
+> > +#define pr_fmt(fmt)     "INTEL_IOMMU: " fmt
+> > +#include <linux/err.h>
+> > +#include <linux/io.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/uaccess.h>
+> > +#include <linux/pm_runtime.h>
+> > +#include <linux/debugfs.h>
+> > +#include <linux/pci.h>
+> > +#include <linux/iommu.h>
+> > +#include <linux/intel-iommu.h>
+> > +#include <linux/intel-svm.h>
+> > +#include <linux/dmar.h>
+> > +#include <linux/spinlock.h>
+> 
+> It might make sense to keep above ordered alphabetically.
+Sure Andy!
+> 
+> > +static void root_tbl_entry_show(struct seq_file *m, struct
+> > intel_iommu *iommu,
+> > +				u64 rtaddr_reg, bool ext, bool
+> > new_ext)
+> > +{
+> > +	int bus;
+> > +
+> > +	seq_printf(m, "\nIOMMU %s: %2s Root Table Addr:%llx\n",
+> > iommu->name,
+> > +		   ext ? "Extended" : "", rtaddr_reg);
+> 
+> Still leading '\n'...
+My bad, will correct it
+> 
+> --
+> Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Intel Finland Oy
