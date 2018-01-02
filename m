@@ -1,114 +1,58 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: Re: [PATCH 31/67] dma-direct: make dma_direct_{alloc, free} available
- to other implementations
-Date: Tue, 2 Jan 2018 16:44:21 +0000
-Message-ID: <f7aca03c-e893-d10a-7a28-bb3c9ae47900@arm.com>
-References: <20171229081911.2802-1-hch@lst.de>
- <20171229081911.2802-32-hch@lst.de>
+From: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Cope with duplicated Stream IDs
+Date: Tue, 2 Jan 2018 10:42:19 -0800
+Message-ID: <20180102184218.GA7161@jc-sabre>
+References: <13744c7ba2af61bc39b68e9ab05ab8482f928334.1514896042.git.robin.murphy@arm.com>
+	<20180102130036.GB6613@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <20171229081911.2802-32-hch@lst.de>
-Content-Language: ru
-Sender: linux-m68k-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-snps-arc@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180102130036.GB6613-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 29/12/17 08:18, Christoph Hellwig wrote:
-> So that they don't need to indirect through the operation vector.
+On Tue, Jan 02, 2018 at 01:00:36PM +0000, Will Deacon wrote:
+> On Tue, Jan 02, 2018 at 12:33:14PM +0000, Robin Murphy wrote:
+> > For PCI devices behind an aliasing PCIe-to-PCI/X bridge, the bridge
+> > alias to DevFn 0.0 on the subordinate bus may match the original RID of
+> > the device, resulting in the same SID being present in the device's
+> > fwspec twice. This causes trouble later in arm_smmu_write_strtab_ent()
+> > when we wind up visiting the STE a second time and find it already live.
+> > 
+> > Avoid the issue by giving arm_smmu_install_ste_for_dev() the cleverness
+> > to skip over duplicates. It seems mildly counterintuitive compared to
+> > preventing the duplicates from existing in the first place, but since
+> > the DT and ACPI probe paths build their fwspecs differently, this is
+> > actually the cleanest and most self-contained way to deal with it.
+> > 
+> > Fixes: 8f78515425da ("iommu/arm-smmu: Implement of_xlate() for SMMUv3")
+> > Reported-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> > Tested-by: Tomasz Nowicki <Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> > Tested-by: Jayachandran C. <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > ---
+> >  drivers/iommu/arm-smmu-v3.c | 9 ++++++++-
+> >  1 file changed, 8 insertions(+), 1 deletion(-)
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/arm/mm/dma-mapping-nommu.c | 9 +++------
->  include/linux/dma-direct.h      | 5 +++++
->  lib/dma-direct.c                | 6 +++---
->  3 files changed, 11 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
-> index 49e9831dc0f1..b4cf3e4e9d4a 100644
-> --- a/arch/arm/mm/dma-mapping-nommu.c
-> +++ b/arch/arm/mm/dma-mapping-nommu.c
-> @@ -11,7 +11,7 @@
->  
->  #include <linux/export.h>
->  #include <linux/mm.h>
-> -#include <linux/dma-mapping.h>
-> +#include <linux/dma-direct.h>
->  #include <linux/scatterlist.h>
->  
->  #include <asm/cachetype.h>
-> @@ -39,7 +39,6 @@ static void *arm_nommu_dma_alloc(struct device *dev, size_t size,
->  				 unsigned long attrs)
->  
->  {
-> -	const struct dma_map_ops *ops = &dma_direct_ops;
->  	void *ret;
->  
->  	/*
-> @@ -48,7 +47,7 @@ static void *arm_nommu_dma_alloc(struct device *dev, size_t size,
->  	 */
->  
->  	if (attrs & DMA_ATTR_NON_CONSISTENT)
-> -		return ops->alloc(dev, size, dma_handle, gfp, attrs);
-> +		return dma_direct_alloc(dev, size, dma_handle, gfp, attrs);
->  
->  	ret = dma_alloc_from_global_coherent(size, dma_handle);
->  
-> @@ -70,10 +69,8 @@ static void arm_nommu_dma_free(struct device *dev, size_t size,
->  			       void *cpu_addr, dma_addr_t dma_addr,
->  			       unsigned long attrs)
->  {
-> -	const struct dma_map_ops *ops = &dma_direct_ops;
-> -
->  	if (attrs & DMA_ATTR_NON_CONSISTENT) {
-> -		ops->free(dev, size, cpu_addr, dma_addr, attrs);
-> +		dma_direct_free(dev, size, cpu_addr, dma_addr, attrs);
->  	} else {
->  		int ret = dma_release_from_global_coherent(get_order(size),
->  							   cpu_addr);
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index 10e924b7cba7..4788bf0bf683 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -38,4 +38,9 @@ static inline void dma_mark_clean(void *addr, size_t size)
->  }
->  #endif /* CONFIG_ARCH_HAS_DMA_MARK_CLEAN */
->  
-> +void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> +		gfp_t gfp, unsigned long attrs);
-> +void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
-> +		dma_addr_t dma_addr, unsigned long attrs);
-> +
->  #endif /* _LINUX_DMA_DIRECT_H */
-> diff --git a/lib/dma-direct.c b/lib/dma-direct.c
-> index f8467cb3d89a..7e913728e099 100644
-> --- a/lib/dma-direct.c
-> +++ b/lib/dma-direct.c
-> @@ -33,8 +33,8 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->  	return phys_to_dma(dev, phys) + size <= dev->coherent_dma_mask;
->  }
->  
-> -static void *dma_direct_alloc(struct device *dev, size_t size,
-> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
-> +void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> +		gfp_t gfp, unsigned long attrs)
->  {
->  	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->  	int page_order = get_order(size);
-> @@ -71,7 +71,7 @@ static void *dma_direct_alloc(struct device *dev, size_t size,
->  	return page_address(page);
->  }
->  
-> -static void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
-> +void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
->  		dma_addr_t dma_addr, unsigned long attrs)
->  {
->  	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> 
+> Cheers, Robin. I'll pick this up and send to Alex later this week along with
+> a couple of other fixes I have kicking around.
 
-Reviewed-by: Vladimir Murzin <vladimir.murzin@arm.com>
+Thanks. Even though the Fixes: tag points to an older commit, we
+really need the fix in 4.14 where another commit (10631d724def drm/pci:
+Deprecate drm_pci_init/exit completely) exposed the issue.
 
-Thanks
-Vladimir
+It it is not already planned, can you please cc stable?
+
+JC.
