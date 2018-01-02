@@ -1,50 +1,71 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 05/67] dma-mapping: replace PCI_DMA_BUS_IS_PHYS with a
- flag in struct dma_map_ops
-Date: Tue, 2 Jan 2018 11:39:49 +0100
-Message-ID: <CAMuHMdV2oT9G3yOjx-oaw06nw27zF_Y34quYf--u13xjKs3dJQ@mail.gmail.com>
-References: <20171229081911.2802-1-hch@lst.de> <20171229081911.2802-6-hch@lst.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Cope with duplicated Stream IDs
+Date: Tue,  2 Jan 2018 12:33:14 +0000
+Message-ID: <13744c7ba2af61bc39b68e9ab05ab8482f928334.1514896042.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <20171229081911.2802-6-hch@lst.de>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Linux MIPS Mailing List <linux-mips@linux-mips.org>, linux-ia64@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, adi-buildroot-devel@lists.sourceforge.net, linux-m68k <linux-m68k@lists.linux-m68k.org>, patches@groups.riscv.org, "open list:METAG ARCHITECTURE" <linux-metag@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, Parisc
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 29, 2017 at 9:18 AM, Christoph Hellwig <hch@lst.de> wrote:
-> The current PCI_DMA_BUS_IS_PHYS decided if a dma implementation is bound
-> by the dma mask in the device because it directly maps to a physical
-> address range (modulo an offset in the device), or if it is virtualized
-> by an iommu and can map any address (that includes virtual iommus like
-> swiotlb).  The problem with this scheme is that it is per-architecture and
-> not per dma_ops instance, and we are growing more and more setups that
-> have multiple different dma operations in use on a single system, for
-> which this scheme can't provide a correct answer.  Depending on the
-> architecture that means we either get a false positive or false negative
-> at the moment.
->
-> This patch instead extents the is_phys flag in struct dma_map_ops that
-> is currently only used by a few architectures to be used tree wide.
->
-> Note that this means that we now need a struct device parent in the
-> Scsi_Host or netdevice.  Every modern driver has these, but there might
-> still be a few outdated legacy drivers out there, which now won't make
-> an intelligent decision.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+For PCI devices behind an aliasing PCIe-to-PCI/X bridge, the bridge
+alias to DevFn 0.0 on the subordinate bus may match the original RID of
+the device, resulting in the same SID being present in the device's
+fwspec twice. This causes trouble later in arm_smmu_write_strtab_ent()
+when we wind up visiting the STE a second time and find it already live.
 
-For m68k:
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Avoid the issue by giving arm_smmu_install_ste_for_dev() the cleverness
+to skip over duplicates. It seems mildly counterintuitive compared to
+preventing the duplicates from existing in the first place, but since
+the DT and ACPI probe paths build their fwspecs differently, this is
+actually the cleanest and most self-contained way to deal with it.
 
-Gr{oetje,eeting}s,
+Fixes: 8f78515425da ("iommu/arm-smmu: Implement of_xlate() for SMMUv3")
+Reported-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Tested-by: Tomasz Nowicki <Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Tested-by: Jayachandran C. <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 9ce3cde575a8..57c92aa3122e 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1752,7 +1752,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
+ 
+ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ {
+-	int i;
++	int i, j;
+ 	struct arm_smmu_master_data *master = fwspec->iommu_priv;
+ 	struct arm_smmu_device *smmu = master->smmu;
+ 
+@@ -1760,6 +1760,13 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ 		u32 sid = fwspec->ids[i];
+ 		__le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
+ 
++		/* Bridged PCI devices may end up with duplicated IDs */
++		for (j = 0; j < i; j++)
++			if (fwspec->ids[j] == sid)
++				break;
++		if (j < i)
++			continue;
++
+ 		arm_smmu_write_strtab_ent(smmu, sid, step, &master->ste);
+ 	}
+ }
+-- 
+2.13.4.dirty
