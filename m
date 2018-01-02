@@ -1,81 +1,78 @@
-From: tn <Tomasz.Nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Cope with duplicated Stream IDs
-Date: Tue, 2 Jan 2018 17:37:00 +0100
-Message-ID: <CY4PR0701MB364944562F47ED010E51F17DF3190@CY4PR0701MB3649.namprd07.prod.outlook.com>
-References: <13744c7ba2af61bc39b68e9ab05ab8482f928334.1514896042.git.robin.murphy@arm.com>
+From: Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: Re: [PATCH 30/67] dma-direct: retry allocations using GFP_DMA for
+ small masks
+Date: Tue, 2 Jan 2018 16:43:15 +0000
+Message-ID: <f6139b03-0a4a-a9fe-4818-9b0bccf419e4@arm.com>
+References: <20171229081911.2802-1-hch@lst.de>
+ <20171229081911.2802-31-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <13744c7ba2af61bc39b68e9ab05ab8482f928334.1514896042.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20171229081911.2802-31-hch@lst.de>
+Content-Language: en-GB
+Sender: linux-m68k-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-snps-arc@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-Thank you for fixing this.
-
-Regards,
-Tomasz
-
-On 02.01.2018 13:33, Robin Murphy wrote:
-> For PCI devices behind an aliasing PCIe-to-PCI/X bridge, the bridge
-> alias to DevFn 0.0 on the subordinate bus may match the original RID of
-> the device, resulting in the same SID being present in the device's
-> fwspec twice. This causes trouble later in arm_smmu_write_strtab_ent()
-> when we wind up visiting the STE a second time and find it already live.
+On 29/12/17 08:18, Christoph Hellwig wrote:
+> If we got back an allocation that wasn't inside the support coherent mask,
+> retry the allocation using GFP_DMA.
 > 
-> Avoid the issue by giving arm_smmu_install_ste_for_dev() the cleverness
-> to skip over duplicates. It seems mildly counterintuitive compared to
-> preventing the duplicates from existing in the first place, but since
-> the DT and ACPI probe paths build their fwspecs differently, this is
-> actually the cleanest and most self-contained way to deal with it.
+> Based on the x86 code.
 > 
-> Fixes: 8f78515425da ("iommu/arm-smmu: Implement of_xlate() for SMMUv3")
-> Reported-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> Tested-by: Tomasz Nowicki <Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> Tested-by: Jayachandran C. <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->   drivers/iommu/arm-smmu-v3.c | 9 ++++++++-
->   1 file changed, 8 insertions(+), 1 deletion(-)
+>  lib/dma-direct.c | 25 ++++++++++++++++++++++++-
+>  1 file changed, 24 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 9ce3cde575a8..57c92aa3122e 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -1752,7 +1752,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
->   
->   static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
->   {
-> -	int i;
-> +	int i, j;
->   	struct arm_smmu_master_data *master = fwspec->iommu_priv;
->   	struct arm_smmu_device *smmu = master->smmu;
->   
-> @@ -1760,6 +1760,13 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
->   		u32 sid = fwspec->ids[i];
->   		__le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
->   
-> +		/* Bridged PCI devices may end up with duplicated IDs */
-> +		for (j = 0; j < i; j++)
-> +			if (fwspec->ids[j] == sid)
-> +				break;
-> +		if (j < i)
-> +			continue;
+> diff --git a/lib/dma-direct.c b/lib/dma-direct.c
+> index ab81de3ac1d3..f8467cb3d89a 100644
+> --- a/lib/dma-direct.c
+> +++ b/lib/dma-direct.c
+> @@ -28,6 +28,11 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
+>  	return true;
+>  }
+>  
+> +static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
+> +{
+> +	return phys_to_dma(dev, phys) + size <= dev->coherent_dma_mask;
+
+Shouldn't it be: phys_to_dma(dev, phys) + size - 1 <= dev->coherent_dma_mask ?
+
+> +}
 > +
->   		arm_smmu_write_strtab_ent(smmu, sid, step, &master->ste);
->   	}
->   }
-> 
+>  static void *dma_direct_alloc(struct device *dev, size_t size,
+>  		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+>  {
+> @@ -35,11 +40,29 @@ static void *dma_direct_alloc(struct device *dev, size_t size,
+>  	int page_order = get_order(size);
+>  	struct page *page = NULL;
+>  
+> +again:
+>  	/* CMA can be used only in the context which permits sleeping */
+> -	if (gfpflags_allow_blocking(gfp))
+> +	if (gfpflags_allow_blocking(gfp)) {
+>  		page = dma_alloc_from_contiguous(dev, count, page_order, gfp);
+> +		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> +			dma_release_from_contiguous(dev, page, count);
+> +			page = NULL;
+> +		}
+> +	}
+>  	if (!page)
+>  		page = alloc_pages_node(dev_to_node(dev), gfp, page_order);
+> +
+> +	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> +		__free_pages(page, page_order);
+> +		page = NULL;
+> +
+> +		if (dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
+> +		    !(gfp & GFP_DMA)) {
+> +			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
+> +			goto again;
+
+Shouldn't we limit number of attempts?
+
+Thanks
+Vladimir
