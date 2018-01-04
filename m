@@ -1,69 +1,97 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 30/67] dma-direct: retry allocations using GFP_DMA for
-	small masks
-Date: Thu, 4 Jan 2018 10:02:51 +0100
-Message-ID: <20180104090251.GE3251@lst.de>
-References: <20171229081911.2802-1-hch@lst.de>
-	<20171229081911.2802-31-hch@lst.de>
-	<f6139b03-0a4a-a9fe-4818-9b0bccf419e4@arm.com>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: [PATCH V4 11/26] iommu/amd: deprecate pci_get_bus_and_slot()
+Date: Thu, 4 Jan 2018 07:25:55 -0500
+Message-ID: <8a5dad82-2886-2a51-28bc-b84ab253c361@codeaurora.org>
+References: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
+ <1513661883-28662-12-git-send-email-okaya@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f6139b03-0a4a-a9fe-4818-9b0bccf419e4-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1513661883-28662-12-git-send-email-okaya@codeaurora.org>
+Content-Language: en-US
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: linux-pci@vger.kernel.org, timur@codeaurora.org
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 02, 2018 at 04:43:15PM +0000, Vladimir Murzin wrote:
-> On 29/12/17 08:18, Christoph Hellwig wrote:
-> > If we got back an allocation that wasn't inside the support coherent mask,
-> > retry the allocation using GFP_DMA.
-> > 
-> > Based on the x86 code.
-> > 
-> > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> > ---
-> >  lib/dma-direct.c | 25 ++++++++++++++++++++++++-
-> >  1 file changed, 24 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/lib/dma-direct.c b/lib/dma-direct.c
-> > index ab81de3ac1d3..f8467cb3d89a 100644
-> > --- a/lib/dma-direct.c
-> > +++ b/lib/dma-direct.c
-> > @@ -28,6 +28,11 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
-> >  	return true;
-> >  }
-> >  
-> > +static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
-> > +{
-> > +	return phys_to_dma(dev, phys) + size <= dev->coherent_dma_mask;
+On 12/19/2017 12:37 AM, Sinan Kaya wrote:
+> pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
+> where a PCI device is present. This restricts the device drivers to be
+> reused for other domain numbers.
 > 
-> Shouldn't it be: phys_to_dma(dev, phys) + size - 1 <= dev->coherent_dma_mask ?
-
-Yes, I think it should.  The existing code was blindly copy and pasted
-from x86.
-
-> > +	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-> > +		__free_pages(page, page_order);
-> > +		page = NULL;
-> > +
-> > +		if (dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
-> > +		    !(gfp & GFP_DMA)) {
-> > +			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
-> > +			goto again;
+> Getting ready to remove pci_get_bus_and_slot() function in favor of
+> pci_get_domain_bus_and_slot().
 > 
-> Shouldn't we limit number of attempts?
+> Hard-code the domain number as 0 for the AMD IOMMU driver.
+> 
+> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+> ---
+>  drivers/iommu/amd_iommu.c      | 3 ++-
+>  drivers/iommu/amd_iommu_init.c | 9 +++++----
+>  drivers/iommu/amd_iommu_v2.c   | 3 ++-
+>  3 files changed, 9 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 7d5eb00..821547b 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -527,7 +527,8 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+>  	struct iommu_dev_data *dev_data = NULL;
+>  	struct pci_dev *pdev;
+>  
+> -	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
+> +	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
+> +					   devid & 0xff);
+>  	if (pdev)
+>  		dev_data = get_dev_data(&pdev->dev);
+>  
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 6fe2d03..4e4a615 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -1697,8 +1697,8 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+>  	u32 range, misc, low, high;
+>  	int ret;
+>  
+> -	iommu->dev = pci_get_bus_and_slot(PCI_BUS_NUM(iommu->devid),
+> -					  iommu->devid & 0xff);
+> +	iommu->dev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(iommu->devid),
+> +						 iommu->devid & 0xff);
+>  	if (!iommu->dev)
+>  		return -ENODEV;
+>  
+> @@ -1764,8 +1764,9 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+>  	if (is_rd890_iommu(iommu->dev)) {
+>  		int i, j;
+>  
+> -		iommu->root_pdev = pci_get_bus_and_slot(iommu->dev->bus->number,
+> -				PCI_DEVFN(0, 0));
+> +		iommu->root_pdev =
+> +			pci_get_domain_bus_and_slot(0, iommu->dev->bus->number,
+> +						    PCI_DEVFN(0, 0));
+>  
+>  		/*
+>  		 * Some rd890 systems may not be fully reconfigured by the
+> diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+> index 7d94e1d..8696382 100644
+> --- a/drivers/iommu/amd_iommu_v2.c
+> +++ b/drivers/iommu/amd_iommu_v2.c
+> @@ -564,7 +564,8 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
+>  	finish      = (iommu_fault->tag >> 9) & 1;
+>  
+>  	devid = iommu_fault->device_id;
+> -	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
+> +	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
+> +					   devid & 0xff);
+>  	if (!pdev)
+>  		return -ENODEV;
+>  	dev_data = get_dev_data(&pdev->dev);
+> 
 
-We only retty once anyway, due to the !GFP_DMA check first and then
-ORing in GFP_DMA.
+Any comments from the IOMMU people?
+
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
