@@ -1,49 +1,62 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: [GIT PULL] IOMMU fixes for v4.15-rc7
-Date: Fri, 5 Jan 2018 15:09:15 -0700
-Message-ID: <20180105150915.1ccea127@t450s.home>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/of: Only do IOMMU lookup for available ones
+Date: Mon, 8 Jan 2018 11:45:03 +0000
+Message-ID: <767a9f59-be14-2103-6675-a2028742e663@arm.com>
+References: <20180103060920.23475-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180103060920.23475-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Linus,
+Hi Jeffy,
 
-No sign of Joerg returning from paternity leave yet this year, so please
-accept this pull request including fixes via Will Deacon for
-arm-smmu-v3.  Thanks,
+On 03/01/18 06:09, Jeffy Chen wrote:
+> The for_each_matching_node_and_match() would return every matching
+> nodes including unavailable ones.
+> 
+> It's pointless to init unavailable IOMMUs, so add a sanity check to
+> avoid that.
 
-Alex
+Even better would be to clean up the last remaining init_fn user and get 
+rid of the whole business. With the probe-deferral mechanism, early 
+initialisation hooks are no longer needed, and the IOMMU_OF_DECLARE 
+section really only remains as a way of detecting builtin drivers long 
+before their registration initcalls run.
 
-The following changes since commit 30a7acd573899fd8b8ac39236eff6468b195ac7d:
+Robin.
 
-  Linux 4.15-rc6 (2017-12-31 14:47:43 -0800)
-
-are available in the git repository at:
-
-  git://github.com/awilliam/linux-vfio.git tags/iommu-v4.15-rc7
-
-for you to fetch changes up to 563b5cbe334e9503ab2b234e279d500fc4f76018:
-
-  iommu/arm-smmu-v3: Cope with duplicated Stream IDs (2018-01-02 16:45:51 +0000)
-
-----------------------------------------------------------------
-IOMMU fixes for Linux v4.15-rc7
-
- * Fix duplicate Stream ID handling in arm-smmu-v3
-
- * Fix arm-smmu-v3 page table ops double free
-
-----------------------------------------------------------------
-Jean-Philippe Brucker (1):
-      iommu/arm-smmu-v3: Don't free page table ops twice
-
-Robin Murphy (1):
-      iommu/arm-smmu-v3: Cope with duplicated Stream IDs
-
- drivers/iommu/arm-smmu-v3.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
+> 
+>   drivers/iommu/of_iommu.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 50947ebb6d17..6f7456caa30d 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -240,6 +240,9 @@ static int __init of_iommu_init(void)
+>   	for_each_matching_node_and_match(np, matches, &match) {
+>   		const of_iommu_init_fn init_fn = match->data;
+>   
+> +		if (!of_device_is_available(np))
+> +			continue;
+> +
+>   		if (init_fn && init_fn(np))
+>   			pr_err("Failed to initialise IOMMU %pOF\n", np);
+>   	}
+> 
