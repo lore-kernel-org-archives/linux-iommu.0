@@ -1,11 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/exynos: Don't unconditionally steal bus ops
-Date: Mon,  8 Jan 2018 19:27:51 +0000
-Message-ID: <1432caf4ecfb077bb54f0115cb5e12b6620e8bfa.1515439558.git.robin.murphy@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 1/2] vfio/type1: Adopt fast IOTLB flush interface
+	when unmap IOVAs
+Date: Mon, 8 Jan 2018 13:53:29 -0700
+Message-ID: <20180108135329.3c1e2c88@t450s.home>
+References: <1514366435-12723-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<1514366435-12723-2-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1514366435-12723-2-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,61 +19,202 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Removing the early device registration hook overlooked the fact that
-it only ran conditionally on a compatible device being present in the
-DT. With exynos_iommu_init() now running as an unconditional initcall,
-problems arise on non-Exynos systems when other IOMMU drivers find
-themselves unable to install their ops on the platform bus, or at worst
-the Exynos ops get called with someone else's domain and all hell breaks
-loose.
+On Wed, 27 Dec 2017 04:20:34 -0500
+Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org> wrote:
 
-Fix this by delaying the setting of bus ops until an Exynos IOMMU is
-actually found, to replicate the previous order of events.
+> VFIO IOMMU type1 currently upmaps IOVA pages synchronously, which requires
+> IOTLB flushing for every unmapping. This results in large IOTLB flushing
+> overhead when handling pass-through devices has a large number of mapped
+> IOVAs.
+> 
+> This can be avoided by using the new IOTLB flushing interface.
 
-Fixes: 928055a01b3f ("iommu/exynos: Remove custom platform device registration code")
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+Hi Suravee,
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 6a96a4c42153..e9e756156429 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -574,6 +574,12 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	struct sysmmu_drvdata *data;
- 	struct resource *res;
- 
-+	if (platform_bus_type->iommu_ops != &exynos_iommu_ops) {
-+		ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
-@@ -1367,16 +1373,8 @@ static int __init exynos_iommu_init(void)
- 		goto err_zero_lv2;
- 	}
- 
--	ret = bus_set_iommu(&platform_bus_type, &exynos_iommu_ops);
--	if (ret) {
--		pr_err("%s: Failed to register exynos-iommu driver.\n",
--								__func__);
--		goto err_set_iommu;
--	}
--
- 	return 0;
--err_set_iommu:
--	kmem_cache_free(lv2table_kmem_cache, zero_lv2_table);
-+
- err_zero_lv2:
- 	platform_driver_unregister(&exynos_sysmmu_driver);
- err_reg_driver:
--- 
-2.13.4.dirty
+I've been playing with other ways we might do this, but I can't come up
+with anything better.  A few comments below...
+
+> 
+> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 89 +++++++++++++++++++++++++++++++++++------
+>  1 file changed, 77 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index e30e29a..f000844 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -102,6 +102,13 @@ struct vfio_pfn {
+>  	atomic_t		ref_count;
+>  };
+>  
+> +struct vfio_regions{
+> +	struct list_head list;
+> +	dma_addr_t iova;
+> +	phys_addr_t phys;
+> +	size_t len;
+> +};
+> +
+>  #define IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)	\
+>  					(!list_empty(&iommu->domain_list))
+>  
+> @@ -479,6 +486,40 @@ static long vfio_unpin_pages_remote(struct vfio_dma *dma, dma_addr_t iova,
+>  	return unlocked;
+>  }
+>  
+> +/*
+> + * Generally, VFIO needs to unpin remote pages after each IOTLB flush.
+> + * Therefore, when using IOTLB flush sync interface, VFIO need to keep track
+> + * of these regions (currently using a list).
+> + *
+> + * This value specifies maximum number of regions for each IOTLB flush sync.
+> + */
+> +#define VFIO_IOMMU_TLB_SYNC_MAX		512
+
+Is this an arbitrary value or are there non-obvious considerations for
+this value should we want to further tune it in the future?
+
+> +
+> +static long vfio_sync_and_unpin(struct vfio_dma *dma, struct vfio_domain *domain,
+> +				struct list_head *regions, bool do_accounting)
+> +{
+> +	long unlocked = 0;
+> +	struct vfio_regions *entry, *next;
+> +
+> +	iommu_tlb_sync(domain->domain);
+> +
+> +	list_for_each_entry_safe(entry, next, regions, list) {
+> +		unlocked += vfio_unpin_pages_remote(dma,
+> +						    entry->iova,
+> +						    entry->phys >> PAGE_SHIFT,
+> +						    entry->len >> PAGE_SHIFT,
+> +						    false);
+> +		list_del(&entry->list);
+> +		kfree(entry);
+> +	}
+> +
+> +	if (do_accounting) {
+> +		vfio_lock_acct(dma->task, -unlocked, NULL);
+> +		return 0;
+> +	}
+> +	return unlocked;
+> +}
+> +
+>  static int vfio_pin_page_external(struct vfio_dma *dma, unsigned long vaddr,
+>  				  unsigned long *pfn_base, bool do_accounting)
+>  {
+> @@ -653,7 +694,10 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  {
+>  	dma_addr_t iova = dma->iova, end = dma->iova + dma->size;
+>  	struct vfio_domain *domain, *d;
+> +	struct list_head unmapped_regions;
+> +	struct vfio_regions *entry;
+>  	long unlocked = 0;
+> +	int cnt = 0;
+>  
+>  	if (!dma->size)
+>  		return 0;
+> @@ -661,6 +705,8 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+>  		return 0;
+>  
+> +	INIT_LIST_HEAD(&unmapped_regions);
+> +
+>  	/*
+>  	 * We use the IOMMU to track the physical addresses, otherwise we'd
+>  	 * need a much more complicated tracking system.  Unfortunately that
+> @@ -698,24 +744,36 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  				break;
+>  		}
+>  
+> -		unmapped = iommu_unmap(domain->domain, iova, len);
+> -		if (WARN_ON(!unmapped))
+> +		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+> +		if (!entry)
+>  			break;
+>  
+> -		unlocked += vfio_unpin_pages_remote(dma, iova,
+> -						    phys >> PAGE_SHIFT,
+> -						    unmapped >> PAGE_SHIFT,
+> -						    false);
+> +		unmapped = iommu_unmap_fast(domain->domain, iova, len);
+> +		if (WARN_ON(!unmapped)) {
+> +			kfree(entry);
+> +			break;
+> +		}
+> +
+> +		iommu_tlb_range_add(domain->domain, iova, unmapped);
+> +		entry->iova = iova;
+> +		entry->phys = phys;
+> +		entry->len  = unmapped;
+> +		list_add_tail(&entry->list, &unmapped_regions);
+> +		cnt++;
+>  		iova += unmapped;
+>  
+> +		if (cnt >= VFIO_IOMMU_TLB_SYNC_MAX) {
+> +			unlocked += vfio_sync_and_unpin(dma, domain, &unmapped_regions,
+> +							do_accounting);
+
+Exceeds 80 columns here.
+
+> +			cnt = 0;
+> +		}
+>  		cond_resched();
+>  	}
+>  
+> +	if (cnt)
+> +		unlocked += vfio_sync_and_unpin(dma, domain, &unmapped_regions,
+> +						do_accounting);
+>  	dma->iommu_mapped = false;
+> -	if (do_accounting) {
+> -		vfio_lock_acct(dma->task, -unlocked, NULL);
+> -		return 0;
+> -	}
+>  	return unlocked;
+>  }
+>  
+> @@ -878,6 +936,7 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+>  {
+>  	long i;
+>  	int ret = 0;
+> +	size_t unmapped = 0;
+>  
+>  	for (i = 0; i < npage; i++, pfn++, iova += PAGE_SIZE) {
+>  		ret = iommu_map(domain->domain, iova,
+> @@ -887,8 +946,14 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+>  			break;
+>  	}
+>  
+> -	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
+> -		iommu_unmap(domain->domain, iova, PAGE_SIZE);
+> +	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE) {
+> +		unmapped = iommu_unmap_fast(domain->domain, iova, PAGE_SIZE);
+> +		if (WARN_ON(!unmapped))
+> +			break;
+> +		iommu_tlb_range_add(domain->domain, iova, unmapped);
+> +	}
+> +	if (unmapped)
+> +		iommu_tlb_sync(domain->domain);
+
+Using unmapped here seems a little sketchy, for instance if we got back
+zero on the last call to iommu_unmap_fast() but had other ranges queued
+for flush.  Do we even need a WARN_ON and break here, are we just
+trying to skip adding a zero range?  The intent is that we either leave
+this function with everything mapped or nothing mapped, so perhaps we
+should warn and continue.  Assuming a spurious sync is ok, we could
+check (i < npage) for the sync condition, the only risk being we had no
+mappings at all and therefore no unmaps.
+
+TBH, I wonder if this function is even needed anymore or if the mapping
+problem in amd_iommu has since ben fixed.
+
+Also, I'm not sure why you're gating adding fast flushing to amd_iommu
+on vfio making use of it.  These can be done independently.  Thanks,
+
+Alex
