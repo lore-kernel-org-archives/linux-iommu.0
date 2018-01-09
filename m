@@ -1,50 +1,52 @@
-From: Jesper Nilsson <jesper.nilsson@axis.com>
-Subject: Re: [PATCH 05/67] dma-mapping: replace PCI_DMA_BUS_IS_PHYS with a
- flag in struct dma_map_ops
-Date: Tue, 9 Jan 2018 16:55:50 +0100
-Message-ID: <20180109155550.GP32368@axis.com>
-References: <20171229081911.2802-1-hch@lst.de>
- <20171229081911.2802-6-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-m68k-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171229081911.2802-6-hch@lst.de>
-Sender: linux-m68k-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-snps-arc@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2 2/3] iommu/ipmmu-vmsa: Remove redundant of_iommu_init_fn hook
+Date: Tue,  9 Jan 2018 16:17:26 +0000
+Message-ID: <12163854e04da92b5de586912bf7257fc0fed79a.1515512134.git.robin.murphy@arm.com>
+References: <da664cf8f60c77cbb657cc2e3849560604eaf6da.1515512134.git.robin.murphy@arm.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <da664cf8f60c77cbb657cc2e3849560604eaf6da.1515512134.git.robin.murphy@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: alex.williamson@redhat.com, joro@8bytes.org
+Cc: sricharan@codeaurora.org, laurent.pinchart+renesas@ideasonboard.com, damm+renesas@opensource.se, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 29, 2017 at 09:18:09AM +0100, Christoph Hellwig wrote:
-> The current PCI_DMA_BUS_IS_PHYS decided if a dma implementation is bound
-> by the dma mask in the device because it directly maps to a physical
-> address range (modulo an offset in the device), or if it is virtualized
-> by an iommu and can map any address (that includes virtual iommus like
-> swiotlb).  The problem with this scheme is that it is per-architecture and
-> not per dma_ops instance, and we are growing more and more setups that
-> have multiple different dma operations in use on a single system, for
-> which this scheme can't provide a correct answer.  Depending on the
-> architecture that means we either get a false positive or false negative
-> at the moment.
-> 
-> This patch instead extents the is_phys flag in struct dma_map_ops that
-> is currently only used by a few architectures to be used tree wide.
-> 
-> Note that this means that we now need a struct device parent in the
-> Scsi_Host or netdevice.  Every modern driver has these, but there might
-> still be a few outdated legacy drivers out there, which now won't make
-> an intelligent decision.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Having of_iommu_init() call ipmmu_init() via ipmmu_vmsa_iommu_of_setup()
+does nothing that the subsys_initcall wouldn't do slightly later anyway,
+since probe-deferral of masters means it is no longer critical to
+register the driver super-early. Clean it up.
 
-For the CRIS part:
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
+v2: New (somehow v1 was based on 4.14-rc3 so missed this...)
 
-> ---
->  arch/cris/arch-v32/drivers/pci/dma.c  |  1 +
->  arch/cris/include/asm/pci.h           |  6 ------
+ drivers/iommu/ipmmu-vmsa.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
-/^JN - Jesper Nilsson
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 8dce3a9de9d8..331dad909301 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1108,18 +1108,8 @@ static void __exit ipmmu_exit(void)
+ subsys_initcall(ipmmu_init);
+ module_exit(ipmmu_exit);
+ 
+-#ifdef CONFIG_IOMMU_DMA
+-static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
+-{
+-	ipmmu_init();
+-	return 0;
+-}
+-
+-IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
+-		 ipmmu_vmsa_iommu_of_setup);
+-IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
+-		 ipmmu_vmsa_iommu_of_setup);
+-#endif
++IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa", NULL);
++IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795", NULL);
+ 
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart@ideasonboard.com>");
 -- 
-               Jesper Nilsson -- jesper.nilsson@axis.com
+2.13.4.dirty
