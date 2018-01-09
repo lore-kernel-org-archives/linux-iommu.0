@@ -1,62 +1,73 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 1/3] iommu/msm: Claim bus ops on probe
-Date: Tue,  9 Jan 2018 16:17:25 +0000
-Message-ID: <da664cf8f60c77cbb657cc2e3849560604eaf6da.1515512134.git.robin.murphy@arm.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: alex.williamson@redhat.com, joro@8bytes.org
-Cc: sricharan@codeaurora.org, laurent.pinchart+renesas@ideasonboard.com, damm+renesas@opensource.se, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu: Check the result of iommu_group_get() for NULL
+Date: Tue, 9 Jan 2018 17:15:01 +0000
+Message-ID: <98dd6b2f-5d54-4ebe-fc53-92a7e3e6f899@arm.com>
+References: <1512408130-24833-1-git-send-email-jcrouse@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1512408130-24833-1-git-send-email-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Since the MSM IOMMU driver now probes via DT exclusively rather than
-platform data, dependent masters should be deferred until the IOMMU
-itself is ready. Thus we can do away with the early initialisation
-hook to unconditionally claim the bus ops, and instead do that only
-once an IOMMU is actually probed. Furthermore, this should also make
-the driver safe for multiplatform kernels on non-MSM SoCs.
+Hi Jordan,
 
-Reviewed-by: Sricharan R <sricharan@codeaurora.org>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+On 04/12/17 17:22, Jordan Crouse wrote:
+> The result of iommu_group_get() was being blindly used in both
+> attach and detach which results in a dereference when trying
+> to work with an unknown device.
 
-v2: Rebase to 4.15-rc, add tags
+I missed this one before it got applied, but FWIW that behaviour was 
+actually somewhat intentional (see 05f80300dc8b). Callers really 
+shouldn't be trying to attach random unknown devices to IOMMU domains 
+anyway, but more crucially, now that iommu_{attach,detach}_group() work 
+everywhere I think the long-term plan is still to remove 
+iommu_{attach,detach}_device() completely.
 
- drivers/iommu/msm_iommu.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+I have no great objection to this patch myself, but do consider it a 
+heads-up that any callers it fixes are liable to be ridden roughshod 
+over by further API changes in future.
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 04f4d51ffacb..dda1ce87a070 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -823,6 +823,8 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		goto fail;
- 	}
- 
-+	bus_set_iommu(&platform_bus_type, &msm_iommu_ops);
-+
- 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
- 		iommu->base, iommu->irq, iommu->ncb);
- 
-@@ -875,19 +877,7 @@ static void __exit msm_iommu_driver_exit(void)
- subsys_initcall(msm_iommu_driver_init);
- module_exit(msm_iommu_driver_exit);
- 
--static int __init msm_iommu_init(void)
--{
--	bus_set_iommu(&platform_bus_type, &msm_iommu_ops);
--	return 0;
--}
--
--static int __init msm_iommu_of_setup(struct device_node *np)
--{
--	msm_iommu_init();
--	return 0;
--}
--
--IOMMU_OF_DECLARE(msm_iommu_of, "qcom,apq8064-iommu", msm_iommu_of_setup);
-+IOMMU_OF_DECLARE(msm_iommu_of, "qcom,apq8064-iommu", NULL);
- 
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("Stepan Moskovchenko <stepanm@codeaurora.org>");
--- 
-2.13.4.dirty
+Robin.
+
+> Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>   drivers/iommu/iommu.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3de5c0b..69fef99 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1303,6 +1303,9 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+>   	int ret;
+>   
+>   	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return -ENODEV;
+> +
+>   	/*
+>   	 * Lock the group to make sure the device-count doesn't
+>   	 * change while we are attaching
+> @@ -1341,6 +1344,8 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+>   	struct iommu_group *group;
+>   
+>   	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return;
+>   
+>   	mutex_lock(&group->mutex);
+>   	if (iommu_group_device_count(group) != 1) {
+> 
