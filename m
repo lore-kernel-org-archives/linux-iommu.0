@@ -1,14 +1,16 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v5 0/6] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Tue, 9 Jan 2018 17:19:15 +0530
-Message-ID: <70e20deb-66fa-9e69-8b36-ba7b17d9390c@codeaurora.org>
-References: <1515492109-753-1-git-send-email-vivek.gautam@codeaurora.org>
-	<1568773.GtDhb2pIXv@aspire.rjw.lan>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/exynos: Don't unconditionally steal bus ops
+Date: Tue, 9 Jan 2018 11:58:14 +0000
+Message-ID: <584abc4c-7582-f519-554a-d7ac4e49bf8b@arm.com>
+References: <CGME20180108192758epcas4p196b256cafeb8fce0359223c7f2aa960c@epcas4p1.samsung.com>
+	<1432caf4ecfb077bb54f0115cb5e12b6620e8bfa.1515439558.git.robin.murphy@arm.com>
+	<878c7791-ef37-adc7-8186-27455f2ef67f@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1568773.GtDhb2pIXv-yvgW3jdyMHm1GS7QM15AGw@public.gmane.org>
+In-Reply-To: <878c7791-ef37-adc7-8186-27455f2ef67f-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,131 +20,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pavel-+ZI9xUNit7I@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 01/09/2018 04:53 PM, Rafael J. Wysocki wrote:
-> On Tuesday, January 9, 2018 11:01:43 AM CET Vivek Gautam wrote:
->> This series provides the support for turning on the arm-smmu's
->> clocks/power domains using runtime pm. This is done using the
->> recently introduced device links patches, which lets the smmu's
->> runtime to follow the master's runtime pm, so the smmu remains
->> powered only when the masters use it.
->>
->> It also adds support for Qcom's arm-smmu-v2 variant that
->> has different clocks and power requirements.
->>
->> Took some reference from the exynos runtime patches [2].
->>
->> Previous version of the patchset [1].
->>
->> After much discussion [4] over the use of pm_runtime_get/put() in
->> .unmap op path for the arm-smmu, and after disussing over more than
->> a couple of approaches to address this, we are putting forward the
->> changes *without* using pm_runtime APIs in 'unmap'. Rather, letting
->> the client device take the control of powering on/off the connected
->> iommu through pm_runtime_get(put)_suppliers() APIs for the scnerios
->> when the iommu power can't be directly controlled by clients through
->> device links.
->> Rafael has agreed to export the suppliers APIs [5].
->>
->> [V5]
->>     * Dropped runtime pm calls from "arm_smmu_unmap" op as discussed over
->>       the list [4] for the last patch series.
->>     * Added a patch to export pm_runtime_get/put_suppliers() APIs to the
->>       series as agreed with Rafael [5].
->>     * Added the related patch for msm drm iommu layer to use
->>       pm_runtime_get/put_suppliers() APIs in msm_mmu_funcs.
->>     * Dropped arm-mmu500 clock patch since that would break existing
->>       platforms.
->>     * Changed compatible 'qcom,msm8996-smmu-v2' to 'qcom,smmu-v2' to reflect
->>       the IP version rather than the platform on which it is used.
->>       The same IP is used across multiple platforms including msm8996,
->>       and sdm845 etc.
->>     * Using clock bulk APIs to handle the clocks available to the IP as
->>       suggested by Stephen Boyd.
->>     * The first patch in v4 version of the patch-series:
->>       ("iommu/arm-smmu: Fix the error path in arm_smmu_add_device") has
->>       already made it to mainline.
->>
->> [V4]
->>     * Reworked the clock handling part. We now take clock names as data
->>       in the driver for supported compatible versions, and loop over them
->>       to get, enable, and disable the clocks.
->>     * Using qcom,msm8996 based compatibles for bindings instead of a generic
->>       qcom compatible.
->>     * Refactor MMU500 patch to just add the necessary clock names data and
->>       corresponding bindings.
->>     * Added the pm_runtime_get/put() calls in .unmap iommu op (fix added by
->>       Stanimir on top of previous patch version.
->>     * Added a patch to fix error path in arm_smmu_add_device()
->>     * Removed patch 3/5 of V3 patch series that added qcom,smmu-v2 bindings.
->>
->> [V3]
->>     * Reworked the patches to keep the clocks init/enabling function
->>       separately for each compatible.
->>
->>     * Added clocks bindings for MMU40x/500.
->>
->>     * Added a new compatible for qcom,smmu-v2 implementation and
->>       the clock bindings for the same.
->>
->>     * Rebased on top of 4.11-rc1
->>
->> [V2]
->>     * Split the patches little differently.
->>
->>     * Addressed comments.
->>
->>     * Removed the patch #4 [3] from previous post
->>       for arm-smmu context save restore. Planning to
->>       post this separately after reworking/addressing Robin's
->>       feedback.
->>
->>     * Reversed the sequence to disable clocks than enabling.
->>       This was required for those cases where the
->>       clocks are populated in a dependent order from DT.
->>
->> [1] https://www.spinics.net/lists/arm-kernel/msg567488.html
->> [2] https://lkml.org/lkml/2016/10/20/70
->> [3] https://patchwork.kernel.org/patch/9389717/
->> [4] https://patchwork.kernel.org/patch/9827825/
->> [5] https://patchwork.kernel.org/patch/10102445/
->>
->> Sricharan R (3):
->>    iommu/arm-smmu: Add pm_runtime/sleep ops
->>    iommu/arm-smmu: Invoke pm_runtime during probe, add/remove device
->>    iommu/arm-smmu: Add the device_link between masters and smmu
->>
->> Vivek Gautam (3):
->>    base: power: runtime: Export pm_runtime_get/put_suppliers
->>    iommu/arm-smmu: Add support for qcom,smmu-v2 variant
->>    drm/msm: iommu: Replace runtime calls with runtime suppliers
->>
->>   .../devicetree/bindings/iommu/arm,smmu.txt         |  35 ++++++
->>   drivers/base/power/runtime.c                       |   2 +
->>   drivers/gpu/drm/msm/msm_iommu.c                    |  16 +--
->>   drivers/iommu/arm-smmu.c                           | 124 ++++++++++++++++++++-
->>   4 files changed, 163 insertions(+), 14 deletions(-)
-> I need some time to review the series.
-
-Sure, thanks Rafael.
-
-regards
-Vivek
-
->
-> Thanks,
-> Rafael
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+T24gMDkvMDEvMTggMDk6NTksIE1hcmVrIFN6eXByb3dza2kgd3JvdGU6Cj4gSGkgUm9iaW4sCj4g
+Cj4gT24gMjAxOC0wMS0wOCAyMDoyNywgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBSZW1vdmluZyB0
+aGUgZWFybHkgZGV2aWNlIHJlZ2lzdHJhdGlvbiBob29rIG92ZXJsb29rZWQgdGhlIGZhY3QgdGhh
+dAo+PiBpdCBvbmx5IHJhbiBjb25kaXRpb25hbGx5IG9uIGEgY29tcGF0aWJsZSBkZXZpY2UgYmVp
+bmcgcHJlc2VudCBpbiB0aGUKPj4gRFQuIFdpdGggZXh5bm9zX2lvbW11X2luaXQoKSBub3cgcnVu
+bmluZyBhcyBhbiB1bmNvbmRpdGlvbmFsIGluaXRjYWxsLAo+PiBwcm9ibGVtcyBhcmlzZSBvbiBu
+b24tRXh5bm9zIHN5c3RlbXMgd2hlbiBvdGhlciBJT01NVSBkcml2ZXJzIGZpbmQKPj4gdGhlbXNl
+bHZlcyB1bmFibGUgdG8gaW5zdGFsbCB0aGVpciBvcHMgb24gdGhlIHBsYXRmb3JtIGJ1cywgb3Ig
+YXQgd29yc3QKPj4gdGhlIEV4eW5vcyBvcHMgZ2V0IGNhbGxlZCB3aXRoIHNvbWVvbmUgZWxzZSdz
+IGRvbWFpbiBhbmQgYWxsIGhlbGwgYnJlYWtzCj4+IGxvb3NlLgo+Pgo+PiBGaXggdGhpcyBieSBk
+ZWxheWluZyB0aGUgc2V0dGluZyBvZiBidXMgb3BzIHVudGlsIGFuIEV4eW5vcyBJT01NVSBpcwo+
+PiBhY3R1YWxseSBmb3VuZCwgdG8gcmVwbGljYXRlIHRoZSBwcmV2aW91cyBvcmRlciBvZiBldmVu
+dHMuCj4+Cj4+IEZpeGVzOiA5MjgwNTVhMDFiM2YgKCJpb21tdS9leHlub3M6IFJlbW92ZSBjdXN0
+b20gcGxhdGZvcm0gZGV2aWNlIAo+PiByZWdpc3RyYXRpb24gY29kZSIpCj4+IFNpZ25lZC1vZmYt
+Ynk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4gCj4gUmlnaHQsIG15IGZh
+dWx0LiBIb3dldmVyIEkgd2lsbCBwcmVmZXIgdG8gcmVzdXJyZWN0IGNvZGUgYWRkZWQgaW5pdGlh
+bGx5Cj4gYnkgY29tbWl0IGE3YjY3Y2Q1ZDlhZiAiaW9tbXUvZXh5bm9zOiBQbGF5IG5pY2UgaW4g
+bXVsdGktcGxhdGZvcm0gYnVpbGRzIi4KPiBUaGVyZSBpcyBubyBuZWVkIHRvIGRvIGFsbCB0aGUg
+dGhpbmdzIGRvbmUgaW4gdGhlIGV4eW5vc19pb21tdV9pbml0IG9uCj4gbm9uLUV4eW5vcyBwbGF0
+Zm9ybXMuCgpZZWFoOyBJIGhhZCBhIG1vbWVudCBvZiBkb3VidCBhbmQgbGVmdCB0aGUgcmVzdCBh
+cy1pcywgYnV0IEkgZ3Vlc3MgYWxsIApvZiB0aGF0IGdsb2JhbCBzZXR1cCBjb3VsZCBpbiBmYWN0
+IGJlIGRlbGF5ZWQgdW50aWwgdGhlIGZpcnN0IHByb2JlLCBhcyAKd2l0aCBkbWFfZGV2LiBBbnl3
+YXksIEknbGwgcmVzcGluIGp1c3QgdGhlIG1pbmltYWwgZml4IHRvIHVuLWJyZWFrIAptdWx0aXBs
+YXRmb3JtLCBhbmQgbGVhdmUgYW55IGZ1cnRoZXIgcmVmYWN0b3JpbmcgdXAgdG8geW91LgoKVGhh
+bmtzLApSb2Jpbi4KCj4+IC0tLQo+PiDCoCBkcml2ZXJzL2lvbW11L2V4eW5vcy1pb21tdS5jIHwg
+MTYgKysrKysrKy0tLS0tLS0tLQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCsp
+LCA5IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9leHlub3Mt
+aW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvZXh5bm9zLWlvbW11LmMKPj4gaW5kZXggNmE5NmE0YzQy
+MTUzLi5lOWU3NTYxNTY0MjkgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvZXh5bm9zLWlv
+bW11LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9leHlub3MtaW9tbXUuYwo+PiBAQCAtNTc0LDYg
+KzU3NCwxMiBAQCBzdGF0aWMgaW50IF9faW5pdCBleHlub3Nfc3lzbW11X3Byb2JlKHN0cnVjdCAK
+Pj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiDCoMKgwqDCoMKgIHN0cnVjdCBzeXNtbXVfZHJ2
+ZGF0YSAqZGF0YTsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgcmVzb3VyY2UgKnJlczsKPj4gK8KgwqDC
+oCBpZiAocGxhdGZvcm1fYnVzX3R5cGUtPmlvbW11X29wcyAhPSAmZXh5bm9zX2lvbW11X29wcykg
+ewo+PiArwqDCoMKgwqDCoMKgwqAgcmV0ID0gYnVzX3NldF9pb21tdSgmcGxhdGZvcm1fYnVzX3R5
+cGUsICZleHlub3NfaW9tbXVfb3BzKTsKPj4gK8KgwqDCoMKgwqDCoMKgIGlmIChyZXQpCj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiByZXQ7Cj4+ICvCoMKgwqAgfQo+PiArCj4+IMKg
+wqDCoMKgwqAgZGF0YSA9IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigqZGF0YSksIEdGUF9LRVJO
+RUwpOwo+PiDCoMKgwqDCoMKgIGlmICghZGF0YSkKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVy
+biAtRU5PTUVNOwo+PiBAQCAtMTM2NywxNiArMTM3Myw4IEBAIHN0YXRpYyBpbnQgX19pbml0IGV4
+eW5vc19pb21tdV9pbml0KHZvaWQpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIGVycl96ZXJv
+X2x2MjsKPj4gwqDCoMKgwqDCoCB9Cj4+IC3CoMKgwqAgcmV0ID0gYnVzX3NldF9pb21tdSgmcGxh
+dGZvcm1fYnVzX3R5cGUsICZleHlub3NfaW9tbXVfb3BzKTsKPj4gLcKgwqDCoCBpZiAocmV0KSB7
+Cj4+IC3CoMKgwqDCoMKgwqDCoCBwcl9lcnIoIiVzOiBGYWlsZWQgdG8gcmVnaXN0ZXIgZXh5bm9z
+LWlvbW11IGRyaXZlci5cbiIsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBfX2Z1bmNfXyk7Cj4+IC3CoMKgwqDCoMKgwqDC
+oCBnb3RvIGVycl9zZXRfaW9tbXU7Cj4+IC3CoMKgwqAgfQo+PiAtCj4+IMKgwqDCoMKgwqAgcmV0
+dXJuIDA7Cj4+IC1lcnJfc2V0X2lvbW11Ogo+PiAtwqDCoMKgIGttZW1fY2FjaGVfZnJlZShsdjJ0
+YWJsZV9rbWVtX2NhY2hlLCB6ZXJvX2x2Ml90YWJsZSk7Cj4+ICsKPj4gwqAgZXJyX3plcm9fbHYy
+Ogo+PiDCoMKgwqDCoMKgIHBsYXRmb3JtX2RyaXZlcl91bnJlZ2lzdGVyKCZleHlub3Nfc3lzbW11
+X2RyaXZlcik7Cj4+IMKgIGVycl9yZWdfZHJpdmVyOgo+IAo+IEJlc3QgcmVnYXJkcwpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
