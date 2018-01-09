@@ -1,16 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/exynos: Don't unconditionally steal bus ops
-Date: Tue, 9 Jan 2018 11:58:14 +0000
-Message-ID: <584abc4c-7582-f519-554a-d7ac4e49bf8b@arm.com>
-References: <CGME20180108192758epcas4p196b256cafeb8fce0359223c7f2aa960c@epcas4p1.samsung.com>
-	<1432caf4ecfb077bb54f0115cb5e12b6620e8bfa.1515439558.git.robin.murphy@arm.com>
-	<878c7791-ef37-adc7-8186-27455f2ef67f@samsung.com>
+Subject: [PATCH v2] iommu/exynos: Don't unconditionally steal bus ops
+Date: Tue,  9 Jan 2018 15:34:07 +0000
+Message-ID: <da24d31fc6f4be7b44ceef215f672c0ed3c37979.1515511941.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <878c7791-ef37-adc7-8186-27455f2ef67f-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,61 +15,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDkvMDEvMTggMDk6NTksIE1hcmVrIFN6eXByb3dza2kgd3JvdGU6Cj4gSGkgUm9iaW4sCj4g
-Cj4gT24gMjAxOC0wMS0wOCAyMDoyNywgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBSZW1vdmluZyB0
-aGUgZWFybHkgZGV2aWNlIHJlZ2lzdHJhdGlvbiBob29rIG92ZXJsb29rZWQgdGhlIGZhY3QgdGhh
-dAo+PiBpdCBvbmx5IHJhbiBjb25kaXRpb25hbGx5IG9uIGEgY29tcGF0aWJsZSBkZXZpY2UgYmVp
-bmcgcHJlc2VudCBpbiB0aGUKPj4gRFQuIFdpdGggZXh5bm9zX2lvbW11X2luaXQoKSBub3cgcnVu
-bmluZyBhcyBhbiB1bmNvbmRpdGlvbmFsIGluaXRjYWxsLAo+PiBwcm9ibGVtcyBhcmlzZSBvbiBu
-b24tRXh5bm9zIHN5c3RlbXMgd2hlbiBvdGhlciBJT01NVSBkcml2ZXJzIGZpbmQKPj4gdGhlbXNl
-bHZlcyB1bmFibGUgdG8gaW5zdGFsbCB0aGVpciBvcHMgb24gdGhlIHBsYXRmb3JtIGJ1cywgb3Ig
-YXQgd29yc3QKPj4gdGhlIEV4eW5vcyBvcHMgZ2V0IGNhbGxlZCB3aXRoIHNvbWVvbmUgZWxzZSdz
-IGRvbWFpbiBhbmQgYWxsIGhlbGwgYnJlYWtzCj4+IGxvb3NlLgo+Pgo+PiBGaXggdGhpcyBieSBk
-ZWxheWluZyB0aGUgc2V0dGluZyBvZiBidXMgb3BzIHVudGlsIGFuIEV4eW5vcyBJT01NVSBpcwo+
-PiBhY3R1YWxseSBmb3VuZCwgdG8gcmVwbGljYXRlIHRoZSBwcmV2aW91cyBvcmRlciBvZiBldmVu
-dHMuCj4+Cj4+IEZpeGVzOiA5MjgwNTVhMDFiM2YgKCJpb21tdS9leHlub3M6IFJlbW92ZSBjdXN0
-b20gcGxhdGZvcm0gZGV2aWNlIAo+PiByZWdpc3RyYXRpb24gY29kZSIpCj4+IFNpZ25lZC1vZmYt
-Ynk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4gCj4gUmlnaHQsIG15IGZh
-dWx0LiBIb3dldmVyIEkgd2lsbCBwcmVmZXIgdG8gcmVzdXJyZWN0IGNvZGUgYWRkZWQgaW5pdGlh
-bGx5Cj4gYnkgY29tbWl0IGE3YjY3Y2Q1ZDlhZiAiaW9tbXUvZXh5bm9zOiBQbGF5IG5pY2UgaW4g
-bXVsdGktcGxhdGZvcm0gYnVpbGRzIi4KPiBUaGVyZSBpcyBubyBuZWVkIHRvIGRvIGFsbCB0aGUg
-dGhpbmdzIGRvbmUgaW4gdGhlIGV4eW5vc19pb21tdV9pbml0IG9uCj4gbm9uLUV4eW5vcyBwbGF0
-Zm9ybXMuCgpZZWFoOyBJIGhhZCBhIG1vbWVudCBvZiBkb3VidCBhbmQgbGVmdCB0aGUgcmVzdCBh
-cy1pcywgYnV0IEkgZ3Vlc3MgYWxsIApvZiB0aGF0IGdsb2JhbCBzZXR1cCBjb3VsZCBpbiBmYWN0
-IGJlIGRlbGF5ZWQgdW50aWwgdGhlIGZpcnN0IHByb2JlLCBhcyAKd2l0aCBkbWFfZGV2LiBBbnl3
-YXksIEknbGwgcmVzcGluIGp1c3QgdGhlIG1pbmltYWwgZml4IHRvIHVuLWJyZWFrIAptdWx0aXBs
-YXRmb3JtLCBhbmQgbGVhdmUgYW55IGZ1cnRoZXIgcmVmYWN0b3JpbmcgdXAgdG8geW91LgoKVGhh
-bmtzLApSb2Jpbi4KCj4+IC0tLQo+PiDCoCBkcml2ZXJzL2lvbW11L2V4eW5vcy1pb21tdS5jIHwg
-MTYgKysrKysrKy0tLS0tLS0tLQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCsp
-LCA5IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9leHlub3Mt
-aW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvZXh5bm9zLWlvbW11LmMKPj4gaW5kZXggNmE5NmE0YzQy
-MTUzLi5lOWU3NTYxNTY0MjkgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvZXh5bm9zLWlv
-bW11LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9leHlub3MtaW9tbXUuYwo+PiBAQCAtNTc0LDYg
-KzU3NCwxMiBAQCBzdGF0aWMgaW50IF9faW5pdCBleHlub3Nfc3lzbW11X3Byb2JlKHN0cnVjdCAK
-Pj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+PiDCoMKgwqDCoMKgIHN0cnVjdCBzeXNtbXVfZHJ2
-ZGF0YSAqZGF0YTsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgcmVzb3VyY2UgKnJlczsKPj4gK8KgwqDC
-oCBpZiAocGxhdGZvcm1fYnVzX3R5cGUtPmlvbW11X29wcyAhPSAmZXh5bm9zX2lvbW11X29wcykg
-ewo+PiArwqDCoMKgwqDCoMKgwqAgcmV0ID0gYnVzX3NldF9pb21tdSgmcGxhdGZvcm1fYnVzX3R5
-cGUsICZleHlub3NfaW9tbXVfb3BzKTsKPj4gK8KgwqDCoMKgwqDCoMKgIGlmIChyZXQpCj4+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiByZXQ7Cj4+ICvCoMKgwqAgfQo+PiArCj4+IMKg
-wqDCoMKgwqAgZGF0YSA9IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigqZGF0YSksIEdGUF9LRVJO
-RUwpOwo+PiDCoMKgwqDCoMKgIGlmICghZGF0YSkKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVy
-biAtRU5PTUVNOwo+PiBAQCAtMTM2NywxNiArMTM3Myw4IEBAIHN0YXRpYyBpbnQgX19pbml0IGV4
-eW5vc19pb21tdV9pbml0KHZvaWQpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIGVycl96ZXJv
-X2x2MjsKPj4gwqDCoMKgwqDCoCB9Cj4+IC3CoMKgwqAgcmV0ID0gYnVzX3NldF9pb21tdSgmcGxh
-dGZvcm1fYnVzX3R5cGUsICZleHlub3NfaW9tbXVfb3BzKTsKPj4gLcKgwqDCoCBpZiAocmV0KSB7
-Cj4+IC3CoMKgwqDCoMKgwqDCoCBwcl9lcnIoIiVzOiBGYWlsZWQgdG8gcmVnaXN0ZXIgZXh5bm9z
-LWlvbW11IGRyaXZlci5cbiIsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBfX2Z1bmNfXyk7Cj4+IC3CoMKgwqDCoMKgwqDC
-oCBnb3RvIGVycl9zZXRfaW9tbXU7Cj4+IC3CoMKgwqAgfQo+PiAtCj4+IMKgwqDCoMKgwqAgcmV0
-dXJuIDA7Cj4+IC1lcnJfc2V0X2lvbW11Ogo+PiAtwqDCoMKgIGttZW1fY2FjaGVfZnJlZShsdjJ0
-YWJsZV9rbWVtX2NhY2hlLCB6ZXJvX2x2Ml90YWJsZSk7Cj4+ICsKPj4gwqAgZXJyX3plcm9fbHYy
-Ogo+PiDCoMKgwqDCoMKgIHBsYXRmb3JtX2RyaXZlcl91bnJlZ2lzdGVyKCZleHlub3Nfc3lzbW11
-X2RyaXZlcik7Cj4+IMKgIGVycl9yZWdfZHJpdmVyOgo+IAo+IEJlc3QgcmVnYXJkcwpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Removing the early device registration hook overlooked the fact that
+it only ran conditionally on a compatible device being present in the
+DT. With exynos_iommu_init() now running as an unconditional initcall,
+problems arise on non-Exynos systems when other IOMMU drivers find
+themselves unable to install their ops on the platform bus, or at worst
+the Exynos ops get called with someone else's domain and all hell breaks
+loose.
+
+The global ops/cache setup could probably all now be triggered from the
+first IOMMU probe, as with dma_dev assigment, but for the time being the
+simplest fix is to resurrect the logic from commit a7b67cd5d9af
+("iommu/exynos: Play nice in multi-platform builds") to explicitly check
+the DT for the presence of an Exynos IOMMU before trying anything.
+
+Fixes: 928055a01b3f ("iommu/exynos: Remove custom platform device registration code")
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+
+v2: Use the simpler explicit DT check.
+
+ drivers/iommu/exynos-iommu.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 79c45650f8de..736d4552d96f 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1353,8 +1353,15 @@ static const struct iommu_ops exynos_iommu_ops = {
+ 
+ static int __init exynos_iommu_init(void)
+ {
++	struct device_node *np;
+ 	int ret;
+ 
++	np = of_find_matching_node(NULL, sysmmu_of_match);
++	if (!np)
++		return 0;
++
++	of_node_put(np);
++
+ 	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+ 				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+ 	if (!lv2table_kmem_cache) {
+-- 
+2.13.4.dirty
