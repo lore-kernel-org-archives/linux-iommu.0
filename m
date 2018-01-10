@@ -1,126 +1,55 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 22/22] arm64: use swiotlb_alloc and swiotlb_free
-Date: Wed, 10 Jan 2018 13:16:17 +0000
-Message-ID: <af49a676-142b-fd37-a395-67d76f7d35fa@arm.com>
-References: <20180110080932.14157-1-hch@lst.de>
- <20180110080932.14157-23-hch@lst.de>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v6 1/5] iommu/vt-d: Add debugfs support for Intel IOMMU
+	internals
+Date: Wed, 10 Jan 2018 15:32:46 +0200
+Message-ID: <1515591166.7000.860.camel@linux.intel.com>
+References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
+	<1515556102-34150-2-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20180110080932.14157-23-hch@lst.de>
-Content-Language: en-GB
-Sender: linux-ia64-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: linux-arch@vger.kernel.org, linux-mips@linux-mips.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>, x86@kernel.org, linux-kernel@vger.kernel.org, Konrad Rzeszutek Wilk <konrad@darnok.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1515556102-34150-2-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/01/18 08:09, Christoph Hellwig wrote:
-> The generic swiotlb_alloc and swiotlb_free routines already take care
-> of CMA allocations and adding GFP_DMA32 where needed, so use them
-> instead of the arm specific helpers.
-
-It took a while to satisfy myself that the GFP_DMA(32) handling ends up 
-equivalent to the current behaviour, but I think it checks out. This 
-will certainly help with the long-overdue cleanup of this file that I've 
-had sat around half-finished for ages.
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/arm64/Kconfig          |  1 +
->   arch/arm64/mm/dma-mapping.c | 46 +++------------------------------------------
->   2 files changed, 4 insertions(+), 43 deletions(-)
+On Tue, 2018-01-09 at 19:48 -0800, Sohil Mehta wrote:
+> From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 6b6985f15d02..53205c02b18a 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -59,6 +59,7 @@ config ARM64
->   	select COMMON_CLK
->   	select CPU_PM if (SUSPEND || CPU_IDLE)
->   	select DCACHE_WORD_ACCESS
-> +	select DMA_DIRECT_OPS
->   	select EDAC_SUPPORT
->   	select FRAME_POINTER
->   	select GENERIC_ALLOCATOR
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 0d641875b20e..a96ec0181818 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -91,46 +91,6 @@ static int __free_from_pool(void *start, size_t size)
->   	return 1;
->   }
->   
-> -static void *__dma_alloc_coherent(struct device *dev, size_t size,
-> -				  dma_addr_t *dma_handle, gfp_t flags,
-> -				  unsigned long attrs)
-> -{
-> -	if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
-> -	    dev->coherent_dma_mask <= DMA_BIT_MASK(32))
-> -		flags |= GFP_DMA32;
-> -	if (dev_get_cma_area(dev) && gfpflags_allow_blocking(flags)) {
-> -		struct page *page;
-> -		void *addr;
-> -
-> -		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
-> -						 get_order(size), flags);
-> -		if (!page)
-> -			return NULL;
-> -
-> -		*dma_handle = phys_to_dma(dev, page_to_phys(page));
-> -		addr = page_address(page);
-> -		memset(addr, 0, size);
-> -		return addr;
-> -	} else {
-> -		return swiotlb_alloc_coherent(dev, size, dma_handle, flags);
-> -	}
-> -}
-> -
-> -static void __dma_free_coherent(struct device *dev, size_t size,
-> -				void *vaddr, dma_addr_t dma_handle,
-> -				unsigned long attrs)
-> -{
-> -	bool freed;
-> -	phys_addr_t paddr = dma_to_phys(dev, dma_handle);
-> -
-> -
-> -	freed = dma_release_from_contiguous(dev,
-> -					phys_to_page(paddr),
-> -					size >> PAGE_SHIFT);
-> -	if (!freed)
-> -		swiotlb_free_coherent(dev, size, vaddr, dma_handle);
-> -}
-> -
->   static void *__dma_alloc(struct device *dev, size_t size,
->   			 dma_addr_t *dma_handle, gfp_t flags,
->   			 unsigned long attrs)
-> @@ -152,7 +112,7 @@ static void *__dma_alloc(struct device *dev, size_t size,
->   		return addr;
->   	}
->   
-> -	ptr = __dma_alloc_coherent(dev, size, dma_handle, flags, attrs);
-> +	ptr = swiotlb_alloc(dev, size, dma_handle, flags, attrs);
->   	if (!ptr)
->   		goto no_mem;
->   
-> @@ -173,7 +133,7 @@ static void *__dma_alloc(struct device *dev, size_t size,
->   	return coherent_ptr;
->   
->   no_map:
-> -	__dma_free_coherent(dev, size, ptr, *dma_handle, attrs);
-> +	swiotlb_free(dev, size, ptr, *dma_handle, attrs);
->   no_mem:
->   	return NULL;
->   }
-> @@ -191,7 +151,7 @@ static void __dma_free(struct device *dev, size_t size,
->   			return;
->   		vunmap(vaddr);
->   	}
-> -	__dma_free_coherent(dev, size, swiotlb_addr, dma_handle, attrs);
-> +	swiotlb_free(dev, size, swiotlb_addr, dma_handle, attrs);
->   }
->   
->   static dma_addr_t __swiotlb_map_page(struct device *dev, struct page *page,
-> 
+> Enable Intel IOMMU debug to export Intel IOMMU internals in debugfs
+
+ 
+> +config INTEL_IOMMU_DEBUG
+> +	bool "Export Intel IOMMU internals in DebugFS"
+> +	depends on INTEL_IOMMU && DEBUG_FS
+
+> +	default n
+
+I thought I commented on this...
+
+Please, remove. "n" is default default, so no need to duplicate it.
+
+> +	help
+> +	  IOMMU internal states such as context, PASID tables can be
+> seen via
+> +	  debugfs. Select this option if you want to export these
+> internals.
+> +
+> +	  Say Y if you need this.
+
+Also I lost a track how this option is being used here. It looks like
+this part is not related to the patch itself.
+
+-- 
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Intel Finland Oy
