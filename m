@@ -1,116 +1,64 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v6 2/5] iommu/vt-d: Add debugfs support to show context
-	internals
-Date: Wed, 10 Jan 2018 11:02:08 -0600
-Message-ID: <042eb604-9ff6-1e50-2027-801cf8e59a33@amd.com>
-References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
-	<1515556102-34150-3-git-send-email-sohil.mehta@intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 10/22] swiotlb: refactor coherent buffer allocation
+Date: Wed, 10 Jan 2018 17:02:30 +0000
+Message-ID: <03c25dda-30da-9169-a8a1-1720ec741b9d@arm.com>
+References: <20180110080932.14157-1-hch@lst.de>
+ <20180110080932.14157-11-hch@lst.de>
+ <cecc98cf-2e6a-a7bc-7390-d6dcced038c4@arm.com>
+ <20180110154649.GA18529@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1515556102-34150-3-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20180110154649.GA18529@lst.de>
+Content-Language: en-GB
+Sender: linux-arch-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>, x86@kernel.org, linux-kernel@vger.kernel.org, Konrad Rzeszutek Wilk <konrad@darnok.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDEvMDkvMjAxOCAwOTo0OCBQTSwgU29oaWwgTWVodGEgd3JvdGU6Cj4gRnJvbTogR2F5YXRy
-aSBLYW1tZWxhIDxnYXlhdHJpLmthbW1lbGFAaW50ZWwuY29tPgo+IAo+IElPTU1VIGludGVybmFs
-cyBzdGF0ZXMgc3VjaCBhcyByb290IGFuZCBjb250ZXh0IGNhbiBiZSBleHBvcnRlZCB0byB0aGUK
-PiB1c2Vyc3BhY2UuCj4gCj4gRXhhbXBsZSBvZiBzdWNoIGR1bXAgaW4gS2FieWxha2U6Cj4gCj4g
-cm9vdEBPVEMtS0JMSC0wMTp+IyBjYXQKPiAvc3lzL2tlcm5lbC9kZWJ1Zy9pbnRlbF9pb21tdS9k
-bWFyX3RyYW5zbGF0aW9uX3N0cnVjdAo+IAo+IElPTU1VIGRtYXIwOiBFeHRlbmRlZCBSb290IFRh
-YmxlIEFkZHI6NDAyYjllODAwCj4gRXh0ZW5kZWQgUm9vdCB0YWJsZSBlbnRyaWVzOgo+IEJ1cyAw
-IEw6IDQwMjE1MDAwMSBIOiAwCj4gTG93ZXIgQ29udGV4dCB0YWJsZSBlbnRyaWVzIGZvciBCdXM6
-IDAKPiBbZW50cnldIERJRCA6QiA6RCAuRiAgICBMb3cgICAgICAgICAgICAgSGlnaAo+IFs4MF0g
-ICAgMDAwMDowMDowYS4wMCAgIDQwMjE0ZmEwNSAgICAgICAxMDIKPiBIaWdoZXIgQ29udGV4dCB0
-YWJsZSBlbnRyaWVzIGZvciBCdXM6IDAKPiBbODBdICAgIDAwMDA6MDA6MGEuMDAgICA0MDI2MDAw
-MGMgICAgICAgMAo+IAo+IElPTU1VIGRtYXIxOiAgICBSb290IFRhYmxlIEFkZHI6NDU1OGEzMDAw
-Cj4gICBSb290IHRibCBlbnRyaWVzOgo+IEJ1cyAwIEw6IDQ1NThhYTAwMSBIOiAwCj4gICBDb250
-ZXh0IHRhYmxlIGVudHJpZXMgZm9yIEJ1czogMAo+IFtlbnRyeV0gRElEIDpCIDpEIC5GICAgIExv
-dyAgICAgICAgICAgICBIaWdoCj4gWzE2MF0gICAwMDAwOjAwOjE0LjAwICAgNDU1OGE5MDAxICAg
-ICAgIDEwMgo+IFsxODRdICAgMDAwMDowMDoxNy4wMCAgIDQwMGVhYzAwMSAgICAgICAzMDIKPiBb
-MjQ4XSAgIDAwMDA6MDA6MWYuMDAgICA0NTU4YWYwMDEgICAgICAgMjAyCj4gWzI1MV0gICAwMDAw
-OjAwOjFmLjAzICAgNDAwNzBlMDAxICAgICAgIDUwMgo+IFsyNTRdICAgMDAwMDowMDoxZi4wNiAg
-IDQ0NjdjOTAwMSAgICAgICA2MDIKPiAgIFJvb3QgdGJsIGVudHJpZXM6Cj4gQnVzIDEgTDogM2Zj
-OGMyMDAxIEg6IDAKPiAgIENvbnRleHQgdGFibGUgZW50cmllcyBmb3IgQnVzOiAxCj4gW2VudHJ5
-XSBESUQgOkIgOkQgLkYgICAgTG93ICAgICAgICAgICAgIEhpZ2gKPiBbMF0gICAgIDAwMDA6MDE6
-MDAuMDAgICAzZmM4YzMwMDEgICAgICAgNDAyCj4gCj4gQ2M6IFNvaGlsIE1laHRhIDxzb2hpbC5t
-ZWh0YUBpbnRlbC5jb20+Cj4gQ2M6IEZlbmdodWEgWXUgPGZlbmdodWEueXVAaW50ZWwuY29tPgo+
-IENjOiBBc2hvayBSYWogPGFzaG9rLnJhakBpbnRlbC5jb20+Cj4gU2lnbmVkLW9mZi1ieTogSmFj
-b2IgUGFuIDxqYWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbT4KPiBTaWduZWQtb2ZmLWJ5OiBH
-YXlhdHJpIEthbW1lbGEgPGdheWF0cmkua2FtbWVsYUBpbnRlbC5jb20+Cj4gLS0tCj4gCj4gdjY6
-IENoYW5nZSB0aGUgb3JkZXIgb2YgaW5jbHVkZXMgdG8gYW4gYWxwaGFiZXRpY2FsIG9yZGVyCj4g
-ICAgICBDaGFuZ2Ugc2VxX3ByaW50ZiBmb3JtYXR0aW5nCj4gCj4gdjU6IENoYW5nZSB0byBhIFNQ
-RFggbGljZW5zZSB0YWcKPiAgICAgIEZpeCBzZXFfcHJpbnRmIGZvcm1hdHRpbmcKPiAKPiB2NDog
-UmVtb3ZlIHRoZSB1bnVzZWQgZnVuY3Rpb24gcGFyYW1ldGVyCj4gICAgICBGaXggY2hlY2twYXRj
-aC5wbCB3YXJuaW5ncwo+ICAgICAgUmVtb3ZlIGVycm9yIHJlcG9ydGluZyBmb3IgZGVidWdmc19j
-cmVhdGVfZmlsZSBmdW5jdGlvbgo+ICAgICAgRml4IHVubmVjZXNzYXJ5IHJlcHJvZ3JhbW1pbmcg
-b2YgdGhlIGNvbnRleHQgZW50cmllcwo+ICAgICAgU2ltcGxpZnkgYW5kIG1lcmdlIHRoZSBzaG93
-IGNvbnRleHQgYW5kIGV4dGVuZGVkIGNvbnRleHQgcGF0Y2ggaW50byBvbmUKPiAgICAgIFJlbW92
-ZSByZWR1bmRhbnQgSU9NTVUgbnVsbCBjaGVjayB1bmRlciBmb3JfZWFjaF9hY3RpdmVfaW9tbXUK
-PiAKPiB2MzogQWRkIGEgbWFjcm8gZm9yIHNlcSBmaWxlIG9wZXJhdGlvbnMKPiAgICAgIENoYW5n
-ZSB0aGUgaW50ZWxfaW9tbXVfY3R4IGZpbGUgbmFtZSB0byBkbWFyX3RyYW5zbGF0aW9uX3N0cnVj
-dAo+IAo+IHYyOiBObyBjaGFuZ2UKPiAKPiAgIGRyaXZlcnMvaW9tbXUvTWFrZWZpbGUgICAgICAg
-ICAgICB8ICAgMSArCj4gICBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LWRlYnVnLmMgfCAxMzkg
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPiAgIGRyaXZlcnMvaW9tbXUv
-aW50ZWwtaW9tbXUuYyAgICAgICB8ICAgNCArKwo+ICAgMyBmaWxlcyBjaGFuZ2VkLCAxNDQgaW5z
-ZXJ0aW9ucygrKQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9t
-bXUtZGVidWcuYwo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L01ha2VmaWxlIGIvZHJp
-dmVycy9pb21tdS9NYWtlZmlsZQo+IGluZGV4IDFmYjY5NTguLmZkYmFmNDYgMTAwNjQ0Cj4gLS0t
-IGEvZHJpdmVycy9pb21tdS9NYWtlZmlsZQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUK
-PiBAQCAtMTUsNiArMTUsNyBAQCBvYmotJChDT05GSUdfQVJNX1NNTVUpICs9IGFybS1zbW11Lm8K
-PiAgIG9iai0kKENPTkZJR19BUk1fU01NVV9WMykgKz0gYXJtLXNtbXUtdjMubwo+ICAgb2JqLSQo
-Q09ORklHX0RNQVJfVEFCTEUpICs9IGRtYXIubwo+ICAgb2JqLSQoQ09ORklHX0lOVEVMX0lPTU1V
-KSArPSBpbnRlbC1pb21tdS5vCj4gK29iai0kKENPTkZJR19JTlRFTF9JT01NVV9ERUJVRykgKz0g
-aW50ZWwtaW9tbXUtZGVidWcubwo+ICAgb2JqLSQoQ09ORklHX0lOVEVMX0lPTU1VX1NWTSkgKz0g
-aW50ZWwtc3ZtLm8KPiAgIG9iai0kKENPTkZJR19JUE1NVV9WTVNBKSArPSBpcG1tdS12bXNhLm8K
-PiAgIG9iai0kKENPTkZJR19JUlFfUkVNQVApICs9IGludGVsX2lycV9yZW1hcHBpbmcubyBpcnFf
-cmVtYXBwaW5nLm8KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS1kZWJ1
-Zy5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS1kZWJ1Zy5jCj4gbmV3IGZpbGUgbW9kZSAx
-MDA2NDQKPiBpbmRleCAwMDAwMDAwLi5kNWIwZWVhCj4gLS0tIC9kZXYvbnVsbAo+ICsrKyBiL2Ry
-aXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUtZGVidWcuYwo+IEBAIC0wLDAgKzEsMTM5IEBACj4gKy8v
-IFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCj4gKy8qCj4gKyAqIENvcHlyaWdodCDC
-qSAyMDE3IEludGVsIENvcnBvcmF0aW9uLgo+ICsgKgo+ICsgKiBBdXRob3JzOiBHYXlhdHJpIEth
-bW1lbGEgPGdheWF0cmkua2FtbWVsYUBpbnRlbC5jb20+Cj4gKyAqICAgICAgICAgIEphY29iIFBh
-biA8amFjb2IuanVuLnBhbkBsaW51eC5pbnRlbC5jb20+Cj4gKyAqCj4gKyAqLwo+ICsKPiArI2Rl
-ZmluZSBwcl9mbXQoZm10KSAgICAgIklOVEVMX0lPTU1VOiAiIGZtdAo+ICsjaW5jbHVkZSA8bGlu
-dXgvZGVidWdmcy5oPgo+ICsjaW5jbHVkZSA8bGludXgvZG1hci5oPgo+ICsjaW5jbHVkZSA8bGlu
-dXgvZXJyLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9pbnRlbC1pb21tdS5oPgo+ICsjaW5jbHVkZSA8
-bGludXgvaW50ZWwtc3ZtLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9pby5oPgo+ICsjaW5jbHVkZSA8
-bGludXgvaW9tbXUuaD4KPiArI2luY2x1ZGUgPGxpbnV4L3BjaS5oPgo+ICsjaW5jbHVkZSA8bGlu
-dXgvcG1fcnVudGltZS5oPgo+ICsjaW5jbHVkZSA8bGludXgvc2xhYi5oPgo+ICsjaW5jbHVkZSA8
-bGludXgvc3BpbmxvY2suaD4KPiArI2luY2x1ZGUgPGxpbnV4L3VhY2Nlc3MuaD4KPiArCj4gKyNp
-bmNsdWRlICJpcnFfcmVtYXBwaW5nLmgiCj4gKwo+ICsjZGVmaW5lIFRPVEFMX0JVU19OUiAoMjU2
-KSAvKiBmdWxsIGJ1cyByYW5nZSAyNTYgKi8KPiArI2RlZmluZSBERUZJTkVfU0hPV19BVFRSSUJV
-VEUoX19uYW1lKQkJCQkJXAo+ICtzdGF0aWMgaW50IF9fbmFtZSAjIyBfb3BlbihzdHJ1Y3QgaW5v
-ZGUgKmlub2RlLCBzdHJ1Y3QgZmlsZSAqZmlsZSkJXAo+ICt7CQkJCQkJCQkJXAo+ICsJcmV0dXJu
-IHNpbmdsZV9vcGVuKGZpbGUsIF9fbmFtZSAjIyBfc2hvdywgaW5vZGUtPmlfcHJpdmF0ZSk7CVwK
-PiArfQkJCQkJCQkJCVwKPiArc3RhdGljIGNvbnN0IHN0cnVjdCBmaWxlX29wZXJhdGlvbnMgX19u
-YW1lICMjIF9mb3BzID0JCQlcCj4gK3sJCQkJCQkJCQlcCj4gKwkub3BlbgkJPSBfX25hbWUgIyMg
-X29wZW4sCQkJCVwKPiArCS5yZWFkCQk9IHNlcV9yZWFkLAkJCQkJXAo+ICsJLmxsc2VlawkJPSBz
-ZXFfbHNlZWssCQkJCQlcCj4gKwkucmVsZWFzZQk9IHNpbmdsZV9yZWxlYXNlLAkJCQlcCj4gKwku
-b3duZXIJCT0gVEhJU19NT0RVTEUsCQkJCQlcCj4gK30KPiArCj4gK3N0YXRpYyB2b2lkIGN0eF90
-YmxfZW50cnlfc2hvdyhzdHJ1Y3Qgc2VxX2ZpbGUgKm0sIHN0cnVjdCBpbnRlbF9pb21tdSAqaW9t
-bXUsCj4gKwkJCSAgICAgICBpbnQgYnVzLCBib29sIGV4dCwgYm9vbCBuZXdfZXh0KQo+ICt7Cj4g
-KwlzdHJ1Y3QgY29udGV4dF9lbnRyeSAqY29udGV4dDsKPiArCWludCBjdHg7Cj4gKwl1bnNpZ25l
-ZCBsb25nIGZsYWdzOwo+ICsKPiArCXNlcV9wcmludGYobSwgIiVzIENvbnRleHQgdGFibGUgZW50
-cmllcyBmb3IgQnVzOiAlZFxuIiwKPiArCQkgICBleHQgPyAiTG93ZXIiIDogIiIsIGJ1cyk7Cj4g
-KwlzZXFfcHV0cyhtLCAiW2VudHJ5XVx0RElEIDpCIDpEIC5GXHRMb3dcdFx0SGlnaFxuIik7Cj4g
-Kwo+ICsJc3Bpbl9sb2NrX2lycXNhdmUoJmlvbW11LT5sb2NrLCBmbGFncyk7Cj4gKwo+ICsJLyog
-UHVibGlzaCBlaXRoZXIgY29udGV4dCBlbnRyaWVzIG9yIGV4dGVuZGVkIGNvbnRlbnh0IGVudHJp
-ZXMgKi8KCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICBeXl5eXl5eXiB0eXBvCgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pb21tdQ==
+On 10/01/18 15:46, Christoph Hellwig wrote:
+> On Wed, Jan 10, 2018 at 12:22:18PM +0000, Robin Murphy wrote:
+>>> +	if (phys_addr == SWIOTLB_MAP_ERROR)
+>>> +		goto out_warn;
+>>>    -		/* Confirm address can be DMA'd by device */
+>>> -		if (dev_addr + size - 1 > dma_mask) {
+>>> -			printk("hwdev DMA mask = 0x%016Lx, dev_addr = 0x%016Lx\n",
+>>> -			       (unsigned long long)dma_mask,
+>>> -			       (unsigned long long)dev_addr);
+>>> +	*dma_handle = swiotlb_phys_to_dma(dev, phys_addr);
+>>
+>> nit: this should probably go after the dma_coherent_ok() check (as with the
+>> original logic).
+> 
+> But the originall logic also needs the dma_addr_t for the
+> dma_coherent_ok check:
+> 
+> 		dev_addr = swiotlb_phys_to_dma(hwdev, paddr);
+> 		/* Confirm address can be DMA'd by device */
+> 		if (dev_addr + size - 1 > dma_mask) {
+> 			...
+> 			goto err_warn;
+> 		}
+> 
+> or do you mean assining to *dma_handle?  The dma_handle is not
+> valid for a failure return, so I don't think this should matter.
+
+Yeah, only the assignment - as I said, it's just a stylistic nit; no big 
+deal either way.
+
+>>> +	if (ret) {
+>>> +		*dma_handle = swiotlb_virt_to_bus(hwdev, ret);
+>>> +		if (dma_coherent_ok(hwdev, *dma_handle, size)) {
+>>> +			memset(ret, 0, size);
+>>> +			return ret;
+>>> +		}
+>>
+>> Aren't we leaking the pages here?
+> 
+> Yes, that free_pages got lost somewhere in the rebases, I've added
+> it back.
+
+Cool.
+
+Robin.
