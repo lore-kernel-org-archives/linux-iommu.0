@@ -1,98 +1,51 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v6 0/5] Add Intel IOMMU debugfs support
-Date: Wed, 10 Jan 2018 15:46:51 +0200
-Message-ID: <1515592011.7000.873.camel@linux.intel.com>
-References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 11/33] dma-mapping: move swiotlb arch helpers to a new
+	header
+Date: Wed, 10 Jan 2018 14:56:01 +0000
+Message-ID: <3721b4ba-0685-255e-06b9-6e60678a1a92@arm.com>
+References: <20180110080027.13879-1-hch@lst.de>
+	<20180110080027.13879-12-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sohil Mehta <sohil.mehta@intel.com>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Ashok Raj <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180110080027.13879-12-hch-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2018-01-09 at 19:48 -0800, Sohil Mehta wrote:
-> Hi All,
+On 10/01/18 08:00, Christoph Hellwig wrote:
+> phys_to_dma, dma_to_phys and dma_capable are helpers published by
+> architecture code for use of swiotlb and xen-swiotlb only.  Drivers are
+> not supposed to use these directly, but use the DMA API instead.
 > 
-> This series aims to add debugfs support for Intel IOMMU. It exposes
-> IOMMU
-> registers, internal context and dumps individual table entries to help
-> debug
-> Intel IOMMUs.
+> Move these to a new asm/dma-direct.h helper, included by a
+> linux/dma-direct.h wrapper that provides the default linear mapping
+> unless the architecture wants to override it.
 > 
-> The first patch does the ground work for the following patches by
-> creating a
-> new Kconfig option - INTEL_IOMMU_DEBUG. It also reorganizes some Intel
-> IOMMU
-> data structures. The next four patches add debugfs support for IOMMU
-> context
-> internals, register contents, PASID internals, and Interrupt remapping
-> in 
-> that order. The information can be accessed in sysfs at
-> '/sys/kernel/debug/intel_iommu/'.
-> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+[...]
+>   drivers/crypto/marvell/cesa.c                      |  1 +
+>   drivers/mtd/nand/qcom_nandc.c                      |  1 +
 
-Thanks for an update.
-I found small issues, otherwise looks pretty much good.
+I took a look at these, and it seems their phys_to_dma() usage is doing 
+the thing which we subsequently formalised as dma_map_resource(). I've 
+had a crack at a quick patch to update the CESA driver; qcom_nandc looks 
+slightly more complex in that the changes probably need to span the BAM 
+dmaengine driver as well.
 
-P.S. During re-indendation take care of the lines that can be combined
-to one line.
+In the process, though, I stumbled across gen_pool_dma_alloc() - yuck, 
+something needs doing there, for sure...
 
-> Regards,
-> Sohil
-> 
-> Changes since v5:
->  - Change the order of includes to an alphabetical order
->  - Change seq_printf and seq_puts formatting
-> 
-> Changes since v4:
->  - Change to a SPDX license tag
->  - Fix seq_printf formatting and remove leading '\n's
-> 
-> Changes since v3:
->  - Remove an unused function parameter from some of the functions
->  - Fix checkpatch.pl warnings
->  - Remove error reporting for debugfs_create_file functions
->  - Fix unnecessary reprogramming of the context entries
->  - Simplify and merge the show context and extended context patch into
-> one
->  - Remove redundant IOMMU null check under for_each_active_iommu
->  - Update the commit title to be consistent
-> 
-> Changes since v2:
->  - Added a macro for seq file operations based on recommendation by
-> Andy 
->    Shevchenko. The marco can be moved to seq_file.h at a future point
->  - Changed the debugfs file names to more relevant ones
->  - Added information for MTRR registers in the regset file
-> 
-> Changes since v1:
->  - Fixed seq_printf formatting
->  - Handled the case when Interrupt remapping is not enabled
-> 
-> Gayatri Kammela (4):
->   iommu/vt-d: Add debugfs support for Intel IOMMU internals
->   iommu/vt-d: Add debugfs support to show context internals
->   iommu/vt-d: Add debugfs support to show register contents
->   iommu/vt-d: Add debugfs support to show Pasid table contents
-> 
-> Sohil Mehta (1):
->   iommu/vt-d: Add debugfs support for Interrupt remapping
-> 
->  drivers/iommu/Kconfig             |  10 ++
->  drivers/iommu/Makefile            |   1 +
->  drivers/iommu/intel-iommu-debug.c | 346
-> ++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/intel-iommu.c       |  35 +---
->  drivers/iommu/intel-svm.c         |   8 -
->  include/linux/intel-iommu.h       |  34 ++++
->  include/linux/intel-svm.h         |  10 +-
->  7 files changed, 407 insertions(+), 37 deletions(-)
->  create mode 100644 drivers/iommu/intel-iommu-debug.c
-> 
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Robin.
