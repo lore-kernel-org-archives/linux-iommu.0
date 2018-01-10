@@ -1,13 +1,11 @@
-From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 5/5] iommu/vt-d: Add debugfs support for Interrupt remapping
-Date: Tue,  9 Jan 2018 19:48:22 -0800
-Message-ID: <1515556102-34150-6-git-send-email-sohil.mehta@intel.com>
-References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
+From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: use domain instead of cache fetching
+Date: Wed, 10 Jan 2018 13:51:37 +0800
+Message-ID: <20180110055137.5711-1-peterx@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1515556102-34150-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,176 +15,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Debugfs extension for Intel IOMMU to dump Interrupt remapping table
-entries for Interrupt remapping and Interrupt posting.
+after commit a1ddcbe93010 ("iommu/vt-d: Pass dmar_domain directly into
+iommu_flush_iotlb_psi", 2015-08-12), we have domain pointer as parameter
+to iommu_flush_iotlb_psi(), so no need to fetch it from cache again.
 
-The file /sys/kernel/debug/intel_iommu/ir_translation_struct provides
-detailed information, such as Index, Source Id, Destination Id, Vector
-and the raw values for entries with the present bit set, in the format
-shown.
+More importantly, a NULL reference pointer bug is reported on RHEL7 (and
+it can be reproduced on some old upstream kernels too, e.g., v4.13) by
+unplugging an 40g nic from a VM (hard to test unplug on real host, but
+it should be the same):
 
-Remapped Interrupt supported on IOMMU: dmar5
- IR table address:ffff93e09d54c310
------------------------------------------------------------
- Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low
- 1      3a00 00000600 2c  0000000000043a00 00000600002c0009
- 111    4301 00000900 a2  0000000000044301 0000090000a20009
+https://bugzilla.redhat.com/show_bug.cgi?id=1531367
 
-Posted Interrupt supported on IOMMU: dmar5
- IR table address:ffff93e09d54c310
---------------------------------------------------------------------
- Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low
- 4      4300 00000010 40c7c880 41  0000001000044300 40c7c88000418001
- 5      4300 00000010 40c7c880 51  0000001000044300 40c7c88000518001
+[   24.391863] pciehp 0000:00:03.0:pcie004: Slot(0): Attention button pressed
+[   24.393442] pciehp 0000:00:03.0:pcie004: Slot(0): Powering off due to button press
+[   29.721068] i40evf 0000:01:00.0: Unable to send opcode 2 to PF, err I40E_ERR_QUEUE_EMPTY, aq_err OK
+[   29.783557] iommu: Removing device 0000:01:00.0 from group 3
+[   29.784662] BUG: unable to handle kernel NULL pointer dereference at 0000000000000304
+[   29.785817] IP: iommu_flush_iotlb_psi+0xcf/0x120
+[   29.786486] PGD 0
+[   29.786487] P4D 0
+[   29.786812]
+[   29.787390] Oops: 0000 [#1] SMP
+[   29.787876] Modules linked in: ip6t_rpfilter ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set nfnetlink ebtable_nat ebtable_broute bridge stp llc ip6table_ng
+[   29.795371] CPU: 0 PID: 156 Comm: kworker/0:2 Not tainted 4.13.0 #14
+[   29.796366] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.11.0-1.el7 04/01/2014
+[   29.797593] Workqueue: pciehp-0 pciehp_power_thread
+[   29.798328] task: ffff94f5745b4a00 task.stack: ffffb326805ac000
+[   29.799178] RIP: 0010:iommu_flush_iotlb_psi+0xcf/0x120
+[   29.799919] RSP: 0018:ffffb326805afbd0 EFLAGS: 00010086
+[   29.800666] RAX: ffff94f5bc56e800 RBX: 0000000000000000 RCX: 0000000200000025
+[   29.801667] RDX: ffff94f5bc56e000 RSI: 0000000000000082 RDI: 0000000000000000
+[   29.802755] RBP: ffffb326805afbf8 R08: 0000000000000000 R09: ffff94f5bc86bbf0
+[   29.803772] R10: ffffb326805afba8 R11: 00000000000ffdc4 R12: ffff94f5bc86a400
+[   29.804789] R13: 0000000000000000 R14: 00000000ffdc4000 R15: 0000000000000000
+[   29.805792] FS:  0000000000000000(0000) GS:ffff94f5bfc00000(0000) knlGS:0000000000000000
+[   29.806923] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   29.807736] CR2: 0000000000000304 CR3: 000000003499d000 CR4: 00000000000006f0
+[   29.808747] Call Trace:
+[   29.809156]  flush_unmaps_timeout+0x126/0x1c0
+[   29.809800]  domain_exit+0xd6/0x100
+[   29.810322]  device_notifier+0x6b/0x70
+[   29.810902]  notifier_call_chain+0x4a/0x70
+[   29.812822]  __blocking_notifier_call_chain+0x47/0x60
+[   29.814499]  blocking_notifier_call_chain+0x16/0x20
+[   29.816137]  device_del+0x233/0x320
+[   29.817588]  pci_remove_bus_device+0x6f/0x110
+[   29.819133]  pci_stop_and_remove_bus_device+0x1a/0x20
+[   29.820817]  pciehp_unconfigure_device+0x7a/0x1d0
+[   29.822434]  pciehp_disable_slot+0x52/0xe0
+[   29.823931]  pciehp_power_thread+0x8a/0xa0
+[   29.825411]  process_one_work+0x18c/0x3a0
+[   29.826875]  worker_thread+0x4e/0x3b0
+[   29.828263]  kthread+0x109/0x140
+[   29.829564]  ? process_one_work+0x3a0/0x3a0
+[   29.831081]  ? kthread_park+0x60/0x60
+[   29.832464]  ret_from_fork+0x25/0x30
+[   29.833794] Code: 85 ed 74 0b 5b 41 5c 41 5d 41 5e 41 5f 5d c3 49 8b 54 24 60 44 89 f8 0f b6 c4 48 8b 04 c2 48 85 c0 74 49 45 0f b6 ff 4a 8b 3c f8 <80> bf
+[   29.838514] RIP: iommu_flush_iotlb_psi+0xcf/0x120 RSP: ffffb326805afbd0
+[   29.840362] CR2: 0000000000000304
+[   29.841716] ---[ end trace b10ec0d6900868d3 ]---
 
-Cc: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+This patch fixes that problem if applied to v4.13 kernel.
+
+The bug does not exist on latest upstream kernel since it's fixed as a
+side effect of commit 13cf01744608 ("iommu/vt-d: Make use of iova
+deferred flushing", 2017-08-15).  But IMHO it's still good to have this
+patch upstream.
+
+CC: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
+ drivers/iommu/intel-iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-v6: Change a couple of seq_puts to seq_putc
-
-v5: Fix seq_puts formatting and remove leading '\n's
-
-v4: Remove the unused function parameter
-    Fix checkpatch.pl warnings
-    Remove error reporting for debugfs_create_file function
-    Remove redundant IOMMU null check under for_each_active_iommu
-
-v3: Use a macro for seq file operations 
-    Change the intel_iommu_interrupt_remap file name to ir_translation_struct
-
-v2: Handle the case when IR is not enabled. Fix seq_printf formatting
-
- drivers/iommu/intel-iommu-debug.c | 98 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 98 insertions(+)
-
-diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-index d25f7c99..b714c6f 100644
---- a/drivers/iommu/intel-iommu-debug.c
-+++ b/drivers/iommu/intel-iommu-debug.c
-@@ -4,6 +4,7 @@
-  *
-  * Authors: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-  *          Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-+ *          Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-  *
-  */
- 
-@@ -231,6 +232,98 @@ static int iommu_regset_show(struct seq_file *m, void *unused)
- 
- DEFINE_SHOW_ATTRIBUTE(iommu_regset);
- 
-+#ifdef CONFIG_IRQ_REMAP
-+static void ir_tbl_remap_entry_show(struct seq_file *m,
-+				    struct intel_iommu *iommu)
-+{
-+	int idx;
-+	struct irte *ri_entry;
-+
-+	/* Print the header only once */
-+	seq_puts(m, " Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low\n");
-+
-+	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
-+		ri_entry = &iommu->ir_table->base[idx];
-+		if (!ri_entry->present || ri_entry->p_pst)
-+			continue;
-+		seq_printf(m, " %d\t%04x %08x %02x  %016llx %016llx\n", idx,
-+			   ri_entry->sid, ri_entry->dest_id, ri_entry->vector,
-+			   ri_entry->high, ri_entry->low);
-+	}
-+}
-+
-+static void ir_tbl_posted_entry_show(struct seq_file *m,
-+				     struct intel_iommu *iommu)
-+{
-+	int idx;
-+	struct irte *pi_entry;
-+
-+	/* Print the header only once */
-+	seq_puts(m, " Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low\n");
-+
-+	for (idx = 0; idx < INTR_REMAP_TABLE_ENTRIES; idx++) {
-+		pi_entry = &iommu->ir_table->base[idx];
-+		if (!pi_entry->present || !pi_entry->p_pst)
-+			continue;
-+		seq_printf(m, " %d\t%04x %08x %08x %02x  %016llx %016llx\n",
-+			   idx, pi_entry->sid, pi_entry->pda_h,
-+			   (pi_entry->pda_l)<<6, pi_entry->vector,
-+			   pi_entry->high, pi_entry->low);
-+	}
-+}
-+
-+/*
-+ * For active IOMMUs go through the Interrupt remapping
-+ * table and print valid entries in a table format for
-+ * Remapped and Posted Interrupts.
-+ */
-+static int ir_translation_struct_show(struct seq_file *m, void *unused)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!ecap_ir_support(iommu->ecap))
-+			continue;
-+
-+		seq_printf(m, "Remapped Interrupt supported on IOMMU: %s\n"
-+			   " IR table address:%p\n", iommu->name,
-+			   iommu->ir_table);
-+		seq_puts(m, "-----------------------------------------------------------\n");
-+
-+		if (iommu->ir_table)
-+			ir_tbl_remap_entry_show(m, iommu);
-+		else
-+			seq_puts(m, "Interrupt Remapping is not enabled\n");
-+		seq_putc(m, '\n');
-+	}
-+
-+	seq_puts(m, "****\t****\t****\t****\t****\t****\t****\t****\n");
-+
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!cap_pi_support(iommu->cap))
-+			continue;
-+
-+		seq_printf(m, "Posted Interrupt supported on IOMMU: %s\n"
-+			   " IR table address:%p\n", iommu->name,
-+			   iommu->ir_table);
-+		seq_puts(m, "--------------------------------------------------------------------\n");
-+
-+		if (iommu->ir_table)
-+			ir_tbl_posted_entry_show(m, iommu);
-+		else
-+			seq_puts(m, "Interrupt Remapping is not enabled\n");
-+		seq_putc(m, '\n');
-+	}
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(ir_translation_struct);
-+#endif
-+
- void __init intel_iommu_debugfs_init(void)
- {
- 	struct dentry *iommu_debug_root;
-@@ -245,4 +338,9 @@ void __init intel_iommu_debugfs_init(void)
- 
- 	debugfs_create_file("iommu_regset", 0444, iommu_debug_root, NULL,
- 			    &iommu_regset_fops);
-+
-+#ifdef CONFIG_IRQ_REMAP
-+	debugfs_create_file("ir_translation_struct", 0444, iommu_debug_root,
-+			    NULL, &ir_translation_struct_fops);
-+#endif
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4a2de34895ec..869f37d1f3b7 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1601,8 +1601,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+ 	 * flush. However, device IOTLB doesn't need to be flushed in this case.
+ 	 */
+ 	if (!cap_caching_mode(iommu->cap) || !map)
+-		iommu_flush_dev_iotlb(get_iommu_domain(iommu, did),
+-				      addr, mask);
++		iommu_flush_dev_iotlb(domain, addr, mask);
  }
+ 
+ static void iommu_flush_iova(struct iova_domain *iovad)
 -- 
-2.7.4
+2.14.3
