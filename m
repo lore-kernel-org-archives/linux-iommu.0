@@ -1,14 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: Check the result of iommu_group_get() for NULL
-Date: Tue, 9 Jan 2018 17:15:01 +0000
-Message-ID: <98dd6b2f-5d54-4ebe-fc53-92a7e3e6f899@arm.com>
-References: <1512408130-24833-1-git-send-email-jcrouse@codeaurora.org>
+From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v6 1/5] iommu/vt-d: Add debugfs support for Intel IOMMU
+	internals
+Date: Tue,  9 Jan 2018 19:48:18 -0800
+Message-ID: <1515556102-34150-2-git-send-email-sohil.mehta@intel.com>
+References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1512408130-24833-1-git-send-email-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <1515556102-34150-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,56 +18,192 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jordan,
+From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-On 04/12/17 17:22, Jordan Crouse wrote:
-> The result of iommu_group_get() was being blindly used in both
-> attach and detach which results in a dereference when trying
-> to work with an unknown device.
+Enable Intel IOMMU debug to export Intel IOMMU internals in debugfs
 
-I missed this one before it got applied, but FWIW that behaviour was 
-actually somewhat intentional (see 05f80300dc8b). Callers really 
-shouldn't be trying to attach random unknown devices to IOMMU domains 
-anyway, but more crucially, now that iommu_{attach,detach}_group() work 
-everywhere I think the long-term plan is still to remove 
-iommu_{attach,detach}_device() completely.
+Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
 
-I have no great objection to this patch myself, but do consider it a 
-heads-up that any callers it fixes are liable to be ridden roughshod 
-over by further API changes in future.
+v6: No change
 
-Robin.
+v5: No change
 
-> Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->   drivers/iommu/iommu.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3de5c0b..69fef99 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1303,6 +1303,9 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->   	int ret;
->   
->   	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return -ENODEV;
-> +
->   	/*
->   	 * Lock the group to make sure the device-count doesn't
->   	 * change while we are attaching
-> @@ -1341,6 +1344,8 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
->   	struct iommu_group *group;
->   
->   	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return;
->   
->   	mutex_lock(&group->mutex);
->   	if (iommu_group_device_count(group) != 1) {
-> 
+v4: No change
+
+v3: No change
+
+v2: No change
+
+ drivers/iommu/Kconfig       | 10 ++++++++++
+ drivers/iommu/intel-iommu.c | 31 +++----------------------------
+ include/linux/intel-iommu.h | 32 ++++++++++++++++++++++++++++++++
+ include/linux/intel-svm.h   |  2 +-
+ 4 files changed, 46 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f3a2134..d7588ee 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -152,6 +152,16 @@ config INTEL_IOMMU
+ 	  and include PCI device scope covered by these DMA
+ 	  remapping devices.
+ 
++config INTEL_IOMMU_DEBUG
++	bool "Export Intel IOMMU internals in DebugFS"
++	depends on INTEL_IOMMU && DEBUG_FS
++	default n
++	help
++	  IOMMU internal states such as context, PASID tables can be seen via
++	  debugfs. Select this option if you want to export these internals.
++
++	  Say Y if you need this.
++
+ config INTEL_IOMMU_SVM
+ 	bool "Support for Shared Virtual Memory with Intel IOMMU"
+ 	depends on INTEL_IOMMU && X86
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4a2de34..e05b8e0 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -183,16 +183,6 @@ static int rwbf_quirk;
+ static int force_on = 0;
+ int intel_iommu_tboot_noforce;
+ 
+-/*
+- * 0: Present
+- * 1-11: Reserved
+- * 12-63: Context Ptr (12 - (haw-1))
+- * 64-127: Reserved
+- */
+-struct root_entry {
+-	u64	lo;
+-	u64	hi;
+-};
+ #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+ 
+ /*
+@@ -218,21 +208,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
+ 
+ 	return re->hi & VTD_PAGE_MASK;
+ }
+-/*
+- * low 64 bits:
+- * 0: present
+- * 1: fault processing disable
+- * 2-3: translation type
+- * 12-63: address space root
+- * high 64 bits:
+- * 0-2: address width
+- * 3-6: aval
+- * 8-23: domain id
+- */
+-struct context_entry {
+-	u64 lo;
+-	u64 hi;
+-};
+ 
+ static inline void context_clear_pasid_enable(struct context_entry *context)
+ {
+@@ -259,7 +234,7 @@ static inline bool __context_present(struct context_entry *context)
+ 	return (context->lo & 1);
+ }
+ 
+-static inline bool context_present(struct context_entry *context)
++bool context_present(struct context_entry *context)
+ {
+ 	return context_pasid_enabled(context) ?
+ 	     __context_present(context) :
+@@ -819,7 +794,7 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ 	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
+ }
+ 
+-static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
++struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
+ 						       u8 bus, u8 devfn, int alloc)
+ {
+ 	struct root_entry *root = &iommu->root_entry[bus];
+@@ -5208,7 +5183,7 @@ static void intel_iommu_put_resv_regions(struct device *dev,
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ #define MAX_NR_PASID_BITS (20)
+-static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
++unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
+ {
+ 	/*
+ 	 * Convert ecap_pss to extend context entry pts encoding, also
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index f3274d9..b8591dc 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -383,6 +383,33 @@ struct pasid_entry;
+ struct pasid_state_entry;
+ struct page_req_dsc;
+ 
++/*
++ * 0: Present
++ * 1-11: Reserved
++ * 12-63: Context Ptr (12 - (haw-1))
++ * 64-127: Reserved
++ */
++struct root_entry {
++	u64     lo;
++	u64     hi;
++};
++
++/*
++ * low 64 bits:
++ * 0: present
++ * 1: fault processing disable
++ * 2-3: translation type
++ * 12-63: address space root
++ * high 64 bits:
++ * 0-2: address width
++ * 3-6: aval
++ * 8-23: domain id
++ */
++struct context_entry {
++	u64 lo;
++	u64 hi;
++};
++
+ struct intel_iommu {
+ 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
+ 	u64 		reg_phys; /* physical address of hw register set */
+@@ -488,8 +515,13 @@ struct intel_svm {
+ 
+ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
+ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
++extern unsigned long intel_iommu_get_pts(struct intel_iommu *iommu);
+ #endif
+ 
+ extern const struct attribute_group *intel_iommu_groups[];
++extern void intel_iommu_debugfs_init(void);
++extern bool context_present(struct context_entry *context);
++extern struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
++						u8 bus, u8 devfn, int alloc);
+ 
+ #endif
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 99bc5b3..733eaf9 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -130,7 +130,7 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 	BUG();
+ }
+ 
+-static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
++static inline int intel_svm_is_pasid_valid(struct device *dev, int pasid)
+ {
+ 	return -EINVAL;
+ }
+-- 
+2.7.4
