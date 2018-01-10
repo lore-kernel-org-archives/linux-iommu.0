@@ -1,36 +1,52 @@
-From: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 32/33] cris: use dma-direct
-Date: Wed, 10 Jan 2018 16:41:24 +0100
-Message-ID: <20180110154124.GB18428@lst.de>
-References: <20180110080027.13879-1-hch@lst.de>
-	<20180110080027.13879-33-hch@lst.de>
-	<1515598060.3238.40.camel@synopsys.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 10/22] swiotlb: refactor coherent buffer allocation
+Date: Wed, 10 Jan 2018 16:46:49 +0100
+Message-ID: <20180110154649.GA18529@lst.de>
+References: <20180110080932.14157-1-hch@lst.de> <20180110080932.14157-11-hch@lst.de> <cecc98cf-2e6a-a7bc-7390-d6dcced038c4@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-ia64-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1515598060.3238.40.camel-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <cecc98cf-2e6a-a7bc-7390-d6dcced038c4@arm.com>
+Sender: linux-ia64-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Christian =?iso-8859-1?Q?K=F6nig?= <ckoenig.leichtzumerken@gmail.com>, x86@kernel.org, linux-kernel@vger.kernel.org, Konrad Rzeszutek Wilk <konrad@darnok.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 10, 2018 at 03:27:41PM +0000, Alexey Brodkin wrote:
-> Hi Christoph,
-> 
-> On Wed, 2018-01-10 at 09:00 +0100, Christoph Hellwig wrote:
-> > cris currently has an incomplete direct mapping dma_map_ops implementation
-> > is PCI support is enabled.  Replace it with the fully feature generic
-> 
-> _if_ PCI support is enabled.
+On Wed, Jan 10, 2018 at 12:22:18PM +0000, Robin Murphy wrote:
+>> +	if (phys_addr == SWIOTLB_MAP_ERROR)
+>> +		goto out_warn;
+>>   -		/* Confirm address can be DMA'd by device */
+>> -		if (dev_addr + size - 1 > dma_mask) {
+>> -			printk("hwdev DMA mask = 0x%016Lx, dev_addr = 0x%016Lx\n",
+>> -			       (unsigned long long)dma_mask,
+>> -			       (unsigned long long)dev_addr);
+>> +	*dma_handle = swiotlb_phys_to_dma(dev, phys_addr);
+>
+> nit: this should probably go after the dma_coherent_ok() check (as with the 
+> original logic).
 
-Thanks, fixed.
+But the originall logic also needs the dma_addr_t for the
+dma_coherent_ok check:
+
+		dev_addr = swiotlb_phys_to_dma(hwdev, paddr);
+		/* Confirm address can be DMA'd by device */
+		if (dev_addr + size - 1 > dma_mask) {
+			...
+			goto err_warn;
+		}
+
+or do you mean assining to *dma_handle?  The dma_handle is not
+valid for a failure return, so I don't think this should matter.
+
+>> +	if (ret) {
+>> +		*dma_handle = swiotlb_virt_to_bus(hwdev, ret);
+>> +		if (dma_coherent_ok(hwdev, *dma_handle, size)) {
+>> +			memset(ret, 0, size);
+>> +			return ret;
+>> +		}
+>
+> Aren't we leaking the pages here?
+
+Yes, that free_pages got lost somewhere in the rebases, I've added
+it back.
