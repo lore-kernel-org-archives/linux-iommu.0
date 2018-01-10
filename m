@@ -1,23 +1,23 @@
-From: Alexey Brodkin <Alexey.Brodkin@synopsys.com>
-Subject: Re: [PATCH 32/33] cris: use dma-direct
-Date: Wed, 10 Jan 2018 15:27:41 +0000
-Message-ID: <1515598060.3238.40.camel@synopsys.com>
-References: <20180110080027.13879-1-hch@lst.de>
-         <20180110080027.13879-33-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 20/33] dma-mapping: clear harmful GFP_* flags in common
+        code
+Date: Wed, 10 Jan 2018 16:29:45 +0100
+Message-ID: <20180110152945.GC17790@lst.de>
+References: <20180110080027.13879-1-hch@lst.de> <20180110080027.13879-21-hch@lst.de> <27b90341-f9d0-356f-0194-1c7203a3f93e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180110080027.13879-33-hch@lst.de>
-Content-Language: en-US
-Content-ID: <B15DD903835F1D4DBDF5538A17C55D00@internal.synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "hch@lst.de" <hch@lst.de>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <27b90341-f9d0-356f-0194-1c7203a3f93e@arm.com>
+Sender: linux-m68k-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, Konrad Rzeszutek Wilk <konrad@darnok.org>, linux-snps-arc@lists.infradead.org, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQ2hyaXN0b3BoLA0KDQpPbiBXZWQsIDIwMTgtMDEtMTAgYXQgMDk6MDAgKzAxMDAsIENocmlz
-dG9waCBIZWxsd2lnIHdyb3RlOg0KPiBjcmlzIGN1cnJlbnRseSBoYXMgYW4gaW5jb21wbGV0ZSBk
-aXJlY3QgbWFwcGluZyBkbWFfbWFwX29wcyBpbXBsZW1lbnRhdGlvbg0KPiBpcyBQQ0kgc3VwcG9y
-dCBpcyBlbmFibGVkLiAgUmVwbGFjZSBpdCB3aXRoIHRoZSBmdWxseSBmZWF0dXJlIGdlbmVyaWMN
-Cg0KX2lmXyBQQ0kgc3VwcG9ydCBpcyBlbmFibGVkLg0KDQotQWxleGV5
+On Wed, Jan 10, 2018 at 11:59:30AM +0000, Robin Murphy wrote:
+> Just a note that if we're all happy to enshrine the "allocations are always 
+> zeroed" behaviour in the API (I am too, for the record), we should remember 
+> to follow up once the dust settles to update the docs and I guess just 
+> #define dma_zalloc_coherent dma_alloc_coherent.
+
+And then just remove it.  But yes, another item for the todo list..
