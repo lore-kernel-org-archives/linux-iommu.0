@@ -1,15 +1,15 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v6 1/5] iommu/vt-d: Add debugfs support for Intel IOMMU
-	internals
-Date: Wed, 10 Jan 2018 15:32:46 +0200
-Message-ID: <1515591166.7000.860.camel@linux.intel.com>
+Subject: Re: [PATCH v6 3/5] iommu/vt-d: Add debugfs support to show register
+	contents
+Date: Wed, 10 Jan 2018 15:35:39 +0200
+Message-ID: <1515591339.7000.863.camel@linux.intel.com>
 References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
-	<1515556102-34150-2-git-send-email-sohil.mehta@intel.com>
+	<1515556102-34150-4-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1515556102-34150-2-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1515556102-34150-4-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,31 +24,31 @@ Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fen
 List-Id: iommu@lists.linux-foundation.org
 
 On Tue, 2018-01-09 at 19:48 -0800, Sohil Mehta wrote:
-> From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+> Debugfs extension to dump all the register contents for each IOMMU
+> device to the user space via debugfs.
 > 
-> Enable Intel IOMMU debug to export Intel IOMMU internals in debugfs
+> example:
+> root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/iommu_regset
+> 
+> DMAR: dmar1: reg_base_addr fed90000
+> Name         Offset     Contents
+> VER          0x00       0x0000000000000010
+> CAP          0x08       0x01c0000c40660462
+> ECAP         0x10       0x0000019e2ff0505e
+> GCMD         0x18       0x0000000000000000
+> GSTS         0x1c       0x00000000c7000000
+> RTADDR       0x20       0x00000004558d6800
+> CCMD         0x28       0x0800000000000000
+> FSTS         0x34       0x0000000000000000
+> FECTL        0x38       0x0000000000000000
+> FEDATA       0x3c       0xfee0100c00004141
 
- 
-> +config INTEL_IOMMU_DEBUG
-> +	bool "Export Intel IOMMU internals in DebugFS"
-> +	depends on INTEL_IOMMU && DEBUG_FS
+> +		seq_printf(m, "\nDMAR: %s: reg_base_addr %llx\n",
+> iommu->name,
+> +			   base);
 
-> +	default n
-
-I thought I commented on this...
-
-Please, remove. "n" is default default, so no need to duplicate it.
-
-> +	help
-> +	  IOMMU internal states such as context, PASID tables can be
-> seen via
-> +	  debugfs. Select this option if you want to export these
-> internals.
-> +
-> +	  Say Y if you need this.
-
-Also I lost a track how this option is being used here. It looks like
-this part is not related to the patch itself.
+Can we get rid of leading '\n'?
 
 -- 
 Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
