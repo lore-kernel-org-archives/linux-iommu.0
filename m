@@ -1,68 +1,89 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v3 08/16] iommu: introduce device fault data
-Date: Wed, 10 Jan 2018 11:41:58 +0000
-Message-ID: <f9f9dd55-3191-eba0-f4e7-e7c9f16c00f1@arm.com>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1510944914-54430-9-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 31/33] dma-direct: reject too small dma masks
+Date: Wed, 10 Jan 2018 11:49:34 +0000
+Message-ID: <0bcca030-a8da-c34a-a905-707986689f33@arm.com>
+References: <20180110080027.13879-1-hch@lst.de>
+ <20180110080027.13879-32-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1510944914-54430-9-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Lan Tianyu <tianyu.lan@intel.com>, Yi L <yi.l.liu@linux.intel.com>, "Liu@mail.linuxfoundation.org" <Liu@mail.linuxfoundation.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20180110080027.13879-32-hch@lst.de>
+Content-Language: en-GB
+Sender: linux-m68k-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, Konrad Rzeszutek Wilk <konrad@darnok.org>, linux-snps-arc@lists.infradead.org, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
+On 10/01/18 08:00, Christoph Hellwig wrote:
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   include/linux/dma-direct.h |  1 +
+>   lib/dma-direct.c           | 19 +++++++++++++++++++
+>   2 files changed, 20 insertions(+)
+> 
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index 4788bf0bf683..bcdb1a3e4b1f 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -42,5 +42,6 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   		gfp_t gfp, unsigned long attrs);
+>   void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
+>   		dma_addr_t dma_addr, unsigned long attrs);
+> +int dma_direct_supported(struct device *dev, u64 mask);
+>   
+>   #endif /* _LINUX_DMA_DIRECT_H */
+> diff --git a/lib/dma-direct.c b/lib/dma-direct.c
+> index 784a68dfdbe3..40b1f92f2214 100644
+> --- a/lib/dma-direct.c
+> +++ b/lib/dma-direct.c
+> @@ -122,6 +122,24 @@ static int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl,
+>   	return nents;
+>   }
+>   
+> +int dma_direct_supported(struct device *dev, u64 mask)
+> +{
+> +#ifdef CONFIG_ZONE_DMA
+> +	if (mask < DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
+> +		return 0;
+> +#else
+> +	/*
+> +	 * Because 32-bit DMA masks are so common we expect every architecture
+> +	 * to be able to satisfy them - either by not supporting more physical
+> +	 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+> +	 * architecture needs to use an IOMMU instead of the direct mapping.
+> +	 */
+> +	if (mask < DMA_BIT_MASK(32))
+> +		return 0;
 
-On 17/11/17 18:55, Jacob Pan wrote:
-[...]
-> +/**
-> + * struct iommu_fault_event - Generic per device fault data
-> + *
-> + * - PCI and non-PCI devices
-> + * - Recoverable faults (e.g. page request), information based on PCI ATS
-> + * and PASID spec.
-> + * - Un-recoverable faults of device interest
-> + * - DMA remapping and IRQ remapping faults
+Do you think it's worth the effort to be a little more accommodating 
+here? i.e.:
+
+		return dma_max_pfn(dev) >= max_pfn;
+
+We seem to have a fair few 28-31 bit masks for older hardware which 
+probably associates with host systems packing equivalently small amounts 
+of RAM.
+
+Otherwise though,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+Robin.
+
+> +#endif
+> +	return 1;
+> +}
 > +
-> + * @type contains fault type.
-> + * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
-> + *         faults are not reported
-> + * @addr: tells the offending page address
-> + * @pasid: contains process address space ID, used in shared virtual memory(SVM)
-> + * @rid: requestor ID
-> + * @page_req_group_id: page request group index
-> + * @last_req: last request in a page request group
-> + * @pasid_valid: indicates if the PRQ has a valid PASID
-> + * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
-> + * @device_private: if present, uniquely identify device-specific
-> + *                  private data for an individual page request.
-> + * @iommu_private: used by the IOMMU driver for storing fault-specific
-> + *                 data. Users should not modify this field before
-> + *                 sending the fault response.
-> + */
-> +struct iommu_fault_event {
-> +	enum iommu_fault_type type;
-> +	enum iommu_fault_reason reason;
-> +	u64 addr;
-> +	u32 pasid;
-> +	u32 page_req_group_id : 9;
-
-As I've been rebasing my work onto your series, I have a few more comments
-about this structure. Is there any advantage in limiting the PRGI as a
-bitfield? PCI uses 9 bits, but others might need more. For instance ARM
-Stall uses 16-bit IDs to identify a fault event.
-
-Could you please make it a u32 (as well as in page_response_msg), and
-could page_req_group_id be renamed to simply "id"?
-
-> +	u32 last_req : 1;
-> +	u32 pasid_valid : 1;
-I noticed that page_response_msg in patch 15/16 calls this bit
-"pasid_present". Could you rename it to "pasid_valid" for consistency?
-
-Thanks,
-Jean
+>   static int dma_direct_mapping_error(struct device *dev, dma_addr_t dma_addr)
+>   {
+>   	return dma_addr == DIRECT_MAPPING_ERROR;
+> @@ -132,6 +150,7 @@ const struct dma_map_ops dma_direct_ops = {
+>   	.free			= dma_direct_free,
+>   	.map_page		= dma_direct_map_page,
+>   	.map_sg			= dma_direct_map_sg,
+> +	.dma_supported		= dma_direct_supported,
+>   	.mapping_error		= dma_direct_mapping_error,
+>   };
+>   EXPORT_SYMBOL(dma_direct_ops);
+> 
