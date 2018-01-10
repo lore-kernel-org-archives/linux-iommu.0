@@ -1,49 +1,113 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 08/22] swiotlb: wire up ->dma_supported in swiotlb_dma_ops
-Date: Wed, 10 Jan 2018 17:23:08 +0000
-Message-ID: <5b14af5b-e6e9-17c5-d433-f50ccb466f90@arm.com>
-References: <20180110080932.14157-1-hch@lst.de>
-	<20180110080932.14157-9-hch@lst.de>
-	<7a058876-08fc-7323-7cb3-fe85116e2ea8@arm.com>
-	<20180110153517.GF17790@lst.de>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH] iommu/vt-d: use domain instead of cache fetching
+Date: Wed, 10 Jan 2018 16:50:58 -0700
+Message-ID: <20180110165058.601984f2@t450s.home>
+References: <20180110055137.5711-1-peterx@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180110153517.GF17790-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180110055137.5711-1-peterx@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Xu <peterx@redhat.com>
+Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/01/18 15:35, Christoph Hellwig wrote:
-> On Wed, Jan 10, 2018 at 12:16:15PM +0000, Robin Murphy wrote:
->> On 10/01/18 08:09, Christoph Hellwig wrote:
->>> To properly reject too small DMA masks based on the addressability of the
->>> bounce buffer.
->>
->> I reckon this is self-evident enough that it should simply be squashed into
->> the previous patch.
+On Wed, 10 Jan 2018 13:51:37 +0800
+Peter Xu <peterx@redhat.com> wrote:
+
+> after commit a1ddcbe93010 ("iommu/vt-d: Pass dmar_domain directly into
+> iommu_flush_iotlb_psi", 2015-08-12), we have domain pointer as parameter
+> to iommu_flush_iotlb_psi(), so no need to fetch it from cache again.
 > 
-> x86 didn't wire it up before, so I want a clear blaimpoint for this
-> change instead of mixing it up.
-That almost makes sense, if x86 were using this generic swiotlb_dma_ops 
-already. AFAICS it's only ia64, unicore and tile who end up using it, 
-and they all had swiotlb_dma_supported hooked up to begin with. Am I 
-missing something?
+> More importantly, a NULL reference pointer bug is reported on RHEL7 (and
+> it can be reproduced on some old upstream kernels too, e.g., v4.13) by
+> unplugging an 40g nic from a VM (hard to test unplug on real host, but
+> it should be the same):
+> 
+> https://bugzilla.redhat.com/show_bug.cgi?id=1531367
+> 
+> [   24.391863] pciehp 0000:00:03.0:pcie004: Slot(0): Attention button pressed
+> [   24.393442] pciehp 0000:00:03.0:pcie004: Slot(0): Powering off due to button press
+> [   29.721068] i40evf 0000:01:00.0: Unable to send opcode 2 to PF, err I40E_ERR_QUEUE_EMPTY, aq_err OK
+> [   29.783557] iommu: Removing device 0000:01:00.0 from group 3
+> [   29.784662] BUG: unable to handle kernel NULL pointer dereference at 0000000000000304
+> [   29.785817] IP: iommu_flush_iotlb_psi+0xcf/0x120
+> [   29.786486] PGD 0
+> [   29.786487] P4D 0
+> [   29.786812]
+> [   29.787390] Oops: 0000 [#1] SMP
+> [   29.787876] Modules linked in: ip6t_rpfilter ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set nfnetlink ebtable_nat ebtable_broute bridge stp llc ip6table_ng
+> [   29.795371] CPU: 0 PID: 156 Comm: kworker/0:2 Not tainted 4.13.0 #14
+> [   29.796366] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.11.0-1.el7 04/01/2014
+> [   29.797593] Workqueue: pciehp-0 pciehp_power_thread
+> [   29.798328] task: ffff94f5745b4a00 task.stack: ffffb326805ac000
+> [   29.799178] RIP: 0010:iommu_flush_iotlb_psi+0xcf/0x120
+> [   29.799919] RSP: 0018:ffffb326805afbd0 EFLAGS: 00010086
+> [   29.800666] RAX: ffff94f5bc56e800 RBX: 0000000000000000 RCX: 0000000200000025
+> [   29.801667] RDX: ffff94f5bc56e000 RSI: 0000000000000082 RDI: 0000000000000000
+> [   29.802755] RBP: ffffb326805afbf8 R08: 0000000000000000 R09: ffff94f5bc86bbf0
+> [   29.803772] R10: ffffb326805afba8 R11: 00000000000ffdc4 R12: ffff94f5bc86a400
+> [   29.804789] R13: 0000000000000000 R14: 00000000ffdc4000 R15: 0000000000000000
+> [   29.805792] FS:  0000000000000000(0000) GS:ffff94f5bfc00000(0000) knlGS:0000000000000000
+> [   29.806923] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   29.807736] CR2: 0000000000000304 CR3: 000000003499d000 CR4: 00000000000006f0
+> [   29.808747] Call Trace:
+> [   29.809156]  flush_unmaps_timeout+0x126/0x1c0
+> [   29.809800]  domain_exit+0xd6/0x100
+> [   29.810322]  device_notifier+0x6b/0x70
+> [   29.810902]  notifier_call_chain+0x4a/0x70
+> [   29.812822]  __blocking_notifier_call_chain+0x47/0x60
+> [   29.814499]  blocking_notifier_call_chain+0x16/0x20
+> [   29.816137]  device_del+0x233/0x320
+> [   29.817588]  pci_remove_bus_device+0x6f/0x110
+> [   29.819133]  pci_stop_and_remove_bus_device+0x1a/0x20
+> [   29.820817]  pciehp_unconfigure_device+0x7a/0x1d0
+> [   29.822434]  pciehp_disable_slot+0x52/0xe0
+> [   29.823931]  pciehp_power_thread+0x8a/0xa0
+> [   29.825411]  process_one_work+0x18c/0x3a0
+> [   29.826875]  worker_thread+0x4e/0x3b0
+> [   29.828263]  kthread+0x109/0x140
+> [   29.829564]  ? process_one_work+0x3a0/0x3a0
+> [   29.831081]  ? kthread_park+0x60/0x60
+> [   29.832464]  ret_from_fork+0x25/0x30
+> [   29.833794] Code: 85 ed 74 0b 5b 41 5c 41 5d 41 5e 41 5f 5d c3 49 8b 54 24 60 44 89 f8 0f b6 c4 48 8b 04 c2 48 85 c0 74 49 45 0f b6 ff 4a 8b 3c f8 <80> bf
+> [   29.838514] RIP: iommu_flush_iotlb_psi+0xcf/0x120 RSP: ffffb326805afbd0
+> [   29.840362] CR2: 0000000000000304
+> [   29.841716] ---[ end trace b10ec0d6900868d3 ]---
+> 
+> This patch fixes that problem if applied to v4.13 kernel.
+> 
+> The bug does not exist on latest upstream kernel since it's fixed as a
+> side effect of commit 13cf01744608 ("iommu/vt-d: Make use of iova
+> deferred flushing", 2017-08-15).  But IMHO it's still good to have this
+> patch upstream.
+> 
+> CC: Alex Williamson <alex.williamson@redhat.com>
+> Signed-off-by: Peter Xu <peterx@redhat.com>
+> ---
+>  drivers/iommu/intel-iommu.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 4a2de34895ec..869f37d1f3b7 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1601,8 +1601,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+>  	 * flush. However, device IOTLB doesn't need to be flushed in this case.
+>  	 */
+>  	if (!cap_caching_mode(iommu->cap) || !map)
+> -		iommu_flush_dev_iotlb(get_iommu_domain(iommu, did),
+> -				      addr, mask);
+> +		iommu_flush_dev_iotlb(domain, addr, mask);
+>  }
+>  
+>  static void iommu_flush_iova(struct iova_domain *iovad)
 
-If regressions are going to happen, they'll surely point at whichever 
-commit pulls the ops into the relevant arch code - there doesn't seem to 
-be a great deal of value in having a piecemeal history of said ops 
-*before* that point.
+Seems like an oversight of a1ddcbe93010 to leave this redundant lookup,
+so it's certainly still relevant to current mainline kernels even if
+it's just an efficiency improvement rather than a bug fix.  Perhaps we
+should include a Fixes tag to link it back to where it's easily fixed.
 
-Robin.
+Fixes: a1ddcbe93010 ("iommu/vt-d: Pass dmar_domain directly into iommu_flush_iotlb_psi")
+Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
