@@ -1,11 +1,15 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: use domain instead of cache fetching
-Date: Wed, 10 Jan 2018 13:51:37 +0800
-Message-ID: <20180110055137.5711-1-peterx@redhat.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/exynos: Don't unconditionally steal bus ops
+Date: Wed, 10 Jan 2018 07:27:24 +0100
+Message-ID: <8ed83858-83c9-0920-19c7-b780b9089d22@samsung.com>
+References: <CGME20180109153413epcas2p2edcbf10c5a256acb473b03d140fd6bcd@epcas2p2.samsung.com>
+	<da24d31fc6f4be7b44ceef215f672c0ed3c37979.1515511941.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <da24d31fc6f4be7b44ceef215f672c0ed3c37979.1515511941.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,96 +19,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-after commit a1ddcbe93010 ("iommu/vt-d: Pass dmar_domain directly into
-iommu_flush_iotlb_psi", 2015-08-12), we have domain pointer as parameter
-to iommu_flush_iotlb_psi(), so no need to fetch it from cache again.
+Hi Robin,
 
-More importantly, a NULL reference pointer bug is reported on RHEL7 (and
-it can be reproduced on some old upstream kernels too, e.g., v4.13) by
-unplugging an 40g nic from a VM (hard to test unplug on real host, but
-it should be the same):
+On 2018-01-09 16:34, Robin Murphy wrote:
+> Removing the early device registration hook overlooked the fact that
+> it only ran conditionally on a compatible device being present in the
+> DT. With exynos_iommu_init() now running as an unconditional initcall,
+> problems arise on non-Exynos systems when other IOMMU drivers find
+> themselves unable to install their ops on the platform bus, or at worst
+> the Exynos ops get called with someone else's domain and all hell breaks
+> loose.
+>
+> The global ops/cache setup could probably all now be triggered from the
+> first IOMMU probe, as with dma_dev assigment, but for the time being the
+> simplest fix is to resurrect the logic from commit a7b67cd5d9af
+> ("iommu/exynos: Play nice in multi-platform builds") to explicitly check
+> the DT for the presence of an Exynos IOMMU before trying anything.
+>
+> Fixes: 928055a01b3f ("iommu/exynos: Remove custom platform device registration code")
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-https://bugzilla.redhat.com/show_bug.cgi?id=1531367
+Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-[   24.391863] pciehp 0000:00:03.0:pcie004: Slot(0): Attention button pressed
-[   24.393442] pciehp 0000:00:03.0:pcie004: Slot(0): Powering off due to button press
-[   29.721068] i40evf 0000:01:00.0: Unable to send opcode 2 to PF, err I40E_ERR_QUEUE_EMPTY, aq_err OK
-[   29.783557] iommu: Removing device 0000:01:00.0 from group 3
-[   29.784662] BUG: unable to handle kernel NULL pointer dereference at 0000000000000304
-[   29.785817] IP: iommu_flush_iotlb_psi+0xcf/0x120
-[   29.786486] PGD 0
-[   29.786487] P4D 0
-[   29.786812]
-[   29.787390] Oops: 0000 [#1] SMP
-[   29.787876] Modules linked in: ip6t_rpfilter ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set nfnetlink ebtable_nat ebtable_broute bridge stp llc ip6table_ng
-[   29.795371] CPU: 0 PID: 156 Comm: kworker/0:2 Not tainted 4.13.0 #14
-[   29.796366] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.11.0-1.el7 04/01/2014
-[   29.797593] Workqueue: pciehp-0 pciehp_power_thread
-[   29.798328] task: ffff94f5745b4a00 task.stack: ffffb326805ac000
-[   29.799178] RIP: 0010:iommu_flush_iotlb_psi+0xcf/0x120
-[   29.799919] RSP: 0018:ffffb326805afbd0 EFLAGS: 00010086
-[   29.800666] RAX: ffff94f5bc56e800 RBX: 0000000000000000 RCX: 0000000200000025
-[   29.801667] RDX: ffff94f5bc56e000 RSI: 0000000000000082 RDI: 0000000000000000
-[   29.802755] RBP: ffffb326805afbf8 R08: 0000000000000000 R09: ffff94f5bc86bbf0
-[   29.803772] R10: ffffb326805afba8 R11: 00000000000ffdc4 R12: ffff94f5bc86a400
-[   29.804789] R13: 0000000000000000 R14: 00000000ffdc4000 R15: 0000000000000000
-[   29.805792] FS:  0000000000000000(0000) GS:ffff94f5bfc00000(0000) knlGS:0000000000000000
-[   29.806923] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   29.807736] CR2: 0000000000000304 CR3: 000000003499d000 CR4: 00000000000006f0
-[   29.808747] Call Trace:
-[   29.809156]  flush_unmaps_timeout+0x126/0x1c0
-[   29.809800]  domain_exit+0xd6/0x100
-[   29.810322]  device_notifier+0x6b/0x70
-[   29.810902]  notifier_call_chain+0x4a/0x70
-[   29.812822]  __blocking_notifier_call_chain+0x47/0x60
-[   29.814499]  blocking_notifier_call_chain+0x16/0x20
-[   29.816137]  device_del+0x233/0x320
-[   29.817588]  pci_remove_bus_device+0x6f/0x110
-[   29.819133]  pci_stop_and_remove_bus_device+0x1a/0x20
-[   29.820817]  pciehp_unconfigure_device+0x7a/0x1d0
-[   29.822434]  pciehp_disable_slot+0x52/0xe0
-[   29.823931]  pciehp_power_thread+0x8a/0xa0
-[   29.825411]  process_one_work+0x18c/0x3a0
-[   29.826875]  worker_thread+0x4e/0x3b0
-[   29.828263]  kthread+0x109/0x140
-[   29.829564]  ? process_one_work+0x3a0/0x3a0
-[   29.831081]  ? kthread_park+0x60/0x60
-[   29.832464]  ret_from_fork+0x25/0x30
-[   29.833794] Code: 85 ed 74 0b 5b 41 5c 41 5d 41 5e 41 5f 5d c3 49 8b 54 24 60 44 89 f8 0f b6 c4 48 8b 04 c2 48 85 c0 74 49 45 0f b6 ff 4a 8b 3c f8 <80> bf
-[   29.838514] RIP: iommu_flush_iotlb_psi+0xcf/0x120 RSP: ffffb326805afbd0
-[   29.840362] CR2: 0000000000000304
-[   29.841716] ---[ end trace b10ec0d6900868d3 ]---
+> ---
+>
+> v2: Use the simpler explicit DT check.
+>
+>   drivers/iommu/exynos-iommu.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 79c45650f8de..736d4552d96f 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1353,8 +1353,15 @@ static const struct iommu_ops exynos_iommu_ops = {
+>   
+>   static int __init exynos_iommu_init(void)
+>   {
+> +	struct device_node *np;
+>   	int ret;
+>   
+> +	np = of_find_matching_node(NULL, sysmmu_of_match);
+> +	if (!np)
+> +		return 0;
+> +
+> +	of_node_put(np);
+> +
+>   	lv2table_kmem_cache = kmem_cache_create("exynos-iommu-lv2table",
+>   				LV2TABLE_SIZE, LV2TABLE_SIZE, 0, NULL);
+>   	if (!lv2table_kmem_cache) {
 
-This patch fixes that problem if applied to v4.13 kernel.
-
-The bug does not exist on latest upstream kernel since it's fixed as a
-side effect of commit 13cf01744608 ("iommu/vt-d: Make use of iova
-deferred flushing", 2017-08-15).  But IMHO it's still good to have this
-patch upstream.
-
-CC: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4a2de34895ec..869f37d1f3b7 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1601,8 +1601,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 	 * flush. However, device IOTLB doesn't need to be flushed in this case.
- 	 */
- 	if (!cap_caching_mode(iommu->cap) || !map)
--		iommu_flush_dev_iotlb(get_iommu_domain(iommu, did),
--				      addr, mask);
-+		iommu_flush_dev_iotlb(domain, addr, mask);
- }
- 
- static void iommu_flush_iova(struct iova_domain *iovad)
+Best regards
 -- 
-2.14.3
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
