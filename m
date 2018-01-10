@@ -1,80 +1,68 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v6 4/5] iommu/vt-d: Add debugfs support to show Pasid
- table contents
-Date: Wed, 10 Jan 2018 15:40:48 +0200
-Message-ID: <1515591648.7000.867.camel@linux.intel.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v6 5/5] iommu/vt-d: Add debugfs support for Interrupt
+	remapping
+Date: Wed, 10 Jan 2018 15:43:31 +0200
+Message-ID: <1515591811.7000.870.camel@linux.intel.com>
 References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
-         <1515556102-34150-5-git-send-email-sohil.mehta@intel.com>
+	<1515556102-34150-6-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1515556102-34150-5-git-send-email-sohil.mehta@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sohil Mehta <sohil.mehta@intel.com>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Ashok Raj <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1515556102-34150-6-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 On Tue, 2018-01-09 at 19:48 -0800, Sohil Mehta wrote:
-
-> Debugfs extension to dump the internals such as pasid table entries
-> for
-> each IOMMU to the userspace.
+> Debugfs extension for Intel IOMMU to dump Interrupt remapping table
+> entries for Interrupt remapping and Interrupt posting.
 > 
-> Example of such dump in Kabylake:
+> The file /sys/kernel/debug/intel_iommu/ir_translation_struct provides
+> detailed information, such as Index, Source Id, Destination Id, Vector
+> and the raw values for entries with the present bit set, in the format
+> shown.
 > 
-> root@OTC-KBLH-01:~# cat
-> /sys/kernel/debug/intel_iommu/dmar_translation_struct
+> Remapped Interrupt supported on IOMMU: dmar5
+>  IR table address:ffff93e09d54c310
+> -----------------------------------------------------------
+>  Index  SID  Dest_ID  Vct Raw_value_high   Raw_value_low
+>  1      3a00 00000600 2c  0000000000043a00 00000600002c0009
+>  111    4301 00000900 a2  0000000000044301 0000090000a20009
 > 
-> IOMMU dmar0: Extended Root Table Addr:402b9e800
-> Extended Root table entries:
-> Bus 0 L: 402150001 H: 0
-> Lower Context table entries for Bus: 0
-> [entry] DID :B :D .F    Low             High
-> [80]    0000:00:0a.00   40214fa05       102
-> Higher Context table entries for Bus: 0
-> [80]    0000:00:0a.00   40260000c       0
-> Pasid Table Addr : ffff8e2d42600000
-> Pasid table entries for domain 0:
-> [Entry]         Contents
-> [0]             12c409801
+> Posted Interrupt supported on IOMMU: dmar5
+>  IR table address:ffff93e09d54c310
+> --------------------------------------------------------------------
+>  Index  SID  PDA_high PDA_low  Vct Raw_value_high   Raw_value_low
+>  4      4300 00000010 40c7c880 41  0000001000044300 40c7c88000418001
+>  5      4300 00000010 40c7c880 51  0000001000044300 40c7c88000518001
+> 
 > 
 
-> +#ifdef CONFIG_INTEL_IOMMU_SVM
-> +static void pasid_tbl_entry_show(struct seq_file *m, struct
-> intel_iommu *iommu)
-> +{
-> +	int pasid_size = 0, i;
-> +
+> +		seq_printf(m, "Remapped Interrupt supported on IOMMU:
+> %s\n"
+> +			   " IR table address:%p\n", iommu->name,
+> +			   iommu->ir_table);
 
-> +	if (ecap_pasid(iommu->ecap)) {
+A nit: If you indent second part of string literal to follow the
+indentation of first one, it would be slightly better for my opinion.
 
-A nit:
-if you use negative condition you can reduce indentation level below.
+> +		seq_printf(m, "Posted Interrupt supported on IOMMU:
+> %s\n"
+> +			   " IR table address:%p\n", iommu->name,
+> +			   iommu->ir_table);
 
-if (!...)
-  return;
-
-pasid_size = ...;
-...
-
-> +		pasid_size = intel_iommu_get_pts(iommu);
-> +
-
-> +	}
-> +}
-> +#else /* CONFIG_INTEL_IOMMU_SVM */
-
-> +static void pasid_tbl_entry_show(struct seq_file *m, struct
-> intel_iommu *iommu)
-> +{
-> +}
-
-I think is not a big deal if you put all in one line like
-static ... {}
-
-> +#endif /* CONFIG_INTEL_IOMMU_SVM */
+Ditto.
 
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Intel Finland Oy
