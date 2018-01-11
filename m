@@ -1,75 +1,104 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 1/9] iommu/of: Drop early initialisation hooks
-Date: Thu, 11 Jan 2018 13:26:26 +0100
-Message-ID: <ad520247-8342-97c2-4448-5f5e87394aa1@samsung.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/9] iommu/rockchip: Fix error handling in attach
+Date: Thu, 11 Jan 2018 15:47:27 +0000
+Message-ID: <427ecf29-2024-b746-c567-903c1ce02e75@arm.com>
 References: <20180111082229.24011-1-jeffy.chen@rock-chips.com>
-        <CGME20180111082537epcas3p274f6bfeb31f10742e8129dc0c877745e@epcas3p2.samsung.com>
-        <20180111082229.24011-2-jeffy.chen@rock-chips.com>
-        <60fdd375-ca74-0fea-c598-39a68b9e7735@samsung.com>
-        <5A57471E.7020304@rock-chips.com>
+	<20180111082229.24011-3-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <5A57471E.7020304@rock-chips.com>
-Content-language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: JeffyChen <jeffy.chen@rock-chips.com>, linux-kernel@vger.kernel.org
-Cc: jcliang@chromium.org, robin.murphy@arm.com, tfiga@chromium.org, linux-samsung-soc@vger.kernel.org, Kukjin Kim <kgene@kernel.org>, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org, Frank Rowand <frowand.list@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, Rob Clark <robdclark@gmail.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180111082229.24011-3-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jeffy,
+On 11/01/18 08:22, Jeffy Chen wrote:
+> From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> 
+> Currently if the driver encounters an error while attaching device, it
+> will leave the IOMMU in an inconsistent state. Even though it shouldn't
+> really happen in reality, let's just add proper error path to keep
+> things consistent.
+> 
+> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
+> 
+>   drivers/iommu/rockchip-iommu.c | 26 +++++++++++++++++---------
+>   1 file changed, 17 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 9d991c2d8767..ee805e1dfba7 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -826,17 +826,10 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+>   
+>   	ret = rk_iommu_force_reset(iommu);
+>   	if (ret)
+> -		return ret;
+> +		goto err_disable_stall;
+>   
+>   	iommu->domain = domain;
+>   
+> -	for (i = 0; i < iommu->num_irq; i++) {
+> -		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
+> -				       IRQF_SHARED, dev_name(dev), iommu);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+>   	for (i = 0; i < iommu->num_mmu; i++) {
+>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+>   			       rk_domain->dt_dma);
+> @@ -844,9 +837,16 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+>   		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
+>   	}
+>   
+> +	for (i = 0; i < iommu->num_irq; i++) {
+> +		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
+> +				       IRQF_SHARED, dev_name(dev), iommu);
 
-On 2018-01-11 12:14, JeffyChen wrote:
-> Hi Marek,
->
-> Thanks for your reply.
->
-> On 01/11/2018 05:40 PM, Marek Szyprowski wrote:
->> Hi Jeffy,
->>
->> On 2018-01-11 09:22, Jeffy Chen wrote:
->>> With the probe-deferral mechanism, early initialisation hooks are no
->>> longer needed.
->>>
->>> Suggested-by: Robin Murphy <robin.murphy@arm.com>
->>> Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
->>> ---
->>>
->>>   drivers/iommu/arm-smmu-v3.c  |  2 +-
->>>   drivers/iommu/arm-smmu.c     | 12 ++++++------
->>>   drivers/iommu/exynos-iommu.c |  2 +-
->>
->> For Exynos IOMMU:
->> Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>
->> IPMMU and MSM IOMMU are no longer multi-platform safe after this patch.
->> It breaks them in the same way as my commit 928055a01b3f ("iommu/exynos:
->> Remove custom platform device registration code") broke Exynos IOMMU.
->>
->> You need a similar fix for them:
->> https://www.spinics.net/lists/arm-kernel/msg627648.html
->
-> hmmm, right, i did saw this fix in the rockchip iommu driver too.
->
-> and there're also some other iommu drivers put bus_set_iommu in their 
-> probe() to avoid that.
->
-> maybe we can do it in the iommu framework?
->
-> for example:
-> 1/ add a bus type member to struct iommu_device
-> 2/ and a iommu_device_set_bus()
-> 3/ do the bus_set_iommu stuff in iommu_device_register()
-> 4/ undo bus_set_iommu in iommu_device_unregister()
+Why aren't we simply requesting the IRQ once in rk_iommu_probe()? Given 
+that the hardware doesn't handle multiple translation contexts, there 
+doesn't seem to be much point in being this dynamic about it.
 
-Frankly, in case the device-tree based systems bus_set_iommu()
-should not be needed at all. However for some legacy reasons it
-is still required by a few bits of code (at least it was needed
-some time ago). Probably it would be best if this is finally
-resolved.
+Robin.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> +		if (ret)
+> +			goto err_free_irq;
+> +	}
+> +
+>   	ret = rk_iommu_enable_paging(iommu);
+>   	if (ret)
+> -		return ret;
+> +		goto err_free_irq;
+>   
+>   	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+>   	list_add_tail(&iommu->node, &rk_domain->iommus);
+> @@ -857,6 +857,14 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+>   	rk_iommu_disable_stall(iommu);
+>   
+>   	return 0;
+> +
+> +err_free_irq:
+> +	while (i--)
+> +		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
+> +err_disable_stall:
+> +	rk_iommu_disable_stall(iommu);
+> +
+> +	return ret;
+>   }
+>   
+>   static void rk_iommu_detach_device(struct iommu_domain *domain,
+> 
