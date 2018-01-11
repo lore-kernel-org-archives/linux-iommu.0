@@ -1,90 +1,114 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 08/16] iommu: introduce device fault data
-Date: Thu, 11 Jan 2018 13:10:55 -0800
-Message-ID: <20180111131055.436b7ccc@jacob-builder>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1510944914-54430-9-git-send-email-jacob.jun.pan@linux.intel.com>
-	<f9f9dd55-3191-eba0-f4e7-e7c9f16c00f1@arm.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 5/6] iommu/arm-smmu: Add support for qcom,
+ smmu-v2 variant
+Date: Thu, 11 Jan 2018 16:23:04 -0600
+Message-ID: <20180111222304.js3c3vrx3u5j3hvj@rob-hp-laptop>
+References: <1515492109-753-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1515492109-753-6-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f9f9dd55-3191-eba0-f4e7-e7c9f16c00f1-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org" <Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1515492109-753-6-git-send-email-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, len.brown-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, pavel-+ZI9xUNit7I@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 10 Jan 2018 11:41:58 +0000
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-
-> Hi Jacob,
-> 
-> On 17/11/17 18:55, Jacob Pan wrote:
-> [...]
-> > +/**
-> > + * struct iommu_fault_event - Generic per device fault data
-> > + *
-> > + * - PCI and non-PCI devices
-> > + * - Recoverable faults (e.g. page request), information based on
-> > PCI ATS
-> > + * and PASID spec.
-> > + * - Un-recoverable faults of device interest
-> > + * - DMA remapping and IRQ remapping faults
-> > +
-> > + * @type contains fault type.
-> > + * @reason fault reasons if relevant outside IOMMU driver, IOMMU
-> > driver internal
-> > + *         faults are not reported
-> > + * @addr: tells the offending page address
-> > + * @pasid: contains process address space ID, used in shared
-> > virtual memory(SVM)
-> > + * @rid: requestor ID
-> > + * @page_req_group_id: page request group index
-> > + * @last_req: last request in a page request group
-> > + * @pasid_valid: indicates if the PRQ has a valid PASID
-> > + * @prot: page access protection flag, e.g. IOMMU_FAULT_READ,
-> > IOMMU_FAULT_WRITE
-> > + * @device_private: if present, uniquely identify device-specific
-> > + *                  private data for an individual page request.
-> > + * @iommu_private: used by the IOMMU driver for storing
-> > fault-specific
-> > + *                 data. Users should not modify this field before
-> > + *                 sending the fault response.
-> > + */
-> > +struct iommu_fault_event {
-> > +	enum iommu_fault_type type;
-> > +	enum iommu_fault_reason reason;
-> > +	u64 addr;
-> > +	u32 pasid;
-> > +	u32 page_req_group_id : 9;  
-> 
-> As I've been rebasing my work onto your series, I have a few more
-> comments about this structure. Is there any advantage in limiting the
-> PRGI as a bitfield? PCI uses 9 bits, but others might need more. For
-> instance ARM Stall uses 16-bit IDs to identify a fault event.
-> 
-> Could you please make it a u32 (as well as in page_response_msg), and
-> could page_req_group_id be renamed to simply "id"?
-> 
-sure, I will make it u32 in v4 version of the patchset. I was using PCI
-standard as a base with no specific advantage.
-I am running into little bit problem with testing, so perhaps next week.
-> > +	u32 last_req : 1;
-> > +	u32 pasid_valid : 1;  
-> I noticed that page_response_msg in patch 15/16 calls this bit
-> "pasid_present". Could you rename it to "pasid_valid" for consistency?
-> 
-make sense.
-> Thanks,
-> Jean
-
-[Jacob Pan]
+T24gVHVlLCBKYW4gMDksIDIwMTggYXQgMDM6MzE6NDhQTSArMDUzMCwgVml2ZWsgR2F1dGFtIHdy
+b3RlOgo+IHFjb20sc21tdS12MiBpcyBhbiBhcm0sc21tdS12MiBpbXBsZW1lbnRhdGlvbiB3aXRo
+IHNwZWNpZmljCj4gY2xvY2sgYW5kIHBvd2VyIHJlcXVpcmVtZW50cy4gVGhpcyBzbW11IGNvcmUg
+aXMgdXNlZCB3aXRoCj4gbXVsdGlwbGUgbWFzdGVycyBvbiBtc204OTk2LCB2aXouIG1kc3MsIHZp
+ZGVvLCBldGMuCj4gQWRkIGJpbmRpbmdzIGZvciB0aGUgc2FtZS4KPiAKPiBTaWduZWQtb2ZmLWJ5
+OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4KPiAtLS0KPiAKPiAg
+KiBNYWpvciBjaGFuZ2UgaW4gdGhpcyBwYXRjaCAtCj4gICAgQ2hhbmdlZCBjb21wYXRpYmxlIHN0
+cmluZyBmcm9tICdxY29tLG1zbTg5OTYtc21tdS12MicgdG8KPiAgICAncWNvbSxzbW11LXYyJyB0
+byByZWZsZWN0IHRoZSBJUCB2ZXJzaW9uIHJhdGhlciB0aGFuIHRoZQo+ICAgIHBsYXRmb3JtIG9u
+IHdoaWNoIGl0IGlzIHVzZWQuCgpUaGUgYnVncyBhbmQgaG93IHRoaW5ncyBhcmUgY29ubmVjdGVk
+IGFyZSBhbGwgdGhlIHNhbWU/IEknZCBzdWdnZXN0IHlvdSAKa2VlcCBib3RoIHN0cmluZ3MuCgo+
+ICAgIFRoZSBzYW1lIElQIGlzIHVzZWQgYWNyb3NzIG11bHRpcGxlIHBsYXRmb3JtcyBpbmNsdWRp
+bmcgbXNtODk5NiwKPiAgICBhbmQgc2RtODQ1IGV0Yy4KCkJ1dCBmb3Igb25seSAyIG9yIHNvIHBs
+YXRmb3JtcyBhIGZhbGxiYWNrIGlzIG5vdCByZWFsbHkgd29ydGggaXQuIFlvdSdsbCAKcHJvYmFi
+bHkgYmUgb24gU01NVXYzIGJlZm9yZSB0b28gbG9uZy4uLgoKPiAKPiAgLi4uL2RldmljZXRyZWUv
+YmluZGluZ3MvaW9tbXUvYXJtLHNtbXUudHh0ICAgICAgICAgfCAzNSArKysrKysrKysrKysrKysr
+KysrKysrCj4gIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgMTMgKysrKysrKysKPiAgMiBmaWxlcyBjaGFuZ2VkLCA0OCBpbnNlcnRpb25zKCspCj4g
+Cj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9h
+cm0sc21tdS50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJt
+LHNtbXUudHh0Cj4gaW5kZXggOGE2ZmZjZTEyYWY1Li5lNDk1MTI4OGM4N2MgMTAwNjQ0Cj4gLS0t
+IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dAo+
+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50
+eHQKPiBAQCAtMTcsNiArMTcsNyBAQCBjb25kaXRpb25zLgo+ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAiYXJtLG1tdS00MDEiCj4gICAgICAgICAgICAgICAgICAgICAgICAgICJhcm0sbW11LTUw
+MCIKPiAgICAgICAgICAgICAgICAgICAgICAgICAgImNhdml1bSxzbW11LXYyIgo+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAicWNvbSxzbW11LXYyIgo+ICAKPiAgICAgICAgICAgICAgICAgICAg
+ZGVwZW5kaW5nIG9uIHRoZSBwYXJ0aWN1bGFyIGltcGxlbWVudGF0aW9uIGFuZC9vciB0aGUKPiAg
+ICAgICAgICAgICAgICAgICAgdmVyc2lvbiBvZiB0aGUgYXJjaGl0ZWN0dXJlIGltcGxlbWVudGVk
+Lgo+IEBAIC03MSw2ICs3MiwyMyBAQCBjb25kaXRpb25zLgo+ICAgICAgICAgICAgICAgICAgICBv
+ciB1c2luZyBzdHJlYW0gbWF0Y2hpbmcgd2l0aCAjaW9tbXUtY2VsbHMgPSA8Mj4sIGFuZAo+ICAg
+ICAgICAgICAgICAgICAgICBtYXkgYmUgaWdub3JlZCBpZiBwcmVzZW50IGluIHN1Y2ggY2FzZXMu
+Cj4gIAo+ICstIGNsb2NrLW5hbWVzOiAgICBTaG91bGQgYmUgImJ1cyIsIGFuZCAiaWZhY2UiIGZv
+ciAicWNvbSxzbW11LXYyIgo+ICsgICAgICAgICAgICAgICAgICBpbXBsZW1lbnRhdGlvbi4KPiAr
+Cj4gKyAgICAgICAgICAgICAgICAgICJidXMiIGNsb2NrIGZvciAicWNvbSxzbW11LXYyIiBpcyBy
+ZXF1aXJlZCBmb3IgZG93bnN0cmVhbQo+ICsgICAgICAgICAgICAgICAgICBidXMgYWNjZXNzIGFu
+ZCBmb3IgdGhlIHNtbXUgcHR3Lgo+ICsKPiArICAgICAgICAgICAgICAgICAgImlmYWNlIiBjbG9j
+ayBpcyByZXF1aXJlZCB0byBhY2Nlc3Mgc21tdSdzIHJlZ2lzdGVycyB0aHJvdWdoCj4gKyAgICAg
+ICAgICAgICAgICAgIHRoZSBUQ1UncyBwcm9ncmFtbWluZyBpbnRlcmZhY2UuCj4gKwo+ICstIGNs
+b2NrczogICAgICAgICBQaGFuZGxlcyBmb3IgcmVzcGVjdGl2ZSBjbG9ja3MgZGVzY3JpYmVkIGJ5
+IGNsb2NrLW5hbWVzLgo+ICsKPiArLSBwb3dlci1kb21haW5zOiAgUGhhbmRsZXMgdG8gU01NVSdz
+IHBvd2VyIGRvbWFpbiBzcGVjaWZpZXIuIFRoaXMgaXMKPiArICAgICAgICAgICAgICAgICAgcmVx
+dWlyZWQgZXZlbiBpZiBTTU1VIGJlbG9uZ3MgdG8gdGhlIG1hc3RlcidzIHBvd2VyCj4gKyAgICAg
+ICAgICAgICAgICAgIGRvbWFpbiwgYXMgdGhlIFNNTVUgd2lsbCBoYXZlIHRvIGJlIGVuYWJsZWQg
+YW5kCj4gKyAgICAgICAgICAgICAgICAgIGFjY2Vzc2VkIGJlZm9yZSBtYXN0ZXIgZ2V0cyBlbmFi
+bGVkIGFuZCBsaW5rZWQgdG8gaXRzCj4gKyAgICAgICAgICAgICAgICAgIFNNTVUuCj4gKwo+ICAq
+KiBEZXByZWNhdGVkIHByb3BlcnRpZXM6Cj4gIAo+ICAtIG1tdS1tYXN0ZXJzIChkZXByZWNhdGVk
+IGluIGZhdm91ciBvZiB0aGUgZ2VuZXJpYyAiaW9tbXVzIiBiaW5kaW5nKSA6Cj4gQEAgLTEzNywz
+ICsxNTUsMjAgQEAgY29uZGl0aW9ucy4KPiAgICAgICAgICAgICAgICAgIGlvbW11LW1hcCA9IDww
+ICZzbW11MyAwIDB4NDAwPjsKPiAgICAgICAgICAgICAgICAgIC4uLgo+ICAgICAgICAgIH07Cj4g
+Kwo+ICsJLyogUWNvbSdzIGFybSxzbW11LXYyIGltcGxlbWVudGF0aW9uICovCj4gKwlzbW11NDog
+aW9tbXUgewo+ICsJCWNvbXBhdGlibGUgPSAicWNvbSxzbW11LXYyIjsKPiArCQlyZWcgPSA8MHhk
+MDAwMDAgMHgxMDAwMD47Cj4gKwo+ICsJCSNnbG9iYWwtaW50ZXJydXB0cyA9IDwxPjsKPiArCQlp
+bnRlcnJ1cHRzID0gPEdJQ19TUEkgNzMgSVJRX1RZUEVfTEVWRUxfSElHSD4sCj4gKwkJCSAgICAg
+PEdJQ19TUEkgMzIwIElSUV9UWVBFX0xFVkVMX0hJR0g+LAo+ICsJCQkgICAgIDxHSUNfU1BJIDMy
+MSBJUlFfVFlQRV9MRVZFTF9ISUdIPjsKPiArCQkjaW9tbXUtY2VsbHMgPSA8MT47Cj4gKwkJcG93
+ZXItZG9tYWlucyA9IDwmbW1jYyBNRFNTX0dEU0M+Owo+ICsKPiArCQljbG9ja3MgPSA8Jm1tY2Mg
+U01NVV9NRFBfQVhJX0NMSz4sCj4gKwkJCSA8Jm1tY2MgU01NVV9NRFBfQUhCX0NMSz47Cj4gKwkJ
+Y2xvY2stbmFtZXMgPSAiYnVzIiwgImlmYWNlIjsKPiArCX07Cj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IGluZGV4IDMz
+YmJjZmVkYjg5Ni4uMmFkZTIxNGM0MWJjIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJt
+LXNtbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IEBAIC0xMTksNiArMTE5
+LDcgQEAgZW51bSBhcm1fc21tdV9pbXBsZW1lbnRhdGlvbiB7Cj4gIAlHRU5FUklDX1NNTVUsCj4g
+IAlBUk1fTU1VNTAwLAo+ICAJQ0FWSVVNX1NNTVVWMiwKPiArCVFDT01fU01NVVYyLAo+ICB9Owo+
+ICAKPiAgc3RydWN0IGFybV9zbW11X3MyY3Igewo+IEBAIC0xOTcxLDYgKzE5NzIsMTcgQEAgc3Ry
+dWN0IGFybV9zbW11X21hdGNoX2RhdGEgewo+ICBBUk1fU01NVV9NQVRDSF9EQVRBKGFybV9tbXU1
+MDAsIEFSTV9TTU1VX1YyLCBBUk1fTU1VNTAwKTsKPiAgQVJNX1NNTVVfTUFUQ0hfREFUQShjYXZp
+dW1fc21tdXYyLCBBUk1fU01NVV9WMiwgQ0FWSVVNX1NNTVVWMik7Cj4gIAo+ICtzdGF0aWMgY29u
+c3QgY2hhciAqIGNvbnN0IHFjb21fc21tdXYyX2Nsa3NbXSA9IHsKPiArCSJidXMiLCAiaWZhY2Ui
+LAo+ICt9Owo+ICsKPiArc3RhdGljIGNvbnN0IHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhIHFj
+b21fc21tdXYyID0gewo+ICsJLnZlcnNpb24gPSBBUk1fU01NVV9WMiwKPiArCS5tb2RlbCA9IFFD
+T01fU01NVVYyLAo+ICsJLmNsa3MgPSBxY29tX3NtbXV2Ml9jbGtzLAo+ICsJLm51bV9jbGtzID0g
+QVJSQVlfU0laRShxY29tX3NtbXV2Ml9jbGtzKSwKPiArfTsKPiArCj4gIHN0YXRpYyBjb25zdCBz
+dHJ1Y3Qgb2ZfZGV2aWNlX2lkIGFybV9zbW11X29mX21hdGNoW10gPSB7Cj4gIAl7IC5jb21wYXRp
+YmxlID0gImFybSxzbW11LXYxIiwgLmRhdGEgPSAmc21tdV9nZW5lcmljX3YxIH0sCj4gIAl7IC5j
+b21wYXRpYmxlID0gImFybSxzbW11LXYyIiwgLmRhdGEgPSAmc21tdV9nZW5lcmljX3YyIH0sCj4g
+QEAgLTE5NzgsNiArMTk5MCw3IEBAIHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhIHsKPiAgCXsg
+LmNvbXBhdGlibGUgPSAiYXJtLG1tdS00MDEiLCAuZGF0YSA9ICZhcm1fbW11NDAxIH0sCj4gIAl7
+IC5jb21wYXRpYmxlID0gImFybSxtbXUtNTAwIiwgLmRhdGEgPSAmYXJtX21tdTUwMCB9LAo+ICAJ
+eyAuY29tcGF0aWJsZSA9ICJjYXZpdW0sc21tdS12MiIsIC5kYXRhID0gJmNhdml1bV9zbW11djIg
+fSwKPiArCXsgLmNvbXBhdGlibGUgPSAicWNvbSxzbW11LXYyIiwgLmRhdGEgPSAmcWNvbV9zbW11
+djIgfSwKPiAgCXsgfSwKPiAgfTsKPiAgTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgYXJtX3NtbXVf
+b2ZfbWF0Y2gpOwo+IC0tIAo+IFFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVhbGNvbW0g
+SW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKPiBvZiBDb2RlIEF1cm9yYSBGb3J1
+bSwgaG9zdGVkIGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCj4gCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRy
+ZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
