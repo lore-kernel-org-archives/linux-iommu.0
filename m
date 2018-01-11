@@ -1,16 +1,18 @@
-From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH 1/9] iommu/of: Drop early initialisation hooks
-Date: Thu, 11 Jan 2018 19:14:38 +0800
-Message-ID: <5A57471E.7020304@rock-chips.com>
+Date: Thu, 11 Jan 2018 12:24:11 +0000
+Message-ID: <faeccc75-79e9-ddb6-446d-88ab63fe4e1f@arm.com>
 References: <20180111082229.24011-1-jeffy.chen@rock-chips.com>
 	<CGME20180111082537epcas3p274f6bfeb31f10742e8129dc0c877745e@epcas3p2.samsung.com>
 	<20180111082229.24011-2-jeffy.chen@rock-chips.com>
 	<60fdd375-ca74-0fea-c598-39a68b9e7735@samsung.com>
+	<5A57471E.7020304@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <60fdd375-ca74-0fea-c598-39a68b9e7735-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <5A57471E.7020304-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,48 +22,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
-
-Thanks for your reply.
-
-On 01/11/2018 05:40 PM, Marek Szyprowski wrote:
-> Hi Jeffy,
->
-> On 2018-01-11 09:22, Jeffy Chen wrote:
->> With the probe-deferral mechanism, early initialisation hooks are no
->> longer needed.
->>
->> Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->> ---
->>
->>   drivers/iommu/arm-smmu-v3.c  |  2 +-
->>   drivers/iommu/arm-smmu.c     | 12 ++++++------
->>   drivers/iommu/exynos-iommu.c |  2 +-
->
-> For Exynos IOMMU:
-> Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->
-> IPMMU and MSM IOMMU are no longer multi-platform safe after this patch.
-> It breaks them in the same way as my commit 928055a01b3f ("iommu/exynos:
-> Remove custom platform device registration code") broke Exynos IOMMU.
->
-> You need a similar fix for them:
-> https://www.spinics.net/lists/arm-kernel/msg627648.html
-
-hmmm, right, i did saw this fix in the rockchip iommu driver too.
-
-and there're also some other iommu drivers put bus_set_iommu in their 
-probe() to avoid that.
-
-maybe we can do it in the iommu framework?
-
-for example:
-1/ add a bus type member to struct iommu_device
-2/ and a iommu_device_set_bus()
-3/ do the bus_set_iommu stuff in iommu_device_register()
-4/ undo bus_set_iommu in iommu_device_unregister()
+SGkgSmVmZnksCgpPbiAxMS8wMS8xOCAxMToxNCwgSmVmZnlDaGVuIHdyb3RlOgo+IEhpIE1hcmVr
+LAo+IAo+IFRoYW5rcyBmb3IgeW91ciByZXBseS4KPiAKPiBPbiAwMS8xMS8yMDE4IDA1OjQwIFBN
+LCBNYXJlayBTenlwcm93c2tpIHdyb3RlOgo+PiBIaSBKZWZmeSwKPj4KPj4gT24gMjAxOC0wMS0x
+MSAwOToyMiwgSmVmZnkgQ2hlbiB3cm90ZToKPj4+IFdpdGggdGhlIHByb2JlLWRlZmVycmFsIG1l
+Y2hhbmlzbSwgZWFybHkgaW5pdGlhbGlzYXRpb24gaG9va3MgYXJlIG5vCj4+PiBsb25nZXIgbmVl
+ZGVkLgo+Pj4KPj4+IFN1Z2dlc3RlZC1ieTogUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJt
+LmNvbT4KCkluIGZhY3QsIHNob3J0bHkgYWZ0ZXIgSSBzYWlkIHRoYXQgSSBoYWQgYSAiaG93IGhh
+cmQgY2FuIGl0IGJlPyIgbW9tZW50IAphbmQgdG9vayBhIGNyYWNrIGF0IGl0IG15c2VsZiAtIHNv
+cnJ5LCBJIHNob3VsZCBwcm9iYWJseSBoYXZlIGNjJ2QgeW91IApvbiB0aGF0IHNlcmllc1sxXS4K
+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBKZWZmeSBDaGVuIDxqZWZmeS5jaGVuQHJvY2stY2hpcHMuY29t
+Pgo+Pj4gLS0tCj4+Pgo+Pj4gwqAgZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jwqAgfMKgIDIg
+Ky0KPj4+IMKgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuY8KgwqDCoMKgIHwgMTIgKysrKysrLS0t
+LS0tCj4+PiDCoCBkcml2ZXJzL2lvbW11L2V4eW5vcy1pb21tdS5jIHzCoCAyICstCj4+Cj4+IEZv
+ciBFeHlub3MgSU9NTVU6Cj4+IEFja2VkLWJ5OiBNYXJlayBTenlwcm93c2tpIDxtLnN6eXByb3dz
+a2lAc2Ftc3VuZy5jb20+Cj4+Cj4+IElQTU1VIGFuZCBNU00gSU9NTVUgYXJlIG5vIGxvbmdlciBt
+dWx0aS1wbGF0Zm9ybSBzYWZlIGFmdGVyIHRoaXMgcGF0Y2guCj4+IEl0IGJyZWFrcyB0aGVtIGlu
+IHRoZSBzYW1lIHdheSBhcyBteSBjb21taXQgOTI4MDU1YTAxYjNmICgiaW9tbXUvZXh5bm9zOgo+
+PiBSZW1vdmUgY3VzdG9tIHBsYXRmb3JtIGRldmljZSByZWdpc3RyYXRpb24gY29kZSIpIGJyb2tl
+IEV4eW5vcyBJT01NVS4KPj4KPj4gWW91IG5lZWQgYSBzaW1pbGFyIGZpeCBmb3IgdGhlbToKPj4g
+aHR0cHM6Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvYXJtLWtlcm5lbC9tc2c2Mjc2NDguaHRtbAo+
+IAo+IGhtbW0sIHJpZ2h0LCBpIGRpZCBzYXcgdGhpcyBmaXggaW4gdGhlIHJvY2tjaGlwIGlvbW11
+IGRyaXZlciB0b28uCj4gCj4gYW5kIHRoZXJlJ3JlIGFsc28gc29tZSBvdGhlciBpb21tdSBkcml2
+ZXJzIHB1dCBidXNfc2V0X2lvbW11IGluIHRoZWlyIAo+IHByb2JlKCkgdG8gYXZvaWQgdGhhdC4K
+PiAKPiBtYXliZSB3ZSBjYW4gZG8gaXQgaW4gdGhlIGlvbW11IGZyYW1ld29yaz8KPiAKPiBmb3Ig
+ZXhhbXBsZToKPiAxLyBhZGQgYSBidXMgdHlwZSBtZW1iZXIgdG8gc3RydWN0IGlvbW11X2Rldmlj
+ZQo+IDIvIGFuZCBhIGlvbW11X2RldmljZV9zZXRfYnVzKCkKPiAzLyBkbyB0aGUgYnVzX3NldF9p
+b21tdSBzdHVmZiBpbiBpb21tdV9kZXZpY2VfcmVnaXN0ZXIoKQo+IDQvIHVuZG8gYnVzX3NldF9p
+b21tdSBpbiBpb21tdV9kZXZpY2VfdW5yZWdpc3RlcigpCgpVbHRpbWF0ZWx5IHdlJ2QgbGlrZSB0
+byBnZXQgcmlkIG9mIHRoZSBidXMgcmVsYXRpb25zaGlwIGFsdG9nZXRoZXIsIHNvIEkgCmRvbid0
+IHRoaW5rIGl0J3MgcmVhbGx5IHdvcnRoIGFkZGluZyBtb3JlIGluZnJhc3RydWN0dXJlIGFyb3Vu
+ZCBpdC4gCkhhdmluZyBvZi1pb21tdS1iYXNlZCBkcml2ZXJzIHNldCBidXMgb3BzIGF0IHByb2Jl
+IHRpbWUsIGFuZCBvdGhlcnMgCmNvbmRpdGlvbmFsbHkgZnJvbSBhbiBpbml0Y2FsbCwgaXMgcHJl
+dHR5IGNsZWFuIGFuZCBzaW1wbGUsIHNvIEknZCAKcmF0aGVyIHN0aWNrIHdpdGggdGhhdCBhcHBy
+b2FjaCBmb3Igbm93LgoKUm9iaW4uCgpbMV0gCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9waXBlcm1haWwvaW9tbXUvMjAxOC1KYW51YXJ5LzAyNTM5NS5odG1sCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
+b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
+dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
