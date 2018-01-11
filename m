@@ -1,113 +1,90 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH] iommu/vt-d: use domain instead of cache fetching
-Date: Wed, 10 Jan 2018 16:50:58 -0700
-Message-ID: <20180110165058.601984f2@t450s.home>
-References: <20180110055137.5711-1-peterx@redhat.com>
+From: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 0/5] Add Intel IOMMU debugfs support
+Date: Thu, 11 Jan 2018 01:32:15 +0000
+Message-ID: <1515634374.60419.14.camel@intel.com>
+References: <1515556102-34150-1-git-send-email-sohil.mehta@intel.com>
+	<1515592011.7000.873.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180110055137.5711-1-peterx@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Xu <peterx@redhat.com>
-Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1515592011.7000.873.camel-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-US
+Content-ID: <18FDA150DC499C4D8305BE9682E654D9-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Yu, Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Shankar,
+	Ravi V" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Kammela,
+	Gayatri" <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 10 Jan 2018 13:51:37 +0800
-Peter Xu <peterx@redhat.com> wrote:
-
-> after commit a1ddcbe93010 ("iommu/vt-d: Pass dmar_domain directly into
-> iommu_flush_iotlb_psi", 2015-08-12), we have domain pointer as parameter
-> to iommu_flush_iotlb_psi(), so no need to fetch it from cache again.
-> 
-> More importantly, a NULL reference pointer bug is reported on RHEL7 (and
-> it can be reproduced on some old upstream kernels too, e.g., v4.13) by
-> unplugging an 40g nic from a VM (hard to test unplug on real host, but
-> it should be the same):
-> 
-> https://bugzilla.redhat.com/show_bug.cgi?id=1531367
-> 
-> [   24.391863] pciehp 0000:00:03.0:pcie004: Slot(0): Attention button pressed
-> [   24.393442] pciehp 0000:00:03.0:pcie004: Slot(0): Powering off due to button press
-> [   29.721068] i40evf 0000:01:00.0: Unable to send opcode 2 to PF, err I40E_ERR_QUEUE_EMPTY, aq_err OK
-> [   29.783557] iommu: Removing device 0000:01:00.0 from group 3
-> [   29.784662] BUG: unable to handle kernel NULL pointer dereference at 0000000000000304
-> [   29.785817] IP: iommu_flush_iotlb_psi+0xcf/0x120
-> [   29.786486] PGD 0
-> [   29.786487] P4D 0
-> [   29.786812]
-> [   29.787390] Oops: 0000 [#1] SMP
-> [   29.787876] Modules linked in: ip6t_rpfilter ip6t_REJECT nf_reject_ipv6 xt_conntrack ip_set nfnetlink ebtable_nat ebtable_broute bridge stp llc ip6table_ng
-> [   29.795371] CPU: 0 PID: 156 Comm: kworker/0:2 Not tainted 4.13.0 #14
-> [   29.796366] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.11.0-1.el7 04/01/2014
-> [   29.797593] Workqueue: pciehp-0 pciehp_power_thread
-> [   29.798328] task: ffff94f5745b4a00 task.stack: ffffb326805ac000
-> [   29.799178] RIP: 0010:iommu_flush_iotlb_psi+0xcf/0x120
-> [   29.799919] RSP: 0018:ffffb326805afbd0 EFLAGS: 00010086
-> [   29.800666] RAX: ffff94f5bc56e800 RBX: 0000000000000000 RCX: 0000000200000025
-> [   29.801667] RDX: ffff94f5bc56e000 RSI: 0000000000000082 RDI: 0000000000000000
-> [   29.802755] RBP: ffffb326805afbf8 R08: 0000000000000000 R09: ffff94f5bc86bbf0
-> [   29.803772] R10: ffffb326805afba8 R11: 00000000000ffdc4 R12: ffff94f5bc86a400
-> [   29.804789] R13: 0000000000000000 R14: 00000000ffdc4000 R15: 0000000000000000
-> [   29.805792] FS:  0000000000000000(0000) GS:ffff94f5bfc00000(0000) knlGS:0000000000000000
-> [   29.806923] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   29.807736] CR2: 0000000000000304 CR3: 000000003499d000 CR4: 00000000000006f0
-> [   29.808747] Call Trace:
-> [   29.809156]  flush_unmaps_timeout+0x126/0x1c0
-> [   29.809800]  domain_exit+0xd6/0x100
-> [   29.810322]  device_notifier+0x6b/0x70
-> [   29.810902]  notifier_call_chain+0x4a/0x70
-> [   29.812822]  __blocking_notifier_call_chain+0x47/0x60
-> [   29.814499]  blocking_notifier_call_chain+0x16/0x20
-> [   29.816137]  device_del+0x233/0x320
-> [   29.817588]  pci_remove_bus_device+0x6f/0x110
-> [   29.819133]  pci_stop_and_remove_bus_device+0x1a/0x20
-> [   29.820817]  pciehp_unconfigure_device+0x7a/0x1d0
-> [   29.822434]  pciehp_disable_slot+0x52/0xe0
-> [   29.823931]  pciehp_power_thread+0x8a/0xa0
-> [   29.825411]  process_one_work+0x18c/0x3a0
-> [   29.826875]  worker_thread+0x4e/0x3b0
-> [   29.828263]  kthread+0x109/0x140
-> [   29.829564]  ? process_one_work+0x3a0/0x3a0
-> [   29.831081]  ? kthread_park+0x60/0x60
-> [   29.832464]  ret_from_fork+0x25/0x30
-> [   29.833794] Code: 85 ed 74 0b 5b 41 5c 41 5d 41 5e 41 5f 5d c3 49 8b 54 24 60 44 89 f8 0f b6 c4 48 8b 04 c2 48 85 c0 74 49 45 0f b6 ff 4a 8b 3c f8 <80> bf
-> [   29.838514] RIP: iommu_flush_iotlb_psi+0xcf/0x120 RSP: ffffb326805afbd0
-> [   29.840362] CR2: 0000000000000304
-> [   29.841716] ---[ end trace b10ec0d6900868d3 ]---
-> 
-> This patch fixes that problem if applied to v4.13 kernel.
-> 
-> The bug does not exist on latest upstream kernel since it's fixed as a
-> side effect of commit 13cf01744608 ("iommu/vt-d: Make use of iova
-> deferred flushing", 2017-08-15).  But IMHO it's still good to have this
-> patch upstream.
-> 
-> CC: Alex Williamson <alex.williamson@redhat.com>
-> Signed-off-by: Peter Xu <peterx@redhat.com>
-> ---
->  drivers/iommu/intel-iommu.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 4a2de34895ec..869f37d1f3b7 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1601,8 +1601,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
->  	 * flush. However, device IOTLB doesn't need to be flushed in this case.
->  	 */
->  	if (!cap_caching_mode(iommu->cap) || !map)
-> -		iommu_flush_dev_iotlb(get_iommu_domain(iommu, did),
-> -				      addr, mask);
-> +		iommu_flush_dev_iotlb(domain, addr, mask);
->  }
->  
->  static void iommu_flush_iova(struct iova_domain *iovad)
-
-Seems like an oversight of a1ddcbe93010 to leave this redundant lookup,
-so it's certainly still relevant to current mainline kernels even if
-it's just an efficiency improvement rather than a bug fix.  Perhaps we
-should include a Fixes tag to link it back to where it's easily fixed.
-
-Fixes: a1ddcbe93010 ("iommu/vt-d: Pass dmar_domain directly into iommu_flush_iotlb_psi")
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
+T24gV2VkLCAyMDE4LTAxLTEwIGF0IDE1OjQ2ICswMjAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+DQo+IE9uIFR1ZSwgMjAxOC0wMS0wOSBhdCAxOTo0OCAtMDgwMCwgU29oaWwgTWVodGEgd3JvdGU6
+DQo+ID4gDQo+ID4gSGkgQWxsLA0KPiA+IA0KPiA+IFRoaXMgc2VyaWVzIGFpbXMgdG8gYWRkIGRl
+YnVnZnMgc3VwcG9ydCBmb3IgSW50ZWwgSU9NTVUuIEl0IGV4cG9zZXMNCj4gPiBJT01NVQ0KPiA+
+IHJlZ2lzdGVycywgaW50ZXJuYWwgY29udGV4dCBhbmQgZHVtcHMgaW5kaXZpZHVhbCB0YWJsZSBl
+bnRyaWVzIHRvDQo+ID4gaGVscA0KPiA+IGRlYnVnDQo+ID4gSW50ZWwgSU9NTVVzLg0KPiA+IA0K
+PiA+IFRoZSBmaXJzdCBwYXRjaCBkb2VzIHRoZSBncm91bmQgd29yayBmb3IgdGhlIGZvbGxvd2lu
+ZyBwYXRjaGVzIGJ5DQo+ID4gY3JlYXRpbmcgYQ0KPiA+IG5ldyBLY29uZmlnIG9wdGlvbiAtIElO
+VEVMX0lPTU1VX0RFQlVHLiBJdCBhbHNvIHJlb3JnYW5pemVzIHNvbWUNCj4gPiBJbnRlbA0KPiA+
+IElPTU1VDQo+ID4gZGF0YSBzdHJ1Y3R1cmVzLiBUaGUgbmV4dCBmb3VyIHBhdGNoZXMgYWRkIGRl
+YnVnZnMgc3VwcG9ydCBmb3INCj4gPiBJT01NVQ0KPiA+IGNvbnRleHQNCj4gPiBpbnRlcm5hbHMs
+IHJlZ2lzdGVyIGNvbnRlbnRzLCBQQVNJRCBpbnRlcm5hbHMsIGFuZCBJbnRlcnJ1cHQNCj4gPiBy
+ZW1hcHBpbmcNCj4gPiBpbsKgDQo+ID4gdGhhdCBvcmRlci4gVGhlIGluZm9ybWF0aW9uIGNhbiBi
+ZSBhY2Nlc3NlZCBpbiBzeXNmcyBhdA0KPiA+ICcvc3lzL2tlcm5lbC9kZWJ1Zy9pbnRlbF9pb21t
+dS8nLg0KPiA+IA0KPiBUaGFua3MgZm9yIGFuIHVwZGF0ZS4NCj4gSSBmb3VuZCBzbWFsbCBpc3N1
+ZXMsIG90aGVyd2lzZSBsb29rcyBwcmV0dHkgbXVjaCBnb29kLg0KPiANCj4gUC5TLiBEdXJpbmcg
+cmUtaW5kZW5kYXRpb24gdGFrZSBjYXJlIG9mIHRoZSBsaW5lcyB0aGF0IGNhbiBiZQ0KPiBjb21i
+aW5lZA0KPiB0byBvbmUgbGluZS4NCj4gDQoNClRoYW5rcyBBbmR5IGZvciB0aGUgcmV2aWV3LiBX
+aWxsIGZpeCB0aGUgaXNzdWVzIHRoYXQgeW91IHBvaW50ZWQgYW5kDQpzZW5kIG91dCB0aGUgdXBk
+YXRlZCBzZXJpZXMuDQoNClNvaGlsDQoNCj4gPiANCj4gPiBSZWdhcmRzLA0KPiA+IFNvaGlsDQo+
+ID4gDQo+ID4gQ2hhbmdlcyBzaW5jZSB2NToNCj4gPiDCoC0gQ2hhbmdlIHRoZSBvcmRlciBvZiBp
+bmNsdWRlcyB0byBhbiBhbHBoYWJldGljYWwgb3JkZXINCj4gPiDCoC0gQ2hhbmdlIHNlcV9wcmlu
+dGYgYW5kIHNlcV9wdXRzIGZvcm1hdHRpbmcNCj4gPiANCj4gPiBDaGFuZ2VzIHNpbmNlIHY0Og0K
+PiA+IMKgLSBDaGFuZ2UgdG8gYSBTUERYIGxpY2Vuc2UgdGFnDQo+ID4gwqAtIEZpeCBzZXFfcHJp
+bnRmIGZvcm1hdHRpbmcgYW5kIHJlbW92ZSBsZWFkaW5nICdcbidzDQo+ID4gDQo+ID4gQ2hhbmdl
+cyBzaW5jZSB2MzoNCj4gPiDCoC0gUmVtb3ZlIGFuIHVudXNlZCBmdW5jdGlvbiBwYXJhbWV0ZXIg
+ZnJvbSBzb21lIG9mIHRoZSBmdW5jdGlvbnMNCj4gPiDCoC0gRml4IGNoZWNrcGF0Y2gucGwgd2Fy
+bmluZ3MNCj4gPiDCoC0gUmVtb3ZlIGVycm9yIHJlcG9ydGluZyBmb3IgZGVidWdmc19jcmVhdGVf
+ZmlsZSBmdW5jdGlvbnMNCj4gPiDCoC0gRml4IHVubmVjZXNzYXJ5IHJlcHJvZ3JhbW1pbmcgb2Yg
+dGhlIGNvbnRleHQgZW50cmllcw0KPiA+IMKgLSBTaW1wbGlmeSBhbmQgbWVyZ2UgdGhlIHNob3cg
+Y29udGV4dCBhbmQgZXh0ZW5kZWQgY29udGV4dCBwYXRjaA0KPiA+IGludG8NCj4gPiBvbmUNCj4g
+PiDCoC0gUmVtb3ZlIHJlZHVuZGFudCBJT01NVSBudWxsIGNoZWNrIHVuZGVyIGZvcl9lYWNoX2Fj
+dGl2ZV9pb21tdQ0KPiA+IMKgLSBVcGRhdGUgdGhlIGNvbW1pdCB0aXRsZSB0byBiZSBjb25zaXN0
+ZW50DQo+ID4gDQo+ID4gQ2hhbmdlcyBzaW5jZSB2MjoNCj4gPiDCoC0gQWRkZWQgYSBtYWNybyBm
+b3Igc2VxIGZpbGUgb3BlcmF0aW9ucyBiYXNlZCBvbiByZWNvbW1lbmRhdGlvbiBieQ0KPiA+IEFu
+ZHnCoA0KPiA+IMKgwqDCoFNoZXZjaGVua28uIFRoZSBtYXJjbyBjYW4gYmUgbW92ZWQgdG8gc2Vx
+X2ZpbGUuaCBhdCBhIGZ1dHVyZQ0KPiA+IHBvaW50DQo+ID4gwqAtIENoYW5nZWQgdGhlIGRlYnVn
+ZnMgZmlsZSBuYW1lcyB0byBtb3JlIHJlbGV2YW50IG9uZXMNCj4gPiDCoC0gQWRkZWQgaW5mb3Jt
+YXRpb24gZm9yIE1UUlIgcmVnaXN0ZXJzIGluIHRoZSByZWdzZXQgZmlsZQ0KPiA+IA0KPiA+IENo
+YW5nZXMgc2luY2UgdjE6DQo+ID4gwqAtIEZpeGVkIHNlcV9wcmludGYgZm9ybWF0dGluZw0KPiA+
+IMKgLSBIYW5kbGVkIHRoZSBjYXNlIHdoZW4gSW50ZXJydXB0IHJlbWFwcGluZyBpcyBub3QgZW5h
+YmxlZA0KPiA+IA0KPiA+IEdheWF0cmkgS2FtbWVsYSAoNCk6DQo+ID4gwqAgaW9tbXUvdnQtZDog
+QWRkIGRlYnVnZnMgc3VwcG9ydCBmb3IgSW50ZWwgSU9NTVUgaW50ZXJuYWxzDQo+ID4gwqAgaW9t
+bXUvdnQtZDogQWRkIGRlYnVnZnMgc3VwcG9ydCB0byBzaG93IGNvbnRleHQgaW50ZXJuYWxzDQo+
+ID4gwqAgaW9tbXUvdnQtZDogQWRkIGRlYnVnZnMgc3VwcG9ydCB0byBzaG93IHJlZ2lzdGVyIGNv
+bnRlbnRzDQo+ID4gwqAgaW9tbXUvdnQtZDogQWRkIGRlYnVnZnMgc3VwcG9ydCB0byBzaG93IFBh
+c2lkIHRhYmxlIGNvbnRlbnRzDQo+ID4gDQo+ID4gU29oaWwgTWVodGEgKDEpOg0KPiA+IMKgIGlv
+bW11L3Z0LWQ6IEFkZCBkZWJ1Z2ZzIHN1cHBvcnQgZm9yIEludGVycnVwdCByZW1hcHBpbmcNCj4g
+PiANCj4gPiDCoGRyaXZlcnMvaW9tbXUvS2NvbmZpZ8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+fMKgwqAxMCArKw0KPiA+IMKgZHJpdmVycy9pb21tdS9NYWtlZmlsZcKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoHzCoMKgwqAxICsNCj4gPiDCoGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUtZGVidWcu
+YyB8IDM0Ng0KPiA+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4g
+wqBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmPCoMKgwqDCoMKgwqDCoHzCoMKgMzUgKy0tLQ0K
+PiA+IMKgZHJpdmVycy9pb21tdS9pbnRlbC1zdm0uY8KgwqDCoMKgwqDCoMKgwqDCoHzCoMKgwqA4
+IC0NCj4gPiDCoGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaMKgwqDCoMKgwqDCoMKgfMKgwqAz
+NCArKysrDQo+ID4gwqBpbmNsdWRlL2xpbnV4L2ludGVsLXN2bS5owqDCoMKgwqDCoMKgwqDCoMKg
+fMKgwqAxMCArLQ0KPiA+IMKgNyBmaWxlcyBjaGFuZ2VkLCA0MDcgaW5zZXJ0aW9ucygrKSwgMzcg
+ZGVsZXRpb25zKC0pDQo+ID4gwqBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9pb21tdS9pbnRl
+bC1pb21tdS1kZWJ1Zy5jDQo+ID4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pb21tdQ==
