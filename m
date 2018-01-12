@@ -1,88 +1,178 @@
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Subject: Re: [PATCH 06/22] swiotlb: rename swiotlb_free to swiotlb_exit
-Date: Fri, 12 Jan 2018 08:39:41 -0500
-Message-ID: <20180112133939.GF26900@localhost.localdomain>
-References: <20180110080932.14157-1-hch@lst.de>
- <20180110080932.14157-7-hch@lst.de>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: RE: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon
+ 161010801 erratum(reserve HW MSI)
+Date: Fri, 12 Jan 2018 14:48:45 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA838639372@FRAEML521-MBX.china.huawei.com>
+References: <20171214160957.13716-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-ia64-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180110080932.14157-7-hch@lst.de>
-Sender: linux-ia64-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Michal Simek <monstr@monstr.eu>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Christian =?iso-8859-1?Q?K=F6nig?= <ckoenig.leichtzumerken@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, John Garry <john.garry@huawei.com>, "xuwei (O)" <xuwei5@huawei.com>, "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linuxarm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 10, 2018 at 09:09:16AM +0100, Christoph Hellwig wrote:
+Hi,
 
-OK?
+> -----Original Message-----
+> From: Shameerali Kolothum Thodi
+> Sent: Friday, December 15, 2017 3:01 PM
+> To: lorenzo.pieralisi@arm.com; robin.murphy@arm.com;
+> marc.zyngier@arm.com; will.deacon@arm.com
+> Cc: joro@8bytes.org; John Garry <john.garry@huawei.com>; xuwei (O)
+> <xuwei5@hisilicon.com>; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
+> iommu@lists.linux-foundation.org; linux-arm-kernel@lists.infradead.org; linux-
+> acpi@vger.kernel.org; devicetree@vger.kernel.org; Linuxarm
+> <linuxarm@huawei.com>
+> Subject: RE: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon
+> 161010801 erratum(reserve HW MSI)
+> 
+> Hi Lorenzo/Robin/Will,
+> 
+> Since this has all the necessary reviewed-by from all concerned now(Thanks to
+> all),
+> just wondering how this will be picked up? through iort or iommu?
+> 
+> Please let me know.
+> 
 
-Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/powerpc/kernel/dma-swiotlb.c | 2 +-
->  arch/x86/kernel/pci-swiotlb.c     | 2 +-
->  include/linux/swiotlb.h           | 4 ++--
->  lib/swiotlb.c                     | 2 +-
->  4 files changed, 5 insertions(+), 5 deletions(-)
+A gentle ping on this series...
+
+Thanks,
+Shameer
+
 > 
-> diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
-> index 506ac4fafac5..88f3963ca30f 100644
-> --- a/arch/powerpc/kernel/dma-swiotlb.c
-> +++ b/arch/powerpc/kernel/dma-swiotlb.c
-> @@ -121,7 +121,7 @@ static int __init check_swiotlb_enabled(void)
->  	if (ppc_swiotlb_enable)
->  		swiotlb_print_info();
->  	else
-> -		swiotlb_free();
-> +		swiotlb_exit();
->  
->  	return 0;
->  }
-> diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
-> index 0d77603c2f50..0ee0f8f34251 100644
-> --- a/arch/x86/kernel/pci-swiotlb.c
-> +++ b/arch/x86/kernel/pci-swiotlb.c
-> @@ -120,7 +120,7 @@ void __init pci_swiotlb_late_init(void)
->  {
->  	/* An IOMMU turned us off. */
->  	if (!swiotlb)
-> -		swiotlb_free();
-> +		swiotlb_exit();
->  	else {
->  		printk(KERN_INFO "PCI-DMA: "
->  		       "Using software bounce buffering for IO (SWIOTLB)\n");
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 24ed817082ee..606375e35d87 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -115,10 +115,10 @@ extern int
->  swiotlb_dma_supported(struct device *hwdev, u64 mask);
->  
->  #ifdef CONFIG_SWIOTLB
-> -extern void __init swiotlb_free(void);
-> +extern void __init swiotlb_exit(void);
->  unsigned int swiotlb_max_segment(void);
->  #else
-> -static inline void swiotlb_free(void) { }
-> +static inline void swiotlb_exit(void) { }
->  static inline unsigned int swiotlb_max_segment(void) { return 0; }
->  #endif
->  
-> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-> index 125c1062119f..cf5311908fa9 100644
-> --- a/lib/swiotlb.c
-> +++ b/lib/swiotlb.c
-> @@ -417,7 +417,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->  	return -ENOMEM;
->  }
->  
-> -void __init swiotlb_free(void)
-> +void __init swiotlb_exit(void)
->  {
->  	if (!io_tlb_orig_addr)
->  		return;
-> -- 
-> 2.14.2
-> 
+> > -----Original Message-----
+> > From: Shameerali Kolothum Thodi
+> > Sent: Thursday, December 14, 2017 4:10 PM
+> > To: lorenzo.pieralisi@arm.com; robin.murphy@arm.com;
+> > marc.zyngier@arm.com; will.deacon@arm.com
+> > Cc: joro@8bytes.org; John Garry <john.garry@huawei.com>; xuwei (O)
+> > <xuwei5@hisilicon.com>; Guohanjun (Hanjun Guo)
+> <guohanjun@huawei.com>;
+> > iommu@lists.linux-foundation.org; linux-arm-kernel@lists.infradead.org;
+> linux-
+> > acpi@vger.kernel.org; devicetree@vger.kernel.org; Linuxarm
+> > <linuxarm@huawei.com>; Shameerali Kolothum Thodi
+> > <shameerali.kolothum.thodi@huawei.com>
+> > Subject: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon
+> > 161010801 erratum(reserve HW MSI)
+> >
+> > On certain HiSilicon platforms (hip06/hip07) the GIC ITS and PCIe RC
+> > deviates from the standard implementation and this breaks PCIe MSI
+> > functionality when SMMU is enabled.
+> >
+> > The HiSilicon erratum 161010801 describes this limitation of certain
+> > HiSilicon platforms to support the SMMU mappings for MSI transactions.
+> > On these platforms GICv3 ITS translator is presented with the deviceID
+> > by extending the MSI payload data to 64 bits to include the deviceID.
+> > Hence, the PCIe controller on this platforms has to differentiate the MSI
+> > payload against other DMA payload and has to modify the MSI payload.
+> > This basically makes it difficult for this platforms to have a SMMU
+> > translation for MSI.
+> >
+> > This patch implements an ACPI based quirk to reserve the hw msi regions
+> > in the smmu-v3 driver which means these address regions will not be
+> > translated and will be excluded from iova allocations.
+> >
+> > To implement this quirk, the following changes are incorporated:
+> > 1. Added a generic helper function to IORT code to retrieve and reserve
+> >    the associated ITS base address from a device IORT node. The function
+> >    has a check for smmu model to determine whether the platform requires
+> >    the HW MSI reservation or not.
+> > 2. Added smmu node entries and explicitly disabled them in hip06/hip07
+> >     dts files so that users are warned about the non-DT support for this
+> >     erratum.
+> >
+> > Changelog:
+> >
+> > v11--> v12
+> > -Thanks to Lorenzo, Fixed !CONFIG_IOMMU_API compile error(patch #1).
+> >
+> > v10 --> v11
+> > -Addressed comments from Lorenzo(patch#1)
+> > -Added Robin's Reviewed-by to patch #2
+> >
+> > v9 --> v10
+> > Addressed comments:
+> > -Moved smmu model check to iort helper function to selectively apply
+> >  the msi reservation which will make the fn call generic from iommu-dma.
+> > -Removed PCI blacklisting patch, instead added smmu nodes(disabled)
+> >  with comments to hip06/hip07 dts file.
+> >
+> > v8 --> v9
+> > -Thanks to Marc, fixed IORT helper function to reserve the ITS
+> >  translater region only.
+> > -Removed the DT support for MSI reservation and blacklisted
+> >  HiSilicon PCIe controllers on DT based systems when SMMUv3 is
+> >  enabled.
+> >
+> > v7 --> v8
+> > Addressed comments from Rob and Lorenzo:
+> >  -Modified to use DT compatible string for errata.
+> >  -Changed logic to retrieve the msi-parent for DT case.
+> >
+> > v6 --> v7
+> > Addressed request from Will to add DT support for the erratum:
+> >  - added bt binding
+> >  - add of_iommu_msi_get_resv_regions()
+> > New arm64 silicon errata entry
+> > Rename iort_iommu_{its->msi}_get_resv_regions
+> >
+> > v5 --> v6
+> > Addressed comments from Robin and Lorenzo:
+> > -No change to patch#1 .
+> > -Reverted v5 patch#2 as this might break the platforms where this quirk
+> >   is not applicable. Provided a generic function in iommu code and added
+> >   back the quirk implementation in SMMU v3 driver(patch#3)
+> >
+> > v4 --> v5
+> > Addressed comments from Robin and Lorenzo:
+> > -Added a comment to make it clear that, for now, only straightforward
+> >   HW topologies are handled while reserving ITS regions(patch #1).
+> >
+> > v3 --> v4
+> > Rebased on 4.13-rc1.
+> > Addressed comments from Robin, Will and Lorenzo:
+> > -As suggested by Robin, moved the ITS msi reservation into
+> >   iommu_dma_get_resv_regions().
+> > -Added its_count != resv region failure case(patch #1).
+> >
+> > v2 --> v3
+> > Addressed comments from Lorenzo and Robin:
+> > -Removed dev_is_pci() check in smmuV3 driver.
+> > -Don't treat device not having an ITS mapping as an error in
+> >   iort helper function.
+> >
+> > v1 --> v2
+> > -patch 2/2: Invoke iort helper fn based on fwnode type(acpi).
+> >
+> > RFCv2 -->PATCH
+> > -Incorporated Lorenzo's review comments.
+> >
+> > RFC v1 --> RFC v2
+> > Based on Robin's review comments,
+> > -Removed  the generic erratum framework.
+> > -Using IORT/MADT tables to retrieve the ITS base addr instead
+> >  of vendor specific CSRT table.
+> >
+> > Shameer Kolothum (3):
+> >   ACPI/IORT: Add msi address regions reservation helper
+> >   iommu/dma: Add HW MSI(GICv3 ITS) address regions reservation
+> >   arm64:dts:hisilicon Disable hisilicon smmu node on hip06/hip07
+> >
+> >  arch/arm64/boot/dts/hisilicon/hip06.dtsi |  56 ++++++++++++++++
+> >  arch/arm64/boot/dts/hisilicon/hip07.dtsi |  25 +++++++
+> >  drivers/acpi/arm64/iort.c                | 111
+> ++++++++++++++++++++++++++++++-
+> >  drivers/iommu/dma-iommu.c                |   8 ++-
+> >  drivers/irqchip/irq-gic-v3-its.c         |   3 +-
+> >  include/linux/acpi_iort.h                |   7 +-
+> >  6 files changed, 204 insertions(+), 6 deletions(-)
+> >
+> > --
+> > 1.9.1
+> >
+
