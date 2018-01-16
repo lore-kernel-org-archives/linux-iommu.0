@@ -1,11 +1,16 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH] MAINTAINERS: add the iommu list for swiotlb and xen-swiotlb
-Date: Tue, 16 Jan 2018 08:56:24 +0100
-Message-ID: <20180116075624.5191-1-hch@lst.de>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: consolidate swiotlb dma_map implementations
+Date: Tue, 16 Jan 2018 09:22:52 +0100
+Message-ID: <76e47666-3de1-68cc-07ad-003491d26ef9@gmail.com>
+References: <20180110080932.14157-1-hch@lst.de>
+	<20180116075338.GB12693@infradead.org>
+Reply-To: christian.koenig-5C7GfCeVMHo@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180116075338.GB12693-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,39 +20,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
-Cc: xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-All other discussions related to the dma mapping interfaces are on the
-iommu list, so let's make it the official list for swiotlb and the
-second list for xen-swiotlb.
+Hi Konrad,
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- MAINTAINERS | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+can you send the first patch to Linus for inclusion in 4.15 if you 
+haven't already done so?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2d54e636d625..30dcafd388ac 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13034,7 +13034,7 @@ F:	arch/x86/boot/video*
- 
- SWIOTLB SUBSYSTEM
- M:	Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
--L:	linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-+L:	iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/konrad/swiotlb.git
- S:	Supported
- F:	lib/swiotlb.c
-@@ -14969,6 +14969,7 @@ F:	include/xen/interface/io/vscsiif.h
- XEN SWIOTLB SUBSYSTEM
- M:	Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
- L:	xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org (moderated for non-subscribers)
-+L:	iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
- S:	Supported
- F:	arch/x86/xen/*swiotlb*
- F:	drivers/xen/*swiotlb*
--- 
-2.14.2
+I'm still getting reports from people complaining about the error message.
+
+Thanks,
+Christian.
+
+Am 16.01.2018 um 08:53 schrieb Christoph Hellwig:
+> I've pulled this into the dma-mapping for-next tree, including the
+> missing free_pages noted.  I'd be fine to rebase another day or two
+> for additional reviews or important fixes.
