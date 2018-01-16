@@ -1,7 +1,7 @@
 From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v2 01/13] iommu/rockchip: Request irqs in rk_iommu_probe()
-Date: Tue, 16 Jan 2018 21:25:28 +0800
-Message-ID: <20180116132540.18939-2-jeffy.chen@rock-chips.com>
+Subject: [PATCH v2 02/13] iommu/rockchip: Suppress unbinding
+Date: Tue, 16 Jan 2018 21:25:29 +0800
+Message-ID: <20180116132540.18939-3-jeffy.chen@rock-chips.com>
 References: <20180116132540.18939-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,100 +21,27 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+It's not safe to unbind rockchip IOMMU driver.
+
 Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
 
 Changes in v2: None
 
- drivers/iommu/rockchip-iommu.c | 38 +++++++++++---------------------------
- 1 file changed, 11 insertions(+), 27 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 9d991c2d8767..4a12d4746095 100644
+index 4a12d4746095..da4afe016a4e 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -18,6 +18,7 @@
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-@@ -91,7 +92,6 @@ struct rk_iommu {
- 	void __iomem **bases;
- 	int num_mmu;
- 	int *irq;
--	int num_irq;
- 	bool reset_disabled;
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
-@@ -830,13 +830,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+@@ -1205,6 +1205,7 @@ static struct platform_driver rk_iommu_driver = {
+ 	.driver = {
+ 		   .name = "rk_iommu",
+ 		   .of_match_table = rk_iommu_dt_ids,
++		   .suppress_bind_attrs = true,
+ 	},
+ };
  
- 	iommu->domain = domain;
- 
--	for (i = 0; i < iommu->num_irq; i++) {
--		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
--				       IRQF_SHARED, dev_name(dev), iommu);
--		if (ret)
--			return ret;
--	}
--
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
- 			       rk_domain->dt_dma);
-@@ -885,9 +878,6 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	rk_iommu_disable_stall(iommu);
- 
--	for (i = 0; i < iommu->num_irq; i++)
--		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
--
- 	iommu->domain = NULL;
- 
- 	dev_dbg(dev, "Detached from iommu domain\n");
-@@ -1138,7 +1128,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	struct rk_iommu *iommu;
- 	struct resource *res;
- 	int num_res = pdev->num_resources;
--	int err, i;
-+	int err, i, irq, num_irq;
- 
- 	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
-@@ -1165,23 +1155,17 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (iommu->num_mmu == 0)
- 		return PTR_ERR(iommu->bases[0]);
- 
--	iommu->num_irq = platform_irq_count(pdev);
--	if (iommu->num_irq < 0)
--		return iommu->num_irq;
--	if (iommu->num_irq == 0)
--		return -ENXIO;
--
--	iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
--				  GFP_KERNEL);
--	if (!iommu->irq)
--		return -ENOMEM;
--
--	for (i = 0; i < iommu->num_irq; i++) {
--		iommu->irq[i] = platform_get_irq(pdev, i);
--		if (iommu->irq[i] < 0) {
--			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
-+	num_irq = of_irq_count(dev->of_node);
-+	for (i = 0; i < num_irq; i++) {
-+		irq = platform_get_irq(pdev, i);
-+		if (irq < 0) {
-+			dev_err(dev, "Failed to get IRQ, %d\n", irq);
- 			return -ENXIO;
- 		}
-+		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
-+				       IRQF_SHARED, dev_name(dev), iommu);
-+		if (err)
-+			return err;
- 	}
- 
- 	iommu->reset_disabled = device_property_read_bool(dev,
 -- 
 2.11.0
