@@ -1,383 +1,298 @@
-From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v2 12/13] iommu/rockchip: Add runtime PM support
-Date: Tue, 16 Jan 2018 21:25:39 +0800
-Message-ID: <20180116132540.18939-13-jeffy.chen@rock-chips.com>
-References: <20180116132540.18939-1-jeffy.chen@rock-chips.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH v2 1/5] iommu: Add virtio-iommu driver
+Date: Tue, 16 Jan 2018 17:45:05 +0000
+Message-ID: <5011918c-0893-8098-a0d2-e340bd740871@arm.com>
+References: <20171117185211.32593-1-jean-philippe.brucker@arm.com>
+ <20171117185211.32593-2-jean-philippe.brucker@arm.com>
+ <54320f26-05a5-9a09-f6cf-ae610c41e077@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180116132540.18939-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <54320f26-05a5-9a09-f6cf-ae610c41e077@redhat.com>
+Content-Language: en-US
+Sender: linux-acpi-owner@vger.kernel.org
+To: Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devel@acpica.org" <devel@acpica.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
+Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "lv.zheng@intel.com" <lv.zheng@intel.com>, "robert.moore@intel.com" <robert.moore@intel.com>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, Sudeep Holla <Sudeep.Holla@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "lenb@kernel.org" <lenb@kernel.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "Jayachandran.Nair@cavium.com" <Jayachandran.Nair@cavium.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, peterx@red
 List-Id: iommu@lists.linux-foundation.org
 
-When the power domain is powered off, the IOMMU cannot be accessed and
-register programming must be deferred until the power domain becomes
-enabled.
+On 15/01/18 15:12, Auger Eric wrote:
+[...]
+>> +/*
+>> + * viommu_get_req_size - compute request size
+>> + *
+>> + * A virtio-iommu request is split into one device-read-only part (top) and one
+>> + * device-write-only part (bottom). Given a request, return the sizes of the two
+>> + * parts in @top and @bottom.
+> for all but virtio_iommu_req_probe, which has a variable bottom size
 
-Add runtime PM support, and use runtime PM device link from IOMMU to
-master to startup and shutdown IOMMU.
+The comment still stands for the probe request, viommu_get_req_size will
+return @bottom depending on viommu->probe_size.
 
-Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
----
+[...]
+>> +/* Must be called with request_lock held */
+>> +static int _viommu_send_reqs_sync(struct viommu_dev *viommu,
+>> +				  struct viommu_request *req, int nr,
+>> +				  int *nr_sent)
+>> +{
+>> +	int i, ret;
+>> +	ktime_t timeout;
+>> +	LIST_HEAD(pending);
+>> +	int nr_received = 0;
+>> +	struct scatterlist *sg[2];
+>> +	/*
+>> +	 * Yes, 1s timeout. As a guest, we don't necessarily have a precise
+>> +	 * notion of time and this just prevents locking up a CPU if the device
+>> +	 * dies.
+>> +	 */
+>> +	unsigned long timeout_ms = 1000;
+>> +
+>> +	*nr_sent = 0;
+>> +
+>> +	for (i = 0; i < nr; i++, req++) {
+>> +		req->written = 0;
+>> +
+>> +		sg[0] = &req->top;
+>> +		sg[1] = &req->bottom;
+>> +
+>> +		ret = virtqueue_add_sgs(viommu->vq, sg, 1, 1, req,
+>> +					GFP_ATOMIC);
+>> +		if (ret)
+>> +			break;
+>> +
+>> +		list_add_tail(&req->list, &pending);
+>> +	}
+>> +
+>> +	if (i && !virtqueue_kick(viommu->vq))
+>> +		return -EPIPE;
+>> +
+>> +	timeout = ktime_add_ms(ktime_get(), timeout_ms * i);
+> I don't really understand how you choose your timeout value: 1s per sent
+> request.
 
-Changes in v2: None
+1s isn't a good timeout value, but I don't know what's good. In a
+prototype I have, even 1s isn't enough. The attach request (for nested
+mode) requires my device to pin down the whole guest memory, and the guest
+ends up timing out on the fastmodel because the request takes too long and
+the model timer runs too fast...
 
- drivers/iommu/rockchip-iommu.c | 191 ++++++++++++++++++++++++++++++-----------
- 1 file changed, 143 insertions(+), 48 deletions(-)
+I was tempted to simply remove this timeout, but I still think having a
+way out when the host device fails is preferable. Otherwise this
+completely locks up the CPU.
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index c2d3ac82184e..c8de1456a016 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -18,11 +18,13 @@
- #include <linux/list.h>
- #include <linux/mm.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/of.h>
- #include <linux/of_iommu.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- 
-@@ -98,6 +100,12 @@ struct rk_iommu {
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-+	struct mutex pm_mutex; /* serializes power transitions */
-+};
-+
-+struct rk_iommudata {
-+	struct device_link *link; /* runtime PM link from IOMMU to master */
-+	struct rk_iommu *iommu;
- };
- 
- static struct device *dma_dev;
-@@ -675,9 +683,15 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
- 	list_for_each(pos, &rk_domain->iommus) {
- 		struct rk_iommu *iommu;
- 		iommu = list_entry(pos, struct rk_iommu, node);
--		rk_iommu_enable_clocks(iommu);
--		rk_iommu_zap_lines(iommu, iova, size);
--		rk_iommu_disable_clocks(iommu);
-+
-+		/* Only zap TLBs of IOMMUs that are powered on. */
-+		if (pm_runtime_get_if_in_use(iommu->dev) > 0) {
-+			rk_iommu_enable_clocks(iommu);
-+			rk_iommu_zap_lines(iommu, iova, size);
-+			rk_iommu_disable_clocks(iommu);
-+
-+			pm_runtime_put(iommu->dev);
-+		}
- 	}
- 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
- }
-@@ -875,28 +889,19 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
- 
- static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
- {
--	return dev->archdata.iommu;
-+	struct rk_iommudata *data = dev->archdata.iommu;
-+
-+	return data ? data->iommu : NULL;
- }
- 
--static void rk_iommu_detach_device(struct iommu_domain *domain,
--				   struct device *dev)
-+static void rk_iommu_shutdown(struct rk_iommu *iommu)
- {
--	struct rk_iommu *iommu;
--	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
--	unsigned long flags;
- 	int i;
- 
--	/* Allow 'virtual devices' (eg drm) to detach from domain */
--	iommu = rk_iommu_from_dev(dev);
--	if (!iommu)
--		return;
--
--	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
--	list_del_init(&iommu->node);
--	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
--
- 	/* Ignore error while disabling, just keep going */
- 	WARN_ON(rk_iommu_enable_clocks(iommu));
-+
-+	mutex_lock(&iommu->pm_mutex);
- 	rk_iommu_enable_stall(iommu);
- 	rk_iommu_disable_paging(iommu);
- 	for (i = 0; i < iommu->num_mmu; i++) {
-@@ -904,46 +909,30 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, 0);
- 	}
- 	rk_iommu_disable_stall(iommu);
--	rk_iommu_disable_clocks(iommu);
-+	mutex_unlock(&iommu->pm_mutex);
- 
--	iommu->domain = NULL;
--
--	dev_dbg(dev, "Detached from iommu domain\n");
-+	rk_iommu_disable_clocks(iommu);
- }
- 
--static int rk_iommu_attach_device(struct iommu_domain *domain,
--				  struct device *dev)
-+static int rk_iommu_startup(struct rk_iommu *iommu)
- {
--	struct rk_iommu *iommu;
-+	struct iommu_domain *domain = iommu->domain;
- 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
--	unsigned long flags;
- 	int ret, i;
- 
--	/*
--	 * Allow 'virtual devices' (e.g., drm) to attach to domain.
--	 * Such a device does not belong to an iommu group.
--	 */
--	iommu = rk_iommu_from_dev(dev);
--	if (!iommu)
--		return 0;
--
--	if (iommu->domain)
--		rk_iommu_detach_device(iommu->domain, dev);
--
- 	ret = rk_iommu_enable_clocks(iommu);
- 	if (ret)
- 		return ret;
- 
-+	mutex_lock(&iommu->pm_mutex);
- 	ret = rk_iommu_enable_stall(iommu);
- 	if (ret)
--		goto err_disable_clocks;
-+		goto err_unlock_mutex;
- 
- 	ret = rk_iommu_force_reset(iommu);
- 	if (ret)
- 		goto err_disable_stall;
- 
--	iommu->domain = domain;
--
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
- 			       rk_domain->dt_dma);
-@@ -955,21 +944,90 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 	if (ret)
- 		goto err_disable_stall;
- 
--	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
--	list_add_tail(&iommu->node, &rk_domain->iommus);
--	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
--
--	dev_dbg(dev, "Attached to iommu domain\n");
--
- 	rk_iommu_disable_stall(iommu);
-+	mutex_unlock(&iommu->pm_mutex);
-+
- 	rk_iommu_disable_clocks(iommu);
- 
- 	return 0;
- 
- err_disable_stall:
- 	rk_iommu_disable_stall(iommu);
--err_disable_clocks:
-+err_unlock_mutex:
-+	mutex_unlock(&iommu->pm_mutex);
- 	rk_iommu_disable_clocks(iommu);
-+	return ret;
-+}
-+
-+static void rk_iommu_detach_device(struct iommu_domain *domain,
-+				   struct device *dev)
-+{
-+	struct rk_iommu *iommu;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
-+	unsigned long flags;
-+
-+	/* Allow 'virtual devices' (eg drm) to detach from domain */
-+	iommu = rk_iommu_from_dev(dev);
-+	if (!iommu)
-+		return;
-+
-+	dev_dbg(dev, "Detaching from iommu domain\n");
-+
-+	/* iommu already detached */
-+	if (iommu->domain != domain)
-+		return;
-+
-+	iommu->domain = NULL;
-+
-+	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
-+	list_del_init(&iommu->node);
-+	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
-+
-+	if (pm_runtime_get_if_in_use(iommu->dev) > 0) {
-+		rk_iommu_shutdown(iommu);
-+		pm_runtime_put(iommu->dev);
-+	}
-+}
-+
-+static int rk_iommu_attach_device(struct iommu_domain *domain,
-+		struct device *dev)
-+{
-+	struct rk_iommu *iommu;
-+	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
-+	unsigned long flags;
-+	int ret;
-+
-+	/*
-+	 * Allow 'virtual devices' (e.g., drm) to attach to domain.
-+	 * Such a device does not belong to an iommu group.
-+	 */
-+	iommu = rk_iommu_from_dev(dev);
-+	if (!iommu)
-+		return 0;
-+
-+	dev_dbg(dev, "Attaching to iommu domain\n");
-+
-+	/* iommu already attached */
-+	if (iommu->domain == domain)
-+		return 0;
-+
-+	if (iommu->domain)
-+		rk_iommu_detach_device(iommu->domain, dev);
-+
-+	iommu->domain = domain;
-+
-+	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
-+	list_add_tail(&iommu->node, &rk_domain->iommus);
-+	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
-+
-+	if (pm_runtime_get_if_in_use(iommu->dev) <= 0)
-+		return 0;
-+
-+	ret = rk_iommu_startup(iommu);
-+	if (ret)
-+		rk_iommu_detach_device(data->domain, dev);
-+
-+	pm_runtime_put(iommu->dev);
- 
- 	return ret;
- }
-@@ -1059,6 +1117,7 @@ static int rk_iommu_add_device(struct device *dev)
- {
- 	struct iommu_group *group;
- 	struct rk_iommu *iommu;
-+	struct rk_iommudata *data = dev->archdata.iommu;
- 
- 	iommu = rk_iommu_from_dev(dev);
- 	if (!iommu)
-@@ -1070,6 +1129,7 @@ static int rk_iommu_add_device(struct device *dev)
- 	iommu_group_put(group);
- 
- 	iommu_device_link(&iommu->iommu, dev);
-+	data->link = device_link_add(dev, iommu->dev, DL_FLAG_PM_RUNTIME);
- 
- 	return 0;
- }
-@@ -1077,11 +1137,13 @@ static int rk_iommu_add_device(struct device *dev)
- static void rk_iommu_remove_device(struct device *dev)
- {
- 	struct rk_iommu *iommu;
-+	struct rk_iommudata *data = dev->archdata.iommu;
- 
- 	iommu = rk_iommu_from_dev(dev);
- 	if (!iommu)
- 		return;
- 
-+	device_link_del(data->link);
- 	iommu_device_unlink(&iommu->iommu, dev);
- 	iommu_group_remove_device(dev);
- }
-@@ -1101,6 +1163,11 @@ static int rk_iommu_of_xlate(struct device *dev,
- 			     struct of_phandle_args *args)
- {
- 	struct platform_device *iommu_dev;
-+	struct rk_iommudata *data;
-+
-+	data = devm_kzalloc(dma_dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
- 
- 	iommu_dev = of_find_device_by_node(args->np);
- 	if (!iommu_dev) {
-@@ -1108,7 +1175,9 @@ static int rk_iommu_of_xlate(struct device *dev,
- 		return -ENODEV;
- 	}
- 
--	dev->archdata.iommu = platform_get_drvdata(iommu_dev);
-+	data->iommu = platform_get_drvdata(iommu_dev);
-+	dev->archdata.iommu = data;
-+
- 	of_dev_put(iommu_dev);
- 
- 	return 0;
-@@ -1204,6 +1273,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 
- 	bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
- 
-+	pm_runtime_enable(dev);
-+
- 	return 0;
- err_remove_sysfs:
- 	iommu_device_sysfs_remove(&iommu->iommu);
-@@ -1216,6 +1287,8 @@ static int rk_iommu_remove(struct platform_device *pdev)
- {
- 	struct rk_iommu *iommu = platform_get_drvdata(pdev);
- 
-+	pm_runtime_disable(&pdev->dev);
-+
- 	iommu_device_unregister(&iommu->iommu);
- 	iommu_device_sysfs_remove(&iommu->iommu);
- 	rk_iommu_put_clocks(iommu);
-@@ -1223,6 +1296,27 @@ static int rk_iommu_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static int __maybe_unused rk_iommu_suspend(struct device *dev)
-+{
-+	struct rk_iommu *iommu = dev_get_drvdata(dev);
-+
-+	rk_iommu_shutdown(iommu);
-+	return 0;
-+}
-+
-+static int __maybe_unused rk_iommu_resume(struct device *dev)
-+{
-+	struct rk_iommu *iommu = dev_get_drvdata(dev);
-+
-+	return rk_iommu_startup(iommu);
-+}
-+
-+static const struct dev_pm_ops rk_iommu_pm_ops = {
-+	SET_RUNTIME_PM_OPS(rk_iommu_suspend, rk_iommu_resume, NULL)
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-+				pm_runtime_force_resume)
-+};
-+
- static const struct of_device_id rk_iommu_dt_ids[] = {
- 	{ .compatible = "rockchip,iommu" },
- 	{ /* sentinel */ }
-@@ -1235,6 +1329,7 @@ static struct platform_driver rk_iommu_driver = {
- 	.driver = {
- 		   .name = "rk_iommu",
- 		   .of_match_table = rk_iommu_dt_ids,
-+		   .pm = &rk_iommu_pm_ops,
- 		   .suppress_bind_attrs = true,
- 	},
- };
--- 
-2.11.0
+>> +	while (nr_received < i && ktime_before(ktime_get(), timeout)) {
+>> +		nr_received += viommu_receive_resp(viommu, i - nr_received,
+>> +						   &pending);
+>> +		if (nr_received < i) {
+>> +			/*
+>> +			 * FIXME: what's a good way to yield to host? A second
+>> +			 * virtqueue_kick won't have any effect since we haven't
+>> +			 * added any descriptor.
+>> +			 */
+>> +			udelay(10);
+> could you explain why udelay gets used here?
+
+I was hoping this could switch to the host quicker than cpu_relax(),
+allowing it to handle the request faster (on ARM udelay could do WFE
+instead of YIELD). The value is completely arbitrary.
+
+Maybe I can replace this with cpu_relax for now. I'd like to refine this
+function anyway when working on performance improvements, but I'm not too
+hopeful we'll get something nicer here.
+
+[...]
+>> +/*
+>> + * viommu_send_req_sync - send one request and wait for reply
+>> + *
+>> + * @top: pointer to a virtio_iommu_req_* structure
+>> + *
+>> + * Returns 0 if the request was successful, or an error number otherwise. No
+>> + * distinction is done between transport and request errors.
+>> + */
+>> +static int viommu_send_req_sync(struct viommu_dev *viommu, void *top)
+>> +{
+>> +	int ret;
+>> +	int nr_sent;
+>> +	void *bottom;
+>> +	struct viommu_request req = {0};
+>          ^
+> drivers/iommu/virtio-iommu.c:326:9: warning: (near initialization for
+> ‘req.top’) [-Wmissing-braces]
+
+Ok
+
+[...]
+>> +/*
+>> + * viommu_del_mappings - remove mappings from the internal tree
+>> + *
+>> + * @vdomain: the domain
+>> + * @iova: start of the range
+>> + * @size: size of the range. A size of 0 corresponds to the entire address
+>> + *	space.
+>> + * @out_mapping: if not NULL, the first removed mapping is returned in there.
+>> + *	This allows the caller to reuse the buffer for the unmap request. Caller
+>> + *	must always free the returned mapping, whether the function succeeds or
+>> + *	not.
+> if unmapped > 0?
+
+Ok
+
+>> + *
+>> + * On success, returns the number of unmapped bytes (>= size)
+>> + */
+>> +static size_t viommu_del_mappings(struct viommu_domain *vdomain,
+>> +				 unsigned long iova, size_t size,
+>> +				 struct viommu_mapping **out_mapping)
+>> +{
+>> +	size_t unmapped = 0;
+>> +	unsigned long flags;
+>> +	unsigned long last = iova + size - 1;
+>> +	struct viommu_mapping *mapping = NULL;
+>> +	struct interval_tree_node *node, *next;
+>> +
+>> +	spin_lock_irqsave(&vdomain->mappings_lock, flags);
+>> +	next = interval_tree_iter_first(&vdomain->mappings, iova, last);
+>> +
+>> +	if (next) {
+>> +		mapping = container_of(next, struct viommu_mapping, iova);
+>> +		/* Trying to split a mapping? */
+>> +		if (WARN_ON(mapping->iova.start < iova))
+>> +			next = NULL;
+>> +	}
+>> +
+>> +	while (next) {
+>> +		node = next;
+>> +		mapping = container_of(node, struct viommu_mapping, iova);
+>> +
+>> +		next = interval_tree_iter_next(node, iova, last);
+>> +
+>> +		/*
+>> +		 * Note that for a partial range, this will return the full
+>> +		 * mapping so we avoid sending split requests to the device.
+>> +		 */
+>> +		unmapped += mapping->iova.last - mapping->iova.start + 1;
+>> +
+>> +		interval_tree_remove(node, &vdomain->mappings);
+>> +
+>> +		if (out_mapping && !(*out_mapping))
+>> +			*out_mapping = mapping;
+>> +		else
+>> +			kfree(mapping);
+>> +	}
+>> +	spin_unlock_irqrestore(&vdomain->mappings_lock, flags);
+>> +
+>> +	return unmapped;
+>> +}
+>> +
+>> +/*
+>> + * viommu_replay_mappings - re-send MAP requests
+>> + *
+>> + * When reattaching a domain that was previously detached from all devices,
+>> + * mappings were deleted from the device. Re-create the mappings available in
+>> + * the internal tree.
+>> + *
+>> + * Caller should hold the mapping lock if necessary.
+> the only caller does not hold the lock. At this point we are attaching
+> our fisrt ep to the domain. I think it would be worth a comment in the
+> caller.
+
+Right
+
+[...]
+>> +	/*
+>> +	 * When attaching the device to a new domain, it will be detached from
+>> +	 * the old one and, if as as a result the old domain isn't attached to
+> as as
+>> +	 * any device, all mappings are removed from the old domain and it is
+>> +	 * freed. (Note that we can't use get_domain_for_dev here, it returns
+>> +	 * the default domain during initial attach.)
+> I don't see where the old domain is freed. I see you descrement the
+> endpoints ref count. Also if you replay the mapping, I guess the
+> mappings were not destroyed?
+
+That comment applies to the virtio-iommu domain - the virtio-iommu
+device needs to destroy the old domain when attaching to a new domain,
+to avoid any mapping leak. I'll change the comment to clarify this.
+
+In the kernel the domain lifetime differs from the virtio-iommu domain,
+the detached domain isn't freed until someone calls free_domain()
+explicitly:
+
+- Initially each device is attached to the default domain, used for
+  kernel DMA.
+- Then VFIO attaches the group to a new domain. The IOMMU core calls
+  attach_dev(). Default domain is detached and the VFIO domain is
+  attached.
+- When VFIO removes the device from its container, the IOMMU core
+  attaches the default domain again. The default domain may still have
+  mappings (SW_MSI for instance) but the device deleted them, so they
+  need to be replayed after the attach request.
+- VFIO issues iommu_domain_free when no group is attached to the VFIO
+  domain anymore.
+
+>> +	 *
+>> +	 * Take note of the device disappearing, so we can ignore unmap request
+>> +	 * on stale domains (that is, between this detach and the upcoming
+>> +	 * free.)
+>> +	 *
+>> +	 * vdev->vdomain is protected by group->mutex
+>> +	 */
+>> +	if (vdev->vdomain)
+>> +		refcount_dec(&vdev->vdomain->endpoints);
+>> +
+>> +	/* DMA to the stack is forbidden, store request on the heap */
+>> +	req = kzalloc(sizeof(*req), GFP_KERNEL);
+>> +	if (!req)
+>> +		return -ENOMEM;
+>> +
+>> +	*req = (struct virtio_iommu_req_attach) {
+>> +		.head.type	= VIRTIO_IOMMU_T_ATTACH,
+>> +		.domain		= cpu_to_le32(vdomain->id),
+>> +	};
+>> +
+>> +	for (i = 0; i < fwspec->num_ids; i++) {
+>> +		req->endpoint = cpu_to_le32(fwspec->ids[i]);
+>> +
+>> +		ret = viommu_send_req_sync(vdomain->viommu, req);
+>> +		if (ret)
+>> +			break;
+>> +	}
+>> +
+>> +	kfree(req);
+>> +
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	if (!refcount_read(&vdomain->endpoints)) {
+>> +		/*
+>> +		 * This endpoint is the first to be attached to the domain.
+>> +		 * Replay existing mappings if any.
+>> +		 */
+>> +		ret = viommu_replay_mappings(vdomain);
+>> +		if (ret)
+>> +			return ret;
+>> +	}
+>> +
+>> +	refcount_inc(&vdomain->endpoints);
+> This does not work for me as the ref counter is initialized to 0 and
+> ref_count does not work if the counter is 0. It emits a WARN_ON and
+> stays at 0. I worked around the issue by explicitly setting
+> recount_set(&vdomain->endpoints, 1) if it was 0 and reffount_inc otherwise.
+
+Yes, I went back to a simple int instead of refcount
+
+[...]
+>> +
+>> +struct virtio_iommu_config {
+>> +	/* Supported page sizes */
+>> +	__u64					page_size_mask;
+> Get a warning
+> ./usr/include/linux/virtio_iommu.h:45: found __[us]{8,16,32,64} type
+> without #include <linux/types.h>
+
+Right, adding HEADERS_CHECK to my config :)
+
+Thanks a lot the review,
+Jean
+
