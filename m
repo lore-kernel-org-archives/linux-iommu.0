@@ -1,7 +1,7 @@
 From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v2 05/13] iommu/rockchip: Fix error handling in init
-Date: Tue, 16 Jan 2018 21:25:32 +0800
-Message-ID: <20180116132540.18939-6-jeffy.chen@rock-chips.com>
+Subject: [PATCH v2 04/13] iommu/rockchip: Fix error handling in probe
+Date: Tue, 16 Jan 2018 21:25:31 +0800
+Message-ID: <20180116132540.18939-5-jeffy.chen@rock-chips.com>
 References: <20180116132540.18939-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,63 +21,47 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-It's hard to undo bus_set_iommu() in the error path, so move it to the
-end of rk_iommu_probe().
+Add missing iommu_device_sysfs_remove in error path.
+
+Also adjust sequence of deinit functions in the remove.
 
 Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
 
-Changes in v2:
-Move bus_set_iommu() to rk_iommu_probe().
+Changes in v2: None
 
- drivers/iommu/rockchip-iommu.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index bd8b32dc0db6..d2a0b0daf40d 100644
+index 4ffb3a65c9d2..bd8b32dc0db6 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -1187,6 +1187,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 		return err;
- 	}
+@@ -1182,18 +1182,20 @@ static int rk_iommu_probe(struct platform_device *pdev)
  
-+	bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
-+
- 	return 0;
- }
- 
-@@ -1218,27 +1220,19 @@ static struct platform_driver rk_iommu_driver = {
- 
- static int __init rk_iommu_init(void)
- {
--	struct device_node *np;
- 	int ret;
- 
--	np = of_find_matching_node(NULL, rk_iommu_dt_ids);
--	if (!np)
--		return 0;
--
--	of_node_put(np);
--
--	ret = bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
--	if (ret)
--		return ret;
--
- 	ret = platform_driver_register(&rk_iommu_domain_driver);
- 	if (ret)
- 		return ret;
- 
- 	ret = platform_driver_register(&rk_iommu_driver);
--	if (ret)
-+	if (ret) {
- 		platform_driver_unregister(&rk_iommu_domain_driver);
--	return ret;
-+		return ret;
+ 	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
+ 	err = iommu_device_register(&iommu->iommu);
++	if (err) {
++		iommu_device_sysfs_remove(&iommu->iommu);
++		return err;
 +	}
-+
+ 
+-	return err;
 +	return 0;
  }
- static void __exit rk_iommu_exit(void)
+ 
+ static int rk_iommu_remove(struct platform_device *pdev)
  {
+ 	struct rk_iommu *iommu = platform_get_drvdata(pdev);
+ 
+-	if (iommu) {
+-		iommu_device_sysfs_remove(&iommu->iommu);
+-		iommu_device_unregister(&iommu->iommu);
+-	}
++	iommu_device_unregister(&iommu->iommu);
++	iommu_device_sysfs_remove(&iommu->iommu);
+ 
+ 	return 0;
+ }
 -- 
 2.11.0
