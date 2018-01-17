@@ -1,46 +1,44 @@
-From: Luis de Bethencourt <luisbg@kernel.org>
-Subject: [PATCH] iommu/vt-d: Fix trailing semicolon
-Date: Wed, 17 Jan 2018 18:19:26 +0000
-Message-ID: <20180117181926.12862-1-luisbg@kernel.org>
+From: Nate Watterson <nwatters@codeaurora.org>
+Subject: [PATCH] iommu/arm-smmu-v3: suppress MSI allocation failure message
+Date: Wed, 17 Jan 2018 13:39:59 -0500
+Message-ID: <1516214399-24012-1-git-send-email-nwatters@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Joe Perches <joe@perches.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Luis de Bethencourt <luisbg@kernel.org>
+To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The trailing semicolon is an empty statement that does no operation.
-Removing it since it doesn't do anything.
+From: Sinan Kaya <okaya@codeaurora.org>
 
-Signed-off-by: Luis de Bethencourt <luisbg@kernel.org>
+Even though QDF2400 supports MSI interrupts with SMMUv3, it is not enabled
+in ACPI FW to preserve compatibility with older kernel versions. Code is
+emitting warning message during boot.
+
+This is causing some test tools to record a false warning and is causing
+support issues.
+
+Better reduce the message level.
+
+Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+Signed-off-by: Nate Watterson <nwatters@codeaurora.org>
 ---
-
-Hi,
-
-After fixing the same thing in drivers/staging/rtl8723bs/, Joe Perches
-suggested I fix it treewide [0].
-
-Best regards 
-Luis
-
-
-[0] http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/2018-January/115410.html
-[1] http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/2018-January/115390.html
-
- drivers/iommu/intel-svm.c | 2 +-
+ drivers/iommu/arm-smmu-v3.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 88a54a0a5f92..67bd4b56e2d9 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -193,7 +193,7 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
- 			 * for example, an "address" value of 0x12345f000 will
- 			 * flush from 0x123440000 to 0x12347ffff (256KiB). */
- 			unsigned long last = address + ((unsigned long)(pages - 1) << VTD_PAGE_SHIFT);
--			unsigned long mask = __rounddown_pow_of_two(address ^ last);;
-+			unsigned long mask = __rounddown_pow_of_two(address ^ last);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 744592d..2118fda 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2331,7 +2331,7 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+ 	/* Allocate MSIs for evtq, gerror and priq. Ignore cmdq */
+ 	ret = platform_msi_domain_alloc_irqs(dev, nvec, arm_smmu_write_msi_msg);
+ 	if (ret) {
+-		dev_warn(dev, "failed to allocate MSIs\n");
++		dev_info(dev, "failed to allocate MSIs\n");
+ 		return;
+ 	}
  
- 			desc.high = QI_DEV_EIOTLB_ADDR((address & ~mask) | (mask - 1)) | QI_DEV_EIOTLB_SIZE;
- 		} else {
 -- 
-2.15.1
+Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux
+Foundation Collaborative Project.
