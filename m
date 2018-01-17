@@ -1,102 +1,52 @@
-From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v3 12/12] iommu/rockchip: Support sharing IOMMU between masters
-Date: Wed, 17 Jan 2018 23:25:42 +0800
-Message-ID: <20180117152542.26429-13-jeffy.chen@rock-chips.com>
-References: <20180117152542.26429-1-jeffy.chen@rock-chips.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [RFC PATCH v2 1/2] vfio/type1: Adopt fast IOTLB flush interface
+ when unmap IOVAs
+Date: Wed, 17 Jan 2018 23:54:40 +0700
+Message-ID: <966d7407-d91f-f652-454d-bbda263567ba@amd.com>
+References: <1514366435-12723-1-git-send-email-suravee.suthikulpanit@amd.com>
+ <1514366435-12723-2-git-send-email-suravee.suthikulpanit@amd.com>
+ <20180108135329.3c1e2c88@t450s.home> <20180108140718.5ce48492@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180117152542.26429-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180108140718.5ce48492@t450s.home>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: iommu@lists.linux-foundation.org, jroedel@suse.de, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-There would be some masters sharing the same IOMMU device. Put them in
-the same iommu group and share the same iommu domain.
+Hi Alex,
 
-Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
----
+On 1/9/18 4:07 AM, Alex Williamson wrote:
+>>> @@ -661,6 +705,8 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>>>   	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+>>>   		return 0;
+>>>   
+>>> +	INIT_LIST_HEAD(&unmapped_regions);
+>>> +
+>>>   	/*
+>>>   	 * We use the IOMMU to track the physical addresses, otherwise we'd
+>>>   	 * need a much more complicated tracking system.  Unfortunately that
+>>> @@ -698,24 +744,36 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>>>   				break;
+>>>   		}
+>>>   
+>>> -		unmapped = iommu_unmap(domain->domain, iova, len);
+>>> -		if (WARN_ON(!unmapped))
+>>> +		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+>>> +		if (!entry)
+>>>   			break;
+> 
+> Turns out this nagged at me a bit too, this function only gets called
+> once to dump the vfio_dma, so bailing out here leaves pages pinned and
+> IOMMU mappings in place, for a performance optimization that we could
+> just skip.  We could sync&unpin anything collected up to this point and
+> continue this step with a synchronous unmap/unpin.  Thanks,
 
-Changes in v3:
-Remove rk_iommudata->domain.
+Ah, that's an over look in my part also. Thanks for catching this. I'll implement
+the fallback mechanism per your suggestion in v3.
 
-Changes in v2: None
-
- drivers/iommu/rockchip-iommu.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index b5585d39d95c..95b1b3c1984c 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -97,6 +97,7 @@ struct rk_iommu {
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-+	struct iommu_group *group;
- };
- 
- struct rk_iommudata {
-@@ -1155,6 +1156,15 @@ static void rk_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
-+static struct iommu_group *rk_iommu_device_group(struct device *dev)
-+{
-+	struct rk_iommu *iommu;
-+
-+	iommu = rk_iommu_from_dev(dev);
-+
-+	return iommu->group;
-+}
-+
- static int rk_iommu_of_xlate(struct device *dev,
- 			     struct of_phandle_args *args)
- {
-@@ -1190,7 +1200,7 @@ static const struct iommu_ops rk_iommu_ops = {
- 	.add_device = rk_iommu_add_device,
- 	.remove_device = rk_iommu_remove_device,
- 	.iova_to_phys = rk_iommu_iova_to_phys,
--	.device_group = generic_device_group,
-+	.device_group = rk_iommu_device_group,
- 	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
- 	.of_xlate = rk_iommu_of_xlate,
- };
-@@ -1246,9 +1256,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	iommu->reset_disabled = device_property_read_bool(dev,
- 					"rockchip,disable-mmu-reset");
- 
-+	iommu->group = iommu_group_alloc();
-+	if (IS_ERR(iommu->group)) {
-+		err = PTR_ERR(iommu->group);
-+		goto err_put_clocks;
-+	}
-+
- 	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
- 	if (err)
--		goto err_put_clocks;
-+		goto err_put_group;
- 
- 	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
- 	iommu_device_set_fwnode(&iommu->iommu, &dev->of_node->fwnode);
-@@ -1272,6 +1288,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	return 0;
- err_remove_sysfs:
- 	iommu_device_sysfs_remove(&iommu->iommu);
-+err_put_group:
-+	iommu_group_put(iommu->group);
- err_put_clocks:
- 	rk_iommu_put_clocks(iommu);
- 	return err;
--- 
-2.11.0
+Thanks,
+Suravee
