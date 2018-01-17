@@ -1,34 +1,42 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH V4 11/26] iommu/amd: deprecate pci_get_bus_and_slot()
-Date: Wed, 17 Jan 2018 14:02:31 +0100
-Message-ID: <20180117130231.GP28161@8bytes.org>
-References: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
- <1513661883-28662-12-git-send-email-okaya@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/omap: Fix debugfs_create_*() usage
+Date: Wed, 17 Jan 2018 14:23:49 +0100
+Message-ID: <20180117132349.3q4gkabp3rmm2yim@8bytes.org>
+References: <1514906985-9712-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1513661883-28662-12-git-send-email-okaya@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sinan Kaya <okaya@codeaurora.org>
-Cc: linux-pci@vger.kernel.org, timur@codeaurora.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
+In-Reply-To: <1514906985-9712-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 19, 2017 at 12:37:47AM -0500, Sinan Kaya wrote:
-> pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
-> where a PCI device is present. This restricts the device drivers to be
-> reused for other domain numbers.
+On Tue, Jan 02, 2018 at 04:29:45PM +0100, Geert Uytterhoeven wrote:
+> When exposing data access through debugfs, the correct
+> debugfs_create_*() functions must be used, depending on data type.
 > 
-> Getting ready to remove pci_get_bus_and_slot() function in favor of
-> pci_get_domain_bus_and_slot().
+> Remove all casts from data pointers passed to debugfs_create_*()
+> functions, as such casts prevent the compiler from flagging bugs.
 > 
-> Hard-code the domain number as 0 for the AMD IOMMU driver.
+> omap_iommu.nr_tlb_entries is "int", hence casting to "u8 *" exposes only
+> a part of it.  Fix this by using debugfs_create_u32() instead.
 > 
-> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 > ---
->  drivers/iommu/amd_iommu.c      | 3 ++-
->  drivers/iommu/amd_iommu_init.c | 9 +++++----
->  drivers/iommu/amd_iommu_v2.c   | 3 ++-
->  3 files changed, 9 insertions(+), 6 deletions(-)
+> Compile-tested only.
+> ---
+>  drivers/iommu/omap-iommu-debug.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Acked-by: Joerg Roedel <jroedel@suse.de>
+Applied, thanks.
