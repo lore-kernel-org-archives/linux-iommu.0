@@ -1,15 +1,15 @@
 From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH v2 01/13] iommu/rockchip: Request irqs in rk_iommu_probe()
-Date: Wed, 17 Jan 2018 15:08:34 +0800
-Message-ID: <5A5EF672.6040304@rock-chips.com>
+Subject: Re: [PATCH v2 05/13] iommu/rockchip: Fix error handling in init
+Date: Wed, 17 Jan 2018 15:14:27 +0800
+Message-ID: <5A5EF7D3.90405@rock-chips.com>
 References: <20180116132540.18939-1-jeffy.chen@rock-chips.com>
-	<20180116132540.18939-2-jeffy.chen@rock-chips.com>
-	<CAAFQd5AO6_GYMs0xac-4ECFH9pn_ssg8jsFVoif0WDQ-daSuRA@mail.gmail.com>
+	<20180116132540.18939-6-jeffy.chen@rock-chips.com>
+	<CAAFQd5AFHheE+5Dx=0=BeL2W1EYd=Kmcb8fKcCBFRgP8ViuxgQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5AO6_GYMs0xac-4ECFH9pn_ssg8jsFVoif0WDQ-daSuRA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAAFQd5AFHheE+5Dx=0=BeL2W1EYd=Kmcb8fKcCBFRgP8ViuxgQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,70 +25,17 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Tomasz,
 
-Thanks for your reply.
-
-On 01/17/2018 12:21 PM, Tomasz Figa wrote:
-> Hi Jeffy,
->
-> Thanks for the patch. Please see my comments inline.
->
+On 01/17/2018 01:26 PM, Tomasz Figa wrote:
 > On Tue, Jan 16, 2018 at 10:25 PM, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
+>> It's hard to undo bus_set_iommu() in the error path, so move it to the
+>> end of rk_iommu_probe().
 >
-> Please add patch description.
+> Does this work fine now? I remember we used to need this called in an
+> early initcall for all the ARM/ARM64 DMA stuff to work.
+>
+yes, i think it works now, i saw there are some other iommu drivers also 
+do this(arm-smmu-v3, mtk_iommu) :)
 
-ok, will do.
->
->> Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->> ---
-> [snip]
->> -       for (i = 0; i < iommu->num_irq; i++) {
->> -               iommu->irq[i] = platform_get_irq(pdev, i);
->> -               if (iommu->irq[i] < 0) {
->> -                       dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
->> +       num_irq = of_irq_count(dev->of_node);
->> +       for (i = 0; i < num_irq; i++) {
->> +               irq = platform_get_irq(pdev, i);
->
-> This lacks consistency. of_irq_count() is used for counting, but
-> platform_get_irq() is used for getting. Either platform_ or of_ API
-> should be used for both and I'd lean for platform_, since it's more
-> general.
-hmmm, right, i was thinking of removing num_irq, and do something like:
-while (nr++) {
-   err = platform_get_irq(dev, nr);
-   if (err == -EPROBE_DEFER)
-      break;
-   if (err < 0)
-      return err;
-   ....
-}
-
-but forgot to do that..
-
->
->> +               if (irq < 0) {
->> +                       dev_err(dev, "Failed to get IRQ, %d\n", irq);
->>                          return -ENXIO;
->>                  }
->> +               err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
->> +                                      IRQF_SHARED, dev_name(dev), iommu);
->> +               if (err)
->> +                       return err;
->>          }
->
-> Looks like there is some more initialization below. Is the driver okay
-> with the IRQ being potentially fired right here? (Shared IRQ handlers
-> might be run at request_irq() time for testing.)
->
-right, forget about that. maybe we can check iommu->domain not NULL in 
-rk_iommu_irq()
-
->>
->>          iommu->reset_disabled = device_property_read_bool(dev,
->
-> ^^
->
 > Best regards,
 > Tomasz
 >
