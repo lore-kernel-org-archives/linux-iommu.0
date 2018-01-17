@@ -1,12 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Back from my parental leave
-Date: Wed, 17 Jan 2018 20:20:11 +0100
-Message-ID: <20180117192011.GU28161@8bytes.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: suppress MSI allocation failure message
+Date: Wed, 17 Jan 2018 20:23:01 +0100
+Message-ID: <20180117192301.GV28161@8bytes.org>
+References: <1516214399-24012-1-git-send-email-nwatters@codeaurora.org>
+	<2f651cfe-e006-cf1d-b624-08e2ba5340fc@arm.com>
+	<66706458-d971-be9b-4390-80a9be39248c@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
+In-Reply-To: <66706458-d971-be9b-4390-80a9be39248c-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,35 +20,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Wed, Jan 17, 2018 at 07:08:39PM +0000, Marc Zyngier wrote:
+> On 17/01/18 18:54, Robin Murphy wrote:
 
-as some of you already noticed I am back from my leave and am now taking
-back the responsibility for the iommu code in the kernel. Actually I am
-already back since January 2nd, but I got immediatly thrown into the
-Meltdown mitigation work. So I couldn't catch up with IOMMU things as
-fast as I wished.
+> Indeed. How about checking dev->msi_domain first, which should tell you
+> whether it is even possible to allocate MSIs, and fallback to wired IRQs
+> instead. That way, we keep the warning on genuine failures to allocate
+> MSIs, and you get to add a nice "Falling back to wired interrupts"
+> message when msi_domain is NULL.
+> 
+> Thoughts?
 
-A big Thanks goes to Alex Williamson, who kept things moving during my
-absence so that all necessary fixes got upstream and things are prepared
-for the next merge window. Thanks a lot, Alex, I owe you at least a
-couple of beers :-)
+That sounds much better then the proposed patch. I am not really interested
+in changing log-levels to make test-tools happy.
 
-So what is the current status? Today I went through the remaining
-patches in my inbox and merged all patches ready for v4.16. If I missed
-your patch(es) and you think they should be in v4.16, please ping me and
-I will have a look again. Besides that the tree is ready for the
-upcoming merge window.
-
-For anything you want me to look at/merge after the next merge window,
-please send the patches again. I will not look back at all the patches
-that were sent to me during my leave. From my POV my inbox is empty, so
-feel free to fill it again after the merge window :-)
-
-
-Regards,
 
 	Joerg
