@@ -1,14 +1,14 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2 02/13] iommu/rockchip: Suppress unbinding
-Date: Wed, 17 Jan 2018 13:23:33 +0900
-Message-ID: <CAAFQd5C_d2JW6kPQOMQ=mB6kHMdNZQGFvamjaDhexoPD_4W7+A@mail.gmail.com>
+Subject: Re: [PATCH v2 04/13] iommu/rockchip: Fix error handling in probe
+Date: Wed, 17 Jan 2018 14:22:47 +0900
+Message-ID: <CAAFQd5A=szLktgV9RrsON+K7y21suXf9KfBaSWc44DauKapbKQ@mail.gmail.com>
 References: <20180116132540.18939-1-jeffy.chen@rock-chips.com>
-	<20180116132540.18939-3-jeffy.chen@rock-chips.com>
+	<20180116132540.18939-5-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180116132540.18939-3-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-Reply-To: <20180116132540.18939-5-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,10 +23,20 @@ Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel
 List-Id: iommu@lists.linux-foundation.org
 
 On Tue, Jan 16, 2018 at 10:25 PM, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
-> It's not safe to unbind rockchip IOMMU driver.
+> Add missing iommu_device_sysfs_remove in error path.
+>
+> Also adjust sequence of deinit functions in the remove.
+>
+> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
+>
+> Changes in v2: None
+>
+>  drivers/iommu/rockchip-iommu.c | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
+>
 
-Might be good to explain why it is not safe and actually add that it
-does not make any sense for such low level devices.
+Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
 Best regards,
 Tomasz
