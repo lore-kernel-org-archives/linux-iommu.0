@@ -1,51 +1,96 @@
-From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH v2 05/13] iommu/rockchip: Fix error handling in init
-Date: Wed, 17 Jan 2018 20:44:56 +0800
-Message-ID: <5A5F4548.9090309@rock-chips.com>
-References: <20180116132540.18939-1-jeffy.chen@rock-chips.com>
-	<20180116132540.18939-6-jeffy.chen@rock-chips.com>
-	<CAAFQd5AFHheE+5Dx=0=BeL2W1EYd=Kmcb8fKcCBFRgP8ViuxgQ@mail.gmail.com>
-	<e227cf1e-f00a-5cdb-487c-bf0046f3acbb@arm.com>
+From: JeffyChen <jeffy.chen@rock-chips.com>
+Subject: Re: [PATCH v2 01/13] iommu/rockchip: Request irqs in rk_iommu_probe()
+Date: Wed, 17 Jan 2018 20:46:08 +0800
+Message-ID: <5A5F4590.1060107@rock-chips.com>
+References: <20180116132540.18939-1-jeffy.chen@rock-chips.com> <20180116132540.18939-2-jeffy.chen@rock-chips.com> <0b341bbd-6823-a041-9cac-e35bdc9e9bdc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e227cf1e-f00a-5cdb-487c-bf0046f3acbb-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, list-Y9sIeH5OGRo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open-Y9sIeH5OGRo@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <0b341bbd-6823-a041-9cac-e35bdc9e9bdc@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+Cc: jcliang@chromium.org, xxm@rock-chips.com, tfiga@chromium.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
-Thanks for your reply.
-
-On 01/17/2018 07:36 PM, Robin Murphy wrote:
-> On 17/01/18 05:26, Tomasz Figa wrote:
->> On Tue, Jan 16, 2018 at 10:25 PM, Jeffy Chen
->> <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
->>> It's hard to undo bus_set_iommu() in the error path, so move it to the
->>> end of rk_iommu_probe().
+On 01/17/2018 08:18 PM, Robin Murphy wrote:
 >>
->> Does this work fine now? I remember we used to need this called in an
->> early initcall for all the ARM/ARM64 DMA stuff to work.
+>> @@ -91,7 +92,6 @@ struct rk_iommu {
+>>       void __iomem **bases;
+>>       int num_mmu;
+>>       int *irq;
 >
-> It will do once we get to patch #11 (where the IOMMU_OF_DECLARE ensures
-> that masters defer until iommu_register() has set ops with a non-NULL
-> .of_xlate callback); in the meantime you might end up depending on DT
-> probe order as to whether the master uses the IOMMU or not. I'd say it's
-> up to you guys whether you consider that a bisection-breaker or not.
+> Nit: irq seems to be redundant now as well.
+oops, will fix it.
 >
-hmmm, maybe i can just place this patch after the patch #11 ;)
+>> -    int num_irq;
+>>       bool reset_disabled;
+>>       struct iommu_device iommu;
+>>       struct list_head node; /* entry in rk_iommu_domain.iommus */
+>> @@ -830,13 +830,6 @@ static int rk_iommu_attach_device(struct
+>> iommu_domain *domain,
+>>       iommu->domain = domain;
+>> -    for (i = 0; i < iommu->num_irq; i++) {
+>> -        ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
+>> -                       IRQF_SHARED, dev_name(dev), iommu);
+>> -        if (ret)
+>> -            return ret;
+>> -    }
+>> -
+>>       for (i = 0; i < iommu->num_mmu; i++) {
+>>           rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+>>                      rk_domain->dt_dma);
+>> @@ -885,9 +878,6 @@ static void rk_iommu_detach_device(struct
+>> iommu_domain *domain,
+>>       }
+>>       rk_iommu_disable_stall(iommu);
+>> -    for (i = 0; i < iommu->num_irq; i++)
+>> -        devm_free_irq(iommu->dev, iommu->irq[i], iommu);
+>> -
+>>       iommu->domain = NULL;
+>>       dev_dbg(dev, "Detached from iommu domain\n");
+>> @@ -1138,7 +1128,7 @@ static int rk_iommu_probe(struct platform_device
+>> *pdev)
+>>       struct rk_iommu *iommu;
+>>       struct resource *res;
+>>       int num_res = pdev->num_resources;
+>> -    int err, i;
+>> +    int err, i, irq, num_irq;
+>>       iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+>>       if (!iommu)
+>> @@ -1165,23 +1155,17 @@ static int rk_iommu_probe(struct
+>> platform_device *pdev)
+>>       if (iommu->num_mmu == 0)
+>>           return PTR_ERR(iommu->bases[0]);
+>> -    iommu->num_irq = platform_irq_count(pdev);
+>> -    if (iommu->num_irq < 0)
+>> -        return iommu->num_irq;
+>> -    if (iommu->num_irq == 0)
+>> -        return -ENXIO;
+>> -
+>> -    iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
+>> -                  GFP_KERNEL);
+>> -    if (!iommu->irq)
+>> -        return -ENOMEM;
+>> -
+>> -    for (i = 0; i < iommu->num_irq; i++) {
+>> -        iommu->irq[i] = platform_get_irq(pdev, i);
+>> -        if (iommu->irq[i] < 0) {
+>> -            dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
+>> +    num_irq = of_irq_count(dev->of_node);
+>
+> To follow up on the other reply, I'm not sure you really need to count
+> the IRQs beforehand at all - you're going to be looping through
+> platform_get_irq() and handling errors anyway, so you may as well just
+> start at 0 and keep going until -ENOENT (or use platform_get_resource()
+> to double-check whether an index should be valid, as we do in arm_smmu).
+ok, will do that.
+>
+> Otherwise, it looks like everything that the IRQ handler needs in the
+> iommu struct (dev, num_mmu and bases) is already initialised by this
+> point, so we should be OK with respect to races.
+ok.
+>
 > Robin.
->
->
->
