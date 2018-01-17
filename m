@@ -1,18 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/msm: Claim bus ops on probe
-Date: Wed, 17 Jan 2018 15:27:20 +0100
-Message-ID: <20180117142720.GT28161@8bytes.org>
-References: <f1a506337bf602c54f4d6d417c14ca556a5f3674.1515436860.git.robin.murphy@arm.com>
-	<20180117133331.vidtyduiu7zr3fwc@8bytes.org>
-	<bc83496f-f0c0-6fe7-acd4-b96526a81dc3@arm.com>
-	<20180117135356.GQ28161@8bytes.org>
-	<fc884e48-bf80-23a7-8275-209950e0ef34@arm.com>
+From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: [PATCH v3 01/12] iommu/rockchip: Prohibiat unbind and remove
+Date: Wed, 17 Jan 2018 23:25:31 +0800
+Message-ID: <20180117152542.26429-2-jeffy.chen@rock-chips.com>
+References: <20180117152542.26429-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <fc884e48-bf80-23a7-8275-209950e0ef34-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180117152542.26429-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,22 +17,74 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 17, 2018 at 02:05:21PM +0000, Robin Murphy wrote:
-> The IOMMU_OF_DECLARE() in ipmmu-vmsa.c added in 4.15 is missed by the
-> prototype change in (4.14-based) v1 2/2 - by applying v2 2/3 on top of the
-> two v1 patches you will end up with an extra NULL argument there which will
-> then fail to compile. v2 3/3 supersedes v1 2/2 by removing that one as well.
-> This is entirely my fault for hacking out some quick patches on top of
-> unrelated development work instead of creating a fresh branch...
+Removal the IOMMUs cannot be done reliably.
 
-Okay, I see. So I removed the two patches from arm/msm and the one patch
-from arm/renesas and applied all 3 patches from v2 to the core branch
-instead.
+This is similar to exynos iommu driver.
 
-Thanks,
+Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+---
 
-	Joerg
+Changes in v3:
+Also remove remove() and module_exit() as Tomasz suggested.
+
+Changes in v2: None
+
+ drivers/iommu/rockchip-iommu.c | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 9d991c2d8767..16cd8780c289 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1197,18 +1197,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	return err;
+ }
+ 
+-static int rk_iommu_remove(struct platform_device *pdev)
+-{
+-	struct rk_iommu *iommu = platform_get_drvdata(pdev);
+-
+-	if (iommu) {
+-		iommu_device_sysfs_remove(&iommu->iommu);
+-		iommu_device_unregister(&iommu->iommu);
+-	}
+-
+-	return 0;
+-}
+-
+ static const struct of_device_id rk_iommu_dt_ids[] = {
+ 	{ .compatible = "rockchip,iommu" },
+ 	{ /* sentinel */ }
+@@ -1217,10 +1205,10 @@ MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
+ 
+ static struct platform_driver rk_iommu_driver = {
+ 	.probe = rk_iommu_probe,
+-	.remove = rk_iommu_remove,
+ 	.driver = {
+ 		   .name = "rk_iommu",
+ 		   .of_match_table = rk_iommu_dt_ids,
++		   .suppress_bind_attrs = true,
+ 	},
+ };
+ 
+@@ -1248,14 +1236,7 @@ static int __init rk_iommu_init(void)
+ 		platform_driver_unregister(&rk_iommu_domain_driver);
+ 	return ret;
+ }
+-static void __exit rk_iommu_exit(void)
+-{
+-	platform_driver_unregister(&rk_iommu_driver);
+-	platform_driver_unregister(&rk_iommu_domain_driver);
+-}
+-
+ subsys_initcall(rk_iommu_init);
+-module_exit(rk_iommu_exit);
+ 
+ MODULE_DESCRIPTION("IOMMU API for Rockchip");
+ MODULE_AUTHOR("Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org> and Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>");
+-- 
+2.11.0
