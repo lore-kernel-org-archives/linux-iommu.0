@@ -1,125 +1,134 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 1/2] vfio/type1: Adopt fast IOTLB flush interface
-	when unmap IOVAs
-Date: Thu, 18 Jan 2018 10:34:12 -0700
-Message-ID: <20180118103412.26b1a581@w520.home>
-References: <1514366435-12723-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<1514366435-12723-2-git-send-email-suravee.suthikulpanit@amd.com>
-	<20180108135329.3c1e2c88@t450s.home>
-	<0cdcfade-481a-96de-cadb-291968392318@amd.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v3 10/16] iommu: introduce device fault report API
+Date: Thu, 18 Jan 2018 19:24:52 +0000
+Message-ID: <6eea3b27-d0ca-8021-325f-fdc876ebf113@arm.com>
+References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1510944914-54430-11-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0cdcfade-481a-96de-cadb-291968392318-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1510944914-54430-11-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Lan Tianyu <tianyu.lan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 18 Jan 2018 10:25:12 +0700
-Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org> wrote:
+Hi Jacob,
 
-> Hi Alex,
+I've got minor comments after working with this patch, sorry for the
+multiple replies
+
+On 17/11/17 18:55, Jacob Pan wrote:
+[...]
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 829e9e9..97b7990 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -581,6 +581,12 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  		goto err_free_name;
+>  	}
+>  
+> +	dev->iommu_param = kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
+
+This should be "sizeof(struct iommu_param)" or maybe
+"sizeof(*dev->iommu_param)".
+
+> +	if (!dev->iommu_param) {
+> +		ret = -ENOMEM;
+> +		goto err_free_name;
+> +	}
+> +
+>  	kobject_get(group->devices_kobj);
+>  
+>  	dev->iommu_group = group;
+> @@ -657,7 +663,7 @@ void iommu_group_remove_device(struct device *dev)
+>  	sysfs_remove_link(&dev->kobj, "iommu_group");
+>  
+>  	trace_remove_device_from_group(group->id, dev);
+> -
+> +	kfree(dev->iommu_param);
+>  	kfree(device->name);
+>  	kfree(device);
+>  	dev->iommu_group = NULL;
+> @@ -791,6 +797,61 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
 > 
-> On 1/9/18 3:53 AM, Alex Williamson wrote:
-> > On Wed, 27 Dec 2017 04:20:34 -0500
-> > Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org> wrote:  
-> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> >> index e30e29a..f000844 100644
-> >> --- a/drivers/vfio/vfio_iommu_type1.c
-> >> +++ b/drivers/vfio/vfio_iommu_type1.c
-> >>
-> >> ... >>
-> >> @@ -479,6 +486,40 @@ static long vfio_unpin_pages_remote(struct vfio_dma *dma, dma_addr_t iova,
-> >>   	return unlocked;
-> >>   }
-> >>   
-> >> +/*
-> >> + * Generally, VFIO needs to unpin remote pages after each IOTLB flush.
-> >> + * Therefore, when using IOTLB flush sync interface, VFIO need to keep track
-> >> + * of these regions (currently using a list).
-> >> + *
-> >> + * This value specifies maximum number of regions for each IOTLB flush sync.
-> >> + */
-> >> +#define VFIO_IOMMU_TLB_SYNC_MAX		512  
-> > 
-> > Is this an arbitrary value or are there non-obvious considerations for
-> > this value should we want to further tune it in the future?  
-> 
-> This is just an arbitrary value for now, which we could try further tuning.
-> On some dGPUs that I have been using, I have seen max of ~1500 regions within an unmap call.
-> In most case, I see less than 100 regions in an unmap call. The structure is currently 40 bytes.
-> So, I figured capping at 512 entry in the list is 20KB is reasonable. Let me know what you think.
+> +int iommu_register_device_fault_handler(struct device *dev,
+> +					iommu_dev_fault_handler_t handler,
+> +					void *data)
+> +{
+> +	struct iommu_param *idata = dev->iommu_param;
+> +
+> +	/*
+> +	 * Device iommu_param should have been allocated when device is
+> +	 * added to its iommu_group.
+> +	 */
+> +	if (!idata)
+> +		return -EINVAL;
+> +	/* Only allow one fault handler registered for each device */
+> +	if (idata->fault_param)
+> +		return -EBUSY;
+> +	get_device(dev);
+> +	idata->fault_param =
+> +		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
+> +	if (!idata->fault_param)
+> +		return -ENOMEM;
+> +	idata->fault_param->handler = handler;
+> +	idata->fault_param->data = data;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
+> +
+> +int iommu_unregister_device_fault_handler(struct device *dev)
+> +{
+> +	struct iommu_param *idata = dev->iommu_param;
+> +
+> +	if (!idata)
+> +		return -EINVAL;
+> +
+> +	kfree(idata->fault_param);
+> +	idata->fault_param = NULL;
+> +	put_device(dev);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
 
-Seems like a reasonable starting point.  For a VM user, the maximum
-size of an unmap will largely depend on the size of the VM,
-predominantly the size of memory above the 4G boundary in the VM.  That
-could be 100s of GB.  In the best case, iommu_unmap could return 1GB
-ranges, in the worst case, 4K.  So I'm not sure there's really any
-upper bound, thus the cond_resched(), but we will opportunistically
-coalesce pages unless disabled via module option.
+We should probably document register() and unregister() functions since
+they are part of the device driver API. If it helps I came up with:
 
-> >> ....
-> >>
-> >> @@ -887,8 +946,14 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
-> >>   			break;
-> >>   	}
-> >>   
-> >> -	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
-> >> -		iommu_unmap(domain->domain, iova, PAGE_SIZE);
-> >> +	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE) {
-> >> +		unmapped = iommu_unmap_fast(domain->domain, iova, PAGE_SIZE);
-> >> +		if (WARN_ON(!unmapped))
-> >> +			break;
-> >> +		iommu_tlb_range_add(domain->domain, iova, unmapped);
-> >> +	}
-> >> +	if (unmapped)
-> >> +		iommu_tlb_sync(domain->domain);  
-> > 
-> > Using unmapped here seems a little sketchy, for instance if we got back
-> > zero on the last call to iommu_unmap_fast() but had other ranges queued
-> > for flush.  Do we even need a WARN_ON and break here, are we just
-> > trying to skip adding a zero range?  The intent is that we either leave
-> > this function with everything mapped or nothing mapped, so perhaps we
-> > should warn and continue.  Assuming a spurious sync is ok, we could
-> > check (i < npage) for the sync condition, the only risk being we had no
-> > mappings at all and therefore no unmaps.
-> >
-> > TBH, I wonder if this function is even needed anymore or if the mapping
-> > problem in amd_iommu has since ben fixed.  
-> 
-> Actually, I never hit this execution path in my test runs. I could just left this
-> unchanged and use the slow unmap path to simplify the logic. I'm not aware of
-> the history of why this logic is needed for AMD IOMMU. Is this a bug in the driver or
-> the hardware?
+/**
+ * iommu_register_device_fault_handler() - Register a device fault handler
+ * @dev: the device
+ * @handler: the fault handler
+ * @data: private data passed as argument to the handler
+ *
+ * When an IOMMU fault event is received, call this handler with the fault event
+ * and data as argument. The handler should return 0. If the fault is
+ * recoverable (IOMMU_FAULT_PAGE_REQ), the handler must also complete
+ * the fault by calling iommu_page_response() with one of the following
+ * response code:
+ * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
+ * - IOMMU_PAGE_RESP_INVALID: terminate the fault
+ * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
+ *   page faults if possible.
+ *
+ * Return 0 if the fault handler was installed successfully, or an error.
+ */
 
-It was a bug in amd_iommu code and unfortunately I've lost details
-beyond what we see in the comments there, iommu ptes previously mapped
-as 4k can't be unmapped and remapped using large page sizes,
-presumably pmds still in place or something along those lines.  If
-you're testing on AMD and not triggering this, let's not try to
-optimize this path, it's just a crusty old safety net.
- 
-> > Also, I'm not sure why you're gating adding fast flushing to amd_iommu
-> > on vfio making use of it.  These can be done independently.  Thanks,  
-> 
-> Currently, the fast unmap interface is mainly called by VFIO. So, I thought I would
-> submit the patches together for review. If you would prefer, I can submit the IOMMU part
-> separately.
+/**
+ * iommu_unregister_device_fault_handler() - Unregister the device fault handler
+ * @dev: the device
+ *
+ * Remove the device fault handler installed with
+ * iommu_register_device_fault_handler().
+ *
+ * Return 0 on success, or an error.
+ */
 
-I think it makes more sense and is most efficient to uncouple them.
-Joerg probably isn't paying attention to the amd_iommu changes because
-I'm commenting on the vfio parts and I'm not looking at the amd_iommu
-changes.  The code doesn't depend on them going in together, so we can
-do them in parallel if they're split.  Thanks,
-
-Alex
+Thanks,
+Jean
