@@ -1,69 +1,108 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 11/13] iommu/rockchip: Fix error handling in init
-Date: Thu, 18 Jan 2018 12:47:33 +0000
-Message-ID: <ebf1b740-5f64-e8fe-fdcf-86dfc532388d@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 13/13] iommu/rockchip: Support sharing IOMMU between
+	masters
+Date: Thu, 18 Jan 2018 12:49:46 +0000
+Message-ID: <50529cf2-72ed-e991-7639-79b5d74c7853@arm.com>
 References: <20180118115251.5542-1-jeffy.chen@rock-chips.com>
- <20180118115251.5542-12-jeffy.chen@rock-chips.com>
+	<20180118115251.5542-14-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180118115251.5542-12-jeffy.chen@rock-chips.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180118115251.5542-14-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jeffy Chen <jeffy.chen@rock-chips.com>, linux-kernel@vger.kernel.org
-Cc: jcliang@chromium.org, xxm@rock-chips.com, tfiga@chromium.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 18/01/18 11:52, Jeffy Chen wrote:
-> It's hard to undo bus_set_iommu() in the error path, so move it to the
-> end of rk_iommu_probe().
+> There would be some masters sharing the same IOMMU device. Put them in
+> the same iommu group and share the same iommu domain.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-> Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
-> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 > ---
 > 
 > Changes in v4: None
-> Changes in v3: None
-> Changes in v2:
-> Move bus_set_iommu() to rk_iommu_probe().
+> Changes in v3:
+> Remove rk_iommudata->domain.
 > 
->   drivers/iommu/rockchip-iommu.c | 15 ++-------------
->   1 file changed, 2 insertions(+), 13 deletions(-)
+> Changes in v2: None
+> 
+>   drivers/iommu/rockchip-iommu.c | 22 ++++++++++++++++++++--
+>   1 file changed, 20 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index b1f177ae03c7..2c095f96c033 100644
+> index e2e7acc3039d..e07929bbcc2a 100644
 > --- a/drivers/iommu/rockchip-iommu.c
 > +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1195,6 +1195,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   	if (!dma_dev)
->   		dma_dev = &pdev->dev;
+> @@ -97,6 +97,7 @@ struct rk_iommu {
+>   	struct iommu_device iommu;
+>   	struct list_head node; /* entry in rk_iommu_domain.iommus */
+>   	struct iommu_domain *domain; /* domain to which iommu is attached */
+> +	struct iommu_group *group;
+>   };
 >   
-> +	bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
+>   struct rk_iommudata {
+> @@ -1157,6 +1158,15 @@ static void rk_iommu_remove_device(struct device *dev)
+>   	iommu_group_remove_device(dev);
+>   }
+>   
+> +static struct iommu_group *rk_iommu_device_group(struct device *dev)
+> +{
+> +	struct rk_iommu *iommu;
 > +
+> +	iommu = rk_iommu_from_dev(dev);
+> +
+> +	return iommu->group;
+> +}
+> +
+>   static int rk_iommu_of_xlate(struct device *dev,
+>   			     struct of_phandle_args *args)
+>   {
+> @@ -1192,7 +1202,7 @@ static const struct iommu_ops rk_iommu_ops = {
+>   	.add_device = rk_iommu_add_device,
+>   	.remove_device = rk_iommu_remove_device,
+>   	.iova_to_phys = rk_iommu_iova_to_phys,
+> -	.device_group = generic_device_group,
+> +	.device_group = rk_iommu_device_group,
+>   	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
+>   	.of_xlate = rk_iommu_of_xlate,
+>   };
+> @@ -1248,9 +1258,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	iommu->reset_disabled = device_property_read_bool(dev,
+>   					"rockchip,disable-mmu-reset");
+>   
+> +	iommu->group = iommu_group_alloc();
+> +	if (IS_ERR(iommu->group)) {
+> +		err = PTR_ERR(iommu->group);
+> +		goto err_put_clocks;
+> +	}
+> +
+>   	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
+>   	if (err)
+> -		goto err_put_clocks;
+> +		goto err_put_group;
+>   
+>   	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
+>   	iommu_device_set_fwnode(&iommu->iommu, &dev->of_node->fwnode);
+> @@ -1274,6 +1290,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
 >   	return 0;
 >   err_remove_sysfs:
 >   	iommu_device_sysfs_remove(&iommu->iommu);
-> @@ -1220,19 +1222,6 @@ static struct platform_driver rk_iommu_driver = {
->   
->   static int __init rk_iommu_init(void)
->   {
-> -	struct device_node *np;
-> -	int ret;
-> -
-> -	np = of_find_matching_node(NULL, rk_iommu_dt_ids);
-> -	if (!np)
-> -		return 0;
-> -
-> -	of_node_put(np);
-> -
-> -	ret = bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
-> -	if (ret)
-> -		return ret;
-> -
->   	return platform_driver_register(&rk_iommu_driver);
->   }
->   subsys_initcall(rk_iommu_init);
+> +err_put_group:
+> +	iommu_group_put(iommu->group);
+>   err_put_clocks:
+>   	rk_iommu_put_clocks(iommu);
+>   	return err;
 > 
