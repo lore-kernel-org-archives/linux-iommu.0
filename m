@@ -1,33 +1,102 @@
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Subject: Re: [PATCH v6 20/99] ida: Convert to XArray
-Date: Wed, 17 Jan 2018 22:17:55 +0100
-Message-ID: <e8c42206-e4d7-dda3-2bb7-2c1faa6ff5be@physik.fu-berlin.de>
-References: <20180117202203.19756-1-willy@infradead.org>
- <20180117202203.19756-21-willy@infradead.org>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFC PATCH v2 1/2] vfio/type1: Adopt fast IOTLB flush interface
+	when unmap IOVAs
+Date: Thu, 18 Jan 2018 10:25:12 +0700
+Message-ID: <0cdcfade-481a-96de-cadb-291968392318@amd.com>
+References: <1514366435-12723-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<1514366435-12723-2-git-send-email-suravee.suthikulpanit@amd.com>
+	<20180108135329.3c1e2c88@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20180117202203.19756-21-willy@infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180108135329.3c1e2c88-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 Content-Language: en-US
-Sender: linux-sh-owner@vger.kernel.org
-To: Matthew Wilcox <willy@infradead.org>, linux-kernel@vger.kernel.org
-Cc: Matthew Wilcox <mawilcox@microsoft.com>, linux-mm@kvack.org, linux-fsdevel@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net, linux-nilfs@vger.kernel.org, linux-btrfs@vger.kernel.org, linux-xfs@vger.kernel.org, linux-usb@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Stefano Stabellini <sstabellini@kernel.org>, iommu@lists.linux-foundation.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, intel-gfx@lists.freedesktop.org, cgroups@vger.kernel.org, linux-sh@vger.kernel.org, David Howells <dhowells@redhat.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Matthew!
+Hi Alex,
 
-On 01/17/2018 09:20 PM, Matthew Wilcox wrote:
-> Use the xarray infrstructure like we used the radix tree infrastructure.
-> This lets us get rid of idr_get_free() from the radix tree code.
+On 1/9/18 3:53 AM, Alex Williamson wrote:
+> On Wed, 27 Dec 2017 04:20:34 -0500
+> Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org> wrote:
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index e30e29a..f000844 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>>
+>> ... >>
+>> @@ -479,6 +486,40 @@ static long vfio_unpin_pages_remote(struct vfio_dma *dma, dma_addr_t iova,
+>>   	return unlocked;
+>>   }
+>>   
+>> +/*
+>> + * Generally, VFIO needs to unpin remote pages after each IOTLB flush.
+>> + * Therefore, when using IOTLB flush sync interface, VFIO need to keep track
+>> + * of these regions (currently using a list).
+>> + *
+>> + * This value specifies maximum number of regions for each IOTLB flush sync.
+>> + */
+>> +#define VFIO_IOMMU_TLB_SYNC_MAX		512
+> 
+> Is this an arbitrary value or are there non-obvious considerations for
+> this value should we want to further tune it in the future?
 
-There's a typo: infrstructure => infratructure
+This is just an arbitrary value for now, which we could try further tuning.
+On some dGPUs that I have been using, I have seen max of ~1500 regions within an unmap call.
+In most case, I see less than 100 regions in an unmap call. The structure is currently 40 bytes.
+So, I figured capping at 512 entry in the list is 20KB is reasonable. Let me know what you think.
 
-Cheers,
-Adrian
+>> ....
+>>
+>> @@ -887,8 +946,14 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+>>   			break;
+>>   	}
+>>   
+>> -	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
+>> -		iommu_unmap(domain->domain, iova, PAGE_SIZE);
+>> +	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE) {
+>> +		unmapped = iommu_unmap_fast(domain->domain, iova, PAGE_SIZE);
+>> +		if (WARN_ON(!unmapped))
+>> +			break;
+>> +		iommu_tlb_range_add(domain->domain, iova, unmapped);
+>> +	}
+>> +	if (unmapped)
+>> +		iommu_tlb_sync(domain->domain);
+> 
+> Using unmapped here seems a little sketchy, for instance if we got back
+> zero on the last call to iommu_unmap_fast() but had other ranges queued
+> for flush.  Do we even need a WARN_ON and break here, are we just
+> trying to skip adding a zero range?  The intent is that we either leave
+> this function with everything mapped or nothing mapped, so perhaps we
+> should warn and continue.  Assuming a spurious sync is ok, we could
+> check (i < npage) for the sync condition, the only risk being we had no
+> mappings at all and therefore no unmaps.
+>
+> TBH, I wonder if this function is even needed anymore or if the mapping
+> problem in amd_iommu has since ben fixed.
 
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+Actually, I never hit this execution path in my test runs. I could just left this
+unchanged and use the slow unmap path to simplify the logic. I'm not aware of
+the history of why this logic is needed for AMD IOMMU. Is this a bug in the driver or
+the hardware?
+
+> Also, I'm not sure why you're gating adding fast flushing to amd_iommu
+> on vfio making use of it.  These can be done independently.  Thanks,
+
+Currently, the fast unmap interface is mainly called by VFIO. So, I thought I would
+submit the patches together for review. If you would prefer, I can submit the IOMMU part
+separately.
+
+Thanks,
+Suravee
