@@ -1,37 +1,31 @@
-From: David Sterba <dsterba@suse.cz>
-Subject: Re: [PATCH v6 85/99] btrfs: Remove unused spinlock
-Date: Thu, 18 Jan 2018 15:22:34 +0100
-Message-ID: <20180118142234.GK13726@twin.jikos.cz>
-References: <20180117202203.19756-1-willy@infradead.org>
- <20180117202203.19756-86-willy@infradead.org>
-Reply-To: dsterba@suse.cz
+From: JeffyChen <jeffy.chen@rock-chips.com>
+Subject: Re: [PATCH v4 08/13] iommu/rockchip: Control clocks needed to access
+ the IOMMU
+Date: Thu, 18 Jan 2018 22:25:05 +0800
+Message-ID: <5A60AE41.2050101@rock-chips.com>
+References: <20180118115251.5542-1-jeffy.chen@rock-chips.com> <20180118115251.5542-9-jeffy.chen@rock-chips.com> <c188e6a9-744c-d984-545c-408607f35cc9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20180117202203.19756-86-willy@infradead.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Matthew Wilcox <willy@infradead.org>
-Cc: linux-s390@vger.kernel.org, David Howells <dhowells@redhat.com>, linux-nilfs@vger.kernel.org, Matthew Wilcox <mawilcox@microsoft.com>, linux-sh@vger.kernel.org, intel-gfx@lists.freedesktop.org, linux-usb@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Stefano Stabellini <sstabellini@kernel.org>, linux-fsdevel@vger.kernel.org, cgroups@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>, linux-btrfs@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c188e6a9-744c-d984-545c-408607f35cc9@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, tfiga@chromium.org
+Cc: jcliang@chromium.org, xxm@rock-chips.com, devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBKYW4gMTcsIDIwMTggYXQgMTI6MjE6NDlQTSAtMDgwMCwgTWF0dGhldyBXaWxjb3gg
-d3JvdGU6Cj4gRnJvbTogTWF0dGhldyBXaWxjb3ggPG1hd2lsY294QG1pY3Jvc29mdC5jb20+Cj4g
-Cj4gVGhlIHJlYWRhX2xvY2sgaW4gc3RydWN0IGJ0cmZzX2RldmljZSB3YXMgb25seSBpbml0aWFs
-aXNlZCwgYW5kIG5vdAo+IGFjdHVhbGx5IHVzZWQuICBUaGF0J3MgZ29vZCBiZWNhdXNlIHRoZXJl
-J3MgYW5vdGhlciBsb2NrIGFsc28gY2FsbGVkCj4gcmVhZGFfbG9jayBpbiB0aGUgYnRyZnNfZnNf
-aW5mbyB0aGF0IHdhcyBxdWl0ZSBoZWF2aWx5IHVzZWQuICBSZW1vdmUKPiB0aGlzIG9uZS4KPiAK
-PiBTaWduZWQtb2ZmLWJ5OiBNYXR0aGV3IFdpbGNveCA8bWF3aWxjb3hAbWljcm9zb2Z0LmNvbT4K
-CkknbGwgcGljayB0aGlzIG9uZSBub3csIHRoYW5rcy4KX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhA
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
-YW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+Hi Robin,
+
+On 01/18/2018 08:27 PM, Robin Murphy wrote:
+>>
+>
+> Is it worth using the clk_bulk_*() APIs for this? At a glance, most of
+> the code being added here appears to duplicate what those functions
+> already do (but I'm no clk API expert, for sure).
+right, i think it's doable, the clk_bulk APIs are very helpful. i think 
+we didn't use that is because this patch were wrote for the chromeos 4.4 
+kernel, which doesn't have clk_bulk yet:)
+
+will do it in the next version, thanks.
+>
+> Robin.
