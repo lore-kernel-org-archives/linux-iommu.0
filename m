@@ -1,57 +1,47 @@
-From: JeffyChen <jeffy.chen@rock-chips.com>
-Subject: Re: [PATCH v4 00/13] iommu/rockchip: Use OF_IOMMU
-Date: Thu, 18 Jan 2018 22:07:59 +0800
-Message-ID: <5A60AA3F.6010801@rock-chips.com>
-References: <20180118115251.5542-1-jeffy.chen@rock-chips.com> <20180118124403.GX28161@8bytes.org>
+From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: Re: [PATCH v4 05/13] iommu/rockchip: Use iopoll helpers to wait for
+	hardware
+Date: Thu, 18 Jan 2018 22:11:41 +0800
+Message-ID: <5A60AB1D.9080002@rock-chips.com>
+References: <20180118115251.5542-1-jeffy.chen@rock-chips.com>
+	<20180118115251.5542-6-jeffy.chen@rock-chips.com>
+	<064794b9-98ae-221e-76bd-e11130514826@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180118124403.GX28161@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: linux-kernel@vger.kernel.org, jcliang@chromium.org, robin.murphy@arm.com, xxm@rock-chips.com, tfiga@chromium.org, devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <064794b9-98ae-221e-76bd-e11130514826-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org
+Cc: jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Robin,
 
-Thanks for your reply.
-
-On 01/18/2018 08:44 PM, Joerg Roedel wrote:
-> On Thu, Jan 18, 2018 at 07:52:38PM +0800, Jeffy Chen wrote:
->> Jeffy Chen (9):
->>    iommu/rockchip: Prohibit unbind and remove
->>    iommu/rockchip: Fix error handling in probe
->>    iommu/rockchip: Request irqs in rk_iommu_probe()
->>    ARM: dts: rockchip: add clocks in vop iommu nodes
->>    iommu/rockchip: Use IOMMU device for dma mapping operations
->>    iommu/rockchip: Use OF_IOMMU to attach devices automatically
->>    iommu/rockchip: Fix error handling in init
->>    iommu/rockchip: Add runtime PM support
->>    iommu/rockchip: Support sharing IOMMU between masters
->>
->> Tomasz Figa (4):
->>    iommu/rockchip: Fix error handling in attach
->>    iommu/rockchip: Use iopoll helpers to wait for hardware
->>    iommu/rockchip: Fix TLB flush of secondary IOMMUs
->>    iommu/rockchip: Control clocks needed to access the IOMMU
+On 01/18/2018 09:09 PM, Robin Murphy wrote:
+>> -#define FORCE_RESET_TIMEOUT    100    /* ms */
+>> +#define FORCE_RESET_TIMEOUT    100000    /* us */
+>> +#define POLL_TIMEOUT        1000    /* us */
 >
-> Please stop resending this every day with minimal changes. I am not
-> going to take it for v4.16, as we are late in the cycle already and there
-> are still review comments.
+> Nit: the callsites look a bit odd with the combination of POLL_TIMEOUT
+> and the magic number 100 - should we not also define something like
+> POLL_PERIOD for that? Also POLL_TIMEOUT is a rather generic name and
+> overlaps with several other drivers, so a namespace prefix would be
+> helpful (i.e. RK_IOMMU_POLL*, or at least RK_POLL*).
 >
-> Just collect all feedback, update the patches, rebase them to v4.16-rc1
-> when its out, and send a new version.
-
-oops, sorry, i send v4 today is mainly because i found v3 would break 
-some of the rk platforms, which needs an extra patch [7] (ARM: dts: 
-rockchip: add clocks in vop iommu nodes),  but forgot to mention it in 
-the change log...
-
-will send new version after all the rest patches been reviewed :)
+> FWIW, my personal preference would be to also suffix these with _US for
+> absolute clarity, but it's not essential (especially if longer names
+> lead to more linebreaks at the callsites).
+right, that make sense, will fix it in next version, thanks :)
 >
+> With those undocumented "100"s fixed up,
 >
-> 	Joerg
->
->
->
+> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
