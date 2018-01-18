@@ -1,52 +1,67 @@
-From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH] iommu/of: Only do IOMMU lookup for available ones
-Date: Thu, 18 Jan 2018 22:58:23 +0800
-Message-ID: <5A60B60F.6040602@rock-chips.com>
-References: <20180103060920.23475-1-jeffy.chen@rock-chips.com>
-	<20180117132808.s5henw63oseg3ufd@8bytes.org>
-	<20180118144118.GA12394@arm.com>
+From: David Sterba <dsterba@suse.cz>
+Subject: Re: [PATCH v6 00/99] XArray version 6
+Date: Thu, 18 Jan 2018 17:07:50 +0100
+Message-ID: <20180118160749.GP13726@twin.jikos.cz>
+References: <20180117202203.19756-1-willy@infradead.org>
+Reply-To: dsterba@suse.cz
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180118144118.GA12394-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180117202203.19756-1-willy@infradead.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: linux-s390@vger.kernel.org, David Howells <dhowells@redhat.com>, linux-nilfs@vger.kernel.org, Matthew Wilcox <mawilcox@microsoft.com>, linux-sh@vger.kernel.org, intel-gfx@lists.freedesktop.org, linux-usb@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Stefano Stabellini <sstabellini@kernel.org>, linux-fsdevel@vger.kernel.org, cgroups@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>, linux-btrfs@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-Thanks for your reply.
-
-On 01/18/2018 10:41 PM, Will Deacon wrote:
->> >
->> >Makes sense to me, but I'd like to have an OK from Robin or Will (added
->> >to Cc) before applying this.
-> I don't think this patch makes a lot of sense in isolation: the SMMU drivers
-> themselves will likely still probe, and it's unclear what we should about
-> DMA when an IOMMU is not deemed to be available. See:
->
-> https://patchwork.kernel.org/patch/9681211/
->
-> Jeffy -- are you solving a real issue here, or is this just an attempt at
-> some cleanup?
-
-hmmm, it's just a cleanup, but it seems like we already removed this 
-of_iommu_init_fn in:
-b0c560f7d8a4 iommu: Clean up of_iommu_init_fn
-
-so this patch can be disregarded too :)
->
-> Will
->
->
->
+T24gV2VkLCBKYW4gMTcsIDIwMTggYXQgMTI6MjA6MjRQTSAtMDgwMCwgTWF0dGhldyBXaWxjb3gg
+d3JvdGU6Cj4gRnJvbTogTWF0dGhldyBXaWxjb3ggPG1hd2lsY294QG1pY3Jvc29mdC5jb20+Cj4g
+Cj4gVGhpcyB2ZXJzaW9uIG9mIHRoZSBYQXJyYXkgaGFzIG5vIGtub3duIGJ1Z3MuCgpJJ3ZlIGJv
+b3RlZCB0aGlzIHBhdGNoc2V0IG9uIDIgYm94ZXMsIGJvdGggaGFkIHJhbmRvbSBwcm9ibGVtcyBk
+dXJpbmcKYm9vdC4gT24gb25lIEkgd2FzIG5vdCBhYmxlIHRvIGRpYWdub3NlIHdoYXQgd2VudCB3
+cm9uZy4gT24gdGhlIG90aGVyCm9uZSB0aGUgc3lzdGVtIGJvb3RlZCB1cCB0byB1c2Vyc3BhY2Ug
+YW5kIGZhaWxlZCB0byBzZXQgdXAgbmV0d29ya2luZy4KU2VyaWFsIGNvbnNvbGUgd29ya2VkIGFu
+ZCB0aGUgbmV0d29yayBzZXJ2aWNlIGNvbXBsYWluZWQgYWJvdXQgd3JvbmcKZm9ybWF0IG9mIC91
+c3Ivc2hhcmUvd2lja2VkL3NjaGVtYS90ZWFtLnhtbCAuIFRoYXQncyBzdXBwb3NlZCB0byBiZSBh
+CnRleHQgZmlsZSwgdGhvdWdoIGhleGR1bXAgc2hvd2VkIG1lIGxvdHMgb2YgemVyb3MuIFRyaW1t
+ZWQgb3V0cHV0OgoKMDAwMDAwMDAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwICAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAgfC4uLi4uLi4uLi4uLi4uLi58CioKKHNpbWlsYXIgb3V0cHV0IGhlcmUp
+CioKMDAwMDBhMTAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwICAxMSAwMyAwMCAwMCAwMCAwMCAw
+MCAwMCAgfC4uLi4uLi4uLi4uLi4uLi58CjAwMDAwYTIwICAyMCA4YiA3ZiAwMSAwMCAwMCAwMCAw
+MCAgYTAgODQgN2QgMDEgMDAgMDAgMDAgMDAgIHwgLi4uLi4uLi4ufS4uLi4ufAowMDAwMGEzMCAg
+MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgIDEwIDg5IDdmIDAxIDAwIDAwIDAwIDAwICB8Li4uLi4u
+Li4uLi4uLi4uLnwKMDAwMDBhNDAgIGEwIDg0IDdkIDAxIDAwIDAwIDAwIDAwICAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAgfC4ufS4uLi4uLi4uLi4uLi58CjAwMDAwYTUwICA4MCA4YSA3ZiAwMSAw
+MCAwMCAwMCAwMCAgZTAgY2YgN2QgMDEgMDAgMDAgMDAgMDAgIHwuLi4uLi4uLi4ufS4uLi4ufAow
+MDAwMGE2MCAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgIDYwIDhhIDdmIDAxIDAwIDAwIDAwIDAw
+ICB8Li4uLi4uLi5gLi4uLi4uLnwKMDAwMDBhNzAgIGEwIDg0IDdkIDAxIDAwIDAwIDAwIDAwICAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAgfC4ufS4uLi4uLi4uLi4uLi58CjAwMDAwYTgwICAzMCA4
+OSA3ZiAwMSAwMCAwMCAwMCAwMCAgYTAgODQgN2QgMDEgMDAgMDAgMDAgMDAgIHwwLi4uLi4uLi4u
+fS4uLi4ufAowMDAwMGE5MCAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgIDYwIGYyIDdmIDAxIDAw
+IDAwIDAwIDAwICB8Li4uLi4uLi5gLi4uLi4uLnwKMDAwMDBhYTAgIDQwIGZkIDdlIDAxIDAwIDAw
+IDAwIDAwICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAgfEAufi4uLi4uLi4uLi4uLi58CjAwMDAw
+YWIwICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgIHwu
+Li4uLi4uLi4uLi4uLi4ufAoqCjAwMDAxMDAwICAzZSAwYSAyMCAyMCAzYyAyZiA2ZCA2NSAgNzQg
+NjggNmYgNjQgM2UgMGEgM2MgMmYgIHw+LiAgPC9tZXRob2Q+LjwvfAowMDAwMTAxMCAgNzMgNjUg
+NzIgNzYgNjkgNjMgNjUgM2UgIDBhICAgICAgICAgICAgICAgICAgICAgICB8c2VydmljZT4ufAoK
+VGhlcmUncyBzb21ldGhpbmcgYXQgdGhlIGVuZCBvZiB0aGUgZmlsZSB0aGF0IGRvZXMgbG9vayBs
+aWtlIGEgeG1sIGZyYWdtZW50LgpUaGUgZmlsZSBzaXplIGlzIDQxMjEuIFRoaXMgbG9va3MgdG8g
+bWUgbGlrZSBleGFjdGx5IHRoZSBmaXJzdCBwYWdlIG9mIHRoZSBmaWxlCndhcyBub3QgcmVhZCBj
+b3JyZWN0bHkuCgpUaGUgeG1sIGZpbGUgaXMgc3VwcG9zZWQgdG8gYmUgcmVhZC1vbmx5IGR1cmlu
+ZyBzdGFydHVwLCBzbyB0aGVyZSB3YXMgbm8gd3JpdGUKaW4gZmxpZ2h0LiAncnBtIC1WdicgcmVw
+b3J0ZWQgb25seSB0aGlzIGZpbGUgY29ycnVwdGVkLiBCb290aW5nIHRvIG90aGVyCmtlcm5lbHMg
+d2FzIGZpbmUsIG5ldHdvcmsgdXAsIGFuZCB0aGUgZmlsZSB3YXMgb2sgYWdhaW4uIFNvIHRoZQpj
+b3JydXB0aW9uIGhhcHBlbmVkIG9ubHkgaW4gbWVtb3J5LCB3aGljaCBsZWFkcyBtZSB0byBjb25j
+bHVzaW9uIHRoYXQKdGhlcmUgaXMgYW4gdW5rbm93biBidWcgaW4geW91ciBwYXRjaHNldC4KX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1h
+aWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
