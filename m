@@ -1,159 +1,104 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v6 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
-	add/remove device
-Date: Fri, 19 Jan 2018 17:13:40 +0530
-Message-ID: <1516362223-22946-4-git-send-email-vivek.gautam@codeaurora.org>
-References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
+From: okaya@codeaurora.org
+Subject: Re: [RFCv2 PATCH 05/36] iommu/process: Bind and unbind process to and
+ from devices
+Date: Fri, 19 Jan 2018 08:07:21 -0500
+Message-ID: <c0e39c5a69a6f612e11c6076be9c5d53@codeaurora.org>
+References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
+ <20171006133203.22803-6-jean-philippe.brucker@arm.com>
+ <0772e71e-4861-1e7b-f248-88aaba8bf2fc@codeaurora.org>
+ <e2753b59-2b9e-ffc6-a7b8-0ed23df38e10@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1516362223-22946-1-git-send-email-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <e2753b59-2b9e-ffc6-a7b8-0ed23df38e10@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, robh+dt@kernel.org, Mark Rutland <Mark.Rutland@arm.com>, Catalin Marinas <Catalin.Marinas@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, hanjun.guo@linaro.org, Sudeep Holla <Sudeep.Holla@arm.com>, rjw@rjwysocki.net, lenb@kernel.org, Robin Murphy <Robin.Murphy@arm.com>, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, gabriele.paoloni@huawei.com, nwatters@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.
 List-Id: iommu@lists.linux-foundation.org
 
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+On 2018-01-19 05:27, Jean-Philippe Brucker wrote:
+> Hi Sinan,
+> 
+> On 19/01/18 04:52, Sinan Kaya wrote:
+>> Hi Jean-Philippe,
+>> 
+>> On 10/6/2017 9:31 AM, Jean-Philippe Brucker wrote:
+>>>  /**
+>>> + * iommu_process_bind_device - Bind a process address space to a 
+>>> device
+>>> + * @dev: the device
+>>> + * @task: the process to bind
+>>> + * @pasid: valid address where the PASID will be stored
+>>> + * @flags: bond properties (IOMMU_PROCESS_BIND_*)
+>>> + *
+>>> + * Create a bond between device and task, allowing the device to 
+>>> access the
+>>> + * process address space using the returned PASID.
+>>> + *
+>>> + * On success, 0 is returned and @pasid contains a valid ID. 
+>>> Otherwise, an error
+>>> + * is returned.
+>>> + */
+>>> +int iommu_process_bind_device(struct device *dev, struct task_struct 
+>>> *task,
+>>> +			      int *pasid, int flags)
+>> 
+>> This API doesn't play nice with endpoint device drivers that have 
+>> PASID limitations.
+>> 
+>> The AMD driver seems to have PASID limitations per product that are 
+>> not being
+>> advertised in the PCI capability.
+>> 
+>> device_iommu_pasid_init()
+>> {
+>>         pasid_limit = min_t(unsigned int,
+>>                         (unsigned int)(1 << 
+>> kfd->device_info->max_pasid_bits),
+>>                         iommu_info.max_pasids);
+>>         /*
+>>          * last pasid is used for kernel queues doorbells
+>>          * in the future the last pasid might be used for a kernel 
+>> thread.
+>>          */
+>>         pasid_limit = min_t(unsigned int,
+>>                                 pasid_limit,
+>>                                 kfd->doorbell_process_limit - 1);
+>> }
+>> 
+>> kfd->device_info->max_pasid_bits seems to contain per device 
+>> limitations.
+>> 
+>> Would you be willing to extend the API so that the requester can 
+>> impose some limit
+>> on the PASID value that is getting allocated.
+> 
+> Good point. Following the feedback for this series, next version adds
+> another public function:
+> 
+> int iommu_sva_device_init(struct device *dev, int features);
+> 
+> that has to be called by the device driver before any bind(). The 
+> intent
+> is to let some IOMMU drivers initialize PASID tables and other features
+> lazily, only if the device driver actually intends to use them. Maybe I
+> could change this function to:
+> 
+> int iommu_sva_device_init(struct device *dev, int features, unsigned 
+> int
+> max_pasid);
+> 
+> @features is a bitmask telling what the device driver needs (PASID 
+> and/or
+> page faults). If features has IOMMU_SVA_FEAT_PASID set, then device 
+> driver
+> can set a max_pasid limit, that we'd store in our private device-iommu
+> data. If max_pasid is 0, then we'd use the PCI limit.
 
-The smmu device probe/remove and add/remove master device callbacks
-gets called when the smmu is not linked to its master, that is without
-the context of the master device. So calling runtime apis in those places
-separately.
+Yes, this should work.
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-[vivek: Cleanup pm runtime calls]
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 45 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 41 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 21acffe91a1c..95478bfb182c 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -914,11 +914,15 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	int irq;
-+	int ret, irq;
- 
- 	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
- 		return;
- 
-+	ret = pm_runtime_get_sync(smmu->dev);
-+	if (ret)
-+		return;
-+
- 	/*
- 	 * Disable the context bank and free the page tables before freeing
- 	 * it.
-@@ -933,6 +937,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 
- 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
- 	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
-+
-+	pm_runtime_put_sync(smmu->dev);
- }
- 
- static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-@@ -1408,12 +1414,20 @@ static int arm_smmu_add_device(struct device *dev)
- 	while (i--)
- 		cfg->smendx[i] = INVALID_SMENDX;
- 
--	ret = arm_smmu_master_alloc_smes(dev);
-+	ret = pm_runtime_get_sync(smmu->dev);
- 	if (ret)
- 		goto out_cfg_free;
- 
-+	ret = arm_smmu_master_alloc_smes(dev);
-+	if (ret) {
-+		pm_runtime_put_sync(smmu->dev);
-+		goto out_cfg_free;
-+	}
-+
- 	iommu_device_link(&smmu->iommu, dev);
- 
-+	pm_runtime_put_sync(smmu->dev);
-+
- 	return 0;
- 
- out_cfg_free:
-@@ -1428,7 +1442,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
- 	struct arm_smmu_master_cfg *cfg;
- 	struct arm_smmu_device *smmu;
--
-+	int ret;
- 
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
- 		return;
-@@ -1436,8 +1450,21 @@ static void arm_smmu_remove_device(struct device *dev)
- 	cfg  = fwspec->iommu_priv;
- 	smmu = cfg->smmu;
- 
-+	/*
-+	 * The device link between the master device and
-+	 * smmu is already purged at this point.
-+	 * So enable the power to smmu explicitly.
-+	 */
-+
-+	ret = pm_runtime_get_sync(smmu->dev);
-+	if (ret)
-+		return;
-+
- 	iommu_device_unlink(&smmu->iommu, dev);
- 	arm_smmu_master_free_smes(fwspec);
-+
-+	pm_runtime_put_sync(smmu->dev);
-+
- 	iommu_group_remove_device(dev);
- 	kfree(fwspec->iommu_priv);
- 	iommu_fwspec_free(dev);
-@@ -2130,6 +2157,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	platform_set_drvdata(pdev, smmu);
-+
-+	pm_runtime_enable(dev);
-+
-+	err = pm_runtime_get_sync(dev);
-+	if (err)
-+		return err;
-+
- 	err = arm_smmu_device_cfg_probe(smmu);
- 	if (err)
- 		return err;
-@@ -2171,9 +2206,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
--	platform_set_drvdata(pdev, smmu);
- 	arm_smmu_device_reset(smmu);
- 	arm_smmu_test_smr_masks(smmu);
-+	pm_runtime_put_sync(dev);
- 
- 	/*
- 	 * For ACPI and generic DT bindings, an SMMU will be probed before
-@@ -2212,6 +2247,8 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 
- 	/* Turn the thing off */
- 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-+	pm_runtime_force_suspend(smmu->dev);
-+
- 	return 0;
- }
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> 
+> Thanks,
+> Jean
