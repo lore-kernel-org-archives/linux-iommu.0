@@ -1,134 +1,155 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v3 10/16] iommu: introduce device fault report API
-Date: Thu, 18 Jan 2018 19:24:52 +0000
-Message-ID: <6eea3b27-d0ca-8021-325f-fdc876ebf113@arm.com>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1510944914-54430-11-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v4 12/13] iommu/rockchip: Add runtime PM support
+Date: Fri, 19 Jan 2018 13:01:33 +0900
+Message-ID: <CAAFQd5A71m5jFD8NaXWyi3g7ssg=nETRhtn2wYp8p_6qJcWu4w@mail.gmail.com>
+References: <20180118115251.5542-1-jeffy.chen@rock-chips.com>
+	<20180118115251.5542-13-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1510944914-54430-11-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Lan Tianyu <tianyu.lan@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180118115251.5542-13-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
-
-I've got minor comments after working with this patch, sorry for the
-multiple replies
-
-On 17/11/17 18:55, Jacob Pan wrote:
-[...]
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 829e9e9..97b7990 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -581,6 +581,12 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->  		goto err_free_name;
->  	}
->  
-> +	dev->iommu_param = kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
-
-This should be "sizeof(struct iommu_param)" or maybe
-"sizeof(*dev->iommu_param)".
-
-> +	if (!dev->iommu_param) {
-> +		ret = -ENOMEM;
-> +		goto err_free_name;
-> +	}
+On Thu, Jan 18, 2018 at 8:52 PM, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
+> When the power domain is powered off, the IOMMU cannot be accessed and
+> register programming must be deferred until the power domain becomes
+> enabled.
+>
+> Add runtime PM support, and use runtime PM device link from IOMMU to
+> master to startup and shutdown IOMMU.
+>
+> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
+>
+> Changes in v4: None
+> Changes in v3:
+> Only call startup() and shutdown() when iommu attached.
+> Remove pm_mutex.
+> Check runtime PM disabled.
+> Check pm_runtime in rk_iommu_irq().
+>
+> Changes in v2: None
+>
+>  drivers/iommu/rockchip-iommu.c | 180 ++++++++++++++++++++++++++++++++---------
+>  1 file changed, 141 insertions(+), 39 deletions(-)
+>
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 2c095f96c033..e2e7acc3039d 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -22,6 +22,7 @@
+>  #include <linux/of_iommu.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+>
+> @@ -99,6 +100,7 @@ struct rk_iommu {
+>  };
+>
+>  struct rk_iommudata {
+> +       struct device_link *link; /* runtime PM link from IOMMU to master */
+>         struct rk_iommu *iommu;
+>  };
+>
+> @@ -583,7 +585,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+>         u32 int_status;
+>         dma_addr_t iova;
+>         irqreturn_t ret = IRQ_NONE;
+> -       int i;
+> +       int i, err;
 > +
->  	kobject_get(group->devices_kobj);
->  
->  	dev->iommu_group = group;
-> @@ -657,7 +663,7 @@ void iommu_group_remove_device(struct device *dev)
->  	sysfs_remove_link(&dev->kobj, "iommu_group");
->  
->  	trace_remove_device_from_group(group->id, dev);
-> -
-> +	kfree(dev->iommu_param);
->  	kfree(device->name);
->  	kfree(device);
->  	dev->iommu_group = NULL;
-> @@ -791,6 +797,61 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
+> +       err = pm_runtime_get_if_in_use(iommu->dev);
+> +       if (err <= 0 && err != -EINVAL)
+> +               return ret;
+>
+>         WARN_ON(rk_iommu_enable_clocks(iommu));
+>
+> @@ -635,6 +641,9 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+>
+>         rk_iommu_disable_clocks(iommu);
+>
+> +       if (pm_runtime_enabled(iommu->dev))
+> +               pm_runtime_put(iommu->dev);
+
+I think this might be racy. There are some places where
+pm_runtime_enable/disable() are called on devices implicitly and I'm
+not sure if we're guaranteed that they don't happen between our
+pm_runtime_get_if_in_use() and pm_runtime_enabled() calls.
+
+An example of a race-free solution would be to save the
+pm_runtime_get_if_in_use() result to a local variable (e.g. bool
+need_runtime_put) and then call pm_runtime_put() based on that.
+
+> +
+>         return ret;
 >  }
->  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
-> 
-> +int iommu_register_device_fault_handler(struct device *dev,
-> +					iommu_dev_fault_handler_t handler,
-> +					void *data)
-> +{
-> +	struct iommu_param *idata = dev->iommu_param;
+>
+> @@ -676,10 +685,20 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
+>         spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+>         list_for_each(pos, &rk_domain->iommus) {
+>                 struct rk_iommu *iommu;
+> +               int ret;
 > +
-> +	/*
-> +	 * Device iommu_param should have been allocated when device is
-> +	 * added to its iommu_group.
-> +	 */
-> +	if (!idata)
-> +		return -EINVAL;
-> +	/* Only allow one fault handler registered for each device */
-> +	if (idata->fault_param)
-> +		return -EBUSY;
-> +	get_device(dev);
-> +	idata->fault_param =
-> +		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
-> +	if (!idata->fault_param)
-> +		return -ENOMEM;
-> +	idata->fault_param->handler = handler;
-> +	idata->fault_param->data = data;
+>                 iommu = list_entry(pos, struct rk_iommu, node);
+> -               rk_iommu_enable_clocks(iommu);
+> -               rk_iommu_zap_lines(iommu, iova, size);
+> -               rk_iommu_disable_clocks(iommu);
 > +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
+> +               /* Only zap TLBs of IOMMUs that are powered on. */
+> +               ret = pm_runtime_get_if_in_use(iommu->dev);
+> +               if (ret > 0 || ret == -EINVAL) {
+> +                       rk_iommu_enable_clocks(iommu);
+> +                       rk_iommu_zap_lines(iommu, iova, size);
+> +                       rk_iommu_disable_clocks(iommu);
+> +               }
 > +
-> +int iommu_unregister_device_fault_handler(struct device *dev)
-> +{
-> +	struct iommu_param *idata = dev->iommu_param;
-> +
-> +	if (!idata)
-> +		return -EINVAL;
-> +
-> +	kfree(idata->fault_param);
-> +	idata->fault_param = NULL;
-> +	put_device(dev);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
+> +               if (ret > 0)
+> +                       pm_runtime_put(iommu->dev);
 
-We should probably document register() and unregister() functions since
-they are part of the device driver API. If it helps I came up with:
+This one nicely avoids the race I mentioned above. :)
 
-/**
- * iommu_register_device_fault_handler() - Register a device fault handler
- * @dev: the device
- * @handler: the fault handler
- * @data: private data passed as argument to the handler
- *
- * When an IOMMU fault event is received, call this handler with the fault event
- * and data as argument. The handler should return 0. If the fault is
- * recoverable (IOMMU_FAULT_PAGE_REQ), the handler must also complete
- * the fault by calling iommu_page_response() with one of the following
- * response code:
- * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
- * - IOMMU_PAGE_RESP_INVALID: terminate the fault
- * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
- *   page faults if possible.
- *
- * Return 0 if the fault handler was installed successfully, or an error.
- */
+>         }
+>         spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+>  }
+> @@ -882,22 +901,30 @@ static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
+>         return data ? data->iommu : NULL;
+>  }
+>
+[snip]
+> +       spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+> +       list_add_tail(&iommu->node, &rk_domain->iommus);
+> +       spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+>
+> -       dev_dbg(dev, "Detached from iommu domain\n");
+> +       ret = pm_runtime_get_if_in_use(iommu->dev);
+> +       if (ret <= 0 && ret != -EINVAL)
+> +               return 0;
+> +
+> +       ret = rk_iommu_startup(iommu);
+> +       if (ret)
+> +               rk_iommu_detach_device(iommu->domain, dev);
+> +
+> +       if (pm_runtime_enabled(iommu->dev))
+> +               pm_runtime_put(iommu->dev);
 
-/**
- * iommu_unregister_device_fault_handler() - Unregister the device fault handler
- * @dev: the device
- *
- * Remove the device fault handler installed with
- * iommu_register_device_fault_handler().
- *
- * Return 0 on success, or an error.
- */
+Here we should also probably act based on what
+pm_runtime_get_if_in_use() returned rather than asking
+pm_runtime_enabled().
 
-Thanks,
-Jean
+Best regards,
+Tomasz
