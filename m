@@ -1,38 +1,37 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] ARM-SMMU: Delete error messages for a failed memory
-	allocation in three functions
-Date: Mon, 22 Jan 2018 11:53:31 +0000
-Message-ID: <20180122115331.GE15456@arm.com>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: Re: ARM-SMMU: Delete error messages for a failed memory allocation in
+ three functions
+Date: Mon, 22 Jan 2018 19:12:07 +0100
+Message-ID: <a714a4ab-8118-e4ef-5982-4395ac2e6c4b@users.sourceforge.net>
 References: <c3e91414-dd5b-2889-d86c-b19aff56571b@users.sourceforge.net>
-	<ac171b23-624d-2df3-d1d1-8e9479ae03bc@arm.com>
+ <ac171b23-624d-2df3-d1d1-8e9479ae03bc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <ac171b23-624d-2df3-d1d1-8e9479ae03bc-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, SF Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <ac171b23-624d-2df3-d1d1-8e9479ae03bc@arm.com>
+Content-Language: en-GB
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: kernel-janitors@vger.kernel.org, =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, LKML <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 22, 2018 at 11:47:13AM +0000, Robin Murphy wrote:
-> On 20/01/18 14:36, SF Markus Elfring wrote:
-> >From: Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>
-> >Date: Sat, 20 Jan 2018 15:30:17 +0100
-> >
-> >Omit extra messages for a memory allocation failure in these functions.
-> 
-> Why?
-
-Don't worry -- I was ignoring this patch (and I assume Joerg does the same).
-
-Will
+Pj4gRGF0ZTogU2F0LCAyMCBKYW4gMjAxOCAxNTozMDoxNyArMDEwMAo+Pgo+PiBPbWl0IGV4dHJh
+IG1lc3NhZ2VzIGZvciBhIG1lbW9yeSBhbGxvY2F0aW9uIGZhaWx1cmUgaW4gdGhlc2UgZnVuY3Rp
+b25zLgo+IAo+IFdoeT8KCkRvIHlvdSBmaW5kIHRoZSB3b3JkaW5nIOKAnFdBUk5JTkc6IFBvc3Np
+YmxlIHVubmVjZXNzYXJ5ICdvdXQgb2YgbWVtb3J5JyBtZXNzYWdl4oCdCihmcm9tIHRoZSBzY3Jp
+cHQg4oCcY2hlY2twYXRjaC5wbOKAnSkgbW9yZSByZWFzb25hYmxlPwoKCj4gVGhpcyBtYXkgYXMg
+d2VsbCBiZSAiZGVsZXRlIHNvbWUgc3R1ZmYgYmVjYXVzZSBJIGZlZWwgbGlrZSBpdCIuCgpEbyB5
+b3UgZmluZCB0aGUgTGludXggYWxsb2NhdGlvbiBmYWlsdXJlIHJlcG9ydCBpbnN1ZmZpY2llbnQK
+aW4gdGhpcyB1c2UgY2FzZT8KClJlZ2FyZHMsCk1hcmt1cwoKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QK
+bGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRl
+YWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
