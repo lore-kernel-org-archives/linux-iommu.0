@@ -1,151 +1,224 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v3 10/16] iommu: introduce device fault report API
-Date: Tue, 23 Jan 2018 12:01:38 -0800
-Message-ID: <20180123120138.787d1f81@jacob-builder>
-References: <1510944914-54430-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1510944914-54430-11-git-send-email-jacob.jun.pan@linux.intel.com>
-        <6eea3b27-d0ca-8021-325f-fdc876ebf113@arm.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v3] vfio/type1: Adopt fast IOTLB flush interface when
+ unmap IOVAs
+Date: Tue, 23 Jan 2018 15:04:52 -0700
+Message-ID: <20180123150452.03a42c53@w520.home>
+References: <1516595377-4681-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6eea3b27-d0ca-8021-325f-fdc876ebf113@arm.com>
+In-Reply-To: <1516595377-4681-1-git-send-email-suravee.suthikulpanit@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Lan Tianyu <tianyu.lan@intel.com>, jacob.jun.pan@linux.intel.com
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, joro@8bytes.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 18 Jan 2018 19:24:52 +0000
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+Hi Suravee,
 
-> Hi Jacob,
-> 
-> I've got minor comments after working with this patch, sorry for the
-> multiple replies
-> 
-> On 17/11/17 18:55, Jacob Pan wrote:
-> [...]
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 829e9e9..97b7990 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -581,6 +581,12 @@ int iommu_group_add_device(struct iommu_group
-> > *group, struct device *dev) goto err_free_name;
-> >  	}
-> >  
-> > +	dev->iommu_param = kzalloc(sizeof(struct
-> > iommu_fault_param), GFP_KERNEL);  
-> 
-> This should be "sizeof(struct iommu_param)" or maybe
-> "sizeof(*dev->iommu_param)".
-> 
-good catch, thanks,
-> > +	if (!dev->iommu_param) {
-> > +		ret = -ENOMEM;
-> > +		goto err_free_name;
-> > +	}
-> > +
-> >  	kobject_get(group->devices_kobj);
-> >  
-> >  	dev->iommu_group = group;
-> > @@ -657,7 +663,7 @@ void iommu_group_remove_device(struct device
-> > *dev) sysfs_remove_link(&dev->kobj, "iommu_group");
-> >  
-> >  	trace_remove_device_from_group(group->id, dev);
-> > -
-> > +	kfree(dev->iommu_param);
-> >  	kfree(device->name);
-> >  	kfree(device);
-> >  	dev->iommu_group = NULL;
-> > @@ -791,6 +797,61 @@ int iommu_group_unregister_notifier(struct
-> > iommu_group *group, }
-> >  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
-> > 
-> > +int iommu_register_device_fault_handler(struct device *dev,
-> > +					iommu_dev_fault_handler_t
-> > handler,
-> > +					void *data)
-> > +{
-> > +	struct iommu_param *idata = dev->iommu_param;
-> > +
-> > +	/*
-> > +	 * Device iommu_param should have been allocated when
-> > device is
-> > +	 * added to its iommu_group.
-> > +	 */
-> > +	if (!idata)
-> > +		return -EINVAL;
-> > +	/* Only allow one fault handler registered for each device
-> > */
-> > +	if (idata->fault_param)
-> > +		return -EBUSY;
-> > +	get_device(dev);
-> > +	idata->fault_param =
-> > +		kzalloc(sizeof(struct iommu_fault_param),
-> > GFP_KERNEL);
-> > +	if (!idata->fault_param)
-> > +		return -ENOMEM;
-> > +	idata->fault_param->handler = handler;
-> > +	idata->fault_param->data = data;
-> > +
-> > +	return 0;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
-> > +
-> > +int iommu_unregister_device_fault_handler(struct device *dev)
-> > +{
-> > +	struct iommu_param *idata = dev->iommu_param;
-> > +
-> > +	if (!idata)
-> > +		return -EINVAL;
-> > +
-> > +	kfree(idata->fault_param);
-> > +	idata->fault_param = NULL;
-> > +	put_device(dev);
-> > +
-> > +	return 0;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);  
-> 
-> We should probably document register() and unregister() functions
-> since they are part of the device driver API. If it helps I came up
-> with:
-> 
-> /**
->  * iommu_register_device_fault_handler() - Register a device fault
-> handler
->  * @dev: the device
->  * @handler: the fault handler
->  * @data: private data passed as argument to the handler
->  *
->  * When an IOMMU fault event is received, call this handler with the
-> fault event
->  * and data as argument. The handler should return 0. If the fault is
->  * recoverable (IOMMU_FAULT_PAGE_REQ), the handler must also complete
->  * the fault by calling iommu_page_response() with one of the
-> following
->  * response code:
->  * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
->  * - IOMMU_PAGE_RESP_INVALID: terminate the fault
->  * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
->  *   page faults if possible.
->  *
->  * Return 0 if the fault handler was installed successfully, or an
-> error. */
-> 
-> /**
->  * iommu_unregister_device_fault_handler() - Unregister the device
-> fault handler
->  * @dev: the device
->  *
->  * Remove the device fault handler installed with
->  * iommu_register_device_fault_handler().
->  *
->  * Return 0 on success, or an error.
->  */
-> 
-agreed. thanks. sorry about the delay.
-> Thanks,
-> Jean
+On Sun, 21 Jan 2018 23:29:37 -0500
+Suravee Suthikulpanit <suravee.suthikulpanit@amd.com> wrote:
 
-[Jacob Pan]
+> VFIO IOMMU type1 currently upmaps IOVA pages synchronously, which requires
+> IOTLB flushing for every unmapping. This results in large IOTLB flushing
+> overhead when handling pass-through devices has a large number of mapped
+> IOVAs (e.g. GPUs). This could also cause IOTLB invalidate time-out issue
+> on AMD IOMMU with certain dGPUs.
+
+Nit, GPUs don't imply a larger number of mapped IOVAs than any
+other type of device, QEMU statically maps the entire VM address space
+regardless of the device type.  I am curious though which dGPUs and what
+size guests experience this problem, I'd also like to have those
+details in the commit log.  Is there any performance data to go along
+with this?
+
+> This can be avoided by using the new IOTLB flushing interface.
+> 
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Joerg Roedel <jroedel@suse.de>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+> Changes from V2: (https://lkml.org/lkml/2017/12/27/43)
+> 
+>   * In vfio_unmap_unpin(), fallback to use slow IOTLB flush
+>     when fast IOTLB flush fails (per Alex).
+> 
+>   * Do not adopt fast IOTLB flush in map_try_harder().
+> 
+>   * Submit VFIO and AMD IOMMU patches separately.
+> 
+>  drivers/vfio/vfio_iommu_type1.c | 98 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 98 insertions(+)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index e30e29a..5c40b00 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -102,6 +102,13 @@ struct vfio_pfn {
+>  	atomic_t		ref_count;
+>  };
+>  
+> +struct vfio_regions {
+> +	struct list_head list;
+> +	dma_addr_t iova;
+> +	phys_addr_t phys;
+> +	size_t len;
+> +};
+> +
+>  #define IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)	\
+>  					(!list_empty(&iommu->domain_list))
+>  
+> @@ -479,6 +486,36 @@ static long vfio_unpin_pages_remote(struct vfio_dma *dma, dma_addr_t iova,
+>  	return unlocked;
+>  }
+>  
+> +/*
+> + * Generally, VFIO needs to unpin remote pages after each IOTLB flush.
+> + * Therefore, when using IOTLB flush sync interface, VFIO need to keep track
+> + * of these regions (currently using a list).
+> + *
+> + * This value specifies maximum number of regions for each IOTLB flush sync.
+> + */
+> +#define VFIO_IOMMU_TLB_SYNC_MAX		512
+> +
+> +static long vfio_sync_unpin(struct vfio_dma *dma, struct vfio_domain *domain,
+> +				struct list_head *regions)
+> +{
+> +	long unlocked = 0;
+> +	struct vfio_regions *entry, *next;
+> +
+> +	iommu_tlb_sync(domain->domain);
+> +
+> +	list_for_each_entry_safe(entry, next, regions, list) {
+> +		unlocked += vfio_unpin_pages_remote(dma,
+> +						    entry->iova,
+> +						    entry->phys >> PAGE_SHIFT,
+> +						    entry->len >> PAGE_SHIFT,
+> +						    false);
+> +		list_del(&entry->list);
+> +		kfree(entry);
+> +	}
+> +	cond_resched();
+> +	return unlocked;
+> +}
+> +
+>  static int vfio_pin_page_external(struct vfio_dma *dma, unsigned long vaddr,
+>  				  unsigned long *pfn_base, bool do_accounting)
+>  {
+> @@ -648,12 +685,40 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
+>  	return i > npage ? npage : (i > 0 ? i : -EINVAL);
+>  }
+>  
+> +static size_t try_unmap_unpin_fast(struct vfio_domain *domain, dma_addr_t iova,
+> +				   size_t len, phys_addr_t phys,
+> +				   struct list_head *unmapped_regions)
+> +{
+> +	struct vfio_regions *entry;
+> +	size_t unmapped;
+> +
+> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+> +	if (!entry)
+> +		return -ENOMEM;
+
+size_t is unsigned, so pushing -ENOMEM out though this unsigned
+function and the callee interpreting it as unsigned, means we're going
+to see this as a very large unmap, not an error condition.  Looks like
+the IOMMU API has problems in this space too, ex. iommu_unmap(), Joerg?
+
+> +
+> +	unmapped = iommu_unmap_fast(domain->domain, iova, len);
+> +	if (WARN_ON(!unmapped)) {
+> +		kfree(entry);
+> +		return -EINVAL;
+> +	}
+
+Not sure about the handling of this, the zero check is just a
+consistency validation.  If there's nothing mapped where we think there
+should be something mapped, we warn and throw out the whole vfio_dma.
+After this patch, such an error gets warned twice, which doesn't
+really seem to be an improvement.
+
+> +
+> +	iommu_tlb_range_add(domain->domain, iova, unmapped);
+> +	entry->iova = iova;
+> +	entry->phys = phys;
+> +	entry->len  = unmapped;
+> +	list_add_tail(&entry->list, unmapped_regions);
+> +	return unmapped;
+> +}
+> +
+>  static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  			     bool do_accounting)
+>  {
+>  	dma_addr_t iova = dma->iova, end = dma->iova + dma->size;
+>  	struct vfio_domain *domain, *d;
+> +	struct list_head unmapped_regions;
+> +	bool use_fastpath = true;
+>  	long unlocked = 0;
+> +	int cnt = 0;
+>  
+>  	if (!dma->size)
+>  		return 0;
+> @@ -661,6 +726,8 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+>  		return 0;
+>  
+> +	INIT_LIST_HEAD(&unmapped_regions);
+> +
+>  	/*
+>  	 * We use the IOMMU to track the physical addresses, otherwise we'd
+>  	 * need a much more complicated tracking system.  Unfortunately that
+> @@ -698,6 +765,33 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  				break;
+>  		}
+>  
+> +		/*
+> +		 * First, try to use fast unmap/unpin. In case of failure,
+> +		 * sync upto the current point, and continue the slow
+> +		 * unmap/unpin path.
+> +		 */
+> +		if (use_fastpath) {
+> +			unmapped = try_unmap_unpin_fast(domain, iova,
+> +							len, phys,
+> +							&unmapped_regions);
+> +			if (unmapped > 0) {
+> +				iova += unmapped;
+> +				cnt++;
+> +			} else {
+> +				use_fastpath = false;
+> +			}
+> +
+> +			if (cnt >= VFIO_IOMMU_TLB_SYNC_MAX || !use_fastpath) {
+> +				unlocked += vfio_sync_unpin(dma, domain,
+> +							    &unmapped_regions);
+> +				cnt = 0;
+> +			}
+> +
+> +			if (use_fastpath)
+> +				continue;
+> +		}
+
+It seems sufficient on a fast path failure to sync and unpin the list
+and continue.  It would probably be wise to single (slow) step the
+failing entry to guarantee forward progress, but I don't see an
+advantage to switching to only slow mode for the full remainder of the
+vfio_dma.  Thanks,
+
+Alex
+
+> +
+> +		/* Slow unmap/unpin path */
+>  		unmapped = iommu_unmap(domain->domain, iova, len);
+>  		if (WARN_ON(!unmapped))
+>  			break;
+> @@ -712,6 +806,10 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  	}
+>  
+>  	dma->iommu_mapped = false;
+> +
+> +	if (cnt)
+> +		unlocked += vfio_sync_unpin(dma, domain, &unmapped_regions);
+> +
+>  	if (do_accounting) {
+>  		vfio_lock_acct(dma->task, -unlocked, NULL);
+>  		return 0;
