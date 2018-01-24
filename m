@@ -1,55 +1,66 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: Re: [PATCH v6 05/99] xarray: Add definition of struct xarray
-Date: Wed, 24 Jan 2018 09:45:22 +0100
-Message-ID: <1516783522.2230.6.camel@tiscali.nl>
-References: <20180117202203.19756-1-willy@infradead.org>
-	 <20180117202203.19756-6-willy@infradead.org>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v4 08/13] iommu/rockchip: Control clocks needed to access
+	the IOMMU
+Date: Wed, 24 Jan 2018 18:51:39 +0900
+Message-ID: <CAAFQd5AjisfRTefYthLgecRYroi4gVunEwX2DzhD0ywMOO5Yzg@mail.gmail.com>
+References: <20180118115251.5542-1-jeffy.chen@rock-chips.com>
+	<20180118115251.5542-9-jeffy.chen@rock-chips.com>
+	<c188e6a9-744c-d984-545c-408607f35cc9@arm.com>
+	<5A60AE41.2050101@rock-chips.com>
+	<1f4b3c0d-1414-0012-a072-f4a11f432c21@rock-chips.com>
+	<5A654925.9020203@rock-chips.com> <5A6563FA.8080602@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20180117202203.19756-6-willy@infradead.org>
-Sender: owner-linux-mm@kvack.org
-To: Matthew Wilcox <willy@infradead.org>
-Cc: Matthew Wilcox <mawilcox@microsoft.com>, linux-mm@kvack.org, linux-fsdevel@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net, linux-nilfs@vger.kernel.org, linux-btrfs@vger.kernel.org, linux-xfs@vger.kernel.org, linux-usb@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Stefano Stabellini <sstabellini@kernel.org>, iommu@lists.linux-foundation.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, intel-gfx@lists.freedesktop.org, cgroups@vger.kernel.org, linux-sh@vger.kernel.org, David Howells <dhowells@redhat.com>, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5A6563FA.8080602-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Randy Li <randy.li-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Mathhew,
+On Mon, Jan 22, 2018 at 1:09 PM, JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
+> Hi Randy,
+>
+>
+> On 01/22/2018 10:15 AM, JeffyChen wrote:
+>>
+>> Hi Randy,
+>>
+>> On 01/22/2018 09:18 AM, Randy Li wrote:
+>>>>
+>>>>
+>>> Also the power domain driver could manage the clocks as well, I would
+>>> suggest to use pm_runtime_*.
+>>
+>>
+>> actually the clocks required by pm domain may not be the same as what we
+>> want to control here, there might be some clocks only be needed when
+>> accessing mmu registers.
+>>
+>> but i'm not very sure about that, will confirm it with Simon Xue.
+>
+>
+> confirmed with Simon, there might be some iommus don't have a pd, and the
+> CONFIG_PM could be disabled.
+>
+> so it might be better to control clocks in iommu driver itself.
+>
 
-Just a minor question.
+Agreed with Jeffy.
 
-On Wed, 2018-01-17 at 12:20 -0800, Matthew Wilcox wrote:
-> This is a direct replacement for struct radix_tree_root.  Some of the
-> struct members have changed name; convert those, and use a #define so
-> that radix_tree users continue to work without change.
-> 
-> Signed-off-by: Matthew Wilcox <mawilcox@microsoft.com>
+I'd give Reviewed-by, but this is my own patch reposted by Jeffy
+(thanks!), so it wouldn't have any value. :)
 
-> --- a/include/linux/xarray.h
-> +++ b/include/linux/xarray.h
-> @@ -10,6 +10,8 @@
->   */
->  
->  #include <linux/bug.h>
-> +#include <linux/compiler.h>
-> +#include <linux/kconfig.h>
-
-The top Makefile includes linux/kconfig.h globally. (See the odd USERINCLUDE
-variable, which is actually part of the LINUXINCLUDE variable, but split off
-to make things confusing.)
-
-Why do you need to include linux/kconfig.h here?
-
->  #include <linux/spinlock.h>
->  #include <linux/types.h>
-
-Thanks,
-
-
-Paul Bolle
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Best regards,
+Tomasz
