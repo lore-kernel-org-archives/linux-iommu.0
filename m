@@ -1,19 +1,16 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v4 08/13] iommu/rockchip: Control clocks needed to access
-	the IOMMU
-Date: Wed, 24 Jan 2018 18:51:39 +0900
-Message-ID: <CAAFQd5AjisfRTefYthLgecRYroi4gVunEwX2DzhD0ywMOO5Yzg@mail.gmail.com>
-References: <20180118115251.5542-1-jeffy.chen@rock-chips.com>
-	<20180118115251.5542-9-jeffy.chen@rock-chips.com>
-	<c188e6a9-744c-d984-545c-408607f35cc9@arm.com>
-	<5A60AE41.2050101@rock-chips.com>
-	<1f4b3c0d-1414-0012-a072-f4a11f432c21@rock-chips.com>
-	<5A654925.9020203@rock-chips.com> <5A6563FA.8080602@rock-chips.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v3] vfio/type1: Adopt fast IOTLB flush interface when
+	unmap IOVAs
+Date: Wed, 24 Jan 2018 17:00:18 +0700
+Message-ID: <abb9f471-9a77-85f7-4afb-a46b86f4e11a@amd.com>
+References: <1516595377-4681-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<20180123150452.03a42c53@w520.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5A6563FA.8080602-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-Reply-To: <20180123150452.03a42c53-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,44 +20,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Randy Li <randy.li-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 22, 2018 at 1:09 PM, JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
-> Hi Randy,
->
->
-> On 01/22/2018 10:15 AM, JeffyChen wrote:
->>
->> Hi Randy,
->>
->> On 01/22/2018 09:18 AM, Randy Li wrote:
->>>>
->>>>
->>> Also the power domain driver could manage the clocks as well, I would
->>> suggest to use pm_runtime_*.
->>
->>
->> actually the clocks required by pm domain may not be the same as what we
->> want to control here, there might be some clocks only be needed when
->> accessing mmu registers.
->>
->> but i'm not very sure about that, will confirm it with Simon Xue.
->
->
-> confirmed with Simon, there might be some iommus don't have a pd, and the
-> CONFIG_PM could be disabled.
->
-> so it might be better to control clocks in iommu driver itself.
->
+Alex / Joerg,
 
-Agreed with Jeffy.
+On 1/24/18 5:04 AM, Alex Williamson wrote:
+>> @@ -648,12 +685,40 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
+>>   	return i > npage ? npage : (i > 0 ? i : -EINVAL);
+>>   }
+>>   
+>> +static size_t try_unmap_unpin_fast(struct vfio_domain *domain, dma_addr_t iova,
+>> +				   size_t len, phys_addr_t phys,
+>> +				   struct list_head *unmapped_regions)
+>> +{
+>> +	struct vfio_regions *entry;
+>> +	size_t unmapped;
+>> +
+>> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+>> +	if (!entry)
+>> +		return -ENOMEM;
+>> +
+>> +	unmapped = iommu_unmap_fast(domain->domain, iova, len);
+>> +	if (WARN_ON(!unmapped)) {
+>> +		kfree(entry);
+>> +		return -EINVAL;
+>> +	}
+> Not sure about the handling of this, the zero check is just a
+> consistency validation.  If there's nothing mapped where we think there
+> should be something mapped, we warn and throw out the whole vfio_dma.
+> After this patch, such an error gets warned twice, which doesn't
+> really seem to be an improvement.
+> 
 
-I'd give Reviewed-by, but this is my own patch reposted by Jeffy
-(thanks!), so it wouldn't have any value. :)
+Since iommu_unmap() and iommu_unmap_fast() can return errors, instead of just zero check,
+we should also check for errors, warn, and bail out the whole vfio_dma.
 
-Best regards,
-Tomasz
+Thanks,
+Suravee
