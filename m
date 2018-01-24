@@ -1,7 +1,7 @@
 From: Dmitry Safonov <dima@arista.com>
-Subject: [PATCH 3/5] iommu/intel: Introduce clear_primary_faults() helper
-Date: Wed, 24 Jan 2018 13:19:55 +0000
-Message-ID: <20180124131957.9549-4-dima@arista.com>
+Subject: [PATCH 2/5] iommu/intel: Clean/document fault status flags
+Date: Wed, 24 Jan 2018 13:19:54 +0000
+Message-ID: <20180124131957.9549-3-dima@arista.com>
 References: <20180124131957.9549-1-dima@arista.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180124131957.9549-1-dima@arista.com>
@@ -10,43 +10,35 @@ To: linux-kernel@vger.kernel.org
 Cc: 0x7f454c46@gmail.com, Dmitry Safonov <dima@arista.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-To my mind it's a bit more readable - and I will re-use it in the next
-patch.
+So one could decode them without opening the specification.
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/iommu/dmar.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ include/linux/intel-iommu.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index accf58388bdb..33fb4244e438 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1611,6 +1611,15 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 	return 0;
- }
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index f3274d9f46a2..a4dc9c2875cc 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -207,12 +207,12 @@
+ #define DMA_FECTL_IM (((u32)1) << 31)
  
-+static void clear_primary_faults(struct intel_iommu *iommu)
-+{
-+	volatile void __iomem *fsts = iommu->reg + DMAR_FSTS_REG;
-+
-+	assert_raw_spin_locked(&iommu->register_lock);
-+
-+	writel(DMA_FSTS_PFO | DMA_FSTS_PPF | DMA_FSTS_PRO, fsts);
-+}
-+
- #define PRIMARY_FAULT_REG_LEN (16)
- irqreturn_t dmar_fault(int irq, void *dev_id)
- {
-@@ -1679,8 +1688,7 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 		raw_spin_lock_irqsave(&iommu->register_lock, flag);
- 	}
+ /* FSTS_REG */
+-#define DMA_FSTS_PPF ((u32)2)
+-#define DMA_FSTS_PFO ((u32)1)
+-#define DMA_FSTS_IQE (1 << 4)
+-#define DMA_FSTS_ICE (1 << 5)
+-#define DMA_FSTS_ITE (1 << 6)
+-#define DMA_FSTS_PRO (1 << 7)
++#define DMA_FSTS_PFO (1 << 0) /* Primary Fault Overflow */
++#define DMA_FSTS_PPF (1 << 1) /* Primary Pending Fault */
++#define DMA_FSTS_IQE (1 << 4) /* Invalidation Queue Error */
++#define DMA_FSTS_ICE (1 << 5) /* Invalidation Completion Error */
++#define DMA_FSTS_ITE (1 << 6) /* Invalidation Time-out Error */
++#define DMA_FSTS_PRO (1 << 7) /* Page Request Overflow */
+ #define dma_fsts_fault_record_index(s) (((s) >> 8) & 0xff)
  
--	writel(DMA_FSTS_PFO | DMA_FSTS_PPF | DMA_FSTS_PRO,
--	       iommu->reg + DMAR_FSTS_REG);
-+	clear_primary_faults(iommu);
- 
- unlock_exit:
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ /* FRCD_REG, 32 bits access */
 -- 
 2.13.6
