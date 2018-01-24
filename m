@@ -1,92 +1,34 @@
-From: Biju Das <biju.das@bp.renesas.com>
-Subject: [PATCH  3/3] ARM: dts: r8a7745: Add IPMMU DT nodes
-Date: Wed, 24 Jan 2018 15:42:02 +0000
-Message-ID: <1516808522-17348-4-git-send-email-biju.das@bp.renesas.com>
-References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
+ support for r8a774[35]
+Date: Wed, 24 Jan 2018 16:52:25 +0100
+Message-ID: <CAMuHMdVH2o1hFU1wLvMu54XjvZv4deE=69G3QBmiVQC_Y-uTDA@mail.gmail.com>
+References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com> <1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
+In-Reply-To: <1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Chris Paterson <chris.paterson2@renesas.com>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, Biju Das <biju.das@bp.renesas.com>
+To: Biju Das <biju.das@bp.renesas.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Chris Paterson <chris.paterson2@renesas.com>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, iommu@lists.linux-foundation.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add the six IPMMU instances found in the r8a7745 to DT with a disabled
-status.
+On Wed, Jan 24, 2018 at 4:42 PM, Biju Das <biju.das@bp.renesas.com> wrote:
+> Document r8a774[35] specific compatible strings. The Renesas RZ/G1[ME]
+> (r8a774[35]) IPMMU are identical to the R-Car Gen2 family.
+>
+> Signed-off-by: Biju Das <biju.das@bp.renesas.com>
+> Reviewed-by: Chris Paterson <chris.paterson2@renesas.com>
 
-Signed-off-by: Biju Das <biju.das@bp.renesas.com>
-Reviewed-by: Chris Paterson <chris.paterson2@renesas.com>
----
- arch/arm/boot/dts/r8a7745.dtsi | 58 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/arch/arm/boot/dts/r8a7745.dtsi b/arch/arm/boot/dts/r8a7745.dtsi
-index ae918e9..a9da80c 100644
---- a/arch/arm/boot/dts/r8a7745.dtsi
-+++ b/arch/arm/boot/dts/r8a7745.dtsi
-@@ -1295,6 +1295,64 @@
- 			status = "disabled";
- 		};
- 
-+		ipmmu_sy0: mmu@e6280000 {
-+			compatible = "renesas,ipmmu-r8a7745",
-+				     "renesas,ipmmu-vmsa";
-+			reg = <0 0xe6280000 0 0x1000>;
-+			interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ipmmu_sy1: mmu@e6290000 {
-+			compatible = "renesas,ipmmu-r8a7745",
-+				     "renesas,ipmmu-vmsa";
-+			reg = <0 0xe6290000 0 0x1000>;
-+			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ipmmu_ds: mmu@e6740000 {
-+			compatible = "renesas,ipmmu-r8a7745",
-+				     "renesas,ipmmu-vmsa";
-+			reg = <0 0xe6740000 0 0x1000>;
-+			interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ipmmu_mp: mmu@ec680000 {
-+			compatible = "renesas,ipmmu-r8a7745",
-+				     "renesas,ipmmu-vmsa";
-+			reg = <0 0xec680000 0 0x1000>;
-+			interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ipmmu_mx: mmu@fe951000 {
-+			compatible = "renesas,ipmmu-r8a7745",
-+				     "renesas,ipmmu-vmsa";
-+			reg = <0 0xfe951000 0 0x1000>;
-+			interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		ipmmu_gp: mmu@e62a0000 {
-+			compatible = "renesas,ipmmu-r8a7745",
-+				     "renesas,ipmmu-vmsa";
-+			reg = <0 0xe62a0000 0 0x1000>;
-+			interrupts = <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 261 IRQ_TYPE_LEVEL_HIGH>;
-+			#iommu-cells = <1>;
-+			status = "disabled";
-+		};
-+
- 		rcar_sound: sound@ec500000 {
- 			/*
- 			 * #sound-dai-cells is required
--- 
-2.7.4
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
