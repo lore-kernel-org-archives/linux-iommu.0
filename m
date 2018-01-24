@@ -1,7 +1,7 @@
 From: Dmitry Safonov <dima@arista.com>
-Subject: [PATCH 5/5] iommu/intel: Rename dmar_fault() => dmar_serve_faults()
-Date: Wed, 24 Jan 2018 13:19:57 +0000
-Message-ID: <20180124131957.9549-6-dima@arista.com>
+Subject: [PATCH 4/5] iommu/intel: Handle DMAR faults on workqueue
+Date: Wed, 24 Jan 2018 13:19:56 +0000
+Message-ID: <20180124131957.9549-5-dima@arista.com>
 References: <20180124131957.9549-1-dima@arista.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180124131957.9549-1-dima@arista.com>
@@ -10,94 +10,183 @@ To: linux-kernel@vger.kernel.org
 Cc: 0x7f454c46@gmail.com, Dmitry Safonov <dima@arista.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fix the return value, parameters and a bit better naming.
+dmar_fault() reports/handles/cleans DMAR faults in a cycle one-by-one.
+The nuisance is that it's set as a irq handler and runs with disabled
+interrupts - which works OK if you have only a couple of DMAR faults,
+but becomes a problem if your intel iommu has a plenty of mappings.
+
+We have a test that checks flapping of PCI link. Once or twice it had
+stuck on soft lockup (which is panic for the typical switch):
+
+ dmar: DMAR:[DMA Write] Request device [4a:00.0] fault addr 5e1a3000
+ DMAR:[fault reason 02] Present bit in context entry is clear
+ NMI watchdog: BUG: soft lockup - CPU#8 stuck for 21s!
+ CPU: 8 PID: 2774 Comm: SuperServer
+ Call Trace:
+  generic_exec_single+0x11b/0x12d
+  ? flush_tlb_func+0x0/0x18a
+  smp_call_function_single+0x89/0xb5
+  smp_call_function_many+0xef/0x207
+  native_flush_tlb_others+0x2e/0x30
+  flush_tlb_mm_range+0x139/0x18a
+  tlb_flush_mmu_tlbonly+0x35/0x85
+  tlb_flush_mmu+0x13/0x1f
+  tlb_finish_mmu+0x14/0x39
+  unmap_region+0xda/0xec
+  do_munmap+0x273/0x2f5
+  vm_munmap+0x45/0x5e
+  SyS_munmap+0x26/0x2f
+  sysenter_dispatch+0x7/0x25
+
+ Kernel panic - not syncing: softlockup: hung tasks
+ sending NMI to all CPUs:
+ NMI backtrace for cpu 0
+ CPU: 0 PID: 0 Comm: swapper/0
+ Call Trace:
+  <IRQ>
+  wait_for_xmitr+0x26/0x8f
+  serial8250_console_putchar+0x1c/0x2c
+  uart_console_write+0x40/0x4b
+  serial8250_console_write+0xe6/0x13f
+  call_console_drivers.constprop.13+0xce/0x103
+  console_unlock+0x1f8/0x39b
+  ? local_clock+0x21/0x23
+  vprintk_emit+0x39e/0x3e6
+  printk+0x4d/0x4f
+  dmar_fault+0x1ab/0x1fd
+  handle_irq_event_percpu+0x8a/0x1f5
+  handle_irq_event+0x41/0x61
+  handle_edge_irq+0xe1/0xfa
+  handle_irq+0x155/0x166
+  do_IRQ+0x5a/0xea
+  ret_from_intr+0x0/0x15
+  <EOI>
+  arch_cpu_idle+0xf/0x11
+  cpu_startup_entry+0x22f/0x3cb
+  rest_init+0x80/0x84
+  start_kernel+0x470/0x47d
+  x86_64_start_reservations+0x2a/0x2c
+  x86_64_start_kernel+0x14b/0x15a
+
+Move DMAR faults clearing out of irq-disabled critical section by
+proceeding with that in a workqueue thread.
+The next patch will correct the definition of dmar_fault().
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- drivers/iommu/dmar.c                | 8 +++-----
- drivers/iommu/intel-iommu.c         | 2 +-
- drivers/iommu/intel_irq_remapping.c | 2 +-
- include/linux/dmar.h                | 2 +-
- 4 files changed, 6 insertions(+), 8 deletions(-)
+ drivers/iommu/dmar.c        | 48 ++++++++++++++++++++++++++++++++++++++++++++-
+ drivers/iommu/intel-iommu.c |  6 ++++++
+ include/linux/dmar.h        |  1 +
+ 3 files changed, 54 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 34a53aeede38..37a1147a7592 100644
+index 33fb4244e438..34a53aeede38 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -1635,9 +1635,8 @@ static void clear_primary_faults(struct intel_iommu *iommu)
+@@ -71,6 +71,12 @@ struct acpi_table_header * __initdata dmar_tbl;
+ static int dmar_dev_scope_status = 1;
+ static unsigned long dmar_seq_ids[BITS_TO_LONGS(DMAR_UNITS_SUPPORTED)];
+ 
++static struct workqueue_struct *fault_wq;
++struct fault {
++	struct work_struct work;
++	struct intel_iommu *iommu;
++};
++
+ static int alloc_iommu(struct dmar_drhd_unit *drhd);
+ static void free_iommu(struct intel_iommu *iommu);
+ 
+@@ -811,6 +817,14 @@ void __init dmar_register_bus_notifier(void)
+ 	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
  }
  
- #define PRIMARY_FAULT_REG_LEN (16)
--irqreturn_t dmar_fault(int irq, void *dev_id)
-+void dmar_serve_faults(struct intel_iommu *iommu)
++int __init dmar_init_workqueue(void)
++{
++	fault_wq = alloc_workqueue("dmar_fault", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
++	if (fault_wq == NULL)
++		return -ENOMEM;
++
++	return 0;
++}
+ 
+ int __init dmar_table_init(void)
  {
--	struct intel_iommu *iommu = dev_id;
- 	int reg, fault_index;
- 	u32 fault_status;
- 	unsigned long flag;
-@@ -1706,14 +1705,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 
- unlock_exit:
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
--	return IRQ_HANDLED;
+@@ -1695,6 +1709,38 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
  }
  
- static void dmar_fault_work(struct work_struct *work)
++static void dmar_fault_work(struct work_struct *work)
++{
++	struct fault *fault = container_of(work, struct fault, work);
++
++	dmar_fault(-1, (void*)fault->iommu);
++}
++
++static irqreturn_t dmar_fault_handler(int irq, void *dev_id)
++{
++	struct intel_iommu *iommu = dev_id;
++	struct fault *fault;
++
++	fault = kzalloc(sizeof(*fault), GFP_ATOMIC);
++	if (fault == NULL) {
++		unsigned long flag;
++
++		/* During OOM - clear faults and let device re-fault */
++		raw_spin_lock_irqsave(&iommu->register_lock, flag);
++		clear_primary_faults(iommu);
++		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
++
++		return IRQ_HANDLED;
++	}
++
++	fault->iommu = iommu;
++	INIT_WORK(&fault->work, dmar_fault_work);
++
++	queue_work(fault_wq, &fault->work);
++
++	return IRQ_HANDLED;
++}
++
+ int dmar_set_interrupt(struct intel_iommu *iommu)
  {
- 	struct fault *fault = container_of(work, struct fault, work);
- 
--	dmar_fault(-1, (void*)fault->iommu);
-+	dmar_serve_faults(fault->iommu);
- }
- 
- static irqreturn_t dmar_fault_handler(int irq, void *dev_id)
-@@ -1786,7 +1784,7 @@ int __init enable_drhd_fault_handling(void)
- 		/*
- 		 * Clear any previous faults.
- 		 */
--		dmar_fault(iommu->irq, iommu);
-+		dmar_serve_faults(iommu);
- 		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
- 		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
+ 	int irq, ret;
+@@ -1713,7 +1759,7 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+ 		return -EINVAL;
  	}
+ 
+-	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
++	ret = request_irq(irq, dmar_fault_handler, IRQF_NO_THREAD, iommu->name, iommu);
+ 	if (ret)
+ 		pr_err("Can't request irq\n");
+ 	return ret;
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4869c02652cc..ee98cbce54bd 100644
+index 4a2de34895ec..4869c02652cc 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3016,7 +3016,7 @@ static void intel_iommu_init_qi(struct intel_iommu *iommu)
- 		/*
- 		 * Clear any previous faults.
- 		 */
--		dmar_fault(-1, iommu);
-+		dmar_serve_faults(iommu);
- 		/*
- 		 * Disable queued invalidation if supported and already enabled
- 		 * before OS handover.
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 66f69af2c219..0958fdc76564 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -558,7 +558,7 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- 		/*
- 		 * Clear previous faults.
- 		 */
--		dmar_fault(-1, iommu);
-+		dmar_serve_faults(iommu);
- 		dmar_disable_qi(iommu);
+@@ -4784,6 +4784,12 @@ int __init intel_iommu_init(void)
+ 		goto out_free_dmar;
+ 	}
  
- 		if (dmar_enable_qi(iommu)) {
++	if (dmar_init_workqueue()) {
++		if (force_on)
++			panic("tboot: Failed to init workqueue for DMARs\n");
++		goto out_free_dmar;
++	}
++
+ 	if (list_empty(&dmar_rmrr_units))
+ 		pr_info("No RMRR found\n");
+ 
 diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 5de4932a6ad8..6e9a5e4ac73a 100644
+index e2433bc50210..5de4932a6ad8 100644
 --- a/include/linux/dmar.h
 +++ b/include/linux/dmar.h
-@@ -280,7 +280,7 @@ extern void dmar_msi_mask(struct irq_data *data);
- extern void dmar_msi_read(int irq, struct msi_msg *msg);
- extern void dmar_msi_write(int irq, struct msi_msg *msg);
- extern int dmar_set_interrupt(struct intel_iommu *iommu);
--extern irqreturn_t dmar_fault(int irq, void *dev_id);
-+extern void dmar_serve_faults(struct intel_iommu *iommu);
- extern int dmar_alloc_hwirq(int id, int node, void *arg);
- extern void dmar_free_hwirq(int irq);
- 
+@@ -113,6 +113,7 @@ static inline bool dmar_rcu_check(void)
+ extern int dmar_table_init(void);
+ extern int dmar_dev_scope_init(void);
+ extern void dmar_register_bus_notifier(void);
++extern int dmar_init_workqueue(void);
+ extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+ 				struct dmar_dev_scope **devices, u16 segment);
+ extern void *dmar_alloc_dev_scope(void *start, void *end, int *cnt);
 -- 
 2.13.6
