@@ -1,210 +1,71 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 4/5] iommu/amd - Expose the active IOMMU device table entries
-Date: Fri, 26 Jan 2018 17:52:45 -0600
-Message-ID: <151701076583.16448.16500299283239245371.stgit@taos>
+From: Gary R Hook <gary.hook@amd.com>
+Subject: [PATCH 5/5] iommu/amd - Add a debugfs entry to specify a IOMMU
+ device table entry
+Date: Fri, 26 Jan 2018 17:52:55 -0600
+Message-ID: <151701077595.16448.10705468886498056095.stgit@taos>
 References: <151701071164.16448.3611271062222336838.stgit@taos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <151701071164.16448.3611271062222336838.stgit@taos>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a debugfs entry to dump the active device table entries from
-the IOMMU's table. 'Active' is determined by non-default values
-in the first and second long words of the DTE. Aside from IOMMU
-devices, this output should list every device reported by lspci.
+Initially (at boot) the device table values dumped are all of the
+active devices.  Add a devid debugfs file to allow the user to select a
+single device table entry to dump (active or not). Let any devid value
+greater than the maximum allowable PCI ID (0xFFFF) restore the
+behavior to that effective at boot.
 
-Use arrays to store DTE bit field definitions for debugfs printing
-in verbose mode
-
-Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Gary R Hook <gary.hook@amd.com>
 ---
- drivers/iommu/amd_iommu_debugfs.c |  182 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 182 insertions(+)
+ drivers/iommu/amd_iommu_debugfs.c |  127 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 109 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
-index 5066d3976912..87840ae9889d 100644
+index 87840ae9889d..efb666873daa 100644
 --- a/drivers/iommu/amd_iommu_debugfs.c
 +++ b/drivers/iommu/amd_iommu_debugfs.c
-@@ -22,6 +22,16 @@
- #define	OSCNPRINTF(fmt, ...) \
- 		scnprintf(OBUFP, OBUFSPC, fmt, ## __VA_ARGS__)
+@@ -38,6 +38,7 @@ static DEFINE_RWLOCK(iommu_debugfs_lock);
+ #define	MAX_NAME_LEN	20
  
-+#define	MAX_PCI_ID	0xFFFF
-+
-+#define	PRINTDTE(i)	OSCNPRINTF("%02x:%02x:%x - " \
-+				   "%016llx %016llx %016llx %016llx\n", \
-+				   PCI_BUS_NUM(i), PCI_SLOT(i), PCI_FUNC(i), \
-+				   amd_iommu_dev_table[i].data[0], \
-+				   amd_iommu_dev_table[i].data[1], \
-+				   amd_iommu_dev_table[i].data[2], \
-+				   amd_iommu_dev_table[i].data[3])
-+
- static struct dentry *iommu_debugfs_dir;
- static DEFINE_RWLOCK(iommu_debugfs_lock);
+ static unsigned int amd_iommu_verbose;
++static unsigned int amd_iommu_devid = ~0;
  
-@@ -81,9 +91,174 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
+ static unsigned int amd_iommu_count_valid_dtes(int start, int end)
+ {
+@@ -91,6 +92,72 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
  	.write = NULL,
  };
  
-+struct bits {
-+	uint bit;
-+	uint len;
-+	char *lbl;
-+	char *note;
-+};
-+
-+static struct bits dte_lft[] = {
-+	{  0, 1, "V:", "[0]" },
-+	{  1, 1, "TV:", "[1]" },
-+	{  7, 2, "Host Access Dirty:", "[8:7]" },
-+	{  9, 3, "Paging Mode:", "[11:9]" },
-+	{ 52, 1, "PPR:", "[52]" },
-+	{ 53, 1, "GPRP:", "[53]" },
-+	{ 54, 1, "GIoV:", "[54]" },
-+	{ 55, 1, "GV:", "[55]" },
-+	{ 56, 2, "GLX:", "[57:56]" },
-+	{ 61, 1, "IR:", "[61]" },
-+	{ 62, 1, "IW:", "[62]" },
-+	{ 96, 1, "I:", "[96]" },
-+	{ 97, 1, "SE:", "[97]" },
-+	{ 98, 1, "SA:", "[98]" },
-+	{ 99, 2, "IOCtl:", "[100:99]" },
-+};
-+static uint lftlen = sizeof(dte_lft) / sizeof(struct bits);
-+
-+static struct bits dte_rght[] = {
-+	{ 101, 1, "Cache:", "[101]" },
-+	{ 102, 1, "SD:", "[102]" },
-+	{ 103, 1, "EX  :", "[103]" },
-+	{ 104, 2, "SysMgt:", "[105:104]" },
-+	{ 128, 1, "IV:", "[128]" },
-+	{ 129, 4, "IntTabLen:", "[132:129]" },
-+	{ 133, 1, "IG:", "[133]" },
-+	{ 184, 1, "InitPass:", "[184]" },
-+	{ 185, 1, "EIntPass:", "[185]" },
-+	{ 186, 1, "NMIPass:", "[186]" },
-+	{ 188, 2, "IntClt:", "[189:188]" },
-+	{ 190, 1, "Lint0Pass:", "[190]" },
-+	{ 191, 1, "Lint1Pass:", "[191]" },
-+	{ 246, 1, "AttrV:", "[246]" },
-+	{ 247, 1, "Mode0FC:", "[247]" },
-+};
-+static uint rghtlen = sizeof(dte_rght) / sizeof(struct bits);
-+
-+#define	DTE_BIT(ds, p, n)	((ds[p/64] >> (p%64)) & ((1ULL<<n) - 1))
-+
-+static void amd_iommu_print_dte_verbose(int devidx, char **buf,
-+					unsigned int *buflen,
-+					unsigned int *offset)
-+{
-+	u64 *dte = amd_iommu_dev_table[devidx].data;
-+	u64 part1, part2, part3;
-+	unsigned int obuflen = *buflen;
-+	unsigned int oboff = *offset;
-+	struct bits *lft, *rght;
-+	char *obuf = *buf;
-+	uint max;
-+	int j;
-+
-+	max = lftlen > rghtlen ? lftlen : rghtlen;
-+
-+	for (j = 0; j < max ; j++) {
-+		lft = &dte_lft[j];
-+		if (j < lftlen)
-+			oboff += OSCNPRINTF("%-19s%3llx %*s", lft->lbl,
-+					    DTE_BIT(dte, lft->bit, lft->len),
-+					    (j < rghtlen) ? -16 : 1,
-+					    lft->note);
-+		else
-+			oboff += OSCNPRINTF("%38s", "");
-+
-+		rght = &dte_rght[j];
-+		if (j < rghtlen)
-+			oboff += OSCNPRINTF("    %-19s%3llx %s\n", rght->lbl,
-+					    DTE_BIT(dte, rght->bit, rght->len),
-+					    rght->note);
-+		else
-+			oboff += OSCNPRINTF("\n");
-+	}
-+
-+	oboff += OSCNPRINTF("%-28s:         %4llx %s\n", "Domain ID",
-+			    DTE_BIT(dte, 64, 16), "[79:64]");
-+	oboff += OSCNPRINTF("%-28s:         %4llx %s\n", "Snoop Attribute",
-+			    DTE_BIT(dte, 248, 8), "[255:248]");
-+	oboff += OSCNPRINTF("%-28s: %12llx %s\n", "Page Table Root Pointer",
-+			    DTE_BIT(dte, 12, 40) << 12, "[51:12]");
-+	oboff += OSCNPRINTF("%-28s: %12llx %s\n",
-+			    "Interrupt Table Root Pointer",
-+			    DTE_BIT(dte, 134, 46) << 6, "[179:134]");
-+
-+	part1 = DTE_BIT(dte, 107, 21) << 19;
-+	part2 = DTE_BIT(dte, 80, 16) << 3;
-+	part3 = DTE_BIT(dte, 58, 3);
-+	oboff += OSCNPRINTF("%-28s: %12llx %s\n\n",
-+			    "Guest CR3 Table Root Pointer",
-+			    (part1 | part2 | part3) << 12,
-+			    "[127:107][95:80][60:58]");
-+
-+	*buflen = obuflen;
-+	*offset = oboff;
-+	*buf = obuf;
-+}
-+
-+static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
-+					  char __user *ubuf,
-+					  size_t count, loff_t *offp)
++static ssize_t amd_iommu_debugfs_devid_read(struct file *filp,
++					    char __user *ubuf,
++					    size_t count, loff_t *offp)
 +{
 +	struct amd_iommu *iommu = filp->private_data;
-+	unsigned int obuflen;
++	unsigned int obuflen = 512;
 +	unsigned int oboff = 0;
-+	unsigned int istart, iend;
 +	ssize_t ret;
-+	u32 i, n;
 +	char *obuf;
 +
 +	if (!iommu)
 +		return 0;
 +
-+	/* Count the number of valid entries in the device table */
-+	istart = 0;
-+	iend = MAX_PCI_ID;
-+	n = amd_iommu_count_valid_dtes(istart, iend);
-+	if (amd_iommu_verbose)
-+		obuflen = n * 2048;
-+	else
-+		obuflen = n * 80;
-+
 +	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
 +	if (!obuf)
 +		return -ENOMEM;
 +
-+	for (i = istart ; i <= iend ; i++)
-+		if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
-+		     || amd_iommu_dev_table[i].data[1]) {
-+			if (amd_iommu_verbose) {
-+				oboff += OSCNPRINTF("Device %02x:%02x.%x\n",
-+						    PCI_BUS_NUM(i),
-+						    PCI_SLOT(i),
-+						    PCI_FUNC(i));
-+				amd_iommu_print_dte_verbose(i, &obuf,
-+							    &obuflen, &oboff);
-+			} else {
-+				oboff += PRINTDTE(i);
-+			}
-+		}
++	if (amd_iommu_verbose)
++		oboff += OSCNPRINTF("%02x:%02x.%x 0x%04x %u\n",
++				    PCI_BUS_NUM(amd_iommu_devid),
++				    PCI_SLOT(amd_iommu_devid),
++				    PCI_FUNC(amd_iommu_devid),
++				    amd_iommu_devid, amd_iommu_devid);
++	else
++		oboff += OSCNPRINTF("%u\n", amd_iommu_devid);
 +
 +	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
 +	kfree(obuf);
@@ -212,35 +73,133 @@ index 5066d3976912..87840ae9889d 100644
 +	return ret;
 +}
 +
-+static const struct file_operations amd_iommu_debugfs_dte_ops = {
++static ssize_t amd_iommu_debugfs_devid_write(struct file *filp,
++					    const char __user *ubuf,
++					    size_t count, loff_t *offp)
++{
++	unsigned int pci_id, pci_slot, pci_func;
++	unsigned int obuflen = 80;
++	ssize_t ret;
++	char *obuf;
++	int n;
++
++	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
++	if (!obuf)
++		return -ENOMEM;
++
++	ret = simple_write_to_buffer(obuf, OBUFLEN, offp, ubuf, count);
++
++	if (strnchr(obuf, OBUFLEN, ':')) {
++		n = sscanf(obuf, "%x:%x.%x", &pci_id, &pci_slot, &pci_func);
++		if (n == 3)
++			amd_iommu_devid = PCI_DEVID(pci_id, PCI_DEVFN(pci_slot, pci_func));
++	} else
++		n = kstrtouint(obuf, 0, &amd_iommu_devid);
++	kfree(obuf);
++
++	return ret;
++}
++
++static const struct file_operations amd_iommu_debugfs_devid_ops = {
 +	.owner = THIS_MODULE,
 +	.open = simple_open,
-+	.read = amd_iommu_debugfs_dte_read,
-+	.write = NULL,
++	.read = amd_iommu_debugfs_devid_read,
++	.write = amd_iommu_debugfs_devid_write,
 +};
 +
+ struct bits {
+ 	uint bit;
+ 	uint len;
+@@ -211,9 +278,13 @@ static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
+ 		return 0;
+ 
+ 	/* Count the number of valid entries in the device table */
+-	istart = 0;
+-	iend = MAX_PCI_ID;
+-	n = amd_iommu_count_valid_dtes(istart, iend);
++	if (amd_iommu_devid > MAX_PCI_ID) {
++		istart = 0;
++		iend = MAX_PCI_ID;
++		n = amd_iommu_count_valid_dtes(istart, iend);
++	} else {
++		n = 1;
++	}
+ 	if (amd_iommu_verbose)
+ 		obuflen = n * 2048;
+ 	else
+@@ -223,20 +294,29 @@ static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
+ 	if (!obuf)
+ 		return -ENOMEM;
+ 
+-	for (i = istart ; i <= iend ; i++)
+-		if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
+-		     || amd_iommu_dev_table[i].data[1]) {
+-			if (amd_iommu_verbose) {
+-				oboff += OSCNPRINTF("Device %02x:%02x.%x\n",
+-						    PCI_BUS_NUM(i),
+-						    PCI_SLOT(i),
+-						    PCI_FUNC(i));
+-				amd_iommu_print_dte_verbose(i, &obuf,
+-							    &obuflen, &oboff);
+-			} else {
+-				oboff += PRINTDTE(i);
++	if (amd_iommu_devid > MAX_PCI_ID) {
++		for (i = istart ; i <= iend ; i++)
++			if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
++			     || amd_iommu_dev_table[i].data[1]) {
++				if (amd_iommu_verbose) {
++					oboff += OSCNPRINTF("Device %02x:%02x.%x\n",
++							    PCI_BUS_NUM(i),
++							    PCI_SLOT(i),
++							    PCI_FUNC(i));
++					amd_iommu_print_dte_verbose(i, &obuf,
++								    &obuflen,
++								    &oboff);
++				} else {
++					oboff += PRINTDTE(i);
++				}
+ 			}
+-		}
++	} else {
++		i = amd_iommu_devid;
++		if (amd_iommu_verbose)
++			amd_iommu_print_dte_verbose(i, &obuf, &obuflen, &oboff);
++		else
++			oboff += PRINTDTE(i);
++	}
+ 
+ 	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
+ 	kfree(obuf);
+@@ -253,12 +333,17 @@ static const struct file_operations amd_iommu_debugfs_dte_ops = {
+ 
  static char readmetext[] =
-+"devicetable             Print active entries in the device table\n"
+ "devicetable             Print active entries in the device table\n"
++"devid                   Controls which device IDs are printed\n"
  "count                   Count of active devices\n"
  "verbose                 Provide additional descriptive text\n"
-+"\n"
-+"                        Dumping the Device Table\n"
-+"The device table is scanned for entries that appear to be active. The\n"
-+"default range is from 0 to 0xFFFF, and only active entries will be reported\n"
+ "\n"
+ "                        Dumping the Device Table\n"
+-"The device table is scanned for entries that appear to be active. The\n"
+-"default range is from 0 to 0xFFFF, and only active entries will be reported\n"
++"The device table is scanned for entries that appear to be active.\n"
++"The default (initial) range is from 0 to 0xFFFF, represented by a devid\n"
++"value greater than 0xFFFF, and only active entries will be reported.\n"
++"If devid is set to a specific value, only that device entry will be\n"
++"displayed (active or not). devid may be specified as ##:##:#, a decimal\n"
++"value, or a hex value.\n"
  "\n";
  
  static ssize_t amd_iommu_debugfs_readme_read(struct file *filp,
-@@ -134,6 +309,13 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
- 	if (!d_verbose)
+@@ -322,6 +407,12 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
+ 	if (!d_dte)
  		goto err;
  
-+	/* Device Table Entries */
-+	d_dte = debugfs_create_file("devicetable", 0400,
++	d_dte = debugfs_create_file("devid", 0400,
 +				    iommu->debugfs_instance, iommu,
-+				    &amd_iommu_debugfs_dte_ops);
++				    &amd_iommu_debugfs_devid_ops);
 +	if (!d_dte)
 +		goto err;
 +
- 	d_dte = debugfs_create_file("count", 0400,
+ 	d_dte = debugfs_create_file("README", 0400,
  				    iommu->debugfs_instance, iommu,
- 				    &amd_iommu_debugfs_dtecount_ops);
+ 				    &amd_iommu_debugfs_readme_ops);
