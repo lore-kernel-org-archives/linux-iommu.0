@@ -1,15 +1,11 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/exynos: Use generic group callback
-Date: Fri, 26 Jan 2018 12:27:19 +0100
-Message-ID: <6ed74e66-b5fe-3ce9-f51f-b63a37d70c50@samsung.com>
-References: <CGME20180124142224epcas4p34a2f69a9b15509ce6d482964778c0cb5@epcas4p3.samsung.com>
-	<1a5c5ec8b79919111619d6d38b177752b154d50a.1516803729.git.robin.murphy@arm.com>
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 0/5] Add debugfs info for the AMD IOMMU
+Date: Fri, 26 Jan 2018 17:52:04 -0600
+Message-ID: <151701071164.16448.3611271062222336838.stgit@taos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1a5c5ec8b79919111619d6d38b177752b154d50a.1516803729.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,61 +15,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+The following series creates a debugfs directory for AMD IOMMUs,
+constructs a framework for additional entries, an online README,
+and a method for dumping device table entries. Data is reported
+in a default concise mode, but a verbose mode is enabled via a
+filesystem entry.
 
-On 2018-01-24 15:22, Robin Murphy wrote:
-> Since iommu_group_get_for_dev() already tries iommu_group_get() and will
-> not call ops->device_group if the group is already non-NULL, the check
-> in get_device_iommu_group() is always redundant and it reduces to a
-> duplicate of the generic version; let's just use that one instead.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+This is the first of three patch series that will expose a number
+of IOMMU registers.
 
-Thanks for this cleanup!
+---
 
-Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Gary R Hook (5):
+      iommu/amd - Add debugfs support
+      iommu/amd - Add a 'verbose' switch for IOMMU debugfs
+      iommu/amd - Add a README variable for the IOMMU debugfs
+      iommu/amd - Expose the active IOMMU device table entries
+      iommu/amd - Add a debugfs entry to specify a IOMMU device table entry
 
-> ---
->   drivers/iommu/exynos-iommu.c | 13 +------------
->   1 file changed, 1 insertion(+), 12 deletions(-)
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 79c45650f8de..5d5a9b0a0561 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1238,17 +1238,6 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
->   	return phys;
->   }
->   
-> -static struct iommu_group *get_device_iommu_group(struct device *dev)
-> -{
-> -	struct iommu_group *group;
-> -
-> -	group = iommu_group_get(dev);
-> -	if (!group)
-> -		group = iommu_group_alloc();
-> -
-> -	return group;
-> -}
-> -
->   static int exynos_iommu_add_device(struct device *dev)
->   {
->   	struct exynos_iommu_owner *owner = dev->archdata.iommu;
-> @@ -1344,7 +1333,7 @@ static const struct iommu_ops exynos_iommu_ops = {
->   	.unmap = exynos_iommu_unmap,
->   	.map_sg = default_iommu_map_sg,
->   	.iova_to_phys = exynos_iommu_iova_to_phys,
-> -	.device_group = get_device_iommu_group,
-> +	.device_group = generic_device_group,
->   	.add_device = exynos_iommu_add_device,
->   	.remove_device = exynos_iommu_remove_device,
->   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+ drivers/iommu/Kconfig             |    9 +
+ drivers/iommu/Makefile            |    2 
+ drivers/iommu/amd_iommu_debugfs.c |  428 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_init.c    |    7 -
+ drivers/iommu/amd_iommu_proto.h   |    6 +
+ drivers/iommu/amd_iommu_types.h   |    3 
+ 6 files changed, 452 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+
+--
