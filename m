@@ -1,144 +1,79 @@
-From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH v5 08/13] iommu/rockchip: Control clocks needed to access
- the IOMMU
-Date: Fri, 26 Jan 2018 17:45:31 +0800
-Message-ID: <5A6AF8BB.4040601@rock-chips.com>
-References: <20180124103516.2571-1-jeffy.chen@rock-chips.com> <20180124103516.2571-9-jeffy.chen@rock-chips.com> <f06d2d9f-3869-ed02-43f4-f4ea4a104a57@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/exynos: Use generic group callback
+Date: Fri, 26 Jan 2018 12:27:19 +0100
+Message-ID: <6ed74e66-b5fe-3ce9-f51f-b63a37d70c50@samsung.com>
+References: <CGME20180124142224epcas4p34a2f69a9b15509ce6d482964778c0cb5@epcas4p3.samsung.com>
+	<1a5c5ec8b79919111619d6d38b177752b154d50a.1516803729.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <f06d2d9f-3869-ed02-43f4-f4ea4a104a57-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, aisheng.dong-3arQi8VN3Tc@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1a5c5ec8b79919111619d6d38b177752b154d50a.1516803729.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
-Thanks for your reply.
+On 2018-01-24 15:22, Robin Murphy wrote:
+> Since iommu_group_get_for_dev() already tries iommu_group_get() and will
+> not call ops->device_group if the group is already non-NULL, the check
+> in get_device_iommu_group() is always redundant and it reduces to a
+> duplicate of the generic version; let's just use that one instead.
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-On 01/24/2018 09:49 PM, Robin Murphy wrote:
->>
->> +Optional properties:
->> +- clocks : A list of master clocks requires for the IOMMU to be
->> accessible
->
-> s/requires/required/
-ok
->
->> +           by the host CPU. The number of clocks depends on the master
->> +           block and might as well be zero. See [1] for generic clock
->
-> Oops, some subtleties of English here :)
->
-> To say "the number of clocks ... might as well be zero" effectively
-> implies "there's no point ever specifying any clocks". I guess what you
-> really mean here is "...might well be...", i.e. it is both valid and
-> reasonably likely to require zero clocks.
-ok
->
->> +           bindings description.
->> +
->> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
->>   Optional properties:
->>   - rockchip,disable-mmu-reset : Don't use the mmu reset operation.
->> @@ -27,5 +34,6 @@ Example:
->>           reg = <0xff940300 0x100>;
->>           interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
->>           interrupt-names = "vopl_mmu";
->> +        clocks = <&cru ACLK_VOP1>, <&cru DCLK_VOP1>, <&cru HCLK_VOP1>;
->>           #iommu-cells = <0>;
->>       };
->> diff --git a/drivers/iommu/rockchip-iommu.c
->> b/drivers/iommu/rockchip-iommu.c
->> index c4131ca792e0..8a5e2a659b67 100644
->> --- a/drivers/iommu/rockchip-iommu.c
->> +++ b/drivers/iommu/rockchip-iommu.c
->> @@ -4,6 +4,7 @@
->>    * published by the Free Software Foundation.
->>    */
->> +#include <linux/clk.h>
->>   #include <linux/compiler.h>
->>   #include <linux/delay.h>
->>   #include <linux/device.h>
->> @@ -91,6 +92,8 @@ struct rk_iommu {
->>       struct device *dev;
->>       void __iomem **bases;
->>       int num_mmu;
->> +    struct clk_bulk_data *clocks;
->> +    int num_clocks;
->>       bool reset_disabled;
->>       struct iommu_device iommu;
->>       struct list_head node; /* entry in rk_iommu_domain.iommus */
->> @@ -450,6 +453,38 @@ static int rk_iommu_force_reset(struct rk_iommu
->> *iommu)
->>       return 0;
->>   }
->> +static int rk_iommu_of_get_clocks(struct rk_iommu *iommu)
->> +{
->> +    struct device_node *np = iommu->dev->of_node;
->> +    int ret;
->> +    int i;
->> +
->> +    ret = of_count_phandle_with_args(np, "clocks", "#clock-cells");
->> +    if (ret == -ENOENT)
->> +        return 0;
->> +    else if (ret < 0)
->> +        return ret;
->> +
->> +    iommu->num_clocks = ret;
->> +    iommu->clocks = devm_kcalloc(iommu->dev, iommu->num_clocks,
->> +                     sizeof(*iommu->clocks), GFP_KERNEL);
->> +    if (!iommu->clocks)
->> +        return -ENOMEM;
->> +
->> +    for (i = 0; i < iommu->num_clocks; ++i) {
->> +        iommu->clocks[i].clk = of_clk_get(np, i);
->> +        if (IS_ERR(iommu->clocks[i].clk)) {
->> +            ret = PTR_ERR(iommu->clocks[i].clk);
->> +            goto err_clk_put;
->> +        }
->> +    }
->
-> Just to confirm my understanding from a quick scan through the code, the
-> reason we can't use clk_bulk_get() here is that currently, clocks[i].id
-> being NULL means we'd end up just getting the first clock multiple
-> times, right?
-right, without a valid name, it would return the first clock.
+Thanks for this cleanup!
 
-     /* Walk up the tree of devices looking for a clock that matches */
-     while (np) {
-         int index = 0;
+Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-         /*
-          * For named clocks, first look up the name in the
-          * "clock-names" property.  If it cannot be found, then
-          * index will be an error code, and of_clk_get() will fail.
-          */
-         if (name)
-             index = of_property_match_string(np, "clock-names", name);
-         clk = __of_clk_get(np, index, dev_id, name);
-
-
+> ---
+>   drivers/iommu/exynos-iommu.c | 13 +------------
+>   1 file changed, 1 insertion(+), 12 deletions(-)
 >
-> I guess there could be other users who also want "just get whatever
-> clocks I have" functionality, so it might be worth proposing that for
-> the core API as a separate/follow-up patch, but it definitely doesn't
-> need to be part of this series.
-right, i can try to do it later :)
->
-> I really don't know enough about correct clk API usage, but modulo the
-> binding comments it certainly looks nice and tidy now;
->
-> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-thanks.
->
-> Thanks,
-> Robin.
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 79c45650f8de..5d5a9b0a0561 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1238,17 +1238,6 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
+>   	return phys;
+>   }
+>   
+> -static struct iommu_group *get_device_iommu_group(struct device *dev)
+> -{
+> -	struct iommu_group *group;
+> -
+> -	group = iommu_group_get(dev);
+> -	if (!group)
+> -		group = iommu_group_alloc();
+> -
+> -	return group;
+> -}
+> -
+>   static int exynos_iommu_add_device(struct device *dev)
+>   {
+>   	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+> @@ -1344,7 +1333,7 @@ static const struct iommu_ops exynos_iommu_ops = {
+>   	.unmap = exynos_iommu_unmap,
+>   	.map_sg = default_iommu_map_sg,
+>   	.iova_to_phys = exynos_iommu_iova_to_phys,
+> -	.device_group = get_device_iommu_group,
+> +	.device_group = generic_device_group,
+>   	.add_device = exynos_iommu_add_device,
+>   	.remove_device = exynos_iommu_remove_device,
+>   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
