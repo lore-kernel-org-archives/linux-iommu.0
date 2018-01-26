@@ -1,50 +1,68 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 0/5] Add debugfs info for the AMD IOMMU
-Date: Fri, 26 Jan 2018 17:52:04 -0600
-Message-ID: <151701071164.16448.3611271062222336838.stgit@taos>
+From: Gary R Hook <gary.hook@amd.com>
+Subject: [PATCH 2/5] iommu/amd - Add a 'verbose' switch for IOMMU debugfs
+Date: Fri, 26 Jan 2018 17:52:26 -0600
+Message-ID: <151701074611.16448.6376879206073473408.stgit@taos>
+References: <151701071164.16448.3611271062222336838.stgit@taos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <151701071164.16448.3611271062222336838.stgit@taos>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The following series creates a debugfs directory for AMD IOMMUs,
-constructs a framework for additional entries, an online README,
-and a method for dumping device table entries. Data is reported
-in a default concise mode, but a verbose mode is enabled via a
-filesystem entry.
+Enable more descriptive debugfs output via a 'verbose' variable.
 
-This is the first of three patch series that will expose a number
-of IOMMU registers.
-
+Signed-off-by: Gary R Hook <gary.hook@amd.com>
 ---
+ drivers/iommu/amd_iommu_debugfs.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-Gary R Hook (5):
-      iommu/amd - Add debugfs support
-      iommu/amd - Add a 'verbose' switch for IOMMU debugfs
-      iommu/amd - Add a README variable for the IOMMU debugfs
-      iommu/amd - Expose the active IOMMU device table entries
-      iommu/amd - Add a debugfs entry to specify a IOMMU device table entry
-
-
- drivers/iommu/Kconfig             |    9 +
- drivers/iommu/Makefile            |    2 
- drivers/iommu/amd_iommu_debugfs.c |  428 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_init.c    |    7 -
- drivers/iommu/amd_iommu_proto.h   |    6 +
- drivers/iommu/amd_iommu_types.h   |    3 
- 6 files changed, 452 insertions(+), 3 deletions(-)
- create mode 100644 drivers/iommu/amd_iommu_debugfs.c
-
---
+diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
+index 18f70934961d..c449f3a7452c 100644
+--- a/drivers/iommu/amd_iommu_debugfs.c
++++ b/drivers/iommu/amd_iommu_debugfs.c
+@@ -27,6 +27,8 @@ static DEFINE_RWLOCK(iommu_debugfs_lock);
+ 
+ #define	MAX_NAME_LEN	20
+ 
++static unsigned int amd_iommu_verbose;
++
+ static unsigned int amd_iommu_count_valid_dtes(int start, int end)
+ {
+ 	unsigned int n = 0;
+@@ -61,7 +63,10 @@ static ssize_t amd_iommu_debugfs_dtecount_read(struct file *filp,
+ 		return -ENOMEM;
+ 
+ 	n = amd_iommu_count_valid_dtes(0, 0xFFFF);
+-	oboff += OSCNPRINTF("%d\n", n);
++	if (amd_iommu_verbose)
++		oboff += OSCNPRINTF("# DTEs:  %d\n", n);
++	else
++		oboff += OSCNPRINTF("%d\n", n);
+ 
+ 	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
+ 	kfree(obuf);
+@@ -79,6 +84,7 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
+ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
+ {
+ 	char name[MAX_NAME_LEN + 1];
++	struct dentry *d_verbose;
+ 	struct dentry *d_dte;
+ 	unsigned long flags;
+ 
+@@ -97,6 +103,12 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
+ 	if (!iommu->debugfs_instance)
+ 		goto err;
+ 
++	d_verbose = debugfs_create_u32("verbose", 0600,
++				       iommu->debugfs_instance,
++				       &amd_iommu_verbose);
++	if (!d_verbose)
++		goto err;
++
+ 	d_dte = debugfs_create_file("count", 0400,
+ 				    iommu->debugfs_instance, iommu,
+ 				    &amd_iommu_debugfs_dtecount_ops);
