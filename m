@@ -1,205 +1,71 @@
-From: Gary R Hook <gary.hook@amd.com>
-Subject: [PATCH 5/5] iommu/amd - Add a debugfs entry to specify a IOMMU
- device table entry
-Date: Fri, 26 Jan 2018 17:52:55 -0600
-Message-ID: <151701077595.16448.10705468886498056095.stgit@taos>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH 1/5] iommu/amd - Add debugfs support
+Date: Sat, 27 Jan 2018 01:00:45 +0100
+Message-ID: <20180127000045.gatkndpu64no3o3j@pd.tnic>
 References: <151701071164.16448.3611271062222336838.stgit@taos>
+ <151701073560.16448.7715293076458740364.stgit@taos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <151701071164.16448.3611271062222336838.stgit@taos>
+Content-Disposition: inline
+In-Reply-To: <151701073560.16448.7715293076458740364.stgit@taos>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
+To: Gary R Hook <gary.hook@amd.com>
+Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Initially (at boot) the device table values dumped are all of the
-active devices.  Add a devid debugfs file to allow the user to select a
-single device table entry to dump (active or not). Let any devid value
-greater than the maximum allowable PCI ID (0xFFFF) restore the
-behavior to that effective at boot.
+On Fri, Jan 26, 2018 at 05:52:15PM -0600, Gary R Hook wrote:
+> Create the basic debugfs functions. Expose a count of IOMMU device
+> table entries that appear to be in use.
+> 
+> Signed-off-by: Gary R Hook <gary.hook@amd.com>
+> ---
+>  drivers/iommu/Kconfig             |    9 +++
+>  drivers/iommu/Makefile            |    2 -
+>  drivers/iommu/amd_iommu_debugfs.c |  112 +++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/amd_iommu_init.c    |    7 ++
+>  drivers/iommu/amd_iommu_proto.h   |    6 ++
+>  drivers/iommu/amd_iommu_types.h   |    3 +
+>  6 files changed, 136 insertions(+), 3 deletions(-)
+>  create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index f3a21343e636..7753989b6be7 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -135,6 +135,15 @@ config AMD_IOMMU_V2
+>  	  hardware. Select this option if you want to use devices that support
+>  	  the PCI PRI and PASID interface.
+>  
+> +config AMD_IOMMU_DEBUG
+> +	bool "Expose AMD IOMMU internals in DebugFS"
+> +	depends on AMD_IOMMU && DEBUG_FS
+> +	default n
+> +	help
+> +	  With this option you can enable access to AMD IOMMU registers and
+> +	  data structures through debugfs. Select this to see information
+> +	  about the internal state of the device.
+> +
+>  # Intel IOMMU support
+>  config DMAR_TABLE
+>  	bool
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 1fb695854809..d9e9ed5f6cfc 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -9,7 +9,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+>  obj-$(CONFIG_IOMMU_IOVA) += iova.o
+>  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+>  obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+> -obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+> +obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o amd_iommu_debugfs.o
 
-Signed-off-by: Gary R Hook <gary.hook@amd.com>
----
- drivers/iommu/amd_iommu_debugfs.c |  127 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 109 insertions(+), 18 deletions(-)
+That looks like it needs to be:
 
-diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
-index 87840ae9889d..efb666873daa 100644
---- a/drivers/iommu/amd_iommu_debugfs.c
-+++ b/drivers/iommu/amd_iommu_debugfs.c
-@@ -38,6 +38,7 @@ static DEFINE_RWLOCK(iommu_debugfs_lock);
- #define	MAX_NAME_LEN	20
- 
- static unsigned int amd_iommu_verbose;
-+static unsigned int amd_iommu_devid = ~0;
- 
- static unsigned int amd_iommu_count_valid_dtes(int start, int end)
- {
-@@ -91,6 +92,72 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
- 	.write = NULL,
- };
- 
-+static ssize_t amd_iommu_debugfs_devid_read(struct file *filp,
-+					    char __user *ubuf,
-+					    size_t count, loff_t *offp)
-+{
-+	struct amd_iommu *iommu = filp->private_data;
-+	unsigned int obuflen = 512;
-+	unsigned int oboff = 0;
-+	ssize_t ret;
-+	char *obuf;
-+
-+	if (!iommu)
-+		return 0;
-+
-+	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
-+	if (!obuf)
-+		return -ENOMEM;
-+
-+	if (amd_iommu_verbose)
-+		oboff += OSCNPRINTF("%02x:%02x.%x 0x%04x %u\n",
-+				    PCI_BUS_NUM(amd_iommu_devid),
-+				    PCI_SLOT(amd_iommu_devid),
-+				    PCI_FUNC(amd_iommu_devid),
-+				    amd_iommu_devid, amd_iommu_devid);
-+	else
-+		oboff += OSCNPRINTF("%u\n", amd_iommu_devid);
-+
-+	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
-+	kfree(obuf);
-+
-+	return ret;
-+}
-+
-+static ssize_t amd_iommu_debugfs_devid_write(struct file *filp,
-+					    const char __user *ubuf,
-+					    size_t count, loff_t *offp)
-+{
-+	unsigned int pci_id, pci_slot, pci_func;
-+	unsigned int obuflen = 80;
-+	ssize_t ret;
-+	char *obuf;
-+	int n;
-+
-+	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
-+	if (!obuf)
-+		return -ENOMEM;
-+
-+	ret = simple_write_to_buffer(obuf, OBUFLEN, offp, ubuf, count);
-+
-+	if (strnchr(obuf, OBUFLEN, ':')) {
-+		n = sscanf(obuf, "%x:%x.%x", &pci_id, &pci_slot, &pci_func);
-+		if (n == 3)
-+			amd_iommu_devid = PCI_DEVID(pci_id, PCI_DEVFN(pci_slot, pci_func));
-+	} else
-+		n = kstrtouint(obuf, 0, &amd_iommu_devid);
-+	kfree(obuf);
-+
-+	return ret;
-+}
-+
-+static const struct file_operations amd_iommu_debugfs_devid_ops = {
-+	.owner = THIS_MODULE,
-+	.open = simple_open,
-+	.read = amd_iommu_debugfs_devid_read,
-+	.write = amd_iommu_debugfs_devid_write,
-+};
-+
- struct bits {
- 	uint bit;
- 	uint len;
-@@ -211,9 +278,13 @@ static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
- 		return 0;
- 
- 	/* Count the number of valid entries in the device table */
--	istart = 0;
--	iend = MAX_PCI_ID;
--	n = amd_iommu_count_valid_dtes(istart, iend);
-+	if (amd_iommu_devid > MAX_PCI_ID) {
-+		istart = 0;
-+		iend = MAX_PCI_ID;
-+		n = amd_iommu_count_valid_dtes(istart, iend);
-+	} else {
-+		n = 1;
-+	}
- 	if (amd_iommu_verbose)
- 		obuflen = n * 2048;
- 	else
-@@ -223,20 +294,29 @@ static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
- 	if (!obuf)
- 		return -ENOMEM;
- 
--	for (i = istart ; i <= iend ; i++)
--		if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
--		     || amd_iommu_dev_table[i].data[1]) {
--			if (amd_iommu_verbose) {
--				oboff += OSCNPRINTF("Device %02x:%02x.%x\n",
--						    PCI_BUS_NUM(i),
--						    PCI_SLOT(i),
--						    PCI_FUNC(i));
--				amd_iommu_print_dte_verbose(i, &obuf,
--							    &obuflen, &oboff);
--			} else {
--				oboff += PRINTDTE(i);
-+	if (amd_iommu_devid > MAX_PCI_ID) {
-+		for (i = istart ; i <= iend ; i++)
-+			if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
-+			     || amd_iommu_dev_table[i].data[1]) {
-+				if (amd_iommu_verbose) {
-+					oboff += OSCNPRINTF("Device %02x:%02x.%x\n",
-+							    PCI_BUS_NUM(i),
-+							    PCI_SLOT(i),
-+							    PCI_FUNC(i));
-+					amd_iommu_print_dte_verbose(i, &obuf,
-+								    &obuflen,
-+								    &oboff);
-+				} else {
-+					oboff += PRINTDTE(i);
-+				}
- 			}
--		}
-+	} else {
-+		i = amd_iommu_devid;
-+		if (amd_iommu_verbose)
-+			amd_iommu_print_dte_verbose(i, &obuf, &obuflen, &oboff);
-+		else
-+			oboff += PRINTDTE(i);
-+	}
- 
- 	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
- 	kfree(obuf);
-@@ -253,12 +333,17 @@ static const struct file_operations amd_iommu_debugfs_dte_ops = {
- 
- static char readmetext[] =
- "devicetable             Print active entries in the device table\n"
-+"devid                   Controls which device IDs are printed\n"
- "count                   Count of active devices\n"
- "verbose                 Provide additional descriptive text\n"
- "\n"
- "                        Dumping the Device Table\n"
--"The device table is scanned for entries that appear to be active. The\n"
--"default range is from 0 to 0xFFFF, and only active entries will be reported\n"
-+"The device table is scanned for entries that appear to be active.\n"
-+"The default (initial) range is from 0 to 0xFFFF, represented by a devid\n"
-+"value greater than 0xFFFF, and only active entries will be reported.\n"
-+"If devid is set to a specific value, only that device entry will be\n"
-+"displayed (active or not). devid may be specified as ##:##:#, a decimal\n"
-+"value, or a hex value.\n"
- "\n";
- 
- static ssize_t amd_iommu_debugfs_readme_read(struct file *filp,
-@@ -322,6 +407,12 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
- 	if (!d_dte)
- 		goto err;
- 
-+	d_dte = debugfs_create_file("devid", 0400,
-+				    iommu->debugfs_instance, iommu,
-+				    &amd_iommu_debugfs_devid_ops);
-+	if (!d_dte)
-+		goto err;
-+
- 	d_dte = debugfs_create_file("README", 0400,
- 				    iommu->debugfs_instance, iommu,
- 				    &amd_iommu_debugfs_readme_ops);
+obj-$(CONFIG_AMD_IOMMU_DEBUG) += amd_iommu_debugfs.o
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
