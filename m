@@ -1,71 +1,54 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 1/5] iommu/amd - Add debugfs support
-Date: Sat, 27 Jan 2018 01:00:45 +0100
-Message-ID: <20180127000045.gatkndpu64no3o3j@pd.tnic>
-References: <151701071164.16448.3611271062222336838.stgit@taos>
- <151701073560.16448.7715293076458740364.stgit@taos>
+From: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/amd: Don't use dev_data in irte_ga_set_affinity()
+Date: Sun, 28 Jan 2018 14:22:19 -0600
+Message-ID: <20180128202219.27005-1-swood@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <151701073560.16448.7715293076458740364.stgit@taos>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Gary R Hook <gary.hook@amd.com>
-Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Luis Claudio R. Goncalves" <lgoncalv-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 26, 2018 at 05:52:15PM -0600, Gary R Hook wrote:
-> Create the basic debugfs functions. Expose a count of IOMMU device
-> table entries that appear to be in use.
-> 
-> Signed-off-by: Gary R Hook <gary.hook@amd.com>
-> ---
->  drivers/iommu/Kconfig             |    9 +++
->  drivers/iommu/Makefile            |    2 -
->  drivers/iommu/amd_iommu_debugfs.c |  112 +++++++++++++++++++++++++++++++++++++
->  drivers/iommu/amd_iommu_init.c    |    7 ++
->  drivers/iommu/amd_iommu_proto.h   |    6 ++
->  drivers/iommu/amd_iommu_types.h   |    3 +
->  6 files changed, 136 insertions(+), 3 deletions(-)
->  create mode 100644 drivers/iommu/amd_iommu_debugfs.c
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f3a21343e636..7753989b6be7 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -135,6 +135,15 @@ config AMD_IOMMU_V2
->  	  hardware. Select this option if you want to use devices that support
->  	  the PCI PRI and PASID interface.
->  
-> +config AMD_IOMMU_DEBUG
-> +	bool "Expose AMD IOMMU internals in DebugFS"
-> +	depends on AMD_IOMMU && DEBUG_FS
-> +	default n
-> +	help
-> +	  With this option you can enable access to AMD IOMMU registers and
-> +	  data structures through debugfs. Select this to see information
-> +	  about the internal state of the device.
-> +
->  # Intel IOMMU support
->  config DMAR_TABLE
->  	bool
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 1fb695854809..d9e9ed5f6cfc 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -9,7 +9,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
->  obj-$(CONFIG_IOMMU_IOVA) += iova.o
->  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
->  obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
-> -obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
-> +obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o amd_iommu_debugfs.o
+search_dev_data() acquires a non-raw lock, which can't be done
+from atomic context on PREEMPT_RT.  There is no need to look at
+dev_data because guest_mode should never be set if use_vapic is
+not set.
 
-That looks like it needs to be:
+Signed-off-by: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+This is a followup to the patches below:
 
-obj-$(CONFIG_AMD_IOMMU_DEBUG) += amd_iommu_debugfs.o
+https://patchwork.codeaurora.org/patch/433611/
+https://patchwork.codeaurora.org/patch/433613/
 
+ drivers/iommu/amd_iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 84e99097dfe3..a933c26df652 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3861,10 +3861,8 @@ static void irte_ga_set_affinity(void *entry, u16 devid, u16 index,
+ 				 u8 vector, u32 dest_apicid)
+ {
+ 	struct irte_ga *irte = (struct irte_ga *) entry;
+-	struct iommu_dev_data *dev_data = search_dev_data(devid);
+ 
+-	if (!dev_data || !dev_data->use_vapic ||
+-	    !irte->lo.fields_remap.guest_mode) {
++	if (!irte->lo.fields_remap.guest_mode) {
+ 		irte->hi.fields.vector = vector;
+ 		irte->lo.fields_remap.destination = dest_apicid;
+ 		modify_irte_ga(devid, index, irte, NULL);
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+1.8.3.1
