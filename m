@@ -1,57 +1,48 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 4/6] iommu/arm-smmu: Add the device_link
- between masters and smmu
-Date: Wed, 31 Jan 2018 13:09:40 +0000
-Message-ID: <6b930150-cb81-b0a5-601c-16cb576c4341@arm.com>
-References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
- <1516362223-22946-5-git-send-email-vivek.gautam@codeaurora.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 11/13] drm/amdgpu: add DRM_AMDGPU_ATC config option
+Date: Wed, 31 Jan 2018 13:15:33 +0000
+Message-ID: <13143246-5f7c-b873-c159-f27342362aaa@arm.com>
+References: <20180126201326.8829-1-christian.koenig@amd.com>
+	<20180126201326.8829-11-christian.koenig@amd.com>
+	<6cf4bd37-fbf1-1fb4-496a-d62e403aea6f@amd.com>
+	<7ebabb2b-1b18-8c7b-626f-d6874bdaac80@gmail.com>
+	<c39b444b-49a1-771a-65ba-ae37ba643673@amd.com>
+	<CAFCwf12ho2gXrBUHtaKRV-mX2kRk45xeu2o=F0-=Q+GFkAs=RA@mail.gmail.com>
+	<6b19483a-79f3-e5e0-307f-ead73b4e2b7a@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <1516362223-22946-5-git-send-email-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <6b19483a-79f3-e5e0-307f-ead73b4e2b7a-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Felix Kuehling <felix.kuehling-5C7GfCeVMHo@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, amd-gfx list <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTkvMDEvMTggMTE6NDMsIFZpdmVrIEdhdXRhbSB3cm90ZToKPiBGcm9tOiBTcmljaGFyYW4g
-UiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+IAo+IEZpbmFsbHkgYWRkIHRoZSBkZXZpY2Ug
-bGluayBiZXR3ZWVuIHRoZSBtYXN0ZXIgZGV2aWNlIGFuZAo+IHNtbXUsIHNvIHRoYXQgdGhlIHNt
-bXUgZ2V0cyBydW50aW1lIGVuYWJsZWQvZGlzYWJsZWQgb25seSB3aGVuIHRoZQo+IG1hc3RlciBu
-ZWVkcyBpdC4gVGhpcyBpcyBkb25lIGZyb20gYWRkX2RldmljZSBjYWxsYmFjayB3aGljaCBnZXRz
-Cj4gY2FsbGVkIG9uY2Ugd2hlbiB0aGUgbWFzdGVyIGlzIGFkZGVkIHRvIHRoZSBzbW11LgoKRG9u
-J3Qgd2UgbmVlZCB0byBiYWxhbmNlIHRoaXMgd2l0aCBhIGRldmljZV9saW5rX2RlbCgpIGluIC5y
-ZW1vdmVfZGV2aWNlIAoobGlrZSBleHlub3MtaW9tbXUgZG9lcyk/CgpSb2Jpbi4KCj4gU2lnbmVk
-LW9mZi1ieTogU3JpY2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiAtLS0KPiAg
-IGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDExICsrKysrKysrKysrCj4gICAxIGZpbGUgY2hh
-bmdlZCwgMTEgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2Fy
-bS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiBpbmRleCA5NTQ3OGJmYjE4MmMu
-LjMzYmJjZmVkYjg5NiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiAr
-KysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiBAQCAtMTM2Nyw2ICsxMzY3LDcgQEAgc3Rh
-dGljIGludCBhcm1fc21tdV9hZGRfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldikKPiAgIAlzdHJ1
-Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11Owo+ICAgCXN0cnVjdCBhcm1fc21tdV9tYXN0ZXJfY2Zn
-ICpjZmc7Cj4gICAJc3RydWN0IGlvbW11X2Z3c3BlYyAqZndzcGVjID0gZGV2LT5pb21tdV9md3Nw
-ZWM7Cj4gKwlzdHJ1Y3QgZGV2aWNlX2xpbmsgKmxpbms7Cj4gICAJaW50IGksIHJldDsKPiAgIAo+
-ICAgCWlmICh1c2luZ19sZWdhY3lfYmluZGluZykgewo+IEBAIC0xNDI4LDYgKzE0MjksMTYgQEAg
-c3RhdGljIGludCBhcm1fc21tdV9hZGRfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldikKPiAgIAo+
-ICAgCXBtX3J1bnRpbWVfcHV0X3N5bmMoc21tdS0+ZGV2KTsKPiAgIAo+ICsJLyoKPiArCSAqIEVz
-dGFibGlzaCB0aGUgbGluayBiZXR3ZWVuIHNtbXUgYW5kIG1hc3Rlciwgc28gdGhhdCB0aGUKPiAr
-CSAqIHNtbXUgZ2V0cyBydW50aW1lIGVuYWJsZWQvZGlzYWJsZWQgYXMgcGVyIHRoZSBtYXN0ZXIn
-cwo+ICsJICogbmVlZHMuCj4gKwkgKi8KPiArCWxpbmsgPSBkZXZpY2VfbGlua19hZGQoZGV2LCBz
-bW11LT5kZXYsIERMX0ZMQUdfUE1fUlVOVElNRSk7Cj4gKwlpZiAoIWxpbmspCj4gKwkJZGV2X3dh
-cm4oc21tdS0+ZGV2LCAiVW5hYmxlIHRvIGNyZWF0ZSBkZXZpY2UgbGluayBiZXR3ZWVuICVzIGFu
-ZCAlc1xuIiwKPiArCQkJIGRldl9uYW1lKHNtbXUtPmRldiksIGRldl9uYW1lKGRldikpOwo+ICsK
-PiAgIAlyZXR1cm4gMDsKPiAgIAo+ICAgb3V0X2NmZ19mcmVlOgo+IApfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZy
-ZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+SGkgQ2hyaXN0aWFuLAoKT24gMzEvMDEvMTggMTM6MDQsIENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6
+Cj4gQWRkaW5nIEplYW4gYW5kIHRoZSBJT01NVSBsaXN0IGFzIHdlbGwuCj4gCj4gQW0gMzEuMDEu
+MjAxOCB1bSAxMzo0MyBzY2hyaWViIE9kZWQgR2FiYmF5Ogo+PiBPbiBUdWUsIEphbiAzMCwgMjAx
+OCBhdCA2OjUzIFBNLCBGZWxpeCBLdWVobGluZyA8ZmVsaXgua3VlaGxpbmdAYW1kLmNvbT4gd3Jv
+dGU6Cj4+PiBbU05JUF0KPj4gVGhlcmUgd2FzIHNvbWUgZGlzY3Vzc2lvbiBsYXN0IHllYXIgYWJv
+dXQgYSBnZW5lcmljIFBBU0lEIGFsbG9jYXRvciBpbgo+PiB0aGUgaW9tbXUgc3Vic3lzdGVtOgo+
+PiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvcGlwZXJtYWlsL2lvbW11LzIwMTct
+SnVuZS8wMjIxNTkuaHRtbAo+Pgo+PiBVbmZvcnR1bmF0ZWx5LCBJIGRvbid0IHRoaW5rIGl0IGdv
+dCBhbnkgZnVydGhlciB0aGVuIHRoYXQuCgpJIGFsc28gc2VudCBhbiBSRkN2MiBpbiBPY3RvYmVy
+OgpodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9hcm0ta2VybmVsL21zZzYwOTc3MS5odG1s
+Cgo+IFllYWgsIHRoYXQgc291bmRzIGV4YWN0bHkgbGlrZSB3aGF0IEkgaGFkIGluIG1pbmQgYXMg
+d2VsbC4KPiAKPiBKZWFuIGFueSB1cGRhdGVzIG9uIHRoYXQgdG9waWM/IFdlIGFyZSByYXRoZXIg
+aW50ZXJlc3RlZCBpbiBjb21tb24gUEFTSUQgCj4gaGFuZGxpbmcgYXMgd2VsbC4KCkdvb2QgdG8g
+aGVhciwgSSBwbGFuIHRvIHNlbmQgYSBuZXcgdmVyc2lvbiBvZiB0aGF0IHNlcmllcyBhZnRlciB0
+aGUgbWVyZ2UKd2luZG93LgoKVGhhbmtzLApKZWFuCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
+eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
+bi9saXN0aW5mby9pb21tdQ==
