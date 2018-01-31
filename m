@@ -1,54 +1,48 @@
-From: Ard Biesheuvel <ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: ARM64 SMMU Setup
-Date: Wed, 31 Jan 2018 22:21:02 +0000
-Message-ID: <CAKv+Gu-vwWp_o=XUd17OJ28Brh=Qt_GibpiSMByAXFW07VrxPA@mail.gmail.com>
-References: <fc00c99b-7766-2ac5-83a5-2ed9e13a15e1@linux.intel.com>
+From: Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH] iommu/vt-d: add NUMA awareness to intel_alloc_coherent()
+Date: Wed, 31 Jan 2018 14:45:56 -0800
+Message-ID: <1517438756.3715.108.camel@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <fc00c99b-7766-2ac5-83a5-2ed9e13a15e1-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Benjamin Serebrin <serebrin@google.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 31 January 2018 at 22:09, Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-> Hi,
->
-> I'm enabling the ARM SMMU-500 on an ARM64 A53. I'm hitting a data abort in
-> the probe functions because I'm accessing the registers in EL1 mode.
->
+From: Eric Dumazet <edumazet@google.com>
 
-Why do you think the fact that you are running at EL1 is causing the data abort?
+Some devices (like mlx4) try hard to allocate memory on selected
+NUMA node, but it turns out intel_alloc_coherent() is not NUMA
+aware yet.
 
-> Linux starts in EL2 mode but drops down to EL1 mode by the time it reaches
-> the arm-smmu probe function.
->
-> Is there something else I need to add to either move the arm-smmu probe
-> earlier or remain in EL2 until after the arm-smmu probe?
->
+Note that dma_generic_alloc_coherent() in arch/x86/kernel/pci-dma.c
+gets this right.
 
-No. I am pretty sure EL2 vs EL1 is not causing your issue. Could you
-elaborate on the nature of the exception you are getting?
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Benjamin Serebrin <serebrin@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+---
+ drivers/iommu/intel-iommu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> A Google search didn't turn up anything so I hoped posting to the list would
-> help.
->
-> Thanks in advance,
->
-> Thor
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a1373cf343269455808f66ad18dc0a2fb7aa73f2..0efef077abc099eb29ebc5cefdd1b996f025dffd 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3734,8 +3734,11 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 		}
+ 	}
+ 
+-	if (!page)
+-		page = alloc_pages(flags, order);
++	if (!page) {
++		page = alloc_pages_node(dev_to_node(dev), flags, order);
++		if (!page)
++			page = alloc_pages(flags, order);
++	}
+ 	if (!page)
+ 		return NULL;
+ 	memset(page_address(page), 0, size);
