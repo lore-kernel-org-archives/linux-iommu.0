@@ -1,20 +1,17 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 11/13] drm/amdgpu: add DRM_AMDGPU_ATC config option
-Date: Wed, 31 Jan 2018 13:15:33 +0000
-Message-ID: <13143246-5f7c-b873-c159-f27342362aaa@arm.com>
-References: <20180126201326.8829-1-christian.koenig@amd.com>
-	<20180126201326.8829-11-christian.koenig@amd.com>
-	<6cf4bd37-fbf1-1fb4-496a-d62e403aea6f@amd.com>
-	<7ebabb2b-1b18-8c7b-626f-d6874bdaac80@gmail.com>
-	<c39b444b-49a1-771a-65ba-ae37ba643673@amd.com>
-	<CAFCwf12ho2gXrBUHtaKRV-mX2kRk45xeu2o=F0-=Q+GFkAs=RA@mail.gmail.com>
-	<6b19483a-79f3-e5e0-307f-ead73b4e2b7a@amd.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 08/13] iommu/rockchip: Control clocks needed to access
+	the IOMMU
+Date: Wed, 31 Jan 2018 07:50:59 -0600
+Message-ID: <CAL_JsqKFW0USD_TgGCO-s4wMBw9O2psToMObjeSEwCNReq-3=w@mail.gmail.com>
+References: <20180124103516.2571-1-jeffy.chen@rock-chips.com>
+	<20180124103516.2571-9-jeffy.chen@rock-chips.com>
+	<20180130170515.3g6wtadqgmehxh5b@rob-hp-laptop>
+	<CAAFQd5A383Ey3Ntg_hcsvzHj2DsSuW6RMQ+kP=LPAZ1YmqjHOg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6b19483a-79f3-e5e0-307f-ead73b4e2b7a-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <CAAFQd5A383Ey3Ntg_hcsvzHj2DsSuW6RMQ+kP=LPAZ1YmqjHOg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,25 +21,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Felix Kuehling <felix.kuehling-5C7GfCeVMHo@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, amd-gfx list <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQ2hyaXN0aWFuLAoKT24gMzEvMDEvMTggMTM6MDQsIENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6
-Cj4gQWRkaW5nIEplYW4gYW5kIHRoZSBJT01NVSBsaXN0IGFzIHdlbGwuCj4gCj4gQW0gMzEuMDEu
-MjAxOCB1bSAxMzo0MyBzY2hyaWViIE9kZWQgR2FiYmF5Ogo+PiBPbiBUdWUsIEphbiAzMCwgMjAx
-OCBhdCA2OjUzIFBNLCBGZWxpeCBLdWVobGluZyA8ZmVsaXgua3VlaGxpbmdAYW1kLmNvbT4gd3Jv
-dGU6Cj4+PiBbU05JUF0KPj4gVGhlcmUgd2FzIHNvbWUgZGlzY3Vzc2lvbiBsYXN0IHllYXIgYWJv
-dXQgYSBnZW5lcmljIFBBU0lEIGFsbG9jYXRvciBpbgo+PiB0aGUgaW9tbXUgc3Vic3lzdGVtOgo+
-PiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvcGlwZXJtYWlsL2lvbW11LzIwMTct
-SnVuZS8wMjIxNTkuaHRtbAo+Pgo+PiBVbmZvcnR1bmF0ZWx5LCBJIGRvbid0IHRoaW5rIGl0IGdv
-dCBhbnkgZnVydGhlciB0aGVuIHRoYXQuCgpJIGFsc28gc2VudCBhbiBSRkN2MiBpbiBPY3RvYmVy
-OgpodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9hcm0ta2VybmVsL21zZzYwOTc3MS5odG1s
-Cgo+IFllYWgsIHRoYXQgc291bmRzIGV4YWN0bHkgbGlrZSB3aGF0IEkgaGFkIGluIG1pbmQgYXMg
-d2VsbC4KPiAKPiBKZWFuIGFueSB1cGRhdGVzIG9uIHRoYXQgdG9waWM/IFdlIGFyZSByYXRoZXIg
-aW50ZXJlc3RlZCBpbiBjb21tb24gUEFTSUQgCj4gaGFuZGxpbmcgYXMgd2VsbC4KCkdvb2QgdG8g
-aGVhciwgSSBwbGFuIHRvIHNlbmQgYSBuZXcgdmVyc2lvbiBvZiB0aGF0IHNlcmllcyBhZnRlciB0
-aGUgbWVyZ2UKd2luZG93LgoKVGhhbmtzLApKZWFuCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+On Wed, Jan 31, 2018 at 1:52 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
+> Hi Rob,
+>
+> On Wed, Jan 31, 2018 at 2:05 AM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+>> On Wed, Jan 24, 2018 at 06:35:11PM +0800, Jeffy Chen wrote:
+>>> From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>>
+>>> Current code relies on master driver enabling necessary clocks before
+>>> IOMMU is accessed, however there are cases when the IOMMU should be
+>>> accessed while the master is not running yet, for example allocating
+>>> V4L2 videobuf2 buffers, which is done by the VB2 framework using DMA
+>>> mapping API and doesn't engage the master driver at all.
+>>>
+>>> This patch fixes the problem by letting clocks needed for IOMMU
+>>> operation to be listed in Device Tree and making the driver enable them
+>>> for the time of accessing the hardware.
+>>>
+>>> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+>>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>> ---
+>>>
+>>> Changes in v5:
+>>> Use clk_bulk APIs.
+>>>
+>>> Changes in v4: None
+>>> Changes in v3: None
+>>> Changes in v2: None
+>>>
+>>>  .../devicetree/bindings/iommu/rockchip,iommu.txt   |  8 +++
+>>
+>> Please split binding patches to a separate patch.
+>>
+>>>  drivers/iommu/rockchip-iommu.c                     | 74 ++++++++++++++++++++--
+>>>  2 files changed, 76 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+>>> index 2098f7732264..33dd853359fa 100644
+>>> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+>>> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+>>> @@ -14,6 +14,13 @@ Required properties:
+>>>                      "single-master" device, and needs no additional information
+>>>                      to associate with its master device.  See:
+>>>                      Documentation/devicetree/bindings/iommu/iommu.txt
+>>> +Optional properties:
+>>> +- clocks : A list of master clocks requires for the IOMMU to be accessible
+>>> +           by the host CPU. The number of clocks depends on the master
+>>> +           block and might as well be zero. See [1] for generic clock
+>>> +           bindings description.
+>>
+>> Hardware blocks don't have a variable number of clock connections.
+>
+> I think you underestimate the imagination of hardware designers. :)
+
+Learned long ago to never do that. If there are 2 ways to do
+something, they will find a 3rd way.
+
+> For Rockchip IOMMU, there is a set of clocks, which all need to be
+> enabled for IOMMU register access to succeed. The clocks are not
+> directly fed to the IOMMU, but they are needed for the various buses
+> and intermediate blocks on the way to the IOMMU to work.
+
+The binding should describe the clock connections, not what clocks a
+driver needs (currently). It sounds like a lack of managing bus clocks
+to me.
+
+In any case, the binding must be written so it can be verified. If you
+can have any number of clocks with any names, there's no point in
+documenting.
+
+Rob
