@@ -1,14 +1,11 @@
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 2/2] vfio/type1: Add iommu_unmap error check when
-	vfio_unmap_unpin
-Date: Tue, 30 Jan 2018 20:48:05 -0500
-Message-ID: <1517363285-89304-3-git-send-email-suravee.suthikulpanit@amd.com>
-References: <1517363285-89304-1-git-send-email-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3] iommu/amd: Add support for fast IOTLB flushing
+Date: Wed, 31 Jan 2018 00:01:14 -0500
+Message-ID: <1517374874-93978-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1517363285-89304-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,42 +15,174 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Besides zero check the number of unmapped page, also check
-and handle iommu_unmap errors.
+Implement the newly added IOTLB flushing interface for AMD IOMMU.
 
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Changes from v2 (https://lkml.org/lkml/2017/12/27/44)
+ * Call domain_flush_complete() after domain_flush_tlb_pde().
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index e30e29a..c580518 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -677,7 +677,8 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
- 	}
+ drivers/iommu/amd_iommu.c       | 77 +++++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/amd_iommu_init.c  |  7 ++++
+ drivers/iommu/amd_iommu_types.h |  7 ++++
+ 3 files changed, 88 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 3609f51..6c7ac3f 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -129,6 +129,12 @@ struct dma_ops_domain {
+ static struct iova_domain reserved_iova_ranges;
+ static struct lock_class_key reserved_rbtree_key;
  
- 	while (iova < end) {
--		size_t unmapped, len;
-+		ssize_t unmapped;
-+		size_t len;
- 		phys_addr_t phys, next;
++struct amd_iommu_flush_entries {
++	struct list_head list;
++	unsigned long iova;
++	size_t size;
++};
++
+ /****************************************************************************
+  *
+  * Helper functions
+@@ -3043,9 +3049,6 @@ static ssize_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ 	unmap_size = iommu_unmap_page(domain, iova, page_size);
+ 	mutex_unlock(&domain->api_lock);
  
- 		phys = iommu_iova_to_phys(domain->domain, iova);
-@@ -699,7 +700,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
- 		}
+-	domain_flush_tlb_pde(domain);
+-	domain_flush_complete(domain);
+-
+ 	return unmap_size;
+ }
  
- 		unmapped = iommu_unmap(domain->domain, iova, len);
--		if (WARN_ON(!unmapped))
-+		if (WARN_ON(unmapped <= 0))
- 			break;
+@@ -3163,6 +3166,71 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	return dev_data->defer_attach;
+ }
  
- 		unlocked += vfio_unpin_pages_remote(dma, iova,
++static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	struct protection_domain *dom = to_pdomain(domain);
++
++	domain_flush_tlb_pde(dom);
++	domain_flush_complete(dom);
++}
++
++static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
++				      unsigned long iova, size_t size)
++{
++	struct amd_iommu_flush_entries *entry, *p;
++	unsigned long flags;
++	bool found = false;
++
++	spin_lock_irqsave(&amd_iommu_flush_list_lock, flags);
++	list_for_each_entry(p, &amd_iommu_flush_list, list) {
++		if (iova != p->iova)
++			continue;
++
++		if (size > p->size) {
++			p->size = size;
++			pr_debug("%s: update range: iova=%#lx, size = %#lx\n",
++				 __func__, p->iova, p->size);
++		}
++		found = true;
++		break;
++	}
++
++	if (!found) {
++		entry = kzalloc(sizeof(struct amd_iommu_flush_entries),
++				GFP_KERNEL);
++		if (entry) {
++			pr_debug("%s: new range: iova=%lx, size=%#lx\n",
++				 __func__, iova, size);
++
++			entry->iova = iova;
++			entry->size = size;
++			list_add(&entry->list, &amd_iommu_flush_list);
++		}
++	}
++	spin_unlock_irqrestore(&amd_iommu_flush_list_lock, flags);
++}
++
++static void amd_iommu_iotlb_sync(struct iommu_domain *domain)
++{
++	struct protection_domain *pdom = to_pdomain(domain);
++	struct amd_iommu_flush_entries *entry, *next;
++	unsigned long flags;
++
++	/* Note:
++	 * Currently, IOMMU driver just flushes the whole IO/TLB for
++	 * a given domain. So, just remove entries from the list here.
++	 */
++	spin_lock_irqsave(&amd_iommu_flush_list_lock, flags);
++	list_for_each_entry_safe(entry, next, &amd_iommu_flush_list, list) {
++		list_del(&entry->list);
++		kfree(entry);
++	}
++	spin_unlock_irqrestore(&amd_iommu_flush_list_lock, flags);
++
++	domain_flush_tlb_pde(pdom);
++	domain_flush_complete(pdom);
++}
++
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3181,6 +3249,9 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	.apply_resv_region = amd_iommu_apply_resv_region,
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
++	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
++	.iotlb_range_add = amd_iommu_iotlb_range_add,
++	.iotlb_sync = amd_iommu_iotlb_sync,
+ };
+ 
+ /*****************************************************************************
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 6fe2d03..e8f8cee 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -185,6 +185,12 @@ struct ivmd_header {
+ bool amd_iommu_force_isolation __read_mostly;
+ 
+ /*
++ * IOTLB flush list
++ */
++LIST_HEAD(amd_iommu_flush_list);
++spinlock_t amd_iommu_flush_list_lock;
++
++/*
+  * List of protection domains - used during resume
+  */
+ LIST_HEAD(amd_iommu_pd_list);
+@@ -2490,6 +2496,7 @@ static int __init early_amd_iommu_init(void)
+ 	__set_bit(0, amd_iommu_pd_alloc_bitmap);
+ 
+ 	spin_lock_init(&amd_iommu_pd_lock);
++	spin_lock_init(&amd_iommu_flush_list_lock);
+ 
+ 	/*
+ 	 * now the data structures are allocated and basically initialized
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index f6b24c7..c3f4a7e 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -668,6 +668,13 @@ struct iommu_dev_data {
+ extern struct list_head amd_iommu_pd_list;
+ 
+ /*
++ * Declarations for the global flush list to support
++ * iotlb_range_add() and iotlb_sync.
++ */
++extern spinlock_t amd_iommu_flush_list_lock;
++extern struct list_head amd_iommu_flush_list;
++
++/*
+  * Structure defining one entry in the device table
+  */
+ struct dev_table_entry {
 -- 
 1.8.3.1
