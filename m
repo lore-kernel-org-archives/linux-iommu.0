@@ -1,17 +1,16 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 08/13] iommu/rockchip: Control clocks needed to access
-	the IOMMU
-Date: Wed, 31 Jan 2018 07:50:59 -0600
-Message-ID: <CAL_JsqKFW0USD_TgGCO-s4wMBw9O2psToMObjeSEwCNReq-3=w@mail.gmail.com>
-References: <20180124103516.2571-1-jeffy.chen@rock-chips.com>
-	<20180124103516.2571-9-jeffy.chen@rock-chips.com>
-	<20180130170515.3g6wtadqgmehxh5b@rob-hp-laptop>
-	<CAAFQd5A383Ey3Ntg_hcsvzHj2DsSuW6RMQ+kP=LPAZ1YmqjHOg@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu: Fix iommu_unmap and iommu_unmap_fast return
+	type
+Date: Wed, 31 Jan 2018 18:02:47 +0000
+Message-ID: <eaa33cb6-3df0-6f95-59ea-e563076d7f76@arm.com>
+References: <1517363285-89304-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<1517363285-89304-2-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5A383Ey3Ntg_hcsvzHj2DsSuW6RMQ+kP=LPAZ1YmqjHOg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1517363285-89304-2-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,79 +20,162 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 31, 2018 at 1:52 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
-> Hi Rob,
->
-> On Wed, Jan 31, 2018 at 2:05 AM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
->> On Wed, Jan 24, 2018 at 06:35:11PM +0800, Jeffy Chen wrote:
->>> From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->>>
->>> Current code relies on master driver enabling necessary clocks before
->>> IOMMU is accessed, however there are cases when the IOMMU should be
->>> accessed while the master is not running yet, for example allocating
->>> V4L2 videobuf2 buffers, which is done by the VB2 framework using DMA
->>> mapping API and doesn't engage the master driver at all.
->>>
->>> This patch fixes the problem by letting clocks needed for IOMMU
->>> operation to be listed in Device Tree and making the driver enable them
->>> for the time of accessing the hardware.
->>>
->>> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->>> ---
->>>
->>> Changes in v5:
->>> Use clk_bulk APIs.
->>>
->>> Changes in v4: None
->>> Changes in v3: None
->>> Changes in v2: None
->>>
->>>  .../devicetree/bindings/iommu/rockchip,iommu.txt   |  8 +++
->>
->> Please split binding patches to a separate patch.
->>
->>>  drivers/iommu/rockchip-iommu.c                     | 74 ++++++++++++++++++++--
->>>  2 files changed, 76 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->>> index 2098f7732264..33dd853359fa 100644
->>> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->>> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->>> @@ -14,6 +14,13 @@ Required properties:
->>>                      "single-master" device, and needs no additional information
->>>                      to associate with its master device.  See:
->>>                      Documentation/devicetree/bindings/iommu/iommu.txt
->>> +Optional properties:
->>> +- clocks : A list of master clocks requires for the IOMMU to be accessible
->>> +           by the host CPU. The number of clocks depends on the master
->>> +           block and might as well be zero. See [1] for generic clock
->>> +           bindings description.
->>
->> Hardware blocks don't have a variable number of clock connections.
->
-> I think you underestimate the imagination of hardware designers. :)
+Hi Suravee,
 
-Learned long ago to never do that. If there are 2 ways to do
-something, they will find a 3rd way.
+On 31/01/18 01:48, Suravee Suthikulpanit wrote:
+> Currently, iommu_unmap and iommu_unmap_fast return unmapped
+> pages with size_t.  However, the actual value returned could
+> be error codes (< 0), which can be misinterpreted as large
+> number of unmapped pages. Therefore, change the return type to ssize_t.
+> 
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> ---
+>   drivers/iommu/amd_iommu.c   |  6 +++---
+>   drivers/iommu/intel-iommu.c |  4 ++--
 
-> For Rockchip IOMMU, there is a set of clocks, which all need to be
-> enabled for IOMMU register access to succeed. The clocks are not
-> directly fed to the IOMMU, but they are needed for the various buses
-> and intermediate blocks on the way to the IOMMU to work.
+Er, there are a few more drivers than that implementing iommu_ops ;)
 
-The binding should describe the clock connections, not what clocks a
-driver needs (currently). It sounds like a lack of managing bus clocks
-to me.
+It seems like it might be more sensible to fix the single instance of a 
+driver returning -EINVAL (which appears to be a "should never happen if 
+used correctly" kinda thing anyway) and leave the API-internal callback 
+prototype as-is. I do agree the inconsistency of iommu_unmap() itself 
+wants sorting, though (particularly the !IOMMU_API stubs which are wrong 
+either way).
 
-In any case, the binding must be written so it can be verified. If you
-can have any number of clocks with any names, there's no point in
-documenting.
+Robin.
 
-Rob
+>   drivers/iommu/iommu.c       | 16 ++++++++--------
+>   include/linux/iommu.h       | 20 ++++++++++----------
+>   4 files changed, 23 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 7d5eb00..3609f51 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -3030,11 +3030,11 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+>   	return ret;
+>   }
+>   
+> -static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+> -			   size_t page_size)
+> +static ssize_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+> +			       size_t page_size)
+>   {
+>   	struct protection_domain *domain = to_pdomain(dom);
+> -	size_t unmap_size;
+> +	ssize_t unmap_size;
+>   
+>   	if (domain->mode == PAGE_MODE_NONE)
+>   		return -EINVAL;
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 4a2de34..15ba866 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5068,8 +5068,8 @@ static int intel_iommu_map(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   
+> -static size_t intel_iommu_unmap(struct iommu_domain *domain,
+> -				unsigned long iova, size_t size)
+> +static ssize_t intel_iommu_unmap(struct iommu_domain *domain,
+> +				 unsigned long iova, size_t size)
+>   {
+>   	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>   	struct page *freelist = NULL;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3de5c0b..8f7da8a 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1557,12 +1557,12 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_map);
+>   
+> -static size_t __iommu_unmap(struct iommu_domain *domain,
+> -			    unsigned long iova, size_t size,
+> -			    bool sync)
+> +static ssize_t __iommu_unmap(struct iommu_domain *domain,
+> +			     unsigned long iova, size_t size,
+> +			     bool sync)
+>   {
+>   	const struct iommu_ops *ops = domain->ops;
+> -	size_t unmapped_page, unmapped = 0;
+> +	ssize_t unmapped_page, unmapped = 0;
+>   	unsigned long orig_iova = iova;
+>   	unsigned int min_pagesz;
+>   
+> @@ -1617,15 +1617,15 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+>   	return unmapped;
+>   }
+>   
+> -size_t iommu_unmap(struct iommu_domain *domain,
+> -		   unsigned long iova, size_t size)
+> +ssize_t iommu_unmap(struct iommu_domain *domain,
+> +		    unsigned long iova, size_t size)
+>   {
+>   	return __iommu_unmap(domain, iova, size, true);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_unmap);
+>   
+> -size_t iommu_unmap_fast(struct iommu_domain *domain,
+> -			unsigned long iova, size_t size)
+> +ssize_t iommu_unmap_fast(struct iommu_domain *domain,
+> +			 unsigned long iova, size_t size)
+>   {
+>   	return __iommu_unmap(domain, iova, size, false);
+>   }
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 41b8c57..78df048 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -199,8 +199,8 @@ struct iommu_ops {
+>   	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+>   	int (*map)(struct iommu_domain *domain, unsigned long iova,
+>   		   phys_addr_t paddr, size_t size, int prot);
+> -	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+> -		     size_t size);
+> +	ssize_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+> +			 size_t size);
+>   	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
+>   			 struct scatterlist *sg, unsigned int nents, int prot);
+>   	void (*flush_iotlb_all)(struct iommu_domain *domain);
+> @@ -299,10 +299,10 @@ extern void iommu_detach_device(struct iommu_domain *domain,
+>   extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+>   extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   		     phys_addr_t paddr, size_t size, int prot);
+> -extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+> -			  size_t size);
+> -extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+> -			       unsigned long iova, size_t size);
+> +extern ssize_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+> +			   size_t size);
+> +extern ssize_t iommu_unmap_fast(struct iommu_domain *domain,
+> +				unsigned long iova, size_t size);
+>   extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+>   				struct scatterlist *sg,unsigned int nents,
+>   				int prot);
+> @@ -465,14 +465,14 @@ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   	return -ENODEV;
+>   }
+>   
+> -static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+> -			      size_t size)
+> +static inline ssize_t iommu_unmap(struct iommu_domain *domain,
+> +				  unsigned long iova, size_t size)
+>   {
+>   	return -ENODEV;
+>   }
+>   
+> -static inline int iommu_unmap_fast(struct iommu_domain *domain, unsigned long iova,
+> -				   int gfp_order)
+> +static inline ssize_t iommu_unmap_fast(struct iommu_domain *domain,
+> +				       unsigned long iova, int gfp_order)
+>   {
+>   	return -ENODEV;
+>   }
+> 
