@@ -1,157 +1,45 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon
-	161010801 erratum(reserve HW MSI)
-Date: Wed, 31 Jan 2018 09:30:47 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA8386406AF@FRAEML521-MBX.china.huawei.com>
-References: <20171214160957.13716-1-shameerali.kolothum.thodi@huawei.com>
-	<20180129153939.GC24972@arm.com>
-	<5FC3163CFD30C246ABAA99954A238FA83863FC88@FRAEML521-MBX.china.huawei.com>
-	<20180129162109.GA25266@arm.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v6 5/6] iommu/arm-smmu: Add support for qcom,
+ smmu-v2 variant
+Date: Wed, 31 Jan 2018 17:30:34 +0530
+Message-ID: <794c2b00-4430-1f82-01d2-cecd6df7b223@codeaurora.org>
+References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1516362223-22946-6-git-send-email-vivek.gautam@codeaurora.org>
+ <20180129194251.3iypqdd4tz7zti6w@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20180129194251.3iypqdd4tz7zti6w@rob-hp-laptop>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xuwei (O)" <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Guohanjun (Hanjun
-	Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-> -----Original Message-----
-> From: Shameerali Kolothum Thodi
-> Sent: Monday, January 29, 2018 4:42 PM
-> To: 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>; Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org;
-> marc.zyngier-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; John Garry
-> <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; xuwei (O) <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Guohanjun
-> (Hanjun Guo) <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> Subject: RE: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon
-> 161010801 erratum(reserve HW MSI)
-> 
-> Hi Joerg,
-> 
-> > -----Original Message-----
-> > From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
-> > Sent: Monday, January 29, 2018 4:21 PM
-> > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org;
-> > marc.zyngier-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; John Garry
-> > <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; xuwei (O) <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Guohanjun
-> > (Hanjun Guo) <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > Subject: Re: [PATCH v12 0/3] iommu/smmu-v3: Workaround for hisilicon
-> > 161010801 erratum(reserve HW MSI)
-> >
-> > On Mon, Jan 29, 2018 at 04:16:33PM +0000, Shameerali Kolothum Thodi
-> wrote:
-> > > > -----Original Message-----
-> > > > From: Will Deacon [mailto:will.deacon-5wv7dgnIgG8@public.gmane.org]
-> > > > Sent: Monday, January 29, 2018 3:40 PM
-> > > > To: Shameerali Kolothum Thodi
-> > > > <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > > > Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org;
-> > > > marc.zyngier-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; John Garry
-> > > > <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; xuwei (O) <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
-> Guohanjun
-> > > > (Hanjun Guo) <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > foundation.org;
-> > > > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > > devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > > > Subject: Re: [PATCH v12 0/3] iommu/smmu-v3: Workaround for
-> > > > hisilicon
-> > > > 161010801 erratum(reserve HW MSI)
-> > > > On Thu, Dec 14, 2017 at 04:09:54PM +0000, Shameer Kolothum wrote:
-> > > > > On certain HiSilicon platforms (hip06/hip07) the GIC ITS and
-> > > > > PCIe RC deviates from the standard implementation and this
-> > > > > breaks PCIe MSI functionality when SMMU is enabled.
-> > > > >
-> > > > > The HiSilicon erratum 161010801 describes this limitation of
-> > > > > certain HiSilicon platforms to support the SMMU mappings for MSI
-> transactions.
-> > > > > On these platforms GICv3 ITS translator is presented with the
-> > > > > deviceID by extending the MSI payload data to 64 bits to include the
-> deviceID.
-> > > > > Hence, the PCIe controller on this platforms has to
-> > > > > differentiate the MSI payload against other DMA payload and has
-> > > > > to modify the MSI
-> > payload.
-> > > > > This basically makes it difficult for this platforms to have a
-> > > > > SMMU translation for MSI.
-> > > > >
-> > > > > This patch implements an ACPI based quirk to reserve the hw msi
-> > > > > regions in the smmu-v3 driver which means these address regions
-> > > > > will not be translated and will be excluded from iova allocations.
-> > > > >
-> > > > > To implement this quirk, the following changes are incorporated:
-> > > > > 1. Added a generic helper function to IORT code to retrieve and reserve
-> > > > >    the associated ITS base address from a device IORT node. The function
-> > > > >    has a check for smmu model to determine whether the platform
-> > requires
-> > > > >    the HW MSI reservation or not.
-> > > > > 2. Added smmu node entries and explicitly disabled them in hip06/hip07
-> > > > >     dts files so that users are warned about the non-DT support for this
-> > > > >     erratum.
-> > > >
-> > > > [...]
-> > > >
-> > > > >  arch/arm64/boot/dts/hisilicon/hip06.dtsi |  56 ++++++++++++++++
-> > > > > arch/arm64/boot/dts/hisilicon/hip07.dtsi |  25 +++++++
-> > > > >  drivers/acpi/arm64/iort.c                | 111
-> > > > ++++++++++++++++++++++++++++++-
-> > > > >  drivers/iommu/dma-iommu.c                |   8 ++-
-> > > > >  drivers/irqchip/irq-gic-v3-its.c         |   3 +-
-> > > > >  include/linux/acpi_iort.h                |   7 +-
-> > > > >  6 files changed, 204 insertions(+), 6 deletions(-)
-> > > >
-> > > > It occurred to me this morning that this series probably isn't
-> > > > queued
-> > anywhere
-> > > > because it's not obvious which tree is supposed to take it and I
-> > > > can't see it in
-> > -
-> > > > next.
-> > > >
-> > > > Is this one for arm64, IOMMU, irqchip or something else? It's
-> > > > probably
-> > missed
-> > > > the boat for 4.16 now...
-> > > >
-> > >
-> > > I have been trying to ping you guys on this[1]. My expectation was
-> > > that it will
-> > be
-> > > through IOMMU. Anyway missed the boat now, I will re-spin for 4.17.
-> >
-> > The problem with "ping" emails is that they don't really mean
-> > anything. In this case, everybody probably assumed somebody else was
-> > picking it up so you didn't get a reply.
-> >
-> > Joerg may be ok pulling this, but it's odd to have dts changes going
-> > via his tree. You might want to split those out, at least. Talk to him.
-> >
-> 
-> This series has all the necessary ACKs from all concerned and as mentioned
-> above somehow created a confusion regarding the pull request. My apologies.
-> 
-> Could you please take a look and send out a pull request, if it is ok.
-> 
-
-Not sure you got a chance to go through this and sorry for asking again.
-Please let me know if you can pull this still or it's too late for now.
-
-Thanks,
-Shameer
+CgpPbiAxLzMwLzIwMTggMToxMiBBTSwgUm9iIEhlcnJpbmcgd3JvdGU6Cj4gT24gRnJpLCBKYW4g
+MTksIDIwMTggYXQgMDU6MTM6NDJQTSArMDUzMCwgVml2ZWsgR2F1dGFtIHdyb3RlOgo+PiBxY29t
+LHNtbXUtdjIgaXMgYW4gYXJtLHNtbXUtdjIgaW1wbGVtZW50YXRpb24gd2l0aCBzcGVjaWZpYwo+
+PiBjbG9jayBhbmQgcG93ZXIgcmVxdWlyZW1lbnRzLiBUaGlzIHNtbXUgY29yZSBpcyB1c2VkIHdp
+dGgKPj4gbXVsdGlwbGUgbWFzdGVycyBvbiBtc204OTk2LCB2aXouIG1kc3MsIHZpZGVvLCBldGMu
+Cj4+IEFkZCBiaW5kaW5ncyBmb3IgdGhlIHNhbWUuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IFZpdmVr
+IEdhdXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPgo+PiAtLS0KPj4gICAuLi4vZGV2
+aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQgICAgICAgICB8IDQzICsrKysrKysr
+KysrKysrKysrKysrKysKPj4gICBkcml2ZXJzL2lvbW11L2FybS1zbW11LmMgICAgICAgICAgICAg
+ICAgICAgICAgICAgICB8IDEzICsrKysrKysKPj4gICAyIGZpbGVzIGNoYW5nZWQsIDU2IGluc2Vy
+dGlvbnMoKykKPiBSZXZpZXdlZC1ieTogUm9iIEhlcnJpbmcgPHJvYmhAa2VybmVsLm9yZz4KClRo
+YW5rcyBSb2IuCgo+IC0tCj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhl
+IGxpbmUgInVuc3Vic2NyaWJlIGxpbnV4LWFybS1tc20iIGluCj4gdGhlIGJvZHkgb2YgYSBtZXNz
+YWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcKPiBNb3JlIG1ham9yZG9tbyBpbmZvIGF0
+ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwKCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxp
+c3QKRnJlZWRyZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
+dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
