@@ -1,50 +1,114 @@
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 11/13] drm/amdgpu: add DRM_AMDGPU_ATC config option
-Date: Wed, 31 Jan 2018 14:04:17 +0100
-Message-ID: <6b19483a-79f3-e5e0-307f-ead73b4e2b7a@amd.com>
-References: <20180126201326.8829-1-christian.koenig@amd.com>
-	<20180126201326.8829-11-christian.koenig@amd.com>
-	<6cf4bd37-fbf1-1fb4-496a-d62e403aea6f@amd.com>
-	<7ebabb2b-1b18-8c7b-626f-d6874bdaac80@gmail.com>
-	<c39b444b-49a1-771a-65ba-ae37ba643673@amd.com>
-	<CAFCwf12ho2gXrBUHtaKRV-mX2kRk45xeu2o=F0-=Q+GFkAs=RA@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v6 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
+ add/remove device
+Date: Wed, 31 Jan 2018 13:06:37 +0000
+Message-ID: <5367e45a-8406-6dd2-1eb8-e1de9095af1a@arm.com>
+References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1516362223-22946-4-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAFCwf12ho2gXrBUHtaKRV-mX2kRk45xeu2o=F0-=Q+GFkAs=RA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Felix Kuehling <felix.kuehling-5C7GfCeVMHo@public.gmane.org>, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx list <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1516362223-22946-4-git-send-email-vivek.gautam@codeaurora.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>, alex.williamson@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, rjw@rjwysocki.net, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, sboyd@codeaurora.org
+Cc: gregkh@linuxfoundation.org, sricharan@codeaurora.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-Adding Jean and the IOMMU list as well.
-
-Am 31.01.2018 um 13:43 schrieb Oded Gabbay:
-> On Tue, Jan 30, 2018 at 6:53 PM, Felix Kuehling <felix.kuehling-5C7GfCeVMHo@public.gmane.org> wrote:
->> [SNIP]
-> There was some discussion last year about a generic PASID allocator in
-> the iommu subsystem:
-> https://lists.linuxfoundation.org/pipermail/iommu/2017-June/022159.html
->
-> Unfortunately, I don't think it got any further then that.
-
-Yeah, that sounds exactly like what I had in mind as well.
-
-Jean any updates on that topic? We are rather interested in common PASID 
-handling as well.
-
-Anybody already working on this? Sounds mostly like moving code around 
-and creating a common interface.
-
-Thanks,
-Christian.
+T24gMTkvMDEvMTggMTE6NDMsIFZpdmVrIEdhdXRhbSB3cm90ZToKPiBGcm9tOiBTcmljaGFyYW4g
+UiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+IAo+IFRoZSBzbW11IGRldmljZSBwcm9iZS9y
+ZW1vdmUgYW5kIGFkZC9yZW1vdmUgbWFzdGVyIGRldmljZSBjYWxsYmFja3MKPiBnZXRzIGNhbGxl
+ZCB3aGVuIHRoZSBzbW11IGlzIG5vdCBsaW5rZWQgdG8gaXRzIG1hc3RlciwgdGhhdCBpcyB3aXRo
+b3V0Cj4gdGhlIGNvbnRleHQgb2YgdGhlIG1hc3RlciBkZXZpY2UuIFNvIGNhbGxpbmcgcnVudGlt
+ZSBhcGlzIGluIHRob3NlIHBsYWNlcwo+IHNlcGFyYXRlbHkuCj4gCj4gU2lnbmVkLW9mZi1ieTog
+U3JpY2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiBbdml2ZWs6IENsZWFudXAg
+cG0gcnVudGltZSBjYWxsc10KPiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdh
+dXRhbUBjb2RlYXVyb3JhLm9yZz4KPiAtLS0KPiAgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8
+IDQ1ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLQo+ICAgMSBm
+aWxlIGNoYW5nZWQsIDQxIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUu
+Ywo+IGluZGV4IDIxYWNmZmU5MWExYy4uOTU0NzhiZmIxODJjIDEwMDY0NAo+IC0tLSBhL2RyaXZl
+cnMvaW9tbXUvYXJtLXNtbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IEBA
+IC05MTQsMTEgKzkxNCwxNSBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV9kZXN0cm95X2RvbWFpbl9j
+b250ZXh0KHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbikKPiAgIAlzdHJ1Y3QgYXJtX3NtbXVf
+ZG9tYWluICpzbW11X2RvbWFpbiA9IHRvX3NtbXVfZG9tYWluKGRvbWFpbik7Cj4gICAJc3RydWN0
+IGFybV9zbW11X2RldmljZSAqc21tdSA9IHNtbXVfZG9tYWluLT5zbW11Owo+ICAgCXN0cnVjdCBh
+cm1fc21tdV9jZmcgKmNmZyA9ICZzbW11X2RvbWFpbi0+Y2ZnOwo+IC0JaW50IGlycTsKPiArCWlu
+dCByZXQsIGlycTsKPiAgIAo+ICAgCWlmICghc21tdSB8fCBkb21haW4tPnR5cGUgPT0gSU9NTVVf
+RE9NQUlOX0lERU5USVRZKQo+ICAgCQlyZXR1cm47Cj4gICAKPiArCXJldCA9IHBtX3J1bnRpbWVf
+Z2V0X3N5bmMoc21tdS0+ZGV2KTsKPiArCWlmIChyZXQpCj4gKwkJcmV0dXJuOwo+ICsKPiAgIAkv
+Kgo+ICAgCSAqIERpc2FibGUgdGhlIGNvbnRleHQgYmFuayBhbmQgZnJlZSB0aGUgcGFnZSB0YWJs
+ZXMgYmVmb3JlIGZyZWVpbmcKPiAgIAkgKiBpdC4KPiBAQCAtOTMzLDYgKzkzNyw4IEBAIHN0YXRp
+YyB2b2lkIGFybV9zbW11X2Rlc3Ryb3lfZG9tYWluX2NvbnRleHQoc3RydWN0IGlvbW11X2RvbWFp
+biAqZG9tYWluKQo+ICAgCj4gICAJZnJlZV9pb19wZ3RhYmxlX29wcyhzbW11X2RvbWFpbi0+cGd0
+Ymxfb3BzKTsKPiAgIAlfX2FybV9zbW11X2ZyZWVfYml0bWFwKHNtbXUtPmNvbnRleHRfbWFwLCBj
+ZmctPmNibmR4KTsKPiArCj4gKwlwbV9ydW50aW1lX3B1dF9zeW5jKHNtbXUtPmRldik7Cj4gICB9
+Cj4gICAKPiAgIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICphcm1fc21tdV9kb21haW5fYWxs
+b2ModW5zaWduZWQgdHlwZSkKPiBAQCAtMTQwOCwxMiArMTQxNCwyMCBAQCBzdGF0aWMgaW50IGFy
+bV9zbW11X2FkZF9kZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2KQo+ICAgCXdoaWxlIChpLS0pCj4g
+ICAJCWNmZy0+c21lbmR4W2ldID0gSU5WQUxJRF9TTUVORFg7Cj4gICAKPiAtCXJldCA9IGFybV9z
+bW11X21hc3Rlcl9hbGxvY19zbWVzKGRldik7Cj4gKwlyZXQgPSBwbV9ydW50aW1lX2dldF9zeW5j
+KHNtbXUtPmRldik7Cj4gICAJaWYgKHJldCkKPiAgIAkJZ290byBvdXRfY2ZnX2ZyZWU7Cj4gICAK
+PiArCXJldCA9IGFybV9zbW11X21hc3Rlcl9hbGxvY19zbWVzKGRldik7Cj4gKwlpZiAocmV0KSB7
+Cj4gKwkJcG1fcnVudGltZV9wdXRfc3luYyhzbW11LT5kZXYpOwo+ICsJCWdvdG8gb3V0X2NmZ19m
+cmVlOwoKUGxlYXNlIGtlZXAgdG8gdGhlIGV4aXN0aW5nIHBhdHRlcm4gYW5kIHB1dCB0aGlzIG9u
+IHRoZSBjbGVhbnVwIHBhdGggCndpdGggYSBuZXcgbGFiZWwsIHJhdGhlciB0aGFuIGlubGluZS4K
+Cj4gKwl9Cj4gKwo+ICAgCWlvbW11X2RldmljZV9saW5rKCZzbW11LT5pb21tdSwgZGV2KTsKPiAg
+IAo+ICsJcG1fcnVudGltZV9wdXRfc3luYyhzbW11LT5kZXYpOwo+ICsKPiAgIAlyZXR1cm4gMDsK
+PiAgIAo+ICAgb3V0X2NmZ19mcmVlOgo+IEBAIC0xNDI4LDcgKzE0NDIsNyBAQCBzdGF0aWMgdm9p
+ZCBhcm1fc21tdV9yZW1vdmVfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldikKPiAgIAlzdHJ1Y3Qg
+aW9tbXVfZndzcGVjICpmd3NwZWMgPSBkZXYtPmlvbW11X2Z3c3BlYzsKPiAgIAlzdHJ1Y3QgYXJt
+X3NtbXVfbWFzdGVyX2NmZyAqY2ZnOwo+ICAgCXN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXU7
+Cj4gLQo+ICsJaW50IHJldDsKPiAgIAo+ICAgCWlmICghZndzcGVjIHx8IGZ3c3BlYy0+b3BzICE9
+ICZhcm1fc21tdV9vcHMpCj4gICAJCXJldHVybjsKPiBAQCAtMTQzNiw4ICsxNDUwLDIxIEBAIHN0
+YXRpYyB2b2lkIGFybV9zbW11X3JlbW92ZV9kZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2KQo+ICAg
+CWNmZyAgPSBmd3NwZWMtPmlvbW11X3ByaXY7Cj4gICAJc21tdSA9IGNmZy0+c21tdTsKPiAgIAo+
+ICsJLyoKPiArCSAqIFRoZSBkZXZpY2UgbGluayBiZXR3ZWVuIHRoZSBtYXN0ZXIgZGV2aWNlIGFu
+ZAo+ICsJICogc21tdSBpcyBhbHJlYWR5IHB1cmdlZCBhdCB0aGlzIHBvaW50Lgo+ICsJICogU28g
+ZW5hYmxlIHRoZSBwb3dlciB0byBzbW11IGV4cGxpY2l0bHkuCj4gKwkgKi8KCkkgZG9uJ3QgdW5k
+ZXJzdGFuZCB0aGlzIGNvbW1lbnQsIGVzcGVjaWFsbHkgc2luY2Ugd2UgZG9uJ3QgZXZlbiAKaW50
+cm9kdWNlIGRldmljZSBsaW5rcyB1bnRpbCB0aGUgZm9sbG93aW5nIHBhdGNoLi4uIDovCgo+ICsK
+PiArCXJldCA9IHBtX3J1bnRpbWVfZ2V0X3N5bmMoc21tdS0+ZGV2KTsKPiArCWlmIChyZXQpCj4g
+KwkJcmV0dXJuOwo+ICsKPiAgIAlpb21tdV9kZXZpY2VfdW5saW5rKCZzbW11LT5pb21tdSwgZGV2
+KTsKPiAgIAlhcm1fc21tdV9tYXN0ZXJfZnJlZV9zbWVzKGZ3c3BlYyk7Cj4gKwo+ICsJcG1fcnVu
+dGltZV9wdXRfc3luYyhzbW11LT5kZXYpOwo+ICsKPiAgIAlpb21tdV9ncm91cF9yZW1vdmVfZGV2
+aWNlKGRldik7Cj4gICAJa2ZyZWUoZndzcGVjLT5pb21tdV9wcml2KTsKPiAgIAlpb21tdV9md3Nw
+ZWNfZnJlZShkZXYpOwo+IEBAIC0yMTMwLDYgKzIxNTcsMTQgQEAgc3RhdGljIGludCBhcm1fc21t
+dV9kZXZpY2VfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgIAlpZiAoZXJy
+KQo+ICAgCQlyZXR1cm4gZXJyOwo+ICAgCj4gKwlwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBz
+bW11KTsKPiArCj4gKwlwbV9ydW50aW1lX2VuYWJsZShkZXYpOwo+ICsKPiArCWVyciA9IHBtX3J1
+bnRpbWVfZ2V0X3N5bmMoZGV2KTsKPiArCWlmIChlcnIpCj4gKwkJcmV0dXJuIGVycjsKPiArCj4g
+ICAJZXJyID0gYXJtX3NtbXVfZGV2aWNlX2NmZ19wcm9iZShzbW11KTsKPiAgIAlpZiAoZXJyKQo+
+ICAgCQlyZXR1cm4gZXJyOwo+IEBAIC0yMTcxLDkgKzIyMDYsOSBAQCBzdGF0aWMgaW50IGFybV9z
+bW11X2RldmljZV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ICAgCQlyZXR1
+cm4gZXJyOwo+ICAgCX0KPiAgIAo+IC0JcGxhdGZvcm1fc2V0X2RydmRhdGEocGRldiwgc21tdSk7
+Cj4gICAJYXJtX3NtbXVfZGV2aWNlX3Jlc2V0KHNtbXUpOwo+ICAgCWFybV9zbW11X3Rlc3Rfc21y
+X21hc2tzKHNtbXUpOwo+ICsJcG1fcnVudGltZV9wdXRfc3luYyhkZXYpOwo+ICAgCj4gICAJLyoK
+PiAgIAkgKiBGb3IgQUNQSSBhbmQgZ2VuZXJpYyBEVCBiaW5kaW5ncywgYW4gU01NVSB3aWxsIGJl
+IHByb2JlZCBiZWZvcmUKPiBAQCAtMjIxMiw2ICsyMjQ3LDggQEAgc3RhdGljIGludCBhcm1fc21t
+dV9kZXZpY2VfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gICAKPiAgIAkv
+KiBUdXJuIHRoZSB0aGluZyBvZmYgKi8KPiAgIAl3cml0ZWwoc0NSMF9DTElFTlRQRCwgQVJNX1NN
+TVVfR1IwX05TKHNtbXUpICsgQVJNX1NNTVVfR1IwX3NDUjApOwo+ICsJcG1fcnVudGltZV9mb3Jj
+ZV9zdXNwZW5kKHNtbXUtPmRldik7CgpXaHkgZG8gd2UgbmVlZCB0aGlzPyBJIGd1ZXNzIGl0IG1p
+Z2h0IGJlIGEgUXVhbGNvbW0taXNtIGFzIEkgZG9uJ3Qgc2VlIAphbnlvbmUgZWxzZSBjYWxsaW5n
+IGl0IGZyb20gLnJlbW92ZSBvdGhlciB0aGFuIGEgY291cGxlIG9mIG90aGVyIHFjb21fKiAKZHJp
+dmVycy4gR2l2ZW4gdGhhdCB3ZSBvbmx5IGdldCBoZXJlIGR1cmluZyBzeXN0ZW0gc2h1dGRvd24g
+KG9yIHRoZSByb290IAp1c2VyIGludGVudGlvbmFsbHkgcGlzc2luZyBhYm91dCB3aXRoIGRyaXZl
+ciB1bmJpbmRpbmcpLCBpdCBkb2Vzbid0IHNlZW0gCmxpa2UgYSBwb2ludCB3aGVyZSBwb3dlciBz
+YXZpbmcgcmVhbGx5IG1hdHRlcnMgYWxsIHRoYXQgbXVjaC4KCkknZCBhbHNvIG5haXZlbHkgZXhw
+ZWN0IHRoYXQgYW55dGhpbmcgdGhpcyBkZXZpY2Ugd2FzIHRoZSBsYXN0IGNvbnN1bWVyIApvZmYg
+d291bGQgZ2V0IHR1cm5lZCBvZmYgYnkgY29yZSBjb2RlIGFueXdheSBvbmNlIGl0J3MgcmVtb3Zl
+ZCwgYnV0IAptYXliZSB0aGluZ3MgYXJlbid0IHRoYXQgc2xpY2s7IEkgZHVubm8gOi8KClJvYmlu
+LgoKPiArCj4gICAJcmV0dXJuIDA7Cj4gICB9Cj4gICAKPiAKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2
+ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21h
+aWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
