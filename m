@@ -1,64 +1,46 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v6 4/6] iommu/arm-smmu: Add the device_link
- between masters and smmu
-Date: Thu, 1 Feb 2018 14:23:11 +0530
-Message-ID: <b7887b45-774a-2515-4304-227037b9af1f@codeaurora.org>
-References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
- <1516362223-22946-5-git-send-email-vivek.gautam@codeaurora.org>
- <6b930150-cb81-b0a5-601c-16cb576c4341@arm.com>
+From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Preferred method to detect if a device is behind an enabled iommu.
+Date: Thu, 1 Feb 2018 10:18:21 +0000
+Message-ID: <20180201101821.00006a16@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <6b930150-cb81-b0a5-601c-16cb576c4341-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgoKT24gMS8zMS8yMDE4IDY6MzkgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAxOS8w
-MS8xOCAxMTo0MywgVml2ZWsgR2F1dGFtIHdyb3RlOgo+PiBGcm9tOiBTcmljaGFyYW4gUiA8c3Jp
-Y2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pgo+PiBGaW5hbGx5IGFkZCB0aGUgZGV2aWNlIGxpbmsg
-YmV0d2VlbiB0aGUgbWFzdGVyIGRldmljZSBhbmQKPj4gc21tdSwgc28gdGhhdCB0aGUgc21tdSBn
-ZXRzIHJ1bnRpbWUgZW5hYmxlZC9kaXNhYmxlZCBvbmx5IHdoZW4gdGhlCj4+IG1hc3RlciBuZWVk
-cyBpdC4gVGhpcyBpcyBkb25lIGZyb20gYWRkX2RldmljZSBjYWxsYmFjayB3aGljaCBnZXRzCj4+
-IGNhbGxlZCBvbmNlIHdoZW4gdGhlIG1hc3RlciBpcyBhZGRlZCB0byB0aGUgc21tdS4KPgo+IERv
-bid0IHdlIG5lZWQgdG8gYmFsYW5jZSB0aGlzIHdpdGggYSBkZXZpY2VfbGlua19kZWwoKSBpbiAK
-PiAucmVtb3ZlX2RldmljZSAobGlrZSBleHlub3MtaW9tbXUgZG9lcyk/CgpSaWdodC4gV2lsbCBh
-ZGQgZGV2aWNlX2xpbmtfZGVsKCkgY2FsbC4gVGhhbmtzIGZvciBwb2ludGluZyBvdXQuCgpyZWdh
-cmRzClZpdmVrCgo+Cj4gUm9iaW4uCj4KPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIgPHNy
-aWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPj4gLS0tCj4+IMKgIGRyaXZlcnMvaW9tbXUvYXJtLXNt
-bXUuYyB8IDExICsrKysrKysrKysrCj4+IMKgIDEgZmlsZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25z
-KCspCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMgYi9kcml2ZXJz
-L2lvbW11L2FybS1zbW11LmMKPj4gaW5kZXggOTU0NzhiZmIxODJjLi4zM2JiY2ZlZGI4OTYgMTAw
-NjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+PiArKysgYi9kcml2ZXJzL2lv
-bW11L2FybS1zbW11LmMKPj4gQEAgLTEzNjcsNiArMTM2Nyw3IEBAIHN0YXRpYyBpbnQgYXJtX3Nt
-bXVfYWRkX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+IMKgwqDCoMKgwqAgc3RydWN0IGFy
-bV9zbW11X2RldmljZSAqc21tdTsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfbWFzdGVy
-X2NmZyAqY2ZnOwo+PiDCoMKgwqDCoMKgIHN0cnVjdCBpb21tdV9md3NwZWMgKmZ3c3BlYyA9IGRl
-di0+aW9tbXVfZndzcGVjOwo+PiArwqDCoMKgIHN0cnVjdCBkZXZpY2VfbGluayAqbGluazsKPj4g
-wqDCoMKgwqDCoCBpbnQgaSwgcmV0Owo+PiDCoCDCoMKgwqDCoMKgIGlmICh1c2luZ19sZWdhY3lf
-YmluZGluZykgewo+PiBAQCAtMTQyOCw2ICsxNDI5LDE2IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVf
-YWRkX2RldmljZShzdHJ1Y3QgZGV2aWNlIAo+PiAqZGV2KQo+PiDCoCDCoMKgwqDCoMKgIHBtX3J1
-bnRpbWVfcHV0X3N5bmMoc21tdS0+ZGV2KTsKPj4gwqAgK8KgwqDCoCAvKgo+PiArwqDCoMKgwqAg
-KiBFc3RhYmxpc2ggdGhlIGxpbmsgYmV0d2VlbiBzbW11IGFuZCBtYXN0ZXIsIHNvIHRoYXQgdGhl
-Cj4+ICvCoMKgwqDCoCAqIHNtbXUgZ2V0cyBydW50aW1lIGVuYWJsZWQvZGlzYWJsZWQgYXMgcGVy
-IHRoZSBtYXN0ZXIncwo+PiArwqDCoMKgwqAgKiBuZWVkcy4KPj4gK8KgwqDCoMKgICovCj4+ICvC
-oMKgwqAgbGluayA9IGRldmljZV9saW5rX2FkZChkZXYsIHNtbXUtPmRldiwgRExfRkxBR19QTV9S
-VU5USU1FKTsKPj4gK8KgwqDCoCBpZiAoIWxpbmspCj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfd2Fy
-bihzbW11LT5kZXYsICJVbmFibGUgdG8gY3JlYXRlIGRldmljZSBsaW5rIGJldHdlZW4gJXMgCj4+
-IGFuZCAlc1xuIiwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZXZfbmFtZShzbW11LT5k
-ZXYpLCBkZXZfbmFtZShkZXYpKTsKPj4gKwo+PiDCoMKgwqDCoMKgIHJldHVybiAwOwo+PiDCoCDC
-oCBvdXRfY2ZnX2ZyZWU6Cj4+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9m
-cmVlZHJlbm8K
+Hi All,
+
+We have a crypto accelerator which needs to have a few different settings
+depending on whether or not the SMMUv3 is enabled and translating addresses
+or not.
+
+https://marc.info/?l=linux-crypto-vger&m=151732626428206&w=2
+
+1) A quirk of the hardware revision means we need to turn some elements
+   off if the iommu is enabled.
+2) The device has certain cache related settings that means it needs to know
+   if it is dealing with VAs or PAs.
+
+Current approach is to see if the iommu_group is set in struct device.
+
+We could fine one instance of another driver doing this and copied that,
+(drivers/dma/rcar-dmac.c)
+but the precedence is weak enough that confirmation would be good.
+So whilst it 'works' the question is whether it is safe in general
+and whether there is a better way.
+
+Thanks,
+
+--
+Jonathan Cameron
+Huawei
