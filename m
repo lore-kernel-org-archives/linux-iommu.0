@@ -1,50 +1,174 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH 1/2] iommu: Fix iommu_unmap and iommu_unmap_fast return
- type
-Date: Thu, 1 Feb 2018 12:03:46 +0700
-Message-ID: <de21de51-1589-edb1-3dd1-b7065eb8fb3c@amd.com>
-References: <1517363285-89304-1-git-send-email-suravee.suthikulpanit@amd.com>
- <1517363285-89304-2-git-send-email-suravee.suthikulpanit@amd.com>
- <eaa33cb6-3df0-6f95-59ea-e563076d7f76@arm.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v6 2/6] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Thu, 1 Feb 2018 11:43:57 +0530
+Message-ID: <1bbaff1b-a3db-e9c4-5b32-2792ed6c4952@codeaurora.org>
+References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1516362223-22946-3-git-send-email-vivek.gautam@codeaurora.org>
+ <9942b74d-7437-21cc-cbd7-38f2844c5d1d@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <eaa33cb6-3df0-6f95-59ea-e563076d7f76@arm.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <9942b74d-7437-21cc-cbd7-38f2844c5d1d-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: jroedel@suse.de
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
 
-On 2/1/18 1:02 AM, Robin Murphy wrote:
-> Hi Suravee,
-> 
-> On 31/01/18 01:48, Suravee Suthikulpanit wrote:
->> Currently, iommu_unmap and iommu_unmap_fast return unmapped
->> pages with size_t.  However, the actual value returned could
->> be error codes (< 0), which can be misinterpreted as large
->> number of unmapped pages. Therefore, change the return type to ssize_t.
+
+On 1/31/2018 5:53 PM, Robin Murphy wrote:
+> On 19/01/18 11:43, Vivek Gautam wrote:
+>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 >>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Alex Williamson <alex.williamson@redhat.com>
->> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> The smmu needs to be functional only when the respective
+>> master's using it are active. The device_link feature
+>> helps to track such functional dependencies, so that the
+>> iommu gets powered when the master device enables itself
+>> using pm_runtime. So by adapting the smmu driver for
+>> runtime pm, above said dependency can be addressed.
+>>
+>> This patch adds the pm runtime/sleep callbacks to the
+>> driver and also the functions to parse the smmu clocks
+>> from DT and enable them in resume/suspend.
+>>
+>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> Signed-off-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> [vivek: Clock rework to request bulk of clocks]
+>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 >> ---
->>   drivers/iommu/amd_iommu.c   |  6 +++---
->>   drivers/iommu/intel-iommu.c |  4 ++--
-> 
-> Er, there are a few more drivers than that implementing iommu_ops ;)
+>>   drivers/iommu/arm-smmu.c | 55 
+>> ++++++++++++++++++++++++++++++++++++++++++++++--
+>>   1 file changed, 53 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 78d4c6b8f1ba..21acffe91a1c 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -48,6 +48,7 @@
+>>   #include <linux/of_iommu.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/platform_device.h>
+>> +#include <linux/pm_runtime.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/spinlock.h>
+>>   @@ -205,6 +206,9 @@ struct arm_smmu_device {
+>>       u32                num_global_irqs;
+>>       u32                num_context_irqs;
+>>       unsigned int            *irqs;
+>> +    struct clk_bulk_data        *clocks;
+>> +    int                num_clks;
+>> +    const char * const        *clk_names;
+>
+> This seems unnecessary, as we use it a grand total of of once, during 
+> initialisation when we have the source data directly to hand. Just 
+> pass data->clks into arm_smmu_init_clks() as an additional argument.
 
-Ahh right.
-> 
-> It seems like it might be more sensible to fix the single instance of a driver returning -EINVAL (which appears to be a "should never happen if used correctly" kinda thing anyway) and leave the API-internal callback prototype as-is. I do agree the inconsistency of iommu_unmap() itself wants sorting, though (particularly the !IOMMU_API stubs which are wrong either way).
-> 
+Sure, will do that.
+>
+> Otherwise, I think this looks reasonable; it's about as unobtrusive as 
+> it's going to get.
+
+Thanks for reviewing.
+
+regards
+Vivek
+
+>
 > Robin.
+>
+>>       u32                cavium_id_base; /* Specific to Cavium */
+>>   @@ -1685,6 +1689,25 @@ static int arm_smmu_id_size_to_bits(int size)
+>>       }
+>>   }
+>>   +static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
+>> +{
+>> +    int i;
+>> +    int num = smmu->num_clks;
+>> +
+>> +    if (num < 1)
+>> +        return 0;
+>> +
+>> +    smmu->clocks = devm_kcalloc(smmu->dev, num,
+>> +                    sizeof(*smmu->clocks), GFP_KERNEL);
+>> +    if (!smmu->clocks)
+>> +        return -ENOMEM;
+>> +
+>> +    for (i = 0; i < num; i++)
+>> +        smmu->clocks[i].id = smmu->clk_names[i];
+>> +
+>> +    return devm_clk_bulk_get(smmu->dev, num, smmu->clocks);
+>> +}
+>> +
+>>   static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>>   {
+>>       unsigned long size;
+>> @@ -1897,10 +1920,12 @@ static int arm_smmu_device_cfg_probe(struct 
+>> arm_smmu_device *smmu)
+>>   struct arm_smmu_match_data {
+>>       enum arm_smmu_arch_version version;
+>>       enum arm_smmu_implementation model;
+>> +    const char * const *clks;
+>> +    int num_clks;
+>>   };
+>>     #define ARM_SMMU_MATCH_DATA(name, ver, imp)    \
+>> -static struct arm_smmu_match_data name = { .version = ver, .model = 
+>> imp }
+>> +static const struct arm_smmu_match_data name = { .version = ver, 
+>> .model = imp }
+>>     ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
+>>   ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
+>> @@ -2001,6 +2026,8 @@ static int arm_smmu_device_dt_probe(struct 
+>> platform_device *pdev,
+>>       data = of_device_get_match_data(dev);
+>>       smmu->version = data->version;
+>>       smmu->model = data->model;
+>> +    smmu->clk_names = data->clks;
+>> +    smmu->num_clks = data->num_clks;
+>>         parse_driver_options(smmu);
+>>   @@ -2099,6 +2126,10 @@ static int arm_smmu_device_probe(struct 
+>> platform_device *pdev)
+>>           smmu->irqs[i] = irq;
+>>       }
+>>   +    err = arm_smmu_init_clocks(smmu);
+>> +    if (err)
+>> +        return err;
+>> +
+>>       err = arm_smmu_device_cfg_probe(smmu);
+>>       if (err)
+>>           return err;
+>> @@ -2197,7 +2228,27 @@ static int __maybe_unused 
+>> arm_smmu_pm_resume(struct device *dev)
+>>       return 0;
+>>   }
+>>   -static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
+>> +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
+>> +{
+>> +    struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+>> +
+>> +    return clk_bulk_prepare_enable(smmu->num_clks, smmu->clocks);
+>> +}
+>> +
+>> +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+>> +{
+>> +    struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+>> +
+>> +    clk_bulk_disable_unprepare(smmu->num_clks, smmu->clocks);
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static const struct dev_pm_ops arm_smmu_pm_ops = {
+>> +    SET_SYSTEM_SLEEP_PM_OPS(NULL, arm_smmu_pm_resume)
+>> +    SET_RUNTIME_PM_OPS(arm_smmu_runtime_suspend,
+>> +               arm_smmu_runtime_resume, NULL)
+>> +};
+>>     static struct platform_driver arm_smmu_driver = {
+>>       .driver    = {
+>>
 
-Make sense. I'll leave the API alone, and change the code to not returning error then.
-There are a few places to fix.
-
-Thanks,
-Suravee
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
