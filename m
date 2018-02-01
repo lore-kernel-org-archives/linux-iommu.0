@@ -1,57 +1,50 @@
-From: Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH] iommu/vt-d: add NUMA awareness to intel_alloc_coherent()
-Date: Wed, 31 Jan 2018 17:46:15 -0800
-Message-ID: <1517449575.3715.113.camel@gmail.com>
-References: <1517438756.3715.108.camel@gmail.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH 1/2] iommu: Fix iommu_unmap and iommu_unmap_fast return
+ type
+Date: Thu, 1 Feb 2018 12:03:46 +0700
+Message-ID: <de21de51-1589-edb1-3dd1-b7065eb8fb3c@amd.com>
+References: <1517363285-89304-1-git-send-email-suravee.suthikulpanit@amd.com>
+ <1517363285-89304-2-git-send-email-suravee.suthikulpanit@amd.com>
+ <eaa33cb6-3df0-6f95-59ea-e563076d7f76@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1517438756.3715.108.camel@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Benjamin Serebrin <serebrin@google.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <eaa33cb6-3df0-6f95-59ea-e563076d7f76@arm.com>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2018-01-31 at 14:45 -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Some devices (like mlx4) try hard to allocate memory on selected
-> NUMA node, but it turns out intel_alloc_coherent() is not NUMA
-> aware yet.
-> 
-> Note that dma_generic_alloc_coherent() in arch/x86/kernel/pci-dma.c
-> gets this right.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Benjamin Serebrin <serebrin@google.com>
-> Cc: David Woodhouse <dwmw2@infradead.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> ---
->  drivers/iommu/intel-iommu.c |    7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index a1373cf343269455808f66ad18dc0a2fb7aa73f2..0efef077abc099eb29ebc5cefdd1b996f025dffd 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -3734,8 +3734,11 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
->  		}
->  	}
->  
-> -	if (!page)
-> -		page = alloc_pages(flags, order);
-> +	if (!page) {
-> +		page = alloc_pages_node(dev_to_node(dev), flags, order);
-> +		if (!page)
-> +			page = alloc_pages(flags, order);
+Hi Robin,
 
-I'll send a V2 without the fallback to alloc_pages()
+On 2/1/18 1:02 AM, Robin Murphy wrote:
+> Hi Suravee,
+> 
+> On 31/01/18 01:48, Suravee Suthikulpanit wrote:
+>> Currently, iommu_unmap and iommu_unmap_fast return unmapped
+>> pages with size_t.  However, the actual value returned could
+>> be error codes (< 0), which can be misinterpreted as large
+>> number of unmapped pages. Therefore, change the return type to ssize_t.
+>>
+>> Cc: Joerg Roedel <joro@8bytes.org>
+>> Cc: Alex Williamson <alex.williamson@redhat.com>
+>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> ---
+>>   drivers/iommu/amd_iommu.c   |  6 +++---
+>>   drivers/iommu/intel-iommu.c |  4 ++--
+> 
+> Er, there are a few more drivers than that implementing iommu_ops ;)
 
-This seems not necessary at all.
+Ahh right.
+> 
+> It seems like it might be more sensible to fix the single instance of a driver returning -EINVAL (which appears to be a "should never happen if used correctly" kinda thing anyway) and leave the API-internal callback prototype as-is. I do agree the inconsistency of iommu_unmap() itself wants sorting, though (particularly the !IOMMU_API stubs which are wrong either way).
+> 
+> Robin.
 
+Make sense. I'll leave the API alone, and change the code to not returning error then.
+There are a few places to fix.
 
-> +	}
->  	if (!page)
->  		return NULL;
->  	memset(page_address(page), 0, size);
+Thanks,
+Suravee
