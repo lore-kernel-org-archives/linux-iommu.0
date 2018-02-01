@@ -1,120 +1,167 @@
-From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH v5 08/13] iommu/rockchip: Control clocks needed to access
-	the IOMMU
-Date: Thu, 01 Feb 2018 19:19:46 +0800
-Message-ID: <5A72F7D2.1050201@rock-chips.com>
-References: <20180124103516.2571-1-jeffy.chen@rock-chips.com>
-	<20180124103516.2571-9-jeffy.chen@rock-chips.com>
-	<20180130170515.3g6wtadqgmehxh5b@rob-hp-laptop>
-	<CAAFQd5A383Ey3Ntg_hcsvzHj2DsSuW6RMQ+kP=LPAZ1YmqjHOg@mail.gmail.com>
-	<CAL_JsqKFW0USD_TgGCO-s4wMBw9O2psToMObjeSEwCNReq-3=w@mail.gmail.com>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: Re: [PATCH v6 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
+ add/remove device
+Date: Thu, 1 Feb 2018 17:03:48 +0530
+Message-ID: <bb9c23ec-c6d8-80fe-a80f-c33c961ab657@codeaurora.org>
+References: <1516362223-22946-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1516362223-22946-4-git-send-email-vivek.gautam@codeaurora.org>
+ <5367e45a-8406-6dd2-1eb8-e1de9095af1a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAL_JsqKFW0USD_TgGCO-s4wMBw9O2psToMObjeSEwCNReq-3=w@mail.gmail.com>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, list-Y9sIeH5OGRo@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open-Y9sIeH5OGRo@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <5367e45a-8406-6dd2-1eb8-e1de9095af1a@arm.com>
+Content-Language: en-US
+Sender: linux-pm-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Vivek Gautam <vivek.gautam@codeaurora.org>, alex.williamson@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, rjw@rjwysocki.net, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, sboyd@codeaurora.org
+Cc: gregkh@linuxfoundation.org, m.szyprowski@samsung.com, architt@codeaurora.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
+Hi Robin,
 
-Thanks for your reply.
-
-On 01/31/2018 09:50 PM, Rob Herring wrote:
-> On Wed, Jan 31, 2018 at 1:52 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->> Hi Rob,
+On 1/31/2018 6:36 PM, Robin Murphy wrote:
+> On 19/01/18 11:43, Vivek Gautam wrote:
+>> From: Sricharan R <sricharan@codeaurora.org>
 >>
->> On Wed, Jan 31, 2018 at 2:05 AM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
->>> On Wed, Jan 24, 2018 at 06:35:11PM +0800, Jeffy Chen wrote:
->>>> From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->>>>
->>>> Current code relies on master driver enabling necessary clocks before
->>>> IOMMU is accessed, however there are cases when the IOMMU should be
->>>> accessed while the master is not running yet, for example allocating
->>>> V4L2 videobuf2 buffers, which is done by the VB2 framework using DMA
->>>> mapping API and doesn't engage the master driver at all.
->>>>
->>>> This patch fixes the problem by letting clocks needed for IOMMU
->>>> operation to be listed in Device Tree and making the driver enable them
->>>> for the time of accessing the hardware.
->>>>
->>>> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->>>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->>>> ---
->>>>
->>>> Changes in v5:
->>>> Use clk_bulk APIs.
->>>>
->>>> Changes in v4: None
->>>> Changes in v3: None
->>>> Changes in v2: None
->>>>
->>>>   .../devicetree/bindings/iommu/rockchip,iommu.txt   |  8 +++
->>>
->>> Please split binding patches to a separate patch.
-right, i'll do that in the next version.
->>>
->>>>   drivers/iommu/rockchip-iommu.c                     | 74 ++++++++++++++++++++--
->>>>   2 files changed, 76 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->>>> index 2098f7732264..33dd853359fa 100644
->>>> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->>>> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
->>>> @@ -14,6 +14,13 @@ Required properties:
->>>>                       "single-master" device, and needs no additional information
->>>>                       to associate with its master device.  See:
->>>>                       Documentation/devicetree/bindings/iommu/iommu.txt
->>>> +Optional properties:
->>>> +- clocks : A list of master clocks requires for the IOMMU to be accessible
->>>> +           by the host CPU. The number of clocks depends on the master
->>>> +           block and might as well be zero. See [1] for generic clock
->>>> +           bindings description.
->>>
->>> Hardware blocks don't have a variable number of clock connections.
+>> The smmu device probe/remove and add/remove master device callbacks
+>> gets called when the smmu is not linked to its master, that is without
+>> the context of the master device. So calling runtime apis in those places
+>> separately.
 >>
->> I think you underestimate the imagination of hardware designers. :)
->
-> Learned long ago to never do that. If there are 2 ways to do
-> something, they will find a 3rd way.
->
->> For Rockchip IOMMU, there is a set of clocks, which all need to be
->> enabled for IOMMU register access to succeed. The clocks are not
->> directly fed to the IOMMU, but they are needed for the various buses
->> and intermediate blocks on the way to the IOMMU to work.
->
-> The binding should describe the clock connections, not what clocks a
-> driver needs (currently). It sounds like a lack of managing bus clocks
-> to me.
->
-> In any case, the binding must be written so it can be verified. If you
-> can have any number of clocks with any names, there's no point in
-> documenting.
+>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> [vivek: Cleanup pm runtime calls]
+>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>> ---
+>>   drivers/iommu/arm-smmu.c | 45 +++++++++++++++++++++++++++++++++++++++++----
+>>   1 file changed, 41 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 21acffe91a1c..95478bfb182c 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -914,11 +914,15 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>>       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>>       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>       struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>> -    int irq;
+>> +    int ret, irq;
+>>         if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+>>           return;
+>>   +    ret = pm_runtime_get_sync(smmu->dev);
+>> +    if (ret)
+>> +        return;
+>> +
+>>       /*
+>>        * Disable the context bank and free the page tables before freeing
+>>        * it.
+>> @@ -933,6 +937,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>>         free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+>>       __arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
+>> +
+>> +    pm_runtime_put_sync(smmu->dev);
+>>   }
+>>     static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+>> @@ -1408,12 +1414,20 @@ static int arm_smmu_add_device(struct device *dev)
+>>       while (i--)
+>>           cfg->smendx[i] = INVALID_SMENDX;
+>>   -    ret = arm_smmu_master_alloc_smes(dev);
+>> +    ret = pm_runtime_get_sync(smmu->dev);
+>>       if (ret)
+>>           goto out_cfg_free;
+>>   +    ret = arm_smmu_master_alloc_smes(dev);
+>> +    if (ret) {
+>> +        pm_runtime_put_sync(smmu->dev);
+>> +        goto out_cfg_free;
+> 
+> Please keep to the existing pattern and put this on the cleanup path with a new label, rather than inline.
 
-the rockchip IOMMU is part of the master block in hardware, so it needs 
-to control the master's power domain and some of the master's clocks 
-when access it's registers.
+ ok.
 
-and the number of clocks needed here, might be different between each 
-IOMMUs(according to which master block it belongs), it's a little like 
-our power domain:
-https://elixir.free-electrons.com/linux/latest/source/arch/arm64/boot/dts/rockchip/rk3399.dtsi#L935
+> 
+>> +    }
+>> +
+>>       iommu_device_link(&smmu->iommu, dev);
+>>   +    pm_runtime_put_sync(smmu->dev);
+>> +
+>>       return 0;
+>>     out_cfg_free:
+>> @@ -1428,7 +1442,7 @@ static void arm_smmu_remove_device(struct device *dev)
+>>       struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>>       struct arm_smmu_master_cfg *cfg;
+>>       struct arm_smmu_device *smmu;
+>> -
+>> +    int ret;
+>>         if (!fwspec || fwspec->ops != &arm_smmu_ops)
+>>           return;
+>> @@ -1436,8 +1450,21 @@ static void arm_smmu_remove_device(struct device *dev)
+>>       cfg  = fwspec->iommu_priv;
+>>       smmu = cfg->smmu;
+>>   +    /*
+>> +     * The device link between the master device and
+>> +     * smmu is already purged at this point.
+>> +     * So enable the power to smmu explicitly.
+>> +     */
+> 
+> I don't understand this comment, especially since we don't even introduce device links until the following patch... :/
+> 
 
-i'm not sure how to describe this correctly, is it ok use something like 
-"the same as it's master block"?
+ This is because the core device_del callback, does a device_links_purge for that device,
+ before calling the remove_device notifier. As a result, have to explicitly turn on the
+ power to iommu. Probably the comment should be removed, rest of the places we don't
+ explain why we are turning on explicitly.
 
->
-> Rob
->
->
->
+>> +
+>> +    ret = pm_runtime_get_sync(smmu->dev);
+>> +    if (ret)
+>> +        return;
+>> +
+>>       iommu_device_unlink(&smmu->iommu, dev);
+>>       arm_smmu_master_free_smes(fwspec);
+>> +
+>> +    pm_runtime_put_sync(smmu->dev);
+>> +
+>>       iommu_group_remove_device(dev);
+>>       kfree(fwspec->iommu_priv);
+>>       iommu_fwspec_free(dev);
+>> @@ -2130,6 +2157,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>       if (err)
+>>           return err;
+>>   +    platform_set_drvdata(pdev, smmu);
+>> +
+>> +    pm_runtime_enable(dev);
+>> +
+>> +    err = pm_runtime_get_sync(dev);
+>> +    if (err)
+>> +        return err;
+>> +
+>>       err = arm_smmu_device_cfg_probe(smmu);
+>>       if (err)
+>>           return err;
+>> @@ -2171,9 +2206,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>           return err;
+>>       }
+>>   -    platform_set_drvdata(pdev, smmu);
+>>       arm_smmu_device_reset(smmu);
+>>       arm_smmu_test_smr_masks(smmu);
+>> +    pm_runtime_put_sync(dev);
+>>         /*
+>>        * For ACPI and generic DT bindings, an SMMU will be probed before
+>> @@ -2212,6 +2247,8 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>>         /* Turn the thing off */
+>>       writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+>> +    pm_runtime_force_suspend(smmu->dev);
+> 
+> Why do we need this? I guess it might be a Qualcomm-ism as I don't see anyone else calling it from .remove other than a couple of other qcom_* drivers. Given that we only get here during system shutdown (or the root user intentionally pissing about with driver unbinding), it doesn't seem like a point where power saving really matters all that much.
+> 
+> I'd also naively expect that anything this device was the last consumer off would get turned off by core code anyway once it's removed, but maybe things aren't that slick; I dunno :/
+
+ hmm, that should not be needed. with turning of all consumers taken care by device_link code before
+ the supplier (iommu) remove gets called should ensure that. So the above force_suspend should
+ not be needed/can be removed. But one more thing is, we do touch the register in the above code.
+ So that should require a additional get/put sync around that writel.
+
+Regards,
+ Sricharan
+
+-- 
+"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
