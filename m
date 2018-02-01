@@ -1,15 +1,17 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: ARM64 SMMU Setup
-Date: Thu, 1 Feb 2018 12:00:09 +0000
-Message-ID: <bfa1d06a-01d2-e97d-2aca-dfa06083305b@arm.com>
-References: <fc00c99b-7766-2ac5-83a5-2ed9e13a15e1@linux.intel.com>
-	<CAKv+Gu-vwWp_o=XUd17OJ28Brh=Qt_GibpiSMByAXFW07VrxPA@mail.gmail.com>
-	<2b9c4adb-9645-0c02-ffb6-9357ff421355@linux.intel.com>
+Subject: Re: [PATCH 1/2] iommu: Fix iommu_unmap and iommu_unmap_fast return
+	type
+Date: Thu, 1 Feb 2018 12:17:22 +0000
+Message-ID: <19766001-07c9-7b67-ae10-8b5467fff748@arm.com>
+References: <1517363285-89304-1-git-send-email-suravee.suthikulpanit@amd.com>
+	<1517363285-89304-2-git-send-email-suravee.suthikulpanit@amd.com>
+	<eaa33cb6-3df0-6f95-59ea-e563076d7f76@arm.com>
+	<de21de51-1589-edb1-3dd1-b7065eb8fb3c@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2b9c4adb-9645-0c02-ffb6-9357ff421355-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <de21de51-1589-edb1-3dd1-b7065eb8fb3c-5C7GfCeVMHo@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,89 +22,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Ard Biesheuvel <ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 31/01/18 23:31, Thor Thayer wrote:
-> Hi Ard,
-> 
-> On 01/31/2018 04:21 PM, Ard Biesheuvel wrote:
->> On 31 January 2018 at 22:09, Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> 
->> wrote:
->>> Hi,
->>>
->>> I'm enabling the ARM SMMU-500 on an ARM64 A53. I'm hitting a data 
->>> abort in
->>> the probe functions because I'm accessing the registers in EL1 mode.
->>>
->>
->> Why do you think the fact that you are running at EL1 is causing the 
->> data abort?
->>
-> Yes, I may not be diagnosing this correctly. I narrowed it down to 
-> failing on the first read in arm_smmu_device_cfg_probe().
-> 
-> When I read the same register with a debugger (I'm in EL1), it fails. I 
-> just realized the read also fails in EL2.
-> 
-> If I elevate the read to EL3, I can read the default reset value from 
-> the register but I mistakenly thought this was EL2.
-
-Yes, this sounds like a TrustZone controller preventing non-secure 
-access to the SMMU altogether. Even if you try to access MMU-500's 
-secure-only registers from non-secure, "successful" accesses to those 
-should behave as RAZ/WI rather than aborting.
-
->>> Linux starts in EL2 mode but drops down to EL1 mode by the time it 
->>> reaches
->>> the arm-smmu probe function.
->>>
->>> Is there something else I need to add to either move the arm-smmu probe
->>> earlier or remain in EL2 until after the arm-smmu probe?
->>>
->>
->> No. I am pretty sure EL2 vs EL1 is not causing your issue. Could you
->> elaborate on the nature of the exception you are getting?
->>
-> The error I'm getting is:
-> 
-> Unhandled fault: synchronous external abort (0x96000010) at 
-> 0xffff000008e40020
-> Internal error: : 96000010 [#1] PREEMPT SMP
-> 
-> To be honest I got lost trying to decode 0x96000010 and I may have used 
-> the wrong ARM document. I ended up interpreting this as Data Abort taken 
-> without an Exception level from the ARMv8 ARM.
-> 
-> Additionally, the SMMU documentation seemed to indicate the Hypervisor 
-> would need to run at EL2 so I ran with that.
-
-Beware that much of the SMMU documentation is based on some theoretical 
-idea of how software might work, and bears little or no relation to what 
-real software actually does ;)
-
-Robin.
-
-> Thank you for the reply and I'll go back and examine my assumptions again.
-> 
-> Thor
-> 
->>> A Google search didn't turn up anything so I hoped posting to the 
->>> list would
->>> help.
->>>
->>> Thanks in advance,
->>>
->>> Thor
->>>
->>>
->>> _______________________________________________
->>> linux-arm-kernel mailing list
->>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMDEvMDIvMTggMDU6MDMsIFN1cmF2ZWUgU3V0aGlrdWxwYW5pdCB3cm90ZToKPiBIaSBSb2Jp
+biwKPiAKPiBPbiAyLzEvMTggMTowMiBBTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBIacKgU3Vy
+YXZlZSwKPj4KPj4gT27CoDMxLzAxLzE4wqAwMTo0OCzCoFN1cmF2ZWXCoFN1dGhpa3VscGFuaXTC
+oHdyb3RlOgo+Pj4gQ3VycmVudGx5LMKgaW9tbXVfdW5tYXDCoGFuZMKgaW9tbXVfdW5tYXBfZmFz
+dMKgcmV0dXJuwqB1bm1hcHBlZAo+Pj4gcGFnZXPCoHdpdGjCoHNpemVfdC7CoMKgSG93ZXZlcizC
+oHRoZcKgYWN0dWFswqB2YWx1ZcKgcmV0dXJuZWTCoGNvdWxkCj4+PiBiZcKgZXJyb3LCoGNvZGVz
+wqAoPMKgMCkswqB3aGljaMKgY2FuwqBiZcKgbWlzaW50ZXJwcmV0ZWTCoGFzwqBsYXJnZQo+Pj4g
+bnVtYmVywqBvZsKgdW5tYXBwZWTCoHBhZ2VzLsKgVGhlcmVmb3JlLMKgY2hhbmdlwqB0aGXCoHJl
+dHVybsKgdHlwZcKgdG/CoHNzaXplX3QuCj4+Pgo+Pj4gQ2M6wqBKb2VyZ8KgUm9lZGVsIDxqb3Jv
+QDhieXRlcy5vcmc+Cj4+PiBDYzrCoEFsZXjCoFdpbGxpYW1zb24gPGFsZXgud2lsbGlhbXNvbkBy
+ZWRoYXQuY29tPgo+Pj4gU2lnbmVkLW9mZi1ieTrCoFN1cmF2ZWXCoFN1dGhpa3VscGFuaXQgPHN1
+cmF2ZWUuc3V0aGlrdWxwYW5pdEBhbWQuY29tPgo+Pj4gLS0tCj4+PiDCoMKgZHJpdmVycy9pb21t
+dS9hbWRfaW9tbXUuY8KgwqDCoHzCoMKgNsKgKysrLS0tCj4+PiDCoMKgZHJpdmVycy9pb21tdS9p
+bnRlbC1pb21tdS5jwqB8wqDCoDTCoCsrLS0KPj4KPj4gRXIswqB0aGVyZcKgYXJlwqBhwqBmZXfC
+oG1vcmXCoGRyaXZlcnPCoHRoYW7CoHRoYXTCoGltcGxlbWVudGluZ8KgaW9tbXVfb3BzIDspCj4g
+Cj4gQWhoIHJpZ2h0Lgo+Pgo+PiBJdCBzZWVtcyBsaWtlIGl0IG1pZ2h0IGJlIG1vcmUgc2Vuc2li
+bGUgdG8gZml4IHRoZSBzaW5nbGUgaW5zdGFuY2Ugb2YgCj4+IGEgZHJpdmVyIHJldHVybmluZyAt
+RUlOVkFMICh3aGljaCBhcHBlYXJzIHRvIGJlIGEgInNob3VsZCBuZXZlciBoYXBwZW4gCj4+IGlm
+IHVzZWQgY29ycmVjdGx5IiBraW5kYSB0aGluZyBhbnl3YXkpIGFuZCBsZWF2ZSB0aGUgQVBJLWlu
+dGVybmFsIAo+PiBjYWxsYmFjayBwcm90b3R5cGUgYXMtaXMuIEkgZG8gYWdyZWUgdGhlIGluY29u
+c2lzdGVuY3kgb2YgCj4+IGlvbW11X3VubWFwKCkgaXRzZWxmIHdhbnRzIHNvcnRpbmcsIHRob3Vn
+aCAocGFydGljdWxhcmx5IHRoZSAKPj4gIUlPTU1VX0FQSSBzdHVicyB3aGljaCBhcmUgd3Jvbmcg
+ZWl0aGVywqB3YXkpLgo+Pgo+PiBSb2Jpbi4KPiAKPiBNYWtlIHNlbnNlLiBJJ2xsIGxlYXZlIHRo
+ZSBBUEkgYWxvbmUsIGFuZCBjaGFuZ2UgdGhlIGNvZGUgdG8gbm90IAo+IHJldHVybmluZyBlcnJv
+ciB0aGVuLgoKQWN0dWFsbHksIG9uIGEgc2Vjb25kIGxvb2sgSSB0aGluayB0aGF0IGNoZWNrIGlu
+IGFtZF9pb21tdSBpcyA5OSUgCnJlZHVuZGFudCBhbnl3YXksIHNpbmNlIFBBR0VfTU9ERV9OT05F
+IGlzIG9ubHkgbm9ybWFsbHkgc2V0IGZvciAKSU9NTVVfRE9NQUlOX0lERU5USVRZIGRvbWFpbnMs
+IHRodXMgaW9tbXVfdW5tYXAoKSB3b3VsZCBoYXZlIGJhaWxlZCBvdXQgCmZyb20gdGhlIF9fSU9N
+TVVfRE9NQUlOX1BBR0lORyBjaGVjayBiZWZvcmUgb3BzLT51bm1hcCBjb3VsZCBiZSBjYWxsZWQu
+IApBRkFJQ1MgdGhlIG9ubHkgd2F5IHRvIGhpdCBpdCBhdCBhbGwgaXMgaWYgYSBjYWxsZXIgc29t
+ZWhvdyBtYW5hZ2VkIHRvIApnZXQgaG9sZCBvZiB0aGUgZGV2X3N0YXRlLT5kb21haW4gc2V0IHVw
+IGluIGFtZF9pb21tdV9pbml0X2RldmljZSgpLCAKdGhlbiB0cmllZCB0byB1bm1hcCBzb21ldGhp
+bmcgZnJvbSB0aGF0LCB3aGljaCBzZWVtcyBzdWNoIGEgdmVyeSB3cm9uZyAKdGhpbmcgdG8gZG8g
+aXQgc2hvdWxkIHByb2JhYmx5IGp1c3QgY3Jhc2ggYW5kIGJ1cm4gd2l0aCBleHRyZW1lIApwcmVq
+dWRpY2UgYW55d2F5LgoKQ2hlZXJzLApSb2Jpbi4KX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
+LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2lvbW11
