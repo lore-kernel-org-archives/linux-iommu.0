@@ -1,73 +1,57 @@
-From: Ard Biesheuvel <ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: ARM64 SMMU Setup
-Date: Wed, 31 Jan 2018 23:48:22 +0000
-Message-ID: <EAD74C8F-E30A-4E6F-B7AA-0E77F0FEC05C@linaro.org>
-References: <fc00c99b-7766-2ac5-83a5-2ed9e13a15e1@linux.intel.com>
-	<CAKv+Gu-vwWp_o=XUd17OJ28Brh=Qt_GibpiSMByAXFW07VrxPA@mail.gmail.com>
-	<2b9c4adb-9645-0c02-ffb6-9357ff421355@linux.intel.com>
-Mime-Version: 1.0 (1.0)
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2b9c4adb-9645-0c02-ffb6-9357ff421355-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+From: Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCH] iommu/vt-d: add NUMA awareness to intel_alloc_coherent()
+Date: Wed, 31 Jan 2018 17:46:15 -0800
+Message-ID: <1517449575.3715.113.camel@gmail.com>
+References: <1517438756.3715.108.camel@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1517438756.3715.108.camel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Benjamin Serebrin <serebrin@google.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Cgo+IE9uIDMxIEphbiAyMDE4LCBhdCAyMzozMSwgVGhvciBUaGF5ZXIgPHRob3IudGhheWVyQGxp
-bnV4LmludGVsLmNvbT4gd3JvdGU6Cj4gCj4gSGkgQXJkLAo+IAo+PiBPbiAwMS8zMS8yMDE4IDA0
-OjIxIFBNLCBBcmQgQmllc2hldXZlbCB3cm90ZToKPj4+IE9uIDMxIEphbnVhcnkgMjAxOCBhdCAy
-MjowOSwgVGhvciBUaGF5ZXIgPHRob3IudGhheWVyQGxpbnV4LmludGVsLmNvbT4gd3JvdGU6Cj4+
-PiBIaSwKPj4+IAo+Pj4gSSdtIGVuYWJsaW5nIHRoZSBBUk0gU01NVS01MDAgb24gYW4gQVJNNjQg
-QTUzLiBJJ20gaGl0dGluZyBhIGRhdGEgYWJvcnQgaW4KPj4+IHRoZSBwcm9iZSBmdW5jdGlvbnMg
-YmVjYXVzZSBJJ20gYWNjZXNzaW5nIHRoZSByZWdpc3RlcnMgaW4gRUwxIG1vZGUuCj4+PiAKPj4g
-V2h5IGRvIHlvdSB0aGluayB0aGUgZmFjdCB0aGF0IHlvdSBhcmUgcnVubmluZyBhdCBFTDEgaXMg
-Y2F1c2luZyB0aGUgZGF0YSBhYm9ydD8KPiBZZXMsIEkgbWF5IG5vdCBiZSBkaWFnbm9zaW5nIHRo
-aXMgY29ycmVjdGx5LiBJIG5hcnJvd2VkIGl0IGRvd24gdG8gZmFpbGluZyBvbiB0aGUgZmlyc3Qg
-cmVhZCBpbiBhcm1fc21tdV9kZXZpY2VfY2ZnX3Byb2JlKCkuCj4gCj4gV2hlbiBJIHJlYWQgdGhl
-IHNhbWUgcmVnaXN0ZXIgd2l0aCBhIGRlYnVnZ2VyIChJJ20gaW4gRUwxKSwgaXQgZmFpbHMuIEkg
-anVzdCByZWFsaXplZCB0aGUgcmVhZCBhbHNvIGZhaWxzIGluIEVMMi4KPiAKPiBJZiBJIGVsZXZh
-dGUgdGhlIHJlYWQgdG8gRUwzLCBJIGNhbiByZWFkIHRoZSBkZWZhdWx0IHJlc2V0IHZhbHVlIGZy
-b20gdGhlIHJlZ2lzdGVyIGJ1dCBJIG1pc3Rha2VubHkgdGhvdWdodCB0aGlzIHdhcyBFTDIuCj4g
-CgpUaGlzIGNvbmZpcm1zIG15IHN1c3BpY2lvbi4gSXQgaXMgdXAgdG8gdGhlIHNlY3VyZSBmaXJt
-d2FyZSBydW5uaW5nIGluIEVMMyAob3Igc2VjdXJlIEVMMSkgdG8gY29uZmlndXJlIHRoZSBTTU1V
-IGl0c2VsZiBhbmQgdGhlIGludGVyY29ubmVjdCBpbiBhIHdheSB0aGF0IGFsbG93cyBjb2RlIHJ1
-bm5pbmcgaW4gRUwyIG9yIG5vbi1zZWN1cmUgRUwxIHRvIGFjY2VzcyBpdCAobm90ZSB0aGF0IEVM
-MyBpcyBhbHdheXMgc2VjdXJlIGFuZCBFTDIgaXMgYWx3YXlzIG5vbi1zZWN1cmUpCgpJIGRvbuKA
-mXQga25vdyB0aGUgZGV0YWlscyBvZiB0aGUgTU1VLTUwMCBvciB0aGUgd2F5IGl0IGlzIGludGVn
-cmF0ZWQgaW50byB5b3VyIHBsYXRmb3JtLCBzbyBJIGNhbuKAmXQgYmUgb2YgYW55IG1vcmUgaGVs
-cCwgdW5mb3J0dW5hdGVseS4KCgo+IAo+Pj4gTGludXggc3RhcnRzIGluIEVMMiBtb2RlIGJ1dCBk
-cm9wcyBkb3duIHRvIEVMMSBtb2RlIGJ5IHRoZSB0aW1lIGl0IHJlYWNoZXMKPj4+IHRoZSBhcm0t
-c21tdSBwcm9iZSBmdW5jdGlvbi4KPj4+IAo+Pj4gSXMgdGhlcmUgc29tZXRoaW5nIGVsc2UgSSBu
-ZWVkIHRvIGFkZCB0byBlaXRoZXIgbW92ZSB0aGUgYXJtLXNtbXUgcHJvYmUKPj4+IGVhcmxpZXIg
-b3IgcmVtYWluIGluIEVMMiB1bnRpbCBhZnRlciB0aGUgYXJtLXNtbXUgcHJvYmU/Cj4+PiAKPj4g
-Tm8uIEkgYW0gcHJldHR5IHN1cmUgRUwyIHZzIEVMMSBpcyBub3QgY2F1c2luZyB5b3VyIGlzc3Vl
-LiBDb3VsZCB5b3UKPj4gZWxhYm9yYXRlIG9uIHRoZSBuYXR1cmUgb2YgdGhlIGV4Y2VwdGlvbiB5
-b3UgYXJlIGdldHRpbmc/Cj4gVGhlIGVycm9yIEknbSBnZXR0aW5nIGlzOgo+IAo+IFVuaGFuZGxl
-ZCBmYXVsdDogc3luY2hyb25vdXMgZXh0ZXJuYWwgYWJvcnQgKDB4OTYwMDAwMTApIGF0IDB4ZmZm
-ZjAwMDAwOGU0MDAyMAo+IEludGVybmFsIGVycm9yOiA6IDk2MDAwMDEwIFsjMV0gUFJFRU1QVCBT
-TVAKCj4gVG8gYmUgaG9uZXN0IEkgZ290IGxvc3QgdHJ5aW5nIHRvIGRlY29kZSAweDk2MDAwMDEw
-IGFuZCBJIG1heSBoYXZlIHVzZWQgdGhlIHdyb25nIEFSTSBkb2N1bWVudC4gSSBlbmRlZCB1cCBp
-bnRlcnByZXRpbmcgdGhpcyBhcyBEYXRhIEFib3J0IHRha2VuIHdpdGhvdXQgYW4gRXhjZXB0aW9u
-IGxldmVsIGZyb20gdGhlIEFSTXY4IEFSTS4KPiAKPiBBZGRpdGlvbmFsbHksIHRoZSBTTU1VIGRv
-Y3VtZW50YXRpb24gc2VlbWVkIHRvIGluZGljYXRlIHRoZSBIeXBlcnZpc29yIHdvdWxkIG5lZWQg
-dG8gcnVuIGF0IEVMMiBzbyBJIHJhbiB3aXRoIHRoYXQuCj4gCj4gVGhhbmsgeW91IGZvciB0aGUg
-cmVwbHkgYW5kIEknbGwgZ28gYmFjayBhbmQgZXhhbWluZSBteSBhc3N1bXB0aW9ucyBhZ2Fpbi4K
-PiAKPiBUaG9yCj4gCj4+PiBBIEdvb2dsZSBzZWFyY2ggZGlkbid0IHR1cm4gdXAgYW55dGhpbmcg
-c28gSSBob3BlZCBwb3N0aW5nIHRvIHRoZSBsaXN0IHdvdWxkCj4+PiBoZWxwLgo+Pj4gCj4+PiBU
-aGFua3MgaW4gYWR2YW5jZSwKPj4+IAo+Pj4gVGhvcgo+Pj4gCj4+PiAKPj4+IF9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+PiBsaW51eC1hcm0ta2VybmVs
-IG1haWxpbmcgbGlzdAo+Pj4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCj4+
-PiBodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1r
-ZXJuZWwKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, 2018-01-31 at 14:45 -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Some devices (like mlx4) try hard to allocate memory on selected
+> NUMA node, but it turns out intel_alloc_coherent() is not NUMA
+> aware yet.
+> 
+> Note that dma_generic_alloc_coherent() in arch/x86/kernel/pci-dma.c
+> gets this right.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Benjamin Serebrin <serebrin@google.com>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> ---
+>  drivers/iommu/intel-iommu.c |    7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index a1373cf343269455808f66ad18dc0a2fb7aa73f2..0efef077abc099eb29ebc5cefdd1b996f025dffd 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -3734,8 +3734,11 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
+>  		}
+>  	}
+>  
+> -	if (!page)
+> -		page = alloc_pages(flags, order);
+> +	if (!page) {
+> +		page = alloc_pages_node(dev_to_node(dev), flags, order);
+> +		if (!page)
+> +			page = alloc_pages(flags, order);
+
+I'll send a V2 without the fallback to alloc_pages()
+
+This seems not necessary at all.
+
+
+> +	}
+>  	if (!page)
+>  		return NULL;
+>  	memset(page_address(page), 0, size);
