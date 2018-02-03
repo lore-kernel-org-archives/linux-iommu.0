@@ -1,8 +1,8 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 1/5] iommu/vt-d: Relocate struct/function declarations to
-	its header files
-Date: Fri,  2 Feb 2018 16:49:57 -0800
-Message-ID: <1517619001-148586-2-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH v7 4/5] iommu/vt-d: Add debugfs support to show Pasid table
+	contents
+Date: Fri,  2 Feb 2018 16:50:00 -0800
+Message-ID: <1517619001-148586-5-git-send-email-sohil.mehta@intel.com>
 References: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,169 +24,138 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-To reuse the static functions and the struct declarations, move them to
-corresponding header files and export the needed functions.
+Debugfs extension to dump the internals such as pasid table entries for
+each IOMMU to the userspace.
 
-Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Example of such dump in Kabylake:
+
+root@OTC-KBLH-01:~# cat
+/sys/kernel/debug/intel_iommu/dmar_translation_struct
+IOMMU dmar1: Extended Root Table Address:4071d3800
+Extended Root Table Entries:
+Bus 0 L: 4071d7001 H: 0
+Lower Context Table Entries for Bus: 0
+[entry]	Device B:D.F	Low		High
+[16]	0000:00:02.0	4071d6005	102
+Higher Context Table Entries for Bus: 0
+[16]	0000:00:02.0	0	0
+Pasid Table Address: 00000000746cb0af
+Pasid Table Entries for domain 0:
+[Entry]         Contents
+[0]             12c409801
+
 Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Co-Developed-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
 
-v7: Split patch 1/5 and 2/5 differently
-    Update the commit message
+v7: Improve code indentation and formatting
 
 v6: No change
 
 v5: No change
 
-v4: No change
+v4: Remove the unused function parameter
+    Fix checkpatch.pl warnings
 
 v3: No change
 
-v2: No change
+v2: Fix seq_printf formatting
 
- drivers/iommu/intel-iommu.c | 33 ++++-----------------------------
- include/linux/intel-iommu.h | 31 +++++++++++++++++++++++++++++++
- include/linux/intel-svm.h   |  2 +-
- 3 files changed, 36 insertions(+), 30 deletions(-)
+ drivers/iommu/intel-iommu-debug.c | 31 +++++++++++++++++++++++++++++++
+ drivers/iommu/intel-svm.c         |  8 --------
+ include/linux/intel-svm.h         |  8 ++++++++
+ 3 files changed, 39 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4a2de34..f6241f6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -183,16 +183,6 @@ static int rwbf_quirk;
- static int force_on = 0;
- int intel_iommu_tboot_noforce;
+diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
+index 38651ad..a9a99aa 100644
+--- a/drivers/iommu/intel-iommu-debug.c
++++ b/drivers/iommu/intel-iommu-debug.c
+@@ -81,6 +81,36 @@ static const struct iommu_regset iommu_regs[] = {
+ 	IOMMU_REGSET_ENTRY(MTRRDEF)
+ };
  
--/*
-- * 0: Present
-- * 1-11: Reserved
-- * 12-63: Context Ptr (12 - (haw-1))
-- * 64-127: Reserved
-- */
--struct root_entry {
--	u64	lo;
--	u64	hi;
--};
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
- 
- /*
-@@ -218,21 +208,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
- 
- 	return re->hi & VTD_PAGE_MASK;
- }
--/*
-- * low 64 bits:
-- * 0: present
-- * 1: fault processing disable
-- * 2-3: translation type
-- * 12-63: address space root
-- * high 64 bits:
-- * 0-2: address width
-- * 3-6: aval
-- * 8-23: domain id
-- */
--struct context_entry {
--	u64 lo;
--	u64 hi;
--};
- 
- static inline void context_clear_pasid_enable(struct context_entry *context)
- {
-@@ -259,7 +234,7 @@ static inline bool __context_present(struct context_entry *context)
- 	return (context->lo & 1);
- }
- 
--static inline bool context_present(struct context_entry *context)
-+bool context_present(struct context_entry *context)
- {
- 	return context_pasid_enabled(context) ?
- 	     __context_present(context) :
-@@ -819,8 +794,8 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
- 	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
- }
- 
--static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
--						       u8 bus, u8 devfn, int alloc)
-+struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
-+					 u8 devfn, int alloc)
- {
- 	struct root_entry *root = &iommu->root_entry[bus];
- 	struct context_entry *context;
-@@ -5208,7 +5183,7 @@ static void intel_iommu_put_resv_regions(struct device *dev,
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- #define MAX_NR_PASID_BITS (20)
--static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
-+unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
- {
- 	/*
- 	 * Convert ecap_pss to extend context entry pts encoding, also
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index f3274d9..78ec85a 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -383,6 +383,33 @@ struct pasid_entry;
- struct pasid_state_entry;
- struct page_req_dsc;
- 
-+/*
-+ * 0: Present
-+ * 1-11: Reserved
-+ * 12-63: Context Ptr (12 - (haw-1))
-+ * 64-127: Reserved
-+ */
-+struct root_entry {
-+	u64     lo;
-+	u64     hi;
-+};
++#ifdef CONFIG_INTEL_IOMMU_SVM
++static void pasid_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu)
++{
++	int pasid_size = 0, i;
 +
-+/*
-+ * low 64 bits:
-+ * 0: present
-+ * 1: fault processing disable
-+ * 2-3: translation type
-+ * 12-63: address space root
-+ * high 64 bits:
-+ * 0-2: address width
-+ * 3-6: aval
-+ * 8-23: domain id
-+ */
-+struct context_entry {
-+	u64 lo;
-+	u64 hi;
-+};
++	if (!ecap_pasid(iommu->ecap))
++		return;
 +
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
- 	u64 		reg_phys; /* physical address of hw register set */
-@@ -488,8 +515,12 @@ struct intel_svm {
++	pasid_size = intel_iommu_get_pts(iommu);
++	seq_printf(m, "Pasid Table Address: %p\n", iommu->pasid_table);
++
++	if (!iommu->pasid_table)
++		return;
++
++	seq_printf(m, "Pasid Table Entries for domain %d:\n", iommu->segment);
++	seq_puts(m, "[Entry]\t\tContents\n");
++
++	/* Publish the pasid table entries here */
++	for (i = 0; i < pasid_size; i++) {
++		if (!iommu->pasid_table[i].val)
++			continue;
++
++		seq_printf(m, "[%d]\t\t%04llx\n", i, iommu->pasid_table[i].val);
++	}
++}
++#else /* CONFIG_INTEL_IOMMU_SVM */
++static inline void
++pasid_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu) {}
++#endif /* CONFIG_INTEL_IOMMU_SVM */
++
+ static void ctx_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu,
+ 			       int bus, bool ext)
+ {
+@@ -116,6 +146,7 @@ static void ctx_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu,
+ 			   iommu->segment, bus, PCI_SLOT(ctx), PCI_FUNC(ctx),
+ 			   context[1].lo, context[1].hi);
+ 	}
++	pasid_tbl_entry_show(m, iommu);
+ out:
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index ed1cf7c..c646724 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -28,14 +28,6 @@
  
- extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
- extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
-+extern unsigned long intel_iommu_get_pts(struct intel_iommu *iommu);
- #endif
+ static irqreturn_t prq_event_thread(int irq, void *d);
  
- extern const struct attribute_group *intel_iommu_groups[];
-+extern bool context_present(struct context_entry *context);
-+extern struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
-+						u8 bus, u8 devfn, int alloc);
- 
- #endif
+-struct pasid_entry {
+-	u64 val;
+-};
+-
+-struct pasid_state_entry {
+-	u64 val;
+-};
+-
+ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+ {
+ 	struct page *pages;
 diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index 99bc5b3..733eaf9 100644
+index 733eaf9..a8abad6 100644
 --- a/include/linux/intel-svm.h
 +++ b/include/linux/intel-svm.h
-@@ -130,7 +130,7 @@ static inline int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	BUG();
- }
+@@ -18,6 +18,14 @@
  
--static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
-+static inline int intel_svm_is_pasid_valid(struct device *dev, int pasid)
- {
- 	return -EINVAL;
- }
+ struct device;
+ 
++struct pasid_entry {
++	u64 val;
++};
++
++struct pasid_state_entry {
++	u64 val;
++};
++
+ struct svm_dev_ops {
+ 	void (*fault_cb)(struct device *dev, int pasid, u64 address,
+ 			 u32 private, int rwxp, int response);
 -- 
 2.7.4
