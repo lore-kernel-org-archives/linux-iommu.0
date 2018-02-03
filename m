@@ -1,12 +1,12 @@
 From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 3/5] iommu/vt-d: Add debugfs support to show register
-	contents
-Date: Fri,  2 Feb 2018 16:49:59 -0800
-Message-ID: <1517619001-148586-4-git-send-email-sohil.mehta@intel.com>
+Subject: [PATCH v7 2/5] iommu/vt-d: Enable debugfs support to show context
+	internals
+Date: Fri,  2 Feb 2018 16:49:58 -0800
+Message-ID: <1517619001-148586-3-git-send-email-sohil.mehta@intel.com>
 References: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <1517619001-148586-1-git-send-email-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -22,175 +22,159 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-
-Debugfs extension to dump all the register contents for each IOMMU
-device to the user space via debugfs.
-
-Example:
-root@OTC-KBLH-01:~# cat /sys/kernel/debug/intel_iommu/iommu_regset
-DMAR: dmar0: Register Base Address fed90000
-Name            Offset          Contents
-VER             0x00            0x0000000000000010
-CAP             0x08            0x01c0000c40660462
-ECAP            0x10            0x0000000000f0101a
-GCMD            0x18            0x0000000000000000
-GSTS            0x1c            0x00000000c7000000
-RTADDR          0x20            0x00000004071d3800
-CCMD            0x28            0x0800000000000000
-FSTS            0x34            0x0000000000000000
-FECTL           0x38            0x0000000000000000
-FEDATA          0x3c            0xfee0100400004021
-
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Co-Developed-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
-
-v7: Use macro for register set definitions
-    Fix compiler warning for readq with 32bit architecture
-    Remove leading '\n'
-
-v6: No change
-
-v5: No change
-
-v4: Fix checkpatch.pl warnings
-    Remove error reporting for debugfs_create_file function
-    Remove redundant IOMMU null check under for_each_active_iommu
-
-v3: Use a macro for seq file operations 
-    Change the intel_iommu_regset file name to iommu_regset
-    Add information for MTRR registers
-
-v2: Fix seq_printf formatting
-
- drivers/iommu/intel-iommu-debug.c | 84 +++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h       |  2 +
- 2 files changed, 86 insertions(+)
-
-diff --git a/drivers/iommu/intel-iommu-debug.c b/drivers/iommu/intel-iommu-debug.c
-index 8253503..38651ad 100644
---- a/drivers/iommu/intel-iommu-debug.c
-+++ b/drivers/iommu/intel-iommu-debug.c
-@@ -38,6 +38,49 @@ static const struct file_operations __name ## _fops =			\
- 	.owner		= THIS_MODULE,					\
- }
- 
-+struct iommu_regset {
-+	int offset;
-+	const char *regs;
-+};
-+
-+#define IOMMU_REGSET_ENTRY(_reg_)					\
-+	{ DMAR_##_reg_##_REG, __stringify(_reg_) }
-+static const struct iommu_regset iommu_regs[] = {
-+	IOMMU_REGSET_ENTRY(VER),
-+	IOMMU_REGSET_ENTRY(CAP),
-+	IOMMU_REGSET_ENTRY(ECAP),
-+	IOMMU_REGSET_ENTRY(GCMD),
-+	IOMMU_REGSET_ENTRY(GSTS),
-+	IOMMU_REGSET_ENTRY(RTADDR),
-+	IOMMU_REGSET_ENTRY(CCMD),
-+	IOMMU_REGSET_ENTRY(FSTS),
-+	IOMMU_REGSET_ENTRY(FECTL),
-+	IOMMU_REGSET_ENTRY(FEDATA),
-+	IOMMU_REGSET_ENTRY(FEADDR),
-+	IOMMU_REGSET_ENTRY(FEUADDR),
-+	IOMMU_REGSET_ENTRY(AFLOG),
-+	IOMMU_REGSET_ENTRY(PMEN),
-+	IOMMU_REGSET_ENTRY(PLMBASE),
-+	IOMMU_REGSET_ENTRY(PLMLIMIT),
-+	IOMMU_REGSET_ENTRY(PHMBASE),
-+	IOMMU_REGSET_ENTRY(PHMLIMIT),
-+	IOMMU_REGSET_ENTRY(IQH),
-+	IOMMU_REGSET_ENTRY(IQT),
-+	IOMMU_REGSET_ENTRY(IQA),
-+	IOMMU_REGSET_ENTRY(ICS),
-+	IOMMU_REGSET_ENTRY(IRTA),
-+	IOMMU_REGSET_ENTRY(PQH),
-+	IOMMU_REGSET_ENTRY(PQT),
-+	IOMMU_REGSET_ENTRY(PQA),
-+	IOMMU_REGSET_ENTRY(PRS),
-+	IOMMU_REGSET_ENTRY(PECTL),
-+	IOMMU_REGSET_ENTRY(PEDATA),
-+	IOMMU_REGSET_ENTRY(PEADDR),
-+	IOMMU_REGSET_ENTRY(PEUADDR),
-+	IOMMU_REGSET_ENTRY(MTRRCAP),
-+	IOMMU_REGSET_ENTRY(MTRRDEF)
-+};
-+
- static void ctx_tbl_entry_show(struct seq_file *m, struct intel_iommu *iommu,
- 			       int bus, bool ext)
- {
-@@ -116,6 +159,45 @@ static int dmar_translation_struct_show(struct seq_file *m, void *unused)
- }
- DEFINE_SHOW_ATTRIBUTE(dmar_translation_struct);
- 
-+static int iommu_regset_show(struct seq_file *m, void *unused)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	unsigned long long base;
-+	int i, ret = 0;
-+	u64 value;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!drhd->reg_base_addr) {
-+			seq_puts(m, "IOMMU: Invalid base address\n");
-+			ret = -EINVAL;
-+			goto out;
-+		}
-+
-+		base = drhd->reg_base_addr;
-+		seq_printf(m, "DMAR: %s: Register Base Address %llx\n",
-+			   iommu->name, base);
-+		seq_puts(m, "Name\t\t\tOffset\t\tContents\n");
-+		/*
-+		 * Publish the contents of the 64-bit hardware registers
-+		 * by adding the offset to the pointer (virtual address).
-+		 */
-+		for (i = 0 ; i < ARRAY_SIZE(iommu_regs); i++) {
-+			value = dmar_readq(iommu->reg + iommu_regs[i].offset);
-+			seq_printf(m, "%-8s\t\t0x%02x\t\t0x%016llx\n",
-+				   iommu_regs[i].regs, iommu_regs[i].offset,
-+				   value);
-+		}
-+		seq_putc(m, '\n');
-+	}
-+out:
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+DEFINE_SHOW_ATTRIBUTE(iommu_regset);
-+
- void __init intel_iommu_debugfs_init(void)
- {
- 	struct dentry *iommu_debug_root;
-@@ -126,4 +208,6 @@ void __init intel_iommu_debugfs_init(void)
- 
- 	debugfs_create_file("dmar_translation_struct", 0444, iommu_debug_root,
- 			    NULL, &dmar_translation_struct_fops);
-+	debugfs_create_file("iommu_regset", 0444, iommu_debug_root, NULL,
-+			    &iommu_regset_fops);
- }
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 8968afa..1044a14 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -71,6 +71,8 @@
- #define	DMAR_PEDATA_REG	0xe4	/* Page request event interrupt data register */
- #define	DMAR_PEADDR_REG	0xe8	/* Page request event interrupt addr register */
- #define	DMAR_PEUADDR_REG 0xec	/* Page request event Upper address register */
-+#define	DMAR_MTRRCAP_REG 0x100	/* Memory type range register capability register */
-+#define	DMAR_MTRRDEF_REG 0x108	/* Memory type range register default type register */
- 
- #define OFFSET_STRIDE		(9)
- 
--- 
-2.7.4
+RnJvbTogR2F5YXRyaSBLYW1tZWxhIDxnYXlhdHJpLmthbW1lbGFAaW50ZWwuY29tPgoKQWRkIGEg
+bmV3IGNvbmZpZyBvcHRpb24gQ09ORklHX0lOVEVMX0lPTU1VX0RFQlVHIGFuZCBleHBvcnQgSW50
+ZWwgSU9NTVUKaW50ZXJuYWxzIHN0YXRlcywgc3VjaCBhcyByb290IGFuZCBjb250ZXh0IGluIGRl
+YnVnZnMgdG8gdGhlIHVzZXJzcGFjZS4KCkV4YW1wbGUgb2Ygc3VjaCBkdW1wIGluIEthYnlsYWtl
+OgoKcm9vdEBPVEMtS0JMSC0wMTp+IyBjYXQKL3N5cy9rZXJuZWwvZGVidWcvaW50ZWxfaW9tbXUv
+ZG1hcl90cmFuc2xhdGlvbl9zdHJ1Y3QKSU9NTVUgZG1hcjE6IEV4dGVuZGVkIFJvb3QgVGFibGUg
+QWRkcmVzczo0MDcxZDM4MDAKRXh0ZW5kZWQgUm9vdCBUYWJsZSBFbnRyaWVzOgpCdXMgMCBMOiA0
+MDcxZDcwMDEgSDogMApMb3dlciBDb250ZXh0IFRhYmxlIEVudHJpZXMgZm9yIEJ1czogMApbZW50
+cnldCURldmljZSBCOkQuRglMb3cJCUhpZ2gKWzE2XQkwMDAwOjAwOjAyLjAJNDA3MWQ2MDA1CTEw
+MgpIaWdoZXIgQ29udGV4dCBUYWJsZSBFbnRyaWVzIGZvciBCdXM6IDAKWzE2XQkwMDAwOjAwOjAy
+LjAJMAkwCgpJT01NVSBkbWFyMDogRXh0ZW5kZWQgUm9vdCBUYWJsZSBBZGRyZXNzOjQwNzFkNDgw
+MAoKSU9NTVUgZG1hcjI6IFJvb3QgVGFibGUgQWRkcmVzczo0MDcxZDUwMDAKUm9vdCBUYWJsZSBF
+bnRyaWVzOgpCdXMgMCBMOiA0MDZkMTMwMDEgSDogMApDb250ZXh0IFRhYmxlIEVudHJpZXMgZm9y
+IEJ1czogMApbZW50cnldCURldmljZSBCOkQuRglMb3cJCUhpZ2gKWzE2MF0JMDAwMDowMDoxNC4w
+CTQwNmQxMjAwMQkxMDIKWzE4NF0JMDAwMDowMDoxNy4wCTQwNTc1NjAwMQkzMDIKWzI0OF0JMDAw
+MDowMDoxZi4wCTQwNmQzYjAwMQkyMDIKWzI1MV0JMDAwMDowMDoxZi4zCTQwNTQ5NzAwMQk0MDIK
+WzI1NF0JMDAwMDowMDoxZi42CTQwNjYyZTAwMQk1MDIKUm9vdCBUYWJsZSBFbnRyaWVzOgpCdXMg
+MSBMOiA0MDFlMDMwMDEgSDogMApDb250ZXh0IFRhYmxlIEVudHJpZXMgZm9yIEJ1czogMQpbZW50
+cnldCURldmljZSBCOkQuRglMb3cJCUhpZ2gKWzBdIAkwMDAwOjAxOjAwLjAJNDAxZTA0MDAxCTYw
+MgoKQ2M6IEZlbmdodWEgWXUgPGZlbmdodWEueXVAaW50ZWwuY29tPgpDYzogQXNob2sgUmFqIDxh
+c2hvay5yYWpAaW50ZWwuY29tPgpDby1EZXZlbG9wZWQtYnk6IFNvaGlsIE1laHRhIDxzb2hpbC5t
+ZWh0YUBpbnRlbC5jb20+ClNpZ25lZC1vZmYtYnk6IEphY29iIFBhbiA8amFjb2IuanVuLnBhbkBs
+aW51eC5pbnRlbC5jb20+ClNpZ25lZC1vZmYtYnk6IFNvaGlsIE1laHRhIDxzb2hpbC5tZWh0YUBp
+bnRlbC5jb20+ClNpZ25lZC1vZmYtYnk6IEdheWF0cmkgS2FtbWVsYSA8Z2F5YXRyaS5rYW1tZWxh
+QGludGVsLmNvbT4KLS0tCgp2NzogU3BsaXQgcGF0Y2ggMS81IGFuZCAyLzUgZGlmZmVyZW50bHkK
+ICAgIFVwZGF0ZSBjb21taXQgbWVzc2FnZSBhbmQgY29weXJpZ2h0IHllYXIKICAgIEZpeCB0eXBv
+IGluIGEgY29tbWVudAogICAgU2ltcGxpZnkgY29kZQoKdjY6IENoYW5nZSB0aGUgb3JkZXIgb2Yg
+aW5jbHVkZXMgdG8gYW4gYWxwaGFiZXRpY2FsIG9yZGVyCiAgICBDaGFuZ2Ugc2VxX3ByaW50ZiBm
+b3JtYXR0aW5nCgp2NTogQ2hhbmdlIHRvIGEgU1BEWCBsaWNlbnNlIHRhZwogICAgRml4IHNlcV9w
+cmludGYgZm9ybWF0dGluZwoKdjQ6IFJlbW92ZSB0aGUgdW51c2VkIGZ1bmN0aW9uIHBhcmFtZXRl
+cgogICAgRml4IGNoZWNrcGF0Y2gucGwgd2FybmluZ3MKICAgIFJlbW92ZSBlcnJvciByZXBvcnRp
+bmcgZm9yIGRlYnVnZnNfY3JlYXRlX2ZpbGUgZnVuY3Rpb24KICAgIEZpeCB1bm5lY2Vzc2FyeSBy
+ZXByb2dyYW1taW5nIG9mIHRoZSBjb250ZXh0IGVudHJpZXMKICAgIFNpbXBsaWZ5IGFuZCBtZXJn
+ZSB0aGUgc2hvdyBjb250ZXh0IGFuZCBleHRlbmRlZCBjb250ZXh0IHBhdGNoIGludG8gb25lCiAg
+ICBSZW1vdmUgcmVkdW5kYW50IElPTU1VIG51bGwgY2hlY2sgdW5kZXIgZm9yX2VhY2hfYWN0aXZl
+X2lvbW11Cgp2MzogQWRkIGEgbWFjcm8gZm9yIHNlcSBmaWxlIG9wZXJhdGlvbnMgCiAgICBDaGFu
+Z2UgdGhlIGludGVsX2lvbW11X2N0eCBmaWxlIG5hbWUgdG8gZG1hcl90cmFuc2xhdGlvbl9zdHJ1
+Y3QKCnYyOiBObyBjaGFuZ2UKCiBkcml2ZXJzL2lvbW11L0tjb25maWcgICAgICAgICAgICAgfCAg
+IDggKysrCiBkcml2ZXJzL2lvbW11L01ha2VmaWxlICAgICAgICAgICAgfCAgIDEgKwogZHJpdmVy
+cy9pb21tdS9pbnRlbC1pb21tdS1kZWJ1Zy5jIHwgMTI5ICsrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrCiBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgICAgICAgfCAgIDEg
+KwogaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oICAgICAgIHwgICA2ICsrCiA1IGZpbGVzIGNo
+YW5nZWQsIDE0NSBpbnNlcnRpb25zKCspCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9pb21t
+dS9pbnRlbC1pb21tdS1kZWJ1Zy5jCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9LY29uZmln
+IGIvZHJpdmVycy9pb21tdS9LY29uZmlnCmluZGV4IGYzYTIxMzQuLjMzMjY0OGYgMTAwNjQ0Ci0t
+LSBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZworKysgYi9kcml2ZXJzL2lvbW11L0tjb25maWcKQEAg
+LTE1Miw2ICsxNTIsMTQgQEAgY29uZmlnIElOVEVMX0lPTU1VCiAJICBhbmQgaW5jbHVkZSBQQ0kg
+ZGV2aWNlIHNjb3BlIGNvdmVyZWQgYnkgdGhlc2UgRE1BCiAJICByZW1hcHBpbmcgZGV2aWNlcy4K
+IAorY29uZmlnIElOVEVMX0lPTU1VX0RFQlVHCisJYm9vbCAiRXhwb3J0IEludGVsIElPTU1VIGlu
+dGVybmFscyBpbiBEZWJ1Z2ZzIgorCWRlcGVuZHMgb24gSU5URUxfSU9NTVUgJiYgREVCVUdfRlMK
+KwloZWxwCisJICBEZWJ1Z2ZzIHN1cHBvcnQgdG8gZXhwb3J0IElPTU1VIGNvbnRleHQgaW50ZXJu
+YWxzLCByZWdpc3RlciBjb250ZW50cywKKwkgIFBBU0lEIGludGVybmFscyBhbmQgaW50ZXJydXB0
+IHJlbWFwcGluZy4gVG8gYWNjZXNzIHRoaXMgaW5mb3JtYXRpb24gaW4KKwkgIHN5c2ZzLCBzYXkg
+WS4KKwogY29uZmlnIElOVEVMX0lPTU1VX1NWTQogCWJvb2wgIlN1cHBvcnQgZm9yIFNoYXJlZCBW
+aXJ0dWFsIE1lbW9yeSB3aXRoIEludGVsIElPTU1VIgogCWRlcGVuZHMgb24gSU5URUxfSU9NTVUg
+JiYgWDg2CmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L01ha2VmaWxlIGIvZHJpdmVycy9pb21t
+dS9NYWtlZmlsZQppbmRleCAxZmI2OTU4Li5mZGJhZjQ2IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lv
+bW11L01ha2VmaWxlCisrKyBiL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUKQEAgLTE1LDYgKzE1LDcg
+QEAgb2JqLSQoQ09ORklHX0FSTV9TTU1VKSArPSBhcm0tc21tdS5vCiBvYmotJChDT05GSUdfQVJN
+X1NNTVVfVjMpICs9IGFybS1zbW11LXYzLm8KIG9iai0kKENPTkZJR19ETUFSX1RBQkxFKSArPSBk
+bWFyLm8KIG9iai0kKENPTkZJR19JTlRFTF9JT01NVSkgKz0gaW50ZWwtaW9tbXUubworb2JqLSQo
+Q09ORklHX0lOVEVMX0lPTU1VX0RFQlVHKSArPSBpbnRlbC1pb21tdS1kZWJ1Zy5vCiBvYmotJChD
+T05GSUdfSU5URUxfSU9NTVVfU1ZNKSArPSBpbnRlbC1zdm0ubwogb2JqLSQoQ09ORklHX0lQTU1V
+X1ZNU0EpICs9IGlwbW11LXZtc2Eubwogb2JqLSQoQ09ORklHX0lSUV9SRU1BUCkgKz0gaW50ZWxf
+aXJxX3JlbWFwcGluZy5vIGlycV9yZW1hcHBpbmcubwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21t
+dS9pbnRlbC1pb21tdS1kZWJ1Zy5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS1kZWJ1Zy5j
+Cm5ldyBmaWxlIG1vZGUgMTAwNjQ0CmluZGV4IDAwMDAwMDAuLjgyNTM1MDMKLS0tIC9kZXYvbnVs
+bAorKysgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LWRlYnVnLmMKQEAgLTAsMCArMSwxMjkg
+QEAKKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCisvKgorICogQ29weXJpZ2h0
+IMKpIDIwMTggSW50ZWwgQ29ycG9yYXRpb24uCisgKgorICogQXV0aG9yczogR2F5YXRyaSBLYW1t
+ZWxhIDxnYXlhdHJpLmthbW1lbGFAaW50ZWwuY29tPgorICogICAgICAgICAgSmFjb2IgUGFuIDxq
+YWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbT4KKyAqICAgICAgICAgIFNvaGlsIE1laHRhIDxz
+b2hpbC5tZWh0YUBpbnRlbC5jb20+CisgKi8KKworI2RlZmluZSBwcl9mbXQoZm10KSAgICAgIklO
+VEVMX0lPTU1VOiAiIGZtdAorI2luY2x1ZGUgPGxpbnV4L2RlYnVnZnMuaD4KKyNpbmNsdWRlIDxs
+aW51eC9kbWFyLmg+CisjaW5jbHVkZSA8bGludXgvZXJyLmg+CisjaW5jbHVkZSA8bGludXgvaW50
+ZWwtaW9tbXUuaD4KKyNpbmNsdWRlIDxsaW51eC9pbnRlbC1zdm0uaD4KKyNpbmNsdWRlIDxsaW51
+eC9pby5oPgorI2luY2x1ZGUgPGxpbnV4L2lvbW11Lmg+CisjaW5jbHVkZSA8bGludXgvcGNpLmg+
+CisjaW5jbHVkZSA8bGludXgvcG1fcnVudGltZS5oPgorI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4K
+KyNpbmNsdWRlIDxsaW51eC9zcGlubG9jay5oPgorI2luY2x1ZGUgPGxpbnV4L3VhY2Nlc3MuaD4K
+KworI2luY2x1ZGUgImlycV9yZW1hcHBpbmcuaCIKKworI2RlZmluZSBUT1RBTF9CVVNfTlIJMjU2
+CS8qIGZ1bGwgYnVzIHJhbmdlICovCisjZGVmaW5lIERFRklORV9TSE9XX0FUVFJJQlVURShfX25h
+bWUpCQkJCQlcCitzdGF0aWMgaW50IF9fbmFtZSAjIyBfb3BlbihzdHJ1Y3QgaW5vZGUgKmlub2Rl
+LCBzdHJ1Y3QgZmlsZSAqZmlsZSkJXAorewkJCQkJCQkJCVwKKwlyZXR1cm4gc2luZ2xlX29wZW4o
+ZmlsZSwgX19uYW1lICMjIF9zaG93LCBpbm9kZS0+aV9wcml2YXRlKTsJXAorfQkJCQkJCQkJCVwK
+K3N0YXRpYyBjb25zdCBzdHJ1Y3QgZmlsZV9vcGVyYXRpb25zIF9fbmFtZSAjIyBfZm9wcyA9CQkJ
+XAorewkJCQkJCQkJCVwKKwkub3BlbgkJPSBfX25hbWUgIyMgX29wZW4sCQkJCVwKKwkucmVhZAkJ
+PSBzZXFfcmVhZCwJCQkJCVwKKwkubGxzZWVrCQk9IHNlcV9sc2VlaywJCQkJCVwKKwkucmVsZWFz
+ZQk9IHNpbmdsZV9yZWxlYXNlLAkJCQlcCisJLm93bmVyCQk9IFRISVNfTU9EVUxFLAkJCQkJXAor
+fQorCitzdGF0aWMgdm9pZCBjdHhfdGJsX2VudHJ5X3Nob3coc3RydWN0IHNlcV9maWxlICptLCBz
+dHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LAorCQkJICAgICAgIGludCBidXMsIGJvb2wgZXh0KQor
+eworCWNvbnN0IGNoYXIgKmN0ID0gZXh0ID8gIkxvd2VyIENvbnRleHQgVGFibGUiIDogIkNvbnRl
+eHQgVGFibGUiOworCXN0cnVjdCBjb250ZXh0X2VudHJ5ICpjb250ZXh0OworCXVuc2lnbmVkIGxv
+bmcgZmxhZ3M7CisJaW50IGN0eDsKKworCXNlcV9wcmludGYobSwgIiVzIEVudHJpZXMgZm9yIEJ1
+czogJWRcbiIsIGN0LCBidXMpOworCXNlcV9wdXRzKG0sICJbZW50cnldXHREZXZpY2UgQjpELkZc
+dExvd1x0XHRIaWdoXG4iKTsKKworCXNwaW5fbG9ja19pcnFzYXZlKCZpb21tdS0+bG9jaywgZmxh
+Z3MpOworCisJLyogUHVibGlzaCBlaXRoZXIgY29udGV4dCBlbnRyaWVzIG9yIGV4dGVuZGVkIGNv
+bnRleHQgZW50cmllcyAqLworCWZvciAoY3R4ID0gMDsgY3R4IDwgKGV4dCA/IDEyOCA6IDI1Nik7
+IGN0eCsrKSB7CisJCWNvbnRleHQgPSBpb21tdV9jb250ZXh0X2FkZHIoaW9tbXUsIGJ1cywgY3R4
+LCAwKTsKKwkJaWYgKCFjb250ZXh0KQorCQkJZ290byBvdXQ7CisKKwkJaWYgKCFjb250ZXh0X3By
+ZXNlbnQoY29udGV4dCkpCisJCQljb250aW51ZTsKKworCQlzZXFfcHJpbnRmKG0sICJbJWRdXHQl
+MDR4OiUwMng6JTAyeC4leFx0JWxseFx0JWxseFxuIiwgY3R4LAorCQkJICAgaW9tbXUtPnNlZ21l
+bnQsIGJ1cywgUENJX1NMT1QoY3R4KSwgUENJX0ZVTkMoY3R4KSwKKwkJCSAgIGNvbnRleHRbMF0u
+bG8sIGNvbnRleHRbMF0uaGkpOworCisJCWlmICghZWNhcF9lY3MoaW9tbXUtPmVjYXApKQorCQkJ
+Y29udGludWU7CisKKwkJc2VxX3ByaW50ZihtLCAiSGlnaGVyIENvbnRleHQgVGFibGUgRW50cmll
+cyBmb3IgQnVzOiAlZFxuIiwKKwkJCSAgIGJ1cyk7CisJCXNlcV9wcmludGYobSwgIlslZF1cdCUw
+NHg6JTAyeDolMDJ4LiV4XHQlbGx4XHQlbGx4XG4iLCBjdHgsCisJCQkgICBpb21tdS0+c2VnbWVu
+dCwgYnVzLCBQQ0lfU0xPVChjdHgpLCBQQ0lfRlVOQyhjdHgpLAorCQkJICAgY29udGV4dFsxXS5s
+bywgY29udGV4dFsxXS5oaSk7CisJfQorb3V0OgorCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmlv
+bW11LT5sb2NrLCBmbGFncyk7Cit9CisKK3N0YXRpYyB2b2lkIHJvb3RfdGJsX2VudHJ5X3Nob3co
+c3RydWN0IHNlcV9maWxlICptLCBzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11KQoreworCXU2NCBy
+dGFkZHJfcmVnID0gZG1hcl9yZWFkcShpb21tdS0+cmVnICsgRE1BUl9SVEFERFJfUkVHKTsKKwli
+b29sIGV4dCA9ICEhKHJ0YWRkcl9yZWcgJiBETUFfUlRBRERSX1JUVCk7CisJY29uc3QgY2hhciAq
+cnQgPSBleHQgPyAiRXh0ZW5kZWQgUm9vdCBUYWJsZSIgOiAiUm9vdCBUYWJsZSI7CisJaW50IGJ1
+czsKKworCXNlcV9wcmludGYobSwgIklPTU1VICVzOiAlcyBBZGRyZXNzOiVsbHhcbiIsIGlvbW11
+LT5uYW1lLCBydCwKKwkJICAgcnRhZGRyX3JlZyk7CisJLyogUHVibGlzaCBleHRlbmRlZCByb290
+IHRhYmxlIGVudHJpZXMgb3Igcm9vdCB0YWJsZSBlbnRyaWVzIGhlcmUgKi8KKwlmb3IgKGJ1cyA9
+IDA7IGJ1cyA8IFRPVEFMX0JVU19OUjsgYnVzKyspIHsKKwkJaWYgKCFpb21tdS0+cm9vdF9lbnRy
+eVtidXNdLmxvKQorCQkJY29udGludWU7CisKKwkJc2VxX3ByaW50ZihtLCAiJXMgRW50cmllczpc
+biIsIHJ0KTsKKwkJc2VxX3ByaW50ZihtLCAiQnVzICVkIEw6ICVsbHggSDogJWxseFxuIiwgYnVz
+LAorCQkJICAgaW9tbXUtPnJvb3RfZW50cnlbYnVzXS5sbywKKwkJCSAgIGlvbW11LT5yb290X2Vu
+dHJ5W2J1c10uaGkpOworCisJCWN0eF90YmxfZW50cnlfc2hvdyhtLCBpb21tdSwgYnVzLCBleHQp
+OworCX0KK30KKworc3RhdGljIGludCBkbWFyX3RyYW5zbGF0aW9uX3N0cnVjdF9zaG93KHN0cnVj
+dCBzZXFfZmlsZSAqbSwgdm9pZCAqdW51c2VkKQoreworCXN0cnVjdCBkbWFyX2RyaGRfdW5pdCAq
+ZHJoZDsKKwlzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11OworCisJcmN1X3JlYWRfbG9jaygpOwor
+CWZvcl9lYWNoX2FjdGl2ZV9pb21tdShpb21tdSwgZHJoZCkgeworCQlyb290X3RibF9lbnRyeV9z
+aG93KG0sIGlvbW11KTsKKwkJc2VxX3B1dGMobSwgJ1xuJyk7CisJfQorCXJjdV9yZWFkX3VubG9j
+aygpOworCisJcmV0dXJuIDA7Cit9CitERUZJTkVfU0hPV19BVFRSSUJVVEUoZG1hcl90cmFuc2xh
+dGlvbl9zdHJ1Y3QpOworCit2b2lkIF9faW5pdCBpbnRlbF9pb21tdV9kZWJ1Z2ZzX2luaXQodm9p
+ZCkKK3sKKwlzdHJ1Y3QgZGVudHJ5ICppb21tdV9kZWJ1Z19yb290OworCisJaW9tbXVfZGVidWdf
+cm9vdCA9IGRlYnVnZnNfY3JlYXRlX2RpcigiaW50ZWxfaW9tbXUiLCBOVUxMKTsKKwlpZiAoIWlv
+bW11X2RlYnVnX3Jvb3QpCisJCXJldHVybjsKKworCWRlYnVnZnNfY3JlYXRlX2ZpbGUoImRtYXJf
+dHJhbnNsYXRpb25fc3RydWN0IiwgMDQ0NCwgaW9tbXVfZGVidWdfcm9vdCwKKwkJCSAgICBOVUxM
+LCAmZG1hcl90cmFuc2xhdGlvbl9zdHJ1Y3RfZm9wcyk7Cit9CmRpZmYgLS1naXQgYS9kcml2ZXJz
+L2lvbW11L2ludGVsLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKaW5kZXgg
+ZjYyNDFmNi4uZTIzZjMxZDMgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUu
+YworKysgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKQEAgLTQ4MDUsNiArNDgwNSw3IEBA
+IGludCBfX2luaXQgaW50ZWxfaW9tbXVfaW5pdCh2b2lkKQogCWNwdWhwX3NldHVwX3N0YXRlKENQ
+VUhQX0lPTU1VX0lOVEVMX0RFQUQsICJpb21tdS9pbnRlbDpkZWFkIiwgTlVMTCwKIAkJCSAgaW50
+ZWxfaW9tbXVfY3B1X2RlYWQpOwogCWludGVsX2lvbW11X2VuYWJsZWQgPSAxOworCWludGVsX2lv
+bW11X2RlYnVnZnNfaW5pdCgpOwogCiAJcmV0dXJuIDA7CiAKZGlmZiAtLWdpdCBhL2luY2x1ZGUv
+bGludXgvaW50ZWwtaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaAppbmRleCA3
+OGVjODVhLi44OTY4YWZhIDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgK
+KysrIGIvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCkBAIC01MTgsNiArNTE4LDEyIEBAIGV4
+dGVybiBzdHJ1Y3QgaW50ZWxfaW9tbXUgKmludGVsX3N2bV9kZXZpY2VfdG9faW9tbXUoc3RydWN0
+IGRldmljZSAqZGV2KTsKIGV4dGVybiB1bnNpZ25lZCBsb25nIGludGVsX2lvbW11X2dldF9wdHMo
+c3RydWN0IGludGVsX2lvbW11ICppb21tdSk7CiAjZW5kaWYKIAorI2lmZGVmIENPTkZJR19JTlRF
+TF9JT01NVV9ERUJVRworZXh0ZXJuIHZvaWQgaW50ZWxfaW9tbXVfZGVidWdmc19pbml0KHZvaWQp
+OworI2Vsc2UKK3N0YXRpYyBpbmxpbmUgdm9pZCBpbnRlbF9pb21tdV9kZWJ1Z2ZzX2luaXQodm9p
+ZCkge30KKyNlbmRpZiAvKiBDT05GSUdfSU5URUxfSU9NTVVfREVCVUcgKi8KKwogZXh0ZXJuIGNv
+bnN0IHN0cnVjdCBhdHRyaWJ1dGVfZ3JvdXAgKmludGVsX2lvbW11X2dyb3Vwc1tdOwogZXh0ZXJu
+IGJvb2wgY29udGV4dF9wcmVzZW50KHN0cnVjdCBjb250ZXh0X2VudHJ5ICpjb250ZXh0KTsKIGV4
+dGVybiBzdHJ1Y3QgY29udGV4dF9lbnRyeSAqaW9tbXVfY29udGV4dF9hZGRyKHN0cnVjdCBpbnRl
+bF9pb21tdSAqaW9tbXUsCi0tIAoyLjcuNAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2lvbW11
