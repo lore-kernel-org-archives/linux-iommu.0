@@ -1,15 +1,11 @@
-From: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu: Fix iommu_unmap and iommu_unmap_fast return
-	type
-Date: Sat, 3 Feb 2018 07:57:49 +0800
-Message-ID: <201802030748.xftfsqJe%fengguang.wu@intel.com>
-References: <1517363285-89304-2-git-send-email-suravee.suthikulpanit@amd.com>
+From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v7 0/5] Add Intel IOMMU debugfs support
+Date: Fri,  2 Feb 2018 16:49:56 -0800
+Message-ID: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1517363285-89304-2-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,66 +15,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suravee,
+Hi All,
 
-I love your patch! Perhaps something to improve:
+This series aims to add debugfs support for Intel IOMMU. It exposes IOMMU
+registers, internal context and dumps individual table entries to help debug
+Intel IOMMUs.
 
-[auto build test WARNING on iommu/next]
-[also build test WARNING on v4.15 next-20180202]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-
-url:    https://github.com/0day-ci/linux/commits/Suravee-Suthikulpanit/iommu-Fix-iommu_unmap-and-iommu_unmap_fast-return-type/20180203-015316
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
+The first patch does the ground work for the following patches by reorganizing
+some Intel IOMMU data structures. The following patches create a new Kconfig
+option - INTEL_IOMMU_DEBUG and add debugfs support for IOMMU context internals,
+register contents, PASID internals, and Interrupt remapping in that order. The
+information can be accessed in sysfs at '/sys/kernel/debug/intel_iommu/'.
 
 
-sparse warnings: (new ones prefixed by >>)
+Regards,
+Sohil
+ 
+Changes since v6:
+ - Split patch 1/5 and 2/5 differently
+ - Simplify and improve code formatting
+ - Use macro for register set definitions
+ - Fix compiler warning for readq
+ - Add Co-Developed-by tag to commit messages
 
->> drivers/iommu/qcom_iommu.c:592:27: sparse: incorrect type in initializer (different signedness) @@ expected long ( )( ... ) @@ got unsigned long ( )( ... ) @@
-   drivers/iommu/qcom_iommu.c:592:27: expected long ( )( ... )
-   drivers/iommu/qcom_iommu.c:592:27: got unsigned long ( )( ... )
-   drivers/iommu/qcom_iommu.c:592:12: error: initialization from incompatible pointer type
-    .unmap = qcom_iommu_unmap,
-    ^~~~~~~~~~~~~~~~
-   drivers/iommu/qcom_iommu.c:592:12: note: (near initialization for 'qcom_iommu_ops.unmap')
-   cc1: some warnings being treated as errors
+Changes since v5:
+ - Change the order of includes to an alphabetical order
+ - Change seq_printf and seq_puts formatting
 
-vim +592 drivers/iommu/qcom_iommu.c
+Changes since v4:
+ - Change to a SPDX license tag
+ - Fix seq_printf formatting and remove leading '\n's
 
-0ae349a0f3 Rob Clark    2017-08-09  584  
-0ae349a0f3 Rob Clark    2017-08-09  585  static const struct iommu_ops qcom_iommu_ops = {
-0ae349a0f3 Rob Clark    2017-08-09  586  	.capable	= qcom_iommu_capable,
-0ae349a0f3 Rob Clark    2017-08-09  587  	.domain_alloc	= qcom_iommu_domain_alloc,
-0ae349a0f3 Rob Clark    2017-08-09  588  	.domain_free	= qcom_iommu_domain_free,
-0ae349a0f3 Rob Clark    2017-08-09  589  	.attach_dev	= qcom_iommu_attach_dev,
-0ae349a0f3 Rob Clark    2017-08-09  590  	.detach_dev	= qcom_iommu_detach_dev,
-0ae349a0f3 Rob Clark    2017-08-09  591  	.map		= qcom_iommu_map,
-0ae349a0f3 Rob Clark    2017-08-09 @592  	.unmap		= qcom_iommu_unmap,
-0ae349a0f3 Rob Clark    2017-08-09  593  	.map_sg		= default_iommu_map_sg,
-4d689b6194 Robin Murphy 2017-09-28  594  	.flush_iotlb_all = qcom_iommu_iotlb_sync,
-4d689b6194 Robin Murphy 2017-09-28  595  	.iotlb_sync	= qcom_iommu_iotlb_sync,
-0ae349a0f3 Rob Clark    2017-08-09  596  	.iova_to_phys	= qcom_iommu_iova_to_phys,
-0ae349a0f3 Rob Clark    2017-08-09  597  	.add_device	= qcom_iommu_add_device,
-0ae349a0f3 Rob Clark    2017-08-09  598  	.remove_device	= qcom_iommu_remove_device,
-0ae349a0f3 Rob Clark    2017-08-09  599  	.device_group	= generic_device_group,
-0ae349a0f3 Rob Clark    2017-08-09  600  	.of_xlate	= qcom_iommu_of_xlate,
-0ae349a0f3 Rob Clark    2017-08-09  601  	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
-0ae349a0f3 Rob Clark    2017-08-09  602  };
-0ae349a0f3 Rob Clark    2017-08-09  603  
+Changes since v3:
+ - Remove an unused function parameter from some of the functions
+ - Fix checkpatch.pl warnings
+ - Remove error reporting for debugfs_create_file functions
+ - Fix unnecessary reprogramming of the context entries
+ - Simplify and merge the show context and extended context patch into one
+ - Remove redundant IOMMU null check under for_each_active_iommu
+ - Update the commit title to be consistent
 
-:::::: The code at line 592 was first introduced by commit
-:::::: 0ae349a0f33fb040a2bc228fdc6d60111455feab iommu/qcom: Add qcom_iommu
+Changes since v2:
+ - Added a macro for seq file operations based on recommendation by Andy 
+   Shevchenko. The marco can be moved to seq_file.h at a future point
+ - Changed the debugfs file names to more relevant ones
+ - Added information for MTRR registers in the regset file
 
-:::::: TO: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-:::::: CC: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Changes since v1:
+ - Fixed seq_printf formatting
+ - Handled the case when Interrupt remapping is not enabled
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+Gayatri Kammela (4):
+  iommu/vt-d: Relocate struct/function declarations to its header files
+  iommu/vt-d: Enable debugfs support to show context internals
+  iommu/vt-d: Add debugfs support to show register contents
+  iommu/vt-d: Add debugfs support to show Pasid table contents
+
+Sohil Mehta (1):
+  iommu/vt-d: Add debugfs support for Interrupt remapping
+
+ drivers/iommu/Kconfig             |   8 +
+ drivers/iommu/Makefile            |   1 +
+ drivers/iommu/intel-iommu-debug.c | 338 ++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel-iommu.c       |  34 +---
+ drivers/iommu/intel-svm.c         |   8 -
+ include/linux/intel-iommu.h       |  39 +++++
+ include/linux/intel-svm.h         |  10 +-
+ 7 files changed, 400 insertions(+), 38 deletions(-)
+ create mode 100644 drivers/iommu/intel-iommu-debug.c
+
+-- 
+2.7.4
