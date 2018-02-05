@@ -1,21 +1,16 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 00/36] Process management for IOMMU + SVM for SMMUv3
-Date: Mon, 5 Feb 2018 11:15:13 -0700
-Message-ID: <20180205181513.GB878@jcrouse-lnx.qualcomm.com>
-References: <20171006133203.22803-1-jean-philippe.brucker@arm.com>
-	<0c6778d8-741f-0db7-fe3c-df88a75ebbb2@huawei.com>
-	<0fecd29e-eaf7-9503-b087-7bfbc251da88@arm.com>
-	<c6b7fb4b-4f2b-0d81-8bb5-8fa6b62aca3a@huawei.com>
-	<8a1e090d-22e8-0295-a53f-bc3b5b7d7971@arm.com>
-	<20171012152803.GA3027@jcrouse-lnx.qualcomm.com>
-	<8539601d-ef7a-8dd0-2fc7-51240c292678@arm.com>
-	<20171025202015.GA6159@jcrouse-lnx.qualcomm.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/io-pgtable: use size_t return type for all
+	foo_unmap
+Date: Mon, 5 Feb 2018 23:51:47 +0530
+Message-ID: <42553426-78dd-bd3a-bd73-92a444534fde@codeaurora.org>
+References: <1517853559-5869-1-git-send-email-vivek.gautam@codeaurora.org>
+	<9c91b0a0-3163-09c6-e0d8-6cb69fbf76b3@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20171025202015.GA6159-9PYrDHPZ2Orvke4nUoYGnHL1okKdlPRT@public.gmane.org>
+In-Reply-To: <9c91b0a0-3163-09c6-e0d8-6cb69fbf76b3-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,144 +20,145 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 25, 2017 at 02:20:15PM -0600, Jordan Crouse wrote:
-> On Mon, Oct 23, 2017 at 02:00:07PM +0100, Jean-Philippe Brucker wrote:
-> > Hi Jordan,
-> > 
-> > [Lots of IOMMU people have been dropped from Cc, I've tried to add them back]
-> > 
-> > On 12/10/17 16:28, Jordan Crouse wrote:
-> > > On Thu, Oct 12, 2017 at 01:55:32PM +0100, Jean-Philippe Brucker wrote:
-> > >> On 12/10/17 13:05, Yisheng Xie wrote:
-> > >> [...]
-> > >>>>>> * An iommu_process can be bound to multiple domains, and a domain can have
-> > >>>>>>   multiple iommu_process.
-> > >>>>> when bind a task to device, can we create a single domain for it? I am thinking
-> > >>>>> about process management without shared PT(for some device only support PASID
-> > >>>>> without pri ability), it seems hard to expand if a domain have multiple iommu_process?
-> > >>>>> Do you have any idea about this?
-> > >>>>
-> > >>>> A device always has to be in a domain, as far as I know. Not supporting
-> > >>>> PRI forces you to pin down all user mappings (or just the ones you use for
-> > >>>> DMA) but you should sill be able to share PT. Now if you don't support
-> > >>>> shared PT either, but only PASID, then you'll have to use io-pgtable and a
-> > >>>> new map/unmap API on an iommu_process. I don't understand your concern
-> > >>>> though, how would the link between process and domains prevent this use-case?
-> > >>>>
-> > >>> So you mean that if an iommu_process bind to multiple devices it should create
-> > >>> multiple io-pgtables? or just share the same io-pgtable?
-> > >>
-> > >> I don't know to be honest, I haven't thought much about the io-pgtable
-> > >> case, I'm all about sharing the mm :)
-> > >>
-> > >> It really depends on what the user (GPU driver I assume) wants. I think
-> > >> that if you're not sharing an mm with the device, then you're trying to
-> > >> hide parts of the process to the device, so you'd also want the
-> > >> flexibility of having different io-pgtables between devices. Different
-> > >> devices accessing isolated parts of the process requires separate io-pgtables.
-> > > 
-> > > In our specific Snapdragon use case the GPU is the only entity that cares about
-> > > process specific io-pgtables.  Everything else (display, video, camera) is happy
-> > > using a global io-ptgable.  The reasoning is that the GPU is programmable from
-> > > user space and can be easily used to copy data whereas the other use cases have
-> > > mostly fixed functions.
-> > > 
-> > > Even if different devices did want to have a process specific io-pgtable I doubt
-> > > we would share them.  Every device uses the IOMMU differently and the magic
-> > > needed to share a io-pgtable between (for example) a GPU and a DSP would be
-> > > prohibitively complicated.
-> > > 
-> > > Jordan
-> > 
-> > 
-> > 
-> > More context here:
-> > https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg20368.html
-> > 
-> > So to summarize the Snapdragon case, if I understand correctly you need
-> > two additional features:
-> > 
-> > (1) A way to create process address spaces, that are not bound to an mm
-> > but to a separate io-pgtable. And a way to map/unmap these contexts.
-> 
-> Correct.
-> 
-> > (2) A way to obtain the PGD in order to program it into the GPU. And also
-> > the ASID I suppose? What about TCR and MAIR?
-> >
-> PGD and ASID.  Not the TCR and MAIR, at least not in the current iteration.
-> 
-> > For (1), I can see some value in isolating process contexts with
-> > io-pgtable without going all the way and sharing the mm. The IOVA=VA
-> > use-case feels a bit weak. But it does provide better isolation than
-> > dma_map/unmap, if the GPU is in charge of PASIDs then two processes that
-> > execute code on the GPU cannot access each others' DMA buffers. Maybe
-> > other users will want that feature (but they really should be using bind_mm!).
-> 
-> That is exactly the use case.  A real-world attach vector in the mobile GPU
-> world is a malicious app that knows that knows that if have a banking app
-> active and copies the surfaces or at the very least scribbles over everything
-> and is very rude.
-> 
-> > In next version I'm going to replace iommu_process_bind by something like
-> > iommu_sva_bind_mm, which reduces the scope of the API I'm introducing and
-> > doesn't fit your case anymore. What you need is a shortcut into the PASID
-> > allocator, a way to allocate a private PASID with io-pgtables instead of
-> > one backed by an mm. Something like:
-> > 
-> > iommu_sva_alloc_pasid(domain, dev) -> pasid
-> > iommu_sva_map(pasid, iova, size, flags)
-> > iommu_sva_unmap(pasid, iova, size)
-> > iommu_sva_free_pasid(domain, pasid)
-> 
-> Yep, that matches up with my thinking.
-> 
-> > Then for (2) the GPU is tightly integrated into the SMMU and can switch
-> > contexts. I might be wrong but I don't see this case becoming standard as
-> > new implementations move to PASIDs, we shouldn't spend too much time
-> > making it generic.
-> 
-> Agreed. This is rather specific use case.
-> 
-> > But to make it fit into the PASID API, how about the following.
-> 
-> 
-> > We provide a backdoor to the GPU driver, allowing it to register PASID ops
-> > into SMMUv2 driver:
-> > 
-> > struct smmuv2_pasid_ops {
-> > 	int (*install_pasid)(struct iommu_domain, int pasid, ttbr, asid
-> > 			     and whatnot);
-> > 	void (*remove_pasid)(struct iommu_domain, int pasid);
-> > }
-> > 
-> > On PASID-capable IOMMUs, iommu_sva_alloc_pasid would install a context
-> > descriptor into the PASID tables (owned by the IOMMU), pointing to the
-> > io-pgtable. As SMMUv2 doesn't support PASID, iommu_sva_alloc_pasid
-> > wouldn't actually install a context descriptor but instead call back into
-> > the GPU driver with install_pasid. The GPU can then do its thing, call
-> > sva_map/unmap, and switch contexts.
-> > 
-> > The good thing is that (1) and (2) are separate, so you get the same
-> > callbacks if you're using iommu_sva_bind_mm instead of the private pasid
-> > thing.
-> 
-> This sounds ideal. It seems to scratch all the right itches that we have. 
-> 
-> Thanks for thinking about this use case. I appreciate your time.
- 
-Hi Jean-Philippe -
-
-Just a gentle nudge to see if there is any progress on this front. I know the
-last 6 months have been busy with other far more serious panics but I wanted to
-offer any help I could provide including testing on various qcom targets.
-
-Regards,
-Jordan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+SGkgUm9iaW4sCgoKT24gMi81LzIwMTggMTE6MzggUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPiBP
+biAwNS8wMi8xOCAxNzo1OSwgVml2ZWsgR2F1dGFtIHdyb3RlOgo+PiBVbm1hcCByZXR1cm5zIGEg
+c2l6ZV90IGFsbCB0aHJvdWdob3V0IHRoZSBJT01NVSBmcmFtZXdvcmsuCj4+IE1ha2UgaW8tcGd0
+YWJsZSBtYXRjaCB0aGlzIGNvbnZlbnRpb24uCj4+IE1vcmVvdmVyLCB0aGVyZSBpc24ndCBhIG5l
+ZWQgdG8gaGF2ZSBhIHNpZ25lZCBpbnQgcmV0dXJuIHR5cGUKPj4gYXMgd2UgcmV0dXJuIDAgaW4g
+Y2FzZSBvZiBmYWlsdXJlcy4KPgo+IFRoYXQgbWFrZXMgc2Vuc2UgKHRoZSBjb2RlIGl0c2VsZiBo
+YXMgYWx3YXlzIGZvbGxvd2VkIHRoYXQgY29udmVudGlvbiwgCj4gZXZlbiBpZiB0aGUgcHJvdG90
+eXBlcyBkaWRuJ3QpLCBhbmQgYXQgYSBnbGFuY2UgaXQgbG9va3MgbGlrZSB5b3UndmUgCj4gY2F1
+Z2h0IGFsbCB0aGUgc2l0ZXMgd2hpY2ggbmVlZCBpdC4KClllcywgYWxsIHRoZSBmb29fdW5tYXAo
+KSBzaXRlcy4KPgo+IEFja2VkLWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29t
+PgoKVGhhbmtzIFJvYmluCgpSZWdhcmRzClZpdmVrCgo+Cj4+IFNpZ25lZC1vZmYtYnk6IFZpdmVr
+IEdhdXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPgo+PiAtLS0KPj4gwqAgZHJpdmVy
+cy9pb21tdS9pby1wZ3RhYmxlLWFybS12N3MuYyB8IDIxICsrKysrKysrKysrLS0tLS0tLS0tLQo+
+PiDCoCBkcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmPCoMKgwqDCoCB8IDI0ICsrKysrKysr
+KysrKy0tLS0tLS0tLS0tLQo+PiDCoCBkcml2ZXJzL2lvbW11L2lvLXBndGFibGUuaMKgwqDCoMKg
+wqDCoMKgwqAgfMKgIDQgKystLQo+PiDCoCAzIGZpbGVzIGNoYW5nZWQsIDI1IGluc2VydGlvbnMo
+KyksIDI0IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pby1w
+Z3RhYmxlLWFybS12N3MuYyAKPj4gYi9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLXY3cy5j
+Cj4+IGluZGV4IDJjYTA4ZGM5MzMxYy4uMTBlNGEzZDExYzAyIDEwMDY0NAo+PiAtLS0gYS9kcml2
+ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLXY3cy5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW8t
+cGd0YWJsZS1hcm0tdjdzLmMKPj4gQEAgLTM1Nyw4ICszNTcsOCBAQCBzdGF0aWMgYm9vbCBhcm1f
+djdzX3B0ZV9pc19jb250KGFybV92N3NfaW9wdGUgCj4+IHB0ZSwgaW50IGx2bCkKPj4gwqDCoMKg
+wqDCoCByZXR1cm4gZmFsc2U7Cj4+IMKgIH0KPj4gwqAgLXN0YXRpYyBpbnQgX19hcm1fdjdzX3Vu
+bWFwKHN0cnVjdCBhcm1fdjdzX2lvX3BndGFibGUgKiwgdW5zaWduZWQgCj4+IGxvbmcsCj4+IC3C
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNpemVfdCwgaW50LCBhcm1fdjdzX2lvcHRlICop
+Owo+PiArc3RhdGljIHNpemVfdCBfX2FybV92N3NfdW5tYXAoc3RydWN0IGFybV92N3NfaW9fcGd0
+YWJsZSAqLCB1bnNpZ25lZCAKPj4gbG9uZywKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgc2l6ZV90LCBpbnQsIGFybV92N3NfaW9wdGUgKik7Cj4+IMKgIMKgIHN0YXRpYyBp
+bnQgYXJtX3Y3c19pbml0X3B0ZShzdHJ1Y3QgYXJtX3Y3c19pb19wZ3RhYmxlICpkYXRhLAo+PiDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGxvbmcgaW92YSwgcGh5
+c19hZGRyX3QgcGFkZHIsIGludCBwcm90LAo+PiBAQCAtNTQxLDkgKzU0MSwxMCBAQCBzdGF0aWMg
+YXJtX3Y3c19pb3B0ZSBhcm1fdjdzX3NwbGl0X2NvbnQoc3RydWN0IAo+PiBhcm1fdjdzX2lvX3Bn
+dGFibGUgKmRhdGEsCj4+IMKgwqDCoMKgwqAgcmV0dXJuIHB0ZTsKPj4gwqAgfQo+PiDCoCAtc3Rh
+dGljIGludCBhcm1fdjdzX3NwbGl0X2Jsa191bm1hcChzdHJ1Y3QgYXJtX3Y3c19pb19wZ3RhYmxl
+ICpkYXRhLAo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVk
+IGxvbmcgaW92YSwgc2l6ZV90IHNpemUsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgYXJtX3Y3c19pb3B0ZSBibGtfcHRlLCBhcm1fdjdzX2lvcHRlICpwdGVwKQo+PiAr
+c3RhdGljIHNpemVfdCBhcm1fdjdzX3NwbGl0X2Jsa191bm1hcChzdHJ1Y3QgYXJtX3Y3c19pb19w
+Z3RhYmxlICpkYXRhLAo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUsCj4+ICvCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYXJtX3Y3c19pb3B0ZSBibGtfcHRlLAo+PiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFybV92N3NfaW9wdGUgKnB0
+ZXApCj4+IMKgIHsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgaW9fcGd0YWJsZV9jZmcgKmNmZyA9ICZk
+YXRhLT5pb3AuY2ZnOwo+PiDCoMKgwqDCoMKgIGFybV92N3NfaW9wdGUgcHRlLCAqdGFibGVwOwo+
+PiBAQCAtNTg0LDkgKzU4NSw5IEBAIHN0YXRpYyBpbnQgYXJtX3Y3c19zcGxpdF9ibGtfdW5tYXAo
+c3RydWN0IAo+PiBhcm1fdjdzX2lvX3BndGFibGUgKmRhdGEsCj4+IMKgwqDCoMKgwqAgcmV0dXJu
+IHNpemU7Cj4+IMKgIH0KPj4gwqAgLXN0YXRpYyBpbnQgX19hcm1fdjdzX3VubWFwKHN0cnVjdCBh
+cm1fdjdzX2lvX3BndGFibGUgKmRhdGEsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgdW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6ZSwgaW50IGx2bCwKPj4gLcKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBhcm1fdjdzX2lvcHRlICpwdGVwKQo+PiArc3RhdGljIHNp
+emVfdCBfX2FybV92N3NfdW5tYXAoc3RydWN0IGFybV92N3NfaW9fcGd0YWJsZSAqZGF0YSwKPj4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpb3ZhLCBz
+aXplX3Qgc2l6ZSwgaW50IGx2bCwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgYXJtX3Y3c19pb3B0ZSAqcHRlcCkKPj4gwqAgewo+PiDCoMKgwqDCoMKgIGFybV92N3NfaW9w
+dGUgcHRlW0FSTV9WN1NfQ09OVF9QQUdFU107Cj4+IMKgwqDCoMKgwqAgc3RydWN0IGlvX3BndGFi
+bGUgKmlvcCA9ICZkYXRhLT5pb3A7Cj4+IEBAIC02NTYsOCArNjU3LDggQEAgc3RhdGljIGludCBf
+X2FybV92N3NfdW5tYXAoc3RydWN0IAo+PiBhcm1fdjdzX2lvX3BndGFibGUgKmRhdGEsCj4+IMKg
+wqDCoMKgwqAgcmV0dXJuIF9fYXJtX3Y3c191bm1hcChkYXRhLCBpb3ZhLCBzaXplLCBsdmwgKyAx
+LCBwdGVwKTsKPj4gwqAgfQo+PiDCoCAtc3RhdGljIGludCBhcm1fdjdzX3VubWFwKHN0cnVjdCBp
+b19wZ3RhYmxlX29wcyAqb3BzLCB1bnNpZ25lZCBsb25nIAo+PiBpb3ZhLAo+PiAtwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIHNpemVfdCBzaXplKQo+PiArc3RhdGljIHNpemVfdCBhcm1fdjdzX3Vu
+bWFwKHN0cnVjdCBpb19wZ3RhYmxlX29wcyAqb3BzLCB1bnNpZ25lZCAKPj4gbG9uZyBpb3ZhLAo+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNpemVfdCBzaXplKQo+PiDCoCB7Cj4+
+IMKgwqDCoMKgwqAgc3RydWN0IGFybV92N3NfaW9fcGd0YWJsZSAqZGF0YSA9IGlvX3BndGFibGVf
+b3BzX3RvX2RhdGEob3BzKTsKPj4gwqAgZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW8tcGd0
+YWJsZS1hcm0uYyAKPj4gYi9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMKPj4gaW5kZXgg
+NTFlNWM0M2NhZWQxLi44ZmFhYWEwNGQ3YTcgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
+aW8tcGd0YWJsZS1hcm0uYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMK
+Pj4gQEAgLTI2OCw5ICsyNjgsOSBAQCBzdGF0aWMgdm9pZCBfX2FybV9scGFlX3NldF9wdGUoYXJt
+X2xwYWVfaW9wdGUgCj4+ICpwdGVwLCBhcm1fbHBhZV9pb3B0ZSBwdGUsCj4+IMKgwqDCoMKgwqDC
+oMKgwqDCoCBfX2FybV9scGFlX3N5bmNfcHRlKHB0ZXAsIGNmZyk7Cj4+IMKgIH0KPj4gwqAgLXN0
+YXRpYyBpbnQgX19hcm1fbHBhZV91bm1hcChzdHJ1Y3QgYXJtX2xwYWVfaW9fcGd0YWJsZSAqZGF0
+YSwKPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIGlvdmEs
+IHNpemVfdCBzaXplLCBpbnQgbHZsLAo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IGFybV9scGFlX2lvcHRlICpwdGVwKTsKPj4gK3N0YXRpYyBzaXplX3QgX19hcm1fbHBhZV91bm1h
+cChzdHJ1Y3QgYXJtX2xwYWVfaW9fcGd0YWJsZSAqZGF0YSwKPj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLCBpbnQg
+bHZsLAo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFybV9scGFlX2lv
+cHRlICpwdGVwKTsKPj4gwqAgwqAgc3RhdGljIHZvaWQgX19hcm1fbHBhZV9pbml0X3B0ZShzdHJ1
+Y3QgYXJtX2xwYWVfaW9fcGd0YWJsZSAqZGF0YSwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBwaHlzX2FkZHJfdCBwYWRkciwgYXJtX2xwYWVfaW9wdGUgcHJvdCwKPj4gQEAg
+LTUwNiwxMCArNTA2LDEwIEBAIHN0YXRpYyB2b2lkIGFybV9scGFlX2ZyZWVfcGd0YWJsZShzdHJ1
+Y3QgCj4+IGlvX3BndGFibGUgKmlvcCkKPj4gwqDCoMKgwqDCoCBrZnJlZShkYXRhKTsKPj4gwqAg
+fQo+PiDCoCAtc3RhdGljIGludCBhcm1fbHBhZV9zcGxpdF9ibGtfdW5tYXAoc3RydWN0IGFybV9s
+cGFlX2lvX3BndGFibGUgKmRhdGEsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCB1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+PiAtwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYXJtX2xwYWVfaW9wdGUgYmxrX3B0ZSwgaW50IGx2
+bCwKPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFybV9scGFlX2lv
+cHRlICpwdGVwKQo+PiArc3RhdGljIHNpemVfdCBhcm1fbHBhZV9zcGxpdF9ibGtfdW5tYXAoc3Ry
+dWN0IGFybV9scGFlX2lvX3BndGFibGUgCj4+ICpkYXRhLAo+PiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6
+ZSwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFybV9s
+cGFlX2lvcHRlIGJsa19wdGUsIGludCBsdmwsCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBhcm1fbHBhZV9pb3B0ZSAqcHRlcCkKPj4gwqAgewo+PiDCoMKg
+wqDCoMKgIHN0cnVjdCBpb19wZ3RhYmxlX2NmZyAqY2ZnID0gJmRhdGEtPmlvcC5jZmc7Cj4+IMKg
+wqDCoMKgwqAgYXJtX2xwYWVfaW9wdGUgcHRlLCAqdGFibGVwOwo+PiBAQCAtNTYwLDkgKzU2MCw5
+IEBAIHN0YXRpYyBpbnQgYXJtX2xwYWVfc3BsaXRfYmxrX3VubWFwKHN0cnVjdCAKPj4gYXJtX2xw
+YWVfaW9fcGd0YWJsZSAqZGF0YSwKPj4gwqDCoMKgwqDCoCByZXR1cm4gc2l6ZTsKPj4gwqAgfQo+
+PiDCoCAtc3RhdGljIGludCBfX2FybV9scGFlX3VubWFwKHN0cnVjdCBhcm1fbHBhZV9pb19wZ3Rh
+YmxlICpkYXRhLAo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGxv
+bmcgaW92YSwgc2l6ZV90IHNpemUsIGludCBsdmwsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgYXJtX2xwYWVfaW9wdGUgKnB0ZXApCj4+ICtzdGF0aWMgc2l6ZV90IF9fYXJtX2xw
+YWVfdW5tYXAoc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEsCj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6
+ZSwgaW50IGx2bCwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBhcm1f
+bHBhZV9pb3B0ZSAqcHRlcCkKPj4gwqAgewo+PiDCoMKgwqDCoMKgIGFybV9scGFlX2lvcHRlIHB0
+ZTsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgaW9fcGd0YWJsZSAqaW9wID0gJmRhdGEtPmlvcDsKPj4g
+QEAgLTYwNiw4ICs2MDYsOCBAQCBzdGF0aWMgaW50IF9fYXJtX2xwYWVfdW5tYXAoc3RydWN0IAo+
+PiBhcm1fbHBhZV9pb19wZ3RhYmxlICpkYXRhLAo+PiDCoMKgwqDCoMKgIHJldHVybiBfX2FybV9s
+cGFlX3VubWFwKGRhdGEsIGlvdmEsIHNpemUsIGx2bCArIDEsIHB0ZXApOwo+PiDCoCB9Cj4+IMKg
+IC1zdGF0aWMgaW50IGFybV9scGFlX3VubWFwKHN0cnVjdCBpb19wZ3RhYmxlX29wcyAqb3BzLCB1
+bnNpZ25lZCAKPj4gbG9uZyBpb3ZhLAo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6
+ZV90IHNpemUpCj4+ICtzdGF0aWMgc2l6ZV90IGFybV9scGFlX3VubWFwKHN0cnVjdCBpb19wZ3Rh
+YmxlX29wcyAqb3BzLCB1bnNpZ25lZCAKPj4gbG9uZyBpb3ZhLAo+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IHNpemUpCj4+IMKgIHsKPj4gwqDCoMKgwqDCoCBzdHJ1
+Y3QgYXJtX2xwYWVfaW9fcGd0YWJsZSAqZGF0YSA9IGlvX3BndGFibGVfb3BzX3RvX2RhdGEob3Bz
+KTsKPj4gwqDCoMKgwqDCoCBhcm1fbHBhZV9pb3B0ZSAqcHRlcCA9IGRhdGEtPnBnZDsKPj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS5oIGIvZHJpdmVycy9pb21tdS9pby1w
+Z3RhYmxlLmgKPj4gaW5kZXggY2QyZTFlYWZmZmU2Li4yZGY3OTA5M2NhZDkgMTAwNjQ0Cj4+IC0t
+LSBhL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS5oCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW8t
+cGd0YWJsZS5oCj4+IEBAIC0xMTksOCArMTE5LDggQEAgc3RydWN0IGlvX3BndGFibGVfY2ZnIHsK
+Pj4gwqAgc3RydWN0IGlvX3BndGFibGVfb3BzIHsKPj4gwqDCoMKgwqDCoCBpbnQgKCptYXApKHN0
+cnVjdCBpb19wZ3RhYmxlX29wcyAqb3BzLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4+IMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBwaHlzX2FkZHJfdCBwYWRkciwgc2l6ZV90IHNpemUsIGludCBwcm90
+KTsKPj4gLcKgwqDCoCBpbnQgKCp1bm1hcCkoc3RydWN0IGlvX3BndGFibGVfb3BzICpvcHMsIHVu
+c2lnbmVkIGxvbmcgaW92YSwKPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3Qgc2l6
+ZSk7Cj4+ICvCoMKgwqAgc2l6ZV90ICgqdW5tYXApKHN0cnVjdCBpb19wZ3RhYmxlX29wcyAqb3Bz
+LCB1bnNpZ25lZCBsb25nIGlvdmEsCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNpemVfdCBz
+aXplKTsKPj4gwqDCoMKgwqDCoCBwaHlzX2FkZHJfdCAoKmlvdmFfdG9fcGh5cykoc3RydWN0IGlv
+X3BndGFibGVfb3BzICpvcHMsCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCB1bnNpZ25lZCBsb25nIGlvdmEpOwo+PiDCoCB9Owo+Pgo+IC0tIAo+IFRvIHVuc3Vi
+c2NyaWJlIGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSAKPiBsaW51
+eC1hcm0tbXNtIiBpbgo+IHRoZSBib2R5IG9mIGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5r
+ZXJuZWwub3JnCj4gTW9yZSBtYWpvcmRvbW8gaW5mbyBhdMKgIGh0dHA6Ly92Z2VyLmtlcm5lbC5v
+cmcvbWFqb3Jkb21vLWluZm8uaHRtbAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
+YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2lvbW11
