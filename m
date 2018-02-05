@@ -1,136 +1,149 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: Do not return error code for APIs with size_t
-	return type
-Date: Mon, 5 Feb 2018 12:29:51 +0000
-Message-ID: <b2da33a2-2f25-6cc9-3dd3-5a626a3e0d94@arm.com>
-References: <1517827553-81034-1-git-send-email-suravee.suthikulpanit@amd.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1517827553-81034-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: [PATCH 1/1] iommu/io-pgtable: use size_t return type for all foo_unmap
+Date: Mon,  5 Feb 2018 23:29:19 +0530
+Message-ID: <1517853559-5869-1-git-send-email-vivek.gautam@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/02/18 10:45, Suravee Suthikulpanit wrote:
-> Currently, iommu_unmap, iommu_unmap_fast and iommu_map_sg return
-> size_t.  However, some of the return values are error codes (< 0),
-> which can be misinterpreted as large size. Therefore, returning size 0
-> instead to signify failure to map/unmap.
-> 
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> ---
-> 
-> Note: This issue was previously discussed here (https://lkml.org/lkml/2018/1/30/873).
-> 
->   drivers/iommu/amd_iommu.c |  2 +-
->   drivers/iommu/iommu.c     |  6 +++---
->   include/linux/iommu.h     | 14 +++++++-------
->   3 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 7d5eb00..fed8059 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3037,7 +3037,7 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
->   	size_t unmap_size;
->   
->   	if (domain->mode == PAGE_MODE_NONE)
-> -		return -EINVAL;
-> +		return 0;
->   
->   	mutex_lock(&domain->api_lock);
->   	unmap_size = iommu_unmap_page(domain, iova, page_size);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3de5c0b..dcd55fd 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1568,10 +1568,10 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
->   
->   	if (unlikely(ops->unmap == NULL ||
->   		     domain->pgsize_bitmap == 0UL))
-> -		return -ENODEV;
-> +		return 0;
->   
->   	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
-> -		return -EINVAL;
-> +		return 0;
->   
->   	/* find out the minimum page size supported */
->   	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-> @@ -1584,7 +1584,7 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
->   	if (!IS_ALIGNED(iova | size, min_pagesz)) {
->   		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
->   		       iova, size, min_pagesz);
-> -		return -EINVAL;
-> +		return 0;
->   	}
->   
->   	pr_debug("unmap this: iova 0x%lx size 0x%zx\n", iova, size);
+Unmap returns a size_t all throughout the IOMMU framework.
+Make io-pgtable match this convention.
+Moreover, there isn't a need to have a signed int return type
+as we return 0 in case of failures.
 
-Nice, that does make matters a lot simpler. I don't think we're really 
-losing any useful information from these return values, since the first 
-two represent things having already gone horribly wrong in the caller, 
-and the third gives a diagnostic in dmesg anyway.
+Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 21 +++++++++++----------
+ drivers/iommu/io-pgtable-arm.c     | 24 ++++++++++++------------
+ drivers/iommu/io-pgtable.h         |  4 ++--
+ 3 files changed, 25 insertions(+), 24 deletions(-)
 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 41b8c57..19938ee 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -465,23 +465,23 @@ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
->   	return -ENODEV;
->   }
->   
-> -static inline int iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-> -			      size_t size)
-> +static inline size_t iommu_unmap(struct iommu_domain *domain,
-> +				 unsigned long iova, size_t size)
->   {
-> -	return -ENODEV;
-> +	return 0;
->   }
->   
-> -static inline int iommu_unmap_fast(struct iommu_domain *domain, unsigned long iova,
-> -				   int gfp_order)
-> +static inline size_t iommu_unmap_fast(struct iommu_domain *domain,
-> +				      unsigned long iova, int gfp_order)
->   {
-> -	return -ENODEV;
-> +	return 0;
->   }
->   
->   static inline size_t iommu_map_sg(struct iommu_domain *domain,
->   				  unsigned long iova, struct scatterlist *sg,
->   				  unsigned int nents, int prot)
->   {
-> -	return -ENODEV;
-> +	return 0;
->   }
->   
->   static inline void iommu_flush_tlb_all(struct iommu_domain *domain)
-> 
-
-I guess this hunk at least is technically:
-
-Fixes: 7d3002cc8c16 ("iommu/core: split mapping to page sizes as 
-supported by the hardware")
-
-Amusingly, it seems ebae3e830a99 fixed part of these prototypes but 
-still managed to miss the return type.
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-Thanks,
-Robin.
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 2ca08dc9331c..10e4a3d11c02 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -357,8 +357,8 @@ static bool arm_v7s_pte_is_cont(arm_v7s_iopte pte, int lvl)
+ 	return false;
+ }
+ 
+-static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *, unsigned long,
+-			   size_t, int, arm_v7s_iopte *);
++static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *, unsigned long,
++			      size_t, int, arm_v7s_iopte *);
+ 
+ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+ 			    unsigned long iova, phys_addr_t paddr, int prot,
+@@ -541,9 +541,10 @@ static arm_v7s_iopte arm_v7s_split_cont(struct arm_v7s_io_pgtable *data,
+ 	return pte;
+ }
+ 
+-static int arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
+-				   unsigned long iova, size_t size,
+-				   arm_v7s_iopte blk_pte, arm_v7s_iopte *ptep)
++static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
++				      unsigned long iova, size_t size,
++				      arm_v7s_iopte blk_pte,
++				      arm_v7s_iopte *ptep)
+ {
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	arm_v7s_iopte pte, *tablep;
+@@ -584,9 +585,9 @@ static int arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
+ 	return size;
+ }
+ 
+-static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+-			    unsigned long iova, size_t size, int lvl,
+-			    arm_v7s_iopte *ptep)
++static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
++			      unsigned long iova, size_t size, int lvl,
++			      arm_v7s_iopte *ptep)
+ {
+ 	arm_v7s_iopte pte[ARM_V7S_CONT_PAGES];
+ 	struct io_pgtable *iop = &data->iop;
+@@ -656,8 +657,8 @@ static int __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+ 	return __arm_v7s_unmap(data, iova, size, lvl + 1, ptep);
+ }
+ 
+-static int arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+-			 size_t size)
++static size_t arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
++			    size_t size)
+ {
+ 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 51e5c43caed1..8faaaa04d7a7 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -268,9 +268,9 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+ 		__arm_lpae_sync_pte(ptep, cfg);
+ }
+ 
+-static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+-			    unsigned long iova, size_t size, int lvl,
+-			    arm_lpae_iopte *ptep);
++static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
++			       unsigned long iova, size_t size, int lvl,
++			       arm_lpae_iopte *ptep);
+ 
+ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 				phys_addr_t paddr, arm_lpae_iopte prot,
+@@ -506,10 +506,10 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+ 	kfree(data);
+ }
+ 
+-static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+-				    unsigned long iova, size_t size,
+-				    arm_lpae_iopte blk_pte, int lvl,
+-				    arm_lpae_iopte *ptep)
++static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
++				       unsigned long iova, size_t size,
++				       arm_lpae_iopte blk_pte, int lvl,
++				       arm_lpae_iopte *ptep)
+ {
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	arm_lpae_iopte pte, *tablep;
+@@ -560,9 +560,9 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 	return size;
+ }
+ 
+-static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+-			    unsigned long iova, size_t size, int lvl,
+-			    arm_lpae_iopte *ptep)
++static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
++			       unsigned long iova, size_t size, int lvl,
++			       arm_lpae_iopte *ptep)
+ {
+ 	arm_lpae_iopte pte;
+ 	struct io_pgtable *iop = &data->iop;
+@@ -606,8 +606,8 @@ static int __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
+ }
+ 
+-static int arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+-			  size_t size)
++static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
++			     size_t size)
+ {
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index cd2e1eafffe6..2df79093cad9 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -119,8 +119,8 @@ struct io_pgtable_cfg {
+ struct io_pgtable_ops {
+ 	int (*map)(struct io_pgtable_ops *ops, unsigned long iova,
+ 		   phys_addr_t paddr, size_t size, int prot);
+-	int (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
+-		     size_t size);
++	size_t (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
++			size_t size);
+ 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
+ 				    unsigned long iova);
+ };
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
