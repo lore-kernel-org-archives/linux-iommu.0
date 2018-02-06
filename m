@@ -1,105 +1,116 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH RFC 1/1] iommu/arm-smmu: Fix context fault message
- considering non-NTS
-Date: Tue, 6 Feb 2018 18:17:43 +0530
-Message-ID: <CAFp+6iENb9rf5-Mz5m41roo9DHasb6=TtWDPxjv2qHGSez1E+g@mail.gmail.com>
-References: <1517912213-3962-1-git-send-email-vivek.gautam@codeaurora.org> <fb3c1797-118f-500b-002b-5ecb9172af1c@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH/RFC 4/6] mm: Add NO_DMA dummies for DMA pool API
+Date: Tue, 6 Feb 2018 12:47:56 +0000
+Message-ID: <61f0970a-c0aa-9b6f-74c7-d63be1e477ac@arm.com>
+References: <1517912092-15470-1-git-send-email-geert@linux-m68k.org>
+	<1517912092-15470-5-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <fb3c1797-118f-500b-002b-5ecb9172af1c@arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, open list <linux-kernel@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1517912092-15470-5-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Martin K . Petersen" <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Geert,
 
+On 06/02/18 10:14, Geert Uytterhoeven wrote:
+> Add dummies for dma{,m}_pool_{create,destroy,alloc,free}(), to allow
+> compile-testing if NO_DMA=y.
+> 
+> This prevents the following from showing up later:
+> 
+>      ERROR: "dma_pool_destroy" [drivers/usb/mtu3/mtu3.ko] undefined!
+>      ERROR: "dma_pool_free" [drivers/usb/mtu3/mtu3.ko] undefined!
+>      ERROR: "dma_pool_alloc" [drivers/usb/mtu3/mtu3.ko] undefined!
+>      ERROR: "dma_pool_create" [drivers/usb/mtu3/mtu3.ko] undefined!
+>      ERROR: "dma_pool_destroy" [drivers/scsi/hisi_sas/hisi_sas_main.ko] undefined!
+>      ERROR: "dma_pool_free" [drivers/scsi/hisi_sas/hisi_sas_main.ko] undefined!
+>      ERROR: "dma_pool_alloc" [drivers/scsi/hisi_sas/hisi_sas_main.ko] undefined!
+>      ERROR: "dma_pool_create" [drivers/scsi/hisi_sas/hisi_sas_main.ko] undefined!
+>      ERROR: "dma_pool_alloc" [drivers/mailbox/bcm-pdc-mailbox.ko] undefined!
+>      ERROR: "dma_pool_free" [drivers/mailbox/bcm-pdc-mailbox.ko] undefined!
+>      ERROR: "dma_pool_create" [drivers/mailbox/bcm-pdc-mailbox.ko] undefined!
+>      ERROR: "dma_pool_destroy" [drivers/mailbox/bcm-pdc-mailbox.ko] undefined!
+> 
+> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+> ---
+>   include/linux/dmapool.h | 21 +++++++++++++++++++--
+>   1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/dmapool.h b/include/linux/dmapool.h
+> index 53ba737505df31c7..adeb5e56c3ad73a8 100644
+> --- a/include/linux/dmapool.h
+> +++ b/include/linux/dmapool.h
+> @@ -16,6 +16,7 @@
+>   
+>   struct device;
+>   
+> +#ifdef CONFIG_HAS_DMA
+>   struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+>   			size_t size, size_t align, size_t allocation);
+>   
+> @@ -23,6 +24,17 @@ void dma_pool_destroy(struct dma_pool *pool);
+>   
+>   void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+>   		     dma_addr_t *handle);
+> +void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t addr);
+> +#else /* !CONFIG_HAS_DMA */
+> +static inline struct dma_pool *dma_pool_create(const char *name,
+> +	struct device *dev, size_t size, size_t align, size_t allocation)
+> +{ return NULL; }
+> +static inline void dma_pool_destroy(struct dma_pool *pool) { }
+> +static inline void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+> +				   dma_addr_t *handle) { return NULL; }
+> +static inline void dma_pool_free(struct dma_pool *pool, void *vaddr,
+> +				 dma_addr_t addr) { }
+> +#endif /* !CONFIG_HAS_DMA */
+>   
+>   static inline void *dma_pool_zalloc(struct dma_pool *pool, gfp_t mem_flags,
+>   				    dma_addr_t *handle)
+> @@ -30,14 +42,19 @@ static inline void *dma_pool_zalloc(struct dma_pool *pool, gfp_t mem_flags,
+>   	return dma_pool_alloc(pool, mem_flags | __GFP_ZERO, handle);
+>   }
+>   
+> -void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t addr);
+> -
+>   /*
+>    * Managed DMA pool
+>    */
+> +#ifdef CONFIG_HAS_DMA
+>   struct dma_pool *dmam_pool_create(const char *name, struct device *dev,
+>   				  size_t size, size_t align, size_t allocation);
+>   void dmam_pool_destroy(struct dma_pool *pool);
+> +#else /* !CONFIG_HAS_DMA */
+> +static inline struct dma_pool *dmam_pool_create(const char *name,
+> +	struct device *dev, size_t size, size_t align, size_t allocation)
+> +{ return NULL; }
+> +static inline void dmam_pool_destroy(struct dma_pool *pool) { }
+> +#endif /* !CONFIG_HAS_DMA */
 
-On Tue, Feb 6, 2018 at 5:22 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> Hi Vivek,
->
-> On 06/02/18 10:16, Vivek Gautam wrote:
->>
->> SMMU_CBn_FSYNR0 definition from SMMU v2 architecture document
->> says that, the S1CBNDX[23:16] field is only valid if SMMU_IDR0.NTS==1.
->> So, update the fsynr in context bank fault handler, so that the
->> fault message displays cbndx only when we have nested translations
->> enabled.
->> Otherwise, it is confusing when 'cb' gives the actual context
->> bank, while the 'fsynr' gives a different value.
->>
->> Example, on a sdm845 system:
->> Before this patch -
->> arm-smmu 15000000.apps-smmu: Unhandled context fault:
->>                            fsr=0x402, iova=0x9e0fb600, fsynr=0x3c0020,
->> cb=0
->> After this patch -
->> arm-smmu 15000000.apps-smmu: Unhandled context fault:
->>                            fsr=0x402, iova=0x9e0aa000, fsynr=0x20, cb=0
->>
->> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> Hi Robin,
->> Does it make sense to mask fsynr like this?
->> Would it still be confusing for CB==0?
->> Tagging the patch as RFC to get your comments. If looks good,
->> then i will send the patch for your ack.
->> Thanks.
->
->
-> I would expect that anyone who knows how to decode a raw FSYNR0 value should
-> also be aware of when various fields are valid or not. I have page 302 of
-> IHI0062D.c open next to this email, and to me it seems virtually impossible
-> to read the definition of S1CBNDX without inherently seeing all the
-> conditions under which it is UNKNOWN (which incidentally are more than this
-> patch would cover).
+Nit: It might be tidier to add *all* the stubs down here so that there 
+only need be a single #ifdef, then move the dma_pool_zalloc definition 
+outside at the end (where we might eventually get rid of it anyway).
 
-Yea, I agree with you. To fully decode the S1CBNDX, one has to refer the spec,
-and once one has the knowledge of the smmu implementation on the one's
-target platform, it becomes unimportant to look at the cbndx again.
+Other than that, though, I think I agree with the series in general - 
+more COMPILE_TEST is always good from the point of view of weeding out 
+drivers using architecture-specific DMA API internals which aren't part 
+of the proper generic interface.
 
->
-> In general, I don't agree with this - we're dumping the raw state of a
-> register, and it's already a cryptic hex value that you have to refer to the
-> architecture spec to decode. There is perhaps some argument for
-> pretty-printing faults with everything fully decoded, but given that they
-> should never be seen under normal operation (especially global faults), I
-> really don't think that's worth the bother either.
+Robin.
 
-Sure. We can drop this patch. Thanks.
-
->
-> Robin.
->
->>   drivers/iommu/arm-smmu.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 69e7c60792a8..827659515b22 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -550,6 +550,9 @@ static irqreturn_t arm_smmu_context_fault(int irq,
->> void *dev)
->>         fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
->>         iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
->>   +     if (!smmu->features & ARM_SMMU_FEAT_TRANS_NESTED)
->> +               fsynr &= 0xffff;
->> +
->>         dev_err_ratelimited(smmu->dev,
->>         "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x,
->> cb=%d\n",
->>                             fsr, iova, fsynr, cfg->cbndx);
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+>   
+>   #endif
+>   
+> 
