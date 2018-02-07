@@ -1,32 +1,140 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH/RFC 0/6] Allow compile-testing NO_DMA
-Date: Tue, 6 Feb 2018 16:24:49 +0100
-Message-ID: <CAK8P3a1K+N54DeTcq4CL76GTD0Nb3WwozN3YoNdnrQW_2oC6jA@mail.gmail.com>
-References: <1517912092-15470-1-git-send-email-geert@linux-m68k.org> <c68d8b8b-dc46-2066-0341-558f57ad113f@arm.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v7 0/6] iommu/arm-smmu: Add runtime pm/sleep support
+Date: Wed,  7 Feb 2018 16:01:16 +0530
+Message-ID: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c68d8b8b-dc46-2066-0341-558f57ad113f@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Mark Brown <broonie@kernel.org>, Richard Weinberger <richard@nod.at>, Felipe Balbi <balbi@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "James E . J . Bottomley" <jejb@linux.vnet.ibm.com>, "Martin K . Petersen" <martin.petersen@oracle.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, linux-usb@vger.kernel.org, linux-scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: airlied-cv59FeDIM0c@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 6, 2018 at 2:05 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> It looks like we have only one real arch (score) without IOMEM, and two
-> (s390 and tile) where it is possible to configure out, so it does seem like
-> a reasonable feature to assume. Maybe we could have something like
-> asm-generic/no-io.h to provide an "unimplemented" version of those
-> interfaces.
+This series provides the support for turning on the arm-smmu's
+clocks/power domains using runtime pm. This is done using the
+recently introduced device links patches, which lets the smmu's
+runtime to follow the master's runtime pm, so the smmu remains
+powered only when the masters use it.
 
-Agreed, there is no use trying to optimize for any of those three cases:
+It also adds support for Qcom's arm-smmu-v2 variant that
+has different clocks and power requirements.
 
-For s390, all new machines come with PCI, so distros will enable it all
-the time. Few users run their own kernels even on older machines.
+Took some reference from the exynos runtime patches [1].
 
-score has been de-facto unmaintained for a few years, and tile has
-recently been orphaned with the hardware platform being abandoned by
-Mellanox.
+After much discussion [3] over the use of pm_runtime_get/put() in
+.unmap op path for the arm-smmu, and after disussing over more than
+a couple of approaches to address this, we are putting forward the
+changes *without* using pm_runtime APIs in 'unmap'. Rather, letting
+the client device take the control of powering on/off the connected
+iommu through pm_runtime_get(put)_suppliers() APIs for the scnerios
+when the iommu power can't be directly controlled by clients through
+device links.
+Rafael acked the change to export the suppliers APIs.
 
-      Arnd
+Previous version of this patch series is @ [5].
+
+[v7]
+   * Addressed review comments given by Robin Murphy -
+     -- Added device_link_del() in .remove_device path.
+     -- Error path cleanup in arm_smmu_add_device().
+     -- Added pm_runtime_get/put_sync() in .remove path, and replaced
+        pm_runtime_force_suspend() with pm_runtime_disable().
+     -- clk_names cleanup in arm_smmu_init_clks()
+   * Added 'Reviewed-by' given by Rob H.
+
+[V6]
+   * Added Ack given by Rafael to first patch in the series.
+   * Addressed Rob Herring's comment for adding soc specific compatible
+     string as well besides 'qcom,smmu-v2'.
+
+[V5]
+   * Dropped runtime pm calls from "arm_smmu_unmap" op as discussed over
+     the list [3] for the last patch series.
+   * Added a patch to export pm_runtime_get/put_suppliers() APIs to the
+     series as agreed with Rafael [4].
+   * Added the related patch for msm drm iommu layer to use
+     pm_runtime_get/put_suppliers() APIs in msm_mmu_funcs.
+   * Dropped arm-mmu500 clock patch since that would break existing
+     platforms.
+   * Changed compatible 'qcom,msm8996-smmu-v2' to 'qcom,smmu-v2' to reflect
+     the IP version rather than the platform on which it is used.
+     The same IP is used across multiple platforms including msm8996,
+     and sdm845 etc.
+   * Using clock bulk APIs to handle the clocks available to the IP as
+     suggested by Stephen Boyd.
+   * The first patch in v4 version of the patch-series:
+     ("iommu/arm-smmu: Fix the error path in arm_smmu_add_device") has
+     already made it to mainline.
+
+[V4]
+   * Reworked the clock handling part. We now take clock names as data
+     in the driver for supported compatible versions, and loop over them
+     to get, enable, and disable the clocks.
+   * Using qcom,msm8996 based compatibles for bindings instead of a generic
+     qcom compatible.
+   * Refactor MMU500 patch to just add the necessary clock names data and
+     corresponding bindings.
+   * Added the pm_runtime_get/put() calls in .unmap iommu op (fix added by
+     Stanimir on top of previous patch version.
+   * Added a patch to fix error path in arm_smmu_add_device()
+   * Removed patch 3/5 of V3 patch series that added qcom,smmu-v2 bindings.
+
+[V3]
+   * Reworked the patches to keep the clocks init/enabling function
+     separately for each compatible.
+
+   * Added clocks bindings for MMU40x/500.
+
+   * Added a new compatible for qcom,smmu-v2 implementation and
+     the clock bindings for the same.
+
+   * Rebased on top of 4.11-rc1
+
+[V2]
+   * Split the patches little differently.
+
+   * Addressed comments.
+
+   * Removed the patch #4 [2] from previous post
+     for arm-smmu context save restore. Planning to
+     post this separately after reworking/addressing Robin's
+     feedback.
+
+   * Reversed the sequence to disable clocks than enabling.
+     This was required for those cases where the
+     clocks are populated in a dependent order from DT.
+
+[1] https://lkml.org/lkml/2016/10/20/70
+[2] https://patchwork.kernel.org/patch/9389717/
+[3] https://patchwork.kernel.org/patch/9827825/
+[4] https://patchwork.kernel.org/patch/10102445/
+[5] https://lkml.org/lkml/2018/1/19/217
+
+Sricharan R (3):
+  iommu/arm-smmu: Add pm_runtime/sleep ops
+  iommu/arm-smmu: Invoke pm_runtime during probe, add/remove device
+  iommu/arm-smmu: Add the device_link between masters and smmu
+
+Vivek Gautam (3):
+  base: power: runtime: Export pm_runtime_get/put_suppliers
+  iommu/arm-smmu: Add support for qcom,smmu-v2 variant
+  drm/msm: iommu: Replace runtime calls with runtime suppliers
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  43 +++++++
+ drivers/base/power/runtime.c                       |   2 +
+ drivers/gpu/drm/msm/msm_iommu.c                    |  16 +--
+ drivers/iommu/arm-smmu.c                           | 127 ++++++++++++++++++++-
+ 4 files changed, 174 insertions(+), 14 deletions(-)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
