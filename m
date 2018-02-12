@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 24/37] iommu/arm-smmu-v3: Add SVA feature checking
-Date: Mon, 12 Feb 2018 18:33:39 +0000
-Message-ID: <20180212183352.22730-25-jean-philippe.brucker@arm.com>
+Subject: [PATCH 21/37] iommu/arm-smmu-v3: Seize private ASID
+Date: Mon, 12 Feb 2018 18:33:36 +0000
+Message-ID: <20180212183352.22730-22-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,100 +21,201 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pc
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Aggregate all sanity-checks for sharing CPU page tables with the SMMU
-under a single ARM_SMMU_FEAT_SVA bit. For PCIe SVA, users also need to
-check FEAT_ATS and FEAT_PRI. For platform SVM, they will most likely have
-to check FEAT_STALLS.
+The SMMU has a single ASID space, the union of shared and private ASID
+sets. This means that the PASID lib competes with the arch allocator for
+ASIDs. Shared ASIDs are those of Linux processes, allocated by the arch,
+and contribute in broadcast TLB maintenance. Private ASIDs are allocated
+by the SMMU driver and used for "classic" map/unmap DMA. They require
+explicit TLB invalidations.
+
+When we pin down an mm_context and get an ASID that is already in use by
+the SMMU, it belongs to a private context. We used to simply abort the
+bind, but this is unfair to users that would be unable to bind a few
+seemingly random processes. We can try one step further, by allocating a
+new private ASID for the context in use, and make the old ASID shared.
+
+Introduce a new lock to prevent races when rewriting context descriptors.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 60 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+ drivers/iommu/arm-smmu-v3-context.c | 88 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 82 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 98690589156b..79bc5b5cceed 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -570,6 +570,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
- #define ARM_SMMU_FEAT_E2H		(1 << 14)
- #define ARM_SMMU_FEAT_BTM		(1 << 15)
-+#define ARM_SMMU_FEAT_SVA		(1 << 16)
- 	u32				features;
+diff --git a/drivers/iommu/arm-smmu-v3-context.c b/drivers/iommu/arm-smmu-v3-context.c
+index b7c90384ff56..5b8c5875e0d9 100644
+--- a/drivers/iommu/arm-smmu-v3-context.c
++++ b/drivers/iommu/arm-smmu-v3-context.c
+@@ -82,6 +82,7 @@
+ 	(((tcr) >> ARM64_TCR_##fld##_SHIFT & ARM64_TCR_##fld##_MASK)	\
+ 	 << CTXDESC_CD_0_TCR_##fld##_SHIFT)
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -2619,6 +2620,62 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
++#define ARM_SMMU_NO_PASID		(-1)
+ 
+ struct arm_smmu_cd {
+ 	struct iommu_pasid_entry	entry;
+@@ -90,8 +91,14 @@ struct arm_smmu_cd {
+ 	u64				tcr;
+ 	u64				mair;
+ 
++	int				pasid;
++
++	/* 'refs' tracks alloc/free */
+ 	refcount_t			refs;
++	/* 'users' tracks attach/detach, and is only used for sanity checking */
++	unsigned int			users;
+ 	struct mm_struct		*mm;
++	struct arm_smmu_cd_tables	*tbl;
+ };
+ 
+ #define pasid_entry_to_cd(entry) \
+@@ -123,6 +130,7 @@ struct arm_smmu_cd_tables {
+ #define pasid_ops_to_tables(ops) \
+ 	pasid_to_cd_tables(iommu_pasid_table_ops_to_table(ops))
+ 
++static DEFINE_SPINLOCK(contexts_lock);
+ static DEFINE_SPINLOCK(asid_lock);
+ static DEFINE_IDR(asid_idr);
+ 
+@@ -209,8 +217,8 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
+ 	return val;
+ }
+ 
+-static int arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
+-				    struct arm_smmu_cd *cd)
++static int __arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
++				     struct arm_smmu_cd *cd)
+ {
+ 	u64 val;
+ 	bool cd_live;
+@@ -284,6 +292,18 @@ static int arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
  	return 0;
  }
  
-+static bool arm_smmu_supports_sva(struct arm_smmu_device *smmu)
++static int arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
++				   struct arm_smmu_cd *cd)
 +{
-+	unsigned long reg, fld;
-+	unsigned long oas;
-+	unsigned long asid_bits;
++	int ret;
 +
-+	u32 feat_mask = ARM_SMMU_FEAT_BTM | ARM_SMMU_FEAT_COHERENCY;
++	spin_lock(&contexts_lock);
++	ret = __arm_smmu_write_ctx_desc(tbl, ssid, cd);
++	spin_unlock(&contexts_lock);
 +
-+	if ((smmu->features & feat_mask) != feat_mask)
-+		return false;
-+
-+	if (!(smmu->pgsize_bitmap & PAGE_SIZE))
-+		return false;
-+
-+	/*
-+	 * Get the smallest PA size of all CPUs (sanitized by cpufeature). We're
-+	 * not even pretending to support AArch32 here.
-+	 */
-+	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
-+	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
-+	switch (fld) {
-+	case 0x0:
-+		oas = 32;
-+		break;
-+	case 0x1:
-+		oas = 36;
-+		break;
-+	case 0x2:
-+		oas = 40;
-+		break;
-+	case 0x3:
-+		oas = 42;
-+		break;
-+	case 0x4:
-+		oas = 44;
-+		break;
-+	case 0x5:
-+		oas = 48;
-+		break;
-+	default:
-+		return false;
-+	}
-+
-+	/* abort if MMU outputs addresses greater than what we support. */
-+	if (smmu->oas < oas)
-+		return false;
-+
-+	/* We can support bigger ASIDs than the CPU, but not smaller */
-+	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_ASID_SHIFT);
-+	asid_bits = fld ? 16 : 8;
-+	if (smmu->asid_bits < asid_bits)
-+		return false;
-+
-+	return true;
++	return ret;
 +}
 +
- static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ static bool arm_smmu_free_asid(struct arm_smmu_cd *cd)
  {
- 	u32 reg;
-@@ -2813,6 +2870,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	bool free;
+@@ -308,14 +328,25 @@ static struct arm_smmu_cd *arm_smmu_alloc_cd(struct arm_smmu_cd_tables *tbl)
+ 	if (!cd)
+ 		return NULL;
  
- 	smmu->ias = max(smmu->ias, smmu->oas);
++	cd->pasid	= ARM_SMMU_NO_PASID;
++	cd->tbl		= tbl;
+ 	refcount_set(&cd->refs, 1);
  
-+	if (arm_smmu_supports_sva(smmu))
-+		smmu->features |= ARM_SMMU_FEAT_SVA;
+ 	return cd;
+ }
+ 
++/*
++ * Try to reserve this ASID in the SMMU. If it is in use, try to steal it from
++ * the private entry. Careful here, we may be modifying the context tables of
++ * another SMMU!
++ */
+ static struct arm_smmu_cd *arm_smmu_share_asid(u16 asid)
+ {
++	int ret;
+ 	struct arm_smmu_cd *cd;
++	struct arm_smmu_cd_tables *tbl;
++	struct arm_smmu_context_cfg *cfg;
++	struct iommu_pasid_entry old_entry;
+ 
+ 	cd = idr_find(&asid_idr, asid);
+ 	if (!cd)
+@@ -325,17 +356,47 @@ static struct arm_smmu_cd *arm_smmu_share_asid(u16 asid)
+ 		/*
+ 		 * It's pretty common to find a stale CD when doing unbind-bind,
+ 		 * given that the release happens after a RCU grace period.
+-		 * Simply reuse it.
++		 * Simply reuse it, but check that it isn't active, because it's
++		 * going to be assigned a different PASID.
+ 		 */
++		if (WARN_ON(cd->users))
++			return ERR_PTR(-EINVAL);
 +
- 	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
- 		 smmu->ias, smmu->oas, smmu->features);
- 	return 0;
+ 		refcount_inc(&cd->refs);
+ 		return cd;
+ 	}
+ 
++	tbl = cd->tbl;
++	cfg = &tbl->pasid.cfg.arm_smmu;
++
++	ret = idr_alloc_cyclic(&asid_idr, cd, 0, 1 << cfg->asid_bits,
++			       GFP_ATOMIC);
++	if (ret < 0)
++		return ERR_PTR(-ENOSPC);
++
++	/* Save the previous ASID */
++	old_entry = cd->entry;
++
++	/*
++	 * Race with unmap; TLB invalidations will start targeting the new ASID,
++	 * which isn't assigned yet. We'll do an invalidate-all on the old ASID
++	 * later, so it doesn't matter.
++	 */
++	cd->entry.tag = ret;
++
+ 	/*
+-	 * Ouch, ASID is already in use for a private cd.
+-	 * TODO: seize it, for the common good.
++	 * Update ASID and invalidate CD in all associated masters. There will
++	 * be some overlap between use of both ASIDs, until we invalidate the
++	 * TLB.
+ 	 */
+-	return ERR_PTR(-EEXIST);
++	arm_smmu_write_ctx_desc(tbl, cd->pasid, cd);
++
++	/* Invalidate TLB entries previously associated with that context */
++	iommu_pasid_flush_tlbs(&tbl->pasid, cd->pasid, &old_entry);
++
++	idr_remove(&asid_idr, asid);
++
++	return NULL;
+ }
+ 
+ static struct iommu_pasid_entry *
+@@ -500,6 +561,15 @@ static int arm_smmu_set_cd(struct iommu_pasid_table_ops *ops, int pasid,
+ 	if (WARN_ON(pasid > (1 << tbl->pasid.cfg.order)))
+ 		return -EINVAL;
+ 
++	if (WARN_ON(cd->pasid != ARM_SMMU_NO_PASID && cd->pasid != pasid))
++		return -EEXIST;
++
++	/*
++	 * There is a single cd structure for each address space, multiple
++	 * devices may use the same in different tables.
++	 */
++	cd->users++;
++	cd->pasid = pasid;
+ 	return arm_smmu_write_ctx_desc(tbl, pasid, cd);
+ }
+ 
+@@ -507,10 +577,16 @@ static void arm_smmu_clear_cd(struct iommu_pasid_table_ops *ops, int pasid,
+ 			      struct iommu_pasid_entry *entry)
+ {
+ 	struct arm_smmu_cd_tables *tbl = pasid_ops_to_tables(ops);
++	struct arm_smmu_cd *cd = pasid_entry_to_cd(entry);
+ 
+ 	if (WARN_ON(pasid > (1 << tbl->pasid.cfg.order)))
+ 		return;
+ 
++	WARN_ON(cd->pasid != pasid);
++
++	if (!(--cd->users))
++		cd->pasid = ARM_SMMU_NO_PASID;
++
+ 	arm_smmu_write_ctx_desc(tbl, pasid, NULL);
+ 
+ 	/*
 -- 
 2.15.1
