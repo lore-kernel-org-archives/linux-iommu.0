@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 28/37] iommu/arm-smmu-v3: Maintain a SID->device structure
-Date: Mon, 12 Feb 2018 18:33:43 +0000
-Message-ID: <20180212183352.22730-29-jean-philippe.brucker@arm.com>
+Subject: [PATCH 29/37] iommu/arm-smmu-v3: Add stall support for platform devices
+Date: Mon, 12 Feb 2018 18:33:44 +0000
+Message-ID: <20180212183352.22730-30-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
@@ -10,176 +10,327 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pc
 Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jonathan.cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When handling faults from the event or PRI queue, we need to find the
-struct device associated to a SID. Add a rb_tree to keep track of SIDs.
+The SMMU provides a Stall model for handling page faults in platform
+devices. It is similar to PCI PRI, but doesn't require devices to have
+their own translation cache. Instead, faulting transactions are parked and
+the OS is given a chance to fix the page tables and retry the transaction.
+
+Enable stall for devices that support it (opt-in by firmware). When an
+event corresponds to a translation error, call the IOMMU fault handler. If
+the fault is recoverable, it will call us back to terminate or continue
+the stall.
+
+Note that this patch tweaks the iommu_fault_event and page_response_msg to
+extend the fault id field. Stall uses 16 bits of IDs whereas PCI PRI only
+uses 9.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 105 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 105 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 175 +++++++++++++++++++++++++++++++++++++++++++-
+ include/linux/iommu.h       |   4 +-
+ 2 files changed, 173 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c5b3a43becaf..2430b2140f8d 100644
+index 2430b2140f8d..8b9f5dd06be0 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -615,10 +615,19 @@ struct arm_smmu_device {
- 	/* IOMMU core code handle */
- 	struct iommu_device		iommu;
+@@ -338,6 +338,15 @@
+ #define CMDQ_PRI_1_RESP_FAIL		(1UL << CMDQ_PRI_1_RESP_SHIFT)
+ #define CMDQ_PRI_1_RESP_SUCC		(2UL << CMDQ_PRI_1_RESP_SHIFT)
  
-+	struct rb_root			streams;
-+	struct mutex			streams_mutex;
++#define CMDQ_RESUME_0_SID_SHIFT		32
++#define CMDQ_RESUME_0_SID_MASK		0xffffffffUL
++#define CMDQ_RESUME_0_ACTION_SHIFT	12
++#define CMDQ_RESUME_0_ACTION_TERM	(0UL << CMDQ_RESUME_0_ACTION_SHIFT)
++#define CMDQ_RESUME_0_ACTION_RETRY	(1UL << CMDQ_RESUME_0_ACTION_SHIFT)
++#define CMDQ_RESUME_0_ACTION_ABORT	(2UL << CMDQ_RESUME_0_ACTION_SHIFT)
++#define CMDQ_RESUME_1_STAG_SHIFT	0
++#define CMDQ_RESUME_1_STAG_MASK		0xffffUL
 +
- 	/* Notifier for the fault queue */
- 	struct notifier_block		faultq_nb;
+ #define CMDQ_SYNC_0_CS_SHIFT		12
+ #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
+ #define CMDQ_SYNC_0_CS_IRQ		(1UL << CMDQ_SYNC_0_CS_SHIFT)
+@@ -358,6 +367,31 @@
+ #define EVTQ_0_ID_SHIFT			0
+ #define EVTQ_0_ID_MASK			0xffUL
+ 
++#define EVT_ID_TRANSLATION_FAULT	0x10
++#define EVT_ID_ADDR_SIZE_FAULT		0x11
++#define EVT_ID_ACCESS_FAULT		0x12
++#define EVT_ID_PERMISSION_FAULT		0x13
++
++#define EVTQ_0_SSV			(1UL << 11)
++#define EVTQ_0_SSID_SHIFT		12
++#define EVTQ_0_SSID_MASK		0xfffffUL
++#define EVTQ_0_SID_SHIFT		32
++#define EVTQ_0_SID_MASK			0xffffffffUL
++#define EVTQ_1_STAG_SHIFT		0
++#define EVTQ_1_STAG_MASK		0xffffUL
++#define EVTQ_1_STALL			(1UL << 31)
++#define EVTQ_1_PRIV			(1UL << 33)
++#define EVTQ_1_EXEC			(1UL << 34)
++#define EVTQ_1_READ			(1UL << 35)
++#define EVTQ_1_S2			(1UL << 39)
++#define EVTQ_1_CLASS_SHIFT		40
++#define EVTQ_1_CLASS_MASK		0x3UL
++#define EVTQ_1_TT_READ			(1UL << 44)
++#define EVTQ_2_ADDR_SHIFT		0
++#define EVTQ_2_ADDR_MASK		0xffffffffffffffffUL
++#define EVTQ_3_IPA_SHIFT		12
++#define EVTQ_3_IPA_MASK			0xffffffffffUL
++
+ /* PRI queue */
+ #define PRIQ_ENT_DWORDS			2
+ #define PRIQ_MAX_SZ_SHIFT		8
+@@ -472,6 +506,13 @@ struct arm_smmu_cmdq_ent {
+ 			enum pri_resp		resp;
+ 		} pri;
+ 
++		#define CMDQ_OP_RESUME		0x44
++		struct {
++			u32			sid;
++			u16			stag;
++			enum page_response_code	resp;
++		} resume;
++
+ 		#define CMDQ_OP_CMD_SYNC	0x46
+ 		struct {
+ 			u32			msidata;
+@@ -545,6 +586,8 @@ struct arm_smmu_strtab_ent {
+ 	bool				assigned;
+ 	struct arm_smmu_s1_cfg		*s1_cfg;
+ 	struct arm_smmu_s2_cfg		*s2_cfg;
++
++	bool				can_stall;
  };
  
-+struct arm_smmu_stream {
-+	u32				id;
-+	struct arm_smmu_master_data	*master;
-+	struct rb_node			node;
-+};
-+
- /* SMMU private data for each master */
- struct arm_smmu_master_data {
- 	struct arm_smmu_device		*smmu;
-@@ -626,6 +635,7 @@ struct arm_smmu_master_data {
- 
- 	struct arm_smmu_domain		*domain;
- 	struct list_head		list; /* domain->devices */
-+	struct arm_smmu_stream		*streams;
- 
- 	struct device			*dev;
- 
-@@ -1250,6 +1260,31 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
- 	return 0;
+ struct arm_smmu_strtab_cfg {
+@@ -904,6 +947,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 			return -EINVAL;
+ 		}
+ 		break;
++	case CMDQ_OP_RESUME:
++		cmd[0] |= (u64)ent->resume.sid << CMDQ_RESUME_0_SID_SHIFT;
++		cmd[1] |= ent->resume.stag << CMDQ_RESUME_1_STAG_SHIFT;
++		switch (ent->resume.resp) {
++		case IOMMU_PAGE_RESP_INVALID:
++		case IOMMU_PAGE_RESP_FAILURE:
++			cmd[0] |= CMDQ_RESUME_0_ACTION_ABORT;
++			break;
++		case IOMMU_PAGE_RESP_SUCCESS:
++			cmd[0] |= CMDQ_RESUME_0_ACTION_RETRY;
++			break;
++		default:
++			return -EINVAL;
++		}
++		break;
+ 	case CMDQ_OP_CMD_SYNC:
+ 		if (ent->sync.msiaddr)
+ 			cmd[0] |= CMDQ_SYNC_0_CS_IRQ;
+@@ -1065,6 +1123,35 @@ static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+ 		dev_err_ratelimited(smmu->dev, "CMD_SYNC timeout\n");
  }
  
-+static struct arm_smmu_master_data *
-+arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
++static int arm_smmu_page_response(struct iommu_domain *domain,
++				  struct device *dev,
++				  struct page_response_msg *resp)
 +{
-+	struct rb_node *node;
-+	struct arm_smmu_stream *stream;
-+	struct arm_smmu_master_data *master = NULL;
++	int sid = dev->iommu_fwspec->ids[0];
++	struct arm_smmu_cmdq_ent cmd = {0};
++	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
 +
-+	mutex_lock(&smmu->streams_mutex);
-+	node = smmu->streams.rb_node;
-+	while (node) {
-+		stream = rb_entry(node, struct arm_smmu_stream, node);
-+		if (stream->id < sid) {
-+			node = node->rb_right;
-+		} else if (stream->id > sid) {
-+			node = node->rb_left;
-+		} else {
-+			master = stream->master;
-+			break;
-+		}
++	if (master->ste.can_stall) {
++		cmd.opcode		= CMDQ_OP_RESUME;
++		cmd.resume.sid		= sid;
++		cmd.resume.stag		= resp->page_req_group_id;
++		cmd.resume.resp		= resp->resp_code;
++	} else {
++		/* TODO: put PRI response here */
++		return -EINVAL;
 +	}
-+	mutex_unlock(&smmu->streams_mutex);
 +
-+	return master;
++	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
++	/*
++	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
++	 * RESUME consumption guarantees that the stalled transaction will be
++	 * terminated... at some point in the future. PRI_RESP is fire and
++	 * forget.
++	 */
++
++	return 0;
++}
++
+ /* Stream table manipulation functions */
+ static void
+ arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_desc *desc)
+@@ -1182,7 +1269,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 			 STRTAB_STE_1_STRW_SHIFT);
+ 
+ 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+-		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
++		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE) &&
++		   !ste->can_stall)
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+ 
+ 		val |= (cfg->base & STRTAB_STE_0_S1CTXPTR_MASK
+@@ -1285,10 +1373,73 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+ 	return master;
+ }
+ 
++static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
++{
++	struct arm_smmu_master_data *master;
++	u8 type = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
++	u32 sid = evt[0] >> EVTQ_0_SID_SHIFT & EVTQ_0_SID_MASK;
++
++	struct iommu_fault_event fault = {
++		.page_req_group_id = evt[1] >> EVTQ_1_STAG_SHIFT & EVTQ_1_STAG_MASK,
++		.addr		= evt[2] >> EVTQ_2_ADDR_SHIFT & EVTQ_2_ADDR_MASK,
++		.last_req	= true,
++	};
++
++	switch (type) {
++	case EVT_ID_TRANSLATION_FAULT:
++	case EVT_ID_ADDR_SIZE_FAULT:
++	case EVT_ID_ACCESS_FAULT:
++		fault.reason = IOMMU_FAULT_REASON_PTE_FETCH;
++		break;
++	case EVT_ID_PERMISSION_FAULT:
++		fault.reason = IOMMU_FAULT_REASON_PERMISSION;
++		break;
++	default:
++		/* TODO: report other unrecoverable faults. */
++		return -EFAULT;
++	}
++
++	/* Stage-2 is always pinned at the moment */
++	if (evt[1] & EVTQ_1_S2)
++		return -EFAULT;
++
++	master = arm_smmu_find_master(smmu, sid);
++	if (!master)
++		return -EINVAL;
++
++	/*
++	 * The domain is valid until the fault returns, because detach() flushes
++	 * the fault queue.
++	 */
++	if (evt[1] & EVTQ_1_STALL)
++		fault.type = IOMMU_FAULT_PAGE_REQ;
++	else
++		fault.type = IOMMU_FAULT_DMA_UNRECOV;
++
++	if (evt[1] & EVTQ_1_READ)
++		fault.prot |= IOMMU_FAULT_READ;
++	else
++		fault.prot |= IOMMU_FAULT_WRITE;
++
++	if (evt[1] & EVTQ_1_EXEC)
++		fault.prot |= IOMMU_FAULT_EXEC;
++
++	if (evt[1] & EVTQ_1_PRIV)
++		fault.prot |= IOMMU_FAULT_PRIV;
++
++	if (evt[0] & EVTQ_0_SSV) {
++		fault.pasid_valid = true;
++		fault.pasid = evt[0] >> EVTQ_0_SSID_SHIFT & EVTQ_0_SSID_MASK;
++	}
++
++	/* Report to device driver or populate the page tables */
++	return iommu_report_device_fault(master->dev, &fault);
 +}
 +
  /* IRQ and event handlers */
  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
  {
-@@ -2146,6 +2181,71 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
- 	return sid < limit;
- }
+-	int i;
++	int i, ret;
+ 	int num_handled = 0;
+ 	struct arm_smmu_device *smmu = dev;
+ 	struct arm_smmu_queue *q = &smmu->evtq.q;
+@@ -1300,12 +1451,19 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 		while (!queue_remove_raw(q, evt)) {
+ 			u8 id = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
  
-+static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
-+				  struct arm_smmu_master_data *master)
-+{
-+	int i;
-+	int ret = 0;
-+	struct arm_smmu_stream *new_stream, *cur_stream;
-+	struct rb_node **new_node, *parent_node = NULL;
-+	struct iommu_fwspec *fwspec = master->dev->iommu_fwspec;
++			spin_unlock(&q->wq.lock);
++			ret = arm_smmu_handle_evt(smmu, evt);
++			spin_lock(&q->wq.lock);
 +
-+	master->streams = kcalloc(fwspec->num_ids,
-+				  sizeof(struct arm_smmu_stream), GFP_KERNEL);
-+	if (!master->streams)
-+		return -ENOMEM;
+ 			if (++num_handled == queue_size) {
+ 				q->batch++;
+ 				wake_up_locked(&q->wq);
+ 				num_handled = 0;
+ 			}
+ 
++			if (!ret)
++				continue;
 +
-+	mutex_lock(&smmu->streams_mutex);
-+	for (i = 0; i < fwspec->num_ids && !ret; i++) {
-+		new_stream = &master->streams[i];
-+		new_stream->id = fwspec->ids[i];
-+		new_stream->master = master;
-+
-+		new_node = &(smmu->streams.rb_node);
-+		while (*new_node) {
-+			cur_stream = rb_entry(*new_node, struct arm_smmu_stream,
-+					      node);
-+			parent_node = *new_node;
-+			if (cur_stream->id > new_stream->id) {
-+				new_node = &((*new_node)->rb_left);
-+			} else if (cur_stream->id < new_stream->id) {
-+				new_node = &((*new_node)->rb_right);
-+			} else {
-+				dev_warn(master->dev,
-+					 "stream %u already in tree\n",
-+					 cur_stream->id);
-+				ret = -EINVAL;
-+				break;
-+			}
-+		}
-+
-+		if (!ret) {
-+			rb_link_node(&new_stream->node, parent_node, new_node);
-+			rb_insert_color(&new_stream->node, &smmu->streams);
-+		}
+ 			dev_info(smmu->dev, "event 0x%02x received:\n", id);
+ 			for (i = 0; i < ARRAY_SIZE(evt); ++i)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+@@ -1442,7 +1600,9 @@ static int arm_smmu_flush_queues(struct notifier_block *nb,
+ 		master = dev->iommu_fwspec->iommu_priv;
+ 
+ 	if (master) {
+-		/* TODO: add support for PRI and Stall */
++		if (master->ste.can_stall)
++			arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
++		/* TODO: add support for PRI */
+ 		return 0;
+ 	}
+ 
+@@ -1756,7 +1916,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 		.order			= master->ssid_bits,
+ 		.sync			= &arm_smmu_ctx_sync,
+ 		.arm_smmu = {
+-			.stall		= !!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE),
++			.stall		= !!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE) ||
++					  master->ste.can_stall,
+ 			.asid_bits	= smmu->asid_bits,
+ 			.hw_access	= !!(smmu->features & ARM_SMMU_FEAT_HA),
+ 			.hw_dirty	= !!(smmu->features & ARM_SMMU_FEAT_HD),
+@@ -2296,6 +2457,11 @@ static int arm_smmu_add_device(struct device *dev)
+ 
+ 	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
+ 
++	if (fwspec->can_stall && smmu->features & ARM_SMMU_FEAT_STALLS) {
++		master->can_fault = true;
++		master->ste.can_stall = true;
 +	}
-+	mutex_unlock(&smmu->streams_mutex);
 +
-+	return ret;
-+}
-+
-+static void arm_smmu_remove_master(struct arm_smmu_device *smmu,
-+				   struct arm_smmu_master_data *master)
-+{
-+	int i;
-+	struct iommu_fwspec *fwspec = master->dev->iommu_fwspec;
-+
-+	if (!master->streams)
-+		return;
-+
-+	mutex_lock(&smmu->streams_mutex);
-+	for (i = 0; i < fwspec->num_ids; i++)
-+		rb_erase(&master->streams[i].node, &smmu->streams);
-+	mutex_unlock(&smmu->streams_mutex);
-+
-+	kfree(master->streams);
-+}
-+
- static struct iommu_ops arm_smmu_ops;
- 
- static int arm_smmu_add_device(struct device *dev)
-@@ -2198,6 +2298,7 @@ static int arm_smmu_add_device(struct device *dev)
- 
  	group = iommu_group_get_for_dev(dev);
  	if (!IS_ERR(group)) {
-+		arm_smmu_insert_master(smmu, master);
- 		iommu_group_put(group);
- 		iommu_device_link(&smmu->iommu, dev);
- 	}
-@@ -2218,6 +2319,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 	smmu = master->smmu;
- 	if (master && master->ste.assigned)
- 		arm_smmu_detach_dev(dev);
-+	arm_smmu_remove_master(smmu, master);
- 	iommu_group_remove_device(dev);
- 	iommu_device_unlink(&smmu->iommu, dev);
- 	kfree(master);
-@@ -2527,6 +2629,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- 	int ret;
- 
- 	atomic_set(&smmu->sync_nr, 0);
-+	mutex_init(&smmu->streams_mutex);
-+	smmu->streams = RB_ROOT;
-+
- 	ret = arm_smmu_init_queues(smmu);
- 	if (ret)
- 		return ret;
+ 		arm_smmu_insert_master(smmu, master);
+@@ -2435,6 +2601,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.mm_attach		= arm_smmu_mm_attach,
+ 	.mm_detach		= arm_smmu_mm_detach,
+ 	.mm_invalidate		= arm_smmu_mm_invalidate,
++	.page_response		= arm_smmu_page_response,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
+ 	.map_sg			= default_iommu_map_sg,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 37c3b9d087ce..f5c2f4be2b42 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -227,7 +227,7 @@ struct page_response_msg {
+ 	u32 pasid;
+ 	enum page_response_code resp_code;
+ 	u32 pasid_present:1;
+-	u32 page_req_group_id : 9;
++	u32 page_req_group_id;
+ 	enum page_response_type type;
+ 	u32 private_data;
+ };
+@@ -421,7 +421,7 @@ struct iommu_fault_event {
+ 	enum iommu_fault_reason reason;
+ 	u64 addr;
+ 	u32 pasid;
+-	u32 page_req_group_id : 9;
++	u32 page_req_group_id;
+ 	u32 last_req : 1;
+ 	u32 pasid_valid : 1;
+ 	u32 prot;
 -- 
 2.15.1
 
