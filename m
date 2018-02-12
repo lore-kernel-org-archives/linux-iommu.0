@@ -1,154 +1,244 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 26/37] iommu/arm-smmu-v3: Add support for Hardware Translation Table Update
-Date: Mon, 12 Feb 2018 18:33:41 +0000
-Message-ID: <20180212183352.22730-27-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 25/37] iommu/arm-smmu-v3: Implement mm operations
+Date: Mon, 12 Feb 2018 18:33:40 +0000
+Message-ID: <20180212183352.22730-26-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
-Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, xuzaibo@huawei.com, ilias.apalodimas@linaro.org, jonathan.cameron@huawei.com, shunyong.yang@hxt-semitech.com, nwatters@codeaurora.org, okaya@codeaurora.org, jcrouse@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com, christian.koenig@amd.com, bharatku@xilinx.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-If the SMMU supports it and the kernel was built with HTTU support, enable
-hardware update of access and dirty flags. This is essential for shared
-page tables, to reduce the number of access faults on the fault queue.
+Hook mm operations to support PASID and page table sharing with the
+SMMUv3:
 
-We can still enable HTTU if CPUs don't support it, because the kernel
-always checks for HW dirty bit and updates the PTE flags atomically.
+* mm_alloc allocates a context descriptor.
+* mm_free releases the context descriptor.
+* mm_attach checks device capabilities and writes the context descriptor.
+* mm_detach clears the context descriptor and sends required
+  invalidations.
+* mm_invalidate sends required invalidations.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3-context.c | 20 ++++++++++++++++++--
- drivers/iommu/arm-smmu-v3.c         | 12 ++++++++++++
- drivers/iommu/iommu-pasid.h         |  4 ++++
- 3 files changed, 34 insertions(+), 2 deletions(-)
+ drivers/iommu/Kconfig       |   1 +
+ drivers/iommu/arm-smmu-v3.c | 131 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 132 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3-context.c b/drivers/iommu/arm-smmu-v3-context.c
-index 5b8c5875e0d9..eaeba1bec2e9 100644
---- a/drivers/iommu/arm-smmu-v3-context.c
-+++ b/drivers/iommu/arm-smmu-v3-context.c
-@@ -62,7 +62,16 @@
- #define ARM64_TCR_TBI0_SHIFT		37
- #define ARM64_TCR_TBI0_MASK		0x1UL
- 
-+#define ARM64_TCR_HA_SHIFT		39
-+#define ARM64_TCR_HA_MASK		0x1UL
-+#define ARM64_TCR_HD_SHIFT		40
-+#define ARM64_TCR_HD_MASK		0x1UL
-+
- #define CTXDESC_CD_0_AA64		(1UL << 41)
-+#define CTXDESC_CD_0_TCR_HD_SHIFT	42
-+#define CTXDESC_CD_0_TCR_HA_SHIFT	43
-+#define CTXDESC_CD_0_HD			(1UL << CTXDESC_CD_0_TCR_HD_SHIFT)
-+#define CTXDESC_CD_0_HA			(1UL << CTXDESC_CD_0_TCR_HA_SHIFT)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
- #define CTXDESC_CD_0_A			(1UL << 46)
-@@ -199,7 +208,7 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_cd_tables *tbl, u32 ssid)
- 	return l1_desc->ptr + idx * CTXDESC_CD_DWORDS;
- }
- 
--static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
-+static u64 arm_smmu_cpu_tcr_to_cd(struct arm_smmu_context_cfg *cfg, u64 tcr)
- {
- 	u64 val = 0;
- 
-@@ -214,6 +223,12 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- 	val |= ARM_SMMU_TCR2CD(tcr, IPS);
- 	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
- 
-+	if (cfg->hw_access)
-+		val |= ARM_SMMU_TCR2CD(tcr, HA);
-+
-+	if (cfg->hw_dirty)
-+		val |= ARM_SMMU_TCR2CD(tcr, HD);
-+
- 	return val;
- }
- 
-@@ -269,7 +284,7 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
- 		iommu_pasid_flush(&tbl->pasid, ssid, true);
- 
- 
--		val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
-+		val = arm_smmu_cpu_tcr_to_cd(cfg, cd->tcr) |
- #ifdef __BIG_ENDIAN
- 		      CTXDESC_CD_0_ENDI |
- #endif
-@@ -460,6 +475,7 @@ arm_smmu_alloc_shared_cd(struct iommu_pasid_table_ops *ops, struct mm_struct *mm
- 	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
- 	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
- 	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
-+	tcr |= TCR_HA | TCR_HD;
- 
- 	cd->ttbr	= virt_to_phys(mm->pgd);
- 	cd->tcr		= tcr;
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 4b272925ee78..d434f7085dc2 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -353,6 +353,7 @@ config ARM_SMMU_V3
+ 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+ 	depends on ARM64
+ 	select IOMMU_API
++	select IOMMU_SVA
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_SMMU_V3_CONTEXT
+ 	select GENERIC_MSI_IRQ_DOMAIN
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 1cdeea7e22cb..8528704627b5 100644
+index 79bc5b5cceed..1cdeea7e22cb 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -67,6 +67,8 @@
- #define IDR0_ASID16			(1 << 12)
- #define IDR0_ATS			(1 << 10)
- #define IDR0_HYP			(1 << 9)
-+#define IDR0_HD				(1 << 7)
-+#define IDR0_HA				(1 << 6)
- #define IDR0_BTM			(1 << 5)
- #define IDR0_COHACC			(1 << 4)
- #define IDR0_TTF_SHIFT			2
-@@ -573,6 +575,8 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_E2H		(1 << 14)
- #define ARM_SMMU_FEAT_BTM		(1 << 15)
- #define ARM_SMMU_FEAT_SVA		(1 << 16)
-+#define ARM_SMMU_FEAT_HA		(1 << 17)
-+#define ARM_SMMU_FEAT_HD		(1 << 18)
- 	u32				features;
+@@ -29,6 +29,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/iommu.h>
+ #include <linux/iopoll.h>
++#include <linux/mmu_context.h>
+ #include <linux/module.h>
+ #include <linux/msi.h>
+ #include <linux/of.h>
+@@ -37,6 +38,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/sched/mm.h>
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1631,6 +1635,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 		.arm_smmu = {
- 			.stall		= !!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE),
- 			.asid_bits	= smmu->asid_bits,
-+			.hw_access	= !!(smmu->features & ARM_SMMU_FEAT_HA),
-+			.hw_dirty	= !!(smmu->features & ARM_SMMU_FEAT_HD),
- 		},
- 	};
+ #include <linux/amba/bus.h>
  
-@@ -2865,6 +2871,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			smmu->features |= ARM_SMMU_FEAT_E2H;
- 	}
+@@ -617,6 +619,7 @@ struct arm_smmu_master_data {
+ 	struct device			*dev;
  
-+	if (reg & (IDR0_HA | IDR0_HD)) {
-+		smmu->features |= ARM_SMMU_FEAT_HA;
-+		if (reg & IDR0_HD)
-+			smmu->features |= ARM_SMMU_FEAT_HD;
+ 	size_t				ssid_bits;
++	bool				can_fault;
+ };
+ 
+ /* SMMU private data for an IOMMU domain */
+@@ -645,6 +648,13 @@ struct arm_smmu_domain {
+ 	spinlock_t			devices_lock;
+ };
+ 
++struct arm_smmu_mm {
++	struct io_mm			io_mm;
++	struct iommu_pasid_entry	*cd;
++	/* Only for release ! */
++	struct iommu_pasid_table_ops	*ops;
++};
++
+ struct arm_smmu_option_prop {
+ 	u32 opt;
+ 	const char *prop;
+@@ -671,6 +681,11 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+ 	return container_of(dom, struct arm_smmu_domain, domain);
+ }
+ 
++static struct arm_smmu_mm *to_smmu_mm(struct io_mm *io_mm)
++{
++	return container_of(io_mm, struct arm_smmu_mm, io_mm);
++}
++
+ static void parse_driver_options(struct arm_smmu_device *smmu)
+ {
+ 	int i = 0;
+@@ -1785,6 +1800,8 @@ static void arm_smmu_detach_dev(struct device *dev)
+ 	struct arm_smmu_domain *smmu_domain = master->domain;
+ 
+ 	if (smmu_domain) {
++		__iommu_sva_unbind_dev_all(dev);
++
+ 		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+ 		list_del(&master->list);
+ 		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+@@ -1902,6 +1919,113 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+ 	return ops->iova_to_phys(ops, iova);
+ }
+ 
++static int arm_smmu_sva_init(struct device *dev, unsigned long features,
++			     unsigned int *min_pasid, unsigned int *max_pasid)
++{
++	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
++
++	if (features & IOMMU_SVA_FEAT_IOPF && !master->can_fault)
++		return -EINVAL;
++
++	if (features & IOMMU_SVA_FEAT_PASID && !master->ssid_bits)
++		return -EINVAL;
++
++	if (!*max_pasid)
++		*max_pasid = 0xfffffU;
++
++	/* SSID support in the SMMU requires at least one SSID bit */
++	*min_pasid = max(*min_pasid, 1U);
++	*max_pasid = min(*max_pasid, (1U << master->ssid_bits) - 1);
++
++	return 0;
++}
++
++static void arm_smmu_sva_shutdown(struct device *dev)
++{
++}
++
++static struct io_mm *arm_smmu_mm_alloc(struct iommu_domain *domain,
++				       struct mm_struct *mm)
++{
++	struct arm_smmu_mm *smmu_mm;
++	struct iommu_pasid_entry *cd;
++	struct iommu_pasid_table_ops *ops;
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
++		return NULL;
++
++	smmu_mm = kzalloc(sizeof(*smmu_mm), GFP_KERNEL);
++	if (!smmu_mm)
++		return NULL;
++
++	smmu_mm->ops = ops = smmu_domain->s1_cfg.ops;
++	cd = ops->alloc_shared_entry(ops, mm);
++	if (IS_ERR(cd)) {
++		kfree(smmu_mm);
++		return ERR_CAST(cd);
 +	}
 +
- 	/*
- 	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
- 	 * will create TLB entries for NH-EL1 world and will miss the
-diff --git a/drivers/iommu/iommu-pasid.h b/drivers/iommu/iommu-pasid.h
-index 77e449a1655b..46fd44e7f4f1 100644
---- a/drivers/iommu/iommu-pasid.h
-+++ b/drivers/iommu/iommu-pasid.h
-@@ -79,6 +79,8 @@ struct iommu_pasid_sync_ops {
-  *
-  * SMMU properties:
-  * @stall:	devices attached to the domain are allowed to stall.
-+ * @hw_dirty:	hardware may update dirty flag
-+ * @hw_access:	hardware may update access flag
-  * @asid_bits:	number of ASID bits supported by the SMMU
-  *
-  * @s1fmt:	PASID table format, chosen by the allocator.
-@@ -86,6 +88,8 @@ struct iommu_pasid_sync_ops {
- struct arm_smmu_context_cfg {
- 	u8				stall:1;
- 	u8				asid_bits;
-+	u8				hw_dirty:1;
-+	u8				hw_access:1;
++	smmu_mm->cd = cd;
++	return &smmu_mm->io_mm;
++}
++
++static void arm_smmu_mm_free(struct io_mm *io_mm)
++{
++	struct arm_smmu_mm *smmu_mm = to_smmu_mm(io_mm);
++
++	smmu_mm->ops->free_entry(smmu_mm->ops, smmu_mm->cd);
++	kfree(smmu_mm);
++}
++
++static int arm_smmu_mm_attach(struct iommu_domain *domain, struct device *dev,
++			      struct io_mm *io_mm, bool attach_domain)
++{
++	struct arm_smmu_mm *smmu_mm = to_smmu_mm(io_mm);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct iommu_pasid_table_ops *ops = smmu_domain->s1_cfg.ops;
++	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
++		return -EINVAL;
++
++	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
++		return -ENODEV;
++
++	/* TODO: io_mm->no_need_for_pri_ill_pin_everything */
++	if (!master->can_fault)
++		return -ENODEV;
++
++	if (!attach_domain)
++		return 0;
++
++	return ops->set_entry(ops, io_mm->pasid, smmu_mm->cd);
++}
++
++static void arm_smmu_mm_detach(struct iommu_domain *domain, struct device *dev,
++			       struct io_mm *io_mm, bool detach_domain)
++{
++	struct arm_smmu_mm *smmu_mm = to_smmu_mm(io_mm);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct iommu_pasid_table_ops *ops = smmu_domain->s1_cfg.ops;
++
++	if (detach_domain)
++		ops->clear_entry(ops, io_mm->pasid, smmu_mm->cd);
++
++	/* TODO: Invalidate ATC. */
++	/* TODO: Invalidate all mappings if last and not DVM. */
++}
++
++static void arm_smmu_mm_invalidate(struct iommu_domain *domain,
++				   struct device *dev, struct io_mm *io_mm,
++				   unsigned long iova, size_t size)
++{
++	/*
++	 * TODO: Invalidate ATC.
++	 * TODO: Invalidate mapping if not DVM
++	 */
++}
++
+ static struct platform_driver arm_smmu_driver;
  
- #define ARM_SMMU_S1FMT_LINEAR		0x0
- #define ARM_SMMU_S1FMT_4K_L2		0x1
+ static int arm_smmu_match_node(struct device *dev, void *data)
+@@ -2108,6 +2232,13 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+ 	.domain_free		= arm_smmu_domain_free,
+ 	.attach_dev		= arm_smmu_attach_dev,
++	.sva_device_init	= arm_smmu_sva_init,
++	.sva_device_shutdown	= arm_smmu_sva_shutdown,
++	.mm_alloc		= arm_smmu_mm_alloc,
++	.mm_free		= arm_smmu_mm_free,
++	.mm_attach		= arm_smmu_mm_attach,
++	.mm_detach		= arm_smmu_mm_detach,
++	.mm_invalidate		= arm_smmu_mm_invalidate,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
+ 	.map_sg			= default_iommu_map_sg,
 -- 
 2.15.1
