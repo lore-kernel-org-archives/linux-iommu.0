@@ -1,7 +1,7 @@
 From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCHv2 2/6] iommu/intel: Clean/document fault status flags
-Date: Mon, 12 Feb 2018 16:48:21 +0000
-Message-ID: <20180212164825.22421-3-dima@arista.com>
+Subject: [PATCHv2 1/6] iommu/intel: Add __init for dmar_register_bus_notifier()
+Date: Mon, 12 Feb 2018 16:48:20 +0000
+Message-ID: <20180212164825.22421-2-dima@arista.com>
 References: <20180212164825.22421-1-dima@arista.com>
 Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
@@ -22,35 +22,25 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-So one could decode them without opening the specification.
+It's called only from intel_iommu_init(), which is init function.
 
 Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/iommu/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 8dad3dd26eae..ef169d67df92 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -209,12 +209,12 @@
- #define DMA_FECTL_IM (((u32)1) << 31)
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9a7ffd13c7f0..accf58388bdb 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -806,7 +806,7 @@ int __init dmar_dev_scope_init(void)
+ 	return dmar_dev_scope_status;
+ }
  
- /* FSTS_REG */
--#define DMA_FSTS_PPF ((u32)2)
--#define DMA_FSTS_PFO ((u32)1)
--#define DMA_FSTS_IQE (1 << 4)
--#define DMA_FSTS_ICE (1 << 5)
--#define DMA_FSTS_ITE (1 << 6)
--#define DMA_FSTS_PRO (1 << 7)
-+#define DMA_FSTS_PFO (1 << 0) /* Primary Fault Overflow */
-+#define DMA_FSTS_PPF (1 << 1) /* Primary Pending Fault */
-+#define DMA_FSTS_IQE (1 << 4) /* Invalidation Queue Error */
-+#define DMA_FSTS_ICE (1 << 5) /* Invalidation Completion Error */
-+#define DMA_FSTS_ITE (1 << 6) /* Invalidation Time-out Error */
-+#define DMA_FSTS_PRO (1 << 7) /* Page Request Overflow */
- #define dma_fsts_fault_record_index(s) (((s) >> 8) & 0xff)
- 
- /* FRCD_REG, 32 bits access */
+-void dmar_register_bus_notifier(void)
++void __init dmar_register_bus_notifier(void)
+ {
+ 	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
+ }
 -- 
 2.13.6
