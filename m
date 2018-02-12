@@ -1,85 +1,123 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 30/37] ACPI/IORT: Check ATS capability in root complex nodes
-Date: Mon, 12 Feb 2018 18:33:45 +0000
-Message-ID: <20180212183352.22730-31-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [PATCH 34/37] PCI: Make "PRG Response PASID Required" handling common
+Date: Mon, 12 Feb 2018 18:33:49 +0000
+Message-ID: <20180212183352.22730-35-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jonathan.cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, xuzaibo@huawei.com, ilias.apalodimas@linaro.org, jonathan.cameron@huawei.com, shunyong.yang@hxt-semitech.com, nwatters@codeaurora.org, okaya@codeaurora.org, jcrouse@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com, christian.koenig@amd.com, bharatku@xilinx.com
 List-Id: iommu@lists.linux-foundation.org
 
-Root complex node in IORT has a bit telling whether it supports ATS or
-not. Store this bit in the IOMMU fwspec when setting up a device, so it
-can be accessed later by an IOMMU driver.
+The PASID ECN to the PCIe spec added a bit in the PRI status register that
+allows a Function to declare whether a PRG Response should contain the
+PASID prefix or not.
 
-Use the negative version (NO_ATS) at the moment because it's not clear
-if/how the bit needs to be integrated in other firmware descriptions. The
-SMMU has a feature bit telling if it supports ATS, which might be
-sufficient in most systems for deciding whether or not we should enable
-the ATS capability in endpoints.
+Move the helper that accesses it from amd_iommu into the PCI subsystem,
+renaming it to be consistent with the current PCI Express specification
+(PRPR - PRG Response PASID Required).
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/acpi/arm64/iort.c | 11 +++++++++++
- include/linux/iommu.h     |  4 ++++
- 2 files changed, 15 insertions(+)
+ drivers/iommu/amd_iommu.c     | 19 +------------------
+ drivers/pci/ats.c             | 17 +++++++++++++++++
+ include/linux/pci-ats.h       |  8 ++++++++
+ include/uapi/linux/pci_regs.h |  1 +
+ 4 files changed, 27 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 95255ecfae7c..db374062ec9d 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -911,6 +911,14 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
- 	dev_dbg(dev, "dma_pfn_offset(%#08llx)\n", offset);
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 74788fdeb773..4bf606747295 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2049,23 +2049,6 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
+ 	return ret;
  }
  
-+static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
+-/* FIXME: Move this to PCI code */
+-#define PCI_PRI_TLP_OFF		(1 << 15)
+-
+-static bool pci_pri_tlp_required(struct pci_dev *pdev)
+-{
+-	u16 status;
+-	int pos;
+-
+-	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+-	if (!pos)
+-		return false;
+-
+-	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+-
+-	return (status & PCI_PRI_TLP_OFF) ? true : false;
+-}
+-
+ /*
+  * If a device is not yet associated with a domain, this function
+  * assigns it visible for the hardware
+@@ -2094,7 +2077,7 @@ static int attach_device(struct device *dev,
+ 
+ 			dev_data->ats.enabled = true;
+ 			dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
+-			dev_data->pri_tlp     = pci_pri_tlp_required(pdev);
++			dev_data->pri_tlp     = pci_prg_resp_requires_prefix(pdev);
+ 		}
+ 	} else if (amd_iommu_iotlb_sup &&
+ 		   pci_enable_ats(pdev, PAGE_SHIFT) == 0) {
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index 6ad80a1fd5a7..52bac62a0e40 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -390,3 +390,20 @@ int pci_max_pasids(struct pci_dev *pdev)
+ }
+ EXPORT_SYMBOL_GPL(pci_max_pasids);
+ #endif /* CONFIG_PCI_PASID */
++
++#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
++bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
 +{
-+	struct acpi_iort_root_complex *pci_rc;
++	u16 status;
++	int pos;
 +
-+	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
-+	return pci_rc->ats_attribute & ACPI_IORT_ATS_SUPPORTED;
++	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
++	if (!pos)
++		return false;
++
++	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
++
++	return !!(status & PCI_PRI_STATUS_PRPR);
 +}
-+
- /**
-  * iort_iommu_configure - Set-up IOMMU configuration for a device.
-  *
-@@ -946,6 +954,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- 		info.node = node;
- 		err = pci_for_each_dma_alias(to_pci_dev(dev),
- 					     iort_pci_iommu_init, &info);
-+
-+		if (!err && !iort_pci_rc_supports_ats(node))
-+			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_NO_ATS;
- 	} else {
- 		int i = 0;
++EXPORT_SYMBOL_GPL(pci_prg_resp_requires_prefix);
++#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+index 7c4b8e27268c..1825ca2c9bf4 100644
+--- a/include/linux/pci-ats.h
++++ b/include/linux/pci-ats.h
+@@ -68,5 +68,13 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
  
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f5c2f4be2b42..641aaf0f1b81 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -631,12 +631,16 @@ struct iommu_fwspec {
- 	const struct iommu_ops	*ops;
- 	struct fwnode_handle	*iommu_fwnode;
- 	void			*iommu_priv;
-+	u32			flags;
- 	unsigned int		num_ids;
- 	unsigned int		num_pasid_bits;
- 	bool			can_stall;
- 	u32			ids[1];
- };
+ #endif /* CONFIG_PCI_PASID */
  
-+/* Firmware disabled ATS in the root complex */
-+#define IOMMU_FWSPEC_PCI_NO_ATS			(1 << 0)
-+
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops);
- void iommu_fwspec_free(struct device *dev);
++#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
++bool pci_prg_resp_requires_prefix(struct pci_dev *pdev);
++#else
++static inline bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
++{
++	return false;
++}
++#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+ 
+ #endif /* LINUX_PCI_ATS_H*/
+diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+index 0c79eac5e9b8..c8020391cfa4 100644
+--- a/include/uapi/linux/pci_regs.h
++++ b/include/uapi/linux/pci_regs.h
+@@ -868,6 +868,7 @@
+ #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
+ #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
+ #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
++#define  PCI_PRI_STATUS_PRPR	0x8000	/* PRG Response requires PASID prefix */
+ #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
+ #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
+ #define PCI_EXT_CAP_PRI_SIZEOF	16
 -- 
 2.15.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
