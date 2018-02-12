@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 14/37] iommu/arm-smmu-v3: Link domains and devices
-Date: Mon, 12 Feb 2018 18:33:29 +0000
-Message-ID: <20180212183352.22730-15-jean-philippe.brucker@arm.com>
+Subject: [PATCH 16/37] iommu: Add generic PASID table library
+Date: Mon, 12 Feb 2018 18:33:31 +0000
+Message-ID: <20180212183352.22730-17-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
@@ -10,105 +10,270 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pc
 Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jonathan.cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When removing a mapping from a domain, we need to send an invalidation to
-all devices that might have stored it in their Address Translation Cache
-(ATC). In addition when updating the context descriptor of a live domain,
-we'll need to send invalidations for all devices attached to it.
+Add a small API within the IOMMU subsystem to handle different formats of
+PASID tables. It uses the same principle as io-pgtable:
 
-Maintain a list of devices in each domain, protected by a spinlock. It is
-updated every time we attach or detach devices to and from domains.
+* The IOMMU driver registers a PASID table with some invalidation
+  callbacks.
+* The pasid-table lib allocates a set of tables of the right format, and
+  returns an iommu_pasid_table_ops structure.
+* The IOMMU driver allocates entries and writes them using the provided
+  ops.
+* The pasid-table lib calls the IOMMU driver back for invalidation when
+  necessary.
+* The IOMMU driver unregisters the ops which frees the tables when
+  finished.
 
-It needs to be a spinlock because we'll invalidate ATC entries from
-within hardirq-safe contexts, but it may be possible to relax the read
-side with RCU later.
+An example user will be Arm SMMU in a subsequent patch.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/iommu/Kconfig       |   8 +++
+ drivers/iommu/Makefile      |   1 +
+ drivers/iommu/iommu-pasid.c |  53 +++++++++++++++++
+ drivers/iommu/iommu-pasid.h | 142 ++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 204 insertions(+)
+ create mode 100644 drivers/iommu/iommu-pasid.c
+ create mode 100644 drivers/iommu/iommu-pasid.h
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 3f2f1fc68b52..fb2507ffcdaf 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -652,6 +652,11 @@ struct arm_smmu_device {
- struct arm_smmu_master_data {
- 	struct arm_smmu_device		*smmu;
- 	struct arm_smmu_strtab_ent	ste;
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e751bb9958ba..8add90ba9b75 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -60,6 +60,14 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+ 
+ endmenu
+ 
++menu "Generic PASID table support"
 +
-+	struct arm_smmu_domain		*domain;
-+	struct list_head		list; /* domain->devices */
++# Selected by the actual PASID table implementations
++config IOMMU_PASID_TABLE
++	bool
 +
-+	struct device			*dev;
- };
- 
- /* SMMU private data for an IOMMU domain */
-@@ -675,6 +680,9 @@ struct arm_smmu_domain {
- 	};
- 
- 	struct iommu_domain		domain;
++endmenu
 +
-+	struct list_head		devices;
-+	spinlock_t			devices_lock;
- };
+ config IOMMU_IOVA
+ 	tristate
  
- struct arm_smmu_option_prop {
-@@ -1540,6 +1548,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	}
- 
- 	mutex_init(&smmu_domain->init_mutex);
-+	INIT_LIST_HEAD(&smmu_domain->devices);
-+	spin_lock_init(&smmu_domain->devices_lock);
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index f4324e29035e..338e59c93131 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_IOMMU_FAULT) += io-pgfault.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
++obj-$(CONFIG_IOMMU_PASID_TABLE) += iommu-pasid.o
+ obj-$(CONFIG_IOMMU_IOVA) += iova.o
+ obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+diff --git a/drivers/iommu/iommu-pasid.c b/drivers/iommu/iommu-pasid.c
+new file mode 100644
+index 000000000000..6b21d369d514
+--- /dev/null
++++ b/drivers/iommu/iommu-pasid.c
+@@ -0,0 +1,53 @@
++/*
++ * PASID table management for the IOMMU
++ *
++ * Copyright (C) 2018 ARM Ltd.
++ * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
++ *
++ * SPDX-License-Identifier: GPL-2.0
++ */
 +
- 	return &smmu_domain->domain;
- }
- 
-@@ -1754,7 +1765,17 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
- 
- static void arm_smmu_detach_dev(struct device *dev)
- {
-+	unsigned long flags;
- 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-+	struct arm_smmu_domain *smmu_domain = master->domain;
++#include <linux/kernel.h>
 +
-+	if (smmu_domain) {
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_del(&master->list);
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++#include "iommu-pasid.h"
 +
-+		master->domain = NULL;
-+	}
- 
- 	master->ste.assigned = false;
- 	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
-@@ -1763,6 +1784,7 @@ static void arm_smmu_detach_dev(struct device *dev)
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret = 0;
-+	unsigned long flags;
- 	struct arm_smmu_device *smmu;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_master_data *master;
-@@ -1798,6 +1820,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	}
- 
- 	ste->assigned = true;
-+	master->domain = smmu_domain;
++static const struct iommu_pasid_init_fns *
++pasid_table_init_fns[PASID_TABLE_NUM_FMTS] = {
++};
 +
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_add(&master->list, &smmu_domain->devices);
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS) {
- 		ste->s1_cfg = NULL;
-@@ -1916,6 +1943,7 @@ static int arm_smmu_add_device(struct device *dev)
- 			return -ENOMEM;
- 
- 		master->smmu = smmu;
-+		master->dev = dev;
- 		fwspec->iommu_priv = master;
- 	}
- 
++struct iommu_pasid_table_ops *
++iommu_alloc_pasid_ops(enum iommu_pasid_table_fmt fmt,
++		      struct iommu_pasid_table_cfg *cfg, void *cookie)
++{
++	struct iommu_pasid_table *table;
++	const struct iommu_pasid_init_fns *fns;
++
++	if (fmt >= PASID_TABLE_NUM_FMTS)
++		return NULL;
++
++	fns = pasid_table_init_fns[fmt];
++	if (!fns)
++		return NULL;
++
++	table = fns->alloc(cfg, cookie);
++	if (!table)
++		return NULL;
++
++	table->fmt = fmt;
++	table->cookie = cookie;
++	table->cfg = *cfg;
++
++	return &table->ops;
++}
++
++void iommu_free_pasid_ops(struct iommu_pasid_table_ops *ops)
++{
++	struct iommu_pasid_table *table;
++
++	if (!ops)
++		return;
++
++	table = container_of(ops, struct iommu_pasid_table, ops);
++	iommu_pasid_flush_all(table);
++	pasid_table_init_fns[table->fmt]->free(table);
++}
+diff --git a/drivers/iommu/iommu-pasid.h b/drivers/iommu/iommu-pasid.h
+new file mode 100644
+index 000000000000..40a27d35c1e0
+--- /dev/null
++++ b/drivers/iommu/iommu-pasid.h
+@@ -0,0 +1,142 @@
++/*
++ * PASID table management for the IOMMU
++ *
++ * Copyright (C) 2017 ARM Ltd.
++ * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
++ *
++ * SPDX-License-Identifier: GPL-2.0
++ */
++#ifndef __IOMMU_PASID_H
++#define __IOMMU_PASID_H
++
++#include <linux/types.h>
++#include "io-pgtable.h"
++
++struct mm_struct;
++
++enum iommu_pasid_table_fmt {
++	PASID_TABLE_NUM_FMTS,
++};
++
++/**
++ * iommu_pasid_entry - Entry of a PASID table
++ *
++ * @token:	architecture-specific data needed to uniquely identify the
++ *		entry. Most notably used for TLB invalidation
++ */
++struct iommu_pasid_entry {
++	u64		tag;
++};
++
++/**
++ * iommu_pasid_table_ops - Operations on a PASID table
++ *
++ * @alloc_shared_entry:	allocate an entry for sharing an mm (SVA)
++ *			Returns the pointer to a new entry or an error
++ * @alloc_priv_entry:	allocate an entry for map/unmap operations
++ *			Returns the pointer to a new entry or an error
++ * @free_entry:		free an entry obtained with alloc_entry
++ * @set_entry:		write PASID table entry
++ * @clear_entry:	clear PASID table entry
++ */
++struct iommu_pasid_table_ops {
++	struct iommu_pasid_entry *
++	(*alloc_shared_entry)(struct iommu_pasid_table_ops *ops,
++			      struct mm_struct *mm);
++	struct iommu_pasid_entry *
++	(*alloc_priv_entry)(struct iommu_pasid_table_ops *ops,
++			    enum io_pgtable_fmt fmt,
++			    struct io_pgtable_cfg *cfg);
++	void (*free_entry)(struct iommu_pasid_table_ops *ops,
++			   struct iommu_pasid_entry *entry);
++	int (*set_entry)(struct iommu_pasid_table_ops *ops, int pasid,
++			 struct iommu_pasid_entry *entry);
++	void (*clear_entry)(struct iommu_pasid_table_ops *ops, int pasid,
++			    struct iommu_pasid_entry *entry);
++};
++
++/**
++ * iommu_pasid_sync_ops - Callbacks into the IOMMU driver
++ *
++ * @cfg_flush:		flush cached configuration for one entry. For a
++ *			multi-level PASID table, 'leaf' tells whether to only
++ *			flush cached leaf entries or intermediate levels as
++ *			well.
++ * @cfg_flush_all:	flush cached configuration for all entries of the PASID
++ *			table
++ * @tlb_flush:		flush TLB entries for one entry
++ */
++struct iommu_pasid_sync_ops {
++	void (*cfg_flush)(void *cookie, int pasid, bool leaf);
++	void (*cfg_flush_all)(void *cookie);
++	void (*tlb_flush)(void *cookie, int pasid,
++			  struct iommu_pasid_entry *entry);
++};
++
++/**
++ * struct iommu_pasid_table_cfg - Configuration data for a set of PASID tables.
++ *
++ * @iommu_dev	device performing the DMA table walks
++ * @order:	number of PASID bits, set by IOMMU driver
++ * @flush:	TLB management callbacks for this set of tables.
++ *
++ * @base:	DMA address of the allocated table, set by the allocator.
++ */
++struct iommu_pasid_table_cfg {
++	struct device			*iommu_dev;
++	size_t				order;
++	const struct iommu_pasid_sync_ops *sync;
++
++	dma_addr_t			base;
++};
++
++struct iommu_pasid_table_ops *
++iommu_alloc_pasid_ops(enum iommu_pasid_table_fmt fmt,
++		      struct iommu_pasid_table_cfg *cfg,
++		      void *cookie);
++void iommu_free_pasid_ops(struct iommu_pasid_table_ops *ops);
++
++/**
++ * struct iommu_pasid_table - describes a set of PASID tables
++ *
++ * @fmt:	The PASID table format.
++ * @cookie:	An opaque token provided by the IOMMU driver and passed back to
++ *		any callback routine.
++ * @cfg:	A copy of the PASID table configuration.
++ * @ops:	The PASID table operations in use for this set of page tables.
++ */
++struct iommu_pasid_table {
++	enum iommu_pasid_table_fmt	fmt;
++	void				*cookie;
++	struct iommu_pasid_table_cfg	cfg;
++	struct iommu_pasid_table_ops	ops;
++};
++
++#define iommu_pasid_table_ops_to_table(ops) \
++	container_of((ops), struct iommu_pasid_table, ops)
++
++struct iommu_pasid_init_fns {
++	struct iommu_pasid_table *(*alloc)(struct iommu_pasid_table_cfg *cfg,
++					   void *cookie);
++	void (*free)(struct iommu_pasid_table *table);
++};
++
++static inline void iommu_pasid_flush_all(struct iommu_pasid_table *table)
++{
++	table->cfg.sync->cfg_flush_all(table->cookie);
++}
++
++static inline void iommu_pasid_flush(struct iommu_pasid_table *table,
++					 int pasid, bool leaf)
++{
++	table->cfg.sync->cfg_flush(table->cookie, pasid, leaf);
++}
++
++static inline void iommu_pasid_flush_tlbs(struct iommu_pasid_table *table,
++					  int pasid,
++					  struct iommu_pasid_entry *entry)
++{
++	table->cfg.sync->tlb_flush(table->cookie, pasid, entry);
++}
++
++#endif /* __IOMMU_PASID_H */
 -- 
 2.15.1
 
