@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 20/37] iommu/arm-smmu-v3: Share process page tables
-Date: Mon, 12 Feb 2018 18:33:35 +0000
-Message-ID: <20180212183352.22730-21-jean-philippe.brucker@arm.com>
+Subject: [PATCH 18/37] iommu/arm-smmu-v3: Add support for Substream IDs
+Date: Mon, 12 Feb 2018 18:33:33 +0000
+Message-ID: <20180212183352.22730-19-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
@@ -10,281 +10,364 @@ To: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@
 Cc: joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, xuzaibo@huawei.com, ilias.apalodimas@linaro.org, jonathan.cameron@huawei.com, shunyong.yang@hxt-semitech.com, nwatters@codeaurora.org, okaya@codeaurora.org, jcrouse@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, robdclark@gmail.com, christian.koenig@amd.com, bharatku@xilinx.com
 List-Id: iommu@lists.linux-foundation.org
 
-With Shared Virtual Addressing (SVA), we need to mirror CPU TTBR, TCR,
-MAIR and ASIDs in SMMU contexts. Each SMMU has a single ASID space split
-into two sets, shared and private. Shared ASIDs correspond to those
-obtained from the arch ASID allocator, and private ASIDs are used for
-"classic" map/unmap DMA.
+At the moment, the SMMUv3 driver offers only one stage-1 or stage-2
+address space to each device. SMMUv3 allows to associate multiple address
+spaces per device. In addition to the Stream ID (SID), that identifies a
+device, we can now have Substream IDs (SSID) identifying an address space.
+In PCIe lingo, SID is called Requester ID (RID) and SSID is called Process
+Address-Space ID (PASID).
 
-Replace the ASID IDA with an IDR, allowing to keep information about each
-context. Initialize shared contexts with info obtained from the mm.
+Prepare the driver for SSID support, by adding context descriptor tables
+in STEs (previously a single static context descriptor). A complete
+stage-1 walk is now performed like this by the SMMU:
+
+      Stream tables          Ctx. tables          Page tables
+        +--------+   ,------->+-------+   ,------->+-------+
+        :        :   |        :       :   |        :       :
+        +--------+   |        +-------+   |        +-------+
+   SID->|  STE   |---'  SSID->|  CD   |---'  IOVA->|  PTE  |--> IPA
+        +--------+            +-------+            +-------+
+        :        :            :       :            :       :
+        +--------+            +-------+            +-------+
+
+We only implement one level of context descriptor table for now, but as
+with stream and page tables, an SSID can be split to target multiple
+levels of tables.
+
+In all stream table entries, we set S1DSS=SSID0 mode, making translations
+without an ssid use context descriptor 0.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- drivers/iommu/arm-smmu-v3-context.c | 181 ++++++++++++++++++++++++++++++++++--
- 1 file changed, 171 insertions(+), 10 deletions(-)
+ drivers/iommu/arm-smmu-v3-context.c | 132 ++++++++++++++++++++++++++----------
+ drivers/iommu/arm-smmu-v3.c         |  33 +++++++--
+ 2 files changed, 126 insertions(+), 39 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3-context.c b/drivers/iommu/arm-smmu-v3-context.c
-index aaffc2071966..b7c90384ff56 100644
+index e910cb356f45..3b0bb9475dea 100644
 --- a/drivers/iommu/arm-smmu-v3-context.c
 +++ b/drivers/iommu/arm-smmu-v3-context.c
-@@ -10,9 +10,11 @@
- #include <linux/dma-mapping.h>
- #include <linux/idr.h>
- #include <linux/kernel.h>
-+#include <linux/mmu_context.h>
- #include <linux/slab.h>
+@@ -79,11 +79,14 @@ struct arm_smmu_cd {
+ #define pasid_entry_to_cd(entry) \
+ 	container_of((entry), struct arm_smmu_cd, entry)
  
- #include "iommu-pasid.h"
-+#include "io-pgtable-arm.h"
- 
- /*
-  * Linear: when less than 1024 SSIDs are supported
-@@ -87,6 +89,9 @@ struct arm_smmu_cd {
- 	u64				ttbr;
- 	u64				tcr;
- 	u64				mair;
++struct arm_smmu_cd_table {
++	__le64				*ptr;
++	dma_addr_t			ptr_dma;
++};
 +
-+	refcount_t			refs;
-+	struct mm_struct		*mm;
+ struct arm_smmu_cd_tables {
+ 	struct iommu_pasid_table	pasid;
+-
+-	void				*ptr;
+-	dma_addr_t			ptr_dma;
++	struct arm_smmu_cd_table	table;
  };
  
- #define pasid_entry_to_cd(entry) \
-@@ -118,7 +123,8 @@ struct arm_smmu_cd_tables {
- #define pasid_ops_to_tables(ops) \
- 	pasid_to_cd_tables(iommu_pasid_table_ops_to_table(ops))
+ #define pasid_to_cd_tables(pasid_table) \
+@@ -94,6 +97,36 @@ struct arm_smmu_cd_tables {
  
--static DEFINE_IDA(asid_ida);
-+static DEFINE_SPINLOCK(asid_lock);
-+static DEFINE_IDR(asid_idr);
+ static DEFINE_IDA(asid_ida);
  
- static int arm_smmu_alloc_cd_leaf_table(struct device *dev,
- 					struct arm_smmu_cd_table *desc,
-@@ -260,7 +266,8 @@ static int arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
- 		      CTXDESC_CD_0_ENDI |
++static int arm_smmu_alloc_cd_leaf_table(struct device *dev,
++					struct arm_smmu_cd_table *desc,
++					size_t num_entries)
++{
++	size_t size = num_entries * (CTXDESC_CD_DWORDS << 3);
++
++	desc->ptr = dmam_alloc_coherent(dev, size, &desc->ptr_dma,
++					GFP_ATOMIC | __GFP_ZERO);
++	if (!desc->ptr) {
++		dev_warn(dev, "failed to allocate context descriptor table\n");
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++static void arm_smmu_free_cd_leaf_table(struct device *dev,
++					struct arm_smmu_cd_table *desc,
++					size_t num_entries)
++{
++	size_t size = num_entries * (CTXDESC_CD_DWORDS << 3);
++
++	dmam_free_coherent(dev, size, desc->ptr, desc->ptr_dma);
++}
++
++static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_cd_tables *tbl, u32 ssid)
++{
++	return tbl->table.ptr + ssid * CTXDESC_CD_DWORDS;
++}
++
+ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
+ {
+ 	u64 val = 0;
+@@ -116,33 +149,72 @@ static int arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
+ 				    struct arm_smmu_cd *cd)
+ {
+ 	u64 val;
+-	__u64 *cdptr = tbl->ptr;
++	bool cd_live;
+ 	struct arm_smmu_context_cfg *cfg = &tbl->pasid.cfg.arm_smmu;
+-
+-	if (!cd || WARN_ON(ssid))
+-		return -EINVAL;
++	__le64 *cdptr = arm_smmu_get_cd_ptr(tbl, ssid);
+ 
+ 	/*
+-	 * We don't need to issue any invalidation here, as we'll invalidate
+-	 * the STE when installing the new entry anyway.
++	 * This function handles the following cases:
++	 *
++	 * (1) Install primary CD, for normal DMA traffic (SSID = 0).
++	 * (2) Install a secondary CD, for SID+SSID traffic, followed by an
++	 *     invalidation.
++	 * (3) Update ASID of primary CD. This is allowed by atomically writing
++	 *     the first 64 bits of the CD, followed by invalidation of the old
++	 *     entry and mappings.
++	 * (4) Remove a secondary CD and invalidate it.
+ 	 */
+-	val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
++
++	if (!cdptr)
++		return -ENOMEM;
++
++	val = le64_to_cpu(cdptr[0]);
++	cd_live = !!(val & CTXDESC_CD_0_V);
++
++	if (!cd) { /* (4) */
++		cdptr[0] = 0;
++	} else if (cd_live) { /* (3) */
++		val &= ~(CTXDESC_CD_0_ASID_MASK << CTXDESC_CD_0_ASID_SHIFT);
++		val |= (cd->entry.tag & CTXDESC_CD_0_ASID_MASK)
++			<< CTXDESC_CD_0_ASID_SHIFT;
++
++		cdptr[0] = cpu_to_le64(val);
++		/*
++		 * Until CD+TLB invalidation, both ASIDs may be used for tagging
++		 * this substream's traffic
++		 */
++	} else { /* (1) and (2) */
++		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK
++				       << CTXDESC_CD_1_TTB0_SHIFT);
++		cdptr[2] = 0;
++		cdptr[3] = cpu_to_le64(cd->mair << CTXDESC_CD_3_MAIR_SHIFT);
++
++		/*
++		 * STE is live, and the SMMU might fetch this CD at any
++		 * time. Ensure it observes the rest of the CD before we
++		 * enable it.
++		 */
++		iommu_pasid_flush(&tbl->pasid, ssid, true);
++
++
++		val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
+ #ifdef __BIG_ENDIAN
+-	      CTXDESC_CD_0_ENDI |
++		      CTXDESC_CD_0_ENDI |
  #endif
- 		      CTXDESC_CD_0_R | CTXDESC_CD_0_A |
--		      CTXDESC_CD_0_ASET_PRIVATE |
-+		      (cd->mm ? CTXDESC_CD_0_ASET_SHARED :
-+		       CTXDESC_CD_0_ASET_PRIVATE) |
- 		      CTXDESC_CD_0_AA64 |
- 		      (cd->entry.tag & CTXDESC_CD_0_ASID_MASK)
- 		      << CTXDESC_CD_0_ASID_SHIFT |
-@@ -277,10 +284,145 @@ static int arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
+-	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET_PRIVATE |
+-	      CTXDESC_CD_0_AA64 | cd->entry.tag << CTXDESC_CD_0_ASID_SHIFT |
+-	      CTXDESC_CD_0_V;
++		      CTXDESC_CD_0_R | CTXDESC_CD_0_A |
++		      CTXDESC_CD_0_ASET_PRIVATE |
++		      CTXDESC_CD_0_AA64 |
++		      (cd->entry.tag & CTXDESC_CD_0_ASID_MASK)
++		      << CTXDESC_CD_0_ASID_SHIFT |
++		      CTXDESC_CD_0_V;
+ 
+-	if (cfg->stall)
+-		val |= CTXDESC_CD_0_S;
++		if (cfg->stall)
++			val |= CTXDESC_CD_0_S;
+ 
+-	cdptr[0] = cpu_to_le64(val);
+-
+-	val = cd->ttbr & CTXDESC_CD_1_TTB0_MASK << CTXDESC_CD_1_TTB0_SHIFT;
+-	cdptr[1] = cpu_to_le64(val);
++		cdptr[0] = cpu_to_le64(val);
++	}
+ 
+-	cdptr[3] = cpu_to_le64(cd->mair << CTXDESC_CD_3_MAIR_SHIFT);
++	iommu_pasid_flush(&tbl->pasid, ssid, true);
+ 
+ 	return 0;
+ }
+@@ -234,24 +306,17 @@ static void arm_smmu_clear_cd(struct iommu_pasid_table_ops *ops, int pasid,
+ static struct iommu_pasid_table *
+ arm_smmu_alloc_cd_tables(struct iommu_pasid_table_cfg *cfg, void *cookie)
+ {
++	int ret;
+ 	struct arm_smmu_cd_tables *tbl;
+ 	struct device *dev = cfg->iommu_dev;
+ 
+-	if (cfg->order) {
+-		/* TODO: support SSID */
+-		return NULL;
+-	}
+-
+ 	tbl = devm_kzalloc(dev, sizeof(*tbl), GFP_KERNEL);
+ 	if (!tbl)
+ 		return NULL;
+ 
+-	tbl->ptr = dmam_alloc_coherent(dev, CTXDESC_CD_DWORDS << 3,
+-				       &tbl->ptr_dma, GFP_KERNEL | __GFP_ZERO);
+-	if (!tbl->ptr) {
+-		dev_warn(dev, "failed to allocate context descriptor\n");
++	ret = arm_smmu_alloc_cd_leaf_table(dev, &tbl->table, 1 << cfg->order);
++	if (ret)
+ 		goto err_free_tbl;
+-	}
+ 
+ 	tbl->pasid.ops = (struct iommu_pasid_table_ops) {
+ 		.alloc_priv_entry	= arm_smmu_alloc_priv_cd,
+@@ -261,7 +326,7 @@ arm_smmu_alloc_cd_tables(struct iommu_pasid_table_cfg *cfg, void *cookie)
+ 		.clear_entry		= arm_smmu_clear_cd,
+ 	};
+ 
+-	cfg->base		= tbl->ptr_dma;
++	cfg->base		= tbl->table.ptr_dma;
+ 	cfg->arm_smmu.s1fmt	= ARM_SMMU_S1FMT_LINEAR;
+ 
+ 	return &tbl->pasid;
+@@ -278,8 +343,7 @@ static void arm_smmu_free_cd_tables(struct iommu_pasid_table *pasid_table)
+ 	struct device *dev = cfg->iommu_dev;
+ 	struct arm_smmu_cd_tables *tbl = pasid_to_cd_tables(pasid_table);
+ 
+-	dmam_free_coherent(dev, CTXDESC_CD_DWORDS << 3,
+-			   tbl->ptr, tbl->ptr_dma);
++	arm_smmu_free_cd_leaf_table(dev, &tbl->table, 1 << cfg->order);
+ 	devm_kfree(dev, tbl);
+ }
+ 
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index b6d8c90fafb3..a307c6885dc0 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -239,12 +239,19 @@
+ #define STRTAB_STE_0_CFG_S2_TRANS	(6UL << STRTAB_STE_0_CFG_SHIFT)
+ 
+ #define STRTAB_STE_0_S1FMT_SHIFT	4
+-#define STRTAB_STE_0_S1FMT_LINEAR	(0UL << STRTAB_STE_0_S1FMT_SHIFT)
++#define STRTAB_STE_0_S1FMT_MASK		0x3UL
+ #define STRTAB_STE_0_S1CTXPTR_SHIFT	6
+ #define STRTAB_STE_0_S1CTXPTR_MASK	0x3ffffffffffUL
+ #define STRTAB_STE_0_S1CDMAX_SHIFT	59
+ #define STRTAB_STE_0_S1CDMAX_MASK	0x1fUL
+ 
++#define STRTAB_STE_1_S1DSS_SHIFT	0
++#define STRTAB_STE_1_S1DSS_MASK		0x3UL
++#define STRTAB_STE_1_S1DSS_TERMINATE	(0x0 << STRTAB_STE_1_S1DSS_SHIFT)
++#define STRTAB_STE_1_S1DSS_BYPASS	(0x1 << STRTAB_STE_1_S1DSS_SHIFT)
++#define STRTAB_STE_1_S1DSS_SSID0	(0x2 << STRTAB_STE_1_S1DSS_SHIFT)
++
++
+ #define STRTAB_STE_1_S1C_CACHE_NC	0UL
+ #define STRTAB_STE_1_S1C_CACHE_WBRA	1UL
+ #define STRTAB_STE_1_S1C_CACHE_WT	2UL
+@@ -601,6 +608,8 @@ struct arm_smmu_master_data {
+ 	struct list_head		list; /* domain->devices */
+ 
+ 	struct device			*dev;
++
++	size_t				ssid_bits;
+ };
+ 
+ /* SMMU private data for an IOMMU domain */
+@@ -1108,8 +1117,11 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 	}
+ 
+ 	if (ste->s1_cfg) {
++		struct iommu_pasid_table_cfg *cfg = &ste->s1_cfg->tables;
++
+ 		BUG_ON(ste_live);
+ 		dst[1] = cpu_to_le64(
++			 STRTAB_STE_1_S1DSS_SSID0 |
+ 			 STRTAB_STE_1_S1C_CACHE_WBRA
+ 			 << STRTAB_STE_1_S1CIR_SHIFT |
+ 			 STRTAB_STE_1_S1C_CACHE_WBRA
+@@ -1124,8 +1136,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+ 
+-		val |= (ste->s1_cfg->tables.base & STRTAB_STE_0_S1CTXPTR_MASK
++		val |= (cfg->base & STRTAB_STE_0_S1CTXPTR_MASK
+ 		        << STRTAB_STE_0_S1CTXPTR_SHIFT) |
++			(u64)(cfg->order & STRTAB_STE_0_S1CDMAX_MASK)
++			<< STRTAB_STE_0_S1CDMAX_SHIFT |
++			(cfg->arm_smmu.s1fmt & STRTAB_STE_0_S1FMT_MASK)
++			<< STRTAB_STE_0_S1FMT_SHIFT |
+ 			STRTAB_STE_0_CFG_S1_TRANS;
+ 	}
+ 
+@@ -1569,6 +1585,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ }
+ 
+ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
++				       struct arm_smmu_master_data *master,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
+ {
+ 	int ret;
+@@ -1578,6 +1595,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct iommu_pasid_table_cfg pasid_cfg = {
+ 		.iommu_dev		= smmu->dev,
++		.order			= master->ssid_bits,
+ 		.sync			= &arm_smmu_ctx_sync,
+ 		.arm_smmu = {
+ 			.stall		= !!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE),
+@@ -1612,6 +1630,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ }
+ 
+ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
++				       struct arm_smmu_master_data *master,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
+ {
+ 	int vmid;
+@@ -1628,7 +1647,8 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
  	return 0;
  }
  
-+static bool arm_smmu_free_asid(struct arm_smmu_cd *cd)
-+{
-+	bool free;
-+	struct arm_smmu_cd *old_cd;
-+
-+	spin_lock(&asid_lock);
-+	free = refcount_dec_and_test(&cd->refs);
-+	if (free) {
-+		old_cd = idr_remove(&asid_idr, (u16)cd->entry.tag);
-+		WARN_ON(old_cd != cd);
-+	}
-+	spin_unlock(&asid_lock);
-+
-+	return free;
-+}
-+
-+static struct arm_smmu_cd *arm_smmu_alloc_cd(struct arm_smmu_cd_tables *tbl)
-+{
-+	struct arm_smmu_cd *cd;
-+
-+	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
-+	if (!cd)
-+		return NULL;
-+
-+	refcount_set(&cd->refs, 1);
-+
-+	return cd;
-+}
-+
-+static struct arm_smmu_cd *arm_smmu_share_asid(u16 asid)
-+{
-+	struct arm_smmu_cd *cd;
-+
-+	cd = idr_find(&asid_idr, asid);
-+	if (!cd)
-+		return NULL;
-+
-+	if (cd->mm) {
-+		/*
-+		 * It's pretty common to find a stale CD when doing unbind-bind,
-+		 * given that the release happens after a RCU grace period.
-+		 * Simply reuse it.
-+		 */
-+		refcount_inc(&cd->refs);
-+		return cd;
-+	}
-+
-+	/*
-+	 * Ouch, ASID is already in use for a private cd.
-+	 * TODO: seize it, for the common good.
-+	 */
-+	return ERR_PTR(-EEXIST);
-+}
-+
- static struct iommu_pasid_entry *
- arm_smmu_alloc_shared_cd(struct iommu_pasid_table_ops *ops, struct mm_struct *mm)
+-static int arm_smmu_domain_finalise(struct iommu_domain *domain)
++static int arm_smmu_domain_finalise(struct iommu_domain *domain,
++				    struct arm_smmu_master_data *master)
  {
--	return ERR_PTR(-ENODEV);
-+	u16 asid;
-+	u64 tcr, par, reg;
-+	int ret = -ENOMEM;
-+	struct arm_smmu_cd *cd;
-+	struct arm_smmu_cd *old_cd = NULL;
-+	struct arm_smmu_cd_tables *tbl = pasid_ops_to_tables(ops);
-+
-+	asid = mm_context_get(mm);
-+	if (!asid)
-+		return ERR_PTR(-ESRCH);
-+
-+	cd = arm_smmu_alloc_cd(tbl);
-+	if (!cd)
-+		goto err_put_context;
-+
-+	idr_preload(GFP_KERNEL);
-+	spin_lock(&asid_lock);
-+	old_cd = arm_smmu_share_asid(asid);
-+	if (!old_cd)
-+		ret = idr_alloc(&asid_idr, cd, asid, asid + 1, GFP_ATOMIC);
-+	spin_unlock(&asid_lock);
-+	idr_preload_end();
-+
-+	if (!IS_ERR_OR_NULL(old_cd)) {
-+		if (WARN_ON(old_cd->mm != mm)) {
-+			ret = -EINVAL;
-+			goto err_free_cd;
-+		}
-+		kfree(cd);
-+		mm_context_put(mm);
-+		return &old_cd->entry;
-+	} else if (old_cd) {
-+		ret = PTR_ERR(old_cd);
-+		goto err_free_cd;
-+	}
-+
-+	tcr = TCR_T0SZ(VA_BITS) | TCR_IRGN0_WBWA | TCR_ORGN0_WBWA |
-+		TCR_SH0_INNER | ARM_LPAE_TCR_EPD1;
-+
-+	switch (PAGE_SIZE) {
-+	case SZ_4K:
-+		tcr |= TCR_TG0_4K;
-+		break;
-+	case SZ_16K:
-+		tcr |= TCR_TG0_16K;
-+		break;
-+	case SZ_64K:
-+		tcr |= TCR_TG0_64K;
-+		break;
-+	default:
-+		WARN_ON(1);
-+		ret = -EINVAL;
-+		goto err_free_asid;
-+	}
-+
-+	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
-+	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
-+	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
-+
-+	cd->ttbr	= virt_to_phys(mm->pgd);
-+	cd->tcr		= tcr;
-+	/*
-+	 * MAIR value is pretty much constant and global, so we can just get it
-+	 * from the current CPU register
-+	 */
-+	cd->mair	= read_sysreg(mair_el1);
-+
-+	cd->mm		= mm;
-+	cd->entry.tag	= asid;
-+
-+	return &cd->entry;
-+
-+err_free_asid:
-+	arm_smmu_free_asid(cd);
-+
-+err_free_cd:
-+	kfree(cd);
-+
-+err_put_context:
-+	mm_context_put(mm);
-+
-+	return ERR_PTR(ret);
- }
+ 	int ret;
+ 	unsigned long ias, oas;
+@@ -1636,6 +1656,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 	struct io_pgtable_cfg pgtbl_cfg;
+ 	struct io_pgtable_ops *pgtbl_ops;
+ 	int (*finalise_stage_fn)(struct arm_smmu_domain *,
++				 struct arm_smmu_master_data *,
+ 				 struct io_pgtable_cfg *);
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+@@ -1688,7 +1709,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 	domain->geometry.aperture_end = (1UL << ias) - 1;
+ 	domain->geometry.force_aperture = true;
  
- static struct iommu_pasid_entry *
-@@ -294,19 +436,23 @@ arm_smmu_alloc_priv_cd(struct iommu_pasid_table_ops *ops,
- 	struct arm_smmu_cd_tables *tbl = pasid_ops_to_tables(ops);
- 	struct arm_smmu_context_cfg *ctx_cfg = &tbl->pasid.cfg.arm_smmu;
+-	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
++	ret = finalise_stage_fn(smmu_domain, master, &pgtbl_cfg);
+ 	if (ret < 0) {
+ 		free_io_pgtable_ops(pgtbl_ops);
+ 		return ret;
+@@ -1783,7 +1804,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  
--	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
-+	cd = arm_smmu_alloc_cd(tbl);
- 	if (!cd)
- 		return ERR_PTR(-ENOMEM);
- 
--	asid = ida_simple_get(&asid_ida, 0, 1 << ctx_cfg->asid_bits,
--			      GFP_KERNEL);
-+	idr_preload(GFP_KERNEL);
-+	spin_lock(&asid_lock);
-+	asid = idr_alloc_cyclic(&asid_idr, cd, 0, 1 << ctx_cfg->asid_bits,
-+				GFP_ATOMIC);
-+	cd->entry.tag = asid;
-+	spin_unlock(&asid_lock);
-+	idr_preload_end();
-+
- 	if (asid < 0) {
- 		kfree(cd);
- 		return ERR_PTR(asid);
+ 	if (!smmu_domain->smmu) {
+ 		smmu_domain->smmu = smmu;
+-		ret = arm_smmu_domain_finalise(domain);
++		ret = arm_smmu_domain_finalise(domain, master);
+ 		if (ret) {
+ 			smmu_domain->smmu = NULL;
+ 			goto out_unlock;
+@@ -1939,6 +1960,8 @@ static int arm_smmu_add_device(struct device *dev)
+ 		}
  	}
  
--	cd->entry.tag = asid;
--
- 	switch (fmt) {
- 	case ARM_64_LPAE_S1:
- 		cd->ttbr	= cfg->arm_lpae_s1_cfg.ttbr[0];
-@@ -322,7 +468,7 @@ arm_smmu_alloc_priv_cd(struct iommu_pasid_table_ops *ops,
- 	return &cd->entry;
- 
- err_free_asid:
--	ida_simple_remove(&asid_ida, asid);
-+	arm_smmu_free_asid(cd);
- 
- 	kfree(cd);
- 
-@@ -334,7 +480,14 @@ static void arm_smmu_free_cd(struct iommu_pasid_table_ops *ops,
- {
- 	struct arm_smmu_cd *cd = pasid_entry_to_cd(entry);
- 
--	ida_simple_remove(&asid_ida, (u16)entry->tag);
-+	if (!arm_smmu_free_asid(cd))
-+		return;
++	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
 +
-+	if (cd->mm) {
-+		/* Unpin ASID */
-+		mm_context_put(cd->mm);
-+	}
-+
- 	kfree(cd);
- }
- 
-@@ -359,6 +512,14 @@ static void arm_smmu_clear_cd(struct iommu_pasid_table_ops *ops, int pasid,
- 		return;
- 
- 	arm_smmu_write_ctx_desc(tbl, pasid, NULL);
-+
-+	/*
-+	 * The ASID allocator won't broadcast the final TLB invalidations for
-+	 * this ASID, so we need to do it manually. For private contexts,
-+	 * freeing io-pgtable ops performs the invalidation.
-+	 */
-+	if (cd->mm)
-+		iommu_pasid_flush_tlbs(&tbl->pasid, cd->pasid, entry);
- }
- 
- static struct iommu_pasid_table *
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (!IS_ERR(group)) {
+ 		iommu_group_put(group);
 -- 
 2.15.1
