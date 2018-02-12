@@ -1,59 +1,43 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH] headers: untangle kmemleak.h from mm.h
-Date: Mon, 12 Feb 2018 23:28:09 +1100
-Message-ID: <87zi4ev1d2.fsf@concordia.ellerman.id.au>
-References: <a4629db7-194d-3c7c-c8fd-24f61b220a70@infradead.org>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <a4629db7-194d-3c7c-c8fd-24f61b220a70@infradead.org>
-Sender: owner-linux-mm@kvack.org
-To: Randy Dunlap <rdunlap@infradead.org>, LKML <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Fengguang Wu <fengguang.wu@intel.com>
-Cc: linux-s390 <linux-s390@vger.kernel.org>, John Johansen <john.johansen@canonical.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, X86 ML <x86@kernel.org>, linux-wireless <linux-wireless@vger.kernel.org>, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+From: Dmitry Safonov <dima@arista.com>
+Subject: [PATCHv2 0/6] iommu/intel: Handle DMAR faults in a wq
+Date: Mon, 12 Feb 2018 16:48:19 +0000
+Message-ID: <20180212164825.22421-1-dima@arista.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: 0x7f454c46@gmail.com, Dmitry Safonov <dima@arista.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Randy Dunlap <rdunlap@infradead.org> writes:
+Changes to v2:
+- Ratelimit printks for dmar faults (6 patch)
 
-> From: Randy Dunlap <rdunlap@infradead.org>
->
-> Currently <linux/slab.h> #includes <linux/kmemleak.h> for no obvious
-> reason. It looks like it's only a convenience, so remove kmemleak.h
-> from slab.h and add <linux/kmemleak.h> to any users of kmemleak_*
-> that don't already #include it.
-> Also remove <linux/kmemleak.h> from source files that do not use it.
->
-> This is tested on i386 allmodconfig and x86_64 allmodconfig. It
-> would be good to run it through the 0day bot for other $ARCHes.
-> I have neither the horsepower nor the storage space for the other
-> $ARCHes.
->
-> [slab.h is the second most used header file after module.h; kernel.h
-> is right there with slab.h. There could be some minor error in the
-> counting due to some #includes having comments after them and I
-> didn't combine all of those.]
->
-> This is Lingchi patch #1 (death by a thousand cuts, applied to kernel
-> header files).
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+First version:
+https://lkml.org/lkml/2018/1/24/364
 
-I threw it at a random selection of configs and so far the only failures
-I'm seeing are:
+A softlockup-panic fix I've meet on kernel test suite.
+While at it, fix a couple of minor issues.
 
-  lib/test_firmware.c:134:2: error: implicit declaration of function 'vfree' [-Werror=implicit-function-declaration]                                                                                                          
-  lib/test_firmware.c:620:25: error: implicit declaration of function 'vzalloc' [-Werror=implicit-function-declaration]
-  lib/test_firmware.c:620:2: error: implicit declaration of function 'vzalloc' [-Werror=implicit-function-declaration]
-  security/integrity/digsig.c:146:2: error: implicit declaration of function 'vfree' [-Werror=implicit-function-declaration]
+Cc: Alex Williamson <alex.williamson@redhat.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org
 
-Full results trickling in here, not all the failures there are caused by
-this patch, ie. some configs are broken in mainline:
+Dmitry Safonov (6):
+  iommu/intel: Add __init for dmar_register_bus_notifier()
+  iommu/intel: Clean/document fault status flags
+  iommu/intel: Introduce clear_primary_faults() helper
+  iommu/intel: Handle DMAR faults on workqueue
+  iommu/intel: Rename dmar_fault() => dmar_serve_faults()
+  iommu/intel: Ratelimit each dmar fault printing
 
-  http://kisskb.ellerman.id.au/kisskb/head/13396/
+ drivers/iommu/dmar.c                | 73 +++++++++++++++++++++++++++++++------
+ drivers/iommu/intel-iommu.c         |  8 +++-
+ drivers/iommu/intel_irq_remapping.c |  2 +-
+ include/linux/dmar.h                |  3 +-
+ include/linux/intel-iommu.h         | 12 +++---
+ 5 files changed, 78 insertions(+), 20 deletions(-)
 
-cheers
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+-- 
+2.13.6
