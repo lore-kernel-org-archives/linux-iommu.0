@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 16/37] iommu: Add generic PASID table library
-Date: Mon, 12 Feb 2018 18:33:31 +0000
-Message-ID: <20180212183352.22730-17-jean-philippe.brucker@arm.com>
+Subject: [PATCH 19/37] iommu/arm-smmu-v3: Add second level of context descriptor table
+Date: Mon, 12 Feb 2018 18:33:34 +0000
+Message-ID: <20180212183352.22730-20-jean-philippe.brucker@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20180212183352.22730-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
@@ -10,270 +10,212 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pc
 Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jonathan.cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a small API within the IOMMU subsystem to handle different formats of
-PASID tables. It uses the same principle as io-pgtable:
-
-* The IOMMU driver registers a PASID table with some invalidation
-  callbacks.
-* The pasid-table lib allocates a set of tables of the right format, and
-  returns an iommu_pasid_table_ops structure.
-* The IOMMU driver allocates entries and writes them using the provided
-  ops.
-* The pasid-table lib calls the IOMMU driver back for invalidation when
-  necessary.
-* The IOMMU driver unregisters the ops which frees the tables when
-  finished.
-
-An example user will be Arm SMMU in a subsequent patch.
+The SMMU can support up to 20 bits of SSID. Add a second level of page
+tables to accommodate this. Devices that support more than 1024 SSIDs now
+have a table of 1024 L1 entries (8kB), pointing to tables of 1024 context
+descriptors (64kB), allocated on demand.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/Kconfig       |   8 +++
- drivers/iommu/Makefile      |   1 +
- drivers/iommu/iommu-pasid.c |  53 +++++++++++++++++
- drivers/iommu/iommu-pasid.h | 142 ++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 204 insertions(+)
- create mode 100644 drivers/iommu/iommu-pasid.c
- create mode 100644 drivers/iommu/iommu-pasid.h
+ drivers/iommu/arm-smmu-v3-context.c | 137 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 130 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index e751bb9958ba..8add90ba9b75 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -60,6 +60,14 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+diff --git a/drivers/iommu/arm-smmu-v3-context.c b/drivers/iommu/arm-smmu-v3-context.c
+index 3b0bb9475dea..aaffc2071966 100644
+--- a/drivers/iommu/arm-smmu-v3-context.c
++++ b/drivers/iommu/arm-smmu-v3-context.c
+@@ -14,6 +14,19 @@
  
- endmenu
+ #include "iommu-pasid.h"
  
-+menu "Generic PASID table support"
-+
-+# Selected by the actual PASID table implementations
-+config IOMMU_PASID_TABLE
-+	bool
-+
-+endmenu
-+
- config IOMMU_IOVA
- 	tristate
- 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index f4324e29035e..338e59c93131 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_IOMMU_FAULT) += io-pgfault.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-+obj-$(CONFIG_IOMMU_PASID_TABLE) += iommu-pasid.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
-diff --git a/drivers/iommu/iommu-pasid.c b/drivers/iommu/iommu-pasid.c
-new file mode 100644
-index 000000000000..6b21d369d514
---- /dev/null
-+++ b/drivers/iommu/iommu-pasid.c
-@@ -0,0 +1,53 @@
 +/*
-+ * PASID table management for the IOMMU
-+ *
-+ * Copyright (C) 2018 ARM Ltd.
-+ * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-+ *
-+ * SPDX-License-Identifier: GPL-2.0
++ * Linear: when less than 1024 SSIDs are supported
++ * 2lvl: at most 1024 L1 entrie,
++ *	 1024 lazy entries per table.
 + */
++#define CTXDESC_SPLIT			10
++#define CTXDESC_NUM_L2_ENTRIES		(1 << CTXDESC_SPLIT)
 +
-+#include <linux/kernel.h>
++#define CTXDESC_L1_DESC_DWORD		1
++#define CTXDESC_L1_DESC_VALID		1
++#define CTXDESC_L1_DESC_L2PTR_SHIFT	12
++#define CTXDESC_L1_DESC_L2PTR_MASK	0xfffffffffUL
 +
-+#include "iommu-pasid.h"
+ #define CTXDESC_CD_DWORDS		8
+ #define CTXDESC_CD_0_TCR_T0SZ_SHIFT	0
+ #define ARM64_TCR_T0SZ_SHIFT		0
+@@ -86,7 +99,17 @@ struct arm_smmu_cd_table {
+ 
+ struct arm_smmu_cd_tables {
+ 	struct iommu_pasid_table	pasid;
+-	struct arm_smmu_cd_table	table;
++	bool				linear;
++	union {
++		struct arm_smmu_cd_table table;
++		struct {
++			__le64		*ptr;
++			dma_addr_t	ptr_dma;
++			size_t		num_entries;
 +
-+static const struct iommu_pasid_init_fns *
-+pasid_table_init_fns[PASID_TABLE_NUM_FMTS] = {
-+};
-+
-+struct iommu_pasid_table_ops *
-+iommu_alloc_pasid_ops(enum iommu_pasid_table_fmt fmt,
-+		      struct iommu_pasid_table_cfg *cfg, void *cookie)
++			struct arm_smmu_cd_table *tables;
++		} l1;
++	};
+ };
+ 
+ #define pasid_to_cd_tables(pasid_table) \
+@@ -122,9 +145,44 @@ static void arm_smmu_free_cd_leaf_table(struct device *dev,
+ 	dmam_free_coherent(dev, size, desc->ptr, desc->ptr_dma);
+ }
+ 
++static void arm_smmu_write_cd_l1_desc(__le64 *dst,
++				      struct arm_smmu_cd_table *desc)
 +{
-+	struct iommu_pasid_table *table;
-+	const struct iommu_pasid_init_fns *fns;
++	u64 val = (desc->ptr_dma & CTXDESC_L1_DESC_L2PTR_MASK <<
++		   CTXDESC_L1_DESC_L2PTR_SHIFT) | CTXDESC_L1_DESC_VALID;
 +
-+	if (fmt >= PASID_TABLE_NUM_FMTS)
++	*dst = cpu_to_le64(val);
++}
++
+ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_cd_tables *tbl, u32 ssid)
+ {
+-	return tbl->table.ptr + ssid * CTXDESC_CD_DWORDS;
++	unsigned long idx;
++	struct arm_smmu_cd_table *l1_desc;
++	struct iommu_pasid_table_cfg *cfg = &tbl->pasid.cfg;
++
++	if (tbl->linear)
++		return tbl->table.ptr + ssid * CTXDESC_CD_DWORDS;
++
++	idx = ssid >> CTXDESC_SPLIT;
++	if (idx >= tbl->l1.num_entries)
 +		return NULL;
 +
-+	fns = pasid_table_init_fns[fmt];
-+	if (!fns)
-+		return NULL;
++	l1_desc = &tbl->l1.tables[idx];
++	if (!l1_desc->ptr) {
++		__le64 *l1ptr = tbl->l1.ptr + idx * CTXDESC_L1_DESC_DWORD;
 +
-+	table = fns->alloc(cfg, cookie);
-+	if (!table)
-+		return NULL;
++		if (arm_smmu_alloc_cd_leaf_table(cfg->iommu_dev, l1_desc,
++						 CTXDESC_NUM_L2_ENTRIES))
++			return NULL;
 +
-+	table->fmt = fmt;
-+	table->cookie = cookie;
-+	table->cfg = *cfg;
++		arm_smmu_write_cd_l1_desc(l1ptr, l1_desc);
++		/* An invalid L1 entry is allowed to be cached */
++		iommu_pasid_flush(&tbl->pasid, idx << CTXDESC_SPLIT, false);
++	}
 +
-+	return &table->ops;
-+}
++	idx = ssid & (CTXDESC_NUM_L2_ENTRIES - 1);
 +
-+void iommu_free_pasid_ops(struct iommu_pasid_table_ops *ops)
-+{
-+	struct iommu_pasid_table *table;
++	return l1_desc->ptr + idx * CTXDESC_CD_DWORDS;
+ }
+ 
+ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
+@@ -307,16 +365,51 @@ static struct iommu_pasid_table *
+ arm_smmu_alloc_cd_tables(struct iommu_pasid_table_cfg *cfg, void *cookie)
+ {
+ 	int ret;
++	size_t size = 0;
+ 	struct arm_smmu_cd_tables *tbl;
+ 	struct device *dev = cfg->iommu_dev;
++	struct arm_smmu_cd_table *leaf_table;
++	size_t num_contexts, num_leaf_entries;
+ 
+ 	tbl = devm_kzalloc(dev, sizeof(*tbl), GFP_KERNEL);
+ 	if (!tbl)
+ 		return NULL;
+ 
+-	ret = arm_smmu_alloc_cd_leaf_table(dev, &tbl->table, 1 << cfg->order);
++	num_contexts = 1 << cfg->order;
++	if (num_contexts <= CTXDESC_NUM_L2_ENTRIES) {
++		/* Fits in a single table */
++		tbl->linear = true;
++		num_leaf_entries = num_contexts;
++		leaf_table = &tbl->table;
++	} else {
++		/*
++		 * SSID[S1CDmax-1:10] indexes 1st-level table, SSID[9:0] indexes
++		 * 2nd-level
++		 */
++		tbl->l1.num_entries = num_contexts / CTXDESC_NUM_L2_ENTRIES;
 +
-+	if (!ops)
-+		return;
++		tbl->l1.tables = devm_kzalloc(dev,
++					      sizeof(struct arm_smmu_cd_table) *
++					      tbl->l1.num_entries, GFP_KERNEL);
++		if (!tbl->l1.tables)
++			goto err_free_tbl;
 +
-+	table = container_of(ops, struct iommu_pasid_table, ops);
-+	iommu_pasid_flush_all(table);
-+	pasid_table_init_fns[table->fmt]->free(table);
-+}
-diff --git a/drivers/iommu/iommu-pasid.h b/drivers/iommu/iommu-pasid.h
-new file mode 100644
-index 000000000000..40a27d35c1e0
---- /dev/null
-+++ b/drivers/iommu/iommu-pasid.h
-@@ -0,0 +1,142 @@
-+/*
-+ * PASID table management for the IOMMU
-+ *
-+ * Copyright (C) 2017 ARM Ltd.
-+ * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-+ *
-+ * SPDX-License-Identifier: GPL-2.0
-+ */
-+#ifndef __IOMMU_PASID_H
-+#define __IOMMU_PASID_H
++		size = tbl->l1.num_entries * (CTXDESC_L1_DESC_DWORD << 3);
++		tbl->l1.ptr = dmam_alloc_coherent(dev, size, &tbl->l1.ptr_dma,
++						  GFP_KERNEL | __GFP_ZERO);
++		if (!tbl->l1.ptr) {
++			dev_warn(dev, "failed to allocate L1 context table\n");
++			devm_kfree(dev, tbl->l1.tables);
++			goto err_free_tbl;
++		}
 +
-+#include <linux/types.h>
-+#include "io-pgtable.h"
++		num_leaf_entries = CTXDESC_NUM_L2_ENTRIES;
++		leaf_table = tbl->l1.tables;
++	}
 +
-+struct mm_struct;
++	ret = arm_smmu_alloc_cd_leaf_table(dev, leaf_table, num_leaf_entries);
+ 	if (ret)
+-		goto err_free_tbl;
++		goto err_free_l1;
+ 
+ 	tbl->pasid.ops = (struct iommu_pasid_table_ops) {
+ 		.alloc_priv_entry	= arm_smmu_alloc_priv_cd,
+@@ -326,11 +419,22 @@ arm_smmu_alloc_cd_tables(struct iommu_pasid_table_cfg *cfg, void *cookie)
+ 		.clear_entry		= arm_smmu_clear_cd,
+ 	};
+ 
+-	cfg->base		= tbl->table.ptr_dma;
+-	cfg->arm_smmu.s1fmt	= ARM_SMMU_S1FMT_LINEAR;
++	if (tbl->linear) {
++		cfg->base		= leaf_table->ptr_dma;
++		cfg->arm_smmu.s1fmt	= ARM_SMMU_S1FMT_LINEAR;
++	} else {
++		cfg->base		= tbl->l1.ptr_dma;
++		cfg->arm_smmu.s1fmt	= ARM_SMMU_S1FMT_64K_L2;
++		arm_smmu_write_cd_l1_desc(tbl->l1.ptr, leaf_table);
++	}
+ 
+ 	return &tbl->pasid;
+ 
++err_free_l1:
++	if (!tbl->linear) {
++		dmam_free_coherent(dev, size, tbl->l1.ptr, tbl->l1.ptr_dma);
++		devm_kfree(dev, tbl->l1.tables);
++	}
+ err_free_tbl:
+ 	devm_kfree(dev, tbl);
+ 
+@@ -343,7 +447,26 @@ static void arm_smmu_free_cd_tables(struct iommu_pasid_table *pasid_table)
+ 	struct device *dev = cfg->iommu_dev;
+ 	struct arm_smmu_cd_tables *tbl = pasid_to_cd_tables(pasid_table);
+ 
+-	arm_smmu_free_cd_leaf_table(dev, &tbl->table, 1 << cfg->order);
++	if (tbl->linear) {
++		arm_smmu_free_cd_leaf_table(dev, &tbl->table, 1 << cfg->order);
++	} else {
++		size_t i, size;
 +
-+enum iommu_pasid_table_fmt {
-+	PASID_TABLE_NUM_FMTS,
-+};
++		for (i = 0; i < tbl->l1.num_entries; i++) {
++			struct arm_smmu_cd_table *table = &tbl->l1.tables[i];
 +
-+/**
-+ * iommu_pasid_entry - Entry of a PASID table
-+ *
-+ * @token:	architecture-specific data needed to uniquely identify the
-+ *		entry. Most notably used for TLB invalidation
-+ */
-+struct iommu_pasid_entry {
-+	u64		tag;
-+};
++			if (!table->ptr)
++				continue;
 +
-+/**
-+ * iommu_pasid_table_ops - Operations on a PASID table
-+ *
-+ * @alloc_shared_entry:	allocate an entry for sharing an mm (SVA)
-+ *			Returns the pointer to a new entry or an error
-+ * @alloc_priv_entry:	allocate an entry for map/unmap operations
-+ *			Returns the pointer to a new entry or an error
-+ * @free_entry:		free an entry obtained with alloc_entry
-+ * @set_entry:		write PASID table entry
-+ * @clear_entry:	clear PASID table entry
-+ */
-+struct iommu_pasid_table_ops {
-+	struct iommu_pasid_entry *
-+	(*alloc_shared_entry)(struct iommu_pasid_table_ops *ops,
-+			      struct mm_struct *mm);
-+	struct iommu_pasid_entry *
-+	(*alloc_priv_entry)(struct iommu_pasid_table_ops *ops,
-+			    enum io_pgtable_fmt fmt,
-+			    struct io_pgtable_cfg *cfg);
-+	void (*free_entry)(struct iommu_pasid_table_ops *ops,
-+			   struct iommu_pasid_entry *entry);
-+	int (*set_entry)(struct iommu_pasid_table_ops *ops, int pasid,
-+			 struct iommu_pasid_entry *entry);
-+	void (*clear_entry)(struct iommu_pasid_table_ops *ops, int pasid,
-+			    struct iommu_pasid_entry *entry);
-+};
++			arm_smmu_free_cd_leaf_table(dev, table,
++						    CTXDESC_NUM_L2_ENTRIES);
++		}
 +
-+/**
-+ * iommu_pasid_sync_ops - Callbacks into the IOMMU driver
-+ *
-+ * @cfg_flush:		flush cached configuration for one entry. For a
-+ *			multi-level PASID table, 'leaf' tells whether to only
-+ *			flush cached leaf entries or intermediate levels as
-+ *			well.
-+ * @cfg_flush_all:	flush cached configuration for all entries of the PASID
-+ *			table
-+ * @tlb_flush:		flush TLB entries for one entry
-+ */
-+struct iommu_pasid_sync_ops {
-+	void (*cfg_flush)(void *cookie, int pasid, bool leaf);
-+	void (*cfg_flush_all)(void *cookie);
-+	void (*tlb_flush)(void *cookie, int pasid,
-+			  struct iommu_pasid_entry *entry);
-+};
++		size = tbl->l1.num_entries * (CTXDESC_L1_DESC_DWORD << 3);
++		dmam_free_coherent(dev, size, tbl->l1.ptr, tbl->l1.ptr_dma);
++		devm_kfree(dev, tbl->l1.tables);
++	}
 +
-+/**
-+ * struct iommu_pasid_table_cfg - Configuration data for a set of PASID tables.
-+ *
-+ * @iommu_dev	device performing the DMA table walks
-+ * @order:	number of PASID bits, set by IOMMU driver
-+ * @flush:	TLB management callbacks for this set of tables.
-+ *
-+ * @base:	DMA address of the allocated table, set by the allocator.
-+ */
-+struct iommu_pasid_table_cfg {
-+	struct device			*iommu_dev;
-+	size_t				order;
-+	const struct iommu_pasid_sync_ops *sync;
-+
-+	dma_addr_t			base;
-+};
-+
-+struct iommu_pasid_table_ops *
-+iommu_alloc_pasid_ops(enum iommu_pasid_table_fmt fmt,
-+		      struct iommu_pasid_table_cfg *cfg,
-+		      void *cookie);
-+void iommu_free_pasid_ops(struct iommu_pasid_table_ops *ops);
-+
-+/**
-+ * struct iommu_pasid_table - describes a set of PASID tables
-+ *
-+ * @fmt:	The PASID table format.
-+ * @cookie:	An opaque token provided by the IOMMU driver and passed back to
-+ *		any callback routine.
-+ * @cfg:	A copy of the PASID table configuration.
-+ * @ops:	The PASID table operations in use for this set of page tables.
-+ */
-+struct iommu_pasid_table {
-+	enum iommu_pasid_table_fmt	fmt;
-+	void				*cookie;
-+	struct iommu_pasid_table_cfg	cfg;
-+	struct iommu_pasid_table_ops	ops;
-+};
-+
-+#define iommu_pasid_table_ops_to_table(ops) \
-+	container_of((ops), struct iommu_pasid_table, ops)
-+
-+struct iommu_pasid_init_fns {
-+	struct iommu_pasid_table *(*alloc)(struct iommu_pasid_table_cfg *cfg,
-+					   void *cookie);
-+	void (*free)(struct iommu_pasid_table *table);
-+};
-+
-+static inline void iommu_pasid_flush_all(struct iommu_pasid_table *table)
-+{
-+	table->cfg.sync->cfg_flush_all(table->cookie);
-+}
-+
-+static inline void iommu_pasid_flush(struct iommu_pasid_table *table,
-+					 int pasid, bool leaf)
-+{
-+	table->cfg.sync->cfg_flush(table->cookie, pasid, leaf);
-+}
-+
-+static inline void iommu_pasid_flush_tlbs(struct iommu_pasid_table *table,
-+					  int pasid,
-+					  struct iommu_pasid_entry *entry)
-+{
-+	table->cfg.sync->tlb_flush(table->cookie, pasid, entry);
-+}
-+
-+#endif /* __IOMMU_PASID_H */
+ 	devm_kfree(dev, tbl);
+ }
+ 
 -- 
 2.15.1
 
