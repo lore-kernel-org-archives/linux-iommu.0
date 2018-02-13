@@ -1,43 +1,40 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Kdump kernel hang when set amd_iommu=off
-Date: Tue, 13 Feb 2018 14:25:20 +0100
-Message-ID: <20180213132520.nqn5osmgsubzjzcq@8bytes.org>
-References: <20180126080622.GC1759@localhost.localdomain>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v3] iommu/amd: Add support for fast IOTLB flushing
+Date: Tue, 13 Feb 2018 14:29:59 +0100
+Message-ID: <20180213132959.kkavgzt37hm7n2tt@8bytes.org>
+References: <1517374874-93978-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180126080622.GC1759-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <1517374874-93978-1-git-send-email-suravee.suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
+Hi Suravee,
 
-On Fri, Jan 26, 2018 at 04:06:22PM +0800, Baoquan He wrote:
-> Saw Huawei's bug report about kdump kernel hang when intel_iommu=off 
-> is set. I met the similar problem in amd system, only set amd_iommu=off
-> in kdump kernel, it means amd_iommu is on in 1st kernel.
-> 
-> I am reading doc and code, trying to debug. Please help have a look when
-> convenient, see if there's hint or direction.
+thanks for working on this.
 
-Yeah, I know that this is broken on the AMD-IOMMU side. Problem is that
-the IOMMU hardware needs to be disabled in the kdump kernel when
-amd_iommu=off is on the command-line. I'll look into fixing that.
+On Wed, Jan 31, 2018 at 12:01:14AM -0500, Suravee Suthikulpanit wrote:
+> +static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
+> +				      unsigned long iova, size_t size)
+> +{
+> +	struct amd_iommu_flush_entries *entry, *p;
+> +	unsigned long flags;
+> +	bool found = false;
+> +
+> +	spin_lock_irqsave(&amd_iommu_flush_list_lock, flags);
 
-I thought we fixed this a while ago already for VT-d, is it broken
-again?
+I am not happy with introducing or using global locks when they are not
+necessary. Can this be a per-domain lock?
+
+Besides, did you check it makes sense to actually keep track of the
+ranges here? My approach would be to just make iotlb_range_add() an noop
+and do a full domain flush in iotlb_sync(). But maybe you did
+measurements you can share here to show there is a benefit.
+
 
 
 	Joerg
