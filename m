@@ -1,47 +1,117 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCHv2 4/6] iommu/intel: Handle DMAR faults on workqueue
-Date: Tue, 13 Feb 2018 17:35:42 +0100
-Message-ID: <20180213163542.tdqhazwfjgqk3zuu@8bytes.org>
-References: <20180212164825.22421-1-dima@arista.com>
- <20180212164825.22421-5-dima@arista.com>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v7 6/6] drm/msm: iommu: Replace runtime
+ calls with runtime suppliers
+Date: Tue, 13 Feb 2018 09:42:05 -0700
+Message-ID: <20180213164205.GA7599@jcrouse-lnx.qualcomm.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1517999482-17317-7-git-send-email-vivek.gautam@codeaurora.org>
+ <CAAFQd5AjopiX6fDgD+mO+-+d0yj-swEnVCNvccWRBSMO+XVJkA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180212164825.22421-5-dima@arista.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Safonov <dima@arista.com>
-Cc: linux-kernel@vger.kernel.org, 0x7f454c46@gmail.com, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
+In-Reply-To: <CAAFQd5AjopiX6fDgD+mO+-+d0yj-swEnVCNvccWRBSMO+XVJkA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 12, 2018 at 04:48:23PM +0000, Dmitry Safonov wrote:
-> dmar_fault() reports/handles/cleans DMAR faults in a cycle one-by-one.
-> The nuisance is that it's set as a irq handler and runs with disabled
-> interrupts - which works OK if you have only a couple of DMAR faults,
-> but becomes a problem if your intel iommu has a plenty of mappings.
-
-I don't think that a work-queue is the right solution here, it adds a
-long delay until the log is processed. During that delay, and with high
-fault rates the error log will overflow during that delay.
-
-Here is what I think you should do instead to fix the soft-lockups:
-
-First, unmask the fault reporting irq so that you will get subsequent
-irqs. Then:
-
-	* For Primary Fault Reporting just cycle once through all
-	  supported fault recording registers.
-
-	* For Advanced Fault Reporting, read start and end pointer of
-	  the log and process all entries.
-
-After that return from the fault handler and let the next irq handle
-additional faults that might have been recorded while the previous
-handler was running.
-
-And of course, ratelimiting the fault printouts is always a good idea.
-
-
-Regards,
-
-	Joerg
+T24gVHVlLCBGZWIgMTMsIDIwMTggYXQgMDY6MTA6MzhQTSArMDkwMCwgVG9tYXN6IEZpZ2Egd3Jv
+dGU6Cj4gSGkgVml2ZWssCj4gCj4gVGhhbmtzIGZvciB0aGUgcGF0Y2guIFBsZWFzZSBzZWUgbXkg
+Y29tbWVudHMgaW5saW5lLgo+IAo+IE9uIFdlZCwgRmViIDcsIDIwMTggYXQgNzozMSBQTSwgVml2
+ZWsgR2F1dGFtCj4gPHZpdmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4gd3JvdGU6Cj4gPiBXaGls
+ZSBoYW5kbGluZyB0aGUgY29uY2VybmVkIGlvbW11LCB0aGVyZSBzaG91bGQgbm90IGJlIGEKPiA+
+IG5lZWQgdG8gcG93ZXIgY29udHJvbCB0aGUgZHJtIGRldmljZXMgZnJvbSBpb21tdSBpbnRlcmZh
+Y2UuCj4gPiBJZiB0aGVzZSBkcm0gZGV2aWNlcyBuZWVkIHRvIGJlIHBvd2VyZWQgYXJvdW5kIHRo
+aXMgdGltZSwKPiA+IHRoZSByZXNwZWN0aXZlIGRyaXZlcnMgc2hvdWxkIHRha2UgY2FyZSBvZiB0
+aGlzLgo+ID4KPiA+IFJlcGxhY2UgdGhlIHBtX3J1bnRpbWVfZ2V0L3B1dF9zeW5jKDxkcm1fZGV2
+aWNlPikgd2l0aAo+ID4gcG1fcnVudGltZV9nZXQvcHV0X3N1cHBsaWVycyg8ZHJtX2RldmljZT4p
+IGNhbGxzLCB0byBwb3dlci11cAo+ID4gdGhlIGNvbm5lY3RlZCBpb21tdSB0aHJvdWdoIHRoZSBk
+ZXZpY2UgbGluayBpbnRlcmZhY2UuCj4gPiBJbiBjYXNlIHRoZSBkZXZpY2UgbGluayBpcyBub3Qg
+c2V0dXAgdGhlc2UgZ2V0L3B1dF9zdXBwbGllcnMoKQo+ID4gY2FsbHMgd2lsbCBiZSBhIG5vLW9w
+LCBhbmQgdGhlIGlvbW11IGRyaXZlciBzaG91bGQgdGFrZSBjYXJlIG9mCj4gPiBwb3dlcmluZyBv
+biBpdHMgZGV2aWNlcyBhY2NvcmRpbmdseS4KPiA+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBH
+YXV0YW0gPHZpdmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4KPiA+IC0tLQo+ID4gIGRyaXZlcnMv
+Z3B1L2RybS9tc20vbXNtX2lvbW11LmMgfCAxNiArKysrKysrKy0tLS0tLS0tCj4gPiAgMSBmaWxl
+IGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKPiA+Cj4gPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9ncHUvZHJtL21zbS9tc21faW9tbXUuYyBiL2RyaXZlcnMvZ3B1L2RybS9t
+c20vbXNtX2lvbW11LmMKPiA+IGluZGV4IGIyM2QzMzYyMmYzNy4uMWFiNjI5YmJlZTY5IDEwMDY0
+NAo+ID4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL21zbS9tc21faW9tbXUuYwo+ID4gKysrIGIvZHJp
+dmVycy9ncHUvZHJtL21zbS9tc21faW9tbXUuYwo+ID4gQEAgLTQwLDkgKzQwLDkgQEAgc3RhdGlj
+IGludCBtc21faW9tbXVfYXR0YWNoKHN0cnVjdCBtc21fbW11ICptbXUsIGNvbnN0IGNoYXIgKiBj
+b25zdCAqbmFtZXMsCj4gPiAgICAgICAgIHN0cnVjdCBtc21faW9tbXUgKmlvbW11ID0gdG9fbXNt
+X2lvbW11KG1tdSk7Cj4gPiAgICAgICAgIGludCByZXQ7Cj4gPgo+ID4gLSAgICAgICBwbV9ydW50
+aW1lX2dldF9zeW5jKG1tdS0+ZGV2KTsKPiA+ICsgICAgICAgcG1fcnVudGltZV9nZXRfc3VwcGxp
+ZXJzKG1tdS0+ZGV2KTsKPiA+ICAgICAgICAgcmV0ID0gaW9tbXVfYXR0YWNoX2RldmljZShpb21t
+dS0+ZG9tYWluLCBtbXUtPmRldik7Cj4gPiAtICAgICAgIHBtX3J1bnRpbWVfcHV0X3N5bmMobW11
+LT5kZXYpOwo+ID4gKyAgICAgICBwbV9ydW50aW1lX3B1dF9zdXBwbGllcnMobW11LT5kZXYpOwo+
+IAo+IEZvciBtZSwgaXQgbG9va3MgbGlrZSBhIHdyb25nIHBsYWNlIHRvIGhhbmRsZSBydW50aW1l
+IFBNIG9mIElPTU1VCj4gaGVyZS4gaW9tbXVfYXR0YWNoX2RldmljZSgpIGNhbGxzIGludG8gSU9N
+TVUgZHJpdmVyJ3MgYXR0YWNoX2RldmljZSgpCj4gY2FsbGJhY2sgYW5kIHRoYXQncyB3aGVyZSBu
+ZWNlc3NhcnkgcnVudGltZSBQTSBnZXRzIHNob3VsZCBoYXBwZW4sIGlmCj4gYW55LiBJbiBvdGhl
+ciB3b3JkcywgZHJpdmVyIEEgKE1TTSBEUk0gZHJpdmVyKSBzaG91bGRuJ3QgYmUgZGVhbGluZwo+
+IHdpdGggcG93ZXIgc3RhdGUgb2YgZGV2aWNlIGNvbnRyb2xsZWQgYnkgZHJpdmVyIEIgKEFSTSBT
+TU1VKS4KIApUaGlzIHdob2xlIHRoaW5nIGlzIGNvbmZ1c2VkIGJ5IHRoZSBmYWN0IHRoYXQgb24g
+TVNNIHRoZSBHUFUgYW5kIHRoZSBHUFUgSU9NTVUKc2hhcmUgc29tZSBvZiB0aGUgc2FtZSBjbG9j
+a3MgYW5kIHBvd2VyIHJhaWwgc28gdHVybmluZyBvbiB0aGUgR1BVIGFsc28KdHVybmVkIG9uIHRo
+ZSBJT01NVSByZWdpc3RlciBiYW5rcyBieSBleHRlbnNpb24uCgpCdXQgaWYgd2UgcHV0IHRoYXQg
+YXNpZGUgdGhlIHF1ZXN0aW9uIGlzIHdobyBzaG91bGQgYmUgcmVzcG9uc2libGUgZm9yCmNvbnRy
+b2xsaW5nIHRoZSBwb3dlciBpbiB0aGlzIHJlbGF0aW9uc2hpcCBhbmQgdGhlcmUgYXJlIHNldmVy
+YWwgZ29vZCByZWFzb25zIHRvCmxlYXZlIGl0IHVwIHRvIHRoZSBjbGllbnQgZGV2aWNlLiBUaGUg
+bW9zdCBpbXBvcnRhbnQgcmVhc29uIGlzIHdoZW4gd2UgbW92ZSB0bwp0aGUgcGVyLWluc3RhbmNl
+IG1vZGVsIHdoZXJlIHRoZSBHUFUgc2VsZi1wcm9ncmFtbWluZ3MgdGhlIFNNTVUgcmVnaXN0ZXJz
+LiBJbgp0aGF0IGNhc2UsIHRoZSBkcml2ZXIgd2lsbCBuZWVkIHRvIG1ha2Ugc3VyZSB0aGF0IHRo
+ZSBTTU1VIGlzIHBvd2VyZWQgdXAgYmVmb3JlCnN1Ym1pdHRpbmcgdGhlIGNvbW1hbmQgYW5kIHRo
+ZW4gcmVtb3ZpbmcgdGhlIHBvd2VyIHZvdGUgd2hlbiB0aGUgY29tbWFuZHMKYXJlIGRvbmUgdG8g
+c2F2ZSBlbmVyZ3kuCgpBZGRpdGlvbmFsbHksIHRoZXJlIG1pZ2h0IGJlIGxlZ2l0aW1hdGUgcmVh
+c29ucyBpbiB0aGUgZHJpdmVyIHRvIGJhdGNoCm9wZXJhdGlvbnMgLSB5b3UgbWF5IHdpc2ggdG8g
+YXR0YWNoIHRoZSBkZXZpY2UgYW5kIHRoZW4gbWFwIHNldmVyYWwgZ2xvYmFsCmJ1ZmZlcnMgaW1t
+ZWRpYXRlbHkgLSBoYXZpbmcgZHJpdmVyIHNpZGUgY29udHJvbCBwcmV2ZW50cyBzZXZlcmFsIHVu
+bmVlZGVkIHBvd2VyCnRyYW5zaXRpb25zLgoKUGVyaGFwcyB0aGUgcmlnaHQgYW5zd2VyIGlzIHRv
+IGRvIGJvdGggLSBhbGxvdyBmb3IgdGhlIGRyaXZlciB0byBlbmFibGUgdGhlCnN1cHBsaWVyIGJ1
+dCBhbHNvIGRvIHRoZSByaWdodCBwb3dlciBvcGVyYXRpb25zIGF0IHRoZSBhcHByb3ByaWF0ZWx5
+IHBsYWNlcyBpbgp0aGUgSU9NTVUgZHJpdmVyLgoKPiBUaGlzIGlzIGFsc28gaW1wb3J0YW50IGZv
+ciB0aGUgcmVhc29ucyBJIHN0YXRlZCBpbiBteSBjb21tZW50cyB0bwo+ICJbUEFUQ0ggdjcgMS82
+XSBiYXNlOiBwb3dlcjogcnVudGltZTogRXhwb3J0Cj4gcG1fcnVudGltZV9nZXQvcHV0X3N1cHBs
+aWVycyIuIFF1b3RpbmcgZm9yIGV2ZXJ5b25lJ3MgY29udmVuaWVuY2U6Cj4gCj4gPj4gVGhlcmUg
+YXJlIGhvd2V2ZXIgY2FzZXMgaW4gd2hpY2ggdGhlIGNvbnN1bWVyIHdhbnRzIHRvIHBvd2VyLW9u
+Cj4gPj4gdGhlIHN1cHBsaWVyLCBidXQgbm90IGl0c2VsZi4KPiA+PiBFLmcuLCBBIEdyYXBoaWNz
+IG9yIG11bHRpbWVkaWEgZHJpdmVyIHdhbnRzIHRvIHBvd2VyLW9uIHRoZSBTTU1VCj4gPj4gdG8g
+dW5tYXAgYSBidWZmZXIgYW5kIGZpbmlzaCB0aGUgVExCIG9wZXJhdGlvbnMgd2l0aG91dCBwb3dl
+cmluZwo+ID4+IG9uIGl0c2VsZi4KPiA+Cj4gPlRoaXMgc291bmRzIHN0cmFuZ2UgdG8gbWUuIElm
+IHRoZSBTTU1VIGlzIHBvd2VyZWQgZG93biwgd291bGRuJ3QgdGhlCj4gPlRMQiBsb3NlIGl0cyBj
+b250ZW50cyBhcyB3ZWxsIChhbmQgc28gbm8gZmx1c2hpbmcgbmVlZGVkKT8KPiA+Cgo+ID5PdGhl
+ciB0aGFuIHRoYXQsIHdoYXQga2luZCBvZiBoYXJkd2FyZSBvcGVyYXRpb25zIHdvdWxkIGJlIG5l
+ZWRlZAo+ID5iZXNpZGVzIGp1c3QgdXBkYXRpbmcgdGhlIHBhZ2UgdGFibGVzIGZyb20gdGhlIENQ
+VT8KPiA+Cgo+IEluIG90aGVyIHdvcmRzLCB0aGUgU01NVSBkcml2ZXIgY2FuIGRlYWwgd2l0aCBo
+YXJkd2FyZSBzdGF0ZSBiYXNlZCBvbgo+IHJldHVybiB2YWx1ZSBvZiBwbV9ydW50aW1lX2dldF9z
+eW5jKCkgb3IgcG1fcnVudGltZV9nZXRfaWZfaW5fdXNlKCkKPiBhbmQgZGVjaWRlIHdoZXRoZXIg
+c29tZSBvcGVyYXRpb25zIGFyZSBuZWNlc3Nhcnkgb3Igbm90LCBlLmcuCj4gLSBhIHN0YXRlIHJl
+c3RvcmUgaXMgbmVjZXNzYXJ5IGlmIHRoZSBkb21haW4gd2FzIHBvd2VyZWQgb2ZmLCBidXQgd2UK
+PiBhcmUgYnJpbmdpbmcgdGhlIG1hc3RlciBvbiwKPiAtIGEgZmx1c2ggbWF5IG5vdCBiZSByZXF1
+aXJlZCB3aGVuICh1biltYXBwaW5nIHdpdGggdGhlIGRvbWFpbiBwb3dlcmVkIG9mZiwKPiAtIGV0
+Yy4KCkkgYWdyZWUgdGhhdCB0aGVyZSBpcyBwcm9iYWJseSBzb21lIGFkdmFuY2VkIGxvZ2ljIHRo
+YXQgd2UgY2FuIGRvIHRvCmNvbmNsdXNpdmVseSBmaWd1cmUgb3V0IHRoZSBzdGF0ZSBvZiB0aGUg
+aGFyZHdhcmUgYW5kIGltcHJvdmUgdGhlIGJlaGF2aW9yLgpJIHdvdWxkIGxvdmUgdG8gc2VlIHRo
+ZSBTTU1VIGRyaXZlciBnZXQgc21hcnRlciBidXQgZm9yIHRoZSBtb21lbnQgd2UgY2FuJ3QKdHJ1
+c3QgaXQgYW5kIHNvIHdlIG5lZWQgdG8gZm9yY2UgdGhlIGJlaGF2aW9yIGZyb20gdGhlIEdQVSBk
+cml2ZXIuIFRoZSBjdXJyZW50CmNvZGUgd29ya3MgZm9yIGE1eCBhbmQgZWFybGllciBidXQgb24g
+c2RtODQ1IHdlIGNhbiAobm8gbG9uZ2VyKSB0cmVhdCB0aGUgR1BVCmFuZCB0aGUgU01NVSBhcyB0
+aGUgc2FtZSBkZXZpY2UgZm9yIHBvd2VyIHB1cnBvc2VzIHNvIHdlIG5lZWQgdGhpcyBjb2RlLiBJ
+ZiBhdApzb21lIHBvaW50IGluIHRoZSBmdXR1cmUgd2UgY2FuIHN0YXJ0IHRvIHNlbGVjdGl2ZWx5
+IHJlbW92ZSB0aGUgc3VwcGxpZXIgY2FsbHMKSSB3b3VsZG4ndCBtaW5kIG9uZSBiaXQuCgpKb3Jk
+YW4KCi0tIApUaGUgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIg
+b2YgQ29kZSBBdXJvcmEgRm9ydW0sCmEgTGludXggRm91bmRhdGlvbiBDb2xsYWJvcmF0aXZlIFBy
+b2plY3QKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJl
+ZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
+Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
