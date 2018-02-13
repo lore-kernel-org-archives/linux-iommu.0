@@ -1,363 +1,97 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH 02/37] iommu/sva: Bind process address spaces to devices
-Date: Tue, 13 Feb 2018 07:54:29 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191002897@SHSMSX101.ccr.corp.intel.com>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
- <20180212183352.22730-3-jean-philippe.brucker@arm.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH v7 2/6] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Tue, 13 Feb 2018 17:03:48 +0900
+Message-ID: <CAAFQd5B2u8RL-tdB3qgPxVUcXnsBSEhXRBZWxqO-w6rYKAiOtg@mail.gmail.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1517999482-17317-3-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20180212183352.22730-3-jean-philippe.brucker@arm.com>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "hanjun.guo@linaro.org" <hanjun.guo@linaro.org>, "sudeep.holla@arm.com" <sudeep.holla@arm.com>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "lenb@kernel.org" <lenb@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "tn@semihalf.com" <tn@semihalf.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>, xieyisheng1@huawei.co
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1517999482-17317-3-git-send-email-vivek.gautam@codeaurora.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pm@vger.kernel.org, David Airlie <airlied@linux.ie>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Greg KH <gregkh@linuxfoundation.org>, freedreno@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>, sboyd@codeaurora.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker
-> Sent: Tuesday, February 13, 2018 2:33 AM
-> 
-> Add bind() and unbind() operations to the IOMMU API. Device drivers can
-> use them to share process page tables with their devices. bind_group()
-> is provided for VFIO's convenience, as it needs to provide a coherent
-> interface on containers. Other device drivers will most likely want to
-> use bind_device(), which binds a single device in the group.
-
-I saw your bind_group implementation tries to bind the address space
-for all devices within a group, which IMO has some problem. Based on PCIe
-spec, packet routing on the bus doesn't take PASID into consideration. 
-since devices within same group cannot be isolated based on requestor-ID
-i.e. traffic not guaranteed going to IOMMU, enabling SVA on multiple devices
-could cause undesired p2p.
- 
-If my understanding of PCIe spec is correct, probably we should fail 
-calling bind_group()/bind_device() when there are multiple devices within 
-the given group. If only one device then bind_group is essentially a wrapper
-to bind_device.
-
-> 
-> Regardless of the IOMMU group or domain a device is in, device drivers
-> should call bind() for each device that will use the PASID.
-> 
-> This patch only adds skeletons for the device driver API, most of the
-> implementation is still missing.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->  drivers/iommu/iommu-sva.c | 105
-> ++++++++++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/iommu.c     |  63 ++++++++++++++++++++++++++++
->  include/linux/iommu.h     |  36 ++++++++++++++++
->  3 files changed, 204 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index cab5d723520f..593685d891bf 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -9,6 +9,9 @@
-> 
->  #include <linux/iommu.h>
-> 
-> +/* TODO: stub for the fault queue. Remove later. */
-> +#define iommu_fault_queue_flush(...)
-> +
->  /**
->   * iommu_sva_device_init() - Initialize Shared Virtual Addressing for a
-> device
->   * @dev: the device
-> @@ -78,6 +81,8 @@ int iommu_sva_device_shutdown(struct device *dev)
->  	if (!domain)
->  		return -ENODEV;
-> 
-> +	__iommu_sva_unbind_dev_all(dev);
-> +
->  	if (domain->ops->sva_device_shutdown)
->  		domain->ops->sva_device_shutdown(dev);
-> 
-> @@ -88,3 +93,103 @@ int iommu_sva_device_shutdown(struct device
-> *dev)
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(iommu_sva_device_shutdown);
-> +
-> +/**
-> + * iommu_sva_bind_device() - Bind a process address space to a device
-> + * @dev: the device
-> + * @mm: the mm to bind, caller must hold a reference to it
-> + * @pasid: valid address where the PASID will be stored
-> + * @flags: bond properties (IOMMU_SVA_FEAT_*)
-> + * @drvdata: private data passed to the mm exit handler
-> + *
-> + * Create a bond between device and task, allowing the device to access
-> the mm
-> + * using the returned PASID. A subsequent bind() for the same device and
-> mm will
-> + * reuse the bond (and return the same PASID), but users will have to call
-> + * unbind() twice.
-
-what's the point of requiring unbind twice?
-
-> + *
-> + * Callers should have taken care of setting up SVA for this device with
-> + * iommu_sva_device_init() beforehand. They may also be notified of the
-> bond
-> + * disappearing, for example when the last task that uses the mm dies, by
-> + * registering a notifier with iommu_register_mm_exit_handler().
-> + *
-> + * If IOMMU_SVA_FEAT_PASID is requested, a PASID is allocated and
-> returned.
-> + * TODO: The alternative, binding the non-PASID context to an mm, isn't
-> + * supported at the moment because existing IOMMU domain types
-> initialize the
-> + * non-PASID context for iommu_map()/unmap() or bypass. This requires
-> a new
-> + * domain type.
-> + *
-> + * If IOMMU_SVA_FEAT_IOPF is not requested, the caller must pin down
-> all
-> + * mappings shared with the device. mlock() isn't sufficient, as it doesn't
-> + * prevent minor page faults (e.g. copy-on-write). TODO: !IOPF isn't
-> allowed at
-> + * the moment.
-> + *
-> + * On success, 0 is returned and @pasid contains a valid ID. Otherwise, an
-> error
-> + * is returned.
-> + */
-> +int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> int *pasid,
-> +			  unsigned long flags, void *drvdata)
-> +{
-> +	struct iommu_domain *domain;
-> +	struct iommu_param *dev_param = dev->iommu_param;
-> +
-> +	domain = iommu_get_domain_for_dev(dev);
-> +	if (!domain)
-> +		return -EINVAL;
-> +
-> +	if (!pasid)
-> +		return -EINVAL;
-> +
-> +	if (!dev_param || (flags & ~dev_param->sva_features))
-> +		return -EINVAL;
-> +
-> +	if (flags != (IOMMU_SVA_FEAT_PASID | IOMMU_SVA_FEAT_IOPF))
-> +		return -EINVAL;
-> +
-> +	return -ENOSYS; /* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
-> +
-> +/**
-> + * iommu_sva_unbind_device() - Remove a bond created with
-> iommu_sva_bind_device
-> + * @dev: the device
-> + * @pasid: the pasid returned by bind()
-> + *
-> + * Remove bond between device and address space identified by @pasid.
-> Users
-> + * should not call unbind() if the corresponding mm exited (as the PASID
-> might
-> + * have been reallocated to another process.)
-> + *
-> + * The device must not be issuing any more transaction for this PASID. All
-> + * outstanding page requests for this PASID must have been flushed to the
-> IOMMU.
-> + *
-> + * Returns 0 on success, or an error value
-> + */
-> +int iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	struct iommu_domain *domain;
-> +
-> +	domain = iommu_get_domain_for_dev(dev);
-> +	if (WARN_ON(!domain))
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Caller stopped the device from issuing PASIDs, now make sure
-> they are
-> +	 * out of the fault queue.
-> +	 */
-> +	iommu_fault_queue_flush(dev);
-> +
-> +	return -ENOSYS; /* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
-> +
-> +/**
-> + * __iommu_sva_unbind_dev_all() - Detach all address spaces from this
-> device
-> + *
-> + * When detaching @device from a domain, IOMMU drivers should use
-> this helper.
-> + */
-> +void __iommu_sva_unbind_dev_all(struct device *dev)
-> +{
-> +	iommu_fault_queue_flush(dev);
-> +
-> +	/* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_unbind_dev_all);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d4a4edaf2d8c..f977851c522b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1535,6 +1535,69 @@ void iommu_detach_group(struct
-> iommu_domain *domain, struct iommu_group *group)
->  }
->  EXPORT_SYMBOL_GPL(iommu_detach_group);
-> 
-> +/*
-> + * iommu_sva_bind_group() - Share address space with all devices in the
-> group.
-> + * @group: the iommu group
-> + * @mm: the mm to bind
-> + * @pasid: valid address where the PASID will be stored
-> + * @flags: bond properties (IOMMU_PROCESS_BIND_*)
-> + * @drvdata: private data passed to the mm exit handler
-> + *
-> + * Create a bond between group and process, allowing devices in the
-> group to
-> + * access the process address space using @pasid.
-> + *
-> + * Refer to iommu_sva_bind_device() for more details.
-> + *
-> + * On success, 0 is returned and @pasid contains a valid ID. Otherwise, an
-> error
-> + * is returned.
-> + */
-> +int iommu_sva_bind_group(struct iommu_group *group, struct
-> mm_struct *mm,
-> +			 int *pasid, unsigned long flags, void *drvdata)
-> +{
-> +	struct group_device *device;
-> +	int ret = -ENODEV;
-> +
-> +	if (!group->domain)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&group->mutex);
-> +	list_for_each_entry(device, &group->devices, list) {
-> +		ret = iommu_sva_bind_device(device->dev, mm, pasid,
-> flags,
-> +					    drvdata);
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	if (ret) {
-> +		list_for_each_entry_continue_reverse(device, &group-
-> >devices, list)
-> +			iommu_sva_unbind_device(device->dev, *pasid);
-> +	}
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_bind_group);
-> +
-> +/**
-> + * iommu_sva_unbind_group() - Remove a bond created with
-> iommu_sva_bind_group()
-> + * @group: the group
-> + * @pasid: the pasid returned by bind
-> + *
-> + * Refer to iommu_sva_unbind_device() for more details.
-> + */
-> +int iommu_sva_unbind_group(struct iommu_group *group, int pasid)
-> +{
-> +	struct group_device *device;
-> +
-> +	mutex_lock(&group->mutex);
-> +	list_for_each_entry(device, &group->devices, list)
-> +		iommu_sva_unbind_device(device->dev, pasid);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_group);
-> +
->  phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain,
-> dma_addr_t iova)
->  {
->  	if (unlikely(domain->ops->iova_to_phys == NULL))
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e9e09eecdece..1fb10d64b9e5 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -576,6 +576,10 @@ int iommu_fwspec_init(struct device *dev, struct
-> fwnode_handle *iommu_fwnode,
->  void iommu_fwspec_free(struct device *dev);
->  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
->  const struct iommu_ops *iommu_ops_from_fwnode(struct
-> fwnode_handle *fwnode);
-> +extern int iommu_sva_bind_group(struct iommu_group *group,
-> +				struct mm_struct *mm, int *pasid,
-> +				unsigned long flags, void *drvdata);
-> +extern int iommu_sva_unbind_group(struct iommu_group *group, int
-> pasid);
-> 
->  #else /* CONFIG_IOMMU_API */
-> 
-> @@ -890,12 +894,28 @@ const struct iommu_ops
-> *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->  	return NULL;
->  }
-> 
-> +static inline int iommu_sva_bind_group(struct iommu_group *group,
-> +				       struct mm_struct *mm, int *pasid,
-> +				       unsigned long flags, void *drvdata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_sva_unbind_group(struct iommu_group *group,
-> int pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  #endif /* CONFIG_IOMMU_API */
-> 
->  #ifdef CONFIG_IOMMU_SVA
->  extern int iommu_sva_device_init(struct device *dev, unsigned long
-> features,
->  				 unsigned int max_pasid);
->  extern int iommu_sva_device_shutdown(struct device *dev);
-> +extern int iommu_sva_bind_device(struct device *dev, struct mm_struct
-> *mm,
-> +				int *pasid, unsigned long flags, void
-> *drvdata);
-> +extern int iommu_sva_unbind_device(struct device *dev, int pasid);
-> +extern void __iommu_sva_unbind_dev_all(struct device *dev);
->  #else /* CONFIG_IOMMU_SVA */
->  static inline int iommu_sva_device_init(struct device *dev,
->  					unsigned long features,
-> @@ -908,6 +928,22 @@ static inline int
-> iommu_sva_device_shutdown(struct device *dev)
->  {
->  	return -ENODEV;
->  }
-> +
-> +static inline int iommu_sva_bind_device(struct device *dev,
-> +					struct mm_struct *mm, int *pasid,
-> +					unsigned long flags, void *drvdata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void __iommu_sva_unbind_dev_all(struct device *dev)
-> +{
-> +}
->  #endif /* CONFIG_IOMMU_SVA */
-> 
->  #endif /* __LINUX_IOMMU_H */
-> --
-> 2.15.1
+SGkgVml2ZWssCgpUaGFua3MgZm9yIHRoZSBwYXRjaC4gUGxlYXNlIHNlZSBzb21lIGNvbW1lbnRz
+IGlubGluZS4KCk9uIFdlZCwgRmViIDcsIDIwMTggYXQgNzozMSBQTSwgVml2ZWsgR2F1dGFtCjx2
+aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+IEZyb206IFNyaWNoYXJhbiBSIDxz
+cmljaGFyYW5AY29kZWF1cm9yYS5vcmc+Cj4KPiBUaGUgc21tdSBuZWVkcyB0byBiZSBmdW5jdGlv
+bmFsIG9ubHkgd2hlbiB0aGUgcmVzcGVjdGl2ZQo+IG1hc3RlcidzIHVzaW5nIGl0IGFyZSBhY3Rp
+dmUuIFRoZSBkZXZpY2VfbGluayBmZWF0dXJlCj4gaGVscHMgdG8gdHJhY2sgc3VjaCBmdW5jdGlv
+bmFsIGRlcGVuZGVuY2llcywgc28gdGhhdCB0aGUKPiBpb21tdSBnZXRzIHBvd2VyZWQgd2hlbiB0
+aGUgbWFzdGVyIGRldmljZSBlbmFibGVzIGl0c2VsZgo+IHVzaW5nIHBtX3J1bnRpbWUuIFNvIGJ5
+IGFkYXB0aW5nIHRoZSBzbW11IGRyaXZlciBmb3IKPiBydW50aW1lIHBtLCBhYm92ZSBzYWlkIGRl
+cGVuZGVuY3kgY2FuIGJlIGFkZHJlc3NlZC4KPgo+IFRoaXMgcGF0Y2ggYWRkcyB0aGUgcG0gcnVu
+dGltZS9zbGVlcCBjYWxsYmFja3MgdG8gdGhlCj4gZHJpdmVyIGFuZCBhbHNvIHRoZSBmdW5jdGlv
+bnMgdG8gcGFyc2UgdGhlIHNtbXUgY2xvY2tzCj4gZnJvbSBEVCBhbmQgZW5hYmxlIHRoZW0gaW4g
+cmVzdW1lL3N1c3BlbmQuCj4KPiBTaWduZWQtb2ZmLWJ5OiBTcmljaGFyYW4gUiA8c3JpY2hhcmFu
+QGNvZGVhdXJvcmEub3JnPgo+IFNpZ25lZC1vZmYtYnk6IEFyY2hpdCBUYW5lamEgPGFyY2hpdHRA
+Y29kZWF1cm9yYS5vcmc+Cj4gW3ZpdmVrOiBDbG9jayByZXdvcmsgdG8gcmVxdWVzdCBidWxrIG9m
+IGNsb2Nrc10KPiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdhdXRhbUBjb2Rl
+YXVyb3JhLm9yZz4KPiAtLS0KPiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgNTYgKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tCj4gIDEgZmlsZSBjaGFu
+Z2VkLCA1NCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+Cj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IGluZGV4
+IDY5ZTdjNjA3OTJhOC4uOWUyZjkxN2UxNmMyIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
+YXJtLXNtbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IEBAIC00OCw2ICs0
+OCw3IEBACj4gICNpbmNsdWRlIDxsaW51eC9vZl9pb21tdS5oPgo+ICAjaW5jbHVkZSA8bGludXgv
+cGNpLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4KPiArI2luY2x1ZGUg
+PGxpbnV4L3BtX3J1bnRpbWUuaD4KPiAgI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KPiAgI2luY2x1
+ZGUgPGxpbnV4L3NwaW5sb2NrLmg+Cj4KPiBAQCAtMjA1LDYgKzIwNiw4IEBAIHN0cnVjdCBhcm1f
+c21tdV9kZXZpY2Ugewo+ICAgICAgICAgdTMyICAgICAgICAgICAgICAgICAgICAgICAgICAgICBu
+dW1fZ2xvYmFsX2lycXM7Cj4gICAgICAgICB1MzIgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IG51bV9jb250ZXh0X2lycXM7Cj4gICAgICAgICB1bnNpZ25lZCBpbnQgICAgICAgICAgICAgICAg
+ICAgICppcnFzOwo+ICsgICAgICAgc3RydWN0IGNsa19idWxrX2RhdGEgICAgICAgICAgICAqY2xv
+Y2tzOwo+ICsgICAgICAgaW50ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBudW1fY2xrczsK
+Cm5pdDogUGVyaGFwcyAibnVtX2Nsb2NrcyIgdG8gYmUgY29uc2lzdGVudCB3aXRoICJjbG9ja3Mi
+PwoKPgo+ICAgICAgICAgdTMyICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjYXZpdW1faWRf
+YmFzZTsgLyogU3BlY2lmaWMgdG8gQ2F2aXVtICovCj4KPiBAQCAtMTg5NywxMCArMTkwMCwxMiBA
+QCBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9jZmdfcHJvYmUoc3RydWN0IGFybV9zbW11X2Rl
+dmljZSAqc21tdSkKPiAgc3RydWN0IGFybV9zbW11X21hdGNoX2RhdGEgewo+ICAgICAgICAgZW51
+bSBhcm1fc21tdV9hcmNoX3ZlcnNpb24gdmVyc2lvbjsKPiAgICAgICAgIGVudW0gYXJtX3NtbXVf
+aW1wbGVtZW50YXRpb24gbW9kZWw7Cj4gKyAgICAgICBjb25zdCBjaGFyICogY29uc3QgKmNsa3M7
+Cj4gKyAgICAgICBpbnQgbnVtX2Nsa3M7CgpuaXQ6IFBlcmhhcHMgcy9jbGtzL2Nsb2Nrcy8gaGVy
+ZSBvciBzL2Nsb2Nrcy9jbGtzLyBpbiBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlPwoKPiAgfTsKPgo+
+ICAjZGVmaW5lIEFSTV9TTU1VX01BVENIX0RBVEEobmFtZSwgdmVyLCBpbXApICAgIFwKPiAtc3Rh
+dGljIHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhIG5hbWUgPSB7IC52ZXJzaW9uID0gdmVyLCAu
+bW9kZWwgPSBpbXAgfQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGFybV9zbW11X21hdGNoX2RhdGEg
+bmFtZSA9IHsgLnZlcnNpb24gPSB2ZXIsIC5tb2RlbCA9IGltcCB9Cj4KPiAgQVJNX1NNTVVfTUFU
+Q0hfREFUQShzbW11X2dlbmVyaWNfdjEsIEFSTV9TTU1VX1YxLCBHRU5FUklDX1NNTVUpOwo+ICBB
+Uk1fU01NVV9NQVRDSF9EQVRBKHNtbXVfZ2VuZXJpY192MiwgQVJNX1NNTVVfVjIsIEdFTkVSSUNf
+U01NVSk7Cj4gQEAgLTIwMDEsNiArMjAwNiw3IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNl
+X2R0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYsCj4gICAgICAgICBkYXRhID0g
+b2ZfZGV2aWNlX2dldF9tYXRjaF9kYXRhKGRldik7Cj4gICAgICAgICBzbW11LT52ZXJzaW9uID0g
+ZGF0YS0+dmVyc2lvbjsKPiAgICAgICAgIHNtbXUtPm1vZGVsID0gZGF0YS0+bW9kZWw7Cj4gKyAg
+ICAgICBzbW11LT5udW1fY2xrcyA9IGRhdGEtPm51bV9jbGtzOwo+Cj4gICAgICAgICBwYXJzZV9k
+cml2ZXJfb3B0aW9ucyhzbW11KTsKPgo+IEBAIC0yMDM5LDYgKzIwNDUsMjggQEAgc3RhdGljIHZv
+aWQgYXJtX3NtbXVfYnVzX2luaXQodm9pZCkKPiAgI2VuZGlmCj4gIH0KPgo+ICtzdGF0aWMgaW50
+IGFybV9zbW11X2luaXRfY2xrcyhzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11KQo+ICt7Cj4g
+KyAgICAgICBpbnQgaTsKPiArICAgICAgIGludCBudW0gPSBzbW11LT5udW1fY2xrczsKPiArICAg
+ICAgIGNvbnN0IHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhICpkYXRhOwo+ICsKPiArICAgICAg
+IGlmIChudW0gPCAxKQo+ICsgICAgICAgICAgICAgICByZXR1cm4gMDsKPiArCj4gKyAgICAgICBz
+bW11LT5jbG9ja3MgPSBkZXZtX2tjYWxsb2Moc21tdS0+ZGV2LCBudW0sCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZW9mKCpzbW11LT5jbG9ja3MpLCBHRlBfS0VSTkVM
+KTsKPiArICAgICAgIGlmICghc21tdS0+Y2xvY2tzKQo+ICsgICAgICAgICAgICAgICByZXR1cm4g
+LUVOT01FTTsKPiArCj4gKyAgICAgICBkYXRhID0gb2ZfZGV2aWNlX2dldF9tYXRjaF9kYXRhKHNt
+bXUtPmRldik7Cj4gKwo+ICsgICAgICAgZm9yIChpID0gMDsgaSA8IG51bTsgaSsrKQo+ICsgICAg
+ICAgICAgICAgICBzbW11LT5jbG9ja3NbaV0uaWQgPSBkYXRhLT5jbGtzW2ldOwoKSSdkIGFyZ3Vl
+IHRoYXQgYXJtX3NtbXVfZGV2aWNlX2R0X3Byb2JlKCkgaXMgYSBiZXR0ZXIgcGxhY2UgZm9yIGFs
+bAp0aGUgY29kZSBhYm92ZSwgc2luY2UgdGhpcyBmdW5jdGlvbiBpcyBjYWxsZWQgcmVnYXJkbGVz
+cyBvZiB3aGV0aGVyCnRoZSBkZXZpY2UgaXMgcHJvYmVkIGZyb20gRFQgb3Igbm90LiBHb2luZyBm
+dXJ0aGVyLAphcm1fc21tdV9kZXZpY2VfYWNwaV9wcm9iZSgpIGNvdWxkIGZpbGwgc21tdS0+bnVt
+X2Nsa3MgYW5kIC0+Y2xvY2tzCnVzaW5nIEFDUEktbGlrZSB3YXkgKGFzIG9wcG9zZWQgdG8gT0Yg
+bWF0Y2ggZGF0YSkgaWYgbmVjZXNzYXJ5LgoKQmVzdCByZWdhcmRzLApUb21hc3oKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
+bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
