@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 3/4] dma-direct: comment the dma_direct_free calling convention
-Date: Mon, 12 Feb 2018 17:47:30 -0800
-Message-ID: <20180213014731.29742-4-hch@lst.de>
+Subject: [PATCH 1/4] ia64: fix build failure with CONFIG_SWIOTLB
+Date: Mon, 12 Feb 2018 17:47:28 -0800
+Message-ID: <20180213014731.29742-2-hch@lst.de>
 References: <20180213014731.29742-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,25 +21,31 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, clabbe-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+From: Corentin Labbe <clabbe-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+
+arch/ia64/kernel/pci-swiotlb.c is removed in commit 4fac8076df85 ("ia64: clean up swiotlb support")
+but pci-swiotlb.o is still present in Makefile, and so build fail when
+CONFIG_SWIOTLB is enabled.
+Fix the build failure by removing pci-swiotlb.o from makefile
+
+Fixes: 4fac8076df85 ("ia64: clean up swiotlb support")
+Signed-off-by: Corentin Labbe <clabbe-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- lib/dma-direct.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/ia64/kernel/Makefile | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/lib/dma-direct.c b/lib/dma-direct.c
-index fdc733cf9e30..c9e8e21cb334 100644
---- a/lib/dma-direct.c
-+++ b/lib/dma-direct.c
-@@ -84,6 +84,10 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 	return page_address(page);
- }
+diff --git a/arch/ia64/kernel/Makefile b/arch/ia64/kernel/Makefile
+index 0b4c65a1af25..498f3da3f225 100644
+--- a/arch/ia64/kernel/Makefile
++++ b/arch/ia64/kernel/Makefile
+@@ -41,7 +41,6 @@ ifneq ($(CONFIG_IA64_ESI),)
+ obj-y				+= esi_stub.o	# must be in kernel proper
+ endif
+ obj-$(CONFIG_INTEL_IOMMU)	+= pci-dma.o
+-obj-$(CONFIG_SWIOTLB)		+= pci-swiotlb.o
  
-+/*
-+ * NOTE: this function must never look at the dma_addr argument, because we want
-+ * to be able to use it as a helper for iommu implementations as well.
-+ */
- void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
- 		dma_addr_t dma_addr, unsigned long attrs)
- {
+ obj-$(CONFIG_BINFMT_ELF)	+= elfcore.o
+ 
 -- 
 2.14.2
