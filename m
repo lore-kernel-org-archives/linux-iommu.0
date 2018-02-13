@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 1/4] ia64: fix build failure with CONFIG_SWIOTLB
-Date: Mon, 12 Feb 2018 17:47:28 -0800
-Message-ID: <20180213014731.29742-2-hch@lst.de>
+Subject: [PATCH 4/4] dma-mapping: fix a comment typo
+Date: Mon, 12 Feb 2018 17:47:31 -0800
+Message-ID: <20180213014731.29742-5-hch@lst.de>
 References: <20180213014731.29742-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,31 +21,24 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, clabbe-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Corentin Labbe <clabbe-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-
-arch/ia64/kernel/pci-swiotlb.c is removed in commit 4fac8076df85 ("ia64: clean up swiotlb support")
-but pci-swiotlb.o is still present in Makefile, and so build fail when
-CONFIG_SWIOTLB is enabled.
-Fix the build failure by removing pci-swiotlb.o from makefile
-
-Fixes: 4fac8076df85 ("ia64: clean up swiotlb support")
-Signed-off-by: Corentin Labbe <clabbe-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Reported-by: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/ia64/kernel/Makefile | 1 -
- 1 file changed, 1 deletion(-)
+ include/linux/dma-mapping.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/ia64/kernel/Makefile b/arch/ia64/kernel/Makefile
-index 0b4c65a1af25..498f3da3f225 100644
---- a/arch/ia64/kernel/Makefile
-+++ b/arch/ia64/kernel/Makefile
-@@ -41,7 +41,6 @@ ifneq ($(CONFIG_IA64_ESI),)
- obj-y				+= esi_stub.o	# must be in kernel proper
- endif
- obj-$(CONFIG_INTEL_IOMMU)	+= pci-dma.o
--obj-$(CONFIG_SWIOTLB)		+= pci-swiotlb.o
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 34fe8463d10e..eb9eab4ecd6d 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -578,7 +578,7 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
  
- obj-$(CONFIG_BINFMT_ELF)	+= elfcore.o
- 
+ /*
+  * This is a hack for the legacy x86 forbid_dac and iommu_sac_force. Please
+- * don't use this is new code.
++ * don't use this in new code.
+  */
+ #ifndef arch_dma_supported
+ #define arch_dma_supported(dev, mask)	(1)
 -- 
 2.14.2
