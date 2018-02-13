@@ -1,39 +1,30 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu: Do not return error code for APIs with size_t
- return type
-Date: Tue, 13 Feb 2018 19:33:14 +0100
-Message-ID: <20180213183313.cu7nsjauuhvorzg2@8bytes.org>
-References: <1517827553-81034-1-git-send-email-suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH 1/1] iommu/io-pgtable: use size_t return type for all
+ foo_unmap
+Date: Tue, 13 Feb 2018 19:33:30 +0100
+Message-ID: <20180213183330.6su6gc3uctpvaa2e@8bytes.org>
+References: <1517853559-5869-1-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1517827553-81034-1-git-send-email-suravee.suthikulpanit@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jroedel@suse.de, alex.williamson@redhat.com
+In-Reply-To: <1517853559-5869-1-git-send-email-vivek.gautam@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: will.deacon@arm.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 05, 2018 at 05:45:53AM -0500, Suravee Suthikulpanit wrote:
-> Currently, iommu_unmap, iommu_unmap_fast and iommu_map_sg return
-> size_t.  However, some of the return values are error codes (< 0),
-> which can be misinterpreted as large size. Therefore, returning size 0
-> instead to signify failure to map/unmap.
+On Mon, Feb 05, 2018 at 11:29:19PM +0530, Vivek Gautam wrote:
+> Unmap returns a size_t all throughout the IOMMU framework.
+> Make io-pgtable match this convention.
+> Moreover, there isn't a need to have a signed int return type
+> as we return 0 in case of failures.
 > 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
 > ---
-> 
-> Note: This issue was previously discussed here (https://lkml.org/lkml/2018/1/30/873).
-> 
->  drivers/iommu/amd_iommu.c |  2 +-
->  drivers/iommu/iommu.c     |  6 +++---
->  include/linux/iommu.h     | 14 +++++++-------
->  3 files changed, 11 insertions(+), 11 deletions(-)
+>  drivers/iommu/io-pgtable-arm-v7s.c | 21 +++++++++++----------
+>  drivers/iommu/io-pgtable-arm.c     | 24 ++++++++++++------------
+>  drivers/iommu/io-pgtable.h         |  4 ++--
+>  3 files changed, 25 insertions(+), 24 deletions(-)
 
-Yeah, I am not happy with this, but the alternatives aren't any
-better... So I applied this one. Thanks!
-
-
-	Joerg
+Applied, thanks.
