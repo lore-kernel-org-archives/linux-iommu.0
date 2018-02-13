@@ -1,65 +1,53 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v7 1/6] base: power: runtime: Export
- pm_runtime_get/put_suppliers
-Date: Tue, 13 Feb 2018 21:54:26 +0900
-Message-ID: <CAAFQd5DNzGYnTRuc2hDr1osQ2=6ruM0wQqV8svP=a10hxTVOGQ@mail.gmail.com>
-References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
- <1517999482-17317-2-git-send-email-vivek.gautam@codeaurora.org>
- <CAAFQd5BmroRf-C8dQkvTKHWK1psGnNi1t7g-q=Xce6KjrGTsdw@mail.gmail.com>
- <65d707c0-76cc-d59e-ff18-1fdd89306900@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 29/37] iommu/arm-smmu-v3: Add stall support for platform
+	devices
+Date: Tue, 13 Feb 2018 12:58:56 +0000
+Message-ID: <f8005429-8e51-fe54-17f8-820543883ce9@arm.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-30-jean-philippe.brucker@arm.com>
+	<5A824359.1080005@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <65d707c0-76cc-d59e-ff18-1fdd89306900@arm.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pm@vger.kernel.org, David Airlie <airlied@linux.ie>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, dri-devel <dri-devel@lists.freedesktop.org>, linux-kernel@vger.kernel.org, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Greg KH <gregkh@linuxfoundation.org>, freedreno@lists.freedesktop.org, sboyd@codeaurora.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5A824359.1080005-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBGZWIgMTMsIDIwMTggYXQgOTowMCBQTSwgUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJw
-aHlAYXJtLmNvbT4gd3JvdGU6Cj4gT24gMTMvMDIvMTggMDc6NDQsIFRvbWFzeiBGaWdhIHdyb3Rl
-Ogo+Pgo+PiBIaSBWaXZlaywKPj4KPj4gT24gV2VkLCBGZWIgNywgMjAxOCBhdCA3OjMxIFBNLCBW
-aXZlayBHYXV0YW0KPj4gPHZpdmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4gd3JvdGU6Cj4+Pgo+
-Pj4gVGhlIGRldmljZSBsaW5rIGFsbG93cyB0aGUgcG0gZnJhbWV3b3JrIHRvIHRpZSB0aGUgc3Vw
-cGxpZXIgYW5kCj4+PiBjb25zdW1lci4gU28sIHdoZW5ldmVyIHRoZSBjb25zdW1lciBpcyBwb3dl
-cmVkLW9uIHRoZSBzdXBwbGllcgo+Pj4gaXMgcG93ZXJlZC1vbiBmaXJzdC4KPj4+Cj4+PiBUaGVy
-ZSBhcmUgaG93ZXZlciBjYXNlcyBpbiB3aGljaCB0aGUgY29uc3VtZXIgd2FudHMgdG8gcG93ZXIt
-b24KPj4+IHRoZSBzdXBwbGllciwgYnV0IG5vdCBpdHNlbGYuCj4+PiBFLmcuLCBBIEdyYXBoaWNz
-IG9yIG11bHRpbWVkaWEgZHJpdmVyIHdhbnRzIHRvIHBvd2VyLW9uIHRoZSBTTU1VCj4+PiB0byB1
-bm1hcCBhIGJ1ZmZlciBhbmQgZmluaXNoIHRoZSBUTEIgb3BlcmF0aW9ucyB3aXRob3V0IHBvd2Vy
-aW5nCj4+PiBvbiBpdHNlbGYuCj4+Cj4+Cj4+IFRoaXMgc291bmRzIHN0cmFuZ2UgdG8gbWUuIElm
-IHRoZSBTTU1VIGlzIHBvd2VyZWQgZG93biwgd291bGRuJ3QgdGhlCj4+IFRMQiBsb3NlIGl0cyBj
-b250ZW50cyBhcyB3ZWxsIChhbmQgc28gbm8gZmx1c2hpbmcgbmVlZGVkKT8KPgo+Cj4gRGVwZW5k
-cyBvbiBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzIC0gaWYgcnVudGltZSBQTSBpcyBhY3R1YWxseSBp
-bXBsZW1lbnRlZAo+IHZpYSBleHRlcm5hbCBjbG9jayBnYXRpbmcgKGluIHRoZSBhYnNlbmNlIG9m
-IGZpbmUtZ3JhaW5lZCBwb3dlciBkb21haW5zKSwKPiB0aGVuICJzdXNwZW5kZWQiIFRMQnMgbWln
-aHQgYm90aCByZXRhaW4gc3RhdGUgYW5kIG5vdCByZWNlaXZlIGludmFsaWRhdGlvbgo+IHJlcXVl
-c3RzLCB3aGljaCBpcyByZWFsbHkgdGhlIHdvcnN0IGNhc2UuCgpBZ3JlZWQuIFRoYXQncyB3aHkg
-aW4gIltQQVRDSCB2NyAzLzZdIGlvbW11L2FybS1zbW11OiBJbnZva2UKcG1fcnVudGltZSBkdXJp
-bmcgcHJvYmUsIGFkZC9yZW1vdmUgZGV2aWNlIiBJIGFjdHVhbGx5IHN1Z2dlc3RlZAptYW5hZ2lu
-ZyBjbG9ja3Mgc2VwYXJhdGVseSBmcm9tIHJ1bnRpbWUgUE0uIEF0IGxlYXN0IHVudGlsIHJ1bnRp
-bWUgUE0KZnJhbWV3b3JrIGFycml2ZXMgYXQgYSBzdGF0ZSwgd2hlcmUgbXVsdGlwbGUgcG93ZXIg
-c3RhdGVzIGNhbiBiZQptYW5hZ2VkLCBpLmUuIGZ1bGwgcG93ZXIgc3RhdGUsIGNsb2NrLWdhdGVk
-IHN0YXRlLCBkb21haW4tb2ZmIHN0YXRlLgooSSB0aGluayBJIG1pZ2h0IGhhdmUgc2VlbiBzb21l
-IG9uZ29pbmcgd29yayBvbiB0aGlzIG9uIExXTiB0aG91Z2guLi4pCgo+Cj4+IE90aGVyIHRoYW4g
-dGhhdCwgd2hhdCBraW5kIG9mIGhhcmR3YXJlIG9wZXJhdGlvbnMgd291bGQgYmUgbmVlZGVkCj4+
-IGJlc2lkZXMganVzdCB1cGRhdGluZyB0aGUgcGFnZSB0YWJsZXMgZnJvbSB0aGUgQ1BVPwo+Cj4K
-PiBEb21haW4gYXR0YWNoL2RldGFjaCBhbHNvIHJlcXVpcmUgdXBkYXRpbmcgU01NVSBoYXJkd2Fy
-ZSBzdGF0ZSAoYW5kIHBvc3NpYmx5Cj4gVExCIG1haW50ZW5hbmNlKSwgYnV0IGRvbid0IGxvZ2lj
-YWxseSByZXF1aXJlIHRoZSBtYXN0ZXIgZGV2aWNlIGl0c2VsZiB0byBiZQo+IGFjdGl2ZSBhdCB0
-aGUgdGltZS4KCldvdWxkbid0IHRoaXMgaGFyZHdhcmUgc3RhdGUgbmVlZCB0byBiZSByZWluaXRp
-YWxpemVkIGFueXdheSBhZnRlcgpyZXNwZWN0aXZlIHBvd2VyIGRvbWFpbiBwb3dlciBjeWNsZXM/
-IChJbiBvdGhlciB3b3JkcywgaGFyZHdhcmUgd291bGQKb25seSBuZWVkIHByb2dyYW1taW5nIGlm
-IGl0J3MgcG93ZXJlZCBvbiBhdCB0aGUgbW9tZW50LikKCkJlc3QgcmVnYXJkcywKVG9tYXN6Cl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBt
-YWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
-LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Hi,
+
+On 13/02/18 01:46, Xu Zaibo wrote:
+> Hi,
+> 
+> On 2018/2/13 2:33, Jean-Philippe Brucker wrote:
+>> The SMMU provides a Stall model for handling page faults in platform
+>> devices. It is similar to PCI PRI, but doesn't require devices to have
+>> their own translation cache. Instead, faulting transactions are parked and
+>> the OS is given a chance to fix the page tables and retry the transaction.
+>>
+>> Enable stall for devices that support it (opt-in by firmware). When an
+>> event corresponds to a translation error, call the IOMMU fault handler. If
+>> the fault is recoverable, it will call us back to terminate or continue
+>> the stall.
+>>
+>> Note that this patch tweaks the iommu_fault_event and page_response_msg to
+>> extend the fault id field. Stall uses 16 bits of IDs whereas PCI PRI only
+>> uses 9.
+> For PCIe devices without ATC,  can they use this Stall model?
+
+Unfortunately no, Stall it is incompatible with PCI. Timing constraints in
+PCI prevent from stalling transactions in the IOMMU.
+
+Thanks,
+Jean
