@@ -1,97 +1,171 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v7 2/6] iommu/arm-smmu: Add pm_runtime/sleep ops
-Date: Tue, 13 Feb 2018 17:03:48 +0900
-Message-ID: <CAAFQd5B2u8RL-tdB3qgPxVUcXnsBSEhXRBZWxqO-w6rYKAiOtg@mail.gmail.com>
-References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
- <1517999482-17317-3-git-send-email-vivek.gautam@codeaurora.org>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH 04/37] iommu/sva: Add a mm_exit callback for device
+ drivers
+Date: Tue, 13 Feb 2018 08:11:03 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1910028F9@SHSMSX101.ccr.corp.intel.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+ <20180212183352.22730-5-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1517999482-17317-3-git-send-email-vivek.gautam@codeaurora.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pm@vger.kernel.org, David Airlie <airlied@linux.ie>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Greg KH <gregkh@linuxfoundation.org>, freedreno@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>, sboyd@codeaurora.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20180212183352.22730-5-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, xieyisheng1-hv44wF8Li91hl2p70BpVqQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVml2ZWssCgpUaGFua3MgZm9yIHRoZSBwYXRjaC4gUGxlYXNlIHNlZSBzb21lIGNvbW1lbnRz
-IGlubGluZS4KCk9uIFdlZCwgRmViIDcsIDIwMTggYXQgNzozMSBQTSwgVml2ZWsgR2F1dGFtCjx2
-aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+IEZyb206IFNyaWNoYXJhbiBSIDxz
-cmljaGFyYW5AY29kZWF1cm9yYS5vcmc+Cj4KPiBUaGUgc21tdSBuZWVkcyB0byBiZSBmdW5jdGlv
-bmFsIG9ubHkgd2hlbiB0aGUgcmVzcGVjdGl2ZQo+IG1hc3RlcidzIHVzaW5nIGl0IGFyZSBhY3Rp
-dmUuIFRoZSBkZXZpY2VfbGluayBmZWF0dXJlCj4gaGVscHMgdG8gdHJhY2sgc3VjaCBmdW5jdGlv
-bmFsIGRlcGVuZGVuY2llcywgc28gdGhhdCB0aGUKPiBpb21tdSBnZXRzIHBvd2VyZWQgd2hlbiB0
-aGUgbWFzdGVyIGRldmljZSBlbmFibGVzIGl0c2VsZgo+IHVzaW5nIHBtX3J1bnRpbWUuIFNvIGJ5
-IGFkYXB0aW5nIHRoZSBzbW11IGRyaXZlciBmb3IKPiBydW50aW1lIHBtLCBhYm92ZSBzYWlkIGRl
-cGVuZGVuY3kgY2FuIGJlIGFkZHJlc3NlZC4KPgo+IFRoaXMgcGF0Y2ggYWRkcyB0aGUgcG0gcnVu
-dGltZS9zbGVlcCBjYWxsYmFja3MgdG8gdGhlCj4gZHJpdmVyIGFuZCBhbHNvIHRoZSBmdW5jdGlv
-bnMgdG8gcGFyc2UgdGhlIHNtbXUgY2xvY2tzCj4gZnJvbSBEVCBhbmQgZW5hYmxlIHRoZW0gaW4g
-cmVzdW1lL3N1c3BlbmQuCj4KPiBTaWduZWQtb2ZmLWJ5OiBTcmljaGFyYW4gUiA8c3JpY2hhcmFu
-QGNvZGVhdXJvcmEub3JnPgo+IFNpZ25lZC1vZmYtYnk6IEFyY2hpdCBUYW5lamEgPGFyY2hpdHRA
-Y29kZWF1cm9yYS5vcmc+Cj4gW3ZpdmVrOiBDbG9jayByZXdvcmsgdG8gcmVxdWVzdCBidWxrIG9m
-IGNsb2Nrc10KPiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdhdXRhbUBjb2Rl
-YXVyb3JhLm9yZz4KPiAtLS0KPiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgNTYgKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tCj4gIDEgZmlsZSBjaGFu
-Z2VkLCA1NCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+Cj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IGluZGV4
-IDY5ZTdjNjA3OTJhOC4uOWUyZjkxN2UxNmMyIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
-YXJtLXNtbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IEBAIC00OCw2ICs0
-OCw3IEBACj4gICNpbmNsdWRlIDxsaW51eC9vZl9pb21tdS5oPgo+ICAjaW5jbHVkZSA8bGludXgv
-cGNpLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4KPiArI2luY2x1ZGUg
-PGxpbnV4L3BtX3J1bnRpbWUuaD4KPiAgI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KPiAgI2luY2x1
-ZGUgPGxpbnV4L3NwaW5sb2NrLmg+Cj4KPiBAQCAtMjA1LDYgKzIwNiw4IEBAIHN0cnVjdCBhcm1f
-c21tdV9kZXZpY2Ugewo+ICAgICAgICAgdTMyICAgICAgICAgICAgICAgICAgICAgICAgICAgICBu
-dW1fZ2xvYmFsX2lycXM7Cj4gICAgICAgICB1MzIgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IG51bV9jb250ZXh0X2lycXM7Cj4gICAgICAgICB1bnNpZ25lZCBpbnQgICAgICAgICAgICAgICAg
-ICAgICppcnFzOwo+ICsgICAgICAgc3RydWN0IGNsa19idWxrX2RhdGEgICAgICAgICAgICAqY2xv
-Y2tzOwo+ICsgICAgICAgaW50ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBudW1fY2xrczsK
-Cm5pdDogUGVyaGFwcyAibnVtX2Nsb2NrcyIgdG8gYmUgY29uc2lzdGVudCB3aXRoICJjbG9ja3Mi
-PwoKPgo+ICAgICAgICAgdTMyICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjYXZpdW1faWRf
-YmFzZTsgLyogU3BlY2lmaWMgdG8gQ2F2aXVtICovCj4KPiBAQCAtMTg5NywxMCArMTkwMCwxMiBA
-QCBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9jZmdfcHJvYmUoc3RydWN0IGFybV9zbW11X2Rl
-dmljZSAqc21tdSkKPiAgc3RydWN0IGFybV9zbW11X21hdGNoX2RhdGEgewo+ICAgICAgICAgZW51
-bSBhcm1fc21tdV9hcmNoX3ZlcnNpb24gdmVyc2lvbjsKPiAgICAgICAgIGVudW0gYXJtX3NtbXVf
-aW1wbGVtZW50YXRpb24gbW9kZWw7Cj4gKyAgICAgICBjb25zdCBjaGFyICogY29uc3QgKmNsa3M7
-Cj4gKyAgICAgICBpbnQgbnVtX2Nsa3M7CgpuaXQ6IFBlcmhhcHMgcy9jbGtzL2Nsb2Nrcy8gaGVy
-ZSBvciBzL2Nsb2Nrcy9jbGtzLyBpbiBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlPwoKPiAgfTsKPgo+
-ICAjZGVmaW5lIEFSTV9TTU1VX01BVENIX0RBVEEobmFtZSwgdmVyLCBpbXApICAgIFwKPiAtc3Rh
-dGljIHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhIG5hbWUgPSB7IC52ZXJzaW9uID0gdmVyLCAu
-bW9kZWwgPSBpbXAgfQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGFybV9zbW11X21hdGNoX2RhdGEg
-bmFtZSA9IHsgLnZlcnNpb24gPSB2ZXIsIC5tb2RlbCA9IGltcCB9Cj4KPiAgQVJNX1NNTVVfTUFU
-Q0hfREFUQShzbW11X2dlbmVyaWNfdjEsIEFSTV9TTU1VX1YxLCBHRU5FUklDX1NNTVUpOwo+ICBB
-Uk1fU01NVV9NQVRDSF9EQVRBKHNtbXVfZ2VuZXJpY192MiwgQVJNX1NNTVVfVjIsIEdFTkVSSUNf
-U01NVSk7Cj4gQEAgLTIwMDEsNiArMjAwNiw3IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNl
-X2R0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYsCj4gICAgICAgICBkYXRhID0g
-b2ZfZGV2aWNlX2dldF9tYXRjaF9kYXRhKGRldik7Cj4gICAgICAgICBzbW11LT52ZXJzaW9uID0g
-ZGF0YS0+dmVyc2lvbjsKPiAgICAgICAgIHNtbXUtPm1vZGVsID0gZGF0YS0+bW9kZWw7Cj4gKyAg
-ICAgICBzbW11LT5udW1fY2xrcyA9IGRhdGEtPm51bV9jbGtzOwo+Cj4gICAgICAgICBwYXJzZV9k
-cml2ZXJfb3B0aW9ucyhzbW11KTsKPgo+IEBAIC0yMDM5LDYgKzIwNDUsMjggQEAgc3RhdGljIHZv
-aWQgYXJtX3NtbXVfYnVzX2luaXQodm9pZCkKPiAgI2VuZGlmCj4gIH0KPgo+ICtzdGF0aWMgaW50
-IGFybV9zbW11X2luaXRfY2xrcyhzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11KQo+ICt7Cj4g
-KyAgICAgICBpbnQgaTsKPiArICAgICAgIGludCBudW0gPSBzbW11LT5udW1fY2xrczsKPiArICAg
-ICAgIGNvbnN0IHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhICpkYXRhOwo+ICsKPiArICAgICAg
-IGlmIChudW0gPCAxKQo+ICsgICAgICAgICAgICAgICByZXR1cm4gMDsKPiArCj4gKyAgICAgICBz
-bW11LT5jbG9ja3MgPSBkZXZtX2tjYWxsb2Moc21tdS0+ZGV2LCBudW0sCj4gKyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZW9mKCpzbW11LT5jbG9ja3MpLCBHRlBfS0VSTkVM
-KTsKPiArICAgICAgIGlmICghc21tdS0+Y2xvY2tzKQo+ICsgICAgICAgICAgICAgICByZXR1cm4g
-LUVOT01FTTsKPiArCj4gKyAgICAgICBkYXRhID0gb2ZfZGV2aWNlX2dldF9tYXRjaF9kYXRhKHNt
-bXUtPmRldik7Cj4gKwo+ICsgICAgICAgZm9yIChpID0gMDsgaSA8IG51bTsgaSsrKQo+ICsgICAg
-ICAgICAgICAgICBzbW11LT5jbG9ja3NbaV0uaWQgPSBkYXRhLT5jbGtzW2ldOwoKSSdkIGFyZ3Vl
-IHRoYXQgYXJtX3NtbXVfZGV2aWNlX2R0X3Byb2JlKCkgaXMgYSBiZXR0ZXIgcGxhY2UgZm9yIGFs
-bAp0aGUgY29kZSBhYm92ZSwgc2luY2UgdGhpcyBmdW5jdGlvbiBpcyBjYWxsZWQgcmVnYXJkbGVz
-cyBvZiB3aGV0aGVyCnRoZSBkZXZpY2UgaXMgcHJvYmVkIGZyb20gRFQgb3Igbm90LiBHb2luZyBm
-dXJ0aGVyLAphcm1fc21tdV9kZXZpY2VfYWNwaV9wcm9iZSgpIGNvdWxkIGZpbGwgc21tdS0+bnVt
-X2Nsa3MgYW5kIC0+Y2xvY2tzCnVzaW5nIEFDUEktbGlrZSB3YXkgKGFzIG9wcG9zZWQgdG8gT0Yg
-bWF0Y2ggZGF0YSkgaWYgbmVjZXNzYXJ5LgoKQmVzdCByZWdhcmRzLApUb21hc3oKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
-bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+> From: Jean-Philippe Brucker
+> Sent: Tuesday, February 13, 2018 2:33 AM
+> 
+> When an mm exits, devices that were bound to it must stop performing
+> DMA
+> on its PASID. Let device drivers register a callback to be notified on mm
+> exit. Add the callback to the iommu_param structure attached to struct
+> device.
+
+what about registering the callback in sva_device_init? 
+
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/iommu-sva.c | 54
+> +++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h     | 18 ++++++++++++++++
+>  2 files changed, 72 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index f9af9d66b3ed..90b524c99d3d 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -569,3 +569,57 @@ void __iommu_sva_unbind_dev_all(struct device
+> *dev)
+>  	spin_unlock(&iommu_sva_lock);
+>  }
+>  EXPORT_SYMBOL_GPL(__iommu_sva_unbind_dev_all);
+> +
+> +/**
+> + * iommu_register_mm_exit_handler() - Set a callback for mm exit
+> + * @dev: the device
+> + * @handler: exit handler
+> + *
+> + * Users of the bind/unbind API should call this function to set a
+> + * device-specific callback telling them when a mm is exiting.
+> + *
+> + * After the callback returns, the device must not issue any more
+> transaction
+> + * with the PASID given as argument to the handler. In addition the
+> handler gets
+> + * an opaque pointer corresponding to the drvdata passed as argument of
+> bind().
+> + *
+> + * The handler itself should return 0 on success, and an appropriate error
+> code
+> + * otherwise.
+> + */
+> +int iommu_register_mm_exit_handler(struct device *dev,
+> +				   iommu_mm_exit_handler_t handler)
+> +{
+> +	struct iommu_param *dev_param = dev->iommu_param;
+> +
+> +	if (!dev_param)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * FIXME: racy. Same as iommu_sva_device_init, but here we'll
+> need a
+> +	 * spinlock to call the mm_exit param from atomic context.
+> +	 */
+> +	if (dev_param->mm_exit)
+> +		return -EBUSY;
+> +
+> +	get_device(dev);
+> +	dev_param->mm_exit = handler;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_register_mm_exit_handler);
+> +
+> +/**
+> + * iommu_unregister_mm_exit_handler() - Remove mm exit callback
+> + */
+> +int iommu_unregister_mm_exit_handler(struct device *dev)
+> +{
+> +	struct iommu_param *dev_param = dev->iommu_param;
+> +
+> +	if (!dev_param || !dev_param->mm_exit)
+> +		return -EINVAL;
+> +
+> +	dev_param->mm_exit = NULL;
+> +	put_device(dev);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unregister_mm_exit_handler);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 09d85f44142a..1b1a16892ac1 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -65,6 +65,8 @@ typedef int (*iommu_dev_fault_handler_t)(struct
+> iommu_fault_event *, void *);
+>  /* Request I/O page fault support */
+>  #define IOMMU_SVA_FEAT_IOPF		(1 << 1)
+> 
+> +typedef int (*iommu_mm_exit_handler_t)(struct device *dev, int pasid,
+> void *);
+> +
+>  struct iommu_domain_geometry {
+>  	dma_addr_t aperture_start; /* First address that can be mapped
+> */
+>  	dma_addr_t aperture_end;   /* Last address that can be mapped
+> */
+> @@ -424,6 +426,7 @@ struct iommu_param {
+>  	unsigned int min_pasid;
+>  	unsigned int max_pasid;
+>  	struct list_head mm_list;
+> +	iommu_mm_exit_handler_t mm_exit;
+>  };
+> 
+>  int  iommu_device_register(struct iommu_device *iommu);
+> @@ -941,6 +944,10 @@ extern int iommu_sva_bind_device(struct device
+> *dev, struct mm_struct *mm,
+>  				int *pasid, unsigned long flags, void
+> *drvdata);
+>  extern int iommu_sva_unbind_device(struct device *dev, int pasid);
+>  extern void __iommu_sva_unbind_dev_all(struct device *dev);
+> +extern int iommu_register_mm_exit_handler(struct device *dev,
+> +					  iommu_mm_exit_handler_t
+> handler);
+> +extern int iommu_unregister_mm_exit_handler(struct device *dev);
+> +
+>  #else /* CONFIG_IOMMU_SVA */
+>  static inline int iommu_sva_device_init(struct device *dev,
+>  					unsigned long features,
+> @@ -969,6 +976,17 @@ static inline int iommu_sva_unbind_device(struct
+> device *dev, int pasid)
+>  static inline void __iommu_sva_unbind_dev_all(struct device *dev)
+>  {
+>  }
+> +
+> +static inline int iommu_register_mm_exit_handler(struct device *dev,
+> +						 iommu_mm_exit_handler_t
+> handler)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iommu_unregister_mm_exit_handler(struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+>  #endif /* CONFIG_IOMMU_SVA */
+> 
+>  #endif /* __LINUX_IOMMU_H */
+> --
+> 2.15.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
