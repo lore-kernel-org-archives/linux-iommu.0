@@ -1,171 +1,102 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 04/37] iommu/sva: Add a mm_exit callback for device
- drivers
-Date: Tue, 13 Feb 2018 08:11:03 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1910028F9@SHSMSX101.ccr.corp.intel.com>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
- <20180212183352.22730-5-jean-philippe.brucker@arm.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH v7 3/6] iommu/arm-smmu: Invoke pm_runtime during probe,
+ add/remove device
+Date: Tue, 13 Feb 2018 17:24:53 +0900
+Message-ID: <CAAFQd5DxYhkK61VDAesby6bT+FtG2nqsbHQRvxkhrsSS0KWtog@mail.gmail.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org> <1517999482-17317-4-git-send-email-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20180212183352.22730-5-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "sudeep.holla-5wv7dgnIgG8@public.gmane.org" <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, xieyisheng1-hv44wF8Li91hl2p70BpVqQ@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <1517999482-17317-4-git-send-email-vivek.gautam@codeaurora.org>
+Sender: linux-pm-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, freedreno@lists.freedesktop.org, David Airlie <airlied@linux.ie>, Greg KH <gregkh@linuxfoundation.org>, sboyd@codeaurora.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker
-> Sent: Tuesday, February 13, 2018 2:33 AM
-> 
-> When an mm exits, devices that were bound to it must stop performing
-> DMA
-> on its PASID. Let device drivers register a callback to be notified on mm
-> exit. Add the callback to the iommu_param structure attached to struct
-> device.
+Hi Vivek,
 
-what about registering the callback in sva_device_init? 
+Thanks for the patch. Please see my comments inline.
 
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+On Wed, Feb 7, 2018 at 7:31 PM, Vivek Gautam
+<vivek.gautam@codeaurora.org> wrote:
+> From: Sricharan R <sricharan@codeaurora.org>
+>
+> The smmu device probe/remove and add/remove master device callbacks
+> gets called when the smmu is not linked to its master, that is without
+> the context of the master device. So calling runtime apis in those places
+> separately.
+>
+> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+> [vivek: Cleanup pm runtime calls]
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
 > ---
->  drivers/iommu/iommu-sva.c | 54
-> +++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h     | 18 ++++++++++++++++
->  2 files changed, 72 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index f9af9d66b3ed..90b524c99d3d 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -569,3 +569,57 @@ void __iommu_sva_unbind_dev_all(struct device
-> *dev)
->  	spin_unlock(&iommu_sva_lock);
->  }
->  EXPORT_SYMBOL_GPL(__iommu_sva_unbind_dev_all);
-> +
-> +/**
-> + * iommu_register_mm_exit_handler() - Set a callback for mm exit
-> + * @dev: the device
-> + * @handler: exit handler
-> + *
-> + * Users of the bind/unbind API should call this function to set a
-> + * device-specific callback telling them when a mm is exiting.
-> + *
-> + * After the callback returns, the device must not issue any more
-> transaction
-> + * with the PASID given as argument to the handler. In addition the
-> handler gets
-> + * an opaque pointer corresponding to the drvdata passed as argument of
-> bind().
-> + *
-> + * The handler itself should return 0 on success, and an appropriate error
-> code
-> + * otherwise.
-> + */
-> +int iommu_register_mm_exit_handler(struct device *dev,
-> +				   iommu_mm_exit_handler_t handler)
-> +{
-> +	struct iommu_param *dev_param = dev->iommu_param;
-> +
-> +	if (!dev_param)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * FIXME: racy. Same as iommu_sva_device_init, but here we'll
-> need a
-> +	 * spinlock to call the mm_exit param from atomic context.
-> +	 */
-> +	if (dev_param->mm_exit)
-> +		return -EBUSY;
-> +
-> +	get_device(dev);
-> +	dev_param->mm_exit = handler;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_register_mm_exit_handler);
-> +
-> +/**
-> + * iommu_unregister_mm_exit_handler() - Remove mm exit callback
-> + */
-> +int iommu_unregister_mm_exit_handler(struct device *dev)
-> +{
-> +	struct iommu_param *dev_param = dev->iommu_param;
-> +
-> +	if (!dev_param || !dev_param->mm_exit)
-> +		return -EINVAL;
-> +
-> +	dev_param->mm_exit = NULL;
-> +	put_device(dev);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unregister_mm_exit_handler);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 09d85f44142a..1b1a16892ac1 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -65,6 +65,8 @@ typedef int (*iommu_dev_fault_handler_t)(struct
-> iommu_fault_event *, void *);
->  /* Request I/O page fault support */
->  #define IOMMU_SVA_FEAT_IOPF		(1 << 1)
-> 
-> +typedef int (*iommu_mm_exit_handler_t)(struct device *dev, int pasid,
-> void *);
-> +
->  struct iommu_domain_geometry {
->  	dma_addr_t aperture_start; /* First address that can be mapped
-> */
->  	dma_addr_t aperture_end;   /* Last address that can be mapped
-> */
-> @@ -424,6 +426,7 @@ struct iommu_param {
->  	unsigned int min_pasid;
->  	unsigned int max_pasid;
->  	struct list_head mm_list;
-> +	iommu_mm_exit_handler_t mm_exit;
->  };
-> 
->  int  iommu_device_register(struct iommu_device *iommu);
-> @@ -941,6 +944,10 @@ extern int iommu_sva_bind_device(struct device
-> *dev, struct mm_struct *mm,
->  				int *pasid, unsigned long flags, void
-> *drvdata);
->  extern int iommu_sva_unbind_device(struct device *dev, int pasid);
->  extern void __iommu_sva_unbind_dev_all(struct device *dev);
-> +extern int iommu_register_mm_exit_handler(struct device *dev,
-> +					  iommu_mm_exit_handler_t
-> handler);
-> +extern int iommu_unregister_mm_exit_handler(struct device *dev);
-> +
->  #else /* CONFIG_IOMMU_SVA */
->  static inline int iommu_sva_device_init(struct device *dev,
->  					unsigned long features,
-> @@ -969,6 +976,17 @@ static inline int iommu_sva_unbind_device(struct
-> device *dev, int pasid)
->  static inline void __iommu_sva_unbind_dev_all(struct device *dev)
->  {
->  }
-> +
-> +static inline int iommu_register_mm_exit_handler(struct device *dev,
-> +						 iommu_mm_exit_handler_t
-> handler)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_unregister_mm_exit_handler(struct device *dev)
-> +{
-> +	return -ENODEV;
-> +}
->  #endif /* CONFIG_IOMMU_SVA */
-> 
->  #endif /* __LINUX_IOMMU_H */
-> --
-> 2.15.1
+>  drivers/iommu/arm-smmu.c | 42 ++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 38 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 9e2f917e16c2..c024f69c1682 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -913,11 +913,15 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>         struct arm_smmu_device *smmu = smmu_domain->smmu;
+>         struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> -       int irq;
+> +       int ret, irq;
+>
+>         if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+>                 return;
+>
+> +       ret = pm_runtime_get_sync(smmu->dev);
+> +       if (ret)
+> +               return;
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+pm_runtime_get_sync() will return 0 if the device was powered off, 1
+if it was already/still powered on or runtime PM is not compiled in,
+or a negative value on error, so shouldn't the test be (ret < 0)?
+
+Moreover, I'm actually wondering if it makes any sense to power up the
+hardware just to program it and power it down again. In a system where
+the IOMMU is located within a power domain, it would cause the IOMMU
+block to lose its state anyway.
+
+Actually, reflecting back on "[PATCH v7 2/6] iommu/arm-smmu: Add
+pm_runtime/sleep ops", perhaps it would make more sense to just
+control the clocks independently of runtime PM? Then, runtime PM could
+be used for real power management, e.g. really powering the block up
+and down, for further power saving.
+
++Generally similar comments for other places in this patch.
+
+> +
+>         /*
+>          * Disable the context bank and free the page tables before freeing
+>          * it.
+> @@ -932,6 +936,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>
+>         free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+>         __arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
+> +
+> +       pm_runtime_put_sync(smmu->dev);
+
+Is there any point in the put being sync here?
+
+[snip]
+
+> @@ -2131,6 +2152,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>         if (err)
+>                 return err;
+>
+> +       platform_set_drvdata(pdev, smmu);
+> +
+> +       pm_runtime_enable(dev);
+
+I suspect this may be a disaster for systems where IOMMUs are located
+inside power domains, because the driver doesn't take care of the
+IOMMU block losing its state on physical power down, as I mentioned in
+my comments above.
+
+Best regards,
+Tomasz
