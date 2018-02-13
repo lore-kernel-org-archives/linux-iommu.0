@@ -1,74 +1,84 @@
-From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
-Subject: Re: [PATCH] headers: untangle kmemleak.h from mm.h
-Date: Tue, 13 Feb 2018 21:09:05 +1100
-Message-ID: <87fu652oce.fsf@concordia.ellerman.id.au>
-References: <a4629db7-194d-3c7c-c8fd-24f61b220a70@infradead.org>
-	<87zi4ev1d2.fsf@concordia.ellerman.id.au>
-	<f119a273-2e86-1b7f-346f-7627ad8b51ed@infradead.org>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v7 4/6] iommu/arm-smmu: Add the device_link
+ between masters and smmu
+Date: Tue, 13 Feb 2018 15:44:16 +0530
+Message-ID: <CAFp+6iFms9ciq5AkGGNobVqhXT3E6xJD3-DahT8i19gp1mLxTw@mail.gmail.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1517999482-17317-5-git-send-email-vivek.gautam@codeaurora.org>
+ <CAAFQd5BQAs9=N27_Z0pJNSrndFY3vFin2KBP44UtiW+tMXy5nQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f119a273-2e86-1b7f-346f-7627ad8b51ed-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Fengguang Wu <fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: linux-s390 <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, John Johansen <john.johansen-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, X86 ML <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-wireless <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dmitry Kasatkin <dmitry.kasatkin-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAAFQd5BQAs9=N27_Z0pJNSrndFY3vFin2KBP44UtiW+tMXy5nQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>"list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> writes:
-
-> On 02/12/2018 04:28 AM, Michael Ellerman wrote:
->> Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> writes:
->> 
->>> From: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
->>>
->>> Currently <linux/slab.h> #includes <linux/kmemleak.h> for no obvious
->>> reason. It looks like it's only a convenience, so remove kmemleak.h
->>> from slab.h and add <linux/kmemleak.h> to any users of kmemleak_*
->>> that don't already #include it.
->>> Also remove <linux/kmemleak.h> from source files that do not use it.
->>>
->>> This is tested on i386 allmodconfig and x86_64 allmodconfig. It
->>> would be good to run it through the 0day bot for other $ARCHes.
->>> I have neither the horsepower nor the storage space for the other
->>> $ARCHes.
->>>
->>> [slab.h is the second most used header file after module.h; kernel.h
->>> is right there with slab.h. There could be some minor error in the
->>> counting due to some #includes having comments after them and I
->>> didn't combine all of those.]
->>>
->>> This is Lingchi patch #1 (death by a thousand cuts, applied to kernel
->>> header files).
->>>
->>> Signed-off-by: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
->> 
->> I threw it at a random selection of configs and so far the only failures
->> I'm seeing are:
->> 
->>   lib/test_firmware.c:134:2: error: implicit declaration of function 'vfree' [-Werror=implicit-function-declaration]                                                                                                          
->>   lib/test_firmware.c:620:25: error: implicit declaration of function 'vzalloc' [-Werror=implicit-function-declaration]
->>   lib/test_firmware.c:620:2: error: implicit declaration of function 'vzalloc' [-Werror=implicit-function-declaration]
->>   security/integrity/digsig.c:146:2: error: implicit declaration of function 'vfree' [-Werror=implicit-function-declaration]
->
-> Both of those source files need to #include <linux/vmalloc.h>.
-
-Yep, I added those and rebuilt. I don't see any more failures that look
-related to your patch.
-
-  http://kisskb.ellerman.id.au/kisskb/head/13399/
-
-
-I haven't gone through the defconfigs I have enabled for a while, so
-it's possible I have some missing but it's still a reasonable cross
-section.
-
-cheers
+SGkgVG9tYXN6LAoKCk9uIFR1ZSwgRmViIDEzLCAyMDE4IGF0IDI6MDEgUE0sIFRvbWFzeiBGaWdh
+IDx0ZmlnYUBjaHJvbWl1bS5vcmc+IHdyb3RlOgo+IEhpIFZpdmVrLAo+Cj4gVGhhbmtzIGZvciB0
+aGUgcGF0Y2guIFBsZWFzZSBzZWUgbXkgY29tbWVudHMgaW5saW5lLgoKVGhhbmtzIGZvciByZXZp
+ZXdpbmcgdGhlIHBhdGNoIHNlcmllcy4KCj4KPiBPbiBXZWQsIEZlYiA3LCAyMDE4IGF0IDc6MzEg
+UE0sIFZpdmVrIEdhdXRhbQo+IDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+
+PiBGcm9tOiBTcmljaGFyYW4gUiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pgo+PiBGaW5h
+bGx5IGFkZCB0aGUgZGV2aWNlIGxpbmsgYmV0d2VlbiB0aGUgbWFzdGVyIGRldmljZSBhbmQKPj4g
+c21tdSwgc28gdGhhdCB0aGUgc21tdSBnZXRzIHJ1bnRpbWUgZW5hYmxlZC9kaXNhYmxlZCBvbmx5
+IHdoZW4gdGhlCj4+IG1hc3RlciBuZWVkcyBpdC4gVGhpcyBpcyBkb25lIGZyb20gYWRkX2Rldmlj
+ZSBjYWxsYmFjayB3aGljaCBnZXRzCj4+IGNhbGxlZCBvbmNlIHdoZW4gdGhlIG1hc3RlciBpcyBh
+ZGRlZCB0byB0aGUgc21tdS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIgPHNyaWNo
+YXJhbkBjb2RlYXVyb3JhLm9yZz4KPj4gU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2aXZl
+ay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+Cj4+IC0tLQo+PiAgZHJpdmVycy9pb21tdS9hcm0tc21t
+dS5jIHwgMTYgKysrKysrKysrKysrKysrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDE2IGluc2VydGlv
+bnMoKykKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZl
+cnMvaW9tbXUvYXJtLXNtbXUuYwo+PiBpbmRleCBjMDI0ZjY5YzE2ODIuLmM3ZTkyNGQ1NTNiZCAx
+MDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCj4+ICsrKyBiL2RyaXZlcnMv
+aW9tbXUvYXJtLXNtbXUuYwo+PiBAQCAtMjE1LDYgKzIxNSw5IEBAIHN0cnVjdCBhcm1fc21tdV9k
+ZXZpY2Ugewo+Pgo+PiAgICAgICAgIC8qIElPTU1VIGNvcmUgY29kZSBoYW5kbGUgKi8KPj4gICAg
+ICAgICBzdHJ1Y3QgaW9tbXVfZGV2aWNlICAgICAgICAgICAgIGlvbW11Owo+PiArCj4+ICsgICAg
+ICAgLyogcnVudGltZSBQTSBsaW5rIHRvIG1hc3RlciAqLwo+PiArICAgICAgIHN0cnVjdCBkZXZp
+Y2VfbGluayAqbGluazsKPj4gIH07Cj4+Cj4+ICBlbnVtIGFybV9zbW11X2NvbnRleHRfZm10IHsK
+Pj4gQEAgLTE0MjUsNiArMTQyOCwxNyBAQCBzdGF0aWMgaW50IGFybV9zbW11X2FkZF9kZXZpY2Uo
+c3RydWN0IGRldmljZSAqZGV2KQo+Pgo+PiAgICAgICAgIHBtX3J1bnRpbWVfcHV0X3N5bmMoc21t
+dS0+ZGV2KTsKPj4KPj4gKyAgICAgICAvKgo+PiArICAgICAgICAqIEVzdGFibGlzaCB0aGUgbGlu
+ayBiZXR3ZWVuIHNtbXUgYW5kIG1hc3Rlciwgc28gdGhhdCB0aGUKPj4gKyAgICAgICAgKiBzbW11
+IGdldHMgcnVudGltZSBlbmFibGVkL2Rpc2FibGVkIGFzIHBlciB0aGUgbWFzdGVyJ3MKPj4gKyAg
+ICAgICAgKiBuZWVkcy4KPj4gKyAgICAgICAgKi8KPj4gKyAgICAgICBzbW11LT5saW5rID0gZGV2
+aWNlX2xpbmtfYWRkKGRldiwgc21tdS0+ZGV2LCBETF9GTEFHX1BNX1JVTlRJTUUpOwo+PiArICAg
+ICAgIGlmICghc21tdS0+bGluaykKPj4gKyAgICAgICAgICAgICAgIGRldl93YXJuKHNtbXUtPmRl
+diwKPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICJVbmFibGUgdG8gY3JlYXRlIGRldmljZSBs
+aW5rIGJldHdlZW4gJXMgYW5kICVzXG4iLAo+PiArICAgICAgICAgICAgICAgICAgICAgICAgZGV2
+X25hbWUoc21tdS0+ZGV2KSwgZGV2X25hbWUoZGV2KSk7Cj4KPiBIb3cgbGlrZWx5IGl0IGlzIHRo
+YXQgdGhlIG1hc3RlciBjYW4gd29yayBub3JtYWxseSBldmVuIGlmIHRoZSBsaW5rCj4gYWRkIGZh
+aWxzPyBQZXJoYXBzIHdlIHNob3VsZCBqdXN0IHJldHVybiBhbiBlcnJvciBoZXJlPwoKUmlnaHQu
+IFdlIGFyZSBhc3N1bWluZyB0aGF0IHRoZSBwb3dlciBpcyBoYW5kbGVkIGZvciBtb3N0IG9mIHRo
+ZQpzbW11IG9wZXJhdGlvbnMsIGFmdGVyIHdlIGFkZCB0aGUgbWFzdGVyIHdpdGggc21tdSwgYmFz
+ZWQgb24gdGhlIGZhY3QKdGhhdCB0aGUgZGV2aWNlIGxpbmsgaXMgc3VjY2Vzc2Z1bC4KV2Ugc2hv
+dWxkIHJldHVybiBlcnJvciBjb2RlIGhlcmUuIFdpbGwgbWFrZSB0aGUgbmVjZXNzYXJ5IGNoYW5n
+ZS4KCj4KPj4gKwo+PiAgICAgICAgIHJldHVybiAwOwo+Pgo+PiAgb3V0X3JwbV9wdXQ6Cj4+IEBA
+IC0xNDQ5LDYgKzE0NjMsOCBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV9yZW1vdmVfZGV2aWNlKHN0
+cnVjdCBkZXZpY2UgKmRldikKPj4gICAgICAgICBjZmcgID0gZndzcGVjLT5pb21tdV9wcml2Owo+
+PiAgICAgICAgIHNtbXUgPSBjZmctPnNtbXU7Cj4+Cj4+ICsgICAgICAgZGV2aWNlX2xpbmtfZGVs
+KHNtbXUtPmxpbmspOwo+Cj4gV2UgYWxsb3dlZCBzbW11LT5saW5rIGluIGFybV9zbW11X2FkZF9k
+ZXZpY2UoKSwgYnV0IGhlcmUgd2UgZG9uJ3QKPiBjaGVjayBpdC4gTG9va2luZyBhdCB0aGUgY29k
+ZSwgZGV2aWNlX2xpbmtfZGVsKCkgZG9lc24ndCBzZWVtIHRvIGNoZWNrCj4gZWl0aGVyLgo+Cj4g
+Tm90ZSB0aGF0IHRoaXMgcHJvYmxlbSB3b3VsZCBnbyBhd2F5IGlmIHdlIGZhaWwgYWRkX2Rldmlj
+ZSBvbgo+IGRldmljZV9saW5rX2FkZCgpIGZhaWx1cmUsIGFzIEkgc3VnZ2VzdGVkIGFib3ZlLCBz
+byBubyBjaGFuZ2Ugd291bGQgYmUKPiBuZWNlc3NhcnkuCgpTdXJlLiBBZnRlciBtYWtpbmcgdGhl
+IGFib3ZlIGNoYW5nZSwgdGhpcyBzaG91bGQgYWxzbyBiZSBoYW5kbGVkLgoKQmVzdCByZWdhcmRz
+ClZpdmVrCgo+Cj4gQmVzdCByZWdhcmRzLAo+IFRvbWFzegoKCgotLSAKUVVBTENPTU0gSU5ESUEs
+IG9uIGJlaGFsZiBvZiBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBhIG1lbWJl
+cgpvZiBDb2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVkIGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBt
+YWlsaW5nIGxpc3QKRnJlZWRyZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
+LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
