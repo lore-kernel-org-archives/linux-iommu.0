@@ -1,35 +1,54 @@
-From: Meelis Roos <mroos@linux.ee>
-Subject: Re: pata-macio WARNING at dmam_alloc_coherent+0xec/0x110
-Date: Tue, 13 Feb 2018 18:46:20 +0200 (EET)
-Message-ID: <alpine.LRH.2.21.1802131845580.21385@math.ut.ee>
-References: <alpine.LRH.2.21.1802122246230.9153@math.ut.ee> <20180213145120.GA14657@lst.de>
+From: Dmitry Safonov <dima@arista.com>
+Subject: Re: [PATCHv2 4/6] iommu/intel: Handle DMAR faults on workqueue
+Date: Tue, 13 Feb 2018 17:38:53 +0000
+Message-ID: <1518543533.2849.25.camel@arista.com>
+References: <20180212164825.22421-1-dima@arista.com>
+         <20180212164825.22421-5-dima@arista.com>
+         <20180213163542.tdqhazwfjgqk3zuu@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180213145120.GA14657@lst.de>
+In-Reply-To: <20180213163542.tdqhazwfjgqk3zuu@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, Linux Kernel list <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: linux-kernel@vger.kernel.org, 0x7f454c46@gmail.com, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-> Does this fix your warning?
+On Tue, 2018-02-13 at 17:35 +0100, Joerg Roedel wrote:
+> On Mon, Feb 12, 2018 at 04:48:23PM +0000, Dmitry Safonov wrote:
+> > dmar_fault() reports/handles/cleans DMAR faults in a cycle one-by-
+> > one.
+> > The nuisance is that it's set as a irq handler and runs with
+> > disabled
+> > interrupts - which works OK if you have only a couple of DMAR
+> > faults,
+> > but becomes a problem if your intel iommu has a plenty of mappings.
 > 
-> diff --git a/drivers/macintosh/macio_asic.c b/drivers/macintosh/macio_asic.c
-> index 62f541f968f6..07074820a167 100644
-> --- a/drivers/macintosh/macio_asic.c
-> +++ b/drivers/macintosh/macio_asic.c
-> @@ -375,6 +375,7 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
->  	dev->ofdev.dev.of_node = np;
->  	dev->ofdev.archdata.dma_mask = 0xffffffffUL;
->  	dev->ofdev.dev.dma_mask = &dev->ofdev.archdata.dma_mask;
-> +	dev->ofdev.dev.coherent_dma_mask = dev->ofdev.archdata.dma_mask;
->  	dev->ofdev.dev.parent = parent;
->  	dev->ofdev.dev.bus = &macio_bus_type;
->  	dev->ofdev.dev.release = macio_release_dev;
+> I don't think that a work-queue is the right solution here, it adds a
+> long delay until the log is processed. During that delay, and with
+> high
+> fault rates the error log will overflow during that delay.
+> 
+> Here is what I think you should do instead to fix the soft-lockups:
+> 
+> First, unmask the fault reporting irq so that you will get subsequent
+> irqs. Then:
+> 
+> 	* For Primary Fault Reporting just cycle once through all
+> 	  supported fault recording registers.
+> 
+> 	* For Advanced Fault Reporting, read start and end pointer of
+> 	  the log and process all entries.
+> 
+> After that return from the fault handler and let the next irq handle
+> additional faults that might have been recorded while the previous
+> handler was running.
 
-Yes, it does - thank you!
+Ok, will re-do this way, thanks.
 
-Tested-by: Meelis Roos <mroos@linux.ee>
+> And of course, ratelimiting the fault printouts is always a good
+> idea.
 
 -- 
-Meelis Roos (mroos@linux.ee)
+            Dima
