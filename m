@@ -1,40 +1,39 @@
-From: Mathieu Malaterre <malat@debian.org>
-Subject: Re: pata-macio WARNING at dmam_alloc_coherent+0xec/0x110
-Date: Tue, 13 Feb 2018 16:22:50 +0100
-Message-ID: <CA+7wUsy80+5XJnbt5yXe-GYjD6V7Ea_wrAxu0Gwwh2kLs2fibQ@mail.gmail.com>
-References: <alpine.LRH.2.21.1802122246230.9153@math.ut.ee> <20180213145120.GA14657@lst.de>
+From: "Hook, Gary" <ghook@amd.com>
+Subject: Re: [PATCH] iommu/amd - Use dev_err to send events to the system log
+Date: Tue, 13 Feb 2018 10:47:55 -0500
+Message-ID: <325d7406-e01b-f7a1-3da6-390b0cf9bc94@amd.com>
+References: <151736066756.21649.4739957712713863861.stgit@sosam4>
+ <20180213132216.gyhndywyu23cdzbv@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180213145120.GA14657@lst.de>
+In-Reply-To: <20180213132216.gyhndywyu23cdzbv@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Meelis Roos <mroos@linux.ee>, iommu@lists.linux-foundation.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux Kernel list <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>, Gary R Hook <gary.hook@amd.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 2/13/2018 8:22 AM, Joerg Roedel wrote:
+> On Tue, Jan 30, 2018 at 07:04:27PM -0600, Gary R Hook wrote:
+>> +		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+>> +			"address=0x%016llx flags=0x%04x]\n",
+>> +			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>> +			address, flags);
+> 
+> That prints the PCI device-name of the IOMMU in front of the message. Is
+> that actually helpful?
+> 
+> If at all, we should print the name of the iommu-device in front of the
+> message, not the PCI device that hosts the IOMMU.
 
-On Tue, Feb 13, 2018 at 3:51 PM, Christoph Hellwig <hch@lst.de> wrote:
-> Does this fix your warning?
->
-> diff --git a/drivers/macintosh/macio_asic.c b/drivers/macintosh/macio_asic.c
-> index 62f541f968f6..07074820a167 100644
-> --- a/drivers/macintosh/macio_asic.c
-> +++ b/drivers/macintosh/macio_asic.c
-> @@ -375,6 +375,7 @@ static struct macio_dev * macio_add_one_device(struct macio_chip *chip,
->         dev->ofdev.dev.of_node = np;
->         dev->ofdev.archdata.dma_mask = 0xffffffffUL;
->         dev->ofdev.dev.dma_mask = &dev->ofdev.archdata.dma_mask;
-> +       dev->ofdev.dev.coherent_dma_mask = dev->ofdev.archdata.dma_mask;
->         dev->ofdev.dev.parent = parent;
->         dev->ofdev.dev.bus = &macio_bus_type;
->         dev->ofdev.dev.release = macio_release_dev;
+so (e.g.):
 
-Indeed, Thanks much! If needed:
+         dev_err(&iommu->dev->dev, "ILLEGAL...
 
-Tested-by: Mathieu Malaterre <malat@debian.org>
+?
 
-System: Mac Mini G4
+I'm okay with that. It does make more sense.
 
-ref:
-https://www.mail-archive.com/linuxppc-dev@lists.ozlabs.org/msg128662.html
+Gary
