@@ -1,89 +1,22 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v7 1/6] base: power: runtime: Export
- pm_runtime_get/put_suppliers
-Date: Tue, 13 Feb 2018 13:37:38 +0000
-Message-ID: <d6aa408f-6458-7a40-51ea-409ea9663af2@arm.com>
-References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
- <1517999482-17317-2-git-send-email-vivek.gautam@codeaurora.org>
- <CAAFQd5BmroRf-C8dQkvTKHWK1psGnNi1t7g-q=Xce6KjrGTsdw@mail.gmail.com>
- <65d707c0-76cc-d59e-ff18-1fdd89306900@arm.com>
- <CAAFQd5DNzGYnTRuc2hDr1osQ2=6ruM0wQqV8svP=a10hxTVOGQ@mail.gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v4] iommu/mediatek: Move attach_device after iommu-group
+ is ready for M4Uv1
+Date: Tue, 13 Feb 2018 14:41:28 +0100
+Message-ID: <20180213134128.nki33e2yljv7scis@8bytes.org>
+References: <1516950688-28405-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <CAAFQd5DNzGYnTRuc2hDr1osQ2=6ruM0wQqV8svP=a10hxTVOGQ@mail.gmail.com>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux-pm@vger.kernel.org, David Airlie <airlied@linux.ie>, Will Deacon <will.deacon@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, dri-devel <dri-devel@lists.freedesktop.org>, linux-kernel@vger.kernel.org, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Greg KH <gregkh@linuxfoundation.org>, freedreno@lists.freedesktop.org, sboyd@codeaurora.org, linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1516950688-28405-1-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Alex Williamson <alex.williamson@redhat.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, Bibby Hsieh <bibby.hsieh@mediatek.com>, youlin.pei@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTMvMDIvMTggMTI6NTQsIFRvbWFzeiBGaWdhIHdyb3RlOgo+IE9uIFR1ZSwgRmViIDEzLCAy
-MDE4IGF0IDk6MDAgUE0sIFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+IHdyb3Rl
-Ogo+PiBPbiAxMy8wMi8xOCAwNzo0NCwgVG9tYXN6IEZpZ2Egd3JvdGU6Cj4+Pgo+Pj4gSGkgVml2
-ZWssCj4+Pgo+Pj4gT24gV2VkLCBGZWIgNywgMjAxOCBhdCA3OjMxIFBNLCBWaXZlayBHYXV0YW0K
-Pj4+IDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+Pj4+Cj4+Pj4gVGhlIGRl
-dmljZSBsaW5rIGFsbG93cyB0aGUgcG0gZnJhbWV3b3JrIHRvIHRpZSB0aGUgc3VwcGxpZXIgYW5k
-Cj4+Pj4gY29uc3VtZXIuIFNvLCB3aGVuZXZlciB0aGUgY29uc3VtZXIgaXMgcG93ZXJlZC1vbiB0
-aGUgc3VwcGxpZXIKPj4+PiBpcyBwb3dlcmVkLW9uIGZpcnN0Lgo+Pj4+Cj4+Pj4gVGhlcmUgYXJl
-IGhvd2V2ZXIgY2FzZXMgaW4gd2hpY2ggdGhlIGNvbnN1bWVyIHdhbnRzIHRvIHBvd2VyLW9uCj4+
-Pj4gdGhlIHN1cHBsaWVyLCBidXQgbm90IGl0c2VsZi4KPj4+PiBFLmcuLCBBIEdyYXBoaWNzIG9y
-IG11bHRpbWVkaWEgZHJpdmVyIHdhbnRzIHRvIHBvd2VyLW9uIHRoZSBTTU1VCj4+Pj4gdG8gdW5t
-YXAgYSBidWZmZXIgYW5kIGZpbmlzaCB0aGUgVExCIG9wZXJhdGlvbnMgd2l0aG91dCBwb3dlcmlu
-Zwo+Pj4+IG9uIGl0c2VsZi4KPj4+Cj4+Pgo+Pj4gVGhpcyBzb3VuZHMgc3RyYW5nZSB0byBtZS4g
-SWYgdGhlIFNNTVUgaXMgcG93ZXJlZCBkb3duLCB3b3VsZG4ndCB0aGUKPj4+IFRMQiBsb3NlIGl0
-cyBjb250ZW50cyBhcyB3ZWxsIChhbmQgc28gbm8gZmx1c2hpbmcgbmVlZGVkKT8KPj4KPj4KPj4g
-RGVwZW5kcyBvbiBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzIC0gaWYgcnVudGltZSBQTSBpcyBhY3R1
-YWxseSBpbXBsZW1lbnRlZAo+PiB2aWEgZXh0ZXJuYWwgY2xvY2sgZ2F0aW5nIChpbiB0aGUgYWJz
-ZW5jZSBvZiBmaW5lLWdyYWluZWQgcG93ZXIgZG9tYWlucyksCj4+IHRoZW4gInN1c3BlbmRlZCIg
-VExCcyBtaWdodCBib3RoIHJldGFpbiBzdGF0ZSBhbmQgbm90IHJlY2VpdmUgaW52YWxpZGF0aW9u
-Cj4+IHJlcXVlc3RzLCB3aGljaCBpcyByZWFsbHkgdGhlIHdvcnN0IGNhc2UuCj4gCj4gQWdyZWVk
-LiBUaGF0J3Mgd2h5IGluICJbUEFUQ0ggdjcgMy82XSBpb21tdS9hcm0tc21tdTogSW52b2tlCj4g
-cG1fcnVudGltZSBkdXJpbmcgcHJvYmUsIGFkZC9yZW1vdmUgZGV2aWNlIiBJIGFjdHVhbGx5IHN1
-Z2dlc3RlZAo+IG1hbmFnaW5nIGNsb2NrcyBzZXBhcmF0ZWx5IGZyb20gcnVudGltZSBQTS4gQXQg
-bGVhc3QgdW50aWwgcnVudGltZSBQTQo+IGZyYW1ld29yayBhcnJpdmVzIGF0IGEgc3RhdGUsIHdo
-ZXJlIG11bHRpcGxlIHBvd2VyIHN0YXRlcyBjYW4gYmUKPiBtYW5hZ2VkLCBpLmUuIGZ1bGwgcG93
-ZXIgc3RhdGUsIGNsb2NrLWdhdGVkIHN0YXRlLCBkb21haW4tb2ZmIHN0YXRlLgo+IChJIHRoaW5r
-IEkgbWlnaHQgaGF2ZSBzZWVuIHNvbWUgb25nb2luZyB3b3JrIG9uIHRoaXMgb24gTFdOIHRob3Vn
-aC4uLikKPiAKPj4KPj4+IE90aGVyIHRoYW4gdGhhdCwgd2hhdCBraW5kIG9mIGhhcmR3YXJlIG9w
-ZXJhdGlvbnMgd291bGQgYmUgbmVlZGVkCj4+PiBiZXNpZGVzIGp1c3QgdXBkYXRpbmcgdGhlIHBh
-Z2UgdGFibGVzIGZyb20gdGhlIENQVT8KPj4KPj4KPj4gRG9tYWluIGF0dGFjaC9kZXRhY2ggYWxz
-byByZXF1aXJlIHVwZGF0aW5nIFNNTVUgaGFyZHdhcmUgc3RhdGUgKGFuZCBwb3NzaWJseQo+PiBU
-TEIgbWFpbnRlbmFuY2UpLCBidXQgZG9uJ3QgbG9naWNhbGx5IHJlcXVpcmUgdGhlIG1hc3RlciBk
-ZXZpY2UgaXRzZWxmIHRvIGJlCj4+IGFjdGl2ZSBhdCB0aGUgdGltZS4KPiAKPiBXb3VsZG4ndCB0
-aGlzIGhhcmR3YXJlIHN0YXRlIG5lZWQgdG8gYmUgcmVpbml0aWFsaXplZCBhbnl3YXkgYWZ0ZXIK
-PiByZXNwZWN0aXZlIHBvd2VyIGRvbWFpbiBwb3dlciBjeWNsZXM/IChJbiBvdGhlciB3b3Jkcywg
-aGFyZHdhcmUgd291bGQKPiBvbmx5IG5lZWQgcHJvZ3JhbW1pbmcgaWYgaXQncyBwb3dlcmVkIG9u
-IGF0IHRoZSBtb21lbnQuKQoKWWVzLCBpZiB0aGUgZW50aXJlIFNNTVUgd2FzIGZ1bGx5IHBvd2Vy
-ZWQgZG93biBiZWNhdXNlIGFsbCBtYXN0ZXJzIHdlcmUgCmluYWN0aXZlLCB0aGVuIGFsbCB0aGF0
-IHNob3VsZCBuZWVkIHRvIGJlIGRvbmUgaXMgdG8gdXBkYXRlIHRoZSBzb2Z0d2FyZSAKc2hhZG93
-IHN0YXRlIGluIHRoZSBleHBlY3RhdGlvbiB0aGF0IGFybV9zbW11X3Jlc2V0KCkgd291bGQgcmUt
-c3luYyBpdCAKdXBvbiBUQ1UgcG93ZXJ1cC4gSWYgYXQgbGVhc3Qgc29tZSBwYXJ0IG9mIHRoZSBp
-bnRlcm5hbCBsb2dpYyByZW1haW5zIAphY3RpdmUsIHRob3VnaCwgdGhlbiB5b3UgbWF5IG9yIG1h
-eSBub3QgbmVlZCB0byBmaWRkbGUgd2l0aCB6ZXJvIG9yIG1vcmUgCmNsb2NrcyBhbmQvb3IgcG93
-ZXIgZG9tYWlucyAoZGVwZW5kaW5nIG9uIG1pY3JvYXJjaGl0ZWN0dXJlIGFuZCAKaW50ZWdyYXRp
-b24pIGluIG9yZGVyIHRvIGJlIHN1cmUgdGhhdCBldmVyeXRoaW5nIGZyb20gdGhlIHByb2dyYW1t
-aW5nIApzbGF2ZSBpbnRlcmZhY2UgdGhyb3VnaCB0byB3aGVyZXZlciB0aGF0IHN0YXRlIGlzIGtl
-cHQgd29ya3MgY29ycmVjdGx5IApzbyB0aGF0IGl0IGNhbiBiZSBjaGFuZ2VkLgoKVGhlIG1haW4g
-bW90aXZhdGlvbiBoZXJlIGlzIHRoYXQgdGhlIFF1YWxjb21tIFNNTVUgbWljcm9hcmNoaXRlY3R1
-cmUgCmFwcGFyZW50bHkgYWxsb3dzIHRoZSBwcm9ncmFtbWluZyBpbnRlcmZhY2UgdG8gYmUgc2h1
-dCBkb3duIHNlcGFyYXRlbHkgCmZyb20gdGhlIFRDVSBjb3JlIChjb250ZXh0IGJhbmtzLCBwYWdl
-IHRhYmxlIHdhbGtlciwgZXRjLiksIGFuZCB0aGV5IGdldCAKYW4gYXBwcmVjaWFibGUgcG93ZXIg
-c2F2aW5nIGZyb20gZG9pbmcgc28uIFRoaXMgaXMgZGlmZmVyZW50IGZyb20sIHNheSwgCnRoZSBB
-cm0gTHRkLiBpbXBsZW1lbnRhdGlvbnMsIHdoZXJlIHRoZSBlbnRpcmUgVENVIGlzIGEgc2luZ2xl
-IApjbG9jay9wb3dlciBkb21haW4gaW50ZXJuYWxseSAoYWx0aG91Z2ggeW91IGNvdWxkIG1heWJl
-IHN0aWxsIGdhdGUgdGhlIApleHRlcm5hbCBBUEIgaW50ZXJmYWNlIGNsb2NrKS4KCkFzIHRoZSBw
-cmV2aW91cyBkaXNjdXNzaW9ucyBoYXZlIHNob3duLCB0aGlzIGlzIHJlYWxseSwgcmVhbGx5IGhh
-cmQgdG8gCmRvIHByb3Blcmx5IGluIGEgZ2VuZXJpYyBtYW5uZXIuCgpSb2Jpbi4KX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
-bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On Fri, Jan 26, 2018 at 03:11:28PM +0800, Yong Wu wrote:
+> ---
+>  drivers/iommu/mtk_iommu_v1.c | 54 +++++++++++++++++---------------------------
+>  1 file changed, 21 insertions(+), 33 deletions(-)
+
+Applied, thanks.
