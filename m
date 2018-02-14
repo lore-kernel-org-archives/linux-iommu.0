@@ -1,79 +1,159 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH 01/37] iommu: Introduce Shared Virtual Addressing API
-Date: Tue, 13 Feb 2018 23:43:08 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191003B1B@SHSMSX101.ccr.corp.intel.com>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
- <20180212183352.22730-2-jean-philippe.brucker@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191002823@SHSMSX101.ccr.corp.intel.com>
- <b3c190e7-1a33-971e-b86c-a9725118ba05@arm.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH] headers: untangle kmemleak.h from mm.h
+Date: Tue, 13 Feb 2018 16:48:44 -0800
+Message-ID: <0e4fbe75-7757-6129-b937-1e849ad8946a@infradead.org>
+References: <a4629db7-194d-3c7c-c8fd-24f61b220a70@infradead.org>
+ <20180212072727.saupl35jvwex6hbe@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <b3c190e7-1a33-971e-b86c-a9725118ba05@arm.com>
+Content-Type: multipart/mixed;
+ boundary="------------F0B99163494C332BC7F40931"
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20180212072727.saupl35jvwex6hbe@gmail.com>
 Content-Language: en-US
-Sender: linux-acpi-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>, Catalin Marinas <Catalin.Marinas@arm.com>, "xuzaibo@huawei.com" <xuzaibo@huawei.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "Raj, Ashok" <ashok.raj@intel.com>, "bharatku@xilinx.com" <bharatku@xilinx.com>, "rfranz@cavium.com" <rfranz@cavium.com>, "lenb@kernel.org" <lenb@kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "shunyong.yang@hxt-semitech.com" <shunyong.yang@hxt-semitech.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>, "rjw@rjwysocki.net" <rjw@rjwysocki.net>, Sudeep Holla <Sudeep.Holla@arm.com>, "christian.koenig@amd.com" <christian.koenig@amd.com>, Jo
+Sender: owner-linux-mm@kvack.org
+To: Ingo Molnar <mingo@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Fengguang Wu <fengguang.wu@intel.com>, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-s390 <linux-s390@vger.kernel.org>, sparclinux@vger.kernel.org, X86 ML <x86@kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, linux-wireless <linux-wireless@vger.kernel.org>, virtualization@lists.linux-foundation.org, John Johansen <john.johansen@canonical.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker
-> Sent: Tuesday, February 13, 2018 8:40 PM
-> 
-> 
-> [...]
-> >> +
-> >> +/**
-> >> + * iommu_sva_device_init() - Initialize Shared Virtual Addressing for a
-> >> device
-> >> + * @dev: the device
-> >> + * @features: bitmask of features that need to be initialized
-> >> + * @max_pasid: max PASID value supported by the device
-> >> + *
-> >> + * Users of the bind()/unbind() API must call this function to initialize all
-> >> + * features required for SVA.
-> >> + *
-> >> + * - If the device should support multiple address spaces (e.g. PCI
-> PASID),
-> >> + *   IOMMU_SVA_FEAT_PASID must be requested.
-> >
-> > I think it is by default assumed when using this API, based on definition of
-> > SVA. Can you elaborate the situation where this flag can be cleared?
-> 
-> When passing a device to userspace, you could also share its non-pasid
-> address space with the process. It requires a new domain type so is left
-> as a TODO in patch 2/37. I did get requests for this feature, though I
-> think it was mostly for prototyping. I guess I could remove the flag, and
-> reintroduce it as IOMMU_SVA_FEAT_NO_PASID later on.
+This is a multi-part message in MIME format.
+--------------F0B99163494C332BC7F40931
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-sorry I still didn't get the definition of non-pasid address space. 
-Did you mean the GPA/IOVA address space and no_pasid implies
-actually some default PASID associated?
-
+On 02/11/2018 11:27 PM, Ingo Molnar wrote:
 > 
-> [...]
-> >> +	ret = domain->ops->sva_device_init(dev, features, &min_pasid,
-> >> +					   &max_pasid);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	/* FIXME: racy. Next version should have a mutex (same as fault
-> >> handler) */
-> >> +	dev_param->sva_features = features;
-> >> +	dev_param->min_pasid = min_pasid;
-> >> +	dev_param->max_pasid = max_pasid;
-> >
-> > what's the point of min_pasid here?
+> * Randy Dunlap <rdunlap@infradead.org> wrote:
 > 
-> Arm SMMUv3 uses entry 0 of the PASID table for the default (non-pasid)
-> context, so it needs to set min_pasid to 1. AMD IOMMU recently added a
-> similar feature (GIoSup), if I understood correctly.
+>> From: Randy Dunlap <rdunlap@infradead.org>
+>>
+>> Currently <linux/slab.h> #includes <linux/kmemleak.h> for no obvious
+>> reason. It looks like it's only a convenience, so remove kmemleak.h
+>> from slab.h and add <linux/kmemleak.h> to any users of kmemleak_*
+>> that don't already #include it.
+>> Also remove <linux/kmemleak.h> from source files that do not use it.
+>>
+>> This is tested on i386 allmodconfig and x86_64 allmodconfig. It
+>> would be good to run it through the 0day bot for other $ARCHes.
+>> I have neither the horsepower nor the storage space for the other
+>> $ARCHes.
+>>
+>> [slab.h is the second most used header file after module.h; kernel.h
+>> is right there with slab.h. There could be some minor error in the
+>> counting due to some #includes having comments after them and I
+>> didn't combine all of those.]
+>>
+>> This is Lingchi patch #1 (death by a thousand cuts, applied to kernel
+>> header files).
+>>
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 > 
+> Nice find:
+> 
+> Reviewed-by: Ingo Molnar <mingo@kernel.org>
+> 
+> I agree that it needs to go through 0-day to find any hidden dependencies we might 
+> have grown due to this.
 
-just for such purpose maybe we should just define a reserved_pasid
-otherwise there will be some waste if an implementation allows it
-non-zero.
+Andrew,
 
-Thanks
-Kevin
+This patch has mostly survived both 0day and ozlabs multi-arch testing with
+2 build errors being reported by both of them.  I have posted patches for
+those separately. (and are attached here)
+
+other-patch-1:
+lkml.kernel.org/r/5664ced1-a0cd-7e4e-71b6-9c3a97d68927@infradead.org
+"lib/test_firmware: add header file to prevent build errors"
+
+other-patch-2:
+lkml.kernel.org/r/b3b7eebb-0e9f-f175-94a8-379c5ddcaa86@infradead.org
+"integrity/security: fix digsig.c build error"
+
+Will you see that these are merged or do you want me to repost them?
+
+thanks,
+-- 
+~Randy
+
+--------------F0B99163494C332BC7F40931
+Content-Type: text/x-patch;
+ name="integrity_security_digsig_add_header.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="integrity_security_digsig_add_header.patch"
+
+From: Randy Dunlap <rdunlap@infradead.org>
+
+security/integrity/digsig.c has build errors on some $ARCH due to a
+missing header file, so add it.
+
+  security/integrity/digsig.c:146:2: error: implicit declaration of function 'vfree' [-Werror=implicit-function-declaration]
+
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Mimi Zohar <zohar@linux.vnet.ibm.com>
+Cc: linux-integrity@vger.kernel.org
+Link: http://kisskb.ellerman.id.au/kisskb/head/13396/
+---
+ security/integrity/digsig.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- lnx-416-rc1.orig/security/integrity/digsig.c
++++ lnx-416-rc1/security/integrity/digsig.c
+@@ -18,6 +18,7 @@
+ #include <linux/cred.h>
+ #include <linux/key-type.h>
+ #include <linux/digsig.h>
++#include <linux/vmalloc.h>
+ #include <crypto/public_key.h>
+ #include <keys/system_keyring.h>
  
+
+
+
+
+--------------F0B99163494C332BC7F40931
+Content-Type: text/x-patch;
+ name="lib_test_firmware_add_header_file.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="lib_test_firmware_add_header_file.patch"
+
+From: Randy Dunlap <rdunlap@infradead.org>
+
+lib/test_firmware.c has build errors on some $ARCH due to a
+missing header file, so add it.
+
+  lib/test_firmware.c:134:2: error: implicit declaration of function 'vfree' [-Werror=implicit-function-declaration]
+  lib/test_firmware.c:620:25: error: implicit declaration of function 'vzalloc' [-Werror=implicit-function-declaration]
+
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Wei Yongjun <weiyongjun1@huawei.com>
+Cc: Luis R. Rodriguez <mcgrof@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: http://kisskb.ellerman.id.au/kisskb/head/13396/
+---
+ lib/test_firmware.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- lnx-416-rc1.orig/lib/test_firmware.c
++++ lnx-416-rc1/lib/test_firmware.c
+@@ -21,6 +21,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/delay.h>
+ #include <linux/kthread.h>
++#include <linux/vfree.h>
+ 
+ #define TEST_FIRMWARE_NAME	"test-firmware.bin"
+ #define TEST_FIRMWARE_NUM_REQS	4
+
+
+
+
+--------------F0B99163494C332BC7F40931--
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
