@@ -1,39 +1,57 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH 4/4] vfio: Allow type-1 IOMMU instantiation with a virtio-iommu
-Date: Wed, 14 Feb 2018 14:53:40 +0000
-Message-ID: <20180214145340.1223-5-jean-philippe.brucker@arm.com>
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
-Return-path: <virtio-dev-return-3216-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
-To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, kvmarm@lists.cs.columbia.edu
-Cc: joro@8bytes.org, alex.williamson@redhat.com, mst@redhat.com, jasowang@redhat.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, eric.auger@redhat.com, eric.auger.pro@gmail.com, peterx@redhat.com, bharat.bhushan@nxp.com, tnowicki@caviumnetworks.com, jayachandran.nair@cavium.com, kevin.tian@intel.com, jintack@cs.columbia.edu
+From: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd - Use dev_err to send events to the system log
+Date: Wed, 14 Feb 2018 09:58:31 -0500
+Message-ID: <0c024682-2621-44a3-3988-787c00aee1c1@amd.com>
+References: <151736066756.21649.4739957712713863861.stgit@sosam4>
+	<20180213132216.gyhndywyu23cdzbv@8bytes.org>
+	<325d7406-e01b-f7a1-3da6-390b0cf9bc94@amd.com>
+	<20180213160018.fg7baclgu5o5rgxc@8bytes.org>
+	<f7e7e2c2-c83d-9c4a-f3ac-5c351576b567@amd.com>
+	<20180214114957.GI16484@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180214114957.GI16484-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When enabling both VFIO and VIRTIO_IOMMU modules, automatically select
-VFIO_IOMMU_TYPE1 as well.
+On 2/14/2018 6:49 AM, Joerg Roedel wrote:
+> On Tue, Feb 13, 2018 at 02:24:56PM -0500, Hook, Gary wrote:
+>> Without actually running a driver and getting some debug info, I'll just
+>> say that my example compiled, the amd_iommu structure points to a pci_dev
+>> which contains a device, and the two possibilities are likely equivalent.
+>>
+>> I'll vet that, of course, but working under the assumption that they are
+>> equivalent, the question becomes, do you have a preference?
+> 
+> They are not equivalent, your version points to the pci_dev containing
+> the IOMMU, my version points to the (virtual) iommu-device for that
+> particular iommu in the kernel.
+> 
+> So the difference in the prefix is:
+> 
+> 	your version: '0000:00:00.2:'
+> 
+> 	vs. my version: 'ivhd0:'
+> 
+> The latter is the better prefix, because it points to the iommu. A
+> pci_dev can contain more than one iommu, so that prefix is not specific
+> enough. I know that there is currently no hardware implementing multiple
+> iommus on one pci_dev, but it is allowed according to the spec.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- drivers/vfio/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Excellent; specificity is good. I'll crank a new version using that
+device.
 
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index c84333eb5eb5..65a1e691110c 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -21,7 +21,7 @@ config VFIO_VIRQFD
- menuconfig VFIO
- 	tristate "VFIO Non-Privileged userspace driver framework"
- 	depends on IOMMU_API
--	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM_SMMU || ARM_SMMU_V3)
-+	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM_SMMU || ARM_SMMU_V3 || VIRTIO_IOMMU)
- 	select ANON_INODES
- 	help
- 	  VFIO provides a framework for secure userspace device drivers.
--- 
-2.16.1
+Thank you!
