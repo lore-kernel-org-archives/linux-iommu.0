@@ -1,24 +1,18 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v7 6/6] drm/msm: iommu: Replace runtime calls with runtime
-	suppliers
-Date: Wed, 14 Feb 2018 16:03:46 +0530
-Message-ID: <CAFp+6iEW0faeHDfzN_F1bRrHGcVo3sPCk4HSY=t9dnEvHkDkYw@mail.gmail.com>
-References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
-	<1517999482-17317-7-git-send-email-vivek.gautam@codeaurora.org>
-	<CAAFQd5AjopiX6fDgD+mO+-+d0yj-swEnVCNvccWRBSMO+XVJkA@mail.gmail.com>
-	<CAF6AEGs8qcRTvz6srSfc39ybZrPYMVg2w6qkaO2AdWL1GD4mQw@mail.gmail.com>
-	<CAAFQd5BKRumpEfAKNF_RKS-ZZ8D671DfOz4vB2+w1SV3aG9NxQ@mail.gmail.com>
-	<CAF6AEGuNZJKtwGZ5mLfqNND2jtU+HYM11UONfAtVTzoM0QVpdg@mail.gmail.com>
-	<CAAFQd5BZJ1G0RG32hYErNzPRvisBhhiSNCBsjbzfm0WzO=DnsQ@mail.gmail.com>
-	<CAFp+6iHaycK=CcE1S15EeuMkaw8LnW0ebptU0hM6tUtWdeEOtA@mail.gmail.com>
-	<CAAFQd5Afj-Bj+3wHwmF2tT7y=46EsYEtO_mXfY6stXBgHutEUg@mail.gmail.com>
-	<CAFp+6iGX6pr+MdPSSHHG=qOnhHky_8OHiDqAcJ9UudEUv=JMHg@mail.gmail.com>
-	<CAAFQd5DiwAugGnPOTw0+XrEfef9x-n-vx59JFuXpNawjiXHwCw@mail.gmail.com>
+From: Tomasz Figa via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v5 08/13] iommu/rockchip: Control clocks needed to access
+	the IOMMU
+Date: Wed, 14 Feb 2018 20:27:28 +0900
+Message-ID: <CAAFQd5DHYn2VK2GwSa0E_hX9Zh3BL5K0b1BnQqz+xzfmhPzhpg@mail.gmail.com>
+References: <20180124103516.2571-1-jeffy.chen@rock-chips.com>
+	<20180124103516.2571-9-jeffy.chen@rock-chips.com>
+	<f06d2d9f-3869-ed02-43f4-f4ea4a104a57@arm.com>
+	<edc5002d-c83f-cf11-ecfb-0c4400b10d07@codeaurora.org>
+Reply-To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5DiwAugGnPOTw0+XrEfef9x-n-vx59JFuXpNawjiXHwCw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <edc5002d-c83f-cf11-ecfb-0c4400b10d07-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,211 +22,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 14, 2018 at 2:46 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
-
-Adding Jordan to this thread as well.
-
-> On Wed, Feb 14, 2018 at 6:13 PM, Vivek Gautam
-> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->> Hi Tomasz,
->>
->> On Wed, Feb 14, 2018 at 11:08 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>> On Wed, Feb 14, 2018 at 1:17 PM, Vivek Gautam
->>> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>> Hi Tomasz,
->>>>
->>>> On Wed, Feb 14, 2018 at 8:31 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>>>> On Wed, Feb 14, 2018 at 11:13 AM, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>>>>> On Tue, Feb 13, 2018 at 8:59 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>>>>>> On Wed, Feb 14, 2018 at 3:03 AM, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>>>>>>> On Tue, Feb 13, 2018 at 4:10 AM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>>>>>>>> Hi Vivek,
->>>>>>>>>
->>>>>>>>> Thanks for the patch. Please see my comments inline.
->>>>>>>>>
->>>>>>>>> On Wed, Feb 7, 2018 at 7:31 PM, Vivek Gautam
->>>>>>>>> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>>>>>>>> While handling the concerned iommu, there should not be a
->>>>>>>>>> need to power control the drm devices from iommu interface.
->>>>>>>>>> If these drm devices need to be powered around this time,
->>>>>>>>>> the respective drivers should take care of this.
->>>>>>>>>>
->>>>>>>>>> Replace the pm_runtime_get/put_sync(<drm_device>) with
->>>>>>>>>> pm_runtime_get/put_suppliers(<drm_device>) calls, to power-up
->>>>>>>>>> the connected iommu through the device link interface.
->>>>>>>>>> In case the device link is not setup these get/put_suppliers()
->>>>>>>>>> calls will be a no-op, and the iommu driver should take care of
->>>>>>>>>> powering on its devices accordingly.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>>>>>>> ---
->>>>>>>>>>  drivers/gpu/drm/msm/msm_iommu.c | 16 ++++++++--------
->>>>>>>>>>  1 file changed, 8 insertions(+), 8 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
->>>>>>>>>> index b23d33622f37..1ab629bbee69 100644
->>>>>>>>>> --- a/drivers/gpu/drm/msm/msm_iommu.c
->>>>>>>>>> +++ b/drivers/gpu/drm/msm/msm_iommu.c
->>>>>>>>>> @@ -40,9 +40,9 @@ static int msm_iommu_attach(struct msm_mmu *mmu, const char * const *names,
->>>>>>>>>>         struct msm_iommu *iommu = to_msm_iommu(mmu);
->>>>>>>>>>         int ret;
->>>>>>>>>>
->>>>>>>>>> -       pm_runtime_get_sync(mmu->dev);
->>>>>>>>>> +       pm_runtime_get_suppliers(mmu->dev);
->>>>>>>>>>         ret = iommu_attach_device(iommu->domain, mmu->dev);
->>>>>>>>>> -       pm_runtime_put_sync(mmu->dev);
->>>>>>>>>> +       pm_runtime_put_suppliers(mmu->dev);
->>>>>>>>>
->>>>>>>>> For me, it looks like a wrong place to handle runtime PM of IOMMU
->>>>>>>>> here. iommu_attach_device() calls into IOMMU driver's attach_device()
->>>>>>>>> callback and that's where necessary runtime PM gets should happen, if
->>>>>>>>> any. In other words, driver A (MSM DRM driver) shouldn't be dealing
->>>>>>>>> with power state of device controlled by driver B (ARM SMMU).
->>>>>>>>
->>>>>>>> Note that we end up having to do the same, because of iommu_unmap()
->>>>>>>> while DRM driver is powered off..  it might be cleaner if it was all
->>>>>>>> self contained in the iommu driver, but that would make it so other
->>>>>>>> drivers couldn't call iommu_unmap() from an irq handler, which is
->>>>>>>> apparently something that some of them want to do..
->>>>>>>
->>>>>>> I'd assume that runtime PM status is already guaranteed to be active
->>>>>>> when the IRQ handler is running, by some other means (e.g.
->>>>>>> pm_runtime_get_sync() called earlier, when queuing some work to the
->>>>>>> hardware). Otherwise, I'm not sure how a powered down device could
->>>>>>> trigger an IRQ.
->>>>>>>
->>>>>>> So, if the master device power is already on, suppliers should be
->>>>>>> powered on as well, thanks to device links.
->>>>>>>
->>>>>>
->>>>>> umm, that is kindof the inverse of the problem..  the problem is
->>>>>> things like gpu driver (and v4l2 drivers that import dma-buf's,
->>>>>> afaict).. they will potentially call iommu->unmap() when device is not
->>>>>> active (due to userspace or things beyond the control of the driver)..
->>>>>> so *they* would want iommu to do pm get/put calls.
->>>>>
->>>>> Which is fine and which is actually already done by one of the patches
->>>>> in this series, not for map/unmap, but probe, add_device,
->>>>> remove_device. Having parts of the API doing it inside the callback
->>>>> and other parts outside sounds at least inconsistent.
->>>>>
->>>>>> But other drivers
->>>>>> trying to unmap from irq ctx would not.  Which is the contradictory
->>>>>> requirement that lead to the idea of iommu user powering up iommu for
->>>>>> unmap.
->>>>>
->>>>> Sorry, maybe I wasn't clear. My last message was supposed to show that
->>>>> it's not contradictory at all, because "other drivers trying to unmap
->>>>> from irq ctx" would already have called pm_runtime_get_*() earlier
->>>>> from a non-irq ctx, which would have also done the same on all the
->>>>> linked suppliers, including the IOMMU. The ultimate result would be
->>>>> that the map/unmap() of the IOMMU driver calling pm_runtime_get_sync()
->>>>> would do nothing besides incrementing the reference count.
->>>>
->>>> The entire point was to avoid the slowpath that pm_runtime_get/put_sync()
->>>> would add in map/unmap. It would not be correct to add a slowpath in irq_ctx
->>>> for taking care of non-irq_ctx and for the situations where master is already
->>>> powered-off.
->>>
->>> Correct me if I'm wrong, but I believe that with what I'm proposing
->>> there wouldn't be any slow path.
->>
->> Yea, but only when the power domain is irq-safe? And not all platforms
->> enable irq-safe power domains. For instance, msm doesn't enable its
->> gdsc power domains as irq-safe.
->> Is it something i am missing?
+On Wed, Feb 14, 2018 at 7:03 PM, Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
 >
-> irq-safe would matter if there would exist a case when the call is
-> done from IRQ context and the power is off. As I explained in a), it
-> shouldn't happen.
-
-Hi Robin, Will
-
-Does adding pm_runtime_get() in map/unmap sounds good to you?
-
-Quoting Tomasz once again here:
->>> a) For IRQ context, the master is already powered on and so the SMMU
->>> is also powered on, through respective device link.
->>> pm_runtime_get_sync() would ultimately just increment the runtime PM
->>> usage count.
->>>
->>> b) For a case when the master is already powered off (which wouldn't
->>> be IRQ context, for the reason stated in a)), powering on the SMMU is
->>> unavoidable, if the SMMU hardware really needs to be accessed (i.e.
->>> some TLBs need to be invalidated, if their state is preserved despite
->>> master being powered down).
-
->>> There was also a point raised that __pm_runtime_resume() called from
->>> pm_runtime_get_sync() would grab dev->power_lock spinlock, which is
->>> true, except that if the device is already active, it would do it only
->>> for the time of checking device state, so I doubt it would really be a
->>> significant point of contention.
-
-Regards
-Vivek
-
 >
-> Best regards,
-> Tomasz
+> On 1/24/2018 7:19 PM, Robin Murphy wrote:
+>>
+>> On 24/01/18 10:35, Jeffy Chen wrote:
+>>>
+>>> From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>>
+>>> Current code relies on master driver enabling necessary clocks before
+>>> IOMMU is accessed, however there are cases when the IOMMU should be
+>>> accessed while the master is not running yet, for example allocating
+>>> V4L2 videobuf2 buffers, which is done by the VB2 framework using DMA
+>>> mapping API and doesn't engage the master driver at all.
+>>>
+>>> This patch fixes the problem by letting clocks needed for IOMMU
+>>> operation to be listed in Device Tree and making the driver enable them
+>>> for the time of accessing the hardware.
+>>>
+>>> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+>>> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>> ---
+>>>
+>>> Changes in v5:
+>>> Use clk_bulk APIs.
+>>>
+>>> Changes in v4: None
+>>> Changes in v3: None
+>>> Changes in v2: None
 >
->>
->>>
->>> a) For IRQ context, the master is already powered on and so the SMMU
->>> is also powered on, through respective device link.
->>> pm_runtime_get_sync() would ultimately just increment the runtime PM
->>> usage count.
->>>
->>> b) For a case when the master is already powered off (which wouldn't
->>> be IRQ context, for the reason stated in a)), powering on the SMMU is
->>> unavoidable, if the SMMU hardware really needs to be accessed (i.e.
->>> some TLBs need to be invalidated, if their state is preserved despite
->>> master being powered down).
->>>
->>>>
->>>>>
->>>>>>
->>>>>> There has already been some discussion about this on various earlier
->>>>>> permutations of this patchset.  I think we have exhausted all other
->>>>>> options.
->>>>>
->>>>> I guess I should have read those. Let me do that now.
->>>> Yea, i point to the thread in cover letter and [PATCH 1/6].
->>>> Thanks.
->>>
->>> I read through all the links in the cover letter and I could see other
->>> attempts not working out indeed, but they were different from what I'm
->>> proposing.
->>>
->>> There was also a point raised that __pm_runtime_resume() called from
->>> pm_runtime_get_sync() would grab dev->power_lock spinlock, which is
->>> true, except that if the device is already active, it would do it only
->>> for the time of checking device state, so I doubt it would really be a
->>> significant point of contention.
->>>
->>> Best regards,
->>> Tomasz
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
->>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+> [snip]
+>
+>
+>>>   +static int rk_iommu_of_get_clocks(struct rk_iommu *iommu)
+>>> +{
+>>> +    struct device_node *np = iommu->dev->of_node;
+>>> +    int ret;
+>>> +    int i;
+>>> +
+>>> +    ret = of_count_phandle_with_args(np, "clocks", "#clock-cells");
+>>> +    if (ret == -ENOENT)
+>>> +        return 0;
+>>> +    else if (ret < 0)
+>>> +        return ret;
+>>> +
+>>> +    iommu->num_clocks = ret;
+>>> +    iommu->clocks = devm_kcalloc(iommu->dev, iommu->num_clocks,
+>>> +                     sizeof(*iommu->clocks), GFP_KERNEL);
+>>> +    if (!iommu->clocks)
+>>> +        return -ENOMEM;
+>>> +
+>>> +    for (i = 0; i < iommu->num_clocks; ++i) {
+>>> +        iommu->clocks[i].clk = of_clk_get(np, i);
+>>> +        if (IS_ERR(iommu->clocks[i].clk)) {
+>>> +            ret = PTR_ERR(iommu->clocks[i].clk);
+>>> +            goto err_clk_put;
+>>> +        }
+>>> +    }
 >>
 >>
+>> Just to confirm my understanding from a quick scan through the code, the
+>> reason we can't use clk_bulk_get() here is that currently, clocks[i].id
+>> being NULL means we'd end up just getting the first clock multiple times,
+>> right?
 >>
->> --
->> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
->> of Code Aurora Forum, hosted by The Linux Foundation
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> I guess there could be other users who also want "just get whatever clocks
+>> I have" functionality, so it might be worth proposing that for the core API
+>> as a separate/follow-up patch, but it definitely doesn't need to be part of
+>> this series.
+>
+>
+> Just to understand. Is it okay to make the driver "just get whatever clocks
+> device node gives"?
+> Doesn't the driver need to be aware of which all clocks are supposed to be
+> obtained and enabled
+>  It's should good for debug to let the world know which clock we failed to
+> get.
 
+Yeah, in general that's desired. However, it is at least impractical
+to specify all the clocks in Rockchip case, because it's different for
+each block and depends on the master next to which it is located.
 
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Best regards,
+Tomasz
