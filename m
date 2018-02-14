@@ -1,14 +1,12 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 08/37] iommu/fault: Handle mm faults
-Date: Wed, 14 Feb 2018 10:46:21 -0800
-Message-ID: <20180214104621.7675579c@jacob-builder>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-9-jean-philippe.brucker@arm.com>
+From: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2] iommu/amd: Avoid locking get_irq_table() from atomic
+	context
+Date: Wed, 14 Feb 2018 17:36:28 -0600
+Message-ID: <20180214233628.29560-1-swood@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180212183352.22730-9-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,151 +16,122 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Luis Claudio R. Goncalves" <lgoncalv-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Clark Williams <williams-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 12 Feb 2018 18:33:23 +0000
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+get_irq_table() previously acquired amd_iommu_devtable_lock which is not
+a raw lock, and thus cannot be acquired from atomic context on
+PREEMPT_RT.  Many calls to modify_irte*() come from atomic context due to
+the IRQ desc->lock, as does amd_iommu_update_ga() due to the preemption
+disabling in vcpu_load/put().
 
-> When a recoverable page fault is handled by the fault workqueue, find
-> the associated mm and call handle_mm_fault.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/io-pgfault.c | 89
-> ++++++++++++++++++++++++++++++++++++++++++++-- 1 file changed, 87
-> insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> index 33309ed316d2..565ec01a1b5f 100644
-> --- a/drivers/iommu/io-pgfault.c
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -9,6 +9,7 @@
->  
->  #include <linux/iommu.h>
->  #include <linux/list.h>
-> +#include <linux/sched/mm.h>
->  #include <linux/slab.h>
->  #include <linux/workqueue.h>
->  
-> @@ -82,8 +83,92 @@ static int iommu_fault_complete(struct
-> iommu_domain *domain, struct device *dev, 
->  static int iommu_fault_handle_single(struct iommu_fault_context
-> *fault) {
-> -	/* TODO */
-> -	return -ENODEV;
-> +	struct mm_struct *mm;
-> +	struct vm_area_struct *vma;
-> +	unsigned int access_flags = 0;
-unsigned long to match vm_flags?
-> +	int ret = IOMMU_PAGE_RESP_INVALID;
-> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
-> +	struct iommu_fault_event *evt = &fault->evt;
-> +
-> +	if (!evt->pasid_valid)
-> +		return ret;
-I guess for not we don't handle PRQ without PASID, right?
-> +
-> +	/*
-> +	 * Special case: PASID Stop Marker (LRW = 0b100) doesn't
-> expect a
-> +	 * response. A Stop Marker may be generated when disabling a
-> PASID
-> +	 * (issuing a PASID stop request) in some PCI devices.
-> +	 *
-> +	 * When the mm_exit() callback returns from the device
-> driver, no page
-> +	 * request is generated for this PASID anymore and
-> outstanding ones have
-> +	 * been pushed to the IOMMU (as per PCIe 4.0r1.0 - 6.20.1
-> and 10.4.1.2 -
-> +	 * Managing PASID TLP Prefix Usage). Some PCI devices will
-> wait for all
-> +	 * outstanding page requests to come back with a response
-> before
-> +	 * completing the PASID stop request. Others do not wait for
-> page
-> +	 * responses, and instead issue this Stop Marker that tells
-> us when the
-> +	 * PASID can be reallocated.
-> +	 *
-> +	 * We ignore the Stop Marker because:
-> +	 * a. Page requests, which are posted requests, have been
-> flushed to the
-> +	 *    IOMMU when mm_exit() returns,
-> +	 * b. We flush all fault queues after mm_exit() returns and
-> before
-> +	 *    freeing the PASID.
-> +	 *
-> +	 * So even though the Stop Marker might be issued by the
-> device *after*
-> +	 * the stop request completes, outstanding faults will have
-> been dealt
-> +	 * with by the time we free the PASID.
-> +	 */
-> +	if (evt->last_req &&
-> +	    !(evt->prot & (IOMMU_FAULT_READ | IOMMU_FAULT_WRITE)))
-> +		return IOMMU_PAGE_RESP_HANDLED;
-> +
-If we don't expect a page response, shouldn't it be filtered by the
-IOMMU vendor driver in the first place? i.e. in the vendor IOMMU driver
-PRQ handler, it will sanitize the request anyway, for anything that
-does not need response, it will not call iommu_report_device_fault().
-> +	mm = iommu_sva_find(evt->pasid);
-> +	if (!mm)
-> +		return ret;
-> +
-> +	down_read(&mm->mmap_sem);
-> +
-> +	vma = find_extend_vma(mm, evt->addr);
-> +	if (!vma)
-> +		/* Unmapped area */
-> +		goto out_put_mm;
-> +
-> +	if (evt->prot & IOMMU_FAULT_READ)
-> +		access_flags |= VM_READ;
-> +
-> +	if (evt->prot & IOMMU_FAULT_WRITE) {
-> +		access_flags |= VM_WRITE;
-> +		fault_flags |= FAULT_FLAG_WRITE;
-> +	}
-> +
-> +	if (evt->prot & IOMMU_FAULT_EXEC) {
-> +		access_flags |= VM_EXEC;
-> +		fault_flags |= FAULT_FLAG_INSTRUCTION;
-> +	}
-> +
-> +	if (!(evt->prot & IOMMU_FAULT_PRIV))
-> +		fault_flags |= FAULT_FLAG_USER;
-> +
-> +	if (access_flags & ~vma->vm_flags)
-> +		/* Access fault */
-> +		goto out_put_mm;
-> +
-> +	ret = handle_mm_fault(vma, evt->addr, fault_flags);
-> +	ret = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
-> +		IOMMU_PAGE_RESP_SUCCESS;
-> +
-> +out_put_mm:
-> +	up_read(&mm->mmap_sem);
-> +
-> +	/*
-> +	 * If the process exits while we're handling the fault on
-> its mm, we
-> +	 * can't do mmput(). exit_mmap() would release the MMU
-> notifier, calling
-> +	 * iommu_notifier_release(), which has to flush the fault
-> queue that
-> +	 * we're executing on... So mmput_async() moves the release
-> of the mm to
-> +	 * another thread, if we're the last user.
-> +	 */
-> +	mmput_async(mm);
-> +
-> +	return ret;
->  }
->  
->  static void iommu_fault_handle_group(struct work_struct *work)
+The only difference between calling get_irq_table() and reading from
+irq_lookup_table[] directly, other than the lock acquisition and
+amd_iommu_rlookup_table[] check, is if the table entry is unpopulated,
+which should never happen when looking up a devid that came from an
+irq_2_irte struct, as get_irq_table() would have already been called on
+that devid during irq_remapping_alloc().
 
-[Jacob Pan]
+The lock acquisition is not needed in these cases because entries in
+irq_lookup_table[] never change once non-NULL -- nor would the
+amd_iommu_devtable_lock usage in get_irq_table() provide meaningful
+protection if they did, since it's released before using the looked up
+table in the get_irq_table() caller.
+
+Rename the old get_irq_table() to alloc_irq_table(), and create a new
+lockless get_irq_table() to be used in non-allocating contexts that WARNs
+if it doesn't find what it's looking for.
+
+Signed-off-by: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+v2: Added new get_irq_table() with WARNs rather than accessing
+irq_lookup_table[] directly.
+---
+ drivers/iommu/amd_iommu.c | 29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index e4026133aa1d..5d41e0733cb3 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3594,7 +3594,22 @@ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+ 	amd_iommu_dev_table[devid].data[2] = dte;
+ }
+ 
+-static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
++static struct irq_remap_table *get_irq_table(u16 devid)
++{
++	struct irq_remap_table *table;
++
++	if (WARN_ONCE(!amd_iommu_rlookup_table[devid],
++		      "%s: no iommu for devid %x\n", __func__, devid))
++		return NULL;
++
++	table = irq_lookup_table[devid];
++	if (WARN_ONCE(!table, "%s: no table for devid %x\n", __func__, devid))
++		return NULL;
++
++	return table;
++}
++
++static struct irq_remap_table *alloc_irq_table(u16 devid, bool ioapic)
+ {
+ 	struct irq_remap_table *table = NULL;
+ 	struct amd_iommu *iommu;
+@@ -3681,7 +3696,7 @@ static int alloc_irq_index(u16 devid, int count, bool align)
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+-	table = get_irq_table(devid, false);
++	table = alloc_irq_table(devid, false);
+ 	if (!table)
+ 		return -ENODEV;
+ 
+@@ -3732,7 +3747,7 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
+ 	if (iommu == NULL)
+ 		return -EINVAL;
+ 
+-	table = get_irq_table(devid, false);
++	table = get_irq_table(devid);
+ 	if (!table)
+ 		return -ENOMEM;
+ 
+@@ -3765,7 +3780,7 @@ static int modify_irte(u16 devid, int index, union irte *irte)
+ 	if (iommu == NULL)
+ 		return -EINVAL;
+ 
+-	table = get_irq_table(devid, false);
++	table = get_irq_table(devid);
+ 	if (!table)
+ 		return -ENOMEM;
+ 
+@@ -3789,7 +3804,7 @@ static void free_irte(u16 devid, int index)
+ 	if (iommu == NULL)
+ 		return;
+ 
+-	table = get_irq_table(devid, false);
++	table = get_irq_table(devid);
+ 	if (!table)
+ 		return;
+ 
+@@ -4107,7 +4122,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 		return ret;
+ 
+ 	if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC) {
+-		if (get_irq_table(devid, true))
++		if (alloc_irq_table(devid, true))
+ 			index = info->ioapic_pin;
+ 		else
+ 			ret = -ENOMEM;
+@@ -4390,7 +4405,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+-	irt = get_irq_table(devid, false);
++	irt = get_irq_table(devid);
+ 	if (!irt)
+ 		return -ENODEV;
+ 
+-- 
+2.14.3
