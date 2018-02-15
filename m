@@ -1,17 +1,17 @@
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH 02/37] iommu/sva: Bind process address spaces to devices
-Date: Thu, 15 Feb 2018 13:29:34 +0100
-Message-ID: <88f5a22a-6db9-f34b-916b-83cd6e683ceb@amd.com>
+Date: Thu, 15 Feb 2018 12:40:57 +0000
+Message-ID: <ca4d4992-0c8b-dae6-e443-7c7f7164be60@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 	<20180212183352.22730-3-jean-philippe.brucker@arm.com>
 	<AADFC41AFE54684AB9EE6CBC0274A5D191002897@SHSMSX101.ccr.corp.intel.com>
 	<b9eacb30-817f-9027-bc0a-1f01cf9f13f9@arm.com>
-	<20180215102113.c7t7rrnyzgazmdli@8bytes.org>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191003AD6@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180215102113.c7t7rrnyzgazmdli-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191003AD6-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,55 +22,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Raj,
-	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2@infradead>
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Raj,
+	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-QW0gMTUuMDIuMjAxOCB1bSAxMToyMSBzY2hyaWViIGpvcm9AOGJ5dGVzLm9yZzoKPiBPbiBUdWUs
-IEZlYiAxMywgMjAxOCBhdCAxMjo1NzoyM1BNICswMDAwLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIg
-d3JvdGU6Cj4+ICogYmluZF9kZXZpY2UoKSBmYWlscyBpZiB0aGUgZGV2aWNlJ3MgZ3JvdXAgaGFz
-IG1vcmUgdGhhbiBvbmUgZGV2aWNlLAo+PiBvdGhlcndpc2UgY2FsbHMgX19iaW5kX2RldmljZSgp
-LiBUaGlzIHByZXZlbnRzIGRldmljZSBkcml2ZXJzIHRoYXQgYXJlCj4+IG9ibGl2aW91cyB0byBJ
-T01NVSBncm91cHMgZnJvbSBvcGVuaW5nIGEgYmFja2Rvb3IuCj4+Cj4+ICogYmluZF9ncm91cCgp
-IGNhbGxzIF9fYmluZF9kZXZpY2UoKSBmb3IgYWxsIGRldmljZXMgaW4gZ3JvdXAuIFRoaXMgd2F5
-Cj4+IHVzZXJzIHRoYXQgYXJlIGF3YXJlIG9mIElPTU1VIGdyb3VwcyBjYW4gc3RpbGwgdXNlIHRo
-ZW0gc2FmZWx5LiBOb3RlIHRoYXQKPj4gYXQgdGhlIG1vbWVudCBiaW5kX2dyb3VwKCkgZmFpbHMg
-YXMgc29vbiBhcyBpdCBmaW5kcyBhIGRldmljZSB0aGF0IGRvZXNuJ3QKPj4gc3VwcG9ydCBTVkEu
-IEhhdmluZyBhbGwgZGV2aWNlcyBzdXBwb3J0IFNWQSBpbiBhIGdpdmVuIGdyb3VwIGlzCj4+IHVu
-cmVhbGlzdGljIGFuZCB0aGlzIGJlaGF2aW9yIG91Z2h0IHRvIGJlIGltcHJvdmVkLgo+IFllYWgs
-IHNvIHRoZSBwcm9ibGVtIG9uIFBDSSBpcyB0aGF0IGFsbCBmdW5jdGlvbnMgb2YgYSBtdWx0aS1m
-dW5jdGlvbgo+IGRldmljZSBhcmUgcHV0IGludG8gb25lIGdyb3VwLiBGb3IgQU1ELUdQVXMgdGhp
-cyBtZWFucyB0aGF0IHRoZSBHUFUKPiAoU1ZBLWNhcGFibGUpIHdpbGwgZW5kIHVwIGluIHRoZSBz
-YW1lIGdyb3VwIGFzIHRoZSBvbi1HUFUgc291bmQKPiBkZXZpY2UgKG5vdCBTVkEtY2FwYWJsZSku
-CgpZZWFoLCBidXQgU1ZBIG9ubHkgYXBwbGllcyB0byByYXRoZXIgbmV3IEFNRC1HUFVzLCB3aGlj
-aCBpbiB0dXJuIGNhbiAKb25seSBkbyBQQ0llIGFuZCB0aGVyZSB0aGUgcHJvYmxlbSBkb2Vzbid0
-IHNlZW1zIHRvIGV4aXN0IGFueSBtb3JlLgoKRS5nLiB0aGUgYXVkaW8gZGV2aWNlIG9uIG15IFZl
-Z2ExMCBnZXRzIGEgc2VwYXJhdGUgZ3JvdXAgZGVzcGl0ZSBiZWluZyAKYmVoaW5kIHNldmVyYWwg
-YnJpZGdlczoKPiAwYjowMC4wIFZHQSBjb21wYXRpYmxlIGNvbnRyb2xsZXI6IEFkdmFuY2VkIE1p
-Y3JvIERldmljZXMsIEluYy4gCj4gW0FNRC9BVEldIFZlZ2EgMTAgW1JhZGVvbiBWZWdhIEZyb250
-aWVyIEVkaXRpb25dCj4gMGI6MDAuMSBBdWRpbyBkZXZpY2U6IEFkdmFuY2VkIE1pY3JvIERldmlj
-ZXMsIEluYy4gW0FNRC9BVEldIERldmljZSBhYWY4Ci4uLgo+IFvCoMKgwqAgNi4zNjI2NjVdIGlv
-bW11OiBBZGRpbmcgZGV2aWNlIDAwMDA6MGI6MDAuMCB0byBncm91cCAxNAo+IFvCoMKgwqAgNi4z
-Njg0NjhdIGlvbW11OiBVc2luZyBkaXJlY3QgbWFwcGluZyBmb3IgZGV2aWNlIDAwMDA6MGI6MDAu
-MAo+IFvCoMKgwqAgNi4zODAwNDBdIGlvbW11OiBBZGRpbmcgZGV2aWNlIDAwMDA6MGI6MDAuMSB0
-byBncm91cCAxNQoKUmVnYXJkcywKQ2hyaXN0aWFuLgoKPgo+IEJlZm9yZSB0aGlzIGNhdXNlcyB1
-cyBiaWcgaGVhZGFjaGVzIEkgc3VnZ2VzdCB0byBvbmx5IHByb3ZpZGUgdGhlCj4gYmluZF9kZXZp
-Y2UoKSBmdW5jdGlvbi4gVGhpcyBzaG91bGQgYmUgZmluZSBiZWNhdXNlIGZvciBTVkEgd2UgZG9u
-J3QKPiBuZWVkIGFsbCB0eXBlcyBvZiBpc29sYXRpb24gdGhhdCBpb21tdV9ncm91cHMgcHJvdmlk
-ZS4KPgo+IElPTU1VLWdyb3VwcyBwcm92aWRlIHR3byB0eXBlcyBvZiBpc29sYXRpb246Cj4KPiAJ
-MSkgVGhleSBncm91cCBkZXZpY2VzIHRvZ2V0aGVyIHdoaWNoIHRoZSBJT01NVSBjYW4ndCBkaXN0
-aW5ndWlzaAo+IAkgICBmcm9tIGVhY2ggb3RoZXIsIGxpa2UgUENJIGRldmljZXMgYmVoaW5kIGEg
-UENJZSBicmlkZ2UuCj4KPiAJMikgRGV2aWNlcyB0aGF0IGNhbid0IGJlIGlzb2xhdGVkIGZyb20g
-ZWFjaCBvdGhlciBhcmUgYWxzbyBwdXQKPiAJICAgaW50byB0aGUgc2FtZSBncm91cC4gVGhpcyBp
-cyB0aGUgY2FzZSBmb3IgbXVsdGktZnVuY3Rpb24gUENJZQo+IAkgICBkZXZpY2VzIGFzIHdlbGwg
-YXMgYWxsIFBDSWUgZGV2aWNlcyBiZWhpbmQgYSBub24tQUNTIGJyaWRnZS4KPiAJICAgQnV0IGFs
-bCB0aGVzZSBkZXZpY2VzIGNhbm4gc3RpbGwgYmUgZGlzdGluZ3Vpc2hlZCBieSB0aGUKPiAJICAg
-SU9NTVUuCj4KPiBUaGVzZSB0d28gdHlwZXMgb2YgcHJvdGVjdGlvbiBhcmUgbmVlZGVkIHRvIHNh
-ZmVseSBhc3NpZ24gZGV2aWNlcyB0bwo+IGd1ZXN0cywgYnV0IGZvciBiYXJlLW1ldGFsIFNWQSBh
-bGwgd2UgbmVlZCBpcyB0eXBlIDEpIGlzb2xhdGlvbiwgYW5kCj4gbm90IGV2ZW4gdGhhdCBpZiB3
-ZSBjYW4gYXNzdW1lIHRoYXQgYWxsIFNWQS1jYXBhYmxlIGRldmljZXMgaGF2ZSBhbgo+IGV4Y2x1
-c2l2ZSBkZXZpY2UtaWQgKG9yIHN0cmVhbS1pZCkuCj4KPgo+Cj4gCUpvZXJnCj4KCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
-dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 13/02/18 23:34, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker
+>> Sent: Tuesday, February 13, 2018 8:57 PM
+>>
+>> On 13/02/18 07:54, Tian, Kevin wrote:
+>>>> From: Jean-Philippe Brucker
+>>>> Sent: Tuesday, February 13, 2018 2:33 AM
+>>>>
+>>>> Add bind() and unbind() operations to the IOMMU API. Device drivers
+>> can
+>>>> use them to share process page tables with their devices. bind_group()
+>>>> is provided for VFIO's convenience, as it needs to provide a coherent
+>>>> interface on containers. Other device drivers will most likely want to
+>>>> use bind_device(), which binds a single device in the group.
+>>>
+>>> I saw your bind_group implementation tries to bind the address space
+>>> for all devices within a group, which IMO has some problem. Based on
+>> PCIe
+>>> spec, packet routing on the bus doesn't take PASID into consideration.
+>>> since devices within same group cannot be isolated based on requestor-
+>> ID
+>>> i.e. traffic not guaranteed going to IOMMU, enabling SVA on multiple
+>> devices
+>>> could cause undesired p2p.
+>> But so does enabling "classic" DMA... If two devices are not protected by
+>> ACS for example, they are put in the same IOMMU group, and one device
+>> might be able to snoop the other's DMA. VFIO allows userspace to create a
+>> container for them and use MAP/UNMAP, but makes it explicit to the user
+>> that for DMA, these devices are not isolated and must be considered as a
+>> single device (you can't pass them to different VMs or put them in
+>> different containers). So I tried to keep the same idea as MAP/UNMAP for
+>> SVA, performing BIND/UNBIND operations on the VFIO container instead of
+>> the device.
+> 
+> there is a small difference. for classic DMA we can reserve PCI BARs 
+> when allocating IOVA, thus multiple devices in the same group can 
+> still work correctly applied with same translation, if isolation is not
+> cared in between. However for SVA it's CPU virtual addresses 
+> managed by kernel mm thus difficult to introduce similar address 
+> reservation. Then it's possible for a VA falling into other device's 
+> BAR in the same group and cause undesired p2p traffic. In such 
+> regard, SVA is actually functionally-broken.
+
+I think the problem exists even if there is a single device in the group.
+If for example, malloc() returns a VA that corresponds to a PCI host
+bridge in IOVA space, performing DMA on that buffer won't reach the IOMMU
+and will cause undesirable side-effects.
+
+My series doesn't address the problem, but I believe we should carve
+reserved regions out of the process address space during bind(), for
+example by creating a PROT_NONE vma preventing userspace from obtaining
+that VA.
+
+If you solve this problem, you also solve it for multiple devices in a
+group, because the IOMMU core provides the resv API on groups... That's
+until you hotplug a device into a live group (currently WARN in VFIO),
+with different resv regions.
+
+>> I kept the analogy simple though, because I don't think there will be many
+>> SVA-capable systems that require IOMMU groups. They will likely
+> 
+> I agree that multiple SVA-capable devices in same IOMMU group is not
+> a typical configuration, especially it's usually observed on new devices.
+> Then based on above limitation, I think we could just explicitly avoid
+> enabling SVA in such case. :-)
+
+I'd certainly like that :)
+
+Thanks,
+Jean
