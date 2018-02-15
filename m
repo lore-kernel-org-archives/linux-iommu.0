@@ -1,63 +1,91 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH 4/4] vfio: Allow type-1 IOMMU instantiation with a
- virtio-iommu
-Date: Thu, 15 Feb 2018 13:53:20 +0000
-Message-ID: <7cd2a302-b3ba-8c77-c721-d54938f2568a@arm.com>
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
- <20180214145340.1223-5-jean-philippe.brucker@arm.com>
- <20180214082639.54556efb@w520.home>
- <9f98aa85-3160-e285-cacd-2f429c58a775@arm.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v7 6/6] drm/msm: iommu: Replace runtime
+ calls with runtime suppliers
+Date: Thu, 15 Feb 2018 09:14:40 -0500
+Message-ID: <CAF6AEGvWhG83gYOAHSkx4_t3y_y4WH3xEmE3VXzVnO8VExJ0Vw@mail.gmail.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1517999482-17317-7-git-send-email-vivek.gautam@codeaurora.org>
+ <CAAFQd5AjopiX6fDgD+mO+-+d0yj-swEnVCNvccWRBSMO+XVJkA@mail.gmail.com>
+ <20180213164205.GA7599@jcrouse-lnx.qualcomm.com>
+ <CAAFQd5CjQRFATfh-mRQv5J=WefYuxBVTkk=Ju09FoqA-Or5Cvg@mail.gmail.com>
+ <20180214154850.GA25422@jcrouse-lnx.qualcomm.com>
+ <CAF6AEGtFOwBtXw7HvDSpEj+w78dsg9+p2SVk9e-uDuCE23Fpbw@mail.gmail.com>
+ <CAAFQd5C-9mbd3hDSvz10a1oiO0--FT-L4EpsAYcALxxUvk6Fjg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <kvm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <9f98aa85-3160-e285-cacd-2f429c58a775@arm.com>
-Content-Language: en-US
-Sender: kvm-owner@vger.kernel.org
-To: Robin Murphy <Robin.Murphy@arm.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAAFQd5C-9mbd3hDSvz10a1oiO0--FT-L4EpsAYcALxxUvk6Fjg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/02/18 15:35, Robin Murphy wrote:
-> On 14/02/18 15:26, Alex Williamson wrote:
->> On Wed, 14 Feb 2018 14:53:40 +0000
->> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
->>
->>> When enabling both VFIO and VIRTIO_IOMMU modules, automatically select
->>> VFIO_IOMMU_TYPE1 as well.
->>>
->>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->>> ---
->>>   drivers/vfio/Kconfig | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
->>> index c84333eb5eb5..65a1e691110c 100644
->>> --- a/drivers/vfio/Kconfig
->>> +++ b/drivers/vfio/Kconfig
->>> @@ -21,7 +21,7 @@ config VFIO_VIRQFD
->>>   menuconfig VFIO
->>>   	tristate "VFIO Non-Privileged userspace driver framework"
->>>   	depends on IOMMU_API
->>> -	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM_SMMU || ARM_SMMU_V3)
->>> +	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM_SMMU || ARM_SMMU_V3 || VIRTIO_IOMMU)
->>>   	select ANON_INODES
->>>   	help
->>>   	  VFIO provides a framework for secure userspace device drivers.
->>
->> Why are we basing this on specific IOMMU drivers in the first place?
->> Only ARM is doing that.  Shouldn't IOMMU_API only be enabled for ARM
->> targets that support it and therefore we can forget about the specific
->> IOMMU drivers?  Thanks,
-> 
-> Makes sense - the majority of ARM systems (and mobile/embedded ARM64 
-> ones) making use of IOMMU_API won't actually support VFIO, but it can't 
-> hurt to allow them to select the type 1 driver regardless. Especially as 
-> multiplatform configs are liable to be pulling in the SMMU driver(s) anyway.
-
-Cool, then I'll change that line to:
-
-+	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM || ARM64)
-
-Thanks,
-Jean
+T24gV2VkLCBGZWIgMTQsIDIwMTggYXQgMTE6MDkgUE0sIFRvbWFzeiBGaWdhIDx0ZmlnYUBjaHJv
+bWl1bS5vcmc+IHdyb3RlOgo+IE9uIFRodSwgRmViIDE1LCAyMDE4IGF0IDE6MTIgQU0sIFJvYiBD
+bGFyayA8cm9iZGNsYXJrQGdtYWlsLmNvbT4gd3JvdGU6Cj4+IE9uIFdlZCwgRmViIDE0LCAyMDE4
+IGF0IDEwOjQ4IEFNLCBKb3JkYW4gQ3JvdXNlIDxqY3JvdXNlQGNvZGVhdXJvcmEub3JnPiB3cm90
+ZToKPj4+IE9uIFdlZCwgRmViIDE0LCAyMDE4IGF0IDEyOjMxOjI5UE0gKzA5MDAsIFRvbWFzeiBG
+aWdhIHdyb3RlOgo+Pj4+Cj4+Pj4gLSBXaGVuIHN1Ym1pdHRpbmcgY29tbWFuZHMgdG8gdGhlIEdQ
+VSwgdGhlIEdQVSBkcml2ZXIgd2lsbAo+Pj4+IHBtX3J1bnRpbWVfZ2V0X3N5bmMoKSBvbiB0aGUg
+R1BVIGRldmljZSwgd2hpY2ggd2lsbCBhdXRvbWF0aWNhbGx5IGRvCj4+Pj4gdGhlIHNhbWUgb24g
+YWxsIHRoZSBsaW5rZWQgc3VwcGxpZXJzLCB3aGljaCB3b3VsZCBhbHNvIGluY2x1ZGUgdGhlCj4+
+Pj4gU01NVSBpdHNlbGYuIFRoZSByb2xlIG9mIGRldmljZSBsaW5rcyBoZXJlIGlzIGV4YWN0bHkg
+dGhhdCB0aGUgR1BVCj4+Pj4gZHJpdmVyIGRvZXNuJ3QgaGF2ZSB0byBjYXJlIHdoaWNoIG90aGVy
+IGRldmljZXMgbmVlZCB0byBiZSBicm91Z2h0IHVwLgo+Pj4KPj4+IFRoaXMgaXMgdHJ1ZS4gIEFz
+c3VtaW5nIHRoYXQgdGhlIGRldmljZSBsaW5rIHdvcmtzIGNvcnJlY3RseSB3ZSB3b3VsZCBub3Qg
+bmVlZAo+Pj4gdG8gZXhwbGljaXRseSBwb3dlciB0aGUgU01NVSB3aGljaCBtYWtlcyBteSBwb2lu
+dCBlbnRpcmVseSBtb290Lgo+Pgo+PiBKdXN0IHRvIHBvaW50IG91dCB3aGF0IG1vdGl2YXRlZCB0
+aGlzIHBhdGNoc2V0LCB0aGUgYmlnZ2VzdCBwcm9ibGVtIGlzCj4+IGlvbW11X3VubWFwKCkgYmVj
+YXVzZSB0aGF0IGNhbiBoYXBwZW4gd2hlbiBHUFUgaXMgbm90IHBvd2VyZWQgb24gKG9yCj4+IGlu
+IHRoZSB2NGwyIGNhc2UsIGJlY2F1c2Ugc29tZSBvdGhlciBkZXZpY2UgZHJvcHBlZCBpdCdzIHJl
+ZmVyZW5jZSB0bwo+PiB0aGUgZG1hLWJ1ZiBhbGxvd2luZyBpdCB0byBiZSBmcmVlJ2QpLiAgQ3Vy
+cmVudGx5IHdlIHBtIGdldC9wdXQgdGhlCj4+IEdQVSBkZXZpY2UgYXJvdW5kIHVubWFwLCBidXQg
+aXQgaXMga2luZGEgc2lsbHkgdG8gYm9vdCB1cCB0aGUgR1BVIGp1c3QKPj4gdG8gdW5tYXAgYSBi
+dWZmZXIuCj4KPiBOb3RlIHRoYXQgaW4gVjRMMiBib3RoIG1hcHBpbmcgYW5kIHVubWFwcGluZyBj
+YW4gaGFwcGVuIGNvbXBsZXRlbHkKPiB3aXRob3V0IGludm9sdmluZyB0aGUgZHJpdmVyLiBTbyBB
+RkFJQ1QgdGhlIGFwcHJvYWNoIGJlaW5nIGltcGxlbWVudGVkCj4gYnkgdGhpcyBwYXRjaHNldCB3
+aWxsIG5vdCB3b3JrLCBiZWNhdXNlIHRoZXJlIHdpbGwgYmUgbm8gb25lIHRvIHBvd2VyCj4gdXAg
+dGhlIElPTU1VIGJlZm9yZSB0aGUgb3BlcmF0aW9uLiBNb3Jlb3ZlciwgdGhlcmUgYXJlIHBsYXRm
+b3JtcyBmb3IKPiB3aGljaCB0aGVyZSBpcyBubyByZWFzb24gdG8gcG93ZXIgdXAgdGhlIElPTU1V
+IGp1c3QgZm9yIG1hcC91bm1hcCwKPiBiZWNhdXNlIHRoZSBoYXJkd2FyZSBzdGF0ZSBpcyBsb3N0
+IGFueXdheSBhbmQgdGhlIG9ubHkgcmVhbCB3b3JrCj4gbmVlZGVkIGlzIHVwZGF0aW5nIHRoZSBw
+YWdlIHRhYmxlcyBpbiBtZW1vcnkuIChJIGZlZWwgbGlrZSB0aGlzIGlzCj4gYWN0dWFsbHkgdHJ1
+ZSBmb3IgbW9zdCBvZiB0aGUgcGxhdGZvcm1zIGluIHRoZSB3aWxkLCBidXQgdGhpcyBpcyBiYXNl
+ZAo+IHB1cmVseSBvbiB0aGUgbm90IHNvIHNtYWxsIG51bWJlciBvZiBwbGF0Zm9ybXMgSSB3b3Jr
+ZWQgd2l0aCwgaGF2ZW4ndAo+IGJvdGhlcmVkIGxvb2tpbmcgZm9yIG1vcmUgZ2VuZXJhbCBldmlk
+ZW5jZS4pCj4KCkF0IGxlYXN0IGFzIGZhciBhcyBkcm0vbXNtL2FkcmVubywgSSdtIG5vdCB0ZXJy
+aWJseSBjb25jZXJuZWQgYWJvdXQKb3RoZXIgcGxhdGZvcm1zIHRoYXQgZG9uJ3QgbmVlZCB0byBw
+b3dlciB1cCBpb21tdS4gIEl0J3Mgbm90IHJlYWxseQp0aGUgc2FtZSBzaXR1YXRpb24gYXMgYSBJ
+UCBibG9jayB0aGF0IHNob3dzIHVwIGluIGFsbCBkaWZmZXJlbnQKdmVuZG9yJ3MgU29Dcy4KCkJ1
+dCBpZiB5b3UgY2FuIGNvbnZpbmNlIFJvYmluIHRvIGdvIGZvciBnZXQvcHV0X3N5bmMoKSBjYWxs
+cyBpbnNpZGUKdGhlIGlvbW11IGRyaXZlciwgSSdtIGZpbmUgd2l0aCB0aGF0IGFwcHJvYWNoIHRv
+by4gIFRoYXQgaXMgd2hhdCBJIGRvCmluIHFjb21faW9tbXUgYWxyZWFkeS4gIEJ1dCBpZiBub3Qg
+SSdkIGxpa2UgdG8gYXQgbGVhc3Qgc29sdmUgdGhpcyBmb3IKc29tZSBwbGF0Zm9ybXMgaWYgd2Ug
+Y2FuJ3Qgc29sdmUgZm9yIGFsbC4KCkJSLAotUgoKPj4KPj4gKFNlbWktcmVsYXRlZCwgSSB3b3Vs
+ZCBhbHNvIGxpa2UgdG8gYmF0Y2ggbWFwL3VubWFwJ3MsIEkganVzdCBoYXZlbid0Cj4+IGdvdHRl
+biBhcm91bmQgdG8gaW1wbGVtZW50aW5nIGl0IHlldC4uIGJ1dCB0aGF0IHdvdWxkIGJlIGFub3Ro
+ZXIgY2FzZQo+PiB3aGVyZSBhIHNpbmdsZSBnZXRfc3VwcGxpZXIoKS9wdXRfc3VwcGxpZXIoKSBv
+dXRzaWRlIG9mIHRoZSBpb21tdQo+PiB3b3VsZCBtYWtlIHNlbnNlIGluc3RlYWQgb2YgcG1fZ2V0
+L3B1dCgpIGluc2lkZSB0aGUgaW9tbXUgZHJpdmVyJ3MKPj4gLT51bm1hcCgpLikKPj4KPj4gSWYg
+eW91IHJlYWxseSBkaXNsaWtlIHRoZSBnZXQvcHV0X3N1cHBsaWVyKCkgYXBwcm9hY2gsIHRoZW4g
+cGVyaGFwcyB3ZQo+PiBuZWVkIGlvbW11X3BtX2dldCgpL2lvbW11X3BtX3B1dCgpIG9wZXJhdGlv
+bnMgdGhhdCB0aGUgaW9tbXUgdXNlcgo+PiBjb3VsZCB1c2UgdG8gYWNjb21wbGlzaCB0aGUgc2Ft
+ZSB0aGluZz8KPgo+IEknbSBhZnJhaWQgdGhpcyB3b3VsZG4ndCB3b3JrIGZvciBWNEwyIGVpdGhl
+ci4gQW5kIEkgc3RpbGwgaGF2ZW4ndAo+IGJlZW4gZ2l2ZW4gYW55IGV2aWRlbmNlIHRoYXQgdGhl
+IGFwcHJvYWNoIEknbSBzdWdnZXN0aW5nLCB3aGljaCByZWxpZXMKPiBvbmx5IG9uIGV4aXN0aW5n
+IHBpZWNlcyBvZiBpbmZyYXN0cnVjdHVyZSBhbmQgd2hpY2ggd29ya2VkIGZvciBib3RoCj4gRXh5
+bm9zIGFuZCBSb2NrY2hpcCwgaW5jbHVkaW5nIFY0TDIsIHdvdWxkbid0IHdvcmsgZm9yIFNNTVUg
+YW5kL29yIFFDCj4gU29Dcy4KPgo+IEJlc3QgcmVnYXJkcywKPiBUb21hc3oKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlz
+dApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
