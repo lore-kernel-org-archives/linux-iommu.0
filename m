@@ -1,137 +1,207 @@
-From: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2] iommu/amd: Avoid locking get_irq_table() from atomic
-	context
-Date: Wed, 14 Feb 2018 17:36:28 -0600
-Message-ID: <20180214233628.29560-1-swood@redhat.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH v7 6/6] drm/msm: iommu: Replace runtime calls with runtime suppliers
+Date: Thu, 15 Feb 2018 12:17:48 +0900
+Message-ID: <CAAFQd5AmG1zSm+CouXOCJbs8SNGFk1-RqfU1nWGjMGJMB-qfvw@mail.gmail.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
+ <1517999482-17317-7-git-send-email-vivek.gautam@codeaurora.org>
+ <CAAFQd5AjopiX6fDgD+mO+-+d0yj-swEnVCNvccWRBSMO+XVJkA@mail.gmail.com>
+ <CAF6AEGs8qcRTvz6srSfc39ybZrPYMVg2w6qkaO2AdWL1GD4mQw@mail.gmail.com>
+ <CAAFQd5BKRumpEfAKNF_RKS-ZZ8D671DfOz4vB2+w1SV3aG9NxQ@mail.gmail.com>
+ <CAF6AEGuNZJKtwGZ5mLfqNND2jtU+HYM11UONfAtVTzoM0QVpdg@mail.gmail.com>
+ <CAAFQd5BZJ1G0RG32hYErNzPRvisBhhiSNCBsjbzfm0WzO=DnsQ@mail.gmail.com>
+ <CAFp+6iHaycK=CcE1S15EeuMkaw8LnW0ebptU0hM6tUtWdeEOtA@mail.gmail.com>
+ <CAAFQd5Afj-Bj+3wHwmF2tT7y=46EsYEtO_mXfY6stXBgHutEUg@mail.gmail.com>
+ <CAFp+6iGX6pr+MdPSSHHG=qOnhHky_8OHiDqAcJ9UudEUv=JMHg@mail.gmail.com>
+ <CAAFQd5DiwAugGnPOTw0+XrEfef9x-n-vx59JFuXpNawjiXHwCw@mail.gmail.com>
+ <CAFp+6iEW0faeHDfzN_F1bRrHGcVo3sPCk4HSY=t9dnEvHkDkYw@mail.gmail.com> <b003ecda-1cbe-4e5f-872b-107154ac40e5@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Luis Claudio R. Goncalves" <lgoncalv-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Clark Williams <williams-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <b003ecda-1cbe-4e5f-872b-107154ac40e5@arm.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PM <linux-pm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, freedreno <freedreno@lists.freedesktop.org>, David Airlie <airlied@linux.ie>, Greg KH <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, jcrouse@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-get_irq_table() previously acquired amd_iommu_devtable_lock which is not
-a raw lock, and thus cannot be acquired from atomic context on
-PREEMPT_RT.  Many calls to modify_irte*() come from atomic context due to
-the IRQ desc->lock, as does amd_iommu_update_ga() due to the preemption
-disabling in vcpu_load/put().
+On Thu, Feb 15, 2018 at 1:03 AM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 14/02/18 10:33, Vivek Gautam wrote:
+>>
+>> On Wed, Feb 14, 2018 at 2:46 PM, Tomasz Figa <tfiga@chromium.org> wrote:
+>>
+>> Adding Jordan to this thread as well.
+>>
+>>> On Wed, Feb 14, 2018 at 6:13 PM, Vivek Gautam
+>>> <vivek.gautam@codeaurora.org> wrote:
+>>>>
+>>>> Hi Tomasz,
+>>>>
+>>>> On Wed, Feb 14, 2018 at 11:08 AM, Tomasz Figa <tfiga@chromium.org>
+>>>> wrote:
+>>>>>
+>>>>> On Wed, Feb 14, 2018 at 1:17 PM, Vivek Gautam
+>>>>> <vivek.gautam@codeaurora.org> wrote:
+>>>>>>
+>>>>>> Hi Tomasz,
+>>>>>>
+>>>>>> On Wed, Feb 14, 2018 at 8:31 AM, Tomasz Figa <tfiga@chromium.org>
+>>>>>> wrote:
+>>>>>>>
+>>>>>>> On Wed, Feb 14, 2018 at 11:13 AM, Rob Clark <robdclark@gmail.com>
+>>>>>>> wrote:
+>>>>>>>>
+>>>>>>>> On Tue, Feb 13, 2018 at 8:59 PM, Tomasz Figa <tfiga@chromium.org>
+>>>>>>>> wrote:
+>>>>>>>>>
+>>>>>>>>> On Wed, Feb 14, 2018 at 3:03 AM, Rob Clark <robdclark@gmail.com>
+>>>>>>>>> wrote:
+>>>>>>>>>>
+>>>>>>>>>> On Tue, Feb 13, 2018 at 4:10 AM, Tomasz Figa <tfiga@chromium.org>
+>>>>>>>>>> wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Hi Vivek,
+>>>>>>>>>>>
+>>>>>>>>>>> Thanks for the patch. Please see my comments inline.
+>>>>>>>>>>>
+>>>>>>>>>>> On Wed, Feb 7, 2018 at 7:31 PM, Vivek Gautam
+>>>>>>>>>>> <vivek.gautam@codeaurora.org> wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>> While handling the concerned iommu, there should not be a
+>>>>>>>>>>>> need to power control the drm devices from iommu interface.
+>>>>>>>>>>>> If these drm devices need to be powered around this time,
+>>>>>>>>>>>> the respective drivers should take care of this.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Replace the pm_runtime_get/put_sync(<drm_device>) with
+>>>>>>>>>>>> pm_runtime_get/put_suppliers(<drm_device>) calls, to power-up
+>>>>>>>>>>>> the connected iommu through the device link interface.
+>>>>>>>>>>>> In case the device link is not setup these get/put_suppliers()
+>>>>>>>>>>>> calls will be a no-op, and the iommu driver should take care of
+>>>>>>>>>>>> powering on its devices accordingly.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>>>>>>>>>>>> ---
+>>>>>>>>>>>>   drivers/gpu/drm/msm/msm_iommu.c | 16 ++++++++--------
+>>>>>>>>>>>>   1 file changed, 8 insertions(+), 8 deletions(-)
+>>>>>>>>>>>>
+>>>>>>>>>>>> diff --git a/drivers/gpu/drm/msm/msm_iommu.c
+>>>>>>>>>>>> b/drivers/gpu/drm/msm/msm_iommu.c
+>>>>>>>>>>>> index b23d33622f37..1ab629bbee69 100644
+>>>>>>>>>>>> --- a/drivers/gpu/drm/msm/msm_iommu.c
+>>>>>>>>>>>> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+>>>>>>>>>>>> @@ -40,9 +40,9 @@ static int msm_iommu_attach(struct msm_mmu
+>>>>>>>>>>>> *mmu, const char * const *names,
+>>>>>>>>>>>>          struct msm_iommu *iommu = to_msm_iommu(mmu);
+>>>>>>>>>>>>          int ret;
+>>>>>>>>>>>>
+>>>>>>>>>>>> -       pm_runtime_get_sync(mmu->dev);
+>>>>>>>>>>>> +       pm_runtime_get_suppliers(mmu->dev);
+>>>>>>>>>>>>          ret = iommu_attach_device(iommu->domain, mmu->dev);
+>>>>>>>>>>>> -       pm_runtime_put_sync(mmu->dev);
+>>>>>>>>>>>> +       pm_runtime_put_suppliers(mmu->dev);
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> For me, it looks like a wrong place to handle runtime PM of IOMMU
+>>>>>>>>>>> here. iommu_attach_device() calls into IOMMU driver's
+>>>>>>>>>>> attach_device()
+>>>>>>>>>>> callback and that's where necessary runtime PM gets should
+>>>>>>>>>>> happen, if
+>>>>>>>>>>> any. In other words, driver A (MSM DRM driver) shouldn't be
+>>>>>>>>>>> dealing
+>>>>>>>>>>> with power state of device controlled by driver B (ARM SMMU).
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Note that we end up having to do the same, because of
+>>>>>>>>>> iommu_unmap()
+>>>>>>>>>> while DRM driver is powered off..  it might be cleaner if it was
+>>>>>>>>>> all
+>>>>>>>>>> self contained in the iommu driver, but that would make it so
+>>>>>>>>>> other
+>>>>>>>>>> drivers couldn't call iommu_unmap() from an irq handler, which is
+>>>>>>>>>> apparently something that some of them want to do..
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I'd assume that runtime PM status is already guaranteed to be
+>>>>>>>>> active
+>>>>>>>>> when the IRQ handler is running, by some other means (e.g.
+>>>>>>>>> pm_runtime_get_sync() called earlier, when queuing some work to the
+>>>>>>>>> hardware). Otherwise, I'm not sure how a powered down device could
+>>>>>>>>> trigger an IRQ.
+>>>>>>>>>
+>>>>>>>>> So, if the master device power is already on, suppliers should be
+>>>>>>>>> powered on as well, thanks to device links.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> umm, that is kindof the inverse of the problem..  the problem is
+>>>>>>>> things like gpu driver (and v4l2 drivers that import dma-buf's,
+>>>>>>>> afaict).. they will potentially call iommu->unmap() when device is
+>>>>>>>> not
+>>>>>>>> active (due to userspace or things beyond the control of the
+>>>>>>>> driver)..
+>>>>>>>> so *they* would want iommu to do pm get/put calls.
+>>>>>>>
+>>>>>>>
+>>>>>>> Which is fine and which is actually already done by one of the
+>>>>>>> patches
+>>>>>>> in this series, not for map/unmap, but probe, add_device,
+>>>>>>> remove_device. Having parts of the API doing it inside the callback
+>>>>>>> and other parts outside sounds at least inconsistent.
+>>>>>>>
+>>>>>>>> But other drivers
+>>>>>>>> trying to unmap from irq ctx would not.  Which is the contradictory
+>>>>>>>> requirement that lead to the idea of iommu user powering up iommu
+>>>>>>>> for
+>>>>>>>> unmap.
+>>>>>>>
+>>>>>>>
+>>>>>>> Sorry, maybe I wasn't clear. My last message was supposed to show
+>>>>>>> that
+>>>>>>> it's not contradictory at all, because "other drivers trying to unmap
+>>>>>>> from irq ctx" would already have called pm_runtime_get_*() earlier
+>>>>>>> from a non-irq ctx, which would have also done the same on all the
+>>>>>>> linked suppliers, including the IOMMU. The ultimate result would be
+>>>>>>> that the map/unmap() of the IOMMU driver calling
+>>>>>>> pm_runtime_get_sync()
+>>>>>>> would do nothing besides incrementing the reference count.
+>>>>>>
+>>>>>>
+>>>>>> The entire point was to avoid the slowpath that
+>>>>>> pm_runtime_get/put_sync()
+>>>>>> would add in map/unmap. It would not be correct to add a slowpath in
+>>>>>> irq_ctx
+>>>>>> for taking care of non-irq_ctx and for the situations where master is
+>>>>>> already
+>>>>>> powered-off.
+>>>>>
+>>>>>
+>>>>> Correct me if I'm wrong, but I believe that with what I'm proposing
+>>>>> there wouldn't be any slow path.
+>>>>
+>>>>
+>>>> Yea, but only when the power domain is irq-safe? And not all platforms
+>>>> enable irq-safe power domains. For instance, msm doesn't enable its
+>>>> gdsc power domains as irq-safe.
+>>>> Is it something i am missing?
+>>>
+>>>
+>>> irq-safe would matter if there would exist a case when the call is
+>>> done from IRQ context and the power is off. As I explained in a), it
+>>> shouldn't happen.
+>>
+>>
+>> Hi Robin, Will
+>>
+>> Does adding pm_runtime_get() in map/unmap sounds good to you?
+>
+>
+> Given that we spent significant effort last year removing as much locking as
+> we possibly could from the map/unmap path to minimise the significant
+> performance impact it was having on networking/storage/etc. workloads, I
+> really don't want to introduce more for the sake of one specific use-case,
+> so no.
 
-The only difference between calling get_irq_table() and reading from
-irq_lookup_table[] directly, other than the lock acquisition and
-amd_iommu_rlookup_table[] check, is if the table entry is unpopulated,
-which should never happen when looking up a devid that came from an
-irq_2_irte struct, as get_irq_table() would have already been called on
-that devid during irq_remapping_alloc().
+Could you elaborate on what kind of locking you are concerned about?
+As I explained before, the normally happening fast path would lock
+dev->power_lock only for the brief moment of incrementing the runtime
+PM usage counter.
 
-The lock acquisition is not needed in these cases because entries in
-irq_lookup_table[] never change once non-NULL -- nor would the
-amd_iommu_devtable_lock usage in get_irq_table() provide meaningful
-protection if they did, since it's released before using the looked up
-table in the get_irq_table() caller.
-
-Rename the old get_irq_table() to alloc_irq_table(), and create a new
-lockless get_irq_table() to be used in non-allocating contexts that WARNs
-if it doesn't find what it's looking for.
-
-Signed-off-by: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
-v2: Added new get_irq_table() with WARNs rather than accessing
-irq_lookup_table[] directly.
----
- drivers/iommu/amd_iommu.c | 29 ++++++++++++++++++++++-------
- 1 file changed, 22 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index e4026133aa1d..5d41e0733cb3 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3594,7 +3594,22 @@ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
- 	amd_iommu_dev_table[devid].data[2] = dte;
- }
- 
--static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
-+static struct irq_remap_table *get_irq_table(u16 devid)
-+{
-+	struct irq_remap_table *table;
-+
-+	if (WARN_ONCE(!amd_iommu_rlookup_table[devid],
-+		      "%s: no iommu for devid %x\n", __func__, devid))
-+		return NULL;
-+
-+	table = irq_lookup_table[devid];
-+	if (WARN_ONCE(!table, "%s: no table for devid %x\n", __func__, devid))
-+		return NULL;
-+
-+	return table;
-+}
-+
-+static struct irq_remap_table *alloc_irq_table(u16 devid, bool ioapic)
- {
- 	struct irq_remap_table *table = NULL;
- 	struct amd_iommu *iommu;
-@@ -3681,7 +3696,7 @@ static int alloc_irq_index(u16 devid, int count, bool align)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	table = get_irq_table(devid, false);
-+	table = alloc_irq_table(devid, false);
- 	if (!table)
- 		return -ENODEV;
- 
-@@ -3732,7 +3747,7 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
- 	if (iommu == NULL)
- 		return -EINVAL;
- 
--	table = get_irq_table(devid, false);
-+	table = get_irq_table(devid);
- 	if (!table)
- 		return -ENOMEM;
- 
-@@ -3765,7 +3780,7 @@ static int modify_irte(u16 devid, int index, union irte *irte)
- 	if (iommu == NULL)
- 		return -EINVAL;
- 
--	table = get_irq_table(devid, false);
-+	table = get_irq_table(devid);
- 	if (!table)
- 		return -ENOMEM;
- 
-@@ -3789,7 +3804,7 @@ static void free_irte(u16 devid, int index)
- 	if (iommu == NULL)
- 		return;
- 
--	table = get_irq_table(devid, false);
-+	table = get_irq_table(devid);
- 	if (!table)
- 		return;
- 
-@@ -4107,7 +4122,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		return ret;
- 
- 	if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC) {
--		if (get_irq_table(devid, true))
-+		if (alloc_irq_table(devid, true))
- 			index = info->ioapic_pin;
- 		else
- 			ret = -ENOMEM;
-@@ -4390,7 +4405,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	irt = get_irq_table(devid, false);
-+	irt = get_irq_table(devid);
- 	if (!irt)
- 		return -ENODEV;
- 
--- 
-2.14.3
+Best regards,
+Tomasz
