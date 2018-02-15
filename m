@@ -1,41 +1,43 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 0/5] Add Intel IOMMU debugfs support
-Date: Thu, 15 Feb 2018 10:53:38 +0100
-Message-ID: <20180215095337.fccoozdclfnbepi4@8bytes.org>
-References: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
-	<20180213140303.42mbzfxpypljy37l@8bytes.org>
-	<20180213214002.GA27066@otc-nc-03>
-	<20180213145332.35c73eda@jacob-builder>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 01/37] iommu: Introduce Shared Virtual Addressing API
+Date: Thu, 15 Feb 2018 10:59:09 +0100
+Message-ID: <20180215095909.r4nwqjhuijusssuy@8bytes.org>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+ <20180212183352.22730-2-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180213145332.35c73eda@jacob-builder>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj,
-	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20180212183352.22730-2-jean-philippe.brucker@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, bhelgaas@google.com, alex.williamson@redhat.com, tn@semihalf.com, liubo95@huawei.com, thunder.leizhen@huawei.com, xieyisheng1@huawei.com, xuzaibo@huawei.com, ilias.apalodimas@linaro.org, jonathan.cameron@huawei.com, shunyong.yang@hxt-semitech.com, nwatters@codeaurora.org, okaya@codeaurora.org, jcrouse@codeaurora.org, rfranz@cavium.com, dwmw2@infradead.org, jacob.jun.pan@linux.intel.com, yi.l.liu
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 13, 2018 at 02:53:32PM -0800, Jacob Pan wrote:
-> We did start out with /dev/mem but run into CONFIG_STRICT_DEVMEM
-> requirement which is turned on by default.
-> libpci is only limited to PCI config space access, right?
+On Mon, Feb 12, 2018 at 06:33:16PM +0000, Jean-Philippe Brucker wrote:
+  
+> +config IOMMU_SVA
+> +	bool "Shared Virtual Addressing API for the IOMMU"
+> +	select IOMMU_API
+> +	help
+> +	  Enable process address space management for the IOMMU API. In systems
+> +	  that support it, device drivers can bind process address spaces to
+> +	  devices and share their page tables using this API.
+> +
+> +	  If unsure, say N here.
 
-Even if /dev/mem is not an option, I am still not convinced that this is
-a good idea. How should this be used? Will you just use it to debug
-Intel IOMMUs when you guys work on the driver or should users report the
-data back when they hit problems?
+I think this should be an option selected by IOMMU driver and not be
+activly selectable by the user.
 
+> +/**
+> + * iommu_sva_device_shutdown() - Shutdown Shared Virtual Addressing for a device
+> + * @dev: the device
+> + *
+> + * Disable SVA. The device should not be performing any DMA while this function
+> + * is running.
 
+Is this a good idea? How about devices that get hot-unplugged while
+processes still use them and there is DMA going back and forth? This
+function can be the point to shut down all ongoing stuff first and the
+shutdown the device.
 
-	Joerg
