@@ -1,17 +1,15 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH 01/37] iommu: Introduce Shared Virtual Addressing API
-Date: Thu, 15 Feb 2018 12:42:05 +0000
-Message-ID: <0b579768-3090-dd50-58b1-3385be92ef21@arm.com>
+Date: Thu, 15 Feb 2018 12:43:06 +0000
+Message-ID: <69405fb7-7453-8575-e020-2ded7b2b92f5@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 	<20180212183352.22730-2-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191002823@SHSMSX101.ccr.corp.intel.com>
-	<b3c190e7-1a33-971e-b86c-a9725118ba05@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191003B1B@SHSMSX101.ccr.corp.intel.com>
+	<20180215095909.r4nwqjhuijusssuy@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191003B1B-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <20180215095909.r4nwqjhuijusssuy-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,84 +20,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "Raj,
-	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rjw@rjwyso
 List-Id: iommu@lists.linux-foundation.org
 
-On 13/02/18 23:43, Tian, Kevin wrote:
->> From: Jean-Philippe Brucker
->> Sent: Tuesday, February 13, 2018 8:40 PM
->>
->>
->> [...]
->>>> +
->>>> +/**
->>>> + * iommu_sva_device_init() - Initialize Shared Virtual Addressing for a
->>>> device
->>>> + * @dev: the device
->>>> + * @features: bitmask of features that need to be initialized
->>>> + * @max_pasid: max PASID value supported by the device
->>>> + *
->>>> + * Users of the bind()/unbind() API must call this function to initialize all
->>>> + * features required for SVA.
->>>> + *
->>>> + * - If the device should support multiple address spaces (e.g. PCI
->> PASID),
->>>> + *   IOMMU_SVA_FEAT_PASID must be requested.
->>>
->>> I think it is by default assumed when using this API, based on definition of
->>> SVA. Can you elaborate the situation where this flag can be cleared?
->>
->> When passing a device to userspace, you could also share its non-pasid
->> address space with the process. It requires a new domain type so is left
->> as a TODO in patch 2/37. I did get requests for this feature, though I
->> think it was mostly for prototyping. I guess I could remove the flag, and
->> reintroduce it as IOMMU_SVA_FEAT_NO_PASID later on.
+On 15/02/18 09:59, Joerg Roedel wrote:
+> On Mon, Feb 12, 2018 at 06:33:16PM +0000, Jean-Philippe Brucker wrote:
+>   
+>> +config IOMMU_SVA
+>> +	bool "Shared Virtual Addressing API for the IOMMU"
+>> +	select IOMMU_API
+>> +	help
+>> +	  Enable process address space management for the IOMMU API. In systems
+>> +	  that support it, device drivers can bind process address spaces to
+>> +	  devices and share their page tables using this API.
+>> +
+>> +	  If unsure, say N here.
 > 
-> sorry I still didn't get the definition of non-pasid address space. 
-> Did you mean the GPA/IOVA address space and no_pasid implies
-> actually some default PASID associated?
+> I think this should be an option selected by IOMMU driver and not be
+> activly selectable by the user.
 
-Yes I mean merging the process address space and IOVA space. There are no
-PASIDs involved if the device or the IOMMU doesn't support it. Instead of
-private DMA page tables you program the mm pgd into the IOMMU. A VFIO
-userspace driver, instead of sending MAP/UNMAP ioctl, could simply issue a
-BIND.
+Ok
 
-Technically nothing prevents it, but now the resv problem discussed on
-patch 2/37 stands out. For example on x86 you'd probably need to carve the
-IOAPIC MSI range out of the process address space. On Arm you'd need to
-create a write-only mapping for MSIs (IOMMU translates it to the IRQ chip
-address, but thankfully accessing the doorbell from CPU side doesn't
-trigger an MSI.)
-
->> [...]
->>>> +	ret = domain->ops->sva_device_init(dev, features, &min_pasid,
->>>> +					   &max_pasid);
->>>> +	if (ret)
->>>> +		return ret;
->>>> +
->>>> +	/* FIXME: racy. Next version should have a mutex (same as fault
->>>> handler) */
->>>> +	dev_param->sva_features = features;
->>>> +	dev_param->min_pasid = min_pasid;
->>>> +	dev_param->max_pasid = max_pasid;
->>>
->>> what's the point of min_pasid here?
->>
->> Arm SMMUv3 uses entry 0 of the PASID table for the default (non-pasid)
->> context, so it needs to set min_pasid to 1. AMD IOMMU recently added a
->> similar feature (GIoSup), if I understood correctly.
->>
+>> +/**
+>> + * iommu_sva_device_shutdown() - Shutdown Shared Virtual Addressing for a device
+>> + * @dev: the device
+>> + *
+>> + * Disable SVA. The device should not be performing any DMA while this function
+>> + * is running.
 > 
-> just for such purpose maybe we should just define a reserved_pasid
-> otherwise there will be some waste if an implementation allows it
-> non-zero.
+> Is this a good idea? How about devices that get hot-unplugged while
+> processes still use them and there is DMA going back and forth? This
+> function can be the point to shut down all ongoing stuff first and the
+> shutdown the device.
 
-What's wasted? It's slightly simpler to use min_pasid because we just pass
-that limit to idr_alloc(). With a reserved_pasid we'll have to call
-idr_alloc(reserved_pasid) once, for the same result.
+To be honest I don't know how hot-unplug works. But sva_device_shutdown()
+may be called, for instance, by the device driver before the device
+disappears, so it has to know how to stop DMA before calling it. The IOMMU
+driver can't really do anything more.
+
+For hot-unplug I guess that device_driver::remove() is called first,
+allowing it to stop all DMA and call sva_device_shutdown().
+
+Then the IOMMU gets a BUS_NOTIFY_REMOVED_DEVICE notification and calls
+iommu_ops::remove_device(), allowing to clean up SVA structure if the
+device driver didn't call unbind_device() and sva_device_shutdown(). But
+at that point we don't have a way to cooperate with the driver to stop DMA
+anymore.
 
 Thanks,
 Jean
