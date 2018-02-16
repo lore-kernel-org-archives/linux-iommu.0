@@ -1,123 +1,119 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
-Date: Thu, 15 Feb 2018 19:17:29 +0000
-Message-ID: <20180215191729.15777-1-dima@arista.com>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v7 6/6] drm/msm: iommu: Replace runtime
+ calls with runtime suppliers
+Date: Fri, 16 Feb 2018 09:13:50 +0900
+Message-ID: <CAAFQd5DkLtq2w00=Zd4sMDB4QOWqi7R-zgydECJXLdTmaHty+g@mail.gmail.com>
+References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
+ <CAAFQd5AjopiX6fDgD+mO+-+d0yj-swEnVCNvccWRBSMO+XVJkA@mail.gmail.com>
+ <CAF6AEGs8qcRTvz6srSfc39ybZrPYMVg2w6qkaO2AdWL1GD4mQw@mail.gmail.com>
+ <CAAFQd5BKRumpEfAKNF_RKS-ZZ8D671DfOz4vB2+w1SV3aG9NxQ@mail.gmail.com>
+ <CAF6AEGuNZJKtwGZ5mLfqNND2jtU+HYM11UONfAtVTzoM0QVpdg@mail.gmail.com>
+ <CAAFQd5BZJ1G0RG32hYErNzPRvisBhhiSNCBsjbzfm0WzO=DnsQ@mail.gmail.com>
+ <CAFp+6iHaycK=CcE1S15EeuMkaw8LnW0ebptU0hM6tUtWdeEOtA@mail.gmail.com>
+ <CAAFQd5Afj-Bj+3wHwmF2tT7y=46EsYEtO_mXfY6stXBgHutEUg@mail.gmail.com>
+ <CAFp+6iGX6pr+MdPSSHHG=qOnhHky_8OHiDqAcJ9UudEUv=JMHg@mail.gmail.com>
+ <CAAFQd5DiwAugGnPOTw0+XrEfef9x-n-vx59JFuXpNawjiXHwCw@mail.gmail.com>
+ <CAFp+6iEW0faeHDfzN_F1bRrHGcVo3sPCk4HSY=t9dnEvHkDkYw@mail.gmail.com>
+ <b003ecda-1cbe-4e5f-872b-107154ac40e5@arm.com>
+ <CAAFQd5AmG1zSm+CouXOCJbs8SNGFk1-RqfU1nWGjMGJMB-qfvw@mail.gmail.com>
+ <CAAFQd5A9B-di9svtiJbvk2hz1U1xo61rTY5vt6AD+KR5iMcG-A@mail.gmail.com>
+ <7406f1ce-c2c9-a6bd-2886-5a34de45add6@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <7406f1ce-c2c9-a6bd-2886-5a34de45add6-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is a ratelimit for printing, but it's incremented each time the
-cpu recives dmar fault interrupt. While one interrupt may signal about
-*many* faults.
-So, measuring the impact it turns out that reading/clearing one fault
-takes < 1 usec, and printing info about the fault takes ~170 msec.
-
-Having in mind that maximum number of fault recording registers per
-remapping hardware unit is 256.. IRQ handler may run for (170*256) msec.
-And as fault-serving loop runs without a time limit, during servicing
-new faults may occur..
-
-Ratelimit each fault printing rather than each irq printing.
-
-Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
-
-BUG: spinlock lockup suspected on CPU#0, CliShell/9903
- lock: 0xffffffff81a47440, .magic: dead4ead, .owner: kworker/u16:2/8915, .owner_cpu: 6
-CPU: 0 PID: 9903 Comm: CliShell
-Call Trace:$\n'
-[..] dump_stack+0x65/0x83$\n'
-[..] spin_dump+0x8f/0x94$\n'
-[..] do_raw_spin_lock+0x123/0x170$\n'
-[..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
-[..] uart_chars_in_buffer+0x20/0x4d$\n'
-[..] tty_chars_in_buffer+0x18/0x1d$\n'
-[..] n_tty_poll+0x1cb/0x1f2$\n'
-[..] tty_poll+0x5e/0x76$\n'
-[..] do_select+0x363/0x629$\n'
-[..] compat_core_sys_select+0x19e/0x239$\n'
-[..] compat_SyS_select+0x98/0xc0$\n'
-[..] sysenter_dispatch+0x7/0x25$\n'
-[..]
-NMI backtrace for cpu 6
-CPU: 6 PID: 8915 Comm: kworker/u16:2
-Workqueue: dmar_fault dmar_fault_work
-Call Trace:$\n'
-[..] wait_for_xmitr+0x26/0x8f$\n'
-[..] serial8250_console_putchar+0x1c/0x2c$\n'
-[..] uart_console_write+0x40/0x4b$\n'
-[..] serial8250_console_write+0xe6/0x13f$\n'
-[..] call_console_drivers.constprop.13+0xce/0x103$\n'
-[..] console_unlock+0x1f8/0x39b$\n'
-[..] vprintk_emit+0x39e/0x3e6$\n'
-[..] printk+0x4d/0x4f$\n'
-[..] dmar_fault+0x1a8/0x1fc$\n'
-[..] dmar_fault_work+0x15/0x17$\n'
-[..] process_one_work+0x1e8/0x3a9$\n'
-[..] worker_thread+0x25d/0x345$\n'
-[..] kthread+0xea/0xf2$\n'
-[..] ret_from_fork+0x58/0x90$\n'
-
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
----
-Maybe it's worth to limit while(1) cycle.
-If IOMMU generates faults with equal speed as irq handler cleans
-them, it may turn into long-irq-disabled region again.
-Not sure if it can happen anyway.
-
- drivers/iommu/dmar.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index accf58388bdb..6c4ea32ee6a9 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 	int reg, fault_index;
- 	u32 fault_status;
- 	unsigned long flag;
--	bool ratelimited;
- 	static DEFINE_RATELIMIT_STATE(rs,
- 				      DEFAULT_RATELIMIT_INTERVAL,
- 				      DEFAULT_RATELIMIT_BURST);
- 
--	/* Disable printing, simply clear the fault when ratelimited */
--	ratelimited = !__ratelimit(&rs);
--
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
- 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
--	if (fault_status && !ratelimited)
-+	if (fault_status && __ratelimit(&rs))
- 		pr_err("DRHD: handling fault status reg %x\n", fault_status);
- 
- 	/* TBD: ignore advanced fault log currently */
-@@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 	fault_index = dma_fsts_fault_record_index(fault_status);
- 	reg = cap_fault_reg_offset(iommu->cap);
- 	while (1) {
-+		/* Disable printing, simply clear the fault when ratelimited */
-+		bool ratelimited = !__ratelimit(&rs);
- 		u8 fault_reason;
- 		u16 source_id;
- 		u64 guest_addr;
--- 
-2.13.6
+T24gRnJpLCBGZWIgMTYsIDIwMTggYXQgMjoxNCBBTSwgUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJw
+aHlAYXJtLmNvbT4gd3JvdGU6Cj4gT24gMTUvMDIvMTggMDQ6MTcsIFRvbWFzeiBGaWdhIHdyb3Rl
+Ogo+IFsuLi5dCj4+Pgo+Pj4gQ291bGQgeW91IGVsYWJvcmF0ZSBvbiB3aGF0IGtpbmQgb2YgbG9j
+a2luZyB5b3UgYXJlIGNvbmNlcm5lZCBhYm91dD8KPj4+IEFzIEkgZXhwbGFpbmVkIGJlZm9yZSwg
+dGhlIG5vcm1hbGx5IGhhcHBlbmluZyBmYXN0IHBhdGggd291bGQgbG9jawo+Pj4gZGV2LT5wb3dl
+cl9sb2NrIG9ubHkgZm9yIHRoZSBicmllZiBtb21lbnQgb2YgaW5jcmVtZW50aW5nIHRoZSBydW50
+aW1lCj4+PiBQTSB1c2FnZSBjb3VudGVyLgo+Pgo+Pgo+PiBNeSBiYWQsIHRoYXQncyBub3QgZXZl
+biBpdC4KPj4KPj4gVGhlIGF0b21pYyB1c2FnZSBjb3VudGVyIGlzIGluY3JlbWVudGVkIGJlZm9y
+ZWhhbmRzLCB3aXRob3V0IGFueQo+PiBsb2NraW5nIFsxXSBhbmQgdGhlIHNwaW5sb2NrIGlzIGFj
+cXVpcmVkIG9ubHkgZm9yIHRoZSBzYWtlIG9mCj4+IHZhbGlkYXRpbmcgdGhhdCBkZXZpY2UncyBy
+dW50aW1lIFBNIHN0YXRlIHJlbWFpbmVkIHZhbGlkIGluZGVlZCBbMl0sCj4+IHdoaWNoIHdvdWxk
+IGJlIHRoZSBjYXNlIGluIHRoZSBmYXN0IHBhdGggb2YgdGhlIHNhbWUgZHJpdmVyIGRvaW5nIHR3
+bwo+PiBtYXBwaW5ncyBpbiBwYXJhbGxlbCwgd2l0aCB0aGUgbWFzdGVyIHBvd2VyZWQgb24gKGFu
+ZCBzbyB0aGUgU01NVSwKPj4gdGhyb3VnaCBkZXZpY2UgbGlua3M7IGlmIG1hc3RlciB3YXMgbm90
+IHBvd2VyZWQgb24gYWxyZWFkeSwgcG93ZXJpbmcKPj4gb24gdGhlIFNNTVUgaXMgdW5hdm9pZGFi
+bGUgYW55d2F5IGFuZCBpdCB3b3VsZCBhZGQgbXVjaCBtb3JlIGxhdGVuY3kKPj4gdGhhbiB0aGUg
+c3BpbmxvY2sgaXRzZWxmKS4KPgo+Cj4gV2Ugbm93IGhhdmUgbm8gbG9ja2luZyBhdCBhbGwgaW4g
+dGhlIG1hcCBwYXRoLCBhbmQgb25seSBhIHBlci1kb21haW4gbG9jawo+IGFyb3VuZCBUTEIgc3lu
+YyBpbiB1bm1hcCB3aGljaCBpcyB1bmZvcnR1bmF0ZWx5IG5lY2Vzc2FyeSBmb3IgY29ycmVjdG5l
+c3M7Cj4gdGhlIGxhdHRlciBpc24ndCB0b28gdGVycmlibGUsIHNpbmNlIGluICJzZXJpb3VzIiBo
+YXJkd2FyZSBpdCBzaG91bGQgb25seSBiZQo+IHNlcmlhbGlzaW5nIGEgZmV3IGNwdXMgc2Vydmlu
+ZyB0aGUgc2FtZSBkZXZpY2UgYWdhaW5zdCBlYWNoIG90aGVyIChlLmcuIGZvcgo+IG11bHRpcGxl
+IHF1ZXVlcyBvbiBhIHNpbmdsZSBOSUMpLgo+Cj4gUHV0dGluZyBpbiBhIGdsb2JhbCBsb2NrIHdo
+aWNoIHNlcmlhbGlzZXMgKmFsbCogY29uY3VycmVudCBtYXAgYW5kIHVubWFwCj4gY2FsbHMgZm9y
+ICphbGwqIHVucmVsYXRlZCBkZXZpY2VzIG1ha2VzIHRoaW5ncyB3b3JzZS4gUGVyaW9kLiBFdmVu
+IGlmIHRoZQo+IGxvY2sgaXRzZWxmIHdlcmUgaGVsZCBmb3IgdGhlIG1pbmltdW0gcG9zc2libGUg
+dGltZSwgaS5lLiB0cml2aWFsbHkKPiAic3Bpbl9sb2NrKCZsb2NrKTsgc3Bpbl91bmxvY2soJmxv
+Y2spIiwgdGhlIGNvc3Qgb2YgcmVwZWF0ZWRseSBib3VuY2luZyB0aGF0Cj4gb25lIGNhY2hlIGxp
+bmUgYXJvdW5kIGJldHdlZW4gOTYgQ1BVcyBhY3Jvc3MgdHdvIHNvY2tldHMgaXMgbm90IG5lZ2xp
+Z2libGUuCgpGYWlyIGVub3VnaC4gTm90ZSB0aGF0IHdlJ3JlIGluIGEgcXVpdGUgaW50ZXJlc3Rp
+bmcgc2l0dWF0aW9uIG5vdzoKIGEpIFdlIG5lZWQgdG8gaGF2ZSBydW50aW1lIFBNIGVuYWJsZWQg
+b24gUXVhbGNvbW0gU29DIHRvIGhhdmUgcG93ZXIKcHJvcGVybHkgbWFuYWdlZCwKIGIpIFdlIG5l
+ZWQgdG8gaGF2ZSBsb2NrLWZyZWUgbWFwL3VubWFwIG9uIHN1Y2ggZGlzdHJpYnV0ZWQgc3lzdGVt
+cywKIGMpIElmIHJ1bnRpbWUgUE0gaXMgZW5hYmxlZCwgd2UgbmVlZCB0byBjYWxsIGludG8gcnVu
+dGltZSBQTSBmcm9tIGFueQpjb2RlIHRoYXQgZG9lcyBoYXJkd2FyZSBhY2Nlc3Nlcywgb3RoZXJ3
+aXNlIHRoZSBJT01NVSBBUEkgKGFuZCBzbyBETUEKQVBJIGFuZCB0aGVuIGFueSBWNEwyIGRyaXZl
+cikgYmVjb21lcyB1bnVzYWJsZS4KCkkgY2FuIHNlZSBvbmUgbW9yZSB3YXkgdGhhdCBjb3VsZCBw
+b3RlbnRpYWxseSBsZXQgdXMgaGF2ZSBhbGwgdGhlCnRocmVlLiBIb3cgYWJvdXQgZW5hYmxpbmcg
+cnVudGltZSBQTSBvbmx5IG9uIHNlbGVjdGVkIGltcGxlbWVudGF0aW9ucwooZS5nLiBxY29tLHNt
+bXUpIGFuZCB0aGVuIGhhdmluZyBhbGwgdGhlIHJ1bnRpbWUgUE0gY2FsbHMgc3Vycm91bmRlZAp3
+aXRoIGlmIChwbV9ydW50aW1lX2VuYWJsZWQoKSksIHdoaWNoIGlzIGxvY2tsZXNzPwoKPgo+PiBb
+MV0KPj4gaHR0cDovL2VsaXhpci5mcmVlLWVsZWN0cm9ucy5jb20vbGludXgvdjQuMTYtcmMxL3Nv
+dXJjZS9kcml2ZXJzL2Jhc2UvcG93ZXIvcnVudGltZS5jI0wxMDI4Cj4+IFsyXQo+PiBodHRwOi8v
+ZWxpeGlyLmZyZWUtZWxlY3Ryb25zLmNvbS9saW51eC92NC4xNi1yYzEvc291cmNlL2RyaXZlcnMv
+YmFzZS9wb3dlci9ydW50aW1lLmMjTDYxMwo+Pgo+PiBJbiBhbnkgY2FzZSwgSSBjYW4ndCBpbWFn
+aW5lIHRoaXMgd29ya2luZyB3aXRoIFY0TDIgb3IgYW55dGhpbmcgZWxzZQo+PiByZWx5aW5nIG9u
+IGFueSBtZW1vcnkgbWFuYWdlbWVudCBtb3JlIGdlbmVyaWMgdGhhbiBjYWxsaW5nIElPTU1VIEFQ
+SQo+PiBkaXJlY3RseSBmcm9tIHRoZSBkcml2ZXIsIHdpdGggdGhlIElPTU1VIGRldmljZSBoYXZp
+bmcgcnVudGltZSBQTQo+PiBlbmFibGVkLCBidXQgd2l0aG91dCBtYW5hZ2luZyB0aGUgcnVudGlt
+ZSBQTSBmcm9tIHRoZSBJT01NVSBkcml2ZXIncwo+PiBjYWxsYmFja3MgdGhhdCBuZWVkIGFjY2Vz
+cyB0byB0aGUgaGFyZHdhcmUuIEFzIEkgbWVudGlvbmVkIGJlZm9yZSwKPj4gb25seSB0aGUgSU9N
+TVUgZHJpdmVyIGtub3dzIHdoZW4gZXhhY3RseSB0aGUgcmVhbCBoYXJkd2FyZSBhY2Nlc3MKPj4g
+bmVlZHMgdG8gYmUgZG9uZSAoZS5nLiBSb2NrY2hpcC9FeHlub3MgZG9uJ3QgbmVlZCB0byBkbyB0
+aGF0IGZvcgo+PiBtYXAvdW5tYXAgaWYgdGhlIHBvd2VyIGlzIGRvd24sIGJ1dCBzb21lIGltcGxl
+bWVudGF0aW9ucyBvZiBTTU1VIHdpdGgKPj4gVExCIHBvd2VyZWQgc2VwYXJhdGVseSBtaWdodCBu
+ZWVkIHRvIGRvIHNvKS4KPgo+Cj4gSXQncyB3b3J0aCBub3RpbmcgdGhhdCBFeHlub3MgYW5kIFJv
+Y2tjaGlwIGFyZSByZWxhdGl2ZWx5IHNtYWxsCj4gc2VsZi1jb250YWluZWQgSVAgYmxvY2tzIGlu
+dGVncmF0ZWQgY2xvc2VseSB3aXRoIHRoZSBpbnRlcmZhY2VzIG9mIHRoZWlyCj4gcmVsZXZhbnQg
+bWFzdGVyIGRldmljZXM7IFNNTVUgaXMgYW4gYXJjaGl0ZWN0dXJlLCBpbXBsZW1lbnRhdGlvbnMg
+b2Ygd2hpY2gKPiBtYXkgYmUgbGFyZ2UsIGRpc3RyaWJ1dGVkLCBhbmQgaGF2ZSBjb21wbGV4IGFu
+ZCB3aWxkbHkgZGlmZmVyaW5nIGludGVybmFsCj4gdG9wb2xvZ2llcy4gQXMgc3VjaCwgaXQncyBh
+IGxvdCBoYXJkZXIgdG8gbWFrZSBoYXJkd2FyZS1zcGVjaWZpYyBhc3N1bXB0aW9ucwo+IGFuZC9v
+ciBiZSBjb3JyZWN0IGZvciBhbGwgcG9zc2libGUgY2FzZXMuCj4KPiBEb24ndCBnZXQgbWUgd3Jv
+bmcsIEkgZG8gdWx0aW1hdGVseSBhZ3JlZSB0aGF0IHRoZSBJT01NVSBkcml2ZXIgaXMgdGhlIG9u
+bHkKPiBhZ2VudCB3aG8gdWx0aW1hdGVseSBrbm93cyB3aGF0IGNhbGxzIGFyZSBnb2luZyB0byBi
+ZSBuZWNlc3NhcnkgZm9yIHdoYXRldmVyCj4gb3BlcmF0aW9uIGl0J3MgcGVyZm9ybWluZyBvbiBp
+dHMgb3duIGhhcmR3YXJlKjsgaXQncyBqdXN0IHRoYXQgZm9yIFNNTVUgaXQKPiBuZWVkcyB0byBi
+ZSBpbXBsZW1lbnRlZCBpbiBhIHdheSB0aGF0IGhhcyB6ZXJvIGltcGFjdCBvbiB0aGUgY2FzZXMg
+d2hlcmUgaXQKPiBkb2Vzbid0IG1hdHRlciwgYmVjYXVzZSBpdCdzIG5vdCB2aWFibGUgdG8gc3Bl
+Y2lhbGlzZSB0aGF0IGRyaXZlciBmb3IgYW55Cj4gcGFydGljdWxhciBJUCBpbXBsZW1lbnRhdGlv
+bi91c2UtY2FzZS4KClN0aWxsLCBleGFjdGx5IHRoZSBzYW1lIGhvbGRzIGZvciB0aGUgbG93IHBv
+d2VyIGVtYmVkZGVkIHVzZSBjYXNlcywKd2hlcmUgd2Ugc3RyaXZlIGZvciB0aGUgbG93ZXN0IHBv
+c3NpYmxlIHBvd2VyIGNvbnN1bXB0aW9uLCB3aGlsZQptYWludGFpbmluZyBwZXJmb3JtYW5jZSBs
+ZXZlbHMgaGlnaCBhcyB3ZWxsLiBBbmQgc28gdGhlIFNNTVUgY29kZSBpcwpleHBlY3RlZCB0byBh
+bHNvIHdvcmsgd2l0aCBvdXIgdXNlIGNhc2VzLCBzdWNoIGFzIFY0TDIgb3IgRFJNIGRyaXZlcnMu
+ClNpbmNlIHRoZXNlIHBvaW50cyBkb24ndCBob2xkIGZvciBjdXJyZW50IFNNTVUgY29kZSwgSSBj
+b3VsZCBzYXkgdGhhdAp0aGUgaXQgaGFzIGJlZW4gYWxyZWFkeSBzcGVjaWFsaXplZCBmb3IgbGFy
+Z2UsIGRpc3RyaWJ1dGVkCmltcGxlbWVudGF0aW9ucy4KCkJlc3QgcmVnYXJkcywKVG9tYXN6Cl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBt
+YWlsaW5nIGxpc3QKRnJlZWRyZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
+LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
