@@ -1,14 +1,16 @@
-From: Yves-Alexis Perez <corsac-8fiUuRrzOP0dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 0/5] Add Intel IOMMU debugfs support
-Date: Sun, 18 Feb 2018 23:15:32 +0100
-Message-ID: <1518992132.2542.5.camel@debian.org>
-References: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
-	<20180213140303.42mbzfxpypljy37l@8bytes.org>
-	<20180213214002.GA27066@otc-nc-03>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 11/37] dt-bindings: document stall and PASID properties
+	for IOMMU masters
+Date: Sun, 18 Feb 2018 20:51:07 -0600
+Message-ID: <20180219025107.v3f3eapukupm7g5j@rob-hp-laptop>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-12-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4391942610758473944=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180213214002.GA27066@otc-nc-03>
+Content-Disposition: inline
+In-Reply-To: <20180212183352.22730-12-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,68 +20,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Feb 12, 2018 at 06:33:26PM +0000, Jean-Philippe Brucker wrote:
+> On ARM systems, some platform devices behind an IOMMU may support stall
+> and PASID features. Stall is the ability to recover from page faults and
+> PASID offers multiple process address spaces to the device. Together they
+> allow to do paging with a device. Let the firmware tell us when a device
+> supports stall and PASID.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  Documentation/devicetree/bindings/iommu/iommu.txt | 24 +++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+> index 5a8b4624defc..8066b3852110 100644
+> --- a/Documentation/devicetree/bindings/iommu/iommu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+> @@ -86,6 +86,30 @@ have a means to turn off translation. But it is invalid in such cases to
+>  disable the IOMMU's device tree node in the first place because it would
+>  prevent any driver from properly setting up the translations.
+>  
+> +Optional properties:
+> +--------------------
+> +- dma-can-stall: When present, the master can wait for a transaction to
+> +  complete for an indefinite amount of time. Upon translation fault some
+> +  IOMMUs, instead of aborting the translation immediately, may first
+> +  notify the driver and keep the transaction in flight. This allows the OS
+> +  to inspect the fault and, for example, make physical pages resident
+> +  before updating the mappings and completing the transaction. Such IOMMU
+> +  accepts a limited number of simultaneous stalled transactions before
+> +  having to either put back-pressure on the master, or abort new faulting
+> +  transactions.
+> +
+> +  Firmware has to opt-in stalling, because most buses and masters don't
+> +  support it. In particular it isn't compatible with PCI, where
+> +  transactions have to complete before a time limit. More generally it
+> +  won't work in systems and masters that haven't been designed for
+> +  stalling. For example the OS, in order to handle a stalled transaction,
+> +  may attempt to retrieve pages from secondary storage in a stalled
+> +  domain, leading to a deadlock.
+> +
+> +- pasid-bits: Some masters support multiple address spaces for DMA, by
+> +  tagging DMA transactions with an address space identifier. By default,
+> +  this is 0, which means that the device only has one address space.
 
---===============4391942610758473944==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-Lsf0i4rxIq4C6g1RKkBY"
+So 3 would mean 8 address spaces?
 
+Maybe pasid-num-bits would be a bit clearer. Either way,
 
---=-Lsf0i4rxIq4C6g1RKkBY
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-On Tue, 2018-02-13 at 13:40 -0800, Raj, Ashok wrote:
-> This version has only hw dumps for now, but we plan to add some other thi=
-ngs
-> like walking 2nd level page-tables, or get some SVM specific data from th=
-e=20
-> driver in the future.=20
-
-Hi,
-
-I'm not sure how much you know about chipsec [1], but with a oneliner [2] y=
-ou
-can have it print a lot of data from Vt-d configuration, including page
-tables. As far as I remember, it doesn't need access to /dev/mem (but I gid=
-n't
-dig to check how it does it).
-
-It might still be useful to have everything from debugfs because it'll alwa=
-ys
-be consistent with the current running kernel, but at least it might help
-users reporting bugs.
-
-[1] https://github.com/chipsec/chipsec
-[2] http://paste.debian.net/1010105
---=20
-Yves-Alexis
---=-Lsf0i4rxIq4C6g1RKkBY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEE8vi34Qgfo83x35gF3rYcyPpXRFsFAlqJ+wUACgkQ3rYcyPpX
-RFvEuQf+NF2yWLkXIM6/XmEXZGQboq4coTLy06M/aT/fQfeUAehE2rBhWQXkmJqF
-JXKFuuy6BXoQ1WW4qq6r/1tanadjeRSDTT2PloE1H/g9wppk9tqXG9S/Dqfzhbjo
-0dc1Ctl7skiO3ioBH77BI5KhjFXBJay9YMvvoNYHg4Fud+M/Ga62IYQUCaa4x2Xp
-mWnLJzY4EPZhQmv1o+ozBVFBltQh2tUER3+W0FHy95OuEv4GaSNhsfrDqhKa0B6a
-+j+278FwoidB9kk8LVrG3xFChl7SGF+r2DCsfCMKHaDJaMvWioTOxaqEwIErU9gX
-C90bwed2cfMu31qNmdnkxG1cuKVenA==
-=egRp
------END PGP SIGNATURE-----
-
---=-Lsf0i4rxIq4C6g1RKkBY--
-
---===============4391942610758473944==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============4391942610758473944==--
+Rob
