@@ -1,62 +1,52 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH 1/4] iommu: Add virtio-iommu driver
-Date: Tue, 20 Feb 2018 11:30:41 +0000
-Message-ID: <ab5bf4f1-9564-9dc6-fefe-5c96352da1be@arm.com>
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
- <20180214145340.1223-2-jean-philippe.brucker@arm.com>
- <417e1617-e5ff-7b13-64e3-a8a98d30bcb9@semihalf.com>
+From: Alex Deucher <alexdeucher@gmail.com>
+Subject: Re: [PATCH] fix double ;;s in code
+Date: Tue, 20 Feb 2018 11:34:20 -0500
+Message-ID: <CADnq5_MY932hPkozosY4ODa5tB3qf7TYNxph1mt_qswkU4tBgw@mail.gmail.com>
+References: <20180217211955.GE9640@amd>
+ <187435d4-5017-edb5-9b6a-b433a148bfcc@c-s.fr>
+ <20180219154135.GV22199@phenom.ffwll.local> <20180219193312.GA3709@amd>
+ <87o9kkcck3.fsf@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-3240-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <417e1617-e5ff-7b13-64e3-a8a98d30bcb9@semihalf.com>
-Content-Language: en-US
-To: Tomasz Nowicki <tn@semihalf.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "peterx@redhat.com" <peterx@redhat.com>, "bharat.bhushan@nxp.com" <bharat.bhushan@nxp.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <87o9kkcck3.fsf@intel.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: daniel.lezcano@linaro.org, narmstrong@baylibre.com, Dave Airlie <airlied@linux.ie>, catalin.marinas@arm.com, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, will.deacon@arm.com, fbarrat@linux.vnet.ibm.com, oleg@redhat.com, paulus@ozlabs.org, yamada.masahiro@socionext.com, mhocko@suse.com, viresh.kumar@linaro.org, Pavel Machek <pavel@ucw.cz>, "H. Peter Anvin" <hpa@zytor.com>, Eric Huang <JinHuiEric.Huang@amd.com>, Rex Zhu <Rex.Zhu@amd.com>, SF Markus Elfring <elfring@users.sourceforge.net>, scott.bauer@intel.com, linux-arm-kernel@lists.infradead.org, mpe@ellerman.id.au, x86@kernel.org, Wenjing Liu <Wenjing.Liu@amd.com>, Russell King <linux@armlinux.org.uk>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Ding Wang <Ding.Wang@amd.com>, aik@ozlabs.ru, wens@csie.org, Ingo Molnar <mingo@redhat.com>, vbabka@suse.cz, Dave Airlie <airlied@redhat.com>, ruscur@russell.cc
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/02/18 12:23, Tomasz Nowicki wrote:
-[...]
->> +static int viommu_receive_resp(struct viommu_dev *viommu, int nr_sent,
->> +			       struct list_head *sent)
->> +{
->> +
->> +	unsigned int len;
->> +	int nr_received = 0;
->> +	struct viommu_request *req, *pending;
->> +
->> +	pending = list_first_entry_or_null(sent, struct viommu_request, list);
->> +	if (WARN_ON(!pending))
->> +		return 0;
->> +
->> +	while ((req = virtqueue_get_buf(viommu->vq, &len)) != NULL) {
->> +		if (req != pending) {
->> +			dev_warn(viommu->dev, "discarding stale request\n");
->> +			continue;
->> +		}
->> +
->> +		pending->written = len;
->> +
->> +		if (++nr_received == nr_sent) {
->> +			WARN_ON(!list_is_last(&pending->list, sent));
->> +			break;
->> +		} else if (WARN_ON(list_is_last(&pending->list, sent))) {
->> +			break;
->> +		}
->> +
->> +		pending = list_next_entry(pending, list);
-> 
-> We should remove current element from the pending list. There is no 
-> guarantee we get response for each while loop so when we get back for 
-> more the _viommu_send_reqs_sync() caller will pass pointer to the out of 
-> date head next time.
-
-Right, I'll fix this
-
-Thanks,
-Jean
+T24gVHVlLCBGZWIgMjAsIDIwMTggYXQgMzowMyBBTSwgSmFuaSBOaWt1bGEKPGphbmkubmlrdWxh
+QGxpbnV4LmludGVsLmNvbT4gd3JvdGU6Cj4gT24gTW9uLCAxOSBGZWIgMjAxOCwgUGF2ZWwgTWFj
+aGVrIDxwYXZlbEB1Y3cuY3o+IHdyb3RlOgo+PiBPbiBNb24gMjAxOC0wMi0xOSAxNjo0MTozNSwg
+RGFuaWVsIFZldHRlciB3cm90ZToKPj4+IFllYWgsIHBscyBzcGxpdCB0aGlzIGludG8gb25lIHBh
+dGNoIHBlciBhcmVhLCB3aXRoIGEgc3VpdGFibGUgcGF0Y2gKPj4+IHN1YmplY3QgcHJlZml4LiBM
+b29rIGF0IGdpdCBsb2cgb2YgZWFjaCBmaWxlIHRvIGdldCBhIGZlZWxpbmcgZm9yIHdoYXQncwo+
+Pj4gdGhlIHN0YW5kYXJkIGluIGVhY2ggYXJlYS4KPj4KPj4gWWVhaCBJIGNhbiBzcGVuZCBob3Vy
+IHNwbGl0aW5nIGl0LCBhbmQgdGhlbiBwZW9wbGUgd2lsbCBpZ25vcmUgaXQKPj4gYW55d2F5Lgo+
+Pgo+PiBJZiB5b3UgY2FyZSBhYm91dCBvbmUgb2YgdGhlIGZpbGVzIGJlaW5nIG1vZGlmaWVkLCBw
+bGVhc2UgZml4IHRoZQo+PiBidWcsICI7OyIgaXMgYSBjbGVhciBidWcuCj4+Cj4+IElmIHlvdSBk
+b24ndCBjYXJlIC4uLiB3ZWxsIEkgZG9uJ3QgY2FyZSBlaXRoZXIuCj4KPiBMb29rLCBpZiB0aGlz
+IGNhdXNlcyBqdXN0IG9uZSBjb25mbGljdCBkb3duIHRoZSBsaW5lIGJlY2F1c2UgaXQgdG91Y2hl
+cwo+IHRoZSBrZXJuZWwgYWxsIG92ZXIgdGhlIHBsYWNlLCB0aGVuIElNTyBpdCBhbHJlYWR5IHdh
+c24ndCB3b3J0aAo+IGl0LiBNZXJnZSBjb25mbGljdHMgYXJlIGluZXZpdGFibGUsIGJ1dCB0aGVy
+ZSdzIG5vIHJlYXNvbiB0byBtYWtlIGxpZmUKPiBoYXJkZXIganVzdCB0byBjYXRlciBmb3IgYSBj
+bGVhbnVwIHBhdGNoLiBJdCdzIG5vdCB0aGF0IGltcG9ydGFudC4KPgo+IEhhZCBpdCBiZWVuIHNw
+bGl0IHVwLCB0aGUgZHJtIHBhcnRzIHdvdWxkJ3ZlIGJlZW4gbWVyZ2VkIGFscmVhZHkuCgpGV0lX
+LCB0aGUgYW1kZ3B1IGFuZCBzY2hlZHVsZXIgY2hhbmdlcyBoYXZlIGFscmVhZHkgYmVlbiBmaXhl
+ZCBmb3IgLW5leHQuCgpBbGV4Cgo+Cj4gQlIsCj4gSmFuaS4KPgo+IC0tCj4gSmFuaSBOaWt1bGEs
+IEludGVsIE9wZW4gU291cmNlIFRlY2hub2xvZ3kgQ2VudGVyCj4gX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPiBhbWQtZ2Z4IG1haWxpbmcgbGlzdAo+IGFt
+ZC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9hbWQtZ2Z4Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3Rz
+LmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2RyaS1kZXZlbAo=
