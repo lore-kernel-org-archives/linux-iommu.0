@@ -1,107 +1,149 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] fix double ;;s in code
-Date: Mon, 19 Feb 2018 20:25:57 -0500
-Message-ID: <CAF6AEGu=pJa8nVqBDXZyKenCGi=FpjiKEYmMrMdSJD23mk1WJA@mail.gmail.com>
-References: <20180217211955.GE9640@amd>
- <187435d4-5017-edb5-9b6a-b433a148bfcc@c-s.fr>
- <20180219154135.GV22199@phenom.ffwll.local> <20180219193312.GA3709@amd>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 37/37] vfio: Add support for Shared Virtual Addressing
+Date: Tue, 20 Feb 2018 11:26:48 +0000
+Message-ID: <5789fb21-dd4b-85a3-e5fc-7212a01fecc7@arm.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-38-jean-philippe.brucker@arm.com>
+	<20180216123329.10f6dc23@w520.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180219193312.GA3709@amd>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Cc: daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, fbarrat-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org, Masahiro Yamada <yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org>, mhocko-IBi9RG/b67k@public.gmane.org, Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, JinHuiEric.Huang-5C7GfCeVMHo@public.gmane.org, Rex.Zhu-5C7GfCeVMHo@public.gmane.org, SF Markus Elfring <elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Chunming Zhou <David1.Zhou-5C7GfCeVMHo@public.gmane.org>, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro@8b>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180216123329.10f6dc23-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rjw@rjwyso
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBGZWIgMTksIDIwMTggYXQgMjozMyBQTSwgUGF2ZWwgTWFjaGVrIDxwYXZlbEB1Y3cu
-Y3o+IHdyb3RlOgo+IE9uIE1vbiAyMDE4LTAyLTE5IDE2OjQxOjM1LCBEYW5pZWwgVmV0dGVyIHdy
-b3RlOgo+PiBPbiBTdW4sIEZlYiAxOCwgMjAxOCBhdCAxMTowMDo1NkFNICswMTAwLCBDaHJpc3Rv
-cGhlIExFUk9ZIHdyb3RlOgo+PiA+Cj4+ID4KPj4gPiBMZSAxNy8wMi8yMDE4IMOgIDIyOjE5LCBQ
-YXZlbCBNYWNoZWsgYSDDqWNyaXQgOgo+PiA+ID4KPj4gPiA+IEZpeCBkb3VibGUgOzsncyBpbiBj
-b2RlLgo+PiA+ID4KPj4gPiA+IFNpZ25lZC1vZmYtYnk6IFBhdmVsIE1hY2hlayA8cGF2ZWxAdWN3
-LmN6Pgo+PiA+Cj4+ID4gQSBzdW1tYXJ5IG9mIHRoZSBmaWxlcyBtb2RpZmllZCBvbiB0b3Agb2Yg
-dGhlIHBhdGNoIHdvdWxkIGhlbHAgdW5kZXJzdGFuZAo+PiA+IHRoZSBpbXBhY3QuCj4+ID4KPj4g
-PiBBIG1heWJlIHRoZXJlIHNob3VsZCBiZSBvbmUgcGF0Y2ggYnkgYXJlYSwgZWcgb25lIGZvciBl
-YWNoIGFyY2ggc3BlY2lmaWMKPj4gPiBtb2RpZiBhbmQgb25lIGZvciBkcml2ZXJzLyBhbmQgb25l
-IGZvciBibG9jay8gPwo+Pgo+PiBZZWFoLCBwbHMgc3BsaXQgdGhpcyBpbnRvIG9uZSBwYXRjaCBw
-ZXIgYXJlYSwgd2l0aCBhIHN1aXRhYmxlIHBhdGNoCj4+IHN1YmplY3QgcHJlZml4LiBMb29rIGF0
-IGdpdCBsb2cgb2YgZWFjaCBmaWxlIHRvIGdldCBhIGZlZWxpbmcgZm9yIHdoYXQncwo+PiB0aGUg
-c3RhbmRhcmQgaW4gZWFjaCBhcmVhLgo+Cj4gWWVhaCBJIGNhbiBzcGVuZCBob3VyIHNwbGl0aW5n
-IGl0LCBhbmQgdGhlbiBwZW9wbGUgd2lsbCBpZ25vcmUgaXQKPiBhbnl3YXkuCj4KPiBJZiB5b3Ug
-Y2FyZSBhYm91dCBvbmUgb2YgdGhlIGZpbGVzIGJlaW5nIG1vZGlmaWVkLCBwbGVhc2UgZml4IHRo
-ZQo+IGJ1ZywgIjs7IiBpcyBhIGNsZWFyIGJ1Zy4KPgo+IElmIHlvdSBkb24ndCBjYXJlIC4uLiB3
-ZWxsIEkgZG9uJ3QgY2FyZSBlaXRoZXIuCj4KPiBkcml2ZXJzL2dwdS8gaGFzIGZvdXIgZW50cmll
-cywgaSBndWVzcyB0aGF0J3Mgc29tZXRoaW5nIGZvciB5b3UuCgpmd2l3LCBvbmUgb2YgdGhvc2Ug
-Zm91ciBpcyBkdXAgb2YgYSBwYXRjaCB0aGF0IEkndmUgYWxyZWFkeSBwdXNoZWQgdG8KbXNtLW5l
-eHQgZm9yIGRybS9tc20gKHdoaWNoIHNlZW1zIHRvIGJlIGFuIGFyZ3VtZW50IGZvciBzcGxpdHRp
-bmcgdXAgYQp0cmVld2lkZSBwYXRjaC4uIHdoaWNoIHNlZW1zIHNvbWV0aGluZyBxdWl0ZSBzY3Jp
-cHRhYmxlLCBidXQgdXAgdG8geW91CndoZXRoZXIgeW91IHdhbnQgdG8gYm90aGVyIHdpdGggdGhh
-dC4uIGVpdGhlciB3YXkgZHJtL21zbSBpcyA7Oy1jbGVhbgpub3cpCgpCUiwKLVIKCgo+ICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBQYXZlbAo+Cj4+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2FtZC9kaXNwbGF5
-L2RjL2NvcmUvZGNfbGlua19kcC5jIGIvZHJpdmVycy9ncHUvZHJtL2FtZC9kaXNwbGF5L2RjL2Nv
-cmUvZGNfbGlua19kcC5jCj4+ID4gPiBpbmRleCA2MWU4YzNlLi4zM2Q5MWU0IDEwMDY0NAo+PiA+
-ID4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2FtZC9kaXNwbGF5L2RjL2NvcmUvZGNfbGlua19kcC5j
-Cj4+ID4gPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vYW1kL2Rpc3BsYXkvZGMvY29yZS9kY19saW5r
-X2RwLmMKPj4gPiA+IEBAIC03MTgsNyArNzE4LDcgQEAgc3RhdGljIGVudW0gbGlua190cmFpbmlu
-Z19yZXN1bHQgcGVyZm9ybV9jaGFubmVsX2VxdWFsaXphdGlvbl9zZXF1ZW5jZSgKPj4gPiA+ICAg
-ICAgICAgICB1aW50MzJfdCByZXRyaWVzX2NoX2VxOwo+PiA+ID4gICAgICAgICAgIGVudW0gZGNf
-bGFuZV9jb3VudCBsYW5lX2NvdW50ID0gbHRfc2V0dGluZ3MtPmxpbmtfc2V0dGluZ3MubGFuZV9j
-b3VudDsKPj4gPiA+ICAgICAgICAgICB1bmlvbiBsYW5lX2FsaWduX3N0YXR1c191cGRhdGVkIGRw
-Y2RfbGFuZV9zdGF0dXNfdXBkYXRlZCA9IHt7MH19Owo+PiA+ID4gLSB1bmlvbiBsYW5lX3N0YXR1
-cyBkcGNkX2xhbmVfc3RhdHVzW0xBTkVfQ09VTlRfRFBfTUFYXSA9IHt7ezB9fX07Owo+PiA+ID4g
-KyB1bmlvbiBsYW5lX3N0YXR1cyBkcGNkX2xhbmVfc3RhdHVzW0xBTkVfQ09VTlRfRFBfTUFYXSA9
-IHt7ezB9fX07Cj4+ID4gPiAgICAgICAgICAgaHdfdHJfcGF0dGVybiA9IGdldF9zdXBwb3J0ZWRf
-dHAobGluayk7Cj4+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2FtZC9wb3dlcnBs
-YXkvYW1kX3Bvd2VycGxheS5jIGIvZHJpdmVycy9ncHUvZHJtL2FtZC9wb3dlcnBsYXkvYW1kX3Bv
-d2VycGxheS5jCj4+ID4gPiBpbmRleCA0YzMyMjNhLi5hZGI2ZTdiIDEwMDY0NAo+PiA+ID4gLS0t
-IGEvZHJpdmVycy9ncHUvZHJtL2FtZC9wb3dlcnBsYXkvYW1kX3Bvd2VycGxheS5jCj4+ID4gPiAr
-KysgYi9kcml2ZXJzL2dwdS9kcm0vYW1kL3Bvd2VycGxheS9hbWRfcG93ZXJwbGF5LmMKPj4gPiA+
-IEBAIC0xNjIsNyArMTYyLDcgQEAgc3RhdGljIGludCBwcF9od19pbml0KHZvaWQgKmhhbmRsZSkK
-Pj4gPiA+ICAgICAgICAgICAgICAgICAgIGlmKGh3bWdyLT5zbXVtZ3JfZnVuY3MtPnN0YXJ0X3Nt
-dShwcF9oYW5kbGUtPmh3bWdyKSkgewo+PiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICBw
-cl9lcnIoInNtYyBzdGFydCBmYWlsZWRcbiIpOwo+PiA+ID4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICBod21nci0+c211bWdyX2Z1bmNzLT5zbXVfZmluaShwcF9oYW5kbGUtPmh3bWdyKTsKPj4g
-PiA+IC0gICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOzsKPj4gPiA+ICsgICAgICAgICAg
-ICAgICAgIHJldHVybiAtRUlOVkFMOwo+PiA+ID4gICAgICAgICAgICAgICAgICAgfQo+PiA+ID4g
-ICAgICAgICAgICAgICAgICAgaWYgKHJldCA9PSBQUF9EUE1fRElTQUJMRUQpCj4+ID4gPiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXhpdDsKPj4gPiA+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL2dwdS9kcm0vbXNtL21kcC9tZHA1L21kcDVfa21zLmMgYi9kcml2ZXJzL2dwdS9kcm0vbXNt
-L21kcC9tZHA1L21kcDVfa21zLmMKPj4gPiA+IGluZGV4IDNlOWJiYTQuLjZkOGUzYTkgMTAwNjQ0
-Cj4+ID4gPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNtL21kcC9tZHA1L21kcDVfa21zLmMKPj4g
-PiA+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9tc20vbWRwL21kcDUvbWRwNV9rbXMuYwo+PiA+ID4g
-QEAgLTY4MCw3ICs2ODAsNyBAQCBzdHJ1Y3QgbXNtX2ttcyAqbWRwNV9rbXNfaW5pdChzdHJ1Y3Qg
-ZHJtX2RldmljZSAqZGV2KQo+PiA+ID4gICAgICAgICAgIH0gZWxzZSB7Cj4+ID4gPiAgICAgICAg
-ICAgICAgICAgICBkZXZfaW5mbygmcGRldi0+ZGV2LAo+PiA+ID4gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIm5vIGlvbW11LCBmYWxsYmFjayB0byBwaHlzIGNvbnRpZyBidWZmZXJzIGZvciBz
-Y2Fub3V0XG4iKTsKPj4gPiA+IC0gICAgICAgICBhc3BhY2UgPSBOVUxMOzsKPj4gPiA+ICsgICAg
-ICAgICBhc3BhY2UgPSBOVUxMOwo+PiA+ID4gICAgICAgICAgIH0KPj4gPiA+ICAgICAgICAgICBw
-bV9ydW50aW1lX3B1dF9zeW5jKCZwZGV2LT5kZXYpOwo+PiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvZ3B1L2RybS9zY2hlZHVsZXIvZ3B1X3NjaGVkdWxlci5jIGIvZHJpdmVycy9ncHUvZHJtL3Nj
-aGVkdWxlci9ncHVfc2NoZWR1bGVyLmMKPj4gPiA+IGluZGV4IDJjMTg5OTYuLjBkOTU4ODggMTAw
-NjQ0Cj4+ID4gPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vc2NoZWR1bGVyL2dwdV9zY2hlZHVsZXIu
-Ywo+PiA+ID4gKysrIGIvZHJpdmVycy9ncHUvZHJtL3NjaGVkdWxlci9ncHVfc2NoZWR1bGVyLmMK
-Pj4gPiA+IEBAIC00NjEsNyArNDYxLDcgQEAgdm9pZCBkcm1fc2NoZWRfaHdfam9iX3Jlc2V0KHN0
-cnVjdCBkcm1fZ3B1X3NjaGVkdWxlciAqc2NoZWQsIHN0cnVjdCBkcm1fc2NoZWRfam8KPj4gPiA+
-ICAgewo+PiA+ID4gICAgICAgICAgIHN0cnVjdCBkcm1fc2NoZWRfam9iICpzX2pvYjsKPj4gPiA+
-ICAgICAgICAgICBzdHJ1Y3QgZHJtX3NjaGVkX2VudGl0eSAqZW50aXR5LCAqdG1wOwo+PiA+ID4g
-LSBpbnQgaTs7Cj4+ID4gPiArIGludCBpOwo+PiA+ID4gICAgICAgICAgIHNwaW5fbG9jaygmc2No
-ZWQtPmpvYl9saXN0X2xvY2spOwo+PiA+ID4gICAgICAgICAgIGxpc3RfZm9yX2VhY2hfZW50cnlf
-cmV2ZXJzZShzX2pvYiwgJnNjaGVkLT5yaW5nX21pcnJvcl9saXN0LCBub2RlKSB7Cj4KPiAtLQo+
-IChlbmdsaXNoKSBodHRwOi8vd3d3LmxpdmVqb3VybmFsLmNvbS9+cGF2ZWxtYWNoZWsKPiAoY2Vz
-a3ksIHBpY3R1cmVzKSBodHRwOi8vYXRyZXkua2FybGluLm1mZi5jdW5pLmN6L35wYXZlbC9waWN0
-dXJlL2hvcnNlcy9ibG9nLmh0bWwKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
-ZnJlZWRyZW5vCg==
+On 16/02/18 19:33, Alex Williamson wrote:
+[...]
+>> +static int vfio_iommu_sva_init(struct device *dev, void *data)
+>> +{
+>> +
+>> +	int ret;
+>> +
+>> +	ret = iommu_sva_device_init(dev, IOMMU_SVA_FEAT_PASID |
+>> +				    IOMMU_SVA_FEAT_IOPF, 0);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return iommu_register_mm_exit_handler(dev, vfio_iommu_mm_exit);
+>> +}
+>> +
+>> +static int vfio_iommu_sva_shutdown(struct device *dev, void *data)
+>> +{
+>> +	iommu_sva_device_shutdown(dev);
+>> +	iommu_unregister_mm_exit_handler(dev);
+> 
+> Typically the order would be reverse of the setup, is it correct this
+> way?
+
+I don't think it matters either way, but ABBA order would be nicer.
+Registering mm_exit handler before sva_device_init is probably best.
+
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int vfio_iommu_bind_group(struct vfio_iommu *iommu,
+>> +				 struct vfio_group *group,
+>> +				 struct vfio_mm *vfio_mm)
+>> +{
+>> +	int ret;
+>> +	int pasid;
+>> +
+>> +	if (!group->sva_enabled) {
+>> +		ret = iommu_group_for_each_dev(group->iommu_group, NULL,
+>> +					       vfio_iommu_sva_init);
+>> +		if (ret)
+>> +			return ret;
+> 
+> Seems were at an unknown state here, do we need to undo any that
+> succeeded?
+
+I think we do. However following the discussion on patch 2/37 it seems
+we should limit SVA to singular groups for the moment, disallowing it if
+the group has more than one device. Handling compound groups is
+complicated and hopefully not needed by SVA systems. So I'd like to
+change the logic here and ensure group_for_each_dev only calls sva_init
+once.
+
+[...]
+>> +	/*
+>> +	 * We can't simply unbind a foreign process by PASID, because the
+>> +	 * process might have died and the PASID might have been reallocated to
+>> +	 * another process. Instead we need to fetch that process mm by PID
+>> +	 * again to make sure we remove the right vfio_mm. In addition, holding
+>> +	 * the mm guarantees that mm_users isn't dropped while we unbind and the
+>> +	 * exit_mm handler doesn't fire. While not strictly necessary, not
+>> +	 * having to care about that race simplifies everyone's life.
+>> +	 */
+>> +	if (params.flags & VFIO_IOMMU_BIND_PID) {
+>> +		mm = vfio_iommu_get_mm_by_vpid(params.pid);
+>> +		if (IS_ERR(mm))
+>> +			return PTR_ERR(mm);
+> 
+> I don't understand how this works for a process that has exited, the
+> mm_exit function gets called to clear vfio_mm.mm, the above may or may
+> not work (could be new ptrace'able process with same pid), but it won't
+> match the mm below, so is the vfio_mm that mm_exit zapped forever stuck
+> in this list until the container is destroyed?
+
+Yes, it's not nice. mm_exit() is called with a spinlock held, so it
+can't take the iommu->lock and modify mm_list.
+vfio_iommu_type1_unbind_process() could do a bit of garbage collection
+and remove all defunct vfio_mm, if they're not held by any iommu_bond
+anymore.
+
+But I think iommu_notifier_release (patch 5/37) can actually release the
+lock temporarily if it's careful about concurrent list modifications
+(and takes a ref to the given bond), in which case we can remove this
+mm_exit() constraint and simplify the VFIO patch.
+
+[...]
+>> +/*
+>> + * Only mode supported at the moment is VFIO_IOMMU_BIND_PROCESS, which takes
+>> + * vfio_iommu_type1_bind_process in data.
+>> + */
+>> +struct vfio_iommu_type1_bind {
+>> +	__u32	argsz;
+>> +	__u32	mode;
+> 
+> s/mode/flags/
+> 
+>> +#define VFIO_IOMMU_BIND_PROCESS		(1 << 0)
+>> +	__u8	data[];
+>> +};
+> 
+> I'm not convinced having a separate vfio_iommu_type1_bind_process
+> struct is necessary.  It seems like we always expect to return a pasid,
+> only the pid is optional, but that could be handled by a single
+> structure with a flag bit to indicate a pid bind is requested.
+
+We were planning to reuse VFIO_IOMMU_BIND for PASID table binding as
+well. So vfio_iommu_type1_bind::flags would either be
+VFIO_IOMMU_BIND_PROCESS or VFIO_IOMMU_BIND_PASID_TABLE, and
+vfio_iommu_type1_bind::data is an union of vfio_iommu_type1_bind_process
+and vfio_iommu_type1_bind_pasid_table
+
+https://patchwork.kernel.org/patch/9701025/
+
+> 
+>> +
+>> +/*
+>> + * VFIO_IOMMU_BIND - _IOWR(VFIO_TYPE, VFIO_BASE + 22, struct vfio_iommu_bind)
+> 
+> vfio_iommu_type1_bind
+
+Thanks,
+Jean
