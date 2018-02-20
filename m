@@ -1,78 +1,48 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 09/37] iommu/fault: Let handler return a fault response
-Date: Tue, 20 Feb 2018 15:19:33 -0800
-Message-ID: <20180220151933.022f1036@jacob-builder>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-10-jean-philippe.brucker@arm.com>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] fix double ;;s in code
+Date: Tue, 20 Feb 2018 15:47:15 -0800
+Message-ID: <20180220154715.2a8ecd75a1c2cc698baefd26@linux-foundation.org>
+References: <20180217211955.GE9640@amd>
+ <187435d4-5017-edb5-9b6a-b433a148bfcc@c-s.fr>
+ <20180219154135.GV22199@phenom.ffwll.local>
+ <20180219193312.GA3709@amd> <87o9kkcck3.fsf@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180212183352.22730-10-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <87o9kkcck3.fsf@intel.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: daniel.lezcano@linaro.org, narmstrong@baylibre.com, airlied@linux.ie, catalin.marinas@arm.com, Alexey.Brodkin@synopsys.com, will.deacon@arm.com, fbarrat@linux.vnet.ibm.com, oleg@redhat.com, paulus@ozlabs.org, yamada.masahiro@socionext.com, mhocko@suse.com, viresh.kumar@linaro.org, Pavel Machek <pavel@ucw.cz>, hpa@zytor.com, JinHuiEric.Huang@amd.com, Rex.Zhu@amd.com, elfring@users.sourceforge.net, scott.bauer@intel.com, linux-arm-kernel@lists.infradead.org, mpe@ellerman.id.au, x86@kernel.org, Wenjing.Liu@amd.com, linux@armlinux.org.uk, amd-gfx@lists.freedesktop.org, Ding.Wang@amd.com, aik@ozlabs.ru, wens@csie.org, mingo@redhat.com, vbabka@suse.cz, airlied@redhat.com, ruscur@russell.cc, shli@kernel.org, dan.carpenter@oracle.com, andresx7@gmail.com, linux-arm-msm@vger.kernel.org, axboe@kernel.dk, linux-efi@vger.kernel.org, alistair@popple.id.au, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 12 Feb 2018 18:33:24 +0000
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-
->  
-> +/**
-> + * enum page_response_code - Return status of fault handlers,
-> telling the IOMMU
-> + * driver how to proceed with the fault.
-> + *
-> + * @IOMMU_FAULT_STATUS_HANDLED: Stop processing the fault, and do
-> not send a
-> + *	reply to the device.
-> + * @IOMMU_FAULT_STATUS_CONTINUE: Fault was not handled. Call the
-> next handler,
-> + *	or terminate.
-> + * @IOMMU_FAULT_STATUS_SUCCESS: Fault has been handled and the page
-> tables
-> + *	populated, retry the access. This is "Success" in PCI PRI.
-> + * @IOMMU_FAULT_STATUS_FAILURE: General error. Drop all subsequent
-> faults from
-> + *	this device if possible. This is "Response Failure" in PCI
-> PRI.
-> + * @IOMMU_FAULT_STATUS_INVALID: Could not handle this fault, don't
-> retry the
-> + *	access. This is "Invalid Request" in PCI PRI.
-> + */
-> +enum page_response_code {
-> +	IOMMU_PAGE_RESP_HANDLED = 0,
-> +	IOMMU_PAGE_RESP_CONTINUE,
-> +	IOMMU_PAGE_RESP_SUCCESS,
-> +	IOMMU_PAGE_RESP_INVALID,
-> +	IOMMU_PAGE_RESP_FAILURE,
-> +};
-it seems to me two things are mixed here:
-1. driver handler response status (HANDLED, CONTINUE)
-2. PCI standard page response code (the rest)
-Can we leave them separate? then we don't have to convert this enum
-to/from PCI ATS page response code.
-
-> +
->  /**
->   * Generic page response information based on PCI ATS and PASID spec.
->   * @addr: servicing page address
-> @@ -202,12 +225,7 @@ enum page_response_type {
->  struct page_response_msg {
->  	u64 addr;
->  	u32 pasid;
-> -	u32 resp_code:4;
-> -#define IOMMU_PAGE_RESP_SUCCESS	0
-> -#define IOMMU_PAGE_RESP_INVALID	1
-> -#define IOMMU_PAGE_RESP_HANDLED	2
-> -#define IOMMU_PAGE_RESP_FAILURE	0xF
-> -
-[Jacob Pan]
+T24gVHVlLCAyMCBGZWIgMjAxOCAxMDowMzo1NiArMDIwMCBKYW5pIE5pa3VsYSA8amFuaS5uaWt1
+bGFAbGludXguaW50ZWwuY29tPiB3cm90ZToKCj4gT24gTW9uLCAxOSBGZWIgMjAxOCwgUGF2ZWwg
+TWFjaGVrIDxwYXZlbEB1Y3cuY3o+IHdyb3RlOgo+ID4gT24gTW9uIDIwMTgtMDItMTkgMTY6NDE6
+MzUsIERhbmllbCBWZXR0ZXIgd3JvdGU6Cj4gPj4gWWVhaCwgcGxzIHNwbGl0IHRoaXMgaW50byBv
+bmUgcGF0Y2ggcGVyIGFyZWEsIHdpdGggYSBzdWl0YWJsZSBwYXRjaAo+ID4+IHN1YmplY3QgcHJl
+Zml4LiBMb29rIGF0IGdpdCBsb2cgb2YgZWFjaCBmaWxlIHRvIGdldCBhIGZlZWxpbmcgZm9yIHdo
+YXQncwo+ID4+IHRoZSBzdGFuZGFyZCBpbiBlYWNoIGFyZWEuCj4gPgo+ID4gWWVhaCBJIGNhbiBz
+cGVuZCBob3VyIHNwbGl0aW5nIGl0LCBhbmQgdGhlbiBwZW9wbGUgd2lsbCBpZ25vcmUgaXQKPiA+
+IGFueXdheS4KPiA+Cj4gPiBJZiB5b3UgY2FyZSBhYm91dCBvbmUgb2YgdGhlIGZpbGVzIGJlaW5n
+IG1vZGlmaWVkLCBwbGVhc2UgZml4IHRoZQo+ID4gYnVnLCAiOzsiIGlzIGEgY2xlYXIgYnVnLgo+
+ID4KPiA+IElmIHlvdSBkb24ndCBjYXJlIC4uLiB3ZWxsIEkgZG9uJ3QgY2FyZSBlaXRoZXIuCj4g
+Cj4gTG9vaywgaWYgdGhpcyBjYXVzZXMganVzdCBvbmUgY29uZmxpY3QgZG93biB0aGUgbGluZSBi
+ZWNhdXNlIGl0IHRvdWNoZXMKPiB0aGUga2VybmVsIGFsbCBvdmVyIHRoZSBwbGFjZSwgdGhlbiBJ
+TU8gaXQgYWxyZWFkeSB3YXNuJ3Qgd29ydGgKPiBpdC4gTWVyZ2UgY29uZmxpY3RzIGFyZSBpbmV2
+aXRhYmxlLCBidXQgdGhlcmUncyBubyByZWFzb24gdG8gbWFrZSBsaWZlCj4gaGFyZGVyIGp1c3Qg
+dG8gY2F0ZXIgZm9yIGEgY2xlYW51cCBwYXRjaC4gSXQncyBub3QgdGhhdCBpbXBvcnRhbnQuCj4g
+Cj4gSGFkIGl0IGJlZW4gc3BsaXQgdXAsIHRoZSBkcm0gcGFydHMgd291bGQndmUgYmVlbiBtZXJn
+ZWQgYWxyZWFkeS4KCkkganVzdCBzdGFnZSBwYXRjaGVzIGxpa2UgdGhpcyBiZWhpbmQgbGludXgt
+bmV4dC4gIFNvIGlmIHlvdXIgc3R1ZmYgaW4KaW4gLW5leHQsIHlvdSdsbCBuZXZlciBub3RpY2Ug
+YSB0aGluZy4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
+dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
