@@ -1,153 +1,74 @@
-From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
 Subject: Re: [PATCH] fix double ;;s in code
-Date: Mon, 19 Feb 2018 20:33:12 +0100
-Message-ID: <20180219193312.GA3709@amd>
+Date: Tue, 20 Feb 2018 17:19:31 +1100
+Message-ID: <87vaesrxn0.fsf@concordia.ellerman.id.au>
 References: <20180217211955.GE9640@amd>
-	<187435d4-5017-edb5-9b6a-b433a148bfcc@c-s.fr>
-	<20180219154135.GV22199@phenom.ffwll.local>
+ <187435d4-5017-edb5-9b6a-b433a148bfcc@c-s.fr>
+ <20180219154135.GV22199@phenom.ffwll.local>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1302780348487197564=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 In-Reply-To: <20180219154135.GV22199-dv86pmgwkMBes7Z6vYuT8azUEOm+Xw19@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christophe LEROY <christophe.leroy-GgN8y9CXRhA@public.gmane.org>, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, oleg-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, ard.biesheuvel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org, daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, alexander.deucher-5C7GfCeVMHo@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, David1.Zhou-5C7GfCeVMHo@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, shli-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, fabio.estevam-3arQi8VN3Tc@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Vladislav.Zakharov-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, noamca@mellanox
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, Christophe LEROY <christophe.leroy-GgN8y9CXRhA@public.gmane.org>
+Cc: daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, fbarrat-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org, yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, JinHuiEric.Huang-5C7GfCeVMHo@public.gmane.org, Rex.Zhu-5C7GfCeVMHo@public.gmane.org, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David1.Zhou-5C7GfCeVMHo@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Wenjing.Liu-5C7GfCeVMHo@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Ding.Wang-5C7GfCeVMHo@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, airlied-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, shli-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, andresx7@
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============1302780348487197564==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wRRV7LY7NUeQGEoC"
-Content-Disposition: inline
-
-
---wRRV7LY7NUeQGEoC
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon 2018-02-19 16:41:35, Daniel Vetter wrote:
-> On Sun, Feb 18, 2018 at 11:00:56AM +0100, Christophe LEROY wrote:
-> >=20
-> >=20
-> > Le 17/02/2018 =E0 22:19, Pavel Machek a =E9crit=A0:
-> > >=20
-> > > Fix double ;;'s in code.
-> > >=20
-> > > Signed-off-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-> >=20
-> > A summary of the files modified on top of the patch would help understa=
-nd
-> > the impact.
-> >=20
-> > A maybe there should be one patch by area, eg one for each arch specific
-> > modif and one for drivers/ and one for block/ ?
->=20
-> Yeah, pls split this into one patch per area, with a suitable patch
-> subject prefix. Look at git log of each file to get a feeling for what's
-> the standard in each area.
-
-Yeah I can spend hour spliting it, and then people will ignore it
-anyway.
-
-If you care about one of the files being modified, please fix the
-bug, ";;" is a clear bug.
-
-If you don't care ... well I don't care either.
-
-drivers/gpu/ has four entries, i guess that's something for you.
-
-								Pavel
-
-> > > diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drive=
-rs/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > > index 61e8c3e..33d91e4 100644
-> > > --- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > > +++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-> > > @@ -718,7 +718,7 @@ static enum link_training_result perform_channel_=
-equalization_sequence(
-> > >   	uint32_t retries_ch_eq;
-> > >   	enum dc_lane_count lane_count =3D lt_settings->link_settings.lane_=
-count;
-> > >   	union lane_align_status_updated dpcd_lane_status_updated =3D {{0}};
-> > > -	union lane_status dpcd_lane_status[LANE_COUNT_DP_MAX] =3D {{{0}}};;
-> > > +	union lane_status dpcd_lane_status[LANE_COUNT_DP_MAX] =3D {{{0}}};
-> > >   	hw_tr_pattern =3D get_supported_tp(link);
-> > > diff --git a/drivers/gpu/drm/amd/powerplay/amd_powerplay.c b/drivers/=
-gpu/drm/amd/powerplay/amd_powerplay.c
-> > > index 4c3223a..adb6e7b 100644
-> > > --- a/drivers/gpu/drm/amd/powerplay/amd_powerplay.c
-> > > +++ b/drivers/gpu/drm/amd/powerplay/amd_powerplay.c
-> > > @@ -162,7 +162,7 @@ static int pp_hw_init(void *handle)
-> > >   		if(hwmgr->smumgr_funcs->start_smu(pp_handle->hwmgr)) {
-> > >   			pr_err("smc start failed\n");
-> > >   			hwmgr->smumgr_funcs->smu_fini(pp_handle->hwmgr);
-> > > -			return -EINVAL;;
-> > > +			return -EINVAL;
-> > >   		}
-> > >   		if (ret =3D=3D PP_DPM_DISABLED)
-> > >   			goto exit;
-> > > diff --git a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c b/drivers/gpu/dr=
-m/msm/mdp/mdp5/mdp5_kms.c
-> > > index 3e9bba4..6d8e3a9 100644
-> > > --- a/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c
-> > > +++ b/drivers/gpu/drm/msm/mdp/mdp5/mdp5_kms.c
-> > > @@ -680,7 +680,7 @@ struct msm_kms *mdp5_kms_init(struct drm_device *=
-dev)
-> > >   	} else {
-> > >   		dev_info(&pdev->dev,
-> > >   			 "no iommu, fallback to phys contig buffers for scanout\n");
-> > > -		aspace =3D NULL;;
-> > > +		aspace =3D NULL;
-> > >   	}
-> > >   	pm_runtime_put_sync(&pdev->dev);
-> > > diff --git a/drivers/gpu/drm/scheduler/gpu_scheduler.c b/drivers/gpu/=
-drm/scheduler/gpu_scheduler.c
-> > > index 2c18996..0d95888 100644
-> > > --- a/drivers/gpu/drm/scheduler/gpu_scheduler.c
-> > > +++ b/drivers/gpu/drm/scheduler/gpu_scheduler.c
-> > > @@ -461,7 +461,7 @@ void drm_sched_hw_job_reset(struct drm_gpu_schedu=
-ler *sched, struct drm_sched_jo
-> > >   {
-> > >   	struct drm_sched_job *s_job;
-> > >   	struct drm_sched_entity *entity, *tmp;
-> > > -	int i;;
-> > > +	int i;
-> > >   	spin_lock(&sched->job_list_lock);
-> > >   	list_for_each_entry_reverse(s_job, &sched->ring_mirror_list, node)=
- {
-
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---wRRV7LY7NUeQGEoC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlqLJngACgkQMOfwapXb+vLMuACfZ4g9YFmQ7Hp3tW427eLSrtF4
-XoEAn2z1vRKfakxYqYv9uHa2jCPTvkLO
-=NM8e
------END PGP SIGNATURE-----
-
---wRRV7LY7NUeQGEoC--
-
---===============1302780348487197564==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1302780348487197564==--
+RGFuaWVsIFZldHRlciA8ZGFuaWVsQGZmd2xsLmNoPiB3cml0ZXM6Cj4gT24gU3VuLCBGZWIgMTgs
+IDIwMTggYXQgMTE6MDA6NTZBTSArMDEwMCwgQ2hyaXN0b3BoZSBMRVJPWSB3cm90ZToKPj4gTGUg
+MTcvMDIvMjAxOCDDoCAyMjoxOSwgUGF2ZWwgTWFjaGVrIGEgw6ljcml0wqA6Cj4+ID4gCj4+ID4g
+Rml4IGRvdWJsZSA7OydzIGluIGNvZGUuCj4+ID4gCj4+ID4gU2lnbmVkLW9mZi1ieTogUGF2ZWwg
+TWFjaGVrIDxwYXZlbEB1Y3cuY3o+Cj4+IAo+PiBBIHN1bW1hcnkgb2YgdGhlIGZpbGVzIG1vZGlm
+aWVkIG9uIHRvcCBvZiB0aGUgcGF0Y2ggd291bGQgaGVscCB1bmRlcnN0YW5kCj4+IHRoZSBpbXBh
+Y3QuCj4+IAo+PiBBIG1heWJlIHRoZXJlIHNob3VsZCBiZSBvbmUgcGF0Y2ggYnkgYXJlYSwgZWcg
+b25lIGZvciBlYWNoIGFyY2ggc3BlY2lmaWMKPj4gbW9kaWYgYW5kIG9uZSBmb3IgZHJpdmVycy8g
+YW5kIG9uZSBmb3IgYmxvY2svID8KPgo+IFllYWgsIHBscyBzcGxpdCB0aGlzIGludG8gb25lIHBh
+dGNoIHBlciBhcmVhLCB3aXRoIGEgc3VpdGFibGUgcGF0Y2gKPiBzdWJqZWN0IHByZWZpeC4gTG9v
+ayBhdCBnaXQgbG9nIG9mIGVhY2ggZmlsZSB0byBnZXQgYSBmZWVsaW5nIGZvciB3aGF0J3MKPiB0
+aGUgc3RhbmRhcmQgaW4gZWFjaCBhcmVhLgoKVGhpcyBwYXJ0IGlzIGFjdHVhbGx5IHByZXR0eSBh
+bm5veWluZy4KCkkgaGFja2VkIHVwIGEgc2NyaXB0IChiZWxvdykgd2hpY2ggc2VlbXMgdG8gZG8g
+YSByZWFzb25hYmxlIGpvYiBpbiBtb3N0CmNhc2VzLgoKRm9yIHRoaXMgcGF0Y2ggaXQgZ2l2ZXM6
+CgogICQgZm9yIGYgaW4gJChnaXQgbHMtZmlsZXMgLW0pOyBkbyAuL2d1ZXNzLXByZWZpeC5weSAk
+ZjsgZG9uZQogIEFSQzogCiAgQVJDOiAKICBBUk06IAogIGFybTY0OiBwdHJhY2U6IAogIEtWTTog
+UFBDOiAKICBwb3dlcnBjL3Bvd2VybnY6CiAgeDg2L2VmaToKICBibG9jay9zZWQtb3BhbDoKICBj
+bG9ja3NvdXJjZTogbWlwcy1naWM6IAogIGNsb2Nrc291cmNlL2RyaXZlcnMvc3VuNWk6CiAgZHJt
+L2FtZC9kaXNwbGF5OgogIGRybS9hbWQvcG93ZXJwbGF5OgogIGRybS9tc20vbWRwNToKICBkcm06
+IAogIGlvbW11L3Z0LWQ6CiAgbWQ6IAogIHNvYzogaW14OiBncGM6IAoKSSB0aGluayB0aG9zZSBh
+cmUgY29ycmVjdCBleGNlcHQgZm9yOgogLSAiZHJtOiIgZm9yICJkcml2ZXJzL2dwdS9kcm0vc2No
+ZWR1bGVyIiB3aGljaCBoYXMgb25seSBhIHNpbmdsZSBjb21taXQuCiAtICJtZDoiIGZvciAiZHJp
+dmVycy9tZC9yYWlkMS5jIiB3aGljaCBpcyB0cmlja2VkIGJ5IGluY29uc2lzdGVudAogICAgdXNh
+Z2Ugb2YgIm1kOiByYWlkMToiIGFuZCAibWQvcmFpZDE6Ii4KCkJ1dCB0aGF0IHNlZW1zIGxpa2Ug
+YSByZWFzb25hYmxlIGhpdCByYXRlLgoKQW5vdGhlciBhcHByb2FjaCB3b3VsZCBiZSB0byBoYXZl
+IGEgZmlsZSB0aGF0IGRlZmluZXMgZm9yIGVhY2ggc3Vic3lzdGVtCndoYXQgdGhlIHByZWZlcnJl
+ZCBzdHlsZSBpcywgYnV0IHRoYXQgaXMgbGlrZWx5IHRvIGJlIGEgUElUQSB0bwptYWludGFpbi4K
+CmNoZWVycwoKCiMhL3Vzci9iaW4vcHl0aG9uMwoKaW1wb3J0IHN5cwppbXBvcnQgcmUKZnJvbSBz
+dWJwcm9jZXNzIGltcG9ydCBjaGVja19vdXRwdXQKZnJvbSBjb2xsZWN0aW9ucyBpbXBvcnQgQ291
+bnRlcgoKaWYgbGVuKHN5cy5hcmd2KSAhPSAyOgogICAgcHJpbnQoJ1VzYWdlOiAlcyA8cGF0aD4n
+ICUgc3lzLmFyZ3ZbMF0sIGZpbGU9c3lzLnN0ZGVycikKICAgIHN5cy5leGl0KDEpCgpmbmFtZSA9
+IHN5cy5hcmd2WzFdCgpjbWQgPSBbJ2dpdCcsICdsb2cnLCAnLS1mb3JtYXQ9JXMnLCAnLW4nLCAn
+MTAwJywgZm5hbWVdCm91dHB1dCA9IGNoZWNrX291dHB1dChjbWQpLmRlY29kZSgndXRmLTgnKQoK
+aWdub3JlID0gWydMaWNlbnNlJywgJ01lcmdlJ10KCiMgT3JkZXJlZCBsaXN0IG9mIHBhdHRlcm5z
+CnBhdHRlcm5zID0gWwogICAgIyBDb21tb24gc3R5bGUgImZvby9iYXIvYmF6OiBGaXggdGhlIGZv
+byIKICAgIHJlLmNvbXBpbGUoJ14oW1x3XC1fXSs6ICkrJyksCiAgICAjIExlc3MgY29tbW9uICJm
+b28gYmFyIGJhejogRml4IHRoZSBmb28iCiAgICByZS5jb21waWxlKCdeKFtcd1wtX10rOj8gKSs6
+ICcpCl0KCndvcmRzID0gW10KZm9yIGxpbmUgaW4gb3V0cHV0LnNwbGl0bGluZXMoKToKICAgIHBy
+ZWZpeCA9IGxpbmUuc3BsaXQoKVswXQogICAgZm9yIHBhdHQgaW4gcGF0dGVybnM6CiAgICAgICAg
+bWF0Y2ggPSBwYXR0LnNlYXJjaChsaW5lKQogICAgICAgIGlmIG1hdGNoOgogICAgICAgICAgICBw
+cmVmaXggPSBtYXRjaC5ncm91cCgwKQogICAgICAgICAgICBicmVhawoKICAgIGlmIHByZWZpeCBp
+biBpZ25vcmU6CiAgICAgICAgY29udGludWUKCiAgICB3b3Jkcy5hcHBlbmQocHJlZml4KQoKIyBX
+YXJuIGlmIHdlIGRpZG4ndCBmaW5kIG1hbnkgZXhhbXBsZXMKaWYgbGVuKHdvcmRzKSA8IDU6CiAg
+ICBwcmludCgiV2FybmluZzogb25seSBmb3VuZCAlZCBwcmV2aW91cyBjb21taXRzIHRvIGd1ZXNz
+IGZyb20gZm9yIiAlIGxlbih3b3JkcyksCiAgICAgICAgICBmbmFtZSwgZmlsZT1zeXMuc3RkZXJy
+KQoKY291bnRzID0gQ291bnRlcih3b3JkcykKcHJpbnQoY291bnRzLm1vc3RfY29tbW9uKDEpWzBd
+WzBdKQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwphbWQt
+Z2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xp
+c3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2FtZC1nZngK
