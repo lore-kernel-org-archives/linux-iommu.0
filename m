@@ -1,109 +1,130 @@
 From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 09/14] drm/msm/gpu: Support using TTBR1 for kernel buffer
-	objects
-Date: Wed, 21 Feb 2018 15:59:19 -0700
-Message-ID: <20180221225924.30737-10-jcrouse@codeaurora.org>
+Subject: [PATCH 08/14] drm/msm: Pass the MMU domain index in
+ struct msm_file_private
+Date: Wed, 21 Feb 2018 15:59:18 -0700
+Message-ID: <20180221225924.30737-9-jcrouse@codeaurora.org>
 References: <20180221225924.30737-1-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 In-Reply-To: <20180221225924.30737-1-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 To: freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-arm-smmu based targets can support split pagetables (TTBR0/TTBR1).
-This is most useful for implementing per-instance pagetables so that
-the "user" pagetable can be swapped out while the "kernel" or
-"global" pagetable remains entact.
-
-if the target specifies a global virtual memory range then try to
-enable TTBR1 (the "global" pagetable) on the domain and and if
-successful use the global virtual memory range for allocations
-on the default GPU address space - this ensures that the global
-allocations make it into the right space. Per-instance pagetables
-still need additional support to be enabled but even if they
-aren't set up it isn't harmful to just use TTBR1 for all
-virtual memory regions and leave the other pagetable unused.
-
-If TTBR1 support isn't enabled then fall back to the "legacy"
-virtual address space both kernel and user.
-
-Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/gpu/drm/msm/msm_gpu.c | 20 ++++++++++++++++++--
- drivers/gpu/drm/msm/msm_gpu.h |  4 ++--
- 2 files changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 086fb347b554..94332faa316f 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -701,7 +701,8 @@ static int get_clocks(struct platform_device *pdev, struct msm_gpu *gpu)
- 
- static struct msm_gem_address_space *
- msm_gpu_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev,
--		uint64_t va_start, uint64_t va_end)
-+		u64 va_start, u64 va_end,
-+		u64 va_global_start, u64 va_global_end)
- {
- 	struct iommu_domain *iommu;
- 	struct msm_gem_address_space *aspace;
-@@ -719,6 +720,20 @@ msm_gpu_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev,
- 	iommu->geometry.aperture_start = va_start;
- 	iommu->geometry.aperture_end = va_end;
- 
-+	/* If a va_global range was specified then try to set up TTBR1 */
-+	if (va_global_start && va_global_end) {
-+		int val = 1;
-+
-+		/* Try to enable TTBR1 on the domain */
-+		ret = iommu_domain_set_attr(iommu, DOMAIN_ATTR_ENABLE_TTBR1,
-+			&val);
-+
-+		if (!WARN(ret, "Unable to enable TTBR1 for the IOMMU\n")) {
-+			iommu->geometry.aperture_start = va_global_start;
-+			iommu->geometry.aperture_end = va_global_end;
-+		}
-+	}
-+
- 	dev_info(gpu->dev->dev, "%s: using IOMMU\n", gpu->name);
- 
- 	aspace = msm_gem_address_space_create(&pdev->dev, iommu, "gpu");
-@@ -811,7 +826,8 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	msm_devfreq_init(gpu);
- 
- 	gpu->aspace = msm_gpu_create_address_space(gpu, pdev,
--		config->va_start, config->va_end);
-+		config->va_start, config->va_end, config->va_start_global,
-+		config->va_end_global);
- 
- 	if (gpu->aspace == NULL)
- 		dev_info(drm->dev, "%s: no IOMMU, fallback to VRAM carveout!\n", name);
-diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index fccfccd303af..698eca2c1431 100644
---- a/drivers/gpu/drm/msm/msm_gpu.h
-+++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -31,8 +31,8 @@ struct msm_gpu_perfcntr;
- struct msm_gpu_config {
- 	const char *ioname;
- 	const char *irqname;
--	uint64_t va_start;
--	uint64_t va_end;
-+	uint64_t va_start, va_end;
-+	uint64_t va_start_global, va_end_global;
- 	unsigned int nr_rings;
- };
- 
--- 
-2.16.1
+UGFzcyB0aGUgaW5kZXggb2YgdGhlIE1NVSBkb21haW4gaW4gc3RydWN0IG1zbV9maWxlX3ByaXZh
+dGUgaW5zdGVhZApvZiBhc3N1bWluZyBncHUtPmlkIHRocm91Z2hvdXQgdGhlIHN1Ym1pdCBwYXRo
+LiBUaGlzIGNsZWFycyB0aGUgd2F5CnRvIGNoYW5nZSBjdHgtPmFzcGFjZSB0byBhIHBlci1pbnN0
+YW5jZSBwYWdldGFibGUuCgpTaWduZWQtb2ZmLWJ5OiBKb3JkYW4gQ3JvdXNlIDxqY3JvdXNlQGNv
+ZGVhdXJvcmEub3JnPgotLS0KIGRyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2Rydi5jICAgICAgICB8
+IDE2ICsrKystLS0tLS0tLS0tLS0KIGRyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2Rydi5oICAgICAg
+ICB8ICAxICsKIGRyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2dlbS5oICAgICAgICB8ICAxICsKIGRy
+aXZlcnMvZ3B1L2RybS9tc20vbXNtX2dlbV9zdWJtaXQuYyB8IDEzICsrKysrKysrLS0tLS0KIGRy
+aXZlcnMvZ3B1L2RybS9tc20vbXNtX2dwdS5jICAgICAgICB8ICA1ICsrLS0tCiA1IGZpbGVzIGNo
+YW5nZWQsIDE2IGluc2VydGlvbnMoKyksIDIwIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvZ3B1L2RybS9tc20vbXNtX2Rydi5jIGIvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fZHJ2
+LmMKaW5kZXggZDkwZWYxZDc4YTFiLi43NGRkMDlkYjkzZDcgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
+Z3B1L2RybS9tc20vbXNtX2Rydi5jCisrKyBiL2RyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2Rydi5j
+CkBAIC01MDIsNiArNTAyLDcgQEAgc3RhdGljIHZvaWQgbG9hZF9ncHUoc3RydWN0IGRybV9kZXZp
+Y2UgKmRldikKIAogc3RhdGljIGludCBjb250ZXh0X2luaXQoc3RydWN0IGRybV9kZXZpY2UgKmRl
+diwgc3RydWN0IGRybV9maWxlICpmaWxlKQogeworCXN0cnVjdCBtc21fZHJtX3ByaXZhdGUgKnBy
+aXYgPSBkZXYtPmRldl9wcml2YXRlOwogCXN0cnVjdCBtc21fZmlsZV9wcml2YXRlICpjdHg7CiAK
+IAljdHggPSBremFsbG9jKHNpemVvZigqY3R4KSwgR0ZQX0tFUk5FTCk7CkBAIC01MTAsNiArNTEx
+LDcgQEAgc3RhdGljIGludCBjb250ZXh0X2luaXQoc3RydWN0IGRybV9kZXZpY2UgKmRldiwgc3Ry
+dWN0IGRybV9maWxlICpmaWxlKQogCiAJbXNtX3N1Ym1pdHF1ZXVlX2luaXQoZGV2LCBjdHgpOwog
+CisJY3R4LT5hc3BhY2UgPSBwcml2LT5ncHUtPmFzcGFjZTsKIAlmaWxlLT5kcml2ZXJfcHJpdiA9
+IGN0eDsKIAogCXJldHVybiAwOwpAQCAtNjgzLDE3ICs2ODUsNiBAQCBzdGF0aWMgaW50IG1zbV9p
+b2N0bF9nZW1fY3B1X2Zpbmkoc3RydWN0IGRybV9kZXZpY2UgKmRldiwgdm9pZCAqZGF0YSwKIAly
+ZXR1cm4gcmV0OwogfQogCi1zdGF0aWMgaW50IG1zbV9pb2N0bF9nZW1faW5mb19pb3ZhKHN0cnVj
+dCBkcm1fZGV2aWNlICpkZXYsCi0JCXN0cnVjdCBkcm1fZ2VtX29iamVjdCAqb2JqLCB1aW50NjRf
+dCAqaW92YSkKLXsKLQlzdHJ1Y3QgbXNtX2RybV9wcml2YXRlICpwcml2ID0gZGV2LT5kZXZfcHJp
+dmF0ZTsKLQotCWlmICghcHJpdi0+Z3B1KQotCQlyZXR1cm4gLUVJTlZBTDsKLQotCXJldHVybiBt
+c21fZ2VtX2dldF9pb3ZhKG9iaiwgcHJpdi0+Z3B1LT5hc3BhY2UsIGlvdmEpOwotfQotCiBzdGF0
+aWMgaW50IG1zbV9pb2N0bF9nZW1faW5mbyhzdHJ1Y3QgZHJtX2RldmljZSAqZGV2LCB2b2lkICpk
+YXRhLAogCQlzdHJ1Y3QgZHJtX2ZpbGUgKmZpbGUpCiB7CkBAIC03MDksOSArNzAwLDEwIEBAIHN0
+YXRpYyBpbnQgbXNtX2lvY3RsX2dlbV9pbmZvKHN0cnVjdCBkcm1fZGV2aWNlICpkZXYsIHZvaWQg
+KmRhdGEsCiAJCXJldHVybiAtRU5PRU5UOwogCiAJaWYgKGFyZ3MtPmZsYWdzICYgTVNNX0lORk9f
+SU9WQSkgeworCQlzdHJ1Y3QgbXNtX2ZpbGVfcHJpdmF0ZSAqY3R4ID0gZmlsZS0+ZHJpdmVyX3By
+aXY7CiAJCXVpbnQ2NF90IGlvdmE7CiAKLQkJcmV0ID0gbXNtX2lvY3RsX2dlbV9pbmZvX2lvdmEo
+ZGV2LCBvYmosICZpb3ZhKTsKKwkJcmV0ID0gbXNtX2dlbV9nZXRfaW92YShvYmosIGN0eC0+YXNw
+YWNlLCAmaW92YSk7CiAJCWlmICghcmV0KQogCQkJYXJncy0+b2Zmc2V0ID0gaW92YTsKIAl9IGVs
+c2UgewpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fZHJ2LmggYi9kcml2ZXJz
+L2dwdS9kcm0vbXNtL21zbV9kcnYuaAppbmRleCAwYTY1M2RkMmU2MTguLjA0OTliMTcwOGY1MiAx
+MDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fZHJ2LmgKKysrIGIvZHJpdmVycy9n
+cHUvZHJtL21zbS9tc21fZHJ2LmgKQEAgLTU5LDYgKzU5LDcgQEAgc3RydWN0IG1zbV9maWxlX3By
+aXZhdGUgewogCXJ3bG9ja190IHF1ZXVlbG9jazsKIAlzdHJ1Y3QgbGlzdF9oZWFkIHN1Ym1pdHF1
+ZXVlczsKIAlpbnQgcXVldWVpZDsKKwlzdHJ1Y3QgbXNtX2dlbV9hZGRyZXNzX3NwYWNlICphc3Bh
+Y2U7CiB9OwogCiBlbnVtIG1zbV9tZHBfcGxhbmVfcHJvcGVydHkgewpkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9ncHUvZHJtL21zbS9tc21fZ2VtLmggYi9kcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9nZW0u
+aAppbmRleCA5MzIwZTE4NGI0OGQuLmE1ZTYxMjU5ZjQwYiAxMDA2NDQKLS0tIGEvZHJpdmVycy9n
+cHUvZHJtL21zbS9tc21fZ2VtLmgKKysrIGIvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fZ2VtLmgK
+QEAgLTEzOCw2ICsxMzgsNyBAQCB2b2lkIG1zbV9nZW1fdnVubWFwKHN0cnVjdCBkcm1fZ2VtX29i
+amVjdCAqb2JqLCBlbnVtIG1zbV9nZW1fbG9jayBzdWJjbGFzcyk7CiBzdHJ1Y3QgbXNtX2dlbV9z
+dWJtaXQgewogCXN0cnVjdCBkcm1fZGV2aWNlICpkZXY7CiAJc3RydWN0IG1zbV9ncHUgKmdwdTsK
+KwlzdHJ1Y3QgbXNtX2dlbV9hZGRyZXNzX3NwYWNlICphc3BhY2U7CiAJc3RydWN0IGxpc3RfaGVh
+ZCBub2RlOyAgIC8qIG5vZGUgaW4gcmluZyBzdWJtaXQgbGlzdCAqLwogCXN0cnVjdCBsaXN0X2hl
+YWQgYm9fbGlzdDsKIAlzdHJ1Y3Qgd3dfYWNxdWlyZV9jdHggdGlja2V0OwpkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9ncHUvZHJtL21zbS9tc21fZ2VtX3N1Ym1pdC5jIGIvZHJpdmVycy9ncHUvZHJtL21z
+bS9tc21fZ2VtX3N1Ym1pdC5jCmluZGV4IGI4ZGM4Zjk2Y2FmMi4uZDE0Mzk5YzBkZmI4IDEwMDY0
+NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9nZW1fc3VibWl0LmMKKysrIGIvZHJpdmVy
+cy9ncHUvZHJtL21zbS9tc21fZ2VtX3N1Ym1pdC5jCkBAIC0zMSw4ICszMSw5IEBACiAjZGVmaW5l
+IEJPX1BJTk5FRCAgIDB4MjAwMAogCiBzdGF0aWMgc3RydWN0IG1zbV9nZW1fc3VibWl0ICpzdWJt
+aXRfY3JlYXRlKHN0cnVjdCBkcm1fZGV2aWNlICpkZXYsCi0JCXN0cnVjdCBtc21fZ3B1ICpncHUs
+IHN0cnVjdCBtc21fZ3B1X3N1Ym1pdHF1ZXVlICpxdWV1ZSwKLQkJdWludDMyX3QgbnJfYm9zLCB1
+aW50MzJfdCBucl9jbWRzKQorCQlzdHJ1Y3QgbXNtX2dwdSAqZ3B1LCBzdHJ1Y3QgbXNtX2dlbV9h
+ZGRyZXNzX3NwYWNlICphc3BhY2UsCisJCXN0cnVjdCBtc21fZ3B1X3N1Ym1pdHF1ZXVlICpxdWV1
+ZSwgdWludDMyX3QgbnJfYm9zLAorCQl1aW50MzJfdCBucl9jbWRzKQogewogCXN0cnVjdCBtc21f
+Z2VtX3N1Ym1pdCAqc3VibWl0OwogCXVpbnQ2NF90IHN6ID0gc2l6ZW9mKCpzdWJtaXQpICsgKCh1
+NjQpbnJfYm9zICogc2l6ZW9mKHN1Ym1pdC0+Ym9zWzBdKSkgKwpAQCAtNDYsNiArNDcsNyBAQCBz
+dGF0aWMgc3RydWN0IG1zbV9nZW1fc3VibWl0ICpzdWJtaXRfY3JlYXRlKHN0cnVjdCBkcm1fZGV2
+aWNlICpkZXYsCiAJCXJldHVybiBOVUxMOwogCiAJc3VibWl0LT5kZXYgPSBkZXY7CisJc3VibWl0
+LT5hc3BhY2UgPSBhc3BhY2U7CiAJc3VibWl0LT5ncHUgPSBncHU7CiAJc3VibWl0LT5mZW5jZSA9
+IE5VTEw7CiAJc3VibWl0LT5waWQgPSBnZXRfcGlkKHRhc2tfcGlkKGN1cnJlbnQpKTsKQEAgLTE2
+Nyw3ICsxNjksNyBAQCBzdGF0aWMgdm9pZCBzdWJtaXRfdW5sb2NrX3VucGluX2JvKHN0cnVjdCBt
+c21fZ2VtX3N1Ym1pdCAqc3VibWl0LAogCXN0cnVjdCBtc21fZ2VtX29iamVjdCAqbXNtX29iaiA9
+IHN1Ym1pdC0+Ym9zW2ldLm9iajsKIAogCWlmIChzdWJtaXQtPmJvc1tpXS5mbGFncyAmIEJPX1BJ
+Tk5FRCkKLQkJbXNtX2dlbV9wdXRfaW92YSgmbXNtX29iai0+YmFzZSwgc3VibWl0LT5ncHUtPmFz
+cGFjZSk7CisJCW1zbV9nZW1fcHV0X2lvdmEoJm1zbV9vYmotPmJhc2UsIHN1Ym1pdC0+YXNwYWNl
+KTsKIAogCWlmIChzdWJtaXQtPmJvc1tpXS5mbGFncyAmIEJPX0xPQ0tFRCkKIAkJd3dfbXV0ZXhf
+dW5sb2NrKCZtc21fb2JqLT5yZXN2LT5sb2NrKTsKQEAgLTI3MCw3ICsyNzIsNyBAQCBzdGF0aWMg
+aW50IHN1Ym1pdF9waW5fb2JqZWN0cyhzdHJ1Y3QgbXNtX2dlbV9zdWJtaXQgKnN1Ym1pdCkKIAog
+CQkvKiBpZiBsb2NraW5nIHN1Y2NlZWRlZCwgcGluIGJvOiAqLwogCQlyZXQgPSBtc21fZ2VtX2dl
+dF9pb3ZhKCZtc21fb2JqLT5iYXNlLAotCQkJCXN1Ym1pdC0+Z3B1LT5hc3BhY2UsICZpb3ZhKTsK
+KwkJCQlzdWJtaXQtPmFzcGFjZSwgJmlvdmEpOwogCiAJCWlmIChyZXQpCiAJCQlicmVhazsKQEAg
+LTQ2NSw3ICs0NjcsOCBAQCBpbnQgbXNtX2lvY3RsX2dlbV9zdWJtaXQoc3RydWN0IGRybV9kZXZp
+Y2UgKmRldiwgdm9pZCAqZGF0YSwKIAkJfQogCX0KIAotCXN1Ym1pdCA9IHN1Ym1pdF9jcmVhdGUo
+ZGV2LCBncHUsIHF1ZXVlLCBhcmdzLT5ucl9ib3MsIGFyZ3MtPm5yX2NtZHMpOworCXN1Ym1pdCA9
+IHN1Ym1pdF9jcmVhdGUoZGV2LCBncHUsIGN0eC0+YXNwYWNlLCBxdWV1ZSwgYXJncy0+bnJfYm9z
+LAorCQlhcmdzLT5ucl9jbWRzKTsKIAlpZiAoIXN1Ym1pdCkgewogCQlyZXQgPSAtRU5PTUVNOwog
+CQlnb3RvIG91dF91bmxvY2s7CmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9n
+cHUuYyBiL2RyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2dwdS5jCmluZGV4IGJkMzc2ZjllMThhNy4u
+MDg2ZmIzNDdiNTU0IDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9ncHUuYwor
+KysgYi9kcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9ncHUuYwpAQCAtNTUxLDcgKzU1MSw3IEBAIHN0
+YXRpYyB2b2lkIHJldGlyZV9zdWJtaXQoc3RydWN0IG1zbV9ncHUgKmdwdSwgc3RydWN0IG1zbV9n
+ZW1fc3VibWl0ICpzdWJtaXQpCiAJCXN0cnVjdCBtc21fZ2VtX29iamVjdCAqbXNtX29iaiA9IHN1
+Ym1pdC0+Ym9zW2ldLm9iajsKIAkJLyogbW92ZSB0byBpbmFjdGl2ZTogKi8KIAkJbXNtX2dlbV9t
+b3ZlX3RvX2luYWN0aXZlKCZtc21fb2JqLT5iYXNlKTsKLQkJbXNtX2dlbV9wdXRfaW92YSgmbXNt
+X29iai0+YmFzZSwgZ3B1LT5hc3BhY2UpOworCQltc21fZ2VtX3B1dF9pb3ZhKCZtc21fb2JqLT5i
+YXNlLCBzdWJtaXQtPmFzcGFjZSk7CiAJCWRybV9nZW1fb2JqZWN0X3VucmVmZXJlbmNlKCZtc21f
+b2JqLT5iYXNlKTsKIAl9CiAKQEAgLTYzNSw4ICs2MzUsNyBAQCB2b2lkIG1zbV9ncHVfc3VibWl0
+KHN0cnVjdCBtc21fZ3B1ICpncHUsIHN0cnVjdCBtc21fZ2VtX3N1Ym1pdCAqc3VibWl0LAogCiAJ
+CS8qIHN1Ym1pdCB0YWtlcyBhIHJlZmVyZW5jZSB0byB0aGUgYm8gYW5kIGlvdmEgdW50aWwgcmV0
+aXJlZDogKi8KIAkJZHJtX2dlbV9vYmplY3RfcmVmZXJlbmNlKCZtc21fb2JqLT5iYXNlKTsKLQkJ
+bXNtX2dlbV9nZXRfaW92YSgmbXNtX29iai0+YmFzZSwKLQkJCQlzdWJtaXQtPmdwdS0+YXNwYWNl
+LCAmaW92YSk7CisJCW1zbV9nZW1fZ2V0X2lvdmEoJm1zbV9vYmotPmJhc2UsIHN1Ym1pdC0+YXNw
+YWNlLCAmaW92YSk7CiAKIAkJaWYgKHN1Ym1pdC0+Ym9zW2ldLmZsYWdzICYgTVNNX1NVQk1JVF9C
+T19XUklURSkKIAkJCW1zbV9nZW1fbW92ZV90b19hY3RpdmUoJm1zbV9vYmotPmJhc2UsIGdwdSwg
+dHJ1ZSwgc3VibWl0LT5mZW5jZSk7Ci0tIAoyLjE2LjEKCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRyZW5v
+QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
