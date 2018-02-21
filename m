@@ -1,15 +1,11 @@
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v3] iommu/amd: Add support for fast IOTLB flushing
-Date: Wed, 21 Feb 2018 14:05:57 +0700
-Message-ID: <2e9a6834-36b2-8f65-ab07-914b8e3d5671@amd.com>
-References: <1517374874-93978-1-git-send-email-suravee.suthikulpanit@amd.com>
-	<20180213132959.kkavgzt37hm7n2tt@8bytes.org>
+Subject: [PATCH v4] iommu/amd: Add support for fast IOTLB flushing
+Date: Wed, 21 Feb 2018 14:19:45 +0700
+Message-ID: <1519197585-10546-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180213132959.kkavgzt37hm7n2tt-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,45 +15,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Since AMD IOMMU driver currently flushes all TLB entries
+when page size is more than one, use the same interface
+for both iommu_ops.flush_iotlb_all() and iommu_ops.iotlb_sync().
 
-On 2/13/18 8:29 PM, Joerg Roedel wrote:
-> Hi Suravee,
-> 
-> thanks for working on this.
-> 
-> On Wed, Jan 31, 2018 at 12:01:14AM -0500, Suravee Suthikulpanit wrote:
->> +static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
->> +				      unsigned long iova, size_t size)
->> +{
->> +	struct amd_iommu_flush_entries *entry, *p;
->> +	unsigned long flags;
->> +	bool found = false;
->> +
->> +	spin_lock_irqsave(&amd_iommu_flush_list_lock, flags);
-> 
-> I am not happy with introducing or using global locks when they are not
-> necessary. Can this be a per-domain lock?
-> 
-> Besides, did you check it makes sense to actually keep track of the
-> ranges here? My approach would be to just make iotlb_range_add() an noop
-> and do a full domain flush in iotlb_sync(). But maybe you did
-> measurements you can share here to show there is a benefit.
-> 
-> 
-> 
-> 	Joerg
-> 
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+Changes from v3 (https://patchwork.kernel.org/patch/10193235)
+ * Change amd_iommu_iotlb_range_add() to no-op and iotlb_sync()
+   to full domain flush for now since we currently flush all entries
+   when the page size is more than one.
+ * Fine-grained invalidation will be introduced in subsequent
+   patch series.
 
-Alright, I'll send out v4 w/ iotlb_range_add() as no-op, and iotlb_sync()
-as full domain flush. This should be sufficient to get start with adopting
-the fast TLB flushing interface.
+ drivers/iommu/amd_iommu.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-I'll submit support for fine-grain TLB invalidation as a separate series.
-
-Thanks,
-Suravee
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index fed8059..6061a8d 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3043,9 +3043,6 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ 	unmap_size = iommu_unmap_page(domain, iova, page_size);
+ 	mutex_unlock(&domain->api_lock);
+ 
+-	domain_flush_tlb_pde(domain);
+-	domain_flush_complete(domain);
+-
+ 	return unmap_size;
+ }
+ 
+@@ -3163,6 +3160,19 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	return dev_data->defer_attach;
+ }
+ 
++static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	struct protection_domain *dom = to_pdomain(domain);
++
++	domain_flush_tlb_pde(dom);
++	domain_flush_complete(dom);
++}
++
++static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
++				      unsigned long iova, size_t size)
++{
++}
++
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3181,6 +3191,9 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	.apply_resv_region = amd_iommu_apply_resv_region,
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
++	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
++	.iotlb_range_add = amd_iommu_iotlb_range_add,
++	.iotlb_sync = amd_iommu_flush_iotlb_all,
+ };
+ 
+ /*****************************************************************************
+-- 
+1.8.3.1
