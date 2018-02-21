@@ -1,68 +1,109 @@
 From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 07/14] drm/msm: Enable 64 bit mode by default
-Date: Wed, 21 Feb 2018 15:59:17 -0700
-Message-ID: <20180221225924.30737-8-jcrouse@codeaurora.org>
+Subject: [PATCH 09/14] drm/msm/gpu: Support using TTBR1 for kernel buffer
+	objects
+Date: Wed, 21 Feb 2018 15:59:19 -0700
+Message-ID: <20180221225924.30737-10-jcrouse@codeaurora.org>
 References: <20180221225924.30737-1-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <20180221225924.30737-1-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-QTVYWCBHUFVzIGNhbiBiZSBydW4gaW4gZWl0aGVyIDMyIG9yIDY0IGJpdCBtb2RlLiBUaGUgR1BV
-IHJlZ2lzdGVycwphbmQgdGhlIG1pY3JvY29kZSB1c2UgNjQgYml0IHZpcnR1YWwgYWRkcmVzc2lu
-ZyBpbiBlaXRoZXIgY2FzZSBidXQgdGhlCnVwcGVyIDMyIGJpdHMgYXJlIGlnbm9yZWQgaWYgdGhl
-IEdQVSBpcyBpbiAzMiBiaXQgbW9kZS4gVGhlcmUgaXMgbm8KcGVyZm9ybWFuY2UgZGlzYWR2YW50
-YWdlIHRvIHJlbWFpbmluZyBpbiA2NCBiaXQgbW9kZSBldmVuIGlmIHdlIGFyZQpvbmx5IGdlbmVy
-YXRpbmcgMzIgYml0IGFkZHJlc3NlcyBzbyBzd2l0Y2ggb3ZlciBub3cgdG8gcHJlcGFyZSBmb3IK
-dXNpbmcgYWRkcmVzc2VzIGFib3ZlIDRHIGZvciB0YXJnZXRzIHRoYXQgc3VwcG9ydCB0aGVtLgoK
-U2lnbmVkLW9mZi1ieTogSm9yZGFuIENyb3VzZSA8amNyb3VzZUBjb2RlYXVyb3JhLm9yZz4KLS0t
-CiBkcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVuby9hNXh4X2dwdS5jIHwgMTQgKysrKysrKysrKysr
-KysKIGRyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2lvbW11LmMgICAgICAgfCAgMiArLQogMiBmaWxl
-cyBjaGFuZ2VkLCAxNSBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYTV4eF9ncHUuYyBiL2RyaXZlcnMvZ3B1L2RybS9t
-c20vYWRyZW5vL2E1eHhfZ3B1LmMKaW5kZXggN2UwOWQ0NGU0YTE1Li5jMTA2NjA2ODg3ZTIgMTAw
-NjQ0Ci0tLSBhL2RyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2E1eHhfZ3B1LmMKKysrIGIvZHJp
-dmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYTV4eF9ncHUuYwpAQCAtNjk1LDYgKzY5NSwyMCBAQCBz
-dGF0aWMgaW50IGE1eHhfaHdfaW5pdChzdHJ1Y3QgbXNtX2dwdSAqZ3B1KQogCQlSRUdfQTVYWF9S
-QkJNX1NFQ1ZJRF9UU0JfVFJVU1RFRF9CQVNFX0hJLCAweDAwMDAwMDAwKTsKIAlncHVfd3JpdGUo
-Z3B1LCBSRUdfQTVYWF9SQkJNX1NFQ1ZJRF9UU0JfVFJVU1RFRF9TSVpFLCAweDAwMDAwMDAwKTsK
-IAorCS8qIFB1dCB0aGUgR1BVIGludG8gNjQgYml0IGJ5IGRlZmF1bHQgKi8KKwlncHVfd3JpdGUo
-Z3B1LCBSRUdfQTVYWF9DUF9BRERSX01PREVfQ05UTCwgMHgxKTsKKwlncHVfd3JpdGUoZ3B1LCBS
-RUdfQTVYWF9WU0NfQUREUl9NT0RFX0NOVEwsIDB4MSk7CisJZ3B1X3dyaXRlKGdwdSwgUkVHX0E1
-WFhfR1JBU19BRERSX01PREVfQ05UTCwgMHgxKTsKKwlncHVfd3JpdGUoZ3B1LCBSRUdfQTVYWF9S
-Ql9BRERSX01PREVfQ05UTCwgMHgxKTsKKwlncHVfd3JpdGUoZ3B1LCBSRUdfQTVYWF9QQ19BRERS
-X01PREVfQ05UTCwgMHgxKTsKKwlncHVfd3JpdGUoZ3B1LCBSRUdfQTVYWF9ITFNRX0FERFJfTU9E
-RV9DTlRMLCAweDEpOworCWdwdV93cml0ZShncHUsIFJFR19BNVhYX1ZGRF9BRERSX01PREVfQ05U
-TCwgMHgxKTsKKwlncHVfd3JpdGUoZ3B1LCBSRUdfQTVYWF9WUENfQUREUl9NT0RFX0NOVEwsIDB4
-MSk7CisJZ3B1X3dyaXRlKGdwdSwgUkVHX0E1WFhfVUNIRV9BRERSX01PREVfQ05UTCwgMHgxKTsK
-KwlncHVfd3JpdGUoZ3B1LCBSRUdfQTVYWF9TUF9BRERSX01PREVfQ05UTCwgMHgxKTsKKwlncHVf
-d3JpdGUoZ3B1LCBSRUdfQTVYWF9UUEwxX0FERFJfTU9ERV9DTlRMLCAweDEpOworCWdwdV93cml0
-ZShncHUsIFJFR19BNVhYX1JCQk1fU0VDVklEX1RTQl9BRERSX01PREVfQ05UTCwgMHgxKTsKKwog
-CXJldCA9IGFkcmVub19od19pbml0KGdwdSk7CiAJaWYgKHJldCkKIAkJcmV0dXJuIHJldDsKZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9tc20vbXNtX2lvbW11LmMgYi9kcml2ZXJzL2dwdS9k
-cm0vbXNtL21zbV9pb21tdS5jCmluZGV4IGIyM2QzMzYyMmYzNy4uZmRiZTFhODM3MmYwIDEwMDY0
-NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNtL21zbV9pb21tdS5jCisrKyBiL2RyaXZlcnMvZ3B1
-L2RybS9tc20vbXNtX2lvbW11LmMKQEAgLTMwLDcgKzMwLDcgQEAgc3RhdGljIGludCBtc21fZmF1
-bHRfaGFuZGxlcihzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHN0cnVjdCBkZXZpY2UgKmRl
-diwKIAlzdHJ1Y3QgbXNtX2lvbW11ICppb21tdSA9IGFyZzsKIAlpZiAoaW9tbXUtPmJhc2UuaGFu
-ZGxlcikKIAkJcmV0dXJuIGlvbW11LT5iYXNlLmhhbmRsZXIoaW9tbXUtPmJhc2UuYXJnLCBpb3Zh
-LCBmbGFncyk7Ci0JcHJfd2Fybl9yYXRlbGltaXRlZCgiKioqIGZhdWx0OiBpb3ZhPSUwOGx4LCBm
-bGFncz0lZFxuIiwgaW92YSwgZmxhZ3MpOworCXByX3dhcm5fcmF0ZWxpbWl0ZWQoIioqKiBmYXVs
-dDogaW92YT0lMTZseCwgZmxhZ3M9JWRcbiIsIGlvdmEsIGZsYWdzKTsKIAlyZXR1cm4gMDsKIH0K
-IAotLSAKMi4xNi4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5v
-cmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJl
-bm8K
+arm-smmu based targets can support split pagetables (TTBR0/TTBR1).
+This is most useful for implementing per-instance pagetables so that
+the "user" pagetable can be swapped out while the "kernel" or
+"global" pagetable remains entact.
+
+if the target specifies a global virtual memory range then try to
+enable TTBR1 (the "global" pagetable) on the domain and and if
+successful use the global virtual memory range for allocations
+on the default GPU address space - this ensures that the global
+allocations make it into the right space. Per-instance pagetables
+still need additional support to be enabled but even if they
+aren't set up it isn't harmful to just use TTBR1 for all
+virtual memory regions and leave the other pagetable unused.
+
+If TTBR1 support isn't enabled then fall back to the "legacy"
+virtual address space both kernel and user.
+
+Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/gpu/drm/msm/msm_gpu.c | 20 ++++++++++++++++++--
+ drivers/gpu/drm/msm/msm_gpu.h |  4 ++--
+ 2 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index 086fb347b554..94332faa316f 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -701,7 +701,8 @@ static int get_clocks(struct platform_device *pdev, struct msm_gpu *gpu)
+ 
+ static struct msm_gem_address_space *
+ msm_gpu_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev,
+-		uint64_t va_start, uint64_t va_end)
++		u64 va_start, u64 va_end,
++		u64 va_global_start, u64 va_global_end)
+ {
+ 	struct iommu_domain *iommu;
+ 	struct msm_gem_address_space *aspace;
+@@ -719,6 +720,20 @@ msm_gpu_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev,
+ 	iommu->geometry.aperture_start = va_start;
+ 	iommu->geometry.aperture_end = va_end;
+ 
++	/* If a va_global range was specified then try to set up TTBR1 */
++	if (va_global_start && va_global_end) {
++		int val = 1;
++
++		/* Try to enable TTBR1 on the domain */
++		ret = iommu_domain_set_attr(iommu, DOMAIN_ATTR_ENABLE_TTBR1,
++			&val);
++
++		if (!WARN(ret, "Unable to enable TTBR1 for the IOMMU\n")) {
++			iommu->geometry.aperture_start = va_global_start;
++			iommu->geometry.aperture_end = va_global_end;
++		}
++	}
++
+ 	dev_info(gpu->dev->dev, "%s: using IOMMU\n", gpu->name);
+ 
+ 	aspace = msm_gem_address_space_create(&pdev->dev, iommu, "gpu");
+@@ -811,7 +826,8 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+ 	msm_devfreq_init(gpu);
+ 
+ 	gpu->aspace = msm_gpu_create_address_space(gpu, pdev,
+-		config->va_start, config->va_end);
++		config->va_start, config->va_end, config->va_start_global,
++		config->va_end_global);
+ 
+ 	if (gpu->aspace == NULL)
+ 		dev_info(drm->dev, "%s: no IOMMU, fallback to VRAM carveout!\n", name);
+diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+index fccfccd303af..698eca2c1431 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.h
++++ b/drivers/gpu/drm/msm/msm_gpu.h
+@@ -31,8 +31,8 @@ struct msm_gpu_perfcntr;
+ struct msm_gpu_config {
+ 	const char *ioname;
+ 	const char *irqname;
+-	uint64_t va_start;
+-	uint64_t va_end;
++	uint64_t va_start, va_end;
++	uint64_t va_start_global, va_end_global;
+ 	unsigned int nr_rings;
+ };
+ 
+-- 
+2.16.1
