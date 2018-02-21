@@ -1,11 +1,16 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v4] iommu/amd: Add support for fast IOTLB flushing
-Date: Wed, 21 Feb 2018 14:19:45 +0700
-Message-ID: <1519197585-10546-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 09/37] iommu/fault: Let handler return a fault response
+Date: Wed, 21 Feb 2018 10:28:04 +0000
+Message-ID: <11811f62-10d8-836c-f184-742d510bbdbc@arm.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-10-jean-philippe.brucker@arm.com>
+	<20180220151933.022f1036@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180220151933.022f1036@jacob-builder>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,70 +20,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rjw@rjwyso
 List-Id: iommu@lists.linux-foundation.org
 
-Since AMD IOMMU driver currently flushes all TLB entries
-when page size is more than one, use the same interface
-for both iommu_ops.flush_iotlb_all() and iommu_ops.iotlb_sync().
+On 20/02/18 23:19, Jacob Pan wrote:
+> On Mon, 12 Feb 2018 18:33:24 +0000
+> Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+> 
+>>  
+>> +/**
+>> + * enum page_response_code - Return status of fault handlers,
+>> telling the IOMMU
+>> + * driver how to proceed with the fault.
+>> + *
+>> + * @IOMMU_FAULT_STATUS_HANDLED: Stop processing the fault, and do
+>> not send a
+>> + *	reply to the device.
+>> + * @IOMMU_FAULT_STATUS_CONTINUE: Fault was not handled. Call the
+>> next handler,
+>> + *	or terminate.
+>> + * @IOMMU_FAULT_STATUS_SUCCESS: Fault has been handled and the page
+>> tables
+>> + *	populated, retry the access. This is "Success" in PCI PRI.
+>> + * @IOMMU_FAULT_STATUS_FAILURE: General error. Drop all subsequent
+>> faults from
+>> + *	this device if possible. This is "Response Failure" in PCI
+>> PRI.
+>> + * @IOMMU_FAULT_STATUS_INVALID: Could not handle this fault, don't
+>> retry the
+>> + *	access. This is "Invalid Request" in PCI PRI.
+>> + */
+>> +enum page_response_code {
+>> +	IOMMU_PAGE_RESP_HANDLED = 0,
+>> +	IOMMU_PAGE_RESP_CONTINUE,
+>> +	IOMMU_PAGE_RESP_SUCCESS,
+>> +	IOMMU_PAGE_RESP_INVALID,
+>> +	IOMMU_PAGE_RESP_FAILURE,
+>> +};
+> it seems to me two things are mixed here:
+> 1. driver handler response status (HANDLED, CONTINUE)
+> 2. PCI standard page response code (the rest)
+> Can we leave them separate? then we don't have to convert this enum
+> to/from PCI ATS page response code.
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
-Changes from v3 (https://patchwork.kernel.org/patch/10193235)
- * Change amd_iommu_iotlb_range_add() to no-op and iotlb_sync()
-   to full domain flush for now since we currently flush all entries
-   when the page size is more than one.
- * Fine-grained invalidation will be introduced in subsequent
-   patch series.
+Except when the producer is a platform device instead of PCI :) But I get
+your point. I liked combining them into one enum because it may simplify
+some device drivers. I can separate HANDLED/CONTINUE and have drivers
+always call page_response().
 
- drivers/iommu/amd_iommu.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index fed8059..6061a8d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3043,9 +3043,6 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
- 	unmap_size = iommu_unmap_page(domain, iova, page_size);
- 	mutex_unlock(&domain->api_lock);
- 
--	domain_flush_tlb_pde(domain);
--	domain_flush_complete(domain);
--
- 	return unmap_size;
- }
- 
-@@ -3163,6 +3160,19 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
- 	return dev_data->defer_attach;
- }
- 
-+static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
-+{
-+	struct protection_domain *dom = to_pdomain(domain);
-+
-+	domain_flush_tlb_pde(dom);
-+	domain_flush_complete(dom);
-+}
-+
-+static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
-+				      unsigned long iova, size_t size)
-+{
-+}
-+
- const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
-@@ -3181,6 +3191,9 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
- 	.apply_resv_region = amd_iommu_apply_resv_region,
- 	.is_attach_deferred = amd_iommu_is_attach_deferred,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
-+	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
-+	.iotlb_range_add = amd_iommu_iotlb_range_add,
-+	.iotlb_sync = amd_iommu_flush_iotlb_all,
- };
- 
- /*****************************************************************************
--- 
-1.8.3.1
+Thanks,
+Jean
