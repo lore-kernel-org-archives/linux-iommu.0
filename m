@@ -1,48 +1,118 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] fix double ;;s in code
-Date: Tue, 20 Feb 2018 15:47:15 -0800
-Message-ID: <20180220154715.2a8ecd75a1c2cc698baefd26@linux-foundation.org>
-References: <20180217211955.GE9640@amd>
- <187435d4-5017-edb5-9b6a-b433a148bfcc@c-s.fr>
- <20180219154135.GV22199@phenom.ffwll.local>
- <20180219193312.GA3709@amd> <87o9kkcck3.fsf@intel.com>
+From: "Mani, Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Wed, 21 Feb 2018 01:56:06 +0000
+Message-ID: <6F87890CF0F5204F892DEA1EF0D77A5973005603@FMSMSX114.amr.corp.intel.com>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+	<6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
+	<20171220115744.591a12e2@vento.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <87o9kkcck3.fsf@intel.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: daniel.lezcano@linaro.org, narmstrong@baylibre.com, airlied@linux.ie, catalin.marinas@arm.com, Alexey.Brodkin@synopsys.com, will.deacon@arm.com, fbarrat@linux.vnet.ibm.com, oleg@redhat.com, paulus@ozlabs.org, yamada.masahiro@socionext.com, mhocko@suse.com, viresh.kumar@linaro.org, Pavel Machek <pavel@ucw.cz>, hpa@zytor.com, JinHuiEric.Huang@amd.com, Rex.Zhu@amd.com, elfring@users.sourceforge.net, scott.bauer@intel.com, linux-arm-kernel@lists.infradead.org, mpe@ellerman.id.au, x86@kernel.org, Wenjing.Liu@amd.com, linux@armlinux.org.uk, amd-gfx@lists.freedesktop.org, Ding.Wang@amd.com, aik@ozlabs.ru, wens@csie.org, mingo@redhat.com, vbabka@suse.cz, airlied@redhat.com, ruscur@russell.cc, shli@kernel.org, dan.carpenter@oracle.com, andresx7@gmail.com, linux-arm-msm@vger.kernel.org, axboe@kernel.dk, linux-efi@vger.kernel.org, alistair@popple.id.au, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mauro Carvalho Chehab <mchehab-JsYNTwtnfakRB7SZvlqPiA@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "Hu, Jerry W" <jerry.w.hu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zhi,
+	Yong" <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCAyMCBGZWIgMjAxOCAxMDowMzo1NiArMDIwMCBKYW5pIE5pa3VsYSA8amFuaS5uaWt1
-bGFAbGludXguaW50ZWwuY29tPiB3cm90ZToKCj4gT24gTW9uLCAxOSBGZWIgMjAxOCwgUGF2ZWwg
-TWFjaGVrIDxwYXZlbEB1Y3cuY3o+IHdyb3RlOgo+ID4gT24gTW9uIDIwMTgtMDItMTkgMTY6NDE6
-MzUsIERhbmllbCBWZXR0ZXIgd3JvdGU6Cj4gPj4gWWVhaCwgcGxzIHNwbGl0IHRoaXMgaW50byBv
-bmUgcGF0Y2ggcGVyIGFyZWEsIHdpdGggYSBzdWl0YWJsZSBwYXRjaAo+ID4+IHN1YmplY3QgcHJl
-Zml4LiBMb29rIGF0IGdpdCBsb2cgb2YgZWFjaCBmaWxlIHRvIGdldCBhIGZlZWxpbmcgZm9yIHdo
-YXQncwo+ID4+IHRoZSBzdGFuZGFyZCBpbiBlYWNoIGFyZWEuCj4gPgo+ID4gWWVhaCBJIGNhbiBz
-cGVuZCBob3VyIHNwbGl0aW5nIGl0LCBhbmQgdGhlbiBwZW9wbGUgd2lsbCBpZ25vcmUgaXQKPiA+
-IGFueXdheS4KPiA+Cj4gPiBJZiB5b3UgY2FyZSBhYm91dCBvbmUgb2YgdGhlIGZpbGVzIGJlaW5n
-IG1vZGlmaWVkLCBwbGVhc2UgZml4IHRoZQo+ID4gYnVnLCAiOzsiIGlzIGEgY2xlYXIgYnVnLgo+
-ID4KPiA+IElmIHlvdSBkb24ndCBjYXJlIC4uLiB3ZWxsIEkgZG9uJ3QgY2FyZSBlaXRoZXIuCj4g
-Cj4gTG9vaywgaWYgdGhpcyBjYXVzZXMganVzdCBvbmUgY29uZmxpY3QgZG93biB0aGUgbGluZSBi
-ZWNhdXNlIGl0IHRvdWNoZXMKPiB0aGUga2VybmVsIGFsbCBvdmVyIHRoZSBwbGFjZSwgdGhlbiBJ
-TU8gaXQgYWxyZWFkeSB3YXNuJ3Qgd29ydGgKPiBpdC4gTWVyZ2UgY29uZmxpY3RzIGFyZSBpbmV2
-aXRhYmxlLCBidXQgdGhlcmUncyBubyByZWFzb24gdG8gbWFrZSBsaWZlCj4gaGFyZGVyIGp1c3Qg
-dG8gY2F0ZXIgZm9yIGEgY2xlYW51cCBwYXRjaC4gSXQncyBub3QgdGhhdCBpbXBvcnRhbnQuCj4g
-Cj4gSGFkIGl0IGJlZW4gc3BsaXQgdXAsIHRoZSBkcm0gcGFydHMgd291bGQndmUgYmVlbiBtZXJn
-ZWQgYWxyZWFkeS4KCkkganVzdCBzdGFnZSBwYXRjaGVzIGxpa2UgdGhpcyBiZWhpbmQgbGludXgt
-bmV4dC4gIFNvIGlmIHlvdXIgc3R1ZmYgaW4KaW4gLW5leHQsIHlvdSdsbCBuZXZlciBub3RpY2Ug
-YSB0aGluZy4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
-dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Hi Mauro,
+
+> > > Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+> > >
+> > > Hi,
+> > >
+> > > Em Fri, 17 Nov 2017 02:58:56 +0000
+> > > "Mani, Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> escreveu:
+> > >
+> > > > Here is an update on the IPU3 documentation that we are currently
+> > > > working
+> > > on.
+> > > >
+> > > > Image processing in IPU3 relies on the following.
+> > > >
+> > > > 1) HW configuration to enable ISP and
+> > > > 2) setting customer specific 3A Tuning / Algorithm Parameters to
+> > > > achieve
+> > > desired image quality.
+> > > >
+> > > > We intend to provide documentation on ImgU driver programming
+> > > > interface
+> > > to help users of this driver to configure and enable ISP HW to meet
+> > > their needs.  This documentation will include details on complete
+> > > V4L2 Kernel driver interface and IO-Control parameters, except for
+> > > the ISP internal algorithm and its parameters (which is Intel proprietary IP).
+> > >
+> > > Sakari asked me to take a look on this thread, specifically on this
+> > > email. I took a look on the other e-mails from this thread that are
+> > > discussing about this IP block.
+> > >
+> > > I understand that Intel wants to keep their internal 3A algorithm
+> > > protected, just like other vendors protect their own algos. It was
+> > > never a requirement to open whatever algorithm are used inside a
+> > > hardware (or firmware). The only requirement is that firmwares
+> > > should be licensed with redistribution permission, ideally merged at
+> > > linux-firmware
+> > git tree.
+> > >
+> > > Yet, what I don't understand is why Intel also wants to also protect
+> > > the interface for such 3A hardware/firmware algorithm. The
+> > > parameters that are passed from an userspace application to Intel
+> > > ISP logic doesn't contain the algorithm itself. What's the issue of
+> > > documenting the meaning of each parameter?
+> > >
+> >
+> > Thanks for looking into this.
+> >
+> > To achieve improved image quality using IPU3, 3A (Auto White balance,
+> > Auto Focus and Auto Exposure) Tuning parameters specific to a given
+> > camera sensor module, are converted to Intel ISP algorithm parameters
+> > in user space camera HAL using AIC (Automatic ISP Configuration) library.
+> >
+> > As a unique design of Intel ISP, it exposes very detailed algorithm
+> > parameters (~ 10000 parameters) to configure ISP's image processing
+> > algorithm per each image fame in runtime. Typical Camera SW developers
+> > (including those at
+> > Intel) are not expected to fully understand and directly set these
+> > parameters to configure the ISP algorithm blocks. Due to the above, a
+> > user space AIC library (in binary form) is provided to generate ISP
+> > Algorithm specific parameters, for a given set of 3A tuning
+> > parameters. It significantly reduces the efforts of SW development in ISP HW
+> configuration.
+> >
+> > On the other hand, the ISP algorithm details could be deduced readily
+> > through these detailed parameters by other ISP experts outside Intel.
+> > This is the reason that we want to keep these parameter definitions as Intel
+> proprietary IP.
+> >
+> > We are fully aware of your concerns on how to enable open source
+> > developers to use Intel ISP through up-streamed Kernel Driver.
+> > Internally, we are working on the license for this AIC library release
+> > now (as Hans said NDA license is not acceptable). We believe this will
+> > be more efficient way to help open source developers.
+> >
+> > This AIC library release would be a binary-only release. This AIC
+> > library does not use any kernel uAPIs directly. The user space Camera
+> > HAL that uses kernel uAPIs is available at
+> > https://chromium.googlesource.com/chromiumos/platform/arc-
+> > camera/+/master
+> >
+
+The AIC library (in binary form) is available here.
+https://storage.googleapis.com/chromeos-localmirror/distfiles/intel-3a-libs-bin-2017.09.27.tbz2
+
+Licensing information can be found in ./LICENSE.intel_3a_library file after unzipping the tar file.
+
+> 
+> Just pinging to know your thoughts on this.
+> 
+> Thanks
+> Raj
