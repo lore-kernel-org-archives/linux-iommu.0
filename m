@@ -1,87 +1,41 @@
-From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 03/37] iommu/sva: Manage process address spaces
-Date: Thu, 22 Feb 2018 17:03:41 +0800
-Message-ID: <63e4b545-c6e5-f4b4-3ba1-cf7a142b64ec@huawei.com>
-References: <1519280641-30258-1-git-send-email-xieyisheng1@huawei.com>
-	<1519280641-30258-3-git-send-email-xieyisheng1@huawei.com>
+From: Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] fix double ;;s in code
+Date: Thu, 22 Feb 2018 17:09:33 +0800
+Message-ID: <20180222090932.GJ3217@dragon>
+References: <20180217211955.GE9640@amd>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519280641-30258-3-git-send-email-xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180217211955.GE9640@amd>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+Cc: daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, fbarrat-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org, yamada.masahiro-uWyLwvC0a2jby3iVrkZq2A@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, JinHuiEric.Huang-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, elfring-Rn4VEauK+AKRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, scott.bauer-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David1.Zhou-5C7GfCeVMHo@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Wenjing.Liu-5C7GfCeVMHo@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Ding.Wang-5C7GfCeVMHo@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, airlied-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, shli-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.orga
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
-
-On 2018/2/22 14:23, Jean-Philippe Brucker wrote:
-> @@ -129,7 +439,10 @@ int iommu_sva_device_shutdown(struct device *dev)
->  int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
->  			  unsigned long flags, void *drvdata)
->  {
-> +	int i, ret;
-> +	struct io_mm *io_mm = NULL;
->  	struct iommu_domain *domain;
-> +	struct iommu_bond *bond = NULL, *tmp;
->  	struct iommu_param *dev_param = dev->iommu_param;
->  
->  	domain = iommu_get_domain_for_dev(dev);
-> @@ -145,7 +458,42 @@ int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
->  	if (flags != (IOMMU_SVA_FEAT_PASID | IOMMU_SVA_FEAT_IOPF))
->  		return -EINVAL;
->  
-> -	return -ENOSYS; /* TODO */
-> +	/* If an io_mm already exists, use it */
-> +	spin_lock(&iommu_sva_lock);
-> +	idr_for_each_entry(&iommu_pasid_idr, io_mm, i) {
-> +		if (io_mm->mm != mm || !io_mm_get_locked(io_mm))
-> +			continue;
-> +
-> +		/* Is it already bound to this device? */
-> +		list_for_each_entry(tmp, &io_mm->devices, mm_head) {
-> +			if (tmp->dev != dev)
-> +				continue;
-> +
-> +			bond = tmp;
-> +			refcount_inc(&bond->refs);
-> +			io_mm_put_locked(io_mm);
-
-Should io_mm->pasid still be set to *pasid when the device already bond? so driver can
-always get the right pasid if it bond to a mm multi-times, without keeping the pasid itself?
-
-Thanks
-Yisheng
-> +			break;
-> +		}
-> +		break;
-> +	}
-> +	spin_unlock(&iommu_sva_lock);
-> +
-> +	if (bond)
-> +		return 0;
-> +
-> +	if (!io_mm) {
-> +		io_mm = io_mm_alloc(domain, dev, mm);
-> +		if (IS_ERR(io_mm))
-> +			return PTR_ERR(io_mm);
-> +	}
-> +
-> +	ret = io_mm_attach(domain, dev, io_mm, drvdata);
-> +	if (ret)
-> +		io_mm_put(io_mm);
-> +	else
-> +		*pasid = io_mm->pasid;
-> +
-> +	return ret;
->  }
->  EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+SGkgUGF2ZWwsCgpPbiBTYXQsIEZlYiAxNywgMjAxOCBhdCAxMDoxOTo1NVBNICswMTAwLCBQYXZl
+bCBNYWNoZWsgd3JvdGU6Ci4uLgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3NvYy9pbXgvZ3BjLmMg
+Yi9kcml2ZXJzL3NvYy9pbXgvZ3BjLmMKPiBpbmRleCA1M2Y3Mjc1Li5jZmI0MmY1IDEwMDY0NAo+
+IC0tLSBhL2RyaXZlcnMvc29jL2lteC9ncGMuYwo+ICsrKyBiL2RyaXZlcnMvc29jL2lteC9ncGMu
+Ywo+IEBAIC0zNDgsNyArMzQ4LDcgQEAgc3RhdGljIGludCBpbXhfZ3BjX29sZF9kdF9pbml0KHN0
+cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHJlZ21hcCAqcmVnbWFwLAo+ICAJCWlmIChpID09IDEp
+IHsKPiAgCQkJZG9tYWluLT5zdXBwbHkgPSBkZXZtX3JlZ3VsYXRvcl9nZXQoZGV2LCAicHUiKTsK
+PiAgCQkJaWYgKElTX0VSUihkb21haW4tPnN1cHBseSkpCj4gLQkJCQlyZXR1cm4gUFRSX0VSUihk
+b21haW4tPnN1cHBseSk7Owo+ICsJCQkJcmV0dXJuIFBUUl9FUlIoZG9tYWluLT5zdXBwbHkpOwo+
+ICAKPiAgCQkJcmV0ID0gaW14X3BnY19nZXRfY2xvY2tzKGRldiwgZG9tYWluKTsKPiAgCQkJaWYg
+KHJldCkKPiAKCkNvbnNpZGVyaW5nIHRoZSBjb250cm92ZXJzeSBob3cgdGhlIGNoYW5nZXMgc2hv
+dWxkIGJlIG1lcmdlZCwgSSdtIGdvaW5nCnRvIHNlbmQgYSBzZXBhcmF0ZSBwYXRjaCBqdXN0IGZv
+ciBJTVggR1BDIGRyaXZlciB3aXRoIGEgcmVwb3J0ZWQtYnkteW91CnRhZy4gIFRoYW5rcyBmb3Ig
+Y2F0Y2hpbmcgdGhpcy4KClNoYXduCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmFtZC1nZnggbWFpbGluZyBsaXN0CmFtZC1nZnhAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vYW1k
+LWdmeAo=
