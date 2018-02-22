@@ -1,131 +1,85 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 6/6] drm/msm: iommu: Replace runtime
- calls with runtime suppliers
-Date: Thu, 22 Feb 2018 13:45:34 +0000
-Message-ID: <28466b36-b5d3-4f60-a45e-b75d79c2a3cb@arm.com>
-References: <1517999482-17317-1-git-send-email-vivek.gautam@codeaurora.org>
- <CAF6AEGs8qcRTvz6srSfc39ybZrPYMVg2w6qkaO2AdWL1GD4mQw@mail.gmail.com>
- <CAAFQd5BKRumpEfAKNF_RKS-ZZ8D671DfOz4vB2+w1SV3aG9NxQ@mail.gmail.com>
- <CAF6AEGuNZJKtwGZ5mLfqNND2jtU+HYM11UONfAtVTzoM0QVpdg@mail.gmail.com>
- <CAAFQd5BZJ1G0RG32hYErNzPRvisBhhiSNCBsjbzfm0WzO=DnsQ@mail.gmail.com>
- <CAFp+6iHaycK=CcE1S15EeuMkaw8LnW0ebptU0hM6tUtWdeEOtA@mail.gmail.com>
- <CAAFQd5Afj-Bj+3wHwmF2tT7y=46EsYEtO_mXfY6stXBgHutEUg@mail.gmail.com>
- <CAFp+6iGX6pr+MdPSSHHG=qOnhHky_8OHiDqAcJ9UudEUv=JMHg@mail.gmail.com>
- <CAAFQd5DiwAugGnPOTw0+XrEfef9x-n-vx59JFuXpNawjiXHwCw@mail.gmail.com>
- <CAFp+6iEW0faeHDfzN_F1bRrHGcVo3sPCk4HSY=t9dnEvHkDkYw@mail.gmail.com>
- <b003ecda-1cbe-4e5f-872b-107154ac40e5@arm.com>
- <CAAFQd5AmG1zSm+CouXOCJbs8SNGFk1-RqfU1nWGjMGJMB-qfvw@mail.gmail.com>
- <CAAFQd5A9B-di9svtiJbvk2hz1U1xo61rTY5vt6AD+KR5iMcG-A@mail.gmail.com>
- <7406f1ce-c2c9-a6bd-2886-5a34de45add6@arm.com>
- <CAAFQd5DkLtq2w00=Zd4sMDB4QOWqi7R-zgydECJXLdTmaHty+g@mail.gmail.com>
+Subject: Re: [PATCH] lib/dma-debug.c: fix memory leakage
+Date: Thu, 22 Feb 2018 14:04:17 +0000
+Message-ID: <6df7e9bd-2203-0692-97e4-8c6434304b0f@arm.com>
+References: <1519298540-3071-1-git-send-email-miles.chen@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAAFQd5DkLtq2w00=Zd4sMDB4QOWqi7R-zgydECJXLdTmaHty+g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1519298540-3071-1-git-send-email-miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, wsd_upstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-W3NvcnJ5LCBJIGhhZCBpbnRlbmRlZCB0byByZXBseSBzb29uZXIgYnV0IGNsZWFybHkgZm9yZ290
-XQoKT24gMTYvMDIvMTggMDA6MTMsIFRvbWFzeiBGaWdhIHdyb3RlOgo+IE9uIEZyaSwgRmViIDE2
-LCAyMDE4IGF0IDI6MTQgQU0sIFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+IHdy
-b3RlOgo+PiBPbiAxNS8wMi8xOCAwNDoxNywgVG9tYXN6IEZpZ2Egd3JvdGU6Cj4+IFsuLi5dCj4+
-Pj4KPj4+PiBDb3VsZCB5b3UgZWxhYm9yYXRlIG9uIHdoYXQga2luZCBvZiBsb2NraW5nIHlvdSBh
-cmUgY29uY2VybmVkIGFib3V0Pwo+Pj4+IEFzIEkgZXhwbGFpbmVkIGJlZm9yZSwgdGhlIG5vcm1h
-bGx5IGhhcHBlbmluZyBmYXN0IHBhdGggd291bGQgbG9jawo+Pj4+IGRldi0+cG93ZXJfbG9jayBv
-bmx5IGZvciB0aGUgYnJpZWYgbW9tZW50IG9mIGluY3JlbWVudGluZyB0aGUgcnVudGltZQo+Pj4+
-IFBNIHVzYWdlIGNvdW50ZXIuCj4+Pgo+Pj4KPj4+IE15IGJhZCwgdGhhdCdzIG5vdCBldmVuIGl0
-Lgo+Pj4KPj4+IFRoZSBhdG9taWMgdXNhZ2UgY291bnRlciBpcyBpbmNyZW1lbnRlZCBiZWZvcmVo
-YW5kcywgd2l0aG91dCBhbnkKPj4+IGxvY2tpbmcgWzFdIGFuZCB0aGUgc3BpbmxvY2sgaXMgYWNx
-dWlyZWQgb25seSBmb3IgdGhlIHNha2Ugb2YKPj4+IHZhbGlkYXRpbmcgdGhhdCBkZXZpY2UncyBy
-dW50aW1lIFBNIHN0YXRlIHJlbWFpbmVkIHZhbGlkIGluZGVlZCBbMl0sCj4+PiB3aGljaCB3b3Vs
-ZCBiZSB0aGUgY2FzZSBpbiB0aGUgZmFzdCBwYXRoIG9mIHRoZSBzYW1lIGRyaXZlciBkb2luZyB0
-d28KPj4+IG1hcHBpbmdzIGluIHBhcmFsbGVsLCB3aXRoIHRoZSBtYXN0ZXIgcG93ZXJlZCBvbiAo
-YW5kIHNvIHRoZSBTTU1VLAo+Pj4gdGhyb3VnaCBkZXZpY2UgbGlua3M7IGlmIG1hc3RlciB3YXMg
-bm90IHBvd2VyZWQgb24gYWxyZWFkeSwgcG93ZXJpbmcKPj4+IG9uIHRoZSBTTU1VIGlzIHVuYXZv
-aWRhYmxlIGFueXdheSBhbmQgaXQgd291bGQgYWRkIG11Y2ggbW9yZSBsYXRlbmN5Cj4+PiB0aGFu
-IHRoZSBzcGlubG9jayBpdHNlbGYpLgo+Pgo+Pgo+PiBXZSBub3cgaGF2ZSBubyBsb2NraW5nIGF0
-IGFsbCBpbiB0aGUgbWFwIHBhdGgsIGFuZCBvbmx5IGEgcGVyLWRvbWFpbiBsb2NrCj4+IGFyb3Vu
-ZCBUTEIgc3luYyBpbiB1bm1hcCB3aGljaCBpcyB1bmZvcnR1bmF0ZWx5IG5lY2Vzc2FyeSBmb3Ig
-Y29ycmVjdG5lc3M7Cj4+IHRoZSBsYXR0ZXIgaXNuJ3QgdG9vIHRlcnJpYmxlLCBzaW5jZSBpbiAi
-c2VyaW91cyIgaGFyZHdhcmUgaXQgc2hvdWxkIG9ubHkgYmUKPj4gc2VyaWFsaXNpbmcgYSBmZXcg
-Y3B1cyBzZXJ2aW5nIHRoZSBzYW1lIGRldmljZSBhZ2FpbnN0IGVhY2ggb3RoZXIgKGUuZy4gZm9y
-Cj4+IG11bHRpcGxlIHF1ZXVlcyBvbiBhIHNpbmdsZSBOSUMpLgo+Pgo+PiBQdXR0aW5nIGluIGEg
-Z2xvYmFsIGxvY2sgd2hpY2ggc2VyaWFsaXNlcyAqYWxsKiBjb25jdXJyZW50IG1hcCBhbmQgdW5t
-YXAKPj4gY2FsbHMgZm9yICphbGwqIHVucmVsYXRlZCBkZXZpY2VzIG1ha2VzIHRoaW5ncyB3b3Jz
-ZS4gUGVyaW9kLiBFdmVuIGlmIHRoZQo+PiBsb2NrIGl0c2VsZiB3ZXJlIGhlbGQgZm9yIHRoZSBt
-aW5pbXVtIHBvc3NpYmxlIHRpbWUsIGkuZS4gdHJpdmlhbGx5Cj4+ICJzcGluX2xvY2soJmxvY2sp
-OyBzcGluX3VubG9jaygmbG9jaykiLCB0aGUgY29zdCBvZiByZXBlYXRlZGx5IGJvdW5jaW5nIHRo
-YXQKPj4gb25lIGNhY2hlIGxpbmUgYXJvdW5kIGJldHdlZW4gOTYgQ1BVcyBhY3Jvc3MgdHdvIHNv
-Y2tldHMgaXMgbm90IG5lZ2xpZ2libGUuCj4gCj4gRmFpciBlbm91Z2guIE5vdGUgdGhhdCB3ZSdy
-ZSBpbiBhIHF1aXRlIGludGVyZXN0aW5nIHNpdHVhdGlvbiBub3c6Cj4gICBhKSBXZSBuZWVkIHRv
-IGhhdmUgcnVudGltZSBQTSBlbmFibGVkIG9uIFF1YWxjb21tIFNvQyB0byBoYXZlIHBvd2VyCj4g
-cHJvcGVybHkgbWFuYWdlZCwKPiAgIGIpIFdlIG5lZWQgdG8gaGF2ZSBsb2NrLWZyZWUgbWFwL3Vu
-bWFwIG9uIHN1Y2ggZGlzdHJpYnV0ZWQgc3lzdGVtcywKPiAgIGMpIElmIHJ1bnRpbWUgUE0gaXMg
-ZW5hYmxlZCwgd2UgbmVlZCB0byBjYWxsIGludG8gcnVudGltZSBQTSBmcm9tIGFueQo+IGNvZGUg
-dGhhdCBkb2VzIGhhcmR3YXJlIGFjY2Vzc2VzLCBvdGhlcndpc2UgdGhlIElPTU1VIEFQSSAoYW5k
-IHNvIERNQQo+IEFQSSBhbmQgdGhlbiBhbnkgVjRMMiBkcml2ZXIpIGJlY29tZXMgdW51c2FibGUu
-Cj4gCj4gSSBjYW4gc2VlIG9uZSBtb3JlIHdheSB0aGF0IGNvdWxkIHBvdGVudGlhbGx5IGxldCB1
-cyBoYXZlIGFsbCB0aGUKPiB0aHJlZS4gSG93IGFib3V0IGVuYWJsaW5nIHJ1bnRpbWUgUE0gb25s
-eSBvbiBzZWxlY3RlZCBpbXBsZW1lbnRhdGlvbnMKPiAoZS5nLiBxY29tLHNtbXUpIGFuZCB0aGVu
-IGhhdmluZyBhbGwgdGhlIHJ1bnRpbWUgUE0gY2FsbHMgc3Vycm91bmRlZAo+IHdpdGggaWYgKHBt
-X3J1bnRpbWVfZW5hYmxlZCgpKSwgd2hpY2ggaXMgbG9ja2xlc3M/CgpZZXMsIHRoYXQncyB0aGUg
-a2luZCBvZiB0aGluZyBJIHdhcyBncmF2aXRhdGluZyB0b3dhcmRzIC0gbXkgdmFndWUgCnRob3Vn
-aHQgd2FzIGFkZGluZyBzb21lIGZsYWcgdG8gdGhlIHNtbXVfZG9tYWluLCBidXQgCnBtX3J1bnRp
-bWVfZW5hYmxlZCgpIGRvZXMgbG9vayBjb25jZXB0dWFsbHkgYSBsb3QgY2xlYW5lci4KCj4+Cj4+
-PiBbMV0KPj4+IGh0dHA6Ly9lbGl4aXIuZnJlZS1lbGVjdHJvbnMuY29tL2xpbnV4L3Y0LjE2LXJj
-MS9zb3VyY2UvZHJpdmVycy9iYXNlL3Bvd2VyL3J1bnRpbWUuYyNMMTAyOAo+Pj4gWzJdCj4+PiBo
-dHRwOi8vZWxpeGlyLmZyZWUtZWxlY3Ryb25zLmNvbS9saW51eC92NC4xNi1yYzEvc291cmNlL2Ry
-aXZlcnMvYmFzZS9wb3dlci9ydW50aW1lLmMjTDYxMwo+Pj4KPj4+IEluIGFueSBjYXNlLCBJIGNh
-bid0IGltYWdpbmUgdGhpcyB3b3JraW5nIHdpdGggVjRMMiBvciBhbnl0aGluZyBlbHNlCj4+PiBy
-ZWx5aW5nIG9uIGFueSBtZW1vcnkgbWFuYWdlbWVudCBtb3JlIGdlbmVyaWMgdGhhbiBjYWxsaW5n
-IElPTU1VIEFQSQo+Pj4gZGlyZWN0bHkgZnJvbSB0aGUgZHJpdmVyLCB3aXRoIHRoZSBJT01NVSBk
-ZXZpY2UgaGF2aW5nIHJ1bnRpbWUgUE0KPj4+IGVuYWJsZWQsIGJ1dCB3aXRob3V0IG1hbmFnaW5n
-IHRoZSBydW50aW1lIFBNIGZyb20gdGhlIElPTU1VIGRyaXZlcidzCj4+PiBjYWxsYmFja3MgdGhh
-dCBuZWVkIGFjY2VzcyB0byB0aGUgaGFyZHdhcmUuIEFzIEkgbWVudGlvbmVkIGJlZm9yZSwKPj4+
-IG9ubHkgdGhlIElPTU1VIGRyaXZlciBrbm93cyB3aGVuIGV4YWN0bHkgdGhlIHJlYWwgaGFyZHdh
-cmUgYWNjZXNzCj4+PiBuZWVkcyB0byBiZSBkb25lIChlLmcuIFJvY2tjaGlwL0V4eW5vcyBkb24n
-dCBuZWVkIHRvIGRvIHRoYXQgZm9yCj4+PiBtYXAvdW5tYXAgaWYgdGhlIHBvd2VyIGlzIGRvd24s
-IGJ1dCBzb21lIGltcGxlbWVudGF0aW9ucyBvZiBTTU1VIHdpdGgKPj4+IFRMQiBwb3dlcmVkIHNl
-cGFyYXRlbHkgbWlnaHQgbmVlZCB0byBkbyBzbykuCj4+Cj4+Cj4+IEl0J3Mgd29ydGggbm90aW5n
-IHRoYXQgRXh5bm9zIGFuZCBSb2NrY2hpcCBhcmUgcmVsYXRpdmVseSBzbWFsbAo+PiBzZWxmLWNv
-bnRhaW5lZCBJUCBibG9ja3MgaW50ZWdyYXRlZCBjbG9zZWx5IHdpdGggdGhlIGludGVyZmFjZXMg
-b2YgdGhlaXIKPj4gcmVsZXZhbnQgbWFzdGVyIGRldmljZXM7IFNNTVUgaXMgYW4gYXJjaGl0ZWN0
-dXJlLCBpbXBsZW1lbnRhdGlvbnMgb2Ygd2hpY2gKPj4gbWF5IGJlIGxhcmdlLCBkaXN0cmlidXRl
-ZCwgYW5kIGhhdmUgY29tcGxleCBhbmQgd2lsZGx5IGRpZmZlcmluZyBpbnRlcm5hbAo+PiB0b3Bv
-bG9naWVzLiBBcyBzdWNoLCBpdCdzIGEgbG90IGhhcmRlciB0byBtYWtlIGhhcmR3YXJlLXNwZWNp
-ZmljIGFzc3VtcHRpb25zCj4+IGFuZC9vciBiZSBjb3JyZWN0IGZvciBhbGwgcG9zc2libGUgY2Fz
-ZXMuCj4+Cj4+IERvbid0IGdldCBtZSB3cm9uZywgSSBkbyB1bHRpbWF0ZWx5IGFncmVlIHRoYXQg
-dGhlIElPTU1VIGRyaXZlciBpcyB0aGUgb25seQo+PiBhZ2VudCB3aG8gdWx0aW1hdGVseSBrbm93
-cyB3aGF0IGNhbGxzIGFyZSBnb2luZyB0byBiZSBuZWNlc3NhcnkgZm9yIHdoYXRldmVyCj4+IG9w
-ZXJhdGlvbiBpdCdzIHBlcmZvcm1pbmcgb24gaXRzIG93biBoYXJkd2FyZSo7IGl0J3MganVzdCB0
-aGF0IGZvciBTTU1VIGl0Cj4+IG5lZWRzIHRvIGJlIGltcGxlbWVudGVkIGluIGEgd2F5IHRoYXQg
-aGFzIHplcm8gaW1wYWN0IG9uIHRoZSBjYXNlcyB3aGVyZSBpdAo+PiBkb2Vzbid0IG1hdHRlciwg
-YmVjYXVzZSBpdCdzIG5vdCB2aWFibGUgdG8gc3BlY2lhbGlzZSB0aGF0IGRyaXZlciBmb3IgYW55
-Cj4+IHBhcnRpY3VsYXIgSVAgaW1wbGVtZW50YXRpb24vdXNlLWNhc2UuCj4gCj4gU3RpbGwsIGV4
-YWN0bHkgdGhlIHNhbWUgaG9sZHMgZm9yIHRoZSBsb3cgcG93ZXIgZW1iZWRkZWQgdXNlIGNhc2Vz
-LAo+IHdoZXJlIHdlIHN0cml2ZSBmb3IgdGhlIGxvd2VzdCBwb3NzaWJsZSBwb3dlciBjb25zdW1w
-dGlvbiwgd2hpbGUKPiBtYWludGFpbmluZyBwZXJmb3JtYW5jZSBsZXZlbHMgaGlnaCBhcyB3ZWxs
-LiBBbmQgc28gdGhlIFNNTVUgY29kZSBpcwo+IGV4cGVjdGVkIHRvIGFsc28gd29yayB3aXRoIG91
-ciB1c2UgY2FzZXMsIHN1Y2ggYXMgVjRMMiBvciBEUk0gZHJpdmVycy4KPiBTaW5jZSB0aGVzZSBw
-b2ludHMgZG9uJ3QgaG9sZCBmb3IgY3VycmVudCBTTU1VIGNvZGUsIEkgY291bGQgc2F5IHRoYXQK
-PiB0aGUgaXQgaGFzIGJlZW4gYWxyZWFkeSBzcGVjaWFsaXplZCBmb3IgbGFyZ2UsIGRpc3RyaWJ1
-dGVkCj4gaW1wbGVtZW50YXRpb25zLgoKSGVoLCByZWFsbHkgaXQncyBzcGVjaWFsaXNlZCBmb3Ig
-ZWFzZSBvZiBtYWludGVuYW5jZSBpbiB0ZXJtcyBvZiBkb2luZyAKYXMgbGl0dGxlIGFzIHdlIGNh
-biBnZXQgYXdheSB3aXRoLCBidXQgZm9yIHdoYXQgd2UgaGF2ZSBpbXBsZW1lbnRlZCwgCmZhc3Qg
-Y29kZSBkb2VzIHNhdmUgQ1BVIGN5Y2xlcyBhbmQgcG93ZXIgb24gZW1iZWRkZWQgc3lzdGVtcyB0
-b28gOykKClJvYmluLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5v
-cmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJl
-bm8K
+On 22/02/18 11:22, miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
+> From: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> 
+> Marty reported a memory leakage introduced by commit 3aaabbf1c39e
+> ("lib/dma-debug.c: fix incorrect pfn calculation"). Fix it
+> by checking the virtual address before allocating the entry.
+
+Oops, seems I failed to look closely enough at the surrounding diff 
+context when I reviewed the original patch... :(
+
+> This patch also use virt_addr_valid() instead of virt_to_page()
+> to check if a virtual address is linear.
+
+That's an area I happen to have been looking at lately and now 
+understand a lot better, so fully agreed there as well.
+
+Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+Maybe also worth having a proper Fixes: tag instead of just naming the 
+commit in prose?
+
+Thanks,
+Robin.
+
+> Reported-by: Marty Faltesek <mfaltesek-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Miles Chen <miles.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>   lib/dma-debug.c | 10 +++++-----
+>   1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+> index 1b34d210452c..7f5cdc1e6b29 100644
+> --- a/lib/dma-debug.c
+> +++ b/lib/dma-debug.c
+> @@ -1491,12 +1491,12 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+>   	if (unlikely(virt == NULL))
+>   		return;
+>   
+> -	entry = dma_entry_alloc();
+> -	if (!entry)
+> +	/* handle vmalloc and linear addresses */
+> +	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
+>   		return;
+>   
+> -	/* handle vmalloc and linear addresses */
+> -	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
+> +	entry = dma_entry_alloc();
+> +	if (!entry)
+>   		return;
+>   
+>   	entry->type      = dma_debug_coherent;
+> @@ -1528,7 +1528,7 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
+>   	};
+>   
+>   	/* handle vmalloc and linear addresses */
+> -	if (!is_vmalloc_addr(virt) && !virt_to_page(virt))
+> +	if (!is_vmalloc_addr(virt) && !virt_addr_valid(virt))
+>   		return;
+>   
+>   	if (is_vmalloc_addr(virt))
+> 
