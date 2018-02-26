@@ -1,15 +1,15 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 4/8] arm64: dts: renesas: r8a77995: Set EtherAVB phy mode
-	to "rgmii"
-Date: Mon, 26 Feb 2018 19:18:23 +0100
-Message-ID: <CAMuHMdUZ903w5esCODRtMqa9BG=4DSgt_MtzM=BSJP+mkHOLxg@mail.gmail.com>
+Subject: Re: [PATCH 5/8] dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N
+	(R8A77965)
+Date: Mon, 26 Feb 2018 19:19:35 +0100
+Message-ID: <CAMuHMdWyKOT_aGfgkfZMFVTj3-__OmbiOrYqxXP5fL-ApLTifA@mail.gmail.com>
 References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
-	<1519667836-31330-5-git-send-email-jacopo+renesas@jmondi.org>
+	<1519667836-31330-6-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519667836-31330-5-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1519667836-31330-6-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,15 +24,12 @@ Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FI
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, Feb 26, 2018 at 6:57 PM, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org> wrote:
-> Set the "phy-mode" property of EtherAVB device to "rgmii" and let board
-> files override it if the installed PHY layer provides delays for the
-> RX/TX channels.
+> Add Renesas R-Car M3-N (R8A77965) compat string to IPMMU DT bindings
+> documentation.
 >
 > Signed-off-by: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-
-But you need a patch to update r8a7795-draak.dtsi first.
 
 Gr{oetje,eeting}s,
 
