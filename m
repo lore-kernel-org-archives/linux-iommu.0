@@ -1,15 +1,15 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 3/8] arm64: dts: renesas: r8a7795: Set EtherAVB phy mode
+Subject: Re: [PATCH 4/8] arm64: dts: renesas: r8a77995: Set EtherAVB phy mode
 	to "rgmii"
-Date: Mon, 26 Feb 2018 19:17:41 +0100
-Message-ID: <CAMuHMdXFa=t4F6gtwq4PnSjyXchbCoETjkphgy-A_RYMWyOnBQ@mail.gmail.com>
+Date: Mon, 26 Feb 2018 19:18:23 +0100
+Message-ID: <CAMuHMdUZ903w5esCODRtMqa9BG=4DSgt_MtzM=BSJP+mkHOLxg@mail.gmail.com>
 References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
-	<1519667836-31330-4-git-send-email-jacopo+renesas@jmondi.org>
+	<1519667836-31330-5-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519667836-31330-4-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1519667836-31330-5-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -32,7 +32,7 @@ On Mon, Feb 26, 2018 at 6:57 PM, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yRO
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 
-But you need a patch to update ulcb.dtsi first.
+But you need a patch to update r8a7795-draak.dtsi first.
 
 Gr{oetje,eeting}s,
 
