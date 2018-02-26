@@ -1,15 +1,14 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 5/8] dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N
-	(R8A77965)
-Date: Mon, 26 Feb 2018 19:19:35 +0100
-Message-ID: <CAMuHMdWyKOT_aGfgkfZMFVTj3-__OmbiOrYqxXP5fL-ApLTifA@mail.gmail.com>
+Subject: Re: [PATCH 6/8] iommu/ipmmu-vmsa: Hook up R8A77965 DT matching code
+Date: Mon, 26 Feb 2018 19:20:37 +0100
+Message-ID: <CAMuHMdVRCWeCYcxL-iiaQ0oKCh9cAaQSieBU2KMR-F5NHrq1TA@mail.gmail.com>
 References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
-	<1519667836-31330-6-git-send-email-jacopo+renesas@jmondi.org>
+	<1519667836-31330-7-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519667836-31330-6-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1519667836-31330-7-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,8 +23,7 @@ Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FI
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, Feb 26, 2018 at 6:57 PM, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org> wrote:
-> Add Renesas R-Car M3-N (R8A77965) compat string to IPMMU DT bindings
-> documentation.
+> Add support for R-Car M3-N (R8A77965) SoC IPMMUs.
 >
 > Signed-off-by: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 
