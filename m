@@ -1,13 +1,11 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 0/8] R-Car M3-N: Enable EtherAVB device node
-Date: Mon, 26 Feb 2018 19:28:47 +0100
-Message-ID: <CAMuHMdXwxhT7MP5xs3HLP3oFX+V9rhCM5jQycXUiCyBOKOUg1Q@mail.gmail.com>
-References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
+From: Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Question on IOMMU indentity mapping for intel-iommu
+Date: Mon, 26 Feb 2018 15:01:35 -0800
+Message-ID: <CAKgT0UfgW23f6K-TbOP=6t=LPEH8e-6xphjZ7amC-Bvb3-S-GA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519667836-31330-1-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,46 +15,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacopo,
+I am interested in adding a new memory mapping option that establishes
+one identity-mapped region for all DMA_TO_DEVICE mappings and creates
+a new dynamic mapping for any DMA_FROM_DEVICE and DMA_BIDIRECTIONAL
+mappings. My thought is it should allow for a compromise between
+security and performance (in the case of networking) in that many of
+the server NICs drivers these days are running with mostly pinned or
+resused paged for Rx. By using an identity mapping for the Tx packets
+we should be able to significantly cut down on the IOMMU overhead for
+the device. The other advantage if this works is that we could use
+this to possibly do something like dirty page tracking in the case of
+a emulated version of the IOMMU.
 
-On Mon, Feb 26, 2018 at 6:57 PM, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org> wrote:
->   as discussed with you Sergei and Geert, in order to enable EtherAVB for
-> R8A77965 we first wanted to make the phy-mode "rgmii-txid" a board specific
-> property for all other SoCs.
+I was originally thinking I could get away with just reusing the
+identity mapping code but it looks like that would end up merging
+everything into one domain if I am understanding correctly. Do I have
+that right?
 
-Thanks for your series!
+Would I be correct in assuming that I will need to have a separate
+domain per device, each domain containing the 1 TO_DEVICE identity
+mapped region, and then whatever other mappings are needed to handle
+the FROM and BIDIRECTIONAL mappings?
 
-> This series adds  the phy-mode property to salvator-common.dtsi and reset the
-> one for R8A77965/R8A7796/R8A77995 to "rgmii".
+Thanks.
 
-I forgot that r8a7795.dtsi and r8a7796.dtsi are used for the ULCB boards, too.
-So to avoid regressions, you need to make a similar change to ulcb.dtsi like you
-made for salvator-common.dtsi.
-
-In addition, r8a77995.dtsi is only used for the Draak board.
-So you have to update r8a7795-draak.dtsi first, too.
-
-> Then, in order to enable EtherAVB for R-Car M3-N, iommu nodes had to be added
-> as they are referenced by the "avb" device node (CC the iommu list for the
-> series for that reason).
-
-I don't think we need the iommu properties and nodes at this early stage.
-Ethernet works fine without them. Simon, do you agree?
-
-P.S. scripts/dtc/dtx_diff is a great tool to compare DTBs before and after your
-      changes. It would have revealed the changes for ULCB and Draak.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+- Alex
