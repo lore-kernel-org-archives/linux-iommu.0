@@ -1,15 +1,13 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 8/8] arm64: dts: renesas: r8a77965: Add EtherAVB device
-	node
-Date: Mon, 26 Feb 2018 19:22:24 +0100
-Message-ID: <CAMuHMdUXRVwgvN0aZLFGUpFuvrcgcdYqjj-OsBb6vsVH9okq8g@mail.gmail.com>
+Subject: Re: [PATCH 0/8] R-Car M3-N: Enable EtherAVB device node
+Date: Mon, 26 Feb 2018 19:28:47 +0100
+Message-ID: <CAMuHMdXwxhT7MP5xs3HLP3oFX+V9rhCM5jQycXUiCyBOKOUg1Q@mail.gmail.com>
 References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
-	<1519667836-31330-9-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519667836-31330-9-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1519667836-31330-1-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,18 +24,31 @@ List-Id: iommu@lists.linux-foundation.org
 Hi Jacopo,
 
 On Mon, Feb 26, 2018 at 6:57 PM, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org> wrote:
-> Populate the ethernet@e6800000 device node to enable Ethernet interface
-> for R-Car M3-N (R8A77965) SoC.
->
-> Signed-off-by: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
->
-> ---
-> v1 -> v2:
-> - Replace ALWAYS_ON power area identifier with numeric constant
+>   as discussed with you Sergei and Geert, in order to enable EtherAVB for
+> R8A77965 we first wanted to make the phy-mode "rgmii-txid" a board specific
+> property for all other SoCs.
 
-And you added the iommus property, which I wouldn't bother doing at this
-early stage.
+Thanks for your series!
+
+> This series adds  the phy-mode property to salvator-common.dtsi and reset the
+> one for R8A77965/R8A7796/R8A77995 to "rgmii".
+
+I forgot that r8a7795.dtsi and r8a7796.dtsi are used for the ULCB boards, too.
+So to avoid regressions, you need to make a similar change to ulcb.dtsi like you
+made for salvator-common.dtsi.
+
+In addition, r8a77995.dtsi is only used for the Draak board.
+So you have to update r8a7795-draak.dtsi first, too.
+
+> Then, in order to enable EtherAVB for R-Car M3-N, iommu nodes had to be added
+> as they are referenced by the "avb" device node (CC the iommu list for the
+> series for that reason).
+
+I don't think we need the iommu properties and nodes at this early stage.
+Ethernet works fine without them. Simon, do you agree?
+
+P.S. scripts/dtc/dtx_diff is a great tool to compare DTBs before and after your
+      changes. It would have revealed the changes for ULCB and Draak.
 
 Gr{oetje,eeting}s,
 
