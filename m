@@ -1,51 +1,38 @@
 From: Jacopo Mondi <jacopo+renesas@jmondi.org>
-Subject: [PATCH 0/8] R-Car M3-N: Enable EtherAVB device node
-Date: Mon, 26 Feb 2018 18:57:08 +0100
-Message-ID: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
+Subject: [PATCH 1/8] arm64: dts: renesas: salvator-common: Override EtherAVB phy-mode
+Date: Mon, 26 Feb 2018 18:57:09 +0100
+Message-ID: <1519667836-31330-2-git-send-email-jacopo+renesas@jmondi.org>
+References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: geert@linux-m68k.org, horms@verge.net.au, sergei.shtylyov@cogentembedded.com, magnus.damm@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
 Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Simon,
-  as discussed with you Sergei and Geert, in order to enable EtherAVB for
-R8A77965 we first wanted to make the phy-mode "rgmii-txid" a board specific
-property for all other SoCs.
+As the PHY interface installed on the Salvator-X[S] board, provides TX
+channel delay, make the "phy-mode" property a board-specific one, meant
+to override the one specified in the SoC DTSI.
 
-This series adds  the phy-mode property to salvator-common.dtsi and reset the
-one for R8A77965/R8A7796/R8A77995 to "rgmii".
+Follow up patches will reset the SoC DTSI to use "rgmii" mode and let
+the board file override that.
 
-Then, in order to enable EtherAVB for R-Car M3-N, iommu nodes had to be added
-as they are referenced by the "avb" device node (CC the iommu list for the
-series for that reason).
+Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+---
+ arch/arm64/boot/dts/renesas/salvator-common.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-Series based on what you already applied to your development tree (M3-N initial
-support - EtherAVB + DTS fixes). A branch for testing is available at
-
-git://jmondi.org/linux m3-n/renesas-drivers-2018-02-13-v4.16-rc1/v2-simon
-
-Thanks
-   j
-
-Jacopo Mondi (8):
-  arm64: dts: renesas: salvator-common: Override EtherAVB phy-mode
-  arm64: dts: renesas: r8a7796: Set EtherAVB phy mode to "rgmii"
-  arm64: dts: renesas: r8a7795: Set EtherAVB phy mode to "rgmii"
-  arm64: dts: renesas: r8a77995: Set EtherAVB phy mode to "rgmii"
-  dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N (R8A77965)
-  iommu/ipmmu-vmsa: Hook up R8A77965 DT matching code
-  arm64: dts: renesas: r8a77965: Add IPMMU mm and ds0 blocks
-  arm64: dts: renesas: r8a77965: Add EtherAVB device node
-
- .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  1 +
- arch/arm64/boot/dts/renesas/r8a7795.dtsi           |  2 +-
- arch/arm64/boot/dts/renesas/r8a7796.dtsi           |  2 +-
- arch/arm64/boot/dts/renesas/r8a77965.dtsi          | 61 ++++++++++++++++++++--
- arch/arm64/boot/dts/renesas/r8a77995.dtsi          |  2 +-
- arch/arm64/boot/dts/renesas/salvator-common.dtsi   |  1 +
- drivers/iommu/ipmmu-vmsa.c                         |  5 ++
- 7 files changed, 68 insertions(+), 6 deletions(-)
-
---
+diff --git a/arch/arm64/boot/dts/renesas/salvator-common.dtsi b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
+index 8e8ec30..c725f9b 100644
+--- a/arch/arm64/boot/dts/renesas/salvator-common.dtsi
++++ b/arch/arm64/boot/dts/renesas/salvator-common.dtsi
+@@ -279,6 +279,7 @@
+ 	pinctrl-0 = <&avb_pins>;
+ 	pinctrl-names = "default";
+ 	phy-handle = <&phy0>;
++	phy-mode = "rgmii-txid";
+ 	status = "okay";
+ 
+ 	phy0: ethernet-phy@0 {
+-- 
 2.7.4
