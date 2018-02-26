@@ -1,15 +1,15 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 1/8] arm64: dts: renesas: salvator-common: Override
-	EtherAVB phy-mode
-Date: Mon, 26 Feb 2018 19:16:38 +0100
-Message-ID: <CAMuHMdWM4-pisr+Yg4FABf0RnY_=2hnCvsmKYdUVe+FwM0T+rQ@mail.gmail.com>
+Subject: Re: [PATCH 2/8] arm64: dts: renesas: r8a7796: Set EtherAVB phy mode
+	to "rgmii"
+Date: Mon, 26 Feb 2018 19:17:27 +0100
+Message-ID: <CAMuHMdVnS3_f6ZsaJ3=SqZwAdKv+mWqJ1_q2VpKD+VMvsqZEnw@mail.gmail.com>
 References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
-	<1519667836-31330-2-git-send-email-jacopo+renesas@jmondi.org>
+	<1519667836-31330-3-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519667836-31330-2-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1519667836-31330-3-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,16 +24,15 @@ Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FI
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, Feb 26, 2018 at 6:57 PM, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org> wrote:
-> As the PHY interface installed on the Salvator-X[S] board, provides TX
-> channel delay, make the "phy-mode" property a board-specific one, meant
-> to override the one specified in the SoC DTSI.
->
-> Follow up patches will reset the SoC DTSI to use "rgmii" mode and let
-> the board file override that.
+> Set the "phy-mode" property of EtherAVB device to "rgmii" and let board
+> files override it if the installed PHY layer provides delays for the
+> RX/TX channels.
 >
 > Signed-off-by: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+
+But you need a patch to update ulcb.dtsi first.
 
 Gr{oetje,eeting}s,
 
