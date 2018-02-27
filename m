@@ -1,16 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 2/4] iommu/io-pgtable-arm: Support 52-bit physical
-	address
-Date: Tue, 27 Feb 2018 13:49:14 +0000
-Message-ID: <52ff8cd6-64ec-d7d4-2135-0b17becc4251@arm.com>
+Subject: Re: [PATCH v2 4/4] iommu/arm-smmu-v3: Support 52-bit virtual address
+Date: Tue, 27 Feb 2018 13:57:34 +0000
+Message-ID: <7275370d-747d-5be9-3cfd-70809b07c2ce@arm.com>
 References: <cover.1512038236.git.robin.murphy@arm.com>
-	<fde583dacee8099ed4e952dbf1c4dfb42070e9c5.1512038236.git.robin.murphy@arm.com>
-	<20180226180501.GC26147@arm.com>
+	<15d196d9a8e160c5df0e0340e23a432482389f9f.1512038236.git.robin.murphy@arm.com>
+	<20180226180508.GE26147@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180226180501.GC26147-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180226180508.GE26147-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -26,137 +25,63 @@ Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina
 List-Id: iommu@lists.linux-foundation.org
 
 On 26/02/18 18:05, Will Deacon wrote:
-> On Thu, Dec 14, 2017 at 04:58:51PM +0000, Robin Murphy wrote:
->> Bring io-pgtable-arm in line with the ARMv8.2-LPA feature allowing
->> 52-bit physical addresses when using the 64KB translation granule.
->> This will be supported by SMMUv3.1.
+> On Thu, Dec 14, 2017 at 04:58:53PM +0000, Robin Murphy wrote:
+>> Stage 1 input addresses are effectively 64-bit in SMMUv3 anyway, so
+>> really all that's involved is letting io-pgtable know the appropriate
+>> upper bound for T0SZ.
 >>
 >> Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 >> ---
 >>
->> v2: Fix TCR_PS/TCR_IPS copy-paste error
+>> v2: No change
 >>
->>   drivers/iommu/io-pgtable-arm.c | 65 ++++++++++++++++++++++++++++++------------
->>   1 file changed, 47 insertions(+), 18 deletions(-)
+>>   drivers/iommu/arm-smmu-v3.c | 8 ++++++++
+>>   1 file changed, 8 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index c9c4e6132e27..7059a0805bd1 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -102,6 +102,7 @@
+>>   #define IDR5_OAS_44_BIT			(4 << IDR5_OAS_SHIFT)
+>>   #define IDR5_OAS_48_BIT			(5 << IDR5_OAS_SHIFT)
+>>   #define IDR5_OAS_52_BIT			(6 << IDR5_OAS_SHIFT)
+>> +#define IDR5_VAX			(1 << 10)
 > 
-> [...]
+> I think this is actually a two-bit field, so we should check the whole
+> thing.
+
+Yes, I either overlooked that or took a cheeky shortcut; will fix.
+
+>>   
+>>   #define ARM_SMMU_CR0			0x20
+>>   #define CR0_CMDQEN			(1 << 3)
+>> @@ -604,6 +605,7 @@ struct arm_smmu_device {
+>>   #define ARM_SMMU_FEAT_STALLS		(1 << 11)
+>>   #define ARM_SMMU_FEAT_HYP		(1 << 12)
+>>   #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
+>> +#define ARM_SMMU_FEAT_VAX		(1 << 14)
+>>   	u32				features;
+>>   
+>>   #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+>> @@ -1656,6 +1658,8 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+>>   	switch (smmu_domain->stage) {
+>>   	case ARM_SMMU_DOMAIN_S1:
+>>   		ias = VA_BITS;
+>> +		if (VA_BITS > 48 && !(smmu->features & ARM_SMMU_FEAT_VAX))
 > 
->> @@ -203,6 +199,25 @@ struct arm_lpae_io_pgtable {
->>   
->>   typedef u64 arm_lpae_iopte;
->>   
->> +static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
->> +				     struct arm_lpae_io_pgtable *data)
->> +{
->> +	arm_lpae_iopte pte = paddr;
->> +
->> +	/* Of the bits which overlap, either 51:48 or 15:12 are always RES0 */
->> +	return (pte | (pte >> 36)) & ARM_LPAE_PTE_ADDR_MASK;
->> +}
+> nit, but I'd rather the if condition was checking ias instead of VA_BITS.
 > 
-> I don't particularly like relying on properties of the paddr for correct
-> construction of the pte here. The existing macro doesn't have this
-> limitation. I suspect it's all fine at the moment because we only use TTBR0,
-> but I'd rather not bake that in if we can avoid it.
-
-What's the relevance of TTBR0 to physical addresses? :/
-
-Note that by this point paddr has been validated against cfg->oas by 
-arm_lpae_map(), and validated to be granule-aligned by iommu_map(), so 
-it really can't be wrong under reasonable conditions.
-
->> +static phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
->> +				  struct arm_lpae_io_pgtable *data)
->> +{
->> +	phys_addr_t paddr = pte & ARM_LPAE_PTE_ADDR_MASK;
->> +	phys_addr_t paddr_hi = paddr & (ARM_LPAE_GRANULE(data) - 1);
->> +
->> +	/* paddr_hi spans nothing for 4K granule, and only RES0 bits for 16K */
->> +	return (paddr ^ paddr_hi) | (paddr_hi << 36);
+>> +			ias = 48;
+>>   		oas = smmu->ias;
 > 
-> Why do we need xor here?
+> Should we also be sanitising the oas here if the SMMU doesn't support 64k
+> pages? It looks like the ias/oas sanitisation isn't cleanly split between
+> the pgtable code and the SMMU driver.
 
-Because "(paddr ^ paddr_hi)" is more concise than "(paddr & 
-~(phys_addr_t)(ARM_LPAE_GRANULE(data) - 1)" or variants thereof. It's 
-potentially a teeny bit more efficient too, I think, but it's mostly 
-about the readability.
-
->>   static bool selftest_running = false;
->>   
->>   static dma_addr_t __arm_lpae_dma_addr(void *pages)
->> @@ -287,7 +302,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->>   		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
->>   
->>   	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
->> -	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
->> +	pte |= paddr_to_iopte(paddr, data);
->>   
->>   	__arm_lpae_set_pte(ptep, pte, &data->iop.cfg);
->>   }
->> @@ -528,7 +543,7 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->>   	if (size == split_sz)
->>   		unmap_idx = ARM_LPAE_LVL_IDX(iova, lvl, data);
->>   
->> -	blk_paddr = iopte_to_pfn(blk_pte, data) << data->pg_shift;
->> +	blk_paddr = iopte_to_paddr(blk_pte, data);
->>   	pte = iopte_prot(blk_pte);
->>   
->>   	for (i = 0; i < tablesz / sizeof(pte); i++, blk_paddr += split_sz) {
->> @@ -652,12 +667,13 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
->>   
->>   found_translation:
->>   	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
->> -	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
->> +	return iopte_to_paddr(pte, data) | iova;
->>   }
->>   
->>   static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
->>   {
->> -	unsigned long granule;
->> +	unsigned long granule, page_sizes;
->> +	unsigned int max_addr_bits = 48;
->>   
->>   	/*
->>   	 * We need to restrict the supported page sizes to match the
->> @@ -677,17 +693,24 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
->>   
->>   	switch (granule) {
->>   	case SZ_4K:
->> -		cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
->> +		page_sizes = (SZ_4K | SZ_2M | SZ_1G);
->>   		break;
->>   	case SZ_16K:
->> -		cfg->pgsize_bitmap &= (SZ_16K | SZ_32M);
->> +		page_sizes = (SZ_16K | SZ_32M);
->>   		break;
->>   	case SZ_64K:
->> -		cfg->pgsize_bitmap &= (SZ_64K | SZ_512M);
->> +		max_addr_bits = 52;
->> +		page_sizes = (SZ_64K | SZ_512M);
->> +		if (cfg->oas > 48)
->> +			page_sizes |= 1ULL << 42; /* 4TB */
->>   		break;
->>   	default:
->> -		cfg->pgsize_bitmap = 0;
->> +		page_sizes = 0;
->>   	}
->> +
->> +	cfg->pgsize_bitmap &= page_sizes;
->> +	cfg->ias = min(cfg->ias, max_addr_bits);
->> +	cfg->oas = min(cfg->oas, max_addr_bits);
-> 
-> I don't think we should be writing to the ias/oas fields here, at least
-> now without auditing the drivers and updating the comments about the
-> io-pgtable API. For example, the SMMUv3 driver uses its own ias local
-> variable to initialise the domain geometry, and won't pick up any changes
-> made here.
-
-As you've discovered, the driver thing is indeed true. More generally, 
-though, we've always adjusted cfg->pgsize_bitmap here, so I don't see 
-why other fields should be treated differently - I've always assumed the 
-cfg which the driver passes in here just represents its total maximum 
-capabilities, from which it's io-pgtable's job to pick an appropriate 
-configuration.
+Right, based on my previous argument it would be cleaner to set 48/52 
+here based on the SMMU features, then constrain to VA_BITS in 
+io-pgtable; I think I was more focused on minimising the diff initially.
 
 Robin.
