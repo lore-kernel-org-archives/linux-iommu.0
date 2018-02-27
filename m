@@ -1,16 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 4/4] iommu/arm-smmu-v3: Support 52-bit virtual address
-Date: Tue, 27 Feb 2018 13:57:34 +0000
-Message-ID: <7275370d-747d-5be9-3cfd-70809b07c2ce@arm.com>
-References: <cover.1512038236.git.robin.murphy@arm.com>
-	<15d196d9a8e160c5df0e0340e23a432482389f9f.1512038236.git.robin.murphy@arm.com>
-	<20180226180508.GE26147@arm.com>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/4] iommu: Add virtio-iommu driver
+Date: Tue, 27 Feb 2018 16:47:22 +0200
+Message-ID: <20180227164510-mutt-send-email-mst@kernel.org>
+References: <20180214145340.1223-2-jean-philippe.brucker@arm.com>
+	<201802220455.lMEb6LLi%fengguang.wu@intel.com>
+	<e5ffc52f-4510-f757-aa83-2a99af3ae06b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180226180508.GE26147-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <e5ffc52f-4510-f757-aa83-2a99af3ae06b-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,68 +20,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org" <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kbuild-all-JC7UmRfGjtg@public.gmane.org" <kbuild-all-JC7UmRfGjtg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 26/02/18 18:05, Will Deacon wrote:
-> On Thu, Dec 14, 2017 at 04:58:53PM +0000, Robin Murphy wrote:
->> Stage 1 input addresses are effectively 64-bit in SMMUv3 anyway, so
->> really all that's involved is letting io-pgtable know the appropriate
->> upper bound for T0SZ.
->>
->> Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>
->> v2: No change
->>
->>   drivers/iommu/arm-smmu-v3.c | 8 ++++++++
->>   1 file changed, 8 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index c9c4e6132e27..7059a0805bd1 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -102,6 +102,7 @@
->>   #define IDR5_OAS_44_BIT			(4 << IDR5_OAS_SHIFT)
->>   #define IDR5_OAS_48_BIT			(5 << IDR5_OAS_SHIFT)
->>   #define IDR5_OAS_52_BIT			(6 << IDR5_OAS_SHIFT)
->> +#define IDR5_VAX			(1 << 10)
+On Thu, Feb 22, 2018 at 11:04:30AM +0000, Jean-Philippe Brucker wrote:
+> On 21/02/18 20:12, kbuild test robot wrote:
+> [...]
+> > config: arm64-allmodconfig (attached as .config)
+> [...]
+> >    aarch64-linux-gnu-ld: arch/arm64/kernel/head.o: relocation R_AARCH64_ABS32 against `_kernel_offset_le_lo32' can not be used when making a shared object
+> >    arch/arm64/kernel/head.o: In function `kimage_vaddr':
+> >    (.idmap.text+0x0): dangerous relocation: unsupported relocation
 > 
-> I think this is actually a two-bit field, so we should check the whole
-> thing.
-
-Yes, I either overlooked that or took a cheeky shortcut; will fix.
-
->>   
->>   #define ARM_SMMU_CR0			0x20
->>   #define CR0_CMDQEN			(1 << 3)
->> @@ -604,6 +605,7 @@ struct arm_smmu_device {
->>   #define ARM_SMMU_FEAT_STALLS		(1 << 11)
->>   #define ARM_SMMU_FEAT_HYP		(1 << 12)
->>   #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
->> +#define ARM_SMMU_FEAT_VAX		(1 << 14)
->>   	u32				features;
->>   
->>   #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
->> @@ -1656,6 +1658,8 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
->>   	switch (smmu_domain->stage) {
->>   	case ARM_SMMU_DOMAIN_S1:
->>   		ias = VA_BITS;
->> +		if (VA_BITS > 48 && !(smmu->features & ARM_SMMU_FEAT_VAX))
+> Is this related?
 > 
-> nit, but I'd rather the if condition was checking ias instead of VA_BITS.
+> >    arch/arm64/kernel/head.o: In function `__primary_switch':
+> >    (.idmap.text+0x340): dangerous relocation: unsupported relocation
+> >    (.idmap.text+0x348): dangerous relocation: unsupported relocation
+> >    drivers/iommu/virtio-iommu.o: In function `viommu_probe':
+> >    virtio-iommu.c:(.text+0xbdc): undefined reference to `virtio_check_driver_offered_feature'
+> >    virtio-iommu.c:(.text+0xcfc): undefined reference to `virtio_check_driver_offered_feature'
+> >    virtio-iommu.c:(.text+0xe10): undefined reference to `virtio_check_driver_offered_feature'
+> >    drivers/iommu/virtio-iommu.o: In function `viommu_send_reqs_sync':
+> >    virtio-iommu.c:(.text+0x130c): undefined reference to `virtqueue_add_sgs'
+> >    virtio-iommu.c:(.text+0x1398): undefined reference to `virtqueue_kick'
+> >    virtio-iommu.c:(.text+0x14d4): undefined reference to `virtqueue_get_buf'
+> >    drivers/iommu/virtio-iommu.o: In function `virtio_iommu_drv_init':
+> >    virtio-iommu.c:(.init.text+0x1c): undefined reference to `register_virtio_driver'
+> >    drivers/iommu/virtio-iommu.o: In function `virtio_iommu_drv_exit':
+> >>> virtio-iommu.c:(.exit.text+0x14): undefined reference to `unregister_virtio_driver'
 > 
->> +			ias = 48;
->>   		oas = smmu->ias;
+> Right. At the moment CONFIG_VIRTIO_IOMMU is a bool instead of tristate,
+> because the IOMMU subsystem isn't entirely ready to have IOMMU drivers
+> built as modules. In addition to exporting symbols it would also needs to
+> hold off probing endpoints behind the IOMMU until the IOMMU driver is
+> loaded. At the moment (I think) it gives up once userspace is reached (see
+> of_iommu_driver_present).
 > 
-> Should we also be sanitising the oas here if the SMMU doesn't support 64k
-> pages? It looks like the ias/oas sanitisation isn't cleanly split between
-> the pgtable code and the SMMU driver.
+> The above report is due to VIRTIO=m and VIRTIO_IOMMU=y. To solve it we could:
+> 
+> a) Allow VIRTIO_IOMMU to be built as module by exporting a dozen IOMMU
+> symbols. It would be a lie. The driver wouldn't be usable because of the
+> probe issue discussed above, but it would build.
+> 
+> b) Actually make any IOMMU driver work as module. Whilst it would
+> certainly be a nice feature, it's a bigger problem and I don't think it
+> has its place in this series.
+> 
+> c) Make VIRTIO_IOMMU depend on VIRTIO_MMIO=y instead of VIRTIO_MMIO, which
+> I think is the sanest for now (and does work), even though distro kernels
+> probably all have VIRTIO=m.
+> 
+> I prefer doing c) now and experiment with b) once I got some time.
+> 
+> Thanks,
+> Jean
 
-Right, based on my previous argument it would be cleaner to set 48/52 
-here based on the SMMU features, then constrain to VA_BITS in 
-io-pgtable; I think I was more focused on minimising the diff initially.
+It kind of means it's a toy for now though. So fine as long
+as it's out of tree.
 
-Robin.
+-- 
+MST
