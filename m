@@ -1,22 +1,19 @@
-From: JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH v5 08/13] iommu/rockchip: Control clocks needed to access
-	the IOMMU
-Date: Thu, 01 Mar 2018 09:37:43 +0800
-Message-ID: <5A975967.6020301@rock-chips.com>
-References: <20180124103516.2571-1-jeffy.chen@rock-chips.com>
-	<20180124103516.2571-9-jeffy.chen@rock-chips.com>
-	<20180130170515.3g6wtadqgmehxh5b@rob-hp-laptop>
-	<CAAFQd5A383Ey3Ntg_hcsvzHj2DsSuW6RMQ+kP=LPAZ1YmqjHOg@mail.gmail.com>
-	<CAL_JsqKFW0USD_TgGCO-s4wMBw9O2psToMObjeSEwCNReq-3=w@mail.gmail.com>
-	<5A72F7D2.1050201@rock-chips.com> <5A8FEBC6.4000408@rock-chips.com>
-	<33d1d6bd-3455-5cad-6990-a9ca94063f3a@arm.com>
-	<5A96A809.2020509@rock-chips.com>
-	<34a60ab2-a3af-3302-6612-740cba5460db@arm.com>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH 02/37] iommu/sva: Bind process address spaces to devices
+Date: Thu, 1 Mar 2018 03:03:25 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439B829DA@SHSMSX104.ccr.corp.intel.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-3-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191002897@SHSMSX101.ccr.corp.intel.com>
+	<b9eacb30-817f-9027-bc0a-1f01cf9f13f9@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191003AD6@SHSMSX101.ccr.corp.intel.com>
+	<ca4d4992-0c8b-dae6-e443-7c7f7164be60@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <34a60ab2-a3af-3302-6612-740cba5460db-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <ca4d4992-0c8b-dae6-e443-7c7f7164be60-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,88 +23,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Raj,
+	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Jean,
 
-Thanks for your reply.
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, February 15, 2018 8:41 PM
+> Subject: Re: [PATCH 02/37] iommu/sva: Bind process address spaces to devices
+> 
+> On 13/02/18 23:34, Tian, Kevin wrote:
+> >> From: Jean-Philippe Brucker
+> >> Sent: Tuesday, February 13, 2018 8:57 PM
+> >>
+> >> On 13/02/18 07:54, Tian, Kevin wrote:
+> >>>> From: Jean-Philippe Brucker
+> >>>> Sent: Tuesday, February 13, 2018 2:33 AM
+> >>>>
+> >>>> Add bind() and unbind() operations to the IOMMU API. Device drivers
+> >> can
+> >>>> use them to share process page tables with their devices.
+> >>>> bind_group() is provided for VFIO's convenience, as it needs to
+> >>>> provide a coherent interface on containers. Other device drivers
+> >>>> will most likely want to use bind_device(), which binds a single device in the
+> group.
+> >>>
+> >>> I saw your bind_group implementation tries to bind the address space
+> >>> for all devices within a group, which IMO has some problem. Based on
+> >> PCIe
+> >>> spec, packet routing on the bus doesn't take PASID into consideration.
+> >>> since devices within same group cannot be isolated based on
+> >>> requestor-
+> >> ID
+> >>> i.e. traffic not guaranteed going to IOMMU, enabling SVA on multiple
+> >> devices
+> >>> could cause undesired p2p.
+> >> But so does enabling "classic" DMA... If two devices are not
+> >> protected by ACS for example, they are put in the same IOMMU group,
+> >> and one device might be able to snoop the other's DMA. VFIO allows
+> >> userspace to create a container for them and use MAP/UNMAP, but makes
+> >> it explicit to the user that for DMA, these devices are not isolated
+> >> and must be considered as a single device (you can't pass them to
+> >> different VMs or put them in different containers). So I tried to
+> >> keep the same idea as MAP/UNMAP for SVA, performing BIND/UNBIND
+> >> operations on the VFIO container instead of the device.
+> >
+> > there is a small difference. for classic DMA we can reserve PCI BARs
+> > when allocating IOVA, thus multiple devices in the same group can
+> > still work correctly applied with same translation, if isolation is
+> > not cared in between. However for SVA it's CPU virtual addresses
+> > managed by kernel mm thus difficult to introduce similar address
+> > reservation. Then it's possible for a VA falling into other device's
+> > BAR in the same group and cause undesired p2p traffic. In such regard,
+> > SVA is actually functionally-broken.
+> 
+> I think the problem exists even if there is a single device in the group.
+> If for example, malloc() returns a VA that corresponds to a PCI host bridge in IOVA
+> space, performing DMA on that buffer won't reach the IOMMU and will cause
+> undesirable side-effects.
 
-On 02/28/2018 11:06 PM, Robin Murphy wrote:
-> On 28/02/18 13:00, JeffyChen wrote:
->> Hi Robin,
->>
->> Thanks for your reply.
->>
->> On 02/28/2018 12:59 AM, Robin Murphy wrote:
->>>>> the rockchip IOMMU is part of the master block in hardware, so it
->>>>> needs
->>>>> to control the master's power domain and some of the master's clocks
->>>>> when access it's registers.
->>>>>
->>>>> and the number of clocks needed here, might be different between each
->>>>> IOMMUs(according to which master block it belongs), it's a little like
->>>>> our power domain:
->>>>> https://elixir.free-electrons.com/linux/latest/source/arch/arm64/boot/dts/rockchip/rk3399.dtsi#L935
->>>>>
->>>>>
->>>>>
->>>>>
->>>>> i'm not sure how to describe this correctly, is it ok use something
->>>>> like
->>>>> "the same as it's master block"?
->>>>
->>>> would it make sense to add a property to specify the master who owns
->>>> the iommu, and we can get all clocks(only some of those clocks are
->>>> actually needed) from it in the of_xlate()? and we can also reuse the
->>>> clock-names of that master to build clk_bulk_data and log errors in
->>>> clk_bulk_get.
->>>
->>> I'm inclined to agree with Rob here - if we're to add anything to the
->>> binding, it should only be whatever clock inputs are defined for the
->>> IOMMU IP block itself. If Linux doesn't properly handle the interconnect
->>> clock hierarchy external to a particular integration, that's a separate
->>> issue and it's not the binding's problem.
->>>
->>> I actually quite like the hack of "borrowing" the clocks from
->>> dev->of_node in of_xlate() - you shouldn't need any DT changes for that,
->>> because you already know that each IOMMU instance only has the one
->>> master device anyway.
->>
->> Thanks:) but actually we are going to support sharing IOMMU between
->> multiple masters(one of them is the main master i think) in the newer
->> chips(not yet supported on upstream kernel)...
->
-> Ha! OK, fair enough, back to the first point then...
->
->> So we might have to get all clocks from all masters, or find a way to
->> specify the main master...and for the multiple masters case, do it in
->> of_xlate() turns out to be a little racy...maybe we can add a property
->> to specify main master, and get it's clocks in probe()?
->
-> I notice that the 4.4 BSP kernel consistently specifies "aclk" and
-> "hclk" for the IOMMU instances - it feels unusual to say "why don't we
-> follow the downstream binding?", but it does look a lot like what I
-> would expect (I'd guess at one for the register slave interface and one
-> for the master interface/general operation?)
-huh, right.
-i did noticed that, but there's a hevc_mmu with ("aclk", "hclk", 
-"clk_core", "clk_cabac") confused me.
+If only a single device in a group, should it mean there is ACS support in
+the path from this device to root complex? It means any memory request
+from this device would be upstreamed to root complex, thus it should be
+able to avoid undesired p2p traffics. So I intend to believe, even we do
+bind in group level, we actually expect to make it work only for the case
+where a single device within a group.
 
-so confirmed with Simon, that hevc_mmu is wrong. currently all IOMMUs 
-should only have 2 clks, either aclk+hclk or aclk+pclk (depends on the 
-clk tree)
-
-so it seems to be a good idea to do so, will send patches soon, thanks :)
->
-> If we can implement conceptually-correct clock handling based on an
-> accurate binding, which should cover most cases, and *then* look at
-> hacking around those where it doesn't quite work in practice due to
-> shortcomings elsewhere, that would be ideal, and of course a lot nicer
-> than just jumping straight into piles of hacks.
->
-> Robin.
->
->
->
+Thanks,
+Yi Liu
