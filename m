@@ -1,15 +1,14 @@
-From: Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Question on IOMMU indentity mapping for intel-iommu
-Date: Wed, 28 Feb 2018 21:05:08 -0800
-Message-ID: <CAKgT0Ue5LWLZNoJF=1Nn8Z4kHJby-J72uqaUAE4W3VPXfJ4kYg@mail.gmail.com>
-References: <CAKgT0UfgW23f6K-TbOP=6t=LPEH8e-6xphjZ7amC-Bvb3-S-GA@mail.gmail.com>
-	<1519717675.10676.36.camel@infradead.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191021BD8@SHSMSX101.ccr.corp.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 03/37] iommu/sva: Manage process address spaces
+Date: Thu, 1 Mar 2018 14:52:20 +0800
+Message-ID: <5A97A324.9050605@linux.intel.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-4-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191021BD8-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <20180212183352.22730-4-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,113 +18,234 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBGZWIgMjgsIDIwMTggYXQgNzoxNSBQTSwgVGlhbiwgS2V2aW4gPGtldmluLnRpYW5A
-aW50ZWwuY29tPiB3cm90ZToKPj4gRnJvbTogRGF2aWQgV29vZGhvdXNlCj4+IFNlbnQ6IFR1ZXNk
-YXksIEZlYnJ1YXJ5IDI3LCAyMDE4IDM6NDggUE0KPj4KPj4gT24gTW9uLCAyMDE4LTAyLTI2IGF0
-IDE1OjAxIC0wODAwLCBBbGV4YW5kZXIgRHV5Y2sgd3JvdGU6Cj4+ID4gSSBhbSBpbnRlcmVzdGVk
-IGluIGFkZGluZyBhIG5ldyBtZW1vcnkgbWFwcGluZyBvcHRpb24gdGhhdAo+PiA+IGVzdGFibGlz
-aGVzCj4+ID4gb25lIGlkZW50aXR5LW1hcHBlZCByZWdpb24gZm9yIGFsbCBETUFfVE9fREVWSUNF
-IG1hcHBpbmdzIGFuZAo+PiBjcmVhdGVzCj4+ID4gYSBuZXcgZHluYW1pYyBtYXBwaW5nIGZvciBh
-bnkgRE1BX0ZST01fREVWSUNFIGFuZAo+PiBETUFfQklESVJFQ1RJT05BTAo+PiA+IG1hcHBpbmdz
-LiBNeSB0aG91Z2h0IGlzIGl0IHNob3VsZCBhbGxvdyBmb3IgYSBjb21wcm9taXNlIGJldHdlZW4K
-Pj4gPiBzZWN1cml0eSBhbmQgcGVyZm9ybWFuY2UgKGluIHRoZSBjYXNlIG9mIG5ldHdvcmtpbmcp
-IGluIHRoYXQgbWFueSBvZgo+PiA+IHRoZSBzZXJ2ZXIgTklDcyBkcml2ZXJzIHRoZXNlIGRheXMg
-YXJlIHJ1bm5pbmcgd2l0aCBtb3N0bHkgcGlubmVkIG9yCj4+ID4gcmVzdXNlZCBwYWdlZCBmb3Ig
-UnguIEJ5IHVzaW5nIGFuIGlkZW50aXR5IG1hcHBpbmcgZm9yIHRoZSBUeCBwYWNrZXRzCj4KPiBS
-eCBwYWNrZXRzPwoKWWVzLCBSeCBwYWNrZXRzLiBJbiB0aGUgY2FzZSBvZiBkcml2ZXJzIGxpa2Ug
-aXhnYmV2ZiB0aGUgZHJpdmVyIGhhcyBhCnBhZ2UgcmV1c2UgbWVjaGFuaXNtIGluIHBsYWNlIHRo
-YXQgYWxsb3dzIGl0IHRvIHJldXNlIHRoZSBzYW1lIHBhZ2UKbXVsdGlwbGUgdGltZXMgZm9yIGVh
-Y2ggUnggYnVmZmVyLiBBcyBhIHJlc3VsdCB3ZSBvZnRlbiBlbmQgdXAKcHJvY2Vzc2luZyBtaWxs
-aW9ucyBvZiBwYWNrZXRzIGFuZCBkb24ndCBoYXZlIHRvIGFsbG9jYXRlIGFuZC9vcgptYXAvdW5t
-YXAgYSBwYWdlIHdoaWxlIGRvaW5nIHNvLiBBcyBzdWNoIHdlIG5vcm1hbGx5IGRvbid0IGhhdmUg
-dG8KaW52YWxpZGF0ZSBvciBjcmVhdGUgYW55IG5ldyBtYXBwaW5ncyBpbiB0aGUgSU9NTVUgZm9y
-IHRob3NlIHBhY2tldHMKd2hpY2ggZ3JlYXRseSByZWR1Y2VzIHRoZSBvdmVyaGVhZC4KCj4+ID4g
-d2Ugc2hvdWxkIGJlIGFibGUgdG8gc2lnbmlmaWNhbnRseSBjdXQgZG93biBvbiB0aGUgSU9NTVUg
-b3ZlcmhlYWQgZm9yCj4+ID4gdGhlIGRldmljZS4gVGhlIG90aGVyIGFkdmFudGFnZSBpZiB0aGlz
-IHdvcmtzIGlzIHRoYXQgd2UgY291bGQgdXNlCj4+ID4gdGhpcyB0byBwb3NzaWJseSBkbyBzb21l
-dGhpbmcgbGlrZSBkaXJ0eSBwYWdlIHRyYWNraW5nIGluIHRoZSBjYXNlIG9mCj4+ID4gYSBlbXVs
-YXRlZCB2ZXJzaW9uIG9mIHRoZSBJT01NVS4KPgo+IEkgZGlkbid0IHF1aXRlIGdldCB0aGlzIHBh
-cnQuIGRpcnR5LXBhZ2UgdHJhY2tpbmcgb24gZW11bGF0ZWQgSU9NTVUKPiBkb2Vzbid0IHJlbHkg
-b24gdGhlIGNoYW5nZXMgdGhhdCB5b3UgYXJlIHByb3Bvc2luZyAtIGp1c3QgbW9uaXRvcgo+IGlu
-dmFsaWRhdGlvbiByZXF1ZXN0cyBhbmQgdGhlbiBjb3VudCBhbGwgY2hhbmdlZCBwYWdlcyBhcyBk
-aXJ0eS4KPiBPZiBjb3Vyc2UgaXQgd291bGQgYmUgb3ZlcmtpbGwgc2luY2UgZXZlbiBSTyBtYXBw
-aW5nIGNoYW5nZXMgYXJlCj4gYWxzbyBjb3VudGVkLiBJbiB0aGF0IG1hbm5lciB5b3VyIHByb3Bv
-c2FsIGlzIHN0aWxsIGFuIG9wdGltaXphdGlvbgo+IGluc3RlYWQgb2YgYSBtdXN0IHRvIGVuYWJs
-ZSBkaXJ0eS1wYWdlIHRyYWNraW5nLCBjb3JyZWN0PwoKWWVzIHRoaXMgaXMgbWVhbnQgdG8gYmUg
-YW4gb3B0aW1pemF0aW9uLiBPbmUgb2YgdGhlIHRoZW9yZXRpY2FsIGlzc3Vlcwp3aXRoIHRyeWlu
-ZyB0byB1c2UgdGhlIElPTU1VIGZvciBkaXJ0eSBwYWdlIHRyYWNraW5nIGlzIHRoYXQgd2UgYXJl
-CmN1cnJlbnRseSBoYXZpbmcgdG8gdXBkYXRlIGEgcGFyYXZpcnR1YWwgSU9NTVUgdG8gY3JlYXRl
-IGFuZAppbnZhbGlkYXRlIG1hcHBpbmdzIGZvciBldmVyeSBwYWNrZXQuIFdpdGggdGhhdCBiZWlu
-ZyB0aGUgY2FzZSB0aGVuCnRoZSBhcmd1bWVudCBjb3VsZCBiZSBtYWtlIHRoYXQgd2UgbWlnaHQg
-YXMgd2VsbCBqdXN0IGJlIHVzaW5nIGEKcGFyYXZpcnR1YWwgbmV0d29yayBpbnRlcmZhY2Ugc2lu
-Y2UgbWFueSBvZiB0aGUgYmVuZWZpdHMgb2YgU1ItSU9WIGFyZQpsaWtlbHkgbG9zdC4KCkkgZmVl
-bCB0aGF0IHRoZSBkZXNpZ24gb2YgZHJpdmVycyBsaWtlIGl4Z2JldmYgYWxyZWFkeSBzb2x2ZXMg
-aGFsZiB0aGUKaXNzdWUgc2luY2Ugd2UgYWxtb3N0IG5ldmVyIG1hcC91bm1hcCBSeCBidWZmZXJz
-LiBJZiB3ZSBpZGVudGl0eQptYXBwZWQgdGhlIFR4IHBhY2tldHMgdGhlbiB0aGF0IGlzIHRoZSBv
-dGhlciBoYWxmIG9mIHRoZSBpc3N1ZSBzb2x2ZWQuCkVzc2VudGlhbGx5IHdoYXQgeW91IGVuZCB1
-cCB3aXRoIGlzIHRoYXQgdGhlIFNSLUlPViBkZXZpY2UsIGluIHRoaXMKY2FzZSBhIFZGIHJ1bm5p
-bmcgdW5kZXIgc29tZXRoaW5nIGxpa2UgaXhnYmV2ZiwgaGFzIGEgbWVhbnMgdG8KcHJvdmlkZWQg
-dGhlIGh5cGVydmlzb3Igd2l0aCBhIGxpc3Qgb2YgcGFnZXMgdGhhdCB0aGUgZGV2aWNlIGlzCndy
-aXRpbmcgdG8gc28gdGhleSBjb3VsZCB0aGVvcmV0aWNhbGx5IGVpdGhlciBiZSBhdm9pZGVkIGZv
-ciB0aGUgbGl2ZQptaWdyYXRpb24sIG9yIGF0IGxlYXN0IHdlIGNvdWxkIGtlZXAgdHJhY2sgb2Yg
-dGhlbSBzbyB0aGF0IHdoZW4gdGhlCmRldmljZSBpcyBlaXRoZXIgaGFsdGVkIG9yIGludmFsaWRh
-dGVzIHRoZSBtYXBwaW5nIHdlIGNvdWxkIHRoZW4gbWFyawp0aGUgcGFnZXMgYXMgZGlydHkgYW5k
-IG1pZ3JhdGUgdGhlbS4KClRoZSBhZGRlZCBib251cyB3aXRoIGFsbCB0aGlzIGlzIHRoYXQgd2Ug
-Y291bGQgcHJvYmFibHkgdXNlIGl0IGFzIGEKaGFsZi13YXkgcG9pbnQgYmV0d2VlbiB0aGUgY3Vy
-cmVudCBpb21tdT1wdCBzb2x1dGlvbiB0aGF0IGlzIG9mdGVuCnVzZWQgdG8gZ2V0IHBlcmZvcm1h
-bmNlIGFuZCB0aGUgc3RhbmRhcmQgc2V0dXAgd2hpY2ggZ2l2ZXMgeW91IGEgYml0Cm1vcmUgaW4g
-dGhlIHdheSBvZiBzZWN1cml0eS4gQXQgbGVhc3Qgd2l0aCB0aGlzIHdlIHdvdWxkIHByb2JhYmx5
-IHNlZQpqdXN0IGFib3V0IHRoZSBzYW1lIHRocm91Z2hwdXQgZm9yIG1vc3QgTklDcywgYnV0IHdl
-IHdvdWxkIGhhdmUgdGhlCmFkZGVkIHNlY3VyaXR5IG9mIGEgZGV2aWNlIHRoYXQgaXMgdW5hYmxl
-IHRvIHdyaXRlIG91dHNpZGUgb2Ygd2hlcmUgd2UKaGFkIHBlcm1pdHRlZCBpdCB0by4KCj4+ID4K
-Pj4gPiBJIHdhcyBvcmlnaW5hbGx5IHRoaW5raW5nIEkgY291bGQgZ2V0IGF3YXkgd2l0aCBqdXN0
-IHJldXNpbmcgdGhlCj4+ID4gaWRlbnRpdHkgbWFwcGluZyBjb2RlIGJ1dCBpdCBsb29rcyBsaWtl
-IHRoYXQgd291bGQgZW5kIHVwIG1lcmdpbmcKPj4gPiBldmVyeXRoaW5nIGludG8gb25lIGRvbWFp
-biBpZiBJIGFtIHVuZGVyc3RhbmRpbmcgY29ycmVjdGx5LiBEbyBJIGhhdmUKPj4gPiB0aGF0IHJp
-Z2h0Pwo+PiA+Cj4+ID4gV291bGQgSSBiZSBjb3JyZWN0IGluIGFzc3VtaW5nIHRoYXQgSSB3aWxs
-IG5lZWQgdG8gaGF2ZSBhIHNlcGFyYXRlCj4+ID4gZG9tYWluIHBlciBkZXZpY2UsIGVhY2ggZG9t
-YWluIGNvbnRhaW5pbmcgdGhlIDEgVE9fREVWSUNFIGlkZW50aXR5Cj4+ID4gbWFwcGVkIHJlZ2lv
-biwgYW5kIHRoZW4gd2hhdGV2ZXIgb3RoZXIgbWFwcGluZ3MgYXJlIG5lZWRlZCB0byBoYW5kbGUK
-Pj4gPiB0aGUgRlJPTSBhbmQgQklESVJFQ1RJT05BTCBtYXBwaW5ncz8KPj4KPj4gSW4gdGhlIG5v
-cm1hbCBtb2RlbCB3aGVyZSB3ZSBleHBsaWNpdGx5IG1hcCBldmVyeSBSWCBhbmQgVFggYnVmZmVy
-LCB5b3UKPj4gaGF2ZSBhIGRvbWFpbiBkZXZpY2UgYW55d2F5OyB0aGF0J3Mgbm90IGEgbmV3IHJl
-cXVpcmVtZW50IGZvciB5b3VyCj4+IG1vZGVsLgo+Pgo+PiBJdCBzb3VuZHMgbGlrZSBhbiBpbnRl
-cmVzdGluZyBpZGVhOyBJIGFncmVlIHRoYXQgaXQncyBhIHJlYXNvbmFibGUKPj4gY29tcHJvbWlz
-ZSBiZXR3ZWVuIHNlY3VyaXR5IGFuZCBwZXJmb3JtYW5jZS4gVGhlIGRldmljZSBjYW4gKnJlYWQq
-IGFsbAo+PiBvZiBtZW1vcnksIGJ1dCBpdCBjYW4ndCB3cml0ZSBhbnl3aGVyZSB0aGF0IGlzbid0
-IGV4cGxpY2l0bHkgbWFwcGVkLgo+Pgo+PiBJbiBhZGRpdGlvbiwgd2UncmUgbWFwcGluZyBidWZm
-ZXJzIGZvciBSWCBzb21lIHRpbWUgaW4gYWR2YW5jZSBvZiB0aGVtCj4+IGJlaW5nIG5lZWRlZCAo
-cmVwbGVuaXNoaW5nIHRoZSB0YWlsIG9mIHRoZSBSWCByaW5nKSwgd2hlcmUgdGhlIGxhdGVuY3kK
-Pj4gb2YgdGhlIG1hcCBvcGVyYXRpb24gaG9wZWZ1bGx5IHNob3VsZG4ndCBiZSBxdWl0ZSBzbyBt
-dWNoIG9mIGFuIGlzc3VlLgo+PiBXaGlsZSBwYWNrZXRzIGZvciBUWCBjYW4gZ28gc3RyYWlnaHQg
-dG8gdGhlIGRldmljZSB3aXRoIG5vIGxhdGVuY3kuCj4+IE92ZXJhbGwsIEkgdGhpbmsgaXQgbWln
-aHQgd29yayByZWFsbHkgd2VsbC4KPj4KPj4gWW91IGRvbid0IHdhbnQgdGhlIGV4aXN0aW5nIGlk
-ZW50aXR5IG1hcHBpbmcgY29kZTsgdGhhdCB3aWxsIGdpdmUgeW91IGEKPj4gUlcgbWFwcGluZyB3
-aGljaCB5b3UgZG9uJ3Qgd2FudCDigJQgeW91IHJlYWxseSBkbyB3YW50IHJlYWQtb25seSBvciB0
-aGlzCj4+IHdob2xlIGV4ZXJjaXNlIGlzIHBvaW50bGVzcywgcmlnaHQ/IEFuZCB5b3UncmUgcmln
-aHQsIGl0IHdvdWxkIGhhdmUgcHV0Cj4+IHRoZSBkb21haW4gaW50byB0aGUgc2luZ2xlIGlkZW50
-aXR5IGRvbWFpbi4KPj4KPj4gWW91IGNvdWxkIHByb2JhYmx5IHN0YXJ0IGJ5IG1vY2tpbmcgdGhp
-cyB1cCB3aXRoIHRoZSBJT01NVSBBUEkuIENyZWF0ZQo+PiBhIGRvbWFpbiB3aXRoIHRoZSAxOjEg
-cmVhZC1vbmx5IG1hcHBpbmcgb2YgYWxsIG1lbW9yeSwgYWRkIHlvdXIgZGV2aWNlCj4+IHRvIGl0
-LCBhbmQgdGhlbiBkbyB5b3VyIHdyaXRlYWJsZSBtYXBwaW5ncyBvbiB0b3AgKGF0IElPVkFzIGhp
-Z2hlciB0aGFuCj4+IHRoZSB0b3Agb2YgcGh5c2ljYWwgbWVtb3J5KS4gVGhhdCdzIHByb2JhYmx5
-IGEgcXVpY2sgd2F5IHRvIGFzc2Vzcwo+PiBwZXJmb3JtYW5jZSBhbmQgcHJvdmUgdGhlIGNvbmNl
-cHQgKGFsdGhvdWdoIHlvdSBkb24ndCBnZXQgZGVmZXJyZWQKPj4gdW5tYXAgb2YgUlggcGFja2V0
-cyB0aGF0IHdheSwgd2hpY2ggbWlnaHQgbWVzcyB0aGluZ3MgdXAgYSBiaXQpLgo+Cj4gQ3VyaW91
-cyBxdWVzdGlvbi4gRG8geW91IHRoaW5rIGFib3ZlIGNvdWxkIGJlIGEgZmluYWwgc29sdXRpb24g
-b3IganVzdAo+IGEgcHJvb2Ytb2YtY29uY2VwdD8gSWYgdGhlIGxhdHRlciwgd2lsbCB0aGUgY2xl
-YW5lciBvcHRpb24gYmUgdG8gYWxsb3cgdGhlCj4gZGV2aWNlIGJpbmRpbmcgdG8gbXVsdGlwbGUg
-ZG9tYWlucyBlLmcuIFJPICYgUlcgd2hpY2ggYXJlIHNlbGVjdGVkCj4gYmFzZWQgb24gRE1BIG1h
-cHBpbmcgZGlyZWN0aW9uIChub3Qgc3VyZSB3aGV0aGVyIGl0J3MgYW4gaW50cnVzaXZlCj4gY2hh
-bmdlIHRvIGlvbW11IGRyaXZlciB3aGljaCB0b2RheSBsaWtlbHkgYXNzdW1lcyBzaW5nbGUgYmlu
-ZGluZyk/Cj4KPj4KPj4gV2hlbiB3ZSBleHBvc2UgdGhpcyB0aHJvdWdoIHRoZSBETUEgQVBJLCBJ
-J2QgcXVpdGUgbGlrZSB0aGlzICpub3QqIHRvCj4+IGJlIEludGVsLXNwZWNpZmljLiBJdCBjb3Vs
-ZCByZWFzb25hYmx5IGxpdmUgaW4gYSBoaWdoZXIgbGF5ZXIgYW5kIGJlCj4+IHVzYWJsZSB3aXRo
-IGFsbCBraW5kcyBvZiBJT01NVSBpbXBsZW1lbnRhdGlvbnMuCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
-cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
-bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Jean,
+
+On 02/13/2018 02:33 AM, Jean-Philippe Brucker wrote:
+> Introduce boilerplate code for allocating IOMMU mm structures and binding
+> them to devices. Four operations are added to IOMMU drivers:
+>
+> * mm_alloc(): to create an io_mm structure and perform architecture-
+>   specific operations required to grab the process (for instance on ARM,
+>   pin down the CPU ASID so that the process doesn't get assigned a new
+>   ASID on rollover).
+>
+>   There is a single valid io_mm structure per Linux mm. Future extensions
+>   may also use io_mm for kernel-managed address spaces, populated with
+>   map()/unmap() calls instead of bound to process address spaces. This
+>   patch focuses on "shared" io_mm.
+>
+> * mm_attach(): attach an mm to a device. The IOMMU driver checks that the
+>   device is capable of sharing an address space, and writes the PASID
+>   table entry to install the pgd.
+>
+>   Some IOMMU drivers will have a single PASID table per domain, for
+>   convenience. Other can implement it differently but to help these
+>   drivers, mm_attach and mm_detach take 'attach_domain' and
+>   'detach_domain' parameters, that tell whether they need to set and clear
+>   the PASID entry or only send the required TLB invalidations.
+>
+> * mm_detach(): detach an mm from a device. The IOMMU driver removes the
+>   PASID table entry and invalidates the IOTLBs.
+>
+> * mm_free(): free a structure allocated by mm_alloc(), and let arch
+>   release the process.
+>
+> mm_attach and mm_detach operations are serialized with a spinlock. At the
+> moment it is global, but if we try to optimize it, the core should at
+> least prevent concurrent attach()/detach() on the same domain (so
+> multi-level PASID table code can allocate tables lazily). mm_alloc() can
+> sleep, but mm_free must not (because we'll have to call it from call_srcu
+> later on.)
+>
+> At the moment we use an IDR for allocating PASIDs and retrieving contexts.
+> We also use a single spinlock. These can be refined and optimized later (a
+> custom allocator will be needed for top-down PASID allocation).
+>
+> Keeping track of address spaces requires the use of MMU notifiers.
+> Handling process exit with regard to unbind() is tricky, so it is left for
+> another patch and we explicitly fail mm_alloc() for the moment.
+>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/iommu-sva.c | 382 +++++++++++++++++++++++++++++++++++++++++++++-
+>  drivers/iommu/iommu.c     |   2 +
+>  include/linux/iommu.h     |  25 +++
+>  3 files changed, 406 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 593685d891bf..f9af9d66b3ed 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -7,11 +7,321 @@
+>   * SPDX-License-Identifier: GPL-2.0
+>   */
+>  
+> +#include <linux/idr.h>
+>  #include <linux/iommu.h>
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +
+> +/**
+> + * DOC: io_mm model
+> + *
+> + * The io_mm keeps track of process address spaces shared between CPU and IOMMU.
+> + * The following example illustrates the relation between structures
+> + * iommu_domain, io_mm and iommu_bond. An iommu_bond is a link between io_mm and
+> + * device. A device can have multiple io_mm and an io_mm may be bound to
+> + * multiple devices.
+> + *              ___________________________
+> + *             |  IOMMU domain A           |
+> + *             |  ________________         |
+> + *             | |  IOMMU group   |        +------- io_pgtables
+> + *             | |                |        |
+> + *             | |   dev 00:00.0 ----+------- bond --- io_mm X
+> + *             | |________________|   \    |
+> + *             |                       '----- bond ---.
+> + *             |___________________________|           \
+> + *              ___________________________             \
+> + *             |  IOMMU domain B           |           io_mm Y
+> + *             |  ________________         |           / /
+> + *             | |  IOMMU group   |        |          / /
+> + *             | |                |        |         / /
+> + *             | |   dev 00:01.0 ------------ bond -' /
+> + *             | |   dev 00:01.1 ------------ bond --'
+> + *             | |________________|        |
+> + *             |                           +------- io_pgtables
+> + *             |___________________________|
+> + *
+> + * In this example, device 00:00.0 is in domain A, devices 00:01.* are in domain
+> + * B. All devices within the same domain access the same address spaces. Device
+> + * 00:00.0 accesses address spaces X and Y, each corresponding to an mm_struct.
+> + * Devices 00:01.* only access address space Y. In addition each
+> + * IOMMU_DOMAIN_DMA domain has a private address space, io_pgtable, that is
+> + * managed with iommu_map()/iommu_unmap(), and isn't shared with the CPU MMU.
+> + *
+> + * To obtain the above configuration, users would for instance issue the
+> + * following calls:
+> + *
+> + *     iommu_sva_bind_device(dev 00:00.0, mm X, ...) -> PASID 1
+> + *     iommu_sva_bind_device(dev 00:00.0, mm Y, ...) -> PASID 2
+> + *     iommu_sva_bind_device(dev 00:01.0, mm Y, ...) -> PASID 2
+> + *     iommu_sva_bind_device(dev 00:01.1, mm Y, ...) -> PASID 2
+> + *
+> + * A single Process Address Space ID (PASID) is allocated for each mm. In the
+> + * example, devices use PASID 1 to read/write into address space X and PASID 2
+> + * to read/write into address space Y.
+> + *
+> + * Hardware tables describing this configuration in the IOMMU would typically
+> + * look like this:
+> + *
+> + *                                PASID tables
+> + *                                 of domain A
+> + *                              .->+--------+
+> + *                             / 0 |        |-------> io_pgtable
+> + *                            /    +--------+
+> + *            Device tables  /   1 |        |-------> pgd X
+> + *              +--------+  /      +--------+
+> + *      00:00.0 |      A |-'     2 |        |--.
+> + *              +--------+         +--------+   \
+> + *              :        :       3 |        |    \
+> + *              +--------+         +--------+     --> pgd Y
+> + *      00:01.0 |      B |--.                    /
+> + *              +--------+   \                  |
+> + *      00:01.1 |      B |----+   PASID tables  |
+> + *              +--------+     \   of domain B  |
+> + *                              '->+--------+   |
+> + *                               0 |        |-- | --> io_pgtable
+> + *                                 +--------+   |
+> + *                               1 |        |   |
+> + *                                 +--------+   |
+> + *                               2 |        |---'
+> + *                                 +--------+
+> + *                               3 |        |
+> + *                                 +--------+
+> + *
+> + * With this model, a single call binds all devices in a given domain to an
+> + * address space. Other devices in the domain will get the same bond implicitly.
+> + * However, users must issue one bind() for each device, because IOMMUs may
+> + * implement SVA differently. Furthermore, mandating one bind() per device
+> + * allows the driver to perform sanity-checks on device capabilities.
+> + *
+> + * On Arm and AMD IOMMUs, entry 0 of the PASID table can be used to hold
+> + * non-PASID translations. In this case PASID 0 is reserved and entry 0 points
+> + * to the io_pgtable base. On Intel IOMMU, the io_pgtable base would be held in
+> + * the device table and PASID 0 would be available to the allocator.
+> + */
+>  
+>  /* TODO: stub for the fault queue. Remove later. */
+>  #define iommu_fault_queue_flush(...)
+>  
+> +struct iommu_bond {
+> +	struct io_mm		*io_mm;
+> +	struct device		*dev;
+> +	struct iommu_domain	*domain;
+> +
+> +	struct list_head	mm_head;
+> +	struct list_head	dev_head;
+> +	struct list_head	domain_head;
+> +
+> +	void			*drvdata;
+> +
+> +	/* Number of bind() calls */
+> +	refcount_t		refs;
+> +};
+> +
+> +/*
+> + * Because we're using an IDR, PASIDs are limited to 31 bits (the sign bit is
+> + * used for returning errors). In practice implementations will use at most 20
+> + * bits, which is the PCI limit.
+> + */
+> +static DEFINE_IDR(iommu_pasid_idr);
+> +
+> +/*
+> + * For the moment this is an all-purpose lock. It serializes
+> + * access/modifications to bonds, access/modifications to the PASID IDR, and
+> + * changes to io_mm refcount as well.
+> + */
+> +static DEFINE_SPINLOCK(iommu_sva_lock);
+> +
+> +static struct io_mm *
+> +io_mm_alloc(struct iommu_domain *domain, struct device *dev,
+> +	    struct mm_struct *mm)
+> +{
+> +	int ret;
+> +	int pasid;
+> +	struct io_mm *io_mm;
+> +	struct iommu_param *dev_param = dev->iommu_param;
+> +
+> +	if (!dev_param || !domain->ops->mm_alloc || !domain->ops->mm_free)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	io_mm = domain->ops->mm_alloc(domain, mm);
+> +	if (IS_ERR(io_mm))
+> +		return io_mm;
+> +	if (!io_mm)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	/*
+> +	 * The mm must not be freed until after the driver frees the io_mm
+> +	 * (which may involve unpinning the CPU ASID for instance, requiring a
+> +	 * valid mm struct.)
+> +	 */
+> +	mmgrab(mm);
+> +
+> +	io_mm->mm		= mm;
+> +	io_mm->release		= domain->ops->mm_free;
+> +	INIT_LIST_HEAD(&io_mm->devices);
+> +
+> +	idr_preload(GFP_KERNEL);
+> +	spin_lock(&iommu_sva_lock);
+> +	pasid = idr_alloc_cyclic(&iommu_pasid_idr, io_mm, dev_param->min_pasid,
+> +				 dev_param->max_pasid + 1, GFP_ATOMIC);
+
+Can the pasid management code be moved into a common library?
+PASID is not stick to SVA. An IOMMU model device could be designed
+to use PASID for second level translation (classical DMA translation)
+as well.
+
+Best regards,
+Lu Baolu
