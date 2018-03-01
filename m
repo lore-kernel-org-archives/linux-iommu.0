@@ -1,7 +1,7 @@
 From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v6 01/14] iommu/rockchip: Prohibit unbind and remove
-Date: Thu,  1 Mar 2018 18:08:11 +0800
-Message-ID: <20180301100824.14887-2-jeffy.chen@rock-chips.com>
+Subject: [PATCH v6 02/14] iommu/rockchip: Fix error handling in probe
+Date: Thu,  1 Mar 2018 18:08:12 +0800
+Message-ID: <20180301100824.14887-3-jeffy.chen@rock-chips.com>
 References: <20180301100824.14887-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,9 +21,7 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Removal of IOMMUs cannot be done reliably.
-
-This is similar to exynos iommu driver.
+Add missing iommu_device_sysfs_remove in error path.
 
 Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
@@ -31,66 +29,30 @@ Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
 Changes in v6: None
 Changes in v5: None
-Changes in v4:
-Rewrite commit message.
-
-Changes in v3:
-Also remove remove() and module_exit() as Tomasz suggested.
-
+Changes in v4: None
+Changes in v3: None
 Changes in v2: None
 
- drivers/iommu/rockchip-iommu.c | 21 +--------------------
- 1 file changed, 1 insertion(+), 20 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 9d991c2d8767..16cd8780c289 100644
+index 16cd8780c289..c2ef3cbd4401 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -1197,18 +1197,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	return err;
+@@ -1193,8 +1193,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 
+ 	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
+ 	err = iommu_device_register(&iommu->iommu);
++	if (err) {
++		iommu_device_sysfs_remove(&iommu->iommu);
++		return err;
++	}
+ 
+-	return err;
++	return 0;
  }
  
--static int rk_iommu_remove(struct platform_device *pdev)
--{
--	struct rk_iommu *iommu = platform_get_drvdata(pdev);
--
--	if (iommu) {
--		iommu_device_sysfs_remove(&iommu->iommu);
--		iommu_device_unregister(&iommu->iommu);
--	}
--
--	return 0;
--}
--
  static const struct of_device_id rk_iommu_dt_ids[] = {
- 	{ .compatible = "rockchip,iommu" },
- 	{ /* sentinel */ }
-@@ -1217,10 +1205,10 @@ MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
- 
- static struct platform_driver rk_iommu_driver = {
- 	.probe = rk_iommu_probe,
--	.remove = rk_iommu_remove,
- 	.driver = {
- 		   .name = "rk_iommu",
- 		   .of_match_table = rk_iommu_dt_ids,
-+		   .suppress_bind_attrs = true,
- 	},
- };
- 
-@@ -1248,14 +1236,7 @@ static int __init rk_iommu_init(void)
- 		platform_driver_unregister(&rk_iommu_domain_driver);
- 	return ret;
- }
--static void __exit rk_iommu_exit(void)
--{
--	platform_driver_unregister(&rk_iommu_driver);
--	platform_driver_unregister(&rk_iommu_domain_driver);
--}
--
- subsys_initcall(rk_iommu_init);
--module_exit(rk_iommu_exit);
- 
- MODULE_DESCRIPTION("IOMMU API for Rockchip");
- MODULE_AUTHOR("Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org> and Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>");
 -- 
 2.11.0
