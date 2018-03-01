@@ -1,18 +1,14 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 02/37] iommu/sva: Bind process address spaces to devices
-Date: Thu, 1 Mar 2018 03:03:25 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439B829DA@SHSMSX104.ccr.corp.intel.com>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-3-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191002897@SHSMSX101.ccr.corp.intel.com>
-	<b9eacb30-817f-9027-bc0a-1f01cf9f13f9@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191003AD6@SHSMSX101.ccr.corp.intel.com>
-	<ca4d4992-0c8b-dae6-e443-7c7f7164be60@arm.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: Question on IOMMU indentity mapping for intel-iommu
+Date: Thu, 1 Mar 2018 03:15:53 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191021BD8@SHSMSX101.ccr.corp.intel.com>
+References: <CAKgT0UfgW23f6K-TbOP=6t=LPEH8e-6xphjZ7amC-Bvb3-S-GA@mail.gmail.com>
+	<1519717675.10676.36.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ca4d4992-0c8b-dae6-e443-7c7f7164be60-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1519717675.10676.36.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,73 +19,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <mykyta.iziumtsev-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Raj,
-	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexander Duyck <alexander.duyck-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
-
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Thursday, February 15, 2018 8:41 PM
-> Subject: Re: [PATCH 02/37] iommu/sva: Bind process address spaces to devices
-> 
-> On 13/02/18 23:34, Tian, Kevin wrote:
-> >> From: Jean-Philippe Brucker
-> >> Sent: Tuesday, February 13, 2018 8:57 PM
-> >>
-> >> On 13/02/18 07:54, Tian, Kevin wrote:
-> >>>> From: Jean-Philippe Brucker
-> >>>> Sent: Tuesday, February 13, 2018 2:33 AM
-> >>>>
-> >>>> Add bind() and unbind() operations to the IOMMU API. Device drivers
-> >> can
-> >>>> use them to share process page tables with their devices.
-> >>>> bind_group() is provided for VFIO's convenience, as it needs to
-> >>>> provide a coherent interface on containers. Other device drivers
-> >>>> will most likely want to use bind_device(), which binds a single device in the
-> group.
-> >>>
-> >>> I saw your bind_group implementation tries to bind the address space
-> >>> for all devices within a group, which IMO has some problem. Based on
-> >> PCIe
-> >>> spec, packet routing on the bus doesn't take PASID into consideration.
-> >>> since devices within same group cannot be isolated based on
-> >>> requestor-
-> >> ID
-> >>> i.e. traffic not guaranteed going to IOMMU, enabling SVA on multiple
-> >> devices
-> >>> could cause undesired p2p.
-> >> But so does enabling "classic" DMA... If two devices are not
-> >> protected by ACS for example, they are put in the same IOMMU group,
-> >> and one device might be able to snoop the other's DMA. VFIO allows
-> >> userspace to create a container for them and use MAP/UNMAP, but makes
-> >> it explicit to the user that for DMA, these devices are not isolated
-> >> and must be considered as a single device (you can't pass them to
-> >> different VMs or put them in different containers). So I tried to
-> >> keep the same idea as MAP/UNMAP for SVA, performing BIND/UNBIND
-> >> operations on the VFIO container instead of the device.
-> >
-> > there is a small difference. for classic DMA we can reserve PCI BARs
-> > when allocating IOVA, thus multiple devices in the same group can
-> > still work correctly applied with same translation, if isolation is
-> > not cared in between. However for SVA it's CPU virtual addresses
-> > managed by kernel mm thus difficult to introduce similar address
-> > reservation. Then it's possible for a VA falling into other device's
-> > BAR in the same group and cause undesired p2p traffic. In such regard,
-> > SVA is actually functionally-broken.
-> 
-> I think the problem exists even if there is a single device in the group.
-> If for example, malloc() returns a VA that corresponds to a PCI host bridge in IOVA
-> space, performing DMA on that buffer won't reach the IOMMU and will cause
-> undesirable side-effects.
-
-If only a single device in a group, should it mean there is ACS support in
-the path from this device to root complex? It means any memory request
-from this device would be upstreamed to root complex, thus it should be
-able to avoid undesired p2p traffics. So I intend to believe, even we do
-bind in group level, we actually expect to make it work only for the case
-where a single device within a group.
-
-Thanks,
-Yi Liu
+PiBGcm9tOiBEYXZpZCBXb29kaG91c2UNCj4gU2VudDogVHVlc2RheSwgRmVicnVhcnkgMjcsIDIw
+MTggMzo0OCBQTQ0KPiANCj4gT24gTW9uLCAyMDE4LTAyLTI2IGF0IDE1OjAxIC0wODAwLCBBbGV4
+YW5kZXIgRHV5Y2sgd3JvdGU6DQo+ID4gSSBhbSBpbnRlcmVzdGVkIGluIGFkZGluZyBhIG5ldyBt
+ZW1vcnkgbWFwcGluZyBvcHRpb24gdGhhdA0KPiA+IGVzdGFibGlzaGVzDQo+ID4gb25lIGlkZW50
+aXR5LW1hcHBlZCByZWdpb24gZm9yIGFsbCBETUFfVE9fREVWSUNFIG1hcHBpbmdzIGFuZA0KPiBj
+cmVhdGVzDQo+ID4gYSBuZXcgZHluYW1pYyBtYXBwaW5nIGZvciBhbnkgRE1BX0ZST01fREVWSUNF
+IGFuZA0KPiBETUFfQklESVJFQ1RJT05BTA0KPiA+IG1hcHBpbmdzLiBNeSB0aG91Z2h0IGlzIGl0
+IHNob3VsZCBhbGxvdyBmb3IgYSBjb21wcm9taXNlIGJldHdlZW4NCj4gPiBzZWN1cml0eSBhbmQg
+cGVyZm9ybWFuY2UgKGluIHRoZSBjYXNlIG9mIG5ldHdvcmtpbmcpIGluIHRoYXQgbWFueSBvZg0K
+PiA+IHRoZSBzZXJ2ZXIgTklDcyBkcml2ZXJzIHRoZXNlIGRheXMgYXJlIHJ1bm5pbmcgd2l0aCBt
+b3N0bHkgcGlubmVkIG9yDQo+ID4gcmVzdXNlZCBwYWdlZCBmb3IgUnguIEJ5IHVzaW5nIGFuIGlk
+ZW50aXR5IG1hcHBpbmcgZm9yIHRoZSBUeCBwYWNrZXRzDQoNClJ4IHBhY2tldHM/DQoNCj4gPiB3
+ZSBzaG91bGQgYmUgYWJsZSB0byBzaWduaWZpY2FudGx5IGN1dCBkb3duIG9uIHRoZSBJT01NVSBv
+dmVyaGVhZCBmb3INCj4gPiB0aGUgZGV2aWNlLiBUaGUgb3RoZXIgYWR2YW50YWdlIGlmIHRoaXMg
+d29ya3MgaXMgdGhhdCB3ZSBjb3VsZCB1c2UNCj4gPiB0aGlzIHRvIHBvc3NpYmx5IGRvIHNvbWV0
+aGluZyBsaWtlIGRpcnR5IHBhZ2UgdHJhY2tpbmcgaW4gdGhlIGNhc2Ugb2YNCj4gPiBhIGVtdWxh
+dGVkIHZlcnNpb24gb2YgdGhlIElPTU1VLg0KDQpJIGRpZG4ndCBxdWl0ZSBnZXQgdGhpcyBwYXJ0
+LiBkaXJ0eS1wYWdlIHRyYWNraW5nIG9uIGVtdWxhdGVkIElPTU1VDQpkb2Vzbid0IHJlbHkgb24g
+dGhlIGNoYW5nZXMgdGhhdCB5b3UgYXJlIHByb3Bvc2luZyAtIGp1c3QgbW9uaXRvcg0KaW52YWxp
+ZGF0aW9uIHJlcXVlc3RzIGFuZCB0aGVuIGNvdW50IGFsbCBjaGFuZ2VkIHBhZ2VzIGFzIGRpcnR5
+Lg0KT2YgY291cnNlIGl0IHdvdWxkIGJlIG92ZXJraWxsIHNpbmNlIGV2ZW4gUk8gbWFwcGluZyBj
+aGFuZ2VzIGFyZQ0KYWxzbyBjb3VudGVkLiBJbiB0aGF0IG1hbm5lciB5b3VyIHByb3Bvc2FsIGlz
+IHN0aWxsIGFuIG9wdGltaXphdGlvbg0KaW5zdGVhZCBvZiBhIG11c3QgdG8gZW5hYmxlIGRpcnR5
+LXBhZ2UgdHJhY2tpbmcsIGNvcnJlY3Q/DQoNCj4gPg0KPiA+IEkgd2FzIG9yaWdpbmFsbHkgdGhp
+bmtpbmcgSSBjb3VsZCBnZXQgYXdheSB3aXRoIGp1c3QgcmV1c2luZyB0aGUNCj4gPiBpZGVudGl0
+eSBtYXBwaW5nIGNvZGUgYnV0IGl0IGxvb2tzIGxpa2UgdGhhdCB3b3VsZCBlbmQgdXAgbWVyZ2lu
+Zw0KPiA+IGV2ZXJ5dGhpbmcgaW50byBvbmUgZG9tYWluIGlmIEkgYW0gdW5kZXJzdGFuZGluZyBj
+b3JyZWN0bHkuIERvIEkgaGF2ZQ0KPiA+IHRoYXQgcmlnaHQ/DQo+ID4NCj4gPiBXb3VsZCBJIGJl
+IGNvcnJlY3QgaW4gYXNzdW1pbmcgdGhhdCBJIHdpbGwgbmVlZCB0byBoYXZlIGEgc2VwYXJhdGUN
+Cj4gPiBkb21haW4gcGVyIGRldmljZSwgZWFjaCBkb21haW4gY29udGFpbmluZyB0aGUgMSBUT19E
+RVZJQ0UgaWRlbnRpdHkNCj4gPiBtYXBwZWQgcmVnaW9uLCBhbmQgdGhlbiB3aGF0ZXZlciBvdGhl
+ciBtYXBwaW5ncyBhcmUgbmVlZGVkIHRvIGhhbmRsZQ0KPiA+IHRoZSBGUk9NIGFuZCBCSURJUkVD
+VElPTkFMIG1hcHBpbmdzPw0KPiANCj4gSW4gdGhlIG5vcm1hbCBtb2RlbCB3aGVyZSB3ZSBleHBs
+aWNpdGx5IG1hcCBldmVyeSBSWCBhbmQgVFggYnVmZmVyLCB5b3UNCj4gaGF2ZSBhIGRvbWFpbiBk
+ZXZpY2UgYW55d2F5OyB0aGF0J3Mgbm90IGEgbmV3IHJlcXVpcmVtZW50IGZvciB5b3VyDQo+IG1v
+ZGVsLg0KPiANCj4gSXQgc291bmRzIGxpa2UgYW4gaW50ZXJlc3RpbmcgaWRlYTsgSSBhZ3JlZSB0
+aGF0IGl0J3MgYSByZWFzb25hYmxlDQo+IGNvbXByb21pc2UgYmV0d2VlbiBzZWN1cml0eSBhbmQg
+cGVyZm9ybWFuY2UuIFRoZSBkZXZpY2UgY2FuICpyZWFkKiBhbGwNCj4gb2YgbWVtb3J5LCBidXQg
+aXQgY2FuJ3Qgd3JpdGUgYW55d2hlcmUgdGhhdCBpc24ndCBleHBsaWNpdGx5IG1hcHBlZC4NCj4g
+DQo+IEluIGFkZGl0aW9uLCB3ZSdyZSBtYXBwaW5nIGJ1ZmZlcnMgZm9yIFJYIHNvbWUgdGltZSBp
+biBhZHZhbmNlIG9mIHRoZW0NCj4gYmVpbmcgbmVlZGVkIChyZXBsZW5pc2hpbmcgdGhlIHRhaWwg
+b2YgdGhlIFJYIHJpbmcpLCB3aGVyZSB0aGUgbGF0ZW5jeQ0KPiBvZiB0aGUgbWFwIG9wZXJhdGlv
+biBob3BlZnVsbHkgc2hvdWxkbid0IGJlIHF1aXRlIHNvIG11Y2ggb2YgYW4gaXNzdWUuDQo+IFdo
+aWxlIHBhY2tldHMgZm9yIFRYIGNhbiBnbyBzdHJhaWdodCB0byB0aGUgZGV2aWNlIHdpdGggbm8g
+bGF0ZW5jeS4NCj4gT3ZlcmFsbCwgSSB0aGluayBpdCBtaWdodCB3b3JrIHJlYWxseSB3ZWxsLg0K
+PiANCj4gWW91IGRvbid0IHdhbnQgdGhlIGV4aXN0aW5nIGlkZW50aXR5IG1hcHBpbmcgY29kZTsg
+dGhhdCB3aWxsIGdpdmUgeW91IGENCj4gUlcgbWFwcGluZyB3aGljaCB5b3UgZG9uJ3Qgd2FudCDi
+gJQgeW91IHJlYWxseSBkbyB3YW50IHJlYWQtb25seSBvciB0aGlzDQo+IHdob2xlIGV4ZXJjaXNl
+IGlzIHBvaW50bGVzcywgcmlnaHQ/IEFuZCB5b3UncmUgcmlnaHQsIGl0IHdvdWxkIGhhdmUgcHV0
+DQo+IHRoZSBkb21haW4gaW50byB0aGUgc2luZ2xlIGlkZW50aXR5IGRvbWFpbi4NCj4gDQo+IFlv
+dSBjb3VsZCBwcm9iYWJseSBzdGFydCBieSBtb2NraW5nIHRoaXMgdXAgd2l0aCB0aGUgSU9NTVUg
+QVBJLiBDcmVhdGUNCj4gYSBkb21haW4gd2l0aCB0aGUgMToxIHJlYWQtb25seSBtYXBwaW5nIG9m
+IGFsbCBtZW1vcnksIGFkZCB5b3VyIGRldmljZQ0KPiB0byBpdCwgYW5kIHRoZW4gZG8geW91ciB3
+cml0ZWFibGUgbWFwcGluZ3Mgb24gdG9wIChhdCBJT1ZBcyBoaWdoZXIgdGhhbg0KPiB0aGUgdG9w
+IG9mIHBoeXNpY2FsIG1lbW9yeSkuIFRoYXQncyBwcm9iYWJseSBhIHF1aWNrIHdheSB0byBhc3Nl
+c3MNCj4gcGVyZm9ybWFuY2UgYW5kIHByb3ZlIHRoZSBjb25jZXB0IChhbHRob3VnaCB5b3UgZG9u
+J3QgZ2V0IGRlZmVycmVkDQo+IHVubWFwIG9mIFJYIHBhY2tldHMgdGhhdCB3YXksIHdoaWNoIG1p
+Z2h0IG1lc3MgdGhpbmdzIHVwIGEgYml0KS4NCg0KQ3VyaW91cyBxdWVzdGlvbi4gRG8geW91IHRo
+aW5rIGFib3ZlIGNvdWxkIGJlIGEgZmluYWwgc29sdXRpb24gb3IganVzdA0KYSBwcm9vZi1vZi1j
+b25jZXB0PyBJZiB0aGUgbGF0dGVyLCB3aWxsIHRoZSBjbGVhbmVyIG9wdGlvbiBiZSB0byBhbGxv
+dyB0aGUNCmRldmljZSBiaW5kaW5nIHRvIG11bHRpcGxlIGRvbWFpbnMgZS5nLiBSTyAmIFJXIHdo
+aWNoIGFyZSBzZWxlY3RlZA0KYmFzZWQgb24gRE1BIG1hcHBpbmcgZGlyZWN0aW9uIChub3Qgc3Vy
+ZSB3aGV0aGVyIGl0J3MgYW4gaW50cnVzaXZlIA0KY2hhbmdlIHRvIGlvbW11IGRyaXZlciB3aGlj
+aCB0b2RheSBsaWtlbHkgYXNzdW1lcyBzaW5nbGUgYmluZGluZyk/DQoNCj4gDQo+IFdoZW4gd2Ug
+ZXhwb3NlIHRoaXMgdGhyb3VnaCB0aGUgRE1BIEFQSSwgSSdkIHF1aXRlIGxpa2UgdGhpcyAqbm90
+KiB0bw0KPiBiZSBJbnRlbC1zcGVjaWZpYy4gSXQgY291bGQgcmVhc29uYWJseSBsaXZlIGluIGEg
+aGlnaGVyIGxheWVyIGFuZCBiZQ0KPiB1c2FibGUgd2l0aCBhbGwga2luZHMgb2YgSU9NTVUgaW1w
+bGVtZW50YXRpb25zLg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
