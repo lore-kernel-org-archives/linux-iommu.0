@@ -1,7 +1,7 @@
 From: srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Subject: [PATCH 1/3] rpmsg: core: export rpmsg bus type
-Date: Fri,  2 Mar 2018 14:55:29 +0000
-Message-ID: <20180302145531.20463-2-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 2/3] rpmsg: core: make rpmsg bus DMA capable
+Date: Fri,  2 Mar 2018 14:55:30 +0000
+Message-ID: <20180302145531.20463-3-srinivas.kandagatla@linaro.org>
 References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,54 +23,26 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Export rpmsg bus type so that iommu drivers iommu ops to
-rpmsg bus type.
-
-On Qualcomm SoCs ADSP exposes functions like audio and
-other which need iommu access, as these drivers are part
-of rpmsg bus, able to allocate memory from iommus is basic
-requirement. So expose this bus so that iommu drivers can
-add ops to this.
+Many of the rpmsg clients like audio drivers need to allocate
+dma memory. Make this bus DMA capable so that the child devices
+can use dma apis.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- drivers/rpmsg/rpmsg_core.c | 3 ++-
- include/linux/rpmsg.h      | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/rpmsg/rpmsg_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
-index 5a081762afcc..e84c71f8d6ab 100644
+index e84c71f8d6ab..540a3f3567b8 100644
 --- a/drivers/rpmsg/rpmsg_core.c
 +++ b/drivers/rpmsg/rpmsg_core.c
-@@ -465,7 +465,7 @@ static int rpmsg_dev_remove(struct device *dev)
- 	return err;
- }
- 
--static struct bus_type rpmsg_bus = {
-+struct bus_type rpmsg_bus = {
- 	.name		= "rpmsg",
- 	.match		= rpmsg_dev_match,
- 	.dev_groups	= rpmsg_dev_groups,
-@@ -473,6 +473,7 @@ static struct bus_type rpmsg_bus = {
+@@ -472,6 +472,7 @@ struct bus_type rpmsg_bus = {
+ 	.uevent		= rpmsg_uevent,
  	.probe		= rpmsg_dev_probe,
  	.remove		= rpmsg_dev_remove,
++	.force_dma	= true,
  };
-+EXPORT_SYMBOL(rpmsg_bus);
+ EXPORT_SYMBOL(rpmsg_bus);
  
- int rpmsg_register_device(struct rpmsg_device *rpdev)
- {
-diff --git a/include/linux/rpmsg.h b/include/linux/rpmsg.h
-index ca07366c4c33..869e5946b7df 100644
---- a/include/linux/rpmsg.h
-+++ b/include/linux/rpmsg.h
-@@ -49,7 +49,7 @@ struct rpmsg_device;
- struct rpmsg_endpoint;
- struct rpmsg_device_ops;
- struct rpmsg_endpoint_ops;
--
-+extern struct bus_type rpmsg_bus;
- /**
-  * struct rpmsg_channel_info - channel info representation
-  * @name: name of service
 -- 
 2.15.1
