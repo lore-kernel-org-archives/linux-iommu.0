@@ -1,20 +1,12 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: RFC on Kdump and PCIe on ARM64
-Date: Fri, 2 Mar 2018 13:37:11 -0500
-Message-ID: <2f8e1f65-5f70-9556-5d96-c50421982f73@codeaurora.org>
-References: <c5c2d8d2-0384-442a-7bc6-8929457b8447@codeaurora.org>
-	<20180301190552.GK13722@bhelgaas-glaptop.roam.corp.google.com>
-	<2b2de17c-8527-e49b-2ef2-2a3d1801e4f9@codeaurora.org>
-	<20180302000303.GD74737@bhelgaas-glaptop.roam.corp.google.com>
-	<20180302103032.GB19323@arm.com>
-	<84121a8d-5294-0567-6c6b-f57e85dc4961@codeaurora.org>
-	<20180302180219.GB20579@arm.com>
+From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
+Subject: WARN_ON(irqs_disabled()) in dma_free_attrs?
+Date: Fri, 2 Mar 2018 19:07:06 +0100
+Message-ID: <20180302180704.GA3846@localhost.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180302180219.GB20579-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,29 +16,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Vikram Sethi <vikrams-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: =?utf-8?Q?J=C3=BCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/2/2018 1:02 PM, Will Deacon wrote:
->> How about the points that Baoquan highlighted in his email regarding the
->> solution from AMD and X86?
-> Which specific points do you think this proposal doesn't address?
-> 
+Hello DMA mapping helpers maintainers,
 
-No specific concerns at this moment.
+I'm porting the PS2 OHCI driver to v4.15 and it triggers
 
->> I have not read the entire thread but, is this just a matter of following
->> what Bjorn recommended or there is more to it?
-> I'm trying to say how I think Bjorn's idea can be implemented for SMMUv3.
-> I basically want to avoid a situation where the SMMU driver tries to walk
-> the in-memory data structures left by a previous kernel and infer the
-> setup from that.
+	WARN_ON(irqs_disabled());
 
-Let me know if you have something to test. We have a test case with the
-crash.
+in include/linux/dma-mapping.h:dma_free_attrs (trace below). USB maintainer
+Alan Stern notes in
 
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+https://www.spinics.net/lists/linux-usb/msg162817.html
+
+that
+
+	This is caused by a deficiency in the DMA core: dma_free_coherent()
+	wants interrupts to be enabled when it is called.  I'm not sure how
+	the other host controller drivers cope with this.
+
+What is the best way to proceed? Can dma_free_attrs be reworked to handle
+disabled IRQs?
+
+Fredrik
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 50 at ./include/linux/dma-mapping.h:537 hcd_buffer_free+0x130/0x200
+Modules linked in:
+CPU: 0 PID: 50 Comm: echo Not tainted 4.15.0+ #1001
+Stack : 81f30ab8 803ed49c 00000003 0000000b 805a3a08 805454c4 00000099 800610dc
+        00000009 00000219 00000001 fffffff3 00000099 10058400 81c09a20 00000001
+        00000000 00000000 805a0000 00000001 0000000a 00000002 00000001 6d6f4320
+        80420770 0000000f 81c098d8 81c098a0 80000000 00000000 802f4690 804e3f8c
+        00000009 00000219 00000001 fffffff3 00000000 00000000 00000000 805a0000
+        ...
+Call Trace:
+[<1f603d86>] show_stack+0x74/0x104
+[<add27dec>] __warn+0x118/0x120
+[<c729dcd6>] warn_slowpath_null+0x44/0x58
+[<c7e21a9a>] hcd_buffer_free+0x130/0x200
+[<61864241>] usb_hcd_unmap_urb_for_dma+0x160/0x16c
+[<d52afbb3>] __usb_hcd_giveback_urb+0x5c/0x120
+[<3a41e8a9>] finish_urb+0x98/0x138
+[<9278d9d1>] ohci_work+0x14c/0x494
+[<49e08409>] ohci_irq+0x134/0x2dc
+[<673da5e4>] usb_hcd_irq+0x2c/0x44
+[<5d46375d>] __handle_irq_event_percpu+0x98/0x158
+[<a3455ed6>] handle_irq_event_percpu+0x20/0x64
+[<e92d5f7a>] handle_irq_event+0x3c/0x64
+[<bebbf000>] handle_level_irq+0xe4/0x120
+[<9e612100>] generic_handle_irq+0x28/0x38
+[<02b6b3c9>] do_IRQ+0x18/0x24
+---[ end trace 9dc1d2a5ee71f57d ]---
