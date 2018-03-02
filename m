@@ -1,12 +1,14 @@
-From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
-Subject: WARN_ON(irqs_disabled()) in dma_free_attrs?
-Date: Fri, 2 Mar 2018 19:07:06 +0100
-Message-ID: <20180302180704.GA3846@localhost.localdomain>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
+Date: Fri, 2 Mar 2018 19:55:48 +0000
+Message-ID: <bfe85e97-2974-06ee-8c6d-f8e8a83348ea@arm.com>
+References: <20180302180704.GA3846@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
+In-Reply-To: <20180302180704.GA3846-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,57 +18,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: =?utf-8?Q?J=C3=BCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: =?UTF-8?Q?J=c3=bcrgen_Urban?= <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello DMA mapping helpers maintainers,
+Hi Fredrik,
 
-I'm porting the PS2 OHCI driver to v4.15 and it triggers
+On 02/03/18 18:07, Fredrik Noring wrote:
+> Hello DMA mapping helpers maintainers,
+> 
+> I'm porting the PS2 OHCI driver to v4.15 and it triggers
+> 
+> 	WARN_ON(irqs_disabled());
+> 
+> in include/linux/dma-mapping.h:dma_free_attrs (trace below). USB maintainer
+> Alan Stern notes in
+> 
+> https://www.spinics.net/lists/linux-usb/msg162817.html
+> 
+> that
+> 
+> 	This is caused by a deficiency in the DMA core: dma_free_coherent()
+> 	wants interrupts to be enabled when it is called.  I'm not sure how
+> 	the other host controller drivers cope with this.
+> 
+> What is the best way to proceed? Can dma_free_attrs be reworked to handle
+> disabled IRQs?
 
-	WARN_ON(irqs_disabled());
+Historically, that particular line of code appears to date back to 
+commit aa24886e379d (and tracking it's ancestry was quite fun).
 
-in include/linux/dma-mapping.h:dma_free_attrs (trace below). USB maintainer
-Alan Stern notes in
+Now, I'm sure not all of the considerations of 11-and-a-half years ago 
+still apply, but one certainly does: ARM* still uses non-cacheable 
+mappings for coherent allocations on systems which aren't 
+hardware-coherent (i.e. most of them), thus the alloc and free paths may 
+respectively set up and tear down those mappings, and the latter 
+involves this guy:
 
-https://www.spinics.net/lists/linux-usb/msg162817.html
+	void vunmap(const void *addr)
+	{
+		BUG_ON(in_interrupt());
+		might_sleep();
+		if (addr)
+			__vunmap(addr, 0);
+	}
 
-that
+Even in the non-coherent ARM case it *would* technically be viable to 
+free a coherent buffer from interrupt context iff it was allocated with 
+GFP_ATOMIC, as those are satisfied from a statically-mapped pool rather 
+than dynamically vmapped, but that doesn't really expand to the general 
+case, and I certainly can't speak for all the other architectures.
 
-	This is caused by a deficiency in the DMA core: dma_free_coherent()
-	wants interrupts to be enabled when it is called.  I'm not sure how
-	the other host controller drivers cope with this.
+As Alan implies, I guess the way forward is to figure out how similar 
+drivers manage - your backtrace suggests that you might be using 
+HCD_LOCAL_MEM, which probably isn't the common case but does seem to 
+appear in at least a couple of other OHCI drivers.
 
-What is the best way to proceed? Can dma_free_attrs be reworked to handle
-disabled IRQs?
+On the other hand, HCD_LOCAL_MEM implies a per-device coherent pool. 
+Since those bypass the arch-specific code, then depending on how 
+unlikely we think it is for devices covered by a single driver to exist 
+both with and without their own memory then it *might* also be 
+reasonable to make the change below. Christoph, what do you reckon?
 
-Fredrik
+Robin.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 50 at ./include/linux/dma-mapping.h:537 hcd_buffer_free+0x130/0x200
-Modules linked in:
-CPU: 0 PID: 50 Comm: echo Not tainted 4.15.0+ #1001
-Stack : 81f30ab8 803ed49c 00000003 0000000b 805a3a08 805454c4 00000099 800610dc
-        00000009 00000219 00000001 fffffff3 00000099 10058400 81c09a20 00000001
-        00000000 00000000 805a0000 00000001 0000000a 00000002 00000001 6d6f4320
-        80420770 0000000f 81c098d8 81c098a0 80000000 00000000 802f4690 804e3f8c
-        00000009 00000219 00000001 fffffff3 00000000 00000000 00000000 805a0000
-        ...
-Call Trace:
-[<1f603d86>] show_stack+0x74/0x104
-[<add27dec>] __warn+0x118/0x120
-[<c729dcd6>] warn_slowpath_null+0x44/0x58
-[<c7e21a9a>] hcd_buffer_free+0x130/0x200
-[<61864241>] usb_hcd_unmap_urb_for_dma+0x160/0x16c
-[<d52afbb3>] __usb_hcd_giveback_urb+0x5c/0x120
-[<3a41e8a9>] finish_urb+0x98/0x138
-[<9278d9d1>] ohci_work+0x14c/0x494
-[<49e08409>] ohci_irq+0x134/0x2dc
-[<673da5e4>] usb_hcd_irq+0x2c/0x44
-[<5d46375d>] __handle_irq_event_percpu+0x98/0x158
-[<a3455ed6>] handle_irq_event_percpu+0x20/0x64
-[<e92d5f7a>] handle_irq_event+0x3c/0x64
-[<bebbf000>] handle_level_irq+0xe4/0x120
-[<9e612100>] generic_handle_irq+0x28/0x38
-[<02b6b3c9>] do_IRQ+0x18/0x24
----[ end trace 9dc1d2a5ee71f57d ]---
+*plus now arm64 and probably others too
+
+----->8-----
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 34fe8463d10e..eb8e42ce89a0 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -542,11 +542,11 @@ static inline void dma_free_attrs(struct device 
+*dev, size_t size,
+  	const struct dma_map_ops *ops = get_dma_ops(dev);
+
+  	BUG_ON(!ops);
+-	WARN_ON(irqs_disabled());
+
+  	if (dma_release_from_dev_coherent(dev, get_order(size), cpu_addr))
+  		return;
+
++	WARN_ON(irqs_disabled());
+  	if (!ops->free || !cpu_addr)
+  		return;
