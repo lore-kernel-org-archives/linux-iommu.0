@@ -1,54 +1,47 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 01/14] iommu: Add DOMAIN_ATTR_ENABLE_TTBR1
-Date: Fri, 2 Mar 2018 14:56:18 +0000
-Message-ID: <39425ac4-d58b-18c1-3025-837222aecc5e@arm.com>
-References: <20180221225924.30737-1-jcrouse@codeaurora.org>
- <20180221225924.30737-2-jcrouse@codeaurora.org>
+From: srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Subject: [PATCH 0/3] drivers: rpmsg: make rpmsg bus DMA capable
+Date: Fri,  2 Mar 2018 14:55:28 +0000
+Message-ID: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180221225924.30737-2-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjEvMDIvMTggMjI6NTksIEpvcmRhbiBDcm91c2Ugd3JvdGU6Cj4gQWRkIGEgbmV3IGRvbWFp
-biBhdHRyaWJ1dGUgdG8gZW5hYmxlIHRoZSBUVEJSMSBwYWdldGFibGUgZm9yIGRyaXZlcnMKPiBh
-bmQgZGV2aWNlcyB0aGF0IHN1cHBvcnQgaXQuICBUaGlzIHdpbGwgZW5hYmxlZCB1c2luZyBhIFRU
-QlIxIChvdGhlcndpc2UKPiBrbm93biBhcyBhICJnbG9iYWwiIG9yICJzeXN0ZW0iIHBhZ2V0YWJs
-ZSBmb3IgZGV2aWNlcyB0aGF0IHN1cHBvcnQgYSBzcGxpdAo+IHBhZ2V0YWJsZSBzY2hlbWUgZm9y
-IHN3aXRjaGluZyBwYWdldGFibGVzIHF1aWNrbHkgYW5kIHNhZmVseS4KClRUQlIxIGlzIHZlcnkg
-bXVjaCBhbiBBcm0gVk1TQS1zcGVjaWZpYyB0ZXJtOyBpZiB0aGUgY29uY2VwdCBvZiBhIHNwbGl0
-IAphZGRyZXNzIHNwYWNlIGlzIHVzZWZ1bCBpbiBnZW5lcmFsLCBpcyBpdCB3b3J0aCB0cnlpbmcg
-dG8gZnJhbWUgaXQgaW4gCmdlbmVyYWwgdGVybXM/IEFGQUlDUyBvdGhlciBJT01NVSBkcml2ZXJz
-IGNvdWxkIGFjaGlldmUgdGhlIHNhbWUgZWZmZWN0IApmYWlybHkgc3RyYWlnaHRmb3J3YXJkbHkg
-Ynkgc2ltcGx5IGNvcHlpbmcgdGhlIHRvcC1sZXZlbCAiZ2xvYmFsIiAKZW50cmllcyBhY3Jvc3Mg
-d2hlbmV2ZXIgdGhleSBzd2l0Y2ggInByaXZhdGUiIHRhYmxlcy4KCkZXSVcgZXZlbiBmb3IgU01N
-VSB0aGVyZSBjb3VsZCBwb3RlbnRpYWxseSBiZSBjYXNlcyB3aXRoIEFybSBMdGQuIElQIAp3aGVy
-ZSB0aGUgU29DIHZlbmRvciBpbXBsZW1lbnRzIGEgc3RhZ2UtMi1vbmx5IGNvbmZpZ3VyYXRpb24g
-aW4gdGhlaXIgCm1lZGlhIHN1YnN5c3RlbSwgYmVjYXVzZSB0aGV5IGNhcmUgbW9zdCBhYm91dCBt
-aW5pbWlzaW5nIGFyZWEgYW5kIApzdGFnZS0xLW9ubHkgaXNuJ3QgYW4gb3B0aW9uLgoKUm9iaW4u
-Cgo+IFNpZ25lZC1vZmYtYnk6IEpvcmRhbiBDcm91c2UgPGpjcm91c2VAY29kZWF1cm9yYS5vcmc+
-Cj4gLS0tCj4gICBpbmNsdWRlL2xpbnV4L2lvbW11LmggfCAxICsKPiAgIDEgZmlsZSBjaGFuZ2Vk
-LCAxIGluc2VydGlvbigrKQo+IAo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lvbW11Lmgg
-Yi9pbmNsdWRlL2xpbnV4L2lvbW11LmgKPiBpbmRleCA2NDFhYWYwZjFiODEuLmUyYzQ5ZTU4M2Q4
-ZCAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lvbW11LmgKPiArKysgYi9pbmNsdWRlL2xp
-bnV4L2lvbW11LmgKPiBAQCAtMTUzLDYgKzE1Myw3IEBAIGVudW0gaW9tbXVfYXR0ciB7Cj4gICAJ
-RE9NQUlOX0FUVFJfRlNMX1BBTVVfRU5BQkxFLAo+ICAgCURPTUFJTl9BVFRSX0ZTTF9QQU1VVjEs
-Cj4gICAJRE9NQUlOX0FUVFJfTkVTVElORywJLyogdHdvIHN0YWdlcyBvZiB0cmFuc2xhdGlvbiAq
-Lwo+ICsJRE9NQUlOX0FUVFJfRU5BQkxFX1RUQlIxLAo+ICAgCURPTUFJTl9BVFRSX01BWCwKPiAg
-IH07Cj4gICAKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5v
-Cg==
+From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+
+On Qualcomm SoCs, DSP exposes many functionalities like audio,
+as these drivers are child of rpmsg bus. Any dma allocations
+or iommu operations on these devices would fail as the rpmsg
+bus is not marked as dma capable bus.
+
+This patchset makes the rpmsg bus dma capable.
+
+This patchset is tested on DB410c and DB820c boards.
+
+Thanks,
+srini
+
+Srinivas Kandagatla (3):
+  rpmsg: core: export rpmsg bus type
+  rpmsg: core: make rpmsg bus DMA capable
+  iommu: armsmmu: set iommu ops for rpmsg bus
+
+ drivers/iommu/arm-smmu.c   | 5 +++++
+ drivers/rpmsg/rpmsg_core.c | 4 +++-
+ include/linux/rpmsg.h      | 2 +-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+-- 
+2.15.1
