@@ -1,13 +1,17 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v8 5/5] iommu/arm-smmu: Add support for qcom,smmu-v2 variant
-Date: Fri,  2 Mar 2018 15:40:50 +0530
-Message-ID: <20180302101050.6191-6-vivek.gautam@codeaurora.org>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: RFC on Kdump and PCIe on ARM64
+Date: Fri, 2 Mar 2018 10:30:32 +0000
+Message-ID: <20180302103032.GB19323@arm.com>
+References: <c5c2d8d2-0384-442a-7bc6-8929457b8447@codeaurora.org>
+	<20180301190552.GK13722@bhelgaas-glaptop.roam.corp.google.com>
+	<2b2de17c-8527-e49b-2ef2-2a3d1801e4f9@codeaurora.org>
+	<20180302000303.GD74737@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180302101050.6191-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180302000303.GD74737-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,137 +21,94 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Vikram Sethi <vikrams-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Goel,
+	Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-qcom,smmu-v2 is an arm,smmu-v2 implementation with specific
-clock and power requirements. This smmu core is used with
-multiple masters on msm8996, viz. mdss, video, etc.
-Add bindings for the same.
+On Thu, Mar 01, 2018 at 06:03:03PM -0600, Bjorn Helgaas wrote:
+> On Thu, Mar 01, 2018 at 02:19:09PM -0500, Sinan Kaya wrote:
+> > On 3/1/2018 2:05 PM, Bjorn Helgaas wrote:
+> > > On Thu, Mar 01, 2018 at 12:44:26PM -0500, Sinan Kaya wrote:
+> > >> Hi,
+> > >>
+> > >> We are seeing IOMMU faults when booting the kdump kernel on ARM64.
+> > >>
+> > >> [    7.220162] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x02 received:
+> > >> [    7.226123] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000010000000002
+> > >> [    7.232023] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000000000000000
+> > >> [    7.237925] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000000000000000
+> > >> [    7.243827] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000000000000000
+> > >>
+> > >> This is Nate's interpretation of the fault:
+> > >>
+> > >> "The PCI device is sending transactions just after the SMMU was
+> > >> reset/reinitialized which is problematic because the device has not
+> > >> yet been added to the SMMU and thus should not be doing *any* DMA.
+> > >> DMA from the PCI devices should be quiesced prior to starting the
+> > >> crashdump kernel or you risk overwriting portions of memory you
+> > >> meant to preserve. In this case the SMMU was actually doing you a
+> > >> favor by blocking these errant DMA operations!!"
+> > >>
+> > >> I think this makes sense especially for the IOMMU enabled case on
+> > >> the host where an IOVA can overlap with the region of memory kdump
+> > >> reserved for itself.
+> > >>
+> > >> Apparently, there has been similar concerns in the past.
+> > >>
+> > >> https://www.fujitsu.com/jp/documents/products/software/os/linux/catalog/LinuxConJapan2013-Indoh.pdf
+> > >>
+> > >> and was not addressed globally due to IOMMU+PCI driver ordering
+> > >> issues and bugs in HW due to hot reset.
+> > >>
+> > >> https://lkml.org/lkml/2012/8/3/160
+> > >>
+> > >> Hot reset as mentioned is destructive and may not be the best
+> > >> implementation choice.  However, most of the modern endpoints
+> > >> support PCIE function level reset.
+> > >>
+> > >> One other solution is for SMMUv3 driver to reserve the kdump used
+> > >> IOVA addresses.
+> > >>
+> > >> Another solution is for the SMMUv3 driver to disable PCIe devices
+> > >> behind the SMMU if it see SMMU is already enabled.
+> > > 
+> > > What problem are you trying to solve?  If the IOMMU is blocking DMA
+> > > after the kdump kernel starts up, that sounds like the desired
+> > > behavior.
+> > > 
+> > 
+> > Three issues:
+> > 1. I'm seeing a flood of SMMUv3 faults due to adapter using
+> > addresses from the previous kernel. This might be OK. 
+> 
+> Yep.  That's cosmetic and we could suppress the messages if they were
+> a problem.
+> 
+> Isn't part of the point of an IOMMU protection against malicious
+> devices and drivers?  If so, we should be able to withstand an
+> arbitrary number of faults.
+> 
+> > 2. When the SMMUv3 driver sees that it is enabled, it resets itself
+> > and configures it one more time. 
+> > 
+> > [    7.018304] arm-smmu-v3 arm-smmu-v3.0.auto: ias 44-bit, oas 44-bit (features 0x00001fef)
+> > [    7.026379] arm-smmu-v3 arm-smmu-v3.0.auto: SMMU currently enabled! Resetting...
+> > 
+> > From the moment IOMMU is disabled to the point where IOMMU get
+> > enabled again, there is a potential for the PCIE device to corrupt
+> > the kdump kernel memory as the bus master and memory enable bits are
+> > left enabled.
+> 
+> Do you really have to reset the IOMMU?  Can you just give it new page
+> tables that start out with all IOVAs from all devices being invalid,
+> then add valid mappings as drivers need them (presumably after the
+> driver has done whatever it needs to so the device stops using the old
+> DMA addresses)?
 
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- .../devicetree/bindings/iommu/arm,smmu.txt         | 42 ++++++++++++++++++++++
- drivers/iommu/arm-smmu.c                           | 15 ++++++++
- 2 files changed, 57 insertions(+)
+We already have the option to do that via the command line using the
+disable_bypass option, so it just sounds like we need to take this into
+account when resetting the SMMU to take care that GBPA is configured so
+that transactions are terminated when SMMUEN=0.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index 8a6ffce12af5..6ea27bd4f785 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -17,10 +17,19 @@ conditions.
-                         "arm,mmu-401"
-                         "arm,mmu-500"
-                         "cavium,smmu-v2"
-+                        "qcom,<soc>-smmu-v2", "qcom,smmu-v2"
- 
-                   depending on the particular implementation and/or the
-                   version of the architecture implemented.
- 
-+                  A number of Qcom SoCs use qcom,smmu-v2 version of the IP.
-+                  "qcom,<soc>-smmu-v2" represents a soc specific compatible
-+                  string that should be present along with the "qcom,smmu-v2"
-+                  to facilitate SoC specific clocks/power connections and to
-+                  address specific bug fixes.
-+                  An example string would be -
-+                  "qcom,msm8996-smmu-v2", "qcom,smmu-v2".
-+
- - reg           : Base address and size of the SMMU.
- 
- - #global-interrupts : The number of global interrupts exposed by the
-@@ -71,6 +80,22 @@ conditions.
-                   or using stream matching with #iommu-cells = <2>, and
-                   may be ignored if present in such cases.
- 
-+- clock-names:    List of the names of clocks input to the device. The
-+                  required list depends on particular implementation and
-+		  is as follows:
-+                  - for "qcom,smmu-v2":
-+                    - "bus": clock required for downstream bus access and
-+		             for the smmu ptw,
-+                    - "iface": clock required to access smmu's registers
-+		               through the TCU's programming interface.
-+                  - unspecified for other implementations.
-+
-+- clocks:         Specifiers for all clocks listed in the clock-names property,
-+                  as per generic clock bindings.
-+
-+- power-domains:  Specifiers for power domains required to be powered on for
-+                  the SMMU to operate, as per generic power domain bindings.
-+
- ** Deprecated properties:
- 
- - mmu-masters (deprecated in favour of the generic "iommus" binding) :
-@@ -137,3 +162,20 @@ conditions.
-                 iommu-map = <0 &smmu3 0 0x400>;
-                 ...
-         };
-+
-+	/* Qcom's arm,smmu-v2 implementation */
-+	smmu4: iommu {
-+		compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
-+		reg = <0xd00000 0x10000>;
-+
-+		#global-interrupts = <1>;
-+		interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>;
-+		#iommu-cells = <1>;
-+		power-domains = <&mmcc MDSS_GDSC>;
-+
-+		clocks = <&mmcc SMMU_MDP_AXI_CLK>,
-+			 <&mmcc SMMU_MDP_AHB_CLK>;
-+		clock-names = "bus", "iface";
-+	};
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index bb1ea82c1003..7a96c924ae22 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -119,6 +119,7 @@ enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
- 	CAVIUM_SMMUV2,
-+	QCOM_SMMUV2,
- };
- 
- struct arm_smmu_s2cr {
-@@ -2003,6 +2004,18 @@ ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
- ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
- 
-+static const char * const qcom_smmuv2_clks[] = {
-+	"bus", "iface",
-+};
-+
-+static const struct arm_smmu_match_data qcom_smmuv2 = {
-+	.version = ARM_SMMU_V2,
-+	.model = QCOM_SMMUV2,
-+	.clks = qcom_smmuv2_clks,
-+	.num_clks = ARRAY_SIZE(qcom_smmuv2_clks),
-+	.rpm_supported = true,
-+};
-+
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
- 	{ .compatible = "arm,smmu-v2", .data = &smmu_generic_v2 },
-@@ -2010,6 +2023,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
-@@ -2379,6 +2393,7 @@ IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400");
- IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401");
- IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500");
- IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2");
-+IOMMU_OF_DECLARE(qcom_smmuv2, "qcom,smmu-v2");
- 
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Will
