@@ -1,67 +1,54 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: RFC on Kdump and PCIe on ARM64
-Date: Fri, 2 Mar 2018 09:20:54 -0500
-Message-ID: <feeab007-951d-7743-70e6-122486feddf7@codeaurora.org>
-References: <c5c2d8d2-0384-442a-7bc6-8929457b8447@codeaurora.org>
-	<20180301190552.GK13722@bhelgaas-glaptop.roam.corp.google.com>
-	<2b2de17c-8527-e49b-2ef2-2a3d1801e4f9@codeaurora.org>
-	<20180302000303.GD74737@bhelgaas-glaptop.roam.corp.google.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 01/14] iommu: Add DOMAIN_ATTR_ENABLE_TTBR1
+Date: Fri, 2 Mar 2018 14:56:18 +0000
+Message-ID: <39425ac4-d58b-18c1-3025-837222aecc5e@arm.com>
+References: <20180221225924.30737-1-jcrouse@codeaurora.org>
+ <20180221225924.30737-2-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180302000303.GD74737-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20180221225924.30737-2-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Vikram Sethi <vikrams-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/1/2018 7:03 PM, Bjorn Helgaas wrote:
->> 3. The last one is adapter gets into fuzzy state due to not coming
->> out of clean state in the second time init and being rejected by
->> SMMUv3 multiple times.
->>
->> [   16.093441] pci 0000:01:00.0: aer_status: 0x00040000, aer_mask: 0x00000000
->> [   16.099356] pci 0000:01:00.0: Malformed TLP
->> [   16.103522] pci 0000:01:00.0: aer_layer=Transaction Layer, aer_agent=Receiver ID
->> [   16.110900] pci 0000:01:00.0: aer_uncor_severity: 0x00062011
->> [   16.116543] pci 0000:01:00.0:   TLP Header: 0a00a000 00008100 01010100 00000000
-> I'm not clear on this.  I don't remember what an IOMMU fault looks
-> like to an Endpoint.  Are you saying that if an Endpoint sees too many
-> of those faults, it gets into this "fuzzy state" (whatever that is :))?
-> Is this a hardware defect?  Do we care (this is a kdump kernel, after
-> all)?  If we do care, can we fix the device by resetting it?
-
-fuzzy=funky=funny=wierd
-
-Regardless of what we do in the IOMMU driver, I think we still have to reset
-the endpoint in order to have a clean initialization.
-
-I'm not sure if all endpoint drivers can recover an adapter from a live state.
-
-I wasn't expecting to see a Malformed TLP error. I was guessing that this was
-caused by SMMU giving a CA or UR to the endpoint or having a live adapter
-in the middle of driver initialization. 
-
-I think we do care about the adapter coming up properly otherwise how would
-you collect the dumps from the system?
-
-I was expecting to come through the network interface and download it from
-the target.
-
-That's why, I was suggesting FLR/PM reset etc. when we know that we are
-booting a kdump kernel.
-
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+T24gMjEvMDIvMTggMjI6NTksIEpvcmRhbiBDcm91c2Ugd3JvdGU6Cj4gQWRkIGEgbmV3IGRvbWFp
+biBhdHRyaWJ1dGUgdG8gZW5hYmxlIHRoZSBUVEJSMSBwYWdldGFibGUgZm9yIGRyaXZlcnMKPiBh
+bmQgZGV2aWNlcyB0aGF0IHN1cHBvcnQgaXQuICBUaGlzIHdpbGwgZW5hYmxlZCB1c2luZyBhIFRU
+QlIxIChvdGhlcndpc2UKPiBrbm93biBhcyBhICJnbG9iYWwiIG9yICJzeXN0ZW0iIHBhZ2V0YWJs
+ZSBmb3IgZGV2aWNlcyB0aGF0IHN1cHBvcnQgYSBzcGxpdAo+IHBhZ2V0YWJsZSBzY2hlbWUgZm9y
+IHN3aXRjaGluZyBwYWdldGFibGVzIHF1aWNrbHkgYW5kIHNhZmVseS4KClRUQlIxIGlzIHZlcnkg
+bXVjaCBhbiBBcm0gVk1TQS1zcGVjaWZpYyB0ZXJtOyBpZiB0aGUgY29uY2VwdCBvZiBhIHNwbGl0
+IAphZGRyZXNzIHNwYWNlIGlzIHVzZWZ1bCBpbiBnZW5lcmFsLCBpcyBpdCB3b3J0aCB0cnlpbmcg
+dG8gZnJhbWUgaXQgaW4gCmdlbmVyYWwgdGVybXM/IEFGQUlDUyBvdGhlciBJT01NVSBkcml2ZXJz
+IGNvdWxkIGFjaGlldmUgdGhlIHNhbWUgZWZmZWN0IApmYWlybHkgc3RyYWlnaHRmb3J3YXJkbHkg
+Ynkgc2ltcGx5IGNvcHlpbmcgdGhlIHRvcC1sZXZlbCAiZ2xvYmFsIiAKZW50cmllcyBhY3Jvc3Mg
+d2hlbmV2ZXIgdGhleSBzd2l0Y2ggInByaXZhdGUiIHRhYmxlcy4KCkZXSVcgZXZlbiBmb3IgU01N
+VSB0aGVyZSBjb3VsZCBwb3RlbnRpYWxseSBiZSBjYXNlcyB3aXRoIEFybSBMdGQuIElQIAp3aGVy
+ZSB0aGUgU29DIHZlbmRvciBpbXBsZW1lbnRzIGEgc3RhZ2UtMi1vbmx5IGNvbmZpZ3VyYXRpb24g
+aW4gdGhlaXIgCm1lZGlhIHN1YnN5c3RlbSwgYmVjYXVzZSB0aGV5IGNhcmUgbW9zdCBhYm91dCBt
+aW5pbWlzaW5nIGFyZWEgYW5kIApzdGFnZS0xLW9ubHkgaXNuJ3QgYW4gb3B0aW9uLgoKUm9iaW4u
+Cgo+IFNpZ25lZC1vZmYtYnk6IEpvcmRhbiBDcm91c2UgPGpjcm91c2VAY29kZWF1cm9yYS5vcmc+
+Cj4gLS0tCj4gICBpbmNsdWRlL2xpbnV4L2lvbW11LmggfCAxICsKPiAgIDEgZmlsZSBjaGFuZ2Vk
+LCAxIGluc2VydGlvbigrKQo+IAo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lvbW11Lmgg
+Yi9pbmNsdWRlL2xpbnV4L2lvbW11LmgKPiBpbmRleCA2NDFhYWYwZjFiODEuLmUyYzQ5ZTU4M2Q4
+ZCAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lvbW11LmgKPiArKysgYi9pbmNsdWRlL2xp
+bnV4L2lvbW11LmgKPiBAQCAtMTUzLDYgKzE1Myw3IEBAIGVudW0gaW9tbXVfYXR0ciB7Cj4gICAJ
+RE9NQUlOX0FUVFJfRlNMX1BBTVVfRU5BQkxFLAo+ICAgCURPTUFJTl9BVFRSX0ZTTF9QQU1VVjEs
+Cj4gICAJRE9NQUlOX0FUVFJfTkVTVElORywJLyogdHdvIHN0YWdlcyBvZiB0cmFuc2xhdGlvbiAq
+Lwo+ICsJRE9NQUlOX0FUVFJfRU5BQkxFX1RUQlIxLAo+ICAgCURPTUFJTl9BVFRSX01BWCwKPiAg
+IH07Cj4gICAKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5v
+Cg==
