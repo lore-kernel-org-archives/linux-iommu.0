@@ -1,68 +1,57 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/3] rpmsg: core: make rpmsg bus DMA capable
-Date: Fri, 2 Mar 2018 16:14:44 +0000
-Message-ID: <07503032-b08b-10ea-9d34-ddf85c682a9d@arm.com>
-References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
-	<20180302145531.20463-3-srinivas.kandagatla@linaro.org>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 03/14] iommu: Create a base struct for io_mm
+Date: Fri, 2 Mar 2018 09:14:58 -0700
+Message-ID: <20180302161458.GA22596@jcrouse-lnx.qualcomm.com>
+References: <20180221225924.30737-1-jcrouse@codeaurora.org>
+ <20180221225924.30737-4-jcrouse@codeaurora.org>
+ <fddafdae-4384-4826-ef63-9075e9866ae9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180302145531.20463-3-srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Cc: ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <fddafdae-4384-4826-ef63-9075e9866ae9-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/03/18 14:55, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org wrote:
-> From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> 
-> Many of the rpmsg clients like audio drivers need to allocate
-> dma memory. Make this bus DMA capable so that the child devices
-> can use dma apis.
-
-AFAICS after 15 minutes in the docs and code, the rpmsg "bus" is a 
-virtual one based around shared-memory mailbox communication, so I don't 
-really see how DMA exists in that context - I think maybe that 
-abstraction needs looking at.
-
-However, from grepping through the DTs it seems at first glance like the 
-non-trivial things under the "qcom,smd" bus mostly map to actual 
-platform devices via the "qcom,smd-edge" property - if those platform 
-devices are the physical DMA masters, they should be the ones used for 
-DMA API operations.
-
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> ---
->   drivers/rpmsg/rpmsg_core.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
-> index e84c71f8d6ab..540a3f3567b8 100644
-> --- a/drivers/rpmsg/rpmsg_core.c
-> +++ b/drivers/rpmsg/rpmsg_core.c
-> @@ -472,6 +472,7 @@ struct bus_type rpmsg_bus = {
->   	.uevent		= rpmsg_uevent,
->   	.probe		= rpmsg_dev_probe,
->   	.remove		= rpmsg_dev_remove,
-> +	.force_dma	= true,
-
-Regardless of the above, would you really need to use this brute force 
-hack instead of just fixing the DTs? I'm struggling to find which 
-drivers might currently be relying on this :/
-
-Robin.
-
->   };
->   EXPORT_SYMBOL(rpmsg_bus);
->   
-> 
+T24gRnJpLCBNYXIgMDIsIDIwMTggYXQgMTI6MjU6NDhQTSArMDAwMCwgSmVhbi1QaGlsaXBwZSBC
+cnVja2VyIHdyb3RlOgo+IEhpIEpvcmRhbiwKPiAKPiBUaGFuayB5b3UgZm9yIHRoaXMsIFNNTVV2
+MyBhbmQgdmlydGlvLWlvbW11IG5lZWQgdGhlc2UgU1ZBIHBhdGNoZXMgYXMgd2VsbC4KPiAKPiBP
+biAyMS8wMi8xOCAyMjo1OSwgSm9yZGFuIENyb3VzZSB3cm90ZToKPiBbLi4uXT4gZGlmZiAtLWdp
+dCBhL2luY2x1ZGUvbGludXgvaW9tbXUuaCBiL2luY2x1ZGUvbGludXgvaW9tbXUuaAo+ID4gaW5k
+ZXggZTJjNDllNTgzZDhkLi5lOTk4Mzg5Y2YxOTUgMTAwNjQ0Cj4gPiAtLS0gYS9pbmNsdWRlL2xp
+bnV4L2lvbW11LmgKPiA+ICsrKyBiL2luY2x1ZGUvbGludXgvaW9tbXUuaAo+ID4gQEAgLTExMCw4
+ICsxMTAsMTcgQEAgc3RydWN0IGlvbW11X2RvbWFpbiB7Cj4gPiAgCXN0cnVjdCBsaXN0X2hlYWQg
+bW1fbGlzdDsKPiA+ICB9Owo+ID4gIAo+ID4gK2VudW0gaW9tbXVfaW9fdHlwZSB7Cj4gPiArCUlP
+X1RZUEVfTU0sCj4gPiArfTsKPiA+ICsKPiA+ICtzdHJ1Y3QgaW9fYmFzZSB7Cj4gPiArCWludCB0
+eXBlOwo+ID4gKwlpbnQgcGFzaWQ7Cj4gPiArfTsKPiAKPiAiaW9fYmFzZSIgaXMgYSBiaXQgdmFn
+dWUuIEknbSBiYWQgYXQgbmFtaW5nIHNvIG15IG9waW5pb24gZG9lc24ndCBob2xkCj4gbXVjaCB3
+YXRlciwgYnV0IEknZCByYXRoZXIgdGhpcyBiZSBzb21ldGhpbmcgbGlrZSAiaW9fbW1fYmFzZSIu
+IFdoZW4gSQo+IGluaXRpYWxseSB0b3llZCB3aXRoIHRoZSBpZGVhIEkgaW50ZW5kZWQgdG8ga2Vl
+cCBpb19tbSBhcyBwYXJlbnQgc3RydWN0dXJlCj4gYW5kIGhhdmUgInByaXZhdGUiIGFuZCAic2hh
+cmVkIiBzdWItc3RydWN0dXJlcy4gRXZlbiBpZiBwcml2YXRlIFBBU0lEcwo+IGRvbid0IHJlbHkg
+b24gdGhlIGtlcm5lbCBtbSBzdWJzeXN0ZW0sIHRoaXMgc3RydWN0dXJlIHdvdWxkIHN0aWxsCj4g
+cmVwcmVzZW50IGFuIEkvTyBtbSBvZiBzb3J0cywgd2l0aCBhIHBnZCBhbmQgcGd0YWJsZSBpbmZv
+LgoKSSdtIGFsc28gYmFkIGF0IG5hbWluZyBidXQgSSBkb24ndCBtaW5kIGNoYW5naW5nIGl0LiBp
+b19tbV9iYXNlIHNlZW1zIG9rYXkgdG8gbWUKdW5sZXNzIHNvbWVib2R5IGhhcyBhIGJldHRlciBp
+ZGVhLiBJIGFsc28gbGlrZSB0aGUgdGVybXMgInByaXZhdGUiIGFuZAoic2hhcmVkIi4gSSdtIGdv
+aW5nIHRvIHN0YXJ0IGFkb3B0aW5nIHRob3NlIHdoZXJlIGl0IG1ha2VzIHNlbnNlLgoKSm9yZGFu
+Cj4gCj4gPiArCj4gPiAgc3RydWN0IGlvX21tIHsKPiA+IC0JaW50CQkJcGFzaWQ7Cj4gPiArCXN0
+cnVjdCBpb19iYXNlCQliYXNlOwo+ID4gIAlzdHJ1Y3QgbGlzdF9oZWFkCWRldmljZXM7Cj4gPiAg
+CXN0cnVjdCBrcmVmCQlrcmVmOwo+ID4gICNpZiBkZWZpbmVkKENPTkZJR19NTVVfTk9USUZJRVIp
+Cj4gPiAKPiAKCi0tIApUaGUgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBt
+ZW1iZXIgb2YgQ29kZSBBdXJvcmEgRm9ydW0sCmEgTGludXggRm91bmRhdGlvbiBDb2xsYWJvcmF0
+aXZlIFByb2plY3QKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5v
+Cg==
