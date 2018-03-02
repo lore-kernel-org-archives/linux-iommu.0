@@ -1,114 +1,47 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: RFC on Kdump and PCIe on ARM64
-Date: Fri, 2 Mar 2018 10:30:32 +0000
-Message-ID: <20180302103032.GB19323@arm.com>
-References: <c5c2d8d2-0384-442a-7bc6-8929457b8447@codeaurora.org>
-	<20180301190552.GK13722@bhelgaas-glaptop.roam.corp.google.com>
-	<2b2de17c-8527-e49b-2ef2-2a3d1801e4f9@codeaurora.org>
-	<20180302000303.GD74737@bhelgaas-glaptop.roam.corp.google.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 03/14] iommu: Create a base struct for io_mm
+Date: Fri, 2 Mar 2018 12:25:48 +0000
+Message-ID: <fddafdae-4384-4826-ef63-9075e9866ae9@arm.com>
+References: <20180221225924.30737-1-jcrouse@codeaurora.org>
+ <20180221225924.30737-4-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180302000303.GD74737-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Vikram Sethi <vikrams-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Goel,
-	Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20180221225924.30737-4-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Cc: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bob Liu <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 01, 2018 at 06:03:03PM -0600, Bjorn Helgaas wrote:
-> On Thu, Mar 01, 2018 at 02:19:09PM -0500, Sinan Kaya wrote:
-> > On 3/1/2018 2:05 PM, Bjorn Helgaas wrote:
-> > > On Thu, Mar 01, 2018 at 12:44:26PM -0500, Sinan Kaya wrote:
-> > >> Hi,
-> > >>
-> > >> We are seeing IOMMU faults when booting the kdump kernel on ARM64.
-> > >>
-> > >> [    7.220162] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x02 received:
-> > >> [    7.226123] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000010000000002
-> > >> [    7.232023] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000000000000000
-> > >> [    7.237925] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000000000000000
-> > >> [    7.243827] arm-smmu-v3 arm-smmu-v3.0.auto:            0x0000000000000000
-> > >>
-> > >> This is Nate's interpretation of the fault:
-> > >>
-> > >> "The PCI device is sending transactions just after the SMMU was
-> > >> reset/reinitialized which is problematic because the device has not
-> > >> yet been added to the SMMU and thus should not be doing *any* DMA.
-> > >> DMA from the PCI devices should be quiesced prior to starting the
-> > >> crashdump kernel or you risk overwriting portions of memory you
-> > >> meant to preserve. In this case the SMMU was actually doing you a
-> > >> favor by blocking these errant DMA operations!!"
-> > >>
-> > >> I think this makes sense especially for the IOMMU enabled case on
-> > >> the host where an IOVA can overlap with the region of memory kdump
-> > >> reserved for itself.
-> > >>
-> > >> Apparently, there has been similar concerns in the past.
-> > >>
-> > >> https://www.fujitsu.com/jp/documents/products/software/os/linux/catalog/LinuxConJapan2013-Indoh.pdf
-> > >>
-> > >> and was not addressed globally due to IOMMU+PCI driver ordering
-> > >> issues and bugs in HW due to hot reset.
-> > >>
-> > >> https://lkml.org/lkml/2012/8/3/160
-> > >>
-> > >> Hot reset as mentioned is destructive and may not be the best
-> > >> implementation choice.  However, most of the modern endpoints
-> > >> support PCIE function level reset.
-> > >>
-> > >> One other solution is for SMMUv3 driver to reserve the kdump used
-> > >> IOVA addresses.
-> > >>
-> > >> Another solution is for the SMMUv3 driver to disable PCIe devices
-> > >> behind the SMMU if it see SMMU is already enabled.
-> > > 
-> > > What problem are you trying to solve?  If the IOMMU is blocking DMA
-> > > after the kdump kernel starts up, that sounds like the desired
-> > > behavior.
-> > > 
-> > 
-> > Three issues:
-> > 1. I'm seeing a flood of SMMUv3 faults due to adapter using
-> > addresses from the previous kernel. This might be OK. 
-> 
-> Yep.  That's cosmetic and we could suppress the messages if they were
-> a problem.
-> 
-> Isn't part of the point of an IOMMU protection against malicious
-> devices and drivers?  If so, we should be able to withstand an
-> arbitrary number of faults.
-> 
-> > 2. When the SMMUv3 driver sees that it is enabled, it resets itself
-> > and configures it one more time. 
-> > 
-> > [    7.018304] arm-smmu-v3 arm-smmu-v3.0.auto: ias 44-bit, oas 44-bit (features 0x00001fef)
-> > [    7.026379] arm-smmu-v3 arm-smmu-v3.0.auto: SMMU currently enabled! Resetting...
-> > 
-> > From the moment IOMMU is disabled to the point where IOMMU get
-> > enabled again, there is a potential for the PCIE device to corrupt
-> > the kdump kernel memory as the bus master and memory enable bits are
-> > left enabled.
-> 
-> Do you really have to reset the IOMMU?  Can you just give it new page
-> tables that start out with all IOVAs from all devices being invalid,
-> then add valid mappings as drivers need them (presumably after the
-> driver has done whatever it needs to so the device stops using the old
-> DMA addresses)?
-
-We already have the option to do that via the command line using the
-disable_bypass option, so it just sounds like we need to take this into
-account when resetting the SMMU to take care that GBPA is configured so
-that transactions are terminated when SMMUEN=0.
-
-Will
+SGkgSm9yZGFuLAoKVGhhbmsgeW91IGZvciB0aGlzLCBTTU1VdjMgYW5kIHZpcnRpby1pb21tdSBu
+ZWVkIHRoZXNlIFNWQSBwYXRjaGVzIGFzIHdlbGwuCgpPbiAyMS8wMi8xOCAyMjo1OSwgSm9yZGFu
+IENyb3VzZSB3cm90ZToKWy4uLl0+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lvbW11Lmgg
+Yi9pbmNsdWRlL2xpbnV4L2lvbW11LmgKPiBpbmRleCBlMmM0OWU1ODNkOGQuLmU5OTgzODljZjE5
+NSAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lvbW11LmgKPiArKysgYi9pbmNsdWRlL2xp
+bnV4L2lvbW11LmgKPiBAQCAtMTEwLDggKzExMCwxNyBAQCBzdHJ1Y3QgaW9tbXVfZG9tYWluIHsK
+PiAgCXN0cnVjdCBsaXN0X2hlYWQgbW1fbGlzdDsKPiAgfTsKPiAgCj4gK2VudW0gaW9tbXVfaW9f
+dHlwZSB7Cj4gKwlJT19UWVBFX01NLAo+ICt9Owo+ICsKPiArc3RydWN0IGlvX2Jhc2Ugewo+ICsJ
+aW50IHR5cGU7Cj4gKwlpbnQgcGFzaWQ7Cj4gK307CgoiaW9fYmFzZSIgaXMgYSBiaXQgdmFndWUu
+IEknbSBiYWQgYXQgbmFtaW5nIHNvIG15IG9waW5pb24gZG9lc24ndCBob2xkCm11Y2ggd2F0ZXIs
+IGJ1dCBJJ2QgcmF0aGVyIHRoaXMgYmUgc29tZXRoaW5nIGxpa2UgImlvX21tX2Jhc2UiLiBXaGVu
+IEkKaW5pdGlhbGx5IHRveWVkIHdpdGggdGhlIGlkZWEgSSBpbnRlbmRlZCB0byBrZWVwIGlvX21t
+IGFzIHBhcmVudCBzdHJ1Y3R1cmUKYW5kIGhhdmUgInByaXZhdGUiIGFuZCAic2hhcmVkIiBzdWIt
+c3RydWN0dXJlcy4gRXZlbiBpZiBwcml2YXRlIFBBU0lEcwpkb24ndCByZWx5IG9uIHRoZSBrZXJu
+ZWwgbW0gc3Vic3lzdGVtLCB0aGlzIHN0cnVjdHVyZSB3b3VsZCBzdGlsbApyZXByZXNlbnQgYW4g
+SS9PIG1tIG9mIHNvcnRzLCB3aXRoIGEgcGdkIGFuZCBwZ3RhYmxlIGluZm8uCgpUaGFua3MsCkpl
+YW4KCj4gKwo+ICBzdHJ1Y3QgaW9fbW0gewo+IC0JaW50CQkJcGFzaWQ7Cj4gKwlzdHJ1Y3QgaW9f
+YmFzZQkJYmFzZTsKPiAgCXN0cnVjdCBsaXN0X2hlYWQJZGV2aWNlczsKPiAgCXN0cnVjdCBrcmVm
+CQlrcmVmOwo+ICAjaWYgZGVmaW5lZChDT05GSUdfTU1VX05PVElGSUVSKQo+IAoKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcg
+bGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
