@@ -1,130 +1,173 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 04/14] iommu: sva: Add support for pasid allocation
-Date: Fri, 2 Mar 2018 09:23:12 -0700
-Message-ID: <20180302162311.GB22596@jcrouse-lnx.qualcomm.com>
-References: <20180221225924.30737-1-jcrouse@codeaurora.org>
-	<20180221225924.30737-5-jcrouse@codeaurora.org>
-	<b71fefa1-2fdf-f14f-9e7a-0e525a103049@arm.com>
+From: Wei Xu <xuwei5@hisilicon.com>
+Subject: Re: [PATCH v12 3/3] arm64:dts:hisilicon Disable hisilicon smmu node
+ on hip06/hip07
+Date: Fri, 2 Mar 2018 16:34:02 +0000
+Message-ID: <5A997CFA.9080306@hisilicon.com>
+References: <20171214160957.13716-1-shameerali.kolothum.thodi@huawei.com>
+ <20171214160957.13716-4-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <b71fefa1-2fdf-f14f-9e7a-0e525a103049-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20171214160957.13716-4-shameerali.kolothum.thodi@huawei.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, lorenzo.pieralisi@arm.com, robin.murphy@arm.com, marc.zyngier@arm.com, will.deacon@arm.com
+Cc: devicetree@vger.kernel.org, joro@8bytes.org, john.garry@huawei.com, linuxarm@huawei.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, guohanjun@huawei.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 02, 2018 at 12:27:58PM +0000, Jean-Philippe Brucker wrote:
-> On 21/02/18 22:59, Jordan Crouse wrote:
-> [...]
-> > +int iommu_sva_alloc_pasid(struct iommu_domain *domain, struct device *dev)
-> > +{
-> > +	int ret, pasid;
-> > +	struct io_pasid *io_pasid;
-> > +
-> > +	if (!domain->ops->pasid_alloc || !domain->ops->pasid_free)
-> > +		return -ENODEV;
-> > +
-> > +	io_pasid = kzalloc(sizeof(*io_pasid), GFP_KERNEL);
-> > +	if (!io_pasid)
-> > +		return -ENOMEM;
-> > +
-> > +	io_pasid->domain = domain;
-> > +	io_pasid->base.type = IO_TYPE_PASID;
-> > +
-> > +	idr_preload(GFP_KERNEL);
-> > +	spin_lock(&iommu_sva_lock);
-> > +	pasid = idr_alloc_cyclic(&iommu_pasid_idr, &io_pasid->base,
-> > +		1, (1 << 31), GFP_ATOMIC);
-> 
-> To be usable by other IOMMUs, this should restrict the PASID range to what
-> the IOMMU and the device support like io_mm_alloc(). In your case 31 bits,
-> but with PCI PASID it depends on the PASID capability and the SMMU
-> SubstreamID range.
-> 
-> For this reason I think device drivers should call iommu_sva_device_init()
-> once, even for the alloc_pasid() API. For SMMUv2 I guess it will be a NOP,
-> but other IOMMUs will allocate PASID tables and enable features in the
-> device. In addition, knowing that all users of the API call
-> iommu_sva_device_init()/shutdown() could allow us to allocate and enable
-> stuff lazily in the future.
-> 
-> It would also allow a given device driver to use both
-> iommu_sva_pasid_alloc() and iommu_sva_bind() at the same time. So that the
-> driver can assigns contexts to userspace and still use some of them for
-> management.
+Hi Shameer,
 
-No problem.
+On 2017/12/14 16:09, Shameer Kolothum wrote:
+> The HiSilicon erratum 161010801 describes the limitation of
+> HiSilicon platforms hip06/hip07 to support the SMMUv3 mappings
+> for MSI transactions.
+> 
+> PCIe controller on these platforms has to differentiate the
+> MSI payload against other DMA payload and has to modify the
+> MSI  payload. This makes it difficult for these platforms to
+> have SMMU translation for MSI. In order to workaround this,
+> ARM SMMUv3 driver requires a quirk to treat the MSI regions
+> separately. Such a quirk is currently missing for DT based
+> systems and therefore we need to explicitly disable the
+> hip06/hip07 smmu entries in dts.
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+> ---
 
-> [...]
-> > +int iommu_sva_map(int pasid, unsigned long iova,
-> > +	      phys_addr_t paddr, size_t size, int prot)
-> 
-> It would be nice to factor iommu_map(), since this logic for map, map_sg
-> and unmap should be the same regardless of the PASID argument.
-> 
-> For example
-> - iommu_sva_map(domain, pasid, ...)
-> - iommu_map(domain, ...)
-> 
-> both call
-> - __iommu_map(domain, pasid, ...)
-> 
-> which calls either
-> - ops->map(domain, ...)
-> - ops->sva_map(domain, pasid, ...)
+Thanks!
+Applied into hisilicon dt tree.
 
-Agree.  I was kind of annoyed at the code duplication - this would be a good way
-to handle it.
+BR,
+Wei
 
-> [...]
-> > @@ -347,6 +353,15 @@ struct iommu_ops {
-> >  	int (*page_response)(struct iommu_domain *domain, struct device *dev,
-> >  			     struct page_response_msg *msg);
-> >  
-> > +	int (*pasid_alloc)(struct iommu_domain *domain, struct device *dev,
-> > +		int pasid);
-> > +	int (*sva_map)(struct iommu_domain *domain, int pasid,
-> > +		       unsigned long iova, phys_addr_t paddr, size_t size,
-> > +		       int prot);
-> > +	size_t (*sva_unmap)(struct iommu_domain *domain, int pasid,
-> > +			    unsigned long iova, size_t size);
-> > +	void (*pasid_free)(struct iommu_domain *domain, int pasid);
-> > +
+>  arch/arm64/boot/dts/hisilicon/hip06.dtsi | 56 ++++++++++++++++++++++++++++++++
+>  arch/arm64/boot/dts/hisilicon/hip07.dtsi | 25 ++++++++++++++
+>  2 files changed, 81 insertions(+)
 > 
-> Hmm, now IOMMU has the following ops:
+> diff --git a/arch/arm64/boot/dts/hisilicon/hip06.dtsi b/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+> index a049b64..35202eb 100644
+> --- a/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+> +++ b/arch/arm64/boot/dts/hisilicon/hip06.dtsi
+> @@ -291,6 +291,13 @@
+>  			#interrupt-cells = <2>;
+>  			num-pins = <128>;
+>  		};
+> +
+> +		mbigen_pcie0: intc_pcie0 {
+> +			msi-parent = <&its_dsa 0x40085>;
+> +			interrupt-controller;
+> +			#interrupt-cells = <2>;
+> +			num-pins = <10>;
+> +		};
+>  	};
+>  
+>  	mbigen_dsa@c0080000 {
+> @@ -312,6 +319,31 @@
+>  		};
+>  	};
+>  
+> +	/**
+> +	 *  HiSilicon erratum 161010801: This describes the limitation
+> +	 *  of HiSilicon platforms hip06/hip07 to support the SMMUv3
+> +	 *  mappings for PCIe MSI transactions.
+> +	 *  PCIe controller on these platforms has to differentiate the
+> +	 *  MSI payload against other DMA payload and has to modify the
+> +	 *  MSI payload. This makes it difficult for these platforms to
+> +	 *  have a SMMU translation for MSI. In order to workaround this,
+> +	 *  ARM SMMUv3 driver requires a quirk to treat the MSI regions
+> +	 *  separately. Such a quirk is currently missing for DT based
+> +	 *  systems. Hence please make sure that the smmu pcie node on
+> +	 *  hip06 is disabled as this will break the PCIe functionality
+> +	 *  when iommu-map entry is used along with the PCIe node.
+> +	 *  Refer:https://www.spinics.net/lists/arm-kernel/msg602812.html
+> +	 */
+> +	smmu0: smmu_pcie {
+> +		compatible = "arm,smmu-v3";
+> +		reg = <0x0 0xa0040000 0x0 0x20000>;
+> +		#iommu-cells = <1>;
+> +		dma-coherent;
+> +		smmu-cb-memtype = <0x0 0x1>;
+> +		hisilicon,broken-prefetch-cmd;
+> +		status = "disabled";
+> +	};
+> +
+>  	soc {
+>  		compatible = "simple-bus";
+>  		#address-cells = <2>;
+> @@ -676,6 +708,30 @@
+>  				     <637 1>,<638 1>,<639 1>;
+>  			status = "disabled";
+>  		};
+> +
+> +		pcie0: pcie@a0090000 {
+> +			compatible = "hisilicon,hip06-pcie-ecam";
+> +			reg = <0 0xb0000000 0 0x2000000>,
+> +			      <0 0xa0090000 0 0x10000>;
+> +			bus-range = <0  31>;
+> +			msi-map = <0x0000 &its_dsa 0x0000 0x2000>;
+> +			msi-map-mask = <0xffff>;
+> +			#address-cells = <3>;
+> +			#size-cells = <2>;
+> +			device_type = "pci";
+> +			dma-coherent;
+> +			ranges = <0x02000000 0 0xb2000000 0x0 0xb2000000 0
+> +				 0x5ff0000 0x01000000 0 0 0 0xb7ff0000
+> +				 0 0x10000>;
+> +			#interrupt-cells = <1>;
+> +			interrupt-map-mask = <0xf800 0 0 7>;
+> +			interrupt-map = <0x0 0 0 1 &mbigen_pcie0 650 4
+> +					0x0 0 0 2 &mbigen_pcie0 650 4
+> +					0x0 0 0 3 &mbigen_pcie0 650 4
+> +					0x0 0 0 4 &mbigen_pcie0 650 4>;
+> +			status = "disabled";
+> +		};
+> +
+>  	};
+>  
+>  };
+> diff --git a/arch/arm64/boot/dts/hisilicon/hip07.dtsi b/arch/arm64/boot/dts/hisilicon/hip07.dtsi
+> index 2c01a21..3e80bf3 100644
+> --- a/arch/arm64/boot/dts/hisilicon/hip07.dtsi
+> +++ b/arch/arm64/boot/dts/hisilicon/hip07.dtsi
+> @@ -1083,6 +1083,31 @@
+>  		};
+>  	};
+>  
+> +	/**
+> +	 *  HiSilicon erratum 161010801: This describes the limitation
+> +	 *  of HiSilicon platforms hip06/hip07 to support the SMMUv3
+> +	 *  mappings for PCIe MSI transactions.
+> +	 *  PCIe controller on these platforms has to differentiate the
+> +	 *  MSI payload against other DMA payload and has to modify the
+> +	 *  MSI payload. This makes it difficult for these platforms to
+> +	 *  have a SMMU translation for MSI. In order to workaround this,
+> +	 *  ARM SMMUv3 driver requires a quirk to treat the MSI regions
+> +	 *  separately. Such a quirk is currently missing for DT based
+> +	 *  systems. Hence please make sure that the smmu pcie node on
+> +	 *  hip07 is disabled as this will break the PCIe functionality
+> +	 *  when iommu-map entry is used along with the PCIe node.
+> +	 *  Refer:https://www.spinics.net/lists/arm-kernel/msg602812.html
+> +	 */
+> +	smmu0: smmu_pcie {
+> +		compatible = "arm,smmu-v3";
+> +		reg = <0x0 0xa0040000 0x0 0x20000>;
+> +		#iommu-cells = <1>;
+> +		dma-coherent;
+> +		smmu-cb-memtype = <0x0 0x1>;
+> +		hisilicon,broken-prefetch-cmd;
+> +		status = "disabled";
+> +	};
+> +
+>  	soc {
+>  		compatible = "simple-bus";
+>  		#address-cells = <2>;
 > 
-> * mm_alloc(): allocates a shared mm structure
-> * mm_attach(): writes the entry in the PASID table
-> * mm_detach(): removes the entry from the PASID table and invalidates it
-> * mm_free(): free shared mm
-> * pasid_alloc(): allocates a pasid structure (which I usually call
-> "private mm") and write the entry in the PASID table (or call
-> install_pasid() for SMMUv2)
-> * pasid_free(): remove from the PASID table (or call remove_pasid()) and
-> free the pasid structure.
-> 
-> Splitting mm_alloc and mm_attach is necessary because the io_mm in my case
-> can be shared between devices (allocated once, attached multiple times).
-> In your case a PASID is private to one device so only one callback is
-> needed. However mm_alloc+mm_attach will do roughly the same as
-> pasid_alloc, so to reduce redundancy in iommu_ops, maybe we could reuse
-> mm_alloc and mm_attach for the private PASID case?
-
-Okay - let me bang on it and see what we can clean up.  Thanks for the review.
-
-Jordan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
