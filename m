@@ -1,7 +1,7 @@
 From: srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Subject: [PATCH 2/3] rpmsg: core: make rpmsg bus DMA capable
-Date: Fri,  2 Mar 2018 14:55:30 +0000
-Message-ID: <20180302145531.20463-3-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 3/3] iommu: armsmmu: set iommu ops for rpmsg bus
+Date: Fri,  2 Mar 2018 14:55:31 +0000
+Message-ID: <20180302145531.20463-4-srinivas.kandagatla@linaro.org>
 References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,26 +23,39 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Many of the rpmsg clients like audio drivers need to allocate
-dma memory. Make this bus DMA capable so that the child devices
-can use dma apis.
+On Qualcomm SoCs, ADSP exposes many functions like audio and
+others. These services need iommu access to allocate any
+memory for the DSP. As these drivers are childeren of
+rpmsg bus, able to allocate memory from iommus is basic
+requirement. So set arm smmu iommu ops for this bus type.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- drivers/rpmsg/rpmsg_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/arm-smmu.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
-index e84c71f8d6ab..540a3f3567b8 100644
---- a/drivers/rpmsg/rpmsg_core.c
-+++ b/drivers/rpmsg/rpmsg_core.c
-@@ -472,6 +472,7 @@ struct bus_type rpmsg_bus = {
- 	.uevent		= rpmsg_uevent,
- 	.probe		= rpmsg_dev_probe,
- 	.remove		= rpmsg_dev_remove,
-+	.force_dma	= true,
- };
- EXPORT_SYMBOL(rpmsg_bus);
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index e6920d32ac9e..9b63489af15c 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -53,6 +53,7 @@
+ #include <linux/spinlock.h>
  
+ #include <linux/amba/bus.h>
++#include <linux/rpmsg.h>
+ 
+ #include "io-pgtable.h"
+ #include "arm-smmu-regs.h"
+@@ -2168,6 +2169,10 @@ static void arm_smmu_bus_init(void)
+ 		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+ 	}
+ #endif
++#ifdef CONFIG_RPMSG
++	if (!iommu_present(&rpmsg_bus))
++		bus_set_iommu(&rpmsg_bus, &arm_smmu_ops);
++#endif
+ }
+ 
+ static int arm_smmu_device_probe(struct platform_device *pdev)
 -- 
 2.15.1
