@@ -1,13 +1,15 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v8 0/5] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Mon, 5 Mar 2018 22:25:42 +0900
-Message-ID: <CAAFQd5AZoCgVts=DOET7js5VPi4ONM2m9R-WM6pWHud26XDVfA@mail.gmail.com>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
+Subject: Re: [RESEND PATCH v6 03/14] iommu/rockchip: Request irqs in
+	rk_iommu_probe()
+Date: Mon, 5 Mar 2018 22:30:22 +0900
+Message-ID: <CAAFQd5DLJwjdream_T4910L9qWbV1n5wivnn3xDCNFFuYqauVQ@mail.gmail.com>
+References: <20180301101837.27969-1-jeffy.chen@rock-chips.com>
+	<20180301101837.27969-4-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180302101050.6191-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20180301101837.27969-4-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,44 +19,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vivek,
+Hi Jeffy,
 
-On Fri, Mar 2, 2018 at 7:10 PM, Vivek Gautam
-<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> This series provides the support for turning on the arm-smmu's
-> clocks/power domains using runtime pm. This is done using the
-> recently introduced device links patches, which lets the smmu's
-> runtime to follow the master's runtime pm, so the smmu remains
-> powered only when the masters use it.
+On Thu, Mar 1, 2018 at 7:18 PM, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
+> Move request_irq to the end of rk_iommu_probe().
 >
-> It also adds support for Qcom's arm-smmu-v2 variant that
-> has different clocks and power requirements.
+> Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
 >
-> Took some reference from the exynos runtime patches [1].
+> Changes in v6: None
+> Changes in v5: None
+> Changes in v4: None
+> Changes in v3:
+> Loop platform_get_irq() as Robin suggested.
 >
-> After another round of discussion [3], we now finally seem to be
-> in agreement to add a flag based on compatible, a flag that would
-> indicate if a particular implementation of arm-smmu supports
-> runtime pm or not.
-> This lets us to use the much-argued pm_runtime_get_sync/put_sync()
-> calls in map/unmap callbacks so that the clients do not have to
-> worry about handling any of the arm-smmu's power.
-> The patch that exported couple of pm_runtime suppliers APIS, viz.
-> pm_runtime_get_suppliers(), and pm_runtime_put_suppliers() can be
-> dropped since we don't have a user now for these APIs.
-> Thanks Rafael for reviewing the changes, but looks like we don't
-> need to export those APIs for some more time. :)
+> Changes in v2: None
 >
-> Previous version of this patch series is @ [5].
-
-Thanks for addressing my comments. There is still a bit of space for
-improving the granularity of power management, as far as I understood
-how it works on SDM845 correctly, but as a first step, this should at
-least let things work.
+>  drivers/iommu/rockchip-iommu.c | 38 +++++++++-----------------------------
+>  1 file changed, 9 insertions(+), 29 deletions(-)
+>
 
 Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
