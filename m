@@ -1,14 +1,13 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v4] iommu/amd: Add support for fast IOTLB flushing
-Date: Mon, 5 Mar 2018 08:08:21 +0700
-Message-ID: <f9396eef-26b9-5280-1250-4aaeb0a38c32@amd.com>
-References: <1519197585-10546-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
+Date: Sun, 4 Mar 2018 21:05:40 -0500 (EST)
+Message-ID: <Pine.LNX.4.44L0.1803042053340.2862-100000@netrider.rowland.org>
+References: <20180304175949.GB2368@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519197585-10546-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180304175949.GB2368-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,77 +17,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org
+To: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
+Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?utf-8?Q?J=C3=BCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Ping..
+On Sun, 4 Mar 2018, Fredrik Noring wrote:
 
-Joerg, when you get a chance, would you please let me know if you have any other concerns for this v4.
+> Hi Alan Stern,
+> 
+> > > Alan, can dma_free_coherent be delayed to a point when IRQs are enabled?
+> > 
+> > Yes, subject to the usual concerns about not being delayed for too 
+> > long.  Also, some HCDs are highly memory-constrained.  I don't know if 
+> > they use this API, but if they do then delaying a free could result in 
+> > not enough memory being available when an allocation is needed.
+> 
+> The PS2 HCD in this case is limited to 256 KiB and memory allocation
+> failures can be observed frequently in USB traces (102 subsequent failures
+> in the trace below involving mass storage transactions, for example). Is
+> there any smartness to the allocations?
 
-Thanks,
-Suravee
+Not as far as I know.
 
-On 2/21/18 2:19 PM, Suravee Suthikulpanit wrote:
-> Since AMD IOMMU driver currently flushes all TLB entries
-> when page size is more than one, use the same interface
-> for both iommu_ops.flush_iotlb_all() and iommu_ops.iotlb_sync().
+>  My impression is that the USB core
+> loops until it gets what it wants, and then happily resumes. Does it busy
+> wait?
+
+No, it doesn't loop and it doesn't busy-wait.  It just fails if memory 
+can't be allocated immediately.  Maybe the higher-level driver has a 
+retry loop of some sort.
+
+> The RT3070 wireless USB device driver, for example, has hardcoded buffer
+> limits that exceed the total amount of available memory. It refuses to
+> accept devices unless adjusted in the source (as in the patch below), after
+> which it works nicely.
 > 
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> ---
-> Changes from v3 (https://patchwork.kernel.org/patch/10193235)
->   * Change amd_iommu_iotlb_range_add() to no-op and iotlb_sync()
->     to full domain flush for now since we currently flush all entries
->     when the page size is more than one.
->   * Fine-grained invalidation will be introduced in subsequent
->     patch series.
+> Other USB device drivers such as the one for the AR9271 wireless device
+> trigger endlessly repeating kernel warnings claiming
 > 
->   drivers/iommu/amd_iommu.c | 19 ++++++++++++++++---
->   1 file changed, 16 insertions(+), 3 deletions(-)
+> 	BOGUS urb xfer, pipe 1 != type 3
 > 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index fed8059..6061a8d 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3043,9 +3043,6 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
->   	unmap_size = iommu_unmap_page(domain, iova, page_size);
->   	mutex_unlock(&domain->api_lock);
->   
-> -	domain_flush_tlb_pde(domain);
-> -	domain_flush_complete(domain);
-> -
->   	return unmap_size;
->   }
->   
-> @@ -3163,6 +3160,19 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
->   	return dev_data->defer_attach;
->   }
->   
-> +static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
-> +{
-> +	struct protection_domain *dom = to_pdomain(domain);
-> +
-> +	domain_flush_tlb_pde(dom);
-> +	domain_flush_complete(dom);
-> +}
-> +
-> +static void amd_iommu_iotlb_range_add(struct iommu_domain *domain,
-> +				      unsigned long iova, size_t size)
-> +{
-> +}
-> +
->   const struct iommu_ops amd_iommu_ops = {
->   	.capable = amd_iommu_capable,
->   	.domain_alloc = amd_iommu_domain_alloc,
-> @@ -3181,6 +3191,9 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
->   	.apply_resv_region = amd_iommu_apply_resv_region,
->   	.is_attach_deferred = amd_iommu_is_attach_deferred,
->   	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
-> +	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
-> +	.iotlb_range_add = amd_iommu_iotlb_range_add,
-> +	.iotlb_sync = amd_iommu_flush_iotlb_all,
->   };
->   
->   /*****************************************************************************
-> 
+> as shown in this kernel backtrace:
+
+...
+
+> I don't know if this is related to memory limitations or some other problem
+> though.
+
+Another problem.  This message indicates there's a bug in the ath9k
+driver; it says that the driver submitted an interrupt URB for a bulk
+endpoint.
+
+Alan Stern
