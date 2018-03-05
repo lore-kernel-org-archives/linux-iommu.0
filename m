@@ -1,40 +1,81 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 10/13] set_memory.h: provide set_memory_{en,de}crypted stubs
-Date: Mon,  5 Mar 2018 09:46:52 -0800
-Message-ID: <20180305174655.9878-11-hch@lst.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH 06/13] x86/amd_gart: use dma_direct_{alloc,free}
+Date: Mon,  5 Mar 2018 09:46:48 -0800
+Message-ID: <20180305174655.9878-7-hch@lst.de>
 References: <20180305174655.9878-1-hch@lst.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180305174655.9878-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: x86@kernel.org
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tom Lendacky <thomas.lendacky@amd.com>, David Woodhouse <dwmw2@infradead.org>, Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180305174655.9878-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- include/linux/set_memory.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+This gains support for CMA allocations for the force_iommu case, and
+cleans up the code a bit.
 
-diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
-index e5140648f638..da5178216da5 100644
---- a/include/linux/set_memory.h
-+++ b/include/linux/set_memory.h
-@@ -17,4 +17,16 @@ static inline int set_memory_x(unsigned long addr,  int numpages) { return 0; }
- static inline int set_memory_nx(unsigned long addr, int numpages) { return 0; }
- #endif
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ arch/x86/kernel/amd_gart_64.c | 36 ++++++++++++++----------------------
+ 1 file changed, 14 insertions(+), 22 deletions(-)
+
+diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
+index 79ac6caaaabb..f299d8a479bb 100644
+--- a/arch/x86/kernel/amd_gart_64.c
++++ b/arch/x86/kernel/amd_gart_64.c
+@@ -480,29 +480,21 @@ static void *
+ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
+ 		    gfp_t flag, unsigned long attrs)
+ {
+-	dma_addr_t paddr;
+-	unsigned long align_mask;
+-	struct page *page;
+-
+-	if (force_iommu && dev->coherent_dma_mask > DMA_BIT_MASK(24)) {
+-		flag &= ~(__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32);
+-		page = alloc_pages(flag | __GFP_ZERO, get_order(size));
+-		if (!page)
+-			return NULL;
+-
+-		align_mask = (1UL << get_order(size)) - 1;
+-		paddr = dma_map_area(dev, page_to_phys(page), size,
+-				     DMA_BIDIRECTIONAL, align_mask);
+-
+-		flush_gart();
+-		if (paddr != bad_dma_addr) {
+-			*dma_addr = paddr;
+-			return page_address(page);
+-		}
+-		__free_pages(page, get_order(size));
+-	} else
+-		return dma_direct_alloc(dev, size, dma_addr, flag, attrs);
++	void *vaddr;
++
++	vaddr = dma_direct_alloc(dev, size, dma_addr, flag, attrs);
++	if (!vaddr ||
++	    !force_iommu || dev->coherent_dma_mask <= DMA_BIT_MASK(24))
++		return vaddr;
  
-+#ifndef CONFIG_ARCH_HAS_MEM_ENCRYPT
-+static inline int set_memory_encrypted(unsigned long addr, int numpages)
-+{
-+	return 0;
-+}
-+
-+static inline int set_memory_decrypted(unsigned long addr, int numpages)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_ARCH_HAS_MEM_ENCRYPT */
-+
- #endif /* _LINUX_SET_MEMORY_H_ */
++	*dma_addr = dma_map_area(dev, virt_to_phys(vaddr), size,
++			DMA_BIDIRECTIONAL, (1UL << get_order(size)) - 1);
++	flush_gart();
++	if (unlikely(*dma_addr == bad_dma_addr))
++		goto out_free;
++	return vaddr;
++out_free:
++	dma_direct_free(dev, size, vaddr, *dma_addr, attrs);
+ 	return NULL;
+ }
+ 
 -- 
 2.14.2
