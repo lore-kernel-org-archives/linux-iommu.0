@@ -1,15 +1,17 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: Using dma-ranges with iommu to limit range of iova
-Date: Mon, 5 Mar 2018 23:45:52 +0530
-Message-ID: <3d0935d7-22ff-9bbf-f02e-9605ea44d130@codeaurora.org>
-References: <b2f9355e-7a59-0017-1d84-897e4c8735f2@codeaurora.org>
-	<561a5d76-eddf-bf07-4eda-295fbbdc1e3e@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 5/6] dma-mapping: support fsl-mc bus
+Date: Mon, 5 Mar 2018 19:39:38 +0100
+Message-ID: <20180305183938.GB20086@lst.de>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+	<1520260166-29387-6-git-send-email-nipun.gupta@nxp.com>
+	<20180305150814.GA15918@lst.de>
+	<7b4f9972-6aaa-fc9d-3854-d48b19a8051c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <561a5d76-eddf-bf07-4eda-295fbbdc1e3e-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <7b4f9972-6aaa-fc9d-3854-d48b19a8051c-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,71 +21,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgoKT24gMy81LzIwMTggNTo0NiBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IEhp
-IFZpdmVrLAo+Cj4gT24gMDUvMDMvMTggMDk6MDYsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4gSGkg
-YWxsLAo+Pgo+PiBJIGhhdmUgYSBxdWVzdGlvbiByZWdhcmRpbmcgdXNhZ2Ugb2YgJ2RtYS1yYW5n
-ZXMnLCBjYW4gc29tZW9uZSBwb2ludCAKPj4gbWUgaW4gdGhlIHJpZ2h0IGRpcmVjdGlvbj8KPj4g
-T24gcWNvbSBzb2MsIGZldyBvZiB0aGUgbWFzdGVyIGRldmljZXMgd2l0aCBpb21tdSBhdHRhY2hl
-ZCB0byB0aGVtLCAKPj4gaGF2ZSBsaW1pdGF0aW9ucyBpbiB1c2luZyB0aGUgaW92YSBhZGRyZXNz
-IHJhbmdlLiBUaGV5IGNhbiBhbGxvdyB0aGUgCj4+IGlvdmEgdG8gYmUgb25seSBpbiBhIGNlcnRh
-aW4gcmFuZ2UsIGUuZy4gdmlkZW8gY29kZWMgZmlybXdhcmUgY2FuIAo+PiBvbmx5IGFjY2VzcyBp
-b3ZhIG9ubHkgaW4gYSBmaXJzdCBmZXcgTUJzIGFzIHRoZSB2aWRlbydzIGFybSBjb3JlIAo+PiBy
-ZXNldCBzdGFydHMgYXQgMHgwLgo+PiBUbyBkbyB0aGF0LCBJIGVhcmxpZXIsIGhhZCB0aGUgdW5k
-ZXJzdGFuZGluZyB0aGF0IHdlIGNhbiBtb2RpZnkgdGhlIAo+PiBpb21tdV9kb21haW4ncyBnZW9t
-ZXRyeSBhcGVydHVyZS4gQnV0IHRoYXQgbG9va3Mga2luZCBvZiBhIGhhY2t5IHdheSAKPj4gdG8g
-Z2V0IHRoZSBkb21haW4gZm9yIHRoZSBkZXZpY2UgYW5kIG1vZGlmeSB0aGUgYXBlcnR1cmUuCj4+
-IEkgd2FzIHRyeWluZyB0byBleHBsb3JlIGlmIHdlIGNhbiB1c2UgdGhlIGRtYS1yYW5nZXMgcHJv
-cGVydHkuIEJ1dCAKPj4gdGhlIGlvbW11IGJpbmRpbmdzIGRvY3VtZW50YXRpb24gZG9lc24ndCBy
-ZWFsbHkgdGFsa3MgbXVjaCBhYm91dCAKPj4gdXNhZ2Ugb2YgZG1hLXJhbmdlcy4KPj4gQ2FuIHNv
-bWVvbmUgaGVscCBtZSB3aXRoIHdpdGggdGhlIGFuc3dlciB0byAtIGNhbiB3ZSB1c2UgJ2RtYS1y
-YW5nZXMnIAo+PiB0byBsaW1pdCBhIGRldmljZSdzIGlvdmEgYWRkcmVzcyBhY2Nlc3M/IElmIHll
-cywgdGhlbiBob3c/Cj4KPiBZZXMsIGlmIHRoZSBkZXZpY2UgaGFzIHBoeXNpY2FsIHJlc3RyaWN0
-aW9ucyBvbiB3aGF0IGl0IGNhbiBhZGRyZXNzLCAKPiB0aGVuICJkbWEtcmFuZ2VzIiBpcyB0aGUg
-Y29ycmVjdCB3YXkgdG8gZGVzY3JpYmUgdGhhdC4gVGhhdCBzaG91bGQgYmUgCj4gcHJldHR5IG11
-Y2ggb3J0aG9nb25hbCB0byB0aGUgSU9NTVUgYmluZGluZyBhbmQgY29tYmluZSBpbiB0aGUgb2J2
-aW91cyAKPiB3YXksIGUuZy46Cj4KPiDCoMKgwqDCoC4uLgo+IMKgwqDCoMKgc29jIHsKPiDCoMKg
-wqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwxPjsKPiDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1j
-ZWxscyA9IDwxPjsKPiDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gInNpbXBsZS1idXMiOwo+
-IMKgwqDCoMKgwqDCoMKgIHJhbmdlczsKPgo+IMKgwqDCoMKgwqDCoMKgIC4uLgo+Cj4gwqDCoMKg
-wqDCoMKgwqAgaW9tbXVAZjAwMDAwMDAgewo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0
-aWJsZSA9ICJpb21tdSI7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHhmMDAwMDAw
-MCAweDEwMDA+Owo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgI2lvbW11LWNlbGxzID0gPDA+Owo+
-IMKgwqDCoMKgwqDCoMKgIH07Cj4KPiDCoMKgwqDCoMKgwqDCoCAuLi4KPgo+IMKgwqDCoMKgwqDC
-oMKgIHN1YnN5c3RlbSB7CgpVc3VhbGx5LCB0aGUgbXVsdGltZWRpYSBkZXZpY2VzIGFyZSBqdXN0
-IHRoZSBkZXZpY2Ugbm9kZXMgd2l0aG91dAphbnkgc3Vic3lzdGVtLiBDYW4gZG1hLXJhbmdlcywg
-YW5kIGlvbW11cyBleGlzdCB0b2dldGhlciBmb3IgdGhlCmRldmljZT8KCj4gI2FkZHJlc3MtY2Vs
-bHMgPSA8MT47Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1jZWxscyA9IDwxPjsKPiDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAic2ltcGxlLWJ1cyI7Cj4gwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCByYW5nZXM7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBEZXZp
-Y2VzIGNhbiBvbmx5IGRyaXZlIGFkZHJlc3MgYml0cyAwOjIzICovCj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBkbWEtcmFuZ2VzID0gPDAgMCAweDEwMDAwMDA+Owo+Cj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBkZXZpY2Ugewo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdXMg
-PSA8JmlvbW11PjsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH07Cj4gwqDCoMKgwqDCoMKgwqAg
-fTsKPiDCoMKgwqDCoH07Cj4gwqDCoMKgwqAuLi4KPgo+IEluIHRlcm1zIG9mIExpbnV4LCBmb3Ig
-dGhlIHN0cmFpZ2h0Zm9yd2FyZCBwbGF0Zm9ybSBkZXZpY2UgY2FzZSAKPiBvZl9kbWFfY29uZmln
-dXJlKCkgaW5pdGlhbGlzZXMgdGhlIHN1YnN5c3RlbSBkZXZpY2VzJyBETUEgbWFza3MgYmFzZWQg
-Cj4gb24gdGhlIHNpemUgY292ZXJlZCBieSAiZG1hLXJhbmdlcyIsIGFuZCB0aGUgRE1BIEFQSSBj
-b2RlIHJlc3BlY3RzIHRoZSAKPiBkZXZpY2UncyBETUEgbWFzayB3aGVuIGFsbG9jYXRpbmcgSU9W
-QXMuIFRoZSBvbmx5IHByb2JsZW0gaXMgdGhlIGJpdCAKPiBpbiB0aGUgbWlkZGxlIHdoZXJlIHRo
-ZSBkZXZpY2UgZHJpdmVyJ3MgZG1hX3NldF9tYXNrKCkgY2FsbCBjYW4ganVzdCAKPiB0cmFzaCBv
-Zl9kbWFfY29uZmlndXJlKCkncyBpbml0aWFsIG1hc2ssIGJlY2F1c2UgdGhlcmUncyBubyB3YXkg
-dG8gCj4gZGlmZmVyZW50aWF0ZSBhbiBleHBsaWNpdGx5LXNwZWNpZmllZCBtYXNrIGZyb20gYSBk
-ZWZhdWx0IG9uZS4KCkJ1dCB0aGUgZHJpdmVycyBzaG91bGQgaWRlYWxseSBjaGVjayBmb3IgYW55
-IGV4aXN0aW5nIGRtYV9tYXNrIHNldCBmb3IgCnRoZSBkZXZpY2UgYmVmb3JlIGNhbGxpbmcgZG1h
-X3NldF9tYXNrX2FuZF9jb2hlcmVudCgpLiBJIHNlZSBmZXcgb2YgdGhlIApkcml2ZXJzIGRvIGNo
-ZWNrIHRoYXQsIHNvIHdlIGRvbid0IG92ZXJ3cml0ZSB0aGUgZG1hIG1hc2suCgo+IEl0J3MgYWxz
-byBldmVuIHVnbGllciBmb3IgUENJIGRldmljZXMgc2luY2UgdGhlIGV4aXN0aW5nICJwYXNzIHRo
-ZSAKPiBob3N0IGJyaWRnZSdzIG5vZGUgYXMgdGhlIGRldmljZSdzIiBib2RnZSBoYXBwZW5zIHRv
-IHdvcmsgZm9yIHRoZSAKPiAiZG1hLWNvaGVyZW50IiBwcm9wZXJ0eSBidXQgaXMgYSBiaXQgYnJv
-a2VuIGluIGdlbmVyYWwgYW5kIGRvZXNuJ3QgCj4gd29yayBhdCBhbGwgZm9yICJkbWEtcmFuZ2Vz
-Ii4KPgo+IEZpeGluZyBhbGwgb2YgdGhpcyAobm90IHRvIG1lbnRpb24gdGhlIERUL0FDUEkgaW50
-ZXJhY3Rpb24gYXNwZWN0KSBoYXMgCj4gYmVlbiBob3ZlcmluZyBhcm91bmQgIzMgb24gbXkgdG8t
-ZG8gbGlzdCBmb3IgdGhlIHBhc3QgY291cGxlIG9mIHllYXJzIAo+IG5vdywgYnV0IHRoaW5ncyBr
-ZWVwIHNuZWFraW5nIGluIGFib3ZlIGl0IDooCgpBbnl0aGluZyB0aGF0IEkgY2FuIHRha2UgYSBs
-b29rIGF0LCBhbmQgYWRkPwoKcmVnYXJkcwpWaXZlawo+Cj4gUm9iaW4uCgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
-b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Mon, Mar 05, 2018 at 03:48:32PM +0000, Robin Murphy wrote:
+> Unfortunately for us, fsl-mc is conceptually rather like PCI in that it's 
+> software-discoverable and the only thing described in DT is the bus "host", 
+> thus we need the same sort of thing as for PCI to map from the child 
+> devices back to the bus root in order to find the appropriate firmware 
+> node. Worse than PCI, though, we wouldn't even have the option of 
+> describing child devices statically in firmware at all, since it's actually 
+> one of these runtime-configurable "build your own network accelerator" 
+> hardware pools where userspace gets to create and destroy "devices" as it 
+> likes.
+
+I really hate the PCI special case just as much.  Maybe we just
+need a dma_configure method on the bus, and move PCI as well as fsl-mc
+to it.
