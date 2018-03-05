@@ -1,13 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 12/13] swiotlb: remove swiotlb_set_mem_attributes
-Date: Mon,  5 Mar 2018 09:46:54 -0800
-Message-ID: <20180305174655.9878-13-hch@lst.de>
-References: <20180305174655.9878-1-hch@lst.de>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: Using dma-ranges with iommu to limit range of iova
+Date: Mon, 5 Mar 2018 23:45:52 +0530
+Message-ID: <3d0935d7-22ff-9bbf-f02e-9605ea44d130@codeaurora.org>
+References: <b2f9355e-7a59-0017-1d84-897e4c8735f2@codeaurora.org>
+	<561a5d76-eddf-bf07-4eda-295fbbdc1e3e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180305174655.9878-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <561a5d76-eddf-bf07-4eda-295fbbdc1e3e-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,107 +19,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that set_memory_decrypted is always available we can just call it
-directly.
-
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/x86/include/asm/mem_encrypt.h |  2 --
- arch/x86/mm/mem_encrypt.c          |  9 ---------
- lib/swiotlb.c                      | 12 ++++++------
- 3 files changed, 6 insertions(+), 17 deletions(-)
-
-diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-index 22c5f3e6f820..9da0b63c8fc7 100644
---- a/arch/x86/include/asm/mem_encrypt.h
-+++ b/arch/x86/include/asm/mem_encrypt.h
-@@ -48,8 +48,6 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size);
- /* Architecture __weak replacement functions */
- void __init mem_encrypt_init(void);
- 
--void swiotlb_set_mem_attributes(void *vaddr, unsigned long size);
--
- bool sme_active(void);
- bool sev_active(void);
- 
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 8bfc735bbdd7..65f45e0ef496 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -379,15 +379,6 @@ void __init mem_encrypt_init(void)
- 			     : "Secure Memory Encryption (SME)");
- }
- 
--void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
--{
--	WARN(PAGE_ALIGN(size) != size,
--	     "size is not page-aligned (%#lx)\n", size);
--
--	/* Make the SWIOTLB buffer area decrypted */
--	set_memory_decrypted((unsigned long)vaddr, size >> PAGE_SHIFT);
--}
--
- struct sme_populate_pgd_data {
- 	void	*pgtable_area;
- 	pgd_t	*pgd;
-diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index ca8eeaead925..8b06b4485e65 100644
---- a/lib/swiotlb.c
-+++ b/lib/swiotlb.c
-@@ -31,6 +31,7 @@
- #include <linux/gfp.h>
- #include <linux/scatterlist.h>
- #include <linux/mem_encrypt.h>
-+#include <linux/set_memory.h>
- 
- #include <asm/io.h>
- #include <asm/dma.h>
-@@ -156,8 +157,6 @@ unsigned long swiotlb_size_or_default(void)
- 	return size ? size : (IO_TLB_DEFAULT_SIZE);
- }
- 
--void __weak swiotlb_set_mem_attributes(void *vaddr, unsigned long size) { }
--
- /* Note that this doesn't work with highmem page */
- static dma_addr_t swiotlb_virt_to_bus(struct device *hwdev,
- 				      volatile void *address)
-@@ -202,12 +201,12 @@ void __init swiotlb_update_mem_attributes(void)
- 
- 	vaddr = phys_to_virt(io_tlb_start);
- 	bytes = PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT);
--	swiotlb_set_mem_attributes(vaddr, bytes);
-+	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
- 	memset(vaddr, 0, bytes);
- 
- 	vaddr = phys_to_virt(io_tlb_overflow_buffer);
- 	bytes = PAGE_ALIGN(io_tlb_overflow);
--	swiotlb_set_mem_attributes(vaddr, bytes);
-+	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
- 	memset(vaddr, 0, bytes);
- }
- 
-@@ -348,7 +347,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 	io_tlb_start = virt_to_phys(tlb);
- 	io_tlb_end = io_tlb_start + bytes;
- 
--	swiotlb_set_mem_attributes(tlb, bytes);
-+	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
- 	memset(tlb, 0, bytes);
- 
- 	/*
-@@ -359,7 +358,8 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 	if (!v_overflow_buffer)
- 		goto cleanup2;
- 
--	swiotlb_set_mem_attributes(v_overflow_buffer, io_tlb_overflow);
-+	set_memory_decrypted((unsigned long)v_overflow_buffer,
-+			io_tlb_overflow >> PAGE_SHIFT);
- 	memset(v_overflow_buffer, 0, io_tlb_overflow);
- 	io_tlb_overflow_buffer = virt_to_phys(v_overflow_buffer);
- 
--- 
-2.14.2
+SGkgUm9iaW4sCgoKT24gMy81LzIwMTggNTo0NiBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IEhp
+IFZpdmVrLAo+Cj4gT24gMDUvMDMvMTggMDk6MDYsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4gSGkg
+YWxsLAo+Pgo+PiBJIGhhdmUgYSBxdWVzdGlvbiByZWdhcmRpbmcgdXNhZ2Ugb2YgJ2RtYS1yYW5n
+ZXMnLCBjYW4gc29tZW9uZSBwb2ludCAKPj4gbWUgaW4gdGhlIHJpZ2h0IGRpcmVjdGlvbj8KPj4g
+T24gcWNvbSBzb2MsIGZldyBvZiB0aGUgbWFzdGVyIGRldmljZXMgd2l0aCBpb21tdSBhdHRhY2hl
+ZCB0byB0aGVtLCAKPj4gaGF2ZSBsaW1pdGF0aW9ucyBpbiB1c2luZyB0aGUgaW92YSBhZGRyZXNz
+IHJhbmdlLiBUaGV5IGNhbiBhbGxvdyB0aGUgCj4+IGlvdmEgdG8gYmUgb25seSBpbiBhIGNlcnRh
+aW4gcmFuZ2UsIGUuZy4gdmlkZW8gY29kZWMgZmlybXdhcmUgY2FuIAo+PiBvbmx5IGFjY2VzcyBp
+b3ZhIG9ubHkgaW4gYSBmaXJzdCBmZXcgTUJzIGFzIHRoZSB2aWRlbydzIGFybSBjb3JlIAo+PiBy
+ZXNldCBzdGFydHMgYXQgMHgwLgo+PiBUbyBkbyB0aGF0LCBJIGVhcmxpZXIsIGhhZCB0aGUgdW5k
+ZXJzdGFuZGluZyB0aGF0IHdlIGNhbiBtb2RpZnkgdGhlIAo+PiBpb21tdV9kb21haW4ncyBnZW9t
+ZXRyeSBhcGVydHVyZS4gQnV0IHRoYXQgbG9va3Mga2luZCBvZiBhIGhhY2t5IHdheSAKPj4gdG8g
+Z2V0IHRoZSBkb21haW4gZm9yIHRoZSBkZXZpY2UgYW5kIG1vZGlmeSB0aGUgYXBlcnR1cmUuCj4+
+IEkgd2FzIHRyeWluZyB0byBleHBsb3JlIGlmIHdlIGNhbiB1c2UgdGhlIGRtYS1yYW5nZXMgcHJv
+cGVydHkuIEJ1dCAKPj4gdGhlIGlvbW11IGJpbmRpbmdzIGRvY3VtZW50YXRpb24gZG9lc24ndCBy
+ZWFsbHkgdGFsa3MgbXVjaCBhYm91dCAKPj4gdXNhZ2Ugb2YgZG1hLXJhbmdlcy4KPj4gQ2FuIHNv
+bWVvbmUgaGVscCBtZSB3aXRoIHdpdGggdGhlIGFuc3dlciB0byAtIGNhbiB3ZSB1c2UgJ2RtYS1y
+YW5nZXMnIAo+PiB0byBsaW1pdCBhIGRldmljZSdzIGlvdmEgYWRkcmVzcyBhY2Nlc3M/IElmIHll
+cywgdGhlbiBob3c/Cj4KPiBZZXMsIGlmIHRoZSBkZXZpY2UgaGFzIHBoeXNpY2FsIHJlc3RyaWN0
+aW9ucyBvbiB3aGF0IGl0IGNhbiBhZGRyZXNzLCAKPiB0aGVuICJkbWEtcmFuZ2VzIiBpcyB0aGUg
+Y29ycmVjdCB3YXkgdG8gZGVzY3JpYmUgdGhhdC4gVGhhdCBzaG91bGQgYmUgCj4gcHJldHR5IG11
+Y2ggb3J0aG9nb25hbCB0byB0aGUgSU9NTVUgYmluZGluZyBhbmQgY29tYmluZSBpbiB0aGUgb2J2
+aW91cyAKPiB3YXksIGUuZy46Cj4KPiDCoMKgwqDCoC4uLgo+IMKgwqDCoMKgc29jIHsKPiDCoMKg
+wqDCoMKgwqDCoCAjYWRkcmVzcy1jZWxscyA9IDwxPjsKPiDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1j
+ZWxscyA9IDwxPjsKPiDCoMKgwqDCoMKgwqDCoCBjb21wYXRpYmxlID0gInNpbXBsZS1idXMiOwo+
+IMKgwqDCoMKgwqDCoMKgIHJhbmdlczsKPgo+IMKgwqDCoMKgwqDCoMKgIC4uLgo+Cj4gwqDCoMKg
+wqDCoMKgwqAgaW9tbXVAZjAwMDAwMDAgewo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29tcGF0
+aWJsZSA9ICJpb21tdSI7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZWcgPSA8MHhmMDAwMDAw
+MCAweDEwMDA+Owo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgI2lvbW11LWNlbGxzID0gPDA+Owo+
+IMKgwqDCoMKgwqDCoMKgIH07Cj4KPiDCoMKgwqDCoMKgwqDCoCAuLi4KPgo+IMKgwqDCoMKgwqDC
+oMKgIHN1YnN5c3RlbSB7CgpVc3VhbGx5LCB0aGUgbXVsdGltZWRpYSBkZXZpY2VzIGFyZSBqdXN0
+IHRoZSBkZXZpY2Ugbm9kZXMgd2l0aG91dAphbnkgc3Vic3lzdGVtLiBDYW4gZG1hLXJhbmdlcywg
+YW5kIGlvbW11cyBleGlzdCB0b2dldGhlciBmb3IgdGhlCmRldmljZT8KCj4gI2FkZHJlc3MtY2Vs
+bHMgPSA8MT47Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjc2l6ZS1jZWxscyA9IDwxPjsKPiDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAic2ltcGxlLWJ1cyI7Cj4gwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCByYW5nZXM7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBEZXZp
+Y2VzIGNhbiBvbmx5IGRyaXZlIGFkZHJlc3MgYml0cyAwOjIzICovCj4gwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBkbWEtcmFuZ2VzID0gPDAgMCAweDEwMDAwMDA+Owo+Cj4gwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBkZXZpY2Ugewo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdXMg
+PSA8JmlvbW11PjsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH07Cj4gwqDCoMKgwqDCoMKgwqAg
+fTsKPiDCoMKgwqDCoH07Cj4gwqDCoMKgwqAuLi4KPgo+IEluIHRlcm1zIG9mIExpbnV4LCBmb3Ig
+dGhlIHN0cmFpZ2h0Zm9yd2FyZCBwbGF0Zm9ybSBkZXZpY2UgY2FzZSAKPiBvZl9kbWFfY29uZmln
+dXJlKCkgaW5pdGlhbGlzZXMgdGhlIHN1YnN5c3RlbSBkZXZpY2VzJyBETUEgbWFza3MgYmFzZWQg
+Cj4gb24gdGhlIHNpemUgY292ZXJlZCBieSAiZG1hLXJhbmdlcyIsIGFuZCB0aGUgRE1BIEFQSSBj
+b2RlIHJlc3BlY3RzIHRoZSAKPiBkZXZpY2UncyBETUEgbWFzayB3aGVuIGFsbG9jYXRpbmcgSU9W
+QXMuIFRoZSBvbmx5IHByb2JsZW0gaXMgdGhlIGJpdCAKPiBpbiB0aGUgbWlkZGxlIHdoZXJlIHRo
+ZSBkZXZpY2UgZHJpdmVyJ3MgZG1hX3NldF9tYXNrKCkgY2FsbCBjYW4ganVzdCAKPiB0cmFzaCBv
+Zl9kbWFfY29uZmlndXJlKCkncyBpbml0aWFsIG1hc2ssIGJlY2F1c2UgdGhlcmUncyBubyB3YXkg
+dG8gCj4gZGlmZmVyZW50aWF0ZSBhbiBleHBsaWNpdGx5LXNwZWNpZmllZCBtYXNrIGZyb20gYSBk
+ZWZhdWx0IG9uZS4KCkJ1dCB0aGUgZHJpdmVycyBzaG91bGQgaWRlYWxseSBjaGVjayBmb3IgYW55
+IGV4aXN0aW5nIGRtYV9tYXNrIHNldCBmb3IgCnRoZSBkZXZpY2UgYmVmb3JlIGNhbGxpbmcgZG1h
+X3NldF9tYXNrX2FuZF9jb2hlcmVudCgpLiBJIHNlZSBmZXcgb2YgdGhlIApkcml2ZXJzIGRvIGNo
+ZWNrIHRoYXQsIHNvIHdlIGRvbid0IG92ZXJ3cml0ZSB0aGUgZG1hIG1hc2suCgo+IEl0J3MgYWxz
+byBldmVuIHVnbGllciBmb3IgUENJIGRldmljZXMgc2luY2UgdGhlIGV4aXN0aW5nICJwYXNzIHRo
+ZSAKPiBob3N0IGJyaWRnZSdzIG5vZGUgYXMgdGhlIGRldmljZSdzIiBib2RnZSBoYXBwZW5zIHRv
+IHdvcmsgZm9yIHRoZSAKPiAiZG1hLWNvaGVyZW50IiBwcm9wZXJ0eSBidXQgaXMgYSBiaXQgYnJv
+a2VuIGluIGdlbmVyYWwgYW5kIGRvZXNuJ3QgCj4gd29yayBhdCBhbGwgZm9yICJkbWEtcmFuZ2Vz
+Ii4KPgo+IEZpeGluZyBhbGwgb2YgdGhpcyAobm90IHRvIG1lbnRpb24gdGhlIERUL0FDUEkgaW50
+ZXJhY3Rpb24gYXNwZWN0KSBoYXMgCj4gYmVlbiBob3ZlcmluZyBhcm91bmQgIzMgb24gbXkgdG8t
+ZG8gbGlzdCBmb3IgdGhlIHBhc3QgY291cGxlIG9mIHllYXJzIAo+IG5vdywgYnV0IHRoaW5ncyBr
+ZWVwIHNuZWFraW5nIGluIGFib3ZlIGl0IDooCgpBbnl0aGluZyB0aGF0IEkgY2FuIHRha2UgYSBs
+b29rIGF0LCBhbmQgYWRkPwoKcmVnYXJkcwpWaXZlawo+Cj4gUm9iaW4uCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
