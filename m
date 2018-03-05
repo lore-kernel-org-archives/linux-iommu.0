@@ -1,41 +1,85 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 5/6] dma-mapping: support fsl-mc bus
-Date: Mon, 5 Mar 2018 15:48:32 +0000
-Message-ID: <7b4f9972-6aaa-fc9d-3854-d48b19a8051c@arm.com>
+From: Nipun Gupta <nipun.gupta@nxp.com>
+Subject: RE: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
+Date: Mon, 5 Mar 2018 15:54:34 +0000
+Message-ID: <HE1PR0401MB2425F261CA777DAA1D41A477E6DA0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
 References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
-	<1520260166-29387-6-git-send-email-nipun.gupta@nxp.com>
-	<20180305150814.GA15918@lst.de>
+ <1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
+ <5cdeded1-ca3c-339a-bf73-73401e7dd4ed@arm.com>
+ <HE1PR0401MB24254CBDB8B6F537D08B925DE6DA0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+ <f382e92a-8ab5-7c93-1f39-fe6797e5c876@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180305150814.GA15918-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f382e92a-8ab5-7c93-1f39-fe6797e5c876@arm.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "joro@8bytes.org" <joro@8bytes.org>, Leo Li <leoyang.li@nxp.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Bharat Bhushan <bharat.bhushan@nxp.com>, "stuyoder@gmail.com" <stuyoder@gmail.com>, Laurentiu Tudor <laurentiu.tudor@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/18 15:08, Christoph Hellwig wrote:
-> We should not add any new hardocded busses here.  Please mark them in
-> OF/ACPI.
-
-Unfortunately for us, fsl-mc is conceptually rather like PCI in that 
-it's software-discoverable and the only thing described in DT is the bus 
-"host", thus we need the same sort of thing as for PCI to map from the 
-child devices back to the bus root in order to find the appropriate 
-firmware node. Worse than PCI, though, we wouldn't even have the option 
-of describing child devices statically in firmware at all, since it's 
-actually one of these runtime-configurable "build your own network 
-accelerator" hardware pools where userspace gets to create and destroy 
-"devices" as it likes.
-
-Robin.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4gTXVycGh5IFtt
+YWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+IFNlbnQ6IE1vbmRheSwgTWFyY2ggMDUsIDIw
+MTggMjE6MDcNCj4gVG86IE5pcHVuIEd1cHRhIDxuaXB1bi5ndXB0YUBueHAuY29tPjsgd2lsbC5k
+ZWFjb25AYXJtLmNvbTsNCj4gbWFyay5ydXRsYW5kQGFybS5jb207IGNhdGFsaW4ubWFyaW5hc0Bh
+cm0uY29tDQo+IENjOiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgcm9iaCtkdEBr
+ZXJuZWwub3JnOyBoY2hAbHN0LmRlOw0KPiBtLnN6eXByb3dza2lAc2Ftc3VuZy5jb207IGdyZWdr
+aEBsaW51eGZvdW5kYXRpb24ub3JnOyBqb3JvQDhieXRlcy5vcmc7DQo+IExlbyBMaSA8bGVveWFu
+Zy5saUBueHAuY29tPjsgc2hhd25ndW9Aa2VybmVsLm9yZzsgbGludXgtDQo+IGtlcm5lbEB2Z2Vy
+Lmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+IGtl
+cm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZzsg
+QmhhcmF0IEJodXNoYW4NCj4gPGJoYXJhdC5iaHVzaGFuQG54cC5jb20+OyBzdHV5b2RlckBnbWFp
+bC5jb207IExhdXJlbnRpdSBUdWRvcg0KPiA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+IFN1
+YmplY3Q6IFJlOiBbUEFUQ0ggMS82XSBEb2NzOiBkdDogYWRkIGZzbC1tYyBpb21tdS1wYXJlbnQg
+ZGV2aWNlLXRyZWUgYmluZGluZw0KPiANCj4gT24gMDUvMDMvMTggMTU6MDAsIE5pcHVuIEd1cHRh
+IHdyb3RlOg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4g
+RnJvbTogUm9iaW4gTXVycGh5IFttYWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+ID4+IFNl
+bnQ6IE1vbmRheSwgTWFyY2ggMDUsIDIwMTggMjA6MjMNCj4gPj4gVG86IE5pcHVuIEd1cHRhIDxu
+aXB1bi5ndXB0YUBueHAuY29tPjsgd2lsbC5kZWFjb25AYXJtLmNvbTsNCj4gPj4gbWFyay5ydXRs
+YW5kQGFybS5jb207IGNhdGFsaW4ubWFyaW5hc0Bhcm0uY29tDQo+ID4+IENjOiBpb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgcm9iaCtkdEBrZXJuZWwub3JnOyBoY2hAbHN0LmRlOw0K
+PiA+PiBtLnN6eXByb3dza2lAc2Ftc3VuZy5jb207IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3Jn
+Ow0KPiBqb3JvQDhieXRlcy5vcmc7DQo+ID4+IExlbyBMaSA8bGVveWFuZy5saUBueHAuY29tPjsg
+c2hhd25ndW9Aa2VybmVsLm9yZzsgbGludXgtDQo+ID4+IGtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7
+IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+ID4+IGtlcm5lbEBsaXN0
+cy5pbmZyYWRlYWQub3JnOyBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZzsgQmhhcmF0IEJo
+dXNoYW4NCj4gPj4gPGJoYXJhdC5iaHVzaGFuQG54cC5jb20+OyBzdHV5b2RlckBnbWFpbC5jb207
+IExhdXJlbnRpdSBUdWRvcg0KPiA+PiA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+ID4+IFN1
+YmplY3Q6IFJlOiBbUEFUQ0ggMS82XSBEb2NzOiBkdDogYWRkIGZzbC1tYyBpb21tdS1wYXJlbnQg
+ZGV2aWNlLXRyZWUNCj4gYmluZGluZw0KPiA+Pg0KPiA+PiBPbiAwNS8wMy8xOCAxNDoyOSwgTmlw
+dW4gR3VwdGEgd3JvdGU6DQo+ID4+PiBUaGUgZXhpc3RpbmcgSU9NTVUgYmluZGluZ3MgY2Fubm90
+IGJlIHVzZWQgdG8gc3BlY2lmeSB0aGUgcmVsYXRpb25zaGlwDQo+ID4+PiBiZXR3ZWVuIGZzbC1t
+YyBkZXZpY2VzIGFuZCBJT01NVXMuIFRoaXMgcGF0Y2ggYWRkcyBhIGJpbmRpbmcgZm9yDQo+ID4+
+PiBtYXBwaW5nIGZzbC1tYyBkZXZpY2VzIHRvIElPTU1VcywgdXNpbmcgYSBuZXcgaW9tbXUtcGFy
+ZW50IHByb3BlcnR5Lg0KPiA+Pg0KPiA+PiBHaXZlbiB0aGF0IGFsbG93aW5nICJtc2ktcGFyZW50
+IiBmb3IgI21zaS1jZWxscyA+IDEgaXMgbWVyZWx5IGENCj4gPj4gYmFja3dhcmQtY29tcGF0aWJp
+bGl0eSBib2RnZSBmdWxsIG9mIGhhcmQtY29kZWQgYXNzdW1wdGlvbnMsIHdoeSB3b3VsZA0KPiA+
+PiB3ZSB3YW50IHRvIGtub3dpbmdseSBpbnRyb2R1Y2UgYSBzaW1pbGFybHkgdW5wbGVhc2FudCBl
+cXVpdmFsZW50IGZvcg0KPiA+PiBJT01NVXM/IFdoYXQncyB3cm9uZyB3aXRoICJpb21tdS1tYXAi
+Pw0KPiA+DQo+ID4gSGkgUm9iaW4sDQo+ID4NCj4gPiBXaXRoICdtc2ktcGFyZW50JyB0aGUgcHJv
+cGVydHkgaXMgZml4ZWQgdXAgdG8gaGF2ZSBtc2ktbWFwLiBJbiB0aGlzIGNhc2UgdGhlcmUgaXMN
+Cj4gPiBubyBmaXh1cCByZXF1aXJlZCBhbmQgc2ltcGxlICdpb21tdS1wYXJlbnQnIHByb3BlcnR5
+IGNhbiBiZSB1c2VkLCB3aXRoIE1DDQo+IGJ1cw0KPiA+IGl0c2VsZiBwcm92aWRpbmcgdGhlIHN0
+cmVhbS1pZCdzIChpbiB0aGUgY29kZSBleGVjdXRpb24gdmlhIEZXKS4NCj4gPg0KPiA+IFdlIGNh
+biBhbHNvIHVzZSB0aGUgaW9tbXUtbWFwIHByb3BlcnR5IHNpbWlsYXIgdG8gUENJLCB3aGljaCB3
+aWxsIHJlcXVpcmUgdS0NCj4gYm9vdA0KPiA+IGZpeHVwLiBCdXQgdGhlbiBpdCBsZWFkcyB0byBs
+aXR0bGUgYml0IGNvbXBsaWNhdGlvbnMgb2YgdS1ib290IC0ga2VybmVsDQo+IGNvbXBhdGliaWxp
+dHkuDQo+IA0KPiBXaGF0IG5lZWRzIGZpeGluZyB1cD8gV2l0aCBhIHN0cmVhbS1tYXAtbWFzayBp
+biBwbGFjZSB0byBpZ25vcmUgdGhlDQo+IHVwcGVyIFN0cmVhbSBJRCBiaXRzLCB5b3UganVzdCBu
+ZWVkOg0KPiANCj4gCWlvbW11LW1hcCA9IDwwICZzbW11IDAgMHg4MD47DQo+IA0KPiB0byBzYXkg
+dGhhdCB0aGUgbG93ZXIgYml0cyBvZiB0aGUgSUNJRCB2YWx1ZSBtYXAgZGlyZWN0bHkgdG8gdGhl
+IGxvd2VyDQo+IGJpdHMgb2YgdGhlIFN0cmVhbSBJRCB2YWx1ZSAtIHRoYXQncyB0aGUgc2FtZSBm
+aXhlZCBwcm9wZXJ0eSBvZiB0aGUNCj4gaGFyZHdhcmUgdGhhdCB5b3UncmUgd2FudGluZyB0byBh
+c3N1bWUgaW4gaW9tbXUtcGFyZW50Lg0KDQpNYWtlcyBzZW5zZS4gSSB3YXMgZ29pbmcgaW4gYSBs
+aXR0bGUgYml0IHdyb25nIGRpcmVjdGlvbi4gVGhhbmtzIGZvciBjb3JyZWN0aW5nLg0KSSB3aWxs
+IHNlbmQgdjIgcGF0Y2hzZXQgd2l0aCBpb21tdS1tYXAgcHJvcGVydHkuDQoNClJlZ2FyZHMsDQpO
+aXB1bg0KDQo+IA0KPiA+IElmIHlvdSBzdWdnZXN0IHdlIGNhbiByZS11c2UgdGhlIGlvbW11LW1h
+cCBwcm9wZXJ0eS4gV2hhdCBpcyB5b3VyIG9waW5pb24/DQo+IA0KPiBJIHRoaW5rIGl0IG1ha2Vz
+IGEgbG90IG1vcmUgc2Vuc2UgdG8gZGlyZWN0bHkgdXNlIHRoZSBwcm9wZXJ0eSB3aGljaA0KPiBh
+bHJlYWR5IGV4aXN0cywgdGhhbiB0byBpbnRyb2R1Y2UgYSBuZXcgb25lIHRvIG1lcmVseSBhc3N1
+bWUgb25lDQo+IGhhcmQtY29kZWQgdmFsdWUgb2YgdGhlIGV4aXN0aW5nIG9uZS4gRXh0ZW5kaW5n
+IG1zaS1wYXJlbnQgdG8gbXNpLW1hcA0KPiB3YXMgYSBjYXNlIG9mICJvb3BzLCBpdCB0dXJucyBv
+dXQgd2UgbmVlZCBtb3JlIGZsZXhpYmlsaXR5IGhlcmUiOyBmb3INCj4gdGhlIGNhc2Ugb2YgaW9t
+bXUtbWFwIEkgY2FuJ3QgaW1hZ2luZSBhbnkganVzdGlmaWNhdGlvbiBmb3Igc2F5aW5nDQo+ICJv
+b3BzLCB3ZSBuZWVkIGxlc3MgZmxleGliaWxpdHkgaGVyZSIgKHNhdmluZyA5IHdob2xlIGJ5dGVz
+IGluIHRoZSBEVA0KPiByZWFsbHkgaXMgaXJyZWxldmFudCkuDQo+IA0KPiBSb2Jpbi4NCg==
