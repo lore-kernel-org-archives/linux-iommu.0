@@ -1,224 +1,104 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 01/13] x86: remove X86_PPRO_FENCE
-Date: Mon,  5 Mar 2018 09:46:43 -0800
-Message-ID: <20180305174655.9878-2-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 13/13] swiotlb: remove swiotlb_{alloc,free}_coherent
+Date: Mon,  5 Mar 2018 09:46:55 -0800
+Message-ID: <20180305174655.9878-14-hch@lst.de>
 References: <20180305174655.9878-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180305174655.9878-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180305174655.9878-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: x86@kernel.org
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tom Lendacky <thomas.lendacky@amd.com>, David Woodhouse <dwmw2@infradead.org>, Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-There were only a few Pentium Pro multiprocessors systems where this
-errata applied. They are more than 20 years old now, and we've slowly
-dropped places where put the workarounds in and discouraged anyone
-from enabling the workaround.
+Unused now that everyone uses swiotlb_{alloc,free}.
 
-Get rid of it for good.
-
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/x86/Kconfig.cpu                        | 13 -------------
- arch/x86/entry/vdso/vdso32/vclock_gettime.c |  2 --
- arch/x86/include/asm/barrier.h              | 30 -----------------------------
- arch/x86/include/asm/io.h                   | 15 ---------------
- arch/x86/kernel/pci-nommu.c                 | 19 ------------------
- arch/x86/um/asm/barrier.h                   |  4 ----
- 6 files changed, 83 deletions(-)
+ include/linux/swiotlb.h |  8 --------
+ lib/swiotlb.c           | 38 --------------------------------------
+ 2 files changed, 46 deletions(-)
 
-diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 8b8d2297d486..638411f22267 100644
---- a/arch/x86/Kconfig.cpu
-+++ b/arch/x86/Kconfig.cpu
-@@ -315,19 +315,6 @@ config X86_L1_CACHE_SHIFT
- 	default "4" if MELAN || M486 || MGEODEGX1
- 	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 5b1f2a00491c..965be92c33b5 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -72,14 +72,6 @@ void *swiotlb_alloc(struct device *hwdev, size_t size, dma_addr_t *dma_handle,
+ void swiotlb_free(struct device *dev, size_t size, void *vaddr,
+ 		dma_addr_t dma_addr, unsigned long attrs);
  
--config X86_PPRO_FENCE
--	bool "PentiumPro memory ordering errata workaround"
--	depends on M686 || M586MMX || M586TSC || M586 || M486 || MGEODEGX1
--	---help---
--	  Old PentiumPro multiprocessor systems had errata that could cause
--	  memory operations to violate the x86 ordering standard in rare cases.
--	  Enabling this option will attempt to work around some (but not all)
--	  occurrences of this problem, at the cost of much heavier spinlock and
--	  memory barrier operations.
+-extern void
+-*swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+-			dma_addr_t *dma_handle, gfp_t flags);
 -
--	  If unsure, say n here. Even distro kernels should think twice before
--	  enabling this: there are few systems, and an unlikely bug.
+-extern void
+-swiotlb_free_coherent(struct device *hwdev, size_t size,
+-		      void *vaddr, dma_addr_t dma_handle);
 -
- config X86_F00F_BUG
- 	def_bool y
- 	depends on M586MMX || M586TSC || M586 || M486
-diff --git a/arch/x86/entry/vdso/vdso32/vclock_gettime.c b/arch/x86/entry/vdso/vdso32/vclock_gettime.c
-index 7780bbfb06ef..9242b28418d5 100644
---- a/arch/x86/entry/vdso/vdso32/vclock_gettime.c
-+++ b/arch/x86/entry/vdso/vdso32/vclock_gettime.c
-@@ -5,8 +5,6 @@
- #undef CONFIG_OPTIMIZE_INLINING
- #endif
- 
--#undef CONFIG_X86_PPRO_FENCE
--
- #ifdef CONFIG_X86_64
- 
- /*
-diff --git a/arch/x86/include/asm/barrier.h b/arch/x86/include/asm/barrier.h
-index e1259f043ae9..042b5e892ed1 100644
---- a/arch/x86/include/asm/barrier.h
-+++ b/arch/x86/include/asm/barrier.h
-@@ -52,11 +52,7 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
- #define barrier_nospec() alternative_2("", "mfence", X86_FEATURE_MFENCE_RDTSC, \
- 					   "lfence", X86_FEATURE_LFENCE_RDTSC)
- 
--#ifdef CONFIG_X86_PPRO_FENCE
--#define dma_rmb()	rmb()
--#else
- #define dma_rmb()	barrier()
--#endif
- #define dma_wmb()	barrier()
- 
- #ifdef CONFIG_X86_32
-@@ -68,30 +64,6 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
- #define __smp_wmb()	barrier()
- #define __smp_store_mb(var, value) do { (void)xchg(&var, value); } while (0)
- 
--#if defined(CONFIG_X86_PPRO_FENCE)
--
--/*
-- * For this option x86 doesn't have a strong TSO memory
-- * model and we should fall back to full barriers.
-- */
--
--#define __smp_store_release(p, v)					\
--do {									\
--	compiletime_assert_atomic_type(*p);				\
--	__smp_mb();							\
--	WRITE_ONCE(*p, v);						\
--} while (0)
--
--#define __smp_load_acquire(p)						\
--({									\
--	typeof(*p) ___p1 = READ_ONCE(*p);				\
--	compiletime_assert_atomic_type(*p);				\
--	__smp_mb();							\
--	___p1;								\
--})
--
--#else /* regular x86 TSO memory ordering */
--
- #define __smp_store_release(p, v)					\
- do {									\
- 	compiletime_assert_atomic_type(*p);				\
-@@ -107,8 +79,6 @@ do {									\
- 	___p1;								\
- })
- 
--#endif
--
- /* Atomic operations are already serializing on x86 */
- #define __smp_mb__before_atomic()	barrier()
- #define __smp_mb__after_atomic()	barrier()
-diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-index 95e948627fd0..f6e5b9375d8c 100644
---- a/arch/x86/include/asm/io.h
-+++ b/arch/x86/include/asm/io.h
-@@ -232,21 +232,6 @@ extern void set_iounmap_nonlazy(void);
-  */
- #define __ISA_IO_base ((char __iomem *)(PAGE_OFFSET))
- 
--/*
-- *	Cache management
-- *
-- *	This needed for two cases
-- *	1. Out of order aware processors
-- *	2. Accidentally out of order processors (PPro errata #51)
-- */
--
--static inline void flush_write_buffers(void)
--{
--#if defined(CONFIG_X86_PPRO_FENCE)
--	asm volatile("lock; addl $0,0(%%esp)": : :"memory");
--#endif
--}
--
- #endif /* __KERNEL__ */
- 
- extern void native_io_delay(void);
-diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
-index 618285e475c6..ac7ea3a8242f 100644
---- a/arch/x86/kernel/pci-nommu.c
-+++ b/arch/x86/kernel/pci-nommu.c
-@@ -37,7 +37,6 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
- 	WARN_ON(size == 0);
- 	if (!check_addr("map_single", dev, bus, size))
- 		return NOMMU_MAPPING_ERROR;
--	flush_write_buffers();
- 	return bus;
+ extern dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+ 				   unsigned long offset, size_t size,
+ 				   enum dma_data_direction dir,
+diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+index 8b06b4485e65..15954b86f09e 100644
+--- a/lib/swiotlb.c
++++ b/lib/swiotlb.c
+@@ -157,13 +157,6 @@ unsigned long swiotlb_size_or_default(void)
+ 	return size ? size : (IO_TLB_DEFAULT_SIZE);
  }
  
-@@ -72,25 +71,9 @@ static int nommu_map_sg(struct device *hwdev, struct scatterlist *sg,
- 			return 0;
- 		s->dma_length = s->length;
- 	}
--	flush_write_buffers();
- 	return nents;
+-/* Note that this doesn't work with highmem page */
+-static dma_addr_t swiotlb_virt_to_bus(struct device *hwdev,
+-				      volatile void *address)
+-{
+-	return phys_to_dma(hwdev, virt_to_phys(address));
+-}
+-
+ static bool no_iotlb_memory;
+ 
+ void swiotlb_print_info(void)
+@@ -752,28 +745,6 @@ swiotlb_alloc_buffer(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	return NULL;
  }
  
--static void nommu_sync_single_for_device(struct device *dev,
--			dma_addr_t addr, size_t size,
--			enum dma_data_direction dir)
+-void *
+-swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+-		       dma_addr_t *dma_handle, gfp_t flags)
 -{
--	flush_write_buffers();
+-	int order = get_order(size);
+-	unsigned long attrs = (flags & __GFP_NOWARN) ? DMA_ATTR_NO_WARN : 0;
+-	void *ret;
+-
+-	ret = (void *)__get_free_pages(flags, order);
+-	if (ret) {
+-		*dma_handle = swiotlb_virt_to_bus(hwdev, ret);
+-		if (dma_coherent_ok(hwdev, *dma_handle, size)) {
+-			memset(ret, 0, size);
+-			return ret;
+-		}
+-		free_pages((unsigned long)ret, order);
+-	}
+-
+-	return swiotlb_alloc_buffer(hwdev, size, dma_handle, attrs);
 -}
+-EXPORT_SYMBOL(swiotlb_alloc_coherent);
 -
--
--static void nommu_sync_sg_for_device(struct device *dev,
--			struct scatterlist *sg, int nelems,
--			enum dma_data_direction dir)
--{
--	flush_write_buffers();
--}
--
- static int nommu_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ static bool swiotlb_free_buffer(struct device *dev, size_t size,
+ 		dma_addr_t dma_addr)
  {
- 	return dma_addr == NOMMU_MAPPING_ERROR;
-@@ -101,8 +84,6 @@ const struct dma_map_ops nommu_dma_ops = {
- 	.free			= dma_generic_free_coherent,
- 	.map_sg			= nommu_map_sg,
- 	.map_page		= nommu_map_page,
--	.sync_single_for_device = nommu_sync_single_for_device,
--	.sync_sg_for_device	= nommu_sync_sg_for_device,
- 	.is_phys		= 1,
- 	.mapping_error		= nommu_mapping_error,
- 	.dma_supported		= x86_dma_supported,
-diff --git a/arch/x86/um/asm/barrier.h b/arch/x86/um/asm/barrier.h
-index b7d73400ea29..f31e5d903161 100644
---- a/arch/x86/um/asm/barrier.h
-+++ b/arch/x86/um/asm/barrier.h
-@@ -30,11 +30,7 @@
+@@ -793,15 +764,6 @@ static bool swiotlb_free_buffer(struct device *dev, size_t size,
+ 	return true;
+ }
  
- #endif /* CONFIG_X86_32 */
- 
--#ifdef CONFIG_X86_PPRO_FENCE
--#define dma_rmb()	rmb()
--#else /* CONFIG_X86_PPRO_FENCE */
- #define dma_rmb()	barrier()
--#endif /* CONFIG_X86_PPRO_FENCE */
- #define dma_wmb()	barrier()
- 
- #include <asm-generic/barrier.h>
+-void
+-swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
+-		      dma_addr_t dev_addr)
+-{
+-	if (!swiotlb_free_buffer(hwdev, size, dev_addr))
+-		free_pages((unsigned long)vaddr, get_order(size));
+-}
+-EXPORT_SYMBOL(swiotlb_free_coherent);
+-
+ static void
+ swiotlb_full(struct device *dev, size_t size, enum dma_data_direction dir,
+ 	     int do_panic)
 -- 
 2.14.2
