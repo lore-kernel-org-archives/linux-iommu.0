@@ -1,127 +1,100 @@
-From: Dmitry Safonov <dima@arista.com>
-Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
-Date: Mon, 05 Mar 2018 15:00:26 +0000
-Message-ID: <1520262026.2743.4.camel@arista.com>
-References: <20180215191729.15777-1-dima@arista.com>
+From: Nipun Gupta <nipun.gupta@nxp.com>
+Subject: RE: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
+Date: Mon, 5 Mar 2018 15:00:37 +0000
+Message-ID: <HE1PR0401MB24254CBDB8B6F537D08B925DE6DA0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+ <1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
+ <5cdeded1-ca3c-339a-bf73-73401e7dd4ed@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180215191729.15777-1-dima@arista.com>
+In-Reply-To: <5cdeded1-ca3c-339a-bf73-73401e7dd4ed@arm.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
-Cc: 0x7f454c46@gmail.com, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
+To: Robin Murphy <robin.murphy@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "joro@8bytes.org" <joro@8bytes.org>, Leo Li <leoyang.li@nxp.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Bharat Bhushan <bharat.bhushan@nxp.com>, "stuyoder@gmail.com" <stuyoder@gmail.com>, Laurentiu Tudor <laurentiu.tudor@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-What do you think about v3?
-It looks like, I can solve my softlookups with just a bit more proper
-ratelimiting..
-
-On Thu, 2018-02-15 at 19:17 +0000, Dmitry Safonov wrote:
-> There is a ratelimit for printing, but it's incremented each time the
-> cpu recives dmar fault interrupt. While one interrupt may signal
-> about
-> *many* faults.
-> So, measuring the impact it turns out that reading/clearing one fault
-> takes < 1 usec, and printing info about the fault takes ~170 msec.
-> 
-> Having in mind that maximum number of fault recording registers per
-> remapping hardware unit is 256.. IRQ handler may run for (170*256)
-> msec.
-> And as fault-serving loop runs without a time limit, during servicing
-> new faults may occur..
-> 
-> Ratelimit each fault printing rather than each irq printing.
-> 
-> Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
-> 
-> BUG: spinlock lockup suspected on CPU#0, CliShell/9903
->  lock: 0xffffffff81a47440, .magic: dead4ead, .owner:
-> kworker/u16:2/8915, .owner_cpu: 6
-> CPU: 0 PID: 9903 Comm: CliShell
-> Call Trace:$\n'
-> [..] dump_stack+0x65/0x83$\n'
-> [..] spin_dump+0x8f/0x94$\n'
-> [..] do_raw_spin_lock+0x123/0x170$\n'
-> [..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
-> [..] uart_chars_in_buffer+0x20/0x4d$\n'
-> [..] tty_chars_in_buffer+0x18/0x1d$\n'
-> [..] n_tty_poll+0x1cb/0x1f2$\n'
-> [..] tty_poll+0x5e/0x76$\n'
-> [..] do_select+0x363/0x629$\n'
-> [..] compat_core_sys_select+0x19e/0x239$\n'
-> [..] compat_SyS_select+0x98/0xc0$\n'
-> [..] sysenter_dispatch+0x7/0x25$\n'
-> [..]
-> NMI backtrace for cpu 6
-> CPU: 6 PID: 8915 Comm: kworker/u16:2
-> Workqueue: dmar_fault dmar_fault_work
-> Call Trace:$\n'
-> [..] wait_for_xmitr+0x26/0x8f$\n'
-> [..] serial8250_console_putchar+0x1c/0x2c$\n'
-> [..] uart_console_write+0x40/0x4b$\n'
-> [..] serial8250_console_write+0xe6/0x13f$\n'
-> [..] call_console_drivers.constprop.13+0xce/0x103$\n'
-> [..] console_unlock+0x1f8/0x39b$\n'
-> [..] vprintk_emit+0x39e/0x3e6$\n'
-> [..] printk+0x4d/0x4f$\n'
-> [..] dmar_fault+0x1a8/0x1fc$\n'
-> [..] dmar_fault_work+0x15/0x17$\n'
-> [..] process_one_work+0x1e8/0x3a9$\n'
-> [..] worker_thread+0x25d/0x345$\n'
-> [..] kthread+0xea/0xf2$\n'
-> [..] ret_from_fork+0x58/0x90$\n'
-> 
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Cc: David Woodhouse <dwmw2@infradead.org>
-> Cc: Ingo Molnar <mingo@kernel.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: iommu@lists.linux-foundation.org
-> Signed-off-by: Dmitry Safonov <dima@arista.com>
-> ---
-> Maybe it's worth to limit while(1) cycle.
-> If IOMMU generates faults with equal speed as irq handler cleans
-> them, it may turn into long-irq-disabled region again.
-> Not sure if it can happen anyway.
-> 
->  drivers/iommu/dmar.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index accf58388bdb..6c4ea32ee6a9 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->  	int reg, fault_index;
->  	u32 fault_status;
->  	unsigned long flag;
-> -	bool ratelimited;
->  	static DEFINE_RATELIMIT_STATE(rs,
->  				      DEFAULT_RATELIMIT_INTERVAL,
->  				      DEFAULT_RATELIMIT_BURST);
->  
-> -	/* Disable printing, simply clear the fault when ratelimited
-> */
-> -	ratelimited = !__ratelimit(&rs);
-> -
->  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
->  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
-> -	if (fault_status && !ratelimited)
-> +	if (fault_status && __ratelimit(&rs))
->  		pr_err("DRHD: handling fault status reg %x\n",
-> fault_status);
->  
->  	/* TBD: ignore advanced fault log currently */
-> @@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->  	fault_index = dma_fsts_fault_record_index(fault_status);
->  	reg = cap_fault_reg_offset(iommu->cap);
->  	while (1) {
-> +		/* Disable printing, simply clear the fault when
-> ratelimited */
-> +		bool ratelimited = !__ratelimit(&rs);
->  		u8 fault_reason;
->  		u16 source_id;
->  		u64 guest_addr;
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUm9iaW4gTXVycGh5IFtt
+YWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+IFNlbnQ6IE1vbmRheSwgTWFyY2ggMDUsIDIw
+MTggMjA6MjMNCj4gVG86IE5pcHVuIEd1cHRhIDxuaXB1bi5ndXB0YUBueHAuY29tPjsgd2lsbC5k
+ZWFjb25AYXJtLmNvbTsNCj4gbWFyay5ydXRsYW5kQGFybS5jb207IGNhdGFsaW4ubWFyaW5hc0Bh
+cm0uY29tDQo+IENjOiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgcm9iaCtkdEBr
+ZXJuZWwub3JnOyBoY2hAbHN0LmRlOw0KPiBtLnN6eXByb3dza2lAc2Ftc3VuZy5jb207IGdyZWdr
+aEBsaW51eGZvdW5kYXRpb24ub3JnOyBqb3JvQDhieXRlcy5vcmc7DQo+IExlbyBMaSA8bGVveWFu
+Zy5saUBueHAuY29tPjsgc2hhd25ndW9Aa2VybmVsLm9yZzsgbGludXgtDQo+IGtlcm5lbEB2Z2Vy
+Lmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0tDQo+IGtl
+cm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZzsg
+QmhhcmF0IEJodXNoYW4NCj4gPGJoYXJhdC5iaHVzaGFuQG54cC5jb20+OyBzdHV5b2RlckBnbWFp
+bC5jb207IExhdXJlbnRpdSBUdWRvcg0KPiA8bGF1cmVudGl1LnR1ZG9yQG54cC5jb20+DQo+IFN1
+YmplY3Q6IFJlOiBbUEFUQ0ggMS82XSBEb2NzOiBkdDogYWRkIGZzbC1tYyBpb21tdS1wYXJlbnQg
+ZGV2aWNlLXRyZWUgYmluZGluZw0KPiANCj4gT24gMDUvMDMvMTggMTQ6MjksIE5pcHVuIEd1cHRh
+IHdyb3RlOg0KPiA+IFRoZSBleGlzdGluZyBJT01NVSBiaW5kaW5ncyBjYW5ub3QgYmUgdXNlZCB0
+byBzcGVjaWZ5IHRoZSByZWxhdGlvbnNoaXANCj4gPiBiZXR3ZWVuIGZzbC1tYyBkZXZpY2VzIGFu
+ZCBJT01NVXMuIFRoaXMgcGF0Y2ggYWRkcyBhIGJpbmRpbmcgZm9yDQo+ID4gbWFwcGluZyBmc2wt
+bWMgZGV2aWNlcyB0byBJT01NVXMsIHVzaW5nIGEgbmV3IGlvbW11LXBhcmVudCBwcm9wZXJ0eS4N
+Cj4gDQo+IEdpdmVuIHRoYXQgYWxsb3dpbmcgIm1zaS1wYXJlbnQiIGZvciAjbXNpLWNlbGxzID4g
+MSBpcyBtZXJlbHkgYQ0KPiBiYWNrd2FyZC1jb21wYXRpYmlsaXR5IGJvZGdlIGZ1bGwgb2YgaGFy
+ZC1jb2RlZCBhc3N1bXB0aW9ucywgd2h5IHdvdWxkDQo+IHdlIHdhbnQgdG8ga25vd2luZ2x5IGlu
+dHJvZHVjZSBhIHNpbWlsYXJseSB1bnBsZWFzYW50IGVxdWl2YWxlbnQgZm9yDQo+IElPTU1Vcz8g
+V2hhdCdzIHdyb25nIHdpdGggImlvbW11LW1hcCI/DQoNCkhpIFJvYmluLA0KDQpXaXRoICdtc2kt
+cGFyZW50JyB0aGUgcHJvcGVydHkgaXMgZml4ZWQgdXAgdG8gaGF2ZSBtc2ktbWFwLiBJbiB0aGlz
+IGNhc2UgdGhlcmUgaXMNCm5vIGZpeHVwIHJlcXVpcmVkIGFuZCBzaW1wbGUgJ2lvbW11LXBhcmVu
+dCcgcHJvcGVydHkgY2FuIGJlIHVzZWQsIHdpdGggTUMgYnVzDQppdHNlbGYgcHJvdmlkaW5nIHRo
+ZSBzdHJlYW0taWQncyAoaW4gdGhlIGNvZGUgZXhlY3V0aW9uIHZpYSBGVykuDQoNCldlIGNhbiBh
+bHNvIHVzZSB0aGUgaW9tbXUtbWFwIHByb3BlcnR5IHNpbWlsYXIgdG8gUENJLCB3aGljaCB3aWxs
+IHJlcXVpcmUgdS1ib290DQpmaXh1cC4gQnV0IHRoZW4gaXQgbGVhZHMgdG8gbGl0dGxlIGJpdCBj
+b21wbGljYXRpb25zIG9mIHUtYm9vdCAtIGtlcm5lbCBjb21wYXRpYmlsaXR5Lg0KDQpJZiB5b3Ug
+c3VnZ2VzdCB3ZSBjYW4gcmUtdXNlIHRoZSBpb21tdS1tYXAgcHJvcGVydHkuIFdoYXQgaXMgeW91
+ciBvcGluaW9uPw0KDQpUaGFua3MsDQpOaXB1bg0KDQo+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IE5p
+cHVuIEd1cHRhIDxuaXB1bi5ndXB0YUBueHAuY29tPg0KPiA+IC0tLQ0KPiA+ICAgLi4uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvbWlzYy9mc2wscW9yaXEtbWMudHh0ICAgICAgfCAzMQ0KPiArKysrKysr
+KysrKysrKysrKysrKysrDQo+ID4gICAxIGZpbGUgY2hhbmdlZCwgMzEgaW5zZXJ0aW9ucygrKQ0K
+PiA+DQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9t
+aXNjL2ZzbCxxb3JpcS1tYy50eHQNCj4gYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
+Z3MvbWlzYy9mc2wscW9yaXEtbWMudHh0DQo+ID4gaW5kZXggNjYxMWE3Yy4uMDExYzdkNiAxMDA2
+NDQNCj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWlzYy9mc2ws
+cW9yaXEtbWMudHh0DQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
+L21pc2MvZnNsLHFvcmlxLW1jLnR4dA0KPiA+IEBAIC05LDYgKzksMjQgQEAgYmxvY2tzIHRoYXQg
+Y2FuIGJlIHVzZWQgdG8gY3JlYXRlIGZ1bmN0aW9uYWwgaGFyZHdhcmUNCj4gb2JqZWN0cy9kZXZp
+Y2VzDQo+ID4gICBzdWNoIGFzIG5ldHdvcmsgaW50ZXJmYWNlcywgY3J5cHRvIGFjY2VsZXJhdG9y
+IGluc3RhbmNlcywgTDIgc3dpdGNoZXMsDQo+ID4gICBldGMuDQo+ID4NCj4gPiArRm9yIGFuIG92
+ZXJ2aWV3IG9mIHRoZSBEUEFBMiBhcmNoaXRlY3R1cmUgYW5kIGZzbC1tYyBidXMgc2VlOg0KPiA+
+ICtkcml2ZXJzL3N0YWdpbmcvZnNsLW1jL1JFQURNRS50eHQNCj4gPiArDQo+ID4gK0FzIGRlc2Ny
+aWJlZCBpbiB0aGUgYWJvdmUgb3ZlcnZpZXcsIGFsbCBEUEFBMiBvYmplY3RzIGluIGEgRFBSQyBz
+aGFyZSB0aGUNCj4gPiArc2FtZSBoYXJkd2FyZSAiaXNvbGF0aW9uIGNvbnRleHQiIGFuZCBhIDEw
+LWJpdCB2YWx1ZSBjYWxsZWQgYW4gSUNJRA0KPiA+ICsoaXNvbGF0aW9uIGNvbnRleHQgaWQpIGlz
+IGV4cHJlc3NlZCBieSB0aGUgaGFyZHdhcmUgdG8gaWRlbnRpZnkNCj4gPiArdGhlIHJlcXVlc3Rl
+ci4NCj4gDQo+IElPVywgcHJlY2lzZWx5IHRoZSBjYXNlIGZvciB3aGljaCAie21zaSxpb21tdX0t
+bWFwIiBleGlzdC4gWWVzLCBJIGtub3cNCj4gdGhleSdyZSBjdXJyZW50bHkgZG9jdW1lbnRlZCB1
+bmRlciBiaW5kaW5ncy9wY2ksIGJ1dCB0aGV5J3JlIG5vdCByZWFsbHkNCj4gaW50ZW5kZWQgdG8g
+YmUgYWJzb2x1dGVseSBQQ0ktc3BlY2lmaWMuDQo+IA0KPiBSb2Jpbi4NCj4gDQo+ID4gK1RoZSBn
+ZW5lcmljICdpb21tdXMnIHByb3BlcnR5IGlzIGNhbm5vdCBiZSB1c2VkIHRvIGRlc2NyaWJlIHRo
+ZSByZWxhdGlvbnNoaXANCj4gPiArYmV0d2VlbiBmc2wtbWMgYW5kIElPTU1Vcywgc28gYW4gaW9t
+bXUtcGFyZW50IHByb3BlcnR5IGlzIHVzZWQgdG8gZGVmaW5lDQo+ID4gK3RoZSBzYW1lLg0KPiA+
+ICsNCj4gPiArRm9yIGdlbmVyaWMgSU9NTVUgYmluZGluZ3MsIHNlZQ0KPiA+ICtEb2N1bWVudGF0
+aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvaW9tbXUudHh0Lg0KPiA+ICsNCj4gPiArRm9y
+IGFybS1zbW11IGJpbmRpbmcsIHNlZToNCj4gPiArRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL2lvbW11L2FybSxzbW11LnR4dC4NCj4gPiArDQo+ID4gICBSZXF1aXJlZCBwcm9wZXJ0
+aWVzOg0KPiA+DQo+ID4gICAgICAgLSBjb21wYXRpYmxlDQo+ID4gQEAgLTg4LDE0ICsxMDYsMjcg
+QEAgU3ViLW5vZGVzOg0KPiA+ICAgICAgICAgICAgICAgICBWYWx1ZSB0eXBlOiA8cGhhbmRsZT4N
+Cj4gPiAgICAgICAgICAgICAgICAgRGVmaW5pdGlvbjogU3BlY2lmaWVzIHRoZSBwaGFuZGxlIHRv
+IHRoZSBQSFkgZGV2aWNlIG5vZGUgYXNzb2NpYXRlZA0KPiA+ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICB3aXRoIHRoZSB0aGlzIGRwbWFjLg0KPiA+ICtPcHRpb25hbCBwcm9wZXJ0aWVzOg0K
+PiA+ICsNCj4gPiArLSBpb21tdS1wYXJlbnQ6IE1hcHMgdGhlIGRldmljZXMgb24gZnNsLW1jIGJ1
+cyB0byBhbiBJT01NVS4NCj4gPiArICBUaGUgcHJvcGVydHkgc3BlY2lmaWVzIHRoZSBJT01NVSBi
+ZWhpbmQgd2hpY2ggdGhlIGRldmljZXMgb24NCj4gPiArICBmc2wtbWMgYnVzIGFyZSByZXNpZGlu
+Zy4NCj4gPg0KPiA+ICAgRXhhbXBsZToNCj4gPg0KPiA+ICsgICAgICAgIHNtbXU6IGlvbW11QDUw
+MDAwMDAgew0KPiA+ICsgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gImFybSxtbXUtNTAwIjsN
+Cj4gPiArICAgICAgICAgICAgICAgI2lvbW11LWNlbGxzID0gPDE+Ow0KPiA+ICsgICAgICAgICAg
+ICAgICBzdHJlYW0tbWF0Y2gtbWFzayA9IDwweDdDMDA+Ow0KPiA+ICsgICAgICAgICAgICAgICAu
+Li4NCj4gPiArICAgICAgICB9Ow0KPiA+ICsNCj4gPiAgICAgICAgICAgZnNsX21jOiBmc2wtbWNA
+ODBjMDAwMDAwIHsNCj4gPiAgICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gImZzbCxxb3Jp
+cS1tYyI7DQo+ID4gICAgICAgICAgICAgICAgICAgcmVnID0gPDB4MDAwMDAwMDggMHgwYzAwMDAw
+MCAwIDB4NDA+LCAgICAvKiBNQyBwb3J0YWwgYmFzZSAqLw0KPiA+ICAgICAgICAgICAgICAgICAg
+ICAgICAgIDwweDAwMDAwMDAwIDB4MDgzNDAwMDAgMCAweDQwMDAwPjsgLyogTUMgY29udHJvbCBy
+ZWcgKi8NCj4gPiAgICAgICAgICAgICAgICAgICBtc2ktcGFyZW50ID0gPCZpdHM+Ow0KPiA+ICsg
+ICAgICAgICAgICAgICAgaW9tbXUtcGFyZW50ID0gPCZzbW11PjsNCj4gPiAgICAgICAgICAgICAg
+ICAgICAjYWRkcmVzcy1jZWxscyA9IDwzPjsNCj4gPiAgICAgICAgICAgICAgICAgICAjc2l6ZS1j
+ZWxscyA9IDwxPjsNCj4gPg0KPiA+DQo=
