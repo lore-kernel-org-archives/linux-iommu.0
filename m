@@ -1,18 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 5/6] dma-mapping: support fsl-mc bus
-Date: Mon, 5 Mar 2018 18:51:56 +0000
-Message-ID: <1729ae21-d08c-b413-51a3-f22c394b388d@arm.com>
-References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
-	<1520260166-29387-6-git-send-email-nipun.gupta@nxp.com>
-	<20180305150814.GA15918@lst.de>
-	<7b4f9972-6aaa-fc9d-3854-d48b19a8051c@arm.com>
-	<20180305183938.GB20086@lst.de>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 5/8] dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N
+	(R8A77965)
+Date: Mon, 5 Mar 2018 15:09:39 -0600
+Message-ID: <20180305210939.c74lfn7jwd3vvolm@rob-hp-laptop>
+References: <1519667836-31330-1-git-send-email-jacopo+renesas@jmondi.org>
+	<1519667836-31330-6-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180305183938.GB20086-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <1519667836-31330-6-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,30 +20,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/18 18:39, Christoph Hellwig wrote:
-> On Mon, Mar 05, 2018 at 03:48:32PM +0000, Robin Murphy wrote:
->> Unfortunately for us, fsl-mc is conceptually rather like PCI in that it's
->> software-discoverable and the only thing described in DT is the bus "host",
->> thus we need the same sort of thing as for PCI to map from the child
->> devices back to the bus root in order to find the appropriate firmware
->> node. Worse than PCI, though, we wouldn't even have the option of
->> describing child devices statically in firmware at all, since it's actually
->> one of these runtime-configurable "build your own network accelerator"
->> hardware pools where userspace gets to create and destroy "devices" as it
->> likes.
+On Mon, Feb 26, 2018 at 06:57:13PM +0100, Jacopo Mondi wrote:
+> Add Renesas R-Car M3-N (R8A77965) compat string to IPMMU DT bindings
+> documentation.
 > 
-> I really hate the PCI special case just as much.  Maybe we just
-> need a dma_configure method on the bus, and move PCI as well as fsl-mc
-> to it.
+> Signed-off-by: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+> ---
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-Hmm, on reflection, 100% ack to that idea. It would neatly supersede 
-bus->force_dma *and* mean that we don't have to effectively pull pci.h 
-into everything, which I've never liked. In hindsight dma_configure() 
-does feel like it's grown into this odd choke point where we munge 
-everything in just for it to awkwardly unpick things again.
-
-Robin.
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
