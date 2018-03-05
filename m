@@ -1,16 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RESEND PATCH v6 13/14] iommu/rockchip: Add runtime PM support
-Date: Mon, 5 Mar 2018 14:13:16 +0000
-Message-ID: <0cd81b39-ffe9-eda3-1358-13afeb2ec25b@arm.com>
-References: <20180301101837.27969-1-jeffy.chen@rock-chips.com>
-	<20180301101837.27969-14-jeffy.chen@rock-chips.com>
-	<CAAFQd5D2SY2RV9HLTeTQigfnVCkF9wDq74_+t3OV2YEb9wJtqg@mail.gmail.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH 0/6] Support for fsl-mc bus and its devices in SMMU
+Date: Mon,  5 Mar 2018 19:59:20 +0530
+Message-ID: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5D2SY2RV9HLTeTQigfnVCkF9wDq74_+t3OV2YEb9wJtqg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,39 +15,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/18 13:49, Tomasz Figa wrote:
-[...]
->> @@ -518,7 +520,12 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
->>          u32 int_status;
->>          dma_addr_t iova;
->>          irqreturn_t ret = IRQ_NONE;
->> -       int i;
->> +       int i, err, need_runtime_put;
-> 
-> nit: need_runtime_put could be a bool.
-> 
->> +
->> +       err = pm_runtime_get_if_in_use(iommu->dev);
->> +       if (err <= 0 && err != -EINVAL)
->> +               return ret;
->> +       need_runtime_put = err > 0;
-> 
-> Generally something must be really wrong if we end up with err == 0
-> here, because the IOMMU must be powered on to signal an interrupt. The
-> only case this could happen would be if the IRQ signal was shared with
-> some device from another power domain. Is it possible on Rockchip
-> SoCs? If not, perhaps we should have a WARN_ON() here for such case.
+This patchset defines IOMMU DT binding for fsl-mc bus and adds
+support in SMMU for fsl-mc bus.
 
-In general, there's almost certainly some time window between the 
-interrupt level being latched at the GIC and the IRQ actually being 
-taken by its target CPU, in which potentially the power could be removed 
-and/or the clocks gated - especially if there are higher-priority IRQs 
-pending at the same time and the racing PM call is on some other CPU. 
-Sure, it's probably unlikely, but I wouldn't necessarily consider it 
-completely erroneous.
+These patches
+  - Define the new property 'iommu-parent' for fsl-mc bus (patch 1)
+  - Integrates the fsl-mc bus with the SMMU using this
+    IOMMU binding (patch 2,3)
+  - Adds the dma-mapping support for fsl-mc bus (patch 4,5)
+  - Updates the fsl-mc device node with iommu/dma related changes
 
-Robin.
+This patchset is based on staging-testing tree where fsl-mc bus is out
+from staging
+
+This patchset is dependent on patch https://patchwork.kernel.org/patch/10207507/;
+otherwise DPAA2 Ethernet driver functionality will break.
+
+Nipun Gupta (6):
+  Docs: dt: add fsl-mc iommu-parent device-tree binding
+  iommu: support iommu configuration for fsl-mc devices
+  iommu: arm-smmu: Add support for the fsl-mc bus
+  bus: fsl-mc: remove dma ops setup from driver
+  dma-mapping: support fsl-mc bus
+  dts: fsl-ls208x: updated DT with SMMU support for fsl-mc
+
+ .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 31 ++++++++++++++++++++++
+ arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |  6 ++++-
+ drivers/base/dma-mapping.c                         |  7 +++++
+ drivers/bus/fsl-mc/fsl-mc-bus.c                    |  5 +---
+ drivers/iommu/arm-smmu.c                           |  7 +++++
+ drivers/iommu/iommu.c                              | 21 +++++++++++++++
+ drivers/iommu/of_iommu.c                           | 23 ++++++++++++++++
+ include/linux/fsl/mc.h                             |  8 ++++++
+ include/linux/iommu.h                              |  2 ++
+ 9 files changed, 105 insertions(+), 5 deletions(-)
+
+-- 
+1.9.1
