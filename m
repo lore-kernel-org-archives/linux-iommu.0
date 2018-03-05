@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 03/13] x86: use dma-direct
-Date: Mon,  5 Mar 2018 09:46:45 -0800
-Message-ID: <20180305174655.9878-4-hch@lst.de>
+Subject: [PATCH 07/13] iommu/amd_iommu: use dma_direct_{alloc,free}
+Date: Mon,  5 Mar 2018 09:46:49 -0800
+Message-ID: <20180305174655.9878-8-hch@lst.de>
 References: <20180305174655.9878-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,329 +21,127 @@ To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The generic dma-direct implementation is now functionally equivalent to
-the x86 nommu dma_map implementation, so switch over to using it.
-
-Note that the various iommu drivers are switched from x86_dma_supported
-to dma_direct_supported to provide identical functionality, although the
-checks looks fairly questionable for at least some of them.
+This cleans up the code a lot by removing duplicate logic.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/x86/Kconfig                   |  1 +
- arch/x86/include/asm/dma-mapping.h |  8 -----
- arch/x86/include/asm/iommu.h       |  3 --
- arch/x86/kernel/Makefile           |  2 +-
- arch/x86/kernel/amd_gart_64.c      |  7 ++--
- arch/x86/kernel/pci-calgary_64.c   |  3 +-
- arch/x86/kernel/pci-dma.c          | 66 +-------------------------------------
- arch/x86/kernel/pci-swiotlb.c      |  5 ++-
- arch/x86/pci/sta2x11-fixup.c       |  2 +-
- drivers/iommu/amd_iommu.c          |  7 ++--
- drivers/iommu/intel-iommu.c        |  3 +-
- 11 files changed, 17 insertions(+), 90 deletions(-)
+ drivers/iommu/Kconfig     |  1 +
+ drivers/iommu/amd_iommu.c | 68 +++++++++++++++--------------------------------
+ 2 files changed, 22 insertions(+), 47 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index c1236b187824..7272bb3768d7 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -83,6 +83,7 @@ config X86
- 	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
- 	select CLOCKSOURCE_WATCHDOG
- 	select DCACHE_WORD_ACCESS
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f3a21343e636..dc7c1914645d 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -107,6 +107,7 @@ config IOMMU_PGTABLES_L2
+ # AMD IOMMU support
+ config AMD_IOMMU
+ 	bool "AMD IOMMU support"
 +	select DMA_DIRECT_OPS
- 	select EDAC_ATOMIC_SCRUB
- 	select EDAC_SUPPORT
- 	select GENERIC_CLOCKEVENTS
-diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
-index 545bf3721bc0..df9816b385eb 100644
---- a/arch/x86/include/asm/dma-mapping.h
-+++ b/arch/x86/include/asm/dma-mapping.h
-@@ -36,14 +36,6 @@ int arch_dma_supported(struct device *dev, u64 mask);
- bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp);
- #define arch_dma_alloc_attrs arch_dma_alloc_attrs
- 
--extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
--					dma_addr_t *dma_addr, gfp_t flag,
--					unsigned long attrs);
--
--extern void dma_generic_free_coherent(struct device *dev, size_t size,
--				      void *vaddr, dma_addr_t dma_addr,
--				      unsigned long attrs);
--
- static inline gfp_t dma_alloc_coherent_gfp_flags(struct device *dev, gfp_t gfp)
- {
- 	if (dev->coherent_dma_mask <= DMA_BIT_MASK(24))
-diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-index 1e5d5d92eb40..baedab8ac538 100644
---- a/arch/x86/include/asm/iommu.h
-+++ b/arch/x86/include/asm/iommu.h
-@@ -2,13 +2,10 @@
- #ifndef _ASM_X86_IOMMU_H
- #define _ASM_X86_IOMMU_H
- 
--extern const struct dma_map_ops nommu_dma_ops;
- extern int force_iommu, no_iommu;
- extern int iommu_detected;
- extern int iommu_pass_through;
- 
--int x86_dma_supported(struct device *dev, u64 mask);
--
- /* 10 seconds */
- #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
- 
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 29786c87e864..2e8c8a09ecab 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -57,7 +57,7 @@ obj-$(CONFIG_X86_ESPFIX64)	+= espfix_64.o
- obj-$(CONFIG_SYSFS)	+= ksysfs.o
- obj-y			+= bootflag.o e820.o
- obj-y			+= pci-dma.o quirks.o topology.o kdebugfs.o
--obj-y			+= alternative.o i8253.o pci-nommu.o hw_breakpoint.o
-+obj-y			+= alternative.o i8253.o hw_breakpoint.o
- obj-y			+= tsc.o tsc_msr.o io_delay.o rtc.o
- obj-y			+= pci-iommu_table.o
- obj-y			+= resource.o
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index ecd486cb06ab..52e3abcf3e70 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -501,8 +501,7 @@ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
- 		}
- 		__free_pages(page, get_order(size));
- 	} else
--		return dma_generic_alloc_coherent(dev, size, dma_addr, flag,
--						  attrs);
-+		return dma_direct_alloc(dev, size, dma_addr, flag, attrs);
- 
- 	return NULL;
- }
-@@ -513,7 +512,7 @@ gart_free_coherent(struct device *dev, size_t size, void *vaddr,
- 		   dma_addr_t dma_addr, unsigned long attrs)
- {
- 	gart_unmap_page(dev, dma_addr, size, DMA_BIDIRECTIONAL, 0);
--	dma_generic_free_coherent(dev, size, vaddr, dma_addr, attrs);
-+	dma_direct_free(dev, size, vaddr, dma_addr, attrs);
- }
- 
- static int gart_mapping_error(struct device *dev, dma_addr_t dma_addr)
-@@ -705,7 +704,7 @@ static const struct dma_map_ops gart_dma_ops = {
- 	.alloc				= gart_alloc_coherent,
- 	.free				= gart_free_coherent,
- 	.mapping_error			= gart_mapping_error,
--	.dma_supported			= x86_dma_supported,
-+	.dma_supported			= dma_direct_supported,
- };
- 
- static void gart_iommu_shutdown(void)
-diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
-index 35c461f21815..5647853053bd 100644
---- a/arch/x86/kernel/pci-calgary_64.c
-+++ b/arch/x86/kernel/pci-calgary_64.c
-@@ -33,6 +33,7 @@
- #include <linux/string.h>
- #include <linux/crash_dump.h>
- #include <linux/dma-mapping.h>
-+#include <linux/dma-direct.h>
- #include <linux/bitmap.h>
- #include <linux/pci_ids.h>
- #include <linux/pci.h>
-@@ -493,7 +494,7 @@ static const struct dma_map_ops calgary_dma_ops = {
- 	.map_page = calgary_map_page,
- 	.unmap_page = calgary_unmap_page,
- 	.mapping_error = calgary_mapping_error,
--	.dma_supported = x86_dma_supported,
-+	.dma_supported = dma_direct_supported,
- };
- 
- static inline void __iomem * busno_to_bbar(unsigned char num)
-diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-index b59820872ec7..db0b88ea8d1b 100644
---- a/arch/x86/kernel/pci-dma.c
-+++ b/arch/x86/kernel/pci-dma.c
-@@ -18,7 +18,7 @@
- 
- static int forbid_dac __read_mostly;
- 
--const struct dma_map_ops *dma_ops = &nommu_dma_ops;
-+const struct dma_map_ops *dma_ops = &dma_direct_ops;
- EXPORT_SYMBOL(dma_ops);
- 
- static int iommu_sac_force __read_mostly;
-@@ -76,60 +76,6 @@ void __init pci_iommu_alloc(void)
- 		}
- 	}
- }
--void *dma_generic_alloc_coherent(struct device *dev, size_t size,
--				 dma_addr_t *dma_addr, gfp_t flag,
--				 unsigned long attrs)
--{
--	struct page *page;
--	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	dma_addr_t addr;
--
--again:
--	page = NULL;
--	/* CMA can be used only in the context which permits sleeping */
--	if (gfpflags_allow_blocking(flag)) {
--		page = dma_alloc_from_contiguous(dev, count, get_order(size),
--						 flag);
--		if (page) {
--			addr = phys_to_dma(dev, page_to_phys(page));
--			if (addr + size > dev->coherent_dma_mask) {
--				dma_release_from_contiguous(dev, page, count);
--				page = NULL;
--			}
--		}
--	}
--	/* fallback */
--	if (!page)
--		page = alloc_pages_node(dev_to_node(dev), flag, get_order(size));
--	if (!page)
--		return NULL;
--
--	addr = phys_to_dma(dev, page_to_phys(page));
--	if (addr + size > dev->coherent_dma_mask) {
--		__free_pages(page, get_order(size));
--
--		if (dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
--		    !(flag & GFP_DMA)) {
--			flag = (flag & ~GFP_DMA32) | GFP_DMA;
--			goto again;
--		}
--
--		return NULL;
--	}
--	memset(page_address(page), 0, size);
--	*dma_addr = addr;
--	return page_address(page);
--}
--
--void dma_generic_free_coherent(struct device *dev, size_t size, void *vaddr,
--			       dma_addr_t dma_addr, unsigned long attrs)
--{
--	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	struct page *page = virt_to_page(vaddr);
--
--	if (!dma_release_from_contiguous(dev, page, count))
--		free_pages((unsigned long)vaddr, get_order(size));
--}
- 
- bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp)
- {
-@@ -243,16 +189,6 @@ int arch_dma_supported(struct device *dev, u64 mask)
- }
- EXPORT_SYMBOL(arch_dma_supported);
- 
--int x86_dma_supported(struct device *dev, u64 mask)
--{
--	/* Copied from i386. Doesn't make much sense, because it will
--	   only work for pci_alloc_coherent.
--	   The caller just has to use GFP_DMA in this case. */
--	if (mask < DMA_BIT_MASK(24))
--		return 0;
--	return 1;
--}
--
- static int __init pci_iommu_init(void)
- {
- 	struct iommu_table_entry *p;
-diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
-index 0ee0f8f34251..bcb6a9bf64ad 100644
---- a/arch/x86/kernel/pci-swiotlb.c
-+++ b/arch/x86/kernel/pci-swiotlb.c
-@@ -30,8 +30,7 @@ void *x86_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
- 	 */
- 	flags |= __GFP_NOWARN;
- 
--	vaddr = dma_generic_alloc_coherent(hwdev, size, dma_handle, flags,
--					   attrs);
-+	vaddr = dma_direct_alloc(hwdev, size, dma_handle, flags, attrs);
- 	if (vaddr)
- 		return vaddr;
- 
-@@ -45,7 +44,7 @@ void x86_swiotlb_free_coherent(struct device *dev, size_t size,
- 	if (is_swiotlb_buffer(dma_to_phys(dev, dma_addr)))
- 		swiotlb_free_coherent(dev, size, vaddr, dma_addr);
- 	else
--		dma_generic_free_coherent(dev, size, vaddr, dma_addr, attrs);
-+		dma_direct_free(dev, size, vaddr, dma_addr, attrs);
- }
- 
- static const struct dma_map_ops x86_swiotlb_dma_ops = {
-diff --git a/arch/x86/pci/sta2x11-fixup.c b/arch/x86/pci/sta2x11-fixup.c
-index 75577c1490c4..6c712fe11bdc 100644
---- a/arch/x86/pci/sta2x11-fixup.c
-+++ b/arch/x86/pci/sta2x11-fixup.c
-@@ -193,7 +193,7 @@ static const struct dma_map_ops sta2x11_dma_ops = {
- 	.sync_sg_for_cpu = swiotlb_sync_sg_for_cpu,
- 	.sync_sg_for_device = swiotlb_sync_sg_for_device,
- 	.mapping_error = swiotlb_dma_mapping_error,
--	.dma_supported = x86_dma_supported,
-+	.dma_supported = dma_direct_supported,
- };
- 
- /* At setup time, we use our own ops if the device is a ConneXt one */
+ 	select SWIOTLB
+ 	select PCI_MSI
+ 	select PCI_ATS
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 74788fdeb773..0bf19423b588 100644
+index 0bf19423b588..83819d0cbf90 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -28,6 +28,7 @@
- #include <linux/debugfs.h>
- #include <linux/scatterlist.h>
- #include <linux/dma-mapping.h>
-+#include <linux/dma-direct.h>
- #include <linux/iommu-helper.h>
- #include <linux/iommu.h>
- #include <linux/delay.h>
-@@ -2193,7 +2194,7 @@ static int amd_iommu_add_device(struct device *dev)
- 				dev_name(dev));
- 
- 		iommu_ignore_device(dev);
--		dev->dma_ops = &nommu_dma_ops;
-+		dev->dma_ops = &dma_direct_ops;
- 		goto out;
- 	}
- 	init_iommu_group(dev);
-@@ -2680,7 +2681,7 @@ static void free_coherent(struct device *dev, size_t size,
-  */
- static int amd_iommu_dma_supported(struct device *dev, u64 mask)
+@@ -2600,51 +2600,32 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 			    unsigned long attrs)
  {
--	if (!x86_dma_supported(dev, mask))
-+	if (!dma_direct_supported(dev, mask))
- 		return 0;
- 	return check_device(dev);
+ 	u64 dma_mask = dev->coherent_dma_mask;
+-	struct protection_domain *domain;
+-	struct dma_ops_domain *dma_dom;
+-	struct page *page;
+-
+-	domain = get_domain(dev);
+-	if (PTR_ERR(domain) == -EINVAL) {
+-		page = alloc_pages(flag, get_order(size));
+-		*dma_addr = page_to_phys(page);
+-		return page_address(page);
+-	} else if (IS_ERR(domain))
+-		return NULL;
++	struct protection_domain *domain = get_domain(dev);
++	bool is_direct = false;
++	void *virt_addr;
+ 
+-	dma_dom   = to_dma_ops_domain(domain);
+-	size	  = PAGE_ALIGN(size);
+-	dma_mask  = dev->coherent_dma_mask;
+-	flag     &= ~(__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32);
+-	flag     |= __GFP_ZERO;
+-
+-	page = alloc_pages(flag | __GFP_NOWARN,  get_order(size));
+-	if (!page) {
+-		if (!gfpflags_allow_blocking(flag))
+-			return NULL;
+-
+-		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+-						 get_order(size), flag);
+-		if (!page)
++	if (IS_ERR(domain)) {
++		if (PTR_ERR(domain) != -EINVAL)
+ 			return NULL;
++		is_direct = true;
+ 	}
+ 
++	virt_addr = dma_direct_alloc(dev, size, dma_addr, flag, attrs);
++	if (!virt_addr || is_direct)
++		return virt_addr;
++
+ 	if (!dma_mask)
+ 		dma_mask = *dev->dma_mask;
+ 
+-	*dma_addr = __map_single(dev, dma_dom, page_to_phys(page),
+-				 size, DMA_BIDIRECTIONAL, dma_mask);
+-
++	*dma_addr = __map_single(dev, to_dma_ops_domain(domain),
++			virt_to_phys(virt_addr), PAGE_ALIGN(size),
++			DMA_BIDIRECTIONAL, dma_mask);
+ 	if (*dma_addr == AMD_IOMMU_MAPPING_ERROR)
+ 		goto out_free;
+-
+-	return page_address(page);
++	return virt_addr;
+ 
+ out_free:
+-
+-	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
+-		__free_pages(page, get_order(size));
+-
++	dma_direct_free(dev, size, virt_addr, *dma_addr, attrs);
+ 	return NULL;
  }
-@@ -2794,7 +2795,7 @@ int __init amd_iommu_init_dma_ops(void)
- 	 * continue to be SWIOTLB.
- 	 */
- 	if (!swiotlb)
--		dma_ops = &nommu_dma_ops;
-+		dma_ops = &dma_direct_ops;
  
- 	if (amd_iommu_unmap_flush)
- 		pr_info("AMD-Vi: IO/TLB flush on unmap enabled\n");
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 582fd01cb7d1..fd899b2a12bb 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -45,6 +45,7 @@
- #include <linux/pci-ats.h>
- #include <linux/memblock.h>
- #include <linux/dma-contiguous.h>
-+#include <linux/dma-direct.h>
- #include <linux/crash_dump.h>
- #include <asm/irq_remapping.h>
- #include <asm/cacheflush.h>
-@@ -3871,7 +3872,7 @@ const struct dma_map_ops intel_dma_ops = {
- 	.unmap_page = intel_unmap_page,
- 	.mapping_error = intel_mapping_error,
- #ifdef CONFIG_X86
--	.dma_supported = x86_dma_supported,
-+	.dma_supported = dma_direct_supported,
- #endif
- };
+@@ -2655,24 +2636,17 @@ static void free_coherent(struct device *dev, size_t size,
+ 			  void *virt_addr, dma_addr_t dma_addr,
+ 			  unsigned long attrs)
+ {
+-	struct protection_domain *domain;
+-	struct dma_ops_domain *dma_dom;
+-	struct page *page;
++	struct protection_domain *domain = get_domain(dev);
  
+-	page = virt_to_page(virt_addr);
+ 	size = PAGE_ALIGN(size);
+ 
+-	domain = get_domain(dev);
+-	if (IS_ERR(domain))
+-		goto free_mem;
++	if (!IS_ERR(domain)) {
++		struct dma_ops_domain *dma_dom = to_dma_ops_domain(domain);
+ 
+-	dma_dom = to_dma_ops_domain(domain);
+-
+-	__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
++		__unmap_single(dma_dom, dma_addr, size, DMA_BIDIRECTIONAL);
++	}
+ 
+-free_mem:
+-	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
+-		__free_pages(page, get_order(size));
++	dma_direct_free(dev, size, virt_addr, dma_addr, attrs);
+ }
+ 
+ /*
 -- 
 2.14.2
