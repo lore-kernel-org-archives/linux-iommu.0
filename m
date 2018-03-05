@@ -1,48 +1,96 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [bug report] iommu/arm-smmu: Make use of the iommu_register interface
-Date: Mon, 5 Mar 2018 17:33:02 +0300
-Message-ID: <20180305143302.GA6224@mwanda>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
+Date: Mon, 5 Mar 2018 14:53:21 +0000
+Message-ID: <5cdeded1-ca3c-339a-bf73-73401e7dd4ed@arm.com>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+ <1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jroedel-l3A5Bk7waGM@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nipun Gupta <nipun.gupta@nxp.com>, will.deacon@arm.com, mark.rutland@arm.com, catalin.marinas@arm.com
+Cc: iommu@lists.linux-foundation.org, robh+dt@kernel.org, hch@lst.de, m.szyprowski@samsung.com, gregkh@linuxfoundation.org, joro@8bytes.org, leoyang.li@nxp.com, shawnguo@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, laurentiu.tudor@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Joerg Roedel,
+On 05/03/18 14:29, Nipun Gupta wrote:
+> The existing IOMMU bindings cannot be used to specify the relationship
+> between fsl-mc devices and IOMMUs. This patch adds a binding for
+> mapping fsl-mc devices to IOMMUs, using a new iommu-parent property.
 
-This is a semi-automatic email about new static checker warnings.
+Given that allowing "msi-parent" for #msi-cells > 1 is merely a 
+backward-compatibility bodge full of hard-coded assumptions, why would 
+we want to knowingly introduce a similarly unpleasant equivalent for 
+IOMMUs? What's wrong with "iommu-map"?
 
-The patch 9648cbc9625b: "iommu/arm-smmu: Make use of the 
-iommu_register interface" from Feb 1, 2017, leads to the following 
-Smatch complaint:
+> Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
+> ---
+>   .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 31 ++++++++++++++++++++++
+>   1 file changed, 31 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> index 6611a7c..011c7d6 100644
+> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> @@ -9,6 +9,24 @@ blocks that can be used to create functional hardware objects/devices
+>   such as network interfaces, crypto accelerator instances, L2 switches,
+>   etc.
+>   
+> +For an overview of the DPAA2 architecture and fsl-mc bus see:
+> +drivers/staging/fsl-mc/README.txt
+> +
+> +As described in the above overview, all DPAA2 objects in a DPRC share the
+> +same hardware "isolation context" and a 10-bit value called an ICID
+> +(isolation context id) is expressed by the hardware to identify
+> +the requester.
 
-    ./drivers/iommu/arm-smmu-v3.c:1957 arm_smmu_remove_device()
-    warn: variable dereferenced before check 'master' (see line 1956)
+IOW, precisely the case for which "{msi,iommu}-map" exist. Yes, I know 
+they're currently documented under bindings/pci, but they're not really 
+intended to be absolutely PCI-specific.
 
-./drivers/iommu/arm-smmu-v3.c
-  1955		master = fwspec->iommu_priv;
-  1956		smmu = master->smmu;
-                       ^^^^^^^^^^^^
-Pach adds unchecked dereference
+Robin.
 
-  1957		if (master && master->ste.assigned)
-                    ^^^^^^
-The old code assumes "master" can be NULL.
-
-  1958			arm_smmu_detach_dev(dev);
-  1959		iommu_group_remove_device(dev);
-
-regards,
-dan carpenter
+> +The generic 'iommus' property is cannot be used to describe the relationship
+> +between fsl-mc and IOMMUs, so an iommu-parent property is used to define
+> +the same.
+> +
+> +For generic IOMMU bindings, see
+> +Documentation/devicetree/bindings/iommu/iommu.txt.
+> +
+> +For arm-smmu binding, see:
+> +Documentation/devicetree/bindings/iommu/arm,smmu.txt.
+> +
+>   Required properties:
+>   
+>       - compatible
+> @@ -88,14 +106,27 @@ Sub-nodes:
+>                 Value type: <phandle>
+>                 Definition: Specifies the phandle to the PHY device node associated
+>                             with the this dpmac.
+> +Optional properties:
+> +
+> +- iommu-parent: Maps the devices on fsl-mc bus to an IOMMU.
+> +  The property specifies the IOMMU behind which the devices on
+> +  fsl-mc bus are residing.
+>   
+>   Example:
+>   
+> +        smmu: iommu@5000000 {
+> +               compatible = "arm,mmu-500";
+> +               #iommu-cells = <1>;
+> +               stream-match-mask = <0x7C00>;
+> +               ...
+> +        };
+> +
+>           fsl_mc: fsl-mc@80c000000 {
+>                   compatible = "fsl,qoriq-mc";
+>                   reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+>                         <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+>                   msi-parent = <&its>;
+> +                iommu-parent = <&smmu>;
+>                   #address-cells = <3>;
+>                   #size-cells = <1>;
+>   
+> 
