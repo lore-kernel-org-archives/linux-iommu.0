@@ -1,7 +1,7 @@
 From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: [PATCH 5/6] dma-mapping: support fsl-mc bus
-Date: Mon,  5 Mar 2018 19:59:25 +0530
-Message-ID: <1520260166-29387-6-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 6/6] dts: fsl-ls208x: updated DT with SMMU support for fsl-mc
+Date: Mon,  5 Mar 2018 19:59:26 +0530
+Message-ID: <1520260166-29387-7-git-send-email-nipun.gupta@nxp.com>
 References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,33 +23,46 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 ---
- drivers/base/dma-mapping.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index 3b11835..2279c4d 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -334,6 +334,7 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
-  * Common configuration to enable DMA API use for a device
-  */
- #include <linux/pci.h>
-+#include <linux/fsl/mc.h>
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+index f3a40af..1f15492 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+@@ -135,6 +135,7 @@
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+ 		ranges;
++		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
  
- int dma_configure(struct device *dev)
- {
-@@ -349,6 +350,12 @@ int dma_configure(struct device *dev)
- 			dma_dev = dma_dev->parent;
- 	}
+ 		clockgen: clocking@1300000 {
+ 			compatible = "fsl,ls2080a-clockgen";
+@@ -357,6 +358,8 @@
+ 			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
+ 			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+ 			msi-parent = <&its>;
++			iommu-parent = <&smmu>;
++			dma-coherent;
+ 			#address-cells = <3>;
+ 			#size-cells = <1>;
  
-+	if (dev_is_fsl_mc(dev)) {
-+		dma_dev = dev;
-+		while (dev_is_fsl_mc(dma_dev))
-+			dma_dev = dma_dev->parent;
-+	}
-+
- 	if (dma_dev->of_node) {
- 		ret = of_dma_configure(dev, dma_dev->of_node);
- 	} else if (has_acpi_companion(dma_dev)) {
+@@ -460,6 +463,8 @@
+ 			compatible = "arm,mmu-500";
+ 			reg = <0 0x5000000 0 0x800000>;
+ 			#global-interrupts = <12>;
++			stream-match-mask = <0x7C00>;
++			dma-coherent;
+ 			interrupts = <0 13 4>, /* global secure fault */
+ 				     <0 14 4>, /* combined secure interrupt */
+ 				     <0 15 4>, /* global non-secure fault */
+@@ -502,7 +507,6 @@
+ 				     <0 204 4>, <0 205 4>,
+ 				     <0 206 4>, <0 207 4>,
+ 				     <0 208 4>, <0 209 4>;
+-			mmu-masters = <&fsl_mc 0x300 0>;
+ 		};
+ 
+ 		dspi: dspi@2100000 {
 -- 
 1.9.1
