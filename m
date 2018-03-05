@@ -1,18 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
-Date: Mon, 5 Mar 2018 16:10:10 +0100
-Message-ID: <20180305151010.GA15965@lst.de>
-References: <20180302180704.GA3846@localhost.localdomain>
-	<20180302213711.GA30356@lst.de>
-	<20180303082234.GB24991@localhost.localdomain>
-	<20180303161249.GA9516@lst.de>
-	<20180303181904.GA19076@localhost.localdomain>
+From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 03/37] iommu/sva: Manage process address spaces
+Date: Mon, 5 Mar 2018 10:28:42 -0500
+Message-ID: <27a044ee-0ed7-0470-0fef-289d0d5cf5e8@codeaurora.org>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-4-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180303181904.GA19076-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+In-Reply-To: <20180212183352.22730-4-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,32 +19,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
-Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, =?iso-8859-1?Q?J=FCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Mar 03, 2018 at 07:19:06PM +0100, Fredrik Noring wrote:
-> Christoph, Alan,
-> 
-> > If it is allocating / freeing this memory all the time in the hot path
-> > it should really use a dma pool (see include/ilinux/dmapool.h).
-> > The dma coherent APIs aren't really built for being called in the
-> > hot path.
-> 
-> hcd_buffer_free uses a combination of dma pools and dma coherent APIs:
-> 
-> 	...
-> 	for (i = 0; i < HCD_BUFFER_POOLS; i++) {
-> 		if (size <= pool_max[i]) {
-> 			dma_pool_free(hcd->pool[i], addr, dma);
-> 			return;
-> 		}
-> 	}
-> 	dma_free_coherent(hcd->self.sysdev, size, addr, dma);
-> 
-> Alan, can dma_free_coherent be delayed to a point when IRQs are enabled?
+On 2/12/2018 1:33 PM, Jean-Philippe Brucker wrote:
+> +static void io_mm_free(struct io_mm *io_mm)
+> +{
+> +	struct mm_struct *mm;
+> +	void (*release)(struct io_mm *);
+> +
+> +	release = io_mm->release;
+> +	mm = io_mm->mm;
+> +
+> +	release(io_mm);
 
-The point is that you should always use a pool, period.
-dma_alloc*/dma_free* are fundamentally expensive operations on my
-architectures, so if you call them from a fast path you are doing
-something wrong.
+Is there any reason why you can't call iommu->release()
+here directly? Why do you need the release local variable?
+
+> +	mmdrop(mm);
+> +}
+> +
+
+
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
