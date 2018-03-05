@@ -1,96 +1,127 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
-Date: Mon, 5 Mar 2018 14:53:21 +0000
-Message-ID: <5cdeded1-ca3c-339a-bf73-73401e7dd4ed@arm.com>
-References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
- <1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
+From: Dmitry Safonov <dima@arista.com>
+Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
+Date: Mon, 05 Mar 2018 15:00:26 +0000
+Message-ID: <1520262026.2743.4.camel@arista.com>
+References: <20180215191729.15777-1-dima@arista.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
-Content-Language: en-GB
+In-Reply-To: <20180215191729.15777-1-dima@arista.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nipun Gupta <nipun.gupta@nxp.com>, will.deacon@arm.com, mark.rutland@arm.com, catalin.marinas@arm.com
-Cc: iommu@lists.linux-foundation.org, robh+dt@kernel.org, hch@lst.de, m.szyprowski@samsung.com, gregkh@linuxfoundation.org, joro@8bytes.org, leoyang.li@nxp.com, shawnguo@kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, laurentiu.tudor@nxp.com
+To: linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+Cc: 0x7f454c46@gmail.com, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/18 14:29, Nipun Gupta wrote:
-> The existing IOMMU bindings cannot be used to specify the relationship
-> between fsl-mc devices and IOMMUs. This patch adds a binding for
-> mapping fsl-mc devices to IOMMUs, using a new iommu-parent property.
+Hi Joerg,
 
-Given that allowing "msi-parent" for #msi-cells > 1 is merely a 
-backward-compatibility bodge full of hard-coded assumptions, why would 
-we want to knowingly introduce a similarly unpleasant equivalent for 
-IOMMUs? What's wrong with "iommu-map"?
+What do you think about v3?
+It looks like, I can solve my softlookups with just a bit more proper
+ratelimiting..
 
-> Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
+On Thu, 2018-02-15 at 19:17 +0000, Dmitry Safonov wrote:
+> There is a ratelimit for printing, but it's incremented each time the
+> cpu recives dmar fault interrupt. While one interrupt may signal
+> about
+> *many* faults.
+> So, measuring the impact it turns out that reading/clearing one fault
+> takes < 1 usec, and printing info about the fault takes ~170 msec.
+> 
+> Having in mind that maximum number of fault recording registers per
+> remapping hardware unit is 256.. IRQ handler may run for (170*256)
+> msec.
+> And as fault-serving loop runs without a time limit, during servicing
+> new faults may occur..
+> 
+> Ratelimit each fault printing rather than each irq printing.
+> 
+> Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
+> 
+> BUG: spinlock lockup suspected on CPU#0, CliShell/9903
+>  lock: 0xffffffff81a47440, .magic: dead4ead, .owner:
+> kworker/u16:2/8915, .owner_cpu: 6
+> CPU: 0 PID: 9903 Comm: CliShell
+> Call Trace:$\n'
+> [..] dump_stack+0x65/0x83$\n'
+> [..] spin_dump+0x8f/0x94$\n'
+> [..] do_raw_spin_lock+0x123/0x170$\n'
+> [..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
+> [..] uart_chars_in_buffer+0x20/0x4d$\n'
+> [..] tty_chars_in_buffer+0x18/0x1d$\n'
+> [..] n_tty_poll+0x1cb/0x1f2$\n'
+> [..] tty_poll+0x5e/0x76$\n'
+> [..] do_select+0x363/0x629$\n'
+> [..] compat_core_sys_select+0x19e/0x239$\n'
+> [..] compat_SyS_select+0x98/0xc0$\n'
+> [..] sysenter_dispatch+0x7/0x25$\n'
+> [..]
+> NMI backtrace for cpu 6
+> CPU: 6 PID: 8915 Comm: kworker/u16:2
+> Workqueue: dmar_fault dmar_fault_work
+> Call Trace:$\n'
+> [..] wait_for_xmitr+0x26/0x8f$\n'
+> [..] serial8250_console_putchar+0x1c/0x2c$\n'
+> [..] uart_console_write+0x40/0x4b$\n'
+> [..] serial8250_console_write+0xe6/0x13f$\n'
+> [..] call_console_drivers.constprop.13+0xce/0x103$\n'
+> [..] console_unlock+0x1f8/0x39b$\n'
+> [..] vprintk_emit+0x39e/0x3e6$\n'
+> [..] printk+0x4d/0x4f$\n'
+> [..] dmar_fault+0x1a8/0x1fc$\n'
+> [..] dmar_fault_work+0x15/0x17$\n'
+> [..] process_one_work+0x1e8/0x3a9$\n'
+> [..] worker_thread+0x25d/0x345$\n'
+> [..] kthread+0xea/0xf2$\n'
+> [..] ret_from_fork+0x58/0x90$\n'
+> 
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Ingo Molnar <mingo@kernel.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
 > ---
->   .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 31 ++++++++++++++++++++++
->   1 file changed, 31 insertions(+)
+> Maybe it's worth to limit while(1) cycle.
+> If IOMMU generates faults with equal speed as irq handler cleans
+> them, it may turn into long-irq-disabled region again.
+> Not sure if it can happen anyway.
 > 
-> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> index 6611a7c..011c7d6 100644
-> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> @@ -9,6 +9,24 @@ blocks that can be used to create functional hardware objects/devices
->   such as network interfaces, crypto accelerator instances, L2 switches,
->   etc.
->   
-> +For an overview of the DPAA2 architecture and fsl-mc bus see:
-> +drivers/staging/fsl-mc/README.txt
-> +
-> +As described in the above overview, all DPAA2 objects in a DPRC share the
-> +same hardware "isolation context" and a 10-bit value called an ICID
-> +(isolation context id) is expressed by the hardware to identify
-> +the requester.
-
-IOW, precisely the case for which "{msi,iommu}-map" exist. Yes, I know 
-they're currently documented under bindings/pci, but they're not really 
-intended to be absolutely PCI-specific.
-
-Robin.
-
-> +The generic 'iommus' property is cannot be used to describe the relationship
-> +between fsl-mc and IOMMUs, so an iommu-parent property is used to define
-> +the same.
-> +
-> +For generic IOMMU bindings, see
-> +Documentation/devicetree/bindings/iommu/iommu.txt.
-> +
-> +For arm-smmu binding, see:
-> +Documentation/devicetree/bindings/iommu/arm,smmu.txt.
-> +
->   Required properties:
->   
->       - compatible
-> @@ -88,14 +106,27 @@ Sub-nodes:
->                 Value type: <phandle>
->                 Definition: Specifies the phandle to the PHY device node associated
->                             with the this dpmac.
-> +Optional properties:
-> +
-> +- iommu-parent: Maps the devices on fsl-mc bus to an IOMMU.
-> +  The property specifies the IOMMU behind which the devices on
-> +  fsl-mc bus are residing.
->   
->   Example:
->   
-> +        smmu: iommu@5000000 {
-> +               compatible = "arm,mmu-500";
-> +               #iommu-cells = <1>;
-> +               stream-match-mask = <0x7C00>;
-> +               ...
-> +        };
-> +
->           fsl_mc: fsl-mc@80c000000 {
->                   compatible = "fsl,qoriq-mc";
->                   reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
->                         <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
->                   msi-parent = <&its>;
-> +                iommu-parent = <&smmu>;
->                   #address-cells = <3>;
->                   #size-cells = <1>;
->   
+>  drivers/iommu/dmar.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index accf58388bdb..6c4ea32ee6a9 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+>  	int reg, fault_index;
+>  	u32 fault_status;
+>  	unsigned long flag;
+> -	bool ratelimited;
+>  	static DEFINE_RATELIMIT_STATE(rs,
+>  				      DEFAULT_RATELIMIT_INTERVAL,
+>  				      DEFAULT_RATELIMIT_BURST);
+>  
+> -	/* Disable printing, simply clear the fault when ratelimited
+> */
+> -	ratelimited = !__ratelimit(&rs);
+> -
+>  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+>  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+> -	if (fault_status && !ratelimited)
+> +	if (fault_status && __ratelimit(&rs))
+>  		pr_err("DRHD: handling fault status reg %x\n",
+> fault_status);
+>  
+>  	/* TBD: ignore advanced fault log currently */
+> @@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+>  	fault_index = dma_fsts_fault_record_index(fault_status);
+>  	reg = cap_fault_reg_offset(iommu->cap);
+>  	while (1) {
+> +		/* Disable printing, simply clear the fault when
+> ratelimited */
+> +		bool ratelimited = !__ratelimit(&rs);
+>  		u8 fault_reason;
+>  		u16 source_id;
+>  		u64 guest_addr;
