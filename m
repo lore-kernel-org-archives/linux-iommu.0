@@ -1,7 +1,7 @@
 From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Subject: Re: [PATCH 07/37] iommu: Add a page fault handler
-Date: Mon, 5 Mar 2018 16:44:48 -0500
-Message-ID: <b2a3d2a7-7042-aef3-0def-05e64e39d046@codeaurora.org>
+Date: Mon, 5 Mar 2018 16:53:17 -0500
+Message-ID: <77afa195-4842-a112-eba5-409b861b5315@codeaurora.org>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
 	<20180212183352.22730-8-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
@@ -24,36 +24,11 @@ Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+y
 List-Id: iommu@lists.linux-foundation.org
 
 On 2/12/2018 1:33 PM, Jean-Philippe Brucker wrote:
-> +static int iommu_queue_fault(struct iommu_domain *domain, struct device *dev,
-> +			     struct iommu_fault_event *evt)
-> +{
-> +	struct iommu_fault_group *group;
-> +	struct iommu_fault_context *fault, *next;
-> +
-> +	if (!iommu_fault_queue)
-> +		return -ENOSYS;
-> +
-> +	if (!evt->last_req) {
-> +		fault = kzalloc(sizeof(*fault), GFP_KERNEL);
-> +		if (!fault)
-> +			return -ENOMEM;
-> +
-> +		fault->evt = *evt;
-> +		fault->dev = dev;
-> +
-> +		/* Non-last request of a group. Postpone until the last one */
-> +		spin_lock(&iommu_partial_faults_lock);
-> +		list_add_tail(&fault->head, &iommu_partial_faults);
-> +		spin_unlock(&iommu_partial_faults_lock);
-> +
-> +		return IOMMU_PAGE_RESP_HANDLED;
-> +	}
-> +
-> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> +	if (!group)
-> +		return -ENOMEM;
+> +static struct workqueue_struct *iommu_fault_queue;
 
-Release the requests in iommu_partial_faults here.
+Is there anyway we can make this fault queue per struct device?
+Since this is common code, I think it needs some care.
+
 
 -- 
 Sinan Kaya
