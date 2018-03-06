@@ -1,16 +1,16 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 07/37] iommu: Add a page fault handler
-Date: Tue, 6 Mar 2018 10:46:36 +0000
-Message-ID: <430e9754-4cf7-0aa8-7899-fc13e6a2e079@arm.com>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-8-jean-philippe.brucker@arm.com>
-	<77afa195-4842-a112-eba5-409b861b5315@codeaurora.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC 1/5] dt-bindings: iommu: Add reserved-dma-region for IOMMU
+	device
+Date: Tue, 6 Mar 2018 11:41:01 +0000
+Message-ID: <23f7c879-2dfe-dbdf-f259-dcc44f045c96@arm.com>
+References: <1520312368-7068-1-git-send-email-jitendra.bhivare@broadcom.com>
+	<1520312368-7068-2-git-send-email-jitendra.bhivare@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <77afa195-4842-a112-eba5-409b861b5315-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1520312368-7068-2-git-send-email-jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,21 +20,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/18 21:53, Sinan Kaya wrote:
-> On 2/12/2018 1:33 PM, Jean-Philippe Brucker wrote:
->> +static struct workqueue_struct *iommu_fault_queue;
+On 06/03/18 04:59, Jitendra Bhivare wrote:
+> Certain regions in IO virtual address space may need to be reserved to be
+> not used for devices configured behind IOMMU.
 > 
-> Is there anyway we can make this fault queue per struct device?
-> Since this is common code, I think it needs some care.
+> Add documentation of the property to allow such regions to be specified in
+> DT to be reserved using IOMMU_RESV_RESERVED type.
 
-I don't think it's better, the workqueue struct seems large. Maybe having
-one wq per IOMMU is a good compromise? As said in my other reply for this
-patch, doing so isn't completely straightforward. I'll consider adding an
-iommu pointer to the iommu_param struct attached to each device.
+That sounds like software policy; DT is for describing hardware.
 
-Thanks,
-Jean
+> Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Vikram Prakash <vikram.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> ---
+>   Documentation/devicetree/bindings/iommu/iommu.txt | 17 +++++++++++++++++
+>   1 file changed, 17 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+> index 5a8b462..5a58ef2 100644
+> --- a/Documentation/devicetree/bindings/iommu/iommu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+> @@ -98,6 +98,20 @@ requirements of that use-case haven't been fully determined yet. Implementing
+>   this is therefore not recommended without further discussion and extension of
+>   this binding.
+>   
+> +Optional properties:
+> +--------------------
+> +- reserved-dma-region: This specifies DMA region to be reserved with specific
+> +  prot in IOVA space. It is in tuples of (busno,prot,bus_addr,size).
+
+What do busno and prot actually mean, and what are valid values for them?
+
+Robin.
+
+> +- #region-address-cells: specifies number of cells needed to encode bus_addr
+> +
+> +- #region-size-cells: specifies number of cells needed to encode size
+> +
+> +Notes:
+> +======
+> +This can be applied to IOMMU master node or to children (such as PCI host
+> +bridges) on the bus behind IOMMU.
+> +
+>   
+>   Examples:
+>   =========
+> @@ -173,6 +187,9 @@ Multiple-master IOMMU with configurable DMA window:
+>   			 * master (i.e. the I/O virtual address space).
+>   			 */
+>   			#iommu-cells = <4>;
+> +			#region-address-cells = <2>;
+> +			#region-size-cells = <2>;
+> +			reserved-dma-region = <0x0 0x0 0x04 0x0 0x04 0x0>;
+>   		};
+>   
+>   		master {
+> 
