@@ -1,7 +1,7 @@
 From: Jitendra Bhivare <jitendra.bhivare@broadcom.com>
-Subject: [RFC 2/5] dt-bindings: brcm: Add reserved-dma-region for iPROC
-Date: Tue,  6 Mar 2018 10:29:25 +0530
-Message-ID: <1520312368-7068-3-git-send-email-jitendra.bhivare@broadcom.com>
+Subject: [RFC 3/5] dt-bindings: arm-smmu: Add reserved-msi-region
+Date: Tue,  6 Mar 2018 10:29:26 +0530
+Message-ID: <1520312368-7068-4-git-send-email-jitendra.bhivare@broadcom.com>
 References: <1520312368-7068-1-git-send-email-jitendra.bhivare@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,34 +21,48 @@ To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
 Cc: Jitendra Bhivare <jitendra.bhivare@broadcom.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-With SoC wide DMA mask of 40-bit, the mappings for entire IOVA space can't
-be specified in the PAXBv2 PCIe RC of SoC. The holes in IOVA space needs to
-be reserved to prevent any IOVA allocations in those spaces.
+iPROC SoC has a special device window to treat GICv3 ITS MSI.
 
-reserved-dma-region property is added to specify the ranges which should
-never be mapped and given to devices sitting behind.
+Current code maps MSI to IOVA space. Add SMMU node property to use
+direct mappings for MSI region.
 
-Reviewed-by: Ray Jui <ray.jui@broadcom.com>
-Reviewed-by: Vikram Prakash <vikram.prakash@broadcom.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+This property is read and reserved when arm_smmu_get_resv_regions
+gets called.
+
 Signed-off-by: Jitendra Bhivare <jitendra.bhivare@broadcom.com>
 ---
- Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/iommu/arm,smmu.txt | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt b/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
-index b8e48b4..3be0fe3 100644
---- a/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
-+++ b/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
-@@ -30,6 +30,9 @@ Optional properties:
- - dma-ranges: Some PAXB-based root complexes do not have inbound mapping done
-   by the ASIC after power on reset.  In this case, SW is required to configure
- the mapping, based on inbound memory regions specified by this property.
-+- reserved-dma-region: PAXBv2 with IOMMU enabled cannot provide mappings for
-+  entire IOVA space specified by DMA mask. Hence this is used to reserve the
-+  gaps in dma-ranges.
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index 8a6ffce..13fa2b9 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -71,6 +71,15 @@ conditions.
+                   or using stream matching with #iommu-cells = <2>, and
+                   may be ignored if present in such cases.
  
- - brcm,pcie-ob: Some iProc SoCs do not have the outbound address mapping done
- by the ASIC after power on reset. In this case, SW needs to configure it
++- reserved-msi-region: MSI region to be reserved with specific prot in IOVA
++		  space for direct mapping. The region is specified in tuple
++		  of (busno,prot,bus_addr,size).
++
++- #region-address-cells: specifies number of cells needed to encode bus_addr
++
++- #region-size-cells: specifies number of cells needed to encode size
++
++
+ ** Deprecated properties:
+ 
+ - mmu-masters (deprecated in favour of the generic "iommus" binding) :
+@@ -95,6 +104,9 @@ conditions.
+                              <0 36 4>,
+                              <0 37 4>;
+                 #iommu-cells = <1>;
++		#region-address-cells = <1>;
++		#region-size-cells = <1>;
++		reserved-msi-region = <0x0 0x1a 0x63c3000 0x8000>;
+         };
+ 
+         /* device with two stream IDs, 0 and 7 */
 -- 
 2.7.4
