@@ -1,7 +1,7 @@
 From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v7 01/14] iommu/rockchip: Prohibit unbind and remove
-Date: Tue,  6 Mar 2018 11:02:39 +0800
-Message-ID: <20180306030252.3197-2-jeffy.chen@rock-chips.com>
+Subject: [PATCH v7 03/14] iommu/rockchip: Request irqs in rk_iommu_probe()
+Date: Tue,  6 Mar 2018 11:02:41 +0800
+Message-ID: <20180306030252.3197-4-jeffy.chen@rock-chips.com>
 References: <20180306030252.3197-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,10 +21,9 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Removal of IOMMUs cannot be done reliably.
+Move request_irq to the end of rk_iommu_probe().
 
-This is similar to exynos iommu driver.
-
+Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
@@ -32,66 +31,92 @@ Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Changes in v7: None
 Changes in v6: None
 Changes in v5: None
-Changes in v4:
-Rewrite commit message.
-
+Changes in v4: None
 Changes in v3:
-Also remove remove() and module_exit() as Tomasz suggested.
+Loop platform_get_irq() as Robin suggested.
 
 Changes in v2: None
 
- drivers/iommu/rockchip-iommu.c | 21 +--------------------
- 1 file changed, 1 insertion(+), 20 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 38 +++++++++-----------------------------
+ 1 file changed, 9 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 9d991c2d8767..16cd8780c289 100644
+index c2ef3cbd4401..b743d82e6fe1 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -1197,18 +1197,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	return err;
- }
+@@ -90,8 +90,6 @@ struct rk_iommu {
+ 	struct device *dev;
+ 	void __iomem **bases;
+ 	int num_mmu;
+-	int *irq;
+-	int num_irq;
+ 	bool reset_disabled;
+ 	struct iommu_device iommu;
+ 	struct list_head node; /* entry in rk_iommu_domain.iommus */
+@@ -830,13 +828,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
  
--static int rk_iommu_remove(struct platform_device *pdev)
--{
--	struct rk_iommu *iommu = platform_get_drvdata(pdev);
--
--	if (iommu) {
--		iommu_device_sysfs_remove(&iommu->iommu);
--		iommu_device_unregister(&iommu->iommu);
+ 	iommu->domain = domain;
+ 
+-	for (i = 0; i < iommu->num_irq; i++) {
+-		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
+-				       IRQF_SHARED, dev_name(dev), iommu);
+-		if (ret)
+-			return ret;
 -	}
 -
--	return 0;
--}
+ 	for (i = 0; i < iommu->num_mmu; i++) {
+ 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+ 			       rk_domain->dt_dma);
+@@ -885,9 +876,6 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	}
+ 	rk_iommu_disable_stall(iommu);
+ 
+-	for (i = 0; i < iommu->num_irq; i++)
+-		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
 -
- static const struct of_device_id rk_iommu_dt_ids[] = {
- 	{ .compatible = "rockchip,iommu" },
- 	{ /* sentinel */ }
-@@ -1217,10 +1205,10 @@ MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
+ 	iommu->domain = NULL;
  
- static struct platform_driver rk_iommu_driver = {
- 	.probe = rk_iommu_probe,
--	.remove = rk_iommu_remove,
- 	.driver = {
- 		   .name = "rk_iommu",
- 		   .of_match_table = rk_iommu_dt_ids,
-+		   .suppress_bind_attrs = true,
- 	},
- };
+ 	dev_dbg(dev, "Detached from iommu domain\n");
+@@ -1138,7 +1126,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	struct rk_iommu *iommu;
+ 	struct resource *res;
+ 	int num_res = pdev->num_resources;
+-	int err, i;
++	int err, i, irq;
  
-@@ -1248,14 +1236,7 @@ static int __init rk_iommu_init(void)
- 		platform_driver_unregister(&rk_iommu_domain_driver);
- 	return ret;
- }
--static void __exit rk_iommu_exit(void)
--{
--	platform_driver_unregister(&rk_iommu_driver);
--	platform_driver_unregister(&rk_iommu_domain_driver);
--}
+ 	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+ 	if (!iommu)
+@@ -1165,23 +1153,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	if (iommu->num_mmu == 0)
+ 		return PTR_ERR(iommu->bases[0]);
+ 
+-	iommu->num_irq = platform_irq_count(pdev);
+-	if (iommu->num_irq < 0)
+-		return iommu->num_irq;
+-	if (iommu->num_irq == 0)
+-		return -ENXIO;
++	i = 0;
++	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
++		if (irq < 0)
++			return irq;
+ 
+-	iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
+-				  GFP_KERNEL);
+-	if (!iommu->irq)
+-		return -ENOMEM;
 -
- subsys_initcall(rk_iommu_init);
--module_exit(rk_iommu_exit);
+-	for (i = 0; i < iommu->num_irq; i++) {
+-		iommu->irq[i] = platform_get_irq(pdev, i);
+-		if (iommu->irq[i] < 0) {
+-			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
+-			return -ENXIO;
+-		}
++		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
++				       IRQF_SHARED, dev_name(dev), iommu);
++		if (err)
++			return err;
+ 	}
  
- MODULE_DESCRIPTION("IOMMU API for Rockchip");
- MODULE_AUTHOR("Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org> and Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>");
+ 	iommu->reset_disabled = device_property_read_bool(dev,
 -- 
 2.11.0
