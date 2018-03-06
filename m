@@ -1,17 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 1/4] iommu/arm-smmu-v3: Clean up address masking
-Date: Tue, 6 Mar 2018 16:02:22 +0000
-Message-ID: <20180306160221.GA19134@arm.com>
-References: <cover.1512038236.git.robin.murphy@arm.com>
-	<24f90689e35a90a337601943a48902a7ab6a7c4d.1512038236.git.robin.murphy@arm.com>
-	<20180226180455.GB26147@arm.com>
-	<0734679d-d94a-92e7-8cea-dcf0c07b0620@arm.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH 1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
+	support for r8a774[35]
+Date: Tue, 6 Mar 2018 18:35:31 +0100
+Message-ID: <CAMuHMdW-J2n3u+qEXaunFjwxLrQAty-pti-zw0w0qsmGQLLZ+g@mail.gmail.com>
+References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
+	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
+	<TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <0734679d-d94a-92e7-8cea-dcf0c07b0620-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <TY1PR01MB1770C8E18C014211F2A2D771C0D90-5SGCI54O2uKdL+CyFhO9sXcolHNk5qUtvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,78 +20,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
+To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Tue, Feb 27, 2018 at 01:28:31PM +0000, Robin Murphy wrote:
-> On 26/02/18 18:04, Will Deacon wrote:
-> >On Thu, Dec 14, 2017 at 04:58:50PM +0000, Robin Murphy wrote:
-> >>Before trying to add the SMMUv3.1 support for 52-bit addresses, make
-> >>things bearable by cleaning up the various address mask definitions to
-> >>use GENMASK_ULL() consistently. The fact that doing so reveals (and
-> >>fixes) a latent off-by-one in Q_BASE_ADDR_MASK only goes to show what a
-> >>jolly good idea it is...
-> >>
-> >>Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >>Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >>---
-> >>
-> >>v2: Clean up one more now-unnecessary linewrap
-> >>
-> >>  drivers/iommu/arm-smmu-v3.c | 53 ++++++++++++++++++---------------------------
-> >>  1 file changed, 21 insertions(+), 32 deletions(-)
-> >
-> >Whilst I agree that using GENMASK is better, this patch does mean that the
-> >driver is (more) inconsistent with its _MASK terminology in that you can't
-> >generally tell whether a definition that ends in _MASK is shifted or not,
-> >and this isn't even consistent for fields within the same register.
-> 
-> The apparently slightly-less-than-obvious internal consistency is that every
-> mask used for an *address field* is now in-place, while other types of field
-> are still handled as inconsistently as they were before. It should also be
-> the case that every x_MASK without a corresponding x_SHIFT defined next to
-> it is unshifted.
-> 
-> Either way it's certainly no *worse* than the current situation where
-> address masks sometimes have a nonzero shift, sometimes have zero bits at
-> the bottom and a shift of 0, and sometimes have no shift defined at all.
-> 
-> Thinking about it some more, the address masks should only ever be needed
-> when *extracting* an address from a register/structure word, or validating
-> them in the context of an address *before* inserting into a field - if we
-> can't trust input to be correct then just silently masking off bits probably
-> isn't the best idea either way - so IMHO there is plenty of contextual
-> disambiguation too.
-> 
-> >Should we be using GENMASK/BIT for all fields instead and removing all of
-> >the _SHIFT definitions?
-> 
-> I'm all aboard using BIT() consistently for single-bit boolean fields, but
-> for multi-bit fields in general we do have to keep an explicit shift defined
-> *somewhere* in order to make sensible use of the value, i.e. either:
-> 
-> 	val = (reg >> 22) & 0x1f;
-> 	reg = (val & 0x1f) << 22;
-> 
-> or:
-> 	val = (reg & 0x07c00000) >> 22;
-> 	reg = (val << 22) & 0x07c00000;
-> 
-> [ but ideally not this mess we currently have in some places:
-> 
-> 	val = (reg & 0x1f << 22) >> 22;
-> ]
-> 
-> Again, I'd gladly clean everything up to at least be self-consistent (and
-> line up more with how we did things in SMMUv2) if you think it's worthwhile.
-> Although I guess that means I'd get the job of fixing up future stable
-> backport conflicts too ;)
-
-I reckon it would be worth the cleanup since you're in the area. I don't
-mind keeping the SHITF definitions where they're needed, but using BIT and
-GENMASK wherever we can.
-
-Will
+SGkgRmFicml6aW8sCgpPbiBUdWUsIE1hciA2LCAyMDE4IGF0IDU6NTUgUE0sIEZhYnJpemlvIENh
+c3Rybwo8ZmFicml6aW8uY2FzdHJvQGJwLnJlbmVzYXMuY29tPiB3cm90ZToKPiBJIGFtIHZlcnkg
+c29ycnkgdG8gYm90aGVyIHlvdSwgZG8geW91IGtub3cgd2hvIGlzIHN1cHBvc2VkIHRvIHRha2Ug
+dGhpcyBwYXRjaD8KCkrDtnJnIGlzIHRoZSBJT01NVSBtYWludGFpbmVyLCBzbyBJIGFzc3VtZSBo
+ZSdzIHRoZSBvbmUuCgo+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+PiBGcm9tOiBCaWp1
+IERhcyBbbWFpbHRvOmJpanUuZGFzQGJwLnJlbmVzYXMuY29tXQo+PiBTZW50OiAyNCBKYW51YXJ5
+IDIwMTggMTU6NDIKPj4gVG86IEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPjsgTGF1cmVu
+dCBQaW5jaGFydCA8bGF1cmVudC5waW5jaGFydEBpZGVhc29uYm9hcmQuY29tPjsgR2VlcnQgVXl0
+dGVyaG9ldmVuCj4+IDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4KPj4gQ2M6IFNpbW9uIEhvcm1h
+biA8aG9ybXNAdmVyZ2UubmV0LmF1PjsgTWFnbnVzIERhbW0gPG1hZ251cy5kYW1tQGdtYWlsLmNv
+bT47IENocmlzIFBhdGVyc29uCj4+IDxDaHJpcy5QYXRlcnNvbjJAcmVuZXNhcy5jb20+OyBGYWJy
+aXppbyBDYXN0cm8gPGZhYnJpemlvLmNhc3Ryb0BicC5yZW5lc2FzLmNvbT47IGlvbW11QGxpc3Rz
+LmxpbnV4LWZvdW5kYXRpb24ub3JnOyBsaW51eC0KPj4gcmVuZXNhcy1zb2NAdmdlci5rZXJuZWwu
+b3JnOyBCaWp1IERhcyA8YmlqdS5kYXNAYnAucmVuZXNhcy5jb20+Cj4+IFN1YmplY3Q6IFtQQVRD
+SCAxLzNdIGR0LWJpbmRpbmdzOiBpb21tdTogaXBtbXUtdm1zYTogQWRkIGRldmljZSB0cmVlIHN1
+cHBvcnQgZm9yIHI4YTc3NFszNV0KPj4KPj4gRG9jdW1lbnQgcjhhNzc0WzM1XSBzcGVjaWZpYyBj
+b21wYXRpYmxlIHN0cmluZ3MuIFRoZSBSZW5lc2FzIFJaL0cxW01FXQo+PiAocjhhNzc0WzM1XSkg
+SVBNTVUgYXJlIGlkZW50aWNhbCB0byB0aGUgUi1DYXIgR2VuMiBmYW1pbHkuCj4+Cj4+IFNpZ25l
+ZC1vZmYtYnk6IEJpanUgRGFzIDxiaWp1LmRhc0BicC5yZW5lc2FzLmNvbT4KPj4gUmV2aWV3ZWQt
+Ynk6IENocmlzIFBhdGVyc29uIDxjaHJpcy5wYXRlcnNvbjJAcmVuZXNhcy5jb20+Cj4+IC0tLQo+
+PiAgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L3JlbmVzYXMsaXBtbXUt
+dm1zYS50eHQgfCA1ICsrKystCj4+ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAx
+IGRlbGV0aW9uKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
+YmluZGluZ3MvaW9tbXUvcmVuZXNhcyxpcG1tdS12bXNhLnR4dAo+PiBiL0RvY3VtZW50YXRpb24v
+ZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9yZW5lc2FzLGlwbW11LXZtc2EudHh0Cj4+IGluZGV4
+IDg1N2RmOTIuLjdkMzAwYWYgMTAwNjQ0Cj4+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9pb21tdS9yZW5lc2FzLGlwbW11LXZtc2EudHh0Cj4+ICsrKyBiL0RvY3VtZW50
+YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9yZW5lc2FzLGlwbW11LXZtc2EudHh0Cj4+
+IEBAIC0xMSwxMiArMTEsMTUgQEAgUmVxdWlyZWQgUHJvcGVydGllczoKPj4gICAgICB0aGUgZGV2
+aWNlIGlzIGNvbXBhdGlibGUgd2l0aCB0aGUgUi1DYXIgR2VuMiBWTVNBLWNvbXBhdGlibGUgSVBN
+TVUuCj4+Cj4+ICAgICAgLSAicmVuZXNhcyxpcG1tdS1yOGE3M2E0IiBmb3IgdGhlIFI4QTczQTQg
+KFItTW9iaWxlIEFQRTYpIElQTU1VLgo+PiArICAgIC0gInJlbmVzYXMsaXBtbXUtcjhhNzc0MyIg
+Zm9yIHRoZSBSOEE3NzQzIChSWi9HMU0pIElQTU1VLgo+PiArICAgIC0gInJlbmVzYXMsaXBtbXUt
+cjhhNzc0NSIgZm9yIHRoZSBSOEE3NzQ1IChSWi9HMUUpIElQTU1VLgo+PiAgICAgIC0gInJlbmVz
+YXMsaXBtbXUtcjhhNzc5MCIgZm9yIHRoZSBSOEE3NzkwIChSLUNhciBIMikgSVBNTVUuCj4+ICAg
+ICAgLSAicmVuZXNhcyxpcG1tdS1yOGE3NzkxIiBmb3IgdGhlIFI4QTc3OTEgKFItQ2FyIE0yLVcp
+IElQTU1VLgo+PiAgICAgIC0gInJlbmVzYXMsaXBtbXUtcjhhNzc5MyIgZm9yIHRoZSBSOEE3Nzkz
+IChSLUNhciBNMi1OKSBJUE1NVS4KPj4gICAgICAtICJyZW5lc2FzLGlwbW11LXI4YTc3OTQiIGZv
+ciB0aGUgUjhBNzc5NCAoUi1DYXIgRTIpIElQTU1VLgo+PiAgICAgIC0gInJlbmVzYXMsaXBtbXUt
+cjhhNzc5NSIgZm9yIHRoZSBSOEE3Nzk1IChSLUNhciBIMykgSVBNTVUuCj4+IC0gICAgLSAicmVu
+ZXNhcyxpcG1tdS12bXNhIiBmb3IgZ2VuZXJpYyBSLUNhciBHZW4yIFZNU0EtY29tcGF0aWJsZSBJ
+UE1NVS4KPj4gKyAgICAtICJyZW5lc2FzLGlwbW11LXZtc2EiIGZvciBnZW5lcmljIFItQ2FyIEdl
+bjIgb3IgUlovRzEgVk1TQS1jb21wYXRpYmxlCj4+ICsgICBJUE1NVS4KPj4KPj4gICAgLSByZWc6
+IEJhc2UgYWRkcmVzcyBhbmQgc2l6ZSBvZiB0aGUgSVBNTVUgcmVnaXN0ZXJzLgo+PiAgICAtIGlu
+dGVycnVwdHM6IFNwZWNpZmllcnMgZm9yIHRoZSBNTVUgZmF1bHQgaW50ZXJydXB0cy4gRm9yIGlu
+c3RhbmNlcyB0aGF0Cj4+IC0tCj4+IDIuNy40CgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAg
+ICAgICAgICAgICAgICAgIEdlZXJ0CgotLQpHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBs
+b3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJz
+b25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBh
+IGhhY2tlci4gQnV0CndoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAi
+cHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcwpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
