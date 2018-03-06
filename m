@@ -1,16 +1,18 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
-	support for r8a774[35]
-Date: Tue, 6 Mar 2018 18:35:31 +0100
-Message-ID: <CAMuHMdW-J2n3u+qEXaunFjwxLrQAty-pti-zw0w0qsmGQLLZ+g@mail.gmail.com>
-References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
-	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
-	<TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 2/4] iommu/io-pgtable-arm: Support 52-bit physical
+	address
+Date: Tue, 6 Mar 2018 17:54:15 +0000
+Message-ID: <20180306175415.GC19134@arm.com>
+References: <cover.1512038236.git.robin.murphy@arm.com>
+	<fde583dacee8099ed4e952dbf1c4dfb42070e9c5.1512038236.git.robin.murphy@arm.com>
+	<20180226180501.GC26147@arm.com>
+	<52ff8cd6-64ec-d7d4-2135-0b17becc4251@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <TY1PR01MB1770C8E18C014211F2A2D771C0D90-5SGCI54O2uKdL+CyFhO9sXcolHNk5qUtvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <52ff8cd6-64ec-d7d4-2135-0b17becc4251-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,62 +22,119 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kristina.martsenko-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgRmFicml6aW8sCgpPbiBUdWUsIE1hciA2LCAyMDE4IGF0IDU6NTUgUE0sIEZhYnJpemlvIENh
-c3Rybwo8ZmFicml6aW8uY2FzdHJvQGJwLnJlbmVzYXMuY29tPiB3cm90ZToKPiBJIGFtIHZlcnkg
-c29ycnkgdG8gYm90aGVyIHlvdSwgZG8geW91IGtub3cgd2hvIGlzIHN1cHBvc2VkIHRvIHRha2Ug
-dGhpcyBwYXRjaD8KCkrDtnJnIGlzIHRoZSBJT01NVSBtYWludGFpbmVyLCBzbyBJIGFzc3VtZSBo
-ZSdzIHRoZSBvbmUuCgo+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+PiBGcm9tOiBCaWp1
-IERhcyBbbWFpbHRvOmJpanUuZGFzQGJwLnJlbmVzYXMuY29tXQo+PiBTZW50OiAyNCBKYW51YXJ5
-IDIwMTggMTU6NDIKPj4gVG86IEpvZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPjsgTGF1cmVu
-dCBQaW5jaGFydCA8bGF1cmVudC5waW5jaGFydEBpZGVhc29uYm9hcmQuY29tPjsgR2VlcnQgVXl0
-dGVyaG9ldmVuCj4+IDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4KPj4gQ2M6IFNpbW9uIEhvcm1h
-biA8aG9ybXNAdmVyZ2UubmV0LmF1PjsgTWFnbnVzIERhbW0gPG1hZ251cy5kYW1tQGdtYWlsLmNv
-bT47IENocmlzIFBhdGVyc29uCj4+IDxDaHJpcy5QYXRlcnNvbjJAcmVuZXNhcy5jb20+OyBGYWJy
-aXppbyBDYXN0cm8gPGZhYnJpemlvLmNhc3Ryb0BicC5yZW5lc2FzLmNvbT47IGlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnOyBsaW51eC0KPj4gcmVuZXNhcy1zb2NAdmdlci5rZXJuZWwu
-b3JnOyBCaWp1IERhcyA8YmlqdS5kYXNAYnAucmVuZXNhcy5jb20+Cj4+IFN1YmplY3Q6IFtQQVRD
-SCAxLzNdIGR0LWJpbmRpbmdzOiBpb21tdTogaXBtbXUtdm1zYTogQWRkIGRldmljZSB0cmVlIHN1
-cHBvcnQgZm9yIHI4YTc3NFszNV0KPj4KPj4gRG9jdW1lbnQgcjhhNzc0WzM1XSBzcGVjaWZpYyBj
-b21wYXRpYmxlIHN0cmluZ3MuIFRoZSBSZW5lc2FzIFJaL0cxW01FXQo+PiAocjhhNzc0WzM1XSkg
-SVBNTVUgYXJlIGlkZW50aWNhbCB0byB0aGUgUi1DYXIgR2VuMiBmYW1pbHkuCj4+Cj4+IFNpZ25l
-ZC1vZmYtYnk6IEJpanUgRGFzIDxiaWp1LmRhc0BicC5yZW5lc2FzLmNvbT4KPj4gUmV2aWV3ZWQt
-Ynk6IENocmlzIFBhdGVyc29uIDxjaHJpcy5wYXRlcnNvbjJAcmVuZXNhcy5jb20+Cj4+IC0tLQo+
-PiAgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L3JlbmVzYXMsaXBtbXUt
-dm1zYS50eHQgfCA1ICsrKystCj4+ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAx
-IGRlbGV0aW9uKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
-YmluZGluZ3MvaW9tbXUvcmVuZXNhcyxpcG1tdS12bXNhLnR4dAo+PiBiL0RvY3VtZW50YXRpb24v
-ZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9yZW5lc2FzLGlwbW11LXZtc2EudHh0Cj4+IGluZGV4
-IDg1N2RmOTIuLjdkMzAwYWYgMTAwNjQ0Cj4+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9pb21tdS9yZW5lc2FzLGlwbW11LXZtc2EudHh0Cj4+ICsrKyBiL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9yZW5lc2FzLGlwbW11LXZtc2EudHh0Cj4+
-IEBAIC0xMSwxMiArMTEsMTUgQEAgUmVxdWlyZWQgUHJvcGVydGllczoKPj4gICAgICB0aGUgZGV2
-aWNlIGlzIGNvbXBhdGlibGUgd2l0aCB0aGUgUi1DYXIgR2VuMiBWTVNBLWNvbXBhdGlibGUgSVBN
-TVUuCj4+Cj4+ICAgICAgLSAicmVuZXNhcyxpcG1tdS1yOGE3M2E0IiBmb3IgdGhlIFI4QTczQTQg
-KFItTW9iaWxlIEFQRTYpIElQTU1VLgo+PiArICAgIC0gInJlbmVzYXMsaXBtbXUtcjhhNzc0MyIg
-Zm9yIHRoZSBSOEE3NzQzIChSWi9HMU0pIElQTU1VLgo+PiArICAgIC0gInJlbmVzYXMsaXBtbXUt
-cjhhNzc0NSIgZm9yIHRoZSBSOEE3NzQ1IChSWi9HMUUpIElQTU1VLgo+PiAgICAgIC0gInJlbmVz
-YXMsaXBtbXUtcjhhNzc5MCIgZm9yIHRoZSBSOEE3NzkwIChSLUNhciBIMikgSVBNTVUuCj4+ICAg
-ICAgLSAicmVuZXNhcyxpcG1tdS1yOGE3NzkxIiBmb3IgdGhlIFI4QTc3OTEgKFItQ2FyIE0yLVcp
-IElQTU1VLgo+PiAgICAgIC0gInJlbmVzYXMsaXBtbXUtcjhhNzc5MyIgZm9yIHRoZSBSOEE3Nzkz
-IChSLUNhciBNMi1OKSBJUE1NVS4KPj4gICAgICAtICJyZW5lc2FzLGlwbW11LXI4YTc3OTQiIGZv
-ciB0aGUgUjhBNzc5NCAoUi1DYXIgRTIpIElQTU1VLgo+PiAgICAgIC0gInJlbmVzYXMsaXBtbXUt
-cjhhNzc5NSIgZm9yIHRoZSBSOEE3Nzk1IChSLUNhciBIMykgSVBNTVUuCj4+IC0gICAgLSAicmVu
-ZXNhcyxpcG1tdS12bXNhIiBmb3IgZ2VuZXJpYyBSLUNhciBHZW4yIFZNU0EtY29tcGF0aWJsZSBJ
-UE1NVS4KPj4gKyAgICAtICJyZW5lc2FzLGlwbW11LXZtc2EiIGZvciBnZW5lcmljIFItQ2FyIEdl
-bjIgb3IgUlovRzEgVk1TQS1jb21wYXRpYmxlCj4+ICsgICBJUE1NVS4KPj4KPj4gICAgLSByZWc6
-IEJhc2UgYWRkcmVzcyBhbmQgc2l6ZSBvZiB0aGUgSVBNTVUgcmVnaXN0ZXJzLgo+PiAgICAtIGlu
-dGVycnVwdHM6IFNwZWNpZmllcnMgZm9yIHRoZSBNTVUgZmF1bHQgaW50ZXJydXB0cy4gRm9yIGlu
-c3RhbmNlcyB0aGF0Cj4+IC0tCj4+IDIuNy40CgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAg
-ICAgICAgICAgICAgICAgIEdlZXJ0CgotLQpHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBs
-b3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJz
-b25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBh
-IGhhY2tlci4gQnV0CndoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAi
-cHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcwpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+Hey Robin,
+
+On Tue, Feb 27, 2018 at 01:49:14PM +0000, Robin Murphy wrote:
+> On 26/02/18 18:05, Will Deacon wrote:
+> >On Thu, Dec 14, 2017 at 04:58:51PM +0000, Robin Murphy wrote:
+> >>Bring io-pgtable-arm in line with the ARMv8.2-LPA feature allowing
+> >>52-bit physical addresses when using the 64KB translation granule.
+> >>This will be supported by SMMUv3.1.
+> >>
+> >>Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> >>Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >>---
+> >>
+> >>v2: Fix TCR_PS/TCR_IPS copy-paste error
+> >>
+> >>  drivers/iommu/io-pgtable-arm.c | 65 ++++++++++++++++++++++++++++++------------
+> >>  1 file changed, 47 insertions(+), 18 deletions(-)
+> >
+> >[...]
+> >
+> >>@@ -203,6 +199,25 @@ struct arm_lpae_io_pgtable {
+> >>  typedef u64 arm_lpae_iopte;
+> >>+static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
+> >>+				     struct arm_lpae_io_pgtable *data)
+> >>+{
+> >>+	arm_lpae_iopte pte = paddr;
+> >>+
+> >>+	/* Of the bits which overlap, either 51:48 or 15:12 are always RES0 */
+> >>+	return (pte | (pte >> 36)) & ARM_LPAE_PTE_ADDR_MASK;
+> >>+}
+> >
+> >I don't particularly like relying on properties of the paddr for correct
+> >construction of the pte here. The existing macro doesn't have this
+> >limitation. I suspect it's all fine at the moment because we only use TTBR0,
+> >but I'd rather not bake that in if we can avoid it.
+> 
+> What's the relevance of TTBR0 to physical addresses? :/
+
+Good point! I clearly got confused here.
+
+> Note that by this point paddr has been validated against cfg->oas by
+> arm_lpae_map(), and validated to be granule-aligned by iommu_map(), so it
+> really can't be wrong under reasonable conditions.
+
+Fair enough, but I still think this would be a bit more readable written
+along the lines of:
+
+	arm_lpae_iopte pte_hi, pte_lo = 0;
+
+	pte_hi = paddr & GENMASK(47, data->pg_shift);
+	if (data->pg_shift == 16) {
+		pte_lo = paddr & GENMASK(ARM_LPAE_MAX_ADDR_BITS - 1, 48);
+		pte_lo >>= (48 - 12);
+	}
+
+	return pte_hi | pte_lo;
+
+Ok, we don't squeeze every last cycle out of it, but I find it much more
+readable. Is it just me? The magic numbers could be #defined and/or
+derived if necessary.
+
+> >>+static phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
+> >>+				  struct arm_lpae_io_pgtable *data)
+> >>+{
+> >>+	phys_addr_t paddr = pte & ARM_LPAE_PTE_ADDR_MASK;
+> >>+	phys_addr_t paddr_hi = paddr & (ARM_LPAE_GRANULE(data) - 1);
+> >>+
+> >>+	/* paddr_hi spans nothing for 4K granule, and only RES0 bits for 16K */
+> >>+	return (paddr ^ paddr_hi) | (paddr_hi << 36);
+> >
+> >Why do we need xor here?
+> 
+> Because "(paddr ^ paddr_hi)" is more concise than "(paddr &
+> ~(phys_addr_t)(ARM_LPAE_GRANULE(data) - 1)" or variants thereof. It's
+> potentially a teeny bit more efficient too, I think, but it's mostly about
+> the readability.
+
+I don't think the bit-twiddling is super readable, to be honest. Again,
+something like:
+
+	phys_addr_t paddr_lo, paddr_hi = 0;
+
+	paddr_lo = pte & GENMASK(47, data->pg_shift);
+	if (data->pg_shift == 16) {
+		paddr_hi = pte & GENMASK(15, 12);
+		paddr_hi <<= (48 - 12);
+	}
+
+	return paddr_hi | paddr_lo;
+
+but I've not even compiled this stuff...
+
+> >>+	cfg->pgsize_bitmap &= page_sizes;
+> >>+	cfg->ias = min(cfg->ias, max_addr_bits);
+> >>+	cfg->oas = min(cfg->oas, max_addr_bits);
+> >
+> >I don't think we should be writing to the ias/oas fields here, at least
+> >now without auditing the drivers and updating the comments about the
+> >io-pgtable API. For example, the SMMUv3 driver uses its own ias local
+> >variable to initialise the domain geometry, and won't pick up any changes
+> >made here.
+> 
+> As you've discovered, the driver thing is indeed true. More generally,
+> though, we've always adjusted cfg->pgsize_bitmap here, so I don't see why
+> other fields should be treated differently - I've always assumed the cfg
+> which the driver passes in here just represents its total maximum
+> capabilities, from which it's io-pgtable's job to pick an appropriate
+> configuration.
+
+Can you update the the header file with a comment to that effect, please?
+
+Will
