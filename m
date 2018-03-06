@@ -1,16 +1,12 @@
-From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: RE: [PATCH  1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
-	support for r8a774[35]
-Date: Tue, 6 Mar 2018 16:55:44 +0000
-Message-ID: <TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
-	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
+From: Jagannathan Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: fix usage of force parameter in
+	intel_ir_reconfigure_irte()
+Date: Tue,  6 Mar 2018 17:39:41 -0500
+Message-ID: <1520375981-4958-1-git-send-email-jag.raman@oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1516808522-17348-2-git-send-email-biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,62 +16,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Dear All,
+It was noticed that the IRTE configured for guest OS kernel
+was over-written while the guest was running. As a result,
+vt-d Posted Interrupts configured for the guest are not being
+delivered directly, and instead bounces off the host. Every
+interrupt delivery takes a VM Exit.
 
-I am very sorry to bother you, do you know who is supposed to take this patch?
+It was noticed that the following stack is doing the over-write:
+[  147.463177]  modify_irte+0x171/0x1f0
+[  147.463405]  intel_ir_set_affinity+0x5c/0x80
+[  147.463641]  msi_domain_set_affinity+0x32/0x90
+[  147.463881]  irq_do_set_affinity+0x37/0xd0
+[  147.464125]  irq_set_affinity_locked+0x9d/0xb0
+[  147.464374]  __irq_set_affinity+0x42/0x70
+[  147.464627]  write_irq_affinity.isra.5+0xe1/0x110
+[  147.464895]  proc_reg_write+0x38/0x70
+[  147.465150]  __vfs_write+0x36/0x180
+[  147.465408]  ? handle_mm_fault+0xdf/0x200
+[  147.465671]  ? _cond_resched+0x15/0x30
+[  147.465936]  vfs_write+0xad/0x1a0
+[  147.466204]  SyS_write+0x52/0xc0
+[  147.466472]  do_syscall_64+0x74/0x1a0
+[  147.466744]  entry_SYSCALL_64_after_hwframe+0x3d/0xa2
 
-Thanks,
-Fab
+reversing the sense of force check in intel_ir_reconfigure_irte()
+restores proper posted interrupt functionality
 
-> -----Original Message-----
-> From: Biju Das [mailto:biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org]
-> Sent: 24 January 2018 15:42
-> To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>; Geert Uytterhoeven
-> <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-> Cc: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>; Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Chris Paterson
-> <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>; Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> Subject: [PATCH 1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree support for r8a774[35]
->
-> Document r8a774[35] specific compatible strings. The Renesas RZ/G1[ME]
-> (r8a774[35]) IPMMU are identical to the R-Car Gen2 family.
->
-> Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> Reviewed-by: Chris Paterson <chris.paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> index 857df92..7d300af 100644
-> --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> @@ -11,12 +11,15 @@ Required Properties:
->      the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
->
->      - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-> +    - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
-> +    - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
->      - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
->      - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
->      - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
->      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
->      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
-> -    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
-> +    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
-> +   IPMMU.
->
->    - reg: Base address and size of the IPMMU registers.
->    - interrupts: Specifiers for the MMU fault interrupts. For instances that
-> --
-> 2.7.4
+Signed-off-by: Jagannathan Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+---
+ Hi Thomas,
 
+ I noticed that you added intel_ir_reconfigure_irte() with the
+ following commit:
+ d491bdff888e ("iommu/vt-d: Reevaluate vector configuration on
+ activate()")
 
+ Could you please confirm the usage of "force" parameter in
+ intel_ir_reconfigure_irte()?
 
+ drivers/iommu/intel_irq_remapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 66f69af..3062a15 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -1136,7 +1136,7 @@ static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
+ 	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+ 
+ 	/* Update the hardware only if the interrupt is in remapped mode. */
+-	if (!force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
++	if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
+ 		modify_irte(&ir_data->irq_2_iommu, irte);
+ }
+ 
+-- 
+1.8.3.1
