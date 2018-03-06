@@ -1,15 +1,15 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 07/37] iommu: Add a page fault handler
-Date: Tue, 6 Mar 2018 10:24:29 +0000
-Message-ID: <4d3d9bbf-a1a7-82ff-9b8d-5634121d83ad@arm.com>
+Subject: Re: [PATCH 03/37] iommu/sva: Manage process address spaces
+Date: Tue, 6 Mar 2018 10:37:10 +0000
+Message-ID: <83f46f73-baa7-c3d5-86f0-cf0af05ab359@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-8-jean-philippe.brucker@arm.com>
-	<b2a3d2a7-7042-aef3-0def-05e64e39d046@codeaurora.org>
+	<20180212183352.22730-4-jean-philippe.brucker@arm.com>
+	<27a044ee-0ed7-0470-0fef-289d0d5cf5e8@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <b2a3d2a7-7042-aef3-0def-05e64e39d046-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <27a044ee-0ed7-0470-0fef-289d0d5cf5e8-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,42 +24,22 @@ To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kerne
 Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/03/18 21:44, Sinan Kaya wrote:
+On 05/03/18 15:28, Sinan Kaya wrote:
 > On 2/12/2018 1:33 PM, Jean-Philippe Brucker wrote:
->> +static int iommu_queue_fault(struct iommu_domain *domain, struct device *dev,
->> +			     struct iommu_fault_event *evt)
+>> +static void io_mm_free(struct io_mm *io_mm)
 >> +{
->> +	struct iommu_fault_group *group;
->> +	struct iommu_fault_context *fault, *next;
+>> +	struct mm_struct *mm;
+>> +	void (*release)(struct io_mm *);
 >> +
->> +	if (!iommu_fault_queue)
->> +		return -ENOSYS;
+>> +	release = io_mm->release;
+>> +	mm = io_mm->mm;
 >> +
->> +	if (!evt->last_req) {
->> +		fault = kzalloc(sizeof(*fault), GFP_KERNEL);
->> +		if (!fault)
->> +			return -ENOMEM;
->> +
->> +		fault->evt = *evt;
->> +		fault->dev = dev;
->> +
->> +		/* Non-last request of a group. Postpone until the last one */
->> +		spin_lock(&iommu_partial_faults_lock);
->> +		list_add_tail(&fault->head, &iommu_partial_faults);
->> +		spin_unlock(&iommu_partial_faults_lock);
->> +
->> +		return IOMMU_PAGE_RESP_HANDLED;
->> +	}
->> +
->> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
->> +	if (!group)
->> +		return -ENOMEM;
+>> +	release(io_mm);
 > 
-> Release the requests in iommu_partial_faults here.
+> Is there any reason why you can't call iommu->release()
+> here directly? Why do you need the release local variable?
 
-We move these requests to the group->faults list (which btw should use
-list_move instead of the current list_del+list_add) and we release them in
-iommu_fault_handle_group()
+I think I can remove the local variable
 
 Thanks,
 Jean
