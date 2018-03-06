@@ -1,99 +1,52 @@
-From: Jeffy Chen <jeffy.chen@rock-chips.com>
-Subject: [PATCH v7 14/14] iommu/rockchip: Support sharing IOMMU between masters
-Date: Tue,  6 Mar 2018 11:27:59 +0800
-Message-ID: <20180306032759.29069-5-jeffy.chen@rock-chips.com>
-References: <20180306030252.3197-1-jeffy.chen@rock-chips.com>
- <20180306032759.29069-1-jeffy.chen@rock-chips.com>
+From: Nipun Gupta <nipun.gupta@nxp.com>
+Subject: RE: [PATCH 5/6] dma-mapping: support fsl-mc bus
+Date: Tue, 6 Mar 2018 04:41:56 +0000
+Message-ID: <HE1PR0401MB24251E99564CAA526F719ECCE6D90@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+ <1520260166-29387-6-git-send-email-nipun.gupta@nxp.com>
+ <20180305150814.GA15918@lst.de>
+ <7b4f9972-6aaa-fc9d-3854-d48b19a8051c@arm.com>
+ <20180305183938.GB20086@lst.de>
+ <1729ae21-d08c-b413-51a3-f22c394b388d@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180306032759.29069-1-jeffy.chen@rock-chips.com>
+In-Reply-To: <1729ae21-d08c-b413-51a3-f22c394b388d@arm.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: jcliang@chromium.org, robin.murphy@arm.com, xxm@rock-chips.com, tfiga@chromium.org, Jeffy Chen <jeffy.chen@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "joro@8bytes.org" <joro@8bytes.org>, Leo Li <leoyang.li@nxp.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Bharat Bhushan <bharat.bhushan@nx>
 List-Id: iommu@lists.linux-foundation.org
 
-There would be some masters sharing the same IOMMU device. Put them in
-the same iommu group and share the same iommu domain.
-
-Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
----
-
-Changes in v7:
-Use iommu_group_ref_get to avoid ref leak
-
-Changes in v6: None
-Changes in v5: None
-Changes in v4: None
-Changes in v3:
-Remove rk_iommudata->domain.
-
-Changes in v2: None
-
- drivers/iommu/rockchip-iommu.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index db08978203f7..6a1c7efa7c17 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -104,6 +104,7 @@ struct rk_iommu {
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-+	struct iommu_group *group;
- };
- 
- /**
-@@ -1091,6 +1092,15 @@ static void rk_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
-+static struct iommu_group *rk_iommu_device_group(struct device *dev)
-+{
-+	struct rk_iommu *iommu;
-+
-+	iommu = rk_iommu_from_dev(dev);
-+
-+	return iommu_group_ref_get(iommu->group);
-+}
-+
- static int rk_iommu_of_xlate(struct device *dev,
- 			     struct of_phandle_args *args)
- {
-@@ -1122,7 +1132,7 @@ static const struct iommu_ops rk_iommu_ops = {
- 	.add_device = rk_iommu_add_device,
- 	.remove_device = rk_iommu_remove_device,
- 	.iova_to_phys = rk_iommu_iova_to_phys,
--	.device_group = generic_device_group,
-+	.device_group = rk_iommu_device_group,
- 	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
- 	.of_xlate = rk_iommu_of_xlate,
- };
-@@ -1191,9 +1201,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	iommu->group = iommu_group_alloc();
-+	if (IS_ERR(iommu->group)) {
-+		err = PTR_ERR(iommu->group);
-+		goto err_unprepare_clocks;
-+	}
-+
- 	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
- 	if (err)
--		goto err_unprepare_clocks;
-+		goto err_put_group;
- 
- 	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
- 	iommu_device_set_fwnode(&iommu->iommu, &dev->of_node->fwnode);
-@@ -1217,6 +1233,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	return 0;
- err_remove_sysfs:
- 	iommu_device_sysfs_remove(&iommu->iommu);
-+err_put_group:
-+	iommu_group_put(iommu->group);
- err_unprepare_clocks:
- 	clk_bulk_unprepare(iommu->num_clocks, iommu->clocks);
- 	return err;
--- 
-2.11.0
+DQoNCj4gRnJvbTogUm9iaW4gTXVycGh5IFttYWlsdG86cm9iaW4ubXVycGh5QGFybS5jb21dDQo+
+IFNlbnQ6IFR1ZXNkYXksIE1hcmNoIDA2LCAyMDE4IDA6MjINCj4gDQo+IE9uIDA1LzAzLzE4IDE4
+OjM5LCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToNCj4gPiBPbiBNb24sIE1hciAwNSwgMjAxOCBh
+dCAwMzo0ODozMlBNICswMDAwLCBSb2JpbiBNdXJwaHkgd3JvdGU6DQo+ID4+IFVuZm9ydHVuYXRl
+bHkgZm9yIHVzLCBmc2wtbWMgaXMgY29uY2VwdHVhbGx5IHJhdGhlciBsaWtlIFBDSSBpbiB0aGF0
+IGl0J3MNCj4gPj4gc29mdHdhcmUtZGlzY292ZXJhYmxlIGFuZCB0aGUgb25seSB0aGluZyBkZXNj
+cmliZWQgaW4gRFQgaXMgdGhlIGJ1cyAiaG9zdCIsDQo+ID4+IHRodXMgd2UgbmVlZCB0aGUgc2Ft
+ZSBzb3J0IG9mIHRoaW5nIGFzIGZvciBQQ0kgdG8gbWFwIGZyb20gdGhlIGNoaWxkDQo+ID4+IGRl
+dmljZXMgYmFjayB0byB0aGUgYnVzIHJvb3QgaW4gb3JkZXIgdG8gZmluZCB0aGUgYXBwcm9wcmlh
+dGUgZmlybXdhcmUNCj4gPj4gbm9kZS4gV29yc2UgdGhhbiBQQ0ksIHRob3VnaCwgd2Ugd291bGRu
+J3QgZXZlbiBoYXZlIHRoZSBvcHRpb24gb2YNCj4gPj4gZGVzY3JpYmluZyBjaGlsZCBkZXZpY2Vz
+IHN0YXRpY2FsbHkgaW4gZmlybXdhcmUgYXQgYWxsLCBzaW5jZSBpdCdzIGFjdHVhbGx5DQo+ID4+
+IG9uZSBvZiB0aGVzZSBydW50aW1lLWNvbmZpZ3VyYWJsZSAiYnVpbGQgeW91ciBvd24gbmV0d29y
+ayBhY2NlbGVyYXRvciINCj4gPj4gaGFyZHdhcmUgcG9vbHMgd2hlcmUgdXNlcnNwYWNlIGdldHMg
+dG8gY3JlYXRlIGFuZCBkZXN0cm95ICJkZXZpY2VzIiBhcyBpdA0KPiA+PiBsaWtlcy4NCj4gPg0K
+PiA+IEkgcmVhbGx5IGhhdGUgdGhlIFBDSSBzcGVjaWFsIGNhc2UganVzdCBhcyBtdWNoLiAgTWF5
+YmUgd2UganVzdA0KPiA+IG5lZWQgYSBkbWFfY29uZmlndXJlIG1ldGhvZCBvbiB0aGUgYnVzLCBh
+bmQgbW92ZSBQQ0kgYXMgd2VsbCBhcyBmc2wtbWMNCj4gPiB0byBpdC4NCj4gDQo+IEhtbSwgb24g
+cmVmbGVjdGlvbiwgMTAwJSBhY2sgdG8gdGhhdCBpZGVhLiBJdCB3b3VsZCBuZWF0bHkgc3VwZXJz
+ZWRlDQo+IGJ1cy0+Zm9yY2VfZG1hICphbmQqIG1lYW4gdGhhdCB3ZSBkb24ndCBoYXZlIHRvIGVm
+ZmVjdGl2ZWx5IHB1bGwgcGNpLmgNCj4gaW50byBldmVyeXRoaW5nLCB3aGljaCBJJ3ZlIG5ldmVy
+IGxpa2VkLiBJbiBoaW5kc2lnaHQgZG1hX2NvbmZpZ3VyZSgpDQo+IGRvZXMgZmVlbCBsaWtlIGl0
+J3MgZ3Jvd24gaW50byB0aGlzIG9kZCBjaG9rZSBwb2ludCB3aGVyZSB3ZSBtdW5nZQ0KPiBldmVy
+eXRoaW5nIGluIGp1c3QgZm9yIGl0IHRvIGF3a3dhcmRseSB1bnBpY2sgdGhpbmdzIGFnYWluLg0K
+PiANCj4gUm9iaW4uDQoNCisxIHRvIHRoZSBpZGVhLg0KDQpTb3JyeSBmb3IgYXNraW5nIGEgdHJp
+dmlhbCBxdWVzdGlvbiAtIGxvb2tpbmcgaW50byBkbWFfY29uZmlndXJlKCkgSSBzZWUgdGhhdA0K
+UENJIGlzIHVzZWQgaW4gdGhlIHN0YXJ0IGFuZCB0aGUgZW5kIG9mIHRoZSBBUEkuDQpJbiB0aGUg
+ZW5kIHBhcnQgcGNpX3B1dF9ob3N0X2JyaWRnZV9kZXZpY2UoKSBpcyBjYWxsZWQuDQpTbyBhcmUg
+dHdvIGJ1cyBjYWxsYmFja3Mgc29tZXRoaW5nIGxpa2UgJ2RtYV9jb25maWdfc3RhcnQnICYgJ2Rt
+YV9jb25maWdfZW5kJw0Kd2lsbCBiZSByZXF1aXJlZCB3aGVyZSB0aGUgZm9ybWVyIG9uZSB3aWxs
+IHJldHVybiAiZG1hX2RldiI/DQoNClJlZ2FyZHMsDQpOaXB1bg0K
