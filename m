@@ -1,16 +1,13 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: Invoke pm_runtime during probe,
-	add/remove device
-Date: Wed, 7 Mar 2018 22:52:22 +0900
-Message-ID: <CAAFQd5BTdF176x5ycatCmCHrMyVX2OZqdXd-JGq06RyDUb0N3g@mail.gmail.com>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
-	<20180302101050.6191-4-vivek.gautam@codeaurora.org>
-	<d0f2b3ed-136d-7704-2aef-1173a342a89c@arm.com>
+From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support for qcom, smmu-500 variant
+Date: Wed, 7 Mar 2018 10:30:09 -0600
+Message-ID: <CAL_Jsq+WWR5r-RcuE2KGpswdRgwzOV_BZjEOzHj5bAULFD6_Xg@mail.gmail.com>
+References: <20180307063219.14409-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <d0f2b3ed-136d-7704-2aef-1173a342a89c-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180307063219.14409-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,65 +17,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 7, 2018 at 9:38 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 02/03/18 10:10, Vivek Gautam wrote:
->>
->> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>
->> The smmu device probe/remove and add/remove master device callbacks
->> gets called when the smmu is not linked to its master, that is without
->> the context of the master device. So calling runtime apis in those places
->> separately.
->>
->> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> [vivek: Cleanup pm runtime calls]
->> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>   drivers/iommu/arm-smmu.c | 96
->> ++++++++++++++++++++++++++++++++++++++++++++----
->>   1 file changed, 88 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index c8b16f53f597..3d6a1875431f 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -209,6 +209,8 @@ struct arm_smmu_device {
->>         struct clk_bulk_data            *clks;
->>         int                             num_clks;
->>   +     bool                            rpm_supported;
->> +
->
->
-> Can we not automatically infer this from whether clocks and/or power domains
-> are specified or not, then just use pm_runtime_enabled() as the fast-path
-> check as Tomasz originally proposed?
+On Wed, Mar 7, 2018 at 12:32 AM, Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> Qualcomm's arm-smmu 500 implementation supports runtime pm
+> so enable the same.
 
-I wouldn't tie this to presence of clocks, since as a next step we
-would want to actually control the clocks separately. (As far as I
-understand, on QCom SoCs we might want to have runtime PM active for
-the translation to work, but clocks gated whenever access to SMMU
-registers is not needed.) Moreover, you might still have some super
-high scale thousand-core systems that require clocks to be
-prepare-enabled, but runtime PM would be undesirable for the reasons
-we discussed before.
+That's a driver detail unrelated to the binding.
 
 >
-> I worry that relying on statically-defined matchdata is just going to blow
-> up the driver and DT binding into a maintenance nightmare; I really don't
-> want to start needing separate definitions for e.g. "arm,juno-etr-mmu-401"
-> and "arm,juno-hdlcd-mmu-401" just because one otherwise-identical instance
-> within the SoC is in a separate controllable power domain while the others
-> aren't.
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>
+>  Based on iommu/arm-smmu pm runtime support series [1]:
+>  [PATCH v8 0/5] iommu/arm-smmu: Add runtime pm/sleep support
+>
+>  Tested on sdm845 with necessary support to enable the smmu
+>  and with necessary user.
+>
+>  [1] https://lkml.org/lkml/2018/3/2/325
+>
+>  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 14 ++++++++++++++
 
-I don't see a reason why both couldn't just have RPM supported
-regardless of whether there is a real power domain. It would
-effectively be just a no-op for those that don't have one. IMHO the
-only reason to avoid having the RPM enabled is the scalability issue
-we discussed before.
+Please split bindings to separate patches.
 
-Best regards,
-Tomasz
+>  drivers/iommu/arm-smmu.c                             |  8 ++++++++
+>  2 files changed, 22 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index 6ea27bd4f785..0b5c6d2a9865 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -18,6 +18,7 @@ conditions.
+>                          "arm,mmu-500"
+>                          "cavium,smmu-v2"
+>                          "qcom,<soc>-smmu-v2", "qcom,smmu-v2"
+
+I don't even see this one in the tree yet...
+
+> +                        "qcom,<soc>-smmu-500", "qcom,smmu-500"
+
+IIRC, the mmu-500 is SMMU v2 implementation, right? Having
+qcom,smmu-500 seems kind of pointless.
+
+Given that we're there's only 1 SoC for "qcom,<soc>-smmu-v2" and
+you're already on to a new genericish compatible, just do SoC specific
+compatible strings.
+
+Rob
