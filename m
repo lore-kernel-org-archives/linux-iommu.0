@@ -1,11 +1,17 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 1/1] iommu/arm-smmu: Add support for qcom,smmu-500 variant
-Date: Wed,  7 Mar 2018 12:02:19 +0530
-Message-ID: <20180307063219.14409-1-vivek.gautam@codeaurora.org>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH  1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
+	support for r8a774[35]
+Date: Wed, 7 Mar 2018 09:09:21 +0100
+Message-ID: <20180307080919.2azwluc7fmoi53qc@verge.net.au>
+References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
+	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
+	<TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <TY1PR01MB1770C8E18C014211F2A2D771C0D90-5SGCI54O2uKdL+CyFhO9sXcolHNk5qUtvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,97 +21,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Qualcomm's arm-smmu 500 implementation supports runtime pm
-so enable the same.
+[CC Alex Williamson]
 
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
+It looks like the last patch to this file was taken by Alex.
+Perhaps he would be willing to take this one too if it it was
+reposted with him CCed.
 
- Based on iommu/arm-smmu pm runtime support series [1]:
- [PATCH v8 0/5] iommu/arm-smmu: Add runtime pm/sleep support
- 
- Tested on sdm845 with necessary support to enable the smmu
- and with necessary user.
-
- [1] https://lkml.org/lkml/2018/3/2/325
-
- Documentation/devicetree/bindings/iommu/arm,smmu.txt | 14 ++++++++++++++
- drivers/iommu/arm-smmu.c                             |  8 ++++++++
- 2 files changed, 22 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index 6ea27bd4f785..0b5c6d2a9865 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -18,6 +18,7 @@ conditions.
-                         "arm,mmu-500"
-                         "cavium,smmu-v2"
-                         "qcom,<soc>-smmu-v2", "qcom,smmu-v2"
-+                        "qcom,<soc>-smmu-500", "qcom,smmu-500"
- 
-                   depending on the particular implementation and/or the
-                   version of the architecture implemented.
-@@ -30,6 +31,10 @@ conditions.
-                   An example string would be -
-                   "qcom,msm8996-smmu-v2", "qcom,smmu-v2".
- 
-+                  "qcom,smmu-500" is arm,mmu-500 implementation that supports
-+                  efficient power management by supporting smmu's state
-+                  retention.
-+
- - reg           : Base address and size of the SMMU.
- 
- - #global-interrupts : The number of global interrupts exposed by the
-@@ -179,3 +184,12 @@ conditions.
- 			 <&mmcc SMMU_MDP_AHB_CLK>;
- 		clock-names = "bus", "iface";
- 	};
-+
-+	smmu5: iommu {
-+		compatible = "qcom,sdm845-smmu-500", "qcom,smmu-500";
-+		reg = <0x15000000 0x80000>;
-+		#iommu-cells = <2>;
-+		#global-interrupts = <1>;
-+
-+		...
-+	};
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7a96c924ae22..7f52456c6b25 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -2008,6 +2008,12 @@ static const char * const qcom_smmuv2_clks[] = {
- 	"bus", "iface",
- };
- 
-+static const struct arm_smmu_match_data qcom_smmu500 = {
-+	.version = ARM_SMMU_V2,
-+	.model = ARM_MMU500,
-+	.rpm_supported = true,
-+};
-+
- static const struct arm_smmu_match_data qcom_smmuv2 = {
- 	.version = ARM_SMMU_V2,
- 	.model = QCOM_SMMUV2,
-@@ -2024,6 +2030,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
- 	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
-+	{ .compatible = "qcom,smmu-500", .data = &qcom_smmu500 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
-@@ -2394,6 +2401,7 @@ IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401");
- IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500");
- IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2");
- IOMMU_OF_DECLARE(qcom_smmuv2, "qcom,smmu-v2");
-+IOMMU_OF_DECLARE(qcom_smmu500, "qcom,smmu-500");
- 
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+On Tue, Mar 06, 2018 at 04:55:44PM +0000, Fabrizio Castro wrote:
+> Dear All,
+> 
+> I am very sorry to bother you, do you know who is supposed to take this patch?
+> 
+> Thanks,
+> Fab
+> 
+> > -----Original Message-----
+> > From: Biju Das [mailto:biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org]
+> > Sent: 24 January 2018 15:42
+> > To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>; Geert Uytterhoeven
+> > <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> > Cc: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>; Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Chris Paterson
+> > <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>; Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
+> > renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > Subject: [PATCH 1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree support for r8a774[35]
+> >
+> > Document r8a774[35] specific compatible strings. The Renesas RZ/G1[ME]
+> > (r8a774[35]) IPMMU are identical to the R-Car Gen2 family.
+> >
+> > Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > Reviewed-by: Chris Paterson <chris.paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> > ---
+> >  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> > b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> > index 857df92..7d300af 100644
+> > --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> > +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> > @@ -11,12 +11,15 @@ Required Properties:
+> >      the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
+> >
+> >      - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
+> > +    - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
+> > +    - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
+> >      - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
+> >      - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
+> >      - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+> >      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+> >      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+> > -    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+> > +    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
+> > +   IPMMU.
+> >
+> >    - reg: Base address and size of the IPMMU registers.
+> >    - interrupts: Specifiers for the MMU fault interrupts. For instances that
+> > --
+> > 2.7.4
+> 
+> 
+> 
+> 
+> Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
+> 
