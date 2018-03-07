@@ -1,17 +1,16 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH  1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
-	support for r8a774[35]
-Date: Wed, 7 Mar 2018 09:09:21 +0100
-Message-ID: <20180307080919.2azwluc7fmoi53qc@verge.net.au>
-References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
-	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
-	<TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v8 1/5] iommu/arm-smmu: Destroy domain context in failure
+	path
+Date: Wed, 7 Mar 2018 12:20:45 +0000
+Message-ID: <d3500b33-8ce6-d767-7e9b-2fd75fea6cbb@arm.com>
+References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
+	<20180302101050.6191-2-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <TY1PR01MB1770C8E18C014211F2A2D771C0D90-5SGCI54O2uKdL+CyFhO9sXcolHNk5qUtvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+In-Reply-To: <20180302101050.6191-2-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,70 +20,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[CC Alex Williamson]
+On 02/03/18 10:10, Vivek Gautam wrote:
+> If we fail after initializing domain_context, we should destroy
+> the context to free up resources.
 
-It looks like the last patch to this file was taken by Alex.
-Perhaps he would be willing to take this one too if it it was
-reposted with him CCed.
+Have another think about why the "problem" this patch caters for cannot 
+ever happen (hint: consider how domain->smmu is used in 
+arm_smmu_init_domain_context()). And then also about the really 
+catastrophically bad problem it actually introduces (hint: 
+"iommu_attach(domain, good_dev); iommu_attach(domain, bad_dev);")
 
-On Tue, Mar 06, 2018 at 04:55:44PM +0000, Fabrizio Castro wrote:
-> Dear All,
+Robin.
+
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
 > 
-> I am very sorry to bother you, do you know who is supposed to take this patch?
+>   * New patch added in this series.
 > 
-> Thanks,
-> Fab
+>   drivers/iommu/arm-smmu.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
 > 
-> > -----Original Message-----
-> > From: Biju Das [mailto:biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org]
-> > Sent: 24 January 2018 15:42
-> > To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>; Geert Uytterhoeven
-> > <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-> > Cc: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>; Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Chris Paterson
-> > <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>; Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-
-> > renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> > Subject: [PATCH 1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree support for r8a774[35]
-> >
-> > Document r8a774[35] specific compatible strings. The Renesas RZ/G1[ME]
-> > (r8a774[35]) IPMMU are identical to the R-Car Gen2 family.
-> >
-> > Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> > Reviewed-by: Chris Paterson <chris.paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-> > ---
-> >  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> > b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> > index 857df92..7d300af 100644
-> > --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> > +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> > @@ -11,12 +11,15 @@ Required Properties:
-> >      the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
-> >
-> >      - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-> > +    - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
-> > +    - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
-> >      - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
-> >      - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
-> >      - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
-> >      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
-> >      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
-> > -    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
-> > +    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
-> > +   IPMMU.
-> >
-> >    - reg: Base address and size of the IPMMU registers.
-> >    - interrupts: Specifiers for the MMU fault interrupts. For instances that
-> > --
-> > 2.7.4
-> 
-> 
-> 
-> 
-> Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 69e7c60792a8..ffc152c36002 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1223,11 +1223,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>   		dev_err(dev,
+>   			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
+>   			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
+> -		return -EINVAL;
+> +		ret = -EINVAL;
+> +		goto destroy_domain;
+>   	}
+>   
+>   	/* Looks ok, so add the device to the domain */
+>   	return arm_smmu_domain_add_master(smmu_domain, fwspec);
+> +
+> +destroy_domain:
+> +	arm_smmu_destroy_domain_context(domain);
+> +	return ret;
+>   }
+>   
+>   static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
 > 
