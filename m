@@ -1,14 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 02/14] iommu/rockchip: Fix error handling in probe
-Date: Wed, 7 Mar 2018 12:59:55 +0000
-Message-ID: <ac9eb221-8483-45e5-6f87-6dcc5decfb45@arm.com>
+Subject: Re: [PATCH v7 03/14] iommu/rockchip: Request irqs in rk_iommu_probe()
+Date: Wed, 7 Mar 2018 13:00:24 +0000
+Message-ID: <3c3aa82e-2a06-4ced-fb7e-8e219b25b812@arm.com>
 References: <20180306030252.3197-1-jeffy.chen@rock-chips.com>
-	<20180306030252.3197-3-jeffy.chen@rock-chips.com>
+	<20180306030252.3197-4-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180306030252.3197-3-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-Reply-To: <20180306030252.3197-4-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,13 +24,11 @@ Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, jcliang-F7+t
 List-Id: iommu@lists.linux-foundation.org
 
 On 06/03/18 03:02, Jeffy Chen wrote:
-> Add missing iommu_device_sysfs_remove in error path.
+> Move request_irq to the end of rk_iommu_probe().
 
 Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-(strictly you don't need to introduce the additional return, but it's 
-only a couple of lines and definitely not worth respinning just for that)
-
+> Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 > Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 > ---
@@ -39,28 +37,90 @@ only a couple of lines and definitely not worth respinning just for that)
 > Changes in v6: None
 > Changes in v5: None
 > Changes in v4: None
-> Changes in v3: None
+> Changes in v3:
+> Loop platform_get_irq() as Robin suggested.
+> 
 > Changes in v2: None
 > 
->   drivers/iommu/rockchip-iommu.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
+>   drivers/iommu/rockchip-iommu.c | 38 +++++++++-----------------------------
+>   1 file changed, 9 insertions(+), 29 deletions(-)
 > 
 > diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 16cd8780c289..c2ef3cbd4401 100644
+> index c2ef3cbd4401..b743d82e6fe1 100644
 > --- a/drivers/iommu/rockchip-iommu.c
 > +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1193,8 +1193,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
+> @@ -90,8 +90,6 @@ struct rk_iommu {
+>   	struct device *dev;
+>   	void __iomem **bases;
+>   	int num_mmu;
+> -	int *irq;
+> -	int num_irq;
+>   	bool reset_disabled;
+>   	struct iommu_device iommu;
+>   	struct list_head node; /* entry in rk_iommu_domain.iommus */
+> @@ -830,13 +828,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
 >   
->   	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
->   	err = iommu_device_register(&iommu->iommu);
-> +	if (err) {
-> +		iommu_device_sysfs_remove(&iommu->iommu);
-> +		return err;
-> +	}
+>   	iommu->domain = domain;
 >   
-> -	return err;
-> +	return 0;
->   }
+> -	for (i = 0; i < iommu->num_irq; i++) {
+> -		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
+> -				       IRQF_SHARED, dev_name(dev), iommu);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+>   	for (i = 0; i < iommu->num_mmu; i++) {
+>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+>   			       rk_domain->dt_dma);
+> @@ -885,9 +876,6 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+>   	}
+>   	rk_iommu_disable_stall(iommu);
 >   
->   static const struct of_device_id rk_iommu_dt_ids[] = {
+> -	for (i = 0; i < iommu->num_irq; i++)
+> -		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
+> -
+>   	iommu->domain = NULL;
+>   
+>   	dev_dbg(dev, "Detached from iommu domain\n");
+> @@ -1138,7 +1126,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	struct rk_iommu *iommu;
+>   	struct resource *res;
+>   	int num_res = pdev->num_resources;
+> -	int err, i;
+> +	int err, i, irq;
+>   
+>   	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+>   	if (!iommu)
+> @@ -1165,23 +1153,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	if (iommu->num_mmu == 0)
+>   		return PTR_ERR(iommu->bases[0]);
+>   
+> -	iommu->num_irq = platform_irq_count(pdev);
+> -	if (iommu->num_irq < 0)
+> -		return iommu->num_irq;
+> -	if (iommu->num_irq == 0)
+> -		return -ENXIO;
+> +	i = 0;
+> +	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
+> +		if (irq < 0)
+> +			return irq;
+>   
+> -	iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
+> -				  GFP_KERNEL);
+> -	if (!iommu->irq)
+> -		return -ENOMEM;
+> -
+> -	for (i = 0; i < iommu->num_irq; i++) {
+> -		iommu->irq[i] = platform_get_irq(pdev, i);
+> -		if (iommu->irq[i] < 0) {
+> -			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
+> -			return -ENXIO;
+> -		}
+> +		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
+> +				       IRQF_SHARED, dev_name(dev), iommu);
+> +		if (err)
+> +			return err;
+>   	}
+>   
+>   	iommu->reset_disabled = device_property_read_bool(dev,
 > 
