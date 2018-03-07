@@ -1,105 +1,93 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v8 4/5] iommu/arm-smmu: Add the device_link between
-	masters and smmu
-Date: Wed, 7 Mar 2018 12:47:28 +0000
-Message-ID: <f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
-	<20180302101050.6191-5-vivek.gautam@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v7 01/14] iommu/rockchip: Prohibit unbind and remove
+Date: Wed, 7 Mar 2018 12:55:54 +0000
+Message-ID: <713e01c9-4850-dd03-841f-060c1eec1cbd@arm.com>
+References: <20180306030252.3197-1-jeffy.chen@rock-chips.com>
+ <20180306030252.3197-2-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180302101050.6191-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180306030252.3197-2-jeffy.chen@rock-chips.com>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jeffy Chen <jeffy.chen@rock-chips.com>, linux-kernel@vger.kernel.org
+Cc: jcliang@chromium.org, xxm@rock-chips.com, tfiga@chromium.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/03/18 10:10, Vivek Gautam wrote:
-> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+On 06/03/18 03:02, Jeffy Chen wrote:
+> Removal of IOMMUs cannot be done reliably.
 > 
-> Finally add the device link between the master device and
-> smmu, so that the smmu gets runtime enabled/disabled only when the
-> master needs it. This is done from add_device callback which gets
-> called once when the master is added to the smmu.
-> 
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> This is similar to exynos iommu driver.
+
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
 > ---
->   drivers/iommu/arm-smmu.c | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 3d6a1875431f..bb1ea82c1003 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -217,6 +217,9 @@ struct arm_smmu_device {
+> Changes in v7: None
+> Changes in v6: None
+> Changes in v5: None
+> Changes in v4:
+> Rewrite commit message.
+> 
+> Changes in v3:
+> Also remove remove() and module_exit() as Tomasz suggested.
+> 
+> Changes in v2: None
+> 
+>   drivers/iommu/rockchip-iommu.c | 21 +--------------------
+>   1 file changed, 1 insertion(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 9d991c2d8767..16cd8780c289 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1197,18 +1197,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	return err;
+>   }
 >   
->   	/* IOMMU core code handle */
->   	struct iommu_device		iommu;
-> +
-> +	/* runtime PM link to master */
-> +	struct device_link *link;
-
-Just the one?
-
+> -static int rk_iommu_remove(struct platform_device *pdev)
+> -{
+> -	struct rk_iommu *iommu = platform_get_drvdata(pdev);
+> -
+> -	if (iommu) {
+> -		iommu_device_sysfs_remove(&iommu->iommu);
+> -		iommu_device_unregister(&iommu->iommu);
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>   static const struct of_device_id rk_iommu_dt_ids[] = {
+>   	{ .compatible = "rockchip,iommu" },
+>   	{ /* sentinel */ }
+> @@ -1217,10 +1205,10 @@ MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
+>   
+>   static struct platform_driver rk_iommu_driver = {
+>   	.probe = rk_iommu_probe,
+> -	.remove = rk_iommu_remove,
+>   	.driver = {
+>   		   .name = "rk_iommu",
+>   		   .of_match_table = rk_iommu_dt_ids,
+> +		   .suppress_bind_attrs = true,
+>   	},
 >   };
 >   
->   enum arm_smmu_context_fmt {
-> @@ -1470,10 +1473,26 @@ static int arm_smmu_add_device(struct device *dev)
+> @@ -1248,14 +1236,7 @@ static int __init rk_iommu_init(void)
+>   		platform_driver_unregister(&rk_iommu_domain_driver);
+>   	return ret;
+>   }
+> -static void __exit rk_iommu_exit(void)
+> -{
+> -	platform_driver_unregister(&rk_iommu_driver);
+> -	platform_driver_unregister(&rk_iommu_domain_driver);
+> -}
+> -
+>   subsys_initcall(rk_iommu_init);
+> -module_exit(rk_iommu_exit);
 >   
->   	iommu_device_link(&smmu->iommu, dev);
->   
-> +	/*
-> +	 * Establish the link between smmu and master, so that the
-> +	 * smmu gets runtime enabled/disabled as per the master's
-> +	 * needs.
-> +	 */
-> +	smmu->link = device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME);
-
-Maybe I've misunderstood how the API works, but AFAICS the second and 
-subsequent devices are all just going to overwrite (and leak) the link 
-of the previous one...
-
-> +	if (!smmu->link) {
-> +		dev_warn(smmu->dev, "Unable to create device link between %s and %s\n",
-> +			 dev_name(smmu->dev), dev_name(dev));
-> +		ret = -ENODEV;
-> +		goto out_unlink;
-> +	}
-> +
->   	arm_smmu_rpm_put(smmu);
->   
->   	return 0;
->   
-> +out_unlink:
-> +	iommu_device_unlink(&smmu->iommu, dev);
-> +	arm_smmu_master_free_smes(fwspec);
->   out_rpm_put:
->   	arm_smmu_rpm_put(smmu);
->   out_cfg_free:
-> @@ -1496,6 +1515,8 @@ static void arm_smmu_remove_device(struct device *dev)
->   	cfg  = fwspec->iommu_priv;
->   	smmu = cfg->smmu;
->   
-> +	device_link_del(smmu->link);
-
-...and equivalently you end up with a double-free (or more) here of a 
-link which may not have belonged to dev anyway.
-
-Robin.
-
-> +
->   	ret = arm_smmu_rpm_get(smmu);
->   	if (ret < 0)
->   		return;
+>   MODULE_DESCRIPTION("IOMMU API for Rockchip");
+>   MODULE_AUTHOR("Simon Xue <xxm@rock-chips.com> and Daniel Kurtz <djkurtz@chromium.org>");
 > 
