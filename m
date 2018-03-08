@@ -1,109 +1,111 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
-Date: Wed, 7 Mar 2018 16:40:19 -0600
-Message-ID: <20180307224019.oowh74pkbi5izuft@rob-hp-laptop>
-References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
-	<1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v8 4/5] iommu/arm-smmu: Add the device_link between
+ masters and smmu
+Date: Thu, 8 Mar 2018 10:29:47 +0530
+Message-ID: <CAFp+6iF1oM=fmRCqSG-SxcUVvvOLet_Y0p7pmGn+=B-LdMNiww@mail.gmail.com>
+References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
+ <20180302101050.6191-5-vivek.gautam@codeaurora.org> <f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1520260166-29387-2-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <joro@8bytes.org>, robh+dt <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, jcrouse@codeaurora.org, Stephen Boyd <sboyd@codeaurora.org>, Sricharan R <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Archit Taneja <architt@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 05, 2018 at 07:59:21PM +0530, Nipun Gupta wrote:
-> The existing IOMMU bindings cannot be used to specify the relationship
-> between fsl-mc devices and IOMMUs. This patch adds a binding for
-> mapping fsl-mc devices to IOMMUs, using a new iommu-parent property.
-> 
-> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> ---
->  .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 31 ++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> index 6611a7c..011c7d6 100644
-> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> @@ -9,6 +9,24 @@ blocks that can be used to create functional hardware objects/devices
->  such as network interfaces, crypto accelerator instances, L2 switches,
->  etc.
->  
-> +For an overview of the DPAA2 architecture and fsl-mc bus see:
-> +drivers/staging/fsl-mc/README.txt
-> +
-> +As described in the above overview, all DPAA2 objects in a DPRC share the
-> +same hardware "isolation context" and a 10-bit value called an ICID
-> +(isolation context id) is expressed by the hardware to identify
-> +the requester.
-> +
-> +The generic 'iommus' property is cannot be used to describe the relationship
-> +between fsl-mc and IOMMUs, so an iommu-parent property is used to define
-> +the same.
+On Wed, Mar 7, 2018 at 6:17 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 02/03/18 10:10, Vivek Gautam wrote:
+>>
+>> From: Sricharan R <sricharan@codeaurora.org>
+>>
+>> Finally add the device link between the master device and
+>> smmu, so that the smmu gets runtime enabled/disabled only when the
+>> master needs it. This is done from add_device callback which gets
+>> called once when the master is added to the smmu.
+>>
+>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>> ---
+>>   drivers/iommu/arm-smmu.c | 21 +++++++++++++++++++++
+>>   1 file changed, 21 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 3d6a1875431f..bb1ea82c1003 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -217,6 +217,9 @@ struct arm_smmu_device {
+>>         /* IOMMU core code handle */
+>>         struct iommu_device             iommu;
+>> +
+>> +       /* runtime PM link to master */
+>> +       struct device_link *link;
+>
+>
+> Just the one?
+>
+>>   };
+>>     enum arm_smmu_context_fmt {
+>> @@ -1470,10 +1473,26 @@ static int arm_smmu_add_device(struct device *dev)
+>>         iommu_device_link(&smmu->iommu, dev);
+>>   +     /*
+>> +        * Establish the link between smmu and master, so that the
+>> +        * smmu gets runtime enabled/disabled as per the master's
+>> +        * needs.
+>> +        */
+>> +       smmu->link = device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME);
+>
+>
+> Maybe I've misunderstood how the API works, but AFAICS the second and
+> subsequent devices are all just going to overwrite (and leak) the link of
+> the previous one...
 
-Why not? It is just a link between 2 nodes.
+Sorry, my bad. Will take care of this.
 
-> +
-> +For generic IOMMU bindings, see
-> +Documentation/devicetree/bindings/iommu/iommu.txt.
-> +
-> +For arm-smmu binding, see:
-> +Documentation/devicetree/bindings/iommu/arm,smmu.txt.
-> +
->  Required properties:
->  
->      - compatible
-> @@ -88,14 +106,27 @@ Sub-nodes:
->                Value type: <phandle>
->                Definition: Specifies the phandle to the PHY device node associated
->                            with the this dpmac.
-> +Optional properties:
-> +
-> +- iommu-parent: Maps the devices on fsl-mc bus to an IOMMU.
-> +  The property specifies the IOMMU behind which the devices on
-> +  fsl-mc bus are residing.
+regards
+Vivek
 
-If you want a generic property, this should be documented in the common 
-binding.
+>
+>> +       if (!smmu->link) {
+>> +               dev_warn(smmu->dev, "Unable to create device link between
+>> %s and %s\n",
+>> +                        dev_name(smmu->dev), dev_name(dev));
+>> +               ret = -ENODEV;
+>> +               goto out_unlink;
+>> +       }
+>> +
+>>         arm_smmu_rpm_put(smmu);
+>>         return 0;
+>>   +out_unlink:
+>> +       iommu_device_unlink(&smmu->iommu, dev);
+>> +       arm_smmu_master_free_smes(fwspec);
+>>   out_rpm_put:
+>>         arm_smmu_rpm_put(smmu);
+>>   out_cfg_free:
+>> @@ -1496,6 +1515,8 @@ static void arm_smmu_remove_device(struct device
+>> *dev)
+>>         cfg  = fwspec->iommu_priv;
+>>         smmu = cfg->smmu;
+>>   +     device_link_del(smmu->link);
+>
+>
+> ...and equivalently you end up with a double-free (or more) here of a link
+> which may not have belonged to dev anyway.
+>
+> Robin.
+>
+>
+>> +
+>>         ret = arm_smmu_rpm_get(smmu);
+>>         if (ret < 0)
+>>                 return;
+>>
+>
 
-Couldn't you have more than 1 IOMMU upstream of a MC?
 
->  
->  Example:
->  
-> +        smmu: iommu@5000000 {
-> +               compatible = "arm,mmu-500";
-> +               #iommu-cells = <1>;
-> +               stream-match-mask = <0x7C00>;
-> +               ...
-> +        };
-> +
->          fsl_mc: fsl-mc@80c000000 {
->                  compatible = "fsl,qoriq-mc";
->                  reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
->                        <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
->                  msi-parent = <&its>;
-> +                iommu-parent = <&smmu>;
->                  #address-cells = <3>;
->                  #size-cells = <1>;
->  
-> -- 
-> 1.9.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
