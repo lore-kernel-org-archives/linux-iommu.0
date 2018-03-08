@@ -1,155 +1,159 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: Invoke pm_runtime during probe,
- add/remove device
-Date: Thu, 8 Mar 2018 12:12:21 +0000
-Message-ID: <6fe36177-a8a5-5f17-bf65-1a53538221a4@arm.com>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
- <20180302101050.6191-4-vivek.gautam@codeaurora.org>
- <d0f2b3ed-136d-7704-2aef-1173a342a89c@arm.com>
- <CAAFQd5BTdF176x5ycatCmCHrMyVX2OZqdXd-JGq06RyDUb0N3g@mail.gmail.com>
- <30a2fa5e-3d8e-acb6-ab31-bec652f1be99@arm.com>
- <CAAFQd5BKkKc2binDe-MCDeP42b6O26Hu9nYjvYRE160EMvi1fA@mail.gmail.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
+Date: Thu, 8 Mar 2018 12:32:28 +0000
+Message-ID: <HE1PR0401MB24257DC948C69C7A9080ED66E6DF0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+	<1520260166-29387-2-git-send-email-nipun.gupta@nxp.com>
+	<20180307224019.oowh74pkbi5izuft@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAFQd5BKkKc2binDe-MCDeP42b6O26Hu9nYjvYRE160EMvi1fA@mail.gmail.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, jcrouse@codeaurora.org, Stephen Boyd <sboyd@codeaurora.org>, Sricharan R <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Archit Taneja <architt@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180307224019.oowh74pkbi5izuft@rob-hp-laptop>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/03/18 04:33, Tomasz Figa wrote:
-> On Thu, Mar 8, 2018 at 1:58 AM, Robin Murphy <robin.murphy@arm.com> wrote:
->> On 07/03/18 13:52, Tomasz Figa wrote:
->>>
->>> On Wed, Mar 7, 2018 at 9:38 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>>>
->>>> On 02/03/18 10:10, Vivek Gautam wrote:
->>>>>
->>>>>
->>>>> From: Sricharan R <sricharan@codeaurora.org>
->>>>>
->>>>> The smmu device probe/remove and add/remove master device callbacks
->>>>> gets called when the smmu is not linked to its master, that is without
->>>>> the context of the master device. So calling runtime apis in those
->>>>> places
->>>>> separately.
->>>>>
->>>>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->>>>> [vivek: Cleanup pm runtime calls]
->>>>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
->>>>> ---
->>>>>     drivers/iommu/arm-smmu.c | 96
->>>>> ++++++++++++++++++++++++++++++++++++++++++++----
->>>>>     1 file changed, 88 insertions(+), 8 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>>>> index c8b16f53f597..3d6a1875431f 100644
->>>>> --- a/drivers/iommu/arm-smmu.c
->>>>> +++ b/drivers/iommu/arm-smmu.c
->>>>> @@ -209,6 +209,8 @@ struct arm_smmu_device {
->>>>>           struct clk_bulk_data            *clks;
->>>>>           int                             num_clks;
->>>>>     +     bool                            rpm_supported;
->>>>> +
->>>>
->>>>
->>>>
->>>> Can we not automatically infer this from whether clocks and/or power
->>>> domains
->>>> are specified or not, then just use pm_runtime_enabled() as the fast-path
->>>> check as Tomasz originally proposed?
->>>
->>>
->>> I wouldn't tie this to presence of clocks, since as a next step we
->>> would want to actually control the clocks separately. (As far as I
->>> understand, on QCom SoCs we might want to have runtime PM active for
->>> the translation to work, but clocks gated whenever access to SMMU
->>> registers is not needed.) Moreover, you might still have some super
->>> high scale thousand-core systems that require clocks to be
->>> prepare-enabled, but runtime PM would be undesirable for the reasons
->>> we discussed before.
->>>
->>>>
->>>> I worry that relying on statically-defined matchdata is just going to
->>>> blow
->>>> up the driver and DT binding into a maintenance nightmare; I really don't
->>>> want to start needing separate definitions for e.g.
->>>> "arm,juno-etr-mmu-401"
->>>> and "arm,juno-hdlcd-mmu-401" just because one otherwise-identical
->>>> instance
->>>> within the SoC is in a separate controllable power domain while the
->>>> others
->>>> aren't.
->>>
->>>
->>> I don't see a reason why both couldn't just have RPM supported
->>> regardless of whether there is a real power domain. It would
->>> effectively be just a no-op for those that don't have one.
->>
->>
->> Because you're then effectively defining "compatible" values for the sake of
->> attaching software policy to them, rather than actually describing different
->> hardware implementations.
->>
->> The fact that RPM can't do anything meaningful unless relevant clock/power
->> aspects *are* described, however, means that we shouldn't need additional
->> information redundant with that. Much like the fact that we don't *already*
->> have an "arm,juno-hdlcd-mmu-401" compatible to account for those being
->> integrated such that IDR0.CTTW has the wrong value, since the presence or
->> not of the "dma-coherent" property already describes the truth in that
->> regard.
+Hi Rob,
+
+> -----Original Message-----
+> From: Rob Herring [mailto:robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org]
+> Sent: Thursday, March 08, 2018 4:10
+> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> Cc: will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org;
+> catalin.marinas-5wv7dgnIgG8@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
+> Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>; gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org;
+> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Laurentiu
+> Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>; shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; hch-jcswGhMUV9g@public.gmane.org; linux-
+> arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+> Subject: Re: [PATCH 1/6] Docs: dt: add fsl-mc iommu-parent device-tree binding
 > 
-> Fair enough.
+> On Mon, Mar 05, 2018 at 07:59:21PM +0530, Nipun Gupta wrote:
+> > The existing IOMMU bindings cannot be used to specify the relationship
+> > between fsl-mc devices and IOMMUs. This patch adds a binding for
+> > mapping fsl-mc devices to IOMMUs, using a new iommu-parent property.
+> >
+> > Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> > ---
+> >  .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 31
+> ++++++++++++++++++++++
+> >  1 file changed, 31 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> > index 6611a7c..011c7d6 100644
+> > --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> > +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> > @@ -9,6 +9,24 @@ blocks that can be used to create functional hardware
+> objects/devices
+> >  such as network interfaces, crypto accelerator instances, L2 switches,
+> >  etc.
+> >
+> > +For an overview of the DPAA2 architecture and fsl-mc bus see:
+> > +drivers/staging/fsl-mc/README.txt
+> > +
+> > +As described in the above overview, all DPAA2 objects in a DPRC share the
+> > +same hardware "isolation context" and a 10-bit value called an ICID
+> > +(isolation context id) is expressed by the hardware to identify
+> > +the requester.
+> > +
+> > +The generic 'iommus' property is cannot be used to describe the relationship
+> > +between fsl-mc and IOMMUs, so an iommu-parent property is used to define
+> > +the same.
 > 
->>
->>> IMHO the
->>> only reason to avoid having the RPM enabled is the scalability issue
->>> we discussed before.
->>
->>
->> Yes, but that's kind of my point; in reality high throughput/minimal latency
->> and aggressive power management are more or less mutually exclusive. Mobile
->> SoCs with fine-grained clock trees and power domains won't have multiple
->> 40GBe/NVMf/whatever links running flat out in parallel; conversely
->> networking/infrastructure/server SoCs aren't designed around saving every
->> last microamp of leakage current - even in the (fairly unlikely) case of the
->> interconnect clocks being software-gateable at all I would be very surprised
->> if that were ever exposed directly to Linux (FWIW I believe ACPI essentially
->> *requires* clocks to be abstracted behind firmware).
->>
->> Realistically then, explicit clocks are only expected on systems which care
->> about power management. We can always revisit that assumption if anything
->> crazy where it isn't the case ever becomes non-theoretical, but for now it's
->> one I'm entirely comfortable with. If on the other hand it turns out that we
->> can rely on just a power domain being present wherever we want RPM, making
->> clocks moot, then all the better.
+> Why not? It is just a link between 2 nodes.
+
+We have #iommu-cells as '1' i.e. iommu will have one stream ID configured for a device.
+Once USB and other devices start to use IOMMU we will also need this iommu-cells.
+
+When #iommu-cells is defined as '1' and we have 'iommus=<&smmu>' compilation
+reports warning about the mismatch.
+In fsl-mc bus case we do not have any stream id associated with the bus.
+
+As suggested by Robin, we can simply use the iommu-map property.
+
 > 
-> Alright. Since Qcom would be the only user of clock and power handling
-> for the time being, I think checking power domain presence could work
-> for us. +/- the fact that clocks need to be handled even if power
-> domain is not present, but we should normally always have both.
+> > +
+> > +For generic IOMMU bindings, see
+> > +Documentation/devicetree/bindings/iommu/iommu.txt.
+> > +
+> > +For arm-smmu binding, see:
+> > +Documentation/devicetree/bindings/iommu/arm,smmu.txt.
+> > +
+> >  Required properties:
+> >
+> >      - compatible
+> > @@ -88,14 +106,27 @@ Sub-nodes:
+> >                Value type: <phandle>
+> >                Definition: Specifies the phandle to the PHY device node associated
+> >                            with the this dpmac.
+> > +Optional properties:
+> > +
+> > +- iommu-parent: Maps the devices on fsl-mc bus to an IOMMU.
+> > +  The property specifies the IOMMU behind which the devices on
+> > +  fsl-mc bus are residing.
+> 
+> If you want a generic property, this should be documented in the common
+> binding.
 
-Great! (the issue of Qcom-specific clock handling is a separate argument 
-which I don't feel like reigniting just now...)
+We can use the iommu-map property which is already documented.
 
-> Now we need a way to do the check. Perhaps for the time being it would
-> be enough to just check for the power-domains property in DT?
+> 
+> Couldn't you have more than 1 IOMMU upstream of a MC?
 
-AFAICS, it might be as simple as arm_smmu_probe() doing this:
+There is no such device currently with which fsl-mc bus uses more than one iommu.
+Infact, our current systems have only single IOMMU :).
 
-	/*
-	 * We want to avoid touching dev->power.lock in fastpaths unless
-	 * it's really going to do something useful - pm_runtime_enabled()
-	 * can serve as an ideal proxy for that decision.
-	 */
-	if (dev->pm_domain)
-		pm_runtime_enable(dev);
+Even in future if such devices are there then we can use iommu-map to specify
+more than one iommu with separate requester ID's (RID's).
 
-or maybe even just gate all the calls with "if (smmu->dev.pm_domain)" 
-directly (like pcie-mediatek does), but I'm not sure which would be 
-conceptually cleaner.
+Thank you for review...
 
-Robin.
+Regards,
+Nipun
+
+> 
+> >
+> >  Example:
+> >
+> > +        smmu: iommu@5000000 {
+> > +               compatible = "arm,mmu-500";
+> > +               #iommu-cells = <1>;
+> > +               stream-match-mask = <0x7C00>;
+> > +               ...
+> > +        };
+> > +
+> >          fsl_mc: fsl-mc@80c000000 {
+> >                  compatible = "fsl,qoriq-mc";
+> >                  reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+> >                        <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+> >                  msi-parent = <&its>;
+> > +                iommu-parent = <&smmu>;
+> >                  #address-cells = <3>;
+> >                  #size-cells = <1>;
+> >
+> > --
+> > 1.9.1
+> >
+> >
+> > _______________________________________________
+> > linux-arm-kernel mailing list
+> > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> >
+> https://emea01.safelinks.protection.outlook.com/?url=http%3A%2F%2Flists.infr
+> adead.org%2Fmailman%2Flistinfo%2Flinux-arm-
+> kernel&data=02%7C01%7Cnipun.gupta%40nxp.com%7Cf64b4fe9c5cf45ce8a9a
+> 08d5847c6919%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C636560
+> 592302736942&sdata=iOwv%2Fzd8UTLm7YCapDOWzrtd48VQeYY2vlufck7eYZI
+> %3D&reserved=0
