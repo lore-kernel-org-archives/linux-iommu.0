@@ -1,117 +1,155 @@
-From: Karthik Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v3 2/4] soc: qcom: Add GENI based QUP Wrapper driver
-Date: Wed, 7 Mar 2018 23:46:36 -0700
-Message-ID: <945b6c00-dde6-6ec7-4577-4cc0d034796b@codeaurora.org>
-References: <1519781889-16117-1-git-send-email-kramasub@codeaurora.org>
-	<1519781889-16117-3-git-send-email-kramasub@codeaurora.org>
-	<152002326567.108663.16836885081217739460@swboyd.mtv.corp.google.com>
-	<4ac213a6-081f-72c1-c9c8-6994786285c9@codeaurora.org>
-	<152037339742.218381.11498404122038956963@swboyd.mtv.corp.google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: Invoke pm_runtime during probe,
+ add/remove device
+Date: Thu, 8 Mar 2018 12:12:21 +0000
+Message-ID: <6fe36177-a8a5-5f17-bf65-1a53538221a4@arm.com>
+References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
+ <20180302101050.6191-4-vivek.gautam@codeaurora.org>
+ <d0f2b3ed-136d-7704-2aef-1173a342a89c@arm.com>
+ <CAAFQd5BTdF176x5ycatCmCHrMyVX2OZqdXd-JGq06RyDUb0N3g@mail.gmail.com>
+ <30a2fa5e-3d8e-acb6-ab31-bec652f1be99@arm.com>
+ <CAAFQd5BKkKc2binDe-MCDeP42b6O26Hu9nYjvYRE160EMvi1fA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <152037339742.218381.11498404122038956963-n1Xw8LXHxjTHt/MElyovVYaSKrA+ACpX0E9HWUfgJXw@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Boyd <swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Boyd <sboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, acourbot-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAAFQd5BKkKc2binDe-MCDeP42b6O26Hu9nYjvYRE160EMvi1fA@mail.gmail.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, jcrouse@codeaurora.org, Stephen Boyd <sboyd@codeaurora.org>, Sricharan R <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Archit Taneja <architt@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 3/6/2018 2:56 PM, Stephen Boyd wrote:
-> Quoting Karthik Ramasubramanian (2018-03-02 16:58:23)
-> 
->>>> +       return iova;
->>>> +}
->>>> +EXPORT_SYMBOL(geni_se_tx_dma_prep);
->>>> +
->>>> +/**
->>>> + * geni_se_rx_dma_prep() - Prepare the Serial Engine for RX DMA transfer
->>>> + * @se:                        Pointer to the concerned Serial Engine.
->>>> + * @buf:               Pointer to the RX buffer.
->>>> + * @len:               Length of the RX buffer.
->>>> + *
->>>> + * This function is used to prepare the buffers for DMA RX.
->>>> + *
->>>> + * Return: Mapped DMA Address of the buffer on success, NULL on failure.
->>>> + */
->>>> +dma_addr_t geni_se_rx_dma_prep(struct geni_se *se, void *buf, size_t len)
->>>> +{
->>>> +       dma_addr_t iova;
->>>> +       struct geni_wrapper *wrapper = se->wrapper;
->>>> +       u32 val;
->>>> +
->>>> +       iova = dma_map_single(wrapper->dev, buf, len, DMA_FROM_DEVICE);
->>>> +       if (dma_mapping_error(wrapper->dev, iova))
->>>> +               return (dma_addr_t)NULL;
+On 08/03/18 04:33, Tomasz Figa wrote:
+> On Thu, Mar 8, 2018 at 1:58 AM, Robin Murphy <robin.murphy@arm.com> wrote:
+>> On 07/03/18 13:52, Tomasz Figa wrote:
 >>>
->>> Can't return a dma_mapping_error address to the caller and have them
->>> figure it out?
->> Earlier we used to return the DMA_ERROR_CODE which has been removed
->> recently in arm64 architecture. If we return the dma_mapping_error, then
->> the caller also needs the device which encountered the mapping error.
->> The serial interface drivers can use their parent currently to resolve
->> the mapping error. Once the wrapper starts mapping using IOMMU context
->> bank, then the serial interface drivers do not know which device to use
->> to know if there is an error.
+>>> On Wed, Mar 7, 2018 at 9:38 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+>>>>
+>>>> On 02/03/18 10:10, Vivek Gautam wrote:
+>>>>>
+>>>>>
+>>>>> From: Sricharan R <sricharan@codeaurora.org>
+>>>>>
+>>>>> The smmu device probe/remove and add/remove master device callbacks
+>>>>> gets called when the smmu is not linked to its master, that is without
+>>>>> the context of the master device. So calling runtime apis in those
+>>>>> places
+>>>>> separately.
+>>>>>
+>>>>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>>>>> [vivek: Cleanup pm runtime calls]
+>>>>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>>>>> ---
+>>>>>     drivers/iommu/arm-smmu.c | 96
+>>>>> ++++++++++++++++++++++++++++++++++++++++++++----
+>>>>>     1 file changed, 88 insertions(+), 8 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>>>> index c8b16f53f597..3d6a1875431f 100644
+>>>>> --- a/drivers/iommu/arm-smmu.c
+>>>>> +++ b/drivers/iommu/arm-smmu.c
+>>>>> @@ -209,6 +209,8 @@ struct arm_smmu_device {
+>>>>>           struct clk_bulk_data            *clks;
+>>>>>           int                             num_clks;
+>>>>>     +     bool                            rpm_supported;
+>>>>> +
+>>>>
+>>>>
+>>>>
+>>>> Can we not automatically infer this from whether clocks and/or power
+>>>> domains
+>>>> are specified or not, then just use pm_runtime_enabled() as the fast-path
+>>>> check as Tomasz originally proposed?
+>>>
+>>>
+>>> I wouldn't tie this to presence of clocks, since as a next step we
+>>> would want to actually control the clocks separately. (As far as I
+>>> understand, on QCom SoCs we might want to have runtime PM active for
+>>> the translation to work, but clocks gated whenever access to SMMU
+>>> registers is not needed.) Moreover, you might still have some super
+>>> high scale thousand-core systems that require clocks to be
+>>> prepare-enabled, but runtime PM would be undesirable for the reasons
+>>> we discussed before.
+>>>
+>>>>
+>>>> I worry that relying on statically-defined matchdata is just going to
+>>>> blow
+>>>> up the driver and DT binding into a maintenance nightmare; I really don't
+>>>> want to start needing separate definitions for e.g.
+>>>> "arm,juno-etr-mmu-401"
+>>>> and "arm,juno-hdlcd-mmu-401" just because one otherwise-identical
+>>>> instance
+>>>> within the SoC is in a separate controllable power domain while the
+>>>> others
+>>>> aren't.
+>>>
+>>>
+>>> I don't see a reason why both couldn't just have RPM supported
+>>> regardless of whether there is a real power domain. It would
+>>> effectively be just a no-op for those that don't have one.
 >>
->> Having said that, the dma_ops suggestion might help with handling this
->> situation. I will look into it further.
+>>
+>> Because you're then effectively defining "compatible" values for the sake of
+>> attaching software policy to them, rather than actually describing different
+>> hardware implementations.
+>>
+>> The fact that RPM can't do anything meaningful unless relevant clock/power
+>> aspects *are* described, however, means that we shouldn't need additional
+>> information redundant with that. Much like the fact that we don't *already*
+>> have an "arm,juno-hdlcd-mmu-401" compatible to account for those being
+>> integrated such that IDR0.CTTW has the wrong value, since the presence or
+>> not of the "dma-coherent" property already describes the truth in that
+>> regard.
 > 
-> Ok, thanks.
+> Fair enough.
 > 
->>>> +{
->>>> +       struct geni_wrapper *wrapper = se->wrapper;
->>>> +
->>>> +       if (iova)
->>>> +               dma_unmap_single(wrapper->dev, iova, len, DMA_FROM_DEVICE);
->>>> +}
->>>> +EXPORT_SYMBOL(geni_se_rx_dma_unprep);
->>>
->>> Instead of having the functions exported, could we set the dma_ops on
->>> all child devices of the wrapper that this driver populates and then
->>> implement the DMA ops for those devices here? I assume that there's
->>> never another DMA master between the wrapper and the serial engine, so I
->>> think it would work.
->> This suggestion looks like it will work.
+>>
+>>> IMHO the
+>>> only reason to avoid having the RPM enabled is the scalability issue
+>>> we discussed before.
+>>
+>>
+>> Yes, but that's kind of my point; in reality high throughput/minimal latency
+>> and aggressive power management are more or less mutually exclusive. Mobile
+>> SoCs with fine-grained clock trees and power domains won't have multiple
+>> 40GBe/NVMf/whatever links running flat out in parallel; conversely
+>> networking/infrastructure/server SoCs aren't designed around saving every
+>> last microamp of leakage current - even in the (fairly unlikely) case of the
+>> interconnect clocks being software-gateable at all I would be very surprised
+>> if that were ever exposed directly to Linux (FWIW I believe ACPI essentially
+>> *requires* clocks to be abstracted behind firmware).
+>>
+>> Realistically then, explicit clocks are only expected on systems which care
+>> about power management. We can always revisit that assumption if anything
+>> crazy where it isn't the case ever becomes non-theoretical, but for now it's
+>> one I'm entirely comfortable with. If on the other hand it turns out that we
+>> can rely on just a power domain being present wherever we want RPM, making
+>> clocks moot, then all the better.
 > 
-> It would be a good idea to check with some other people on the dma_ops
-> suggestion. Maybe add the DMA mapping subsystem folks to help out here
-I have added the DMA mapping subsystem folks to help out here.
+> Alright. Since Qcom would be the only user of clock and power handling
+> for the time being, I think checking power domain presence could work
+> for us. +/- the fact that clocks need to be handled even if power
+> domain is not present, but we should normally always have both.
 
-To present an overview, we have a wrapper controller which is composed 
-of several serial engines. The serial engines are programmed with UART, 
-I2C or SPI protocol and support DMA transfer. When the serial engines 
-perform DMA transfer, the wrapper controller device is used to perform 
-the mapping. The reason wrapper device is used is because of IOMMU and 
-there is only one IOMMU context bank to perform the translation for the 
-entire wrapper controller. So the wrapper controller exports map and 
-unmap functions to the individual protocol drivers.
+Great! (the issue of Qcom-specific clock handling is a separate argument 
+which I don't feel like reigniting just now...)
 
-There is a suggestion to make the parent wrapper controller implement 
-the dma_map_ops, instead of exported map/unmap functions and populate 
-those dma_map_ops on all the children serial engines. Can you please 
-provide your inputs regarding this suggestion?
-> 
-> DMA MAPPING HELPERS
-> M:      Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> M:      Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> R:      Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> L:      iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> 
-> 
-Regards,
-Karthik.
--- 
-Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+> Now we need a way to do the check. Perhaps for the time being it would
+> be enough to just check for the power-domains property in DT?
+
+AFAICS, it might be as simple as arm_smmu_probe() doing this:
+
+	/*
+	 * We want to avoid touching dev->power.lock in fastpaths unless
+	 * it's really going to do something useful - pm_runtime_enabled()
+	 * can serve as an ideal proxy for that decision.
+	 */
+	if (dev->pm_domain)
+		pm_runtime_enable(dev);
+
+or maybe even just gate all the calls with "if (smmu->dev.pm_domain)" 
+directly (like pcie-mediatek does), but I'm not sure which would be 
+conceptually cleaner.
+
+Robin.
