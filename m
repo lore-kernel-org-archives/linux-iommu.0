@@ -1,111 +1,117 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH v8 4/5] iommu/arm-smmu: Add the device_link between
- masters and smmu
-Date: Thu, 8 Mar 2018 10:29:47 +0530
-Message-ID: <CAFp+6iF1oM=fmRCqSG-SxcUVvvOLet_Y0p7pmGn+=B-LdMNiww@mail.gmail.com>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
- <20180302101050.6191-5-vivek.gautam@codeaurora.org> <f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
+From: Karthik Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v3 2/4] soc: qcom: Add GENI based QUP Wrapper driver
+Date: Wed, 7 Mar 2018 23:46:36 -0700
+Message-ID: <945b6c00-dde6-6ec7-4577-4cc0d034796b@codeaurora.org>
+References: <1519781889-16117-1-git-send-email-kramasub@codeaurora.org>
+	<1519781889-16117-3-git-send-email-kramasub@codeaurora.org>
+	<152002326567.108663.16836885081217739460@swboyd.mtv.corp.google.com>
+	<4ac213a6-081f-72c1-c9c8-6994786285c9@codeaurora.org>
+	<152037339742.218381.11498404122038956963@swboyd.mtv.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <joro@8bytes.org>, robh+dt <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, jcrouse@codeaurora.org, Stephen Boyd <sboyd@codeaurora.org>, Sricharan R <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Archit Taneja <architt@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <152037339742.218381.11498404122038956963-n1Xw8LXHxjTHt/MElyovVYaSKrA+ACpX0E9HWUfgJXw@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stephen Boyd <swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Boyd <sboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, acourbot-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 7, 2018 at 6:17 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 02/03/18 10:10, Vivek Gautam wrote:
+
+
+On 3/6/2018 2:56 PM, Stephen Boyd wrote:
+> Quoting Karthik Ramasubramanian (2018-03-02 16:58:23)
+> 
+>>>> +       return iova;
+>>>> +}
+>>>> +EXPORT_SYMBOL(geni_se_tx_dma_prep);
+>>>> +
+>>>> +/**
+>>>> + * geni_se_rx_dma_prep() - Prepare the Serial Engine for RX DMA transfer
+>>>> + * @se:                        Pointer to the concerned Serial Engine.
+>>>> + * @buf:               Pointer to the RX buffer.
+>>>> + * @len:               Length of the RX buffer.
+>>>> + *
+>>>> + * This function is used to prepare the buffers for DMA RX.
+>>>> + *
+>>>> + * Return: Mapped DMA Address of the buffer on success, NULL on failure.
+>>>> + */
+>>>> +dma_addr_t geni_se_rx_dma_prep(struct geni_se *se, void *buf, size_t len)
+>>>> +{
+>>>> +       dma_addr_t iova;
+>>>> +       struct geni_wrapper *wrapper = se->wrapper;
+>>>> +       u32 val;
+>>>> +
+>>>> +       iova = dma_map_single(wrapper->dev, buf, len, DMA_FROM_DEVICE);
+>>>> +       if (dma_mapping_error(wrapper->dev, iova))
+>>>> +               return (dma_addr_t)NULL;
+>>>
+>>> Can't return a dma_mapping_error address to the caller and have them
+>>> figure it out?
+>> Earlier we used to return the DMA_ERROR_CODE which has been removed
+>> recently in arm64 architecture. If we return the dma_mapping_error, then
+>> the caller also needs the device which encountered the mapping error.
+>> The serial interface drivers can use their parent currently to resolve
+>> the mapping error. Once the wrapper starts mapping using IOMMU context
+>> bank, then the serial interface drivers do not know which device to use
+>> to know if there is an error.
 >>
->> From: Sricharan R <sricharan@codeaurora.org>
->>
->> Finally add the device link between the master device and
->> smmu, so that the smmu gets runtime enabled/disabled only when the
->> master needs it. This is done from add_device callback which gets
->> called once when the master is added to the smmu.
->>
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
->> ---
->>   drivers/iommu/arm-smmu.c | 21 +++++++++++++++++++++
->>   1 file changed, 21 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 3d6a1875431f..bb1ea82c1003 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -217,6 +217,9 @@ struct arm_smmu_device {
->>         /* IOMMU core code handle */
->>         struct iommu_device             iommu;
->> +
->> +       /* runtime PM link to master */
->> +       struct device_link *link;
->
->
-> Just the one?
->
->>   };
->>     enum arm_smmu_context_fmt {
->> @@ -1470,10 +1473,26 @@ static int arm_smmu_add_device(struct device *dev)
->>         iommu_device_link(&smmu->iommu, dev);
->>   +     /*
->> +        * Establish the link between smmu and master, so that the
->> +        * smmu gets runtime enabled/disabled as per the master's
->> +        * needs.
->> +        */
->> +       smmu->link = device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME);
->
->
-> Maybe I've misunderstood how the API works, but AFAICS the second and
-> subsequent devices are all just going to overwrite (and leak) the link of
-> the previous one...
+>> Having said that, the dma_ops suggestion might help with handling this
+>> situation. I will look into it further.
+> 
+> Ok, thanks.
+> 
+>>>> +{
+>>>> +       struct geni_wrapper *wrapper = se->wrapper;
+>>>> +
+>>>> +       if (iova)
+>>>> +               dma_unmap_single(wrapper->dev, iova, len, DMA_FROM_DEVICE);
+>>>> +}
+>>>> +EXPORT_SYMBOL(geni_se_rx_dma_unprep);
+>>>
+>>> Instead of having the functions exported, could we set the dma_ops on
+>>> all child devices of the wrapper that this driver populates and then
+>>> implement the DMA ops for those devices here? I assume that there's
+>>> never another DMA master between the wrapper and the serial engine, so I
+>>> think it would work.
+>> This suggestion looks like it will work.
+> 
+> It would be a good idea to check with some other people on the dma_ops
+> suggestion. Maybe add the DMA mapping subsystem folks to help out here
+I have added the DMA mapping subsystem folks to help out here.
 
-Sorry, my bad. Will take care of this.
+To present an overview, we have a wrapper controller which is composed 
+of several serial engines. The serial engines are programmed with UART, 
+I2C or SPI protocol and support DMA transfer. When the serial engines 
+perform DMA transfer, the wrapper controller device is used to perform 
+the mapping. The reason wrapper device is used is because of IOMMU and 
+there is only one IOMMU context bank to perform the translation for the 
+entire wrapper controller. So the wrapper controller exports map and 
+unmap functions to the individual protocol drivers.
 
-regards
-Vivek
-
->
->> +       if (!smmu->link) {
->> +               dev_warn(smmu->dev, "Unable to create device link between
->> %s and %s\n",
->> +                        dev_name(smmu->dev), dev_name(dev));
->> +               ret = -ENODEV;
->> +               goto out_unlink;
->> +       }
->> +
->>         arm_smmu_rpm_put(smmu);
->>         return 0;
->>   +out_unlink:
->> +       iommu_device_unlink(&smmu->iommu, dev);
->> +       arm_smmu_master_free_smes(fwspec);
->>   out_rpm_put:
->>         arm_smmu_rpm_put(smmu);
->>   out_cfg_free:
->> @@ -1496,6 +1515,8 @@ static void arm_smmu_remove_device(struct device
->> *dev)
->>         cfg  = fwspec->iommu_priv;
->>         smmu = cfg->smmu;
->>   +     device_link_del(smmu->link);
->
->
-> ...and equivalently you end up with a double-free (or more) here of a link
-> which may not have belonged to dev anyway.
->
-> Robin.
->
->
->> +
->>         ret = arm_smmu_rpm_get(smmu);
->>         if (ret < 0)
->>                 return;
->>
->
-
-
-
+There is a suggestion to make the parent wrapper controller implement 
+the dma_map_ops, instead of exported map/unmap functions and populate 
+those dma_map_ops on all the children serial engines. Can you please 
+provide your inputs regarding this suggestion?
+> 
+> DMA MAPPING HELPERS
+> M:      Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> M:      Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> R:      Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> L:      iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> 
+> 
+Regards,
+Karthik.
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
