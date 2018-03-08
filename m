@@ -1,14 +1,20 @@
-From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 27/37] iommu/arm-smmu-v3: Register fault workqueue
-Date: Thu, 8 Mar 2018 17:44:54 +0000
-Message-ID: <20180308184454.00000b4e@huawei.com>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-28-jean-philippe.brucker@arm.com>
+From: Karthik Ramasubramanian <kramasub-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v3 2/4] soc: qcom: Add GENI based QUP Wrapper driver
+Date: Thu, 8 Mar 2018 11:18:55 -0700
+Message-ID: <303d3e2b-bc91-2a23-a154-8ea34ecbf771@codeaurora.org>
+References: <1519781889-16117-1-git-send-email-kramasub@codeaurora.org>
+	<1519781889-16117-3-git-send-email-kramasub@codeaurora.org>
+	<152002326567.108663.16836885081217739460@swboyd.mtv.corp.google.com>
+	<4ac213a6-081f-72c1-c9c8-6994786285c9@codeaurora.org>
+	<152037339742.218381.11498404122038956963@swboyd.mtv.corp.google.com>
+	<945b6c00-dde6-6ec7-4577-4cc0d034796b@codeaurora.org>
+	<8567be1b-1431-4f1d-cb41-6a7eaa434438@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180212183352.22730-28-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <8567be1b-1431-4f1d-cb41-6a7eaa434438-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,237 +24,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Stephen Boyd <swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Boyd <sboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Girish Mahadevan <girishm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, acourbot-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jslaby-IBi9RG/b67k@public.gmane.org, Sagar Dharia <sdharia-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 12 Feb 2018 18:33:42 +0000
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-
-> When using PRI or Stall, the PRI or event handler enqueues faults into the
-> core fault queue. Register it based on the SMMU features.
-> 
-> When the core stops using a PASID, it notifies the SMMU to flush all
-> instances of this PASID from the PRI queue. Add a way to flush the PRI and
-> event queue. PRI and event thread now take a spinlock while processing the
-> queue. The flush handler takes this lock to inspect the queue state.
-> We avoid livelock, where the SMMU adds fault to the queue faster than we
-> can consume them, by incrementing a 'batch' number on every cycle so the
-> flush handler only has to wait a complete cycle (two batch increments.)
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-I think you have a potential incorrect free issue... See inline.
-
-Jonathan
-> ---
->  drivers/iommu/Kconfig       |   1 +
->  drivers/iommu/arm-smmu-v3.c | 103 +++++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 103 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index d434f7085dc2..d79c68754bb9 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -354,6 +354,7 @@ config ARM_SMMU_V3
->  	depends on ARM64
->  	select IOMMU_API
->  	select IOMMU_SVA
-> +	select IOMMU_FAULT
->  	select IOMMU_IO_PGTABLE_LPAE
->  	select ARM_SMMU_V3_CONTEXT
->  	select GENERIC_MSI_IRQ_DOMAIN
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 8528704627b5..c5b3a43becaf 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -494,6 +494,10 @@ struct arm_smmu_queue {
->  
->  	u32 __iomem			*prod_reg;
->  	u32 __iomem			*cons_reg;
-> +
-> +	/* Event and PRI */
-> +	u64				batch;
-> +	wait_queue_head_t		wq;
->  };
->  
->  struct arm_smmu_cmdq {
-> @@ -610,6 +614,9 @@ struct arm_smmu_device {
->  
->  	/* IOMMU core code handle */
->  	struct iommu_device		iommu;
-> +
-> +	/* Notifier for the fault queue */
-> +	struct notifier_block		faultq_nb;
->  };
->  
->  /* SMMU private data for each master */
-> @@ -1247,14 +1254,23 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->  {
->  	int i;
-> +	int num_handled = 0;
->  	struct arm_smmu_device *smmu = dev;
->  	struct arm_smmu_queue *q = &smmu->evtq.q;
-> +	size_t queue_size = 1 << q->max_n_shift;
->  	u64 evt[EVTQ_ENT_DWORDS];
->  
-> +	spin_lock(&q->wq.lock);
->  	do {
->  		while (!queue_remove_raw(q, evt)) {
->  			u8 id = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
->  
-> +			if (++num_handled == queue_size) {
-> +				q->batch++;
-> +				wake_up_locked(&q->wq);
-> +				num_handled = 0;
-> +			}
-> +
->  			dev_info(smmu->dev, "event 0x%02x received:\n", id);
->  			for (i = 0; i < ARRAY_SIZE(evt); ++i)
->  				dev_info(smmu->dev, "\t0x%016llx\n",
-> @@ -1272,6 +1288,11 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->  
->  	/* Sync our overflow flag, as we believe we're up to speed */
->  	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
-> +
-> +	q->batch++;
-> +	wake_up_locked(&q->wq);
-> +	spin_unlock(&q->wq.lock);
-> +
->  	return IRQ_HANDLED;
->  }
->  
-> @@ -1315,13 +1336,24 @@ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
->  
->  static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
->  {
-> +	int num_handled = 0;
->  	struct arm_smmu_device *smmu = dev;
->  	struct arm_smmu_queue *q = &smmu->priq.q;
-> +	size_t queue_size = 1 << q->max_n_shift;
->  	u64 evt[PRIQ_ENT_DWORDS];
->  
-> +	spin_lock(&q->wq.lock);
->  	do {
-> -		while (!queue_remove_raw(q, evt))
-> +		while (!queue_remove_raw(q, evt)) {
-> +			spin_unlock(&q->wq.lock);
->  			arm_smmu_handle_ppr(smmu, evt);
-> +			spin_lock(&q->wq.lock);
-> +			if (++num_handled == queue_size) {
-> +				q->batch++;
-> +				wake_up_locked(&q->wq);
-> +				num_handled = 0;
-> +			}
-> +		}
->  
->  		if (queue_sync_prod(q) == -EOVERFLOW)
->  			dev_err(smmu->dev, "PRIQ overflow detected -- requests lost\n");
-> @@ -1329,9 +1361,65 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
->  
->  	/* Sync our overflow flag, as we believe we're up to speed */
->  	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
-> +
-> +	q->batch++;
-> +	wake_up_locked(&q->wq);
-> +	spin_unlock(&q->wq.lock);
-> +
->  	return IRQ_HANDLED;
->  }
->  
-> +/*
-> + * arm_smmu_flush_queue - wait until all events/PPRs currently in the queue have
-> + * been consumed.
-> + *
-> + * Wait until the queue thread finished a batch, or until the queue is empty.
-> + * Note that we don't handle overflows on q->batch. If it occurs, just wait for
-> + * the queue to be empty.
-> + */
-> +static int arm_smmu_flush_queue(struct arm_smmu_device *smmu,
-> +				struct arm_smmu_queue *q, const char *name)
-> +{
-> +	int ret;
-> +	u64 batch;
-> +
-> +	spin_lock(&q->wq.lock);
-> +	if (queue_sync_prod(q) == -EOVERFLOW)
-> +		dev_err(smmu->dev, "%s overflow detected -- requests lost\n", name);
-> +
-> +	batch = q->batch;
-> +	ret = wait_event_interruptible_locked(q->wq, queue_empty(q) ||
-> +					      q->batch >= batch + 2);
-> +	spin_unlock(&q->wq.lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int arm_smmu_flush_queues(struct notifier_block *nb,
-> +				 unsigned long action, void *data)
-> +{
-> +	struct arm_smmu_device *smmu = container_of(nb, struct arm_smmu_device,
-> +						    faultq_nb);
-> +	struct device *dev = data;
-> +	struct arm_smmu_master_data *master = NULL;
-> +
-> +	if (dev)
-> +		master = dev->iommu_fwspec->iommu_priv;
-> +
-> +	if (master) {
-> +		/* TODO: add support for PRI and Stall */
-> +		return 0;
-> +	}
-> +
-> +	/* No target device, flush all queues. */
-> +	if (smmu->features & ARM_SMMU_FEAT_STALLS)
-> +		arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
-> +	if (smmu->features & ARM_SMMU_FEAT_PRI)
-> +		arm_smmu_flush_queue(smmu, &smmu->priq.q, "priq");
-> +
-> +	return 0;
-> +}
-> +
->  static int arm_smmu_device_disable(struct arm_smmu_device *smmu);
->  
->  static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
-> @@ -2288,6 +2376,10 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->  		     << Q_BASE_LOG2SIZE_SHIFT;
->  
->  	q->prod = q->cons = 0;
-> +
-> +	init_waitqueue_head(&q->wq);
-> +	q->batch = 0;
-> +
->  	return 0;
->  }
->  
-> @@ -3168,6 +3260,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->  
-> +	if (smmu->features & (ARM_SMMU_FEAT_STALLS | ARM_SMMU_FEAT_PRI)) {
-> +		smmu->faultq_nb.notifier_call = arm_smmu_flush_queues;
-> +		ret = iommu_fault_queue_register(&smmu->faultq_nb);
-Here you register only if this smmu supports stalls or pri which is fine, but
-see the unregister path.
-
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
->  	/* And we're up. Go go go! */
->  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
->  				     "smmu3.%pa", &ioaddr);
-> @@ -3210,6 +3309,8 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->  {
->  	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
->  
-> +	iommu_fault_queue_unregister(&smmu->faultq_nb);
-
-Here you unregister from the fault queue unconditionally.  That is mostly
-safe but it seems to decrement and potentially destroy the work queue that
-is in use by another smmu instance that does support page faulting.
-
-> +
->  	arm_smmu_device_disable(smmu);
->  
->  	return 0;
+CgpPbiAzLzgvMjAxOCA2OjI0IEFNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMDgvMDMvMTgg
+MDY6NDYsIEthcnRoaWsgUmFtYXN1YnJhbWFuaWFuIHdyb3RlOgo+Pgo+Pgo+PiBPbiAzLzYvMjAx
+OCAyOjU2IFBNLCBTdGVwaGVuIEJveWQgd3JvdGU6Cj4+PiBRdW90aW5nIEthcnRoaWsgUmFtYXN1
+YnJhbWFuaWFuICgyMDE4LTAzLTAyIDE2OjU4OjIzKQo+Pj4KPj4+Pj4+ICvCoMKgwqDCoMKgwqAg
+cmV0dXJuIGlvdmE7Cj4+Pj4+PiArfQo+Pj4+Pj4gK0VYUE9SVF9TWU1CT0woZ2VuaV9zZV90eF9k
+bWFfcHJlcCk7Cj4+Pj4+PiArCj4+Pj4+PiArLyoqCj4+Pj4+PiArICogZ2VuaV9zZV9yeF9kbWFf
+cHJlcCgpIC0gUHJlcGFyZSB0aGUgU2VyaWFsIEVuZ2luZSBmb3IgUlggRE1BIAo+Pj4+Pj4gdHJh
+bnNmZXIKPj4+Pj4+ICsgKiBAc2U6wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCBQb2ludGVyIHRvIHRoZSBjb25jZXJuZWQgU2VyaWFsIAo+Pj4+Pj4gRW5naW5l
+Lgo+Pj4+Pj4gKyAqIEBidWY6wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBQb2ludGVyIHRv
+IHRoZSBSWCBidWZmZXIuCj4+Pj4+PiArICogQGxlbjrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIExlbmd0aCBvZiB0aGUgUlggYnVmZmVyLgo+Pj4+Pj4gKyAqCj4+Pj4+PiArICogVGhpcyBm
+dW5jdGlvbiBpcyB1c2VkIHRvIHByZXBhcmUgdGhlIGJ1ZmZlcnMgZm9yIERNQSBSWC4KPj4+Pj4+
+ICsgKgo+Pj4+Pj4gKyAqIFJldHVybjogTWFwcGVkIERNQSBBZGRyZXNzIG9mIHRoZSBidWZmZXIg
+b24gc3VjY2VzcywgTlVMTCBvbiAKPj4+Pj4+IGZhaWx1cmUuCj4+Pj4+PiArICovCj4+Pj4+PiAr
+ZG1hX2FkZHJfdCBnZW5pX3NlX3J4X2RtYV9wcmVwKHN0cnVjdCBnZW5pX3NlICpzZSwgdm9pZCAq
+YnVmLCAKPj4+Pj4+IHNpemVfdCBsZW4pCj4+Pj4+PiArewo+Pj4+Pj4gK8KgwqDCoMKgwqDCoCBk
+bWFfYWRkcl90IGlvdmE7Cj4+Pj4+PiArwqDCoMKgwqDCoMKgIHN0cnVjdCBnZW5pX3dyYXBwZXIg
+KndyYXBwZXIgPSBzZS0+d3JhcHBlcjsKPj4+Pj4+ICvCoMKgwqDCoMKgwqAgdTMyIHZhbDsKPj4+
+Pj4+ICsKPj4+Pj4+ICvCoMKgwqDCoMKgwqAgaW92YSA9IGRtYV9tYXBfc2luZ2xlKHdyYXBwZXIt
+PmRldiwgYnVmLCBsZW4sIAo+Pj4+Pj4gRE1BX0ZST01fREVWSUNFKTsKPj4+Pj4+ICvCoMKgwqDC
+oMKgwqAgaWYgKGRtYV9tYXBwaW5nX2Vycm9yKHdyYXBwZXItPmRldiwgaW92YSkpCj4+Pj4+PiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gKGRtYV9hZGRyX3QpTlVMTDsKPj4+
+Pj4KPj4+Pj4gQ2FuJ3QgcmV0dXJuIGEgZG1hX21hcHBpbmdfZXJyb3IgYWRkcmVzcyB0byB0aGUg
+Y2FsbGVyIGFuZCBoYXZlIHRoZW0KPj4+Pj4gZmlndXJlIGl0IG91dD8KPj4+PiBFYXJsaWVyIHdl
+IHVzZWQgdG8gcmV0dXJuIHRoZSBETUFfRVJST1JfQ09ERSB3aGljaCBoYXMgYmVlbiByZW1vdmVk
+Cj4+Pj4gcmVjZW50bHkgaW4gYXJtNjQgYXJjaGl0ZWN0dXJlLiBJZiB3ZSByZXR1cm4gdGhlIGRt
+YV9tYXBwaW5nX2Vycm9yLCAKPj4+PiB0aGVuCj4+Pj4gdGhlIGNhbGxlciBhbHNvIG5lZWRzIHRo
+ZSBkZXZpY2Ugd2hpY2ggZW5jb3VudGVyZWQgdGhlIG1hcHBpbmcgZXJyb3IuCj4+Pj4gVGhlIHNl
+cmlhbCBpbnRlcmZhY2UgZHJpdmVycyBjYW4gdXNlIHRoZWlyIHBhcmVudCBjdXJyZW50bHkgdG8g
+cmVzb2x2ZQo+Pj4+IHRoZSBtYXBwaW5nIGVycm9yLiBPbmNlIHRoZSB3cmFwcGVyIHN0YXJ0cyBt
+YXBwaW5nIHVzaW5nIElPTU1VIGNvbnRleHQKPj4+PiBiYW5rLCB0aGVuIHRoZSBzZXJpYWwgaW50
+ZXJmYWNlIGRyaXZlcnMgZG8gbm90IGtub3cgd2hpY2ggZGV2aWNlIHRvIHVzZQo+Pj4+IHRvIGtu
+b3cgaWYgdGhlcmUgaXMgYW4gZXJyb3IuCj4+Pj4KPj4+PiBIYXZpbmcgc2FpZCB0aGF0LCB0aGUg
+ZG1hX29wcyBzdWdnZXN0aW9uIG1pZ2h0IGhlbHAgd2l0aCBoYW5kbGluZyB0aGlzCj4+Pj4gc2l0
+dWF0aW9uLiBJIHdpbGwgbG9vayBpbnRvIGl0IGZ1cnRoZXIuCj4+Pgo+Pj4gT2ssIHRoYW5rcy4K
+Pj4+Cj4+Pj4+PiArewo+Pj4+Pj4gK8KgwqDCoMKgwqDCoCBzdHJ1Y3QgZ2VuaV93cmFwcGVyICp3
+cmFwcGVyID0gc2UtPndyYXBwZXI7Cj4+Pj4+PiArCj4+Pj4+PiArwqDCoMKgwqDCoMKgIGlmIChp
+b3ZhKQo+Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZG1hX3VubWFwX3Npbmds
+ZSh3cmFwcGVyLT5kZXYsIGlvdmEsIGxlbiwgCj4+Pj4+PiBETUFfRlJPTV9ERVZJQ0UpOwo+Pj4+
+Pj4gK30KPj4+Pj4+ICtFWFBPUlRfU1lNQk9MKGdlbmlfc2VfcnhfZG1hX3VucHJlcCk7Cj4+Pj4+
+Cj4+Pj4+IEluc3RlYWQgb2YgaGF2aW5nIHRoZSBmdW5jdGlvbnMgZXhwb3J0ZWQsIGNvdWxkIHdl
+IHNldCB0aGUgZG1hX29wcyBvbgo+Pj4+PiBhbGwgY2hpbGQgZGV2aWNlcyBvZiB0aGUgd3JhcHBl
+ciB0aGF0IHRoaXMgZHJpdmVyIHBvcHVsYXRlcyBhbmQgdGhlbgo+Pj4+PiBpbXBsZW1lbnQgdGhl
+IERNQSBvcHMgZm9yIHRob3NlIGRldmljZXMgaGVyZT8gSSBhc3N1bWUgdGhhdCB0aGVyZSdzCj4+
+Pj4+IG5ldmVyIGFub3RoZXIgRE1BIG1hc3RlciBiZXR3ZWVuIHRoZSB3cmFwcGVyIGFuZCB0aGUg
+c2VyaWFsIGVuZ2luZSwgCj4+Pj4+IHNvIEkKPj4+Pj4gdGhpbmsgaXQgd291bGQgd29yay4KPj4+
+PiBUaGlzIHN1Z2dlc3Rpb24gbG9va3MgbGlrZSBpdCB3aWxsIHdvcmsuCj4+Pgo+Pj4gSXQgd291
+bGQgYmUgYSBnb29kIGlkZWEgdG8gY2hlY2sgd2l0aCBzb21lIG90aGVyIHBlb3BsZSBvbiB0aGUg
+ZG1hX29wcwo+Pj4gc3VnZ2VzdGlvbi4gTWF5YmUgYWRkIHRoZSBETUEgbWFwcGluZyBzdWJzeXN0
+ZW0gZm9sa3MgdG8gaGVscCBvdXQgaGVyZQo+PiBJIGhhdmUgYWRkZWQgdGhlIERNQSBtYXBwaW5n
+IHN1YnN5c3RlbSBmb2xrcyB0byBoZWxwIG91dCBoZXJlLgo+Pgo+PiBUbyBwcmVzZW50IGFuIG92
+ZXJ2aWV3LCB3ZSBoYXZlIGEgd3JhcHBlciBjb250cm9sbGVyIHdoaWNoIGlzIGNvbXBvc2VkIAo+
+PiBvZiBzZXZlcmFsIHNlcmlhbCBlbmdpbmVzLiBUaGUgc2VyaWFsIGVuZ2luZXMgYXJlIHByb2dy
+YW1tZWQgd2l0aCAKPj4gVUFSVCwgSTJDIG9yIFNQSSBwcm90b2NvbCBhbmQgc3VwcG9ydCBETUEg
+dHJhbnNmZXIuIFdoZW4gdGhlIHNlcmlhbCAKPj4gZW5naW5lcyBwZXJmb3JtIERNQSB0cmFuc2Zl
+ciwgdGhlIHdyYXBwZXIgY29udHJvbGxlciBkZXZpY2UgaXMgdXNlZCB0byAKPj4gcGVyZm9ybSB0
+aGUgbWFwcGluZy4gVGhlIHJlYXNvbiB3cmFwcGVyIGRldmljZSBpcyB1c2VkIGlzIGJlY2F1c2Ug
+b2YgCj4+IElPTU1VIGFuZCB0aGVyZSBpcyBvbmx5IG9uZSBJT01NVSBjb250ZXh0IGJhbmsgdG8g
+cGVyZm9ybSB0aGUgCj4+IHRyYW5zbGF0aW9uIGZvciB0aGUgZW50aXJlIHdyYXBwZXIgY29udHJv
+bGxlci4gU28gdGhlIHdyYXBwZXIgCj4+IGNvbnRyb2xsZXIgZXhwb3J0cyBtYXAgYW5kIHVubWFw
+IGZ1bmN0aW9ucyB0byB0aGUgaW5kaXZpZHVhbCBwcm90b2NvbCAKPj4gZHJpdmVycy4KPj4KPj4g
+VGhlcmUgaXMgYSBzdWdnZXN0aW9uIHRvIG1ha2UgdGhlIHBhcmVudCB3cmFwcGVyIGNvbnRyb2xs
+ZXIgaW1wbGVtZW50IAo+PiB0aGUgZG1hX21hcF9vcHMsIGluc3RlYWQgb2YgZXhwb3J0ZWQgbWFw
+L3VubWFwIGZ1bmN0aW9ucyBhbmQgcG9wdWxhdGUgCj4+IHRob3NlIGRtYV9tYXBfb3BzIG9uIGFs
+bCB0aGUgY2hpbGRyZW4gc2VyaWFsIGVuZ2luZXMuIENhbiB5b3UgcGxlYXNlIAo+PiBwcm92aWRl
+IHlvdXIgaW5wdXRzIHJlZ2FyZGluZyB0aGlzIHN1Z2dlc3Rpb24/Cj4gCj4gSW1wbGVtZW50aW5n
+IGRtYV9tYXBfb3BzIGluc2lkZSBhIGRyaXZlciBmb3IgcmVhbCBoYXJkd2FyZSBpcyBhbG1vc3Qg
+Cj4gYWx3YXlzIHRoZSB3cm9uZyB0aGluZyB0byBkby4KPiAKPiBCYXNlZCBvbiB3aGF0IEkgY291
+bGQgaW5mZXIgYWJvdXQgdGhlIGhhcmR3YXJlIGZyb20gbG9va2luZyB0aHJvdWdoIHRoZSAKPiB3
+aG9sZSBzZXJpZXMgaW4gdGhlIGxpbnV4LWFybS1tc20gYXJjaGl2ZSwgdGhpcyBpcyBwcm9iYWJs
+eSBtb3JlIGxpa2UgYSAKPiBtdWx0aS1jaGFubmVsIERNQSBjb250cm9sbGVyIHdoZXJlIGVhY2gg
+ImNoYW5uZWwiIGhhcyBhIGNvbmZpZ3VyYWJsZSAKPiBzZXJpYWwgaW50ZXJmYWNlIG9uIHRoZSBv
+dGhlciBlbmQsIGFzIG9wcG9zZWQgdG8gYW4gYWN0dWFsIGJ1cyB3aGVyZSB0aGUgCj4gc2VyaWFs
+IGVuZ2luZXMgYXJlIGluZGl2aWR1YWxseSBkaXN0aW5jdCBBSEIgbWFzdGVycyByb3V0ZWQgdGhy
+b3VnaCB0aGUgCj4gd3JhcHBlci4gSWYgdGhhdCdzIHRydWUsIHRoZW4gdXNpbmcgdGhlIFFVUCBw
+bGF0Zm9ybSBkZXZpY2UgZm9yIERNQSBBUEkgCj4gY2FsbHMgaXMgdGhlIGFwcHJvcHJpYXRlIHRo
+aW5nIHRvIGRvLiBQZXJzb25hbGx5IEknZCBiZSBpbmNsaW5lZCBub3QgdG8gCj4gYWJzdHJhY3Qg
+dGhlIGRtYV97bWFwLHVubWFwfSBjYWxscyBhdCBhbGwsIGFuZCBqdXN0IGhhdmUgdGhlIHByb3Rv
+Y29sIAo+IGRyaXZlcnMgbWFrZSB0aGVtIGRpcmVjdGx5IHVzaW5nIGRldi0+cGFyZW50L3dyYXBw
+ZXItPmRldi93aGF0ZXZlciwgYnV0IAo+IGlmIHlvdSBkbyB3YW50IHRvIGFic3RyYWN0IHRob3Nl
+IHRoZW4ganVzdCBnaXZlIHRoZSBhYnN0cmFjdGlvbiBhIHNhbmVyIAo+IGludGVyZmFjZSwgaS5l
+LiBwYXNzIHRoZSBETUEgaGFuZGxlIGJ5IHJlZmVyZW5jZSBhbmQgcmV0dXJuIGEgcmVndWxhciAK
+PiBpbnQgZm9yIGVycm9yL3N1Y2Nlc3Mgc3RhdHVzLgo+IAo+IFJvYmluLgpUaGFuayB5b3UgUm9i
+aW4gJiBDaHJpc3RvcGggZm9yIHlvdXIgaW5wdXRzLiBUaGUgd3JhcHBlciBkcml2ZXIgdXNlZCB0
+byAKcHJvdmlkZSB0aGUgcmVjb21tZW5kZWQgYWJzdHJhY3Rpb24gdW50aWwgdjIgb2YgdGhpcyBw
+YXRjaCBzZXJpZXMuIEluIHYzIAppdCB3YXMgdHdlYWtlZCB0byBhZGRyZXNzIGEgY29tbWVudC4g
+SWYgdGhlcmUgYXJlIG5vIG9iamVjdGlvbnMsIEkgd2lsbCAKcmV2aXZlIGl0IGJhY2suCgpSZWdh
+cmRzLApLYXJ0aGlrLgotLSAKUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBt
+ZW1iZXIgb2YgdGhlIENvZGUgQXVyb3JhIEZvcnVtLAphIExpbnV4IEZvdW5kYXRpb24gQ29sbGFi
+b3JhdGl2ZSBQcm9qZWN0Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
