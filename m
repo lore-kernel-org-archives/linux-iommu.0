@@ -1,14 +1,14 @@
 From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 07/37] iommu: Add a page fault handler
-Date: Thu, 8 Mar 2018 15:40:35 +0000
-Message-ID: <20180308164035.000065c2@huawei.com>
+Subject: Re: [PATCH 31/37] iommu/arm-smmu-v3: Add support for PCI ATS
+Date: Thu, 8 Mar 2018 16:17:41 +0000
+Message-ID: <20180308171725.0000763c@huawei.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-8-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-32-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180212183352.22730-8-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180212183352.22730-32-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,514 +22,476 @@ To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 12 Feb 2018 18:33:22 +0000
+On Mon, 12 Feb 2018 18:33:46 +0000
 Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-> Some systems allow devices to handle IOMMU translation faults in the core
-> mm. For example systems supporting the PCI PRI extension or Arm SMMU stall
-> model. Infrastructure for reporting such recoverable page faults was
-> recently added to the IOMMU core, for SVA virtualization. Extend
-> iommu_report_device_fault() to handle host page faults as well.
+> PCIe devices can implement their own TLB, named Address Translation Cache
+> (ATC). Enable Address Translation Service (ATS) for devices that support
+> it and send them invalidation requests whenever we invalidate the IOTLBs.
 > 
-> * IOMMU drivers instantiate a fault workqueue, using
->   iommu_fault_queue_init() and iommu_fault_queue_destroy().
+>   Range calculation
+>   -----------------
 > 
-> * When it receives a fault event, supposedly in an IRQ handler, the IOMMU
->   driver reports the fault using iommu_report_device_fault()
+> The invalidation packet itself is a bit awkward: range must be naturally
+> aligned, which means that the start address is a multiple of the range
+> size. In addition, the size must be a power of two number of 4k pages. We
+> have a few options to enforce this constraint:
 > 
-> * If the device driver registered a handler (e.g. VFIO), pass down the
->   fault event. Otherwise submit it to the fault queue, to be handled in a
->   thread.
+> (1) Find the smallest naturally aligned region that covers the requested
+>     range. This is simple to compute and only takes one ATC_INV, but it
+>     will spill on lots of neighbouring ATC entries.
 > 
-> * When the fault corresponds to an io_mm, call the mm fault handler on it
->   (in next patch).
+> (2) Align the start address to the region size (rounded up to a power of
+>     two), and send a second invalidation for the next range of the same
+>     size. Still not great, but reduces spilling.
 > 
-> * Once the fault is handled, the mm wrapper or the device driver reports
->   success of failure with iommu_page_response(). The translation is either
->   retried or aborted, depending on the response code.
+> (3) Cover the range exactly with the smallest number of naturally aligned
+>     regions. This would be interesting to implement but as for (2),
+>     requires multiple ATC_INV.
+> 
+> As I suspect ATC invalidation packets will be a very scarce resource, I'll
+> go with option (1) for now, and only send one big invalidation. We can
+> move to (2), which is both easier to read and more gentle with the ATC,
+> once we've observed on real systems that we can send multiple smaller
+> Invalidation Requests for roughly the same price as a single big one.
+> 
+> Note that with io-pgtable, the unmap function is called for each page, so
+> this doesn't matter. The problem shows up when sharing page tables with
+> the MMU.
+> 
+>   Timeout
+>   -------
+> 
+> ATC invalidation is allowed to take up to 90 seconds, according to the
+> PCIe spec, so it is possible to hit the SMMU command queue timeout during
+> normal operations.
+> 
+> Some SMMU implementations will raise a CERROR_ATC_INV_SYNC when a CMD_SYNC
+> fails because of an ATC invalidation. Some will just abort the CMD_SYNC.
+> Others might let CMD_SYNC complete and have an asynchronous IMPDEF
+> mechanism to record the error. When we receive a CERROR_ATC_INV_SYNC, we
+> could retry sending all ATC_INV since last successful CMD_SYNC. When a
+> CMD_SYNC fails without CERROR_ATC_INV_SYNC, we could retry sending *all*
+> commands since last successful CMD_SYNC.
+> 
+> We cannot afford to wait 90 seconds in iommu_unmap, let alone MMU
+> notifiers. So we'd have to introduce a more clever system if this timeout
+> becomes a problem, like keeping hold of mappings and invalidating in the
+> background. Implementing safe delayed invalidations is a very complex
+> problem and deserves a series of its own. We'll assess whether more work
+> is needed to properly handle ATC invalidation timeouts once this code runs
+> on real hardware.
+> 
+>   Misc
+>   ----
+> 
+> I didn't put ATC and TLB invalidations in the same functions for three
+> reasons:
+> 
+> * TLB invalidation by range is batched and committed with a single sync.
+>   Batching ATC invalidation is inconvenient, endpoints limit the number of
+>   inflight invalidations. We'd have to count the number of invalidations
+>   queued and send a sync periodically. In addition, I suspect we always
+>   need a sync between TLB and ATC invalidation for the same page.
+> 
+> * Doing ATC invalidation outside tlb_inv_range also allows to send less
+>   requests, since TLB invalidations are done per page or block, while ATC
+>   invalidations target IOVA ranges.
+> 
+> * TLB invalidation by context is performed when freeing the domain, at
+>   which point there isn't any device attached anymore.
 > 
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-A few really minor points inline...  Basically looks good to me.
+Few minor error path related comments inline..
 
 > ---
->  drivers/iommu/Kconfig      |  10 ++
->  drivers/iommu/Makefile     |   1 +
->  drivers/iommu/io-pgfault.c | 282 +++++++++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/iommu-sva.c  |   3 -
->  drivers/iommu/iommu.c      |  31 ++---
->  include/linux/iommu.h      |  34 +++++-
->  6 files changed, 339 insertions(+), 22 deletions(-)
->  create mode 100644 drivers/iommu/io-pgfault.c
+>  drivers/iommu/arm-smmu-v3.c | 236 ++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 226 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 146eebe9a4bb..e751bb9958ba 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -85,6 +85,15 @@ config IOMMU_SVA
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 8b9f5dd06be0..76513135310f 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -37,6 +37,7 @@
+>  #include <linux/of_iommu.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/pci.h>
+> +#include <linux/pci-ats.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/sched/mm.h>
 >  
->  	  If unsure, say N here.
+> @@ -109,6 +110,7 @@
+>  #define IDR5_OAS_48_BIT			(5 << IDR5_OAS_SHIFT)
 >  
-> +config IOMMU_FAULT
-> +	bool "Fault handler for the IOMMU API"
-> +	select IOMMU_API
-> +	help
-> +	  Enable the generic fault handler for the IOMMU API, that handles
-> +	  recoverable page faults or inject them into guests.
+>  #define ARM_SMMU_CR0			0x20
+> +#define CR0_ATSCHK			(1 << 4)
+>  #define CR0_CMDQEN			(1 << 3)
+>  #define CR0_EVTQEN			(1 << 2)
+>  #define CR0_PRIQEN			(1 << 1)
+> @@ -304,6 +306,7 @@
+>  #define CMDQ_ERR_CERROR_NONE_IDX	0
+>  #define CMDQ_ERR_CERROR_ILL_IDX		1
+>  #define CMDQ_ERR_CERROR_ABT_IDX		2
+> +#define CMDQ_ERR_CERROR_ATC_INV_IDX	3
+>  
+>  #define CMDQ_0_OP_SHIFT			0
+>  #define CMDQ_0_OP_MASK			0xffUL
+> @@ -327,6 +330,15 @@
+>  #define CMDQ_TLBI_1_VA_MASK		~0xfffUL
+>  #define CMDQ_TLBI_1_IPA_MASK		0xfffffffff000UL
+>  
+> +#define CMDQ_ATC_0_SSID_SHIFT		12
+> +#define CMDQ_ATC_0_SSID_MASK		0xfffffUL
+> +#define CMDQ_ATC_0_SID_SHIFT		32
+> +#define CMDQ_ATC_0_SID_MASK		0xffffffffUL
+> +#define CMDQ_ATC_0_GLOBAL		(1UL << 9)
+> +#define CMDQ_ATC_1_SIZE_SHIFT		0
+> +#define CMDQ_ATC_1_SIZE_MASK		0x3fUL
+> +#define CMDQ_ATC_1_ADDR_MASK		~0xfffUL
 > +
-> +	  If unsure, say N here.
+>  #define CMDQ_PRI_0_SSID_SHIFT		12
+>  #define CMDQ_PRI_0_SSID_MASK		0xfffffUL
+>  #define CMDQ_PRI_0_SID_SHIFT		32
+> @@ -425,6 +437,11 @@ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+>  MODULE_PARM_DESC(disable_bypass,
+>  	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+>  
+> +static bool disable_ats_check;
+> +module_param_named(disable_ats_check, disable_ats_check, bool, S_IRUGO);
+> +MODULE_PARM_DESC(disable_ats_check,
+> +	"By default, the SMMU checks whether each incoming transaction marked as translated is allowed by the stream configuration. This option disables the check.");
 > +
->  config FSL_PAMU
->  	bool "Freescale IOMMU support"
->  	depends on PCI
-> @@ -156,6 +165,7 @@ config INTEL_IOMMU
->  	select IOMMU_API
->  	select IOMMU_IOVA
->  	select DMAR_TABLE
-> +	select IOMMU_FAULT
->  	help
->  	  DMA remapping (DMAR) devices support enables independent address
->  	  translations for Direct Memory Access (DMA) from devices.
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 1dbcc89ebe4c..f4324e29035e 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -4,6 +4,7 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
->  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
->  obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
-> +obj-$(CONFIG_IOMMU_FAULT) += io-pgfault.o
->  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
->  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
->  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> new file mode 100644
-> index 000000000000..33309ed316d2
-> --- /dev/null
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -0,0 +1,282 @@
-> +/*
-> + * Handle device page faults
-> + *
-> + * Copyright (C) 2018 ARM Ltd.
-> + * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> + *
-> + * SPDX-License-Identifier: GPL-2.0
-> + */
+>  enum pri_resp {
+>  	PRI_RESP_DENY,
+>  	PRI_RESP_FAIL,
+> @@ -498,6 +515,16 @@ struct arm_smmu_cmdq_ent {
+>  			u64			addr;
+>  		} tlbi;
+>  
+> +		#define CMDQ_OP_ATC_INV		0x40
+> +		#define ATC_INV_SIZE_ALL	52
+> +		struct {
+> +			u32			sid;
+> +			u32			ssid;
+> +			u64			addr;
+> +			u8			size;
+> +			bool			global;
+> +		} atc;
 > +
-> +#include <linux/iommu.h>
-> +#include <linux/list.h>
-> +#include <linux/slab.h>
-> +#include <linux/workqueue.h>
+>  		#define CMDQ_OP_PRI_RESP	0x41
+>  		struct {
+>  			u32			sid;
+> @@ -928,6 +955,14 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  	case CMDQ_OP_TLBI_EL2_ASID:
+>  		cmd[0] |= (u64)ent->tlbi.asid << CMDQ_TLBI_0_ASID_SHIFT;
+>  		break;
+> +	case CMDQ_OP_ATC_INV:
+> +		cmd[0] |= ent->substream_valid ? CMDQ_0_SSV : 0;
+> +		cmd[0] |= ent->atc.global ? CMDQ_ATC_0_GLOBAL : 0;
+> +		cmd[0] |= ent->atc.ssid << CMDQ_ATC_0_SSID_SHIFT;
+> +		cmd[0] |= (u64)ent->atc.sid << CMDQ_ATC_0_SID_SHIFT;
+> +		cmd[1] |= ent->atc.size << CMDQ_ATC_1_SIZE_SHIFT;
+> +		cmd[1] |= ent->atc.addr & CMDQ_ATC_1_ADDR_MASK;
+> +		break;
+>  	case CMDQ_OP_PRI_RESP:
+>  		cmd[0] |= ent->substream_valid ? CMDQ_0_SSV : 0;
+>  		cmd[0] |= ent->pri.ssid << CMDQ_PRI_0_SSID_SHIFT;
+> @@ -984,6 +1019,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>  		[CMDQ_ERR_CERROR_NONE_IDX]	= "No error",
+>  		[CMDQ_ERR_CERROR_ILL_IDX]	= "Illegal command",
+>  		[CMDQ_ERR_CERROR_ABT_IDX]	= "Abort on command fetch",
+> +		[CMDQ_ERR_CERROR_ATC_INV_IDX]	= "ATC invalidate timeout",
+>  	};
+>  
+>  	int i;
+> @@ -1003,6 +1039,14 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+>  		dev_err(smmu->dev, "retrying command fetch\n");
+>  	case CMDQ_ERR_CERROR_NONE_IDX:
+>  		return;
+> +	case CMDQ_ERR_CERROR_ATC_INV_IDX:
+> +		/*
+> +		 * ATC Invalidation Completion timeout. CONS is still pointing
+> +		 * at the CMD_SYNC. Attempt to complete other pending commands
+> +		 * by repeating the CMD_SYNC, though we might well end up back
+> +		 * here since the ATC invalidation may still be pending.
+> +		 */
+> +		return;
+>  	case CMDQ_ERR_CERROR_ILL_IDX:
+>  		/* Fallthrough */
+>  	default:
+> @@ -1261,9 +1305,6 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+>  			 STRTAB_STE_1_S1C_CACHE_WBRA
+>  			 << STRTAB_STE_1_S1COR_SHIFT |
+>  			 STRTAB_STE_1_S1C_SH_ISH << STRTAB_STE_1_S1CSH_SHIFT |
+> -#ifdef CONFIG_PCI_ATS
+> -			 STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT |
+> -#endif
+>  			 (smmu->features & ARM_SMMU_FEAT_E2H ?
+>  			  STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1) <<
+>  			 STRTAB_STE_1_STRW_SHIFT);
+> @@ -1300,6 +1341,10 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+>  		val |= STRTAB_STE_0_CFG_S2_TRANS;
+>  	}
+>  
+> +	if (IS_ENABLED(CONFIG_PCI_ATS))
+> +		dst[1] |= cpu_to_le64(STRTAB_STE_1_EATS_TRANS
+> +				      << STRTAB_STE_1_EATS_SHIFT);
 > +
-> +static struct workqueue_struct *iommu_fault_queue;
-> +static DECLARE_RWSEM(iommu_fault_queue_sem);
-> +static refcount_t iommu_fault_queue_refs = REFCOUNT_INIT(0);
-> +static BLOCKING_NOTIFIER_HEAD(iommu_fault_queue_flush_notifiers);
-> +
-> +/* Used to store incomplete fault groups */
-> +static LIST_HEAD(iommu_partial_faults);
-> +static DEFINE_SPINLOCK(iommu_partial_faults_lock);
-> +
-> +struct iommu_fault_context {
-> +	struct device			*dev;
-> +	struct iommu_fault_event	evt;
-> +	struct list_head		head;
-> +};
-> +
-> +struct iommu_fault_group {
-> +	struct iommu_domain		*domain;
-> +	struct iommu_fault_context	last_fault;
-> +	struct list_head		faults;
-> +	struct work_struct		work;
-> +};
-> +
-> +/*
-> + * iommu_fault_complete() - Finish handling a fault
-> + *
-> + * Send a response if necessary and pass on the sanitized status code
-> + */
-> +static int iommu_fault_complete(struct iommu_domain *domain, struct device *dev,
-> +				struct iommu_fault_event *evt, int status)
+>  	arm_smmu_sync_ste_for_sid(smmu, sid);
+>  	dst[0] = cpu_to_le64(val);
+>  	arm_smmu_sync_ste_for_sid(smmu, sid);
+> @@ -1680,6 +1725,104 @@ static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
+>  	return IRQ_WAKE_THREAD;
+>  }
+>  
+> +/* ATS invalidation */
+> +static bool arm_smmu_master_has_ats(struct arm_smmu_master_data *master)
 > +{
-> +	struct page_response_msg resp = {
-> +		.addr		= evt->addr,
-> +		.pasid		= evt->pasid,
-> +		.pasid_present	= evt->pasid_valid,
-> +		.page_req_group_id = evt->page_req_group_id,
-Really trivial, but if you want to align the equals signs, the all need indenting
-one more tab.
-
-> +		.type		= IOMMU_PAGE_GROUP_RESP,
-> +		.private_data	= evt->iommu_private,
+> +	return dev_is_pci(master->dev) && to_pci_dev(master->dev)->ats_enabled;
+> +}
+> +
+> +static void
+> +arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
+> +			struct arm_smmu_cmdq_ent *cmd)
+> +{
+> +	size_t log2_span;
+> +	size_t span_mask;
+> +	/* ATC invalidates are always on 4096 bytes pages */
+> +	size_t inval_grain_shift = 12;
+> +	unsigned long page_start, page_end;
+> +
+> +	*cmd = (struct arm_smmu_cmdq_ent) {
+> +		.opcode			= CMDQ_OP_ATC_INV,
+> +		.substream_valid	= !!ssid,
+> +		.atc.ssid		= ssid,
 > +	};
 > +
-> +	/*
-> +	 * There is no "handling" an unrecoverable fault, so the only valid
-> +	 * return values are 0 or an error.
-> +	 */
-> +	if (evt->type == IOMMU_FAULT_DMA_UNRECOV)
-> +		return status > 0 ? 0 : status;
+> +	if (!size) {
+> +		cmd->atc.size = ATC_INV_SIZE_ALL;
+> +		return;
+> +	}
 > +
-> +	/* Someone took ownership of the fault and will complete it later */
-> +	if (status == IOMMU_PAGE_RESP_HANDLED)
+> +	page_start	= iova >> inval_grain_shift;
+> +	page_end	= (iova + size - 1) >> inval_grain_shift;
+> +
+> +	/*
+> +	 * Find the smallest power of two that covers the range. Most
+> +	 * significant differing bit between start and end address indicates the
+> +	 * required span, ie. fls(start ^ end). For example:
+> +	 *
+> +	 * We want to invalidate pages [8; 11]. This is already the ideal range:
+> +	 *		x = 0b1000 ^ 0b1011 = 0b11
+> +	 *		span = 1 << fls(x) = 4
+> +	 *
+> +	 * To invalidate pages [7; 10], we need to invalidate [0; 15]:
+> +	 *		x = 0b0111 ^ 0b1010 = 0b1101
+> +	 *		span = 1 << fls(x) = 16
+> +	 */
+> +	log2_span	= fls_long(page_start ^ page_end);
+> +	span_mask	= (1ULL << log2_span) - 1;
+> +
+> +	page_start	&= ~span_mask;
+> +
+> +	cmd->atc.addr	= page_start << inval_grain_shift;
+> +	cmd->atc.size	= log2_span;
+> +}
+> +
+> +static int arm_smmu_atc_inv_master(struct arm_smmu_master_data *master,
+> +				   struct arm_smmu_cmdq_ent *cmd)
+> +{
+> +	int i;
+> +	struct iommu_fwspec *fwspec = master->dev->iommu_fwspec;
+> +
+> +	if (!arm_smmu_master_has_ats(master))
 > +		return 0;
 > +
-> +	/*
-> +	 * There was an internal error with handling the recoverable fault. Try
-> +	 * to complete the fault if possible.
-> +	 */
-> +	if (status < 0)
-> +		status = IOMMU_PAGE_RESP_INVALID;
-> +
-> +	if (WARN_ON(!domain->ops->page_response))
-> +		/*
-> +		 * The IOMMU driver shouldn't have submitted recoverable faults
-> +		 * if it cannot receive a response.
-> +		 */
-> +		return -EINVAL;
-> +
-> +	resp.resp_code = status;
-> +	return domain->ops->page_response(domain, dev, &resp);
-> +}
-> +
-> +static int iommu_fault_handle_single(struct iommu_fault_context *fault)
-> +{
-> +	/* TODO */
-> +	return -ENODEV;
-> +}
-> +
-> +static void iommu_fault_handle_group(struct work_struct *work)
-> +{
-> +	struct iommu_fault_group *group;
-> +	struct iommu_fault_context *fault, *next;
-> +	int status = IOMMU_PAGE_RESP_SUCCESS;
-> +
-> +	group = container_of(work, struct iommu_fault_group, work);
-> +
-> +	list_for_each_entry_safe(fault, next, &group->faults, head) {
-> +		struct iommu_fault_event *evt = &fault->evt;
-> +		/*
-> +		 * Errors are sticky: don't handle subsequent faults in the
-> +		 * group if there is an error.
-> +		 */
-> +		if (status == IOMMU_PAGE_RESP_SUCCESS)
-> +			status = iommu_fault_handle_single(fault);
-> +
-> +		if (!evt->last_req)
-> +			kfree(fault);
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		cmd->atc.sid = fwspec->ids[i];
+> +		arm_smmu_cmdq_issue_cmd(master->smmu, cmd);
 > +	}
 > +
-> +	iommu_fault_complete(group->domain, group->last_fault.dev,
-> +			     &group->last_fault.evt, status);
-> +	kfree(group);
+> +	arm_smmu_cmdq_issue_sync(master->smmu);
+> +
+> +	return 0;
 > +}
 > +
-> +static int iommu_queue_fault(struct iommu_domain *domain, struct device *dev,
-> +			     struct iommu_fault_event *evt)
+> +static int arm_smmu_atc_inv_master_all(struct arm_smmu_master_data *master,
+> +				       int ssid)
 > +{
-> +	struct iommu_fault_group *group;
-> +	struct iommu_fault_context *fault, *next;
+> +	struct arm_smmu_cmdq_ent cmd;
 > +
-> +	if (!iommu_fault_queue)
+> +	arm_smmu_atc_inv_to_cmd(ssid, 0, 0, &cmd);
+> +	return arm_smmu_atc_inv_master(master, &cmd);
+> +}
+> +
+> +static size_t
+> +arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+> +			unsigned long iova, size_t size)
+> +{
+> +	unsigned long flags;
+> +	struct arm_smmu_cmdq_ent cmd;
+> +	struct arm_smmu_master_data *master;
+> +
+> +	arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
+> +
+> +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> +	list_for_each_entry(master, &smmu_domain->devices, list)
+> +		arm_smmu_atc_inv_master(master, &cmd);
+> +	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> +
+> +	return size;
+> +}
+> +
+>  /* IO_PGTABLE API */
+>  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>  {
+> @@ -2092,6 +2235,8 @@ static void arm_smmu_detach_dev(struct device *dev)
+>  	if (smmu_domain) {
+>  		__iommu_sva_unbind_dev_all(dev);
+>  
+> +		arm_smmu_atc_inv_master_all(master, 0);
+> +
+>  		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+>  		list_del(&master->list);
+>  		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> @@ -2179,12 +2324,19 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+>  static size_t
+>  arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+>  {
+> -	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
+> +	int ret;
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
+>  
+>  	if (!ops)
+>  		return 0;
+>  
+> -	return ops->unmap(ops, iova, size);
+> +	ret = ops->unmap(ops, iova, size);
+> +
+> +	if (ret && smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS)
+> +		ret = arm_smmu_atc_inv_domain(smmu_domain, 0, iova, size);
+> +
+> +	return ret;
+>  }
+>  
+>  static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+> @@ -2342,6 +2494,48 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+>  	return sid < limit;
+>  }
+>  
+> +static int arm_smmu_enable_ats(struct arm_smmu_master_data *master)
+> +{
+> +	int ret;
+> +	size_t stu;
+> +	struct pci_dev *pdev;
+> +	struct arm_smmu_device *smmu = master->smmu;
+> +	struct iommu_fwspec *fwspec = master->dev->iommu_fwspec;
+> +
+> +	if (!(smmu->features & ARM_SMMU_FEAT_ATS) || !dev_is_pci(master->dev) ||
+> +	    (fwspec->flags & IOMMU_FWSPEC_PCI_NO_ATS))
 > +		return -ENOSYS;
 > +
-> +	if (!evt->last_req) {
-> +		fault = kzalloc(sizeof(*fault), GFP_KERNEL);
-> +		if (!fault)
-> +			return -ENOMEM;
+> +	pdev = to_pci_dev(master->dev);
 > +
-> +		fault->evt = *evt;
-> +		fault->dev = dev;
+> +	/* Smallest Translation Unit: log2 of the smallest supported granule */
+> +	stu = __ffs(smmu->pgsize_bitmap);
 > +
-> +		/* Non-last request of a group. Postpone until the last one */
-> +		spin_lock(&iommu_partial_faults_lock);
-> +		list_add_tail(&fault->head, &iommu_partial_faults);
-> +		spin_unlock(&iommu_partial_faults_lock);
+> +	ret = pci_enable_ats(pdev, stu);
+> +	if (ret)
+> +		return ret;
 > +
-> +		return IOMMU_PAGE_RESP_HANDLED;
-> +	}
+> +	dev_dbg(&pdev->dev, "enabled ATS (STU=%zu, QDEP=%d)\n", stu,
+> +		pci_ats_queue_depth(pdev));
 > +
-> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> +	if (!group)
-> +		return -ENOMEM;
+> +	return 0;
+> +}
 > +
-> +	group->last_fault.evt = *evt;
-> +	group->last_fault.dev = dev;
-> +	group->domain = domain;
-> +	INIT_LIST_HEAD(&group->faults);
-> +	list_add(&group->last_fault.head, &group->faults);
-> +	INIT_WORK(&group->work, iommu_fault_handle_group);
+> +static void arm_smmu_disable_ats(struct arm_smmu_master_data *master)
+> +{
+> +	struct pci_dev *pdev;
 > +
-> +	/* See if we have pending faults for this group */
-> +	spin_lock(&iommu_partial_faults_lock);
-> +	list_for_each_entry_safe(fault, next, &iommu_partial_faults, head) {
-> +		if (fault->evt.page_req_group_id == evt->page_req_group_id &&
-> +		    fault->dev == dev) {
-> +			list_del(&fault->head);
-> +			/* Insert *before* the last fault */
-> +			list_add(&fault->head, &group->faults);
+> +	if (!dev_is_pci(master->dev))
+> +		return;
+> +
+> +	pdev = to_pci_dev(master->dev);
+> +
+> +	if (!pdev->ats_enabled)
+> +		return;
+> +
+> +	pci_disable_ats(pdev);
+> +}
+> +
+>  static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+>  				  struct arm_smmu_master_data *master)
+>  {
+> @@ -2462,14 +2656,24 @@ static int arm_smmu_add_device(struct device *dev)
+>  		master->ste.can_stall = true;
+>  	}
+>  
+> +	arm_smmu_enable_ats(master);
+It's a bit nasty not to handle the errors that this could output (other than
+the ENOSYS for when it's not available). Seems that it would be nice to at
+least add a note to the log if people are expecting it to work and it won't
+because some condition or other isn't met.
+
+> +
+>  	group = iommu_group_get_for_dev(dev);
+> -	if (!IS_ERR(group)) {
+> -		arm_smmu_insert_master(smmu, master);
+> -		iommu_group_put(group);
+> -		iommu_device_link(&smmu->iommu, dev);
+> +	if (IS_ERR(group)) {
+> +		ret = PTR_ERR(group);
+> +		goto err_disable_ats;
+>  	}
+>  
+> -	return PTR_ERR_OR_ZERO(group);
+> +	iommu_group_put(group);
+> +	arm_smmu_insert_master(smmu, master);
+> +	iommu_device_link(&smmu->iommu, dev);
+> +
+> +	return 0;
+> +
+> +err_disable_ats:
+> +	arm_smmu_disable_ats(master);
+master is leaked here I think...
+Possibly other things as this doesn't line up with the
+remove which I'd have mostly expected it to do.
+
+There are some slightly fishy bits of ordering in the original code
+anyway that I'm not seeing justification for (why is
+the iommu_device_unlink later than one might expect for
+example).
+
+> +
+> +	return ret;
+>  }
+>  
+>  static void arm_smmu_remove_device(struct device *dev)
+> @@ -2486,6 +2690,8 @@ static void arm_smmu_remove_device(struct device *dev)
+>  	if (master && master->ste.assigned)
+>  		arm_smmu_detach_dev(dev);
+>  	arm_smmu_remove_master(smmu, master);
+> +	arm_smmu_disable_ats(master);
+> +
+>  	iommu_group_remove_device(dev);
+>  	iommu_device_unlink(&smmu->iommu, dev);
+>  	kfree(master);
+> @@ -3094,6 +3300,16 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  		}
+>  	}
+>  
+> +	if (smmu->features & ARM_SMMU_FEAT_ATS && !disable_ats_check) {
+> +		enables |= CR0_ATSCHK;
+> +		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> +					      ARM_SMMU_CR0ACK);
+> +		if (ret) {
+> +			dev_err(smmu->dev, "failed to enable ATS check\n");
+> +			return ret;
 > +		}
 > +	}
-> +	spin_unlock(&iommu_partial_faults_lock);
 > +
-> +	queue_work(iommu_fault_queue, &group->work);
-> +
-> +	/* Postpone the fault completion */
-> +	return IOMMU_PAGE_RESP_HANDLED;
-> +}
-> +
-> +/**
-> + * iommu_report_device_fault() - Handle fault in device driver or mm
-> + *
-> + * If the device driver expressed interest in handling fault, report it through
-> + * the callback. If the fault is recoverable, try to page in the address.
-> + */
-> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> +{
-> +	int ret = -ENOSYS;
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +
-> +	if (!domain)
-> +		return -ENODEV;
-> +
-> +	/*
-> +	 * if upper layers showed interest and installed a fault handler,
-> +	 * invoke it.
-> +	 */
-> +	if (iommu_has_device_fault_handler(dev)) {
-> +		struct iommu_fault_param *param = dev->iommu_param->fault_param;
-> +
-> +		return param->handler(evt, param->data);
-> +	}
-> +
-> +	/* If the handler is blocking, handle fault in the workqueue */
-> +	if (evt->type == IOMMU_FAULT_PAGE_REQ)
-> +		ret = iommu_queue_fault(domain, dev, evt);
-> +
-> +	return iommu_fault_complete(domain, dev, evt, ret);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-> +
-> +/**
-> + * iommu_fault_queue_register() - register an IOMMU driver to the fault queue
-> + * @flush_notifier: a notifier block that is called before the fault queue is
-> + * flushed. The IOMMU driver should commit all faults that are pending in its
-> + * low-level queues at the time of the call, into the fault queue. The notifier
-> + * takes a device pointer as argument, hinting what endpoint is causing the
-> + * flush. When the device is NULL, all faults should be committed.
-> + */
-> +int iommu_fault_queue_register(struct notifier_block *flush_notifier)
-> +{
-> +	/*
-> +	 * The WQ is unordered because the low-level handler enqueues faults by
-> +	 * group. PRI requests within a group have to be ordered, but once
-> +	 * that's dealt with, the high-level function can handle groups out of
-> +	 * order.
-> +	 */
-> +	down_write(&iommu_fault_queue_sem);
-> +	if (!iommu_fault_queue) {
-> +		iommu_fault_queue = alloc_workqueue("iommu_fault_queue",
-> +						    WQ_UNBOUND, 0);
-> +		if (iommu_fault_queue)
-> +			refcount_set(&iommu_fault_queue_refs, 1);
-> +	} else {
-> +		refcount_inc(&iommu_fault_queue_refs);
-> +	}
-> +	up_write(&iommu_fault_queue_sem);
-> +
-> +	if (!iommu_fault_queue)
-> +		return -ENOMEM;
-> +
-> +	if (flush_notifier)
-> +		blocking_notifier_chain_register(&iommu_fault_queue_flush_notifiers,
-> +						 flush_notifier);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_fault_queue_register);
-> +
-> +/**
-> + * iommu_fault_queue_flush() - Ensure that all queued faults have been
-> + * processed.
-> + * @dev: the endpoint whose faults need to be flushed. If NULL, flush all
-> + *       pending faults.
-> + *
-> + * Users must call this function when releasing a PASID, to ensure that all
-> + * pending faults affecting this PASID have been handled, and won't affect the
-> + * address space of a subsequent process that reuses this PASID.
-> + */
-> +void iommu_fault_queue_flush(struct device *dev)
-> +{
-> +	blocking_notifier_call_chain(&iommu_fault_queue_flush_notifiers, 0, dev);
-> +
-> +	down_read(&iommu_fault_queue_sem);
-> +	/*
-> +	 * Don't flush the partial faults list. All PRGs with the PASID are
-> +	 * complete and have been submitted to the queue.
-> +	 */
-> +	if (iommu_fault_queue)
-> +		flush_workqueue(iommu_fault_queue);
-> +	up_read(&iommu_fault_queue_sem);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_fault_queue_flush);
-> +
-> +/**
-> + * iommu_fault_queue_unregister() - Unregister an IOMMU driver from the fault
-> + * queue.
-> + * @flush_notifier: same parameter as iommu_fault_queue_register
-> + */
-> +void iommu_fault_queue_unregister(struct notifier_block *flush_notifier)
-> +{
-> +	down_write(&iommu_fault_queue_sem);
-> +	if (refcount_dec_and_test(&iommu_fault_queue_refs)) {
-> +		destroy_workqueue(iommu_fault_queue);
-> +		iommu_fault_queue = NULL;
-> +	}
-> +	up_write(&iommu_fault_queue_sem);
-> +
-> +	if (flush_notifier)
-> +		blocking_notifier_chain_unregister(&iommu_fault_queue_flush_notifiers,
-> +						   flush_notifier);
-I would expect the ordering in queue_unregister to be the reverse of queue
-register (to make it obvious there are no races).
-
-That would put this last block at the start before potentially destroying
-the work queue.  If I'm missing something then perhaps a comment to
-explain why the ordering is not the obvious one?
-
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_fault_queue_unregister);
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 4bc2a8c12465..d7b231cd7355 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -102,9 +102,6 @@
->   * the device table and PASID 0 would be available to the allocator.
->   */
->  
-> -/* TODO: stub for the fault queue. Remove later. */
-> -#define iommu_fault_queue_flush(...)
-> -
->  struct iommu_bond {
->  	struct io_mm		*io_mm;
->  	struct device		*dev;
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 1d60b32a6744..c475893ec7dc 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -798,6 +798,17 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
->  }
->  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
->  
-> +/**
-> + * iommu_register_device_fault_handler() - Register a device fault handler
-> + * @dev: the device
-> + * @handler: the fault handler
-> + * @data: private data passed as argument to the callback
-> + *
-> + * When an IOMMU fault event is received, call this handler with the fault event
-> + * and data as argument.
-> + *
-> + * Return 0 if the fault handler was installed successfully, or an error.
-> + */
->  int iommu_register_device_fault_handler(struct device *dev,
->  					iommu_dev_fault_handler_t handler,
->  					void *data)
-> @@ -825,6 +836,13 @@ int iommu_register_device_fault_handler(struct device *dev,
->  }
->  EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
->  
-> +/**
-> + * iommu_unregister_device_fault_handler() - Unregister the device fault handler
-> + * @dev: the device
-> + *
-> + * Remove the device fault handler installed with
-> + * iommu_register_device_fault_handler().
-> + */
->  int iommu_unregister_device_fault_handler(struct device *dev)
->  {
->  	struct iommu_param *idata = dev->iommu_param;
-> @@ -840,19 +858,6 @@ int iommu_unregister_device_fault_handler(struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
->  
-> -
-> -int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> -{
-> -	/* we only report device fault if there is a handler registered */
-> -	if (!dev->iommu_param || !dev->iommu_param->fault_param ||
-> -		!dev->iommu_param->fault_param->handler)
-> -		return -ENOSYS;
-> -
-> -	return dev->iommu_param->fault_param->handler(evt,
-> -						dev->iommu_param->fault_param->data);
-> -}
-> -EXPORT_SYMBOL_GPL(iommu_report_device_fault);
-> -
->  /**
->   * iommu_group_id - Return ID for a group
->   * @group: the group to ID
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 226ab4f3ae0e..65e56f28e0ce 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -205,6 +205,7 @@ struct page_response_msg {
->  	u32 resp_code:4;
->  #define IOMMU_PAGE_RESP_SUCCESS	0
->  #define IOMMU_PAGE_RESP_INVALID	1
-> +#define IOMMU_PAGE_RESP_HANDLED	2
->  #define IOMMU_PAGE_RESP_FAILURE	0xF
->  
->  	u32 pasid_present:1;
-> @@ -534,7 +535,6 @@ extern int iommu_register_device_fault_handler(struct device *dev,
->  
->  extern int iommu_unregister_device_fault_handler(struct device *dev);
->  
-> -extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
->  extern int iommu_page_response(struct iommu_domain *domain, struct device *dev,
->  			       struct page_response_msg *msg);
->  
-> @@ -836,11 +836,6 @@ static inline bool iommu_has_device_fault_handler(struct device *dev)
->  	return false;
->  }
->  
-> -static inline int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
-> -{
-> -	return 0;
-> -}
-> -
->  static inline int iommu_page_response(struct iommu_domain *domain, struct device *dev,
->  				      struct page_response_msg *msg)
->  {
-> @@ -1005,4 +1000,31 @@ static inline struct mm_struct *iommu_sva_find(int pasid)
->  }
->  #endif /* CONFIG_IOMMU_SVA */
->  
-> +#ifdef CONFIG_IOMMU_FAULT
-> +extern int iommu_fault_queue_register(struct notifier_block *flush_notifier);
-> +extern void iommu_fault_queue_flush(struct device *dev);
-> +extern void iommu_fault_queue_unregister(struct notifier_block *flush_notifier);
-> +extern int iommu_report_device_fault(struct device *dev,
-> +				     struct iommu_fault_event *evt);
-> +#else /* CONFIG_IOMMU_FAULT */
-> +static inline int iommu_fault_queue_register(struct notifier_block *flush_notifier)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void iommu_fault_queue_flush(struct device *dev)
-> +{
-> +}
-> +
-> +static inline void iommu_fault_queue_unregister(struct notifier_block *flush_notifier)
-> +{
-> +}
-> +
-> +static inline int iommu_report_device_fault(struct device *dev,
-> +					    struct iommu_fault_event *evt)
-> +{
-> +	return 0;
-> +}
-> +#endif /* CONFIG_IOMMU_FAULT */
-> +
->  #endif /* __LINUX_IOMMU_H */
+>  	ret = arm_smmu_setup_irqs(smmu);
+>  	if (ret) {
+>  		dev_err(smmu->dev, "failed to setup irqs\n");
