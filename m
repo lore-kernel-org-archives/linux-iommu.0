@@ -1,20 +1,17 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: Invoke pm_runtime during probe,
-	add/remove device
-Date: Fri, 9 Mar 2018 13:50:32 +0900
-Message-ID: <CAAFQd5BU+hU8aPyq6Rcaiwzu1sf7vcRNwnzt5LZZ+L01DnjqhA@mail.gmail.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v8 4/5] iommu/arm-smmu: Add the device_link between
+	masters and smmu
+Date: Fri, 9 Mar 2018 12:41:46 +0530
+Message-ID: <CAFp+6iFzGYWZMLkNrN1ZJJ2xH4CxQsiU6oYboHDzL0jDwm+4VQ@mail.gmail.com>
 References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
-	<20180302101050.6191-4-vivek.gautam@codeaurora.org>
-	<d0f2b3ed-136d-7704-2aef-1173a342a89c@arm.com>
-	<CAAFQd5BTdF176x5ycatCmCHrMyVX2OZqdXd-JGq06RyDUb0N3g@mail.gmail.com>
-	<30a2fa5e-3d8e-acb6-ab31-bec652f1be99@arm.com>
-	<CAAFQd5BKkKc2binDe-MCDeP42b6O26Hu9nYjvYRE160EMvi1fA@mail.gmail.com>
-	<6fe36177-a8a5-5f17-bf65-1a53538221a4@arm.com>
+	<20180302101050.6191-5-vivek.gautam@codeaurora.org>
+	<f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
+	<CAFp+6iF1oM=fmRCqSG-SxcUVvvOLet_Y0p7pmGn+=B-LdMNiww@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6fe36177-a8a5-5f17-bf65-1a53538221a4-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAFp+6iF1oM=fmRCqSG-SxcUVvvOLet_Y0p7pmGn+=B-LdMNiww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,179 +21,133 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 8, 2018 at 9:12 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 08/03/18 04:33, Tomasz Figa wrote:
->>
->> On Thu, Mar 8, 2018 at 1:58 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+On Thu, Mar 8, 2018 at 10:29 AM, Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> On Wed, Mar 7, 2018 at 6:17 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 02/03/18 10:10, Vivek Gautam wrote:
 >>>
->>> On 07/03/18 13:52, Tomasz Figa wrote:
->>>>
->>>>
->>>> On Wed, Mar 7, 2018 at 9:38 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>> wrote:
->>>>>
->>>>>
->>>>> On 02/03/18 10:10, Vivek Gautam wrote:
->>>>>>
->>>>>>
->>>>>>
->>>>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>>>
->>>>>> The smmu device probe/remove and add/remove master device callbacks
->>>>>> gets called when the smmu is not linked to its master, that is without
->>>>>> the context of the master device. So calling runtime apis in those
->>>>>> places
->>>>>> separately.
->>>>>>
->>>>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>>> [vivek: Cleanup pm runtime calls]
->>>>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>>> ---
->>>>>>     drivers/iommu/arm-smmu.c | 96
->>>>>> ++++++++++++++++++++++++++++++++++++++++++++----
->>>>>>     1 file changed, 88 insertions(+), 8 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>>>>> index c8b16f53f597..3d6a1875431f 100644
->>>>>> --- a/drivers/iommu/arm-smmu.c
->>>>>> +++ b/drivers/iommu/arm-smmu.c
->>>>>> @@ -209,6 +209,8 @@ struct arm_smmu_device {
->>>>>>           struct clk_bulk_data            *clks;
->>>>>>           int                             num_clks;
->>>>>>     +     bool                            rpm_supported;
->>>>>> +
->>>>>
->>>>>
->>>>>
->>>>>
->>>>> Can we not automatically infer this from whether clocks and/or power
->>>>> domains
->>>>> are specified or not, then just use pm_runtime_enabled() as the
->>>>> fast-path
->>>>> check as Tomasz originally proposed?
->>>>
->>>>
->>>>
->>>> I wouldn't tie this to presence of clocks, since as a next step we
->>>> would want to actually control the clocks separately. (As far as I
->>>> understand, on QCom SoCs we might want to have runtime PM active for
->>>> the translation to work, but clocks gated whenever access to SMMU
->>>> registers is not needed.) Moreover, you might still have some super
->>>> high scale thousand-core systems that require clocks to be
->>>> prepare-enabled, but runtime PM would be undesirable for the reasons
->>>> we discussed before.
->>>>
->>>>>
->>>>> I worry that relying on statically-defined matchdata is just going to
->>>>> blow
->>>>> up the driver and DT binding into a maintenance nightmare; I really
->>>>> don't
->>>>> want to start needing separate definitions for e.g.
->>>>> "arm,juno-etr-mmu-401"
->>>>> and "arm,juno-hdlcd-mmu-401" just because one otherwise-identical
->>>>> instance
->>>>> within the SoC is in a separate controllable power domain while the
->>>>> others
->>>>> aren't.
->>>>
->>>>
->>>>
->>>> I don't see a reason why both couldn't just have RPM supported
->>>> regardless of whether there is a real power domain. It would
->>>> effectively be just a no-op for those that don't have one.
+>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 >>>
+>>> Finally add the device link between the master device and
+>>> smmu, so that the smmu gets runtime enabled/disabled only when the
+>>> master needs it. This is done from add_device callback which gets
+>>> called once when the master is added to the smmu.
 >>>
+>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>> ---
+>>>   drivers/iommu/arm-smmu.c | 21 +++++++++++++++++++++
+>>>   1 file changed, 21 insertions(+)
 >>>
->>> Because you're then effectively defining "compatible" values for the sake
->>> of
->>> attaching software policy to them, rather than actually describing
->>> different
->>> hardware implementations.
->>>
->>> The fact that RPM can't do anything meaningful unless relevant
->>> clock/power
->>> aspects *are* described, however, means that we shouldn't need additional
->>> information redundant with that. Much like the fact that we don't
->>> *already*
->>> have an "arm,juno-hdlcd-mmu-401" compatible to account for those being
->>> integrated such that IDR0.CTTW has the wrong value, since the presence or
->>> not of the "dma-coherent" property already describes the truth in that
->>> regard.
+>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>> index 3d6a1875431f..bb1ea82c1003 100644
+>>> --- a/drivers/iommu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm-smmu.c
+>>> @@ -217,6 +217,9 @@ struct arm_smmu_device {
+>>>         /* IOMMU core code handle */
+>>>         struct iommu_device             iommu;
+>>> +
+>>> +       /* runtime PM link to master */
+>>> +       struct device_link *link;
 >>
 >>
->> Fair enough.
->>
->>>
->>>> IMHO the
->>>> only reason to avoid having the RPM enabled is the scalability issue
->>>> we discussed before.
->>>
->>>
->>>
->>> Yes, but that's kind of my point; in reality high throughput/minimal
->>> latency
->>> and aggressive power management are more or less mutually exclusive.
->>> Mobile
->>> SoCs with fine-grained clock trees and power domains won't have multiple
->>> 40GBe/NVMf/whatever links running flat out in parallel; conversely
->>> networking/infrastructure/server SoCs aren't designed around saving every
->>> last microamp of leakage current - even in the (fairly unlikely) case of
->>> the
->>> interconnect clocks being software-gateable at all I would be very
->>> surprised
->>> if that were ever exposed directly to Linux (FWIW I believe ACPI
->>> essentially
->>> *requires* clocks to be abstracted behind firmware).
->>>
->>> Realistically then, explicit clocks are only expected on systems which
->>> care
->>> about power management. We can always revisit that assumption if anything
->>> crazy where it isn't the case ever becomes non-theoretical, but for now
->>> it's
->>> one I'm entirely comfortable with. If on the other hand it turns out that
->>> we
->>> can rely on just a power domain being present wherever we want RPM,
->>> making
->>> clocks moot, then all the better.
->>
->>
->> Alright. Since Qcom would be the only user of clock and power handling
->> for the time being, I think checking power domain presence could work
->> for us. +/- the fact that clocks need to be handled even if power
->> domain is not present, but we should normally always have both.
->
->
-> Great! (the issue of Qcom-specific clock handling is a separate argument
-> which I don't feel like reigniting just now...)
->
->> Now we need a way to do the check. Perhaps for the time being it would
->> be enough to just check for the power-domains property in DT?
->
->
-> AFAICS, it might be as simple as arm_smmu_probe() doing this:
->
->         /*
->          * We want to avoid touching dev->power.lock in fastpaths unless
->          * it's really going to do something useful - pm_runtime_enabled()
->          * can serve as an ideal proxy for that decision.
->          */
->         if (dev->pm_domain)
->                 pm_runtime_enable(dev);
->
-> or maybe even just gate all the calls with "if (smmu->dev.pm_domain)"
-> directly (like pcie-mediatek does), but I'm not sure which would be
-> conceptually cleaner.
+>> Just the one?
 
-Okay, that was easier than I expected. Thanks. :)
+we will either have to count all the devices that are present on the
+iommu bus, or
+maintain a list to which all the links can be added.
+But to add the list, we will have to initialize a LIST_HEAD in struct
+device_link
+as well.
 
-Actually, there is one more thing that might need rechecking. Are you
-sure that dev->pm_domain is NULL for the devices, for which we don't
-want runtime PM to be enabled? I think ACPI was mentioned and ACPI
-includes the concept of PM domains.
+Or, I think we don't even need to maintain a pointer to link with smmu.
+In arm_smmu_remove_device(), we can find out the correct link, and delete it.
 
-Best regards,
-Tomasz
+        list_for_each_entry(link, &dev->links.suppliers, c_node)
+                if (link->supplier == smmu->dev);
+                           device_link_del(link);
+
+Should that be fine?
+
+Rafael, does the above snippet looks right to you? Context: smmu->dev
+is the supplier, and dev is the consumer. We want to find the link,
+and delete it.
+
+regards
+Vivek
+
+>>
+>>>   };
+>>>     enum arm_smmu_context_fmt {
+>>> @@ -1470,10 +1473,26 @@ static int arm_smmu_add_device(struct device *dev)
+>>>         iommu_device_link(&smmu->iommu, dev);
+>>>   +     /*
+>>> +        * Establish the link between smmu and master, so that the
+>>> +        * smmu gets runtime enabled/disabled as per the master's
+>>> +        * needs.
+>>> +        */
+>>> +       smmu->link = device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME);
+>>
+>>
+>> Maybe I've misunderstood how the API works, but AFAICS the second and
+>> subsequent devices are all just going to overwrite (and leak) the link of
+>> the previous one...
+>
+> Sorry, my bad. Will take care of this.
+>
+> regards
+> Vivek
+>
+>>
+>>> +       if (!smmu->link) {
+>>> +               dev_warn(smmu->dev, "Unable to create device link between
+>>> %s and %s\n",
+>>> +                        dev_name(smmu->dev), dev_name(dev));
+>>> +               ret = -ENODEV;
+>>> +               goto out_unlink;
+>>> +       }
+>>> +
+>>>         arm_smmu_rpm_put(smmu);
+>>>         return 0;
+>>>   +out_unlink:
+>>> +       iommu_device_unlink(&smmu->iommu, dev);
+>>> +       arm_smmu_master_free_smes(fwspec);
+>>>   out_rpm_put:
+>>>         arm_smmu_rpm_put(smmu);
+>>>   out_cfg_free:
+>>> @@ -1496,6 +1515,8 @@ static void arm_smmu_remove_device(struct device
+>>> *dev)
+>>>         cfg  = fwspec->iommu_priv;
+>>>         smmu = cfg->smmu;
+>>>   +     device_link_del(smmu->link);
+>>
+>>
+>> ...and equivalently you end up with a double-free (or more) here of a link
+>> which may not have belonged to dev anyway.
+>>
+>> Robin.
+>>
+>>
+>>> +
+>>>         ret = arm_smmu_rpm_get(smmu);
+>>>         if (ret < 0)
+>>>                 return;
+>>>
+>>
+>
+>
+>
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
