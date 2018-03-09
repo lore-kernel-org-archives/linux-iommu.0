@@ -1,14 +1,20 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v2 5/5] iommu/amd - Add a debugfs entry to specify a IOMMU
-	device table entry
-Date: Thu, 08 Mar 2018 18:51:31 -0600
-Message-ID: <152055669123.63229.1692099069085978884.stgit@sosxen2.amd.com>
-References: <152055660594.63229.5131049527614494130.stgit@sosxen2.amd.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: Invoke pm_runtime during probe,
+	add/remove device
+Date: Fri, 9 Mar 2018 13:50:32 +0900
+Message-ID: <CAAFQd5BU+hU8aPyq6Rcaiwzu1sf7vcRNwnzt5LZZ+L01DnjqhA@mail.gmail.com>
+References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
+	<20180302101050.6191-4-vivek.gautam@codeaurora.org>
+	<d0f2b3ed-136d-7704-2aef-1173a342a89c@arm.com>
+	<CAAFQd5BTdF176x5ycatCmCHrMyVX2OZqdXd-JGq06RyDUb0N3g@mail.gmail.com>
+	<30a2fa5e-3d8e-acb6-ab31-bec652f1be99@arm.com>
+	<CAAFQd5BKkKc2binDe-MCDeP42b6O26Hu9nYjvYRE160EMvi1fA@mail.gmail.com>
+	<6fe36177-a8a5-5f17-bf65-1a53538221a4@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <152055660594.63229.5131049527614494130.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
+In-Reply-To: <6fe36177-a8a5-5f17-bf65-1a53538221a4-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,176 +24,179 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Initially (at boot) the device table values dumped are all of the
-active devices.  Add a devid debugfs file to allow the user to select a
-single device table entry to dump (active or not). Let any devid value
-greater than the maximum allowable PCI ID (0xFFFF) restore the
-behavior to that effective at boot.
+On Thu, Mar 8, 2018 at 9:12 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 08/03/18 04:33, Tomasz Figa wrote:
+>>
+>> On Thu, Mar 8, 2018 at 1:58 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>>>
+>>> On 07/03/18 13:52, Tomasz Figa wrote:
+>>>>
+>>>>
+>>>> On Wed, Mar 7, 2018 at 9:38 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>>> wrote:
+>>>>>
+>>>>>
+>>>>> On 02/03/18 10:10, Vivek Gautam wrote:
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>>>
+>>>>>> The smmu device probe/remove and add/remove master device callbacks
+>>>>>> gets called when the smmu is not linked to its master, that is without
+>>>>>> the context of the master device. So calling runtime apis in those
+>>>>>> places
+>>>>>> separately.
+>>>>>>
+>>>>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>>> [vivek: Cleanup pm runtime calls]
+>>>>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>>> ---
+>>>>>>     drivers/iommu/arm-smmu.c | 96
+>>>>>> ++++++++++++++++++++++++++++++++++++++++++++----
+>>>>>>     1 file changed, 88 insertions(+), 8 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>>>>> index c8b16f53f597..3d6a1875431f 100644
+>>>>>> --- a/drivers/iommu/arm-smmu.c
+>>>>>> +++ b/drivers/iommu/arm-smmu.c
+>>>>>> @@ -209,6 +209,8 @@ struct arm_smmu_device {
+>>>>>>           struct clk_bulk_data            *clks;
+>>>>>>           int                             num_clks;
+>>>>>>     +     bool                            rpm_supported;
+>>>>>> +
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> Can we not automatically infer this from whether clocks and/or power
+>>>>> domains
+>>>>> are specified or not, then just use pm_runtime_enabled() as the
+>>>>> fast-path
+>>>>> check as Tomasz originally proposed?
+>>>>
+>>>>
+>>>>
+>>>> I wouldn't tie this to presence of clocks, since as a next step we
+>>>> would want to actually control the clocks separately. (As far as I
+>>>> understand, on QCom SoCs we might want to have runtime PM active for
+>>>> the translation to work, but clocks gated whenever access to SMMU
+>>>> registers is not needed.) Moreover, you might still have some super
+>>>> high scale thousand-core systems that require clocks to be
+>>>> prepare-enabled, but runtime PM would be undesirable for the reasons
+>>>> we discussed before.
+>>>>
+>>>>>
+>>>>> I worry that relying on statically-defined matchdata is just going to
+>>>>> blow
+>>>>> up the driver and DT binding into a maintenance nightmare; I really
+>>>>> don't
+>>>>> want to start needing separate definitions for e.g.
+>>>>> "arm,juno-etr-mmu-401"
+>>>>> and "arm,juno-hdlcd-mmu-401" just because one otherwise-identical
+>>>>> instance
+>>>>> within the SoC is in a separate controllable power domain while the
+>>>>> others
+>>>>> aren't.
+>>>>
+>>>>
+>>>>
+>>>> I don't see a reason why both couldn't just have RPM supported
+>>>> regardless of whether there is a real power domain. It would
+>>>> effectively be just a no-op for those that don't have one.
+>>>
+>>>
+>>>
+>>> Because you're then effectively defining "compatible" values for the sake
+>>> of
+>>> attaching software policy to them, rather than actually describing
+>>> different
+>>> hardware implementations.
+>>>
+>>> The fact that RPM can't do anything meaningful unless relevant
+>>> clock/power
+>>> aspects *are* described, however, means that we shouldn't need additional
+>>> information redundant with that. Much like the fact that we don't
+>>> *already*
+>>> have an "arm,juno-hdlcd-mmu-401" compatible to account for those being
+>>> integrated such that IDR0.CTTW has the wrong value, since the presence or
+>>> not of the "dma-coherent" property already describes the truth in that
+>>> regard.
+>>
+>>
+>> Fair enough.
+>>
+>>>
+>>>> IMHO the
+>>>> only reason to avoid having the RPM enabled is the scalability issue
+>>>> we discussed before.
+>>>
+>>>
+>>>
+>>> Yes, but that's kind of my point; in reality high throughput/minimal
+>>> latency
+>>> and aggressive power management are more or less mutually exclusive.
+>>> Mobile
+>>> SoCs with fine-grained clock trees and power domains won't have multiple
+>>> 40GBe/NVMf/whatever links running flat out in parallel; conversely
+>>> networking/infrastructure/server SoCs aren't designed around saving every
+>>> last microamp of leakage current - even in the (fairly unlikely) case of
+>>> the
+>>> interconnect clocks being software-gateable at all I would be very
+>>> surprised
+>>> if that were ever exposed directly to Linux (FWIW I believe ACPI
+>>> essentially
+>>> *requires* clocks to be abstracted behind firmware).
+>>>
+>>> Realistically then, explicit clocks are only expected on systems which
+>>> care
+>>> about power management. We can always revisit that assumption if anything
+>>> crazy where it isn't the case ever becomes non-theoretical, but for now
+>>> it's
+>>> one I'm entirely comfortable with. If on the other hand it turns out that
+>>> we
+>>> can rely on just a power domain being present wherever we want RPM,
+>>> making
+>>> clocks moot, then all the better.
+>>
+>>
+>> Alright. Since Qcom would be the only user of clock and power handling
+>> for the time being, I think checking power domain presence could work
+>> for us. +/- the fact that clocks need to be handled even if power
+>> domain is not present, but we should normally always have both.
+>
+>
+> Great! (the issue of Qcom-specific clock handling is a separate argument
+> which I don't feel like reigniting just now...)
+>
+>> Now we need a way to do the check. Perhaps for the time being it would
+>> be enough to just check for the power-domains property in DT?
+>
+>
+> AFAICS, it might be as simple as arm_smmu_probe() doing this:
+>
+>         /*
+>          * We want to avoid touching dev->power.lock in fastpaths unless
+>          * it's really going to do something useful - pm_runtime_enabled()
+>          * can serve as an ideal proxy for that decision.
+>          */
+>         if (dev->pm_domain)
+>                 pm_runtime_enable(dev);
+>
+> or maybe even just gate all the calls with "if (smmu->dev.pm_domain)"
+> directly (like pcie-mediatek does), but I'm not sure which would be
+> conceptually cleaner.
 
-Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/amd_iommu_debugfs.c |  109 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 100 insertions(+), 9 deletions(-)
+Okay, that was easier than I expected. Thanks. :)
 
-diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
-index c4e071f7a5b9..aa6935340163 100644
---- a/drivers/iommu/amd_iommu_debugfs.c
-+++ b/drivers/iommu/amd_iommu_debugfs.c
-@@ -28,6 +28,7 @@ static DEFINE_RWLOCK(iommu_debugfs_lock);
- #define	MAX_NAME_LEN	20
- 
- static unsigned int amd_iommu_verbose = 0;
-+static unsigned int amd_iommu_devid = ~0;
- 
- static unsigned int amd_iommu_count_valid_dtes(int start, int end)
- {
-@@ -81,6 +82,76 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
- 	.write = NULL,
- };
- 
-+static ssize_t amd_iommu_debugfs_devid_read(struct file *filp,
-+					    char __user *ubuf,
-+					    size_t count, loff_t *offp)
-+{
-+	struct amd_iommu *iommu = filp->private_data;
-+	unsigned int obuflen = 512;
-+	unsigned int oboff = 0;
-+	ssize_t ret;
-+	char *obuf;
-+
-+	if (!iommu)
-+		return 0;
-+
-+	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
-+	if (!obuf)
-+		return -ENOMEM;
-+
-+	if (amd_iommu_verbose)
-+		oboff += OSCNPRINTF("%02x:%02x:%x (%u / %04x)\n",
-+				    PCI_BUS_NUM(amd_iommu_devid),
-+				    PCI_SLOT(amd_iommu_devid),
-+				    PCI_FUNC(amd_iommu_devid),
-+				    amd_iommu_devid, amd_iommu_devid);
-+	else
-+		oboff += OSCNPRINTF("%u\n", amd_iommu_devid);
-+
-+	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
-+	kfree(obuf);
-+
-+	return ret;
-+}
-+
-+static ssize_t amd_iommu_debugfs_devid_write(struct file *filp,
-+					    const char __user *ubuf,
-+					    size_t count, loff_t *offp)
-+{
-+	unsigned int pci_id, pci_slot, pci_func;
-+	unsigned int obuflen = 80;
-+	ssize_t ret;
-+	char *obuf;
-+	int n;
-+
-+	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
-+	if (!obuf)
-+		return -ENOMEM;
-+
-+	ret = simple_write_to_buffer(obuf, OBUFLEN, offp, ubuf, count);
-+
-+	if (strnchr(obuf, OBUFLEN, ':'))
-+	{
-+		n = sscanf(obuf, "%x:%x.%x", &pci_id, &pci_slot, &pci_func);
-+		if (n == 3)
-+			amd_iommu_devid = PCI_DEVID(pci_id, PCI_DEVFN(pci_slot, pci_func));
-+	} else if (obuf[0] == '0' && obuf[1] == 'x') {
-+		n = sscanf(obuf, "%x", &amd_iommu_devid);
-+	} else {
-+		n = sscanf(obuf, "%d", &amd_iommu_devid);
-+	}
-+	kfree(obuf);
-+
-+	return ret;
-+}
-+
-+static const struct file_operations amd_iommu_debugfs_devid_ops = {
-+	.owner = THIS_MODULE,
-+	.open = simple_open,
-+	.read = amd_iommu_debugfs_devid_read,
-+	.write = amd_iommu_debugfs_devid_write,
-+};
-+
- #define	MAX_PCI_ID	0xFFFF
- 
- #define	PRINTDTE(i)	OSCNPRINTF("%02x:%02x:%x - %016llx %016llx %016llx %016llx\n", \
-@@ -106,19 +177,28 @@ static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
- 		return 0;
- 
- 	/* Count the number of valid entries in the device table */
--	istart = 0;
--	iend = MAX_PCI_ID;
--	n = amd_iommu_count_valid_dtes(istart, iend);
-+	if (amd_iommu_devid > MAX_PCI_ID) {
-+		istart = 0;
-+		iend = MAX_PCI_ID;
-+		n = amd_iommu_count_valid_dtes(istart, iend);
-+	} else {
-+		n = 1;
-+	}
- 	obuflen = n * 80;
- 
- 	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
- 	if (!obuf)
- 		return -ENOMEM;
- 
--	for (i = istart ; i <= iend ; i++)
--		if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
--		     || amd_iommu_dev_table[i].data[1])
--			oboff += PRINTDTE(i);
-+	if (amd_iommu_devid > MAX_PCI_ID) {
-+		for (i = istart ; i <= iend ; i++)
-+			if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
-+			     || amd_iommu_dev_table[i].data[1])
-+				oboff += PRINTDTE(i);
-+	} else {
-+		i = amd_iommu_devid;
-+		oboff += PRINTDTE(i);
-+	}
- 
- 	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
- 	kfree(obuf);
-@@ -135,12 +215,17 @@ static const struct file_operations amd_iommu_debugfs_dte_ops = {
- 
- static char readmetext[] =
- "devicetable             Print active entries in the device table\n"
-+"devid                   Controls which device IDs are printed\n"
- "count                   Count of active devices\n"
- "verbose                 Provide additional descriptive text\n"
- "\n"
- "                        Dumping the Device Table\n"
--"The device table is scanned for entries that appear to be active. The\n"
--"default range is from 0 to 0xFFFF, and only active entries will be reported\n"
-+"The device table is scanned for entries that appear to be active.\n"
-+"The default (initial) range is from 0 to 0xFFFF, represented by a devid\n"
-+"value greater than 0xFFFF, and only active entries will be reported.\n"
-+"If devid is set to a specific value, only that device entry will be\n"
-+"displayed (active or not). devid may be specified as ##:##:#, a decimal\n"
-+"value, or a hex value.\n"
- "\n";
- 
- static ssize_t amd_iommu_debugfs_readme_read(struct file *filp,
-@@ -204,6 +289,12 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
- 	if (!d_dte)
- 		goto err;
- 
-+	d_dte = debugfs_create_file("devid", 0400,
-+				    iommu->debugfs_instance, iommu,
-+				    &amd_iommu_debugfs_devid_ops);
-+	if (!d_dte)
-+		goto err;
-+
- 	d_dte = debugfs_create_file("README", 0400,
- 				    iommu->debugfs_instance, iommu,
- 				    &amd_iommu_debugfs_readme_ops);
+Actually, there is one more thing that might need rechecking. Are you
+sure that dev->pm_domain is NULL for the devices, for which we don't
+want runtime PM to be enabled? I think ACPI was mentioned and ACPI
+includes the concept of PM domains.
+
+Best regards,
+Tomasz
