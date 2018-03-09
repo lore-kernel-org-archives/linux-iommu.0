@@ -1,7 +1,7 @@
 From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v2] iommu/amd - Use dev_err to send events to the system log
-Date: Thu, 08 Mar 2018 18:34:41 -0600
-Message-ID: <152055568151.107515.8442872081731932876.stgit@sosxen2.amd.com>
+Subject: [PATCH v2 0/5] Add debugfs info for the AMD IOMMU
+Date: Thu, 08 Mar 2018 18:50:37 -0600
+Message-ID: <152055660594.63229.5131049527614494130.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,103 +19,35 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove printk and use a more preferable error logging function.
+The following series creates a debugfs directory for AMD IOMMUs,
+constructs a framework for additional entries, an online README,
+and a method for dumping device table entries. Data is reported
+in a default concise mode, but a verbose mode is enabled via a
+filesystem entry.
 
-Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+This is the first of three patch series that will expose a number
+of IOMMU registers.
+
+Changes since v1:
+- Correctly use CONFIG_AMD_IOMMU_DEBUG in Makefile and header file
+
 ---
- drivers/iommu/amd_iommu.c |   55 +++++++++++++++++++++++----------------------
- 1 file changed, 28 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 7389cc15d97a..7f4e82aed6a0 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -547,6 +547,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
- 
- static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- {
-+	struct device *dev = iommu->iommu.dev;
- 	int type, devid, domid, flags;
- 	volatile u32 *event = __evt;
- 	int count = 0;
-@@ -573,53 +574,53 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 		amd_iommu_report_page_fault(devid, domid, address, flags);
- 		return;
- 	} else {
--		printk(KERN_ERR "AMD-Vi: Event logged [");
-+		dev_err(dev, "AMD-Vi: Event logged [");
- 	}
- 
- 	switch (type) {
- 	case EVENT_TYPE_ILL_DEV:
--		printk("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
--		       "address=0x%016llx flags=0x%04x]\n",
--		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--		       address, flags);
-+		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
-+			"address=0x%016llx flags=0x%04x]\n",
-+			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+			address, flags);
- 		dump_dte_entry(devid);
- 		break;
- 	case EVENT_TYPE_DEV_TAB_ERR:
--		printk("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
--		       "address=0x%016llx flags=0x%04x]\n",
--		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--		       address, flags);
-+		dev_err(dev, "DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
-+			"address=0x%016llx flags=0x%04x]\n",
-+			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+			address, flags);
- 		break;
- 	case EVENT_TYPE_PAGE_TAB_ERR:
--		printk("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
--		       "domain=0x%04x address=0x%016llx flags=0x%04x]\n",
--		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--		       domid, address, flags);
-+		dev_err(dev, "PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
-+			"domain=0x%04x address=0x%016llx flags=0x%04x]\n",
-+			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+			domid, address, flags);
- 		break;
- 	case EVENT_TYPE_ILL_CMD:
--		printk("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
-+		dev_err(dev, "ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
- 		dump_command(address);
- 		break;
- 	case EVENT_TYPE_CMD_HARD_ERR:
--		printk("COMMAND_HARDWARE_ERROR address=0x%016llx "
--		       "flags=0x%04x]\n", address, flags);
-+		dev_err(dev, "COMMAND_HARDWARE_ERROR address=0x%016llx "
-+			"flags=0x%04x]\n", address, flags);
- 		break;
- 	case EVENT_TYPE_IOTLB_INV_TO:
--		printk("IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
--		       "address=0x%016llx]\n",
--		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--		       address);
-+		dev_err(dev, "IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
-+			"address=0x%016llx]\n",
-+			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+			address);
- 		break;
- 	case EVENT_TYPE_INV_DEV_REQ:
--		printk("INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
--		       "address=0x%016llx flags=0x%04x]\n",
--		       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--		       address, flags);
-+		dev_err(dev, "INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
-+			"address=0x%016llx flags=0x%04x]\n",
-+			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+			address, flags);
- 		break;
- 	default:
--		printk(KERN_ERR "UNKNOWN type=0x%02x event[0]=0x%08x "
--		       "event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
--		       type, event[0], event[1], event[2], event[3]);
-+		dev_err(dev, KERN_ERR "UNKNOWN event[0]=0x%08x event[1]=0x%08x "
-+			"event[2]=0x%08x event[3]=0x%08x\n",
-+			event[0], event[1], event[2], event[3]);
- 	}
- 
- 	memset(__evt, 0, 4 * sizeof(u32));
+Gary R Hook (5):
+      iommu/amd - Add debugfs support
+      iommu/amd - Add a 'verbose' switch for IOMMU debugfs
+      iommu/amd - Add a README variable for the IOMMU debugfs
+      iommu/amd - Expose the active IOMMU device table entries
+      iommu/amd - Add a debugfs entry to specify a IOMMU device table entry
+
+
+ drivers/iommu/Kconfig             |    8 +
+ drivers/iommu/Makefile            |    1 
+ drivers/iommu/amd_iommu_debugfs.c |  310 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_init.c    |    7 +
+ drivers/iommu/amd_iommu_proto.h   |    7 +
+ drivers/iommu/amd_iommu_types.h   |    3 
+ 6 files changed, 334 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+
+--
