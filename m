@@ -1,22 +1,19 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 5/6] dma-mapping: support fsl-mc bus
-Date: Fri, 9 Mar 2018 18:50:05 +0000
-Message-ID: <579b3df0-f78b-3c77-7a8a-9cd69848f1af@arm.com>
-References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
-	<1520260166-29387-6-git-send-email-nipun.gupta@nxp.com>
-	<20180305150814.GA15918@lst.de>
-	<7b4f9972-6aaa-fc9d-3854-d48b19a8051c@arm.com>
-	<20180305183938.GB20086@lst.de>
-	<1729ae21-d08c-b413-51a3-f22c394b388d@arm.com>
-	<HE1PR0401MB24251E99564CAA526F719ECCE6D90@HE1PR0401MB2425.eurprd04.prod.outlook.com>
-	<20180308074115.GB15748@lst.de>
-	<HE1PR0401MB2425871215B13AD0EFDCA5C3E6DE0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
+Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
+Date: Sun, 11 Mar 2018 19:01:25 +0100
+Message-ID: <20180311180124.GA27731@localhost.localdomain>
+References: <20180302180704.GA3846@localhost.localdomain>
+	<20180302213711.GA30356@lst.de>
+	<20180303082234.GB24991@localhost.localdomain>
+	<20180303161249.GA9516@lst.de>
+	<20180303181904.GA19076@localhost.localdomain>
+	<20180305151010.GA15965@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <HE1PR0401MB2425871215B13AD0EFDCA5C3E6DE0-B0v07Ae2taqTjcJO+iVGAo3W/0Ik+aLCnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20180305151010.GA15965-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,48 +23,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, =?utf-8?Q?J=C3=BCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/03/18 18:29, Nipun Gupta wrote:
-> 
-> 
->> -----Original Message-----
->> From: Christoph Hellwig [mailto:hch-jcswGhMUV9g@public.gmane.org]
->> Sent: Thursday, March 08, 2018 13:11
->>
->> On Tue, Mar 06, 2018 at 04:41:56AM +0000, Nipun Gupta wrote:
->>> Sorry for asking a trivial question - looking into dma_configure() I see that
->>> PCI is used in the start and the end of the API.
->>> In the end part pci_put_host_bridge_device() is called.
->>> So are two bus callbacks something like 'dma_config_start' &
->> 'dma_config_end'
->>> will be required where the former one will return "dma_dev"?
->>
->> I'd just use dma_configure as the callback.
-> 
-> This would be a decent stuff.
+Hi Christoph,
 
-Yes, the PCI version should end up looking a lot like the old 
-pci_dma_configure() used to, before everything got pulled together.
+> The point is that you should always use a pool, period.
+> dma_alloc*/dma_free* are fundamentally expensive operations on my
+> architectures, so if you call them from a fast path you are doing
+> something wrong.
 
->> Currently the of_dma_configure and acpi_dma_configure are only used
->> for PCI anyway, as no one else sets a non-NULL dma dev.
-> 
-> My understanding is that even the platform bus uses the of_dma_configure
-> and probably acpi_dma_configure too. So platform bus may also need the
-> callback implemented. Please correct me if my understanding is wrong.
+The author's comment in commit b3476675320e "usb: dma bounce buffer support"
+seems to suggest that the greatest concern is space efficiency as opposed to
+speed. I tried to evaluate strict pool allocations, similar to the patch
+below, but that didn't turn out as I expected.
 
-Indeed, platform and AMBA will want an implementation to dispatch 
-between {of,acpi}_dma_configre() per the current logic. Host1x doesn't 
-seem to care about ACPI so probably wants its own just calling 
-of_dma_configure().
+I chose a 64 KiB pool maximum since it has been the largest requested size I
+have observed in USB traces (which may not hold in general, of course). This
+change caused the USB mass storage driver to get stuck in some kind of memory
+deadlock, with endless busy-looping on 64 KiB allocation failures.
 
-> I will submit the patch with 'dma_configure' callback implemented for
-> the busses shortly.
+I also tried a progression of pool sizes including nonpowers of two, for
+example 12288, to make better use of the 256 KiB memory capacity. However,
+the following part of dma_pool_create in linux/mm/dmapool.c is somewhat
+puzzling:
 
-Cheers - I've been trying to find some time to take a look myself, but 
-having something to review instead would certainly be easier :)
+	if (!boundary)
+		boundary = allocation;
+	else if ((boundary < size) || (boundary & (boundary - 1)))
+		return NULL;
 
-Robin.
+Is the boundary variable required to be a power of two only when it is
+explicitly given as nonzero?
+
+Fredrik
+
+diff --git a/drivers/usb/core/buffer.c b/drivers/usb/core/buffer.c
+index 77eef8acff94..8cc8fbc91c76 100644
+--- a/drivers/usb/core/buffer.c
++++ b/drivers/usb/core/buffer.c
+@@ -26,7 +26,7 @@
+ 
+ /* FIXME tune these based on pool statistics ... */
+ static size_t pool_max[HCD_BUFFER_POOLS] = {
+-	32, 128, 512, 2048,
++	32, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536
+ };
+ 
+ void __init usb_init_pool_max(void)
+@@ -76,7 +76,7 @@ int hcd_buffer_create(struct usb_hcd *hcd)
+ 			continue;
+ 		snprintf(name, sizeof(name), "buffer-%d", size);
+ 		hcd->pool[i] = dma_pool_create(name, hcd->self.sysdev,
+-				size, size, 0);
++				size, min_t(size_t, 4096, size), 0);
+ 		if (!hcd->pool[i]) {
+ 			hcd_buffer_destroy(hcd);
+ 			return -ENOMEM;
+@@ -140,7 +140,7 @@ void *hcd_buffer_alloc(
+ 		if (size <= pool_max[i])
+ 			return dma_pool_alloc(hcd->pool[i], mem_flags, dma);
+ 	}
+-	return dma_alloc_coherent(hcd->self.sysdev, size, dma, mem_flags);
++	return NULL;
+ }
+ 
+ void hcd_buffer_free(
+@@ -169,5 +169,5 @@ void hcd_buffer_free(
+ 			return;
+ 		}
+ 	}
+-	dma_free_coherent(hcd->self.sysdev, size, addr, dma);
++	BUG();		/* The buffer could not have been allocated. */
+ }
+diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
+index 176900528822..2075f1e22e32 100644
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -189,7 +189,7 @@ struct usb_hcd {
+ 	struct usb_hcd		*primary_hcd;
+ 
+ 
+-#define HCD_BUFFER_POOLS	4
++#define HCD_BUFFER_POOLS	11
+ 	struct dma_pool		*pool[HCD_BUFFER_POOLS];
+ 
+ 	int			state;
