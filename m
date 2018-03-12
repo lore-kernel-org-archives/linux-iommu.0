@@ -1,19 +1,11 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v8 4/5] iommu/arm-smmu: Add the device_link between
-	masters and smmu
-Date: Mon, 12 Mar 2018 15:51:44 +0530
-Message-ID: <CAFp+6iGPWxRVUjiTW34eDoce55HZ0Y8EcKMCSyfg2RnHuX0zMw@mail.gmail.com>
-References: <20180302101050.6191-1-vivek.gautam@codeaurora.org>
-	<20180302101050.6191-5-vivek.gautam@codeaurora.org>
-	<f3011ef1-7ffe-8c2b-b9d6-3fb094789656@arm.com>
-	<CAFp+6iF1oM=fmRCqSG-SxcUVvvOLet_Y0p7pmGn+=B-LdMNiww@mail.gmail.com>
-	<CAFp+6iFzGYWZMLkNrN1ZJJ2xH4CxQsiU6oYboHDzL0jDwm+4VQ@mail.gmail.com>
-	<f6822915-8921-c9cc-218a-f094ac5ed032@arm.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH] dma-mapping: move dma configuration to bus infrastructure
+Date: Mon, 12 Mar 2018 20:54:52 +0530
+Message-ID: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f6822915-8921-c9cc-218a-f094ac5ed032-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,95 +15,375 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: hch-jcswGhMUV9g@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Cc: rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 9, 2018 at 6:04 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 09/03/18 07:11, Vivek Gautam wrote:
->>
->> On Thu, Mar 8, 2018 at 10:29 AM, Vivek Gautam
->> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>
->>> On Wed, Mar 7, 2018 at 6:17 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>> wrote:
->>>>
->>>> On 02/03/18 10:10, Vivek Gautam wrote:
->>>>>
->>>>>
->>>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>>
->>>>> Finally add the device link between the master device and
->>>>> smmu, so that the smmu gets runtime enabled/disabled only when the
->>>>> master needs it. This is done from add_device callback which gets
->>>>> called once when the master is added to the smmu.
->>>>>
->>>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>> ---
->>>>>    drivers/iommu/arm-smmu.c | 21 +++++++++++++++++++++
->>>>>    1 file changed, 21 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>>>> index 3d6a1875431f..bb1ea82c1003 100644
->>>>> --- a/drivers/iommu/arm-smmu.c
->>>>> +++ b/drivers/iommu/arm-smmu.c
->>>>> @@ -217,6 +217,9 @@ struct arm_smmu_device {
->>>>>          /* IOMMU core code handle */
->>>>>          struct iommu_device             iommu;
->>>>> +
->>>>> +       /* runtime PM link to master */
->>>>> +       struct device_link *link;
->>>>
->>>>
->>>>
->>>> Just the one?
->>
->>
->> we will either have to count all the devices that are present on the
->> iommu bus, or
->> maintain a list to which all the links can be added.
->> But to add the list, we will have to initialize a LIST_HEAD in struct
->> device_link
->> as well.
->>
->> Or, I think we don't even need to maintain a pointer to link with smmu.
->> In arm_smmu_remove_device(), we can find out the correct link, and delete
->> it.
->>
->>          list_for_each_entry(link, &dev->links.suppliers, c_node)
->>                  if (link->supplier == smmu->dev);
->>                             device_link_del(link);
->>
->> Should that be fine?
->>
->> Rafael, does the above snippet looks right to you? Context: smmu->dev
->> is the supplier, and dev is the consumer. We want to find the link,
->> and delete it.
->
->
-> Actually, looking at the existing code, it seems like device_link_add() will
-> in fact look up and return any existing link between a given supplier and
-> consumer - is that intentional API behaviour that users may rely on to avoid
-> keeping track of explicit link pointers?
-> (or conversely, might it be
-> reasonable to factor out a device_link_find() function?)
+The change introduces 'dma_configure' & 'dma_deconfigure'as
+bus callback functions so each bus can choose to implement
+its own dma configuration function.
+This eases the addition of new busses w.r.t. adding the dma
+configuration functionality.
 
-Yea, that sounds better.
+The change also updates the PCI, Platform and ACPI bus to use
+new introduced callbacks.
 
-regards
-Vivek
+Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+---
+ - This patch is based on the comments on:
+   https://patchwork.kernel.org/patch/10259087/
+ - I have validated for PCI and platform, but not for AMBA as I
+   do not have infrastructure to validate it.
+   Can anyone please validate them on AMBA?
 
->
-> Robin.
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ drivers/amba/bus.c          | 38 ++++++++++++++++++++++++-----
+ drivers/base/dd.c           | 14 +++++++----
+ drivers/base/dma-mapping.c  | 41 -------------------------------
+ drivers/base/platform.c     | 36 ++++++++++++++++++++++-----
+ drivers/pci/pci-driver.c    | 59 ++++++++++++++++++++++++++++++++++++---------
+ include/linux/device.h      |  6 +++++
+ include/linux/dma-mapping.h | 12 ---------
+ 7 files changed, 124 insertions(+), 82 deletions(-)
 
-
-
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 594c228..58241d2 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -20,6 +20,8 @@
+ #include <linux/sizes.h>
+ #include <linux/limits.h>
+ #include <linux/clk/clk-conf.h>
++#include <linux/acpi.h>
++#include <linux/of_device.h>
+ 
+ #include <asm/irq.h>
+ 
+@@ -171,6 +173,28 @@ static int amba_pm_runtime_resume(struct device *dev)
+ }
+ #endif /* CONFIG_PM */
+ 
++int amba_dma_configure(struct device *dev)
++{
++	enum dev_dma_attr attr;
++	int ret = 0;
++
++	if (dev->of_node) {
++		ret = of_dma_configure(dev, dev->of_node);
++	} else if (has_acpi_companion(dev)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
++		if (attr != DEV_DMA_NOT_SUPPORTED)
++			ret = acpi_dma_configure(dev, attr);
++	}
++
++	return ret;
++}
++
++void amba_dma_deconfigure(struct device *dev)
++{
++	of_dma_deconfigure(dev);
++	acpi_dma_deconfigure(dev);
++}
++
+ static const struct dev_pm_ops amba_pm = {
+ 	.suspend	= pm_generic_suspend,
+ 	.resume		= pm_generic_resume,
+@@ -190,12 +214,14 @@ static int amba_pm_runtime_resume(struct device *dev)
+  * so we call the bus "amba".
+  */
+ struct bus_type amba_bustype = {
+-	.name		= "amba",
+-	.dev_groups	= amba_dev_groups,
+-	.match		= amba_match,
+-	.uevent		= amba_uevent,
+-	.pm		= &amba_pm,
+-	.force_dma	= true,
++	.name			= "amba",
++	.dev_groups		= amba_dev_groups,
++	.match			= amba_match,
++	.uevent			= amba_uevent,
++	.pm			= &amba_pm,
++	.dma_configure		= amba_dma_configure,
++	.dma_deconfigure	= amba_dma_deconfigure,
++	.force_dma		= true,
+ };
+ 
+ static int __init amba_init(void)
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index de6fd09..f124f3f 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -421,9 +421,11 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 	if (ret)
+ 		goto pinctrl_bind_failed;
+ 
+-	ret = dma_configure(dev);
+-	if (ret)
+-		goto dma_failed;
++	if (dev->bus->dma_configure) {
++		ret = dev->bus->dma_configure(dev);
++		if (ret)
++			goto dma_failed;
++	}
+ 
+ 	if (driver_sysfs_add(dev)) {
+ 		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
+@@ -486,7 +488,8 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+ 	goto done;
+ 
+ probe_failed:
+-	dma_deconfigure(dev);
++	if (dev->bus->dma_deconfigure)
++		dev->bus->dma_deconfigure(dev);
+ dma_failed:
+ 	if (dev->bus)
+ 		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+@@ -895,7 +898,8 @@ static void __device_release_driver(struct device *dev, struct device *parent)
+ 			drv->remove(dev);
+ 
+ 		device_links_driver_cleanup(dev);
+-		dma_deconfigure(dev);
++		if (dev->bus->dma_deconfigure)
++			dev->bus->dma_deconfigure(dev);
+ 
+ 		devres_release_all(dev);
+ 		dev->driver = NULL;
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index 3b11835..f16bd49 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -6,11 +6,9 @@
+  * Copyright (c) 2006  Tejun Heo <teheo-l3A5Bk7waGM@public.gmane.org>
+  */
+ 
+-#include <linux/acpi.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/export.h>
+ #include <linux/gfp.h>
+-#include <linux/of_device.h>
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
+ 
+@@ -329,42 +327,3 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
+ 	vunmap(cpu_addr);
+ }
+ #endif
+-
+-/*
+- * Common configuration to enable DMA API use for a device
+- */
+-#include <linux/pci.h>
+-
+-int dma_configure(struct device *dev)
+-{
+-	struct device *bridge = NULL, *dma_dev = dev;
+-	enum dev_dma_attr attr;
+-	int ret = 0;
+-
+-	if (dev_is_pci(dev)) {
+-		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
+-		dma_dev = bridge;
+-		if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
+-		    dma_dev->parent->of_node)
+-			dma_dev = dma_dev->parent;
+-	}
+-
+-	if (dma_dev->of_node) {
+-		ret = of_dma_configure(dev, dma_dev->of_node);
+-	} else if (has_acpi_companion(dma_dev)) {
+-		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
+-		if (attr != DEV_DMA_NOT_SUPPORTED)
+-			ret = acpi_dma_configure(dev, attr);
+-	}
+-
+-	if (bridge)
+-		pci_put_host_bridge_device(bridge);
+-
+-	return ret;
+-}
+-
+-void dma_deconfigure(struct device *dev)
+-{
+-	of_dma_deconfigure(dev);
+-	acpi_dma_deconfigure(dev);
+-}
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index f1bf7b3..adf94eb 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1130,6 +1130,28 @@ int platform_pm_restore(struct device *dev)
+ 
+ #endif /* CONFIG_HIBERNATE_CALLBACKS */
+ 
++int platform_dma_configure(struct device *dev)
++{
++	enum dev_dma_attr attr;
++	int ret = 0;
++
++	if (dev->of_node) {
++		ret = of_dma_configure(dev, dev->of_node);
++	} else if (has_acpi_companion(dev)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
++		if (attr != DEV_DMA_NOT_SUPPORTED)
++			ret = acpi_dma_configure(dev, attr);
++	}
++
++	return ret;
++}
++
++void platform_dma_deconfigure(struct device *dev)
++{
++	of_dma_deconfigure(dev);
++	acpi_dma_deconfigure(dev);
++}
++
+ static const struct dev_pm_ops platform_dev_pm_ops = {
+ 	.runtime_suspend = pm_generic_runtime_suspend,
+ 	.runtime_resume = pm_generic_runtime_resume,
+@@ -1137,12 +1159,14 @@ int platform_pm_restore(struct device *dev)
+ };
+ 
+ struct bus_type platform_bus_type = {
+-	.name		= "platform",
+-	.dev_groups	= platform_dev_groups,
+-	.match		= platform_match,
+-	.uevent		= platform_uevent,
+-	.pm		= &platform_dev_pm_ops,
+-	.force_dma	= true,
++	.name			= "platform",
++	.dev_groups		= platform_dev_groups,
++	.match			= platform_match,
++	.uevent			= platform_uevent,
++	.pm			= &platform_dev_pm_ops,
++	.dma_configure		= platform_dma_configure,
++	.dma_deconfigure	= platform_dma_deconfigure,
++	.force_dma		= true,
+ };
+ EXPORT_SYMBOL_GPL(platform_bus_type);
+ 
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 3bed6be..4a77814 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -18,6 +18,8 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/suspend.h>
+ #include <linux/kexec.h>
++#include <linux/acpi.h>
++#include <linux/of_device.h>
+ #include "pci.h"
+ 
+ struct pci_dynid {
+@@ -1522,19 +1524,52 @@ static int pci_bus_num_vf(struct device *dev)
+ 	return pci_num_vf(to_pci_dev(dev));
+ }
+ 
++int pci_dma_configure(struct device *dev)
++{
++	struct device *bridge, *dma_dev;
++	enum dev_dma_attr attr;
++	int ret = 0;
++
++	bridge = pci_get_host_bridge_device(to_pci_dev(dev));
++	dma_dev = bridge;
++	if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
++	    dma_dev->parent->of_node)
++		dma_dev = dma_dev->parent;
++
++	if (dma_dev->of_node) {
++		ret = of_dma_configure(dev, dma_dev->of_node);
++	} else if (has_acpi_companion(dma_dev)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
++		if (attr != DEV_DMA_NOT_SUPPORTED)
++			ret = acpi_dma_configure(dev, attr);
++	}
++
++	pci_put_host_bridge_device(bridge);
++
++	return ret;
++}
++
++void pci_dma_deconfigure(struct device *dev)
++{
++	of_dma_deconfigure(dev);
++	acpi_dma_deconfigure(dev);
++}
++
+ struct bus_type pci_bus_type = {
+-	.name		= "pci",
+-	.match		= pci_bus_match,
+-	.uevent		= pci_uevent,
+-	.probe		= pci_device_probe,
+-	.remove		= pci_device_remove,
+-	.shutdown	= pci_device_shutdown,
+-	.dev_groups	= pci_dev_groups,
+-	.bus_groups	= pci_bus_groups,
+-	.drv_groups	= pci_drv_groups,
+-	.pm		= PCI_PM_OPS_PTR,
+-	.num_vf		= pci_bus_num_vf,
+-	.force_dma	= true,
++	.name			= "pci",
++	.match			= pci_bus_match,
++	.uevent			= pci_uevent,
++	.probe			= pci_device_probe,
++	.remove			= pci_device_remove,
++	.shutdown		= pci_device_shutdown,
++	.dev_groups		= pci_dev_groups,
++	.bus_groups		= pci_bus_groups,
++	.drv_groups		= pci_drv_groups,
++	.pm			= PCI_PM_OPS_PTR,
++	.num_vf			= pci_bus_num_vf,
++	.dma_configure		= pci_dma_configure,
++	.dma_deconfigure	= pci_dma_deconfigure,
++	.force_dma		= true,
+ };
+ EXPORT_SYMBOL(pci_bus_type);
+ 
+diff --git a/include/linux/device.h b/include/linux/device.h
+index b093405..9b2dcf6 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -88,6 +88,9 @@ extern int __must_check bus_create_file(struct bus_type *,
+  * @resume:	Called to bring a device on this bus out of sleep mode.
+  * @num_vf:	Called to find out how many virtual functions a device on this
+  *		bus supports.
++ * @dma_configure:	Called to setup DMA configuration on a device on
++			this bus.
++ * @dma_deconfigure:	Called to tear down the DMA configuration.
+  * @pm:		Power management operations of this bus, callback the specific
+  *		device driver's pm-ops.
+  * @iommu_ops:  IOMMU specific operations for this bus, used to attach IOMMU
+@@ -130,6 +133,9 @@ struct bus_type {
+ 
+ 	int (*num_vf)(struct device *dev);
+ 
++	int (*dma_configure)(struct device *dev);
++	void (*dma_deconfigure)(struct device *dev);
++
+ 	const struct dev_pm_ops *pm;
+ 
+ 	const struct iommu_ops *iommu_ops;
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index eb9eab4..039224b 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -761,18 +761,6 @@ void *dma_mark_declared_memory_occupied(struct device *dev,
+ }
+ #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
+ 
+-#ifdef CONFIG_HAS_DMA
+-int dma_configure(struct device *dev);
+-void dma_deconfigure(struct device *dev);
+-#else
+-static inline int dma_configure(struct device *dev)
+-{
+-	return 0;
+-}
+-
+-static inline void dma_deconfigure(struct device *dev) {}
+-#endif
+-
+ /*
+  * Managed DMA API
+  */
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+1.9.1
