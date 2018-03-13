@@ -1,15 +1,14 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
-Date: Tue, 13 Mar 2018 16:21:35 +0000
-Message-ID: <1520958095.2686.0.camel@arista.com>
-References: <20180215191729.15777-1-dima@arista.com>
-	<1520262026.2743.4.camel@arista.com>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] iommu/amd - Add debugfs support
+Date: Tue, 13 Mar 2018 19:16:44 +0200
+Message-ID: <CAHp75VdK6qFopBE4rD4yNO5GHccxyte=GhYU7YGcWOEYSCyX8Q@mail.gmail.com>
+References: <152055660594.63229.5131049527614494130.stgit@sosxen2.amd.com>
+	<152055664720.63229.16209149030018336339.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1520262026.2743.4.camel-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <152055664720.63229.16209149030018336339.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,127 +18,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Gentle ping?
+On Fri, Mar 9, 2018 at 2:50 AM, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org> wrote:
 
-On Mon, 2018-03-05 at 15:00 +0000, Dmitry Safonov wrote:
-> Hi Joerg,
-> 
-> What do you think about v3?
-> It looks like, I can solve my softlookups with just a bit more proper
-> ratelimiting..
-> 
-> On Thu, 2018-02-15 at 19:17 +0000, Dmitry Safonov wrote:
-> > There is a ratelimit for printing, but it's incremented each time
-> > the
-> > cpu recives dmar fault interrupt. While one interrupt may signal
-> > about
-> > *many* faults.
-> > So, measuring the impact it turns out that reading/clearing one
-> > fault
-> > takes < 1 usec, and printing info about the fault takes ~170 msec.
-> > 
-> > Having in mind that maximum number of fault recording registers per
-> > remapping hardware unit is 256.. IRQ handler may run for (170*256)
-> > msec.
-> > And as fault-serving loop runs without a time limit, during
-> > servicing
-> > new faults may occur..
-> > 
-> > Ratelimit each fault printing rather than each irq printing.
-> > 
-> > Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
-> > 
-> > BUG: spinlock lockup suspected on CPU#0, CliShell/9903
-> >  lock: 0xffffffff81a47440, .magic: dead4ead, .owner:
-> > kworker/u16:2/8915, .owner_cpu: 6
-> > CPU: 0 PID: 9903 Comm: CliShell
-> > Call Trace:$\n'
-> > [..] dump_stack+0x65/0x83$\n'
-> > [..] spin_dump+0x8f/0x94$\n'
-> > [..] do_raw_spin_lock+0x123/0x170$\n'
-> > [..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
-> > [..] uart_chars_in_buffer+0x20/0x4d$\n'
-> > [..] tty_chars_in_buffer+0x18/0x1d$\n'
-> > [..] n_tty_poll+0x1cb/0x1f2$\n'
-> > [..] tty_poll+0x5e/0x76$\n'
-> > [..] do_select+0x363/0x629$\n'
-> > [..] compat_core_sys_select+0x19e/0x239$\n'
-> > [..] compat_SyS_select+0x98/0xc0$\n'
-> > [..] sysenter_dispatch+0x7/0x25$\n'
-> > [..]
-> > NMI backtrace for cpu 6
-> > CPU: 6 PID: 8915 Comm: kworker/u16:2
-> > Workqueue: dmar_fault dmar_fault_work
-> > Call Trace:$\n'
-> > [..] wait_for_xmitr+0x26/0x8f$\n'
-> > [..] serial8250_console_putchar+0x1c/0x2c$\n'
-> > [..] uart_console_write+0x40/0x4b$\n'
-> > [..] serial8250_console_write+0xe6/0x13f$\n'
-> > [..] call_console_drivers.constprop.13+0xce/0x103$\n'
-> > [..] console_unlock+0x1f8/0x39b$\n'
-> > [..] vprintk_emit+0x39e/0x3e6$\n'
-> > [..] printk+0x4d/0x4f$\n'
-> > [..] dmar_fault+0x1a8/0x1fc$\n'
-> > [..] dmar_fault_work+0x15/0x17$\n'
-> > [..] process_one_work+0x1e8/0x3a9$\n'
-> > [..] worker_thread+0x25d/0x345$\n'
-> > [..] kthread+0xea/0xf2$\n'
-> > [..] ret_from_fork+0x58/0x90$\n'
-> > 
-> > Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> > Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> > Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-> > ---
-> > Maybe it's worth to limit while(1) cycle.
-> > If IOMMU generates faults with equal speed as irq handler cleans
-> > them, it may turn into long-irq-disabled region again.
-> > Not sure if it can happen anyway.
-> > 
-> >  drivers/iommu/dmar.c | 8 +++-----
-> >  1 file changed, 3 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> > index accf58388bdb..6c4ea32ee6a9 100644
-> > --- a/drivers/iommu/dmar.c
-> > +++ b/drivers/iommu/dmar.c
-> > @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void
-> > *dev_id)
-> >  	int reg, fault_index;
-> >  	u32 fault_status;
-> >  	unsigned long flag;
-> > -	bool ratelimited;
-> >  	static DEFINE_RATELIMIT_STATE(rs,
-> >  				      DEFAULT_RATELIMIT_INTERVAL,
-> >  				      DEFAULT_RATELIMIT_BURST);
-> >  
-> > -	/* Disable printing, simply clear the fault when
-> > ratelimited
-> > */
-> > -	ratelimited = !__ratelimit(&rs);
-> > -
-> >  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
-> >  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
-> > -	if (fault_status && !ratelimited)
-> > +	if (fault_status && __ratelimit(&rs))
-> >  		pr_err("DRHD: handling fault status reg %x\n",
-> > fault_status);
-> >  
-> >  	/* TBD: ignore advanced fault log currently */
-> > @@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
-> >  	fault_index = dma_fsts_fault_record_index(fault_status);
-> >  	reg = cap_fault_reg_offset(iommu->cap);
-> >  	while (1) {
-> > +		/* Disable printing, simply clear the fault when
-> > ratelimited */
-> > +		bool ratelimited = !__ratelimit(&rs);
-> >  		u8 fault_reason;
-> >  		u16 source_id;
-> >  		u64 guest_addr;
+> +       default n
+
+Redundant
+
+
+> +#include <linux/pci.h>
+> +#include <linux/iommu.h>
+> +#include <linux/debugfs.h>
+
+Keep in order?
+
+> +#include "amd_iommu_proto.h"
+> +#include "amd_iommu_types.h"
+
+> +/* DebugFS helpers */
+> +#define        OBUFP           (obuf + oboff)
+> +#define        OBUFLEN         obuflen
+> +#define        OBUFSPC         (OBUFLEN - oboff)
+> +#define        OSCNPRINTF(fmt, ...) \
+> +               scnprintf(OBUFP, OBUFSPC, fmt, ## __VA_ARGS__)
+
+I don't see any advantages of this. Other way around, they will simple
+makes things hard to read an understand in place.
+
+
+> +       for (i = start ; i <= end ; i++)
+
+Missed {}
+
+> +               if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
+> +                   || amd_iommu_dev_table[i].data[1])
+> +                       n++;
+> +       return n;
+> +}
+
+> +
+> +static ssize_t amd_iommu_debugfs_dtecount_read(struct file *filp,
+> +                                         char __user *ubuf,
+> +                                         size_t count, loff_t *offp)
+> +{
+> +       struct amd_iommu *iommu = filp->private_data;
+
+> +       unsigned int obuflen = 512;
+
+Sounds like way too much.
+
+> +       if (!iommu)
+> +               return 0;
+
+When this possible?
+
+> +       obuf = kmalloc(OBUFLEN, GFP_KERNEL);
+> +       if (!obuf)
+> +               return -ENOMEM;
+> +
+> +       n = amd_iommu_count_valid_dtes(0, 0xFFFF);
+> +       oboff += OSCNPRINTF("%d\n", n);
+
+> +       return ret;
+> +}
+
+
+> @@ -89,6 +89,7 @@
+>  #define ACPI_DEVFLAG_ATSDIS             0x10000000
+>
+>  #define LOOP_TIMEOUT   100000
+> +
+>  /*
+>   * ACPI table definitions
+>   *
+
+Doesn't belong to the patch.
+
+> +#endif
+> +
+> +
+
+Extra unneeded line.
+
+-- 
+With Best Regards,
+Andy Shevchenko
