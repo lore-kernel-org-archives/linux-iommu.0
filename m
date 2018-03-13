@@ -1,15 +1,15 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH] dma-mapping: move dma configuration to bus infrastructure
-Date: Tue, 13 Mar 2018 16:11:28 +0000
-Message-ID: <HE1PR0401MB2425D5BBC381C96D4ABE9D18E6D20@HE1PR0401MB2425.eurprd04.prod.outlook.com>
-References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
-	<a6cd83c9-d769-2994-5230-0a97de1897e5@arm.com>
+From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
+Date: Tue, 13 Mar 2018 16:21:35 +0000
+Message-ID: <1520958095.2686.0.camel@arista.com>
+References: <20180215191729.15777-1-dima@arista.com>
+	<1520262026.2743.4.camel@arista.com>
+Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <a6cd83c9-d769-2994-5230-0a97de1897e5-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1520262026.2743.4.camel-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,463 +19,127 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org" <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "msuchanek-l3A5Bk7waGM@public.gmane.org" <msuchanek-l3A5Bk7waGM@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Gentle ping?
 
-
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> Sent: Tuesday, March 13, 2018 17:06
+On Mon, 2018-03-05 at 15:00 +0000, Dmitry Safonov wrote:
+> Hi Joerg,
 > 
-> On 12/03/18 15:24, Nipun Gupta wrote:
-> > The change introduces 'dma_configure' & 'dma_deconfigure'as
-> > bus callback functions so each bus can choose to implement
-> > its own dma configuration function.
-> > This eases the addition of new busses w.r.t. adding the dma
-> > configuration functionality.
+> What do you think about v3?
+> It looks like, I can solve my softlookups with just a bit more proper
+> ratelimiting..
 > 
-> It's probably worth clarifying - either in the commit message, the
-> kerneldoc, or both - that the bus-specific aspect is that of mapping
-> between a given device on the bus and the relevant firmware description
-> of its DMA configuration.
-
-Okay.
-
->
-> > The change also updates the PCI, Platform and ACPI bus to use
-> > new introduced callbacks.
-> >
-> > Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> On Thu, 2018-02-15 at 19:17 +0000, Dmitry Safonov wrote:
+> > There is a ratelimit for printing, but it's incremented each time
+> > the
+> > cpu recives dmar fault interrupt. While one interrupt may signal
+> > about
+> > *many* faults.
+> > So, measuring the impact it turns out that reading/clearing one
+> > fault
+> > takes < 1 usec, and printing info about the fault takes ~170 msec.
+> > 
+> > Having in mind that maximum number of fault recording registers per
+> > remapping hardware unit is 256.. IRQ handler may run for (170*256)
+> > msec.
+> > And as fault-serving loop runs without a time limit, during
+> > servicing
+> > new faults may occur..
+> > 
+> > Ratelimit each fault printing rather than each irq printing.
+> > 
+> > Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
+> > 
+> > BUG: spinlock lockup suspected on CPU#0, CliShell/9903
+> >  lock: 0xffffffff81a47440, .magic: dead4ead, .owner:
+> > kworker/u16:2/8915, .owner_cpu: 6
+> > CPU: 0 PID: 9903 Comm: CliShell
+> > Call Trace:$\n'
+> > [..] dump_stack+0x65/0x83$\n'
+> > [..] spin_dump+0x8f/0x94$\n'
+> > [..] do_raw_spin_lock+0x123/0x170$\n'
+> > [..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
+> > [..] uart_chars_in_buffer+0x20/0x4d$\n'
+> > [..] tty_chars_in_buffer+0x18/0x1d$\n'
+> > [..] n_tty_poll+0x1cb/0x1f2$\n'
+> > [..] tty_poll+0x5e/0x76$\n'
+> > [..] do_select+0x363/0x629$\n'
+> > [..] compat_core_sys_select+0x19e/0x239$\n'
+> > [..] compat_SyS_select+0x98/0xc0$\n'
+> > [..] sysenter_dispatch+0x7/0x25$\n'
+> > [..]
+> > NMI backtrace for cpu 6
+> > CPU: 6 PID: 8915 Comm: kworker/u16:2
+> > Workqueue: dmar_fault dmar_fault_work
+> > Call Trace:$\n'
+> > [..] wait_for_xmitr+0x26/0x8f$\n'
+> > [..] serial8250_console_putchar+0x1c/0x2c$\n'
+> > [..] uart_console_write+0x40/0x4b$\n'
+> > [..] serial8250_console_write+0xe6/0x13f$\n'
+> > [..] call_console_drivers.constprop.13+0xce/0x103$\n'
+> > [..] console_unlock+0x1f8/0x39b$\n'
+> > [..] vprintk_emit+0x39e/0x3e6$\n'
+> > [..] printk+0x4d/0x4f$\n'
+> > [..] dmar_fault+0x1a8/0x1fc$\n'
+> > [..] dmar_fault_work+0x15/0x17$\n'
+> > [..] process_one_work+0x1e8/0x3a9$\n'
+> > [..] worker_thread+0x25d/0x345$\n'
+> > [..] kthread+0xea/0xf2$\n'
+> > [..] ret_from_fork+0x58/0x90$\n'
+> > 
+> > Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> > Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> > Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 > > ---
-> >   - This patch is based on the comments on:
-> >
-> https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpatchwo
-> rk.kernel.org%2Fpatch%2F10259087%2F&data=02%7C01%7Cnipun.gupta%40nxp.com%7
-> Cc541100ecb944e7650a408d588d69ab0%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7
-> C0%7C636565377665676631&sdata=k2Xjn5B1GECx4UjCg9tChOpOrD3NPM7BkzIXLLSv3rI%
-> 3D&reserved=0
-> >   - I have validated for PCI and platform, but not for AMBA as I
-> >     do not have infrastructure to validate it.
-> >     Can anyone please validate them on AMBA?
-> >
-> >   drivers/amba/bus.c          | 38 ++++++++++++++++++++++++-----
-> >   drivers/base/dd.c           | 14 +++++++----
-> >   drivers/base/dma-mapping.c  | 41 -------------------------------
-> >   drivers/base/platform.c     | 36 ++++++++++++++++++++++-----
-> >   drivers/pci/pci-driver.c    | 59 ++++++++++++++++++++++++++++++++++++-
-> --------
-> >   include/linux/device.h      |  6 +++++
-> >   include/linux/dma-mapping.h | 12 ---------
-> >   7 files changed, 124 insertions(+), 82 deletions(-)
-> >
-> > diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-> > index 594c228..58241d2 100644
-> > --- a/drivers/amba/bus.c
-> > +++ b/drivers/amba/bus.c
-> > @@ -20,6 +20,8 @@
-> >   #include <linux/sizes.h>
-> >   #include <linux/limits.h>
-> >   #include <linux/clk/clk-conf.h>
-> > +#include <linux/acpi.h>
-> > +#include <linux/of_device.h>
-> >
-> >   #include <asm/irq.h>
-> >
-> > @@ -171,6 +173,28 @@ static int amba_pm_runtime_resume(struct device
-> *dev)
-> >   }
-> >   #endif /* CONFIG_PM */
-> >
-> > +int amba_dma_configure(struct device *dev)
-> > +{
-> > +	enum dev_dma_attr attr;
-> > +	int ret = 0;
-> > +
-> > +	if (dev->of_node) {
-> > +		ret = of_dma_configure(dev, dev->of_node);
-> > +	} else if (has_acpi_companion(dev)) {
-> > +		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
-> > +		if (attr != DEV_DMA_NOT_SUPPORTED)
-> > +			ret = acpi_dma_configure(dev, attr);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> 
-> I would be inclined to have amba_bustype just reference
-> platform_dma_configure() directly rather than duplicate it like this,
-> since there's no sensible reason for them to ever differ.
-
-I think dma_common_configure() having this as the common code seems pretty
-Decent. All the busses will probably call this API.
-
-> 
-> > +
-> > +void amba_dma_deconfigure(struct device *dev)
-> > +{
-> > +	of_dma_deconfigure(dev);
-> > +	acpi_dma_deconfigure(dev);
-> > +}
-> > +
-> >   static const struct dev_pm_ops amba_pm = {
-> >   	.suspend	= pm_generic_suspend,
-> >   	.resume		= pm_generic_resume,
-> > @@ -190,12 +214,14 @@ static int amba_pm_runtime_resume(struct device
-> *dev)
-> >    * so we call the bus "amba".
-> >    */
-> >   struct bus_type amba_bustype = {
-> > -	.name		= "amba",
-> > -	.dev_groups	= amba_dev_groups,
-> > -	.match		= amba_match,
-> > -	.uevent		= amba_uevent,
-> > -	.pm		= &amba_pm,
-> > -	.force_dma	= true,
-> > +	.name			= "amba",
-> > +	.dev_groups		= amba_dev_groups,
-> > +	.match			= amba_match,
-> > +	.uevent			= amba_uevent,
-> > +	.pm			= &amba_pm,
-> > +	.dma_configure		= amba_dma_configure,
-> > +	.dma_deconfigure	= amba_dma_deconfigure,
-> > +	.force_dma		= true,
-> 
-> This patch should also be removing force_dma because it no longer makes
-> sense. If DMA configuration is now done by a bus-level callback, then a
-> bus which wants its children to get DMA configuration needs to implement
-> that callback; there's nowhere to force a "default" global behaviour any
-> more.
-
-Agree. We will also need to pass a force_dma flag in of_dma_configure() as
-Christoph suggests. Ill update this.
-
-> 
-> >   };
-> >
-> >   static int __init amba_init(void)
-> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> > index de6fd09..f124f3f 100644
-> > --- a/drivers/base/dd.c
-> > +++ b/drivers/base/dd.c
-> > @@ -421,9 +421,11 @@ static int really_probe(struct device *dev, struct
-> device_driver *drv)
-> >   	if (ret)
-> >   		goto pinctrl_bind_failed;
-> >
-> > -	ret = dma_configure(dev);
-> > -	if (ret)
-> > -		goto dma_failed;
-> > +	if (dev->bus->dma_configure) {
-> > +		ret = dev->bus->dma_configure(dev);
-> > +		if (ret)
-> > +			goto dma_failed;
-> > +	}
-> >
-> >   	if (driver_sysfs_add(dev)) {
-> >   		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
-> > @@ -486,7 +488,8 @@ static int really_probe(struct device *dev, struct
-> device_driver *drv)
-> >   	goto done;
-> >
-> >   probe_failed:
-> > -	dma_deconfigure(dev);
-> > +	if (dev->bus->dma_deconfigure)
-> > +		dev->bus->dma_deconfigure(dev);
-> >   dma_failed:
-> >   	if (dev->bus)
-> >   		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-> > @@ -895,7 +898,8 @@ static void __device_release_driver(struct device
-> *dev, struct device *parent)
-> >   			drv->remove(dev);
-> >
-> >   		device_links_driver_cleanup(dev);
-> > -		dma_deconfigure(dev);
-> > +		if (dev->bus->dma_deconfigure)
-> > +			dev->bus->dma_deconfigure(dev);
-> >
-> >   		devres_release_all(dev);
-> >   		dev->driver = NULL;
-> > diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-> > index 3b11835..f16bd49 100644
-> > --- a/drivers/base/dma-mapping.c
-> > +++ b/drivers/base/dma-mapping.c
-> > @@ -6,11 +6,9 @@
-> >    * Copyright (c) 2006  Tejun Heo <teheo-l3A5Bk7waGM@public.gmane.org>
-> >    */
-> >
-> > -#include <linux/acpi.h>
-> >   #include <linux/dma-mapping.h>
-> >   #include <linux/export.h>
-> >   #include <linux/gfp.h>
-> > -#include <linux/of_device.h>
-> >   #include <linux/slab.h>
-> >   #include <linux/vmalloc.h>
-> >
-> > @@ -329,42 +327,3 @@ void dma_common_free_remap(void *cpu_addr, size_t
-> size, unsigned long vm_flags)
-> >   	vunmap(cpu_addr);
-> >   }
-> >   #endif
+> > Maybe it's worth to limit while(1) cycle.
+> > If IOMMU generates faults with equal speed as irq handler cleans
+> > them, it may turn into long-irq-disabled region again.
+> > Not sure if it can happen anyway.
+> > 
+> >  drivers/iommu/dmar.c | 8 +++-----
+> >  1 file changed, 3 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> > index accf58388bdb..6c4ea32ee6a9 100644
+> > --- a/drivers/iommu/dmar.c
+> > +++ b/drivers/iommu/dmar.c
+> > @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void
+> > *dev_id)
+> >  	int reg, fault_index;
+> >  	u32 fault_status;
+> >  	unsigned long flag;
+> > -	bool ratelimited;
+> >  	static DEFINE_RATELIMIT_STATE(rs,
+> >  				      DEFAULT_RATELIMIT_INTERVAL,
+> >  				      DEFAULT_RATELIMIT_BURST);
+> >  
+> > -	/* Disable printing, simply clear the fault when
+> > ratelimited
+> > */
+> > -	ratelimited = !__ratelimit(&rs);
 > > -
-> > -/*
-> > - * Common configuration to enable DMA API use for a device
-> > - */
-> > -#include <linux/pci.h>
-> > -
-> > -int dma_configure(struct device *dev)
-> > -{
-> > -	struct device *bridge = NULL, *dma_dev = dev;
-> > -	enum dev_dma_attr attr;
-> > -	int ret = 0;
-> > -
-> > -	if (dev_is_pci(dev)) {
-> > -		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
-> > -		dma_dev = bridge;
-> > -		if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
-> > -		    dma_dev->parent->of_node)
-> > -			dma_dev = dma_dev->parent;
-> > -	}
-> > -
-> > -	if (dma_dev->of_node) {
-> > -		ret = of_dma_configure(dev, dma_dev->of_node);
-> > -	} else if (has_acpi_companion(dma_dev)) {
-> > -		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
-> > -		if (attr != DEV_DMA_NOT_SUPPORTED)
-> > -			ret = acpi_dma_configure(dev, attr);
-> > -	}
-> > -
-> > -	if (bridge)
-> > -		pci_put_host_bridge_device(bridge);
-> > -
-> > -	return ret;
-> > -}
-> > -
-> > -void dma_deconfigure(struct device *dev)
-> > -{
-> > -	of_dma_deconfigure(dev);
-> > -	acpi_dma_deconfigure(dev);
-> > -}
-> > diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> > index f1bf7b3..adf94eb 100644
-> > --- a/drivers/base/platform.c
-> > +++ b/drivers/base/platform.c
-> > @@ -1130,6 +1130,28 @@ int platform_pm_restore(struct device *dev)
-> >
-> >   #endif /* CONFIG_HIBERNATE_CALLBACKS */
-> >
-> > +int platform_dma_configure(struct device *dev)
-> > +{
-> > +	enum dev_dma_attr attr;
-> > +	int ret = 0;
-> > +
-> > +	if (dev->of_node) {
-> > +		ret = of_dma_configure(dev, dev->of_node);
-> > +	} else if (has_acpi_companion(dev)) {
-> > +		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
-> > +		if (attr != DEV_DMA_NOT_SUPPORTED)
-> > +			ret = acpi_dma_configure(dev, attr);
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +void platform_dma_deconfigure(struct device *dev)
-> > +{
-> > +	of_dma_deconfigure(dev);
-> > +	acpi_dma_deconfigure(dev);
-> > +}
-> > +
-> >   static const struct dev_pm_ops platform_dev_pm_ops = {
-> >   	.runtime_suspend = pm_generic_runtime_suspend,
-> >   	.runtime_resume = pm_generic_runtime_resume,
-> > @@ -1137,12 +1159,14 @@ int platform_pm_restore(struct device *dev)
-> >   };
-> >
-> >   struct bus_type platform_bus_type = {
-> > -	.name		= "platform",
-> > -	.dev_groups	= platform_dev_groups,
-> > -	.match		= platform_match,
-> > -	.uevent		= platform_uevent,
-> > -	.pm		= &platform_dev_pm_ops,
-> > -	.force_dma	= true,
-> > +	.name			= "platform",
-> > +	.dev_groups		= platform_dev_groups,
-> > +	.match			= platform_match,
-> > +	.uevent			= platform_uevent,
-> > +	.pm			= &platform_dev_pm_ops,
-> > +	.dma_configure		= platform_dma_configure,
-> > +	.dma_deconfigure	= platform_dma_deconfigure,
-> > +	.force_dma		= true,
-> >   };
-> >   EXPORT_SYMBOL_GPL(platform_bus_type);
-> >
-> > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> > index 3bed6be..4a77814 100644
-> > --- a/drivers/pci/pci-driver.c
-> > +++ b/drivers/pci/pci-driver.c
-> > @@ -18,6 +18,8 @@
-> >   #include <linux/pm_runtime.h>
-> >   #include <linux/suspend.h>
-> >   #include <linux/kexec.h>
-> > +#include <linux/acpi.h>
-> > +#include <linux/of_device.h>
-> >   #include "pci.h"
-> >
-> >   struct pci_dynid {
-> > @@ -1522,19 +1524,52 @@ static int pci_bus_num_vf(struct device *dev)
-> >   	return pci_num_vf(to_pci_dev(dev));
-> >   }
-> >
-> > +int pci_dma_configure(struct device *dev)
-> > +{
-> > +	struct device *bridge, *dma_dev;
-> 
-> You don't need dma_dev here; see the code removed in 09515ef5ddad for
-> how the logic originally worked.
-
-Okay. I will have a look in this commit id.
-
-> 
-> > +	enum dev_dma_attr attr;
-> > +	int ret = 0;
-> > +
-> > +	bridge = pci_get_host_bridge_device(to_pci_dev(dev));
-> > +	dma_dev = bridge;
-> > +	if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
-> > +	    dma_dev->parent->of_node)
-> > +		dma_dev = dma_dev->parent;
-> > +
-> > +	if (dma_dev->of_node) {
-> > +		ret = of_dma_configure(dev, dma_dev->of_node);
-> > +	} else if (has_acpi_companion(dma_dev)) {
-> > +		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
-> > +		if (attr != DEV_DMA_NOT_SUPPORTED)
-> > +			ret = acpi_dma_configure(dev, attr);
-> > +	}
-> > +
-> > +	pci_put_host_bridge_device(bridge);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +void pci_dma_deconfigure(struct device *dev)
-> > +{
-> > +	of_dma_deconfigure(dev);
-> > +	acpi_dma_deconfigure(dev);
-> > +}
-> > +
-> >   struct bus_type pci_bus_type = {
-> > -	.name		= "pci",
-> > -	.match		= pci_bus_match,
-> > -	.uevent		= pci_uevent,
-> > -	.probe		= pci_device_probe,
-> > -	.remove		= pci_device_remove,
-> > -	.shutdown	= pci_device_shutdown,
-> > -	.dev_groups	= pci_dev_groups,
-> > -	.bus_groups	= pci_bus_groups,
-> > -	.drv_groups	= pci_drv_groups,
-> > -	.pm		= PCI_PM_OPS_PTR,
-> > -	.num_vf		= pci_bus_num_vf,
-> > -	.force_dma	= true,
-> > +	.name			= "pci",
-> > +	.match			= pci_bus_match,
-> > +	.uevent			= pci_uevent,
-> > +	.probe			= pci_device_probe,
-> > +	.remove			= pci_device_remove,
-> > +	.shutdown		= pci_device_shutdown,
-> > +	.dev_groups		= pci_dev_groups,
-> > +	.bus_groups		= pci_bus_groups,
-> > +	.drv_groups		= pci_drv_groups,
-> > +	.pm			= PCI_PM_OPS_PTR,
-> > +	.num_vf			= pci_bus_num_vf,
-> > +	.dma_configure		= pci_dma_configure,
-> > +	.dma_deconfigure	= pci_dma_deconfigure,
-> > +	.force_dma		= true,
-> >   };
-> >   EXPORT_SYMBOL(pci_bus_type);
-> >
-> > diff --git a/include/linux/device.h b/include/linux/device.h
-> > index b093405..9b2dcf6 100644
-> > --- a/include/linux/device.h
-> > +++ b/include/linux/device.h
-> > @@ -88,6 +88,9 @@ extern int __must_check bus_create_file(struct
-> bus_type *,
-> >    * @resume:	Called to bring a device on this bus out of sleep mode.
-> >    * @num_vf:	Called to find out how many virtual functions a device on
-> this
-> >    *		bus supports.
-> > + * @dma_configure:	Called to setup DMA configuration on a device on
-> > +			this bus.
-> > + * @dma_deconfigure:	Called to tear down the DMA configuration.
-> >    * @pm:		Power management operations of this bus, callback
-> the specific
-> >    *		device driver's pm-ops.
-> >    * @iommu_ops:  IOMMU specific operations for this bus, used to attach
-> IOMMU
-> > @@ -130,6 +133,9 @@ struct bus_type {
-> >
-> >   	int (*num_vf)(struct device *dev);
-> >
-> > +	int (*dma_configure)(struct device *dev);
-> > +	void (*dma_deconfigure)(struct device *dev);
-> 
-> Seeing it laid out in the patch, I really don't think we need a
-> deconfigure callback like this - the fact that we're just copy-pasting
-> the existing implementation everywhere is a big hint, but more
-> conceptually I can't see a good reason for it to ever need bus-specific
-> behaviour in the same way that configure does.
-> 
-> Maybe that means we keep dma_configure() around for the sake of
-> symmetry, but just reduce it to:
-> 
-> int dma_configure(struct device *dev)
-> {
-> 	if (dev->bus->dma_configure)
-> 		return dev->bus->dma_configure(dev);
-> 	return 0;
-> }
-> 
-> Realistically though, dma_deconfigure() only exists for the sake of
-> calling arch_teardown_dma_ops(), and that only really exists for the
-> sake of the old ARM IOMMU code, so I'm not inclined to pretend it's
-> anywhere near as important as the dma_configure() path in design terms.
-
-Yes, I will remove dma_deconfigure callback.
-
-Thanks,
-Nipun
-
-> 
-> Robin.
-> 
-> > +
-> >   	const struct dev_pm_ops *pm;
-> >
-> >   	const struct iommu_ops *iommu_ops;
-> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> > index eb9eab4..039224b 100644
-> > --- a/include/linux/dma-mapping.h
-> > +++ b/include/linux/dma-mapping.h
-> > @@ -761,18 +761,6 @@ void *dma_mark_declared_memory_occupied(struct
-> device *dev,
-> >   }
-> >   #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
-> >
-> > -#ifdef CONFIG_HAS_DMA
-> > -int dma_configure(struct device *dev);
-> > -void dma_deconfigure(struct device *dev);
-> > -#else
-> > -static inline int dma_configure(struct device *dev)
-> > -{
-> > -	return 0;
-> > -}
-> > -
-> > -static inline void dma_deconfigure(struct device *dev) {}
-> > -#endif
-> > -
-> >   /*
-> >    * Managed DMA API
-> >    */
-> >
+> >  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+> >  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+> > -	if (fault_status && !ratelimited)
+> > +	if (fault_status && __ratelimit(&rs))
+> >  		pr_err("DRHD: handling fault status reg %x\n",
+> > fault_status);
+> >  
+> >  	/* TBD: ignore advanced fault log currently */
+> > @@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+> >  	fault_index = dma_fsts_fault_record_index(fault_status);
+> >  	reg = cap_fault_reg_offset(iommu->cap);
+> >  	while (1) {
+> > +		/* Disable printing, simply clear the fault when
+> > ratelimited */
+> > +		bool ratelimited = !__ratelimit(&rs);
+> >  		u8 fault_reason;
+> >  		u16 source_id;
+> >  		u64 guest_addr;
