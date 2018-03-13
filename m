@@ -1,18 +1,21 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 11/13] dma-direct: handle the memory encryption bit in
-	common code
-Date: Tue, 13 Mar 2018 14:10:05 +0100
-Message-ID: <20180313131005.GA6260@lst.de>
-References: <20180305174655.9878-1-hch@lst.de>
-	<20180305174655.9878-12-hch@lst.de>
-	<114e27be-5814-4258-4985-af08763c8a74@amd.com>
-	<0c9d3e4a-8407-282a-73eb-21d28047e0e3@amd.com>
+Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
+Date: Tue, 13 Mar 2018 14:17:45 +0100
+Message-ID: <20180313131745.GC6260@lst.de>
+References: <20180302180704.GA3846@localhost.localdomain>
+	<20180302213711.GA30356@lst.de>
+	<20180303082234.GB24991@localhost.localdomain>
+	<20180303161249.GA9516@lst.de>
+	<20180303181904.GA19076@localhost.localdomain>
+	<20180305151010.GA15965@lst.de>
+	<20180311180124.GA27731@localhost.localdomain>
+	<5696e17e-e0f4-4e6c-7783-4eeea0ff7a5e@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <0c9d3e4a-8407-282a-73eb-21d28047e0e3-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <5696e17e-e0f4-4e6c-7783-4eeea0ff7a5e-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,37 +25,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>, USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, =?iso-8859-1?Q?J=FCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 12, 2018 at 02:48:51PM -0500, Tom Lendacky wrote:
-> Ok, I found one issue that allows this to work when the IOMMU isn't
-> enabled (see below).
+On Tue, Mar 13, 2018 at 12:11:49PM +0000, Robin Murphy wrote:
+> Taking a step back, though, provided the original rationale about 
+> dma_declare_coherent_memory() is still valid, I wonder if we should simply 
+> permit the USB code to call dma_{alloc,free}_from_dev_coherent() directly 
+> here instead of being "good" and indirecting through the top-level DMA API 
+> (which is the part which leads to problems). Given that it's a specific DMA 
+> bounce buffer implementation within a core API, not just any old driver 
+> code, I personally would consider that reasonable.
 
-Thanks, folded!
+Looking back I don't really understand why we even indirect the "classic"
+per-device dma_declare_coherent_memory use case through the DMA API.
 
-> But the bigger issue is when the IOMMU is enabled.  The IOMMU code uses
-> a common mapping routine to create the I/O page tables.  This routine
-> assumes that all memory being mapped is encrypted and therefore sets the
-> encryption bit in the I/O page tables.  With this patch, the call to
-> dma_alloc_direct() now returns un-encrypted memory which results in an
-> encryption mis-match.  I think keeping dma_alloc_direct() as it was prior
-> to this patch is the way to go.  It allows SME DMA allocations to remain
-> encrypted and avoids added complexity in the amd_iommu.c file.  This
-> would mean that SEV would still have special DMA operations (so that the
-> alloc/free can change the memory to un-encrypted).
-> 
-> What do you think?
+It seems like a pretty different use case to me.  In the USB case we
+also have the following additional twist in that it doesn't even need
+the mapping to be coherent.
 
-In terms of logic you are right.  I still don't like keeping a just
-slightly tweaked version of dma_alloc_direct around just for this, it
-will be perpetually out of sync in terms of features and bug fixes.
-
-What do you think about this version that does the decision at runtime:
-
-	http://git.infradead.org/users/hch/misc.git/commitdiff/b89f24dc856595dc7610d672bf077195ab0dabf4
-
-The full tree is available here for testing:
-
-	git://git.infradead.org/users/hch/misc.git dma-direct-x86
+So maybe for now the quick fix is to move the sleep check as suggested
+earlier in this thread, but in the long run we probably need to do some
+major rework of how dma_declare_coherent_memory and friends work.
