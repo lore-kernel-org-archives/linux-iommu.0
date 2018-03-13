@@ -1,19 +1,17 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
-Date: Tue, 13 Mar 2018 12:11:49 +0000
-Message-ID: <5696e17e-e0f4-4e6c-7783-4eeea0ff7a5e@arm.com>
-References: <20180302180704.GA3846@localhost.localdomain>
-	<20180302213711.GA30356@lst.de>
-	<20180303082234.GB24991@localhost.localdomain>
-	<20180303161249.GA9516@lst.de>
-	<20180303181904.GA19076@localhost.localdomain>
-	<20180305151010.GA15965@lst.de>
-	<20180311180124.GA27731@localhost.localdomain>
+Subject: Re: [PATCH v9 1/5] driver core: Find an existing link between two
+	devices
+Date: Tue, 13 Mar 2018 12:49:37 +0000
+Message-ID: <4eaf2006-ea68-d9e9-a0db-89acec0ea299@arm.com>
+References: <20180313085534.11650-1-vivek.gautam@codeaurora.org>
+	<20180313085534.11650-2-vivek.gautam@codeaurora.org>
+	<8903307.QazHKW0JrR@aspire.rjw.lan>
+	<CAFp+6iE=0PD6fZZVd+bC1Z95Lkt=X-F4YOXz8EtdiXL=jsC1RA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180311180124.GA27731-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+In-Reply-To: <CAFp+6iE=0PD6fZZVd+bC1Z95Lkt=X-F4YOXz8EtdiXL=jsC1RA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,109 +22,103 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: =?UTF-8?Q?J=c3=bcrgen_Urban?= <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/03/18 18:01, Fredrik Noring wrote:
-> Hi Christoph,
+On 13/03/18 09:55, Vivek Gautam wrote:
+> On Tue, Mar 13, 2018 at 3:10 PM, Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org> wrote:
+>> On Tuesday, March 13, 2018 9:55:30 AM CET Vivek Gautam wrote:
+>>> The lists managing the device-links can be traversed to
+>>> find the link between two devices. The device_link_add() APIs
+>>> does traverse these lists to check if there's already a link
+>>> setup between the two devices.
+>>> So, add a new APIs, device_link_find(), to find an existing
+>>> device link between two devices - suppliers and consumers.
+>>>
+>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>> Cc: Rafael J. Wysocki <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+>>> Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+>>> ---
+>>>
+>>>   * New patch added to this series.
+>>>
+>>>   drivers/base/core.c    | 30 +++++++++++++++++++++++++++---
+>>>   include/linux/device.h |  2 ++
+>>>   2 files changed, 29 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/base/core.c b/drivers/base/core.c
+>>> index 5847364f25d9..e8c9774e4ba2 100644
+>>> --- a/drivers/base/core.c
+>>> +++ b/drivers/base/core.c
+>>> @@ -144,6 +144,30 @@ static int device_reorder_to_tail(struct device *dev, void *not_used)
+>>>        return 0;
+>>>   }
+>>>
+>>> +/**
+>>> + * device_link_find - find any existing link between two devices.
+>>> + * @consumer: Consumer end of the link.
+>>> + * @supplier: Supplier end of the link.
+>>> + *
+>>> + * Returns pointer to the existing link between a supplier and
+>>> + * and consumer devices, or NULL if no link exists.
+>>> + */
+>>> +struct device_link *device_link_find(struct device *consumer,
+>>> +                                  struct device *supplier)
+>>> +{
+>>> +     struct device_link *link = NULL;
+>>> +
+>>> +     if (!consumer || !supplier)
+>>> +             return NULL;
+>>> +
+>>> +     list_for_each_entry(link, &supplier->links.consumers, s_node)
+>>> +             if (link->consumer == consumer)
+>>> +                     break;
+>>> +
+>>
+>> Any mutual exclusion?
+>>
+>> Or is the caller expected to take care of it?  And if so, then how?
 > 
->> The point is that you should always use a pool, period.
->> dma_alloc*/dma_free* are fundamentally expensive operations on my
->> architectures, so if you call them from a fast path you are doing
->> something wrong.
-> 
-> The author's comment in commit b3476675320e "usb: dma bounce buffer support"
-> seems to suggest that the greatest concern is space efficiency as opposed to
-> speed. I tried to evaluate strict pool allocations, similar to the patch
-> below, but that didn't turn out as I expected.
-> 
-> I chose a 64 KiB pool maximum since it has been the largest requested size I
-> have observed in USB traces (which may not hold in general, of course). This
-> change caused the USB mass storage driver to get stuck in some kind of memory
-> deadlock, with endless busy-looping on 64 KiB allocation failures.
-> 
-> I also tried a progression of pool sizes including nonpowers of two, for
-> example 12288, to make better use of the 256 KiB memory capacity. However,
-> the following part of dma_pool_create in linux/mm/dmapool.c is somewhat
-> puzzling:
-> 
->          if (!boundary)
->                  boundary = allocation;
->          else if ((boundary < size) || (boundary & (boundary - 1)))
->                  return NULL;
-> 
-> Is the boundary variable required to be a power of two only when it is
-> explicitly given as nonzero?
+> I think it's better that we take care of lock here in the code rather
+> than depending
+> on the caller.
+> But i can't take device_links_write_lock() since device_link_add()
+> already takes that.
 
-I would think so; realistically, the notion of non-power-of-two 
-boundaries doesn't make a great deal of sense. IIRC, XHCI has a 64KB 
-boundary limitation, but [OE]HCI don't (as far as I could see from the 
-specs).
+Well, the normal pattern is to break out the internal helper function 
+as-is, then add a public wrapper which validates inputs, handles 
+locking, etc., equivalently to existing caller(s). See what 
+device_link_del() and others do, e.g.:
 
-> 
-> Fredrik
-> 
-> diff --git a/drivers/usb/core/buffer.c b/drivers/usb/core/buffer.c
-> index 77eef8acff94..8cc8fbc91c76 100644
-> --- a/drivers/usb/core/buffer.c
-> +++ b/drivers/usb/core/buffer.c
-> @@ -26,7 +26,7 @@
-> 
->   /* FIXME tune these based on pool statistics ... */
->   static size_t pool_max[HCD_BUFFER_POOLS] = {
-> -       32, 128, 512, 2048,
-> +       32, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536
->   };
-> 
->   void __init usb_init_pool_max(void)
-> @@ -76,7 +76,7 @@ int hcd_buffer_create(struct usb_hcd *hcd)
->                          continue;
->                  snprintf(name, sizeof(name), "buffer-%d", size);
->                  hcd->pool[i] = dma_pool_create(name, hcd->self.sysdev,
-> -                               size, size, 0);
-> +                               size, min_t(size_t, 4096, size), 0);
->                  if (!hcd->pool[i]) {
->                          hcd_buffer_destroy(hcd);
->                          return -ENOMEM;
-> @@ -140,7 +140,7 @@ void *hcd_buffer_alloc(
->                  if (size <= pool_max[i])
->                          return dma_pool_alloc(hcd->pool[i], mem_flags, dma);
->          }
-> -       return dma_alloc_coherent(hcd->self.sysdev, size, dma, mem_flags);
+static struct device_link *__device_link_find(struct device *consumer,
+		struct device *supplier)
+{
+	list_for_each_entry(link, &supplier->links.consumers, s_node)
+		if (link->consumer == consumer)
+			return link;
+	return NULL;
+}
 
-Taking a step back, though, provided the original rationale about 
-dma_declare_coherent_memory() is still valid, I wonder if we should 
-simply permit the USB code to call dma_{alloc,free}_from_dev_coherent() 
-directly here instead of being "good" and indirecting through the 
-top-level DMA API (which is the part which leads to problems). Given 
-that it's a specific DMA bounce buffer implementation within a core API, 
-not just any old driver code, I personally would consider that reasonable.
+struct device_link *device_link_find(struct device *consumer,
+		struct device *supplier)
+{
+	struct device_link *link;
+
+	if (!consumer || !supplier)
+		return NULL;
+
+	device_links_write_lock();
+	link = __device_link_find(consumer, supplier);	
+	device_links_write_unlock();
+	return link;
+}
+
+where device_link_add() would call __device_link_find() directly.
+
+However, as Tomasz points out (and I hadn't really considered), if the 
+only reasonable thing to with a link once you've found it is to delete 
+it, then in terms of the public API it may well make more sense to just 
+implement something like a device_link_remove() which does both in one go.
 
 Robin.
-
-> +       return NULL;
->   }
-> 
->   void hcd_buffer_free(
-> @@ -169,5 +169,5 @@ void hcd_buffer_free(
->                          return;
->                  }
->          }
-> -       dma_free_coherent(hcd->self.sysdev, size, addr, dma);
-> +       BUG();          /* The buffer could not have been allocated. */
->   }
-> diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
-> index 176900528822..2075f1e22e32 100644
-> --- a/include/linux/usb/hcd.h
-> +++ b/include/linux/usb/hcd.h
-> @@ -189,7 +189,7 @@ struct usb_hcd {
->          struct usb_hcd          *primary_hcd;
-> 
-> 
-> -#define HCD_BUFFER_POOLS       4
-> +#define HCD_BUFFER_POOLS       11
->          struct dma_pool         *pool[HCD_BUFFER_POOLS];
-> 
->          int                     state;
-> 
