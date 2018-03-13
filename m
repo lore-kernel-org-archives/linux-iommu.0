@@ -1,17 +1,16 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v2 5/5] iommu/amd - Add a debugfs entry to specify a IOMMU
-	device table entry
-Date: Tue, 13 Mar 2018 13:54:15 -0500
-Message-ID: <3969f155-c3bf-44c5-d056-825e71d42152@amd.com>
+From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] iommu/amd - Add debugfs support
+Date: Tue, 13 Mar 2018 22:23:15 +0200
+Message-ID: <CAHp75VeySPBEeJKRXzmqfPey56J3rwr2-dPRzSYx+7a7TAC5rw@mail.gmail.com>
 References: <152055660594.63229.5131049527614494130.stgit@sosxen2.amd.com>
-	<152055669123.63229.1692099069085978884.stgit@sosxen2.amd.com>
-	<CAHp75Vfc+JTjU2P0GCedVFcHYniXoVcmRC3n4cFsLMr9sx6eyA@mail.gmail.com>
+	<152055664720.63229.16209149030018336339.stgit@sosxen2.amd.com>
+	<CAHp75VdK6qFopBE4rD4yNO5GHccxyte=GhYU7YGcWOEYSCyX8Q@mail.gmail.com>
+	<30bd9559-0e44-bd18-6b9a-ec35bc8276f3@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAHp75Vfc+JTjU2P0GCedVFcHYniXoVcmRC3n4cFsLMr9sx6eyA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <30bd9559-0e44-bd18-6b9a-ec35bc8276f3-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,35 +20,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/13/2018 12:20 PM, Andy Shevchenko wrote:
-> 
->> +               oboff += OSCNPRINTF("%02x:%02x:%x (%u / %04x)\n",
->> +                                   PCI_BUS_NUM(amd_iommu_devid),
->> +                                   PCI_SLOT(amd_iommu_devid),
->> +                                   PCI_FUNC(amd_iommu_devid),
-> 
-> Perhaps at some point we will have an extension to %p to print PCI BDFs.
+On Tue, Mar 13, 2018 at 8:54 PM, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org> wrote:
+> On 03/13/2018 12:16 PM, Andy Shevchenko wrote:
+>> On Fri, Mar 9, 2018 at 2:50 AM, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org> wrote:
 
-But until then....  ;-)
+>>> +#include <linux/pci.h>
+>>> +#include <linux/iommu.h>
+>>> +#include <linux/debugfs.h>
+>>
+>>
+>> Keep in order?
 
->> +       if (strnchr(obuf, OBUFLEN, ':'))
->> +       {
-> 
-> Style
+> What order would that be? These few needed files are listed in the same
+> order as which they appear in amd_iommu.c. I'm gonna need a preference
+> spelled out, please (and a rationale, so I may better understand).
 
-D'oh!
+To increase readability and avoid potential header duplication (here
+is can bus protocol implementation where the problem exists for real,
+even in new code!)
 
->> +       } else if (obuf[0] == '0' && obuf[1] == 'x') {
->> +               n = sscanf(obuf, "%x", &amd_iommu_devid);
->> +       } else {
->> +               n = sscanf(obuf, "%d", &amd_iommu_devid);
->> +       }
-> 
-> kstrtoint() ?
+>>> +/* DebugFS helpers */
+>>> +#define        OBUFP           (obuf + oboff)
+>>> +#define        OBUFLEN         obuflen
+>>> +#define        OBUFSPC         (OBUFLEN - oboff)
+>>> +#define        OSCNPRINTF(fmt, ...) \
+>>> +               scnprintf(OBUFP, OBUFSPC, fmt, ## __VA_ARGS__)
+>>
+>>
+>> I don't see any advantages of this. Other way around, they will simple
+>> makes things hard to read an understand in place.
+>
+>
+> I used this technique in the CCP driver code (where it was accepted), in an
+> effort to do the opposite of what you claim: make the code more readable.
+> Given the 80 column limit, a large number of arguments, and very long
+> statements, IMO something needs to give. I don't find the use of #defines to
+> be obfuscating.
+>
+> I'm not trying to argue, but rather simply state the perspective / reasoning
+> I used to create a source file I feel is manageable. I have 17 more iommu
+> patches built upon this strategy, and this seems to be advantageous for all
+> of them.
 
-I see various mechanisms for this sort of thing, and simply chose one.
-Am happy to use whatever is preferred.
+It's fine to me as long as it's fine to maintainer, but honestly
+speaking I would avoid such code as much as possible. Imagine that
+your "advantage" basically becomes disadvantage to everyone else who
+is not familiar with the code.
+
+Each time I see macro in the code, I would need to at least step on
+it, run cscope, read, and come back. And at this point of time I
+already forgot what this code is doing, it does use sNprintf() or
+sCNprintf() or whatever wrapper on top of either...
+
+>>> +       for (i = start ; i <= end ; i++)
+
+>> Missed {}
+
+> Wasn't sure about the M.O. given that the body of this loop is a single if
+> statement. And I don't see anywhere in
+> https://www.kernel.org/doc/html/latest/process/coding-style.html
+> in section 3.1 where curly braces are called for in this situation. May I
+> ask for clarification on the style rule, please?
+
+You can do nothing, though I'm guided by the end of section 3.0
+(though it tells only about 'if' case).
+
+>>> @@ -89,6 +89,7 @@
+>>>   #define ACPI_DEVFLAG_ATSDIS             0x10000000
+>>>
+>>>   #define LOOP_TIMEOUT   100000
+>>> +
+>>>   /*
+>>>    * ACPI table definitions
+>>>    *
+
+>> Doesn't belong to the patch.
+
+> I'm sorry, I don't understand. The added blank line doesn't belong to the
+> patch?
+
+Correct.
+
+-- 
+With Best Regards,
+Andy Shevchenko
