@@ -1,7 +1,8 @@
 From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v3 3/5] iommu/amd - Add a README variable for the IOMMU debugfs
-Date: Wed, 14 Mar 2018 18:05:15 -0500
-Message-ID: <152106871561.67212.3504698988832928735.stgit@sosxen2.amd.com>
+Subject: [PATCH v3 4/5] iommu/amd - Expose the active IOMMU device table
+	entries
+Date: Wed, 14 Mar 2018 18:05:25 -0500
+Message-ID: <152106872543.67212.1710383006630131454.stgit@sosxen2.amd.com>
 References: <152106836233.67212.15861879210675477690.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,59 +22,94 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Provide help text via a filesystem entry
+Add a debugfs entry to dump the active device table entries from
+the IOMMU's table. Active is determined by non-default values
+in the first and second long words of the DTE. Aside from IOMMU
+devices, this output should list every device reported by lspci.
 
 Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_debugfs.c |   31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/iommu/amd_iommu_debugfs.c |   60 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
-index 170863e5e86b..d95428b1ef90 100644
+index d95428b1ef90..1d941c5329be 100644
 --- a/drivers/iommu/amd_iommu_debugfs.c
 +++ b/drivers/iommu/amd_iommu_debugfs.c
-@@ -92,6 +92,31 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
+@@ -92,9 +92,62 @@ static const struct file_operations amd_iommu_debugfs_dtecount_ops = {
  	.write = NULL,
  };
  
-+static char readmetext[] =
-+"count                   Count of active devices\n"
-+"verbose                 Provide additional descriptive text\n"
-+"\n";
++#define	MAX_PCI_ID	0xFFFF
 +
-+static ssize_t amd_iommu_debugfs_readme_read(struct file *filp,
-+				      char __user *ubuf,
-+				      size_t count, loff_t *offp)
++#define	PRINTDTE(i)	OSCNPRINTF("%02x:%02x:%x - %016llx %016llx %016llx %016llx\n", \
++				   PCI_BUS_NUM(i), PCI_SLOT(i), PCI_FUNC(i), \
++				   amd_iommu_dev_table[i].data[0], \
++				   amd_iommu_dev_table[i].data[1], \
++				   amd_iommu_dev_table[i].data[2], \
++				   amd_iommu_dev_table[i].data[3]);
++
++static ssize_t amd_iommu_debugfs_dte_read(struct file *filp,
++					  char __user *ubuf,
++					  size_t count, loff_t *offp)
 +{
++	unsigned int obuflen;
++	unsigned int oboff = 0;
++	unsigned int istart, iend;
 +	ssize_t ret;
++	u32 i, n;
++	char *obuf;
 +
-+	ret = simple_read_from_buffer(ubuf, count, offp,
-+				      readmetext, strlen(readmetext));
++	/* Count the number of valid entries in the device table */
++	istart = 0;
++	iend = MAX_PCI_ID;
++	n = amd_iommu_count_valid_dtes(istart, iend);
++	obuflen = n * 80;
++
++	obuf = kmalloc(OBUFLEN, GFP_KERNEL);
++	if (!obuf)
++		return -ENOMEM;
++
++	for (i = istart ; i <= iend ; i++)
++		if ((amd_iommu_dev_table[i].data[0] ^ 0x3)
++		     || amd_iommu_dev_table[i].data[1])
++			oboff += PRINTDTE(i);
++
++	ret = simple_read_from_buffer(ubuf, count, offp, obuf, oboff);
++	kfree(obuf);
 +
 +	return ret;
 +}
 +
-+
-+static const struct file_operations amd_iommu_debugfs_readme_ops = {
++static const struct file_operations amd_iommu_debugfs_dte_ops = {
 +	.owner = THIS_MODULE,
 +	.open = simple_open,
-+	.read = amd_iommu_debugfs_readme_read,
++	.read = amd_iommu_debugfs_dte_read,
 +	.write = NULL,
 +};
 +
- void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
- {
- 	char name[MAX_NAME_LEN + 1];
-@@ -125,6 +150,12 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
- 	if (!d_dte)
+ static char readmetext[] =
++"devicetable             Print active entries in the device table\n"
+ "count                   Count of active devices\n"
+ "verbose                 Provide additional descriptive text\n"
++"\n"
++"                        Dumping the Device Table\n"
++"The device table is scanned for entries that appear to be active. The\n"
++"default range is from 0 to 0xFFFF, and only active entries will be reported\n"
+ "\n";
+ 
+ static ssize_t amd_iommu_debugfs_readme_read(struct file *filp,
+@@ -144,6 +197,13 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
+ 	if (!d_verbose)
  		goto err;
  
-+	d_dte = debugfs_create_file("README", 0400,
++	/* Device Table Entries */
++	d_dte = debugfs_create_file("devicetable", 0400,
 +				    iommu->debugfs_instance, iommu,
-+				    &amd_iommu_debugfs_readme_ops);
++				    &amd_iommu_debugfs_dte_ops);
 +	if (!d_dte)
 +		goto err;
 +
- 	return;
- 
- err:
+ 	d_dte = debugfs_create_file("count", 0400,
+ 				    iommu->debugfs_instance, iommu,
+ 				    &amd_iommu_debugfs_dtecount_ops);
