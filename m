@@ -1,15 +1,15 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 28/37] iommu/arm-smmu-v3: Maintain a SID->device structure
-Date: Wed, 14 Mar 2018 13:09:10 +0000
-Message-ID: <4d83c676-604c-6003-5284-81e3535689a8@arm.com>
+Subject: Re: [PATCH 31/37] iommu/arm-smmu-v3: Add support for PCI ATS
+Date: Wed, 14 Mar 2018 13:09:50 +0000
+Message-ID: <31673218-f051-3e31-e5fe-37de44edd443@arm.com>
 References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
-	<20180212183352.22730-29-jean-philippe.brucker@arm.com>
-	<20180308183431.00005f86@huawei.com>
+	<20180212183352.22730-32-jean-philippe.brucker@arm.com>
+	<20180308171725.0000763c@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180308183431.00005f86-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20180308171725.0000763c-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,46 +24,53 @@ To: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rjw@rjwyso
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/03/18 17:34, Jonathan Cameron wrote:
->>  static int arm_smmu_add_device(struct device *dev)
->> @@ -2198,6 +2298,7 @@ static int arm_smmu_add_device(struct device *dev)
->>  
->>  	group = iommu_group_get_for_dev(dev);
->>  	if (!IS_ERR(group)) {
->> +		arm_smmu_insert_master(smmu, master);
-> There are some error cases it would be good to take notice off when
-> inserting the master.  Admittedly the same is true of iommu_device_link
-> so I guess you are keeping with the existing code style.
-> 
-> Would also be nice if the later bit of rework to drop these out
-> of the if statement was done before this patch in the series.
+On 08/03/18 16:17, Jonathan Cameron wrote:
+>> +	arm_smmu_enable_ats(master);
+> It's a bit nasty not to handle the errors that this could output (other than
+> the ENOSYS for when it's not available). Seems that it would be nice to at
+> least add a note to the log if people are expecting it to work and it won't
+> because some condition or other isn't met.
 
-Not sure that's worth a separate patch, maybe we can do it here.
+I agree it's not ideal. Last time this came up the problem was that
+checking if ATS is supported requires an ugly ifdef. A proper
+implementation requires more support in the PCI core, e.g. a
+pci_ats_supported() function.
+
+https://www.spinics.net/lists/kvm/msg145932.html
+
+>> +
+>>  	group = iommu_group_get_for_dev(dev);
+>> -	if (!IS_ERR(group)) {
+>> -		arm_smmu_insert_master(smmu, master);
+>> -		iommu_group_put(group);
+>> -		iommu_device_link(&smmu->iommu, dev);
+>> +	if (IS_ERR(group)) {
+>> +		ret = PTR_ERR(group);
+>> +		goto err_disable_ats;
+>>  	}
+>>  
+>> -	return PTR_ERR_OR_ZERO(group);
+>> +	iommu_group_put(group);
+>> +	arm_smmu_insert_master(smmu, master);
+>> +	iommu_device_link(&smmu->iommu, dev);
+>> +
+>> +	return 0;
+>> +
+>> +err_disable_ats:
+>> +	arm_smmu_disable_ats(master);
+> master is leaked here I think...
+> Possibly other things as this doesn't line up with the
+> remove which I'd have mostly expected it to do.
+
+> There are some slightly fishy bits of ordering in the original code
+> anyway that I'm not seeing justification for (why is
+> the iommu_device_unlink later than one might expect for
+> example).
+
+Yeah, knowing the rest of the probing code, there may exist subtle legacy
+reasons for not freeing the master here and the strange orderings. I try
+to keep existing behaviors where possible since I barely even have the
+bandwidth to fix my own code.
 
 Thanks,
 Jean
-
-> 
->>  		iommu_group_put(group);
->>  		iommu_device_link(&smmu->iommu, dev);
->>  	}
->> @@ -2218,6 +2319,7 @@ static void arm_smmu_remove_device(struct device *dev)
->>  	smmu = master->smmu;
->>  	if (master && master->ste.assigned)
->>  		arm_smmu_detach_dev(dev);
->> +	arm_smmu_remove_master(smmu, master);
->>  	iommu_group_remove_device(dev);
->>  	iommu_device_unlink(&smmu->iommu, dev);
->>  	kfree(master);
->> @@ -2527,6 +2629,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
->>  	int ret;
->>  
->>  	atomic_set(&smmu->sync_nr, 0);
->> +	mutex_init(&smmu->streams_mutex);
->> +	smmu->streams = RB_ROOT;
->> +
->>  	ret = arm_smmu_init_queues(smmu);
->>  	if (ret)
->>  		return ret;
-> 
-> 
