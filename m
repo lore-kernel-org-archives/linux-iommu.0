@@ -1,13 +1,17 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 14/14] swiotlb: remove swiotlb_{alloc,free}_coherent
-Date: Wed, 14 Mar 2018 18:52:13 +0100
-Message-ID: <20180314175213.20256-15-hch@lst.de>
-References: <20180314175213.20256-1-hch@lst.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC 2/5] dt-bindings: brcm: Add reserved-dma-region for iPROC
+Date: Wed, 14 Mar 2018 18:45:06 +0000
+Message-ID: <a4a27e3c-4e7b-4850-ebf7-bd2b8f6f0d97@arm.com>
+References: <1520312368-7068-1-git-send-email-jitendra.bhivare@broadcom.com>
+	<1520312368-7068-3-git-send-email-jitendra.bhivare@broadcom.com>
+	<c2f30c0c-ff5e-2904-11f4-5351749381a9@arm.com>
+	<CAOA9gs32BqGiXD7R2v7=Xkv-PVLTzuU3VmG1dAm6HNd4=w-qQg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180314175213.20256-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <CAOA9gs32BqGiXD7R2v7=Xkv-PVLTzuU3VmG1dAm6HNd4=w-qQg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,99 +21,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Unused now that everyone uses swiotlb_{alloc,free}.
+On 12/03/18 07:03, Jitendra Bhivare wrote:
+> On Tue, Mar 6, 2018 at 5:12 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 06/03/18 04:59, Jitendra Bhivare wrote:
+>>>
+>>> With SoC wide DMA mask of 40-bit, the mappings for entire IOVA space can't
+>>> be specified in the PAXBv2 PCIe RC of SoC. The holes in IOVA space needs
+>>> to
+>>> be reserved to prevent any IOVA allocations in those spaces.
+>>
+>>
+>> Can you clarify why? If this is the PCI inbound window thing again, let me
+>> say once again that "dma-ranges" is the appropriate way for DT to describe
+>> the hardware.
+>>
+>> Robin.
+> dma-ranges = < \
+> 0x43000000 0x00 0x00000000 0x00 0x80000000 0x00 0x80000000 \
+> 0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+> 0x43000000 0x80 0x00000000 0x80 0x00000000 0x80 0x00000000>
+> 
+> Yes, its for PCI inbound windows. In our HW, they are limited by sizes
+> specified in
+> ARM memory maps which was done for non-IOMMU cases to catch any transfer
+> outside the ranges.
+> dma-ranges are already being used to program these inbound windows and SoC
+> wide DMA mask is already specified but IOMMU code can still allocate IOVAs
+> in the gaps for which translation will fail in PCIe RC.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- include/linux/swiotlb.h |  8 --------
- lib/swiotlb.c           | 38 --------------------------------------
- 2 files changed, 46 deletions(-)
+Right, so make iommu-dma reserve the gaps. No need to clutter up the DT 
+with redundant information which gets handled pretty much identically 
+anyway.
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 5b1f2a00491c..965be92c33b5 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -72,14 +72,6 @@ void *swiotlb_alloc(struct device *hwdev, size_t size, dma_addr_t *dma_handle,
- void swiotlb_free(struct device *dev, size_t size, void *vaddr,
- 		dma_addr_t dma_addr, unsigned long attrs);
- 
--extern void
--*swiotlb_alloc_coherent(struct device *hwdev, size_t size,
--			dma_addr_t *dma_handle, gfp_t flags);
--
--extern void
--swiotlb_free_coherent(struct device *hwdev, size_t size,
--		      void *vaddr, dma_addr_t dma_handle);
--
- extern dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
- 				   unsigned long offset, size_t size,
- 				   enum dma_data_direction dir,
-diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index 8b06b4485e65..15954b86f09e 100644
---- a/lib/swiotlb.c
-+++ b/lib/swiotlb.c
-@@ -157,13 +157,6 @@ unsigned long swiotlb_size_or_default(void)
- 	return size ? size : (IO_TLB_DEFAULT_SIZE);
- }
- 
--/* Note that this doesn't work with highmem page */
--static dma_addr_t swiotlb_virt_to_bus(struct device *hwdev,
--				      volatile void *address)
--{
--	return phys_to_dma(hwdev, virt_to_phys(address));
--}
--
- static bool no_iotlb_memory;
- 
- void swiotlb_print_info(void)
-@@ -752,28 +745,6 @@ swiotlb_alloc_buffer(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 	return NULL;
- }
- 
--void *
--swiotlb_alloc_coherent(struct device *hwdev, size_t size,
--		       dma_addr_t *dma_handle, gfp_t flags)
--{
--	int order = get_order(size);
--	unsigned long attrs = (flags & __GFP_NOWARN) ? DMA_ATTR_NO_WARN : 0;
--	void *ret;
--
--	ret = (void *)__get_free_pages(flags, order);
--	if (ret) {
--		*dma_handle = swiotlb_virt_to_bus(hwdev, ret);
--		if (dma_coherent_ok(hwdev, *dma_handle, size)) {
--			memset(ret, 0, size);
--			return ret;
--		}
--		free_pages((unsigned long)ret, order);
--	}
--
--	return swiotlb_alloc_buffer(hwdev, size, dma_handle, attrs);
--}
--EXPORT_SYMBOL(swiotlb_alloc_coherent);
--
- static bool swiotlb_free_buffer(struct device *dev, size_t size,
- 		dma_addr_t dma_addr)
- {
-@@ -793,15 +764,6 @@ static bool swiotlb_free_buffer(struct device *dev, size_t size,
- 	return true;
- }
- 
--void
--swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
--		      dma_addr_t dev_addr)
--{
--	if (!swiotlb_free_buffer(hwdev, size, dev_addr))
--		free_pages((unsigned long)vaddr, get_order(size));
--}
--EXPORT_SYMBOL(swiotlb_free_coherent);
--
- static void
- swiotlb_full(struct device *dev, size_t size, enum dma_data_direction dir,
- 	     int do_panic)
--- 
-2.14.2
+Robin.
+
+>>
+>>
+>>> reserved-dma-region property is added to specify the ranges which should
+>>> never be mapped and given to devices sitting behind.
+>>>
+>>> Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>> Reviewed-by: Vikram Prakash <vikram.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>> Signed-off-by: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>> ---
+>>>    Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt | 3 +++
+>>>    1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>> b/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>> index b8e48b4..3be0fe3 100644
+>>> --- a/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>> +++ b/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>> @@ -30,6 +30,9 @@ Optional properties:
+>>>    - dma-ranges: Some PAXB-based root complexes do not have inbound mapping
+>>> done
+>>>      by the ASIC after power on reset.  In this case, SW is required to
+>>> configure
+>>>    the mapping, based on inbound memory regions specified by this property.
+>>> +- reserved-dma-region: PAXBv2 with IOMMU enabled cannot provide mappings
+>>> for
+>>> +  entire IOVA space specified by DMA mask. Hence this is used to reserve
+>>> the
+>>> +  gaps in dma-ranges.
+>>>      - brcm,pcie-ob: Some iProc SoCs do not have the outbound address
+>>> mapping done
+>>>    by the ASIC after power on reset. In this case, SW needs to configure it
+>>>
+>>
