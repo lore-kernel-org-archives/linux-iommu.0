@@ -1,18 +1,19 @@
-From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 1/5] iommu/amd - Add debugfs support
-Date: Wed, 14 Mar 2018 17:29:36 +0200
-Message-ID: <CAHp75VeEUCVSKLH0aobk=+GjVHWgO_OAKZRCx8gqDc9tWvESMw@mail.gmail.com>
-References: <152055660594.63229.5131049527614494130.stgit@sosxen2.amd.com>
-	<152055664720.63229.16209149030018336339.stgit@sosxen2.amd.com>
-	<CAHp75VdK6qFopBE4rD4yNO5GHccxyte=GhYU7YGcWOEYSCyX8Q@mail.gmail.com>
-	<30bd9559-0e44-bd18-6b9a-ec35bc8276f3@amd.com>
-	<CAHp75VeySPBEeJKRXzmqfPey56J3rwr2-dPRzSYx+7a7TAC5rw@mail.gmail.com>
-	<08d19301-7e8e-7586-8ffb-91823af0d31b@amd.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 11/13] dma-direct: handle the memory encryption bit in
+	common code
+Date: Wed, 14 Mar 2018 10:44:29 -0500
+Message-ID: <69e98163-beca-fb8a-a26b-66dfeef2f689@amd.com>
+References: <20180305174655.9878-1-hch@lst.de>
+	<20180305174655.9878-12-hch@lst.de>
+	<114e27be-5814-4258-4985-af08763c8a74@amd.com>
+	<0c9d3e4a-8407-282a-73eb-21d28047e0e3@amd.com>
+	<20180313131005.GA6260@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <08d19301-7e8e-7586-8ffb-91823af0d31b-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20180313131005.GA6260-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,37 +23,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 14, 2018 at 5:24 PM, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org> wrote:
-> On 03/13/2018 03:23 PM, Andy Shevchenko wrote:
+On 03/13/2018 08:10 AM, Christoph Hellwig wrote:
+> On Mon, Mar 12, 2018 at 02:48:51PM -0500, Tom Lendacky wrote:
+>> Ok, I found one issue that allows this to work when the IOMMU isn't
+>> enabled (see below).
+> 
+> Thanks, folded!
+> 
+>> But the bigger issue is when the IOMMU is enabled.  The IOMMU code uses
+>> a common mapping routine to create the I/O page tables.  This routine
+>> assumes that all memory being mapped is encrypted and therefore sets the
+>> encryption bit in the I/O page tables.  With this patch, the call to
+>> dma_alloc_direct() now returns un-encrypted memory which results in an
+>> encryption mis-match.  I think keeping dma_alloc_direct() as it was prior
+>> to this patch is the way to go.  It allows SME DMA allocations to remain
+>> encrypted and avoids added complexity in the amd_iommu.c file.  This
+>> would mean that SEV would still have special DMA operations (so that the
+>> alloc/free can change the memory to un-encrypted).
+>>
+>> What do you think?
+> 
+> In terms of logic you are right.  I still don't like keeping a just
+> slightly tweaked version of dma_alloc_direct around just for this, it
+> will be perpetually out of sync in terms of features and bug fixes.
+> 
+> What do you think about this version that does the decision at runtime:
+> 
+> 	http://git.infradead.org/users/hch/misc.git/commitdiff/b89f24dc856595dc7610d672bf077195ab0dabf4
+> 
+> The full tree is available here for testing:
+> 
+> 	git://git.infradead.org/users/hch/misc.git dma-direct-x86
+> 
 
->>>>> +#include <linux/pci.h>
->>>>> +#include <linux/iommu.h>
->>>>> +#include <linux/debugfs.h>
+Thanks for the pointer to the tree.  I did find one bug in the
+allocation routine, that once fixed (see below), worked with SME
+for IOMMU on and off and worked with an SEV guest.
 
->>>> Keep in order?
+I understand the comment about using sev_active() in the dma-direct
+code, maybe we can up with something later to address that.
 
->>> What order would that be? These few needed files are listed in the same
->>> order as which they appear in amd_iommu.c. I'm gonna need a preference
->>> spelled out, please (and a rationale, so I may better understand).
+Thanks,
+Tom
 
->> To increase readability and avoid potential header duplication (here
->> is can bus protocol implementation where the problem exists for real,
->> even in new code!)
+diff --git a/lib/dma-direct.c b/lib/dma-direct.c
+index 856e140..988a3d8 100644
+--- a/lib/dma-direct.c
++++ b/lib/dma-direct.c
+@@ -82,10 +82,12 @@ void *dma_direct_alloc(struct device *dev, size_t
+size, dma_addr_t *dma_handle,
 
-> With all due respect, I don't find that you clearly answered my question.
-
-Alphabetical order I meant.
-
-> I
-> will hazard a guess that you mean to -alphabetize- them? Which I am happy to
-> do, and will do so in the next version.
-
-Yes, please.
-
--- 
-With Best Regards,
-Andy Shevchenko
+ 	if (!page)
+ 		return NULL;
+-	*dma_handle = __phys_to_dma(dev, page_to_phys(page));
++	*dma_handle = phys_to_dma(dev, page_to_phys(page));
+ 	ret = page_address(page);
+-	if (sev_active())
++	if (sev_active()) {
++		*dma_handle = __phys_to_dma(dev, page_to_phys(page));
+ 		set_memory_decrypted((unsigned long)ret, 1 << page_order);
++	}
+ 	memset(ret, 0, size);
+ 	return ret;
+ }
