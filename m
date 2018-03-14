@@ -1,61 +1,59 @@
-From: Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH v9 1/5] driver core: Find an existing link between two
- devices
-Date: Wed, 14 Mar 2018 13:27:59 +0100
-Message-ID: <20180314122759.GB19651@wunner.de>
-References: <20180313085534.11650-1-vivek.gautam@codeaurora.org>
- <2217404.A2W3Iek6du@aspire.rjw.lan>
- <CAAFQd5CQXY0Efv+2MC1kTVW5q4eZjJ=gwVaR-LA=3agnSSHzUw@mail.gmail.com>
- <2705105.V6KYPvoJqj@aspire.rjw.lan>
- <11eae0bc-7921-e598-9c01-63498400c85b@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 07/37] iommu: Add a page fault handler
+Date: Wed, 14 Mar 2018 13:08:07 +0000
+Message-ID: <d855e893-0f3d-3106-eb75-ce01ad9ce663@arm.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-8-jean-philippe.brucker@arm.com>
+	<20180308164035.000065c2@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <11eae0bc-7921-e598-9c01-63498400c85b@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Figa <tfiga@chromium.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>, Sricharan R <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Archit Taneja <architt@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180308164035.000065c2-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rjw@rjwyso
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 14, 2018 at 12:14:15PM +0000, Robin Murphy wrote:
-> >>On Wed, Mar 14, 2018 at 8:12 PM, Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
-> >>>On Tuesday, March 13, 2018 12:23:34 PM CET Tomasz Figa wrote:
-> >>>>On Tue, Mar 13, 2018 at 7:34 PM, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
-> >>>>>On Tue, Mar 13, 2018 at 3:45 PM, Tomasz Figa <tfiga@chromium.org> wrote:
-> >>>>>>On Tue, Mar 13, 2018 at 5:55 PM, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
-> >>>>>>>The lists managing the device-links can be traversed to
-> >>>>>>>find the link between two devices. The device_link_add() APIs
-> >>>>>>>does traverse these lists to check if there's already a link
-> >>>>>>>setup between the two devices.
-> >>>>>>>So, add a new APIs, device_link_find(), to find an existing
-> >>>>>>>device link between two devices - suppliers and consumers.
-> >>>>>>
-> >>>>>>I'm wondering if this API would be useful for anything else that the
-> >>>>>>problem we're trying to solve with deleting links without storing them
-> >>>>>>anywhere. Perhaps a device_link_del_dev(consumer, supplier) would be a
-> >>>>>>better alternative?
-> >>>>>
-> >>>>>Yea, that sounds simpler i think. Will add this API instead of
-> >>>>>find_link(). Thanks.
-> >>>>
-> >>>>Perhaps let's wait for a moment to see if there are other opinions. :)
-> >>>>
-> >>>>Rafael, Lucas, any thoughts?
-> >>>
-> >>>It is not clear to me what the device_link_del_dev(consumer, supplier)
-> >>>would do.
-> 
-> Not quite - the issue here is that we have one supplier with an arbitrarily
-> large number of consumers, and would prefer that supplier not to have to
-> spend a whole bunch of memory to store all the struct device_link pointers
-> for the sole reason of having something to give to device_link_del() at the
-> end, given that the device links code is already keeping track of everything
-> internally anyway.
+Hi Jonathan,
 
-Makes sense to me.  How about an additional flag which autoremoves the
-link on provider unbind?
+Thanks for reviewing
+
+On 08/03/18 15:40, Jonathan Cameron wrote:
+>> +/**
+>> + * iommu_fault_queue_unregister() - Unregister an IOMMU driver from the fault
+>> + * queue.
+>> + * @flush_notifier: same parameter as iommu_fault_queue_register
+>> + */
+>> +void iommu_fault_queue_unregister(struct notifier_block *flush_notifier)
+>> +{
+>> +	down_write(&iommu_fault_queue_sem);
+>> +	if (refcount_dec_and_test(&iommu_fault_queue_refs)) {
+>> +		destroy_workqueue(iommu_fault_queue);
+>> +		iommu_fault_queue = NULL;
+>> +	}
+>> +	up_write(&iommu_fault_queue_sem);
+>> +
+>> +	if (flush_notifier)
+>> +		blocking_notifier_chain_unregister(&iommu_fault_queue_flush_notifiers,
+>> +						   flush_notifier);
+> I would expect the ordering in queue_unregister to be the reverse of queue
+> register (to make it obvious there are no races).
+> 
+> That would put this last block at the start before potentially destroying
+> the work queue.  If I'm missing something then perhaps a comment to
+> explain why the ordering is not the obvious one?
+
+Sure, I'll fix the order, I don't think there was any good reason for it
 
 Thanks,
-
-Lukas
+Jean
