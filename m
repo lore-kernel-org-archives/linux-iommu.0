@@ -1,20 +1,21 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 Subject: Re: [PATCH 05/10] iommu/amd: remove the special case from
 	get_irq_table()
-Date: Thu, 15 Mar 2018 16:19:17 +0100
-Message-ID: <20180315151917.pgheszruqnnjbqb4@8bytes.org>
+Date: Thu, 15 Mar 2018 16:25:51 +0100
+Message-ID: <20180315152551.vsut2dt7b2m7guyu@linutronix.de>
 References: <20180223222736.18542-1-bigeasy@linutronix.de>
 	<20180223222736.18542-6-bigeasy@linutronix.de>
 	<20180315125342.q74wurk6bdbhl6hy@8bytes.org>
 	<20180315130153.3ba2loj5oplogdew@linutronix.de>
 	<20180315130723.dunmpmbkswwvq54g@8bytes.org>
 	<20180315141541.6g3xc6yi4siafuwr@linutronix.de>
+	<20180315151917.pgheszruqnnjbqb4@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180315141541.6g3xc6yi4siafuwr-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+In-Reply-To: <20180315151917.pgheszruqnnjbqb4-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,28 +25,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBNYXIgMTUsIDIwMTggYXQgMDM6MTU6NDFQTSArMDEwMCwgU2ViYXN0aWFuIEFuZHJ6
-ZWogU2lld2lvciB3cm90ZToKPiAtPnNldF9hbGxvY2F0ZWQoKSBvcGVyYXRlcyBvbmx5IG9uIDDi
-gKYzMSBhbmQgb3RoZXIgY291bGQgYmUgdXNlZCBhdCB0aGUKPiBzYW1lIHRpbWUuIEhvd2V2ZXIg
-MOKApjMxIHNob3VsZCBiZSBhY2Nlc3NlZCBieSBvdGhlciB1c2VyIGJlZm9yZSB0aGV5IGFyZQo+
-IHJlYWR5Lgo+IAo+IGlycV9yZW1hcHBpbmdfYWxsb2MoKSBpcyB0aGF0IC0+YWxsb2MoKSBjYWxs
-YmFjayBpbnZva2VkIHZpYQo+IGlycV9kb21haW5fYWxsb2NfaXJxc19oaWVyYXJjaHkoKSBhbmQg
-ZWFjaCBjYWxsZXIgaGFzIHRvIGhvbGQgdGhlCj4gJmlycV9kb21haW5fbXV0ZXggbXV0ZXguIFNv
-IHdlIHNob3VsZCBub3QgaGF2ZSB0aG9zZSBpbiBwYXJhbGxlbC4KPiAKPiBJcyBpdCBwb3NzaWJs
-ZSB0byBoYXZlIHRob3NlIGVudHJpZXMgYWNjZXNzZWQgYmVmb3JlIHRoZSBzZXR1cCBpcwo+IGNv
-bXBsZXRlPyBNeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgdGhpcyBzZXR1cCBpcyBwZXJmb3JtZWQg
-b25jZSBkdXJpbmcKPiBib290IChlc3BlY2lhbGx5IHRoYXQgaW9hcGljIHBhcnQpIGFuZCBub3Qg
-YWdhaW4uCj4gCj4gRnJvbSBsb29raW5nIGF0IHRoYXQgaHVuaywgaXQgc2hvdWxkIG5vdCBodXJ0
-IHRvIGFkZCB0aGF0IGxvY2ssIGp1c3QKPiB3YW50ZWQgdG8gY2hlY2sgaXQgaXMgcmVhbGx5IG5l
-ZWRlZC4KCk9rYXksIGlmIHRoZSBpcnEtbGF5ZXIgZG9lcyB0aGUgbmVlZGVkIGxvY2tpbmcsIHRo
-ZW4gd2UgZG9uJ3QgbmVlZAphbm90aGVyIGxvY2sgaGVyZS4gVGhlcmUgaXMgdGhlIG1vZGlmeV9p
-cnRlX2dhKCkgcGF0aCBmb3IgdGhlCnZpcnR1YWxpemVkIGlycSByb3V0aW5nIGludG8gS1ZNIGd1
-ZXN0cywgYnV0IHRoZXJlIHNob3VsZCBiZSBubyBLVk0KZ3Vlc3RzIHJ1bm5pbmcgd2hlbiBzZXR1
-cCB0aGUgaW9hcGljIHJvdXRpbmcgZW50cmllcy4KCgoKCUpvZXJnCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 2018-03-15 16:19:17 [+0100], Joerg Roedel wrote:
+> Okay, if the irq-layer does the needed locking, then we don't need
+> another lock here. There is the modify_irte_ga() path for the
+> virtualized irq routing into KVM guests, but there should be no KVM
+> guests running when setup the ioapic routing entries.
+
+okay then. Let me rebase the queue on top whatever you have now and then
+if the box still boots I will post them again.
+
+> 	Joerg
+
+Sebastian
