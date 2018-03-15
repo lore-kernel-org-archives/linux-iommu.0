@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH 2/3] iommu/vt-d: Decouple idr bond pointer from svm
-Date: Thu, 15 Mar 2018 10:38:20 +0800
-Message-ID: <1521081501-30119-3-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH 3/3] iommu/vt-d: Use global PASID for SVM usage
+Date: Thu, 15 Mar 2018 10:38:21 +0800
+Message-ID: <1521081501-30119-4-git-send-email-baolu.lu@linux.intel.com>
 References: <1521081501-30119-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,14 +21,8 @@ To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roede
 Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As we move the PASID idr out of SVM code and make it serving
-as a global PASID name space, the consumer can specify a ptr
-to bind it with a PASID. We shouldn't assume that each PASID
-will be bond with a ptr of struct intel_svm anymore.
-
-This patch cleans up a idr_for_each_entry() usage in the SVM
-code. It's required to replace the SVM-specific idr with the
-global PASID idr.
+This patch switches PASID management for SVM from SVM specific
+idr to the global idr.
 
 Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
@@ -38,77 +32,101 @@ Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Reviewed-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-svm.c   | 14 ++++++++++----
- include/linux/intel-iommu.h |  1 +
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/intel-svm.c   | 20 +++++++++-----------
+ include/linux/intel-iommu.h |  1 -
+ 2 files changed, 9 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 99bc9bd..f3b7394 100644
+index f3b7394..1c45f75 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -298,6 +298,7 @@ static const struct mmu_notifier_ops intel_mmuops = {
- };
+@@ -85,8 +85,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+ 				iommu->name);
+ 	}
  
- static DEFINE_MUTEX(pasid_mutex);
-+static LIST_HEAD(global_svm_list);
+-	idr_init(&iommu->pasid_idr);
+-
+ 	return 0;
+ }
  
- int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
- {
-@@ -329,13 +330,13 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+@@ -102,7 +100,7 @@ int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
+ 		free_pages((unsigned long)iommu->pasid_state_table, order);
+ 		iommu->pasid_state_table = NULL;
+ 	}
+-	idr_destroy(&iommu->pasid_idr);
++
+ 	return 0;
+ }
  
- 	mutex_lock(&pasid_mutex);
- 	if (pasid && !(flags & SVM_FLAG_PRIVATE_PASID)) {
--		int i;
-+		struct intel_svm *t;
+@@ -392,9 +390,9 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 			pasid_max = iommu->pasid_max;
  
--		idr_for_each_entry(&iommu->pasid_idr, svm, i) {
--			if (svm->mm != mm ||
--			    (svm->flags & SVM_FLAG_PRIVATE_PASID))
-+		list_for_each_entry(t, &global_svm_list, list) {
-+			if (t->mm != mm || (t->flags & SVM_FLAG_PRIVATE_PASID))
- 				continue;
- 
-+			svm = t;
- 			if (svm->pasid >= pasid_max) {
- 				dev_warn(dev,
- 					 "Limited PASID width. Cannot use existing PASID %d\n",
-@@ -403,6 +404,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		svm->mm = mm;
- 		svm->flags = flags;
- 		INIT_LIST_HEAD_RCU(&svm->devs);
-+		INIT_LIST_HEAD(&svm->list);
- 		ret = -ENOMEM;
+ 		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
+-		ret = idr_alloc(&iommu->pasid_idr, svm,
+-				!!cap_caching_mode(iommu->cap),
+-				pasid_max - 1, GFP_KERNEL);
++		ret = intel_iommu_alloc_pasid(svm,
++					      !!cap_caching_mode(iommu->cap),
++					      pasid_max - 1, GFP_KERNEL);
+ 		if (ret < 0) {
+ 			kfree(svm);
+ 			goto out;
+@@ -409,7 +407,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
  		if (mm) {
  			ret = mmu_notifier_register(&svm->notifier, mm);
-@@ -433,6 +435,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		 * anyway. Surely that can be left entirely to the guest? */
- 		if (cap_caching_mode(iommu->cap))
- 			intel_flush_pasid_dev(svm, sdev, 0);
-+
-+		list_add_tail(&svm->list, &global_svm_list);
- 	}
- 	list_add_rcu(&sdev->list, &svm->devs);
+ 			if (ret) {
+-				idr_remove(&svm->iommu->pasid_idr, svm->pasid);
++				intel_iommu_free_pasid(svm->pasid);
+ 				kfree(svm);
+ 				kfree(sdev);
+ 				goto out;
+@@ -463,7 +461,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 	if (!iommu || !iommu->pasid_table)
+ 		goto out;
  
-@@ -488,6 +492,8 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+-	svm = idr_find(&iommu->pasid_idr, pasid);
++	svm = intel_iommu_lookup_pasid(pasid);
+ 	if (!svm)
+ 		goto out;
+ 
+@@ -488,7 +486,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 					svm->iommu->pasid_table[svm->pasid].val = 0;
+ 					wmb();
+ 
+-					idr_remove(&svm->iommu->pasid_idr, svm->pasid);
++					intel_iommu_free_pasid(svm->pasid);
  					if (svm->mm)
  						mmu_notifier_unregister(&svm->notifier, svm->mm);
  
-+					list_del(&svm->list);
-+
- 					/* We mandate that no page faults may be outstanding
- 					 * for the PASID when intel_svm_unbind_mm() is called.
- 					 * If that is not obeyed, subtle errors will happen.
+@@ -523,7 +521,7 @@ int intel_svm_is_pasid_valid(struct device *dev, int pasid)
+ 	if (!iommu || !iommu->pasid_table)
+ 		goto out;
+ 
+-	svm = idr_find(&iommu->pasid_idr, pasid);
++	svm = intel_iommu_lookup_pasid(pasid);
+ 	if (!svm)
+ 		goto out;
+ 
+@@ -621,7 +619,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 
+ 		if (!svm || svm->pasid != req->pasid) {
+ 			rcu_read_lock();
+-			svm = idr_find(&iommu->pasid_idr, req->pasid);
++			svm = intel_iommu_lookup_pasid(req->pasid);
+ 			/* It *can't* go away, because the driver is not permitted
+ 			 * to unbind the mm while any page faults are outstanding.
+ 			 * So we only need RCU to protect the internal idr code. */
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index bf83073..a2013dd 100644
+index a2013dd..e50bef8 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -486,6 +486,7 @@ struct intel_svm {
- 	int flags;
- 	int pasid;
- 	struct list_head devs;
-+	struct list_head list;
- };
- 
- extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
+@@ -418,7 +418,6 @@ struct intel_iommu {
+ 	struct pasid_state_entry *pasid_state_table;
+ 	struct page_req_dsc *prq;
+ 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+-	struct idr pasid_idr;
+ 	u32 pasid_max;
+ #endif
+ 	struct q_inval  *qi;            /* Queued invalidation info */
 -- 
 2.7.4
