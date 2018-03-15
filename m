@@ -1,14 +1,16 @@
-From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 7/7] iommu/dma: Move PCI window region reservation back
-	into dma specific path.
-Date: Thu, 15 Mar 2018 16:35:09 +0000
-Message-ID: <20180315163509.17740-8-shameerali.kolothum.thodi@huawei.com>
-References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 05/14] x86/amd_gart: look at coherent_dma_mask instead of
+	GFP_DMA
+Date: Thu, 15 Mar 2018 13:47:48 -0400
+Message-ID: <20180315174747.GP13391@char.us.oracle.com>
+References: <20180314175213.20256-1-hch@lst.de>
+	<20180314175213.20256-6-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180315163509.17740-1-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180314175213.20256-6-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,107 +20,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This pretty much reverts commit 273df9635385 ("iommu/dma: Make PCI
-window reservation generic")  by moving the PCI window region
-reservation back into the dma specific path so that these regions
-doesn't get exposed via the IOMMU API interface. With this change,
-the vfio interface will report only iommu specific reserved regions
-to the user space.
+On Wed, Mar 14, 2018 at 06:52:04PM +0100, Christoph Hellwig wrote:
+> We want to phase out looking at the magic GFP_DMA flag in the dma mapping
+> routines, so switch the gart driver to use the coherent_dma_mask instead,
+> which is used to select the GFP_DMA flag in the caller.
+> 
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/dma-iommu.c | 54 ++++++++++++++++++++++-------------------------
- 1 file changed, 25 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index f05f3cf..ddcbbdb 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -167,40 +167,16 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
-  * @list: Reserved region list from iommu_get_resv_regions()
-  *
-  * IOMMU drivers can use this to implement their .get_resv_regions callback
-- * for general non-IOMMU-specific reservations. Currently, this covers host
-- * bridge windows for PCI devices and GICv3 ITS region reservation on ACPI
-- * based ARM platforms that may require HW MSI reservation.
-+ * for general non-IOMMU-specific reservations. Currently, this covers GICv3
-+ * ITS region reservation on ACPI based ARM platforms that may require HW MSI
-+ * reservation.
-  */
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
- {
--	struct pci_host_bridge *bridge;
--	struct resource_entry *window;
--
--	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode) &&
--		iort_iommu_msi_get_resv_regions(dev, list) < 0)
--		return;
--
--	if (!dev_is_pci(dev))
--		return;
--
--	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
--	resource_list_for_each_entry(window, &bridge->windows) {
--		struct iommu_resv_region *region;
--		phys_addr_t start;
--		size_t length;
--
--		if (resource_type(window->res) != IORESOURCE_MEM)
--			continue;
- 
--		start = window->res->start - window->offset;
--		length = window->res->end - window->res->start + 1;
--		region = iommu_alloc_resv_region(start, length, 0,
--				IOMMU_RESV_RESERVED);
--		if (!region)
--			return;
-+	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
-+		iort_iommu_msi_get_resv_regions(dev, list);
- 
--		list_add_tail(&region->list, list);
--	}
- }
- EXPORT_SYMBOL(iommu_dma_get_resv_regions);
- 
-@@ -229,6 +205,23 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
- 	return 0;
- }
- 
-+static void iova_reserve_pci_windows(struct pci_dev *dev,
-+		struct iova_domain *iovad)
-+{
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct resource_entry *window;
-+	unsigned long lo, hi;
-+
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		if (resource_type(window->res) != IORESOURCE_MEM)
-+			continue;
-+
-+		lo = iova_pfn(iovad, window->res->start - window->offset);
-+		hi = iova_pfn(iovad, window->res->end - window->offset);
-+		reserve_iova(iovad, lo, hi);
-+	}
-+}
-+
- static int iova_reserve_iommu_regions(struct device *dev,
- 		struct iommu_domain *domain)
- {
-@@ -238,6 +231,9 @@ static int iova_reserve_iommu_regions(struct device *dev,
- 	LIST_HEAD(resv_regions);
- 	int ret = 0;
- 
-+	if (dev_is_pci(dev))
-+		iova_reserve_pci_windows(to_pci_dev(dev), iovad);
-+
- 	iommu_get_resv_regions(dev, &resv_regions);
- 	list_for_each_entry(region, &resv_regions, list) {
- 		unsigned long lo, hi;
--- 
-2.7.4
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>  arch/x86/kernel/amd_gart_64.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
+> index 52e3abcf3e70..79ac6caaaabb 100644
+> --- a/arch/x86/kernel/amd_gart_64.c
+> +++ b/arch/x86/kernel/amd_gart_64.c
+> @@ -484,7 +484,7 @@ gart_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_addr,
+>  	unsigned long align_mask;
+>  	struct page *page;
+>  
+> -	if (force_iommu && !(flag & GFP_DMA)) {
+> +	if (force_iommu && dev->coherent_dma_mask > DMA_BIT_MASK(24)) {
+>  		flag &= ~(__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32);
+>  		page = alloc_pages(flag | __GFP_ZERO, get_order(size));
+>  		if (!page)
+> -- 
+> 2.14.2
+> 
