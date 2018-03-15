@@ -1,21 +1,19 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH 05/10] iommu/amd: remove the special case from
-	get_irq_table()
-Date: Thu, 15 Mar 2018 16:25:51 +0100
-Message-ID: <20180315152551.vsut2dt7b2m7guyu@linutronix.de>
-References: <20180223222736.18542-1-bigeasy@linutronix.de>
-	<20180223222736.18542-6-bigeasy@linutronix.de>
-	<20180315125342.q74wurk6bdbhl6hy@8bytes.org>
-	<20180315130153.3ba2loj5oplogdew@linutronix.de>
-	<20180315130723.dunmpmbkswwvq54g@8bytes.org>
-	<20180315141541.6g3xc6yi4siafuwr@linutronix.de>
-	<20180315151917.pgheszruqnnjbqb4@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
+Date: Thu, 15 Mar 2018 16:28:28 +0100
+Message-ID: <20180315152828.GA11365@8bytes.org>
+References: <20180215191729.15777-1-dima@arista.com>
+	<20180315134649.skh2aukcmg5ud74y@8bytes.org>
+	<1521123183.2686.7.camel@arista.com>
+	<20180315142253.GC5259@8bytes.org>
+	<1521124490.2686.16.camel@arista.com>
+	<1521124920.2686.20.camel@arista.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180315151917.pgheszruqnnjbqb4-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1521124920.2686.20.camel-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,19 +23,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-03-15 16:19:17 [+0100], Joerg Roedel wrote:
-> Okay, if the irq-layer does the needed locking, then we don't need
-> another lock here. There is the modify_irte_ga() path for the
-> virtualized irq routing into KVM guests, but there should be no KVM
-> guests running when setup the ioapic routing entries.
+On Thu, Mar 15, 2018 at 02:42:00PM +0000, Dmitry Safonov wrote:
+> But even with loop-limit we will need ratelimit each printk() *also*.
+> Otherwise loop-limit will be based on time spent printing, not on
+> anything else..
+> The patch makes sense even with loop-limit in my opinion.
 
-okay then. Let me rebase the queue on top whatever you have now and then
-if the box still boots I will post them again.
+Looks like I mis-read your patch, somehow it looked to me as if you
+replace all 'ratelimited' usages with a call to __ratelimit(), but you
+just move 'ratelimited' into the loop, which actually makes sense.
 
-> 	Joerg
+But still, this alone is no proper fix for the soft-lockups you are
+seeing.
 
-Sebastian
+
+	Joerg
