@@ -1,67 +1,124 @@
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v5 6/7] vfio/type1: remove duplicate retrieval of reserved regions
-Date: Thu, 15 Mar 2018 16:35:08 +0000
-Message-ID: <20180315163509.17740-7-shameerali.kolothum.thodi@huawei.com>
+From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5 7/7] iommu/dma: Move PCI window region reservation back
+	into dma specific path.
+Date: Thu, 15 Mar 2018 16:35:09 +0000
+Message-ID: <20180315163509.17740-8-shameerali.kolothum.thodi@huawei.com>
 References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: alex.williamson@redhat.com, eric.auger@redhat.com, pmorel@linux.vnet.ibm.com
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linuxarm@huawei.com, john.garry@huawei.com, xuwei5@hisilicon.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180315163509.17740-1-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As we now already have the reserved regions list, just pass that into
-vfio_iommu_has_sw_msi() fn.
+This pretty much reverts commit 273df9635385 ("iommu/dma: Make PCI
+window reservation generic")  by moving the PCI window region
+reservation back into the dma specific path so that these regions
+doesn't get exposed via the IOMMU API interface. With this change,
+the vfio interface will report only iommu specific reserved regions
+to the user space.
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/iommu/dma-iommu.c | 54 ++++++++++++++++++++++-------------------------
+ 1 file changed, 25 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 90f195d..65c13e7 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1204,15 +1204,13 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
- 	return NULL;
- }
- 
--static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
-+static bool vfio_iommu_has_sw_msi(struct list_head *group_resv_regions,
-+						phys_addr_t *base)
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f05f3cf..ddcbbdb 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -167,40 +167,16 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+  * @list: Reserved region list from iommu_get_resv_regions()
+  *
+  * IOMMU drivers can use this to implement their .get_resv_regions callback
+- * for general non-IOMMU-specific reservations. Currently, this covers host
+- * bridge windows for PCI devices and GICv3 ITS region reservation on ACPI
+- * based ARM platforms that may require HW MSI reservation.
++ * for general non-IOMMU-specific reservations. Currently, this covers GICv3
++ * ITS region reservation on ACPI based ARM platforms that may require HW MSI
++ * reservation.
+  */
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
  {
--	struct list_head group_resv_regions;
--	struct iommu_resv_region *region, *next;
-+	struct iommu_resv_region *region;
- 	bool ret = false;
+-	struct pci_host_bridge *bridge;
+-	struct resource_entry *window;
+-
+-	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode) &&
+-		iort_iommu_msi_get_resv_regions(dev, list) < 0)
+-		return;
+-
+-	if (!dev_is_pci(dev))
+-		return;
+-
+-	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
+-	resource_list_for_each_entry(window, &bridge->windows) {
+-		struct iommu_resv_region *region;
+-		phys_addr_t start;
+-		size_t length;
+-
+-		if (resource_type(window->res) != IORESOURCE_MEM)
+-			continue;
  
--	INIT_LIST_HEAD(&group_resv_regions);
--	iommu_get_group_resv_regions(group, &group_resv_regions);
--	list_for_each_entry(region, &group_resv_regions, list) {
-+	list_for_each_entry(region, group_resv_regions, list) {
- 		/*
- 		 * The presence of any 'real' MSI regions should take
- 		 * precedence over the software-managed one if the
-@@ -1228,8 +1226,7 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
- 			ret = true;
- 		}
- 	}
--	list_for_each_entry_safe(region, next, &group_resv_regions, list)
--		kfree(region);
-+
- 	return ret;
+-		start = window->res->start - window->offset;
+-		length = window->res->end - window->res->start + 1;
+-		region = iommu_alloc_resv_region(start, length, 0,
+-				IOMMU_RESV_RESERVED);
+-		if (!region)
+-			return;
++	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
++		iort_iommu_msi_get_resv_regions(dev, list);
+ 
+-		list_add_tail(&region->list, list);
+-	}
+ }
+ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ 
+@@ -229,6 +205,23 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
+ 	return 0;
  }
  
-@@ -1564,7 +1561,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
++static void iova_reserve_pci_windows(struct pci_dev *dev,
++		struct iova_domain *iovad)
++{
++	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
++	struct resource_entry *window;
++	unsigned long lo, hi;
++
++	resource_list_for_each_entry(window, &bridge->windows) {
++		if (resource_type(window->res) != IORESOURCE_MEM)
++			continue;
++
++		lo = iova_pfn(iovad, window->res->start - window->offset);
++		hi = iova_pfn(iovad, window->res->end - window->offset);
++		reserve_iova(iovad, lo, hi);
++	}
++}
++
+ static int iova_reserve_iommu_regions(struct device *dev,
+ 		struct iommu_domain *domain)
+ {
+@@ -238,6 +231,9 @@ static int iova_reserve_iommu_regions(struct device *dev,
+ 	LIST_HEAD(resv_regions);
+ 	int ret = 0;
  
--	resv_msi = vfio_iommu_has_sw_msi(iommu_group, &resv_msi_base);
-+	resv_msi = vfio_iommu_has_sw_msi(&group_resv_regions, &resv_msi_base);
- 
- 	INIT_LIST_HEAD(&domain->group_list);
- 	list_add(&group->next, &domain->group_list);
++	if (dev_is_pci(dev))
++		iova_reserve_pci_windows(to_pci_dev(dev), iovad);
++
+ 	iommu_get_resv_regions(dev, &resv_regions);
+ 	list_for_each_entry(region, &resv_regions, list) {
+ 		unsigned long lo, hi;
 -- 
 2.7.4
