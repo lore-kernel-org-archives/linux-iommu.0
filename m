@@ -1,68 +1,26 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH 05/10] iommu/amd: remove the special case from
-	get_irq_table()
-Date: Thu, 15 Mar 2018 15:15:41 +0100
-Message-ID: <20180315141541.6g3xc6yi4siafuwr@linutronix.de>
-References: <20180223222736.18542-1-bigeasy@linutronix.de>
-	<20180223222736.18542-6-bigeasy@linutronix.de>
-	<20180315125342.q74wurk6bdbhl6hy@8bytes.org>
-	<20180315130153.3ba2loj5oplogdew@linutronix.de>
-	<20180315130723.dunmpmbkswwvq54g@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix a potential memory leak
+Date: Thu, 15 Mar 2018 15:16:36 +0100
+Message-ID: <20180315141636.cel3dqr4pzxfgtb3@8bytes.org>
+References: <1519450947-9760-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180315130723.dunmpmbkswwvq54g-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1519450947-9760-1-git-send-email-baolu.lu@linux.intel.com>
+Sender: stable-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, "# v4 . 4+" <stable@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxOC0wMy0xNSAxNDowNzoyMyBbKzAxMDBdLCBKb2VyZyBSb2VkZWwgd3JvdGU6Cj4gT24g
-VGh1LCBNYXIgMTUsIDIwMTggYXQgMDI6MDE6NTNQTSArMDEwMCwgU2ViYXN0aWFuIEFuZHJ6ZWog
-U2lld2lvciB3cm90ZToKPiA+IE9uIDIwMTgtMDMtMTUgMTM6NTM6NDIgWyswMTAwXSwgSm9lcmcg
-Um9lZGVsIHdyb3RlOgo+ID4gPiBPbiBGcmksIEZlYiAyMywgMjAxOCBhdCAxMToyNzozMVBNICsw
-MTAwLCBTZWJhc3RpYW4gQW5kcnplaiBTaWV3aW9yIHdyb3RlOgo+ID4gPiA+IEBAIC00MTAzLDEw
-ICs0MDkzLDI2IEBAIHN0YXRpYyBpbnQgaXJxX3JlbWFwcGluZ19hbGxvYyhzdHJ1Y3QgaXJxX2Rv
-bWFpbiAqZG9tYWluLCB1bnNpZ25lZCBpbnQgdmlycSwKPiA+ID4gPiAgCQlyZXR1cm4gcmV0Owo+
-ID4gPiA+ICAKPiA+ID4gPiAgCWlmIChpbmZvLT50eXBlID09IFg4Nl9JUlFfQUxMT0NfVFlQRV9J
-T0FQSUMpIHsKPiA+ID4gPiAtCQlpZiAoZ2V0X2lycV90YWJsZShkZXZpZCwgdHJ1ZSkpCj4gPiA+
-ID4gKwkJc3RydWN0IGlycV9yZW1hcF90YWJsZSAqdGFibGU7Cj4gPiA+ID4gKwkJc3RydWN0IGFt
-ZF9pb21tdSAqaW9tbXU7Cj4gPiA+ID4gKwo+ID4gPiA+ICsJCXRhYmxlID0gZ2V0X2lycV90YWJs
-ZShkZXZpZCk7Cj4gPiA+ID4gKwkJaWYgKHRhYmxlKSB7Cj4gPiA+ID4gKwkJCWlmICghdGFibGUt
-Pm1pbl9pbmRleCkgewo+ID4gPiA+ICsJCQkJLyoKPiA+ID4gPiArCQkJCSAqIEtlZXAgdGhlIGZp
-cnN0IDMyIGluZGV4ZXMgZnJlZSBmb3IgSU9BUElDCj4gPiA+ID4gKwkJCQkgKiBpbnRlcnJ1cHRz
-Lgo+ID4gPiA+ICsJCQkJICovCj4gPiA+ID4gKwkJCQl0YWJsZS0+bWluX2luZGV4ID0gMzI7Cj4g
-PiA+ID4gKwkJCQlpb21tdSA9IGFtZF9pb21tdV9ybG9va3VwX3RhYmxlW2RldmlkXTsKPiA+ID4g
-PiArCQkJCWZvciAoaSA9IDA7IGkgPCAzMjsgKytpKQo+ID4gPiA+ICsJCQkJCWlvbW11LT5pcnRl
-X29wcy0+c2V0X2FsbG9jYXRlZCh0YWJsZSwgaSk7Cj4gPiA+ID4gKwkJCX0KPiA+ID4gCj4gPiA+
-IEkgdGhpbmsgdGhpcyBuZWVkcyB0byBiZSBwcm90ZWN0ZWQgYnkgdGhlIHRhYmxlLT5sb2NrLgo+
-ID4gCj4gPiBXaGljaCBwYXJ0IGFueSB3aHk/IFRoZSAhLT5taW5faW5kZXggcGFydCBwbHVzIGV4
-dGVuZGluZyhzZXR0aW5nIHRvIDMyKT8KPiAKPiBJbiBwYXJ0aWN1bGFyIHRoZSBzZXRfYWxsb2Nh
-dGVkIHBhcnQsIHdoZW4gZ2V0X2lycV90YWJsZSgpIHJldHVybnMgdGhlCj4gdGFibGUgaXMgdmlz
-aWJsZSB0byBvdGhlciB1c2VycyBhcyB3ZWxsLiBJIGhhdmUgbm90IGNoZWNrZWQgdGhlCj4gaXJx
-LWxheWVyIGxvY2tpbmcgdG8gYmUgc3VyZSB0aGF0IGNhbiBoYXBwZW4sIHRob3VnaC4KCi0+c2V0
-X2FsbG9jYXRlZCgpIG9wZXJhdGVzIG9ubHkgb24gMOKApjMxIGFuZCBvdGhlciBjb3VsZCBiZSB1
-c2VkIGF0IHRoZQpzYW1lIHRpbWUuIEhvd2V2ZXIgMOKApjMxIHNob3VsZCBiZSBhY2Nlc3NlZCBi
-eSBvdGhlciB1c2VyIGJlZm9yZSB0aGV5IGFyZQpyZWFkeS4KCmlycV9yZW1hcHBpbmdfYWxsb2Mo
-KSBpcyB0aGF0IC0+YWxsb2MoKSBjYWxsYmFjayBpbnZva2VkIHZpYQppcnFfZG9tYWluX2FsbG9j
-X2lycXNfaGllcmFyY2h5KCkgYW5kIGVhY2ggY2FsbGVyIGhhcyB0byBob2xkIHRoZQomaXJxX2Rv
-bWFpbl9tdXRleCBtdXRleC4gU28gd2Ugc2hvdWxkIG5vdCBoYXZlIHRob3NlIGluIHBhcmFsbGVs
-LgoKSXMgaXQgcG9zc2libGUgdG8gaGF2ZSB0aG9zZSBlbnRyaWVzIGFjY2Vzc2VkIGJlZm9yZSB0
-aGUgc2V0dXAgaXMKY29tcGxldGU/IE15IHVuZGVyc3RhbmRpbmcgaXMgdGhhdCB0aGlzIHNldHVw
-IGlzIHBlcmZvcm1lZCBvbmNlIGR1cmluZwpib290IChlc3BlY2lhbGx5IHRoYXQgaW9hcGljIHBh
-cnQpIGFuZCBub3QgYWdhaW4uCgpGcm9tIGxvb2tpbmcgYXQgdGhhdCBodW5rLCBpdCBzaG91bGQg
-bm90IGh1cnQgdG8gYWRkIHRoYXQgbG9jaywganVzdAp3YW50ZWQgdG8gY2hlY2sgaXQgaXMgcmVh
-bGx5IG5lZWRlZC4KClNlYmFzdGlhbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+On Sat, Feb 24, 2018 at 01:42:27PM +0800, Lu Baolu wrote:
+> A memory block was allocated in intel_svm_bind_mm() but never freed
+> in a failure path. This patch fixes this by free it to avoid memory
+> leakage.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: <stable@vger.kernel.org> # v4.4+
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Applied, thanks.
