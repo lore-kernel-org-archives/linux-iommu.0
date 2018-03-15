@@ -1,15 +1,16 @@
 From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 11/14] swiotlb: remove swiotlb_set_mem_attributes
-Date: Thu, 15 Mar 2018 13:51:59 -0400
-Message-ID: <20180315175159.GR13391@char.us.oracle.com>
+Date: Thu, 15 Mar 2018 13:54:22 -0400
+Message-ID: <20180315175422.GE19870@char.us.oracle.com>
 References: <20180314175213.20256-1-hch@lst.de>
 	<20180314175213.20256-12-hch@lst.de>
+	<20180315175159.GR13391@char.us.oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180314175213.20256-12-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180315175159.GR13391-he5eyhs8q0BAdwtm4QZOy9BPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,9 +24,18 @@ To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 14, 2018 at 06:52:10PM +0100, Christoph Hellwig wrote:
-> Now that set_memory_decrypted is always available we can just call it
-> directly.
+On Thu, Mar 15, 2018 at 01:51:59PM -0400, Konrad Rzeszutek Wilk wrote:
+> On Wed, Mar 14, 2018 at 06:52:10PM +0100, Christoph Hellwig wrote:
+> > Now that set_memory_decrypted is always available we can just call it
+> > directly.
+> > 
 > 
+> Won't this break ARM build?
 
-Won't this break ARM build?
+<brainfart> And of course right after asking that question I went back to
+the previous patch as I had that in my mind it was arch/x86/include, not the global
+one.
+
+So pls ignore my query and instead:
+
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
