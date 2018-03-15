@@ -1,8 +1,7 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 1/7] vfio/type1: Introduce iova list and add iommu aperture
-	validity check
-Date: Thu, 15 Mar 2018 16:35:03 +0000
-Message-ID: <20180315163509.17740-2-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v5 3/7] vfio/type1: Update iova list on detach
+Date: Thu, 15 Mar 2018 16:35:05 +0000
+Message-ID: <20180315163509.17740-4-shameerali.kolothum.thodi@huawei.com>
 References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,271 +21,140 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This introduces an iova list that is valid for dma mappings. Make
-sure the new iommu aperture window doesn't conflict with the current
-one or with any existing dma mappings during attach.
+Get a copy of iova list on _group_detach and try to update the list.
+On success replace the current one with the copy. Leave the list as
+it is if update fails.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 183 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 180 insertions(+), 3 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 91 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 45657e2..1123c74 100644
+index cfe2bb2..25e6920 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -60,6 +60,7 @@ MODULE_PARM_DESC(disable_hugepages,
- 
- struct vfio_iommu {
- 	struct list_head	domain_list;
-+	struct list_head	iova_list;
- 	struct vfio_domain	*external_domain; /* domain for external user */
- 	struct mutex		lock;
- 	struct rb_root		dma_list;
-@@ -92,6 +93,12 @@ struct vfio_group {
- 	struct list_head	next;
- };
- 
-+struct vfio_iova {
-+	struct list_head	list;
-+	dma_addr_t		start;
-+	dma_addr_t		end;
-+};
-+
- /*
-  * Guest RAM pinning working set or DMA target
-  */
-@@ -1204,6 +1211,149 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
- 	return ret;
+@@ -1667,12 +1667,88 @@ static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
+ 	WARN_ON(iommu->notifier.head);
  }
  
 +/*
-+ * This is a helper function to insert an address range to iova list.
-+ * The list starts with a single entry corresponding to the IOMMU
-+ * domain geometry to which the device group is attached. The list
-+ * aperture gets modified when a new domain is added to the container
-+ * if the new aperture doesn't conflict with the current one or with
-+ * any existing dma mappings. The list is also modified to exclude
-+ * any reserved regions associated with the device group.
++ * Called when a domain is removed in detach. It is possible that
++ * the removed domain decided the iova aperture window. Modify the
++ * iova aperture with the smallest window among existing domains.
 + */
-+static int vfio_iommu_iova_insert(struct list_head *head,
-+				  dma_addr_t start, dma_addr_t end)
++static void vfio_iommu_aper_expand(struct vfio_iommu *iommu,
++				   struct list_head *iova_copy)
 +{
-+	struct vfio_iova *region;
++	struct vfio_domain *domain;
++	struct iommu_domain_geometry geo;
++	struct vfio_iova *node;
++	dma_addr_t start = 0;
++	dma_addr_t end = (dma_addr_t)~0;
 +
-+	region = kmalloc(sizeof(*region), GFP_KERNEL);
-+	if (!region)
-+		return -ENOMEM;
++	list_for_each_entry(domain, &iommu->domain_list, next) {
++		iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY,
++				      &geo);
++		if (geo.aperture_start > start)
++			start = geo.aperture_start;
++		if (geo.aperture_end < end)
++			end = geo.aperture_end;
++	}
 +
-+	INIT_LIST_HEAD(&region->list);
-+	region->start = start;
-+	region->end = end;
-+
-+	list_add_tail(&region->list, head);
-+	return 0;
++	/* Modify aperture limits. The new aper is either same or bigger */
++	node = list_first_entry(iova_copy, struct vfio_iova, list);
++	node->start = start;
++	node = list_last_entry(iova_copy, struct vfio_iova, list);
++	node->end = end;
 +}
 +
 +/*
-+ * Check the new iommu aperture conflicts with existing aper or with any
-+ * existing dma mappings.
++ * Called when a group is detached. The reserved regions for that
++ * group can be part of valid iova now. But since reserved regions
++ * may be duplicated among groups, populate the iova valid regions
++ * list again.
 + */
-+static bool vfio_iommu_aper_conflict(struct vfio_iommu *iommu,
-+				     dma_addr_t start, dma_addr_t end)
++static int vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
++				   struct list_head *iova_copy)
 +{
-+	struct vfio_iova *first, *last;
-+	struct list_head *iova = &iommu->iova_list;
-+
-+	if (list_empty(iova))
-+		return false;
-+
-+	/* Disjoint sets, return conflict */
-+	first = list_first_entry(iova, struct vfio_iova, list);
-+	last = list_last_entry(iova, struct vfio_iova, list);
-+	if ((start > last->end) || (end < first->start))
-+		return true;
-+
-+	/* Check for any existing dma mappings outside the new start */
-+	if (start > first->start) {
-+		if (vfio_find_dma(iommu, first->start, start - first->start))
-+			return true;
-+	}
-+
-+	/* Check for any existing dma mappings outside the new end */
-+	if (end < last->end) {
-+		if (vfio_find_dma(iommu, end + 1, last->end - end))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+/*
-+ * Resize iommu iova aperture window. This is called only if the new
-+ * aperture has no conflict with existing aperture and dma mappings.
-+ */
-+static int vfio_iommu_aper_resize(struct list_head *iova,
-+				      dma_addr_t start,
-+				      dma_addr_t end)
-+{
-+	struct vfio_iova *node, *next;
-+
-+	if (list_empty(iova))
-+		return vfio_iommu_iova_insert(iova, start, end);
-+
-+	/* Adjust iova list start */
-+	list_for_each_entry_safe(node, next, iova, list) {
-+		if (start < node->start)
-+			break;
-+		if ((start >= node->start) && (start < node->end)) {
-+			node->start = start;
-+			break;
-+		}
-+		/* Delete nodes before new start */
-+		list_del(&node->list);
-+		kfree(node);
-+	}
-+
-+	/* Adjust iova list end */
-+	list_for_each_entry_safe(node, next, iova, list) {
-+		if (end > node->end)
-+			continue;
-+		if ((end > node->start) && (end <= node->end)) {
-+			node->end = end;
-+			continue;
-+		}
-+		/* Delete nodes after new end */
-+		list_del(&node->list);
-+		kfree(node);
-+	}
-+
-+	return 0;
-+}
-+
-+static void vfio_iommu_iova_free(struct list_head *iova)
-+{
-+	struct vfio_iova *n, *next;
-+
-+	list_for_each_entry_safe(n, next, iova, list) {
-+		list_del(&n->list);
-+		kfree(n);
-+	}
-+}
-+
-+static int vfio_iommu_iova_get_copy(struct vfio_iommu *iommu,
-+				    struct list_head *iova_copy)
-+{
-+
-+	struct list_head *iova = &iommu->iova_list;
-+	struct vfio_iova *n;
++	struct vfio_domain *d;
++	struct vfio_group *g;
++	struct vfio_iova *node;
++	dma_addr_t start, end;
++	LIST_HEAD(resv_regions);
 +	int ret;
 +
-+	list_for_each_entry(n, iova, list) {
-+		ret = vfio_iommu_iova_insert(iova_copy, n->start, n->end);
-+		if (ret)
-+			goto out_free;
++	list_for_each_entry(d, &iommu->domain_list, next) {
++		list_for_each_entry(g, &d->group_list, next)
++			iommu_get_group_resv_regions(g->iommu_group,
++							 &resv_regions);
 +	}
 +
-+	return 0;
++	if (list_empty(&resv_regions))
++		return 0;
 +
-+out_free:
++	node = list_first_entry(iova_copy, struct vfio_iova, list);
++	start = node->start;
++	node = list_last_entry(iova_copy, struct vfio_iova, list);
++	end = node->end;
++
++	/* purge the iova list and create new one */
 +	vfio_iommu_iova_free(iova_copy);
++
++	ret = vfio_iommu_aper_resize(iova_copy, start, end);
++	if (ret)
++		goto done;
++
++	/* Exclude current reserved regions from iova ranges */
++	ret = vfio_iommu_resv_exclude(iova_copy, &resv_regions);
++done:
++	vfio_iommu_resv_free(&resv_regions);
 +	return ret;
 +}
 +
-+static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
-+					struct list_head *iova_copy)
-+{
-+	struct list_head *iova = &iommu->iova_list;
-+
-+	vfio_iommu_iova_free(iova);
-+
-+	list_splice_tail(iova_copy, iova);
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
+ static void vfio_iommu_type1_detach_group(void *iommu_data,
+ 					  struct iommu_group *iommu_group)
  {
-@@ -1214,6 +1364,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	int ret;
- 	bool resv_msi, msi_remap;
- 	phys_addr_t resv_msi_base;
-+	struct iommu_domain_geometry geo;
+ 	struct vfio_iommu *iommu = iommu_data;
+ 	struct vfio_domain *domain;
+ 	struct vfio_group *group;
++	bool iova_copy_fail;
 +	LIST_HEAD(iova_copy);
  
  	mutex_lock(&iommu->lock);
  
-@@ -1283,6 +1435,25 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_domain;
+@@ -1695,6 +1771,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+ 		}
+ 	}
  
-+	/* Get aperture info */
-+	iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY, &geo);
++	/*
++	 * Get a copy of iova list. If success, use copy to update the
++	 * list and to replace the current one.
++	 */
++	iova_copy_fail = !!vfio_iommu_iova_get_copy(iommu, &iova_copy);
 +
-+	if (vfio_iommu_aper_conflict(iommu, geo.aperture_start,
-+					    geo.aperture_end)) {
-+		ret = -EINVAL;
-+		goto out_detach;
+ 	list_for_each_entry(domain, &iommu->domain_list, next) {
+ 		group = find_iommu_group(domain, iommu_group);
+ 		if (!group)
+@@ -1720,10 +1802,19 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+ 			iommu_domain_free(domain->domain);
+ 			list_del(&domain->next);
+ 			kfree(domain);
++			if (!iova_copy_fail && !list_empty(&iommu->domain_list))
++				vfio_iommu_aper_expand(iommu, &iova_copy);
+ 		}
+ 		break;
+ 	}
+ 
++	if (!iova_copy_fail && !list_empty(&iommu->domain_list)) {
++		if (!vfio_iommu_resv_refresh(iommu, &iova_copy))
++			vfio_iommu_iova_insert_copy(iommu, &iova_copy);
++		else
++			vfio_iommu_iova_free(&iova_copy);
 +	}
 +
-+	/* Get a copy of the current iova list and work on it */
-+	ret = vfio_iommu_iova_get_copy(iommu, &iova_copy);
-+	if (ret)
-+		goto out_detach;
-+
-+	ret = vfio_iommu_aper_resize(&iova_copy, geo.aperture_start,
-+						 geo.aperture_end);
-+	if (ret)
-+		goto out_detach;
-+
- 	resv_msi = vfio_iommu_has_sw_msi(iommu_group, &resv_msi_base);
- 
- 	INIT_LIST_HEAD(&domain->group_list);
-@@ -1316,8 +1487,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 				list_add(&group->next, &d->group_list);
- 				iommu_domain_free(domain->domain);
- 				kfree(domain);
--				mutex_unlock(&iommu->lock);
--				return 0;
-+				goto done;
- 			}
- 
- 			ret = iommu_attach_group(domain->domain, iommu_group);
-@@ -1340,7 +1510,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	}
- 
- 	list_add(&domain->next, &iommu->domain_list);
--
-+done:
-+	/* Delete the old one and insert new iova list */
-+	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
+ detach_group_done:
  	mutex_unlock(&iommu->lock);
- 
- 	return 0;
-@@ -1349,6 +1521,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	iommu_detach_group(domain->domain, iommu_group);
- out_domain:
- 	iommu_domain_free(domain->domain);
-+	vfio_iommu_iova_free(&iova_copy);
- out_free:
- 	kfree(domain);
- 	kfree(group);
-@@ -1487,6 +1660,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
- 	}
- 
- 	INIT_LIST_HEAD(&iommu->domain_list);
-+	INIT_LIST_HEAD(&iommu->iova_list);
- 	iommu->dma_list = RB_ROOT;
- 	mutex_init(&iommu->lock);
- 	BLOCKING_INIT_NOTIFIER_HEAD(&iommu->notifier);
-@@ -1529,6 +1703,9 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 		list_del(&domain->next);
- 		kfree(domain);
- 	}
-+
-+	vfio_iommu_iova_free(&iommu->iova_list);
-+
- 	kfree(iommu);
  }
- 
 -- 
 2.7.4
