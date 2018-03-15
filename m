@@ -1,14 +1,18 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
-Date: Thu, 15 Mar 2018 14:46:49 +0100
-Message-ID: <20180315134649.skh2aukcmg5ud74y@8bytes.org>
-References: <20180215191729.15777-1-dima@arista.com>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH 04/14] x86: use generic swiotlb_ops
+Date: Thu, 15 Mar 2018 14:48:09 +0100 (CET)
+Message-ID: <alpine.DEB.2.21.1803151446420.1525@nanos.tec.linutronix.de>
+References: <20180314175213.20256-1-hch@lst.de>
+	<20180314175213.20256-5-hch@lst.de>
+	<alpine.DEB.2.21.1803150956300.1525@nanos.tec.linutronix.de>
+	<20180315115426.GB16210@lst.de>
+	<alpine.DEB.2.21.1803151351280.1525@nanos.tec.linutronix.de>
+	<20180315133530.GA17956@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180215191729.15777-1-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20180315133530.GA17956-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,38 +22,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 15, 2018 at 07:17:29PM +0000, Dmitry Safonov wrote:
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index accf58388bdb..6c4ea32ee6a9 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->  	int reg, fault_index;
->  	u32 fault_status;
->  	unsigned long flag;
-> -	bool ratelimited;
->  	static DEFINE_RATELIMIT_STATE(rs,
->  				      DEFAULT_RATELIMIT_INTERVAL,
->  				      DEFAULT_RATELIMIT_BURST);
->  
-> -	/* Disable printing, simply clear the fault when ratelimited */
-> -	ratelimited = !__ratelimit(&rs);
-> -
->  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
->  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
-> -	if (fault_status && !ratelimited)
-> +	if (fault_status && __ratelimit(&rs))
->  		pr_err("DRHD: handling fault status reg %x\n", fault_status);
+On Thu, 15 Mar 2018, Christoph Hellwig wrote:
 
-This looks aweful. Have you tried to limit the number of loops in this
-function and returning? You can handle the next faults by the next
-interrupt. This ensures that the cpu visits a scheduling point from time
-to time so that you don't see soft-lockups.
+> On Thu, Mar 15, 2018 at 01:52:14PM +0100, Thomas Gleixner wrote:
+> > Yeah, I know that the standard defines it, but that doesn't mean it makes
+> > sense. At least not to me.
+> 
+> It makes sense in that it logically is a boolean but we only want
+> to allocate 1 bit for it, unlike the normal ABI allocations of at
+> least a byte.
+>
+> Either way, tell me what you want it changed to, and I'll do it.
 
-
-
-	Joerg
+I'd prefer either bool or a regular bitfield, but I can live with the
+boolean bitfield as well.
