@@ -1,16 +1,18 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 3/5] dt-bindings: arm-smmu: Add reserved-msi-region
-Date: Thu, 15 Mar 2018 19:42:56 +0000
-Message-ID: <d2e1d6fa-05ec-ac4a-7db4-2adc756369d1@arm.com>
+Subject: Re: [RFC 2/5] dt-bindings: brcm: Add reserved-dma-region for iPROC
+Date: Thu, 15 Mar 2018 19:58:51 +0000
+Message-ID: <ffc9e4c2-709d-707f-06eb-2cc14bea883b@arm.com>
 References: <1520312368-7068-1-git-send-email-jitendra.bhivare@broadcom.com>
-	<1520312368-7068-4-git-send-email-jitendra.bhivare@broadcom.com>
-	<9aeb8e14-2a14-d71b-7970-055ed04a131c@arm.com>
-	<CAOA9gs0_mUJcuthxon5Ru1B7FFK=_XuCh4E4D98DzPih8dey8w@mail.gmail.com>
+	<1520312368-7068-3-git-send-email-jitendra.bhivare@broadcom.com>
+	<c2f30c0c-ff5e-2904-11f4-5351749381a9@arm.com>
+	<CAOA9gs32BqGiXD7R2v7=Xkv-PVLTzuU3VmG1dAm6HNd4=w-qQg@mail.gmail.com>
+	<a4a27e3c-4e7b-4850-ebf7-bd2b8f6f0d97@arm.com>
+	<CAOA9gs1XE1RkumEkYafO5f+b1YjGCFTYzxSSB-U4JcsR6=QdQg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOA9gs0_mUJcuthxon5Ru1B7FFK=_XuCh4E4D98DzPih8dey8w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAOA9gs1XE1RkumEkYafO5f+b1YjGCFTYzxSSB-U4JcsR6=QdQg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,93 +27,130 @@ To: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/03/18 07:19, Jitendra Bhivare wrote:
-> On Tue, Mar 6, 2018 at 5:17 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 06/03/18 04:59, Jitendra Bhivare wrote:
+On 15/03/18 12:03, Jitendra Bhivare wrote:
+> On Thu, Mar 15, 2018 at 12:15 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 12/03/18 07:03, Jitendra Bhivare wrote:
 >>>
->>> iPROC SoC has a special device window to treat GICv3 ITS MSI.
+>>> On Tue, Mar 6, 2018 at 5:12 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>>>>
+>>>> On 06/03/18 04:59, Jitendra Bhivare wrote:
+>>>>>
+>>>>>
+>>>>> With SoC wide DMA mask of 40-bit, the mappings for entire IOVA space
+>>>>> can't
+>>>>> be specified in the PAXBv2 PCIe RC of SoC. The holes in IOVA space needs
+>>>>> to
+>>>>> be reserved to prevent any IOVA allocations in those spaces.
+>>>>
+>>>>
+>>>>
+>>>> Can you clarify why? If this is the PCI inbound window thing again, let
+>>>> me
+>>>> say once again that "dma-ranges" is the appropriate way for DT to
+>>>> describe
+>>>> the hardware.
+>>>>
+>>>> Robin.
+>>>
+>>> dma-ranges = < \
+>>> 0x43000000 0x00 0x00000000 0x00 0x80000000 0x00 0x80000000 \
+>>> 0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+>>> 0x43000000 0x80 0x00000000 0x80 0x00000000 0x80 0x00000000>
+>>>
+>>> Yes, its for PCI inbound windows. In our HW, they are limited by sizes
+>>> specified in
+>>> ARM memory maps which was done for non-IOMMU cases to catch any transfer
+>>> outside the ranges.
+>>> dma-ranges are already being used to program these inbound windows and SoC
+>>> wide DMA mask is already specified but IOMMU code can still allocate IOVAs
+>>> in the gaps for which translation will fail in PCIe RC.
 >>
 >>
->> Ugh, really? After preferably printing out 100 copies of the SBSA, binding
->> them all together and dropping the lot onto the hardware designers from a
->> great height, could you clarify what exactly the special behaviour is here?
+>> Right, so make iommu-dma reserve the gaps. No need to clutter up the DT with
+>> redundant information which gets handled pretty much identically anyway.
 >>
 >> Robin.
->>
-> The special device window needs to programmed so that writes to
-> specified address
-> region helps for specific ordering of traffic prior to it.
+> There was a mistake in pasting dma-ranges mentioned. This is what we use it in
+> IOMMU case.
+> #define PCIE_DMA_RANGES dma-ranges = < \
+> 0x43000000 0x00 0x00000000 0x00 0x00000000 0x04 0x00000000 \
+> 0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+> 0x43000000 0x80 0x00000000 0x80 0x00000000 0x80 0x00000000>
+> 
+> #define PCIE_RESERVED_DMA_REGION reserved-dma-region = < \
+> 0x0 0x0 0x04 0x0 0x04 0x0 \
+> 0x0 0x0 0x10 0x0 0x70 0x0>
+> 
+> This is non-iommu case which is per ARM memory map.
+> #define PCIE_DMA_RANGES dma-ranges = < \
+> 0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
+> 0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+> 0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+> 
+> In IOMMU case, we had to increase first in-bound window i.e.
+> dma-ranges first entry
+> from 2GB-4GB (in non-iommu case) to 0-16GB because out-bound window specified
+> from 2GB-4GB implicitly gets reserved by the PCI iommu code. This allowed IOVA
+> allocations from 0-2GB and 4-16GB mapped through in-bound windows.
+> 
+> Basically, my point is that dma-ranges specified is being used to
+> program our in-bound
+> windows and defines PCI space to CPU address space supported mappings of HW.
+> In the same way, it would be better to explicitly specify
+> reserved-dma-region to clarify
+> this as HW hole than implicity reserving the regions.
 
-OK, I know of PCIe root complexes having address matching to give the 
-MSI write the appropriate AXI memory type attributes when the SMMU is 
-bypassed, but ordering is a new one. I guess you have some glue logic on 
-the root complex master interface which injects an ACE barrier 
-transaction in front of any write to the ITS doorbell address?
->>> Current code maps MSI to IOVA space. Add SMMU node property to use
->>> direct mappings for MSI region.
->>>
->>> This property is read and reserved when arm_smmu_get_resv_regions
->>> gets called.
-
-Either way, this should be a generic, not SMMU-specific, property - 
-there are other platforms that would also make use of it to describe a 
-similar hardware situation (which we currently only support via ACPI). 
-The big question is where to put it: hardware-wise, the property of 
-"MSIs won't work properly if the doorbell is remapped to a different 
-address" belongs firmly to the root complex, not the IOMMU, while the 
-address itself is already a property of the MSI controller. The IOMMU is 
-just the innocent guy in the middle who has to discover and respect the 
-constraints.
-
-I'd like to think we could just have some flag to say "you can't remap 
-my MSIs!" then go and chase the msi-parent/msi-map phandle to the MSI 
-controller to get the address from its reg property, which is more or 
-less the equivalent of what the current ACPI workaround does - see 
-commit 8b4282e6b8e2 ("ACPI/IORT: Add msi address regions reservation 
-helper") in linux-next - but I can already think of ways in which that 
-might not work. For one, there's not necessarily any guarantee that the 
-MSI controller's programming interface and doorbell are in the same 
-place, so we probably do need to describe the specific MSI address(es) 
-that the root complex cares about, from the root complex end :/
+Why? If DMA traffic can only pass through inbound windows, and you 
+program the inbound windows based on dma-ranges, then by definition 
+dma-ranges tells you exactly the set of addresses that are usable for 
+DMA, and by extension, IOMMU remapping. I fail to see how it's then 
+"better" to add a second slightly different description of the exact 
+same information with the bonus maintenance burden of then having to 
+ensure the two actually match.
 
 Robin.
 
->>>
->>> Signed-off-by: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
->>> ---
->>>    Documentation/devicetree/bindings/iommu/arm,smmu.txt | 12 ++++++++++++
->>>    1 file changed, 12 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->>> b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->>> index 8a6ffce..13fa2b9 100644
->>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->>> @@ -71,6 +71,15 @@ conditions.
->>>                      or using stream matching with #iommu-cells = <2>, and
->>>                      may be ignored if present in such cases.
->>>    +- reserved-msi-region: MSI region to be reserved with specific prot in
->>> IOVA
->>> +                 space for direct mapping. The region is specified in
->>> tuple
->>> +                 of (busno,prot,bus_addr,size).
->>> +
->>> +- #region-address-cells: specifies number of cells needed to encode
->>> bus_addr
->>> +
->>> +- #region-size-cells: specifies number of cells needed to encode size
->>> +
->>> +
->>>    ** Deprecated properties:
->>>      - mmu-masters (deprecated in favour of the generic "iommus" binding) :
->>> @@ -95,6 +104,9 @@ conditions.
->>>                                 <0 36 4>,
->>>                                 <0 37 4>;
->>>                    #iommu-cells = <1>;
->>> +               #region-address-cells = <1>;
->>> +               #region-size-cells = <1>;
->>> +               reserved-msi-region = <0x0 0x1a 0x63c3000 0x8000>;
->>>            };
->>>              /* device with two stream IDs, 0 and 7 */
->>>
+> We can at least have single property 'reserved-dma-window' for MSI
+> region and DMA regions
+> to help describe the holes in the HW than let SW compute it.
+> 
+>>>>
+>>>>
+>>>>> reserved-dma-region property is added to specify the ranges which should
+>>>>> never be mapped and given to devices sitting behind.
+>>>>>
+>>>>> Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>>>> Reviewed-by: Vikram Prakash <vikram.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>>>> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>>>> Signed-off-by: Jitendra Bhivare <jitendra.bhivare-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>>>> ---
+>>>>>     Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt | 3 +++
+>>>>>     1 file changed, 3 insertions(+)
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>>>> b/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>>>> index b8e48b4..3be0fe3 100644
+>>>>> --- a/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>>>> +++ b/Documentation/devicetree/bindings/pci/brcm,iproc-pcie.txt
+>>>>> @@ -30,6 +30,9 @@ Optional properties:
+>>>>>     - dma-ranges: Some PAXB-based root complexes do not have inbound
+>>>>> mapping
+>>>>> done
+>>>>>       by the ASIC after power on reset.  In this case, SW is required to
+>>>>> configure
+>>>>>     the mapping, based on inbound memory regions specified by this
+>>>>> property.
+>>>>> +- reserved-dma-region: PAXBv2 with IOMMU enabled cannot provide
+>>>>> mappings
+>>>>> for
+>>>>> +  entire IOVA space specified by DMA mask. Hence this is used to
+>>>>> reserve
+>>>>> the
+>>>>> +  gaps in dma-ranges.
+>>>>>       - brcm,pcie-ob: Some iProc SoCs do not have the outbound address
+>>>>> mapping done
+>>>>>     by the ASIC after power on reset. In this case, SW needs to configure
+>>>>> it
+>>>>>
+>>>>
 >>
