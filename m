@@ -1,72 +1,116 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH 04/10] iommu/amd: split irq_lookup_table out of the
-	amd_iommu_devtable_lock
-Date: Fri, 16 Mar 2018 21:18:30 +0100
-Message-ID: <20180316201836.7864-5-bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 05/10] Revert "iommu/amd: Avoid locking get_irq_table() from atomic context"
+Date: Fri, 16 Mar 2018 21:18:31 +0100
+Message-ID: <20180316201836.7864-6-bigeasy@linutronix.de>
 References: <20180316201836.7864-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180316201836.7864-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180316201836.7864-1-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, tglx@linutronix.de, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Scott Wood <swood@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The function get_irq_table() reads/writes irq_lookup_table while holding
-the amd_iommu_devtable_lock. It also modifies
-amd_iommu_dev_table[].data[2].
-set_dte_entry() is using amd_iommu_dev_table[].data[0|1] (under the
-domain->lock) so it should be okay. The access to the iommu is
-serialized with its own (iommu's) lock.
+This reverts commit df42a04b15f1 ("iommu/amd: Avoid locking
+get_irq_table() from atomic context").
+Its goal is to avoid a warning/bug on RT. While I generally support that
+goal this change is colliding with larger rework which accomplishes the
+same goal but different.
 
-So split out get_irq_table() out of amd_iommu_devtable_lock's lock. The
-new lock is a raw_spin_lock because modify_irte_ga() is called while
-desc->lock is held (which is raw).
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Scott Wood <swood@redhat.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iommu/amd_iommu.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 29 +++++++----------------------
+ 1 file changed, 7 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 692b2e3b9af1..5191319d9f0a 100644
+index 5191319d9f0a..30ad2a3fbe15 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -82,6 +82,7 @@
- 
- static DEFINE_RWLOCK(amd_iommu_devtable_lock);
- static DEFINE_SPINLOCK(pd_bitmap_lock);
-+static DEFINE_RAW_SPINLOCK(iommu_table_lock);
- 
- /* List of all available dev_data structures */
- static LLIST_HEAD(dev_data_list);
-@@ -3623,7 +3624,7 @@ static struct irq_remap_table *alloc_irq_table(u16 devid, bool ioapic)
- 	unsigned long flags;
- 	u16 alias;
- 
--	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
-+	raw_spin_lock_irqsave(&iommu_table_lock, flags);
- 
- 	iommu = amd_iommu_rlookup_table[devid];
- 	if (!iommu)
-@@ -3688,7 +3689,7 @@ static struct irq_remap_table *alloc_irq_table(u16 devid, bool ioapic)
- 	iommu_completion_wait(iommu);
- 
- out_unlock:
--	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
-+	raw_spin_unlock_irqrestore(&iommu_table_lock, flags);
- 
- 	return table;
+@@ -3602,22 +3602,7 @@ static void set_dte_irq_entry(u16 devid, struct irq_=
+remap_table *table)
+ 	amd_iommu_dev_table[devid].data[2] =3D dte;
  }
--- 
+=20
+-static struct irq_remap_table *get_irq_table(u16 devid)
+-{
+-	struct irq_remap_table *table;
+-
+-	if (WARN_ONCE(!amd_iommu_rlookup_table[devid],
+-		      "%s: no iommu for devid %x\n", __func__, devid))
+-		return NULL;
+-
+-	table =3D irq_lookup_table[devid];
+-	if (WARN_ONCE(!table, "%s: no table for devid %x\n", __func__, devid))
+-		return NULL;
+-
+-	return table;
+-}
+-
+-static struct irq_remap_table *alloc_irq_table(u16 devid, bool ioapic)
++static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
+ {
+ 	struct irq_remap_table *table =3D NULL;
+ 	struct amd_iommu *iommu;
+@@ -3704,7 +3689,7 @@ static int alloc_irq_index(u16 devid, int count, bool=
+ align)
+ 	if (!iommu)
+ 		return -ENODEV;
+=20
+-	table =3D alloc_irq_table(devid, false);
++	table =3D get_irq_table(devid, false);
+ 	if (!table)
+ 		return -ENODEV;
+=20
+@@ -3755,7 +3740,7 @@ static int modify_irte_ga(u16 devid, int index, struc=
+t irte_ga *irte,
+ 	if (iommu =3D=3D NULL)
+ 		return -EINVAL;
+=20
+-	table =3D get_irq_table(devid);
++	table =3D get_irq_table(devid, false);
+ 	if (!table)
+ 		return -ENOMEM;
+=20
+@@ -3788,7 +3773,7 @@ static int modify_irte(u16 devid, int index, union ir=
+te *irte)
+ 	if (iommu =3D=3D NULL)
+ 		return -EINVAL;
+=20
+-	table =3D get_irq_table(devid);
++	table =3D get_irq_table(devid, false);
+ 	if (!table)
+ 		return -ENOMEM;
+=20
+@@ -3812,7 +3797,7 @@ static void free_irte(u16 devid, int index)
+ 	if (iommu =3D=3D NULL)
+ 		return;
+=20
+-	table =3D get_irq_table(devid);
++	table =3D get_irq_table(devid, false);
+ 	if (!table)
+ 		return;
+=20
+@@ -4130,7 +4115,7 @@ static int irq_remapping_alloc(struct irq_domain *dom=
+ain, unsigned int virq,
+ 		return ret;
+=20
+ 	if (info->type =3D=3D X86_IRQ_ALLOC_TYPE_IOAPIC) {
+-		if (alloc_irq_table(devid, true))
++		if (get_irq_table(devid, true))
+ 			index =3D info->ioapic_pin;
+ 		else
+ 			ret =3D -ENOMEM;
+@@ -4413,7 +4398,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *d=
+ata)
+ 	if (!iommu)
+ 		return -ENODEV;
+=20
+-	irt =3D get_irq_table(devid);
++	irt =3D get_irq_table(devid, false);
+ 	if (!irt)
+ 		return -ENODEV;
+=20
+--=20
 2.16.2
