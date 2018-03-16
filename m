@@ -1,7 +1,8 @@
 From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH 06/10] iommu/amd: remove the special case from get_irq_table()
-Date: Fri, 16 Mar 2018 21:18:32 +0100
-Message-ID: <20180316201836.7864-7-bigeasy@linutronix.de>
+Subject: [PATCH 07/10] iommu/amd: use `table' instead `irt' as variable name
+	in amd_iommu_update_ga()
+Date: Fri, 16 Mar 2018 21:18:33 +0100
+Message-ID: <20180316201836.7864-8-bigeasy@linutronix.de>
 References: <20180316201836.7864-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,126 +22,51 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-get_irq_table() has a special ioapic argument. If set then it will
-pre-allocate / reserve the first 32 indexes. The argument is only once
-true and it would make get_irq_table() a little simpler if we would
-extract the special bits to the caller.
+The variable of type struct irq_remap_table is always named `table'
+except in amd_iommu_update_ga() where it is called `irt'. Make it
+consistent and name it also `table'.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 42 ++++++++++++++++++++++++------------------
- 1 file changed, 24 insertions(+), 18 deletions(-)
+ drivers/iommu/amd_iommu.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 30ad2a3fbe15..e1628ff5f6bd 100644
+index e1628ff5f6bd..6ee8ef22ad51 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -3602,7 +3602,7 @@ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
- 	amd_iommu_dev_table[devid].data[2] = dte;
- }
- 
--static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
-+static struct irq_remap_table *get_irq_table(u16 devid)
+@@ -4390,7 +4390,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
  {
- 	struct irq_remap_table *table = NULL;
+ 	unsigned long flags;
  	struct amd_iommu *iommu;
-@@ -3636,10 +3636,6 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
- 	/* Initialize table spin-lock */
- 	raw_spin_lock_init(&table->lock);
- 
--	if (ioapic)
--		/* Keep the first 32 indexes free for IOAPIC interrupts */
--		table->min_index = 32;
--
- 	table->table = kmem_cache_alloc(amd_iommu_irq_cache, GFP_ATOMIC);
- 	if (!table->table) {
- 		kfree(table);
-@@ -3654,12 +3650,6 @@ static struct irq_remap_table *get_irq_table(u16 devid, bool ioapic)
- 		memset(table->table, 0,
- 		       (MAX_IRQS_PER_TABLE * (sizeof(u64) * 2)));
- 
--	if (ioapic) {
--		int i;
--
--		for (i = 0; i < 32; ++i)
--			iommu->irte_ops->set_allocated(table, i);
--	}
- 
- 	irq_lookup_table[devid] = table;
- 	set_dte_irq_entry(devid, table);
-@@ -3689,7 +3679,7 @@ static int alloc_irq_index(u16 devid, int count, bool align)
+-	struct irq_remap_table *irt;
++	struct irq_remap_table *table;
+ 	struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
+ 	int devid = ir_data->irq_2_irte.devid;
+ 	struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
+@@ -4404,11 +4404,11 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
  	if (!iommu)
  		return -ENODEV;
  
--	table = get_irq_table(devid, false);
+-	irt = get_irq_table(devid);
+-	if (!irt)
 +	table = get_irq_table(devid);
- 	if (!table)
++	if (!table)
  		return -ENODEV;
  
-@@ -3740,7 +3730,7 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
- 	if (iommu == NULL)
- 		return -EINVAL;
+-	raw_spin_lock_irqsave(&irt->lock, flags);
++	raw_spin_lock_irqsave(&table->lock, flags);
  
--	table = get_irq_table(devid, false);
-+	table = get_irq_table(devid);
- 	if (!table)
- 		return -ENOMEM;
+ 	if (ref->lo.fields_vapic.guest_mode) {
+ 		if (cpu >= 0)
+@@ -4417,7 +4417,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
+ 		barrier();
+ 	}
  
-@@ -3773,7 +3763,7 @@ static int modify_irte(u16 devid, int index, union irte *irte)
- 	if (iommu == NULL)
- 		return -EINVAL;
+-	raw_spin_unlock_irqrestore(&irt->lock, flags);
++	raw_spin_unlock_irqrestore(&table->lock, flags);
  
--	table = get_irq_table(devid, false);
-+	table = get_irq_table(devid);
- 	if (!table)
- 		return -ENOMEM;
- 
-@@ -3797,7 +3787,7 @@ static void free_irte(u16 devid, int index)
- 	if (iommu == NULL)
- 		return;
- 
--	table = get_irq_table(devid, false);
-+	table = get_irq_table(devid);
- 	if (!table)
- 		return;
- 
-@@ -4115,10 +4105,26 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		return ret;
- 
- 	if (info->type == X86_IRQ_ALLOC_TYPE_IOAPIC) {
--		if (get_irq_table(devid, true))
-+		struct irq_remap_table *table;
-+		struct amd_iommu *iommu;
-+
-+		table = get_irq_table(devid);
-+		if (table) {
-+			if (!table->min_index) {
-+				/*
-+				 * Keep the first 32 indexes free for IOAPIC
-+				 * interrupts.
-+				 */
-+				table->min_index = 32;
-+				iommu = amd_iommu_rlookup_table[devid];
-+				for (i = 0; i < 32; ++i)
-+					iommu->irte_ops->set_allocated(table, i);
-+			}
- 			index = info->ioapic_pin;
--		else
-+			WARN_ON(table->min_index != 32);
-+		} else {
- 			ret = -ENOMEM;
-+		}
- 	} else {
- 		bool align = (info->type == X86_IRQ_ALLOC_TYPE_MSI);
- 
-@@ -4398,7 +4404,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	irt = get_irq_table(devid, false);
-+	irt = get_irq_table(devid);
- 	if (!irt)
- 		return -ENODEV;
- 
+ 	iommu_flush_irt(iommu, devid);
+ 	iommu_completion_wait(iommu);
 -- 
 2.16.2
