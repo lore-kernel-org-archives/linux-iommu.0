@@ -1,15 +1,19 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v10 4/5] iommu/arm-smmu: Add the device_link between
-	masters and smmu
-Date: Fri, 16 Mar 2018 15:41:29 +0900
-Message-ID: <CAAFQd5AAgCE7avK=bR45Kjd=LhJ-qe+kD1otPWPaXUo7_JR65g@mail.gmail.com>
-References: <20180314081434.30875-1-vivek.gautam@codeaurora.org>
-	<20180314081434.30875-5-vivek.gautam@codeaurora.org>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH  1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
+	support for r8a774[35]
+Date: Fri, 16 Mar 2018 12:48:01 +0100
+Message-ID: <20180316114801.kxlktwd3st76yphe@verge.net.au>
+References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
+	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
+	<TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+	<20180307080919.2azwluc7fmoi53qc@verge.net.au>
+	<20180314090834.GA5259@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180314081434.30875-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180314090834.GA5259-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,72 +23,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vivek,
+On Wed, Mar 14, 2018 at 10:08:34AM +0100, Joerg Roedel wrote:
+> On Wed, Mar 07, 2018 at 09:09:21AM +0100, Simon Horman wrote:
+> > [CC Alex Williamson]
+> > 
+> > It looks like the last patch to this file was taken by Alex.
+> > Perhaps he would be willing to take this one too if it it was
+> > reposted with him CCed.
+> 
+> Alex was taking care of IOMMU patches while I was off at the end of last
+> year. I will take care of these.
 
-On Wed, Mar 14, 2018 at 5:14 PM, Vivek Gautam
-<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->
-> Finally add the device link between the master device and
-> smmu, so that the smmu gets runtime enabled/disabled only when the
-> master needs it. This is done from add_device callback which gets
-> called once when the master is added to the smmu.
->
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> ---
->
-> Changes since v9:
->  - Using device_link_del_dev() to delete the device link, instead of
->    doing it in two steps - device_link_find() to first find the link, and
->    then calling device_link_del().
->
->  drivers/iommu/arm-smmu.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 56a04ae80bf3..4cf270ffd449 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1460,10 +1460,31 @@ static int arm_smmu_add_device(struct device *dev)
->
->         iommu_device_link(&smmu->iommu, dev);
->
-> +       if (pm_runtime_enabled(smmu->dev)) {
-> +               struct device_link *link;
-> +
-> +               /*
-> +                * Establish the link between smmu and master, so that the
-> +                * smmu gets runtime enabled/disabled as per the master's
-> +                * needs.
-> +                */
-> +               link = device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME);
-> +               if (!link) {
-> +                       dev_warn(smmu->dev,
-> +                                "Unable to add link to the consumer %s\n",
-> +                                dev_name(dev));
-> +                       ret = -ENODEV;
-> +                       goto out_unlink;
-> +               }
-> +       }
-
-If it's an error, we should use dev_err(). Also, as per Robin's
-comment for v9 could we make it as follows?
-
-if (pm_runtime_enabled(smmu->dev) &&
-    !device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME)) {
-        dev_err(smmu->dev,
-                         "Unable to add link to the consumer %s\n",
-dev_name(dev));
-        ret = -ENODEV;
-        goto out_unlink;
-}
-
-Best regards,
-Tomasz
+Excellent, thanks for clarifying.
