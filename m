@@ -1,8 +1,8 @@
 From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH 07/10] iommu/amd: use `table' instead `irt' as variable name
-	in amd_iommu_update_ga()
-Date: Fri, 16 Mar 2018 21:18:33 +0100
-Message-ID: <20180316201836.7864-8-bigeasy@linutronix.de>
+Subject: [PATCH 08/10] iommu/amd: factor out setting the remap table for a
+	devid
+Date: Fri, 16 Mar 2018 21:18:34 +0100
+Message-ID: <20180316201836.7864-9-bigeasy@linutronix.de>
 References: <20180316201836.7864-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,51 +22,65 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The variable of type struct irq_remap_table is always named `table'
-except in amd_iommu_update_ga() where it is called `irt'. Make it
-consistent and name it also `table'.
+Setting the IRQ remap table for a specific devid (or its alias devid)
+includes three steps. Those three steps are always repeated each time
+this is done.
+Introduce a new helper function, move those steps there and use that
+function instead. The compiler can still decide if it is worth to
+inline.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/amd_iommu.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index e1628ff5f6bd..6ee8ef22ad51 100644
+index 6ee8ef22ad51..7dd4c27a941d 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -4390,7 +4390,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
+@@ -3602,6 +3602,14 @@ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+ 	amd_iommu_dev_table[devid].data[2] = dte;
+ }
+ 
++static void set_remap_table_entry(struct amd_iommu *iommu, u16 devid,
++				  struct irq_remap_table *table)
++{
++	irq_lookup_table[devid] = table;
++	set_dte_irq_entry(devid, table);
++	iommu_flush_dte(iommu, devid);
++}
++
+ static struct irq_remap_table *get_irq_table(u16 devid)
  {
- 	unsigned long flags;
- 	struct amd_iommu *iommu;
--	struct irq_remap_table *irt;
-+	struct irq_remap_table *table;
- 	struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
- 	int devid = ir_data->irq_2_irte.devid;
- 	struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
-@@ -4404,11 +4404,11 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	irt = get_irq_table(devid);
--	if (!irt)
-+	table = get_irq_table(devid);
-+	if (!table)
- 		return -ENODEV;
- 
--	raw_spin_lock_irqsave(&irt->lock, flags);
-+	raw_spin_lock_irqsave(&table->lock, flags);
- 
- 	if (ref->lo.fields_vapic.guest_mode) {
- 		if (cpu >= 0)
-@@ -4417,7 +4417,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 		barrier();
+ 	struct irq_remap_table *table = NULL;
+@@ -3622,9 +3630,7 @@ static struct irq_remap_table *get_irq_table(u16 devid)
+ 	alias = amd_iommu_alias_table[devid];
+ 	table = irq_lookup_table[alias];
+ 	if (table) {
+-		irq_lookup_table[devid] = table;
+-		set_dte_irq_entry(devid, table);
+-		iommu_flush_dte(iommu, devid);
++		set_remap_table_entry(iommu, devid, table);
+ 		goto out;
  	}
  
--	raw_spin_unlock_irqrestore(&irt->lock, flags);
-+	raw_spin_unlock_irqrestore(&table->lock, flags);
+@@ -3651,14 +3657,9 @@ static struct irq_remap_table *get_irq_table(u16 devid)
+ 		       (MAX_IRQS_PER_TABLE * (sizeof(u64) * 2)));
  
- 	iommu_flush_irt(iommu, devid);
+ 
+-	irq_lookup_table[devid] = table;
+-	set_dte_irq_entry(devid, table);
+-	iommu_flush_dte(iommu, devid);
+-	if (devid != alias) {
+-		irq_lookup_table[alias] = table;
+-		set_dte_irq_entry(alias, table);
+-		iommu_flush_dte(iommu, alias);
+-	}
++	set_remap_table_entry(iommu, devid, table);
++	if (devid != alias)
++		set_remap_table_entry(iommu, alias, table);
+ 
+ out:
  	iommu_completion_wait(iommu);
 -- 
 2.16.2
