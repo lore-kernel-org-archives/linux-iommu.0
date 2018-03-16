@@ -1,19 +1,13 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH  1/3] dt-bindings: iommu: ipmmu-vmsa: Add device tree
-	support for r8a774[35]
-Date: Fri, 16 Mar 2018 12:48:01 +0100
-Message-ID: <20180316114801.kxlktwd3st76yphe@verge.net.au>
-References: <1516808522-17348-1-git-send-email-biju.das@bp.renesas.com>
-	<1516808522-17348-2-git-send-email-biju.das@bp.renesas.com>
-	<TY1PR01MB1770C8E18C014211F2A2D771C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-	<20180307080919.2azwluc7fmoi53qc@verge.net.au>
-	<20180314090834.GA5259@8bytes.org>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: [PATCH v2 5/5] scsi: Add NO_DMA dummies for SCSI DMA mapping API
+Date: Fri, 16 Mar 2018 14:25:44 +0100
+Message-ID: <1521206744-1504-6-git-send-email-geert@linux-m68k.org>
+References: <1521206744-1504-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180314090834.GA5259-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1521206744-1504-1-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,19 +17,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "Martin K . Petersen" <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 14, 2018 at 10:08:34AM +0100, Joerg Roedel wrote:
-> On Wed, Mar 07, 2018 at 09:09:21AM +0100, Simon Horman wrote:
-> > [CC Alex Williamson]
-> > 
-> > It looks like the last patch to this file was taken by Alex.
-> > Perhaps he would be willing to take this one too if it it was
-> > reposted with him CCed.
-> 
-> Alex was taking care of IOMMU patches while I was off at the end of last
-> year. I will take care of these.
+Add dummies for scsi_dma_{,un}map(), to allow compile-testing if
+NO_DMA=y.
 
-Excellent, thanks for clarifying.
+This prevents the following from showing up later:
+
+    ERROR: "scsi_dma_unmap" [drivers/firewire/firewire-sbp2.ko] undefined!
+    ERROR: "scsi_dma_map" [drivers/firewire/firewire-sbp2.ko] undefined!
+
+Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+v2:
+  - Add Reviewed-by, Acked-by,
+  - Drop RFC state.
+---
+ include/scsi/scsi_cmnd.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/include/scsi/scsi_cmnd.h b/include/scsi/scsi_cmnd.h
+index 2280b2351739572c..aaf1e971c6a368d1 100644
+--- a/include/scsi/scsi_cmnd.h
++++ b/include/scsi/scsi_cmnd.h
+@@ -174,8 +174,13 @@ extern void scsi_kunmap_atomic_sg(void *virt);
+ 
+ extern int scsi_init_io(struct scsi_cmnd *cmd);
+ 
++#ifdef CONFIG_SCSI_DMA
+ extern int scsi_dma_map(struct scsi_cmnd *cmd);
+ extern void scsi_dma_unmap(struct scsi_cmnd *cmd);
++#else /* !CONFIG_SCSI_DMA */
++static inline int scsi_dma_map(struct scsi_cmnd *cmd) { return -ENOSYS; }
++static inline void scsi_dma_unmap(struct scsi_cmnd *cmd) { }
++#endif /* !CONFIG_SCSI_DMA */
+ 
+ static inline unsigned scsi_sg_count(struct scsi_cmnd *cmd)
+ {
+-- 
+2.7.4
