@@ -1,11 +1,15 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH 1/1] iommu/vt-d: Use real PASID for flush in caching mode
-Date: Fri, 16 Mar 2018 12:31:36 +0800
-Message-ID: <1521174696-22495-1-git-send-email-baolu.lu@linux.intel.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v10 4/5] iommu/arm-smmu: Add the device_link between
+	masters and smmu
+Date: Fri, 16 Mar 2018 15:41:29 +0900
+Message-ID: <CAAFQd5AAgCE7avK=bR45Kjd=LhJ-qe+kD1otPWPaXUo7_JR65g@mail.gmail.com>
+References: <20180314081434.30875-1-vivek.gautam@codeaurora.org>
+	<20180314081434.30875-5-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180314081434.30875-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,43 +19,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SWYgY2FjaGluZyBtb2RlIGlzIHN1cHBvcnRlZCwgdGhlIGhhcmR3YXJlIHdpbGwgY2FjaGUKbm9u
-ZS1wcmVzZW50IG9yIGVycm9uZW91cyB0cmFuc2xhdGlvbiBlbnRyaWVzLiBIZW5jZSwKc29mdHdh
-cmUgc2hvdWxkIGV4cGxpY2l0bHkgaW52YWxpZGF0ZSB0aGUgUEFTSUQgY2FjaGUKYWZ0ZXIgYSBQ
-QVNJRCB0YWJsZSBlbnRyeSBiZWNvbWVzIHByZXNlbnQuIFdlIHNob3VsZAppc3N1ZSBzdWNoIGlu
-dmFsaWRhdGlvbiB3aXRoIHRoZSBQQVNJRCB2YWx1ZSB0aGF0IHdlCmhhdmUgY2hhbmdlZC4gUEFT
-SUQgMCBpcyBub3QgcmVzZXJ2ZWQgZm9yIHRoaXMgY2FzZS4KCkNjOiBKYWNvYiBQYW4gPGphY29i
-Lmp1bi5wYW5AbGludXguaW50ZWwuY29tPgpDYzogS2V2aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRl
-bC5jb20+CkNjOiBTYW5rYXJhbiBSYWplc2ggPHJhamVzaC5zYW5rYXJhbkBpbnRlbC5jb20+ClN1
-Z2dlc3RlZC1ieTogQXNob2sgUmFqIDxhc2hvay5yYWpAaW50ZWwuY29tPgpTaWduZWQtb2ZmLWJ5
-OiBMaXUgWWkgTCA8eWkubC5saXVAaW50ZWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdSA8
-YmFvbHUubHVAbGludXguaW50ZWwuY29tPgotLS0KIGRyaXZlcnMvaW9tbXUvaW50ZWwtc3ZtLmMg
-fCAxNiArKysrKystLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCAx
-MCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsLXN2bS5jIGIv
-ZHJpdmVycy9pb21tdS9pbnRlbC1zdm0uYwppbmRleCA5OWJjOWJkLi5iN2I4OGI1IDEwMDY0NAot
-LS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLXN2bS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwt
-c3ZtLmMKQEAgLTQyMiwxNyArNDIyLDEzIEBAIGludCBpbnRlbF9zdm1fYmluZF9tbShzdHJ1Y3Qg
-ZGV2aWNlICpkZXYsIGludCAqcGFzaWQsIGludCBmbGFncywgc3RydWN0IHN2bV9kZXZfCiAJCWlv
-bW11LT5wYXNpZF90YWJsZVtzdm0tPnBhc2lkXS52YWwgPSBwYXNpZF9lbnRyeV92YWw7CiAKIAkJ
-d21iKCk7Ci0JCS8qIEluIGNhY2hpbmcgbW9kZSwgd2Ugc3RpbGwgaGF2ZSB0byBmbHVzaCB3aXRo
-IFBBU0lEIDAgd2hlbgotCQkgKiBhIFBBU0lEIHRhYmxlIGVudHJ5IGJlY29tZXMgcHJlc2VudC4g
-Tm90IGVudGlyZWx5IGNsZWFyCi0JCSAqICp3aHkqIHRoYXQgd291bGQgYmUgdGhlIGNhc2Ug4oCU
-IHN1cmVseSB3ZSBjb3VsZCBqdXN0IGlzc3VlCi0JCSAqIGEgZmx1c2ggd2l0aCB0aGUgUEFTSUQg
-dmFsdWUgdGhhdCB3ZSd2ZSBjaGFuZ2VkPyBUaGUgUEFTSUQKLQkJICogaXMgdGhlIGluZGV4IGlu
-dG8gdGhlIHRhYmxlLCBhZnRlciBhbGwuIEl0J3Mgbm90IGxpa2UgZG9tYWluCi0JCSAqIElEcyBp
-biB0aGUgY2FzZSBvZiB0aGUgZXF1aXZhbGVudCBjb250ZXh0LWVudHJ5IGNoYW5nZSBpbgotCQkg
-KiBjYWNoaW5nIG1vZGUuIEFuZCBmb3IgdGhhdCBtYXR0ZXIgaXQncyBub3QgZW50aXJlbHkgY2xl
-YXIgd2h5Ci0JCSAqIGEgVk1NIHdvdWxkIGJlIGluIHRoZSBidXNpbmVzcyBvZiBjYWNoaW5nIHRo
-ZSBQQVNJRCB0YWJsZQotCQkgKiBhbnl3YXkuIFN1cmVseSB0aGF0IGNhbiBiZSBsZWZ0IGVudGly
-ZWx5IHRvIHRoZSBndWVzdD8gKi8KKworCQkvKgorCQkgKiBGbHVzaCBQQVNJRCBjYWNoZSB3aGVu
-IGEgUEFTSUQgdGFibGUgZW50cnkgYmVjb21lcworCQkgKiBwcmVzZW50LgorCQkgKi8KIAkJaWYg
-KGNhcF9jYWNoaW5nX21vZGUoaW9tbXUtPmNhcCkpCi0JCQlpbnRlbF9mbHVzaF9wYXNpZF9kZXYo
-c3ZtLCBzZGV2LCAwKTsKKwkJCWludGVsX2ZsdXNoX3Bhc2lkX2Rldihzdm0sIHNkZXYsIHN2bS0+
-cGFzaWQpOwogCX0KIAlsaXN0X2FkZF9yY3UoJnNkZXYtPmxpc3QsICZzdm0tPmRldnMpOwogCi0t
-IAoyLjcuNAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Vivek,
+
+On Wed, Mar 14, 2018 at 5:14 PM, Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>
+> Finally add the device link between the master device and
+> smmu, so that the smmu gets runtime enabled/disabled only when the
+> master needs it. This is done from add_device callback which gets
+> called once when the master is added to the smmu.
+>
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> ---
+>
+> Changes since v9:
+>  - Using device_link_del_dev() to delete the device link, instead of
+>    doing it in two steps - device_link_find() to first find the link, and
+>    then calling device_link_del().
+>
+>  drivers/iommu/arm-smmu.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 56a04ae80bf3..4cf270ffd449 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1460,10 +1460,31 @@ static int arm_smmu_add_device(struct device *dev)
+>
+>         iommu_device_link(&smmu->iommu, dev);
+>
+> +       if (pm_runtime_enabled(smmu->dev)) {
+> +               struct device_link *link;
+> +
+> +               /*
+> +                * Establish the link between smmu and master, so that the
+> +                * smmu gets runtime enabled/disabled as per the master's
+> +                * needs.
+> +                */
+> +               link = device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME);
+> +               if (!link) {
+> +                       dev_warn(smmu->dev,
+> +                                "Unable to add link to the consumer %s\n",
+> +                                dev_name(dev));
+> +                       ret = -ENODEV;
+> +                       goto out_unlink;
+> +               }
+> +       }
+
+If it's an error, we should use dev_err(). Also, as per Robin's
+comment for v9 could we make it as follows?
+
+if (pm_runtime_enabled(smmu->dev) &&
+    !device_link_add(dev, smmu->dev, DL_FLAG_PM_RUNTIME)) {
+        dev_err(smmu->dev,
+                         "Unable to add link to the consumer %s\n",
+dev_name(dev));
+        ret = -ENODEV;
+        goto out_unlink;
+}
+
+Best regards,
+Tomasz
