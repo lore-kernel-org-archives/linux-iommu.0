@@ -1,116 +1,68 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH] iommu/mediatek: Fix protect memory setting
-Date: Sun, 18 Mar 2018 09:52:54 +0800
-Message-ID: <1521337974-22112-1-git-send-email-yong.wu@mediatek.com>
+From: =?UTF-8?Q?Matias_Bj=c3=b8rling?= <mb@lightnvm.io>
+Subject: Re: [PATCH v2 10/21] lightnvm: Remove depends on HAS_DMA in case of
+ platform dependency
+Date: Sun, 18 Mar 2018 19:46:11 +0100
+Message-ID: <319a2b17-f08e-7219-cf5d-08e2df81d55c@lightnvm.io>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+ <1521208314-4783-11-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1521208314-4783-11-git-send-email-geert@linux-m68k.org>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Felipe Balbi <balbi@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "James E . J . Bottomley" <jejb@linux.vnet.ibm.com>, "Martin K . Petersen" <martin.petersen@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Tejun Heo <tj@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Stefan Richter <stefanr@s5r6.in-berlin.de>, Alan Tull <atull@kernel.org>, Moritz Fischer <mdf@kernel.org>, Wolfram Sang <wsa@the-dreams.de>
+Cc: iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org, linux-scsi@vger.kernel.org, alsa-devel@alsa-project.org, linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org, linux-fbdev@vger.kernel.org, linux1394-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org, linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, linux-block@vger.kernel.org, linux-media@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, netdev@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-In MediaTek's IOMMU design, When a iommu translation fault occurs
-(HW can NOT translate the destination address to a valid physical
-address), the IOMMU HW output the dirty data into a special memory
-to avoid corrupting the main memory, this is called "protect memory".
-the register(0x114) for protect memory is a little different between
-mt8173 and mt2712.
+On 03/16/2018 02:51 PM, Geert Uytterhoeven wrote:
+> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+> In most cases this other symbol is an architecture or platform specific
+> symbol, or PCI.
+> 
+> Generic symbols and drivers without platform dependencies keep their
+> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+> cannot work anyway.
+> 
+> This simplifies the dependencies, and allows to improve compile-testing.
+> 
+> Notes:
+>    - FSL_FMAN keeps its dependency on HAS_DMA, as it calls set_dma_ops(),
+>      which does not exist if HAS_DMA=n (Do we need a dummy? The use of
+>      set_dma_ops() in this driver is questionable),
+>    - SND_SOC_LPASS_IPQ806X and SND_SOC_LPASS_PLATFORM loose their
+>      dependency on HAS_DMA, as they are selected from
+>      SND_SOC_APQ8016_SBC.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Reviewed-by: Mark Brown <broonie@kernel.org>
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> v2:
+>    - Add Reviewed-by, Acked-by,
+>    - Drop RFC state,
+>    - Split per subsystem.
+> ---
+>   drivers/lightnvm/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/lightnvm/Kconfig b/drivers/lightnvm/Kconfig
+> index 10c08982185a572f..9c03f35d9df113c6 100644
+> --- a/drivers/lightnvm/Kconfig
+> +++ b/drivers/lightnvm/Kconfig
+> @@ -4,7 +4,7 @@
+>   
+>   menuconfig NVM
+>   	bool "Open-Channel SSD target support"
+> -	depends on BLOCK && HAS_DMA && PCI
+> +	depends on BLOCK && PCI
+>   	select BLK_DEV_NVME
+>   	help
+>   	  Say Y here to get to enable Open-channel SSDs.
+> 
 
-In the mt8173, bit[30:6] in the register represents [31:7] of the
-physical address. In the 4GB mode, the register bit[31] should be 1.
-While in the mt2712, the bits don't shift. bit[31:7] in the register
-represents [31:7] in the physical address, and bit[1:0] in the
-register represents bit[33:32] of the physical address if it has.
+Looks good.
 
-Fixes: e6dec9230862 ("iommu/mediatek: Add mt2712 IOMMU support")
-Reported-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
-After adding the setting above, the macro will be complex, like:
- #define F_MMU_IVRP_PA_SET(data)		({	\
-	const struct mtk_iommu_data *_data =  data;	\
-	phys_addr_t _pa = data->protect_base;		\
-	((_data->m4u_plat == M4U_MT8173) ?		\
-	((_pa >> 1) | (_data->enable_4GB << 31)) :	\
-	(lower_32_bits(_pa) | (_pa >> 32)));		\
-	})
-And this macro is called twice(hw_init and resume).
-
-To avoid adding this complex macro or a new function, I put
-it in the code and backup its value in the suspend registers.
----
- drivers/iommu/mtk_iommu.c | 15 ++++++++++-----
- drivers/iommu/mtk_iommu.h |  1 +
- 2 files changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index f227d73..f2832a1 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -60,7 +60,7 @@
- 	(((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
- 
- #define REG_MMU_IVRP_PADDR			0x114
--#define F_MMU_IVRP_PA_SET(pa, ext)		(((pa) >> 1) | ((!!(ext)) << 31))
-+
- #define REG_MMU_VLD_PA_RNG			0x118
- #define F_MMU_VLD_PA_RNG(EA, SA)		(((EA) << 8) | (SA))
- 
-@@ -539,8 +539,13 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
- 	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
- 
--	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
--		       data->base + REG_MMU_IVRP_PADDR);
-+	if (data->m4u_plat == M4U_MT8173)
-+		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
-+	else
-+		regval = lower_32_bits(data->protect_base) |
-+			 upper_32_bits(data->protect_base);
-+	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
-+
- 	if (data->enable_4GB && data->m4u_plat != M4U_MT8173) {
- 		/*
- 		 * If 4GB mode is enabled, the validate PA range is from
-@@ -695,6 +700,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- 	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
- 	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
- 	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
-+	reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
- 	clk_disable_unprepare(data->bclk);
- 	return 0;
- }
-@@ -717,8 +723,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- 	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
- 	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
- 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
--	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
--		       base + REG_MMU_IVRP_PADDR);
-+	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
- 	if (data->m4u_dom)
- 		writel(data->m4u_dom->cfg.arm_v7s_cfg.ttbr[0],
- 		       base + REG_MMU_PT_BASE_ADDR);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index b4451a1..778498b 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -32,6 +32,7 @@ struct mtk_iommu_suspend_reg {
- 	u32				ctrl_reg;
- 	u32				int_control0;
- 	u32				int_main_control;
-+	u32				ivrp_paddr;
- };
- 
- enum mtk_iommu_plat {
--- 
-1.8.1.1.dirty
+Reviewed-by: Matias Bjørling <mb@lightnvm.io>
