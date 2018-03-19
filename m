@@ -1,15 +1,14 @@
 From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
-	update	iova list
-Date: Mon, 19 Mar 2018 07:51:58 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1910857ED@SHSMSX101.ccr.corp.intel.com>
+Subject: RE: [PATCH v5 0/7] vfio/type1: Add support for valid iova list
+	management
+Date: Mon, 19 Mar 2018 08:28:32 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108585F@SHSMSX101.ccr.corp.intel.com>
 References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
-	<20180315163509.17740-3-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180315163509.17740-3-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20180315163509.17740-1-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -27,176 +26,89 @@ List-Id: iommu@lists.linux-foundation.org
 > From: Shameer Kolothum
 > Sent: Friday, March 16, 2018 12:35 AM
 > 
-> This retrieves the reserved regions associated with dev group and
-> checks for conflicts with any existing dma mappings. Also update
-> the iova list excluding the reserved regions.
+> This series introduces an iova list associated with a vfio
+> iommu. The list is kept updated taking care of iommu apertures,
+> and reserved regions. Also this series adds checks for any conflict
+> with existing dma mappings whenever a new device group is attached to
+> the domain.
 > 
-> Signed-off-by: Shameer Kolothum
-> <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 90
-> +++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 90 insertions(+)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c
-> b/drivers/vfio/vfio_iommu_type1.c
-> index 1123c74..cfe2bb2 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1313,6 +1313,82 @@ static int vfio_iommu_aper_resize(struct
-> list_head *iova,
->  	return 0;
->  }
-> 
-> +/*
-> + * Check reserved region conflicts with existing dma mappings
-> + */
-> +static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
-> +				struct list_head *resv_regions)
-> +{
-> +	struct iommu_resv_region *region;
-> +
-> +	/* Check for conflict with existing dma mappings */
-> +	list_for_each_entry(region, resv_regions, list) {
-> +		if (vfio_find_dma(iommu, region->start, region->length))
-> +			return true;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +/*
-> + * Check iova region overlap with  reserved regions and
-> + * exclude them from the iommu iova range
-> + */
-> +static int vfio_iommu_resv_exclude(struct list_head *iova,
-> +					struct list_head *resv_regions)
-> +{
-> +	struct iommu_resv_region *resv;
-> +	struct vfio_iova *n, *next;
-> +
-> +	list_for_each_entry(resv, resv_regions, list) {
-> +		phys_addr_t start, end;
-> +
-> +		start = resv->start;
-> +		end = resv->start + resv->length - 1;
-> +
-> +		list_for_each_entry_safe(n, next, iova, list) {
-> +			int ret = 0;
-> +
-> +			/* No overlap */
-> +			if ((start > n->end) || (end < n->start))
-> +				continue;
-> +			/*
-> +			 * Insert a new node if current node overlaps with
-> the
-> +			 * reserve region to exlude that from valid iova
-> range.
-> +			 * Note that, new node is inserted before the
-> current
-> +			 * node and finally the current node is deleted
-> keeping
-> +			 * the list updated and sorted.
-> +			 */
-> +			if (start > n->start)
-> +				ret = vfio_iommu_iova_insert(&n->list,
-> +							n->start, start - 1);
-> +			if (!ret && end < n->end)
-> +				ret = vfio_iommu_iova_insert(&n->list,
-> +							end + 1, n->end);
-> +			if (ret)
-> +				return ret;
+> User-space can retrieve valid iova ranges using VFIO_IOMMU_GET_INFO
+> ioctl capability chains. Any dma map request outside the valid iova
+> range will be rejected.
 
-Is it safer to delete the 1st node here in case of failure of the 2nd node?
-There is no problem with current logic since upon error iova_copy will
-be released anyway. However this function alone doesn't assume the
-fact of a temporary list, thus it's better to keep the list clean w/o garbage
-left from any error handling.
+GET_INFO is done at initialization time which is good for cold attached
+devices. If a hotplugged device may cause change of valid iova ranges
+at run-time, then there could be potential problem (which however is
+difficult for user space or orchestration stack to figure out in advance)
+Can we do some extension like below to make hotplug case cleaner?
 
-> +
-> +			list_del(&n->list);
-> +			kfree(n);
-> +		}
-> +	}
-> +
-> +	if (list_empty(iova))
-> +		return -EINVAL;
+- An interface allowing user space to request VFIO rejecting further 
+attach_group if doing so may cause iova range change. e.g. Qemu can 
+do such request once completing initial GET_INFO;
 
-if list_empty should BUG_ON here? or do we really need this check?
+- or an event notification to user space upon change of valid iova
+ranges when attaching a new device at run-time. It goes one step 
+further - even attach may cause iova range change, it may still
+succeed as long as Qemu hasn't allocated any iova in impacted 
+range
 
-> +
-> +	return 0;
-> +}
-> +
-> +static void vfio_iommu_resv_free(struct list_head *resv_regions)
-> +{
-> +	struct iommu_resv_region *n, *next;
-> +
-> +	list_for_each_entry_safe(n, next, resv_regions, list) {
-> +		list_del(&n->list);
-> +		kfree(n);
-> +	}
-> +}
-> +
->  static void vfio_iommu_iova_free(struct list_head *iova)
->  {
->  	struct vfio_iova *n, *next;
-> @@ -1366,6 +1442,7 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
->  	phys_addr_t resv_msi_base;
->  	struct iommu_domain_geometry geo;
->  	LIST_HEAD(iova_copy);
-> +	LIST_HEAD(group_resv_regions);
+Thanks
+Kevin
+
 > 
->  	mutex_lock(&iommu->lock);
 > 
-> @@ -1444,6 +1521,13 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
->  		goto out_detach;
->  	}
+> v4 --> v5
+> Rebased to next-20180315.
 > 
-> +	iommu_get_group_resv_regions(iommu_group,
-> &group_resv_regions);
-> +
-> +	if (vfio_iommu_resv_conflict(iommu, &group_resv_regions)) {
-> +		ret = -EINVAL;
-> +		goto out_detach;
-> +	}
-> +
->  	/* Get a copy of the current iova list and work on it */
->  	ret = vfio_iommu_iova_get_copy(iommu, &iova_copy);
->  	if (ret)
-> @@ -1454,6 +1538,10 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
->  	if (ret)
->  		goto out_detach;
+>  -Incorporated the corner case bug fix suggested by Alex to patch #5.
+>  -Based on suggestions by Alex and Robin, added patch#7. This
+>   moves the PCI window  reservation back in to DMA specific path.
+>   This is to fix the issue reported by Eric[1].
 > 
-> +	ret = vfio_iommu_resv_exclude(&iova_copy, &group_resv_regions);
-> +	if (ret)
-> +		goto out_detach;
-> +
->  	resv_msi = vfio_iommu_has_sw_msi(iommu_group,
-> &resv_msi_base);
+> Note:
+> The patch #7 has dependency with [2][3]
 > 
->  	INIT_LIST_HEAD(&domain->group_list);
-> @@ -1514,6 +1602,7 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
->  	/* Delete the old one and insert new iova list */
->  	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
->  	mutex_unlock(&iommu->lock);
-> +	vfio_iommu_resv_free(&group_resv_regions);
+> 1. https://patchwork.kernel.org/patch/10232043/
+> 2. https://patchwork.kernel.org/patch/10216553/
+> 3. https://patchwork.kernel.org/patch/10216555/
 > 
->  	return 0;
+> v3 --> v4
+>  Addressed comments received for v3.
+>  -dma_addr_t instead of phys_addr_t
+>  -LIST_HEAD() usage.
+>  -Free up iova_copy list in case of error.
+>  -updated logic in filling the iova caps info(patch #5)
 > 
-> @@ -1522,6 +1611,7 @@ static int vfio_iommu_type1_attach_group(void
-> *iommu_data,
->  out_domain:
->  	iommu_domain_free(domain->domain);
->  	vfio_iommu_iova_free(&iova_copy);
-> +	vfio_iommu_resv_free(&group_resv_regions);
->  out_free:
->  	kfree(domain);
->  	kfree(group);
+> RFCv2 --> v3
+>  Removed RFC tag.
+>  Addressed comments from Alex and Eric:
+>  - Added comments to make iova list management logic more clear.
+>  - Use of iova list copy so that original is not altered in
+>    case of failure.
+> 
+> RFCv1 --> RFCv2
+>  Addressed comments from Alex:
+> -Introduced IOVA list management and added checks for conflicts with
+>  existing dma map entries during attach/detach.
+> 
+> Shameer Kolothum (2):
+>   vfio/type1: Add IOVA range capability support
+>   iommu/dma: Move PCI window region reservation back into dma specific
+>     path.
+> 
+> Shameerali Kolothum Thodi (5):
+>   vfio/type1: Introduce iova list and add iommu aperture validity check
+>   vfio/type1: Check reserve region conflict and update iova list
+>   vfio/type1: Update iova list on detach
+>   vfio/type1: check dma map request is within a valid iova range
+>   vfio/type1: remove duplicate retrieval of reserved regions
+> 
+>  drivers/iommu/dma-iommu.c       |  54 ++---
+>  drivers/vfio/vfio_iommu_type1.c | 497
+> +++++++++++++++++++++++++++++++++++++++-
+>  include/uapi/linux/vfio.h       |  23 ++
+>  3 files changed, 533 insertions(+), 41 deletions(-)
+> 
 > --
 > 2.7.4
 > 
