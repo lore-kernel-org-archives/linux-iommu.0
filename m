@@ -1,92 +1,70 @@
-From: Alan Tull <atull@kernel.org>
-Subject: Re: [PATCH v2 06/21] fpga: Remove depends on HAS_DMA in case of
- platform dependency
-Date: Mon, 19 Mar 2018 11:06:29 -0500
-Message-ID: <CANk1AXR3sv2=G-KsQh1p0rdcvy-3XZs6qVy5EMbcAMS6OSVzeQ@mail.gmail.com>
-References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
- <1521208314-4783-7-git-send-email-geert@linux-m68k.org>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v7 0/5] Add Intel IOMMU debugfs support
+Date: Mon, 19 Mar 2018 09:37:14 -0700
+Message-ID: <20180319093714.3afe698b@jacob-builder>
+References: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
+	<20180213140303.42mbzfxpypljy37l@8bytes.org>
+	<20180213214002.GA27066@otc-nc-03>
+	<20180213145332.35c73eda@jacob-builder>
+	<20180215095337.fccoozdclfnbepi4@8bytes.org>
+	<20180215083811.3ec86e49@jacob-builder>
+	<20180315131854.s6xmltsvsysublcw@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1521208314-4783-7-git-send-email-geert@linux-m68k.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org, linux-fpga@vger.kernel.org, linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Eric Anholt <eric@anholt.net>, netdev@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux1394-devel@lists.sourceforge.net, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Stefan Wahren <stefan.wahren@i2se.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, "James E . J . Bottomley" <jejb@linux.vnet.ibm.com>, Herbert Xu <herbert@gondor.apana.org.au>, linux-scsi@vger.kernel.org, Richard Weinberger <richard@nod.at>, Joerg Roedel <joro@8bytes.org>, Jassi Brar <jassisinghbrar@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, linux-serial@vger.kernel.org, Matias Bjorling <mb@lightn>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180315131854.s6xmltsvsysublcw-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj,
+	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 16, 2018 at 8:51 AM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
+On Thu, 15 Mar 2018 14:18:54 +0100
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-Hi Geert,
+> On Thu, Feb 15, 2018 at 08:38:11AM -0800, Jacob Pan wrote:
+> > Just wondering if your concern is on the implementation or the
+> > debugfs idea in general. Perhaps have some common IOMMU debugfs?  
+> 
+> My concern mainly is that we add interfaces which reveal
+> potentially security relevant information
+I don;t think security is any worse than existing kernel page table in
+debugfs. i.e. /sys/kernel/debug/page_tables
+This is a debug feature.
+> to user-space and that tools
+> come up using it so that this also becomes kABI and we can't easily
+> change it anymore and this whole stuff turns into a maintence
+> nightmare.
+> 
+Agreed, perhaps we can address that by only dumping user readable data
+which avoid having a parser tool that relies on stable kABI?
 
-This essentially removes this commit
+> So that is definitly not something I'd like to see enabled in the
+> distros, and its better to avoid it at all and search for better ways
+> to debug upcoming issues.
+> 
+We can make it "def_bool n" so only used by advanced customers who can
+recompile kernel.
+> BPF tracers and tracing in general comes to mind here...
+> 
+my concern is that tracing is suitable for dynamic debugging, but these
+context info are mostly static. Perhaps I am missing some tracing
+features.
 
-commit 1c8cb409491403036919dd1c6b45013dc8835a44
-Author: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Wed Aug 3 13:45:46 2016 -0700
+Thanks,
 
-    drivers/fpga/Kconfig: fix build failure
+Jacob
+> 
+> 	Joerg
+> 
 
-    While building m32r allmodconfig the build is failing with the error:
-
-      ERROR: "bad_dma_ops" [drivers/fpga/zynq-fpga.ko] undefined!
-
-    Xilinx Zynq FPGA is using DMA but there was no dependency while
-    building.
-
-    Link: http://lkml.kernel.org/r/1464346526-13913-1-git-send-email-sudipm.mukherjee@gmail.com
-    Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-    Acked-by: Moritz Fischer <moritz.fischer@ettus.com>
-    Cc: Alan Tull <atull@opensource.altera.com>
-    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-
-Alan
-
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
->
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
->
-> This simplifies the dependencies, and allows to improve compile-testing.
->
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Reviewed-by: Mark Brown <broonie@kernel.org>
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Split per subsystem.
-> ---
->  drivers/fpga/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-> index f47ef848bcd056d5..fd539132542e30ee 100644
-> --- a/drivers/fpga/Kconfig
-> +++ b/drivers/fpga/Kconfig
-> @@ -53,7 +53,6 @@ config FPGA_MGR_ALTERA_CVP
->  config FPGA_MGR_ZYNQ_FPGA
->         tristate "Xilinx Zynq FPGA"
->         depends on ARCH_ZYNQ || COMPILE_TEST
-> -       depends on HAS_DMA
->         help
->           FPGA manager driver support for Xilinx Zynq FPGAs.
->
-> --
-> 2.7.4
->
+[Jacob Pan]
