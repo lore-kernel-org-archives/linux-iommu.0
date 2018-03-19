@@ -1,20 +1,13 @@
 From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 11/13] dma-direct: handle the memory encryption bit in
-	common code
-Date: Mon, 19 Mar 2018 08:17:03 -0500
-Message-ID: <e9982425-b003-9be0-8359-2fb85c5ae76a@amd.com>
-References: <20180305174655.9878-1-hch@lst.de>
-	<20180305174655.9878-12-hch@lst.de>
-	<114e27be-5814-4258-4985-af08763c8a74@amd.com>
-	<0c9d3e4a-8407-282a-73eb-21d28047e0e3@amd.com>
-	<20180313131005.GA6260@lst.de>
-	<69e98163-beca-fb8a-a26b-66dfeef2f689@amd.com>
-	<20180319103939.GA23333@lst.de>
+Subject: Re: use generic dma-direct and swiotlb code for x86 V3
+Date: Mon, 19 Mar 2018 09:00:56 -0500
+Message-ID: <8fcf5cf4-5db4-8197-0012-e69dc8f41b18@amd.com>
+References: <20180319103826.12853-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180319103939.GA23333-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180319103826.12853-1-hch-jcswGhMUV9g@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,17 +18,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/19/2018 5:39 AM, Christoph Hellwig wrote:
-> Can you test and review the V3 of the series I just sent out?
-> We reall should get it into linux-next ASAP.
+On 3/19/2018 5:38 AM, Christoph Hellwig wrote:
+> Hi all,
+> 
+> this series switches the x86 code the the dma-direct implementation
+> for direct (non-iommu) dma and the generic swiotlb ops.  This includes
+> getting rid of the special ops for the AMD memory encryption case and
+> the STA2x11 SOC.  The generic implementations are based on the x86
+> code, so they provide the same functionality.
+> 
 
-Can do.  I'll get back to you on V3 thread with the results.
+Booted the system with SME on and off and the IOMMU on, off and in
+passthrough mode without issues.  In each case, booted an SEV guest
+without issues.  I'll be able to do more extensive testing later, but
+for now...
 
-Thanks,
-Tom
+Tested-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
 
+> Changes since V2:
+>  - minor changelog tweaks
+>  - made is_sta2x11 a plain bool
+> 
+> Changes since V1:
+>  - fix the length in the set_memory_decrypted call
+>  - fix the SEV case
 > 
