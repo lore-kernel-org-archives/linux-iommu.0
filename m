@@ -1,14 +1,17 @@
-From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 27/37] iommu/arm-smmu-v3: Register fault workqueue
-Date: Mon, 19 Mar 2018 19:03:41 +0800
-Message-ID: <f2841aac-4c5e-4ac2-fa4d-81d6b2857503@huawei.com>
-References: <1519280641-30258-1-git-send-email-xieyisheng1@huawei.com>
-	<1519280641-30258-27-git-send-email-xieyisheng1@huawei.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v5 0/7] vfio/type1: Add support for valid iova list
+	management
+Date: Mon, 19 Mar 2018 12:12:47 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191085BED@SHSMSX101.ccr.corp.intel.com>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19108585F@SHSMSX101.ccr.corp.intel.com>
+	<5FC3163CFD30C246ABAA99954A238FA838675F3C@FRAEML521-MBX.china.huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1519280641-30258-27-git-send-email-xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838675F3C-WFPaWmAhWqtUuCJht5byYAK1hpo4iccwjNknBlVQO8k@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,31 +21,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, christian.koenig-5C7GfCeVMHo@public.gmane.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: "xuwei (O)" <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
+> From: Shameerali Kolothum Thodi
+> [mailto:shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org]
+> 
+> Hi Kevin,
+> 
+> Thanks for taking a look at this series.
+> 
+> > -----Original Message-----
+> > From: Tian, Kevin [mailto:kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org]
+> > Sent: Monday, March 19, 2018 8:29 AM
+> > To: Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
+> > alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+> > Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; xuwei (O)
+> > <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
+> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Subject: RE: [PATCH v5 0/7] vfio/type1: Add support for valid iova list
+> > management
+> >
+> > > From: Shameer Kolothum
+> > > Sent: Friday, March 16, 2018 12:35 AM
+> > >
+> > > This series introduces an iova list associated with a vfio
+> > > iommu. The list is kept updated taking care of iommu apertures,
+> > > and reserved regions. Also this series adds checks for any conflict
+> > > with existing dma mappings whenever a new device group is attached
+> to
+> > > the domain.
+> > >
+> > > User-space can retrieve valid iova ranges using
+> VFIO_IOMMU_GET_INFO
+> > > ioctl capability chains. Any dma map request outside the valid iova
+> > > range will be rejected.
+> >
+> > GET_INFO is done at initialization time which is good for cold attached
+> > devices. If a hotplugged device may cause change of valid iova ranges
+> > at run-time, then there could be potential problem (which however is
+> > difficult for user space or orchestration stack to figure out in advance)
+> > Can we do some extension like below to make hotplug case cleaner?
+> 
+> As I understand, in case a hotplugged device results in an update to the
+> valid
+> Iova ranges then the Qemu, vfio_connect_container() -->
+> memory_listner_register()
+> will fail if there is a conflict as patch #4 checks for invalid dma map requests.
 
-[...]
-> @@ -3168,6 +3260,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->  
-> +	if (smmu->features & (ARM_SMMU_FEAT_STALLS | ARM_SMMU_FEAT_PRI)) {
-> +		smmu->faultq_nb.notifier_call = arm_smmu_flush_queues;
-> +		ret = iommu_fault_queue_register(&smmu->faultq_nb);
-> +		if (ret)
-> +			return ret;
+OK, possibly Qemu can do another GET_INFO upon any dma map 
+error to get latest ranges and then allocate a new valid iova to
+redo the map. this should work if valid ranges shrink due to new
+hotplugged device. But if hot-removing a device may result in
+more valid ranges, so far there is no way for Qemu to pick up.
+I'm not sure whether we want to go that far though...
 
-I find a case here: CONFIG_IOMMU_FAULT=n, and smmu support feature STALLS or PRI,
-the device probe will failed here, is this what we want?
+> 
+> Not sure, your concern is preventing hotplug much before this happens or
+> not.
+> 
+
+yes, my earlier thought is more to catch the problem in attach phase.
 
 Thanks
-Yisheng
-
-> +	}
-> +
->  	/* And we're up. Go go go! */
->  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
->  				     "smmu3.%pa", &ioaddr);
+Kevin
