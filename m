@@ -1,30 +1,48 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic dma-direct and swiotlb code for x86 V3
-Date: Mon, 19 Mar 2018 16:28:40 +0100
-Message-ID: <20180319152840.GA28041@lst.de>
-References: <20180319103826.12853-1-hch@lst.de> <20180319152737.GK1110@char.us.oracle.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 12/14] dma-direct: handle the memory encryption bit in
+	common code
+Date: Mon, 19 Mar 2018 15:37:20 +0000
+Message-ID: <5316b479-7e75-d62f-6b17-b6bece55187c@arm.com>
+References: <20180319103826.12853-1-hch@lst.de>
+	<20180319103826.12853-13-hch@lst.de>
+	<dd05dd14-9969-7985-826e-f440c3fc4c08@arm.com>
+	<20180319152442.GA27915@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180319152737.GK1110@char.us.oracle.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Christoph Hellwig <hch@lst.de>, x86@kernel.org, Tom Lendacky <thomas.lendacky@amd.com>, David Woodhouse <dwmw2@infradead.org>, Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180319152442.GA27915-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 19, 2018 at 11:27:37AM -0400, Konrad Rzeszutek Wilk wrote:
-> On Mon, Mar 19, 2018 at 11:38:12AM +0100, Christoph Hellwig wrote:
-> > Hi all,
-> > 
-> > this series switches the x86 code the the dma-direct implementation
-> > for direct (non-iommu) dma and the generic swiotlb ops.  This includes
-> > getting rid of the special ops for the AMD memory encryption case and
-> > the STA2x11 SOC.  The generic implementations are based on the x86
-> > code, so they provide the same functionality.
+On 19/03/18 15:24, Christoph Hellwig wrote:
+> On Mon, Mar 19, 2018 at 03:19:04PM +0000, Robin Murphy wrote:
+>> As a heads-up, I've just realised there's now a silent (but build-breaking)
+>> conflict with the current arm64 queue brewing here, as we've unfortunately
+>> had to reintroduce ARCH_HAS_PHYS_TO_DMA as a means of being safe against an
+>> ugly architectural corner case - currently commit 1f85b42a691c ("arm64:
+>> Revert L1_CACHE_SHIFT back to 6 (64-byte cache line size)") in -next.
 > 
-> I need to test this on my baremertal and Xen setup - and I lost your
-> git repo URL - any chance you mention point out to me so I can
-> kick of a build?
+> Please revert that arm64 commit.  This condition should be handled
+> in common code as it is not arm specific.  And next time please CC
+> the iommu list and dma-mapping maintainers before doing such a change.
 
-git://git.infradead.org/users/hch/misc.git dma-direct-x86
+There didn't seem enough justification to clutter up core SWIOTLB code 
+with the ability to force bouncing on a per-device basis, but if you 
+think there are real potential users out there then fair enough. For 
+arm64, it's extremely unlikely that anyone will ever build a 
+sufficiently wacky system to actually hit this code path; we really only 
+implemented it for peace of mind per the letter of the architecture.
+
+Robin.
