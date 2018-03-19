@@ -1,13 +1,15 @@
 From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: use generic dma-direct and swiotlb code for x86 V3
-Date: Mon, 19 Mar 2018 09:00:56 -0500
-Message-ID: <8fcf5cf4-5db4-8197-0012-e69dc8f41b18@amd.com>
+Subject: Re: [PATCH 10/14] set_memory.h: provide set_memory_{en,de}crypted
+	stubs
+Date: Mon, 19 Mar 2018 09:21:20 -0500
+Message-ID: <cedbd051-cc59-1f80-4143-975342fc5e0c@amd.com>
 References: <20180319103826.12853-1-hch@lst.de>
+	<20180319103826.12853-11-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180319103826.12853-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180319103826.12853-11-hch-jcswGhMUV9g@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,27 +25,34 @@ Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>,
 List-Id: iommu@lists.linux-foundation.org
 
 On 3/19/2018 5:38 AM, Christoph Hellwig wrote:
-> Hi all,
-> 
-> this series switches the x86 code the the dma-direct implementation
-> for direct (non-iommu) dma and the generic swiotlb ops.  This includes
-> getting rid of the special ops for the AMD memory encryption case and
-> the STA2x11 SOC.  The generic implementations are based on the x86
-> code, so they provide the same functionality.
-> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-Booted the system with SME on and off and the IOMMU on, off and in
-passthrough mode without issues.  In each case, booted an SEV guest
-without issues.  I'll be able to do more extensive testing later, but
-for now...
+Reviewed-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
 
-Tested-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-
-> Changes since V2:
->  - minor changelog tweaks
->  - made is_sta2x11 a plain bool
+> ---
+>  include/linux/set_memory.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 > 
-> Changes since V1:
->  - fix the length in the set_memory_decrypted call
->  - fix the SEV case
+> diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
+> index e5140648f638..da5178216da5 100644
+> --- a/include/linux/set_memory.h
+> +++ b/include/linux/set_memory.h
+> @@ -17,4 +17,16 @@ static inline int set_memory_x(unsigned long addr,  int numpages) { return 0; }
+>  static inline int set_memory_nx(unsigned long addr, int numpages) { return 0; }
+>  #endif
+>  
+> +#ifndef CONFIG_ARCH_HAS_MEM_ENCRYPT
+> +static inline int set_memory_encrypted(unsigned long addr, int numpages)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline int set_memory_decrypted(unsigned long addr, int numpages)
+> +{
+> +	return 0;
+> +}
+> +#endif /* CONFIG_ARCH_HAS_MEM_ENCRYPT */
+> +
+>  #endif /* _LINUX_SET_MEMORY_H_ */
 > 
