@@ -1,17 +1,18 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH 00/10 v2] iommu/amd: lock splitting & GFP_KERNEL allocation
-Date: Mon, 19 Mar 2018 13:15:27 +0100
-Message-ID: <20180319121527.zdmuwid4i3mjpwjw@linutronix.de>
-References: <20180316201836.7864-1-bigeasy@linutronix.de>
-	<1521316194.3722.74.camel@redhat.com>
-	<20180317211013.rlou66s542ad4y2i@linutronix.de>
-	<1521323019.3722.98.camel@redhat.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
+	update	iova list
+Date: Mon, 19 Mar 2018 12:16:22 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191085C0C@SHSMSX101.ccr.corp.intel.com>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<20180315163509.17740-3-shameerali.kolothum.thodi@huawei.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1910857ED@SHSMSX101.ccr.corp.intel.com>
+	<5FC3163CFD30C246ABAA99954A238FA838675F4F@FRAEML521-MBX.china.huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1521323019.3722.98.camel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA838675F4F-WFPaWmAhWqtUuCJht5byYAK1hpo4iccwjNknBlVQO8k@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,27 +22,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: "xuwei (O)" <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-03-17 16:43:39 [-0500], Scott Wood wrote:
-> If that's worth the lock dropping then fine (though why does only one
-> of the two allocations use GFP_KERNEL?), but it doesn't need to be a
-That was a mistake, I planned to keep both as GFP_KERNEL.
-
-> raw lock if the non-allocating users are separated.  Keeping them
-> separate will also preserve the WARNs if we somehow end up in an atomic
-> context with no table (versus relying on atomic sleep debugging that
-> may or may not be enabled), and make the code easier to understand by
-> being explicit about which functions can be used from RT-atomic
-> context.
-
-That separated part is okay. We could keep it. However, I am not sure if
-looking at the table irq_lookup_table[devid] without the lock is okay.
-The pointer is assigned without DTE entry/iommu-flush to be completed. 
-This does not look "okay".
-
-> -Scott
+> From: Shameerali Kolothum Thodi
+> [mailto:shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org]
 > 
-Sebastian
+> > -----Original Message-----
+> > From: Tian, Kevin [mailto:kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org]
+> > Sent: Monday, March 19, 2018 7:52 AM
+> > To: Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
+> > alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+> > Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; xuwei (O)
+> > <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
+> > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Subject: RE: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
+> > update iova list
+> >
+> > > From: Shameer Kolothum
+> > > Sent: Friday, March 16, 2018 12:35 AM
+> > >
+> > > This retrieves the reserved regions associated with dev group and
+> > > checks for conflicts with any existing dma mappings. Also update
+> > > the iova list excluding the reserved regions.
+> > >
+> > > Signed-off-by: Shameer Kolothum
+> > > <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > > ---
+> > >  drivers/vfio/vfio_iommu_type1.c | 90
+> > > +++++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 90 insertions(+)
+> > >
+> > > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > > b/drivers/vfio/vfio_iommu_type1.c
+> > > index 1123c74..cfe2bb2 100644
+> > > --- a/drivers/vfio/vfio_iommu_type1.c
+> > > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > > @@ -1313,6 +1313,82 @@ static int vfio_iommu_aper_resize(struct
+> > > list_head *iova,
+> > >  	return 0;
+> > >  }
+> > >
+> > > +/*
+> > > + * Check reserved region conflicts with existing dma mappings
+> > > + */
+> > > +static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
+> > > +				struct list_head *resv_regions)
+> > > +{
+> > > +	struct iommu_resv_region *region;
+> > > +
+> > > +	/* Check for conflict with existing dma mappings */
+> > > +	list_for_each_entry(region, resv_regions, list) {
+> > > +		if (vfio_find_dma(iommu, region->start, region->length))
+> > > +			return true;
+> > > +	}
+> > > +
+> > > +	return false;
+> > > +}
+> > > +
+> > > +/*
+> > > + * Check iova region overlap with  reserved regions and
+> > > + * exclude them from the iommu iova range
+> > > + */
+> > > +static int vfio_iommu_resv_exclude(struct list_head *iova,
+> > > +					struct list_head *resv_regions)
+> > > +{
+> > > +	struct iommu_resv_region *resv;
+> > > +	struct vfio_iova *n, *next;
+> > > +
+> > > +	list_for_each_entry(resv, resv_regions, list) {
+> > > +		phys_addr_t start, end;
+> > > +
+> > > +		start = resv->start;
+> > > +		end = resv->start + resv->length - 1;
+> > > +
+> > > +		list_for_each_entry_safe(n, next, iova, list) {
+> > > +			int ret = 0;
+> > > +
+> > > +			/* No overlap */
+> > > +			if ((start > n->end) || (end < n->start))
+> > > +				continue;
+> > > +			/*
+> > > +			 * Insert a new node if current node overlaps with
+> > > the
+> > > +			 * reserve region to exlude that from valid iova
+> > > range.
+> > > +			 * Note that, new node is inserted before the
+> > > current
+> > > +			 * node and finally the current node is deleted
+> > > keeping
+> > > +			 * the list updated and sorted.
+> > > +			 */
+> > > +			if (start > n->start)
+> > > +				ret = vfio_iommu_iova_insert(&n->list,
+> > > +							n->start, start - 1);
+> > > +			if (!ret && end < n->end)
+> > > +				ret = vfio_iommu_iova_insert(&n->list,
+> > > +							end + 1, n->end);
+> > > +			if (ret)
+> > > +				return ret;
+> >
+> > Is it safer to delete the 1st node here in case of failure of the 2nd node?
+> > There is no problem with current logic since upon error iova_copy will
+> > be released anyway. However this function alone doesn't assume the
+> > fact of a temporary list, thus it's better to keep the list clean w/o garbage
+> > left from any error handling.
+> 
+> Agree. I will consider this.
+> 
+> > > +
+> > > +			list_del(&n->list);
+> > > +			kfree(n);
+> > > +		}
+> > > +	}
+> > > +
+> > > +	if (list_empty(iova))
+> > > +		return -EINVAL;
+> >
+> > if list_empty should BUG_ON here? or do we really need this check?
+> 
+> I think we need the check here. This basically means there is no valid iova
+> region as the reserved regions overlaps it completely(very unlikely, a bad
+> configuration maybe). The __attach will fail if that happens and may be
+> WARN_ON is a good idea to notify the user.
+> 
+
+you are right. I misread the code that deletion happens only
+after insertion...
+
+Thanks
+Kevin
