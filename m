@@ -1,8 +1,8 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH 12/14] dma-direct: handle the memory encryption bit in
 	common code
-Date: Mon, 19 Mar 2018 16:55:51 +0000
-Message-ID: <20180319165551.GE14916@arm.com>
+Date: Mon, 19 Mar 2018 18:01:41 +0000
+Message-ID: <20180319180141.w5o6lhknhd6q7ktq@armageddon.cambridge.arm.com>
 References: <20180319103826.12853-1-hch@lst.de>
 	<20180319103826.12853-13-hch@lst.de>
 	<dd05dd14-9969-7985-826e-f440c3fc4c08@arm.com>
@@ -25,7 +25,7 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On Mon, Mar 19, 2018 at 05:03:43PM +0100, Christoph Hellwig wrote:
@@ -41,17 +41,39 @@ On Mon, Mar 19, 2018 at 05:03:43PM +0100, Christoph Hellwig wrote:
 > easily happen elsewhere, so there is no need to duplicate a lot
 > of code for that.
 
-Fair enough, although I wouldn't say it's a *lot* of code being duplicated.
-Are there other architectures working around this issue too? I couldn't
-see anything in the other dma-direct.h headers.
+I don't particularly like maintaining an arm64-specific dma-direct.h
+either but arm64 seems to be the only architecture that needs to
+potentially force a bounce when cache_line_size() > ARCH_DMA_MINALIGN
+and the device is non-coherent. Note that lib/swiotlb.c doesn't even
+deal with non-coherent DMA (e.g. map_sg doesn't have arch callbacks for
+cache maintenance), so not disrupting lib/swiotlb.c seems to be the
+least intrusive option.
 
 > Nevermind that the commit should at least be three different patches:
 > 
 >  (1) revert the broken original commit
 >  (2) increase the dma min alignment
+
+Reverting the original commit could, on its own, break an SoC which
+expects ARCH_DMA_MINALIGN == 128. So these two should be a single commit
+(my patch only reverts the L1_CACHE_BYTES change rather than
+ARCH_DMA_MINALIGN, the latter being correct as 128).
+
+Anyway, it's queued already and we try not to rebase the branches we
+published. Fix-ups on top are fine though.
+
 >  (3) put the swiotlb workaround in place
 
-I'd agree with you if this wasn't already queued and sitting in -next.
-Reverting what we currently have seems a bit OTT now. Catalin?
+As I said above, adding a check in swiotlb.c for
+!is_device_dma_coherent(dev) && (ARCH_DMA_MINALIGN < cache_line_size())
+feels too architecture specific. Adding yet another hook like
+arch_dma_capable() doesn't feel right either since we already have the
+possibility to override dma_capable() by selecting ARCH_HAS_PHYS_TO_DMA.
 
-Will
+The "cleanest" I came up with for swiotlb.c was a new
+DMA_ATTR_FORCE_BOUNCE attribute. However, it required more changes to
+the arm64 dma-mapping.c than simply implementing an arch-specific
+dma_capable().
+
+-- 
+Catalin
