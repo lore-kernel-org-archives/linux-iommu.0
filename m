@@ -1,16 +1,14 @@
-From: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] rpmsg: core: make rpmsg bus DMA capable
-Date: Sun, 18 Mar 2018 15:47:24 -0700
-Message-ID: <20180318224724.GJ5626@tuxbook-pro>
-References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
-	<20180302145531.20463-3-srinivas.kandagatla@linaro.org>
-	<07503032-b08b-10ea-9d34-ddf85c682a9d@arm.com>
+From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 01/21] ASoC: Remove depends on HAS_DMA in case of
+	platform dependency
+Date: Sun, 18 Mar 2018 17:54:11 -0700
+Message-ID: <20180319005411.GY2186@sirena.org.uk>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+	<1521208314-4783-2-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8250706146855282102=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <07503032-b08b-10ea-9d34-ddf85c682a9d-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1521208314-4783-2-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,76 +18,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri 02 Mar 08:14 PST 2018, Robin Murphy wrote:
 
-> On 02/03/18 14:55, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org wrote:
-> > From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > 
-> > Many of the rpmsg clients like audio drivers need to allocate
-> > dma memory. Make this bus DMA capable so that the child devices
-> > can use dma apis.
-> 
-> AFAICS after 15 minutes in the docs and code, the rpmsg "bus" is a virtual
-> one based around shared-memory mailbox communication, so I don't really see
-> how DMA exists in that context - I think maybe that abstraction needs
-> looking at.
-> 
+--===============8250706146855282102==
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="oWEYV0WmY9Kcrzh0"
+Content-Disposition: inline
 
-That's right, rpmsg shuffles messages back and forth to some coprocessor
-over shared memory, the contexts generating and receiving these messages
-are "rpmsg devices".
 
-The problem Srinivas is facing is that one of these rpmsg devices is
-trying to allocate and map a larger chunk of memory to be shared with
-the coprocessor, which is then going to be referenced in the messages
-being passed in rpmsg.
+--oWEYV0WmY9Kcrzh0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> However, from grepping through the DTs it seems at first glance like the
-> non-trivial things under the "qcom,smd" bus mostly map to actual platform
-> devices via the "qcom,smd-edge" property - if those platform devices are the
-> physical DMA masters, they should be the ones used for DMA API operations.
-> 
+On Fri, Mar 16, 2018 at 02:51:34PM +0100, Geert Uytterhoeven wrote:
+> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+> In most cases this other symbol is an architecture or platform specific
+> symbol, or PCI.
 
-One of the rpmsg implementations is virtio based and have a similar
-problem, there dma_alloc*() is called with dev->parent->parent as
-device, but this causes issues as dev->parent might not be what the
-original author expected it to -- so this needs to be reworked as well.
+Acked-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-> > Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > ---
-> >   drivers/rpmsg/rpmsg_core.c | 1 +
-> >   1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
-> > index e84c71f8d6ab..540a3f3567b8 100644
-> > --- a/drivers/rpmsg/rpmsg_core.c
-> > +++ b/drivers/rpmsg/rpmsg_core.c
-> > @@ -472,6 +472,7 @@ struct bus_type rpmsg_bus = {
-> >   	.uevent		= rpmsg_uevent,
-> >   	.probe		= rpmsg_dev_probe,
-> >   	.remove		= rpmsg_dev_remove,
-> > +	.force_dma	= true,
-> 
-> Regardless of the above, would you really need to use this brute force hack
-> instead of just fixing the DTs? I'm struggling to find which drivers might
-> currently be relying on this :/
-> 
+Thanks again for doing this work, it's really good to see!
 
-The rpmsg devices, described as child nodes of rpmsg bus relates to
-specific functions in the coprocessor firmware. The fact that the
-firmware can be started and stopped dynamically makes the current layout
-quite convenient (in comparison to e.g. how we would describe a
-mailbox).
+--oWEYV0WmY9Kcrzh0
+Content-Type: application/pgp-signature; name="signature.asc"
 
-We know for these cases that dev->parent->parent is a remoteproc
-instance representing the coprocessor that sits on the other side of the
-communication channel. So we did investigate if we could just have that
-to allocate and map buffers. The problem with this is that these
-functions has multiple iommu contexts.
+-----BEGIN PGP SIGNATURE-----
 
-Regards,
-Bjorn
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlqvCjIACgkQJNaLcl1U
+h9CLbQf/Tg+dhuRMVvi1udWCp1BJUGB8Vd88otJVfjSSf1BIoBvw4XV7xrP7HUJH
+V98MDQfrlLGW8qtZFHhsjmz4+NsOu9t5y7+2UjwDXtoq/dZT9TmgxeJc7lwl3zZS
+qaIe8HYUK8KmKWhwDW/YJbYX7oUSO+G6SZvUOVVq7UFU03iCATTKU8/N4+Ckixxb
+QzTdPkgsvrz2xVe5SjvUWJPTZ0Jl4b8WsLE3+i65FYqhlyiWQqTxyEtNRlbfUtKq
+tcPXSUwsstpVqf3fsRI4n50J0xynVIeoIT9urJ0ZXjlgjg0r5jFkxYuXByUax8xw
+XbixoPLIKcJ26u2e3uGs+EZnaQ0iCw==
+=p8oA
+-----END PGP SIGNATURE-----
+
+--oWEYV0WmY9Kcrzh0--
+
+--===============8250706146855282102==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============8250706146855282102==--
