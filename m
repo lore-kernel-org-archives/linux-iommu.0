@@ -1,15 +1,14 @@
 From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 10/14] set_memory.h: provide set_memory_{en,de}crypted
-	stubs
-Date: Mon, 19 Mar 2018 09:21:20 -0500
-Message-ID: <cedbd051-cc59-1f80-4143-975342fc5e0c@amd.com>
+Subject: Re: [PATCH 11/14] swiotlb: remove swiotlb_set_mem_attributes
+Date: Mon, 19 Mar 2018 09:41:03 -0500
+Message-ID: <7fe2c163-c659-c27f-b54b-23b38e4b0149@amd.com>
 References: <20180319103826.12853-1-hch@lst.de>
-	<20180319103826.12853-11-hch@lst.de>
+	<20180319103826.12853-12-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180319103826.12853-11-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180319103826.12853-12-hch-jcswGhMUV9g@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,34 +24,106 @@ Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>,
 List-Id: iommu@lists.linux-foundation.org
 
 On 3/19/2018 5:38 AM, Christoph Hellwig wrote:
+> Now that set_memory_decrypted is always available we can just call it
+> directly.
+> 
 > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 > Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
 Reviewed-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
 
 > ---
->  include/linux/set_memory.h | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
+>  arch/x86/include/asm/mem_encrypt.h |  2 --
+>  arch/x86/mm/mem_encrypt.c          |  9 ---------
+>  lib/swiotlb.c                      | 12 ++++++------
+>  3 files changed, 6 insertions(+), 17 deletions(-)
 > 
-> diff --git a/include/linux/set_memory.h b/include/linux/set_memory.h
-> index e5140648f638..da5178216da5 100644
-> --- a/include/linux/set_memory.h
-> +++ b/include/linux/set_memory.h
-> @@ -17,4 +17,16 @@ static inline int set_memory_x(unsigned long addr,  int numpages) { return 0; }
->  static inline int set_memory_nx(unsigned long addr, int numpages) { return 0; }
->  #endif
+> diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+> index 22c5f3e6f820..9da0b63c8fc7 100644
+> --- a/arch/x86/include/asm/mem_encrypt.h
+> +++ b/arch/x86/include/asm/mem_encrypt.h
+> @@ -48,8 +48,6 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size);
+>  /* Architecture __weak replacement functions */
+>  void __init mem_encrypt_init(void);
 >  
-> +#ifndef CONFIG_ARCH_HAS_MEM_ENCRYPT
-> +static inline int set_memory_encrypted(unsigned long addr, int numpages)
-> +{
-> +	return 0;
-> +}
-> +
-> +static inline int set_memory_decrypted(unsigned long addr, int numpages)
-> +{
-> +	return 0;
-> +}
-> +#endif /* CONFIG_ARCH_HAS_MEM_ENCRYPT */
-> +
->  #endif /* _LINUX_SET_MEMORY_H_ */
+> -void swiotlb_set_mem_attributes(void *vaddr, unsigned long size);
+> -
+>  bool sme_active(void);
+>  bool sev_active(void);
+>  
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index 66beedc8fe3d..d3b80d5f9828 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -446,15 +446,6 @@ void __init mem_encrypt_init(void)
+>  			     : "Secure Memory Encryption (SME)");
+>  }
+>  
+> -void swiotlb_set_mem_attributes(void *vaddr, unsigned long size)
+> -{
+> -	WARN(PAGE_ALIGN(size) != size,
+> -	     "size is not page-aligned (%#lx)\n", size);
+> -
+> -	/* Make the SWIOTLB buffer area decrypted */
+> -	set_memory_decrypted((unsigned long)vaddr, size >> PAGE_SHIFT);
+> -}
+> -
+>  struct sme_populate_pgd_data {
+>  	void	*pgtable_area;
+>  	pgd_t	*pgd;
+> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+> index c43ec2271469..005d1d87bb2e 100644
+> --- a/lib/swiotlb.c
+> +++ b/lib/swiotlb.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/gfp.h>
+>  #include <linux/scatterlist.h>
+>  #include <linux/mem_encrypt.h>
+> +#include <linux/set_memory.h>
+>  
+>  #include <asm/io.h>
+>  #include <asm/dma.h>
+> @@ -156,8 +157,6 @@ unsigned long swiotlb_size_or_default(void)
+>  	return size ? size : (IO_TLB_DEFAULT_SIZE);
+>  }
+>  
+> -void __weak swiotlb_set_mem_attributes(void *vaddr, unsigned long size) { }
+> -
+>  /* For swiotlb, clear memory encryption mask from dma addresses */
+>  static dma_addr_t swiotlb_phys_to_dma(struct device *hwdev,
+>  				      phys_addr_t address)
+> @@ -209,12 +208,12 @@ void __init swiotlb_update_mem_attributes(void)
+>  
+>  	vaddr = phys_to_virt(io_tlb_start);
+>  	bytes = PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT);
+> -	swiotlb_set_mem_attributes(vaddr, bytes);
+> +	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+>  	memset(vaddr, 0, bytes);
+>  
+>  	vaddr = phys_to_virt(io_tlb_overflow_buffer);
+>  	bytes = PAGE_ALIGN(io_tlb_overflow);
+> -	swiotlb_set_mem_attributes(vaddr, bytes);
+> +	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+>  	memset(vaddr, 0, bytes);
+>  }
+>  
+> @@ -355,7 +354,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  	io_tlb_start = virt_to_phys(tlb);
+>  	io_tlb_end = io_tlb_start + bytes;
+>  
+> -	swiotlb_set_mem_attributes(tlb, bytes);
+> +	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+>  	memset(tlb, 0, bytes);
+>  
+>  	/*
+> @@ -366,7 +365,8 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  	if (!v_overflow_buffer)
+>  		goto cleanup2;
+>  
+> -	swiotlb_set_mem_attributes(v_overflow_buffer, io_tlb_overflow);
+> +	set_memory_decrypted((unsigned long)v_overflow_buffer,
+> +			io_tlb_overflow >> PAGE_SHIFT);
+>  	memset(v_overflow_buffer, 0, io_tlb_overflow);
+>  	io_tlb_overflow_buffer = virt_to_phys(v_overflow_buffer);
+>  
 > 
