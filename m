@@ -1,15 +1,15 @@
-From: Madalin-cristian Bucur <madalin.bucur-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH v2 10/21] lightnvm: Remove depends on HAS_DMA in case of
-	platform dependency
-Date: Mon, 19 Mar 2018 05:27:16 +0000
-Message-ID: <AM5PR04MB3267989AB6A81639F61AB165ECD40@AM5PR04MB3267.eurprd04.prod.outlook.com>
-References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
-	<1521208314-4783-11-git-send-email-geert@linux-m68k.org>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
+	update	iova list
+Date: Mon, 19 Mar 2018 07:51:58 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1910857ED@SHSMSX101.ccr.corp.intel.com>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<20180315163509.17740-3-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1521208314-4783-11-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+In-Reply-To: <20180315163509.17740-3-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,100 +20,188 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "Martin K . Petersen" <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stefan Richter <stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org>, Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Moritz Fischer <mdf-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, Jassi Brar <jas>
-Cc: "devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org" <devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org>, "alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org" <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mtd-IAPFreCvJWMMKQXVYFwzLw@public.gmane.org>
+To: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: netdev-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:netdev-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org]
-> On Behalf Of Geert Uytterhoeven
-> Sent: Friday, March 16, 2018 3:52 PM
-> To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>; Marek Szyprowski
-> <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>; Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>;
-> Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Greg Kroah-Hartman
-> <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>; James E . J . Bottomley
-> <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>; Martin K . Petersen
-> <martin.petersen-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>; Andrew Morton <akpm@linux-
-> foundation.org>; Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Liam Girdwood
-> <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Herbert Xu
-> <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>; David S . Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>;
-> Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>; Stefan Richter
-> <stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org>; Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Moritz Fischer
-> <mdf-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>; Jonathan Cameron
-> <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; Matias Bjorling
-> <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>; Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Mauro Carvalho
-> Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>; Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>; David
-> Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>; Brian Norris
-> <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>; Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>;
-> Cyrille Pitchen <cyrille.pitchen-yU5RGvR974pGWvitb5QawA@public.gmane.org>; Boris Brezillon
-> <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>; Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>;
-> Kalle Valo <kvalo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>;
-> Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>; Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>;
-> Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org; linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux1394-
-> devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org; linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Subject: [PATCH v2 10/21] lightnvm: Remove depends on HAS_DMA in case of
-> platform dependency
+> From: Shameer Kolothum
+> Sent: Friday, March 16, 2018 12:35 AM
 > 
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on
-> another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
+> This retrieves the reserved regions associated with dev group and
+> checks for conflicts with any existing dma mappings. Also update
+> the iova list excluding the reserved regions.
 > 
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
-> 
-> This simplifies the dependencies, and allows to improve compile-testing.
-> 
-> Notes:
->   - FSL_FMAN keeps its dependency on HAS_DMA, as it calls set_dma_ops(),
->     which does not exist if HAS_DMA=n (Do we need a dummy? The use of
->     set_dma_ops() in this driver is questionable),
-
-Hi,
-
-The set_dma_ops() is no longer required in the fsl/fman, I'll send a patch to remove it.
-
-Thanks
-
->   - SND_SOC_LPASS_IPQ806X and SND_SOC_LPASS_PLATFORM loose their
->     dependency on HAS_DMA, as they are selected from
->     SND_SOC_APQ8016_SBC.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Shameer Kolothum
+> <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 > ---
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Split per subsystem.
-> ---
->  drivers/lightnvm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/vfio/vfio_iommu_type1.c | 90
+> +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 90 insertions(+)
 > 
-> diff --git a/drivers/lightnvm/Kconfig b/drivers/lightnvm/Kconfig
-> index 10c08982185a572f..9c03f35d9df113c6 100644
-> --- a/drivers/lightnvm/Kconfig
-> +++ b/drivers/lightnvm/Kconfig
-> @@ -4,7 +4,7 @@
+> diff --git a/drivers/vfio/vfio_iommu_type1.c
+> b/drivers/vfio/vfio_iommu_type1.c
+> index 1123c74..cfe2bb2 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -1313,6 +1313,82 @@ static int vfio_iommu_aper_resize(struct
+> list_head *iova,
+>  	return 0;
+>  }
 > 
->  menuconfig NVM
->  	bool "Open-Channel SSD target support"
-> -	depends on BLOCK && HAS_DMA && PCI
-> +	depends on BLOCK && PCI
->  	select BLK_DEV_NVME
->  	help
->  	  Say Y here to get to enable Open-channel SSDs.
+> +/*
+> + * Check reserved region conflicts with existing dma mappings
+> + */
+> +static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
+> +				struct list_head *resv_regions)
+> +{
+> +	struct iommu_resv_region *region;
+> +
+> +	/* Check for conflict with existing dma mappings */
+> +	list_for_each_entry(region, resv_regions, list) {
+> +		if (vfio_find_dma(iommu, region->start, region->length))
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +/*
+> + * Check iova region overlap with  reserved regions and
+> + * exclude them from the iommu iova range
+> + */
+> +static int vfio_iommu_resv_exclude(struct list_head *iova,
+> +					struct list_head *resv_regions)
+> +{
+> +	struct iommu_resv_region *resv;
+> +	struct vfio_iova *n, *next;
+> +
+> +	list_for_each_entry(resv, resv_regions, list) {
+> +		phys_addr_t start, end;
+> +
+> +		start = resv->start;
+> +		end = resv->start + resv->length - 1;
+> +
+> +		list_for_each_entry_safe(n, next, iova, list) {
+> +			int ret = 0;
+> +
+> +			/* No overlap */
+> +			if ((start > n->end) || (end < n->start))
+> +				continue;
+> +			/*
+> +			 * Insert a new node if current node overlaps with
+> the
+> +			 * reserve region to exlude that from valid iova
+> range.
+> +			 * Note that, new node is inserted before the
+> current
+> +			 * node and finally the current node is deleted
+> keeping
+> +			 * the list updated and sorted.
+> +			 */
+> +			if (start > n->start)
+> +				ret = vfio_iommu_iova_insert(&n->list,
+> +							n->start, start - 1);
+> +			if (!ret && end < n->end)
+> +				ret = vfio_iommu_iova_insert(&n->list,
+> +							end + 1, n->end);
+> +			if (ret)
+> +				return ret;
+
+Is it safer to delete the 1st node here in case of failure of the 2nd node?
+There is no problem with current logic since upon error iova_copy will
+be released anyway. However this function alone doesn't assume the
+fact of a temporary list, thus it's better to keep the list clean w/o garbage
+left from any error handling.
+
+> +
+> +			list_del(&n->list);
+> +			kfree(n);
+> +		}
+> +	}
+> +
+> +	if (list_empty(iova))
+> +		return -EINVAL;
+
+if list_empty should BUG_ON here? or do we really need this check?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static void vfio_iommu_resv_free(struct list_head *resv_regions)
+> +{
+> +	struct iommu_resv_region *n, *next;
+> +
+> +	list_for_each_entry_safe(n, next, resv_regions, list) {
+> +		list_del(&n->list);
+> +		kfree(n);
+> +	}
+> +}
+> +
+>  static void vfio_iommu_iova_free(struct list_head *iova)
+>  {
+>  	struct vfio_iova *n, *next;
+> @@ -1366,6 +1442,7 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+>  	phys_addr_t resv_msi_base;
+>  	struct iommu_domain_geometry geo;
+>  	LIST_HEAD(iova_copy);
+> +	LIST_HEAD(group_resv_regions);
+> 
+>  	mutex_lock(&iommu->lock);
+> 
+> @@ -1444,6 +1521,13 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+>  		goto out_detach;
+>  	}
+> 
+> +	iommu_get_group_resv_regions(iommu_group,
+> &group_resv_regions);
+> +
+> +	if (vfio_iommu_resv_conflict(iommu, &group_resv_regions)) {
+> +		ret = -EINVAL;
+> +		goto out_detach;
+> +	}
+> +
+>  	/* Get a copy of the current iova list and work on it */
+>  	ret = vfio_iommu_iova_get_copy(iommu, &iova_copy);
+>  	if (ret)
+> @@ -1454,6 +1538,10 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+>  	if (ret)
+>  		goto out_detach;
+> 
+> +	ret = vfio_iommu_resv_exclude(&iova_copy, &group_resv_regions);
+> +	if (ret)
+> +		goto out_detach;
+> +
+>  	resv_msi = vfio_iommu_has_sw_msi(iommu_group,
+> &resv_msi_base);
+> 
+>  	INIT_LIST_HEAD(&domain->group_list);
+> @@ -1514,6 +1602,7 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+>  	/* Delete the old one and insert new iova list */
+>  	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
+>  	mutex_unlock(&iommu->lock);
+> +	vfio_iommu_resv_free(&group_resv_regions);
+> 
+>  	return 0;
+> 
+> @@ -1522,6 +1611,7 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+>  out_domain:
+>  	iommu_domain_free(domain->domain);
+>  	vfio_iommu_iova_free(&iova_copy);
+> +	vfio_iommu_resv_free(&group_resv_regions);
+>  out_free:
+>  	kfree(domain);
+>  	kfree(group);
 > --
 > 2.7.4
+> 
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
