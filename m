@@ -1,19 +1,16 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
-Date: Tue, 20 Mar 2018 20:50:13 +0000
-Message-ID: <1521579013.2686.83.camel@arista.com>
-References: <20180215191729.15777-1-dima@arista.com>
-	<20180315134649.skh2aukcmg5ud74y@8bytes.org>
-	<1521123183.2686.7.camel@arista.com> <20180315142253.GC5259@8bytes.org>
-	<1521124490.2686.16.camel@arista.com>
-	<1521124920.2686.20.camel@arista.com>
-	<20180315152828.GA11365@8bytes.org>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
+	update iova list
+Date: Tue, 20 Mar 2018 16:37:44 -0600
+Message-ID: <20180320163744.3c09fde0@t450s.home>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<20180315163509.17740-3-shameerali.kolothum.thodi@huawei.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1910857ED@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180315152828.GA11365-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1910857ED-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,36 +20,111 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2018-03-15 at 16:28 +0100, Joerg Roedel wrote:
-> On Thu, Mar 15, 2018 at 02:42:00PM +0000, Dmitry Safonov wrote:
-> > But even with loop-limit we will need ratelimit each printk()
-> > *also*.
-> > Otherwise loop-limit will be based on time spent printing, not on
-> > anything else..
-> > The patch makes sense even with loop-limit in my opinion.
+On Mon, 19 Mar 2018 07:51:58 +0000
+"Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+
+> > From: Shameer Kolothum
+> > Sent: Friday, March 16, 2018 12:35 AM
+> > 
+> > This retrieves the reserved regions associated with dev group and
+> > checks for conflicts with any existing dma mappings. Also update
+> > the iova list excluding the reserved regions.
+> > 
+> > Signed-off-by: Shameer Kolothum
+> > <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > ---
+> >  drivers/vfio/vfio_iommu_type1.c | 90
+> > +++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 90 insertions(+)
+> > 
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > b/drivers/vfio/vfio_iommu_type1.c
+> > index 1123c74..cfe2bb2 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -1313,6 +1313,82 @@ static int vfio_iommu_aper_resize(struct
+> > list_head *iova,
+> >  	return 0;
+> >  }
+> > 
+> > +/*
+> > + * Check reserved region conflicts with existing dma mappings
+> > + */
+> > +static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
+> > +				struct list_head *resv_regions)
+> > +{
+> > +	struct iommu_resv_region *region;
+> > +
+> > +	/* Check for conflict with existing dma mappings */
+> > +	list_for_each_entry(region, resv_regions, list) {
+> > +		if (vfio_find_dma(iommu, region->start, region->length))
+> > +			return true;
+> > +	}
+> > +
+> > +	return false;
+> > +}
+> > +
+> > +/*
+> > + * Check iova region overlap with  reserved regions and
+> > + * exclude them from the iommu iova range
+> > + */
+> > +static int vfio_iommu_resv_exclude(struct list_head *iova,
+> > +					struct list_head *resv_regions)
+> > +{
+> > +	struct iommu_resv_region *resv;
+> > +	struct vfio_iova *n, *next;
+> > +
+> > +	list_for_each_entry(resv, resv_regions, list) {
+> > +		phys_addr_t start, end;
+> > +
+> > +		start = resv->start;
+> > +		end = resv->start + resv->length - 1;
+> > +
+> > +		list_for_each_entry_safe(n, next, iova, list) {
+> > +			int ret = 0;
+> > +
+> > +			/* No overlap */
+> > +			if ((start > n->end) || (end < n->start))
+> > +				continue;
+> > +			/*
+> > +			 * Insert a new node if current node overlaps with
+> > the
+> > +			 * reserve region to exlude that from valid iova
+> > range.
+> > +			 * Note that, new node is inserted before the
+> > current
+> > +			 * node and finally the current node is deleted
+> > keeping
+> > +			 * the list updated and sorted.
+> > +			 */
+> > +			if (start > n->start)
+> > +				ret = vfio_iommu_iova_insert(&n->list,
+> > +							n->start, start - 1);
+> > +			if (!ret && end < n->end)
+> > +				ret = vfio_iommu_iova_insert(&n->list,
+> > +							end + 1, n->end);
+> > +			if (ret)
+> > +				return ret;  
 > 
-> Looks like I mis-read your patch, somehow it looked to me as if you
-> replace all 'ratelimited' usages with a call to __ratelimit(), but
-> you
-> just move 'ratelimited' into the loop, which actually makes sense.
+> Is it safer to delete the 1st node here in case of failure of the 2nd node?
+> There is no problem with current logic since upon error iova_copy will
+> be released anyway. However this function alone doesn't assume the
+> fact of a temporary list, thus it's better to keep the list clean w/o garbage
+> left from any error handling.
 
-So, is it worth to apply the patch?
+I don't think the proposal makes the list notably more sane on failure
+than we have here.  If the function returns an error and the list is
+modified in any way, how can the caller recover?  We're operating on a
+principle of modify a copy and throw it away on error, the only
+function level solution to the problem you're noting is to make each
+function generate a working copy, which is clearly inefficient.  This
+is a static function, not intended for general use, so I think a
+sufficient approach to address your concern is to simply note the error
+behavior in the comment above the function, the list is in an
+unknown/inconsistent state on error.  Thanks,
 
-> But still, this alone is no proper fix for the soft-lockups you are
-> seeing.
-
-Hmm, but this fixes my softlockup issue, because it's about time spent
-in printk() inside irq-disabled section, rather about exiting the dmar-
-clearing loop.
-And on my hw doesn't make any difference to limit loop or not because
-clearing a fault is much faster than hw could generate a new fault.
-ITOW, it fixes the softlockup for me and the loop-related lockup can't
-happen on hw I have (so it's the other issue, [possible?] on other hw).
-
--- 
-Thanks,
-             Dmitry
+Alex
