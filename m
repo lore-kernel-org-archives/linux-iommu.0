@@ -1,52 +1,42 @@
-From: Scott Wood <swood@redhat.com>
-Subject: Re: [PATCH 00/10 v2] iommu/amd: lock splitting & GFP_KERNEL
- allocation
-Date: Mon, 19 Mar 2018 17:49:24 -0500
-Message-ID: <1521499764.3722.108.camel@redhat.com>
-References: <20180316201836.7864-1-bigeasy@linutronix.de>
-         <1521316194.3722.74.camel@redhat.com>
-         <20180317211013.rlou66s542ad4y2i@linutronix.de>
-         <1521323019.3722.98.camel@redhat.com>
-         <20180319121527.zdmuwid4i3mjpwjw@linutronix.de>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/ipmmu-vmsa: Document R-Car M3-N IPMMU DT bindings
+Date: Tue, 20 Mar 2018 15:48:11 +0900
+Message-ID: <152152849171.7720.4760459385074072620.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180319121527.zdmuwid4i3mjpwjw@linutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, tglx@linutronix.de
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2018-03-19 at 13:15 +0100, Sebastian Andrzej Siewior wrote:
-> On 2018-03-17 16:43:39 [-0500], Scott Wood wrote:
-> > If that's worth the lock dropping then fine (though why does only
-> > one
-> > of the two allocations use GFP_KERNEL?), but it doesn't need to be
-> > a
-> 
-> That was a mistake, I planned to keep both as GFP_KERNEL.
-> 
-> > raw lock if the non-allocating users are separated.  Keeping them
-> > separate will also preserve the WARNs if we somehow end up in an
-> > atomic
-> > context with no table (versus relying on atomic sleep debugging
-> > that
-> > may or may not be enabled), and make the code easier to understand
-> > by
-> > being explicit about which functions can be used from RT-atomic
-> > context.
-> 
-> That separated part is okay. We could keep it. However, I am not sure
-> if
-> looking at the table irq_lookup_table[devid] without the lock is
-> okay.
-> The pointer is assigned without DTE entry/iommu-flush to be
-> completed. 
-> This does not look "okay".
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Those callers are getting the devid from an irq_2_irte struct, which
-was set up in irq_remapping_alloc() after get/alloc_irq_table() is
-completed.
+Update the IPMMU DT binding documentation to include the r8a77965 compat
+string for the IPMMU devices included in the R-Car M3-N SoC.
 
--Scott
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
+
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2018-03-20 15:30:50.640607110 +0900
+@@ -17,6 +17,7 @@ Required Properties:
+     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+     - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+     - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
++    - "renesas,ipmmu-r8a77965" for the R8A77965 (R-Car M3-N) IPMMU.
+     - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
+     - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
+     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
