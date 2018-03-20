@@ -1,14 +1,19 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/mediatek: Fix protect memory setting
-Date: Tue, 20 Mar 2018 13:57:17 -0500
-Message-ID: <20180320185716.ldxs2vvfcchznpnb@8bytes.org>
-References: <1521337974-22112-1-git-send-email-yong.wu@mediatek.com>
+From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCHv3] iommu/intel: Ratelimit each dmar fault printing
+Date: Tue, 20 Mar 2018 20:50:13 +0000
+Message-ID: <1521579013.2686.83.camel@arista.com>
+References: <20180215191729.15777-1-dima@arista.com>
+	<20180315134649.skh2aukcmg5ud74y@8bytes.org>
+	<1521123183.2686.7.camel@arista.com> <20180315142253.GC5259@8bytes.org>
+	<1521124490.2686.16.camel@arista.com>
+	<1521124920.2686.20.camel@arista.com>
+	<20180315152828.GA11365@8bytes.org>
+Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1521337974-22112-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <20180315152828.GA11365-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,20 +23,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Mar 18, 2018 at 09:52:54AM +0800, Yong Wu wrote:
-> To avoid adding this complex macro or a new function, I put
-> it in the code and backup its value in the suspend registers.
+On Thu, 2018-03-15 at 16:28 +0100, Joerg Roedel wrote:
+> On Thu, Mar 15, 2018 at 02:42:00PM +0000, Dmitry Safonov wrote:
+> > But even with loop-limit we will need ratelimit each printk()
+> > *also*.
+> > Otherwise loop-limit will be based on time spent printing, not on
+> > anything else..
+> > The patch makes sense even with loop-limit in my opinion.
+> 
+> Looks like I mis-read your patch, somehow it looked to me as if you
+> replace all 'ratelimited' usages with a call to __ratelimit(), but
+> you
+> just move 'ratelimited' into the loop, which actually makes sense.
 
-Missing Signed-off-by.
+So, is it worth to apply the patch?
 
-> ---
->  drivers/iommu/mtk_iommu.c | 15 ++++++++++-----
->  drivers/iommu/mtk_iommu.h |  1 +
->  2 files changed, 11 insertions(+), 5 deletions(-)
+> But still, this alone is no proper fix for the soft-lockups you are
+> seeing.
 
+Hmm, but this fixes my softlockup issue, because it's about time spent
+in printk() inside irq-disabled section, rather about exiting the dmar-
+clearing loop.
+And on my hw doesn't make any difference to limit loop or not because
+clearing a fault is much faster than hw could generate a new fault.
+ITOW, it fixes the softlockup for me and the loop-related lockup can't
+happen on hw I have (so it's the other issue, [possible?] on other hw).
 
-Joerg
+-- 
+Thanks,
+             Dmitry
