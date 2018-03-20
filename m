@@ -1,13 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Document R-Car M3-N IPMMU DT bindings
-Date: Tue, 20 Mar 2018 10:18:44 +0200
-Message-ID: <1662708.Iq9jEY22gx@avalon>
-References: <152152849171.7720.4760459385074072620.sendpatchset@little-apple>
+From: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: use generic dma-direct and swiotlb code for x86 V3
+Date: Tue, 20 Mar 2018 09:37:51 +0100
+Message-ID: <20180320083751.nrpt64dsmpqbhzc6@gmail.com>
+References: <20180319103826.12853-1-hch@lst.de>
+	<20180319152737.GK1110@char.us.oracle.com>
+	<20180319152840.GA28041@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <152152849171.7720.4760459385074072620.sendpatchset@little-apple>
+Content-Disposition: inline
+In-Reply-To: <20180319152840.GA28041-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,43 +20,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
 
-Thank you for the patch.
+* Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
 
-On Tuesday, 20 March 2018 08:48:11 EET Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> On Mon, Mar 19, 2018 at 11:27:37AM -0400, Konrad Rzeszutek Wilk wrote:
+> > On Mon, Mar 19, 2018 at 11:38:12AM +0100, Christoph Hellwig wrote:
+> > > Hi all,
+> > > 
+> > > this series switches the x86 code the the dma-direct implementation
+> > > for direct (non-iommu) dma and the generic swiotlb ops.  This includes
+> > > getting rid of the special ops for the AMD memory encryption case and
+> > > the STA2x11 SOC.  The generic implementations are based on the x86
+> > > code, so they provide the same functionality.
+> > 
+> > I need to test this on my baremertal and Xen setup - and I lost your
+> > git repo URL - any chance you mention point out to me so I can
+> > kick of a build?
 > 
-> Update the IPMMU DT binding documentation to include the r8a77965 compat
-> string for the IPMMU devices included in the R-Car M3-N SoC.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> git://git.infradead.org/users/hch/misc.git dma-direct-x86
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Btw., what's the upstreaming route for these patches?
 
-> ---
-> 
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 +
->  1 file changed, 1 insertion(+)
-> 
-> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> +++
-> work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	
-2018-03
-> -20 15:30:50.640607110 +0900 @@ -17,6 +17,7 @@ Required Properties:
->      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
->      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
->      - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
-> +    - "renesas,ipmmu-r8a77965" for the R8A77965 (R-Car M3-N) IPMMU.
->      - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
->      - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
->      - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+While it's a multi-arch series it's all pretty x86-heavy as well so we can host it 
+in -tip (in tip:core/dma or such), but feel free to handle it yourself as well:
 
--- 
-Regards,
+  Reviewed-by: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-Laurent Pinchart
+Thanks,
+
+	Ingo
