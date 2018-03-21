@@ -1,17 +1,18 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH v2 2/2] drivers: remove force dma flag from buses
-Date: Wed, 21 Mar 2018 16:28:46 +0000
-Message-ID: <HE1PR0401MB2425644F72A063ED42B79D5FE6AA0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
-References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
-	<1521615323-4752-1-git-send-email-nipun.gupta@nxp.com>
-	<1521615323-4752-2-git-send-email-nipun.gupta@nxp.com>
-	<20180321093525.GT14085@kroah.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
+	update iova list
+Date: Wed, 21 Mar 2018 10:31:12 -0600
+Message-ID: <20180321103112.229d4bf1@w520.home>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<20180315163509.17740-3-shameerali.kolothum.thodi@huawei.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1910857ED@SHSMSX101.ccr.corp.intel.com>
+	<20180320163744.3c09fde0@t450s.home>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191089B3B@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180321093525.GT14085-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191089B3B-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,68 +22,131 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org" <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, "andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "msuchanek-l3A5Bk7waGM@public.gmane.org" <msuchanek-l3A5Bk7waGM@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, dri-devel-PD4FTy7X32k@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Wed, 21 Mar 2018 03:30:29 +0000
+"Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Wednesday, March 21, 2018 6:38 AM
+> > 
+> > On Mon, 19 Mar 2018 07:51:58 +0000
+> > "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> >   
+> > > > From: Shameer Kolothum
+> > > > Sent: Friday, March 16, 2018 12:35 AM
+> > > >
+> > > > This retrieves the reserved regions associated with dev group and
+> > > > checks for conflicts with any existing dma mappings. Also update
+> > > > the iova list excluding the reserved regions.
+> > > >
+> > > > Signed-off-by: Shameer Kolothum
+> > > > <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > > > ---
+> > > >  drivers/vfio/vfio_iommu_type1.c | 90
+> > > > +++++++++++++++++++++++++++++++++++++++++
+> > > >  1 file changed, 90 insertions(+)
+> > > >
+> > > > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > > > b/drivers/vfio/vfio_iommu_type1.c
+> > > > index 1123c74..cfe2bb2 100644
+> > > > --- a/drivers/vfio/vfio_iommu_type1.c
+> > > > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > > > @@ -1313,6 +1313,82 @@ static int vfio_iommu_aper_resize(struct
+> > > > list_head *iova,
+> > > >  	return 0;
+> > > >  }
+> > > >
+> > > > +/*
+> > > > + * Check reserved region conflicts with existing dma mappings
+> > > > + */
+> > > > +static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
+> > > > +				struct list_head *resv_regions)
+> > > > +{
+> > > > +	struct iommu_resv_region *region;
+> > > > +
+> > > > +	/* Check for conflict with existing dma mappings */
+> > > > +	list_for_each_entry(region, resv_regions, list) {
+> > > > +		if (vfio_find_dma(iommu, region->start, region->length))
+> > > > +			return true;
+> > > > +	}
+> > > > +
+> > > > +	return false;
+> > > > +}
+> > > > +
+> > > > +/*
+> > > > + * Check iova region overlap with  reserved regions and
+> > > > + * exclude them from the iommu iova range
+> > > > + */
+> > > > +static int vfio_iommu_resv_exclude(struct list_head *iova,
+> > > > +					struct list_head *resv_regions)
+> > > > +{
+> > > > +	struct iommu_resv_region *resv;
+> > > > +	struct vfio_iova *n, *next;
+> > > > +
+> > > > +	list_for_each_entry(resv, resv_regions, list) {
+> > > > +		phys_addr_t start, end;
+> > > > +
+> > > > +		start = resv->start;
+> > > > +		end = resv->start + resv->length - 1;
+> > > > +
+> > > > +		list_for_each_entry_safe(n, next, iova, list) {
+> > > > +			int ret = 0;
+> > > > +
+> > > > +			/* No overlap */
+> > > > +			if ((start > n->end) || (end < n->start))
+> > > > +				continue;
+> > > > +			/*
+> > > > +			 * Insert a new node if current node overlaps with
+> > > > the
+> > > > +			 * reserve region to exlude that from valid iova
+> > > > range.
+> > > > +			 * Note that, new node is inserted before the
+> > > > current
+> > > > +			 * node and finally the current node is deleted
+> > > > keeping
+> > > > +			 * the list updated and sorted.
+> > > > +			 */
+> > > > +			if (start > n->start)
+> > > > +				ret = vfio_iommu_iova_insert(&n->list,
+> > > > +							n->start, start - 1);
+> > > > +			if (!ret && end < n->end)
+> > > > +				ret = vfio_iommu_iova_insert(&n->list,
+> > > > +							end + 1, n->end);
+> > > > +			if (ret)
+> > > > +				return ret;  
+> > >
+> > > Is it safer to delete the 1st node here in case of failure of the 2nd node?
+> > > There is no problem with current logic since upon error iova_copy will
+> > > be released anyway. However this function alone doesn't assume the
+> > > fact of a temporary list, thus it's better to keep the list clean w/o garbage
+> > > left from any error handling.  
+> > 
+> > I don't think the proposal makes the list notably more sane on failure
+> > than we have here.  If the function returns an error and the list is
+> > modified in any way, how can the caller recover?  We're operating on a
+> > principle of modify a copy and throw it away on error, the only
+> > function level solution to the problem you're noting is to make each
+> > function generate a working copy, which is clearly inefficient.  This
+> > is a static function, not intended for general use, so I think a
+> > sufficient approach to address your concern is to simply note the error
+> > behavior in the comment above the function, the list is in an
+> > unknown/inconsistent state on error.  Thanks,
+> >   
+> 
+> 'static' doesn't mean it cannot be used for general purpose in the same
+> file.
 
-> -----Original Message-----
-> From: Greg KH [mailto:gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org]
-> Sent: Wednesday, March 21, 2018 15:05
-> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> Cc: robin.murphy-5wv7dgnIgG8@public.gmane.org; hch-jcswGhMUV9g@public.gmane.org; linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org;
-> m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
-> andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org;
-> vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org; thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org;
-> rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org; dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> msuchanek-l3A5Bk7waGM@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-
-> msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bharat Bhushan
-> <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>; Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>
-> Subject: Re: [PATCH v2 2/2] drivers: remove force dma flag from buses
-> 
-> On Wed, Mar 21, 2018 at 12:25:23PM +0530, Nipun Gupta wrote:
-> > With each bus implementing its own DMA configuration callback,
-> > there is no need for bus to explicitly have force_dma in its
-> > global structure. This patch modifies of_dma_configure API to
-> > accept an input parameter which specifies if implicit DMA
-> > configuration is required even when it is not described by the
-> > firmware.
-> 
-> Having to "remember" what that bool variable means on the end of the
-> function call is a royal pain over time, right?
-> 
-> Why not just create a new function:
-> 	dma_common_configure_force(dma)
-> that always does this?  Leave "dma_common_configure()" alone, and then
-> wrap the old code with these two helper functions that call the 'core'
-> code with the bool set properly?
-> 
-> That way you do not have to "know" what that parameter is, the function
-> name just documents it automatically, so when you see it in the
-> bus-specific code, no need to go and have to hunt for anything.  And if
-> you are reading the dma core code, it's obvious what is happening as the
-> functions are all right there.
+Obviously this is true, but expecting robust error handling, as might
+be found in an exported general purpose function, from a static
+specific purpose helper, is a bit absurd.  The strategy is therefore,
+a) can we make it more general purpose without compromising the intent
+of the function; probably not without adding overhead of using a local
+copy of the list, b) can we modify the API, function name, arg names,
+etc to make the behavior more intuitive; maybe, c) Can we at least add
+a comment to make the potentially non-intuitive behavior obvious; of
+course.  Thanks,
 
-How about we do not pass any flag in 'dma_common_configure()', and inside this
-API we pass "true" to 'of_dma_configure()'? I am saying this because currently
-both the busses (platform and AMBA) which uses 'dma_common_configure()' passes
-"true" value. If we create additional 'dma_common_configure_force()', then
-'dma_common_configure()' will not be used anytime and will become redundant.
-
-If someday new busses come and they needs to use similar functionality which
-'dma_common_configure()' provides, but with passing "false" to 'of_dma_configure()',
-then what you suggests of having two separate such API's will be more reasonable
-and can be implemented?
-
-Thanks,
-Nipun
-
-> 
-> thanks,
-> 
-> greg k-h
+Alex
