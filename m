@@ -1,38 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/mediatek: Fix protect memory setting
-Date: Wed, 21 Mar 2018 06:14:55 -0500
-Message-ID: <20180321111455.djllpdsj35vu5cxc@8bytes.org>
-References: <1521337974-22112-1-git-send-email-yong.wu@mediatek.com>
- <20180320185716.ldxs2vvfcchznpnb@8bytes.org>
- <1521609504.24119.5.camel@mhfsdcap03>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/4] iommu: Add virtio-iommu driver
+Date: Wed, 21 Mar 2018 13:14:04 +0000
+Message-ID: <a11f1b52-c031-014c-8c23-1732f3d4666c@arm.com>
+References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
+	<20180214145340.1223-2-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1521609504.24119.5.camel@mhfsdcap03>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, youlin.pei@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
+Cc: "jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org" <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 21, 2018 at 01:18:24PM +0800, Yong Wu wrote:
-> On Tue, 2018-03-20 at 13:57 -0500, Joerg Roedel wrote:
-> > On Sun, Mar 18, 2018 at 09:52:54AM +0800, Yong Wu wrote:
-> > > To avoid adding this complex macro or a new function, I put
-> > > it in the code and backup its value in the suspend registers.
-> > 
-> > Missing Signed-off-by.
+On 21/03/18 06:43, Tian, Kevin wrote:
+[...]
+>> +
+>> +#include <uapi/linux/virtio_iommu.h>
+>> +
+>> +#define MSI_IOVA_BASE			0x8000000
+>> +#define MSI_IOVA_LENGTH			0x100000
 > 
-> Signed-off-by and Reported-by have been added above.
-> 
-> ====
-> Reported-by: Honghui Zhang <honghui.zhang@mediatek.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ====
+> this is ARM specific, and according to virtio-iommu spec isn't it
+> better probed on the endpoint instead of hard-coding here?
 
-Right, sorry. I was in a hurry and missed it. Patch is now applied.
+These values are arbitrary, not really ARM-specific even if ARM is the
+only user yet: we're just reserving a random IOVA region for mapping MSIs.
+It is hard-coded because of the way iommu-dma.c works, but I don't quite
+remember why that allocation isn't dynamic.
 
+As said on the v0.6 spec thread, I'm not sure allocating the IOVA range in
+the host is preferable. With nested translation the guest has to map it
+anyway, and I believe dealing with IOVA allocation should be left to the
+guest when possible.
 
 Thanks,
-
-	Joerg
+Jean
