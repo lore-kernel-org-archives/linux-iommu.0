@@ -1,83 +1,82 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 37/37] vfio: Add support for Shared Virtual Addressing
-Date: Wed, 21 Mar 2018 13:40:13 +0000
-Message-ID: <09ecbaf4-477c-1a06-4f37-523391e5b92e@arm.com>
-References: <1519280641-30258-1-git-send-email-xieyisheng1@huawei.com>
-	<1519280641-30258-37-git-send-email-xieyisheng1@huawei.com>
-	<e3ae1693-0ed8-65e1-352a-07f79038dcbd@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/4] iommu: Add virtio-iommu driver
+Date: Wed, 21 Mar 2018 14:23:38 +0000
+Message-ID: <739fbfdf-1651-8036-367a-52940b93dee6@arm.com>
+References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
+	<20180214145340.1223-2-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
+	<a11f1b52-c031-014c-8c23-1732f3d4666c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <e3ae1693-0ed8-65e1-352a-07f79038dcbd-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rjw-LthD3rsA81gHJAlzAAQw8A@public.gmane.org
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <a11f1b52-c031-014c-8c23-1732f3d4666c@arm.com>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Cc: "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/03/18 09:47, Yisheng Xie wrote:
-> Hi Jean,
-> 
-> vfio can be compiled as module, however you use some functions which are not
-> exported.
-
-Oh right. I remember the kbuild test robot warning about this once, I
-wonder why it didn't find this one.
-
-> comment inline:
-> 
+On 21/03/18 13:14, Jean-Philippe Brucker wrote:
+> On 21/03/18 06:43, Tian, Kevin wrote:
 > [...]
->> Add two new ioctl for VFIO containers. VFIO_IOMMU_BIND_PROCESS creates a
->> bond between a container and a process address space, identified by a
->> device-specific ID named PASID. This allows the device to target DMA
->> transactions at the process virtual addresses without a need for mapping
->> and unmapping buffers explicitly in the IOMMU. The process page tables are
->> shared with the IOMMU, and mechanisms such as PCI ATS/PRI are used to
->> handle faults. VFIO_IOMMU_UNBIND_PROCESS removes a bond created with
->> VFIO_IOMMU_BIND_PROCESS.
+>>> +
+>>> +#include <uapi/linux/virtio_iommu.h>
+>>> +
+>>> +#define MSI_IOVA_BASE			0x8000000
+>>> +#define MSI_IOVA_LENGTH			0x100000
 >>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
->> ---
-> [...]
->> +static struct mm_struct *vfio_iommu_get_mm_by_vpid(pid_t vpid)
->> +{
->> +	struct mm_struct *mm;
->> +	struct task_struct *task;
->> +
->> +	rcu_read_lock();
->> +	task = find_task_by_vpid(vpid);
+>> this is ARM specific, and according to virtio-iommu spec isn't it
+>> better probed on the endpoint instead of hard-coding here?
 > 
-> Maybe can use?
-> 	task = pid_task(find_vpid(params.vpid), PIDTYPE_PID)
+> These values are arbitrary, not really ARM-specific even if ARM is the
+> only user yet: we're just reserving a random IOVA region for mapping MSIs.
+> It is hard-coded because of the way iommu-dma.c works, but I don't quite
+> remember why that allocation isn't dynamic.
 
-I'd rather submit a patch requesting to export the symbol. Especially
-since this function can be further simplified by using the brand new
-find_get_task_by_vpid() helper, introduced by 2ee0826085d1.
+The host kernel needs to have *some* MSI region in place before the 
+guest can start configuring interrupts, otherwise it won't know what 
+address to give to the underlying hardware. However, as soon as the host 
+kernel has picked a region, host userspace needs to know that it can no 
+longer use addresses in that region for DMA-able guest memory. It's a 
+lot easier when the address is fixed in hardware and the host userspace 
+will never be stupid enough to try and VFIO_IOMMU_DMA_MAP it, but in the 
+more general case where MSI writes undergo IOMMU address translation so 
+it's an arbitrary IOVA, this has the potential to conflict with stuff 
+like guest memory hotplug.
 
->> +	if (task)
->> +		get_task_struct(task);
->> +	rcu_read_unlock();
->> +	if (!task)
->> +		return ERR_PTR(-ESRCH);
->> +
->> +	/* Ensure that current has RW access on the mm */
->> +	mm = mm_access(task, PTRACE_MODE_ATTACH_REALCREDS);
+What we currently have is just the simplest option, with the host kernel 
+just picking something up-front and pretending to host userspace that 
+it's a fixed hardware address. There's certainly scope for it to be a 
+bit more dynamic in the sense of adding an interface to let userspace 
+move it around (before attaching any devices, at least), but I don't 
+think it's feasible for the host kernel to second-guess userspace enough 
+to make it entirely transparent like it is in the DMA API domain case.
+
+Of course, that's all assuming the host itself is using a virtio-iommu 
+(e.g. in a nested virt or emulation scenario). When it's purely within a 
+guest then an MSI reservation shouldn't matter so much, since the guest 
+won't be anywhere near the real hardware configuration anyway.
+
+Robin.
+
+> As said on the v0.6 spec thread, I'm not sure allocating the IOVA range in
+> the host is preferable. With nested translation the guest has to map it
+> anyway, and I believe dealing with IOVA allocation should be left to the
+> guest when possible.
 > 
-> You will try to export mm_access, I find Felix have tried to, but seems give up:
+> Thanks,
+> Jean
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 > 
->  https://patchwork.kernel.org/patch/9744281/
-
-Thanks for the pointer, I'll try to revive this.
-
-Thanks,
-Jean
