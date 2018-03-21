@@ -1,21 +1,17 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: use generic dma-direct and swiotlb code for x86 V3
-Date: Wed, 21 Mar 2018 10:32:09 -0400
-Message-ID: <20180321143209.GN1110@char.us.oracle.com>
-References: <20180319103826.12853-1-hch@lst.de>
-	<20180319152737.GK1110@char.us.oracle.com>
-	<20180319152840.GA28041@lst.de>
-	<20180320083751.nrpt64dsmpqbhzc6@gmail.com>
-	<20180320084412.GA16337@lst.de>
-	<20180320090351.2qnwcsauhodrqxdj@gmail.com>
-	<CAPbh3rspsGE3i=WzxC4DL=EDTEbhVZVb29j-fyhAXZRwk=Xncg@mail.gmail.com>
-	<20180320151600.GA23920@lst.de>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [PATCH v2 1/2] dma-mapping: move dma configuration to bus
+	infrastructure
+Date: Wed, 21 Mar 2018 16:13:38 +0000
+Message-ID: <HE1PR0401MB242585F3CB211F71AF29791EE6AA0@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
+	<1521615323-4752-1-git-send-email-nipun.gupta@nxp.com>
+	<20180321092954.GS14085@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180320151600.GA23920-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180321092954.GS14085-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,20 +21,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org" <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, "andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "msuchanek-l3A5Bk7waGM@public.gmane.org" <msuchanek-l3A5Bk7waGM@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, dri-devel-PD4FTy7X32k@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 20, 2018 at 04:16:00PM +0100, Christoph Hellwig wrote:
-> On Tue, Mar 20, 2018 at 11:25:21AM +0000, Konrad Rzeszutek Wilk wrote:
-> > Are you testing with swiotlb=force?
+
+
+> -----Original Message-----
+> From: Greg KH [mailto:gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org]
+> Sent: Wednesday, March 21, 2018 15:00
+
+<snip>
+
+> > +int dma_configure(struct device *dev)
+> > +{
+> > +	if (dev->bus->dma_configure)
+> > +		return dev->bus->dma_configure(dev);
+> > +
+> > +	return 0;
+> > +}
+> >  void dma_deconfigure(struct device *dev)
 > 
-> I've done swiotlb=force testing with earlier versions, and otherwise
-> relied on a VM with more the 4gb of memory and emulated devices
-> without 64-bit capability.
+> Empty line after this new function?  Sorry, couldn't help it :)
+> 
+> >  {
+> >  	of_dma_deconfigure(dev);
+> > diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> > index f1bf7b3..d2d5891 100644
+> > --- a/drivers/base/platform.c
+> > +++ b/drivers/base/platform.c
+> > @@ -1130,6 +1130,11 @@ int platform_pm_restore(struct device *dev)
+> >
+> >  #endif /* CONFIG_HIBERNATE_CALLBACKS */
+> >
 
-Awesome! I also did my testing so all good. Ingo, if you want to
-you can add 'Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>'
-on the patches that don't have my tag.
+<snip>
 
-Christoph, thank you for cleaning up this swamp!
+> > +
+> >  	const struct dev_pm_ops *pm;
+> >
+> >  	const struct iommu_ops *iommu_ops;
+> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> > index eb9eab4..c15986b 100644
+> > --- a/include/linux/dma-mapping.h
+> > +++ b/include/linux/dma-mapping.h
+> > @@ -761,6 +761,7 @@ void *dma_mark_declared_memory_occupied(struct
+> device *dev,
+> >  }
+> >  #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
+> >
+> > +int dma_common_configure(struct device *dev);
+> >  #ifdef CONFIG_HAS_DMA
+> 
+> Blank line after the new function declaration?
+> 
+> Other than those very minor things, nice job, this looks good:
+> 
+> Reviewed-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+
+Thank you for the review :). I will fix your comments in next version.
+
+Regards,
+Nipun
