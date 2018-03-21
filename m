@@ -1,15 +1,14 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 1/4] iommu: Add virtio-iommu driver
-Date: Wed, 21 Mar 2018 06:43:35 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
-	<20180214145340.1223-2-jean-philippe.brucker@arm.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH v2 1/2] dma-mapping: move dma configuration to bus
+	infrastructure
+Date: Wed, 21 Mar 2018 12:25:22 +0530
+Message-ID: <1521615323-4752-1-git-send-email-nipun.gupta@nxp.com>
+References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180214145340.1223-2-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1520868292-2479-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,67 +18,277 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
-Cc: "jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org" <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Wednesday, February 14, 2018 10:54 PM
-> 
-> The virtio IOMMU is a para-virtualized device, allowing to send IOMMU
-> requests such as map/unmap over virtio-mmio transport without
-> emulating
-> page tables. This implementation handles ATTACH, DETACH, MAP and
-> UNMAP
-> requests.
-> 
-> The bulk of the code transforms calls coming from the IOMMU API into
-> corresponding virtio requests. Mappings are kept in an interval tree
-> instead of page tables.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+It's bus specific aspect to map a given device on the bus and
+relevant firmware description of its DMA configuration.
+So, this change introduces '/dma_configure/' as bus callback
+giving flexibility to busses for implementing its own dma
+configuration function.
 
-[...]
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> new file mode 100644
-> index 000000000000..a9c9245e8ba2
-> --- /dev/null
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -0,0 +1,960 @@
-> +/*
-> + * Virtio driver for the paravirtualized IOMMU
-> + *
-> + * Copyright (C) 2018 ARM Limited
-> + * Author: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> + *
-> + * SPDX-License-Identifier: GPL-2.0
-> + */
-> +
-> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> +
-> +#include <linux/amba/bus.h>
-> +#include <linux/delay.h>
-> +#include <linux/dma-iommu.h>
-> +#include <linux/freezer.h>
-> +#include <linux/interval_tree.h>
-> +#include <linux/iommu.h>
-> +#include <linux/module.h>
-> +#include <linux/of_iommu.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/pci.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/virtio.h>
-> +#include <linux/virtio_config.h>
-> +#include <linux/virtio_ids.h>
-> +#include <linux/wait.h>
-> +
-> +#include <uapi/linux/virtio_iommu.h>
-> +
-> +#define MSI_IOVA_BASE			0x8000000
-> +#define MSI_IOVA_LENGTH			0x100000
+The change eases the addition of new busses w.r.t. adding the dma
+configuration functionality.
 
-this is ARM specific, and according to virtio-iommu spec isn't it
-better probed on the endpoint instead of hard-coding here?
+This patch also updates the PCI, Platform, ACPI and host1x bus to
+use new introduced callbacks.
 
-Thanks
-Kevin
+Suggested-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+---
+ - The patches are based on the comments on:
+   https://patchwork.kernel.org/patch/10259087/
+
+Changes in v2:
+  - Do not have dma_deconfigure callback
+  - Have '/dma_common_configure/' API to provide a common DMA
+    configuration which can be used by busses if it suits them.
+  - Platform and ACPI bus to use '/dma_common_configure/' in
+    '/dma_configure/' callback.
+  - Updated commit message
+  - Updated pci_dma_configure API with changes suggested by Robin
+
+ drivers/amba/bus.c          |  7 +++++++
+ drivers/base/dma-mapping.c  | 35 +++++++++++++++--------------------
+ drivers/base/platform.c     |  6 ++++++
+ drivers/gpu/host1x/bus.c    |  9 +++++++++
+ drivers/pci/pci-driver.c    | 32 ++++++++++++++++++++++++++++++++
+ include/linux/device.h      |  4 ++++
+ include/linux/dma-mapping.h |  1 +
+ 7 files changed, 74 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 594c228..2fa1e8b 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -20,6 +20,7 @@
+ #include <linux/sizes.h>
+ #include <linux/limits.h>
+ #include <linux/clk/clk-conf.h>
++#include <linux/dma-mapping.h>
+ 
+ #include <asm/irq.h>
+ 
+@@ -171,6 +172,11 @@ static int amba_pm_runtime_resume(struct device *dev)
+ }
+ #endif /* CONFIG_PM */
+ 
++static int amba_dma_configure(struct device *dev)
++{
++	return dma_common_configure(dev);
++}
++
+ static const struct dev_pm_ops amba_pm = {
+ 	.suspend	= pm_generic_suspend,
+ 	.resume		= pm_generic_resume,
+@@ -194,6 +200,7 @@ struct bus_type amba_bustype = {
+ 	.dev_groups	= amba_dev_groups,
+ 	.match		= amba_match,
+ 	.uevent		= amba_uevent,
++	.dma_configure	= amba_dma_configure,
+ 	.pm		= &amba_pm,
+ 	.force_dma	= true,
+ };
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index 3b11835..48f9af0 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -331,38 +331,33 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
+ #endif
+ 
+ /*
+- * Common configuration to enable DMA API use for a device
++ * Common configuration to enable DMA API use for a device.
++ * A bus can use this function in its 'dma_configure' callback, if
++ * suitable for the bus.
+  */
+-#include <linux/pci.h>
+-
+-int dma_configure(struct device *dev)
++int dma_common_configure(struct device *dev)
+ {
+-	struct device *bridge = NULL, *dma_dev = dev;
+ 	enum dev_dma_attr attr;
+ 	int ret = 0;
+ 
+-	if (dev_is_pci(dev)) {
+-		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
+-		dma_dev = bridge;
+-		if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
+-		    dma_dev->parent->of_node)
+-			dma_dev = dma_dev->parent;
+-	}
+-
+-	if (dma_dev->of_node) {
+-		ret = of_dma_configure(dev, dma_dev->of_node);
+-	} else if (has_acpi_companion(dma_dev)) {
+-		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
++	if (dev->of_node) {
++		ret = of_dma_configure(dev, dev->of_node);
++	} else if (has_acpi_companion(dev)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
+ 		if (attr != DEV_DMA_NOT_SUPPORTED)
+ 			ret = acpi_dma_configure(dev, attr);
+ 	}
+ 
+-	if (bridge)
+-		pci_put_host_bridge_device(bridge);
+-
+ 	return ret;
+ }
+ 
++int dma_configure(struct device *dev)
++{
++	if (dev->bus->dma_configure)
++		return dev->bus->dma_configure(dev);
++
++	return 0;
++}
+ void dma_deconfigure(struct device *dev)
+ {
+ 	of_dma_deconfigure(dev);
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index f1bf7b3..d2d5891 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1130,6 +1130,11 @@ int platform_pm_restore(struct device *dev)
+ 
+ #endif /* CONFIG_HIBERNATE_CALLBACKS */
+ 
++static int platform_dma_configure(struct device *dev)
++{
++	return dma_common_configure(dev);
++}
++
+ static const struct dev_pm_ops platform_dev_pm_ops = {
+ 	.runtime_suspend = pm_generic_runtime_suspend,
+ 	.runtime_resume = pm_generic_runtime_resume,
+@@ -1141,6 +1146,7 @@ struct bus_type platform_bus_type = {
+ 	.dev_groups	= platform_dev_groups,
+ 	.match		= platform_match,
+ 	.uevent		= platform_uevent,
++	.dma_configure	= platform_dma_configure,
+ 	.pm		= &platform_dev_pm_ops,
+ 	.force_dma	= true,
+ };
+diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
+index 88a3558..fa9896d 100644
+--- a/drivers/gpu/host1x/bus.c
++++ b/drivers/gpu/host1x/bus.c
+@@ -314,6 +314,14 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
+ 	return strcmp(dev_name(dev), drv->name) == 0;
+ }
+ 
++static int host1x_dma_configure(struct device *dev)
++{
++	if (dev->of_node)
++		return of_dma_configure(dev, dev->of_node);
++
++	return 0;
++}
++
+ static const struct dev_pm_ops host1x_device_pm_ops = {
+ 	.suspend = pm_generic_suspend,
+ 	.resume = pm_generic_resume,
+@@ -326,6 +334,7 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
+ struct bus_type host1x_bus_type = {
+ 	.name = "host1x",
+ 	.match = host1x_device_match,
++	.dma_configure	= host1x_dma_configure,
+ 	.pm = &host1x_device_pm_ops,
+ 	.force_dma = true,
+ };
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 3bed6be..b473a4c 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -18,6 +18,8 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/suspend.h>
+ #include <linux/kexec.h>
++#include <linux/of_device.h>
++#include <linux/acpi.h>
+ #include "pci.h"
+ 
+ struct pci_dynid {
+@@ -1522,6 +1524,35 @@ static int pci_bus_num_vf(struct device *dev)
+ 	return pci_num_vf(to_pci_dev(dev));
+ }
+ 
++/**
++ * pci_dma_configure - Setup DMA configuration
++ * @dev: ptr to dev structure
++ *
++ * Function to update PCI devices's DMA configuration using the same
++ * info from the OF node or ACPI node of host bridge's parent (if any).
++ */
++static int pci_dma_configure(struct device *dev)
++{
++	struct device *bridge;
++	enum dev_dma_attr attr;
++	int ret = 0;
++
++	bridge = pci_get_host_bridge_device(to_pci_dev(dev));
++
++	if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
++	    bridge->parent->of_node) {
++		ret = of_dma_configure(dev, bridge->parent->of_node);
++	} else if (has_acpi_companion(bridge)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(bridge->fwnode));
++		if (attr != DEV_DMA_NOT_SUPPORTED)
++			ret = acpi_dma_configure(dev, attr);
++	}
++
++	pci_put_host_bridge_device(bridge);
++
++	return ret;
++}
++
+ struct bus_type pci_bus_type = {
+ 	.name		= "pci",
+ 	.match		= pci_bus_match,
+@@ -1534,6 +1565,7 @@ struct bus_type pci_bus_type = {
+ 	.drv_groups	= pci_drv_groups,
+ 	.pm		= PCI_PM_OPS_PTR,
+ 	.num_vf		= pci_bus_num_vf,
++	.dma_configure	= pci_dma_configure,
+ 	.force_dma	= true,
+ };
+ EXPORT_SYMBOL(pci_bus_type);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index b093405..1832d90 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -88,6 +88,8 @@ extern int __must_check bus_create_file(struct bus_type *,
+  * @resume:	Called to bring a device on this bus out of sleep mode.
+  * @num_vf:	Called to find out how many virtual functions a device on this
+  *		bus supports.
++ * @dma_configure:	Called to setup DMA configuration on a device on
++			this bus.
+  * @pm:		Power management operations of this bus, callback the specific
+  *		device driver's pm-ops.
+  * @iommu_ops:  IOMMU specific operations for this bus, used to attach IOMMU
+@@ -130,6 +132,8 @@ struct bus_type {
+ 
+ 	int (*num_vf)(struct device *dev);
+ 
++	int (*dma_configure)(struct device *dev);
++
+ 	const struct dev_pm_ops *pm;
+ 
+ 	const struct iommu_ops *iommu_ops;
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index eb9eab4..c15986b 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -761,6 +761,7 @@ void *dma_mark_declared_memory_occupied(struct device *dev,
+ }
+ #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
+ 
++int dma_common_configure(struct device *dev);
+ #ifdef CONFIG_HAS_DMA
+ int dma_configure(struct device *dev);
+ void dma_deconfigure(struct device *dev);
+-- 
+1.9.1
