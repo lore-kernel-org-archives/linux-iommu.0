@@ -1,185 +1,83 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
-	update iova list
-Date: Thu, 22 Mar 2018 09:15:22 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA838678FA7@FRAEML521-MBX.china.huawei.com>
-References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
-	<20180315163509.17740-3-shameerali.kolothum.thodi@huawei.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D1910857ED@SHSMSX101.ccr.corp.intel.com>
-	<20180320163744.3c09fde0@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191089B3B@SHSMSX101.ccr.corp.intel.com>
-	<20180321103112.229d4bf1@w520.home>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [PATCH 1/4] iommu: Add virtio-iommu driver
+Date: Thu, 22 Mar 2018 10:06:23 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108DC47@SHSMSX101.ccr.corp.intel.com>
+References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
+	<20180214145340.1223-2-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
+	<a11f1b52-c031-014c-8c23-1732f3d4666c@arm.com>
+	<739fbfdf-1651-8036-367a-52940b93dee6@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180321103112.229d4bf1-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <739fbfdf-1651-8036-367a-52940b93dee6@arm.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "xuwei (O)" <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Cc: "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Wednesday, March 21, 2018 4:31 PM
-> To: Tian, Kevin <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>;
-> eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; xuwei (O) <xuwei5-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; Linuxarm
-> <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Subject: Re: [PATCH v5 2/7] vfio/type1: Check reserve region conflict and
-> update iova list
+> From: Robin Murphy [mailto:robin.murphy@arm.com]
+> Sent: Wednesday, March 21, 2018 10:24 PM
 > 
-> On Wed, 21 Mar 2018 03:30:29 +0000
-> "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-> 
-> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > Sent: Wednesday, March 21, 2018 6:38 AM
-> > >
-> > > On Mon, 19 Mar 2018 07:51:58 +0000
-> > > "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-> > >
-> > > > > From: Shameer Kolothum
-> > > > > Sent: Friday, March 16, 2018 12:35 AM
-> > > > >
-> > > > > This retrieves the reserved regions associated with dev group and
-> > > > > checks for conflicts with any existing dma mappings. Also update
-> > > > > the iova list excluding the reserved regions.
-> > > > >
-> > > > > Signed-off-by: Shameer Kolothum
-> > > > > <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> > > > > ---
-> > > > >  drivers/vfio/vfio_iommu_type1.c | 90
-> > > > > +++++++++++++++++++++++++++++++++++++++++
-> > > > >  1 file changed, 90 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/vfio/vfio_iommu_type1.c
-> > > > > b/drivers/vfio/vfio_iommu_type1.c
-> > > > > index 1123c74..cfe2bb2 100644
-> > > > > --- a/drivers/vfio/vfio_iommu_type1.c
-> > > > > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > > > > @@ -1313,6 +1313,82 @@ static int vfio_iommu_aper_resize(struct
-> > > > > list_head *iova,
-> > > > >  	return 0;
-> > > > >  }
-> > > > >
-> > > > > +/*
-> > > > > + * Check reserved region conflicts with existing dma mappings
-> > > > > + */
-> > > > > +static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
-> > > > > +				struct list_head *resv_regions)
-> > > > > +{
-> > > > > +	struct iommu_resv_region *region;
-> > > > > +
-> > > > > +	/* Check for conflict with existing dma mappings */
-> > > > > +	list_for_each_entry(region, resv_regions, list) {
-> > > > > +		if (vfio_find_dma(iommu, region->start, region-
-> >length))
-> > > > > +			return true;
-> > > > > +	}
-> > > > > +
-> > > > > +	return false;
-> > > > > +}
-> > > > > +
-> > > > > +/*
-> > > > > + * Check iova region overlap with  reserved regions and
-> > > > > + * exclude them from the iommu iova range
-> > > > > + */
-> > > > > +static int vfio_iommu_resv_exclude(struct list_head *iova,
-> > > > > +					struct list_head *resv_regions)
-> > > > > +{
-> > > > > +	struct iommu_resv_region *resv;
-> > > > > +	struct vfio_iova *n, *next;
-> > > > > +
-> > > > > +	list_for_each_entry(resv, resv_regions, list) {
-> > > > > +		phys_addr_t start, end;
-> > > > > +
-> > > > > +		start = resv->start;
-> > > > > +		end = resv->start + resv->length - 1;
-> > > > > +
-> > > > > +		list_for_each_entry_safe(n, next, iova, list) {
-> > > > > +			int ret = 0;
-> > > > > +
-> > > > > +			/* No overlap */
-> > > > > +			if ((start > n->end) || (end < n->start))
-> > > > > +				continue;
-> > > > > +			/*
-> > > > > +			 * Insert a new node if current node overlaps
-> with
-> > > > > the
-> > > > > +			 * reserve region to exlude that from valid iova
-> > > > > range.
-> > > > > +			 * Note that, new node is inserted before the
-> > > > > current
-> > > > > +			 * node and finally the current node is deleted
-> > > > > keeping
-> > > > > +			 * the list updated and sorted.
-> > > > > +			 */
-> > > > > +			if (start > n->start)
-> > > > > +				ret = vfio_iommu_iova_insert(&n->list,
-> > > > > +							n->start, start
-> - 1);
-> > > > > +			if (!ret && end < n->end)
-> > > > > +				ret = vfio_iommu_iova_insert(&n->list,
-> > > > > +							end + 1, n-
-> >end);
-> > > > > +			if (ret)
-> > > > > +				return ret;
-> > > >
-> > > > Is it safer to delete the 1st node here in case of failure of the 2nd node?
-> > > > There is no problem with current logic since upon error iova_copy will
-> > > > be released anyway. However this function alone doesn't assume the
-> > > > fact of a temporary list, thus it's better to keep the list clean w/o garbage
-> > > > left from any error handling.
-> > >
-> > > I don't think the proposal makes the list notably more sane on failure
-> > > than we have here.  If the function returns an error and the list is
-> > > modified in any way, how can the caller recover?  We're operating on a
-> > > principle of modify a copy and throw it away on error, the only
-> > > function level solution to the problem you're noting is to make each
-> > > function generate a working copy, which is clearly inefficient.  This
-> > > is a static function, not intended for general use, so I think a
-> > > sufficient approach to address your concern is to simply note the error
-> > > behavior in the comment above the function, the list is in an
-> > > unknown/inconsistent state on error.  Thanks,
-> > >
+> On 21/03/18 13:14, Jean-Philippe Brucker wrote:
+> > On 21/03/18 06:43, Tian, Kevin wrote:
+> > [...]
+> >>> +
+> >>> +#include <uapi/linux/virtio_iommu.h>
+> >>> +
+> >>> +#define MSI_IOVA_BASE			0x8000000
+> >>> +#define MSI_IOVA_LENGTH			0x100000
+> >>
+> >> this is ARM specific, and according to virtio-iommu spec isn't it
+> >> better probed on the endpoint instead of hard-coding here?
 > >
-> > 'static' doesn't mean it cannot be used for general purpose in the same
-> > file.
+> > These values are arbitrary, not really ARM-specific even if ARM is the
+> > only user yet: we're just reserving a random IOVA region for mapping
+> MSIs.
+> > It is hard-coded because of the way iommu-dma.c works, but I don't
+> quite
+> > remember why that allocation isn't dynamic.
 > 
-> Obviously this is true, but expecting robust error handling, as might
-> be found in an exported general purpose function, from a static
-> specific purpose helper, is a bit absurd.  The strategy is therefore,
-> a) can we make it more general purpose without compromising the intent
-> of the function; probably not without adding overhead of using a local
-> copy of the list, b) can we modify the API, function name, arg names,
-> etc to make the behavior more intuitive; maybe, c) Can we at least add
-> a comment to make the potentially non-intuitive behavior obvious; of
-> course.  Thanks,
+> The host kernel needs to have *some* MSI region in place before the
+> guest can start configuring interrupts, otherwise it won't know what
+> address to give to the underlying hardware. However, as soon as the host
+> kernel has picked a region, host userspace needs to know that it can no
+> longer use addresses in that region for DMA-able guest memory. It's a
+> lot easier when the address is fixed in hardware and the host userspace
+> will never be stupid enough to try and VFIO_IOMMU_DMA_MAP it, but in
+> the
+> more general case where MSI writes undergo IOMMU address translation
+> so
+> it's an arbitrary IOVA, this has the potential to conflict with stuff
+> like guest memory hotplug.
+> 
+> What we currently have is just the simplest option, with the host kernel
+> just picking something up-front and pretending to host userspace that
+> it's a fixed hardware address. There's certainly scope for it to be a
+> bit more dynamic in the sense of adding an interface to let userspace
+> move it around (before attaching any devices, at least), but I don't
+> think it's feasible for the host kernel to second-guess userspace enough
+> to make it entirely transparent like it is in the DMA API domain case.
+> 
+> Of course, that's all assuming the host itself is using a virtio-iommu
+> (e.g. in a nested virt or emulation scenario). When it's purely within a
+> guest then an MSI reservation shouldn't matter so much, since the guest
+> won't be anywhere near the real hardware configuration anyway.
+> 
+> Robin.
 
-I had a look at this function again and agree with the observation that 
-the only way to make it more sane would be to create another local copy
-of the list and free up that in case of error. That sounds very inefficient.
+Curious since anyway we are defining a new iommu architecture
+is it possible to avoid those ARM-specific burden completely? 
 
-I will go with the suggestion of adding a comment here to make the
-behavior obvious.
-
-Hi Alex,
-
-If there are other comments to this series, then I will sent a revised one
-along with this change added. Otherwise hope, its ok for you to add the
-comment. Please let me know.
-
-Thanks,
-Shameer
+Thanks
+Kevin
