@@ -1,72 +1,79 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH 06/10] iommu/amd: use `table' instead `irt' as variable name
-	in amd_iommu_update_ga()
-Date: Thu, 22 Mar 2018 16:22:38 +0100
-Message-ID: <20180322152242.12705-7-bigeasy@linutronix.de>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 07/10] iommu/amd: factor out setting the remap table for a devid
+Date: Thu, 22 Mar 2018 16:22:39 +0100
+Message-ID: <20180322152242.12705-8-bigeasy@linutronix.de>
 References: <20180322152242.12705-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180322152242.12705-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180322152242.12705-1-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, tglx@linutronix.de, Scott Wood <swood@redhat.com>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 List-Id: iommu@lists.linux-foundation.org
 
-The variable of type struct irq_remap_table is always named `table'
-except in amd_iommu_update_ga() where it is called `irt'. Make it
-consistent and name it also `table'.
+Setting the IRQ remap table for a specific devid (or its alias devid)
+includes three steps. Those three steps are always repeated each time
+this is done.
+Introduce a new helper function, move those steps there and use that
+function instead. The compiler can still decide if it is worth to
+inline.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/iommu/amd_iommu.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/amd_iommu.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a5982a61f181..ea120c7b46c9 100644
+index ea120c7b46c9..11ea2d656be8 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -4405,7 +4405,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
+@@ -3617,6 +3617,14 @@ static struct irq_remap_table *get_irq_table(u16 dev=
+id)
+ 	return table;
+ }
+=20
++static void set_remap_table_entry(struct amd_iommu *iommu, u16 devid,
++				  struct irq_remap_table *table)
++{
++	irq_lookup_table[devid] =3D table;
++	set_dte_irq_entry(devid, table);
++	iommu_flush_dte(iommu, devid);
++}
++
+ static struct irq_remap_table *alloc_irq_table(u16 devid)
  {
- 	unsigned long flags;
- 	struct amd_iommu *iommu;
--	struct irq_remap_table *irt;
-+	struct irq_remap_table *table;
- 	struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
- 	int devid = ir_data->irq_2_irte.devid;
- 	struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
-@@ -4419,11 +4419,11 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	irt = get_irq_table(devid);
--	if (!irt)
-+	table = get_irq_table(devid);
-+	if (!table)
- 		return -ENODEV;
- 
--	raw_spin_lock_irqsave(&irt->lock, flags);
-+	raw_spin_lock_irqsave(&table->lock, flags);
- 
- 	if (ref->lo.fields_vapic.guest_mode) {
- 		if (cpu >= 0)
-@@ -4432,7 +4432,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 		barrier();
+ 	struct irq_remap_table *table =3D NULL;
+@@ -3637,9 +3645,7 @@ static struct irq_remap_table *alloc_irq_table(u16 de=
+vid)
+ 	alias =3D amd_iommu_alias_table[devid];
+ 	table =3D irq_lookup_table[alias];
+ 	if (table) {
+-		irq_lookup_table[devid] =3D table;
+-		set_dte_irq_entry(devid, table);
+-		iommu_flush_dte(iommu, devid);
++		set_remap_table_entry(iommu, devid, table);
+ 		goto out;
  	}
- 
--	raw_spin_unlock_irqrestore(&irt->lock, flags);
-+	raw_spin_unlock_irqrestore(&table->lock, flags);
- 
- 	iommu_flush_irt(iommu, devid);
+=20
+@@ -3666,14 +3672,9 @@ static struct irq_remap_table *alloc_irq_table(u16 d=
+evid)
+ 		       (MAX_IRQS_PER_TABLE * (sizeof(u64) * 2)));
+=20
+=20
+-	irq_lookup_table[devid] =3D table;
+-	set_dte_irq_entry(devid, table);
+-	iommu_flush_dte(iommu, devid);
+-	if (devid !=3D alias) {
+-		irq_lookup_table[alias] =3D table;
+-		set_dte_irq_entry(alias, table);
+-		iommu_flush_dte(iommu, alias);
+-	}
++	set_remap_table_entry(iommu, devid, table);
++	if (devid !=3D alias)
++		set_remap_table_entry(iommu, alias, table);
+=20
+ out:
  	iommu_completion_wait(iommu);
--- 
+--=20
 2.16.2
