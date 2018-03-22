@@ -1,16 +1,19 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH v2 2/2] drivers: remove force dma flag from buses
-Date: Thu, 22 Mar 2018 09:19:26 +0100
-Message-ID: <20180322081926.GC29444@lst.de>
-References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
-	<1521615323-4752-1-git-send-email-nipun.gupta@nxp.com>
-	<1521615323-4752-2-git-send-email-nipun.gupta@nxp.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v5 0/7] vfio/type1: Add support for valid iova list
+	management
+Date: Thu, 22 Mar 2018 09:10:46 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108DB22@SHSMSX101.ccr.corp.intel.com>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19108585F@SHSMSX101.ccr.corp.intel.com>
+	<20180320165514.0f4cd556@t450s.home>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191089B15@SHSMSX101.ccr.corp.intel.com>
+	<20180321111110.34258235@w520.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1521615323-4752-2-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+In-Reply-To: <20180321111110.34258235-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,34 +23,137 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Cc: zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> --- a/drivers/dma/qcom/hidma_mgmt.c
-> +++ b/drivers/dma/qcom/hidma_mgmt.c
-> @@ -398,7 +398,7 @@ static int __init hidma_mgmt_of_populate_channels(struct device_node *np)
->  		}
->  		of_node_get(child);
->  		new_pdev->dev.of_node = child;
-> -		of_dma_configure(&new_pdev->dev, child);
-> +		of_dma_configure(&new_pdev->dev, child, true);
->  		/*
->  		 * It is assumed that calling of_msi_configure is safe on
->  		 * platforms with or without MSI support.
+> From: Alex Williamson
+> Sent: Thursday, March 22, 2018 1:11 AM
+> 
+> On Wed, 21 Mar 2018 03:28:16 +0000
+> "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> 
+> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > > Sent: Wednesday, March 21, 2018 6:55 AM
+> > >
+> > > On Mon, 19 Mar 2018 08:28:32 +0000
+> > > "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> > >
+> > > > > From: Shameer Kolothum
+> > > > > Sent: Friday, March 16, 2018 12:35 AM
+> > > > >
+> > > > > This series introduces an iova list associated with a vfio
+> > > > > iommu. The list is kept updated taking care of iommu apertures,
+> > > > > and reserved regions. Also this series adds checks for any conflict
+> > > > > with existing dma mappings whenever a new device group is
+> attached
+> > > to
+> > > > > the domain.
+> > > > >
+> > > > > User-space can retrieve valid iova ranges using
+> > > VFIO_IOMMU_GET_INFO
+> > > > > ioctl capability chains. Any dma map request outside the valid iova
+> > > > > range will be rejected.
+> > > >
+> > > > GET_INFO is done at initialization time which is good for cold attached
+> > > > devices. If a hotplugged device may cause change of valid iova ranges
+> > > > at run-time, then there could be potential problem (which however is
+> > > > difficult for user space or orchestration stack to figure out in advance)
+> > > > Can we do some extension like below to make hotplug case cleaner?
+> > >
+> > > Let's be clear what we mean by hotplug here, as I see it, the only
+> > > relevant hotplug would be a physical device, hot added to the host,
+> > > which becomes a member of an existing, in-use IOMMU group.  If, on
+> the
+> > > other hand, we're talking about hotplug related to the user process,
+> > > there's nothing asynchronous about that.  For instance in the QEMU
+> > > case, QEMU must add the group to the container, at which point it can
+> > > evaluate the new iova list and remove the group from the container if
+> > > it doesn't like the result.  So what would be a case of the available
+> > > iova list for a group changing as a result of adding a device?
+> >
+> > My original thought was about the latter case. At that moment
+> > I was not sure whether the window between adding/removing
+> > the group may cause some issue if there are right some IOVA
+> > allocations happening in parallel. But looks Qemu can anyway
+> > handle it well as long as such scenario is considered.
+> 
+> I believe the kernel patches here and the existing code are using
+> locking to prevent races between mapping changes and device changes, so
+> the acceptance of a new group into a container and the iova list for a
+> container should always be correct for the order these operations
+> arrive.  Beyond that, I don't believe it's the kernel's responsibility
+> to do anything more than block groups from being added if they conflict
+> with current mappings.  The user already has the minimum interfaces
+> they need to manage other scenarios.
 
-Where did we mark this bus as force_dma before?
+Agree
 
-> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> index 9a4f4246..895c83e 100644
-> --- a/drivers/of/of_reserved_mem.c
-> +++ b/drivers/of/of_reserved_mem.c
-> @@ -353,7 +353,7 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
->  		/* ensure that dma_ops is set for virtual devices
->  		 * using reserved memory
->  		 */
-> -		of_dma_configure(dev, np);
-> +		of_dma_configure(dev, np, true);
+> 
+> > > > - An interface allowing user space to request VFIO rejecting further
+> > > > attach_group if doing so may cause iova range change. e.g. Qemu can
+> > > > do such request once completing initial GET_INFO;
+> > >
+> > > For the latter case above, it seems unnecessary, QEMU can revert the
+> > > attach, we're only promising that the attach won't interfere with
+> > > existing mappings.  For the host hotplug case, the user has no control,
+> > > the new device is a member of the iommu group and therefore
+> necessarily
+> > > becomes a part of container.  I imagine there are plenty of other holes
+> > > in this scenario already.
+> > >
+> > > > - or an event notification to user space upon change of valid iova
+> > > > ranges when attaching a new device at run-time. It goes one step
+> > > > further - even attach may cause iova range change, it may still
+> > > > succeed as long as Qemu hasn't allocated any iova in impacted
+> > > > range
+> > >
+> > > Same as above, in the QEMU hotplug case, the user is orchestrating the
+> > > adding of the group to the container, they can then check the iommu
+> > > info on their own and determine what, if any, changes are relevant to
+> > > them, knowing that the addition would not succeed if any current
+> > > mappings where affected.  In the host case, a notification would be
+> > > required, but we'd first need to identify exactly how the iova list can
+> > > change asynchronous to the user doing anything.  Thanks,
+> >
+> > for host hotplug, possibly notification could be an opt-in model.
+> > meaning if user space doesn't explicitly request receiving notification
+> > on such event, the device is just left in unused state (vfio-pci still
+> > claims the device, assuming it assigned to the container owner, but
+> > the owner doesn't use it)
+> 
+> Currently, if a device is added to a live group, the kernel will print
+> a warning.  We have a todo to bind that device to a vfio-bus driver,
+> but I'm not sure that isn't an overreach into the system policy
+> decisions.  If system policy decides to bind to a vfio bus driver, all
+> is well, but we might be missing the iommu backend adding the device to
+> the iommu domain, so it probably won't work unless the requester ID is
+> actually aliased to the IOMMU (such as a conventional PCI device), a
+> standard PCIe device simply wouldn't be part of the IOMMU domain and
+> would generate IOMMU faults if the user attempts to use it (AFAICT).
+> OTOH, if system policy binds the device to a native host driver, then
+> the integrity of the group for userspace use is compromised, which is
+> terminated with prejudice via a BUG.  Obviously the user is never
+> obligated to listen to signals and we don't provide a signal here as
+> this scenario is mostly theoretical, though it would be relatively easy
+> with software hotplug to artificially induce such a condition.
+> 
+> However, I'm still not sure how adding a device to a group is
+> necessarily relevant to this series, particularly how it would change
+> the iova list.  When we add groups to a container, we're potentially
+> crossing boundaries between IOMMUs and may therefore pickup new
+> reserved resource requirements, but devices within a group seem like
+> reserved regions should already be accounted for in the existing group.
+> At least so long as we've decided reserved regions are only the IOMMU
+> imposed reserved regions and not routing within the group, which we've
+> hand waved as the user's problem already.  Thanks,
+> 
 
-Did all the callers of this one really force dma?  I have a hard time
-untangling the call stacks unfortunately.
+oh it's not relevant to this series now. As I said my earlier concern
+is more on guest hotplug side which has been closed. Sorry for 
+distracting the thread when further replying to host hotplug which
+should be in a separate thread if necessary (so I'll stop further comment
+here until there is a real need for that part. :-)
+
+Thanks
+Kevin
