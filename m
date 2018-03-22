@@ -1,13 +1,15 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH 09/10] iommu/amd: make amd_iommu_devtable_lock a spin_lock
-Date: Thu, 22 Mar 2018 16:22:41 +0100
-Message-ID: <20180322152242.12705-10-bigeasy@linutronix.de>
-References: <20180322152242.12705-1-bigeasy@linutronix.de>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 7/7] iommu/dma: Move PCI window region reservation
+	back into dma specific path.
+Date: Thu, 22 Mar 2018 10:21:48 -0600
+Message-ID: <20180322102148.29afce09@w520.home>
+References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
+	<20180315163509.17740-8-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180322152242.12705-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+In-Reply-To: <20180315163509.17740-8-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,77 +19,118 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Before commit 0bb6e243d7fb ("iommu/amd: Support IOMMU_DOMAIN_DMA type
-allocation") amd_iommu_devtable_lock had a read_lock() user but now
-there are none. In fact, after the mentioned commit we had only
-write_lock() user of the lock. Since there is no reason to keep it as
-writer lock, change its type to a spin_lock.
-I *think* that we might even be able to remove the lock because all its
-current user seem to have their own protection.
+On Thu, 15 Mar 2018 16:35:09 +0000
+Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+> This pretty much reverts commit 273df9635385 ("iommu/dma: Make PCI
+> window reservation generic")  by moving the PCI window region
+> reservation back into the dma specific path so that these regions
+> doesn't get exposed via the IOMMU API interface. With this change,
+> the vfio interface will report only iommu specific reserved regions
+> to the user space.
+> 
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> ---
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c493d345b3ef..23e26a4b708e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -80,7 +80,7 @@
-  */
- #define AMD_IOMMU_PGSIZES	((~0xFFFUL) & ~(2ULL << 38))
- 
--static DEFINE_RWLOCK(amd_iommu_devtable_lock);
-+static DEFINE_SPINLOCK(amd_iommu_devtable_lock);
- static DEFINE_SPINLOCK(pd_bitmap_lock);
- static DEFINE_SPINLOCK(iommu_table_lock);
- 
-@@ -2097,9 +2097,9 @@ static int attach_device(struct device *dev,
- 	}
- 
- skip_ats_check:
--	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
-+	spin_lock_irqsave(&amd_iommu_devtable_lock, flags);
- 	ret = __attach_device(dev_data, domain);
--	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
-+	spin_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
- 
- 	/*
- 	 * We might boot into a crash-kernel here. The crashed kernel
-@@ -2149,9 +2149,9 @@ static void detach_device(struct device *dev)
- 	domain   = dev_data->domain;
- 
- 	/* lock device table */
--	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
-+	spin_lock_irqsave(&amd_iommu_devtable_lock, flags);
- 	__detach_device(dev_data);
--	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
-+	spin_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
- 
- 	if (!dev_is_pci(dev))
- 		return;
-@@ -2814,7 +2814,7 @@ static void cleanup_domain(struct protection_domain *domain)
- 	struct iommu_dev_data *entry;
- 	unsigned long flags;
- 
--	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
-+	spin_lock_irqsave(&amd_iommu_devtable_lock, flags);
- 
- 	while (!list_empty(&domain->dev_list)) {
- 		entry = list_first_entry(&domain->dev_list,
-@@ -2822,7 +2822,7 @@ static void cleanup_domain(struct protection_domain *domain)
- 		__detach_device(entry);
- 	}
- 
--	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
-+	spin_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
- }
- 
- static void protection_domain_free(struct protection_domain *domain)
--- 
-2.16.2
+As currently ordered, we expose the iova list to the user in 5/7 with
+the PCI window reservations still intact.  Isn't that a bisection
+problem?  This patch should come before the iova list is expose to the
+user.  This is otherwise independent, so I can pop it up in the stack on
+commit, but I'd need an ack from Joerg and Robin to take it via my
+tree.  Thanks,
+
+Alex
+
+>  drivers/iommu/dma-iommu.c | 54 ++++++++++++++++++++++-------------------------
+>  1 file changed, 25 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index f05f3cf..ddcbbdb 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -167,40 +167,16 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+>   * @list: Reserved region list from iommu_get_resv_regions()
+>   *
+>   * IOMMU drivers can use this to implement their .get_resv_regions callback
+> - * for general non-IOMMU-specific reservations. Currently, this covers host
+> - * bridge windows for PCI devices and GICv3 ITS region reservation on ACPI
+> - * based ARM platforms that may require HW MSI reservation.
+> + * for general non-IOMMU-specific reservations. Currently, this covers GICv3
+> + * ITS region reservation on ACPI based ARM platforms that may require HW MSI
+> + * reservation.
+>   */
+>  void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+>  {
+> -	struct pci_host_bridge *bridge;
+> -	struct resource_entry *window;
+> -
+> -	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode) &&
+> -		iort_iommu_msi_get_resv_regions(dev, list) < 0)
+> -		return;
+> -
+> -	if (!dev_is_pci(dev))
+> -		return;
+> -
+> -	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
+> -	resource_list_for_each_entry(window, &bridge->windows) {
+> -		struct iommu_resv_region *region;
+> -		phys_addr_t start;
+> -		size_t length;
+> -
+> -		if (resource_type(window->res) != IORESOURCE_MEM)
+> -			continue;
+>  
+> -		start = window->res->start - window->offset;
+> -		length = window->res->end - window->res->start + 1;
+> -		region = iommu_alloc_resv_region(start, length, 0,
+> -				IOMMU_RESV_RESERVED);
+> -		if (!region)
+> -			return;
+> +	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
+> +		iort_iommu_msi_get_resv_regions(dev, list);
+>  
+> -		list_add_tail(&region->list, list);
+> -	}
+>  }
+>  EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+>  
+> @@ -229,6 +205,23 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
+>  	return 0;
+>  }
+>  
+> +static void iova_reserve_pci_windows(struct pci_dev *dev,
+> +		struct iova_domain *iovad)
+> +{
+> +	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+> +	struct resource_entry *window;
+> +	unsigned long lo, hi;
+> +
+> +	resource_list_for_each_entry(window, &bridge->windows) {
+> +		if (resource_type(window->res) != IORESOURCE_MEM)
+> +			continue;
+> +
+> +		lo = iova_pfn(iovad, window->res->start - window->offset);
+> +		hi = iova_pfn(iovad, window->res->end - window->offset);
+> +		reserve_iova(iovad, lo, hi);
+> +	}
+> +}
+> +
+>  static int iova_reserve_iommu_regions(struct device *dev,
+>  		struct iommu_domain *domain)
+>  {
+> @@ -238,6 +231,9 @@ static int iova_reserve_iommu_regions(struct device *dev,
+>  	LIST_HEAD(resv_regions);
+>  	int ret = 0;
+>  
+> +	if (dev_is_pci(dev))
+> +		iova_reserve_pci_windows(to_pci_dev(dev), iovad);
+> +
+>  	iommu_get_resv_regions(dev, &resv_regions);
+>  	list_for_each_entry(region, &resv_regions, list) {
+>  		unsigned long lo, hi;
