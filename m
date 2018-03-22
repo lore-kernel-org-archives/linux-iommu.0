@@ -1,83 +1,50 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH 1/4] iommu: Add virtio-iommu driver
-Date: Thu, 22 Mar 2018 10:06:23 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19108DC47@SHSMSX101.ccr.corp.intel.com>
-References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
-	<20180214145340.1223-2-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19108B0FE@SHSMSX101.ccr.corp.intel.com>
-	<a11f1b52-c031-014c-8c23-1732f3d4666c@arm.com>
-	<739fbfdf-1651-8036-367a-52940b93dee6@arm.com>
+From: Shaokun Zhang <zhangshaokun@hisilicon.com>
+Subject: [PATCH] iommu/vt-d, trivial: Remove unused variable
+Date: Thu, 22 Mar 2018 18:18:06 +0800
+Message-ID: <1521713886-87177-1-git-send-email-zhangshaokun@hisilicon.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-In-Reply-To: <739fbfdf-1651-8036-367a-52940b93dee6@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Sender: virtualization-bounces@lists.linux-foundation.org
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
-Cc: "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Shaokun Zhang <zhangshaokun@hisilicon.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Robin Murphy [mailto:robin.murphy@arm.com]
-> Sent: Wednesday, March 21, 2018 10:24 PM
-> 
-> On 21/03/18 13:14, Jean-Philippe Brucker wrote:
-> > On 21/03/18 06:43, Tian, Kevin wrote:
-> > [...]
-> >>> +
-> >>> +#include <uapi/linux/virtio_iommu.h>
-> >>> +
-> >>> +#define MSI_IOVA_BASE			0x8000000
-> >>> +#define MSI_IOVA_LENGTH			0x100000
-> >>
-> >> this is ARM specific, and according to virtio-iommu spec isn't it
-> >> better probed on the endpoint instead of hard-coding here?
-> >
-> > These values are arbitrary, not really ARM-specific even if ARM is the
-> > only user yet: we're just reserving a random IOVA region for mapping
-> MSIs.
-> > It is hard-coded because of the way iommu-dma.c works, but I don't
-> quite
-> > remember why that allocation isn't dynamic.
-> 
-> The host kernel needs to have *some* MSI region in place before the
-> guest can start configuring interrupts, otherwise it won't know what
-> address to give to the underlying hardware. However, as soon as the host
-> kernel has picked a region, host userspace needs to know that it can no
-> longer use addresses in that region for DMA-able guest memory. It's a
-> lot easier when the address is fixed in hardware and the host userspace
-> will never be stupid enough to try and VFIO_IOMMU_DMA_MAP it, but in
-> the
-> more general case where MSI writes undergo IOMMU address translation
-> so
-> it's an arbitrary IOVA, this has the potential to conflict with stuff
-> like guest memory hotplug.
-> 
-> What we currently have is just the simplest option, with the host kernel
-> just picking something up-front and pretending to host userspace that
-> it's a fixed hardware address. There's certainly scope for it to be a
-> bit more dynamic in the sense of adding an interface to let userspace
-> move it around (before attaching any devices, at least), but I don't
-> think it's feasible for the host kernel to second-guess userspace enough
-> to make it entirely transparent like it is in the DMA API domain case.
-> 
-> Of course, that's all assuming the host itself is using a virtio-iommu
-> (e.g. in a nested virt or emulation scenario). When it's purely within a
-> guest then an MSI reservation shouldn't matter so much, since the guest
-> won't be anywhere near the real hardware configuration anyway.
-> 
-> Robin.
+Unused after commit <42e8c186b595> ("iommu/vt-d: Simplify io/tlb flushing
+in intel_iommu_unmap"), cleanup it.
 
-Curious since anyway we are defining a new iommu architecture
-is it possible to avoid those ARM-specific burden completely? 
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+---
+ drivers/iommu/intel-iommu.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Thanks
-Kevin
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 582fd01..d49e0d3 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5072,7 +5072,6 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ {
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	struct page *freelist = NULL;
+-	struct intel_iommu *iommu;
+ 	unsigned long start_pfn, last_pfn;
+ 	unsigned int npages;
+ 	int iommu_id, level = 0;
+@@ -5091,12 +5090,9 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 
+ 	npages = last_pfn - start_pfn + 1;
+ 
+-	for_each_domain_iommu(iommu_id, dmar_domain) {
+-		iommu = g_iommus[iommu_id];
+-
++	for_each_domain_iommu(iommu_id, dmar_domain)
+ 		iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain,
+ 				      start_pfn, npages, !freelist, 0);
+-	}
+ 
+ 	dma_free_pagelist(freelist);
+ 
+-- 
+1.9.1
