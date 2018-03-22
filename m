@@ -1,43 +1,91 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH] iommu/mediatek: Fix protect memory setting
-Date: Thu, 22 Mar 2018 09:13:04 +0800
-Message-ID: <1521681184.583.2.camel@mhfsdcap03>
-References: <1521337974-22112-1-git-send-email-yong.wu@mediatek.com>
-         <20180320185716.ldxs2vvfcchznpnb@8bytes.org>
-         <1521609504.24119.5.camel@mhfsdcap03>
-         <20180321111455.djllpdsj35vu5cxc@8bytes.org>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] dma-mapping: move dma configuration to bus
+	infrastructure
+Date: Thu, 22 Mar 2018 09:15:30 +0100
+Message-ID: <20180322081530.GA29444@lst.de>
+References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
+	<1521615323-4752-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180321111455.djllpdsj35vu5cxc@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, honghui.zhang@mediatek.com, youlin.pei@mediatek.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1521615323-4752-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Cc: zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2018-03-21 at 06:14 -0500, Joerg Roedel wrote:
-> On Wed, Mar 21, 2018 at 01:18:24PM +0800, Yong Wu wrote:
-> > On Tue, 2018-03-20 at 13:57 -0500, Joerg Roedel wrote:
-> > > On Sun, Mar 18, 2018 at 09:52:54AM +0800, Yong Wu wrote:
-> > > > To avoid adding this complex macro or a new function, I put
-> > > > it in the code and backup its value in the suspend registers.
-> > > 
-> > > Missing Signed-off-by.
-> > 
-> > Signed-off-by and Reported-by have been added above.
-> > 
-> > ====
-> > Reported-by: Honghui Zhang <honghui.zhang@mediatek.com>
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ====
-> 
-> Right, sorry. I was in a hurry and missed it. Patch is now applied.
+> +static int amba_dma_configure(struct device *dev)
+> +{
+> +	return dma_common_configure(dev);
+> +}
 
-Thanks Joerg.
+So it turns out we only end with two callers of dma_common_configure
+after this series.  Based ont hat I'm tempted with the suggestion
+from Robin to just have amba call platform_dma_configure, and move
+the code from dma_common_configure to platform_dma_configure.
 
-> 
-> 
-> Thanks,
-> 
-> 	Joerg
+> +int dma_configure(struct device *dev)
+> +{
+> +	if (dev->bus->dma_configure)
+> +		return dev->bus->dma_configure(dev);
+> +
+> +	return 0;
+> +}
+>  void dma_deconfigure(struct device *dev)
+
+As grep pointed out this wants a blank line after the function, and while
+in nitpicking mode I'd suggest to remove the blank line above the return
+statement while at it.
+
+> diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
+> index 88a3558..fa9896d 100644
+> --- a/drivers/gpu/host1x/bus.c
+> +++ b/drivers/gpu/host1x/bus.c
+> @@ -314,6 +314,14 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
+>  	return strcmp(dev_name(dev), drv->name) == 0;
+>  }
+>  
+> +static int host1x_dma_configure(struct device *dev)
+> +{
+> +	if (dev->of_node)
+> +		return of_dma_configure(dev, dev->of_node);
+> +
+> +	return 0;
+
+Same here.
+
+> + */
+> +static int pci_dma_configure(struct device *dev)
+> +{
+> +	struct device *bridge;
+> +	enum dev_dma_attr attr;
+> +	int ret = 0;
+> +
+> +	bridge = pci_get_host_bridge_device(to_pci_dev(dev));
+> +
+> +	if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
+> +	    bridge->parent->of_node) {
+> +		ret = of_dma_configure(dev, bridge->parent->of_node);
+> +	} else if (has_acpi_companion(bridge)) {
+> +		attr = acpi_get_dma_attr(to_acpi_device_node(bridge->fwnode));
+> +		if (attr != DEV_DMA_NOT_SUPPORTED)
+> +			ret = acpi_dma_configure(dev, attr);
+> +	}
+
+The attr declaration can be moved into the inner scope here.
+
+> +	pci_put_host_bridge_device(bridge);
+> +
+> +	return ret;
+
+Drop the blank line after the return, please.
