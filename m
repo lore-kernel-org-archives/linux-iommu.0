@@ -1,7 +1,8 @@
 From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH 02/10] iommu/amd: turn dev_data_list into a lock less list
-Date: Thu, 22 Mar 2018 16:22:34 +0100
-Message-ID: <20180322152242.12705-3-bigeasy@linutronix.de>
+Subject: [PATCH 03/10] iommu/amd: split domain id out of
+	amd_iommu_devtable_lock
+Date: Thu, 22 Mar 2018 16:22:35 +0100
+Message-ID: <20180322152242.12705-4-bigeasy@linutronix.de>
 References: <20180322152242.12705-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,99 +22,61 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-alloc_dev_data() adds new items to dev_data_list and search_dev_data()
-is searching for items in this list. Both protect the access to the list
-with a spinlock.
-There is no need to navigate forth and back within the list and there is
-also no deleting of a specific item. This qualifies the list to become a
-lock less list and as part of this, the spinlock can be removed.
-With this change the ordering of those items within the list is changed:
-before the change new items were added to the end of the list, now they
-are added to the front. I don't think it matters but wanted to mention
-it.
+domain_id_alloc() and domain_id_free() is used for id management. Those
+two function share a bitmap (amd_iommu_pd_alloc_bitmap) and set/clear
+bits based on id allocation. There is no need to share this with
+amd_iommu_devtable_lock, it can use its own lock for this operation.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 28 ++++++++++------------------
- drivers/iommu/amd_iommu_types.h |  2 +-
- 2 files changed, 11 insertions(+), 19 deletions(-)
+ drivers/iommu/amd_iommu.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 121c54f1c768..d4c2b1a11924 100644
+index d4c2b1a11924..fcfdce70707d 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -83,8 +83,7 @@
+@@ -81,6 +81,7 @@
+ #define AMD_IOMMU_PGSIZES	((~0xFFFUL) & ~(2ULL << 38))
+ 
  static DEFINE_RWLOCK(amd_iommu_devtable_lock);
++static DEFINE_SPINLOCK(pd_bitmap_lock);
  
  /* List of all available dev_data structures */
--static LIST_HEAD(dev_data_list);
--static DEFINE_SPINLOCK(dev_data_list_lock);
-+static LLIST_HEAD(dev_data_list);
+ static LLIST_HEAD(dev_data_list);
+@@ -1600,29 +1601,26 @@ static void del_domain_from_list(struct protection_domain *domain)
  
- LIST_HEAD(ioapic_map);
- LIST_HEAD(hpet_map);
-@@ -203,40 +202,33 @@ static struct dma_ops_domain* to_dma_ops_domain(struct protection_domain *domain
- static struct iommu_dev_data *alloc_dev_data(u16 devid)
+ static u16 domain_id_alloc(void)
  {
- 	struct iommu_dev_data *dev_data;
 -	unsigned long flags;
+ 	int id;
  
- 	dev_data = kzalloc(sizeof(*dev_data), GFP_KERNEL);
- 	if (!dev_data)
- 		return NULL;
+-	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
++	spin_lock(&pd_bitmap_lock);
+ 	id = find_first_zero_bit(amd_iommu_pd_alloc_bitmap, MAX_DOMAIN_ID);
+ 	BUG_ON(id == 0);
+ 	if (id > 0 && id < MAX_DOMAIN_ID)
+ 		__set_bit(id, amd_iommu_pd_alloc_bitmap);
+ 	else
+ 		id = 0;
+-	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
++	spin_unlock(&pd_bitmap_lock);
  
- 	dev_data->devid = devid;
--
--	spin_lock_irqsave(&dev_data_list_lock, flags);
--	list_add_tail(&dev_data->dev_data_list, &dev_data_list);
--	spin_unlock_irqrestore(&dev_data_list_lock, flags);
--
- 	ratelimit_default_init(&dev_data->rs);
- 
-+	llist_add(&dev_data->dev_data_list, &dev_data_list);
- 	return dev_data;
+ 	return id;
  }
  
- static struct iommu_dev_data *search_dev_data(u16 devid)
+ static void domain_id_free(int id)
  {
- 	struct iommu_dev_data *dev_data;
 -	unsigned long flags;
-+	struct llist_node *node;
- 
--	spin_lock_irqsave(&dev_data_list_lock, flags);
--	list_for_each_entry(dev_data, &dev_data_list, dev_data_list) {
-+	if (llist_empty(&dev_data_list))
-+		return NULL;
-+
-+	node = dev_data_list.first;
-+	llist_for_each_entry(dev_data, node, dev_data_list) {
- 		if (dev_data->devid == devid)
--			goto out_unlock;
-+			return dev_data;
- 	}
- 
--	dev_data = NULL;
 -
--out_unlock:
--	spin_unlock_irqrestore(&dev_data_list_lock, flags);
--
--	return dev_data;
-+	return NULL;
+-	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
++	spin_lock(&pd_bitmap_lock);
+ 	if (id > 0 && id < MAX_DOMAIN_ID)
+ 		__clear_bit(id, amd_iommu_pd_alloc_bitmap);
+-	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
++	spin_unlock(&pd_bitmap_lock);
  }
  
- static int __last_alias(struct pci_dev *pdev, u16 alias, void *data)
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index da886b0095aa..1c9b080276c9 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -627,7 +627,7 @@ struct devid_map {
-  */
- struct iommu_dev_data {
- 	struct list_head list;		  /* For domain->dev_list */
--	struct list_head dev_data_list;	  /* For global dev_data_list */
-+	struct llist_node dev_data_list;  /* For global dev_data_list */
- 	struct protection_domain *domain; /* Domain the device is bound to */
- 	u16 devid;			  /* PCI Device ID */
- 	u16 alias;			  /* Alias Device ID */
+ #define DEFINE_FREE_PT_FN(LVL, FN)				\
 -- 
 2.16.2
