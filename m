@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v4 10/22] iommu: introduce device fault data
-Date: Thu, 22 Mar 2018 20:12:02 -0700
-Message-ID: <1521774734-48433-11-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 11/22] driver core: add per device iommu param
+Date: Thu, 22 Mar 2018 20:12:03 -0700
+Message-ID: <1521774734-48433-12-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,163 +18,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Device faults detected by IOMMU can be reported outside IOMMU
-subsystem for further processing. This patch intends to provide
-a generic device fault data such that device drivers can be
-communicated with IOMMU faults without model specific knowledge.
+DMA faults can be detected by IOMMU at device level. Adding a pointer
+to struct device allows IOMMU subsystem to report relevant faults
+back to the device driver for further handling.
+For direct assigned device (or user space drivers), guest OS holds
+responsibility to handle and respond per device IOMMU fault.
+Therefore we need fault reporting mechanism to propagate faults beyond
+IOMMU subsystem.
 
-The proposed format is the result of discussion at:
-https://lkml.org/lkml/2017/11/10/291
-Part of the code is based on Jean-Philippe Brucker's patchset
-(https://patchwork.kernel.org/patch/9989315/).
+There are two other IOMMU data pointers under struct device today, here
+we introduce iommu_param as a parent pointer such that all device IOMMU
+data can be consolidated here. The idea was suggested here by Greg KH
+and Joerg. The name iommu_param is chosen here since iommu_data has been used.
 
-The assumption is that model specific IOMMU driver can filter and
-handle most of the internal faults if the cause is within IOMMU driver
-control. Therefore, the fault reasons can be reported are grouped
-and generalized based common specifications such as PCI ATS.
-
+Suggested-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Link: https://lkml.org/lkml/2017/10/6/81
 ---
- include/linux/iommu.h | 102 +++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 100 insertions(+), 2 deletions(-)
+ include/linux/device.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index da684a7..9eaa907 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -49,13 +49,17 @@ struct bus_type;
- struct device;
- struct iommu_domain;
- struct notifier_block;
-+struct iommu_fault_event;
+diff --git a/include/linux/device.h b/include/linux/device.h
+index b093405..35d9f34 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -41,6 +41,7 @@ struct iommu_ops;
+ struct iommu_group;
+ struct iommu_fwspec;
+ struct dev_pin_info;
++struct iommu_param;
  
- /* iommu fault flags */
--#define IOMMU_FAULT_READ	0x0
--#define IOMMU_FAULT_WRITE	0x1
-+#define IOMMU_FAULT_READ		(1 << 0)
-+#define IOMMU_FAULT_WRITE		(1 << 1)
-+#define IOMMU_FAULT_EXEC		(1 << 2)
-+#define IOMMU_FAULT_PRIV		(1 << 3)
+ struct bus_attribute {
+ 	struct attribute	attr;
+@@ -872,6 +873,7 @@ struct dev_links_info {
+  * 		device (i.e. the bus driver that discovered the device).
+  * @iommu_group: IOMMU group the device belongs to.
+  * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
++ * @iommu_param: Per device generic IOMMU runtime data
+  *
+  * @offline_disabled: If set, the device is permanently online.
+  * @offline:	Set after successful invocation of bus type's .offline().
+@@ -961,6 +963,7 @@ struct device {
+ 	void	(*release)(struct device *dev);
+ 	struct iommu_group	*iommu_group;
+ 	struct iommu_fwspec	*iommu_fwspec;
++	struct iommu_param	*iommu_param;
  
- typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
- 			struct device *, unsigned long, int, void *);
-+typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
- 
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
-@@ -264,6 +268,99 @@ struct iommu_device {
- 	struct device *dev;
- };
- 
-+/*  Generic fault types, can be expanded IRQ remapping fault */
-+enum iommu_fault_type {
-+	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
-+	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
-+};
-+
-+enum iommu_fault_reason {
-+	IOMMU_FAULT_REASON_UNKNOWN = 0,
-+
-+	/* IOMMU internal error, no specific reason to report out */
-+	IOMMU_FAULT_REASON_INTERNAL,
-+
-+	/* Could not access the PASID table */
-+	IOMMU_FAULT_REASON_PASID_FETCH,
-+
-+	/*
-+	 * PASID is out of range (e.g. exceeds the maximum PASID
-+	 * supported by the IOMMU) or disabled.
-+	 */
-+	IOMMU_FAULT_REASON_PASID_INVALID,
-+
-+	/* Could not access the page directory (Invalid PASID entry) */
-+	IOMMU_FAULT_REASON_PGD_FETCH,
-+
-+	/* Could not access the page table entry (Bad address) */
-+	IOMMU_FAULT_REASON_PTE_FETCH,
-+
-+	/* Protection flag check failed */
-+	IOMMU_FAULT_REASON_PERMISSION,
-+};
-+
-+/**
-+ * struct iommu_fault_event - Generic per device fault data
-+ *
-+ * - PCI and non-PCI devices
-+ * - Recoverable faults (e.g. page request), information based on PCI ATS
-+ * and PASID spec.
-+ * - Un-recoverable faults of device interest
-+ * - DMA remapping and IRQ remapping faults
-+
-+ * @type contains fault type.
-+ * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
-+ *         faults are not reported
-+ * @addr: tells the offending page address
-+ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
-+ * @rid: requestor ID
-+ * @page_req_group_id: page request group index
-+ * @last_req: last request in a page request group
-+ * @pasid_valid: indicates if the PRQ has a valid PASID
-+ * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
-+ * @device_private: if present, uniquely identify device-specific
-+ *                  private data for an individual page request.
-+ * @iommu_private: used by the IOMMU driver for storing fault-specific
-+ *                 data. Users should not modify this field before
-+ *                 sending the fault response.
-+ */
-+struct iommu_fault_event {
-+	enum iommu_fault_type type;
-+	enum iommu_fault_reason reason;
-+	u64 addr;
-+	u32 pasid;
-+	u32 page_req_group_id;
-+	u32 last_req : 1;
-+	u32 pasid_valid : 1;
-+	u32 prot;
-+	u64 device_private;
-+	u64 iommu_private;
-+};
-+
-+/**
-+ * struct iommu_fault_param - per-device IOMMU fault data
-+ * @dev_fault_handler: Callback function to handle IOMMU faults at device level
-+ * @data: handler private data
-+ *
-+ */
-+struct iommu_fault_param {
-+	iommu_dev_fault_handler_t handler;
-+	void *data;
-+};
-+
-+/**
-+ * struct iommu_param - collection of per-device IOMMU data
-+ *
-+ * @fault_param: IOMMU detected device fault reporting data
-+ *
-+ * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
-+ *	struct iommu_group	*iommu_group;
-+ *	struct iommu_fwspec	*iommu_fwspec;
-+ */
-+struct iommu_param {
-+	struct iommu_fault_param *fault_param;
-+};
-+
- int  iommu_device_register(struct iommu_device *iommu);
- void iommu_device_unregister(struct iommu_device *iommu);
- int  iommu_device_sysfs_add(struct iommu_device *iommu,
-@@ -437,6 +534,7 @@ struct iommu_ops {};
- struct iommu_group {};
- struct iommu_fwspec {};
- struct iommu_device {};
-+struct iommu_fault_param {};
- 
- static inline bool iommu_present(struct bus_type *bus)
- {
+ 	bool			offline_disabled:1;
+ 	bool			offline:1;
 -- 
 2.7.4
