@@ -1,17 +1,12 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 7/7] iommu/dma: Move PCI window region reservation back
-	into dma specific path.
-Date: Thu, 22 Mar 2018 17:22:27 +0000
-Message-ID: <3b481ba6-ffdd-fef1-12dc-f5eac8b589d5@arm.com>
-References: <20180315163509.17740-1-shameerali.kolothum.thodi@huawei.com>
-	<20180315163509.17740-8-shameerali.kolothum.thodi@huawei.com>
-	<20180322102148.29afce09@w520.home>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v4 00/22] IOMMU and VT-d driver support for Shared Virtual
+	Address (SVA)
+Date: Thu, 22 Mar 2018 20:11:52 -0700
+Message-ID: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180322102148.29afce09-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,132 +16,135 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/03/18 16:21, Alex Williamson wrote:
-> On Thu, 15 Mar 2018 16:35:09 +0000
-> Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
-> 
->> This pretty much reverts commit 273df9635385 ("iommu/dma: Make PCI
->> window reservation generic")  by moving the PCI window region
->> reservation back into the dma specific path so that these regions
->> doesn't get exposed via the IOMMU API interface. With this change,
->> the vfio interface will report only iommu specific reserved regions
->> to the user space.
->>
->> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
-> 
-> As currently ordered, we expose the iova list to the user in 5/7 with
-> the PCI window reservations still intact.  Isn't that a bisection
-> problem?  This patch should come before the iova list is expose to the
-> user.  This is otherwise independent, so I can pop it up in the stack on
-> commit, but I'd need an ack from Joerg and Robin to take it via my
-> tree.  Thanks,
+Hi All,
 
-If it counts, the changes look right, so:
+Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on Intel
+platforms allow address space sharing between device DMA and applications.
+SVA can reduce programming complexity and enhance security. To enable SVA
+in the guest, i.e. shared guest application address space and physical
+device DMA address, IOMMU driver must provide some new functionalities.
 
-Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+This patchset is a follow-up on the discussions held at LPC 2017
+VFIO/IOMMU/PCI track. Slides and notes can be found here:
+https://linuxplumbersconf.org/2017/ocw/events/LPC2017/tracks/636
 
-but it does look like there's a hard dependency on Joerg's core branch 
-where Shameer's ITS workaround patches are currently queued. Otherwise, 
-though, I don't think there's anything else due to be touching iommu-dma 
-just yet.
+The complete guest SVA support also involves changes in QEMU and VFIO,
+which has been posted earlier.
+https://www.spinics.net/lists/kvm/msg148798.html
 
-Robin.
+This is the IOMMU portion follow up of the more complete series of the
+kernel changes to support vSVA. Please refer to the link below for more
+details. https://www.spinics.net/lists/kvm/msg148819.html
 
-> 
-> Alex
-> 
->>   drivers/iommu/dma-iommu.c | 54 ++++++++++++++++++++++-------------------------
->>   1 file changed, 25 insertions(+), 29 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index f05f3cf..ddcbbdb 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -167,40 +167,16 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
->>    * @list: Reserved region list from iommu_get_resv_regions()
->>    *
->>    * IOMMU drivers can use this to implement their .get_resv_regions callback
->> - * for general non-IOMMU-specific reservations. Currently, this covers host
->> - * bridge windows for PCI devices and GICv3 ITS region reservation on ACPI
->> - * based ARM platforms that may require HW MSI reservation.
->> + * for general non-IOMMU-specific reservations. Currently, this covers GICv3
->> + * ITS region reservation on ACPI based ARM platforms that may require HW MSI
->> + * reservation.
->>    */
->>   void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
->>   {
->> -	struct pci_host_bridge *bridge;
->> -	struct resource_entry *window;
->> -
->> -	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode) &&
->> -		iort_iommu_msi_get_resv_regions(dev, list) < 0)
->> -		return;
->> -
->> -	if (!dev_is_pci(dev))
->> -		return;
->> -
->> -	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
->> -	resource_list_for_each_entry(window, &bridge->windows) {
->> -		struct iommu_resv_region *region;
->> -		phys_addr_t start;
->> -		size_t length;
->> -
->> -		if (resource_type(window->res) != IORESOURCE_MEM)
->> -			continue;
->>   
->> -		start = window->res->start - window->offset;
->> -		length = window->res->end - window->res->start + 1;
->> -		region = iommu_alloc_resv_region(start, length, 0,
->> -				IOMMU_RESV_RESERVED);
->> -		if (!region)
->> -			return;
->> +	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
->> +		iort_iommu_msi_get_resv_regions(dev, list);
->>   
->> -		list_add_tail(&region->list, list);
->> -	}
->>   }
->>   EXPORT_SYMBOL(iommu_dma_get_resv_regions);
->>   
->> @@ -229,6 +205,23 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
->>   	return 0;
->>   }
->>   
->> +static void iova_reserve_pci_windows(struct pci_dev *dev,
->> +		struct iova_domain *iovad)
->> +{
->> +	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
->> +	struct resource_entry *window;
->> +	unsigned long lo, hi;
->> +
->> +	resource_list_for_each_entry(window, &bridge->windows) {
->> +		if (resource_type(window->res) != IORESOURCE_MEM)
->> +			continue;
->> +
->> +		lo = iova_pfn(iovad, window->res->start - window->offset);
->> +		hi = iova_pfn(iovad, window->res->end - window->offset);
->> +		reserve_iova(iovad, lo, hi);
->> +	}
->> +}
->> +
->>   static int iova_reserve_iommu_regions(struct device *dev,
->>   		struct iommu_domain *domain)
->>   {
->> @@ -238,6 +231,9 @@ static int iova_reserve_iommu_regions(struct device *dev,
->>   	LIST_HEAD(resv_regions);
->>   	int ret = 0;
->>   
->> +	if (dev_is_pci(dev))
->> +		iova_reserve_pci_windows(to_pci_dev(dev), iovad);
->> +
->>   	iommu_get_resv_regions(dev, &resv_regions);
->>   	list_for_each_entry(region, &resv_regions, list) {
->>   		unsigned long lo, hi;
-> 
+Generic APIs are introduced in addition to Intel VT-d specific changes,
+the goal is to have common interfaces across IOMMU and device types for
+both VFIO and other in-kernel users.
+
+At the top level, new IOMMU interfaces are introduced as follows:
+ - bind guest PASID table
+ - passdown invalidations of translation caches
+ - IOMMU device fault reporting including page request/response and
+   non-recoverable faults.
+
+For IOMMU detected device fault reporting, struct device is extended to
+provide callback and tracking at device level. The original proposal was
+discussed here "Error handling for I/O memory management units"
+(https://lwn.net/Articles/608914/). I have experimented two alternative
+solutions:
+1. use a shared group notifier, this does not scale well also causes unwanted
+notification traffic when group sibling device is reported with faults.
+2. place fault callback at device IOMMU arch data, e.g. device_domain_info
+in Intel/FSL IOMMU driver. This will cause code duplication, since per
+device fault reporting is generic.
+
+The additional patches are Intel VT-d specific, which either implements or
+replaces existing private interfaces with the generic ones.
+
+This patchset is based on the work and ideas from many people, especially:
+Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+
+Thanks,
+
+Jacob
+
+V4
+	- Futher integrate feedback for iommu_param and iommu_fault_param
+	  from Jean and others.
+	- Handle fault reporting error and race conditions. Keep tracking per
+	  device pending page requests such that page group response can be
+	  sanitized.
+	- Added a timer to handle irresponsive guest who does not send page
+	  response on time.
+	- Use a workqueue for VT-d non-recorverable IRQ fault handling.
+	- Added trace events for invalidation and fault reporting.
+V3
+	- Consolidated fault reporting data format based on discussions on v2,
+	  including input from ARM and AMD.
+	- Renamed invalidation APIs from svm to sva based on discussions on v2
+	- Use a parent pointer under struct device for all iommu per device data
+	- Simplified device fault callback, allow driver private data to be
+	  registered. This might make it easy to replace domain fault handler.
+V2
+	- Replaced hybrid interface data model (generic data + vendor specific
+	data) with all generic data. This will have the security benefit where
+	data passed from user space can be sanitized by all software layers if
+	needed.
+	- Addressed review comments from V1
+	- Use per device fault report data
+	- Support page request/response communications between host IOMMU and
+	guest or other in-kernel users.
+	- Added unrecoverable fault reporting to DMAR
+	- Use threaded IRQ function for DMAR fault interrupt and fault
+	  reporting
+
+
+Jacob Pan (21):
+  iommu: introduce bind_pasid_table API function
+  iommu/vt-d: move device_domain_info to header
+  iommu/vt-d: add a flag for pasid table bound status
+  iommu/vt-d: add bind_pasid_table function
+  iommu/vt-d: add definitions for PFSID
+  iommu/vt-d: fix dev iotlb pfsid use
+  iommu/vt-d: support flushing more translation cache types
+  iommu/vt-d: add svm/sva invalidate function
+  iommu: introduce device fault data
+  driver core: add per device iommu param
+  iommu: introduce device fault report API
+  iommu: introduce page response function
+  iommu: handle page response timeout
+  iommu/config: add build dependency for dmar
+  iommu/vt-d: report non-recoverable faults to device
+  iommu/intel-svm: report device page request
+  iommu/intel-svm: replace dev ops with fault report API
+  iommu/intel-svm: do not flush iotlb for viommu
+  iommu/vt-d: add intel iommu page response function
+  trace/iommu: add sva trace events
+  iommu: use sva invalidate and device fault trace event
+
+Liu, Yi L (1):
+  iommu: introduce iommu invalidate API function
+
+ drivers/iommu/Kconfig         |   1 +
+ drivers/iommu/dmar.c          | 207 ++++++++++++++++++++++-
+ drivers/iommu/intel-iommu.c   | 376 +++++++++++++++++++++++++++++++++++++++---
+ drivers/iommu/intel-svm.c     |  82 +++++++--
+ drivers/iommu/iommu.c         | 284 ++++++++++++++++++++++++++++++-
+ include/linux/device.h        |   3 +
+ include/linux/dma_remapping.h |   1 +
+ include/linux/dmar.h          |   2 +-
+ include/linux/intel-iommu.h   |  52 +++++-
+ include/linux/intel-svm.h     |  20 +--
+ include/linux/iommu.h         | 226 ++++++++++++++++++++++++-
+ include/trace/events/iommu.h  | 112 +++++++++++++
+ include/uapi/linux/iommu.h    | 111 +++++++++++++
+ 13 files changed, 1405 insertions(+), 72 deletions(-)
+ create mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.7.4
