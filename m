@@ -1,11 +1,13 @@
 From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v8 00/14] iommu/rockchip: Use OF_IOMMU
-Date: Fri, 23 Mar 2018 15:38:00 +0800
-Message-ID: <20180323073814.5802-1-jeffy.chen@rock-chips.com>
+Subject: [PATCH v8 01/14] iommu/rockchip: Prohibit unbind and remove
+Date: Fri, 23 Mar 2018 15:38:01 +0800
+Message-ID: <20180323073814.5802-2-jeffy.chen@rock-chips.com>
+References: <20180323073814.5802-1-jeffy.chen@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180323073814.5802-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,81 +18,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Shawn Lin <shawn.lin-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Kever Yang <kever.yang-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Finley Xiao <finley.xiao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Romain Perier <romain.perier-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Sugar Zhang <sugar.zhang-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nickey Yang <nickey.yang-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Jacob Chen <jacob-chen-fyOeoxGR3m/QT0dZR+AlfA@public.gmane.org>, Liang Chen <cl-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Caesar Wang <wxt-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Yao <markyao0591-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Davi
+Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Removal of IOMMUs cannot be done reliably.
 
-This series fixes some issues in rockchip iommu driver, and add of_iommu
-support in it.
+This is similar to exynos iommu driver.
+
+Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
 Changes in v8:
 Rebase on newest for-next.
-Don't introduce the additional return.
-Rename startup()/shutdown() to enable()/disable().
-Do runtime PM suspend in .shutdown().
-Modify pm_runtime_get_if_in_use()/pm_runtime_put() as Tomasz suggested.
 
-Changes in v7:
-Use iommu_group_ref_get to avoid ref leak
-
-Changes in v6:
-Add clk names, and modify all iommu nodes in all existing rockchip dts
-Fix dt-binding as Robin suggested.
-Use aclk and iface clk as Rob and Robin suggested, and split binding
-patch.
-
-Changes in v5:
-Use out labels to save the duplication between the error and success paths.
-Use RK_MMU_POLL_PERIOD_US instead of 100.
-Remove clk names.
-Use clk_bulk APIs.
-Avoid race about pm_runtime_get_if_in_use() and pm_runtime_enabled().
-
+Changes in v7: None
+Changes in v6: None
+Changes in v5: None
 Changes in v4:
 Rewrite commit message.
 
 Changes in v3:
 Also remove remove() and module_exit() as Tomasz suggested.
-Loop platform_get_irq() as Robin suggested.
-Add struct rk_iommudata.
-Squash iommu/rockchip: Use iommu_group_get_for_dev() for add_device
-Only call startup() and shutdown() when iommu attached.
-Remove pm_mutex.
-Check runtime PM disabled.
-Check pm_runtime in rk_iommu_irq().
-Remove rk_iommudata->domain.
 
-Changes in v2:
-Move irq request to probe(in patch[0])
-Move bus_set_iommu() to rk_iommu_probe().
+Changes in v2: None
 
-Jeffy Chen (10):
-  iommu/rockchip: Prohibit unbind and remove
-  iommu/rockchip: Fix error handling in probe
-  iommu/rockchip: Request irqs in rk_iommu_probe()
-  ARM: dts: rockchip: add clocks in iommu nodes
-  dt-bindings: iommu/rockchip: Add clock property
-  iommu/rockchip: Use IOMMU device for dma mapping operations
-  iommu/rockchip: Use OF_IOMMU to attach devices automatically
-  iommu/rockchip: Fix error handling in init
-  iommu/rockchip: Add runtime PM support
-  iommu/rockchip: Support sharing IOMMU between masters
+ drivers/iommu/rockchip-iommu.c | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
 
-Tomasz Figa (4):
-  iommu/rockchip: Fix error handling in attach
-  iommu/rockchip: Use iopoll helpers to wait for hardware
-  iommu/rockchip: Fix TLB flush of secondary IOMMUs
-  iommu/rockchip: Control clocks needed to access the IOMMU
-
- .../devicetree/bindings/iommu/rockchip,iommu.txt   |   7 +
- arch/arm/boot/dts/rk3036.dtsi                      |   2 +
- arch/arm/boot/dts/rk322x.dtsi                      |   8 +
- arch/arm/boot/dts/rk3288.dtsi                      |  12 +
- arch/arm64/boot/dts/rockchip/rk3328.dtsi           |  10 +
- arch/arm64/boot/dts/rockchip/rk3368.dtsi           |  10 +
- arch/arm64/boot/dts/rockchip/rk3399.dtsi           |  14 +-
- drivers/iommu/rockchip-iommu.c                     | 600 +++++++++++----------
- 8 files changed, 363 insertions(+), 300 deletions(-)
-
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 6a3719e118da..e7fb824d123e 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1197,18 +1197,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	return err;
+ }
+ 
+-static int rk_iommu_remove(struct platform_device *pdev)
+-{
+-	struct rk_iommu *iommu = platform_get_drvdata(pdev);
+-
+-	if (iommu) {
+-		iommu_device_sysfs_remove(&iommu->iommu);
+-		iommu_device_unregister(&iommu->iommu);
+-	}
+-
+-	return 0;
+-}
+-
+ static void rk_iommu_shutdown(struct platform_device *pdev)
+ {
+ 	struct rk_iommu *iommu = platform_get_drvdata(pdev);
+@@ -1234,11 +1222,11 @@ MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
+ 
+ static struct platform_driver rk_iommu_driver = {
+ 	.probe = rk_iommu_probe,
+-	.remove = rk_iommu_remove,
+ 	.shutdown = rk_iommu_shutdown,
+ 	.driver = {
+ 		   .name = "rk_iommu",
+ 		   .of_match_table = rk_iommu_dt_ids,
++		   .suppress_bind_attrs = true,
+ 	},
+ };
+ 
+@@ -1266,14 +1254,7 @@ static int __init rk_iommu_init(void)
+ 		platform_driver_unregister(&rk_iommu_domain_driver);
+ 	return ret;
+ }
+-static void __exit rk_iommu_exit(void)
+-{
+-	platform_driver_unregister(&rk_iommu_driver);
+-	platform_driver_unregister(&rk_iommu_domain_driver);
+-}
+-
+ subsys_initcall(rk_iommu_init);
+-module_exit(rk_iommu_exit);
+ 
+ MODULE_DESCRIPTION("IOMMU API for Rockchip");
+ MODULE_AUTHOR("Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org> and Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>");
 -- 
 2.11.0
