@@ -1,177 +1,98 @@
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v4 01/22] iommu: introduce bind_pasid_table API function
-Date: Thu, 22 Mar 2018 20:11:53 -0700
-Message-ID: <1521774734-48433-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 07/22] iommu/vt-d: fix dev iotlb pfsid use
+Date: Thu, 22 Mar 2018 20:11:59 -0700
+Message-ID: <1521774734-48433-8-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org, Yi L <yi.l.liu@linux.intel.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Lan Tianyu <tianyu.lan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
-use in the guest:
-https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
+PFSID should be used in the invalidation descriptor for flushing
+device IOTLBs on SRIOV VFs.
 
-As part of the proposed architecture, when an SVM capable PCI
-device is assigned to a guest, nested mode is turned on. Guest owns the
-first level page tables (request with PASID) which performs GVA->GPA
-translation. Second level page tables are owned by the host for GPA->HPA
-translation for both request with and without PASID.
-
-A new IOMMU driver interface is therefore needed to perform tasks as
-follows:
-* Enable nested translation and appropriate translation type
-* Assign guest PASID table pointer (in GPA) and size to host IOMMU
-
-This patch introduces new API functions to perform bind/unbind guest PASID
-tables. Based on common data, model specific IOMMU drivers can be extended
-to perform the specific steps for binding pasid table of assigned devices.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/iommu.c      | 19 +++++++++++++++++++
- include/linux/iommu.h      | 24 ++++++++++++++++++++++++
- include/uapi/linux/iommu.h | 32 ++++++++++++++++++++++++++++++++
- 3 files changed, 75 insertions(+)
- create mode 100644 include/uapi/linux/iommu.h
+ drivers/iommu/dmar.c        |  6 +++---
+ drivers/iommu/intel-iommu.c | 16 +++++++++++++++-
+ include/linux/intel-iommu.h |  5 ++---
+ 3 files changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 69fef99..734ed09 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1325,6 +1325,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 9a7ffd1..78f7e70 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1339,8 +1339,8 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 	qi_submit_sync(&desc, iommu);
  }
- EXPORT_SYMBOL_GPL(iommu_attach_device);
  
-+int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-+			struct pasid_table_config *pasidt_binfo)
-+{
-+	if (unlikely(!domain->ops->bind_pasid_table))
-+		return -ENODEV;
-+
-+	return domain->ops->bind_pasid_table(domain, dev, pasidt_binfo);
-+}
-+EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
-+
-+void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-+{
-+	if (unlikely(!domain->ops->unbind_pasid_table))
-+		return;
-+
-+	domain->ops->unbind_pasid_table(domain, dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
+-void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+-			u64 addr, unsigned mask)
++void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
++			u16 qdep, u64 addr, unsigned mask)
  {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 41b8c57..0f6f6c5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -25,6 +25,7 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
-+#include <uapi/linux/iommu.h>
+ 	struct qi_desc desc;
  
- #define IOMMU_READ	(1 << 0)
- #define IOMMU_WRITE	(1 << 1)
-@@ -187,6 +188,8 @@ struct iommu_resv_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @bind_pasid_table: bind pasid table pointer for guest SVM
-+ * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -233,8 +236,14 @@ struct iommu_ops {
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
+@@ -1355,7 +1355,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+ 		qdep = 0;
  
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-+
- 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+ 	desc.low = QI_DEV_IOTLB_SID(sid) | QI_DEV_IOTLB_QDEP(qdep) |
+-		   QI_DIOTLB_TYPE;
++		   QI_DIOTLB_TYPE | QI_DEV_IOTLB_PFSID(pfsid);
  
-+	int (*bind_pasid_table)(struct iommu_domain *domain, struct device *dev,
-+				struct pasid_table_config *pasidt_binfo);
-+	void (*unbind_pasid_table)(struct iommu_domain *domain,
-+				struct device *dev);
-+
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -296,6 +305,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_bind_pasid_table(struct iommu_domain *domain,
-+		struct device *dev, struct pasid_table_config *pasidt_binfo);
-+extern void iommu_unbind_pasid_table(struct iommu_domain *domain,
-+				struct device *dev);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
-@@ -696,6 +709,17 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 	return NULL;
+ 	qi_submit_sync(&desc, iommu);
  }
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 8667727..53e9b7b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1482,6 +1482,19 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 		return;
  
-+static inline
-+int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-+			struct pasid_table_config *pasidt_binfo)
-+{
-+	return -EINVAL;
-+}
-+static inline
-+void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-+{
-+}
-+
- #endif /* CONFIG_IOMMU_API */
+ 	pdev = to_pci_dev(info->dev);
++	/* For IOMMU that supports device IOTLB throttling (DIT), we assign
++	 * PFSID to the invalidation desc of a VF such that IOMMU HW can gauge
++	 * queue depth at PF level. If DIT is not set, PFSID will be treated as
++	 * reserved, which should be set to 0.
++	 */
++	if (!ecap_dit(info->iommu->ecap))
++		info->pfsid = 0;
++	else if (pdev && pdev->is_virtfn) {
++		if (ecap_dit(info->iommu->ecap))
++			dev_warn(&pdev->dev, "SRIOV VF device IOTLB enabled without flow control\n");
++		info->pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
++	} else
++		info->pfsid = PCI_DEVID(info->bus, info->devfn);
  
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-new file mode 100644
-index 0000000..9f7a6bf
---- /dev/null
-+++ b/include/uapi/linux/iommu.h
-@@ -0,0 +1,32 @@
-+/*
-+ * IOMMU user API definitions
-+ *
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef _UAPI_IOMMU_H
-+#define _UAPI_IOMMU_H
-+
-+#include <linux/types.h>
-+
-+/**
-+ * PASID table data used to bind guest PASID table to the host IOMMU. This will
-+ * enable guest managed first level page tables.
-+ * @version: for future extensions and identification of the data format
-+ * @bytes: size of this structure
-+ * @base_ptr:	PASID table pointer
-+ * @pasid_bits:	number of bits supported in the guest PASID table, must be less
-+ *		or equal than the host supported PASID size.
-+ */
-+struct pasid_table_config {
-+	__u32 version;
-+#define PASID_TABLE_CFG_VERSION 1
-+	__u32 bytes;
-+	__u64 base_ptr;
-+	__u8 pasid_bits;
-+};
-+
-+#endif /* _UAPI_IOMMU_H */
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	/* The PCIe spec, in its wisdom, declares that the behaviour of
+@@ -1547,7 +1560,8 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 
+ 		sid = info->bus << 8 | info->devfn;
+ 		qdep = info->ats_qdep;
+-		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
++		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
++				qdep, addr, mask);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ }
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 0e3b618..1c9375b 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -477,9 +477,8 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
+ 			     u8 fm, u64 type);
+ extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 			  unsigned int size_order, u64 type);
+-extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+-			       u64 addr, unsigned mask);
+-
++extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
++			u16 qdep, u64 addr, unsigned mask);
+ extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+ 
+ extern int dmar_ir_support(void);
 -- 
 2.7.4
