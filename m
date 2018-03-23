@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v4 13/22] iommu: introduce page response function
-Date: Thu, 22 Mar 2018 20:12:05 -0700
-Message-ID: <1521774734-48433-14-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 14/22] iommu: handle page response timeout
+Date: Thu, 22 Mar 2018 20:12:06 -0700
+Message-ID: <1521774734-48433-15-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,166 +21,166 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <li
 Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-IO page faults can be handled outside IOMMU subsystem. For an example,
-when nested translation is turned on and guest owns the
-first level page tables, device page request can be forwared
-to the guest for handling faults. As the page response returns
-by the guest, IOMMU driver on the host need to process the
-response which informs the device and completes the page request
-transaction.
+When IO page faults are reported outside IOMMU subsystem, the page
+request handler may fail for various reasons. E.g. a guest received
+page requests but did not have a chance to run for a long time. The
+irresponsive behavior could hold off limited resources on the pending
+device.
+There can be hardware or credit based software solutions as suggested
+in the PCI ATS Ch-4. To provide a basic safty net this patch
+introduces a per device deferrable timer which monitors the longest
+pending page fault that requires a response. Proper action such as
+sending failure response code could be taken when timer expires but not
+included in this patch. We need to consider the life cycle of page
+groupd ID to prevent confusion with reused group ID by a device.
+For now, a warning message provides clue of such failure.
 
-This patch introduces generic API function for page response
-passing from the guest or other in-kernel users. The definitions of
-the generic data is based on PCI ATS specification not limited to
-any vendor.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Link: https://lkml.org/lkml/2017/12/7/1725
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 45 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/iommu.h | 52 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 97 insertions(+)
+ drivers/iommu/iommu.c | 60 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ include/linux/iommu.h |  4 ++++
+ 2 files changed, 62 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cd653ff..42e8f00 100644
+index 42e8f00..1e74944 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -1503,6 +1503,51 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
+@@ -799,6 +799,39 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
  }
- EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
+ EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
  
-+int iommu_page_response(struct device *dev,
-+			struct page_response_msg *msg)
++/* Max time to wait for a pending page request */
++#define IOMMU_PAGE_RESPONSE_MAXTIME (HZ * 10)
++static void iommu_dev_fault_timer_fn(struct timer_list *t)
 +{
-+	struct iommu_param *param = dev->iommu_param;
-+	int ret = -EINVAL;
++	struct iommu_fault_param *fparam = from_timer(fparam, t, timer);
 +	struct iommu_fault_event *evt, *iter;
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
 +
-+	if (!domain || !domain->ops->page_response)
-+		return -ENODEV;
++	u64 now;
 +
-+	/*
-+	 * Device iommu_param should have been allocated when device is
-+	 * added to its iommu_group.
++	now = get_jiffies_64();
++
++	/* The goal is to ensure driver or guest page fault handler(via vfio)
++	 * send page response on time. Otherwise, limited queue resources
++	 * may be occupied by some irresponsive guests or drivers.
++	 * When per device pending fault list is not empty, we periodically checks
++	 * if any anticipated page response time has expired.
++	 *
++	 * TODO:
++	 * We could do the following if response time expires:
++	 * 1. send page response code FAILURE to all pending PRQ
++	 * 2. inform device driver or vfio
++	 * 3. drain in-flight page requests and responses for this device
++	 * 4. clear pending fault list such that driver can unregister fault
++	 *    handler(otherwise blocked when pending faults are present).
 +	 */
-+	if (!param || !param->fault_param)
-+		return -EINVAL;
-+
-+	/* Only send response if there is a fault report pending */
-+	mutex_lock(&param->fault_param->lock);
-+	if (list_empty(&param->fault_param->faults)) {
-+		pr_warn("no pending PRQ, drop response\n");
-+		goto done_unlock;
++	list_for_each_entry_safe(evt, iter, &fparam->faults, list) {
++		if (time_after64(evt->expire, now))
++			pr_err("Page response time expired!, pasid %d gid %d exp %llu now %llu\n",
++				evt->pasid, evt->page_req_group_id, evt->expire, now);
 +	}
-+	/*
-+	 * Check if we have a matching page request pending to respond,
-+	 * otherwise return -EINVAL
-+	 */
-+	list_for_each_entry_safe(evt, iter, &param->fault_param->faults, list) {
-+		if (evt->pasid == msg->pasid &&
-+		    msg->page_req_group_id == evt->page_req_group_id) {
-+			msg->private_data = evt->iommu_private;
-+			ret = domain->ops->page_response(dev, msg);
-+			list_del(&evt->list);
-+			kfree(evt);
-+			break;
-+		}
-+	}
-+
-+done_unlock:
-+	mutex_unlock(&param->fault_param->lock);
-+	return ret;
++	mod_timer(t, now + IOMMU_PAGE_RESPONSE_MAXTIME);
 +}
-+EXPORT_SYMBOL_GPL(iommu_page_response);
 +
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
+ /**
+  * iommu_register_device_fault_handler() - Register a device fault handler
+  * @dev: the device
+@@ -806,8 +839,8 @@ EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+  * @data: private data passed as argument to the handler
+  *
+  * When an IOMMU fault event is received, call this handler with the fault event
+- * and data as argument. The handler should return 0. If the fault is
+- * recoverable (IOMMU_FAULT_PAGE_REQ), the handler must also complete
++ * and data as argument. The handler should return 0 on success. If the fault is
++ * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also complete
+  * the fault by calling iommu_page_response() with one of the following
+  * response code:
+  * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
+@@ -848,6 +881,9 @@ int iommu_register_device_fault_handler(struct device *dev,
+ 	param->fault_param->data = data;
+ 	INIT_LIST_HEAD(&param->fault_param->faults);
+ 
++	timer_setup(&param->fault_param->timer, iommu_dev_fault_timer_fn,
++		TIMER_DEFERRABLE);
++
+ 	mutex_unlock(&param->lock);
+ 
+ 	return 0;
+@@ -905,6 +941,8 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
  {
+ 	int ret = 0;
+ 	struct iommu_fault_event *evt_pending;
++	struct timer_list *tmr;
++	u64 exp;
+ 	struct iommu_fault_param *fparam;
+ 
+ 	/* iommu_param is allocated when device is added to group */
+@@ -925,6 +963,17 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+ 			goto done_unlock;
+ 		}
+ 		memcpy(evt_pending, evt, sizeof(struct iommu_fault_event));
++		/* Keep track of response expiration time */
++		exp = get_jiffies_64() + IOMMU_PAGE_RESPONSE_MAXTIME;
++		evt_pending->expire = exp;
++
++		if (list_empty(&fparam->faults)) {
++			/* First pending event, start timer */
++			tmr = &dev->iommu_param->fault_param->timer;
++			WARN_ON(timer_pending(tmr));
++			mod_timer(tmr, exp);
++		}
++
+ 		mutex_lock(&fparam->lock);
+ 		list_add_tail(&evt_pending->list, &fparam->faults);
+ 		mutex_unlock(&fparam->lock);
+@@ -1542,6 +1591,13 @@ int iommu_page_response(struct device *dev,
+ 		}
+ 	}
+ 
++	/* stop response timer if no more pending request */
++	if (list_empty(&param->fault_param->faults) &&
++		timer_pending(&param->fault_param->timer)) {
++		pr_debug("no pending PRQ, stop timer\n");
++		del_timer(&param->fault_param->timer);
++	}
++
+ done_unlock:
+ 	mutex_unlock(&param->fault_param->lock);
+ 	return ret;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b89e881..af0e393 100644
+index af0e393..94cfda8 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -163,6 +163,55 @@ struct iommu_resv_region {
- #ifdef CONFIG_IOMMU_API
+@@ -375,6 +375,7 @@ enum iommu_fault_reason {
+  * @iommu_private: used by the IOMMU driver for storing fault-specific
+  *                 data. Users should not modify this field before
+  *                 sending the fault response.
++ * @expire: time limit in jiffies will wait for page response
+  */
+ struct iommu_fault_event {
+ 	struct list_head list;
+@@ -388,6 +389,7 @@ struct iommu_fault_event {
+ 	u32 prot;
+ 	u64 device_private;
+ 	u64 iommu_private;
++	u64 expire;
+ };
  
  /**
-+ * enum page_response_code - Return status of fault handlers, telling the IOMMU
-+ * driver how to proceed with the fault.
-+ *
-+ * @IOMMU_FAULT_STATUS_SUCCESS: Fault has been handled and the page tables
-+ *	populated, retry the access. This is "Success" in PCI PRI.
-+ * @IOMMU_FAULT_STATUS_FAILURE: General error. Drop all subsequent faults from
-+ *	this device if possible. This is "Response Failure" in PCI PRI.
-+ * @IOMMU_FAULT_STATUS_INVALID: Could not handle this fault, don't retry the
-+ *	access. This is "Invalid Request" in PCI PRI.
-+ */
-+enum page_response_code {
-+	IOMMU_PAGE_RESP_SUCCESS = 0,
-+	IOMMU_PAGE_RESP_INVALID,
-+	IOMMU_PAGE_RESP_FAILURE,
-+};
-+
-+/**
-+ * enum page_request_handle_t - Return page request/response handler status
-+ *
-+ * @IOMMU_FAULT_STATUS_HANDLED: Stop processing the fault, and do not send a
-+ *	reply to the device.
-+ * @IOMMU_FAULT_STATUS_CONTINUE: Fault was not handled. Call the next handler,
-+ *	or terminate.
-+ */
-+enum page_request_handle_t {
-+	IOMMU_PAGE_RESP_HANDLED = 0,
-+	IOMMU_PAGE_RESP_CONTINUE,
-+};
-+
-+/**
-+ * Generic page response information based on PCI ATS and PASID spec.
-+ * @addr: servicing page address
-+ * @pasid: contains process address space ID
-+ * @resp_code: response code
-+ * @page_req_group_id: page request group index
-+ * @type: group or stream/single page response
-+ * @private_data: uniquely identify device-specific private data for an
-+ *                individual page response
-+ */
-+struct page_response_msg {
-+	u64 addr;
-+	u32 pasid;
-+	enum page_response_code resp_code;
-+	u32 pasid_present:1;
-+	u32 page_req_group_id;
-+	u64 private_data;
-+};
-+
-+/**
-  * struct iommu_ops - iommu ops and capabilities
-  * @capable: check capability
-  * @domain_alloc: allocate iommu domain
-@@ -195,6 +244,7 @@ struct iommu_resv_region {
-  * @bind_pasid_table: bind pasid table pointer for guest SVM
-  * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-  * @sva_invalidate: invalidate translation caches of shared virtual address
-+ * @page_response: handle page request response
+@@ -395,11 +397,13 @@ struct iommu_fault_event {
+  * @dev_fault_handler: Callback function to handle IOMMU faults at device level
+  * @data: handler private data
+  * @faults: holds the pending faults which needs response, e.g. page response.
++ * @timer: track page request pending time limit
+  * @lock: protect pending PRQ event list
   */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -250,6 +300,7 @@ struct iommu_ops {
- 				struct device *dev);
- 	int (*sva_invalidate)(struct iommu_domain *domain,
- 		struct device *dev, struct tlb_invalidate_info *inv_info);
-+	int (*page_response)(struct device *dev, struct page_response_msg *msg);
- 
- 	unsigned long pgsize_bitmap;
+ struct iommu_fault_param {
+ 	iommu_dev_fault_handler_t handler;
+ 	struct list_head faults;
++	struct timer_list timer;
+ 	struct mutex lock;
+ 	void *data;
  };
-@@ -471,6 +522,7 @@ extern int iommu_unregister_device_fault_handler(struct device *dev);
- 
- extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
- 
-+extern int iommu_page_response(struct device *dev, struct page_response_msg *msg);
- extern int iommu_group_id(struct iommu_group *group);
- extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
 -- 
 2.7.4
