@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v4 20/22] iommu/vt-d: add intel iommu page response function
-Date: Thu, 22 Mar 2018 20:12:12 -0700
-Message-ID: <1521774734-48433-21-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 17/22] iommu/intel-svm: report device page request
+Date: Thu, 22 Mar 2018 20:12:09 -0700
+Message-ID: <1521774734-48433-18-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,94 +21,147 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <li
 Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds page response support for Intel VT-d.
-Generic response data is taken from the IOMMU API
-then parsed into VT-d specific response descriptor format.
+If the source device of a page request has its PASID table pointer
+bound to a guest, the first level page tables are owned by the guest.
+In this case, we shall let guest OS to manage page fault.
+
+This patch uses the IOMMU fault reporting API to send fault events,
+possibly via VFIO, to the guest OS. Once guest pages are fault in, guest
+will issue page response which will be passed down via the invalidation
+passdown APIs.
+
+Recoverable faults, such as page request reporting is not limitted to
+guest use. In kernel driver can also request a chance to receive fault
+notifications.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 47 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  3 +++
- 2 files changed, 50 insertions(+)
+ drivers/iommu/intel-svm.c | 71 ++++++++++++++++++++++++++++++++++++++++-------
+ include/linux/iommu.h     |  1 +
+ 2 files changed, 62 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3229e20..8d73ff0 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5195,6 +5195,52 @@ static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
- 	return ret;
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 99bc9bd..bdc702c 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -580,6 +580,56 @@ static bool is_canonical_address(u64 addr)
+ 	return (((saddr << shift) >> shift) == saddr);
  }
  
-+int intel_iommu_page_response(struct device *dev, struct page_response_msg *msg)
++static int prq_to_iommu_prot(struct page_req_dsc *req)
 +{
-+	struct qi_desc resp;
-+	struct intel_iommu *iommu;
-+	struct pci_dev *pdev;
-+	u8 bus, devfn;
-+	u16 rid;
-+	u64 desc;
++	int prot = 0;
 +
-+	pdev = to_pci_dev(dev);
-+	iommu = device_to_iommu(dev, &bus, &devfn);
-+	if (!iommu) {
-+		dev_err(dev, "No IOMMU for device to unbind PASID table\n");
++	if (req->rd_req)
++		prot |= IOMMU_FAULT_READ;
++	if (req->wr_req)
++		prot |= IOMMU_FAULT_WRITE;
++	if (req->exe_req)
++		prot |= IOMMU_FAULT_EXEC;
++	if (req->priv_req)
++		prot |= IOMMU_FAULT_PRIV;
++
++	return prot;
++}
++
++static int intel_svm_prq_report(struct page_req_dsc *desc)
++{
++	int ret = 0;
++	struct iommu_fault_event event;
++	struct pci_dev *pdev;
++
++	memset(&event, 0, sizeof(struct iommu_fault_event));
++	pdev = pci_get_bus_and_slot(desc->bus, desc->devfn);
++	if (!pdev) {
++		pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
++			desc->bus, PCI_SLOT(desc->devfn),
++			PCI_FUNC(desc->devfn));
 +		return -ENODEV;
 +	}
 +
-+	pci_dev_get(pdev);
-+	rid = ((u16)bus << 8) | devfn;
-+	/* Iommu private data contains  preserved page request descriptor, so we
-+	 * inspect the SRR bit for response type then queue response with only
-+	 * the private data [54:32].
++	/* Fill in event data for device specific processing */
++	event.type = IOMMU_FAULT_PAGE_REQ;
++	event.addr = (u64)desc->addr << VTD_PAGE_SHIFT;
++	event.pasid = desc->pasid;
++	event.page_req_group_id = desc->prg_index;
++	event.prot = prq_to_iommu_prot(desc);
++	event.last_req = desc->lpig;
++	event.pasid_valid = 1;
++	/* keep track of PRQ so that when the response comes back, we know
++	 * whether we do group response or stream response. SRR[0] and
++	 * private[54:32] bits in the descriptor are stored.
 +	 */
-+	desc = msg->private_data;
-+	if (desc & QI_PRQ_SRR) {
-+		/* Page Stream Response */
-+		resp.low = QI_PSTRM_IDX(msg->page_req_group_id) |
-+			(desc & QI_PRQ_PRIV) | QI_PSTRM_BUS(PCI_BUS_NUM(pdev->bus->number)) |
-+			QI_PSTRM_PASID(msg->pasid) | QI_PSTRM_RESP_TYPE;
-+		resp.high = QI_PSTRM_ADDR(msg->addr) | QI_PSTRM_DEVFN(pdev->devfn & 0xff) |
-+			QI_PSTRM_RESP_CODE(msg->resp_code);
-+	} else {
-+		/* Page Group Response */
-+		resp.low = QI_PGRP_PASID(msg->pasid) |
-+			QI_PGRP_DID(rid) |
-+			QI_PGRP_PASID_P(msg->pasid_present) |
-+			QI_PGRP_RESP_TYPE;
-+		resp.high = QI_PGRP_IDX(msg->page_req_group_id) |
-+			(desc & QI_PRQ_PRIV) | QI_PGRP_RESP_CODE(msg->resp_code);
-+
-+	}
-+	qi_submit_sync(&resp, iommu);
++	event.iommu_private = *(u64 *)desc;
++	ret = iommu_report_device_fault(&pdev->dev, &event);
 +	pci_dev_put(pdev);
 +
-+	return 0;
++	return ret;
 +}
 +
- static int intel_iommu_map(struct iommu_domain *domain,
- 			   unsigned long iova, phys_addr_t hpa,
- 			   size_t size, int iommu_prot)
-@@ -5625,6 +5671,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.bind_pasid_table	= intel_iommu_bind_pasid_table,
- 	.unbind_pasid_table	= intel_iommu_unbind_pasid_table,
- 	.sva_invalidate		= intel_iommu_sva_invalidate,
-+	.page_response		= intel_iommu_page_response,
- #endif
- 	.map			= intel_iommu_map,
- 	.unmap			= intel_iommu_unmap,
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index dacb6cf..d2e1b5c 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -337,6 +337,9 @@ enum {
- #define QI_PSTRM_BUS(bus)	(((u64)(bus)) << 24)
- #define QI_PSTRM_PASID(pasid)	(((u64)(pasid)) << 4)
- 
-+#define QI_PRQ_SRR	BIT_ULL(0)
-+#define QI_PRQ_PRIV	GENMASK_ULL(54, 32)
+ static irqreturn_t prq_event_thread(int irq, void *d)
+ {
+ 	struct intel_iommu *iommu = d;
+@@ -628,6 +678,16 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 				goto no_pasid;
+ 			}
+ 		}
++		/* If address is not canonical, return invalid response */
++		if (!is_canonical_address(address))
++			goto bad_req;
 +
- #define QI_RESP_SUCCESS		0x0
- #define QI_RESP_INVALID		0x1
- #define QI_RESP_FAILURE		0xf
++		/*
++		 * If prq is to be handled outside iommu driver via receiver of
++		 * the fault notifiers, we skip the page response here.
++		 */
++		if (!intel_svm_prq_report(req))
++			goto prq_advance;
+ 
+ 		result = QI_RESP_INVALID;
+ 		/* Since we're using init_mm.pgd directly, we should never take
+@@ -638,9 +698,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		if (!mmget_not_zero(svm->mm))
+ 			goto bad_req;
+ 
+-		/* If address is not canonical, return invalid response */
+-		if (!is_canonical_address(address))
+-			goto bad_req;
+ 
+ 		down_read(&svm->mm->mmap_sem);
+ 		vma = find_extend_vma(svm->mm, address);
+@@ -673,12 +730,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 
+ 		if (WARN_ON(&sdev->list == &svm->devs))
+ 			sdev = NULL;
+-
+-		if (sdev && sdev->ops && sdev->ops->fault_cb) {
+-			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
+-				(req->exe_req << 1) | (req->priv_req);
+-			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
+-		}
+ 		/* We get here in the error case where the PASID lookup failed,
+ 		   and these can be NULL. Do not use them below this point! */
+ 		sdev = NULL;
+@@ -704,7 +755,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 
+ 			qi_submit_sync(&resp, iommu);
+ 		}
+-
++	prq_advance:
+ 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
+ 	}
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 94cfda8..dbe2866 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -42,6 +42,7 @@
+  * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
++#define IOMMU_EXEC	(1 << 6)
+ 
+ struct iommu_ops;
+ struct iommu_group;
 -- 
 2.7.4
