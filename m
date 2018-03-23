@@ -1,13 +1,15 @@
-From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v8 14/14] iommu/rockchip: Support sharing IOMMU between masters
-Date: Fri, 23 Mar 2018 15:38:14 +0800
-Message-ID: <20180323073814.5802-15-jeffy.chen@rock-chips.com>
-References: <20180323073814.5802-1-jeffy.chen@rock-chips.com>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH v4 11/22] driver core: add per device iommu param
+Date: Fri, 23 Mar 2018 09:12:09 +0100
+Message-ID: <20180323081209.GA27808@kroah.com>
+References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1521774734-48433-12-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180323073814.5802-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1521774734-48433-12-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,94 +19,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There would be some masters sharing the same IOMMU device. Put them in
-the same iommu group and share the same iommu domain.
+On Thu, Mar 22, 2018 at 08:12:03PM -0700, Jacob Pan wrote:
+> DMA faults can be detected by IOMMU at device level. Adding a pointer
+> to struct device allows IOMMU subsystem to report relevant faults
+> back to the device driver for further handling.
+> For direct assigned device (or user space drivers), guest OS holds
+> responsibility to handle and respond per device IOMMU fault.
+> Therefore we need fault reporting mechanism to propagate faults beyond
+> IOMMU subsystem.
+> 
+> There are two other IOMMU data pointers under struct device today, here
+> we introduce iommu_param as a parent pointer such that all device IOMMU
+> data can be consolidated here. The idea was suggested here by Greg KH
+> and Joerg. The name iommu_param is chosen here since iommu_data has been used.
+> 
+> Suggested-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> Link: https://lkml.org/lkml/2017/10/6/81
 
-Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-
-Changes in v8: None
-Changes in v7:
-Use iommu_group_ref_get to avoid ref leak
-
-Changes in v6: None
-Changes in v5: None
-Changes in v4: None
-Changes in v3:
-Remove rk_iommudata->domain.
-
-Changes in v2: None
-
- drivers/iommu/rockchip-iommu.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 9f6f74689464..5fc8656c60f9 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -104,6 +104,7 @@ struct rk_iommu {
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
- 	struct iommu_domain *domain; /* domain to which iommu is attached */
-+	struct iommu_group *group;
- };
- 
- struct rk_iommudata {
-@@ -1073,6 +1074,15 @@ static void rk_iommu_remove_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- }
- 
-+static struct iommu_group *rk_iommu_device_group(struct device *dev)
-+{
-+	struct rk_iommu *iommu;
-+
-+	iommu = rk_iommu_from_dev(dev);
-+
-+	return iommu_group_ref_get(iommu->group);
-+}
-+
- static int rk_iommu_of_xlate(struct device *dev,
- 			     struct of_phandle_args *args)
- {
-@@ -1104,7 +1114,7 @@ static const struct iommu_ops rk_iommu_ops = {
- 	.add_device = rk_iommu_add_device,
- 	.remove_device = rk_iommu_remove_device,
- 	.iova_to_phys = rk_iommu_iova_to_phys,
--	.device_group = generic_device_group,
-+	.device_group = rk_iommu_device_group,
- 	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
- 	.of_xlate = rk_iommu_of_xlate,
- };
-@@ -1173,9 +1183,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
-+	iommu->group = iommu_group_alloc();
-+	if (IS_ERR(iommu->group)) {
-+		err = PTR_ERR(iommu->group);
-+		goto err_unprepare_clocks;
-+	}
-+
- 	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
- 	if (err)
--		goto err_unprepare_clocks;
-+		goto err_put_group;
- 
- 	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
- 	iommu_device_set_fwnode(&iommu->iommu, &dev->of_node->fwnode);
-@@ -1199,6 +1215,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	return 0;
- err_remove_sysfs:
- 	iommu_device_sysfs_remove(&iommu->iommu);
-+err_put_group:
-+	iommu_group_put(iommu->group);
- err_unprepare_clocks:
- 	clk_bulk_unprepare(iommu->num_clocks, iommu->clocks);
- 	return err;
--- 
-2.11.0
+Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
