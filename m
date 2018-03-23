@@ -1,123 +1,74 @@
-From: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH v8 03/14] iommu/rockchip: Request irqs in rk_iommu_probe()
-Date: Fri, 23 Mar 2018 15:38:03 +0800
-Message-ID: <20180323073814.5802-4-jeffy.chen@rock-chips.com>
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Subject: [PATCH v8 04/14] iommu/rockchip: Fix error handling in attach
+Date: Fri, 23 Mar 2018 15:38:04 +0800
+Message-ID: <20180323073814.5802-5-jeffy.chen@rock-chips.com>
 References: <20180323073814.5802-1-jeffy.chen@rock-chips.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180323073814.5802-1-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180323073814.5802-1-jeffy.chen@rock-chips.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: jcliang@chromium.org, robin.murphy@arm.com, xxm@rock-chips.com, tfiga@chromium.org, Jeffy Chen <jeffy.chen@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move request_irq to the end of rk_iommu_probe().
+From: Tomasz Figa <tfiga@chromium.org>
 
-Suggested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Currently if the driver encounters an error while attaching device, it
+will leave the IOMMU in an inconsistent state. Even though it shouldn't
+really happen in reality, let's just add proper error path to keep
+things consistent.
+
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
 Changes in v8: None
 Changes in v7: None
 Changes in v6: None
-Changes in v5: None
+Changes in v5:
+Use out labels to save the duplication between the error and success paths.
+
 Changes in v4: None
-Changes in v3:
-Loop platform_get_irq() as Robin suggested.
+Changes in v3: None
+Changes in v2:
+Move irq request to probe(in patch[0])
 
-Changes in v2: None
-
- drivers/iommu/rockchip-iommu.c | 38 +++++++++-----------------------------
- 1 file changed, 9 insertions(+), 29 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 73117dbe839e..ec3ff936aa60 100644
+index ec3ff936aa60..5cbd5ceeb039 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -90,8 +90,6 @@ struct rk_iommu {
- 	struct device *dev;
- 	void __iomem **bases;
- 	int num_mmu;
--	int *irq;
--	int num_irq;
- 	bool reset_disabled;
- 	struct iommu_device iommu;
- 	struct list_head node; /* entry in rk_iommu_domain.iommus */
-@@ -830,13 +828,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+@@ -824,7 +824,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	ret = rk_iommu_force_reset(iommu);
+ 	if (ret)
+-		return ret;
++		goto out_disable_stall;
  
  	iommu->domain = domain;
  
--	for (i = 0; i < iommu->num_irq; i++) {
--		ret = devm_request_irq(iommu->dev, iommu->irq[i], rk_iommu_irq,
--				       IRQF_SHARED, dev_name(dev), iommu);
--		if (ret)
--			return ret;
--	}
--
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
- 			       rk_domain->dt_dma);
-@@ -885,9 +876,6 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	}
+@@ -837,7 +837,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	ret = rk_iommu_enable_paging(iommu);
+ 	if (ret)
+-		return ret;
++		goto out_disable_stall;
+ 
+ 	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+ 	list_add_tail(&iommu->node, &rk_domain->iommus);
+@@ -845,9 +845,9 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	dev_dbg(dev, "Attached to iommu domain\n");
+ 
++out_disable_stall:
  	rk_iommu_disable_stall(iommu);
- 
--	for (i = 0; i < iommu->num_irq; i++)
--		devm_free_irq(iommu->dev, iommu->irq[i], iommu);
 -
- 	iommu->domain = NULL;
+-	return 0;
++	return ret;
+ }
  
- 	dev_dbg(dev, "Detached from iommu domain\n");
-@@ -1138,7 +1126,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	struct rk_iommu *iommu;
- 	struct resource *res;
- 	int num_res = pdev->num_resources;
--	int err, i;
-+	int err, i, irq;
- 
- 	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
-@@ -1165,23 +1153,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (iommu->num_mmu == 0)
- 		return PTR_ERR(iommu->bases[0]);
- 
--	iommu->num_irq = platform_irq_count(pdev);
--	if (iommu->num_irq < 0)
--		return iommu->num_irq;
--	if (iommu->num_irq == 0)
--		return -ENXIO;
-+	i = 0;
-+	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
-+		if (irq < 0)
-+			return irq;
- 
--	iommu->irq = devm_kcalloc(dev, iommu->num_irq, sizeof(*iommu->irq),
--				  GFP_KERNEL);
--	if (!iommu->irq)
--		return -ENOMEM;
--
--	for (i = 0; i < iommu->num_irq; i++) {
--		iommu->irq[i] = platform_get_irq(pdev, i);
--		if (iommu->irq[i] < 0) {
--			dev_err(dev, "Failed to get IRQ, %d\n", iommu->irq[i]);
--			return -ENXIO;
--		}
-+		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
-+				       IRQF_SHARED, dev_name(dev), iommu);
-+		if (err)
-+			return err;
- 	}
- 
- 	iommu->reset_disabled = device_property_read_bool(dev,
+ static void rk_iommu_detach_device(struct iommu_domain *domain,
 -- 
 2.11.0
