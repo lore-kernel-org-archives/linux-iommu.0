@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v4 02/22] iommu/vt-d: move device_domain_info to header
-Date: Thu, 22 Mar 2018 20:11:54 -0700
-Message-ID: <1521774734-48433-3-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 03/22] iommu/vt-d: add a flag for pasid table bound status
+Date: Thu, 22 Mar 2018 20:11:55 -0700
+Message-ID: <1521774734-48433-4-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,73 +21,25 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <li
 Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Allow both intel-iommu.c and dmar.c to access device_domain_info.
-Prepare for additional per device arch data used in TLB flush function
+Adding a flag in device domain into to track whether a guest or
+user PASID table is bound to a device.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 18 ------------------
- include/linux/intel-iommu.h | 19 +++++++++++++++++++
- 2 files changed, 19 insertions(+), 18 deletions(-)
+ include/linux/intel-iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 582fd01..15fa30d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -414,24 +414,6 @@ struct dmar_domain {
- 					   iommu core */
- };
- 
--/* PCI domain-device relationship */
--struct device_domain_info {
--	struct list_head link;	/* link to domain siblings */
--	struct list_head global; /* link to global list */
--	u8 bus;			/* PCI bus number */
--	u8 devfn;		/* PCI devfn number */
--	u8 pasid_supported:3;
--	u8 pasid_enabled:1;
--	u8 pri_supported:1;
--	u8 pri_enabled:1;
--	u8 ats_supported:1;
--	u8 ats_enabled:1;
--	u8 ats_qdep;
--	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
--	struct intel_iommu *iommu; /* IOMMU used by this device */
--	struct dmar_domain *domain; /* pointer to domain */
--};
--
- struct dmar_rmrr_unit {
- 	struct list_head list;		/* list of rmrr units	*/
- 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 8dad3dd..13b44bb 100644
+index 13b44bb..e4a16dc 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -434,6 +434,25 @@ struct intel_iommu {
- 	u32		flags;      /* Software defined flags */
- };
- 
-+/* PCI domain-device relationship */
-+struct device_domain_info {
-+	struct list_head link;	/* link to domain siblings */
-+	struct list_head global; /* link to global list */
-+	u8 bus;			/* PCI bus number */
-+	u8 devfn;		/* PCI devfn number */
-+	u8 pasid_supported:3;
-+	u8 pasid_enabled:1;
-+	u8 pri_supported:1;
-+	u8 pri_enabled:1;
-+	u8 ats_supported:1;
-+	u8 ats_enabled:1;
-+	u8 ats_qdep;
-+	u64 fault_mask;	/* selected IOMMU faults to be reported */
-+	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
-+	struct intel_iommu *iommu; /* IOMMU used by this device */
-+	struct dmar_domain *domain; /* pointer to domain */
-+};
-+
- static inline void __iommu_flush_cache(
- 	struct intel_iommu *iommu, void *addr, int size)
- {
+@@ -446,6 +446,7 @@ struct device_domain_info {
+ 	u8 pri_enabled:1;
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
++	u8 pasid_table_bound:1;
+ 	u8 ats_qdep;
+ 	u64 fault_mask;	/* selected IOMMU faults to be reported */
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
 -- 
 2.7.4
