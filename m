@@ -1,15 +1,13 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 09/14] dt-bindings: iommu/rockchip: Add clock property
-Date: Sun, 25 Mar 2018 18:52:05 -0500
-Message-ID: <20180325235205.fkrz3chbkfj7eo64@rob-hp-laptop>
-References: <20180323073814.5802-1-jeffy.chen@rock-chips.com>
-	<20180323073814.5802-10-jeffy.chen@rock-chips.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 0/3] iommu/vt-d: Global PASID name space
+Date: Mon, 26 Mar 2018 08:38:21 +0800
+Message-ID: <5AB840FD.8020600@linux.intel.com>
+References: <1521081501-30119-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180323073814.5802-10-jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-Reply-To: <1521081501-30119-1-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,16 +17,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 23, 2018 at 03:38:09PM +0800, Jeffy Chen wrote:
-> Add clock property, since we are going to control clocks in rockchip
-> iommu driver.
-> 
-> Signed-off-by: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
+Hi Joerg,
 
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+A gentle ping. :-)
+
+Any comments on this patch set?
+
+Best regards,
+Lu Baolu
+
+On 03/15/2018 10:38 AM, Lu Baolu wrote:
+> Hi,
+>
+> This patch series is trying to change the scope of PASID management
+> used in Intel IOMMU driver from per IOMMU to driver global. This is
+> required for some cases where current per-IOMMU PASID name space
+> doesn't work. For an example, one application (associated with one
+> PASID) might talk to two physical devices simultaneously where two
+> devices could reside behind two different IOMMU units.
+>
+> Best regards,
+> Lu Baolu
+>
+> Lu Baolu (3):
+>   iommu/vt-d: Global PASID name space
+>   iommu/vt-d: Decouple idr bond pointer from svm
+>   iommu/vt-d: Use global PASID for SVM usage
+>
+>  drivers/iommu/intel-iommu.c | 64 +++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/intel-svm.c   | 34 +++++++++++++-----------
+>  include/linux/intel-iommu.h |  7 ++++-
+>  3 files changed, 89 insertions(+), 16 deletions(-)
+>
