@@ -1,13 +1,16 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 7/7] iommu/arm-smmu-v3: Support 52-bit virtual address
-Date: Mon, 26 Mar 2018 13:35:15 +0100
-Message-ID: <d0c584bf33868c7606d4f88a583fb88b1ae8f201.1522065584.git.robin.murphy@arm.com>
-References: <cover.1522065583.git.robin.murphy@arm.com>
+Subject: Re: Is adding offset to dma address is valid operation?
+Date: Mon, 26 Mar 2018 14:31:15 +0100
+Message-ID: <d49288da-ea0b-ac9c-923f-93b5e7672d29@arm.com>
+References: <8be08248-174e-19c2-357d-7d31c60a90f7@chelsio.com>
+	<5ea7def7-2daa-b4b1-17e7-47524746a61a@arm.com>
+	<6986f4c8-a3c0-2483-6eae-cfb56eaee10a@chelsio.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1522065583.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <6986f4c8-a3c0-2483-6eae-cfb56eaee10a-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,66 +20,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Harsh Jain <harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Stage 1 input addresses are effectively 64-bit in SMMUv3 anyway, so
-really all that's involved is letting io-pgtable know the appropriate
-upper bound for T0SZ.
+On 26/03/18 13:31, Harsh Jain wrote:
+> 
+> 
+> On 26-03-2018 17:15, Robin Murphy wrote:
+>> Hi Harsh,
+>> 
+>> On 26/03/18 10:55, Harsh Jain wrote:
+>>> Hi,
+>>> 
+>>> Can we add  offset to dma address received from IOMMU in
+>>> scatter/Gather list before sending it to H/W.
+>>> 
+>>> Address to HW = sg_dma_address(sg) + offset, where 0 < offset <
+>>> sg_dma_len(sg).
+>> 
+>> sg_dma_address() should already account for sg->offset (i.e. the
+>> start of the buffer within the page. If there's a DMA API
+>> implementation failing to respect that then that's a bug.
+>> 
+>>> I need this operation to make sure our H/W does not receives
+>>> entry of size greater than 2K.
+>> 
+>> If however it's just that you want to fragment a single SG entry
+>> into multiple commaneds/descriptors/etc. internally to your driver,
+>> then I can't see that being an issue as long as you don't visibly
+>> modify the scatterlist itself. If there's a genuine length and/or
+>> alignment limitation in the hardware, though, it would be better to
+>> set up dev->dma_parms appropriately to describe them, such that the
+>> subsystem responsible for generating the scatterlist respects the
+>> appropriate constraints in the first place (and if it doesn't, then
+>> that's another bug to fix).
+> Can dma_parms  handle 2K size limit ? Because dma_map_sg() returns <=
+> passed nents. But in my case nents will increase.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+The point is that dma_map_sg() should still never increase nents, 
+because the guy *creating* the scatterlist is also expected to respect 
+dma_parms where it exists, such that nents would be appropriate to start 
+with. That said, it does look like there are some places (e.g. the block 
+layer) which may not cope properly with limits less than PAGE_SIZE, so I 
+guess the reliability of dma_parms might depend on how much you want to 
+go spelunking in core code :/
 
-v3: Fix IDR5.VAX being a 2-bit field, and slight reorganisation of the
-    stage 1 IAS logic. Since constraining to VA_BITS turns out to be an
-    SMMUv3-specific behaviour, and would introduce an undesirable arm64
-    dependency to io-pgtable, I ended up leaving it here.
-
- drivers/iommu/arm-smmu-v3.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e0d46661c153..b0e23d6bd1ef 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -92,6 +92,8 @@
- #define IDR5_OAS_44_BIT			4
- #define IDR5_OAS_48_BIT			5
- #define IDR5_OAS_52_BIT			6
-+#define IDR5_VAX			GENMASK(11, 10)
-+#define IDR5_VAX_52_BIT			1
- 
- #define ARM_SMMU_CR0			0x20
- #define CR0_CMDQEN			(1 << 3)
-@@ -551,6 +553,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_STALLS		(1 << 11)
- #define ARM_SMMU_FEAT_HYP		(1 << 12)
- #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
-+#define ARM_SMMU_FEAT_VAX		(1 << 14)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1591,7 +1594,8 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 
- 	switch (smmu_domain->stage) {
- 	case ARM_SMMU_DOMAIN_S1:
--		ias = VA_BITS;
-+		ias = (smmu->features & ARM_SMMU_FEAT_VAX) ? 52 : 48;
-+		ias = min_t(unsigned long, ias, VA_BITS);
- 		oas = smmu->ias;
- 		fmt = ARM_64_LPAE_S1;
- 		finalise_stage_fn = arm_smmu_domain_finalise_s1;
-@@ -2634,6 +2638,10 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	if (reg & IDR5_GRAN4K)
- 		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
- 
-+	/* Input address size */
-+	if (FIELD_GET(IDR5_VAX, reg) == IDR5_VAX_52_BIT)
-+		smmu->features |= ARM_SMMU_FEAT_VAX;
-+
- 	/* Output address size */
- 	switch (FIELD_GET(IDR5_OAS, reg)) {
- 	case IDR5_OAS_32_BIT:
--- 
-2.16.1.dirty
+Robin.
