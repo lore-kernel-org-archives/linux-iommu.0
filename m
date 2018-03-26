@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 4/7] iommu/arm-smmu-v3: Clean up queue definitions
-Date: Mon, 26 Mar 2018 13:35:12 +0100
-Message-ID: <0fe73f1baef5849e579d91771b8613524de7d898.1522065584.git.robin.murphy@arm.com>
+Subject: [PATCH v3 5/7] iommu/io-pgtable-arm: Support 52-bit physical address
+Date: Mon, 26 Mar 2018 13:35:13 +0100
+Message-ID: <9ef51e5c1264e481d885735cecdd0ae39de09d7c.1522065584.git.robin.murphy@arm.com>
 References: <cover.1522065583.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,258 +21,201 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As with registers and tables, use GENMASK and the bitfield accessors
-consistently for queue fields, to save some lines and ease maintenance
-a little. This now leaves everything in a nice state where all named
-field definitions expect to be used with bitfield accessors (although
-since single-bit fields can still be used directly we leave some of
-those uses as-is to avoid unnecessary churn), while the few remaining
-*_MASK definitions apply exclusively to in-place values.
+Bring io-pgtable-arm in line with the ARMv8.2-LPA feature allowing
+52-bit physical addresses when using the 64KB translation granule.
+This will be supported by SMMUv3.1.
 
+Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
-v3: New
+v3: 64K-granule-specific logic in iopte_to_paddr() makes it much more
+    symmetrical with paddr_to_iopte() and generates shorter code.
 
- drivers/iommu/arm-smmu-v3.c | 126 +++++++++++++++++++-------------------------
- 1 file changed, 54 insertions(+), 72 deletions(-)
+    I haven't implemented explicit input masking in paddr_to_iopte()
+    since I realised that if we did ever get an out-of-range address
+    there, it would only make the difference between silently mapping
+    the wrong address and silently mapping a slightly different wrong
+    address.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index b1dc7d7cbbb5..4e0ffda217f6 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -184,6 +184,7 @@
- #define ARM_SMMU_SH_OSH			2
- #define ARM_SMMU_SH_ISH			3
- #define ARM_SMMU_MEMATTR_DEVICE_nGnRE	0x1
-+#define ARM_SMMU_MEMATTR_OIWB		0xf
+    I also went to add a comment about io_pgtable_alloc() updating the
+    cfg, only to find that it's been documented as such from the start.
+
+ drivers/iommu/io-pgtable-arm.c | 67 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 49 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 51e5c43caed1..a5be4c92c5c8 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -21,6 +21,7 @@
+ #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
  
- #define Q_IDX(q, p)			((p) & ((1 << (q)->max_n_shift) - 1))
- #define Q_WRP(q, p)			((p) & (1 << (q)->max_n_shift))
-@@ -301,64 +302,49 @@
- #define CMDQ_ERR_CERROR_ILL_IDX		1
- #define CMDQ_ERR_CERROR_ABT_IDX		2
+ #include <linux/atomic.h>
++#include <linux/bitops.h>
+ #include <linux/iommu.h>
+ #include <linux/kernel.h>
+ #include <linux/sizes.h>
+@@ -32,7 +33,7 @@
  
--#define CMDQ_0_OP_SHIFT			0
--#define CMDQ_0_OP_MASK			0xffUL
-+#define CMDQ_0_OP			GENMASK_ULL(7, 0)
- #define CMDQ_0_SSV			(1UL << 11)
+ #include "io-pgtable.h"
  
--#define CMDQ_PREFETCH_0_SID_SHIFT	32
--#define CMDQ_PREFETCH_1_SIZE_SHIFT	0
-+#define CMDQ_PREFETCH_0_SID		GENMASK_ULL(63, 32)
-+#define CMDQ_PREFETCH_1_SIZE		GENMASK_ULL(4, 0)
- #define CMDQ_PREFETCH_1_ADDR_MASK	GENMASK_ULL(63, 12)
+-#define ARM_LPAE_MAX_ADDR_BITS		48
++#define ARM_LPAE_MAX_ADDR_BITS		52
+ #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
+ #define ARM_LPAE_MAX_LEVELS		4
  
--#define CMDQ_CFGI_0_SID_SHIFT		32
--#define CMDQ_CFGI_0_SID_MASK		0xffffffffUL
-+#define CMDQ_CFGI_0_SID			GENMASK_ULL(63, 32)
- #define CMDQ_CFGI_1_LEAF		(1UL << 0)
--#define CMDQ_CFGI_1_RANGE_SHIFT		0
--#define CMDQ_CFGI_1_RANGE_MASK		0x1fUL
-+#define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
+@@ -86,6 +87,8 @@
+ #define ARM_LPAE_PTE_TYPE_TABLE		3
+ #define ARM_LPAE_PTE_TYPE_PAGE		3
  
--#define CMDQ_TLBI_0_VMID_SHIFT		32
--#define CMDQ_TLBI_0_ASID_SHIFT		48
-+#define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
-+#define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
- #define CMDQ_TLBI_1_LEAF		(1UL << 0)
- #define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
- #define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(47, 12)
++#define ARM_LPAE_PTE_ADDR_MASK		GENMASK_ULL(47,12)
++
+ #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
+ #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
+ #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
+@@ -159,6 +162,7 @@
+ #define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
+ #define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
+ #define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
++#define ARM_LPAE_TCR_PS_52_BIT		0x6ULL
  
--#define CMDQ_PRI_0_SSID_SHIFT		12
--#define CMDQ_PRI_0_SSID_MASK		0xfffffUL
--#define CMDQ_PRI_0_SID_SHIFT		32
--#define CMDQ_PRI_0_SID_MASK		0xffffffffUL
--#define CMDQ_PRI_1_GRPID_SHIFT		0
--#define CMDQ_PRI_1_GRPID_MASK		0x1ffUL
--#define CMDQ_PRI_1_RESP_SHIFT		12
--#define CMDQ_PRI_1_RESP_DENY		(0UL << CMDQ_PRI_1_RESP_SHIFT)
--#define CMDQ_PRI_1_RESP_FAIL		(1UL << CMDQ_PRI_1_RESP_SHIFT)
--#define CMDQ_PRI_1_RESP_SUCC		(2UL << CMDQ_PRI_1_RESP_SHIFT)
-+#define CMDQ_PRI_0_SSID			GENMASK_ULL(31, 12)
-+#define CMDQ_PRI_0_SID			GENMASK_ULL(63, 32)
-+#define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
-+#define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
+ #define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
+ #define ARM_LPAE_MAIR_ATTR_MASK		0xff
+@@ -170,9 +174,7 @@
+ #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
  
--#define CMDQ_SYNC_0_CS_SHIFT		12
--#define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
--#define CMDQ_SYNC_0_CS_IRQ		(1UL << CMDQ_SYNC_0_CS_SHIFT)
--#define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
--#define CMDQ_SYNC_0_MSH_SHIFT		22
--#define CMDQ_SYNC_0_MSH_ISH		(3UL << CMDQ_SYNC_0_MSH_SHIFT)
--#define CMDQ_SYNC_0_MSIATTR_SHIFT	24
--#define CMDQ_SYNC_0_MSIATTR_OIWB	(0xfUL << CMDQ_SYNC_0_MSIATTR_SHIFT)
--#define CMDQ_SYNC_0_MSIDATA_SHIFT	32
--#define CMDQ_SYNC_0_MSIDATA_MASK	0xffffffffUL
-+#define CMDQ_SYNC_0_CS			GENMASK_ULL(13, 12)
-+#define CMDQ_SYNC_0_CS_NONE		0
-+#define CMDQ_SYNC_0_CS_IRQ		1
-+#define CMDQ_SYNC_0_CS_SEV		2
-+#define CMDQ_SYNC_0_MSH			GENMASK_ULL(23, 22)
-+#define CMDQ_SYNC_0_MSIATTR		GENMASK_ULL(27, 24)
-+#define CMDQ_SYNC_0_MSIDATA		GENMASK_ULL(63, 32)
- #define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(47, 2)
+ /* IOPTE accessors */
+-#define iopte_deref(pte,d)					\
+-	(__va((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)	\
+-	& ~(ARM_LPAE_GRANULE(d) - 1ULL)))
++#define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
  
- /* Event queue */
- #define EVTQ_ENT_DWORDS			4
- #define EVTQ_MAX_SZ_SHIFT		7
+ #define iopte_type(pte,l)					\
+ 	(((pte) >> ARM_LPAE_PTE_TYPE_SHIFT) & ARM_LPAE_PTE_TYPE_MASK)
+@@ -184,12 +186,6 @@
+ 		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_PAGE) :	\
+ 		(iopte_type(pte,l) == ARM_LPAE_PTE_TYPE_BLOCK))
  
--#define EVTQ_0_ID_SHIFT			0
--#define EVTQ_0_ID_MASK			0xffUL
-+#define EVTQ_0_ID			GENMASK_ULL(7, 0)
+-#define iopte_to_pfn(pte,d)					\
+-	(((pte) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1)) >> (d)->pg_shift)
+-
+-#define pfn_to_iopte(pfn,d)					\
+-	(((pfn) << (d)->pg_shift) & ((1ULL << ARM_LPAE_MAX_ADDR_BITS) - 1))
+-
+ struct arm_lpae_io_pgtable {
+ 	struct io_pgtable	iop;
  
- /* PRI queue */
- #define PRIQ_ENT_DWORDS			2
- #define PRIQ_MAX_SZ_SHIFT		8
+@@ -203,6 +199,27 @@ struct arm_lpae_io_pgtable {
  
--#define PRIQ_0_SID_SHIFT		0
--#define PRIQ_0_SID_MASK			0xffffffffUL
--#define PRIQ_0_SSID_SHIFT		32
--#define PRIQ_0_SSID_MASK		0xfffffUL
-+#define PRIQ_0_SID			GENMASK_ULL(31, 0)
-+#define PRIQ_0_SSID			GENMASK_ULL(51, 32)
- #define PRIQ_0_PERM_PRIV		(1UL << 58)
- #define PRIQ_0_PERM_EXEC		(1UL << 59)
- #define PRIQ_0_PERM_READ		(1UL << 60)
-@@ -366,8 +352,7 @@
- #define PRIQ_0_PRG_LAST			(1UL << 62)
- #define PRIQ_0_SSID_V			(1UL << 63)
+ typedef u64 arm_lpae_iopte;
  
--#define PRIQ_1_PRG_IDX_SHIFT		0
--#define PRIQ_1_PRG_IDX_MASK		0x1ffUL
-+#define PRIQ_1_PRG_IDX			GENMASK_ULL(8, 0)
- #define PRIQ_1_ADDR_MASK		GENMASK_ULL(63, 12)
++static arm_lpae_iopte paddr_to_iopte(phys_addr_t paddr,
++				     struct arm_lpae_io_pgtable *data)
++{
++	arm_lpae_iopte pte = paddr;
++
++	/* Of the bits which overlap, either 51:48 or 15:12 are always RES0 */
++	return (pte | (pte >> (48 - 12))) & ARM_LPAE_PTE_ADDR_MASK;
++}
++
++static phys_addr_t iopte_to_paddr(arm_lpae_iopte pte,
++				  struct arm_lpae_io_pgtable *data)
++{
++	phys_addr_t paddr = pte & ARM_LPAE_PTE_ADDR_MASK;
++
++	if (data->pg_shift < 16)
++		return paddr;
++
++	/* Rotate the packed high-order bits back to the top */
++	return (paddr | (paddr << (48 - 12))) & (ARM_LPAE_PTE_ADDR_MASK << 4);
++}
++
+ static bool selftest_running = false;
  
- /* High-level queue structures */
-@@ -384,9 +369,9 @@ MODULE_PARM_DESC(disable_bypass,
- 	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+ static dma_addr_t __arm_lpae_dma_addr(void *pages)
+@@ -287,7 +304,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
  
- enum pri_resp {
--	PRI_RESP_DENY,
--	PRI_RESP_FAIL,
--	PRI_RESP_SUCC,
-+	PRI_RESP_DENY = 0,
-+	PRI_RESP_FAIL = 1,
-+	PRI_RESP_SUCC = 2,
- };
+ 	pte |= ARM_LPAE_PTE_AF | ARM_LPAE_PTE_SH_IS;
+-	pte |= pfn_to_iopte(paddr >> data->pg_shift, data);
++	pte |= paddr_to_iopte(paddr, data);
  
- enum arm_smmu_msi_index {
-@@ -790,67 +775,64 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
- static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 	__arm_lpae_set_pte(ptep, pte, &data->iop.cfg);
+ }
+@@ -528,7 +545,7 @@ static int arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 	if (size == split_sz)
+ 		unmap_idx = ARM_LPAE_LVL_IDX(iova, lvl, data);
+ 
+-	blk_paddr = iopte_to_pfn(blk_pte, data) << data->pg_shift;
++	blk_paddr = iopte_to_paddr(blk_pte, data);
+ 	pte = iopte_prot(blk_pte);
+ 
+ 	for (i = 0; i < tablesz / sizeof(pte); i++, blk_paddr += split_sz) {
+@@ -652,12 +669,13 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+ 
+ found_translation:
+ 	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
+-	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
++	return iopte_to_paddr(pte, data) | iova;
+ }
+ 
+ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
  {
- 	memset(cmd, 0, CMDQ_ENT_DWORDS << 3);
--	cmd[0] |= (ent->opcode & CMDQ_0_OP_MASK) << CMDQ_0_OP_SHIFT;
-+	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
+-	unsigned long granule;
++	unsigned long granule, page_sizes;
++	unsigned int max_addr_bits = 48;
  
- 	switch (ent->opcode) {
- 	case CMDQ_OP_TLBI_EL2_ALL:
- 	case CMDQ_OP_TLBI_NSNH_ALL:
+ 	/*
+ 	 * We need to restrict the supported page sizes to match the
+@@ -677,17 +695,24 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+ 
+ 	switch (granule) {
+ 	case SZ_4K:
+-		cfg->pgsize_bitmap &= (SZ_4K | SZ_2M | SZ_1G);
++		page_sizes = (SZ_4K | SZ_2M | SZ_1G);
  		break;
- 	case CMDQ_OP_PREFETCH_CFG:
--		cmd[0] |= (u64)ent->prefetch.sid << CMDQ_PREFETCH_0_SID_SHIFT;
--		cmd[1] |= ent->prefetch.size << CMDQ_PREFETCH_1_SIZE_SHIFT;
-+		cmd[0] |= FIELD_PREP(CMDQ_PREFETCH_0_SID, ent->prefetch.sid);
-+		cmd[1] |= FIELD_PREP(CMDQ_PREFETCH_1_SIZE, ent->prefetch.size);
- 		cmd[1] |= ent->prefetch.addr & CMDQ_PREFETCH_1_ADDR_MASK;
+ 	case SZ_16K:
+-		cfg->pgsize_bitmap &= (SZ_16K | SZ_32M);
++		page_sizes = (SZ_16K | SZ_32M);
  		break;
- 	case CMDQ_OP_CFGI_STE:
--		cmd[0] |= (u64)ent->cfgi.sid << CMDQ_CFGI_0_SID_SHIFT;
--		cmd[1] |= ent->cfgi.leaf ? CMDQ_CFGI_1_LEAF : 0;
-+		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
-+		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_LEAF, ent->cfgi.leaf);
- 		break;
- 	case CMDQ_OP_CFGI_ALL:
- 		/* Cover the entire SID range */
--		cmd[1] |= CMDQ_CFGI_1_RANGE_MASK << CMDQ_CFGI_1_RANGE_SHIFT;
-+		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
- 		break;
- 	case CMDQ_OP_TLBI_NH_VA:
--		cmd[0] |= (u64)ent->tlbi.asid << CMDQ_TLBI_0_ASID_SHIFT;
--		cmd[1] |= ent->tlbi.leaf ? CMDQ_TLBI_1_LEAF : 0;
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
-+		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
- 		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
- 		break;
- 	case CMDQ_OP_TLBI_S2_IPA:
--		cmd[0] |= (u64)ent->tlbi.vmid << CMDQ_TLBI_0_VMID_SHIFT;
--		cmd[1] |= ent->tlbi.leaf ? CMDQ_TLBI_1_LEAF : 0;
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
-+		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
- 		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
- 		break;
- 	case CMDQ_OP_TLBI_NH_ASID:
--		cmd[0] |= (u64)ent->tlbi.asid << CMDQ_TLBI_0_ASID_SHIFT;
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
- 		/* Fallthrough */
- 	case CMDQ_OP_TLBI_S12_VMALL:
--		cmd[0] |= (u64)ent->tlbi.vmid << CMDQ_TLBI_0_VMID_SHIFT;
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
- 		break;
- 	case CMDQ_OP_PRI_RESP:
--		cmd[0] |= ent->substream_valid ? CMDQ_0_SSV : 0;
--		cmd[0] |= ent->pri.ssid << CMDQ_PRI_0_SSID_SHIFT;
--		cmd[0] |= (u64)ent->pri.sid << CMDQ_PRI_0_SID_SHIFT;
--		cmd[1] |= ent->pri.grpid << CMDQ_PRI_1_GRPID_SHIFT;
-+		cmd[0] |= FIELD_PREP(CMDQ_0_SSV, ent->substream_valid);
-+		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SSID, ent->pri.ssid);
-+		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SID, ent->pri.sid);
-+		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_GRPID, ent->pri.grpid);
- 		switch (ent->pri.resp) {
- 		case PRI_RESP_DENY:
--			cmd[1] |= CMDQ_PRI_1_RESP_DENY;
--			break;
- 		case PRI_RESP_FAIL:
--			cmd[1] |= CMDQ_PRI_1_RESP_FAIL;
--			break;
- 		case PRI_RESP_SUCC:
--			cmd[1] |= CMDQ_PRI_1_RESP_SUCC;
- 			break;
- 		default:
- 			return -EINVAL;
- 		}
-+		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
- 		break;
- 	case CMDQ_OP_CMD_SYNC:
- 		if (ent->sync.msiaddr)
--			cmd[0] |= CMDQ_SYNC_0_CS_IRQ;
-+			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
- 		else
--			cmd[0] |= CMDQ_SYNC_0_CS_SEV;
--		cmd[0] |= CMDQ_SYNC_0_MSH_ISH | CMDQ_SYNC_0_MSIATTR_OIWB;
--		cmd[0] |= (u64)ent->sync.msidata << CMDQ_SYNC_0_MSIDATA_SHIFT;
-+			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
-+		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
-+		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
-+		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
- 		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+ 	case SZ_64K:
+-		cfg->pgsize_bitmap &= (SZ_64K | SZ_512M);
++		max_addr_bits = 52;
++		page_sizes = (SZ_64K | SZ_512M);
++		if (cfg->oas > 48)
++			page_sizes |= 1ULL << 42; /* 4TB */
  		break;
  	default:
-@@ -1239,7 +1221,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+-		cfg->pgsize_bitmap = 0;
++		page_sizes = 0;
+ 	}
++
++	cfg->pgsize_bitmap &= page_sizes;
++	cfg->ias = min(cfg->ias, max_addr_bits);
++	cfg->oas = min(cfg->oas, max_addr_bits);
+ }
  
- 	do {
- 		while (!queue_remove_raw(q, evt)) {
--			u8 id = evt[0] >> EVTQ_0_ID_SHIFT & EVTQ_0_ID_MASK;
-+			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
- 
- 			dev_info(smmu->dev, "event 0x%02x received:\n", id);
- 			for (i = 0; i < ARRAY_SIZE(evt); ++i)
-@@ -1267,11 +1249,11 @@ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
- 	u16 grpid;
- 	bool ssv, last;
- 
--	sid = evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK;
--	ssv = evt[0] & PRIQ_0_SSID_V;
--	ssid = ssv ? evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK : 0;
--	last = evt[0] & PRIQ_0_PRG_LAST;
--	grpid = evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK;
-+	sid = FIELD_GET(PRIQ_0_SID, evt[0]);
-+	ssv = FIELD_GET(PRIQ_0_SSID_V, evt[0]);
-+	ssid = ssv ? FIELD_GET(PRIQ_0_SSID, evt[0]) : 0;
-+	last = FIELD_GET(PRIQ_0_PRG_LAST, evt[0]);
-+	grpid = FIELD_GET(PRIQ_1_PRG_IDX, evt[1]);
- 
- 	dev_info(smmu->dev, "unexpected PRI request received:\n");
- 	dev_info(smmu->dev,
+ static struct arm_lpae_io_pgtable *
+@@ -784,6 +809,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	case 48:
+ 		reg |= (ARM_LPAE_TCR_PS_48_BIT << ARM_LPAE_TCR_IPS_SHIFT);
+ 		break;
++	case 52:
++		reg |= (ARM_LPAE_TCR_PS_52_BIT << ARM_LPAE_TCR_IPS_SHIFT);
++		break;
+ 	default:
+ 		goto out_free_data;
+ 	}
+@@ -891,6 +919,9 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ 	case 48:
+ 		reg |= (ARM_LPAE_TCR_PS_48_BIT << ARM_LPAE_TCR_PS_SHIFT);
+ 		break;
++	case 52:
++		reg |= (ARM_LPAE_TCR_PS_52_BIT << ARM_LPAE_TCR_PS_SHIFT);
++		break;
+ 	default:
+ 		goto out_free_data;
+ 	}
 -- 
 2.16.1.dirty
