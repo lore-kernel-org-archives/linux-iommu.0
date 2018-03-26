@@ -1,15 +1,11 @@
-From: Harsh Jain <harsh-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: Is adding offset to dma address is valid operation?
-Date: Mon, 26 Mar 2018 18:01:58 +0530
-Message-ID: <6986f4c8-a3c0-2483-6eae-cfb56eaee10a@chelsio.com>
-References: <8be08248-174e-19c2-357d-7d31c60a90f7@chelsio.com>
-	<5ea7def7-2daa-b4b1-17e7-47524746a61a@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v3 0/7] SMMUv3 52-bit address support
+Date: Mon, 26 Mar 2018 13:35:08 +0100
+Message-ID: <cover.1522065583.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5ea7def7-2daa-b4b1-17e7-47524746a61a-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,32 +15,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAyNi0wMy0yMDE4IDE3OjE1LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gSGkgSGFyc2gsCj4K
-PiBPbiAyNi8wMy8xOCAxMDo1NSwgSGFyc2ggSmFpbiB3cm90ZToKPj4gSGksCj4+Cj4+IENhbiB3
-ZSBhZGTCoCBvZmZzZXQgdG8gZG1hIGFkZHJlc3MgcmVjZWl2ZWQgZnJvbSBJT01NVSBpbiBzY2F0
-dGVyL0dhdGhlciBsaXN0IGJlZm9yZSBzZW5kaW5nIGl0IHRvIEgvVy4KPj4KPj4gQWRkcmVzcyB0
-byBIVyA9IHNnX2RtYV9hZGRyZXNzKHNnKSArIG9mZnNldCwgd2hlcmUgMCA8IG9mZnNldCA8IHNn
-X2RtYV9sZW4oc2cpLgo+Cj4gc2dfZG1hX2FkZHJlc3MoKSBzaG91bGQgYWxyZWFkeSBhY2NvdW50
-IGZvciBzZy0+b2Zmc2V0IChpLmUuIHRoZSBzdGFydCBvZiB0aGUgYnVmZmVyIHdpdGhpbiB0aGUg
-cGFnZS4gSWYgdGhlcmUncyBhIERNQSBBUEkgaW1wbGVtZW50YXRpb24gZmFpbGluZyB0byByZXNw
-ZWN0IHRoYXQgdGhlbiB0aGF0J3MgYSBidWcuCj4KPj4gSSBuZWVkIHRoaXMgb3BlcmF0aW9uIHRv
-IG1ha2Ugc3VyZSBvdXIgSC9XIGRvZXMgbm90IHJlY2VpdmVzIGVudHJ5IG9mIHNpemUgZ3JlYXRl
-ciB0aGFuIDJLLgo+Cj4gSWYgaG93ZXZlciBpdCdzIGp1c3QgdGhhdCB5b3Ugd2FudCB0byBmcmFn
-bWVudCBhIHNpbmdsZSBTRyBlbnRyeSBpbnRvIG11bHRpcGxlIGNvbW1hbmVkcy9kZXNjcmlwdG9y
-cy9ldGMuIGludGVybmFsbHkgdG8geW91ciBkcml2ZXIsIHRoZW4gSSBjYW4ndCBzZWUgdGhhdCBi
-ZWluZyBhbiBpc3N1ZSBhcyBsb25nIGFzIHlvdSBkb24ndCB2aXNpYmx5IG1vZGlmeSB0aGUgc2Nh
-dHRlcmxpc3QgaXRzZWxmLiBJZiB0aGVyZSdzIGEgZ2VudWluZSBsZW5ndGggYW5kL29yIGFsaWdu
-bWVudCBsaW1pdGF0aW9uIGluIHRoZSBoYXJkd2FyZSwgdGhvdWdoLCBpdCB3b3VsZCBiZSBiZXR0
-ZXIgdG8gc2V0IHVwIGRldi0+ZG1hX3Bhcm1zIGFwcHJvcHJpYXRlbHkgdG8gZGVzY3JpYmUgdGhl
-bSwgc3VjaCB0aGF0IHRoZSBzdWJzeXN0ZW0gcmVzcG9uc2libGUgZm9yIGdlbmVyYXRpbmcgdGhl
-IHNjYXR0ZXJsaXN0IHJlc3BlY3RzIHRoZSBhcHByb3ByaWF0ZSBjb25zdHJhaW50cyBpbiB0aGUg
-Zmlyc3QgcGxhY2UgKGFuZCBpZiBpdCBkb2Vzbid0LCB0aGVuIHRoYXQncyBhbm90aGVyIGJ1ZyB0
-byBmaXgpLgpDYW4gZG1hX3Bhcm1zwqAgaGFuZGxlIDJLIHNpemUgbGltaXQgPyBCZWNhdXNlIGRt
-YV9tYXBfc2coKSByZXR1cm5zIDw9IHBhc3NlZCBuZW50cy4gQnV0IGluIG15IGNhc2UgbmVudHMg
-d2lsbCBpbmNyZWFzZS4KCj4KPiBSb2Jpbi4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+Hi all,
+
+Here's a v3 with most of the additional cleanup as discussed, which makes
+the diffstat look pretty horrific, but I think it does work out for the
+better in the end. I did write a further patch converting "(1 << x)" into
+"BIT(x)", but comes out as a +70/-70 diff of pure churn which somehow
+manages to make the codegen in arm_smmu_device_probe() worse, so it got
+git reset --hard into oblivion.
+
+Robin.
+
+Robin Murphy (7):
+  iommu/arm-smmu-v3: Clean up address masking
+  iommu/arm-smmu-v3: Clean up register definitions
+  iommu/arm-smmu-v3: Clean up table definitions
+  iommu/arm-smmu-v3: Clean up queue definitions
+  iommu/io-pgtable-arm: Support 52-bit physical address
+  iommu/arm-smmu-v3: Support 52-bit physical address
+  iommu/arm-smmu-v3: Support 52-bit virtual address
+
+ drivers/iommu/arm-smmu-v3.c    | 523 ++++++++++++++++++-----------------------
+ drivers/iommu/io-pgtable-arm.c |  67 ++++--
+ 2 files changed, 277 insertions(+), 313 deletions(-)
+
+-- 
+2.16.1.dirty
