@@ -1,41 +1,78 @@
-From: Evgeniy Didin <Evgeniy.Didin@synopsys.com>
-Subject: dma-mapping: clearing GFP_ZERO flag caused crashes of Ethernet on
- arc/hsdk board.
-Date: Tue, 27 Mar 2018 17:12:54 +0000
-Message-ID: <1522170774.2593.9.camel@synopsys.com>
+From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: dma-mapping: clearing GFP_ZERO flag caused crashes of Ethernet on
+	arc/hsdk board.
+Date: Tue, 27 Mar 2018 21:11:32 +0300
+Message-ID: <CAHp75VeZSsdR1=ZhOM6jseYCP3m0GyE=8EjJUxWosze9BBw9rQ@mail.gmail.com>
+References: <1522170774.2593.9.camel@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
-Content-ID: <9E5AD8C975D8E34FB958C62C38827BD4@internal.synopsys.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, "hch@lst.de" <hch@lst.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alexey Brodkin <Alexey.Brodkin@synopsys.com>, "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>, "geert@linux-m68k.org" <geert@linux-m68k.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1522170774.2593.9.camel-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Evgeniy Didin <Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Cc: "jesper.nilsson-VrBV9hrLPhE@public.gmane.org" <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org" <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Eugeniy Paltsev <Eugeniy.Paltsev-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGVsbG8sDQoNCkFmdGVyIGNvbW1pdCAgNTdiZjVhODk2M2Y4ICgiZG1hLW1hcHBpbmc6IGNsZWFy
-IGhhcm1mdWwgR0ZQXyogZmxhZ3MgaW4gY29tbW9uIGNvZGUiKSAgd2Ugbm90aWNlZCBwcm9ibGVt
-cyB3aXRoIEV0aGVybmV0IGNvbnRyb2xsZXIgb24gb25lIG9mIG91ciBwbGF0Zm9ybXMgKG5hbWVs
-eSBBUkMgSFNESykuDQpJDQpuIHBhcnRpY3VsYXIgd2Ugc2VlIHRoYXQgcmVtb3ZhbCBvZiBfX0dG
-UF9aRVJPIGZsYWcgaW4gZnVuY3Rpb24gZG1hX2FsbG9jX2F0dHJzKCkgd2FzIHRoZSBjdWxwcml0
-IGJlY2F1c2UgaW4gb3VyIGltcGxlbWVudGF0aW9uIG9mIGFyY19kbWFfYWxsb2MoKSB3ZSBvbmx5
-IGFsbG9jYXRlIHplcm9lZCBwYWdlcyBpZg0KdGhhdCBmbGFnIGlzIGV4cGxpY2l0bHkgc2V0IGJ5
-IHRoZSBjYWxsZXIuIE5vdyB3aXRoIHVuY29uZGl0aW9uYWwgcmVtb3ZhbCBvZiB0aGF0IGZsYWcg
-aW4gZG1hX2FsbG9jX2F0dHJzKCkgd2UgYWxsb2NhdGUgbm9uLXplcm9lZCBwYWdlcyBhbmQgdGhh
-dCBzZWVtIHRvIGNhdXNlIHByb2JsZW1zLg0KDQpGcm9tDQptZW50aW9uZWQgY29tbWl0IG1lc3Nh
-Z2UgSSBtYXkgY29uY2x1ZGUgdGhhdCBhcmNoaXRlY3R1cmFsIGNvZGUgaXMgc3VwcG9zZWQgdG8g
-YWx3YXlzIGFsbG9jYXRlIHplcm9lZCBwYWdlcyBidXQgSSBjYW5ub3QgZmluZCBhbnkgcmVxdWly
-ZW1lbnQgb2YgdGhhdCBpbiBrZXJuZWwncyBkb2N1bWVudGF0aW9uLg0KQ291bA0KZCB5b3UgcGxl
-YXNlIHBvaW50IG1lIHRvIHRoYXQgcmVxdWlyZW1lbnQgaWYgdGhhdCBleGlzdHMgYXQgYWxsLCB0
-aGVuIHdlJ2xsIGltcGxlbWVudCBhIGZpeCBpbiBvdXIgYXJjaCBjb2RlIGxpa2UgdGhhdDoNCi0t
-LS0tLS0tLS0tLS0tLS0tLS0tLT44LS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpkaWZmIC0tZ2l0DQph
-L2FyY2gvYXJjL21tL2RtYS5jIGIvYXJjaC9hcmMvbW0vZG1hLmMNCmluZGV4IDFkY2M0MDRiNWFl
-Yy4uYzkyZTUxODQxM2FhIDEwMDY0NA0KLS0tIGEvYXJjaC9hcmMvbW0vZG1hLmMNCisrKyBiL2Fy
-Y2gvYXJjL21tL2RtYS5jDQpAQCAtMzAsNyArMzAsNyBAQCBzdGF0aWMgdm9pZCAqYXJjX2RtYV9h
-bGxvYyhzdHJ1Y3QNCmRldmljZSAqZGV2LCBzaXplX3Qgc2l6ZSwNCiAgICAgIHZvaWQgKmt2YWRk
-cjsNCiAgICAgIGludCBuZWVkX2NvaCA9IDEsIG5lZWRfa3ZhZGRyID0gMDsNCg0KLSAgICAgICBw
-YWdlID0gYWxsb2NfcGFnZXMoZ2ZwLCBvcmRlcik7DQorICAgICAgIHBhZ2UgPSBhbGxvY19wYWdl
-cyhnZnAgfCBfX0dGUF9aRVJPLCBvcmRlcik7DQogICAgIA0KaWYgKCFwYWdlKQ0KICAgICAgICAg
-ICAgICByZXR1cm4gTlVMTDsNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLT44LS0tLS0tLS0tLS0tLS0t
-LS0tLS0tDQoNCkJlc3QgcmVnYXJkcywNCkV2Z2VuaXkgRGlkaW4=
+On Tue, Mar 27, 2018 at 8:12 PM, Evgeniy Didin
+<Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org> wrote:
+> Hello,
+>
+> After commit  57bf5a8963f8 ("dma-mapping: clear harmful GFP_* flags in common code")  we noticed problems with Ethernet controller on one of our platforms (namely ARC HSDK).
+> I
+> n particular we see that removal of __GFP_ZERO flag in function dma_alloc_attrs() was the culprit because in our implementation of arc_dma_alloc() we only allocate zeroed pages if
+> that flag is explicitly set by the caller. Now with unconditional removal of that flag in dma_alloc_attrs() we allocate non-zeroed pages and that seem to cause problems.
+>
+> From
+> mentioned commit message I may conclude that architectural code is supposed to always allocate zeroed pages but I cannot find any requirement of that in kernel's documentation.
+> Coul
+> d you please point me to that requirement if that exists at all, then we'll implement a fix in our arch code like that:
+
+Can you elaborate what driver is in use?
+stmmac with dwmac-anarion?
+
+If so, this driver (w/o anarion parts, which I believe doesn't have
+anything to do with this) is widely used on other platforms.
+We have to see a lot of reports, though only one so far?
+
+The logical question is why?
+
+Another question why caller can't ask for zero pages explicitly?
+
+P.S. Current kernel code shows only 3 use cases of GFP_ZERO. It seems
+arm64 has something similar in mind.
+
+> --------------------->8---------------------
+> diff --git
+> a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
+> index 1dcc404b5aec..c92e518413aa 100644
+> --- a/arch/arc/mm/dma.c
+> +++ b/arch/arc/mm/dma.c
+> @@ -30,7 +30,7 @@ static void *arc_dma_alloc(struct
+> device *dev, size_t size,
+>       void *kvaddr;
+>       int need_coh = 1, need_kvaddr = 0;
+>
+> -       page = alloc_pages(gfp, order);
+> +       page = alloc_pages(gfp | __GFP_ZERO, order);
+>
+> if (!page)
+>               return NULL;
+> --------------------->8---------------------
+>
+> Best regards,
+> Evgeniy Didin
+
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
