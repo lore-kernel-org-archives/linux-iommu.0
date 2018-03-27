@@ -1,65 +1,65 @@
-From: Tushar Dave <tushar.n.dave@oracle.com>
-Subject: intel-iommu: Is this a bug?
-Date: Mon, 26 Mar 2018 18:09:02 -0700
-Message-ID: <66db7b28-5749-1d13-b228-88b34087f3b6@oracle.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.17
+Date: Tue, 27 Mar 2018 17:37:17 +0100
+Message-ID: <20180327163716.GC18435@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: dwmw2@infradead.org, joro@8bytes.org, iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Joerg,
 
-I am analyzing network performance with intel-iommu enabled.
-And found that running with iommu=pt, for every dma map/unmap it
-executes this code:
+Please pull the following Arm SMMU updates for 4.17. Changes include:
 
-/*
-          * At boot time, we don't yet know if devices will be 64-bit 
-capable.
-          * Assume that they will — if they turn out not to be, then we can
-          * take them out of the 1:1 domain later.
-          */
-         if (!startup) {
-                 /*
-                  * If the device's dma_mask is less than the system's 
-memory
-                  * size then this is not a candidate for identity mapping.
-                  */
-                 u64 dma_mask = *dev->dma_mask;
+  * More graceful handling and reporting of IRQ setup failures
+  * General cleanup of our register field definitions using linux/bitmask.h
+  * Support for 52-bit physical and virtual addressing
 
-                 if (dev->coherent_dma_mask &&
-                     dev->coherent_dma_mask < dma_mask)
-                         dma_mask = dev->coherent_dma_mask;
+Cheers,
 
-                 return dma_mask >= dma_get_required_mask(dev);
-         }
+Will
 
+--->8
 
-Do we really need this check for every dma/unmap?
-Considering it should be only during startup, shouldn't it be,
+The following changes since commit 4a3928c6f8a53fa1aed28ccba227742486e8ddcb:
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 582fd01..3c8f14e 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2929,7 +2929,7 @@ static int iommu_should_identity_map(struct device 
-*dev, int startup)
-          * Assume that they will — if they turn out not to be, then we can
-          * take them out of the 1:1 domain later.
-          */
--       if (!startup) {
-+       if (startup) {
-                 /*
-                  * If the device's dma_mask is less than the system's 
-memory
-                  * size then this is not a candidate for identity mapping.
+  Linux 4.16-rc3 (2018-02-25 18:50:41 -0800)
 
+are available in the git repository at:
 
-Thanks.
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
 
--Tushar
+for you to fetch changes up to dcd189e6d2eca4663da6120463fbff0995bc06eb:
+
+  iommu/arm-smmu-v3: Support 52-bit virtual address (2018-03-27 14:12:06 +0100)
+
+----------------------------------------------------------------
+Nate Watterson (1):
+      iommu/arm-smmu-v3: limit reporting of MSI allocation failures
+
+Robin Murphy (8):
+      iommu/arm-smmu-v3: Warn about missing IRQs
+      iommu/arm-smmu-v3: Clean up address masking
+      iommu/arm-smmu-v3: Clean up register definitions
+      iommu/arm-smmu-v3: Clean up table definitions
+      iommu/arm-smmu-v3: Clean up queue definitions
+      iommu/io-pgtable-arm: Support 52-bit physical address
+      iommu/arm-smmu-v3: Support 52-bit physical address
+      iommu/arm-smmu-v3: Support 52-bit virtual address
+
+ drivers/iommu/arm-smmu-v3.c    | 542 ++++++++++++++++++-----------------------
+ drivers/iommu/io-pgtable-arm.c |  67 +++--
+ 2 files changed, 292 insertions(+), 317 deletions(-)
