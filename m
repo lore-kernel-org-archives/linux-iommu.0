@@ -1,17 +1,15 @@
-From: Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Subject: Re: dma-mapping: clearing GFP_ZERO flag caused crashes of Ethernet
-	on arc/hsdk board.
-Date: Tue, 27 Mar 2018 21:19:19 +0000
-Message-ID: <1522185558.6917.7.camel@synopsys.com>
-References: <1522170774.2593.9.camel@synopsys.com>
-	<CAHp75VeZSsdR1=ZhOM6jseYCP3m0GyE=8EjJUxWosze9BBw9rQ@mail.gmail.com>
+From: "Mani, Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Wed, 28 Mar 2018 03:14:40 +0000
+Message-ID: <6F87890CF0F5204F892DEA1EF0D77A597303587A@FMSMSX114.amr.corp.intel.com>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+	<6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
+	<20171220115744.591a12e2@vento.lan>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAHp75VeZSsdR1=ZhOM6jseYCP3m0GyE=8EjJUxWosze9BBw9rQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 Content-Language: en-US
-Content-ID: <64D7FDC862E9D24C95389F44BE802964-z7JfP6tgrtVBCHUSTMH8dZqQE7yCjDx5@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,52 +19,123 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "jesper.nilsson-VrBV9hrLPhE@public.gmane.org" <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, "Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org" <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Eugeniy.Paltsev-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Eugeniy.Paltsev-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
+To: Mauro Carvalho Chehab <mchehab-JsYNTwtnfakRB7SZvlqPiA@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "Hu, Jerry W" <jerry.w.hu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zhi,
+	Yong" <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Andy,
+Adding Tomasz...
 
-On Tue, 2018-03-27 at 21:11 +0300, Andy Shevchenko wrote:
-> On Tue, Mar 27, 2018 at 8:12 PM, Evgeniy Didin
-> <Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org> wrote:
-> > Hello,
-> > 
-> > After commit  57bf5a8963f8 ("dma-mapping: clear harmful GFP_* flags in common code")  we noticed problems with Ethernet controller on one of our
-> > platforms (namely ARC HSDK).
-> > I
-> > n particular we see that removal of __GFP_ZERO flag in function dma_alloc_attrs() was the culprit because in our implementation of arc_dma_alloc()
-> > we only allocate zeroed pages if
-> > that flag is explicitly set by the caller. Now with unconditional removal of that flag in dma_alloc_attrs() we allocate non-zeroed pages and that
-> > seem to cause problems.
-> > 
-> > From
-> > mentioned commit message I may conclude that architectural code is supposed to always allocate zeroed pages but I cannot find any requirement of
-> > that in kernel's documentation.
-> > Coul
-> > d you please point me to that requirement if that exists at all, then we'll implement a fix in our arch code like that:
+> -----Original Message-----
+> From: Mani, Rajmohan
+> Sent: Tuesday, February 20, 2018 5:56 PM
+> To: 'Mauro Carvalho Chehab' <mchehab-JsYNTwtnfakRB7SZvlqPiA@public.gmane.org>
+> Cc: Zhi, Yong <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; 'linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org' <linux-
+> media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>; 'sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org'
+> <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>; Zheng, Jian Xu <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>;
+> Toivonen, Tuukka <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; Hu, Jerry W
+> <jerry.w.hu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; 'arnd-r2nGTMty4D4@public.gmane.org' <arnd-r2nGTMty4D4@public.gmane.org>; 'hch-jcswGhMUV9g@public.gmane.org'
+> <hch-jcswGhMUV9g@public.gmane.org>; 'robin.murphy-5wv7dgnIgG8@public.gmane.org' <robin.murphy-5wv7dgnIgG8@public.gmane.org>;
+> 'iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org' <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+> Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
 > 
-> Can you elaborate what driver is in use?
-> stmmac with dwmac-anarion?
-
-It is indeed DW GMAC (AKA STMMAC) with built-in DMA.
-
-> If so, this driver (w/o anarion parts, which I believe doesn't have
-> anything to do with this) is widely used on other platforms.
-> We have to see a lot of reports, though only one so far?
+> Hi Mauro,
 > 
-> The logical question is why?
-
-1. See that's another platform with ARC core so maybe in case of ARM
-   DMA allocator already zeroes pages regardless provided flags -
-   personally I didn't check that.
-
-2. Even on HSDK we saw that only on attempt to run "iperf", even DHCP
-   client works perfectly fine on that same platform so maybe others
-   just don't see problems yet.
-
-3. Who knows if RCs are being tested on other platforms with
-   networking so maybe similar reports will start to appear once
-   4.16 gets released.
-
--Alexey
+> > > > Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+> > > >
+> > > > Hi,
+> > > >
+> > > > Em Fri, 17 Nov 2017 02:58:56 +0000 "Mani, Rajmohan"
+> > > > <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> escreveu:
+> > > >
+> > > > > Here is an update on the IPU3 documentation that we are
+> > > > > currently working
+> > > > on.
+> > > > >
+> > > > > Image processing in IPU3 relies on the following.
+> > > > >
+> > > > > 1) HW configuration to enable ISP and
+> > > > > 2) setting customer specific 3A Tuning / Algorithm Parameters to
+> > > > > achieve
+> > > > desired image quality.
+> > > > >
+> > > > > We intend to provide documentation on ImgU driver programming
+> > > > > interface
+> > > > to help users of this driver to configure and enable ISP HW to
+> > > > meet their needs.  This documentation will include details on
+> > > > complete
+> > > > V4L2 Kernel driver interface and IO-Control parameters, except for
+> > > > the ISP internal algorithm and its parameters (which is Intel proprietary
+> IP).
+> > > >
+> > > > Sakari asked me to take a look on this thread, specifically on
+> > > > this email. I took a look on the other e-mails from this thread
+> > > > that are discussing about this IP block.
+> > > >
+> > > > I understand that Intel wants to keep their internal 3A algorithm
+> > > > protected, just like other vendors protect their own algos. It was
+> > > > never a requirement to open whatever algorithm are used inside a
+> > > > hardware (or firmware). The only requirement is that firmwares
+> > > > should be licensed with redistribution permission, ideally merged
+> > > > at linux-firmware
+> > > git tree.
+> > > >
+> > > > Yet, what I don't understand is why Intel also wants to also
+> > > > protect the interface for such 3A hardware/firmware algorithm. The
+> > > > parameters that are passed from an userspace application to Intel
+> > > > ISP logic doesn't contain the algorithm itself. What's the issue
+> > > > of documenting the meaning of each parameter?
+> > > >
+> > >
+> > > Thanks for looking into this.
+> > >
+> > > To achieve improved image quality using IPU3, 3A (Auto White
+> > > balance, Auto Focus and Auto Exposure) Tuning parameters specific to
+> > > a given camera sensor module, are converted to Intel ISP algorithm
+> > > parameters in user space camera HAL using AIC (Automatic ISP
+> Configuration) library.
+> > >
+> > > As a unique design of Intel ISP, it exposes very detailed algorithm
+> > > parameters (~ 10000 parameters) to configure ISP's image processing
+> > > algorithm per each image fame in runtime. Typical Camera SW
+> > > developers (including those at
+> > > Intel) are not expected to fully understand and directly set these
+> > > parameters to configure the ISP algorithm blocks. Due to the above,
+> > > a user space AIC library (in binary form) is provided to generate
+> > > ISP Algorithm specific parameters, for a given set of 3A tuning
+> > > parameters. It significantly reduces the efforts of SW development
+> > > in ISP HW
+> > configuration.
+> > >
+> > > On the other hand, the ISP algorithm details could be deduced
+> > > readily through these detailed parameters by other ISP experts outside
+> Intel.
+> > > This is the reason that we want to keep these parameter definitions
+> > > as Intel
+> > proprietary IP.
+> > >
+> > > We are fully aware of your concerns on how to enable open source
+> > > developers to use Intel ISP through up-streamed Kernel Driver.
+> > > Internally, we are working on the license for this AIC library
+> > > release now (as Hans said NDA license is not acceptable). We believe
+> > > this will be more efficient way to help open source developers.
+> > >
+> > > This AIC library release would be a binary-only release. This AIC
+> > > library does not use any kernel uAPIs directly. The user space
+> > > Camera HAL that uses kernel uAPIs is available at
+> > > https://chromium.googlesource.com/chromiumos/platform/arc-
+> > > camera/+/master
+> > >
+> 
+> The AIC library (in binary form) is available here.
+> https://storage.googleapis.com/chromeos-localmirror/distfiles/intel-3a-libs-
+> bin-2017.09.27.tbz2
+> 
+> Licensing information can be found in ./LICENSE.intel_3a_library file after
+> unzipping the tar file.
+> 
+> >
+> > Just pinging to know your thoughts on this.
+> >
+> > Thanks
+> > Raj
