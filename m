@@ -1,17 +1,11 @@
-From: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: dma-mapping: clearing GFP_ZERO flag caused crashes of Ethernet
-	on arc/hsdk board.
-Date: Wed, 28 Mar 2018 09:53:13 +0200
-Message-ID: <20180328075313.GA19864@lst.de>
-References: <1522170774.2593.9.camel@synopsys.com>
-	<CAHp75VeZSsdR1=ZhOM6jseYCP3m0GyE=8EjJUxWosze9BBw9rQ@mail.gmail.com>
-	<1522185558.6917.7.camel@synopsys.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH RFC 1/1] iommu/of: Deconfigure iommu on driver detach
+Date: Wed, 28 Mar 2018 15:55:29 +0530
+Message-ID: <20180328102529.13435-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1522185558.6917.7.camel-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,19 +15,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Cc: "jesper.nilsson-VrBV9hrLPhE@public.gmane.org" <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org" <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "Eugeniy.Paltsev-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Eugeniy.Paltsev-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> > The logical question is why?
-> 
-> 1. See that's another platform with ARC core so maybe in case of ARM
->    DMA allocator already zeroes pages regardless provided flags -
->    personally I didn't check that.
+As part of dma_deconfigure, lets deconfigure the iommu too
+on driver detach, so that we clear the iommu domain and
+related group.
 
-Yes, most architectures always clear memory returned by dma_alloc*.
-Looks like a few don't and my commit got them in trouble.  As usual
-I'd prefer to match x86 semantics for now to avoid problems.
+Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
 
-I'll send patches for arc and s390 which seem to be actually used
-holdouts, and will look if anyone else is also affected.
+As a part of dma_deconfigure, shouldn't we deconfigure the iommu
+as well? This should reverse all that we do in of_iommu_configure.
+So that we call the .remove_device ops for iommu and eventually
+clear all the iommu domain, related group infrastructure.
+I am seeing that the loadable modules get the same iommu configurations
+after re-loading them, i.e. iommu domain, and iova_domain configurations,
+as we didn't cleared them.
+So should we be clearing these configurations, and therefore do a
+of_iommu_deconfigure() or sort?
+
+ drivers/iommu/of_iommu.c | 11 +++++++++++
+ drivers/of/device.c      |  1 +
+ include/linux/of_iommu.h |  5 +++++
+ 3 files changed, 17 insertions(+)
+
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 5c36a8b7656a..1a23e6204ade 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -160,6 +160,17 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ 	return err;
+ }
+ 
++void of_iommu_deconfigure(struct device *dev)
++{
++	const struct iommu_ops *ops = NULL;
++
++	if (dev->iommu_fwspec && dev->iommu_fwspec->ops)
++		ops = dev->iommu_fwspec->ops;
++
++	if (ops && ops->remove_device && dev->iommu_group)
++		ops->remove_device(dev);
++}
++
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					   struct device_node *master_np)
+ {
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 064c818105bd..e13cb7914dbe 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -177,6 +177,7 @@ EXPORT_SYMBOL_GPL(of_dma_configure);
+ void of_dma_deconfigure(struct device *dev)
+ {
+ 	arch_teardown_dma_ops(dev);
++	of_iommu_deconfigure(dev);
+ }
+ 
+ int of_device_register(struct platform_device *pdev)
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 4fa654e4b5a9..3d4c22e95c0c 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -15,6 +15,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					struct device_node *master_np);
+ 
++extern void of_iommu_deconfigure(struct device *dev);
++
+ #else
+ 
+ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+@@ -30,6 +32,9 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 	return NULL;
+ }
+ 
++static inline void of_iommu_deconfigure(struct device *dev)
++{ }
++
+ #endif	/* CONFIG_OF_IOMMU */
+ 
+ extern struct of_device_id __iommu_of_table;
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
