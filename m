@@ -1,16 +1,14 @@
-From: Evgeniy Didin <Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH] dma-mapping: don't clear GFP_ZERO in dma_alloc_attrs
-Date: Wed, 28 Mar 2018 15:12:47 +0000
-Message-ID: <1522249966.2593.14.camel@synopsys.com>
-References: <20180328133535.17302-1-hch@lst.de>
-	<20180328133535.17302-2-hch@lst.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 4.17
+Date: Thu, 29 Mar 2018 10:26:05 +0200
+Message-ID: <20180329082605.33gqerpbhskcsw5i@8bytes.org>
+References: <20180327163716.GC18435@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180328133535.17302-2-hch-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
-Content-ID: <39D21B2E5947E541869FC01EB34E3DE5-z7JfP6tgrtVBCHUSTMH8dZqQE7yCjDx5@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180327163716.GC18435-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,52 +18,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Evgeniy.Didin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-QWRkaW5nIGxpbnV4LXNucHMgYW5kIGxpbnV4LWFyY2ggbWFpbGluZyBsaXN0cy4NCg0KPiBSZXZl
-cnQgdGhlIGNsZWFyaW5nIG9mIF9fR0ZQX1pFUk8gaW4gZG1hX2FsbG9jX2F0dHJzIGFuZCBtb3Zl
-IGl0IHRvDQo+IGRtYV9kaXJlY3RfYWxsb2MgZm9yIG5vdy7CoMKgV2hpbGUgbW9zdCBjb21tb24g
-YXJjaGl0ZWN0dXJlcyBhbHdheXMgemVybyBkbWENCj4gY29oZXJlbnkgYWxsb2NhdGlvbnMgKGFu
-ZCB4ODYgZGlkIHNvIHNpbmNlIGRheSBvbmUpIHRoaXMgaXMgbm90IGRvY3VtZW50ZWQNCj4gYW5k
-IGF0IGxlYXN0IGFyYyBhbmQgczM5MCBkbyBub3QgemVybyB3aXRob3V0IHRoZSBleHBsaWNpdCBf
-X0dGUF9aRVJPDQo+IGFyZ3VtZW50Lg0KVGhpcyBwYXRjaCBmaXhlZCBFdGhlcm5ldCBpc3N1ZXMg
-b24gQVJDIEhTREsuDQpodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9rZXJuZWwvbXNnMjc2
-MjA1NC5odG1sDQoNClRlc3RlZC1ieTogRXZnZW5peSBEaWRpbiA8RXZnZW5peS5EaWRpbkBzeW5v
-cHN5cy5jb20+DQo+IEZpeGVzOiA1N2JmNWE4OTYzZjggKCJkbWEtbWFwcGluZzogY2xlYXIgaGFy
-bWZ1bCBHRlBfKiBmbGFncyBpbiBjb21tb24gY29kZSIpDQo+IFJlcG9ydGVkLWJ5OiBFdmdlbml5
-IERpZGluIDxFdmdlbml5LkRpZGluQHN5bm9wc3lzLmNvbT4NCj4gUmVwb3J0ZWQtYnk6IFNlYmFz
-dGlhbiBPdHQgPHNlYm90dEBsaW51eC52bmV0LmlibS5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IENo
-cmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPg0KPiAtLS0NCj4gwqBpbmNsdWRlL2xpbnV4L2Rt
-YS1tYXBwaW5nLmggfCA4ICsrLS0tLS0tDQo+IMKgbGliL2RtYS1kaXJlY3QuY8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoHwgMyArKysNCj4gwqAyIGZpbGVzIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygr
-KSwgNiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2RtYS1t
-YXBwaW5nLmggYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgNCj4gaW5kZXggZWI5ZWFiNGVj
-ZDZkLi4xMmZlZGNiYTlhOWEgMTAwNjQ0DQo+IC0tLSBhL2luY2x1ZGUvbGludXgvZG1hLW1hcHBp
-bmcuaA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgNCj4gQEAgLTUxOCwxMiAr
-NTE4LDggQEAgc3RhdGljIGlubGluZSB2b2lkICpkbWFfYWxsb2NfYXR0cnMoc3RydWN0IGRldmlj
-ZSAqZGV2LCBzaXplX3Qgc2l6ZSwNCj4gwqAJaWYgKGRtYV9hbGxvY19mcm9tX2Rldl9jb2hlcmVu
-dChkZXYsIHNpemUsIGRtYV9oYW5kbGUsICZjcHVfYWRkcikpDQo+IMKgCQlyZXR1cm4gY3B1X2Fk
-ZHI7DQo+IMKgDQo+IC0JLyoNCj4gLQnCoCogTGV0IHRoZSBpbXBsZW1lbnRhdGlvbiBkZWNpZGUg
-b24gdGhlIHpvbmUgdG8gYWxsb2NhdGUgZnJvbSwgYW5kDQo+IC0JwqAqIGRlY2lkZSBvbiB0aGUg
-d2F5IG9mIHplcm9pbmcgdGhlIG1lbW9yeSBnaXZlbiB0aGF0IHRoZSBtZW1vcnkNCj4gLQnCoCog
-cmV0dXJuZWQgc2hvdWxkIGFsd2F5cyBiZSB6ZXJvZWQuDQo+IC0JwqAqLw0KPiAtCWZsYWcgJj0g
-fihfX0dGUF9ETUEgfCBfX0dGUF9ETUEzMiB8IF9fR0ZQX0hJR0hNRU0gfCBfX0dGUF9aRVJPKTsN
-Cj4gKwkvKiBsZXQgdGhlIGltcGxlbWVudGF0aW9uIGRlY2lkZSBvbiB0aGUgem9uZSB0byBhbGxv
-Y2F0ZSBmcm9tOiAqLw0KPiArCWZsYWcgJj0gfihfX0dGUF9ETUEgfCBfX0dGUF9ETUEzMiB8IF9f
-R0ZQX0hJR0hNRU0pOw0KPiANCj4gwqAJaWYgKCFhcmNoX2RtYV9hbGxvY19hdHRycygmZGV2LCAm
-ZmxhZykpDQo+IMKgCQlyZXR1cm4gTlVMTDsNCj4gZGlmZiAtLWdpdCBhL2xpYi9kbWEtZGlyZWN0
-LmMgYi9saWIvZG1hLWRpcmVjdC5jDQo+IGluZGV4IDEyNzdkMjkzZDRkYS4uYzBiYmEzMGZlZjBh
-IDEwMDY0NA0KPiAtLS0gYS9saWIvZG1hLWRpcmVjdC5jDQo+ICsrKyBiL2xpYi9kbWEtZGlyZWN0
-LmMNCj4gQEAgLTU5LDYgKzU5LDkgQEAgdm9pZCAqZG1hX2RpcmVjdF9hbGxvYyhzdHJ1Y3QgZGV2
-aWNlICpkZXYsIHNpemVfdCBzaXplLCBkbWFfYWRkcl90ICpkbWFfaGFuZGxlLA0KPiDCoAlzdHJ1
-Y3QgcGFnZSAqcGFnZSA9IE5VTEw7DQo+IMKgCXZvaWQgKnJldDsNCj4gwqANCj4gKwkvKiB3ZSBh
-bHdheXMgbWFudWFsbHkgemVybyB0aGUgbWVtb3J5IG9uY2Ugd2UgYXJlIGRvbmU6ICovDQo+ICsJ
-Z2ZwICY9IH5fX0dGUF9aRVJPOw0KPiArDQo+IMKgCS8qIEdGUF9ETUEzMiBhbmQgR0ZQX0RNQSBh
-cmUgbm8gb3BzIHdpdGhvdXQgdGhlIGNvcnJlc3BvbmRpbmcgem9uZXM6ICovDQo+IMKgCWlmIChk
-ZXYtPmNvaGVyZW50X2RtYV9tYXNrIDw9IERNQV9CSVRfTUFTSyhBUkNIX1pPTkVfRE1BX0JJVFMp
-KQ0KPiDCoAkJZ2ZwIHw9IEdGUF9ETUE7Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby9pb21tdQ==
+On Tue, Mar 27, 2018 at 05:37:17PM +0100, Will Deacon wrote:
+> Hi Joerg,
+> 
+> Please pull the following Arm SMMU updates for 4.17. Changes include:
+> 
+>   * More graceful handling and reporting of IRQ setup failures
+>   * General cleanup of our register field definitions using linux/bitmask.h
+>   * Support for 52-bit physical and virtual addressing
+> 
+> Cheers,
+> 
+> Will
+> 
+> --->8
+> 
+> The following changes since commit 4a3928c6f8a53fa1aed28ccba227742486e8ddcb:
+> 
+>   Linux 4.16-rc3 (2018-02-25 18:50:41 -0800)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+Pulled, thanks Will.
