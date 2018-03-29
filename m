@@ -1,14 +1,21 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/10 v3] iommu/amd: lock splitting & GFP_KERNEL allocation
-Date: Thu, 29 Mar 2018 10:38:42 +0200
-Message-ID: <20180329083842.ik7rxmfajhj5x3sq@8bytes.org>
-References: <20180322152242.12705-1-bigeasy@linutronix.de>
+Subject: Re: [PATCH v7 0/5] Add Intel IOMMU debugfs support
+Date: Thu, 29 Mar 2018 10:48:24 +0200
+Message-ID: <20180329084824.fvy7cg2wban4by4n@8bytes.org>
+References: <1517619001-148586-1-git-send-email-sohil.mehta@intel.com>
+	<20180213140303.42mbzfxpypljy37l@8bytes.org>
+	<20180213214002.GA27066@otc-nc-03>
+	<20180213145332.35c73eda@jacob-builder>
+	<20180215095337.fccoozdclfnbepi4@8bytes.org>
+	<20180215083811.3ec86e49@jacob-builder>
+	<20180315131854.s6xmltsvsysublcw@8bytes.org>
+	<20180319093714.3afe698b@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180322152242.12705-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+In-Reply-To: <20180319093714.3afe698b@jacob-builder>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,19 +25,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj,
+	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 22, 2018 at 04:22:32PM +0100, Sebastian Andrzej Siewior wrote:
-> Hi,
-> 
-> this is the rebase on top of iommu/x86/amd of my last series. It takes
-> Scotts comments into consideration from my v2.
-> 
-> It contains lock splitting and GFP_KERNEL allocation of remap-table.
-> Mostly cleanup.
-> 
-> The patches were boot tested on an AMD EPYC 7601.
+[ Adding Gary from AMD to Cc ]
 
-Applied, thanks.
+On Mon, Mar 19, 2018 at 09:37:14AM -0700, Jacob Pan wrote:
+> On Thu, 15 Mar 2018 14:18:54 +0100
+> Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> 
+> > On Thu, Feb 15, 2018 at 08:38:11AM -0800, Jacob Pan wrote:
+> > > Just wondering if your concern is on the implementation or the
+> > > debugfs idea in general. Perhaps have some common IOMMU debugfs?  
+> > 
+> > My concern mainly is that we add interfaces which reveal
+> > potentially security relevant information
+> I don;t think security is any worse than existing kernel page table in
+> debugfs. i.e. /sys/kernel/debug/page_tables
+> This is a debug feature.
+
+Okay, so here is the way to go: Please introduce a basic debugfs
+facility to the core iommu code. It should basically only create a
+'iommu/' directory in debugfs where drivers can create their own
+sub-directories. This must be enabled by a new kconfig option
+(CONFIG_IOMMU_DEBUGFS) and the kernel should print a big fat warning at
+boot when it is enabled. This hopefully prevents anyone from enabling it
+for production kernels.
+
+Then in the next cycle I will review again more closely what information
+about VT-d and AMD-Vi is revealed there and will probably apply what I
+can live with.
+
+Thanks,
+
+	Joerg
