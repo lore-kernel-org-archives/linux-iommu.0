@@ -1,14 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d, trivial: Remove unused variable
-Date: Thu, 29 Mar 2018 10:32:21 +0200
-Message-ID: <20180329083220.gov323bcknoh7amn@8bytes.org>
-References: <1521713886-87177-1-git-send-email-zhangshaokun@hisilicon.com>
+Subject: Re: [PATCH 00/10 v3] iommu/amd: lock splitting & GFP_KERNEL allocation
+Date: Thu, 29 Mar 2018 10:38:42 +0200
+Message-ID: <20180329083842.ik7rxmfajhj5x3sq@8bytes.org>
+References: <20180322152242.12705-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1521713886-87177-1-git-send-email-zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+In-Reply-To: <20180322152242.12705-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,19 +18,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shaokun Zhang <zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Scott Wood <swood-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 22, 2018 at 06:18:06PM +0800, Shaokun Zhang wrote:
-> Unused after commit <42e8c186b595> ("iommu/vt-d: Simplify io/tlb flushing
-> in intel_iommu_unmap"), cleanup it.
+On Thu, Mar 22, 2018 at 04:22:32PM +0100, Sebastian Andrzej Siewior wrote:
+> Hi,
 > 
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Shaokun Zhang <zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
+> this is the rebase on top of iommu/x86/amd of my last series. It takes
+> Scotts comments into consideration from my v2.
+> 
+> It contains lock splitting and GFP_KERNEL allocation of remap-table.
+> Mostly cleanup.
+> 
+> The patches were boot tested on an AMD EPYC 7601.
 
 Applied, thanks.
