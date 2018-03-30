@@ -1,15 +1,15 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 0/3] iommu/vt-d: Global PASID name space
-Date: Fri, 30 Mar 2018 07:38:29 +0800
-Message-ID: <5ABD78F5.4070704@linux.intel.com>
-References: <1521081501-30119-1-git-send-email-baolu.lu@linux.intel.com>
-	<5AB840FD.8020600@linux.intel.com>
-	<20180329085233.aea52spusygcmxz6@8bytes.org>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu - Enable debugfs exposure of the IOMMU
+Date: Thu, 29 Mar 2018 22:57:11 -0500
+Message-ID: <e6aec192-030c-5942-16fb-02553467c8a3@amd.com>
+References: <152236384612.3266.1451709369164076985.stgit@taos>
+	<152236408441.3266.6015804200548808265.stgit@taos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180329085233.aea52spusygcmxz6-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <152236408441.3266.6015804200548808265.stgit@taos>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +19,159 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 3/29/2018 5:54 PM, Gary R Hook wrote:
+> Provide base enablement for using debugfs to expose internal data of
+> an IOMMU driver. When enabled, create the /sys/kernel/debug/iommu
 
-On 03/29/2018 04:52 PM, Joerg Roedel wrote:
-> On Mon, Mar 26, 2018 at 08:38:21AM +0800, Lu Baolu wrote:
->> Hi Joerg,
->>
->> A gentle ping. :-)
->>
->> Any comments on this patch set?
-> Yes, it doesn't apply on-top of my x86/vt-d branch. Please rebase it
-> after the merge-window to rc1 and re-send.
+So this can't actually create anything yet since nothing invokes the
+function.  Maybe describe how it should be used by other drivers (and
+probably include that description as a commment for the function) to
+create the directory.
 
-Sure.
+> directory.  Emit a strong warning at boot time to indicate that this
+> feature is enabled.
+> 
+> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig          |   11 +++++++++++
+>  drivers/iommu/Makefile         |    2 ++
+>  drivers/iommu/amd_iommu_init.c |    2 ++
+>  drivers/iommu/iommu-debugfs.c  |   32 ++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h          |    4 ++++
+>  5 files changed, 51 insertions(+)
+>  create mode 100644 drivers/iommu/iommu-debugfs.c
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index f3a21343e636..c1e39dabfec2 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -60,6 +60,17 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+>  
+>  endmenu
+>  
+> +config IOMMU_DEBUG
+> +	bool "Enable IOMMU internals in DebugFS"
+> +	depends on DEBUG_FS
+> +	default n
+> +	help
+> +	  Allows exposure of IOMMU device internals. This option enables
+> +	  the use of debugfs by IOMMU drivers as required. Devices can,
+> +	  at initialization time, cause the IOMMU code to create a top-level
+> +	  debug/iommu directory, and then populate a subdirectory with
+> +	  entries as required.
+> +
+>  config IOMMU_IOVA
+>  	tristate
+>  
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 1fb695854809..5e5c3339681d 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -2,6 +2,7 @@
+>  obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+> +obj-$(CONFIG_IOMMU_DEBUG) += iommu-debugfs.o
+>  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+> @@ -10,6 +11,7 @@ obj-$(CONFIG_IOMMU_IOVA) += iova.o
+>  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+>  obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+>  obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+> +obj-$(CONFIG_AMD_IOMMU_DEBUG) += amd_iommu_debugfs.o
 
-Best regards,
-Lu Baolu
+Where is this CONFIG defined?
+
+>  obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
+>  obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
+>  obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 6fe2d0346073..99d48c42a12f 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -2783,6 +2783,8 @@ int __init amd_iommu_detect(void)
+>  	iommu_detected = 1;
+>  	x86_init.iommu.iommu_init = amd_iommu_init;
+>  
+> +dump_stack();
+> +
+
+This definitely shouldn't be here.
+
+>  	return 1;
+>  }
+>  
+> diff --git a/drivers/iommu/iommu-debugfs.c b/drivers/iommu/iommu-debugfs.c
+> new file mode 100644
+> index 000000000000..94c9acc63b65
+> --- /dev/null
+> +++ b/drivers/iommu/iommu-debugfs.c
+> @@ -0,0 +1,32 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * AMD IOMMU driver
+
+This isn't the AMD IOMMU driver.
+
+> + *
+> + * Copyright (C) 2018 Advanced Micro Devices, Inc.
+> + *
+> + * Author: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+> + */
+> +
+> +#include <linux/pci.h>
+> +#include <linux/iommu.h>
+> +#include <linux/debugfs.h>
+> +
+> +static struct dentry *iommu_debugfs_dir;
+> +
+> +#define	MAX_NAME_LEN	20
+
+This isn't used anywhere.
+
+> +
+> +/* Return a zero on failure; 1 on successful setup */
+
+Return NULL on failure, pointer to IOMMU debugfs dentry on success.
+
+> +struct dentry *iommu_debugfs_setup(void)
+> +{
+> +	if (!debugfs_initialized())
+> +		return NULL;
+> +
+> +	if (!iommu_debugfs_dir)
+> +		iommu_debugfs_dir = debugfs_create_dir("iommu", NULL);
+> +
+> +	if (iommu_debugfs_dir)
+> +		pr_warn("WARNING: IOMMU DEBUGFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL\n");
+> +
+> +	return iommu_debugfs_dir;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_debugfs_setup);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 41b8c5757859..cb2957dac43b 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -696,6 +696,10 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+>  	return NULL;
+>  }
+>  
+> +#ifdef	CONFIG_IOMMU_DEBUG
+
+Should be a space between the #ifdef and the CONFIG_..., not a tab.
+
+Thanks,
+Tom
+
+> +struct dentry *iommu_debugfs_setup(void);
+> +#endif
+> +
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  #endif /* __LINUX_IOMMU_H */
+> 
