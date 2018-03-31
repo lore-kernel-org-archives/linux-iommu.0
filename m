@@ -1,15 +1,12 @@
 From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCHv4 2/2] iommu/vt-d: Limit number of faults to clear in irq
-	handler
-Date: Sat, 31 Mar 2018 01:33:12 +0100
-Message-ID: <20180331003312.6390-2-dima@arista.com>
-References: <20180331003312.6390-1-dima@arista.com>
+Subject: [PATCHv4 1/2] iommu/vt-d: Ratelimit each dmar fault printing
+Date: Sat, 31 Mar 2018 01:33:11 +0100
+Message-ID: <20180331003312.6390-1-dima@arista.com>
 Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180331003312.6390-1-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,9 +20,56 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yR
 Cc: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Theoretically, on some machines faults might be generated faster than
-they're cleared by CPU. Let's limit the cleaning-loop by number of hw
-fault registers.
+There is a ratelimit for printing, but it's incremented each time the
+cpu recives dmar fault interrupt. While one interrupt may signal about
+*many* faults.
+So, measuring the impact it turns out that reading/clearing one fault
+takes < 1 usec, and printing info about the fault takes ~170 msec.
+
+Having in mind that maximum number of fault recording registers per
+remapping hardware unit is 256.. IRQ handler may run for (170*256) msec.
+And as fault-serving loop runs without a time limit, during servicing
+new faults may occur..
+
+Ratelimit each fault printing rather than each irq printing.
+
+Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
+
+BUG: spinlock lockup suspected on CPU#0, CliShell/9903
+ lock: 0xffffffff81a47440, .magic: dead4ead, .owner: kworker/u16:2/8915, .owner_cpu: 6
+CPU: 0 PID: 9903 Comm: CliShell
+Call Trace:$\n'
+[..] dump_stack+0x65/0x83$\n'
+[..] spin_dump+0x8f/0x94$\n'
+[..] do_raw_spin_lock+0x123/0x170$\n'
+[..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
+[..] uart_chars_in_buffer+0x20/0x4d$\n'
+[..] tty_chars_in_buffer+0x18/0x1d$\n'
+[..] n_tty_poll+0x1cb/0x1f2$\n'
+[..] tty_poll+0x5e/0x76$\n'
+[..] do_select+0x363/0x629$\n'
+[..] compat_core_sys_select+0x19e/0x239$\n'
+[..] compat_SyS_select+0x98/0xc0$\n'
+[..] sysenter_dispatch+0x7/0x25$\n'
+[..]
+NMI backtrace for cpu 6
+CPU: 6 PID: 8915 Comm: kworker/u16:2
+Workqueue: dmar_fault dmar_fault_work
+Call Trace:$\n'
+[..] wait_for_xmitr+0x26/0x8f$\n'
+[..] serial8250_console_putchar+0x1c/0x2c$\n'
+[..] uart_console_write+0x40/0x4b$\n'
+[..] serial8250_console_write+0xe6/0x13f$\n'
+[..] call_console_drivers.constprop.13+0xce/0x103$\n'
+[..] console_unlock+0x1f8/0x39b$\n'
+[..] vprintk_emit+0x39e/0x3e6$\n'
+[..] printk+0x4d/0x4f$\n'
+[..] dmar_fault+0x1a8/0x1fc$\n'
+[..] dmar_fault_work+0x15/0x17$\n'
+[..] process_one_work+0x1e8/0x3a9$\n'
+[..] worker_thread+0x25d/0x345$\n'
+[..] kthread+0xea/0xf2$\n'
+[..] ret_from_fork+0x58/0x90$\n'
 
 Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
@@ -35,30 +79,40 @@ Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/dmar.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 6c4ea32ee6a9..cf1105111209 100644
+index accf58388bdb..6c4ea32ee6a9 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -1615,7 +1615,7 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- irqreturn_t dmar_fault(int irq, void *dev_id)
- {
- 	struct intel_iommu *iommu = dev_id;
--	int reg, fault_index;
-+	int reg, fault_index, i;
+@@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 	int reg, fault_index;
  	u32 fault_status;
  	unsigned long flag;
+-	bool ratelimited;
  	static DEFINE_RATELIMIT_STATE(rs,
-@@ -1633,7 +1633,7 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 				      DEFAULT_RATELIMIT_INTERVAL,
+ 				      DEFAULT_RATELIMIT_BURST);
  
+-	/* Disable printing, simply clear the fault when ratelimited */
+-	ratelimited = !__ratelimit(&rs);
+-
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+ 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+-	if (fault_status && !ratelimited)
++	if (fault_status && __ratelimit(&rs))
+ 		pr_err("DRHD: handling fault status reg %x\n", fault_status);
+ 
+ 	/* TBD: ignore advanced fault log currently */
+@@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
  	fault_index = dma_fsts_fault_record_index(fault_status);
  	reg = cap_fault_reg_offset(iommu->cap);
--	while (1) {
-+	for (i = 0; i < cap_num_fault_regs(iommu->cap); i++) {
- 		/* Disable printing, simply clear the fault when ratelimited */
- 		bool ratelimited = !__ratelimit(&rs);
+ 	while (1) {
++		/* Disable printing, simply clear the fault when ratelimited */
++		bool ratelimited = !__ratelimit(&rs);
  		u8 fault_reason;
+ 		u16 source_id;
+ 		u64 guest_addr;
 -- 
 2.13.6
