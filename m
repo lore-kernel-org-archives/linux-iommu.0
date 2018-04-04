@@ -1,13 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH RFC 1/1] iommu/of: Deconfigure iommu on driver detach
-Date: Tue, 3 Apr 2018 11:57:10 +0100
-Message-ID: <993dcde3-f518-9852-9271-3a2c5a3300a5@arm.com>
-References: <20180328102529.13435-1-vivek.gautam@codeaurora.org>
+From: "Mani, Rajmohan" <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+Date: Wed, 4 Apr 2018 01:07:45 +0000
+Message-ID: <6F87890CF0F5204F892DEA1EF0D77A5973037040@FMSMSX114.amr.corp.intel.com>
+References: <1508298408-25822-1-git-send-email-yong.zhi@intel.com>
+	<6F87890CF0F5204F892DEA1EF0D77A5972FD4195@FMSMSX114.amr.corp.intel.com>
+	<20171220115744.591a12e2@vento.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180328102529.13435-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,105 +19,125 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mauro Carvalho Chehab <mchehab-JsYNTwtnfakRB7SZvlqPiA@public.gmane.org>
+Cc: "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "Hu, Jerry W" <jerry.w.hu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zheng, Jian Xu" <jian.xu.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Toivonen, Tuukka" <tuukka.toivonen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Zhi,
+	Yong" <yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/03/18 11:25, Vivek Gautam wrote:
-> As part of dma_deconfigure, lets deconfigure the iommu too
-> on driver detach, so that we clear the iommu domain and
-> related group.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
-> 
-> As a part of dma_deconfigure, shouldn't we deconfigure the iommu
-> as well? This should reverse all that we do in of_iommu_configure.
-> So that we call the .remove_device ops for iommu and eventually
-> clear all the iommu domain, related group infrastructure.
-> I am seeing that the loadable modules get the same iommu configurations
-> after re-loading them, i.e. iommu domain, and iova_domain configurations,
-> as we didn't cleared them.
-> So should we be clearing these configurations, and therefore do a
-> of_iommu_deconfigure() or sort?
+Hi Mauro and all,
 
-Nope. Unbinding a driver does not cause the device to stop existing, nor 
-remove it from its parent bus, which is what .remove_device represents. 
-Device grouping is based on the underlying hardware topology, which 
-isn't going to change at runtime, so there's little point in the 
-software state pretending otherwise. If a module is leaking DMA mappings 
-in the default domain when unloaded, that's a bug in that module (and 
-certainly not specific to the IOMMU layer).
+> > Subject: RE: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+> >
+> > Hi Mauro,
+> >
+> > > > > Subject: Re: [PATCH v4 00/12] Intel IPU3 ImgU patchset
+> > > > >
+> > > > > Hi,
+> > > > >
+> > > > > Em Fri, 17 Nov 2017 02:58:56 +0000 "Mani, Rajmohan"
+> > > > > <rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> escreveu:
+> > > > >
+> > > > > > Here is an update on the IPU3 documentation that we are
+> > > > > > currently working
+> > > > > on.
+> > > > > >
+> > > > > > Image processing in IPU3 relies on the following.
+> > > > > >
+> > > > > > 1) HW configuration to enable ISP and
+> > > > > > 2) setting customer specific 3A Tuning / Algorithm Parameters
+> > > > > > to achieve
+> > > > > desired image quality.
+> > > > > >
+> > > > > > We intend to provide documentation on ImgU driver programming
+> > > > > > interface
+> > > > > to help users of this driver to configure and enable ISP HW to
+> > > > > meet their needs.  This documentation will include details on
+> > > > > complete
+> > > > > V4L2 Kernel driver interface and IO-Control parameters, except
+> > > > > for the ISP internal algorithm and its parameters (which is
+> > > > > Intel proprietary
+> > IP).
+> > > > >
+> > > > > Sakari asked me to take a look on this thread, specifically on
+> > > > > this email. I took a look on the other e-mails from this thread
+> > > > > that are discussing about this IP block.
+> > > > >
+> > > > > I understand that Intel wants to keep their internal 3A
+> > > > > algorithm protected, just like other vendors protect their own
+> > > > > algos. It was never a requirement to open whatever algorithm are
+> > > > > used inside a hardware (or firmware). The only requirement is
+> > > > > that firmwares should be licensed with redistribution
+> > > > > permission, ideally merged at linux-firmware
+> > > > git tree.
+> > > > >
+> > > > > Yet, what I don't understand is why Intel also wants to also
+> > > > > protect the interface for such 3A hardware/firmware algorithm.
+> > > > > The parameters that are passed from an userspace application to
+> > > > > Intel ISP logic doesn't contain the algorithm itself. What's the
+> > > > > issue of documenting the meaning of each parameter?
+> > > > >
+> > > >
+> > > > Thanks for looking into this.
+> > > >
+> > > > To achieve improved image quality using IPU3, 3A (Auto White
+> > > > balance, Auto Focus and Auto Exposure) Tuning parameters specific
+> > > > to a given camera sensor module, are converted to Intel ISP
+> > > > algorithm parameters in user space camera HAL using AIC (Automatic
+> > > > ISP
+> > Configuration) library.
+> > > >
+> > > > As a unique design of Intel ISP, it exposes very detailed
+> > > > algorithm parameters (~ 10000 parameters) to configure ISP's image
+> > > > processing algorithm per each image fame in runtime. Typical
+> > > > Camera SW developers (including those at
+> > > > Intel) are not expected to fully understand and directly set these
+> > > > parameters to configure the ISP algorithm blocks. Due to the
+> > > > above, a user space AIC library (in binary form) is provided to
+> > > > generate ISP Algorithm specific parameters, for a given set of 3A
+> > > > tuning parameters. It significantly reduces the efforts of SW
+> > > > development in ISP HW
+> > > configuration.
+> > > >
+> > > > On the other hand, the ISP algorithm details could be deduced
+> > > > readily through these detailed parameters by other ISP experts
+> > > > outside
+> > Intel.
+> > > > This is the reason that we want to keep these parameter
+> > > > definitions as Intel
+> > > proprietary IP.
+> > > >
+> > > > We are fully aware of your concerns on how to enable open source
+> > > > developers to use Intel ISP through up-streamed Kernel Driver.
+> > > > Internally, we are working on the license for this AIC library
+> > > > release now (as Hans said NDA license is not acceptable). We
+> > > > believe this will be more efficient way to help open source developers.
+> > > >
+> > > > This AIC library release would be a binary-only release. This AIC
+> > > > library does not use any kernel uAPIs directly. The user space
+> > > > Camera HAL that uses kernel uAPIs is available at
+> > > > https://chromium.googlesource.com/chromiumos/platform/arc-
+> > > > camera/+/master
+> > > >
+> >
+> > The AIC library (in binary form) is available here.
+> > https://storage.googleapis.com/chromeos-localmirror/distfiles/intel-3a
+> > -libs-
+> > bin-2017.09.27.tbz2
+> >
+> > Licensing information can be found in ./LICENSE.intel_3a_library file
+> > after unzipping the tar file.
+> >
+> > >
+> > > Just pinging to know your thoughts on this.
+> > >
 
-For reference, the only reason we touch .add_device in 
-of_iommu_configure() is because iommu_bus_init() is not quite reliable 
-enough for multiple IOMMU instances serving the platform bus (or 
-similar). It's an ugly workaround which should go away if and when we 
-manage to get rid of the notion of per-bus ops in the API.
+To follow up further on this, we have posted the preliminary documentation on
+bnr (bayer noise reduction) parameters as below.
 
-Robin.
+https://www.mail-archive.com/linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg128683.html
 
-> 
->   drivers/iommu/of_iommu.c | 11 +++++++++++
->   drivers/of/device.c      |  1 +
->   include/linux/of_iommu.h |  5 +++++
->   3 files changed, 17 insertions(+)
-> 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 5c36a8b7656a..1a23e6204ade 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -160,6 +160,17 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
->   	return err;
->   }
->   
-> +void of_iommu_deconfigure(struct device *dev)
-> +{
-> +	const struct iommu_ops *ops = NULL;
-> +
-> +	if (dev->iommu_fwspec && dev->iommu_fwspec->ops)
-> +		ops = dev->iommu_fwspec->ops;
-> +
-> +	if (ops && ops->remove_device && dev->iommu_group)
-> +		ops->remove_device(dev);
-> +}
-> +
->   const struct iommu_ops *of_iommu_configure(struct device *dev,
->   					   struct device_node *master_np)
->   {
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index 064c818105bd..e13cb7914dbe 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -177,6 +177,7 @@ EXPORT_SYMBOL_GPL(of_dma_configure);
->   void of_dma_deconfigure(struct device *dev)
->   {
->   	arch_teardown_dma_ops(dev);
-> +	of_iommu_deconfigure(dev);
->   }
->   
->   int of_device_register(struct platform_device *pdev)
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index 4fa654e4b5a9..3d4c22e95c0c 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -15,6 +15,8 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
->   extern const struct iommu_ops *of_iommu_configure(struct device *dev,
->   					struct device_node *master_np);
->   
-> +extern void of_iommu_deconfigure(struct device *dev);
-> +
->   #else
->   
->   static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-> @@ -30,6 +32,9 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
->   	return NULL;
->   }
->   
-> +static inline void of_iommu_deconfigure(struct device *dev)
-> +{ }
-> +
->   #endif	/* CONFIG_OF_IOMMU */
->   
->   extern struct of_device_id __iommu_of_table;
-> 
+We would like hear your early feedback and apply the same towards the
+documentation of remaining IPU3 parameters.
+
+Thanks
+Raj
