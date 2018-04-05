@@ -1,14 +1,12 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
-Date: Thu, 5 Apr 2018 12:26:23 +0100
-Message-ID: <20180405112622.GE23485@arm.com>
-References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: amd_iommu fallback question
+Date: Thu, 5 Apr 2018 21:36:12 +0200
+Message-ID: <20180405193612.GA12474@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1522247980-31892-1-git-send-email-timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,46 +16,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sameer Goel <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 28, 2018 at 09:39:40AM -0500, Timur Tabi wrote:
-> From: Sameer Goel <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> 
-> Set SMMU_GBPA to abort all incoming translations during the SMMU reset
-> when SMMUEN==0.
-> 
-> This prevents a race condition where a stray DMA from the crashed primary
-> kernel can try to access an IOVA address as an invalid PA when SMMU is
-> disabled during reset in the crash kernel.
-> 
-> Signed-off-by: Sameer Goel <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 3f2f1fc68b52..c04a89310c59 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2458,6 +2458,18 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->  	if (reg & CR0_SMMUEN)
->  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
->  
-> +	/*
-> +	 * Abort all incoming translations. This can happen in a kdump case
-> +	 * where SMMU is initialized when a prior DMA is pending. Just
-> +	 * disabling the SMMU in this case might result in writes to invalid
-> +	 * PAs.
-> +	 */
-> +	ret = arm_smmu_update_gbpa(smmu, 1, GBPA_ABORT);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "GBPA not responding to update\n");
-> +		return ret;
-> +	}
+Hi Joerg,
 
-This needs to be predicated on the disable_bypass option, otherwise I think
-it will cause regressions for systems that rely on passthrough.
-
-Will
+I've got a little question on the amd_iommu code, hope you (or someone
+else on the list) can answer it.  Most of the dma_map_ops methods have
+a fallback for the case when get_domain() return -EINVAL, which basically
+duplicates the normal no-iommu implementation, with the map_sg method
+being and exception that always returns and error (return value of 0
+is an error for its calling convention).  Is that an oversight?  If yes
+so I wonder why it hasn't been caught yet.  Or is the whole fallback
+code dead and can be removed?
