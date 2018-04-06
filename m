@@ -1,16 +1,14 @@
-From: Dominik Brodowski <linux-X3ehHDuj6sIIGcDfoQAp7OTW4wlIGRCZ@public.gmane.org>
-Subject: Re: x86/dma conversion for v4.17-rc1 breaks sound / sst-acpi (commit
-	6e4bf5867783)
-Date: Fri, 6 Apr 2018 16:52:39 +0200
-Message-ID: <20180406145239.GA1845@light.dominikbrodowski.net>
-References: <20180405205657.GA1788@light.dominikbrodowski.net>
-	<20180406141452.GA29724@lst.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: amd_iommu fallback question
+Date: Fri, 6 Apr 2018 20:23:29 +0200
+Message-ID: <20180406182329.GA15462@8bytes.org>
+References: <20180405193612.GA12474@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180406141452.GA29724-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180405193612.GA12474-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,29 +19,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, tiwai-IBi9RG/b67k@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, perex-/Fr2/VpizcU@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 06, 2018 at 04:14:52PM +0200, Christoph Hellwig wrote:
-> Hi Dominik,
-> 
-> can you try current Linus' master with the following hack applied and
-> see if that works?
-> 
-> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-> index 47aeb04c1997..32aacd0d56a8 100644
-> --- a/lib/swiotlb.c
-> +++ b/lib/swiotlb.c
-> @@ -1087,6 +1087,6 @@ const struct dma_map_ops swiotlb_dma_ops = {
->  	.unmap_sg		= swiotlb_unmap_sg_attrs,
->  	.map_page		= swiotlb_map_page,
->  	.unmap_page		= swiotlb_unmap_page,
-> -	.dma_supported		= swiotlb_dma_supported,
-> +	.dma_supported		= dma_direct_supported,
->  };
->  #endif /* CONFIG_DMA_DIRECT_OPS */
+Hi Christoph,
 
-Yes, it solves the issue.
+On Thu, Apr 05, 2018 at 09:36:12PM +0200, Christoph Hellwig wrote:
+> I've got a little question on the amd_iommu code, hope you (or someone
+> else on the list) can answer it.  Most of the dma_map_ops methods have
+> a fallback for the case when get_domain() return -EINVAL, which basically
+> duplicates the normal no-iommu implementation, with the map_sg method
+> being and exception that always returns and error (return value of 0
+> is an error for its calling convention).  Is that an oversight?  If yes
+> so I wonder why it hasn't been caught yet.  Or is the whole fallback
+> code dead and can be removed?
 
-Thanks,
-	Dominik
+Yeah, the fall-back code is basically dead since the amd driver uses
+per-device dma_ops. It was just an oversight that it is not removed yet.
+
+
+	Joerg
