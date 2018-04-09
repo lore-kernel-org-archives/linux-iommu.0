@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v1 3/4] iommu/tegra: gart: Constify number of GART pages
-Date: Mon,  9 Apr 2018 23:07:21 +0300
-Message-ID: <954659be6760130f6ffd5e733db2ad58cbb8e6e4.1523304324.git.digetx@gmail.com>
+Subject: [PATCH v1 4/4] iommu/tegra: gart: Optimize map/unmap
+Date: Mon,  9 Apr 2018 23:07:22 +0300
+Message-ID: <f21a7b6a8f141b87f75687904a76f3728ea639a8.1523304324.git.digetx@gmail.com>
 References: <cover.1523304324.git.digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,80 +23,127 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jon
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART has a fixed aperture size, hence the number of pages is constant.
+Currently GART writes one page entry at a time. More optimal would be to
+aggregate the writes and flush BUS buffer in the end, this gives map/unmap
+10-40% (depending on size of mapping) performance boost compared to a
+flushing after each entry update.
 
 Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/iommu/tegra-gart.c | 63 +++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 89ec24c6952c..4a0607669d34 100644
+index 4a0607669d34..9f59f5f17661 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -33,6 +33,8 @@
+@@ -36,7 +36,7 @@
+ #define GART_APERTURE_SIZE	SZ_32M
  
- #include <asm/cacheflush.h>
- 
-+#define GART_APERTURE_SIZE	SZ_32M
-+
  /* bitmap of the page sizes currently supported */
- #define GART_IOMMU_PGSIZES	(SZ_4K)
+-#define GART_IOMMU_PGSIZES	(SZ_4K)
++#define GART_IOMMU_PGSIZES	GENMASK(24, 12)
  
-@@ -47,6 +49,8 @@
- #define GART_PAGE_MASK						\
- 	(~(GART_PAGE_SIZE - 1) & ~GART_ENTRY_PHYS_ADDR_VALID)
+ #define GART_REG_BASE		0x24
+ #define GART_CONFIG		(0x24 - GART_REG_BASE)
+@@ -269,25 +269,21 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
+ 	kfree(gart_domain);
+ }
  
-+#define GART_PAGECOUNT		(GART_APERTURE_SIZE >> GART_PAGE_SHIFT)
+-static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+-			  phys_addr_t pa, size_t bytes, int prot)
++static int gart_iommu_map_page(struct gart_device *gart,
++			       unsigned long iova,
++			       phys_addr_t pa)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
+ 	unsigned long flags;
+ 	unsigned long pfn;
+ 	unsigned long pte;
+ 
+-	if (!gart_iova_range_valid(gart, iova, bytes))
+-		return -EINVAL;
+-
+-	spin_lock_irqsave(&gart->pte_lock, flags);
+ 	pfn = __phys_to_pfn(pa);
+ 	if (!pfn_valid(pfn)) {
+ 		dev_err(gart->dev, "Invalid page: %pa\n", &pa);
+-		spin_unlock_irqrestore(&gart->pte_lock, flags);
+ 		return -EINVAL;
+ 	}
 +
- struct gart_client {
- 	struct device		*dev;
- 	struct list_head	list;
-@@ -55,7 +59,6 @@ struct gart_client {
- struct gart_device {
- 	void __iomem		*regs;
- 	u32			*savedata;
--	u32			page_count;	/* total remappable size */
- 	dma_addr_t		iovmm_base;	/* offset to vmm_area */
- 	spinlock_t		pte_lock;	/* for pagetable */
- 	struct list_head	client;
-@@ -91,7 +94,7 @@ static struct gart_domain *to_gart_domain(struct iommu_domain *dom)
++	spin_lock_irqsave(&gart->pte_lock, flags);
+ 	if (gart_debug) {
+ 		pte = gart_read_pte(gart, iova);
+ 		if (pte & GART_ENTRY_PHYS_ADDR_VALID) {
+@@ -297,8 +293,41 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		}
+ 	}
+ 	gart_set_pte(gart, iova, GART_PTE(pfn));
++	spin_unlock_irqrestore(&gart->pte_lock, flags);
++
++	return 0;
++}
++
++static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
++			  phys_addr_t pa, size_t bytes, int prot)
++{
++	struct gart_domain *gart_domain = to_gart_domain(domain);
++	struct gart_device *gart = gart_domain->gart;
++	size_t mapped;
++	int ret = -1;
++
++	if (!gart_iova_range_valid(gart, iova, bytes))
++		return -EINVAL;
++
++	for (mapped = 0; mapped < bytes; mapped += GART_PAGE_SIZE) {
++		ret = gart_iommu_map_page(gart, iova + mapped, pa + mapped);
++		if (ret)
++			break;
++	}
++
+ 	FLUSH_GART_REGS(gart);
++	return ret;
++}
++
++static int gart_iommu_unmap_page(struct gart_device *gart,
++				 unsigned long iova)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&gart->pte_lock, flags);
++	gart_set_pte(gart, iova, 0);
+ 	spin_unlock_irqrestore(&gart->pte_lock, flags);
++
+ 	return 0;
+ }
  
- #define for_each_gart_pte(gart, iova)					\
- 	for (iova = gart->iovmm_base;					\
--	     iova < gart->iovmm_base + GART_PAGE_SIZE * gart->page_count; \
-+	     iova < gart->iovmm_base + GART_APERTURE_SIZE; 		\
- 	     iova += GART_PAGE_SIZE)
+@@ -307,16 +336,20 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ {
+ 	struct gart_domain *gart_domain = to_gart_domain(domain);
+ 	struct gart_device *gart = gart_domain->gart;
+-	unsigned long flags;
++	size_t unmapped;
++	int ret;
  
- static inline void gart_set_pte(struct gart_device *gart,
-@@ -158,7 +161,7 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
- 	iova_start = iova;
- 	iova_end = iova_start + bytes - 1;
- 	gart_start = gart->iovmm_base;
--	gart_end = gart_start + gart->page_count * GART_PAGE_SIZE - 1;
-+	gart_end = gart_start + GART_APERTURE_SIZE - 1;
+ 	if (!gart_iova_range_valid(gart, iova, bytes))
+ 		return 0;
  
- 	if (iova_start < gart_start)
- 		return false;
-@@ -241,7 +244,7 @@ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
- 	gart_domain->gart = gart;
- 	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
- 	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
--					gart->page_count * GART_PAGE_SIZE - 1;
-+							GART_APERTURE_SIZE - 1;
- 	gart_domain->domain.geometry.force_aperture = true;
+-	spin_lock_irqsave(&gart->pte_lock, flags);
+-	gart_set_pte(gart, iova, 0);
++	for (unmapped = 0; unmapped < bytes; unmapped += GART_PAGE_SIZE) {
++		ret = gart_iommu_unmap_page(gart, iova + unmapped);
++		if (ret)
++			break;
++	}
++
+ 	FLUSH_GART_REGS(gart);
+-	spin_unlock_irqrestore(&gart->pte_lock, flags);
+-	return bytes;
++	return unmapped;
+ }
  
- 	return &gart_domain->domain;
-@@ -463,9 +466,8 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	INIT_LIST_HEAD(&gart->client);
- 	gart->regs = gart_regs;
- 	gart->iovmm_base = (dma_addr_t)res_remap->start;
--	gart->page_count = (resource_size(res_remap) >> GART_PAGE_SHIFT);
- 
--	gart->savedata = vmalloc(sizeof(u32) * gart->page_count);
-+	gart->savedata = vmalloc(sizeof(u32) * GART_PAGECOUNT);
- 	if (!gart->savedata) {
- 		dev_err(dev, "failed to allocate context save area\n");
- 		return -ENOMEM;
+ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
 -- 
 2.16.3
