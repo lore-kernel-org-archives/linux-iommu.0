@@ -1,67 +1,112 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v11 0/4] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Mon, 09 Apr 2018 04:22:09 +0000
-Message-ID: <CAAFQd5CDY5p8oBz4QC5f6GsKiiYqdenCHGCqKhuWn10JwKjOpw@mail.gmail.com>
-References: <20180322102204.14760-1-vivek.gautam@codeaurora.org>
+From: jacopo mondi <jacopo@jmondi.org>
+Subject: Re: [RFC v2 2/2] base: dma-mapping: Postpone page_to_pfn() on mmap()
+Date: Mon, 9 Apr 2018 09:25:47 +0200
+Message-ID: <20180409072547.GU20945@w540>
+References: <1510679286-6988-1-git-send-email-jacopo+renesas@jmondi.org>
+ <1510679286-6988-3-git-send-email-jacopo+renesas@jmondi.org>
+ <ea4f2d82-6a27-a7c1-091f-6230cfd988a3@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180322102204.14760-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="8a48p4KKsB+A/3VY"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <ea4f2d82-6a27-a7c1-091f-6230cfd988a3@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, ysato@users.sourceforge.jp, dalias@libc.org, laurent.pinchart@ideasonboard.com, geert@linux-m68k.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will, Robin,
 
-On Thu, Mar 22, 2018 at 7:22 PM Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-wrote:
+--8a48p4KKsB+A/3VY
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-> This series provides the support for turning on the arm-smmu's
-> clocks/power domains using runtime pm. This is done using the
-> recently introduced device links patches, which lets the smmu's
-> runtime to follow the master's runtime pm, so the smmu remains
-> powered only when the masters use it.
-> As not all implementations support clock/power gating, we are checking
-> for a valid 'smmu->dev's pm_domain' to conditionally enable the runtime
-> power management for such smmu implementations that can support it.
+Hi Robin, Laurent,
+    a long time passed, sorry about this.
 
-> This series also adds support for Qcom's arm-smmu-v2 variant that
-> has different clocks and power requirements.
+On Wed, Nov 15, 2017 at 01:38:23PM +0000, Robin Murphy wrote:
+> On 14/11/17 17:08, Jacopo Mondi wrote:
+> >On SH4 architecture, with SPARSEMEM memory model, translating page to
+> >pfn hangs the CPU. Post-pone translation to pfn after
+> >dma_mmap_from_dev_coherent() function call as it succeeds and make page
+> >translation not necessary.
+> >
+> >This patch was suggested by Laurent Pinchart and he's working to submit
+> >a proper fix mainline. Not sending for inclusion at the moment.
+>
+> Y'know, I think this patch does have some merit by itself - until we know
+> that cpu_addr *doesn't* represent some device-private memory which is not
+> guaranteed to be backed by a struct page, calling virt_to_page() on it is
+> arguably semantically incorrect, even if it might happen to be benign in
+> most cases.
 
-> Took some reference from the exynos runtime patches [1].
+I still need to carry this patch in my trees to have a working dma memory mapping
+on SH4 platforms. My understanding from your comment is that there may
+be a way forward for this patch, do you still think the same? Have you
+got any suggestion on how to improve this eventually for inclusion?
 
-> With conditional runtime pm now, we avoid touching dev->power.lock
-> in fastpaths for smmu implementations that don't need to do anything
-> useful with pm_runtime.
-> This lets us to use the much-argued pm_runtime_get_sync/put_sync()
-> calls in map/unmap callbacks so that the clients do not have to
-> worry about handling any of the arm-smmu's power.
+Thanks
+   j
 
-> Previous version of this patch series is @ [5].
+>
+> Robin.
+>
+> >Suggested-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> >Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+> >---
+> >  drivers/base/dma-mapping.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> >diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+> >index e584edd..73d64d3 100644
+> >--- a/drivers/base/dma-mapping.c
+> >+++ b/drivers/base/dma-mapping.c
+> >@@ -227,8 +227,8 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+> >  #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
+> >  	unsigned long user_count = vma_pages(vma);
+> >  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> >-	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+> >  	unsigned long off = vma->vm_pgoff;
+> >+	unsigned long pfn;
+> >
+> >  	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> >
+> >@@ -236,6 +236,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+> >  		return ret;
+> >
+> >  	if (off < count && user_count <= (count - off)) {
+> >+		pfn = page_to_pfn(virt_to_page(cpu_addr));
+> >  		ret = remap_pfn_range(vma, vma->vm_start,
+> >  				      pfn + off,
+> >  				      user_count << PAGE_SHIFT,
+> >--
+> >2.7.4
+> >
+> >_______________________________________________
+> >iommu mailing list
+> >iommu@lists.linux-foundation.org
+> >https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> >
 
-> [v11]
->     * Some more cleanups for device link. We don't need an explicit
->       delete for device link from the driver, but just set the flag
->       DL_FLAG_AUTOREMOVE.
->       device_link_add() API description says -
->       "If the DL_FLAG_AUTOREMOVE is set, the link will be removed
->       automatically when the consumer device driver unbinds."
->     * Addressed the comments for 'smmu' in arm_smmu_map/unmap().
->     * Dropped the patch [10] that introduced device_link_del_dev() API.
+--8a48p4KKsB+A/3VY
+Content-Type: application/pgp-signature; name="signature.asc"
 
-As far as I can see, this version addresses all the earlier comments. Do
-you think this is something that you could apply?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Best regards,
-Tomasz
+iQIcBAEBAgAGBQJayxV7AAoJEHI0Bo8WoVY8poQP/RLuihAmfxnsaF8Y5vpyWWQT
+GS7+W9OGNVGOn8IeMsp0Lq+GSpzqHVd8o18/06m1Cp+4KIzhgbGrOPpSHBZ4qMON
+oi98PJHrMWxIqzgSt/ejjXQ70USkEAOfv4tMZ8R8QnzFcOZ4Ka/ppoH2JuSzb0E5
+XCKfgkqFu7VyT5cQCERb0+orAVmj5w4vpglIr6igE0UTh0XjubXqtIxFitH3qmdw
+cnboVo3SH7eTLTDzSWdOPUi0aPRditdbHOpencmWpwtKQRAwFx7xwtefWkrML+dT
+n8Ygl0VOk+B5zYlb1JMCmX1/btaxOl9P7wDI0IkUwuEY3S7ZWmpzoWnlw/Fzbnlb
+wWoEmTLuM514Qd9UTB98hDqpsZhe5D/Zo7kExHAU+peucxUyfZ6g2q1mwrDYwUY+
+BP78VWaQc4lHQZ9xBGkHgaXzmVHjmEjXFWe+L/3z1iGmngYdR4/b5Dhfw1GXT6mt
+PHcliy3AbgHT/wr55WBCEB2+xdl7tChdv/Hl2x89kDqkRXFnS+uWsIJ4qd4U0DIy
+oDb/6g4TAbGV7j/k3gEQT4MkclRYrv/rlDVyYZrGIWn6oX8iDieVLoJSa2mNa59K
+sAWLR3Ca+vLaGI+WOn+8mvg0ZxW4Wywi5xwiru98RVPHI1CxGQGL1Hm3ayyK/K+F
+H2NKjX9Nm20Zg0HDf/oh
+=MB4Z
+-----END PGP SIGNATURE-----
+
+--8a48p4KKsB+A/3VY--
