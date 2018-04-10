@@ -1,11 +1,13 @@
 From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH 0/2] iommu/rockchip: fix clock handling to not break old dts
-Date: Tue, 10 Apr 2018 11:26:10 +0200
-Message-ID: <20180410092612.2653-1-heiko@sntech.de>
+Subject: [PATCH 2/2] iommu/rockchip: make clock handling optional
+Date: Tue, 10 Apr 2018 11:26:12 +0200
+Message-ID: <20180410092612.2653-3-heiko@sntech.de>
+References: <20180410092612.2653-1-heiko@sntech.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20180410092612.2653-1-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -19,21 +21,34 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The newly added clock handling makes iommu clocks required, thus breaking
-devicetrees from the last 4 years.
+iommu clocks are optional, so the driver should not fail if they are not
+present. Instead just set the number of clocks to 0, which the clk-blk APIs
+can handle just fine.
 
-This series fixes the binding and driver to work without clocks being
-present, like it did before and should therefore probably go in as fix
-on top of the clock-handling patch.
+Fixes: f2e3a5f557ad ("iommu/rockchip: Control clocks needed to access the IOMMU")
+Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-
-Heiko Stuebner (2):
-  dt-bindings: iommu/rockchip: Make clock properties optional
-  iommu/rockchip: make clock handling optional
-
- Documentation/devicetree/bindings/iommu/rockchip,iommu.txt | 4 ++--
- drivers/iommu/rockchip-iommu.c                             | 8 ++++++--
- 2 files changed, 8 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 5fc8656c60f9..7215c683cb8f 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1176,8 +1176,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 		iommu->clocks[i].id = rk_iommu_clocks[i];
+ 
+ 	err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
+-	if (err)
+-		return err;
++	if (err) {
++		if (err == -ENOENT)
++			iommu->num_clocks = 0;
++		else
++			return err;
++	}
+ 
+ 	err = clk_bulk_prepare(iommu->num_clocks, iommu->clocks);
+ 	if (err)
 -- 
 2.16.2
