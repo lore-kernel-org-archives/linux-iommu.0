@@ -1,56 +1,96 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] drivers: remove force dma flag from buses
-Date: Mon, 9 Apr 2018 15:27:45 -0500
-Message-ID: <20180409202745.p6hxkyy4n7fin3bd@rob-hp-laptop>
-References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
-	<1522396485-10248-1-git-send-email-nipun.gupta@nxp.com>
-	<1522396485-10248-2-git-send-email-nipun.gupta@nxp.com>
+From: jacopo mondi <jacopo@jmondi.org>
+Subject: Re: [PATCH] base: dma-mapping: Postpone cpu addr translation on
+ mmap()
+Date: Tue, 10 Apr 2018 09:57:52 +0200
+Message-ID: <20180410075752.GB20945@w540>
+References: <1523293148-18726-1-git-send-email-jacopo+renesas@jmondi.org>
+ <20180409175251.GA5426@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="n5G3y24fV3/VEqbx"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1522396485-10248-2-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Cc: zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20180409175251.GA5426@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, laurent.pinchart@ideasonboard.com, robin.murphy@arm.com, dalias@libc.org, ysato@users.sourceforge.jp, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 30, 2018 at 01:24:45PM +0530, Nipun Gupta wrote:
-> With each bus implementing its own DMA configuration callback,
-> there is no need for bus to explicitly have force_dma in its
-> global structure. This patch modifies of_dma_configure API to
-> accept an input parameter which specifies if implicit DMA
-> configuration is required even when it is not described by the
-> firmware.
-> 
-> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> ---
-> Changes in v2:
->   - This is a new change suggested by Robin and Christoph
->     and is added to the series.
-> 
-> Changes in v3:
->   - Rebase and changes corresponding to the changes in patch 1/2
-> 
->  drivers/amba/bus.c            | 1 -
->  drivers/base/platform.c       | 3 +--
->  drivers/bcma/main.c           | 2 +-
->  drivers/dma/qcom/hidma_mgmt.c | 2 +-
->  drivers/gpu/host1x/bus.c      | 5 ++---
->  drivers/of/device.c           | 6 ++++--
->  drivers/of/of_reserved_mem.c  | 2 +-
->  drivers/pci/pci-driver.c      | 3 +--
->  include/linux/device.h        | 4 ----
->  include/linux/of_device.h     | 8 ++++++--
->  10 files changed, 17 insertions(+), 19 deletions(-)
 
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--n5G3y24fV3/VEqbx
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+
+Hi Christoph,
+
+On Mon, Apr 09, 2018 at 10:52:51AM -0700, Christoph Hellwig wrote:
+> On Mon, Apr 09, 2018 at 06:59:08PM +0200, Jacopo Mondi wrote:
+> > I'm still a bit puzzled on what happens if dma_mmap_from_dev_coherent() fails.
+> > Does a dma_mmap_from_dev_coherent() failure guarantee anyhow that the
+> > successive virt_to_page() isn't problematic as it is today?
+> > Or is it the
+> >  	if (off < count && user_count <= (count - off))
+> > check that makes the translation safe?
+>
+> It doesn't.  I think one major issue is that we should not simply fall
+> to dma_common_mmap if no method is required, but need every instance of
+> dma_map_ops to explicitly opt into an mmap method that is known to work.
+
+I see.. this patch thus just postpones the problem...
+
+>
+> >  #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
+> >  	unsigned long user_count = vma_pages(vma);
+> >  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > -	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+> >  	unsigned long off = vma->vm_pgoff;
+> > +	unsigned long pfn;
+> >
+> >  	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> >
+> > @@ -235,6 +235,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+> >  		return ret;
+> >
+> >  	if (off < count && user_count <= (count - off)) {
+> > +		pfn = page_to_pfn(virt_to_page(cpu_addr));
+> >  		ret = remap_pfn_range(vma, vma->vm_start,
+> >  				      pfn + off,
+> >  				      user_count << PAGE_SHIFT,
+>
+> Why not:
+>
+> 		ret = remap_pfn_range(vma, vma->vm_start,
+> 				page_to_pfn(virt_to_page(cpu_addr)) + off,
+>
+> and save the temp variable?
+
+Sure, it's better... Should I send a v2 or considering your above
+comment this patch is just a mitigation and should be ditched in
+favour of a proper solution (which requires a much more considerable amount
+of work though)?
+
+Thanks
+   j
+
+--n5G3y24fV3/VEqbx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJazG6AAAoJEHI0Bo8WoVY86H0P/2SMs4laMyttAVmvylDfTO4w
+p8rssvBm/Qt20vZDkznGlLX2++8JAY4AMtdwjEvx+RrJHzvvjoziIYEIguZFv1IA
+8sM/N2i7+4KpHeJsUJtQ0ckcxbxyGXZsz2BOMsUFtmsa0lo0U0B1W9mCfpxaj5sn
+MApicnmKxUBlfbbFzgoug4+l2bdOWkWtO1Es6t9Ky08kUySfcHq38InjrnyOGC3V
+ERjohSe5N8+FMzySnnpDQ2tqkCJ03vOrQa4WG301fsLADrkWzQ6qmItfyfIe3k2X
+8A8VScaqG1u2p4yNUoJfmfKvGWkEmiiz6rqyesOVQHkCmmrDNyT+lpZsejpWg/qQ
+HhG7f8q72CxMY4vsj8j2o5fSc9LNplVabEAGCOBDvU+S4SQcWTapnMhGv1hEXNzW
+P3eMzDTcLQwmRoOHd1ZLkRKVtpWanH5UZQYsnLIg2dtz3j2x5JGE9N7W7CeMWsyn
+9nGmY47qBvnNszGNY5R/wBTzaiPzbsFM0uKfW9eeedxHwb3yR1S+f7qeBKHm/H7u
+rpUPOYU6GaJyxfjUUE+t+dFJYKrUf3VTxMCbViEAZBu5HgG9LiveADvSLyNPxJec
+tMkTMv2Tplq9GxiFDNB+nZGlr7DwMpoWc/5qZg+v0TshwdtLony7cdtD0Us+Gg9t
+oe7/84v/+s4N7PLfgU6I
+=BwgV
+-----END PGP SIGNATURE-----
+
+--n5G3y24fV3/VEqbx--
