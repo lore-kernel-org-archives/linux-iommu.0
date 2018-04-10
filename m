@@ -1,16 +1,18 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iommu/rockchip: Make clock properties
-	optional
-Date: Tue, 10 Apr 2018 13:26:41 +0200
-Message-ID: <2406273.dIyKc4zb8g@phil>
-References: <20180410092612.2653-1-heiko@sntech.de>
-	<20180410092612.2653-2-heiko@sntech.de>
-	<99245ec4-6835-7fa7-3bad-dd21874f92c0@arm.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v9 5/5] iommu/arm-smmu: Add support for qcom,
+	smmu-v2 variant
+Date: Tue, 10 Apr 2018 13:14:57 +0000
+Message-ID: <CAAFQd5Cj3qaqt8ACabZwN4ZKaNbF9N9suGVaOKD8-kNxgfeeVA@mail.gmail.com>
+References: <20180313085534.11650-1-vivek.gautam@codeaurora.org>
+	<20180313085534.11650-6-vivek.gautam@codeaurora.org>
+	<61d30fff-1bf8-d2c1-bbe9-f93de836ae77@huawei.com>
+	<7d5af071-ef98-8461-3ce9-e84fc0b3956a@codeaurora.org>
+	<d97872fe-5e8e-cc27-e385-64cea8ea2458@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <99245ec4-6835-7fa7-3bad-dd21874f92c0-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <d97872fe-5e8e-cc27-e385-64cea8ea2458-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,34 +22,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
+To: xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Yisheng,
 
-Am Dienstag, 10. April 2018, 13:18:48 CEST schrieb Robin Murphy:
-> On 10/04/18 10:26, Heiko Stuebner wrote:
-> > Rockchip IOMMUs are used without explicit clock handling for 4 years
-> > now, so we should keep compatibility with old devicetrees if possible.
-> > Therefore make iommu clocks optional.
-> 
-> Do we need to touch the binding itself? Obviously the driver has to 
-> treat clocks as optional in existing DTs (and I feel a bit dumb now for 
-> managing to overlook that in review), but the binding effectively only 
-> covers future DTs, and I'd assume we want to encourage the clocks to be 
-> correctly specified there.
+Sorry, I think we missed your question here.
 
-I guess that depends on your definition of the timespan for backwards
-compatibility. I'm always starting out at indefinite till convinced
-otherwise ;-). Hence the clocks would need to stay optional for (nearly)
-forever.
+On Wed, Mar 28, 2018 at 3:12 PM Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
 
-Also, having the binding claim them as required but the code handling
-them as optional just calls for someone to remove the optional handling :-D
+> Hi Vivek,
 
-Not sure if there is a established way of saying
-"we want this for all future devices, but allow it to be missing for old dts".
+> On 2018/3/28 12:37, Vivek Gautam wrote:
+> > Hi Yisheng
+> >
+> >
+> > On 3/28/2018 6:54 AM, Yisheng Xie wrote:
+> >> Hi Vivek,
+> >>
+> >> On 2018/3/13 16:55, Vivek Gautam wrote:
+> >>> +- power-domains:  Specifiers for power domains required to be
+powered on for
+> >>> +                  the SMMU to operate, as per generic power domain
+bindings.
+> >>> +
+> >> In this patchset, power-domains is not used right? And you just do the
+clock gating,
+> >> but not power gating, right?
+> >
+> > We are handling the power-domains too. Please see the example in this
+binding doc.
+
+> I see, but I do not find the point in code of these patchset, do you mean
+PMIC(e.g mmcc)
+> will gate the power domain of SMMU(e.g. MDSS_GDSC of mmcc) when PMIC
+suspend?
 
 
-Heiko
+If respective SoC power domains is registered as a standard genpd PM
+domain, then the runtime PM subsystem will take care of power domain
+control at runtime suspend and resume.
+
+Best regards,
+Tomasz
