@@ -1,15 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iommu/rockchip: Make clock properties
-	optional
-Date: Tue, 10 Apr 2018 12:18:48 +0100
-Message-ID: <99245ec4-6835-7fa7-3bad-dd21874f92c0@arm.com>
+Subject: Re: [PATCH 2/2] iommu/rockchip: make clock handling optional
+Date: Tue, 10 Apr 2018 12:24:15 +0100
+Message-ID: <0f17363b-408d-9da4-a930-074c705953bd@arm.com>
 References: <20180410092612.2653-1-heiko@sntech.de>
-	<20180410092612.2653-2-heiko@sntech.de>
+	<20180410092612.2653-3-heiko@sntech.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180410092612.2653-2-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+In-Reply-To: <20180410092612.2653-3-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,42 +24,43 @@ Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA
 List-Id: iommu@lists.linux-foundation.org
 
 On 10/04/18 10:26, Heiko Stuebner wrote:
-> Rockchip IOMMUs are used without explicit clock handling for 4 years
-> now, so we should keep compatibility with old devicetrees if possible.
-> Therefore make iommu clocks optional.
-
-Do we need to touch the binding itself? Obviously the driver has to 
-treat clocks as optional in existing DTs (and I feel a bit dumb now for 
-managing to overlook that in review), but the binding effectively only 
-covers future DTs, and I'd assume we want to encourage the clocks to be 
-correctly specified there.
-
-Robin.
-
-> Fixes: 8fa9eb39c614 ("dt-bindings: iommu/rockchip: Add clock property")
+> iommu clocks are optional, so the driver should not fail if they are not
+> present. Instead just set the number of clocks to 0, which the clk-blk APIs
+> can handle just fine.
+> 
+> Fixes: f2e3a5f557ad ("iommu/rockchip: Control clocks needed to access the IOMMU")
 > Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 > ---
->   Documentation/devicetree/bindings/iommu/rockchip,iommu.txt | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+>   drivers/iommu/rockchip-iommu.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
-> index 6ecefea1c6f9..25bfad987513 100644
-> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
-> @@ -14,13 +14,13 @@ Required properties:
->                       "single-master" device, and needs no additional information
->                       to associate with its master device.  See:
->                       Documentation/devicetree/bindings/iommu/iommu.txt
-> +
-> +Optional properties:
->   - clocks          : A list of clocks required for the IOMMU to be accessible by
->                       the host CPU.
->   - clock-names     : Should contain the following:
->   	"iface" - Main peripheral bus clock (PCLK/HCL) (required)
->   	"aclk"  - AXI bus clock (required)
-> -
-> -Optional properties:
->   - rockchip,disable-mmu-reset : Don't use the mmu reset operation.
->   			       Some mmu instances may produce unexpected results
->   			       when the reset operation is used.
-> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 5fc8656c60f9..7215c683cb8f 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1176,8 +1176,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   		iommu->clocks[i].id = rk_iommu_clocks[i];
+>   
+>   	err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
+> -	if (err)
+> -		return err;
+> +	if (err) {
+> +		if (err == -ENOENT)
+> +			iommu->num_clocks = 0;
+> +		else
+> +			return err;
+> +	}
+
+Nit: this might be a bit nicer as:
+
+	if (err == -ENOENT)
+		iommu->num_clocks = 0;
+	else if (err)
+		return err;
+
+Either way,
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+Thanks,
+Robin.
