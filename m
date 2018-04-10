@@ -1,96 +1,56 @@
-From: jacopo mondi <jacopo@jmondi.org>
-Subject: Re: [PATCH] base: dma-mapping: Postpone cpu addr translation on
- mmap()
-Date: Tue, 10 Apr 2018 09:57:52 +0200
-Message-ID: <20180410075752.GB20945@w540>
-References: <1523293148-18726-1-git-send-email-jacopo+renesas@jmondi.org>
- <20180409175251.GA5426@infradead.org>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH 1/2] dt-bindings: iommu/rockchip: Make clock properties
+ optional
+Date: Tue, 10 Apr 2018 11:26:11 +0200
+Message-ID: <20180410092612.2653-2-heiko@sntech.de>
+References: <20180410092612.2653-1-heiko@sntech.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="n5G3y24fV3/VEqbx"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180409175251.GA5426@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, laurent.pinchart@ideasonboard.com, robin.murphy@arm.com, dalias@libc.org, ysato@users.sourceforge.jp, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20180410092612.2653-1-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Rockchip IOMMUs are used without explicit clock handling for 4 years
+now, so we should keep compatibility with old devicetrees if possible.
+Therefore make iommu clocks optional.
 
---n5G3y24fV3/VEqbx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Fixes: 8fa9eb39c614 ("dt-bindings: iommu/rockchip: Add clock property")
+Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ Documentation/devicetree/bindings/iommu/rockchip,iommu.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Hi Christoph,
-
-On Mon, Apr 09, 2018 at 10:52:51AM -0700, Christoph Hellwig wrote:
-> On Mon, Apr 09, 2018 at 06:59:08PM +0200, Jacopo Mondi wrote:
-> > I'm still a bit puzzled on what happens if dma_mmap_from_dev_coherent() fails.
-> > Does a dma_mmap_from_dev_coherent() failure guarantee anyhow that the
-> > successive virt_to_page() isn't problematic as it is today?
-> > Or is it the
-> >  	if (off < count && user_count <= (count - off))
-> > check that makes the translation safe?
->
-> It doesn't.  I think one major issue is that we should not simply fall
-> to dma_common_mmap if no method is required, but need every instance of
-> dma_map_ops to explicitly opt into an mmap method that is known to work.
-
-I see.. this patch thus just postpones the problem...
-
->
-> >  #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
-> >  	unsigned long user_count = vma_pages(vma);
-> >  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> > -	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
-> >  	unsigned long off = vma->vm_pgoff;
-> > +	unsigned long pfn;
-> >
-> >  	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-> >
-> > @@ -235,6 +235,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
-> >  		return ret;
-> >
-> >  	if (off < count && user_count <= (count - off)) {
-> > +		pfn = page_to_pfn(virt_to_page(cpu_addr));
-> >  		ret = remap_pfn_range(vma, vma->vm_start,
-> >  				      pfn + off,
-> >  				      user_count << PAGE_SHIFT,
->
-> Why not:
->
-> 		ret = remap_pfn_range(vma, vma->vm_start,
-> 				page_to_pfn(virt_to_page(cpu_addr)) + off,
->
-> and save the temp variable?
-
-Sure, it's better... Should I send a v2 or considering your above
-comment this patch is just a mitigation and should be ditched in
-favour of a proper solution (which requires a much more considerable amount
-of work though)?
-
-Thanks
-   j
-
---n5G3y24fV3/VEqbx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJazG6AAAoJEHI0Bo8WoVY86H0P/2SMs4laMyttAVmvylDfTO4w
-p8rssvBm/Qt20vZDkznGlLX2++8JAY4AMtdwjEvx+RrJHzvvjoziIYEIguZFv1IA
-8sM/N2i7+4KpHeJsUJtQ0ckcxbxyGXZsz2BOMsUFtmsa0lo0U0B1W9mCfpxaj5sn
-MApicnmKxUBlfbbFzgoug4+l2bdOWkWtO1Es6t9Ky08kUySfcHq38InjrnyOGC3V
-ERjohSe5N8+FMzySnnpDQ2tqkCJ03vOrQa4WG301fsLADrkWzQ6qmItfyfIe3k2X
-8A8VScaqG1u2p4yNUoJfmfKvGWkEmiiz6rqyesOVQHkCmmrDNyT+lpZsejpWg/qQ
-HhG7f8q72CxMY4vsj8j2o5fSc9LNplVabEAGCOBDvU+S4SQcWTapnMhGv1hEXNzW
-P3eMzDTcLQwmRoOHd1ZLkRKVtpWanH5UZQYsnLIg2dtz3j2x5JGE9N7W7CeMWsyn
-9nGmY47qBvnNszGNY5R/wBTzaiPzbsFM0uKfW9eeedxHwb3yR1S+f7qeBKHm/H7u
-rpUPOYU6GaJyxfjUUE+t+dFJYKrUf3VTxMCbViEAZBu5HgG9LiveADvSLyNPxJec
-tMkTMv2Tplq9GxiFDNB+nZGlr7DwMpoWc/5qZg+v0TshwdtLony7cdtD0Us+Gg9t
-oe7/84v/+s4N7PLfgU6I
-=BwgV
------END PGP SIGNATURE-----
-
---n5G3y24fV3/VEqbx--
+diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+index 6ecefea1c6f9..25bfad987513 100644
+--- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+@@ -14,13 +14,13 @@ Required properties:
+                     "single-master" device, and needs no additional information
+                     to associate with its master device.  See:
+                     Documentation/devicetree/bindings/iommu/iommu.txt
++
++Optional properties:
+ - clocks          : A list of clocks required for the IOMMU to be accessible by
+                     the host CPU.
+ - clock-names     : Should contain the following:
+ 	"iface" - Main peripheral bus clock (PCLK/HCL) (required)
+ 	"aclk"  - AXI bus clock (required)
+-
+-Optional properties:
+ - rockchip,disable-mmu-reset : Don't use the mmu reset operation.
+ 			       Some mmu instances may produce unexpected results
+ 			       when the reset operation is used.
+-- 
+2.16.2
