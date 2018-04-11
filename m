@@ -1,15 +1,13 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH RFC 1/1] iommu/of: Deconfigure iommu on driver detach
-Date: Thu, 12 Apr 2018 01:22:57 +0530
-Message-ID: <08aac02a-e93a-fd68-9d37-fe956b24b00a@codeaurora.org>
-References: <20180328102529.13435-1-vivek.gautam@codeaurora.org>
-	<993dcde3-f518-9852-9271-3a2c5a3300a5@arm.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [VERY RFC 0/2] iommu: optionally skip attaching to a DMA domain
+Date: Wed, 11 Apr 2018 19:32:55 -0400
+Message-ID: <CAF6AEGvVRPzGO00UqyiD2vBwZn4kDdr8rnBf2Tr4ypS0pRpHLQ@mail.gmail.com>
+References: <20180411185510.11594-1-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <993dcde3-f518-9852-9271-3a2c5a3300a5-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180411185510.11594-1-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,86 +17,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgoKT24gNC8zLzIwMTggNDoyNyBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9u
-IDI4LzAzLzE4IDExOjI1LCBWaXZlayBHYXV0YW0gd3JvdGU6Cj4+IEFzIHBhcnQgb2YgZG1hX2Rl
-Y29uZmlndXJlLCBsZXRzIGRlY29uZmlndXJlIHRoZSBpb21tdSB0b28KPj4gb24gZHJpdmVyIGRl
-dGFjaCwgc28gdGhhdCB3ZSBjbGVhciB0aGUgaW9tbXUgZG9tYWluIGFuZAo+PiByZWxhdGVkIGdy
-b3VwLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdhdXRhbUBjb2Rl
-YXVyb3JhLm9yZz4KPj4gLS0tCj4+Cj4+IEFzIGEgcGFydCBvZiBkbWFfZGVjb25maWd1cmUsIHNo
-b3VsZG4ndCB3ZSBkZWNvbmZpZ3VyZSB0aGUgaW9tbXUKPj4gYXMgd2VsbD8gVGhpcyBzaG91bGQg
-cmV2ZXJzZSBhbGwgdGhhdCB3ZSBkbyBpbiBvZl9pb21tdV9jb25maWd1cmUuCj4+IFNvIHRoYXQg
-d2UgY2FsbCB0aGUgLnJlbW92ZV9kZXZpY2Ugb3BzIGZvciBpb21tdSBhbmQgZXZlbnR1YWxseQo+
-PiBjbGVhciBhbGwgdGhlIGlvbW11IGRvbWFpbiwgcmVsYXRlZCBncm91cCBpbmZyYXN0cnVjdHVy
-ZS4KPj4gSSBhbSBzZWVpbmcgdGhhdCB0aGUgbG9hZGFibGUgbW9kdWxlcyBnZXQgdGhlIHNhbWUg
-aW9tbXUgY29uZmlndXJhdGlvbnMKPj4gYWZ0ZXIgcmUtbG9hZGluZyB0aGVtLCBpLmUuIGlvbW11
-IGRvbWFpbiwgYW5kIGlvdmFfZG9tYWluIAo+PiBjb25maWd1cmF0aW9ucywKPj4gYXMgd2UgZGlk
-bid0IGNsZWFyZWQgdGhlbS4KPj4gU28gc2hvdWxkIHdlIGJlIGNsZWFyaW5nIHRoZXNlIGNvbmZp
-Z3VyYXRpb25zLCBhbmQgdGhlcmVmb3JlIGRvIGEKPj4gb2ZfaW9tbXVfZGVjb25maWd1cmUoKSBv
-ciBzb3J0Pwo+Cj4gTm9wZS4gVW5iaW5kaW5nIGEgZHJpdmVyIGRvZXMgbm90IGNhdXNlIHRoZSBk
-ZXZpY2UgdG8gc3RvcCBleGlzdGluZywgCj4gbm9yIHJlbW92ZSBpdCBmcm9tIGl0cyBwYXJlbnQg
-YnVzLCB3aGljaCBpcyB3aGF0IC5yZW1vdmVfZGV2aWNlIAo+IHJlcHJlc2VudHMuIERldmljZSBn
-cm91cGluZyBpcyBiYXNlZCBvbiB0aGUgdW5kZXJseWluZyBoYXJkd2FyZSAKPiB0b3BvbG9neSwg
-d2hpY2ggaXNuJ3QgZ29pbmcgdG8gY2hhbmdlIGF0IHJ1bnRpbWUsIHNvIHRoZXJlJ3MgbGl0dGxl
-IAo+IHBvaW50IGluIHRoZSBzb2Z0d2FyZSBzdGF0ZSBwcmV0ZW5kaW5nIG90aGVyd2lzZS4gSWYg
-YSBtb2R1bGUgaXMgCj4gbGVha2luZyBETUEgbWFwcGluZ3MgaW4gdGhlIGRlZmF1bHQgZG9tYWlu
-IHdoZW4gdW5sb2FkZWQsIHRoYXQncyBhIGJ1ZyAKPiBpbiB0aGF0IG1vZHVsZSAoYW5kIGNlcnRh
-aW5seSBub3Qgc3BlY2lmaWMgdG8gdGhlIElPTU1VIGxheWVyKS4KClRoYW5rcyBmb3IgeW91ciBy
-ZXZpZXcsIGFuZCByZWFsbHkgc29ycnkgZm9yIHRoZSBkZWxheWVkIHJlc3BvbnNlLgpJIGNhbiBm
-b2xsb3cgd2hhdCB5b3Ugc2FpZC4gU28gdGhlIGRldmljZSB3aWxsIG9ubHkgYmUgcmVtb3ZlZCAo
-YnkgCi5yZW1vdmVfZGV2aWNlKSB3aGVuIHRoZXJlJ3MgYSBCVVNfTk9USUZZX1JFTU9WRURfREVW
-SUNFIG5vdGlmaWVyIGNhbGwuCldlIGNhbiBkcm9wIHRoaXMgcGF0Y2guCgpCZXN0IHJlZ2FyZHMK
-Vml2ZWsKCj4KPiBGb3IgcmVmZXJlbmNlLCB0aGUgb25seSByZWFzb24gd2UgdG91Y2ggLmFkZF9k
-ZXZpY2UgaW4gCj4gb2ZfaW9tbXVfY29uZmlndXJlKCkgaXMgYmVjYXVzZSBpb21tdV9idXNfaW5p
-dCgpIGlzIG5vdCBxdWl0ZSByZWxpYWJsZSAKPiBlbm91Z2ggZm9yIG11bHRpcGxlIElPTU1VIGlu
-c3RhbmNlcyBzZXJ2aW5nIHRoZSBwbGF0Zm9ybSBidXMgKG9yIAo+IHNpbWlsYXIpLiBJdCdzIGFu
-IHVnbHkgd29ya2Fyb3VuZCB3aGljaCBzaG91bGQgZ28gYXdheSBpZiBhbmQgd2hlbiB3ZSAKPiBt
-YW5hZ2UgdG8gZ2V0IHJpZCBvZiB0aGUgbm90aW9uIG9mIHBlci1idXMgb3BzIGluIHRoZSBBUEku
-Cj4KPiBSb2Jpbi4KPgo+Pgo+PiDCoCBkcml2ZXJzL2lvbW11L29mX2lvbW11LmMgfCAxMSArKysr
-KysrKysrKwo+PiDCoCBkcml2ZXJzL29mL2RldmljZS5jwqDCoMKgwqDCoCB8wqAgMSArCj4+IMKg
-IGluY2x1ZGUvbGludXgvb2ZfaW9tbXUuaCB8wqAgNSArKysrKwo+PiDCoCAzIGZpbGVzIGNoYW5n
-ZWQsIDE3IGluc2VydGlvbnMoKykKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvb2Zf
-aW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvb2ZfaW9tbXUuYwo+PiBpbmRleCA1YzM2YThiNzY1NmEu
-LjFhMjNlNjIwNGFkZSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9vZl9pb21tdS5jCj4+
-ICsrKyBiL2RyaXZlcnMvaW9tbXUvb2ZfaW9tbXUuYwo+PiBAQCAtMTYwLDYgKzE2MCwxNyBAQCBz
-dGF0aWMgaW50IG9mX3BjaV9pb21tdV9pbml0KHN0cnVjdCBwY2lfZGV2IAo+PiAqcGRldiwgdTE2
-IGFsaWFzLCB2b2lkICpkYXRhKQo+PiDCoMKgwqDCoMKgIHJldHVybiBlcnI7Cj4+IMKgIH0KPj4g
-wqAgK3ZvaWQgb2ZfaW9tbXVfZGVjb25maWd1cmUoc3RydWN0IGRldmljZSAqZGV2KQo+PiArewo+
-PiArwqDCoMKgIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcyA9IE5VTEw7Cj4+ICsKPj4gK8Kg
-wqDCoCBpZiAoZGV2LT5pb21tdV9md3NwZWMgJiYgZGV2LT5pb21tdV9md3NwZWMtPm9wcykKPj4g
-K8KgwqDCoMKgwqDCoMKgIG9wcyA9IGRldi0+aW9tbXVfZndzcGVjLT5vcHM7Cj4+ICsKPj4gK8Kg
-wqDCoCBpZiAob3BzICYmIG9wcy0+cmVtb3ZlX2RldmljZSAmJiBkZXYtPmlvbW11X2dyb3VwKQo+
-PiArwqDCoMKgwqDCoMKgwqAgb3BzLT5yZW1vdmVfZGV2aWNlKGRldik7Cj4+ICt9Cj4+ICsKPj4g
-wqAgY29uc3Qgc3RydWN0IGlvbW11X29wcyAqb2ZfaW9tbXVfY29uZmlndXJlKHN0cnVjdCBkZXZp
-Y2UgKmRldiwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHN0cnVjdCBkZXZpY2Vfbm9kZSAqbWFzdGVyX25wKQo+PiDCoCB7Cj4+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL29mL2RldmljZS5jIGIvZHJpdmVycy9vZi9kZXZpY2UuYwo+PiBpbmRleCAwNjRj
-ODE4MTA1YmQuLmUxM2NiNzkxNGRiZSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9vZi9kZXZpY2Uu
-Ywo+PiArKysgYi9kcml2ZXJzL29mL2RldmljZS5jCj4+IEBAIC0xNzcsNiArMTc3LDcgQEAgRVhQ
-T1JUX1NZTUJPTF9HUEwob2ZfZG1hX2NvbmZpZ3VyZSk7Cj4+IMKgIHZvaWQgb2ZfZG1hX2RlY29u
-ZmlndXJlKHN0cnVjdCBkZXZpY2UgKmRldikKPj4gwqAgewo+PiDCoMKgwqDCoMKgIGFyY2hfdGVh
-cmRvd25fZG1hX29wcyhkZXYpOwo+PiArwqDCoMKgIG9mX2lvbW11X2RlY29uZmlndXJlKGRldik7
-Cj4+IMKgIH0KPj4gwqAgwqAgaW50IG9mX2RldmljZV9yZWdpc3RlcihzdHJ1Y3QgcGxhdGZvcm1f
-ZGV2aWNlICpwZGV2KQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9vZl9pb21tdS5oIGIv
-aW5jbHVkZS9saW51eC9vZl9pb21tdS5oCj4+IGluZGV4IDRmYTY1NGU0YjVhOS4uM2Q0YzIyZTk1
-YzBjIDEwMDY0NAo+PiAtLS0gYS9pbmNsdWRlL2xpbnV4L29mX2lvbW11LmgKPj4gKysrIGIvaW5j
-bHVkZS9saW51eC9vZl9pb21tdS5oCj4+IEBAIC0xNSw2ICsxNSw4IEBAIGV4dGVybiBpbnQgb2Zf
-Z2V0X2RtYV93aW5kb3coc3RydWN0IGRldmljZV9ub2RlIAo+PiAqZG4sIGNvbnN0IGNoYXIgKnBy
-ZWZpeCwKPj4gwqAgZXh0ZXJuIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9mX2lvbW11X2NvbmZp
-Z3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBzdHJ1Y3QgZGV2aWNlX25vZGUgKm1hc3Rlcl9ucCk7Cj4+IMKgICtleHRl
-cm4gdm9pZCBvZl9pb21tdV9kZWNvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYpOwo+PiArCj4+
-IMKgICNlbHNlCj4+IMKgIMKgIHN0YXRpYyBpbmxpbmUgaW50IG9mX2dldF9kbWFfd2luZG93KHN0
-cnVjdCBkZXZpY2Vfbm9kZSAqZG4sIGNvbnN0IAo+PiBjaGFyICpwcmVmaXgsCj4+IEBAIC0zMCw2
-ICszMiw5IEBAIHN0YXRpYyBpbmxpbmUgY29uc3Qgc3RydWN0IGlvbW11X29wcyAKPj4gKm9mX2lv
-bW11X2NvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+IMKgwqDCoMKgwqAgcmV0dXJuIE5V
-TEw7Cj4+IMKgIH0KPj4gwqAgK3N0YXRpYyBpbmxpbmUgdm9pZCBvZl9pb21tdV9kZWNvbmZpZ3Vy
-ZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+ICt7IH0KPj4gKwo+PiDCoCAjZW5kaWbCoMKgwqAgLyog
-Q09ORklHX09GX0lPTU1VICovCj4+IMKgIMKgIGV4dGVybiBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkIF9f
-aW9tbXVfb2ZfdGFibGU7Cj4+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+On Wed, Apr 11, 2018 at 2:55 PM, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> I've been struggling with a problem for a while and I haven't been able to come
+> up with a clean solution. Rob convinced me to stop complaining and do
+> _something_ and hopefully this can spur a good discussion.
+>
+> The scenario is basically this: The MSM GPU wants to manage its own IOMMU
+> virtual address space in lieu of using the DMA API to do so. The most important
+> reason is that when per-instance pagetables [1] are enabled each file descriptor
+> uses its own pagetable which are dynamically switched between contexts. In
+> conjunction with this we use a split pagetable scheme to allow global buffers
+> be persistently mapped so even a single pagetable has multiple ranges that need
+> to be utilized based on buffer type.
+>
+> Obviously the DMA API isn't suitable for this kind of specialized use. We want
+> to push it off to the side, allocate our own domain, and use it directly with
+> the IOMMU APIs. In a perfect world we would just not use the DMA API and attach
+> our own domain and that would be the end of the story. Unfortunately this is not
+> a perfect world.
+>
+> In order to switch the pagetable from the GPU the SoC has some special wiring so
+> that the GPU can reprogram the TTBR0 register in the IOMMU to the appropriate
+> value. For a variety of reasons the hardware is hardcoded to only be able to
+> access context bank 0 in the SMMU device. Long story short; if the DMA
+> domain is allocated during bus enumeration and attached to context bank 0 then
+> by the time we get to the driver domain we have long since lost our chance to
+> get the context bank we need.
+>
+> After going back and forth and trying a few possible options it seems like the
+> "easiest" solution" is to skip attaching the DMA domain in the first place. But
+> we still need to create a default domain and set up the IOMMU groups correctly
+> so that when the GPU driver comes along it can attach the device and everything
+> will Just Work (TM). Rob suggested that we should use a blacklist of devices
+> that choose to not participate so thats what I'm offering as a starting point
+> for discussion.
+
+in an ideal world, the dma-mapping layer magic would not be forced on
+a driver, but would be an opt-in thing (ie. driver's ->probe() calls
+dma_setup_magic_iommu_stuff(dev)), and becomes more of a helper layer
+that drivers could opt-in to.. but that changes how things work
+significantly at iommu probe time and probably touches a lot of
+drivers.  A property in dt would be the easy down-stream solution, but
+this is mostly about the driver (but also about how the firmware
+works, so maybe dt is not out of bounds?).  The black-list approach is
+fairly simple, although maybe a bit of a point-solution.  (Although
+the number of drivers this problem applies to might not be much
+greater than 1.)
+
+So short version, very interested if anyone has better suggestions.
+Because we really need to do *something* here.
+
+BR,
+-R
+
+> The first patch in this series allows the specific IOMMU driver to gracefully
+> skip attaching a device by returning -ENOSUPP. In that case, the core will
+> skip printing error messages and it won't attach the domain to the group but
+> it still allows the group to get created so that the IOMMU device is properly
+> set up. In arch_setup_dma_ops() the call to iommu_get_domain_for_dev() will
+> return NULL and the IOMMU ops won't be set up.
+>
+> The second patch implements the blacklist in arm-smmu.c based on the compatible
+> string of the GPU device and returns -ENOTSUPP.
+>
+> I tested this with my current per-instance pagetable stack and it does the job
+> but I am very much in the market for better ideas.
+>
+> [1] https://patchwork.freedesktop.org/series/38729/
+>
+> Jordan Crouse (2):
+>   iommu: Gracefully allow drivers to not attach to a default domain
+>   iommu/arm-smmu: Add list of devices to opt out of DMA domains
+>
+>  drivers/iommu/arm-smmu.c | 23 +++++++++++++++++++++++
+>  drivers/iommu/iommu.c    | 18 ++++++++++++++----
+>  2 files changed, 37 insertions(+), 4 deletions(-)
+>
+> --
+> 2.16.1
+>
