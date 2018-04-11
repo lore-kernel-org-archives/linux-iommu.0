@@ -1,40 +1,81 @@
-From: Sinan Kaya <okaya@codeaurora.org>
-Subject: Re: [PATCH 03/37] iommu/sva: Manage process address spaces
-Date: Tue, 10 Apr 2018 14:53:47 -0400
-Message-ID: <04d4d161-ed72-f6b6-9b94-1d60bd79ef94@codeaurora.org>
-References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
- <20180212183352.22730-4-jean-philippe.brucker@arm.com>
+From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 5/5] iommu/arm-smmu: Add support for qcom,smmu-v2
+	variant
+Date: Wed, 11 Apr 2018 09:22:05 +0800
+Message-ID: <65a57964-805b-3a38-71a2-0c383af30539@huawei.com>
+References: <20180313085534.11650-1-vivek.gautam@codeaurora.org>
+	<20180313085534.11650-6-vivek.gautam@codeaurora.org>
+	<61d30fff-1bf8-d2c1-bbe9-f93de836ae77@huawei.com>
+	<7d5af071-ef98-8461-3ce9-e84fc0b3956a@codeaurora.org>
+	<d97872fe-5e8e-cc27-e385-64cea8ea2458@huawei.com>
+	<CAAFQd5Cj3qaqt8ACabZwN4ZKaNbF9N9suGVaOKD8-kNxgfeeVA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180212183352.22730-4-jean-philippe.brucker@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
-Cc: mark.rutland@arm.com, xieyisheng1@huawei.com, ilias.apalodimas@linaro.org, catalin.marinas@arm.com, xuzaibo@huawei.com, jonathan.cameron@huawei.com, will.deacon@arm.com, yi.l.liu@intel.com, lorenzo.pieralisi@arm.com, ashok.raj@intel.com, tn@semihalf.com, joro@8bytes.org, bharatku@xilinx.com, rfranz@cavium.com, lenb@kernel.org, jacob.jun.pan@linux.intel.com, alex.williamson@redhat.com, robh+dt@kernel.org, thunder.leizhen@huawei.com, bhelgaas@google.com, shunyong.yang@hxt-semitech.com, dwmw2@infradead.org, liubo95@huawei.com, rjw@rjwysocki.net, jcrouse@codeaurora.org, robdclark@gmail.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, robin.murphy@arm.com, christian.koenig@amd.com, nwatters@codeaurora.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAAFQd5Cj3qaqt8ACabZwN4ZKaNbF9N9suGVaOKD8-kNxgfeeVA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2/12/2018 1:33 PM, Jean-Philippe Brucker wrote:
-> +static void io_mm_detach_all_locked(struct iommu_bond *bond)
-> +{
-> +	while (!io_mm_detach_locked(bond));
-> +}
-> +
+Hi Tomasz,
 
-I don't remember if I mentioned this before or not but I think this loop
-needs a little bit relaxation with yield and maybe an informational message
-with might help if wait exceeds some time.
+On 2018/4/10 21:14, Tomasz Figa wrote:
+> Hi Yisheng,
+> 
+> Sorry, I think we missed your question here.
+> 
+> On Wed, Mar 28, 2018 at 3:12 PM Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
+> 
+>> Hi Vivek,
+> 
+>> On 2018/3/28 12:37, Vivek Gautam wrote:
+>>> Hi Yisheng
+>>>
+>>>
+>>> On 3/28/2018 6:54 AM, Yisheng Xie wrote:
+>>>> Hi Vivek,
+>>>>
+>>>> On 2018/3/13 16:55, Vivek Gautam wrote:
+>>>>> +- power-domains:  Specifiers for power domains required to be
+> powered on for
+>>>>> +                  the SMMU to operate, as per generic power domain
+> bindings.
+>>>>> +
+>>>> In this patchset, power-domains is not used right? And you just do the
+> clock gating,
+>>>> but not power gating, right?
+>>>
+>>> We are handling the power-domains too. Please see the example in this
+> binding doc.
+> 
+>> I see, but I do not find the point in code of these patchset, do you mean
+> PMIC(e.g mmcc)
+>> will gate the power domain of SMMU(e.g. MDSS_GDSC of mmcc) when PMIC
+> suspend?
+> 
+> 
+> If respective SoC power domains is registered as a standard genpd PM
+> domain, then the runtime PM subsystem will take care of power domain
+> control at runtime suspend and resume.
+> 
 
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+Get it, thanks for your explain, I should have learned about this.
+
+Thanks
+Yisheng
+
+> Best regards,
+> Tomasz
+> 
+> .
+> 
