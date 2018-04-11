@@ -1,93 +1,77 @@
-From: Robin Murphy <robin.murphy@arm.com>
+From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Subject: Re: [PATCH V2] drm/amdgpu: limit DMA size to PAGE_SIZE for
- scatter-gather buffers
-Date: Wed, 11 Apr 2018 13:03:59 +0100
-Message-ID: <32b82296-bba5-b5f1-266b-45c1ed66da94@arm.com>
+	scatter-gather buffers
+Date: Wed, 11 Apr 2018 10:33:14 -0400
+Message-ID: <1a1d0069-c8d3-cc0d-cf1c-8e90e4a2b0d7@codeaurora.org>
 References: <1523394001-4615-1-git-send-email-okaya@codeaurora.org>
+	<32b82296-bba5-b5f1-266b-45c1ed66da94@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1523394001-4615-1-git-send-email-okaya@codeaurora.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <32b82296-bba5-b5f1-266b-45c1ed66da94-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Sinan Kaya <okaya@codeaurora.org>, amd-gfx@lists.freedesktop.org, timur@codeaurora.org, sulrich@codeaurora.org
-Cc: Tom St Denis <tom.stdenis@amd.com>, David Panariti <David.Panariti@amd.com>, David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>, open list <linux-kernel@vger.kernel.org>, "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>, hch@lst.de, Emily Deng <Emily.Deng@amd.com>, iommu@lists.linux-foundation.org, Huang Rui <ray.huang@amd.com>, Roger He <Hongbo.He@amd.com>, linux-arm-kernel@lists.infradead.org, Feifei Xu <Feifei.Xu@amd.com>, Alex Deucher <alexander.deucher@amd.com>, Jim Qu <Jim.Qu@amd.com>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, Monk Liu <Monk.Liu@amd.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, sulrich-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "David (ChunMing) Zhou" <David1.Zhou-5C7GfCeVMHo@public.gmane.org>, David Panariti <David.Panariti-5C7GfCeVMHo@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Felix Kuehling <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:DRM DRIVERS" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, Emily Deng <Emily.Deng-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Huang Rui <ray.huang-5C7GfCeVMHo@public.gmane.org>, Roger He <Hongbo.He-5C7GfCeVMHo@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Feifei Xu <Feifei.Xu-5C7GfCeVMHo@public.gmane.org>, Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>, Jim Qu <Jim.Qu-5C7GfCeVMHo@public.gmane.org>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Monk Liu <Monk.Liu-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTAvMDQvMTggMjE6NTksIFNpbmFuIEtheWEgd3JvdGU6Cj4gQ29kZSBpcyBleHBlY2luZyB0
-byBvYnNlcnZlIHRoZSBzYW1lIG51bWJlciBvZiBidWZmZXJzIHJldHVybmVkIGZyb20KPiBkbWFf
-bWFwX3NnKCkgZnVuY3Rpb24gY29tcGFyZWQgdG8gc2dfYWxsb2NfdGFibGVfZnJvbV9wYWdlcygp
-LiBUaGlzCj4gZG9lc24ndCBob2xkIHRydWUgdW5pdmVyc2FsbHkgZXNwZWNpYWxseSBmb3Igc3lz
-dGVtcyB3aXRoIElPTU1VLgoKU28gd2h5IG5vdCBmaXggc2FpZCBjb2RlPyBJdCdzIGNsZWFybHkg
-bm90IGEgcmVhbCBoYXJkd2FyZSBsaW1pdGF0aW9uLCAKYW5kIHRoZSBtYXBfc2coKSBBUElzIGhh
-dmUgcG90ZW50aWFsbHkgcmV0dXJuZWQgZmV3ZXIgdGhhbiBuZW50cyBzaW5jZSAKZm9yZXZlciwg
-c28gdGhlcmUncyByZWFsbHkgbm8gZXhjdXNlLgoKPiBJT01NVSBkcml2ZXIgdHJpZXMgdG8gY29t
-YmluZSBidWZmZXJzIGludG8gYSBzaW5nbGUgRE1BIGFkZHJlc3MgYXMgbXVjaAo+IGFzIGl0IGNh
-bi4gVGhlIHJpZ2h0IHRoaW5nIGlzIHRvIHRlbGwgdGhlIERNQSBsYXllciBob3cgbXVjaCBjb21i
-aW5pbmcKPiBJT01NVSBjYW4gZG8uCgpEaXNhZ3JlZTsgdGhpcyBpcyBhIGRvZGd5IGhhY2ssIHNp
-bmNlIHlvdSdsbCBub3cgZW5kIHVwIHBhc3NpbmcgCnNjYXR0ZXJsaXN0cyBpbnRvIGRtYV9tYXBf
-c2coKSB3aGljaCBhbHJlYWR5IHZpb2xhdGUgbWF4X3NlZ19zaXplIHRvIApiZWdpbiB3aXRoLCBh
-bmQgSSB0aGluayBhIGNvbnNjaWVudGlvdXMgRE1BIEFQSSBpbXBsZW1lbnRhdGlvbiB3b3VsZCBi
-ZSAKYXQgcmlnaHRzIHRvIGZhaWwgdGhlIG1hcHBpbmcgZm9yIHRoYXQgcmVhc29uIChJIGtub3cg
-YXJtNjQgaGFwcGVucyBub3QgCnRvLCBidXQgdGhhdCB3YXMgYSBkZWxpYmVyYXRlIGRlc2lnbiBk
-ZWNpc2lvbiB0byBtYWtlIG15IGxpZmUgZWFzaWVyIGF0IAp0aGUgdGltZSkuCgpBcyBhIHNob3J0
-LXRlcm0gZml4LCBhdCBsZWFzdCBkbyBzb21ldGhpbmcgbGlrZSB3aGF0IGk5MTUgZG9lcyBhbmQg
-CmNvbnN0cmFpbiB0aGUgdGFibGUgYWxsb2NhdGlvbiB0byB0aGUgZGVzaXJlZCBzZWdtZW50IHNp
-emUgYXMgd2VsbCwgc28gCnRoaW5ncyByZW1haW4gc2VsZi1jb25zaXN0ZW50LiBCdXQgc3RpbGwg
-bmV2ZXIgY2xhaW0gdGhhdCBmYWtpbmcgYSAKaGFyZHdhcmUgY29uc3RyYWludCBhcyBhIHdvcmth
-cm91bmQgZm9yIGEgZHJpdmVyIHNob3J0Y29taW5nIGlzICJ0aGUgCnJpZ2h0IHRoaW5nIHRvIGRv
-IiA7KQoKUm9iaW4uCgo+IFNpZ25lZC1vZmYtYnk6IFNpbmFuIEtheWEgPG9rYXlhQGNvZGVhdXJv
-cmEub3JnPgo+IC0tLQo+ICAgZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRncHUvZ21jX3Y2XzAuYyB8
-IDIgKy0KPiAgIGRyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192N18wLmMgfCAxICsKPiAg
-IGRyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192OF8wLmMgfCAxICsKPiAgIGRyaXZlcnMv
-Z3B1L2RybS9hbWQvYW1kZ3B1L2dtY192OV8wLmMgfCAxICsKPiAgIDQgZmlsZXMgY2hhbmdlZCwg
-NCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-Z3B1L2RybS9hbWQvYW1kZ3B1L2dtY192Nl8wLmMgYi9kcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGdw
-dS9nbWNfdjZfMC5jCj4gaW5kZXggOGUyODI3MC4uMWIwMzFlYiAxMDA2NDQKPiAtLS0gYS9kcml2
-ZXJzL2dwdS9kcm0vYW1kL2FtZGdwdS9nbWNfdjZfMC5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJt
-L2FtZC9hbWRncHUvZ21jX3Y2XzAuYwo+IEBAIC04NTEsNyArODUxLDcgQEAgc3RhdGljIGludCBn
-bWNfdjZfMF9zd19pbml0KHZvaWQgKmhhbmRsZSkKPiAgIAkJcGNpX3NldF9jb25zaXN0ZW50X2Rt
-YV9tYXNrKGFkZXYtPnBkZXYsIERNQV9CSVRfTUFTSygzMikpOwo+ICAgCQlkZXZfd2FybihhZGV2
-LT5kZXYsICJhbWRncHU6IE5vIGNvaGVyZW50IERNQSBhdmFpbGFibGUuXG4iKTsKPiAgIAl9Cj4g
-LQo+ICsJZG1hX3NldF9tYXhfc2VnX3NpemUoYWRldi0+ZGV2LCBQQUdFX1NJWkUpOwo+ICAgCXIg
-PSBnbWNfdjZfMF9pbml0X21pY3JvY29kZShhZGV2KTsKPiAgIAlpZiAocikgewo+ICAgCQlkZXZf
-ZXJyKGFkZXYtPmRldiwgIkZhaWxlZCB0byBsb2FkIG1jIGZpcm13YXJlIVxuIik7Cj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192N18wLmMgYi9kcml2ZXJzL2dw
-dS9kcm0vYW1kL2FtZGdwdS9nbWNfdjdfMC5jCj4gaW5kZXggODZlOWQ2ODIuLjBhNGIyY2MxIDEw
-MDY0NAo+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192N18wLmMKPiArKysg
-Yi9kcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGdwdS9nbWNfdjdfMC5jCj4gQEAgLTk5OSw2ICs5OTks
-NyBAQCBzdGF0aWMgaW50IGdtY192N18wX3N3X2luaXQodm9pZCAqaGFuZGxlKQo+ICAgCQlwY2lf
-c2V0X2NvbnNpc3RlbnRfZG1hX21hc2soYWRldi0+cGRldiwgRE1BX0JJVF9NQVNLKDMyKSk7Cj4g
-ICAJCXByX3dhcm4oImFtZGdwdTogTm8gY29oZXJlbnQgRE1BIGF2YWlsYWJsZVxuIik7Cj4gICAJ
-fQo+ICsJZG1hX3NldF9tYXhfc2VnX3NpemUoYWRldi0+ZGV2LCBQQUdFX1NJWkUpOwo+ICAgCj4g
-ICAJciA9IGdtY192N18wX2luaXRfbWljcm9jb2RlKGFkZXYpOwo+ICAgCWlmIChyKSB7Cj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192OF8wLmMgYi9kcml2ZXJz
-L2dwdS9kcm0vYW1kL2FtZGdwdS9nbWNfdjhfMC5jCj4gaW5kZXggOWE4MTNkOC4uYjE3MTUyOSAx
-MDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGdwdS9nbWNfdjhfMC5jCj4gKysr
-IGIvZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRncHUvZ21jX3Y4XzAuYwo+IEBAIC0xMDk2LDYgKzEw
-OTYsNyBAQCBzdGF0aWMgaW50IGdtY192OF8wX3N3X2luaXQodm9pZCAqaGFuZGxlKQo+ICAgCQlw
-Y2lfc2V0X2NvbnNpc3RlbnRfZG1hX21hc2soYWRldi0+cGRldiwgRE1BX0JJVF9NQVNLKDMyKSk7
-Cj4gICAJCXByX3dhcm4oImFtZGdwdTogTm8gY29oZXJlbnQgRE1BIGF2YWlsYWJsZVxuIik7Cj4g
-ICAJfQo+ICsJZG1hX3NldF9tYXhfc2VnX3NpemUoYWRldi0+ZGV2LCBQQUdFX1NJWkUpOwo+ICAg
-Cj4gICAJciA9IGdtY192OF8wX2luaXRfbWljcm9jb2RlKGFkZXYpOwo+ICAgCWlmIChyKSB7Cj4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192OV8wLmMgYi9kcml2
-ZXJzL2dwdS9kcm0vYW1kL2FtZGdwdS9nbWNfdjlfMC5jCj4gaW5kZXggM2I3ZTdhZi4uMzZlNjU4
-YWIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRncHUvZ21jX3Y5XzAuYwo+
-ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9hbWQvYW1kZ3B1L2dtY192OV8wLmMKPiBAQCAtODU1LDYg
-Kzg1NSw3IEBAIHN0YXRpYyBpbnQgZ21jX3Y5XzBfc3dfaW5pdCh2b2lkICpoYW5kbGUpCj4gICAJ
-CXBjaV9zZXRfY29uc2lzdGVudF9kbWFfbWFzayhhZGV2LT5wZGV2LCBETUFfQklUX01BU0soMzIp
-KTsKPiAgIAkJcHJpbnRrKEtFUk5fV0FSTklORyAiYW1kZ3B1OiBObyBjb2hlcmVudCBETUEgYXZh
-aWxhYmxlLlxuIik7Cj4gICAJfQo+ICsJZG1hX3NldF9tYXhfc2VnX3NpemUoYWRldi0+ZGV2LCBQ
-QUdFX1NJWkUpOwo+ICAgCj4gICAJciA9IGdtY192OV8wX21jX2luaXQoYWRldik7Cj4gICAJaWYg
-KHIpCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
-aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
-czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+On 4/11/2018 8:03 AM, Robin Murphy wrote:
+> On 10/04/18 21:59, Sinan Kaya wrote:
+>> Code is expecing to observe the same number of buffers returned from
+>> dma_map_sg() function compared to sg_alloc_table_from_pages(). This
+>> doesn't hold true universally especially for systems with IOMMU.
+> 
+> So why not fix said code? It's clearly not a real hardware limitation, and the map_sg() APIs have potentially returned fewer than nents since forever, so there's really no excuse.
+
+Sure, I'll take a better fix if there is one.
+
+> 
+>> IOMMU driver tries to combine buffers into a single DMA address as much
+>> as it can. The right thing is to tell the DMA layer how much combining
+>> IOMMU can do.
+> 
+> Disagree; this is a dodgy hack, since you'll now end up passing scatterlists into dma_map_sg() which already violate max_seg_size to begin with, and I think a conscientious DMA API implementation would be at rights to fail the mapping for that reason (I know arm64 happens not to, but that was a deliberate design decision to make my life easier at the time).
+> 
+> As a short-term fix, at least do something like what i915 does and constrain the table allocation to the desired segment size as well, so things remain self-consistent. But still never claim that faking a hardware constraint as a workaround for a driver shortcoming is "the right thing to do" ;)
+
+You are asking for something like this from here, right?
+
+https://elixir.bootlin.com/linux/v4.16.1/source/drivers/gpu/drm/i915/i915_gem_dmabuf.c#L58
+
+
+	ret = sg_alloc_table(st, obj->mm.pages->nents, GFP_KERNEL);
+	if (ret)
+		goto err_free;
+
+	src = obj->mm.pages->sgl;
+	dst = st->sgl;
+	for (i = 0; i < obj->mm.pages->nents; i++) {
+		sg_set_page(dst, sg_page(src), src->length, 0);
+		dst = sg_next(dst);
+		src = sg_next(src);
+	}
+
+This seems to allocate the scatter gather list and fill it in manually before passing it
+to dma_map_sg(). I'll give it a try. 
+
+Just double checking.
+
+> 
+> Robin.
+> 
+>> Signed-off-by: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+
+
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
