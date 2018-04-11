@@ -1,83 +1,60 @@
 From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 1/2] iommu: Gracefully allow drivers to not attach to a
-	default domain
-Date: Wed, 11 Apr 2018 12:55:09 -0600
-Message-ID: <20180411185510.11594-2-jcrouse@codeaurora.org>
+Subject: [PATCH 2/2] iommu/arm-smmu: Add list of devices to opt
+ out of DMA domains
+Date: Wed, 11 Apr 2018 12:55:10 -0600
+Message-ID: <20180411185510.11594-3-jcrouse@codeaurora.org>
 References: <20180411185510.11594-1-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 In-Reply-To: <20180411185510.11594-1-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Provide individual device drivers the chance to gracefully refuse
-to attach a device to the default domain. If the attach_device
-op returns -ENOTSUPP don't print a error message and don't set
-group->domain but still return success from iommu_group_add_dev().
-
-This allows all the usual APIs to work and the next domain to try
-to attach will take group->domain for itself and everything will
-proceed as normal.
-
-Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/iommu.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 69fef991c651..2403cce138d2 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -592,7 +592,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	if (group->domain)
- 		ret = __iommu_attach_device(group->domain, dev);
- 	mutex_unlock(&group->mutex);
--	if (ret)
-+	if (ret && ret != -ENOTSUPP)
- 		goto err_put_group;
- 
- 	/* Notify any listeners about change to group. */
-@@ -617,7 +617,9 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	sysfs_remove_link(&dev->kobj, "iommu_group");
- err_free_device:
- 	kfree(device);
--	pr_err("Failed to add device %s to group %d: %d\n", dev_name(dev), group->id, ret);
-+	if (ret != -ENOTSUPP)
-+		pr_err("Failed to add device %s to group %d: %d\n",
-+			dev_name(dev), group->id, ret);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_group_add_device);
-@@ -1039,8 +1041,16 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 
- 	ret = iommu_group_add_device(group, dev);
- 	if (ret) {
--		iommu_group_put(group);
--		return ERR_PTR(ret);
-+		/*
-+		 * If the driver chooses not to bind the device, reset
-+		 * group->domain so a new domain can be added later
-+		 */
-+		if (ret == -ENOTSUPP)
-+			group->domain = NULL;
-+		else {
-+			iommu_group_put(group);
-+			return ERR_PTR(ret);
-+		}
- 	}
- 
- 	return group;
--- 
-2.16.1
+QWRkIGEgbGlzdCBvZiBjb21wYXRpYmxlIHN0cmluZ3MgZm9yIGRldmljZXMgdGhhdCB3aXNoIHRv
+IG9wdCBvdXQKb2YgYXR0YWNoaW5nIHRvIGEgRE1BIGRvbWFpbi4gIFRoaXMgaXMgZm9yIGRldmlj
+ZXMgdGhhdCBwcmVmZXIgdG8KbWFuYWdlIHRoZWlyIG93biBJT01NVSBzcGFjZSBmb3IgYW55IG51
+bWJlciBvZiByZWFzb25zLiBSZXR1cm5pbmcKRU5PVFNVUFAgZm9yIGF0dGFjaCBkZXZpY2Ugd2ls
+bCBmaWx0ZXIgZG93biBhbmQgZm9yY2UKYXJjaF9zZXR1cF9kbWFfb3BzKCkgdG8gbm90IHNldCB1
+cCB0aGUgaW9tbXUgRE1BIG9wcy4gTGF0ZXIKdGhlIGNsaWVudCBkZXZpY2UgaW4gcXVlc3Rpb24g
+Y2FuIHNldCB1cCBhbmQgYXR0YWNoIHRoZWlyIG93bgpkb21haW4uCgpTaWduZWQtb2ZmLWJ5OiBK
+b3JkYW4gQ3JvdXNlIDxqY3JvdXNlQGNvZGVhdXJvcmEub3JnPgotLS0KIGRyaXZlcnMvaW9tbXUv
+YXJtLXNtbXUuYyB8IDIzICsrKysrKysrKysrKysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwg
+MjMgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBi
+L2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwppbmRleCA2OWU3YzYwNzkyYTguLjA5ZmEwM2ExNWY0
+ZiAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZlcnMvaW9t
+bXUvYXJtLXNtbXUuYwpAQCAtMTE4Nyw2ICsxMTg3LDE1IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVf
+ZG9tYWluX2FkZF9tYXN0ZXIoc3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21tdV9kb21haW4sCiAJ
+cmV0dXJuIDA7CiB9CiAKKy8qCisgKiBUaGlzIGlzIGEgbGlzdCBvZiBjb21wYXRpYmxlIHN0cmlu
+Z3MgZm9yIGRldmljZXMgdGhhdCB3aXNoIHRvIG1hbmFnZSB0aGVpcgorICogb3duIElPTU1VIHNw
+YWNlIGluc3RlYWQgb2YgdGhlIERNQSBJT01NVSBvcHMuIERldmljZXMgb24gdGhpcyBsaXN0IHdp
+bGwgbm90CisgKiBhbGxvdyB0aGVtc2VsdmVzIHRvIGJlIGF0dGFjaGVkIHRvIGEgSU9NTVVfRE9N
+QUlOX0RNQSBkb21haW4KKyAqLworc3RhdGljIGNvbnN0IGNoYXIgKiBjb25zdCBhcm1fc21tdV9k
+bWFfYmxhY2tsaXN0W10gPSB7CisJInFjb20sYWRyZW5vIiwKK307CisKIHN0YXRpYyBpbnQgYXJt
+X3NtbXVfYXR0YWNoX2RldihzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHN0cnVjdCBkZXZp
+Y2UgKmRldikKIHsKIAlpbnQgcmV0OwpAQCAtMTIwOSw2ICsxMjE4LDIwIEBAIHN0YXRpYyBpbnQg
+YXJtX3NtbXVfYXR0YWNoX2RldihzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHN0cnVjdCBk
+ZXZpY2UgKmRldikKIAlpZiAoIWZ3c3BlYy0+aW9tbXVfcHJpdikKIAkJcmV0dXJuIC1FTk9ERVY7
+CiAKKwkvKgorCSAqIElmIHRoaXMgaXMgdGhlIGRmZWF1bHQgRE1BIGRvbWFpbiwgY2hlY2sgdG8g
+c2VlIGlmIHRoZSBkZXZpY2UgaXMgb24KKwkgKiB0aGUgYmxhY2tsaXN0IGFuZCByZWplY3QgaWYg
+c28KKwkgKi8KKwlpZiAoZG9tYWluLT50eXBlID09IElPTU1VX0RPTUFJTl9ETUEgJiYgZGV2LT5v
+Zl9ub2RlKSB7CisJCWludCBpOworCisJCWZvciAoaSA9IDA7IGkgPCBBUlJBWV9TSVpFKGFybV9z
+bW11X2RtYV9ibGFja2xpc3QpOyBpKyspIHsKKwkJCWlmIChvZl9kZXZpY2VfaXNfY29tcGF0aWJs
+ZShkZXYtPm9mX25vZGUsCisJCQkJYXJtX3NtbXVfZG1hX2JsYWNrbGlzdFtpXSkpCisJCQkJcmV0
+dXJuIC1FTk9UU1VQUDsKKwkJfQorCX0KKwogCXNtbXUgPSBmd3NwZWNfc21tdShmd3NwZWMpOwog
+CS8qIEVuc3VyZSB0aGF0IHRoZSBkb21haW4gaXMgZmluYWxpc2VkICovCiAJcmV0ID0gYXJtX3Nt
+bXVfaW5pdF9kb21haW5fY29udGV4dChkb21haW4sIHNtbXUpOwotLSAKMi4xNi4xCgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGlu
+ZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVl
+ZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
