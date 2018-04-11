@@ -1,74 +1,207 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
-Date: Wed, 11 Apr 2018 17:54:58 +0100
-Message-ID: <438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
-References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
-	<3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
-	<3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH 1/4] iommu: Add virtio-iommu driver
+Date: Wed, 11 Apr 2018 19:33:53 +0100
+Message-ID: <a67a759a-e12b-998e-40aa-84e539619484@arm.com>
+References: <20180214145340.1223-1-jean-philippe.brucker@arm.com>
+	<20180214145340.1223-2-jean-philippe.brucker@arm.com>
+	<d0cfe602-f6e8-2d6e-0942-23012f3facef@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3772fb2d-01b7-4820-6d13-a0263654dabc-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <d0cfe602-f6e8-2d6e-0942-23012f3facef@arm.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Robin Murphy <robin.murphy@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Cc: "jayachandran.nair@cavium.com" <jayachandran.nair@cavium.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, Tomasz.Nowicki@caviumnetworks.com, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Will Deacon <Will.Deacon@arm.com>, "jintack@cs.columbia.edu" <jintack@cs.columbia.edu>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgU2FtbWVyLAoKT24gMTEvMDQvMTggMTY6NTgsIEdvZWwsIFNhbWVlciB3cm90ZToKPiAKPiAK
-PiBPbiAzLzI4LzIwMTggOTowMCBBTSwgTWFyYyBaeW5naWVyIHdyb3RlOgo+PiBPbiAyMDE4LTAz
-LTI4IDE1OjM5LCBUaW11ciBUYWJpIHdyb3RlOgo+Pj4gRnJvbTogU2FtZWVyIEdvZWwgPHNnb2Vs
-QGNvZGVhdXJvcmEub3JnPgo+Pj4KPj4+IFNldCBTTU1VX0dCUEEgdG8gYWJvcnQgYWxsIGluY29t
-aW5nIHRyYW5zbGF0aW9ucyBkdXJpbmcgdGhlIFNNTVUgcmVzZXQKPj4+IHdoZW4gU01NVUVOPT0w
-Lgo+Pj4KPj4+IFRoaXMgcHJldmVudHMgYSByYWNlIGNvbmRpdGlvbiB3aGVyZSBhIHN0cmF5IERN
-QSBmcm9tIHRoZSBjcmFzaGVkIHByaW1hcnkKPj4+IGtlcm5lbCBjYW4gdHJ5IHRvIGFjY2VzcyBh
-biBJT1ZBIGFkZHJlc3MgYXMgYW4gaW52YWxpZCBQQSB3aGVuIFNNTVUgaXMKPj4+IGRpc2FibGVk
-IGR1cmluZyByZXNldCBpbiB0aGUgY3Jhc2gga2VybmVsLgo+Pj4KPj4+IFNpZ25lZC1vZmYtYnk6
-IFNhbWVlciBHb2VsIDxzZ29lbEBjb2RlYXVyb3JhLm9yZz4KPj4+IC0tLQo+Pj4gwqBkcml2ZXJz
-L2lvbW11L2FybS1zbW11LXYzLmMgfCAxMiArKysrKysrKysrKysKPj4+IMKgMSBmaWxlIGNoYW5n
-ZWQsIDEyIGluc2VydGlvbnMoKykKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9h
-cm0tc21tdS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jCj4+PiBpbmRleCAzZjJm
-MWZjNjhiNTIuLmMwNGE4OTMxMGM1OSAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJt
-LXNtbXUtdjMuYwo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jCj4+PiBAQCAt
-MjQ1OCw2ICsyNDU4LDE4IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX3Jlc2V0KHN0cnVj
-dAo+Pj4gYXJtX3NtbXVfZGV2aWNlICpzbW11LCBib29sIGJ5cGFzcykKPj4+IMKgwqDCoMKgIGlm
-IChyZWcgJiBDUjBfU01NVUVOKQo+Pj4gwqDCoMKgwqDCoMKgwqDCoCBkZXZfd2FybihzbW11LT5k
-ZXYsICJTTU1VIGN1cnJlbnRseSBlbmFibGVkISBSZXNldHRpbmcuLi5cbiIpOwo+Pj4KPj4+ICvC
-oMKgwqAgLyoKPj4+ICvCoMKgwqDCoCAqIEFib3J0IGFsbCBpbmNvbWluZyB0cmFuc2xhdGlvbnMu
-IFRoaXMgY2FuIGhhcHBlbiBpbiBhIGtkdW1wIGNhc2UKPj4+ICvCoMKgwqDCoCAqIHdoZXJlIFNN
-TVUgaXMgaW5pdGlhbGl6ZWQgd2hlbiBhIHByaW9yIERNQSBpcyBwZW5kaW5nLiBKdXN0Cj4+PiAr
-wqDCoMKgwqAgKiBkaXNhYmxpbmcgdGhlIFNNTVUgaW4gdGhpcyBjYXNlIG1pZ2h0IHJlc3VsdCBp
-biB3cml0ZXMgdG8gaW52YWxpZAo+Pj4gK8KgwqDCoMKgICogUEFzLgo+Pj4gK8KgwqDCoMKgICov
-Cj4+PiArwqDCoMKgIHJldCA9IGFybV9zbW11X3VwZGF0ZV9nYnBhKHNtbXUsIDEsIEdCUEFfQUJP
-UlQpOwo+Pj4gK8KgwqDCoCBpZiAocmV0KSB7Cj4+PiArwqDCoMKgwqDCoMKgwqAgZGV2X2Vycihz
-bW11LT5kZXYsICJHQlBBIG5vdCByZXNwb25kaW5nIHRvIHVwZGF0ZVxuIik7Cj4+PiArwqDCoMKg
-wqDCoMKgwqAgcmV0dXJuIHJldDsKPj4+ICvCoMKgwqAgfQo+Pj4gKwo+Pj4gwqDCoMKgwqAgcmV0
-ID0gYXJtX3NtbXVfZGV2aWNlX2Rpc2FibGUoc21tdSk7Cj4+PiDCoMKgwqDCoCBpZiAocmV0KQo+
-Pj4gwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+Pgo+PiBBIHRhbmdlbnRpYWwgcXVlc3Rp
-b246IGNhbiB3ZSByZWxpYWJseSBkZXRlY3QgdGhhdCB0aGUgU01NVSBhbHJlYWR5Cj4+IGhhcyB2
-YWxpZCBtYXBwaW5ncywgd2hpY2ggd291bGQgaW5kaWNhdGUgdGhhdCB3ZSdyZSBpbiBhIHByZXR0
-eSBiYWQKPj4gc2hhcGUgYWxyZWFkeSBieSB0aGUgdGltZSB3ZSBzZXQgdGhhdCBiaXQ/IEZvciBh
-bGwgd2Uga25vdywgbWVtb3J5Cj4+IGNvdWxkIGhhdmUgYmVlbiBjb3JydXB0ZWQgbG9uZyBiZWZv
-cmUgd2UgaGl0IHRoaXMgcG9pbnQsIGFuZCB0aGlzCj4+IHBhdGNoIGJhcmVseSBuYXJyb3dzIHRo
-ZSB3aW5kb3cgb2Ygb3Bwb3J0dW5pdHkuCj4KPiA6KSBZZXMgdGhhdCBpcyBjb3JyZWN0LiBUaGlz
-IG9ubHkgY292ZXJzIHRoZSBrZHVtcCBzY2VuYXJpby4gVHJ5aW5nCj4gdG8gZ2V0IHNvbWUgcmVs
-aWFiaWxpdHkgd2hlbiBib290aW5nIHVwIHRoZSBjcmFzaCBrZXJuZWwuIFRoZSBzeXN0ZW0KPiBp
-cyBhbHJlYWR5IGluIGEgYmFkIHN0YXRlLiBJIGRvbid0IHRoaW5rIHRoYXQgdGhpcyB3aWxsIGhh
-cHBlbiBpbiBhCj4gbm9ybWFsIHNjZW5hcmlvLiBCdXQgcGxlYXNlIHBvaW50IG1lIHRvIHRoZSBH
-SUN2MyBjaGFuZ2UgYW5kIEknbGwKPiBoYXZlIGEgbG9vay4KClNlZSB0aGlzOgpodHRwczovL2dp
-dC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9tYXovYXJtLXBsYXRmb3Jtcy5n
-aXQvdHJlZS9kcml2ZXJzL2lycWNoaXAvaXJxLWdpYy12My1pdHMuYz9oPWlycS9pcnFjaGlwLTQu
-MTcmaWQ9NmViNDg2YjY2YTMwOTRjZGNkNjhkYzM5YzlkZjNhMjlkNmE1MWRkNSNuMzQwNwoKCU0u
-Ci0tIApKYXp6IGlzIG5vdCBkZWFkLiBJdCBqdXN0IHNtZWxscyBmdW5ueS4uLgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 23/03/18 14:48, Robin Murphy wrote:
+[..]
+>> + * Virtio driver for the paravirtualized IOMMU
+>> + *
+>> + * Copyright (C) 2018 ARM Limited
+>> + * Author: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> + *
+>> + * SPDX-License-Identifier: GPL-2.0
+> 
+> This wants to be a // comment at the very top of the file (thankfully 
+> the policy is now properly documented in-tree since 
+> Documentation/process/license-rules.rst got merged)
+
+Ok
+
+[...]
+>> +
+>> +/*
+>> + * viommu_del_mappings - remove mappings from the internal tree
+>> + *
+>> + * @vdomain: the domain
+>> + * @iova: start of the range
+>> + * @size: size of the range. A size of 0 corresponds to the entire address
+>> + *	space.
+>> + * @out_mapping: if not NULL, the first removed mapping is returned in there.
+>> + *	This allows the caller to reuse the buffer for the unmap request. When
+>> + *	the returned size is greater than zero, if a mapping is returned, the
+>> + *	caller must free it.
+> 
+> This "free multiple mappings except maybe hand one of them off to the 
+> caller" interface is really unintuitive. AFAICS it's only used by 
+> viommu_unmap() to grab mapping->req, but that doesn't seem to care about 
+> mapping itself, so I wonder whether it wouldn't make more sense to just 
+> have a global kmem_cache of struct virtio_iommu_req_unmap for that and 
+> avoid a lot of complexity...
+
+Well it's a small complication for what I hoped would be a meanignful
+performance difference, but more below.
+
+>> +
+>> +/* IOMMU API */
+>> +
+>> +static bool viommu_capable(enum iommu_cap cap)
+>> +{
+>> +	return false;
+>> +}
+> 
+> The .capable callback is optional, so it's only worth implementing once 
+> you want it to do something beyond the default behaviour.
+> 
+
+Ah, right
+
+[...]
+>> +static size_t viommu_unmap(struct iommu_domain *domain, unsigned long iova,
+>> +			   size_t size)
+>> +{
+>> +	int ret = 0;
+>> +	size_t unmapped;
+>> +	struct viommu_mapping *mapping = NULL;
+>> +	struct viommu_domain *vdomain = to_viommu_domain(domain);
+>> +
+>> +	unmapped = viommu_del_mappings(vdomain, iova, size, &mapping);
+>> +	if (unmapped < size) {
+>> +		ret = -EINVAL;
+>> +		goto out_free;
+>> +	}
+>> +
+>> +	/* Device already removed all mappings after detach. */
+>> +	if (!vdomain->endpoints)
+>> +		goto out_free;
+>> +
+>> +	if (WARN_ON(!mapping))
+>> +		return 0;
+>> +
+>> +	mapping->req.unmap = (struct virtio_iommu_req_unmap) {
+>> +		.head.type	= VIRTIO_IOMMU_T_UNMAP,
+>> +		.domain		= cpu_to_le32(vdomain->id),
+>> +		.virt_start	= cpu_to_le64(iova),
+>> +		.virt_end	= cpu_to_le64(iova + unmapped - 1),
+>> +	};
+> 
+> ...In fact, the kmem_cache idea might be moot since it looks like with a 
+> bit of restructuring you could get away with just a single per-viommu 
+> virtio_iommu_req_unmap structure; this lot could be passed around on the 
+> stack until request_lock is taken, at which point it would be copied 
+> into the 'real' DMA-able structure. The equivalent might apply to 
+> viommu_map() too - now that I'm looking at it, it seems like it would 
+> take pretty minimal effort to encapsulate the whole business cleanly in 
+> viommu_send_req_sync(), which could do something like this instead of 
+> going through viommu_send_reqs_sync():
+> 
+> 	...
+> 	spin_lock_irqsave(&viommu->request_lock, flags);
+> 	viommu_copy_req(viommu->dma_req, req);
+> 	ret = _viommu_send_reqs_sync(viommu, viommu->dma_req, 1, &sent);
+> 	spin_unlock_irqrestore(&viommu->request_lock, flags);
+> 	...
+
+I'll have to come back to that sorry, still conducting some experiments
+with map/unmap.
+
+I'd rather avoid introducing a single dma_req per viommu, because I'd
+like to move to the iotlb_range_add/iotlb_sync interface as soon as
+possible, and the request logic changes a lot when multiple threads are
+susceptible to interleave map/unmap requests.
+
+I ran some tests, and adding a kmem_cache (or simply using kmemdup, it
+doesn't make a noticeable difference at our scale) reduces netperf
+stream/maerts throughput by 1.1%/1.4% (+/- 0.5% over 30 tests). That's
+for a virtio-net device (1 tx/rx vq), and with a vfio device the
+difference isn't measurable. At this point I'm not fussy about such
+small difference, so don't mind simplifying viommu_del_mapping.
+
+[...]
+>> +	/*
+>> +	 * Last step creates a default domain and attaches to it. Everything
+>> +	 * must be ready.
+>> +	 */
+>> +	group = iommu_group_get_for_dev(dev);
+>> +	if (!IS_ERR(group))
+>> +		iommu_group_put(group);
+> 
+> Since you create the sysfs IOMMU device, maybe also create the links for 
+> the masters?
+
+Ok
+
+>> +
+>> +	return PTR_ERR_OR_ZERO(group);
+>> +}
+>> +
+>> +static void viommu_remove_device(struct device *dev)
+>> +{
+> 
+> You need to remove dev from its group, too (basically, .remove_device 
+> should always undo everything .add_device did)
+> 
+> It would also be good practice to verify that dev->iommu_fwspec exists 
+> and is one of yours before touching anything, although having checked 
+> the core code I see we do currently just about get away with it thanks 
+> to the horrible per-bus ops.
+
+Ok
+
+> 
+>> +	kfree(dev->iommu_fwspec->iommu_priv);
+>> +}
+>> +
+>> +static struct iommu_group *viommu_device_group(struct device *dev)
+>> +{
+>> +	if (dev_is_pci(dev))
+>> +		return pci_device_group(dev);
+>> +	else
+>> +		return generic_device_group(dev);
+>> +}
+>> +
+>> +static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>> +{
+>> +	return iommu_fwspec_add_ids(dev, args->args, 1);
+> 
+> I'm sure a DT binding somewhere needs to document the appropriate value 
+> and meaning for #iommu-cells - I guess that probably falls under the 
+> virtio-mmio binding?
+
+Yes I guess mmio.txt would be the best place for this.
+
+[...]
+>> +/*
+>> + * Virtio-iommu definition v0.6
+>> + *
+>> + * Copyright (C) 2018 ARM Ltd.
+>> + *
+>> + * SPDX-License-Identifier: BSD-3-Clause
+> 
+> Again, at the top, although in /* */ here since it's a header.
+
+Right
+
+Thanks for the review,
+Jean
