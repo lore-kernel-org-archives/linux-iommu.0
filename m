@@ -1,14 +1,14 @@
 From: "Goel, Sameer" <sgoel@codeaurora.org>
 Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
-Date: Wed, 11 Apr 2018 09:54:49 -0600
-Message-ID: <0b58c706-e2f9-83c0-7936-f13de79e2010@codeaurora.org>
+Date: Wed, 11 Apr 2018 09:58:05 -0600
+Message-ID: <3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
 References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
- <20180405112622.GE23485@arm.com>
+ <3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180405112622.GE23485@arm.com>
+In-Reply-To: <3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
 Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -19,54 +19,56 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, Timur Tabi <timur@codeaurora.org>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, nwatters@codeaurora.org, linux-arm-kernel@lists.infradead.org
+To: Marc Zyngier <marc.zyngier@arm.com>, Timur Tabi <timur@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, nwatters@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 4/5/2018 5:26 AM, Will Deacon wrote:
-> On Wed, Mar 28, 2018 at 09:39:40AM -0500, Timur Tabi wrote:
->> From: Sameer Goel <sgoel@codeaurora.org>
->>
->> Set SMMU_GBPA to abort all incoming translations during the SMMU reset
->> when SMMUEN==0.
->>
->> This prevents a race condition where a stray DMA from the crashed primary
->> kernel can try to access an IOVA address as an invalid PA when SMMU is
->> disabled during reset in the crash kernel.
->>
->> Signed-off-by: Sameer Goel <sgoel@codeaurora.org>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 12 ++++++++++++
->>  1 file changed, 12 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 3f2f1fc68b52..c04a89310c59 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -2458,6 +2458,18 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->>  	if (reg & CR0_SMMUEN)
->>  		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
->>  
->> +	/*
->> +	 * Abort all incoming translations. This can happen in a kdump case
->> +	 * where SMMU is initialized when a prior DMA is pending. Just
->> +	 * disabling the SMMU in this case might result in writes to invalid
->> +	 * PAs.
->> +	 */
->> +	ret = arm_smmu_update_gbpa(smmu, 1, GBPA_ABORT);
->> +	if (ret) {
->> +		dev_err(smmu->dev, "GBPA not responding to update\n");
->> +		return ret;
->> +	}
-> 
-> This needs to be predicated on the disable_bypass option, otherwise I think
-> it will cause regressions for systems that rely on passthrough.
-Ok, I'll make the change.
-> 
-> Will
-> 
-
--- 
- Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc. Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+CgpPbiAzLzI4LzIwMTggOTowMCBBTSwgTWFyYyBaeW5naWVyIHdyb3RlOgo+IE9uIDIwMTgtMDMt
+MjggMTU6MzksIFRpbXVyIFRhYmkgd3JvdGU6Cj4+IEZyb206IFNhbWVlciBHb2VsIDxzZ29lbEBj
+b2RlYXVyb3JhLm9yZz4KPj4KPj4gU2V0IFNNTVVfR0JQQSB0byBhYm9ydCBhbGwgaW5jb21pbmcg
+dHJhbnNsYXRpb25zIGR1cmluZyB0aGUgU01NVSByZXNldAo+PiB3aGVuIFNNTVVFTj09MC4KPj4K
+Pj4gVGhpcyBwcmV2ZW50cyBhIHJhY2UgY29uZGl0aW9uIHdoZXJlIGEgc3RyYXkgRE1BIGZyb20g
+dGhlIGNyYXNoZWQgcHJpbWFyeQo+PiBrZXJuZWwgY2FuIHRyeSB0byBhY2Nlc3MgYW4gSU9WQSBh
+ZGRyZXNzIGFzIGFuIGludmFsaWQgUEEgd2hlbiBTTU1VIGlzCj4+IGRpc2FibGVkIGR1cmluZyBy
+ZXNldCBpbiB0aGUgY3Jhc2gga2VybmVsLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBTYW1lZXIgR29l
+bCA8c2dvZWxAY29kZWF1cm9yYS5vcmc+Cj4+IC0tLQo+PiDCoGRyaXZlcnMvaW9tbXUvYXJtLXNt
+bXUtdjMuYyB8IDEyICsrKysrKysrKysrKwo+PiDCoDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRp
+b25zKCspCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMgYi9k
+cml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPj4gaW5kZXggM2YyZjFmYzY4YjUyLi5jMDRhODkz
+MTBjNTkgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+PiArKysg
+Yi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPj4gQEAgLTI0NTgsNiArMjQ1OCwxOCBAQCBz
+dGF0aWMgaW50IGFybV9zbW11X2RldmljZV9yZXNldChzdHJ1Y3QKPj4gYXJtX3NtbXVfZGV2aWNl
+ICpzbW11LCBib29sIGJ5cGFzcykKPj4gwqDCoMKgwqAgaWYgKHJlZyAmIENSMF9TTU1VRU4pCj4+
+IMKgwqDCoMKgwqDCoMKgwqAgZGV2X3dhcm4oc21tdS0+ZGV2LCAiU01NVSBjdXJyZW50bHkgZW5h
+YmxlZCEgUmVzZXR0aW5nLi4uXG4iKTsKPj4KPj4gK8KgwqDCoCAvKgo+PiArwqDCoMKgwqAgKiBB
+Ym9ydCBhbGwgaW5jb21pbmcgdHJhbnNsYXRpb25zLiBUaGlzIGNhbiBoYXBwZW4gaW4gYSBrZHVt
+cCBjYXNlCj4+ICvCoMKgwqDCoCAqIHdoZXJlIFNNTVUgaXMgaW5pdGlhbGl6ZWQgd2hlbiBhIHBy
+aW9yIERNQSBpcyBwZW5kaW5nLiBKdXN0Cj4+ICvCoMKgwqDCoCAqIGRpc2FibGluZyB0aGUgU01N
+VSBpbiB0aGlzIGNhc2UgbWlnaHQgcmVzdWx0IGluIHdyaXRlcyB0byBpbnZhbGlkCj4+ICvCoMKg
+wqDCoCAqIFBBcy4KPj4gK8KgwqDCoMKgICovCj4+ICvCoMKgwqAgcmV0ID0gYXJtX3NtbXVfdXBk
+YXRlX2dicGEoc21tdSwgMSwgR0JQQV9BQk9SVCk7Cj4+ICvCoMKgwqAgaWYgKHJldCkgewo+PiAr
+wqDCoMKgwqDCoMKgwqAgZGV2X2VycihzbW11LT5kZXYsICJHQlBBIG5vdCByZXNwb25kaW5nIHRv
+IHVwZGF0ZVxuIik7Cj4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+PiArwqDCoMKgIH0K
+Pj4gKwo+PiDCoMKgwqDCoCByZXQgPSBhcm1fc21tdV9kZXZpY2VfZGlzYWJsZShzbW11KTsKPj4g
+wqDCoMKgwqAgaWYgKHJldCkKPj4gwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+IAo+IEEg
+dGFuZ2VudGlhbCBxdWVzdGlvbjogY2FuIHdlIHJlbGlhYmx5IGRldGVjdCB0aGF0IHRoZSBTTU1V
+IGFscmVhZHkgaGFzIHZhbGlkIG1hcHBpbmdzLCB3aGljaCB3b3VsZCBpbmRpY2F0ZSB0aGF0IHdl
+J3JlIGluIGEgcHJldHR5IGJhZCBzaGFwZSBhbHJlYWR5IGJ5IHRoZSB0aW1lIHdlIHNldCB0aGF0
+IGJpdD8gRm9yIGFsbCB3ZSBrbm93LCBtZW1vcnkgY291bGQgaGF2ZSBiZWVuIGNvcnJ1cHRlZCBs
+b25nIGJlZm9yZSB3ZSBoaXQgdGhpcyBwb2ludCwgYW5kIHRoaXMgcGF0Y2ggYmFyZWx5IG5hcnJv
+d3MgdGhlIHdpbmRvdyBvZiBvcHBvcnR1bml0eS4KOikgWWVzIHRoYXQgaXMgY29ycmVjdC4gVGhp
+cyBvbmx5IGNvdmVycyB0aGUga2R1bXAgc2NlbmFyaW8uIFRyeWluZyB0byBnZXQgc29tZSByZWxp
+YWJpbGl0eSB3aGVuIGJvb3RpbmcgdXAgdGhlIGNyYXNoIGtlcm5lbC4gVGhlIHN5c3RlbSBpcyBh
+bHJlYWR5IGluIGEgYmFkIHN0YXRlLiBJIGRvbid0IHRoaW5rIHRoYXQgdGhpcyB3aWxsIGhhcHBl
+biBpbiBhIG5vcm1hbCBzY2VuYXJpby4gQnV0IHBsZWFzZSBwb2ludCBtZSB0byB0aGUgR0lDdjMg
+Y2hhbmdlIGFuZCBJJ2xsIGhhdmUgYSBsb29rLgpUaGFua3MsClNhbWVlciAKPiAKPiBBdCB0aGUg
+dmVyeSBsZWFzdCwgd2Ugc2hvdWxkIGVtaXQgYSB3YXJuaW5nIGFuZCB0YWludCB0aGUga2VybmVs
+ICh3ZSd2ZSByZWNlbnRseSBhZGRlZCBzdWNoIG1lYXN1cmVzIHRvIHRoZSBHSUN2MyBkcml2ZXIp
+Lgo+IAo+IFRoYW5rcywKPiAKPiDCoMKgwqDCoMKgwqDCoCBNLgoKLS0gCiBRdWFsY29tbSBEYXRh
+Y2VudGVyIFRlY2hub2xvZ2llcyBhcyBhbiBhZmZpbGlhdGUgb2YgUXVhbGNvbW0gVGVjaG5vbG9n
+aWVzLCBJbmMuIFF1YWxjb21tIFRlY2hub2xvZ2llcywgSW5jLiBpcyBhIG1lbWJlciBvZiB0aGUg
+Q29kZSBBdXJvcmEgRm9ydW0sIGEgTGludXggRm91bmRhdGlvbiBDb2xsYWJvcmF0aXZlIFByb2pl
+Y3QuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51
+eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVh
+ZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1h
+cm0ta2VybmVsCg==
