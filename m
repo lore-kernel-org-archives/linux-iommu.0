@@ -1,69 +1,167 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V2] drm/amdgpu: limit DMA size to PAGE_SIZE for
-	scatter-gather buffers
-Date: Wed, 11 Apr 2018 16:32:13 +0100
-Message-ID: <2d812da5-1c0d-0e53-83f2-ba1781a12fe9@arm.com>
-References: <1523394001-4615-1-git-send-email-okaya@codeaurora.org>
-	<32b82296-bba5-b5f1-266b-45c1ed66da94@arm.com>
-	<1a1d0069-c8d3-cc0d-cf1c-8e90e4a2b0d7@codeaurora.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Updates for Linux v4.17
+Date: Wed, 11 Apr 2018 17:49:53 +0200
+Message-ID: <20180411154945.44ywamihmo7yb6oe@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1a1d0069-c8d3-cc0d-cf1c-8e90e4a2b0d7-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, sulrich-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: Tom St Denis <tom.stdenis-5C7GfCeVMHo@public.gmane.org>, "David (ChunMing) Zhou" <David1.Zhou-5C7GfCeVMHo@public.gmane.org>, David Panariti <David.Panariti-5C7GfCeVMHo@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Felix Kuehling <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:DRM DRIVERS" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, Emily Deng <Emily.Deng-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Huang Rui <ray.huang-5C7GfCeVMHo@public.gmane.org>, Roger He <Hongbo.He-5C7GfCeVMHo@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Feifei Xu <Feifei.Xu-5C7GfCeVMHo@public.gmane.org>, Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>, Jim Qu <Jim.Qu-5C7GfCeVMHo@public.gmane.org>, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Monk Liu <Monk.Liu-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/04/18 15:33, Sinan Kaya wrote:
-> On 4/11/2018 8:03 AM, Robin Murphy wrote:
->> On 10/04/18 21:59, Sinan Kaya wrote:
->>> Code is expecing to observe the same number of buffers returned
->>> from dma_map_sg() function compared to
->>> sg_alloc_table_from_pages(). This doesn't hold true universally
->>> especially for systems with IOMMU.
->> 
->> So why not fix said code? It's clearly not a real hardware
->> limitation, and the map_sg() APIs have potentially returned fewer
->> than nents since forever, so there's really no excuse.
-> 
-> Sure, I'll take a better fix if there is one.
-> 
->> 
->>> IOMMU driver tries to combine buffers into a single DMA address
->>> as much as it can. The right thing is to tell the DMA layer how
->>> much combining IOMMU can do.
->> 
->> Disagree; this is a dodgy hack, since you'll now end up passing
->> scatterlists into dma_map_sg() which already violate max_seg_size
->> to begin with, and I think a conscientious DMA API implementation
->> would be at rights to fail the mapping for that reason (I know
->> arm64 happens not to, but that was a deliberate design decision to
->> make my life easier at the time).
->> 
->> As a short-term fix, at least do something like what i915 does and
->> constrain the table allocation to the desired segment size as well,
->> so things remain self-consistent. But still never claim that faking
->> a hardware constraint as a workaround for a driver shortcoming is
->> "the right thing to do" ;)
-> 
-> You are asking for something like this from here, right?
-> 
-> https://elixir.bootlin.com/linux/v4.16.1/source/drivers/gpu/drm/i915/i915_gem_dmabuf.c#L58
+Hi Linus,
 
-I just looked for callers of __sg_alloc_table_from_pages() with a limit 
-other than SCATTERLIST_MAX_SEGMENT, and found 
-__i915_gem_userptr_alloc_pages(), which at first glance appears to be 
-doing something vaguely similar to amdgpu_ttm_tt_pin_userptr().
+The following changes since commit 3eb2ce825ea1ad89d20f7a3b5780df850e4be274:
 
-Robin.
+  Linux 4.16-rc7 (2018-03-25 12:44:30 -1000)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.17
+
+for you to fetch changes up to d4f96fd5c249defda290299f9646287dd3df0803:
+
+  Merge branches 'x86/amd', 'x86/vt-d', 'arm/rockchip', 'arm/omap', 'arm/mediatek', 'arm/exynos', 'arm/renesas', 'arm/smmu' and 'core' into next (2018-03-29 15:24:40 +0200)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v4.17
+
+These updates come with:
+
+	- OF_IOMMU support for the Rockchip iommu driver so that it can
+	  use generic DT bindings
+
+	- Rework of locking in the AMD IOMMU interrupt remapping code to
+	  make it work better in RT kernels
+
+	- Support for improved iotlb flushing in the AMD IOMMU driver
+
+	- Support for 52-bit physical and virtual addressing in the
+	  ARM-SMMU
+
+	- Various other small fixes and cleanups
+
+----------------------------------------------------------------
+Biju Das (1):
+      dt-bindings: iommu: ipmmu-vmsa: Add device tree support for r8a774[35]
+
+Dmitry Safonov (2):
+      iommu/vt-d: Add __init for dmar_register_bus_notifier()
+      iommu/vt-d: Clean/document fault status flags
+
+Gary R Hook (1):
+      iommu/amd: Use dev_err to send events to the system log
+
+Jeffy Chen (10):
+      iommu/omap: Increase group ref in .device_group()
+      iommu/rockchip: Prohibit unbind and remove
+      iommu/rockchip: Fix error handling in probe
+      iommu/rockchip: Request irqs in rk_iommu_probe()
+      dt-bindings: iommu/rockchip: Add clock property
+      iommu/rockchip: Use IOMMU device for dma mapping operations
+      iommu/rockchip: Use OF_IOMMU to attach devices automatically
+      iommu/rockchip: Fix error handling in init
+      iommu/rockchip: Add runtime PM support
+      iommu/rockchip: Support sharing IOMMU between masters
+
+Joerg Roedel (2):
+      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      Merge branches 'x86/amd', 'x86/vt-d', 'arm/rockchip', 'arm/omap', 'arm/mediatek', 'arm/exynos', 'arm/renesas', 'arm/smmu' and 'core' into next
+
+Lu Baolu (2):
+      iommu/vt-d: Fix a potential memory leak
+      iommu/vt-d: Use real PASID for flush in caching mode
+
+Marc Zyngier (1):
+      iommu/rockchip: Perform a reset on shutdown
+
+Nate Watterson (1):
+      iommu/arm-smmu-v3: limit reporting of MSI allocation failures
+
+Robin Murphy (10):
+      iommu/exynos: Use generic group callback
+      iommu/arm-smmu-v3: Warn about missing IRQs
+      iommu/arm-smmu-v3: Clean up address masking
+      iommu/arm-smmu-v3: Clean up register definitions
+      iommu/arm-smmu-v3: Clean up table definitions
+      iommu/arm-smmu-v3: Clean up queue definitions
+      iommu/io-pgtable-arm: Support 52-bit physical address
+      iommu/arm-smmu-v3: Support 52-bit physical address
+      iommu/arm-smmu-v3: Support 52-bit virtual address
+      iommu/io-pgtable-arm: Avoid warning with 32-bit phys_addr_t
+
+Scott Wood (3):
+      iommu/amd: Use raw locks on atomic context paths
+      iommu/amd: Don't use dev_data in irte_ga_set_affinity()
+      iommu/amd: Avoid locking get_irq_table() from atomic context
+
+Sebastian Andrzej Siewior (10):
+      iommu/amd: Take into account that alloc_dev_data() may return NULL
+      iommu/amd: Turn dev_data_list into a lock less list
+      iommu/amd: Split domain id out of amd_iommu_devtable_lock
+      iommu/amd: Split irq_lookup_table out of the amd_iommu_devtable_lock
+      iommu/amd: Remove the special case from alloc_irq_table()
+      iommu/amd: Use `table' instead `irt' as variable name in amd_iommu_update_ga()
+      iommu/amd: Factor out setting the remap table for a devid
+      iommu/amd: Drop the lock while allocating new irq remap table
+      iommu/amd: Make amd_iommu_devtable_lock a spin_lock
+      iommu/amd: Return proper error code in irq_remapping_alloc()
+
+Shameer Kolothum (2):
+      ACPI/IORT: Add msi address regions reservation helper
+      iommu/dma: Add HW MSI(GICv3 ITS) address regions reservation
+
+Shaokun Zhang (1):
+      iommu/vt-d:Remove unused variable
+
+Suravee Suthikulpanit (2):
+      iommu: Do not return error code for APIs with size_t return type
+      iommu/amd: Add support for fast IOTLB flushing
+
+Tomasz Figa (4):
+      iommu/rockchip: Fix error handling in attach
+      iommu/rockchip: Use iopoll helpers to wait for hardware
+      iommu/rockchip: Fix TLB flush of secondary IOMMUs
+      iommu/rockchip: Control clocks needed to access the IOMMU
+
+Vivek Gautam (1):
+      iommu/io-pgtable: Use size_t return type for all foo_unmap
+
+Yong Wu (2):
+      iommu/mediatek: Move attach_device after iommu-group is ready for M4Uv1
+      iommu/mediatek: Fix protect memory setting
+
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          |   5 +-
+ .../devicetree/bindings/iommu/rockchip,iommu.txt   |   7 +
+ drivers/acpi/arm64/iort.c                          | 111 +++-
+ drivers/iommu/amd_iommu.c                          | 320 ++++++-----
+ drivers/iommu/amd_iommu_init.c                     |   2 +-
+ drivers/iommu/amd_iommu_types.h                    |   6 +-
+ drivers/iommu/arm-smmu-v3.c                        | 542 +++++++++----------
+ drivers/iommu/dma-iommu.c                          |   8 +-
+ drivers/iommu/dmar.c                               |   2 +-
+ drivers/iommu/exynos-iommu.c                       |  13 +-
+ drivers/iommu/intel-iommu.c                        |   6 +-
+ drivers/iommu/intel-svm.c                          |  17 +-
+ drivers/iommu/io-pgtable-arm-v7s.c                 |  21 +-
+ drivers/iommu/io-pgtable-arm.c                     |  91 ++--
+ drivers/iommu/io-pgtable.h                         |   4 +-
+ drivers/iommu/iommu.c                              |   6 +-
+ drivers/iommu/mtk_iommu.c                          |  15 +-
+ drivers/iommu/mtk_iommu.h                          |   1 +
+ drivers/iommu/mtk_iommu_v1.c                       |  54 +-
+ drivers/iommu/omap-iommu.c                         |   2 +-
+ drivers/iommu/rockchip-iommu.c                     | 592 +++++++++++----------
+ drivers/irqchip/irq-gic-v3-its.c                   |   3 +-
+ include/linux/acpi_iort.h                          |   7 +-
+ include/linux/intel-iommu.h                        |  12 +-
+ include/linux/iommu.h                              |  14 +-
+ 25 files changed, 1008 insertions(+), 853 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
