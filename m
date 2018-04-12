@@ -1,19 +1,18 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] swiotlb: Fix unexpected swiotlb_alloc_coherent() failures
-Date: Thu, 12 Apr 2018 11:32:54 +0100
-Message-ID: <81b9eae2-11d4-162d-9d3a-12e06eff9fea@arm.com>
-References: <20180410170513.22834-1-tiwai@suse.de>
-	<20180410170615.GA27589@lst.de> <s5hzi2bat25.wl-tiwai@suse.de>
-	<40618b9c-786d-7f5f-3f5b-fc1dd8375846@arm.com>
-	<20180410181020.GA28565@lst.de> <s5h4lkib3rd.wl-tiwai@suse.de>
-	<20180412060227.GA30248@lst.de> <s5h3700am1f.wl-tiwai@suse.de>
-	<s5hy3hs96rq.wl-tiwai@suse.de> <s5hwoxc96d5.wl-tiwai@suse.de>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
+Date: Thu, 12 Apr 2018 11:55:30 +0100
+Message-ID: <20180412105530.GC20539@arm.com>
+References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
+	<3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
+	<3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
+	<438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
+	<7756f245-6c63-92d4-d101-4040a45b660b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <s5hwoxc96d5.wl-tiwai-l3A5Bk7waGM@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <7756f245-6c63-92d4-d101-4040a45b660b-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,60 +22,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takashi Iwai <tiwai-l3A5Bk7waGM@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/04/18 09:27, Takashi Iwai wrote:
-> On Thu, 12 Apr 2018 10:19:05 +0200,
-> Takashi Iwai wrote:
->>
->> On Thu, 12 Apr 2018 10:03:56 +0200,
->> Takashi Iwai wrote:
->>>
->>> On Thu, 12 Apr 2018 08:02:27 +0200,
->>> Christoph Hellwig wrote:
->>>>
->>>> On Wed, Apr 11, 2018 at 09:28:54AM +0200, Takashi Iwai wrote:
->>>>>> But we should try a GFP_DMA32 allocation first, so this is a bit
->>>>>> surprising.
->>>>>
->>>>> Hm, do we really try that?
->>>>> Through a quick glance, dma_alloc_coherent_gfp_flags() gives GFP_DMA32
->>>>> only when coherent mask <= DMA_BIT_MASK(32); in the case of iwlwifi,
->>>>> it's 36bit, so GFP_DMA isn't set.
->>>>
->>>> Oh, yes - it is using an odd dma mask, and amdgpu seems to use an
->>>> just as odd 40-bit dma mask.
->>>>
->>>>> We had a fallback allocation with GFP_DMA32 in the past, but this
->>>>> seems gone long time ago along with cleanups (commit c647c3bb2d16).
->>>>>
->>>>> But I haven't followed about this topic for long time, so I might have
->>>>> missed obviously...
->>>>
->>>> I think a fallback would be much better here rather than relying on the
->>>> limited swiotlb buffer bool.  dma_direct_alloc (which in 4.17 is also
->>>> used for x86) already has a GFP_DMA fallback, so extending this for
->>>> GFP_DMA32 as well would seem reasonable.
->>>>
->>>> Any volunteers?
->>>
->>> Below is a quick attempt, totally untested.  Actually the retry with
->>> GFP_DMA is superfluous for archs without it, so the first patch
->>> corrects it.
->>
->> Gah, scratch this, it doesn't work.  A different check is needed...
+On Thu, Apr 12, 2018 at 11:17:24AM +0100, Robin Murphy wrote:
+> On 11/04/18 17:54, Marc Zyngier wrote:
+> >On 11/04/18 16:58, Goel, Sameer wrote:
+> >>On 3/28/2018 9:00 AM, Marc Zyngier wrote:
+> >>>A tangential question: can we reliably detect that the SMMU already
+> >>>has valid mappings, which would indicate that we're in a pretty bad
+> >>>shape already by the time we set that bit? For all we know, memory
+> >>>could have been corrupted long before we hit this point, and this
+> >>>patch barely narrows the window of opportunity.
+> >>
+> >>:) Yes that is correct. This only covers the kdump scenario. Trying
+> >>to get some reliability when booting up the crash kernel. The system
+> >>is already in a bad state. I don't think that this will happen in a
+> >>normal scenario. But please point me to the GICv3 change and I'll
+> >>have a look.
+> >
+> >See this:
+> >https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/tree/drivers/irqchip/irq-gic-v3-its.c?h=irq/irqchip-4.17&id=6eb486b66a3094cdcd68dc39c9df3a29d6a51dd5#n3407
 > 
-> The v2 patches are below, replaced with IS_ENABLED(CONFIG_ZONE_DMA).
+> The nearest equivalent to that is probably the top-level SMMUEN check that
+> we already have (see the diff context above). To go beyond that you'd have
+> to chase the old stream table pointer and scan the whole thing looking for
+> valid contexts, then potentially walk page tables within those contexts to
+> check for live translations if you really wanted to be sure. That would be a
+> hell of a lot of work to do in the boot path.
 
-That looks pretty reasonable to me - I'd be tempted to try a factoring 
-out a helper function to avoid the "goto again" logic, but that's hardly 
-crucial.
+Yeah, please don't waste time writing a patch to do that! ;)
 
-What I'd really love to see is something like the alloc_pages_mask() 
-proposal from years ago to come back such that GFP_DMA32 could die 
-entirely, but I don't know anywhere near enough about the mm layer to 
-consider taking that on myself :(
-
-Robin.
+Will
