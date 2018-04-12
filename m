@@ -1,13 +1,21 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [VERY RFC 0/2] iommu: optionally skip attaching to a DMA domain
-Date: Wed, 11 Apr 2018 19:32:55 -0400
-Message-ID: <CAF6AEGvVRPzGO00UqyiD2vBwZn4kDdr8rnBf2Tr4ypS0pRpHLQ@mail.gmail.com>
-References: <20180411185510.11594-1-jcrouse@codeaurora.org>
+From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 5/5] iommu/arm-smmu: Add support for qcom,smmu-v2
+	variant
+Date: Thu, 12 Apr 2018 09:55:35 +0800
+Message-ID: <76065271-c6e6-2ce7-8608-c18b621055ce@huawei.com>
+References: <20180313085534.11650-1-vivek.gautam@codeaurora.org>
+	<20180313085534.11650-6-vivek.gautam@codeaurora.org>
+	<61d30fff-1bf8-d2c1-bbe9-f93de836ae77@huawei.com>
+	<7d5af071-ef98-8461-3ce9-e84fc0b3956a@codeaurora.org>
+	<d97872fe-5e8e-cc27-e385-64cea8ea2458@huawei.com>
+	<CAAFQd5Cj3qaqt8ACabZwN4ZKaNbF9N9suGVaOKD8-kNxgfeeVA@mail.gmail.com>
+	<65a57964-805b-3a38-71a2-0c383af30539@huawei.com>
+	<ff1c730f-0009-58e5-cf4a-45fe9ab93d1e@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180411185510.11594-1-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <ff1c730f-0009-58e5-cf4a-45fe9ab93d1e-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,87 +25,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, gaojianbo-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 11, 2018 at 2:55 PM, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> I've been struggling with a problem for a while and I haven't been able to come
-> up with a clean solution. Rob convinced me to stop complaining and do
-> _something_ and hopefully this can spur a good discussion.
->
-> The scenario is basically this: The MSM GPU wants to manage its own IOMMU
-> virtual address space in lieu of using the DMA API to do so. The most important
-> reason is that when per-instance pagetables [1] are enabled each file descriptor
-> uses its own pagetable which are dynamically switched between contexts. In
-> conjunction with this we use a split pagetable scheme to allow global buffers
-> be persistently mapped so even a single pagetable has multiple ranges that need
-> to be utilized based on buffer type.
->
-> Obviously the DMA API isn't suitable for this kind of specialized use. We want
-> to push it off to the side, allocate our own domain, and use it directly with
-> the IOMMU APIs. In a perfect world we would just not use the DMA API and attach
-> our own domain and that would be the end of the story. Unfortunately this is not
-> a perfect world.
->
-> In order to switch the pagetable from the GPU the SoC has some special wiring so
-> that the GPU can reprogram the TTBR0 register in the IOMMU to the appropriate
-> value. For a variety of reasons the hardware is hardcoded to only be able to
-> access context bank 0 in the SMMU device. Long story short; if the DMA
-> domain is allocated during bus enumeration and attached to context bank 0 then
-> by the time we get to the driver domain we have long since lost our chance to
-> get the context bank we need.
->
-> After going back and forth and trying a few possible options it seems like the
-> "easiest" solution" is to skip attaching the DMA domain in the first place. But
-> we still need to create a default domain and set up the IOMMU groups correctly
-> so that when the GPU driver comes along it can attach the device and everything
-> will Just Work (TM). Rob suggested that we should use a blacklist of devices
-> that choose to not participate so thats what I'm offering as a starting point
-> for discussion.
+Hi Vivek,
 
-in an ideal world, the dma-mapping layer magic would not be forced on
-a driver, but would be an opt-in thing (ie. driver's ->probe() calls
-dma_setup_magic_iommu_stuff(dev)), and becomes more of a helper layer
-that drivers could opt-in to.. but that changes how things work
-significantly at iommu probe time and probably touches a lot of
-drivers.  A property in dt would be the easy down-stream solution, but
-this is mostly about the driver (but also about how the firmware
-works, so maybe dt is not out of bounds?).  The black-list approach is
-fairly simple, although maybe a bit of a point-solution.  (Although
-the number of drivers this problem applies to might not be much
-greater than 1.)
+On 2018/4/11 13:15, Vivek Gautam wrote:
+> Hi Yisheng,
+> 
+> 
+> On 4/11/2018 6:52 AM, Yisheng Xie wrote:
+>> Hi Tomasz,
+>>
+>> On 2018/4/10 21:14, Tomasz Figa wrote:
+>>> Hi Yisheng,
+>>>
+>>> Sorry, I think we missed your question here.
+>>>
+>>> On Wed, Mar 28, 2018 at 3:12 PM Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
+>>>
+>>>> Hi Vivek,
+>>>> On 2018/3/28 12:37, Vivek Gautam wrote:
+>>>>> Hi Yisheng
+>>>>>
+>>>>>
+>>>>> On 3/28/2018 6:54 AM, Yisheng Xie wrote:
+>>>>>> Hi Vivek,
+>>>>>>
+>>>>>> On 2018/3/13 16:55, Vivek Gautam wrote:
+>>>>>>> +- power-domains:  Specifiers for power domains required to be
+>>> powered on for
+>>>>>>> +                  the SMMU to operate, as per generic power domain
+>>> bindings.
+>>>>>>> +
+>>>>>> In this patchset, power-domains is not used right? And you just do the
+>>> clock gating,
+>>>>>> but not power gating, right?
+>>>>> We are handling the power-domains too. Please see the example in this
+>>> binding doc.
+>>>
+>>>> I see, but I do not find the point in code of these patchset, do you mean
+>>> PMIC(e.g mmcc)
+>>>> will gate the power domain of SMMU(e.g. MDSS_GDSC of mmcc) when PMIC
+>>> suspend?
+>>>
+>>>
+>>> If respective SoC power domains is registered as a standard genpd PM
+>>> domain, then the runtime PM subsystem will take care of power domain
+>>> control at runtime suspend and resume.
+>>>
+>> Get it, thanks for your explain, I should have learned about this.
+> 
+> Sorry, i missed your subsequent question, and Tomasz has explained it now.
 
-So short version, very interested if anyone has better suggestions.
-Because we really need to do *something* here.
+Never mind about that.
 
-BR,
--R
+> Let me know if you have further questions.
 
-> The first patch in this series allows the specific IOMMU driver to gracefully
-> skip attaching a device by returning -ENOSUPP. In that case, the core will
-> skip printing error messages and it won't attach the domain to the group but
-> it still allows the group to get created so that the IOMMU device is properly
-> set up. In arch_setup_dma_ops() the call to iommu_get_domain_for_dev() will
-> return NULL and the IOMMU ops won't be set up.
->
-> The second patch implements the blacklist in arm-smmu.c based on the compatible
-> string of the GPU device and returns -ENOTSUPP.
->
-> I tested this with my current per-instance pagetable stack and it does the job
-> but I am very much in the market for better ideas.
->
-> [1] https://patchwork.freedesktop.org/series/38729/
->
-> Jordan Crouse (2):
->   iommu: Gracefully allow drivers to not attach to a default domain
->   iommu/arm-smmu: Add list of devices to opt out of DMA domains
->
->  drivers/iommu/arm-smmu.c | 23 +++++++++++++++++++++++
->  drivers/iommu/iommu.c    | 18 ++++++++++++++----
->  2 files changed, 37 insertions(+), 4 deletions(-)
->
-> --
-> 2.16.1
->
+Presently, no other questions. Thanks for your kind help.
+
+Thanks
+Yisheng
+> 
+> regards
+> Vivek
+>>
+>> Thanks
+>> Yisheng
+>>
+>>> Best regards,
+>>> Tomasz
+>>>
+>>> .
+>>>
+>> -- 
+>> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> 
+> .
+> 
