@@ -1,18 +1,18 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
-Date: Thu, 12 Apr 2018 11:55:30 +0100
-Message-ID: <20180412105530.GC20539@arm.com>
+Date: Thu, 12 Apr 2018 12:56:07 +0100
+Message-ID: <265a41d4-ec3c-6697-0340-6830807ea10f@arm.com>
 References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
 	<3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
 	<3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
 	<438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
 	<7756f245-6c63-92d4-d101-4040a45b660b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 In-Reply-To: <7756f245-6c63-92d4-d101-4040a45b660b-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,36 +22,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 12, 2018 at 11:17:24AM +0100, Robin Murphy wrote:
-> On 11/04/18 17:54, Marc Zyngier wrote:
-> >On 11/04/18 16:58, Goel, Sameer wrote:
-> >>On 3/28/2018 9:00 AM, Marc Zyngier wrote:
-> >>>A tangential question: can we reliably detect that the SMMU already
-> >>>has valid mappings, which would indicate that we're in a pretty bad
-> >>>shape already by the time we set that bit? For all we know, memory
-> >>>could have been corrupted long before we hit this point, and this
-> >>>patch barely narrows the window of opportunity.
-> >>
-> >>:) Yes that is correct. This only covers the kdump scenario. Trying
-> >>to get some reliability when booting up the crash kernel. The system
-> >>is already in a bad state. I don't think that this will happen in a
-> >>normal scenario. But please point me to the GICv3 change and I'll
-> >>have a look.
-> >
-> >See this:
-> >https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git/tree/drivers/irqchip/irq-gic-v3-its.c?h=irq/irqchip-4.17&id=6eb486b66a3094cdcd68dc39c9df3a29d6a51dd5#n3407
-> 
-> The nearest equivalent to that is probably the top-level SMMUEN check that
-> we already have (see the diff context above). To go beyond that you'd have
-> to chase the old stream table pointer and scan the whole thing looking for
-> valid contexts, then potentially walk page tables within those contexts to
-> check for live translations if you really wanted to be sure. That would be a
-> hell of a lot of work to do in the boot path.
-
-Yeah, please don't waste time writing a patch to do that! ;)
-
-Will
+T24gMTIvMDQvMTggMTE6MTcsIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAxMS8wNC8xOCAxNzo1
+NCwgTWFyYyBaeW5naWVyIHdyb3RlOgo+PiBIaSBTYW1tZXIsCj4+Cj4+IE9uIDExLzA0LzE4IDE2
+OjU4LCBHb2VsLCBTYW1lZXIgd3JvdGU6Cj4+Pgo+Pj4KPj4+IE9uIDMvMjgvMjAxOCA5OjAwIEFN
+LCBNYXJjIFp5bmdpZXIgd3JvdGU6Cj4+Pj4gT24gMjAxOC0wMy0yOCAxNTozOSwgVGltdXIgVGFi
+aSB3cm90ZToKPj4+Pj4gRnJvbTogU2FtZWVyIEdvZWwgPHNnb2VsQGNvZGVhdXJvcmEub3JnPgo+
+Pj4+Pgo+Pj4+PiBTZXQgU01NVV9HQlBBIHRvIGFib3J0IGFsbCBpbmNvbWluZyB0cmFuc2xhdGlv
+bnMgZHVyaW5nIHRoZSBTTU1VIHJlc2V0Cj4+Pj4+IHdoZW4gU01NVUVOPT0wLgo+Pj4+Pgo+Pj4+
+PiBUaGlzIHByZXZlbnRzIGEgcmFjZSBjb25kaXRpb24gd2hlcmUgYSBzdHJheSBETUEgZnJvbSB0
+aGUgY3Jhc2hlZCBwcmltYXJ5Cj4+Pj4+IGtlcm5lbCBjYW4gdHJ5IHRvIGFjY2VzcyBhbiBJT1ZB
+IGFkZHJlc3MgYXMgYW4gaW52YWxpZCBQQSB3aGVuIFNNTVUgaXMKPj4+Pj4gZGlzYWJsZWQgZHVy
+aW5nIHJlc2V0IGluIHRoZSBjcmFzaCBrZXJuZWwuCj4+Pj4+Cj4+Pj4+IFNpZ25lZC1vZmYtYnk6
+IFNhbWVlciBHb2VsIDxzZ29lbEBjb2RlYXVyb3JhLm9yZz4KPj4+Pj4gLS0tCj4+Pj4+ICDCoGRy
+aXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDEyICsrKysrKysrKysrKwo+Pj4+PiAgwqAxIGZp
+bGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKQo+Pj4+Pgo+Pj4+PiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9pb21tdS9hcm0tc21tdS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jCj4+
+Pj4+IGluZGV4IDNmMmYxZmM2OGI1Mi4uYzA0YTg5MzEwYzU5IDEwMDY0NAo+Pj4+PiAtLS0gYS9k
+cml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPj4+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0t
+c21tdS12My5jCj4+Pj4+IEBAIC0yNDU4LDYgKzI0NTgsMTggQEAgc3RhdGljIGludCBhcm1fc21t
+dV9kZXZpY2VfcmVzZXQoc3RydWN0Cj4+Pj4+IGFybV9zbW11X2RldmljZSAqc21tdSwgYm9vbCBi
+eXBhc3MpCj4+Pj4+ICDCoMKgwqDCoCBpZiAocmVnICYgQ1IwX1NNTVVFTikKPj4+Pj4gIMKgwqDC
+oMKgwqDCoMKgwqAgZGV2X3dhcm4oc21tdS0+ZGV2LCAiU01NVSBjdXJyZW50bHkgZW5hYmxlZCEg
+UmVzZXR0aW5nLi4uXG4iKTsKPj4+Pj4KPj4+Pj4gK8KgwqDCoCAvKgo+Pj4+PiArwqDCoMKgwqAg
+KiBBYm9ydCBhbGwgaW5jb21pbmcgdHJhbnNsYXRpb25zLiBUaGlzIGNhbiBoYXBwZW4gaW4gYSBr
+ZHVtcCBjYXNlCj4+Pj4+ICvCoMKgwqDCoCAqIHdoZXJlIFNNTVUgaXMgaW5pdGlhbGl6ZWQgd2hl
+biBhIHByaW9yIERNQSBpcyBwZW5kaW5nLiBKdXN0Cj4+Pj4+ICvCoMKgwqDCoCAqIGRpc2FibGlu
+ZyB0aGUgU01NVSBpbiB0aGlzIGNhc2UgbWlnaHQgcmVzdWx0IGluIHdyaXRlcyB0byBpbnZhbGlk
+Cj4+Pj4+ICvCoMKgwqDCoCAqIFBBcy4KPj4+Pj4gK8KgwqDCoMKgICovCj4+Pj4+ICvCoMKgwqAg
+cmV0ID0gYXJtX3NtbXVfdXBkYXRlX2dicGEoc21tdSwgMSwgR0JQQV9BQk9SVCk7Cj4+Pj4+ICvC
+oMKgwqAgaWYgKHJldCkgewo+Pj4+PiArwqDCoMKgwqDCoMKgwqAgZGV2X2VycihzbW11LT5kZXYs
+ICJHQlBBIG5vdCByZXNwb25kaW5nIHRvIHVwZGF0ZVxuIik7Cj4+Pj4+ICvCoMKgwqDCoMKgwqDC
+oCByZXR1cm4gcmV0Owo+Pj4+PiArwqDCoMKgIH0KPj4+Pj4gKwo+Pj4+PiAgwqDCoMKgwqAgcmV0
+ID0gYXJtX3NtbXVfZGV2aWNlX2Rpc2FibGUoc21tdSk7Cj4+Pj4+ICDCoMKgwqDCoCBpZiAocmV0
+KQo+Pj4+PiAgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+Pj4+Cj4+Pj4gQSB0YW5nZW50
+aWFsIHF1ZXN0aW9uOiBjYW4gd2UgcmVsaWFibHkgZGV0ZWN0IHRoYXQgdGhlIFNNTVUgYWxyZWFk
+eQo+Pj4+IGhhcyB2YWxpZCBtYXBwaW5ncywgd2hpY2ggd291bGQgaW5kaWNhdGUgdGhhdCB3ZSdy
+ZSBpbiBhIHByZXR0eSBiYWQKPj4+PiBzaGFwZSBhbHJlYWR5IGJ5IHRoZSB0aW1lIHdlIHNldCB0
+aGF0IGJpdD8gRm9yIGFsbCB3ZSBrbm93LCBtZW1vcnkKPj4+PiBjb3VsZCBoYXZlIGJlZW4gY29y
+cnVwdGVkIGxvbmcgYmVmb3JlIHdlIGhpdCB0aGlzIHBvaW50LCBhbmQgdGhpcwo+Pj4+IHBhdGNo
+IGJhcmVseSBuYXJyb3dzIHRoZSB3aW5kb3cgb2Ygb3Bwb3J0dW5pdHkuCj4+Pgo+Pj4gOikgWWVz
+IHRoYXQgaXMgY29ycmVjdC4gVGhpcyBvbmx5IGNvdmVycyB0aGUga2R1bXAgc2NlbmFyaW8uIFRy
+eWluZwo+Pj4gdG8gZ2V0IHNvbWUgcmVsaWFiaWxpdHkgd2hlbiBib290aW5nIHVwIHRoZSBjcmFz
+aCBrZXJuZWwuIFRoZSBzeXN0ZW0KPj4+IGlzIGFscmVhZHkgaW4gYSBiYWQgc3RhdGUuIEkgZG9u
+J3QgdGhpbmsgdGhhdCB0aGlzIHdpbGwgaGFwcGVuIGluIGEKPj4+IG5vcm1hbCBzY2VuYXJpby4g
+QnV0IHBsZWFzZSBwb2ludCBtZSB0byB0aGUgR0lDdjMgY2hhbmdlIGFuZCBJJ2xsCj4+PiBoYXZl
+IGEgbG9vay4KPj4KPj4gU2VlIHRoaXM6Cj4+IGh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3Nj
+bS9saW51eC9rZXJuZWwvZ2l0L21hei9hcm0tcGxhdGZvcm1zLmdpdC90cmVlL2RyaXZlcnMvaXJx
+Y2hpcC9pcnEtZ2ljLXYzLWl0cy5jP2g9aXJxL2lycWNoaXAtNC4xNyZpZD02ZWI0ODZiNjZhMzA5
+NGNkY2Q2OGRjMzljOWRmM2EyOWQ2YTUxZGQ1I24zNDA3Cj4gCj4gVGhlIG5lYXJlc3QgZXF1aXZh
+bGVudCB0byB0aGF0IGlzIHByb2JhYmx5IHRoZSB0b3AtbGV2ZWwgU01NVUVOIGNoZWNrIAo+IHRo
+YXQgd2UgYWxyZWFkeSBoYXZlIChzZWUgdGhlIGRpZmYgY29udGV4dCBhYm92ZSkuIFRvIGdvIGJl
+eW9uZCB0aGF0IAo+IHlvdSdkIGhhdmUgdG8gY2hhc2UgdGhlIG9sZCBzdHJlYW0gdGFibGUgcG9p
+bnRlciBhbmQgc2NhbiB0aGUgd2hvbGUgCj4gdGhpbmcgbG9va2luZyBmb3IgdmFsaWQgY29udGV4
+dHMsIHRoZW4gcG90ZW50aWFsbHkgd2FsayBwYWdlIHRhYmxlcyAKPiB3aXRoaW4gdGhvc2UgY29u
+dGV4dHMgdG8gY2hlY2sgZm9yIGxpdmUgdHJhbnNsYXRpb25zIGlmIHlvdSByZWFsbHkgCj4gd2Fu
+dGVkIHRvIGJlIHN1cmUuIFRoYXQgd291bGQgYmUgYSBoZWxsIG9mIGEgbG90IG9mIHdvcmsgdG8g
+ZG8gaW4gdGhlIAo+IGJvb3QgcGF0aC4KWWVhaCwgZmVlbHMgYSBiaXQgdG9vIGludm9sdmVkIGZv
+ciBzYW5pdHkuIEknZCBzaW1wbHkgc3VnZ2VzdCB5b3UgdGFpbnQKdGhlIGtlcm5lbCBpZiB5b3Ug
+ZmluZCB0aGUgU01NVSBlbmFibGVkLCBhcyB5b3UncmUgYWxyZWFkeSBvbiBzaGFreSBncm91bmQu
+CgpUaGFua3MsCgoJTS4KLS0gCkphenogaXMgbm90IGRlYWQuIEl0IGp1c3Qgc21lbGxzIGZ1bm55
+Li4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
+IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
+c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
