@@ -1,16 +1,18 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
-Date: Thu, 12 Apr 2018 11:17:24 +0100
-Message-ID: <7756f245-6c63-92d4-d101-4040a45b660b@arm.com>
-References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
-	<3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
-	<3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
-	<438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
+Subject: Re: [PATCH] swiotlb: Fix unexpected swiotlb_alloc_coherent() failures
+Date: Thu, 12 Apr 2018 11:32:54 +0100
+Message-ID: <81b9eae2-11d4-162d-9d3a-12e06eff9fea@arm.com>
+References: <20180410170513.22834-1-tiwai@suse.de>
+	<20180410170615.GA27589@lst.de> <s5hzi2bat25.wl-tiwai@suse.de>
+	<40618b9c-786d-7f5f-3f5b-fc1dd8375846@arm.com>
+	<20180410181020.GA28565@lst.de> <s5h4lkib3rd.wl-tiwai@suse.de>
+	<20180412060227.GA30248@lst.de> <s5h3700am1f.wl-tiwai@suse.de>
+	<s5hy3hs96rq.wl-tiwai@suse.de> <s5hwoxc96d5.wl-tiwai@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <438a6180-fca8-d3a1-985f-e595529911f3-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <s5hwoxc96d5.wl-tiwai-l3A5Bk7waGM@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -21,64 +23,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Takashi Iwai <tiwai-l3A5Bk7waGM@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTEvMDQvMTggMTc6NTQsIE1hcmMgWnluZ2llciB3cm90ZToKPiBIaSBTYW1tZXIsCj4gCj4g
-T24gMTEvMDQvMTggMTY6NTgsIEdvZWwsIFNhbWVlciB3cm90ZToKPj4KPj4KPj4gT24gMy8yOC8y
-MDE4IDk6MDAgQU0sIE1hcmMgWnluZ2llciB3cm90ZToKPj4+IE9uIDIwMTgtMDMtMjggMTU6Mzks
-IFRpbXVyIFRhYmkgd3JvdGU6Cj4+Pj4gRnJvbTogU2FtZWVyIEdvZWwgPHNnb2VsQGNvZGVhdXJv
-cmEub3JnPgo+Pj4+Cj4+Pj4gU2V0IFNNTVVfR0JQQSB0byBhYm9ydCBhbGwgaW5jb21pbmcgdHJh
-bnNsYXRpb25zIGR1cmluZyB0aGUgU01NVSByZXNldAo+Pj4+IHdoZW4gU01NVUVOPT0wLgo+Pj4+
-Cj4+Pj4gVGhpcyBwcmV2ZW50cyBhIHJhY2UgY29uZGl0aW9uIHdoZXJlIGEgc3RyYXkgRE1BIGZy
-b20gdGhlIGNyYXNoZWQgcHJpbWFyeQo+Pj4+IGtlcm5lbCBjYW4gdHJ5IHRvIGFjY2VzcyBhbiBJ
-T1ZBIGFkZHJlc3MgYXMgYW4gaW52YWxpZCBQQSB3aGVuIFNNTVUgaXMKPj4+PiBkaXNhYmxlZCBk
-dXJpbmcgcmVzZXQgaW4gdGhlIGNyYXNoIGtlcm5lbC4KPj4+Pgo+Pj4+IFNpZ25lZC1vZmYtYnk6
-IFNhbWVlciBHb2VsIDxzZ29lbEBjb2RlYXVyb3JhLm9yZz4KPj4+PiAtLS0KPj4+PiAgwqBkcml2
-ZXJzL2lvbW11L2FybS1zbW11LXYzLmMgfCAxMiArKysrKysrKysrKysKPj4+PiAgwqAxIGZpbGUg
-Y2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKQo+Pj4+Cj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-aW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+IGlu
-ZGV4IDNmMmYxZmM2OGI1Mi4uYzA0YTg5MzEwYzU5IDEwMDY0NAo+Pj4+IC0tLSBhL2RyaXZlcnMv
-aW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMu
-Ywo+Pj4+IEBAIC0yNDU4LDYgKzI0NTgsMTggQEAgc3RhdGljIGludCBhcm1fc21tdV9kZXZpY2Vf
-cmVzZXQoc3RydWN0Cj4+Pj4gYXJtX3NtbXVfZGV2aWNlICpzbW11LCBib29sIGJ5cGFzcykKPj4+
-PiAgwqDCoMKgwqAgaWYgKHJlZyAmIENSMF9TTU1VRU4pCj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqAg
-ZGV2X3dhcm4oc21tdS0+ZGV2LCAiU01NVSBjdXJyZW50bHkgZW5hYmxlZCEgUmVzZXR0aW5nLi4u
-XG4iKTsKPj4+Pgo+Pj4+ICvCoMKgwqAgLyoKPj4+PiArwqDCoMKgwqAgKiBBYm9ydCBhbGwgaW5j
-b21pbmcgdHJhbnNsYXRpb25zLiBUaGlzIGNhbiBoYXBwZW4gaW4gYSBrZHVtcCBjYXNlCj4+Pj4g
-K8KgwqDCoMKgICogd2hlcmUgU01NVSBpcyBpbml0aWFsaXplZCB3aGVuIGEgcHJpb3IgRE1BIGlz
-IHBlbmRpbmcuIEp1c3QKPj4+PiArwqDCoMKgwqAgKiBkaXNhYmxpbmcgdGhlIFNNTVUgaW4gdGhp
-cyBjYXNlIG1pZ2h0IHJlc3VsdCBpbiB3cml0ZXMgdG8gaW52YWxpZAo+Pj4+ICvCoMKgwqDCoCAq
-IFBBcy4KPj4+PiArwqDCoMKgwqAgKi8KPj4+PiArwqDCoMKgIHJldCA9IGFybV9zbW11X3VwZGF0
-ZV9nYnBhKHNtbXUsIDEsIEdCUEFfQUJPUlQpOwo+Pj4+ICvCoMKgwqAgaWYgKHJldCkgewo+Pj4+
-ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKHNtbXUtPmRldiwgIkdCUEEgbm90IHJlc3BvbmRpbmcg
-dG8gdXBkYXRlXG4iKTsKPj4+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJuIHJldDsKPj4+PiArwqDC
-oMKgIH0KPj4+PiArCj4+Pj4gIMKgwqDCoMKgIHJldCA9IGFybV9zbW11X2RldmljZV9kaXNhYmxl
-KHNtbXUpOwo+Pj4+ICDCoMKgwqDCoCBpZiAocmV0KQo+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgIHJl
-dHVybiByZXQ7Cj4+Pgo+Pj4gQSB0YW5nZW50aWFsIHF1ZXN0aW9uOiBjYW4gd2UgcmVsaWFibHkg
-ZGV0ZWN0IHRoYXQgdGhlIFNNTVUgYWxyZWFkeQo+Pj4gaGFzIHZhbGlkIG1hcHBpbmdzLCB3aGlj
-aCB3b3VsZCBpbmRpY2F0ZSB0aGF0IHdlJ3JlIGluIGEgcHJldHR5IGJhZAo+Pj4gc2hhcGUgYWxy
-ZWFkeSBieSB0aGUgdGltZSB3ZSBzZXQgdGhhdCBiaXQ/IEZvciBhbGwgd2Uga25vdywgbWVtb3J5
-Cj4+PiBjb3VsZCBoYXZlIGJlZW4gY29ycnVwdGVkIGxvbmcgYmVmb3JlIHdlIGhpdCB0aGlzIHBv
-aW50LCBhbmQgdGhpcwo+Pj4gcGF0Y2ggYmFyZWx5IG5hcnJvd3MgdGhlIHdpbmRvdyBvZiBvcHBv
-cnR1bml0eS4KPj4KPj4gOikgWWVzIHRoYXQgaXMgY29ycmVjdC4gVGhpcyBvbmx5IGNvdmVycyB0
-aGUga2R1bXAgc2NlbmFyaW8uIFRyeWluZwo+PiB0byBnZXQgc29tZSByZWxpYWJpbGl0eSB3aGVu
-IGJvb3RpbmcgdXAgdGhlIGNyYXNoIGtlcm5lbC4gVGhlIHN5c3RlbQo+PiBpcyBhbHJlYWR5IGlu
-IGEgYmFkIHN0YXRlLiBJIGRvbid0IHRoaW5rIHRoYXQgdGhpcyB3aWxsIGhhcHBlbiBpbiBhCj4+
-IG5vcm1hbCBzY2VuYXJpby4gQnV0IHBsZWFzZSBwb2ludCBtZSB0byB0aGUgR0lDdjMgY2hhbmdl
-IGFuZCBJJ2xsCj4+IGhhdmUgYSBsb29rLgo+IAo+IFNlZSB0aGlzOgo+IGh0dHBzOi8vZ2l0Lmtl
-cm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L21hei9hcm0tcGxhdGZvcm1zLmdpdC90
-cmVlL2RyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLWl0cy5jP2g9aXJxL2lycWNoaXAtNC4xNyZp
-ZD02ZWI0ODZiNjZhMzA5NGNkY2Q2OGRjMzljOWRmM2EyOWQ2YTUxZGQ1I24zNDA3CgpUaGUgbmVh
-cmVzdCBlcXVpdmFsZW50IHRvIHRoYXQgaXMgcHJvYmFibHkgdGhlIHRvcC1sZXZlbCBTTU1VRU4g
-Y2hlY2sgCnRoYXQgd2UgYWxyZWFkeSBoYXZlIChzZWUgdGhlIGRpZmYgY29udGV4dCBhYm92ZSku
-IFRvIGdvIGJleW9uZCB0aGF0IAp5b3UnZCBoYXZlIHRvIGNoYXNlIHRoZSBvbGQgc3RyZWFtIHRh
-YmxlIHBvaW50ZXIgYW5kIHNjYW4gdGhlIHdob2xlIAp0aGluZyBsb29raW5nIGZvciB2YWxpZCBj
-b250ZXh0cywgdGhlbiBwb3RlbnRpYWxseSB3YWxrIHBhZ2UgdGFibGVzIAp3aXRoaW4gdGhvc2Ug
-Y29udGV4dHMgdG8gY2hlY2sgZm9yIGxpdmUgdHJhbnNsYXRpb25zIGlmIHlvdSByZWFsbHkgCndh
-bnRlZCB0byBiZSBzdXJlLiBUaGF0IHdvdWxkIGJlIGEgaGVsbCBvZiBhIGxvdCBvZiB3b3JrIHRv
-IGRvIGluIHRoZSAKYm9vdCBwYXRoLgoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+On 12/04/18 09:27, Takashi Iwai wrote:
+> On Thu, 12 Apr 2018 10:19:05 +0200,
+> Takashi Iwai wrote:
+>>
+>> On Thu, 12 Apr 2018 10:03:56 +0200,
+>> Takashi Iwai wrote:
+>>>
+>>> On Thu, 12 Apr 2018 08:02:27 +0200,
+>>> Christoph Hellwig wrote:
+>>>>
+>>>> On Wed, Apr 11, 2018 at 09:28:54AM +0200, Takashi Iwai wrote:
+>>>>>> But we should try a GFP_DMA32 allocation first, so this is a bit
+>>>>>> surprising.
+>>>>>
+>>>>> Hm, do we really try that?
+>>>>> Through a quick glance, dma_alloc_coherent_gfp_flags() gives GFP_DMA32
+>>>>> only when coherent mask <= DMA_BIT_MASK(32); in the case of iwlwifi,
+>>>>> it's 36bit, so GFP_DMA isn't set.
+>>>>
+>>>> Oh, yes - it is using an odd dma mask, and amdgpu seems to use an
+>>>> just as odd 40-bit dma mask.
+>>>>
+>>>>> We had a fallback allocation with GFP_DMA32 in the past, but this
+>>>>> seems gone long time ago along with cleanups (commit c647c3bb2d16).
+>>>>>
+>>>>> But I haven't followed about this topic for long time, so I might have
+>>>>> missed obviously...
+>>>>
+>>>> I think a fallback would be much better here rather than relying on the
+>>>> limited swiotlb buffer bool.  dma_direct_alloc (which in 4.17 is also
+>>>> used for x86) already has a GFP_DMA fallback, so extending this for
+>>>> GFP_DMA32 as well would seem reasonable.
+>>>>
+>>>> Any volunteers?
+>>>
+>>> Below is a quick attempt, totally untested.  Actually the retry with
+>>> GFP_DMA is superfluous for archs without it, so the first patch
+>>> corrects it.
+>>
+>> Gah, scratch this, it doesn't work.  A different check is needed...
+> 
+> The v2 patches are below, replaced with IS_ENABLED(CONFIG_ZONE_DMA).
+
+That looks pretty reasonable to me - I'd be tempted to try a factoring 
+out a helper function to avoid the "goto again" logic, but that's hardly 
+crucial.
+
+What I'd really love to see is something like the alloc_pages_mask() 
+proposal from years ago to come back such that GFP_DMA32 could die 
+entirely, but I don't know anywhere near enough about the mm layer to 
+consider taking that on myself :(
+
+Robin.
