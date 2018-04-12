@@ -1,51 +1,40 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH] swiotlb: Fix unexpected swiotlb_alloc_coherent() failures
-Date: Thu, 12 Apr 2018 08:02:27 +0200
-Message-ID: <20180412060227.GA30248@lst.de>
-References: <20180410170513.22834-1-tiwai@suse.de>
-	<20180410170615.GA27589@lst.de> <s5hzi2bat25.wl-tiwai@suse.de>
-	<40618b9c-786d-7f5f-3f5b-fc1dd8375846@arm.com>
-	<20180410181020.GA28565@lst.de> <s5h4lkib3rd.wl-tiwai@suse.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH V2] drm/amdgpu: limit DMA size to PAGE_SIZE for
+        scatter-gather buffers
+Date: Thu, 12 Apr 2018 08:26:00 +0200
+Message-ID: <20180412062600.GB30499@lst.de>
+References: <1523394001-4615-1-git-send-email-okaya@codeaurora.org> <32b82296-bba5-b5f1-266b-45c1ed66da94@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <s5h4lkib3rd.wl-tiwai-l3A5Bk7waGM@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Takashi Iwai <tiwai-l3A5Bk7waGM@public.gmane.org>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <32b82296-bba5-b5f1-266b-45c1ed66da94@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Sinan Kaya <okaya@codeaurora.org>, amd-gfx@lists.freedesktop.org, timur@codeaurora.org, sulrich@codeaurora.org, Tom St Denis <tom.stdenis@amd.com>, "David (ChunMing) Zhou" <David1.Zhou@amd.com>, Emily Deng <Emily.Deng@amd.com>, David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>, open list <linux-kernel@vger.kernel.org>, "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>, David Panariti <David.Panariti@amd.com>, Jim Qu <Jim.Qu@amd.com>, Huang Rui <ray.huang@amd.com>, Roger He <Hongbo.He@amd.com>, Monk Liu <Monk.Liu@amd.com>, Feifei Xu <Feifei.Xu@amd.com>, Alex Deucher <alexander.deucher@amd.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, iomm
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 11, 2018 at 09:28:54AM +0200, Takashi Iwai wrote:
-> > But we should try a GFP_DMA32 allocation first, so this is a bit
-> > surprising.
-> 
-> Hm, do we really try that?
-> Through a quick glance, dma_alloc_coherent_gfp_flags() gives GFP_DMA32
-> only when coherent mask <= DMA_BIT_MASK(32); in the case of iwlwifi,
-> it's 36bit, so GFP_DMA isn't set.
+On Wed, Apr 11, 2018 at 01:03:59PM +0100, Robin Murphy wrote:
+> On 10/04/18 21:59, Sinan Kaya wrote:
+>> Code is expecing to observe the same number of buffers returned from
+>> dma_map_sg() function compared to sg_alloc_table_from_pages(). This
+>> doesn't hold true universally especially for systems with IOMMU.
+>
+> So why not fix said code? It's clearly not a real hardware limitation, and 
+> the map_sg() APIs have potentially returned fewer than nents since forever, 
+> so there's really no excuse.
 
-Oh, yes - it is using an odd dma mask, and amdgpu seems to use an
-just as odd 40-bit dma mask.
+Yes, relying on dma_map_sg returning the same number of entries as passed
+it is completely bogus.
 
-> We had a fallback allocation with GFP_DMA32 in the past, but this
-> seems gone long time ago along with cleanups (commit c647c3bb2d16).
-> 
-> But I haven't followed about this topic for long time, so I might have
-> missed obviously...
+>> IOMMU driver tries to combine buffers into a single DMA address as much
+>> as it can. The right thing is to tell the DMA layer how much combining
+>> IOMMU can do.
+>
+> Disagree; this is a dodgy hack, since you'll now end up passing 
+> scatterlists into dma_map_sg() which already violate max_seg_size to begin 
+> with, and I think a conscientious DMA API implementation would be at rights 
+> to fail the mapping for that reason (I know arm64 happens not to, but that 
+> was a deliberate design decision to make my life easier at the time).
 
-I think a fallback would be much better here rather than relying on the
-limited swiotlb buffer bool.  dma_direct_alloc (which in 4.17 is also
-used for x86) already has a GFP_DMA fallback, so extending this for
-GFP_DMA32 as well would seem reasonable.
-
-Any volunteers?
+Agreed.
