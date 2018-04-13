@@ -1,40 +1,103 @@
-From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH] iommu: amd: hide unused iommu_table_lock
-Date: Fri, 13 Apr 2018 17:03:10 +0200
-Message-ID: <20180413150310.4gbpuavvimnfj57a@linutronix.de>
-References: <20180404105713.633983-1-arnd@arndb.de>
+From: jacopo mondi <jacopo@jmondi.org>
+Subject: Re: [PATCH] base: dma-mapping: Postpone cpu addr translation on
+ mmap()
+Date: Fri, 13 Apr 2018 18:30:09 +0200
+Message-ID: <20180413163009.GE6666@w540>
+References: <1523293148-18726-1-git-send-email-jacopo+renesas@jmondi.org>
+ <20180409175251.GA5426@infradead.org>
+ <20180410075752.GB20945@w540>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="ZRyEpB+iJ+qUx0kp"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180404105713.633983-1-arnd-r2nGTMty4D4@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+In-Reply-To: <20180410075752.GB20945@w540>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, laurent.pinchart@ideasonboard.com, robin.murphy@arm.com, dalias@libc.org, ysato@users.sourceforge.jp, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-04-04 12:56:59 [+0200], Arnd Bergmann wrote:
-> The newly introduced lock is only used when CONFIG_IRQ_REMAP is enabled:
-> 
-> drivers/iommu/amd_iommu.c:86:24: error: 'iommu_table_lock' defined but not used [-Werror=unused-variable]
->  static DEFINE_SPINLOCK(iommu_table_lock);
-> 
-> This moves the definition next to the user, within the #ifdef protected
-> section of the file.
-> 
-> Fixes: ea6166f4b83e ("iommu/amd: Split irq_lookup_table out of the amd_iommu_devtable_lock")
-> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Acked-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 
-Thank you Arnd.
+--ZRyEpB+iJ+qUx0kp
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-Sebastian
+Hello again,
+
+On Tue, Apr 10, 2018 at 09:57:52AM +0200, jacopo mondi wrote:
+> Hi Christoph,
+>
+> On Mon, Apr 09, 2018 at 10:52:51AM -0700, Christoph Hellwig wrote:
+> > On Mon, Apr 09, 2018 at 06:59:08PM +0200, Jacopo Mondi wrote:
+> > > I'm still a bit puzzled on what happens if dma_mmap_from_dev_coherent() fails.
+> > > Does a dma_mmap_from_dev_coherent() failure guarantee anyhow that the
+> > > successive virt_to_page() isn't problematic as it is today?
+> > > Or is it the
+> > >  	if (off < count && user_count <= (count - off))
+> > > check that makes the translation safe?
+> >
+> > It doesn't.  I think one major issue is that we should not simply fall
+> > to dma_common_mmap if no method is required, but need every instance of
+> > dma_map_ops to explicitly opt into an mmap method that is known to work.
+>
+> I see.. this patch thus just postpones the problem...
+>
+> >
+> > >  #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
+> > >  	unsigned long user_count = vma_pages(vma);
+> > >  	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > > -	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
+> > >  	unsigned long off = vma->vm_pgoff;
+> > > +	unsigned long pfn;
+> > >
+> > >  	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> > >
+> > > @@ -235,6 +235,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+> > >  		return ret;
+> > >
+> > >  	if (off < count && user_count <= (count - off)) {
+> > > +		pfn = page_to_pfn(virt_to_page(cpu_addr));
+> > >  		ret = remap_pfn_range(vma, vma->vm_start,
+> > >  				      pfn + off,
+> > >  				      user_count << PAGE_SHIFT,
+> >
+> > Why not:
+> >
+> > 		ret = remap_pfn_range(vma, vma->vm_start,
+> > 				page_to_pfn(virt_to_page(cpu_addr)) + off,
+> >
+> > and save the temp variable?
+>
+> Sure, it's better... Should I send a v2 or considering your above
+> comment this patch is just a mitigation and should be ditched in
+> favour of a proper solution (which requires a much more considerable amount
+> of work though)?
+
+Don't want to be insistent, but I didn't get from your reply if a v2
+is welcome or not :)
+
+Thanks
+  j
+
+--ZRyEpB+iJ+qUx0kp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJa0NsRAAoJEHI0Bo8WoVY8GF0QAKn83Ua0fVq/WitRlPQoYE74
+Re1T8GJjmZXt9DjEnbJtpUye+lQzEQn10NyOGGHX6OMwHI3AnZ2C5QNUZzvdJ/+7
+RPHml+RV4pzBW9/nVz7iIqnutjdCYI6qzn+8nfedLlUPvaSx/kxFPhLMzpOJFzkS
+BHFqJF8XE2jI7BGMwOFArbfi/VQIcRWItQgyxUQ3wx7k6cnReB5CUBJ1BnvQW6Pq
+a1ZI1mcmHz/CYwHlzVRPRzPDjWnIzimb1qeFIg0SSqVjSb3N+gsC5D2y/UeAxmfW
+NGQ/JcP1Rmrp6oaNCg+TWFVQERtPJcS1MxXdgfmbTlnqcfTFjqIcTYCtR7G+GjFM
+JTUPZA8sjQED4qQYDxzulfa83MsBrJFb8EdiP6d+9So8+nhY0PiK8EIw1QHevP+O
+8pcqB2WIPn6Tg9Wzot2XAxSiXarZ4YYQSck0Zt0o7tKzFO7mmunbyaSmz6A5KVcV
+uLWemrQcKpyTCp3+NUvGpTM1gjmbXaZjtqVjTTznu7lc0smMmTAxHLCq/Bt12xIk
+abnFAz+HQ6qjRnDQsYc1D8tsoXgbzOf7HZrQA46TPIbzBa19HqNSsyUz+k0yTLdc
+PNjTxN2JGvUZIZtsi0SET4itmnyBsgJjZjibVhGrRnv2mli+ubvnnpHfdyFWSILA
+AB1G1Nw8H2wQlCrVZLEy
+=BgWl
+-----END PGP SIGNATURE-----
+
+--ZRyEpB+iJ+qUx0kp--
