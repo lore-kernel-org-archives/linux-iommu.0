@@ -1,15 +1,18 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] base: dma-mapping: Postpone cpu addr translation on
-	mmap()
-Date: Fri, 13 Apr 2018 18:43:29 +0100
-Message-ID: <c0f27cac-163d-d7b1-7c27-e1476a6d77b0@arm.com>
-References: <1523640337-26064-1-git-send-email-jacopo+renesas@jmondi.org>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iommu/rockchip: Make clock properties
+	optional
+Date: Fri, 13 Apr 2018 16:02:26 -0500
+Message-ID: <20180413210226.x4jx7b6kmui3oa3f@rob-hp-laptop>
+References: <20180410092612.2653-1-heiko@sntech.de>
+	<20180410092612.2653-2-heiko@sntech.de>
+	<99245ec4-6835-7fa7-3bad-dd21874f92c0@arm.com>
+	<2406273.dIyKc4zb8g@phil>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1523640337-26064-1-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <2406273.dIyKc4zb8g@phil>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,81 +22,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: dalias-8zAoT0mYgF4@public.gmane.org, ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 13/04/18 18:25, Jacopo Mondi wrote:
-> Postpone calling virt_to_page() translation on memory locations not
-> guaranteed to be backed by a struct page. Try first to map memory from
-> device's coherent memory pool, then perform translation if that fails.
+On Tue, Apr 10, 2018 at 01:26:41PM +0200, Heiko Stuebner wrote:
+> Hi Robin,
 > 
-> On some architectures, specifically SH when configured with SPARSEMEM
-> memory model, assuming a struct page is always assigned to a memory
-> address lead to unexpected hangs during the virtual to page address
-> translation. This patch fixes that specific issue but applies in the
-> general case too.
+> Am Dienstag, 10. April 2018, 13:18:48 CEST schrieb Robin Murphy:
+> > On 10/04/18 10:26, Heiko Stuebner wrote:
+> > > Rockchip IOMMUs are used without explicit clock handling for 4 years
+> > > now, so we should keep compatibility with old devicetrees if possible.
+> > > Therefore make iommu clocks optional.
+> > 
+> > Do we need to touch the binding itself? Obviously the driver has to 
+> > treat clocks as optional in existing DTs (and I feel a bit dumb now for 
+> > managing to overlook that in review), but the binding effectively only 
+> > covers future DTs, and I'd assume we want to encourage the clocks to be 
+> > correctly specified there.
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+I'd prefer the DT docs reflect what is correct for new/current dts 
+files. That's the only way the docs can validate the dts files.
 
-> Suggested-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> Signed-off-by: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+> I guess that depends on your definition of the timespan for backwards
+> compatibility. I'm always starting out at indefinite till convinced
+> otherwise ;-). Hence the clocks would need to stay optional for (nearly)
+> forever.
 > 
-> ---
-> 
-> It has now been clarified this patch does not resolve the issue, but only
-> mitigate it on platforms where dma_mmap_from_dev_coherent() succeeds and
-> delay page_to_pfn() faulty conversion.
-> 
-> A suggested proper solution would be not relying on dma_common_mmap() but
-> require all platforms to implement an mmap methods known to work, as noted
-> by Christoph in v1 review.
+> Also, having the binding claim them as required but the code handling
+> them as optional just calls for someone to remove the optional handling :-D
 
-Note that that "proper solution" should still involve having 
-dma_common_mmap() since we certainly don't want an explosion of code 
-duplication. It just means that architectures that do use it should be 
-defining their dma_map_ops with an explicit ".mmap = dma_common_mmap" 
-instead of relying on dma_mmap_attrs() calling it by default. Thus the 
-more architectures this implementation *is* definitely safe for, the 
-better :)
+A comment in the code saying why missing clocks are allowed should 
+suffice.
 
-Robin.
+> Not sure if there is a established way of saying
+> "we want this for all future devices, but allow it to be missing for old dts".
 
-> v1 -> v2:
-> - Save the 'pfn' temp variable performing the page_to_pfn() conversion in the
->    remap_pfn_range() function call as suggested by Christoph.
-> 
-> ---
->   drivers/base/dma-mapping.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-> index 3b11835..d82566d 100644
-> --- a/drivers/base/dma-mapping.c
-> +++ b/drivers/base/dma-mapping.c
-> @@ -226,7 +226,6 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
->   #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
->   	unsigned long user_count = vma_pages(vma);
->   	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	unsigned long pfn = page_to_pfn(virt_to_page(cpu_addr));
->   	unsigned long off = vma->vm_pgoff;
-> 
->   	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-> @@ -234,12 +233,11 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
->   	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
->   		return ret;
-> 
-> -	if (off < count && user_count <= (count - off)) {
-> +	if (off < count && user_count <= (count - off))
->   		ret = remap_pfn_range(vma, vma->vm_start,
-> -				      pfn + off,
-> +				      page_to_pfn(virt_to_page(cpu_addr)) + off,
->   				      user_count << PAGE_SHIFT,
->   				      vma->vm_page_prot);
-> -	}
->   #endif	/* !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
-> 
->   	return ret;
-> --
-> 2.7.4
-> 
+We don't really...
+
+Rob
