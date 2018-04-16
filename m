@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v4 01/22] iommu: introduce bind_pasid_table API function
-Date: Mon, 16 Apr 2018 14:48:50 -0700
-Message-ID: <1523915351-54415-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 03/22] iommu/vt-d: add a flag for pasid table bound status
+Date: Mon, 16 Apr 2018 14:48:52 -0700
+Message-ID: <1523915351-54415-4-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,171 +18,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
-use in the guest:
-https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
+Adding a flag in device domain into to track whether a guest or
+user PASID table is bound to a device.
 
-As part of the proposed architecture, when an SVM capable PCI
-device is assigned to a guest, nested mode is turned on. Guest owns the
-first level page tables (request with PASID) which performs GVA->GPA
-translation. Second level page tables are owned by the host for GPA->HPA
-translation for both request with and without PASID.
-
-A new IOMMU driver interface is therefore needed to perform tasks as
-follows:
-* Enable nested translation and appropriate translation type
-* Assign guest PASID table pointer (in GPA) and size to host IOMMU
-
-This patch introduces new API functions to perform bind/unbind guest PASID
-tables. Based on common data, model specific IOMMU drivers can be extended
-to perform the specific steps for binding pasid table of assigned devices.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/iommu.c      | 19 +++++++++++++++++++
- include/linux/iommu.h      | 24 ++++++++++++++++++++++++
- include/uapi/linux/iommu.h | 32 ++++++++++++++++++++++++++++++++
- 3 files changed, 75 insertions(+)
- create mode 100644 include/uapi/linux/iommu.h
+ include/linux/intel-iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d2aa2320..3a69620 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1325,6 +1325,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_device);
- 
-+int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-+			struct pasid_table_config *pasidt_binfo)
-+{
-+	if (unlikely(!domain->ops->bind_pasid_table))
-+		return -ENODEV;
-+
-+	return domain->ops->bind_pasid_table(domain, dev, pasidt_binfo);
-+}
-+EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
-+
-+void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-+{
-+	if (unlikely(!domain->ops->unbind_pasid_table))
-+		return;
-+
-+	domain->ops->unbind_pasid_table(domain, dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee..8ad111f 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -25,6 +25,7 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
-+#include <uapi/linux/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
- #define IOMMU_WRITE	(1 << 1)
-@@ -187,6 +188,8 @@ struct iommu_resv_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @bind_pasid_table: bind pasid table pointer for guest SVM
-+ * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -233,8 +236,14 @@ struct iommu_ops {
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
- 
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-+
- 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
- 
-+	int (*bind_pasid_table)(struct iommu_domain *domain, struct device *dev,
-+				struct pasid_table_config *pasidt_binfo);
-+	void (*unbind_pasid_table)(struct iommu_domain *domain,
-+				struct device *dev);
-+
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -296,6 +305,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_bind_pasid_table(struct iommu_domain *domain,
-+		struct device *dev, struct pasid_table_config *pasidt_binfo);
-+extern void iommu_unbind_pasid_table(struct iommu_domain *domain,
-+				struct device *dev);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
-@@ -696,6 +709,17 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 	return NULL;
- }
- 
-+static inline
-+int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-+			struct pasid_table_config *pasidt_binfo)
-+{
-+	return -EINVAL;
-+}
-+static inline
-+void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-+{
-+}
-+
- #endif /* CONFIG_IOMMU_API */
- 
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-new file mode 100644
-index 0000000..9f7a6bf
---- /dev/null
-+++ b/include/uapi/linux/iommu.h
-@@ -0,0 +1,32 @@
-+/*
-+ * IOMMU user API definitions
-+ *
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef _UAPI_IOMMU_H
-+#define _UAPI_IOMMU_H
-+
-+#include <linux/types.h>
-+
-+/**
-+ * PASID table data used to bind guest PASID table to the host IOMMU. This will
-+ * enable guest managed first level page tables.
-+ * @version: for future extensions and identification of the data format
-+ * @bytes: size of this structure
-+ * @base_ptr:	PASID table pointer
-+ * @pasid_bits:	number of bits supported in the guest PASID table, must be less
-+ *		or equal than the host supported PASID size.
-+ */
-+struct pasid_table_config {
-+	__u32 version;
-+#define PASID_TABLE_CFG_VERSION 1
-+	__u32 bytes;
-+	__u64 base_ptr;
-+	__u8 pasid_bits;
-+};
-+
-+#endif /* _UAPI_IOMMU_H */
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 304afae..ddc7d79 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -473,6 +473,7 @@ struct device_domain_info {
+ 	u8 pri_enabled:1;
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
++	u8 pasid_table_bound:1;
+ 	u8 ats_qdep;
+ 	u64 fault_mask;	/* selected IOMMU faults to be reported */
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
 -- 
 2.7.4
