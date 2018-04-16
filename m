@@ -1,79 +1,73 @@
-From: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH 08/12] mmc: reduce use of block bounce buffers (fwd)
-Date: Mon, 16 Apr 2018 21:11:46 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1804162110510.3044@hadrien>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v4 06/22] iommu/vt-d: add definitions for PFSID
+Date: Mon, 16 Apr 2018 14:48:55 -0700
+Message-ID: <1523915351-54415-7-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-block@vger.kernel.org, linux-ide@vger.kernel.org, linux-scsi@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kbuild-all@01.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523915351-54415-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is a duplicated test on line 360.
+When SRIOV VF device IOTLB is invalidated, we need to provide
+the PF source ID such that IOMMU hardware can gauge the depth
+of invalidation queue which is shared among VFs. This is needed
+when device invalidation throttle (DIT) capability is supported.
 
-julia
+This patch adds bit definitions for checking and tracking PFSID.
 
----------- Forwarded message ----------
-Date: Mon, 16 Apr 2018 23:04:18 +0800
-From: kbuild test robot <lkp@intel.com>
-To: kbuild@01.org
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: [PATCH 08/12] mmc: reduce use of block bounce buffers
-
-CC: kbuild-all@01.org
-In-Reply-To: <20180416085032.7367-9-hch@lst.de>
-References: <20180416085032.7367-9-hch@lst.de>
-TO: Christoph Hellwig <hch@lst.de>
-CC: iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-block@vger.kernel.org, linux-ide@vger.kernel.org, linux-scsi@vger.kernel.org, netdev@vger.kernel.org
-CC: linux-kernel@vger.kernel.org
-
-Hi Christoph,
-
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on linus/master]
-[also build test WARNING on v4.17-rc1 next-20180416]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-
-url:    https://github.com/0day-ci/linux/commits/Christoph-Hellwig/iscsi_tcp-don-t-set-a-bounce-limit/20180416-172618
-:::::: branch date: 6 hours ago
-:::::: commit date: 6 hours ago
-
->> drivers/mmc/core/queue.c:360:5-29: duplicated argument to && or ||
-
-# https://github.com/0day-ci/linux/commit/6620a69f0eea8e8b7586f08f721c95a336022497
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 6620a69f0eea8e8b7586f08f721c95a336022497
-vim +360 drivers/mmc/core/queue.c
-
-81196976 Adrian Hunter     2017-11-29  350
-c8b5fd03 Adrian Hunter     2017-09-22  351  static void mmc_setup_queue(struct mmc_queue *mq, struct mmc_card *card)
-c8b5fd03 Adrian Hunter     2017-09-22  352  {
-c8b5fd03 Adrian Hunter     2017-09-22  353  	struct mmc_host *host = card->host;
-c8b5fd03 Adrian Hunter     2017-09-22  354
-8b904b5b Bart Van Assche   2018-03-07  355  	blk_queue_flag_set(QUEUE_FLAG_NONROT, mq->queue);
-8b904b5b Bart Van Assche   2018-03-07  356  	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, mq->queue);
-c8b5fd03 Adrian Hunter     2017-09-22  357  	if (mmc_can_erase(card))
-c8b5fd03 Adrian Hunter     2017-09-22  358  		mmc_queue_setup_discard(mq->queue, card);
-c8b5fd03 Adrian Hunter     2017-09-22  359
-6620a69f Christoph Hellwig 2018-04-16 @360  	if (!mmc_dev(host)->dma_mask || !mmc_dev(host)->dma_mask)
-6620a69f Christoph Hellwig 2018-04-16  361  		blk_queue_bounce_limit(mq->queue, BLK_BOUNCE_HIGH);
-c8b5fd03 Adrian Hunter     2017-09-22  362  	blk_queue_max_hw_sectors(mq->queue,
-c8b5fd03 Adrian Hunter     2017-09-22  363  		min(host->max_blk_count, host->max_req_size / 512));
-c8b5fd03 Adrian Hunter     2017-09-22  364  	blk_queue_max_segments(mq->queue, host->max_segs);
-c8b5fd03 Adrian Hunter     2017-09-22  365  	blk_queue_max_segment_size(mq->queue, host->max_seg_size);
-c8b5fd03 Adrian Hunter     2017-09-22  366
-1e8e55b6 Adrian Hunter     2017-11-29  367  	INIT_WORK(&mq->recovery_work, mmc_mq_recovery_handler);
-81196976 Adrian Hunter     2017-11-29  368  	INIT_WORK(&mq->complete_work, mmc_blk_mq_complete_work);
-81196976 Adrian Hunter     2017-11-29  369
-81196976 Adrian Hunter     2017-11-29  370  	mutex_init(&mq->complete_lock);
-81196976 Adrian Hunter     2017-11-29  371
-81196976 Adrian Hunter     2017-11-29  372  	init_waitqueue_head(&mq->wait);
-81196976 Adrian Hunter     2017-11-29  373  }
-81196976 Adrian Hunter     2017-11-29  374
-
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ include/linux/intel-iommu.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index ddc7d79..dfacd49 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -114,6 +114,7 @@
+  * Extended Capability Register
+  */
+ 
++#define ecap_dit(e)		((e >> 41) & 0x1)
+ #define ecap_pasid(e)		((e >> 40) & 0x1)
+ #define ecap_pss(e)		((e >> 35) & 0x1f)
+ #define ecap_eafs(e)		((e >> 34) & 0x1)
+@@ -284,6 +285,7 @@ enum {
+ #define QI_DEV_IOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
+ #define QI_DEV_IOTLB_QDEP(qdep)	(((qdep) & 0x1f) << 16)
+ #define QI_DEV_IOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
++#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xff0) << 48))
+ #define QI_DEV_IOTLB_SIZE	1
+ #define QI_DEV_IOTLB_MAX_INVS	32
+ 
+@@ -308,6 +310,7 @@ enum {
+ #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
+ #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
+ #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
++#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xff0) << 48))
+ #define QI_DEV_EIOTLB_MAX_INVS	32
+ 
+ #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
+@@ -467,6 +470,7 @@ struct device_domain_info {
+ 	struct list_head global; /* link to global list */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
++	u16 pfsid;		/* SRIOV physical function source ID */
+ 	u8 pasid_supported:3;
+ 	u8 pasid_enabled:1;
+ 	u8 pri_supported:1;
+-- 
+2.7.4
