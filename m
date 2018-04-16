@@ -1,12 +1,13 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v4 00/22] IOMMU and VT-d driver support for Shared Virtual
-	Address (SVA)
-Date: Mon, 16 Apr 2018 14:48:49 -0700
-Message-ID: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 07/22] iommu/vt-d: fix dev iotlb pfsid use
+Date: Mon, 16 Apr 2018 14:48:56 -0700
+Message-ID: <1523915351-54415-8-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523915351-54415-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,134 +21,89 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <li
 Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg and All,
+PFSID should be used in the invalidation descriptor for flushing
+device IOTLBs on SRIOV VFs.
 
-(Rebased to 4.17-rc1. resend)
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/dmar.c        |  6 +++---
+ drivers/iommu/intel-iommu.c | 16 +++++++++++++++-
+ include/linux/intel-iommu.h |  5 ++---
+ 3 files changed, 20 insertions(+), 7 deletions(-)
 
-Shared virtual address (SVA), a.k.a, Shared virtual memory (SVM) on Intel
-platforms allow address space sharing between device DMA and applications.
-SVA can reduce programming complexity and enhance security. To enable SVA
-in the guest, i.e. shared guest application address space and physical
-device DMA address, IOMMU driver must provide some new functionalities.
-
-This patchset is a follow-up on the discussions held at LPC 2017
-VFIO/IOMMU/PCI track. Slides and notes can be found here:
-https://linuxplumbersconf.org/2017/ocw/events/LPC2017/tracks/636
-
-The complete guest SVA support also involves changes in QEMU and VFIO,
-which has been posted earlier.
-https://www.spinics.net/lists/kvm/msg148798.html
-
-This is the IOMMU portion follow up of the more complete series of the
-kernel changes to support vSVA. Please refer to the link below for more
-details. https://www.spinics.net/lists/kvm/msg148819.html
-
-Generic APIs are introduced in addition to Intel VT-d specific changes,
-the goal is to have common interfaces across IOMMU and device types for
-both VFIO and other in-kernel users.
-
-At the top level, new IOMMU interfaces are introduced as follows:
- - bind guest PASID table
- - passdown invalidations of translation caches
- - IOMMU device fault reporting including page request/response and
-   non-recoverable faults.
-
-For IOMMU detected device fault reporting, struct device is extended to
-provide callback and tracking at device level. The original proposal was
-discussed here "Error handling for I/O memory management units"
-(https://lwn.net/Articles/608914/). I have experimented two alternative
-solutions:
-1. use a shared group notifier, this does not scale well also causes unwanted
-notification traffic when group sibling device is reported with faults.
-2. place fault callback at device IOMMU arch data, e.g. device_domain_info
-in Intel/FSL IOMMU driver. This will cause code duplication, since per
-device fault reporting is generic.
-
-The additional patches are Intel VT-d specific, which either implements or
-replaces existing private interfaces with the generic ones.
-
-This patchset is based on the work and ideas from many people, especially:
-Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-
-Thanks,
-
-Jacob
-
-V4
-	- Futher integrate feedback for iommu_param and iommu_fault_param
-	  from Jean and others.
-	- Handle fault reporting error and race conditions. Keep tracking per
-	  device pending page requests such that page group response can be
-	  sanitized.
-	- Added a timer to handle irresponsive guest who does not send page
-	  response on time.
-	- Use a workqueue for VT-d non-recorverable IRQ fault handling.
-	- Added trace events for invalidation and fault reporting.
-V3
-	- Consolidated fault reporting data format based on discussions on v2,
-	  including input from ARM and AMD.
-	- Renamed invalidation APIs from svm to sva based on discussions on v2
-	- Use a parent pointer under struct device for all iommu per device data
-	- Simplified device fault callback, allow driver private data to be
-	  registered. This might make it easy to replace domain fault handler.
-V2
-	- Replaced hybrid interface data model (generic data + vendor specific
-	data) with all generic data. This will have the security benefit where
-	data passed from user space can be sanitized by all software layers if
-	needed.
-	- Addressed review comments from V1
-	- Use per device fault report data
-	- Support page request/response communications between host IOMMU and
-	guest or other in-kernel users.
-	- Added unrecoverable fault reporting to DMAR
-	- Use threaded IRQ function for DMAR fault interrupt and fault
-	  reporting
-
-
-
-Jacob Pan (21):
-  iommu: introduce bind_pasid_table API function
-  iommu/vt-d: move device_domain_info to header
-  iommu/vt-d: add a flag for pasid table bound status
-  iommu/vt-d: add bind_pasid_table function
-  iommu/vt-d: add definitions for PFSID
-  iommu/vt-d: fix dev iotlb pfsid use
-  iommu/vt-d: support flushing more translation cache types
-  iommu/vt-d: add svm/sva invalidate function
-  iommu: introduce device fault data
-  driver core: add per device iommu param
-  iommu: introduce device fault report API
-  iommu: introduce page response function
-  iommu: handle page response timeout
-  iommu/config: add build dependency for dmar
-  iommu/vt-d: report non-recoverable faults to device
-  iommu/intel-svm: report device page request
-  iommu/intel-svm: replace dev ops with fault report API
-  iommu/intel-svm: do not flush iotlb for viommu
-  iommu/vt-d: add intel iommu page response function
-  trace/iommu: add sva trace events
-  iommu: use sva invalidate and device fault trace event
-
-Liu, Yi L (1):
-  iommu: introduce iommu invalidate API function
-
- drivers/iommu/Kconfig         |   1 +
- drivers/iommu/dmar.c          | 209 ++++++++++++++++++++++-
- drivers/iommu/intel-iommu.c   | 376 +++++++++++++++++++++++++++++++++++++++---
- drivers/iommu/intel-svm.c     |  84 ++++++++--
- drivers/iommu/iommu.c         | 284 ++++++++++++++++++++++++++++++-
- include/linux/device.h        |   3 +
- include/linux/dma_remapping.h |   1 +
- include/linux/dmar.h          |   2 +-
- include/linux/intel-iommu.h   |  52 +++++-
- include/linux/intel-svm.h     |  20 +--
- include/linux/iommu.h         | 226 ++++++++++++++++++++++++-
- include/trace/events/iommu.h  | 112 +++++++++++++
- include/uapi/linux/iommu.h    | 111 +++++++++++++
- 13 files changed, 1409 insertions(+), 72 deletions(-)
- create mode 100644 include/uapi/linux/iommu.h
-
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index accf5838..38bb90f 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1339,8 +1339,8 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 	qi_submit_sync(&desc, iommu);
+ }
+ 
+-void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+-			u64 addr, unsigned mask)
++void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
++			u16 qdep, u64 addr, unsigned mask)
+ {
+ 	struct qi_desc desc;
+ 
+@@ -1355,7 +1355,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+ 		qdep = 0;
+ 
+ 	desc.low = QI_DEV_IOTLB_SID(sid) | QI_DEV_IOTLB_QDEP(qdep) |
+-		   QI_DIOTLB_TYPE;
++		   QI_DIOTLB_TYPE | QI_DEV_IOTLB_PFSID(pfsid);
+ 
+ 	qi_submit_sync(&desc, iommu);
+ }
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d8058be..cae4042 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1459,6 +1459,19 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 		return;
+ 
+ 	pdev = to_pci_dev(info->dev);
++	/* For IOMMU that supports device IOTLB throttling (DIT), we assign
++	 * PFSID to the invalidation desc of a VF such that IOMMU HW can gauge
++	 * queue depth at PF level. If DIT is not set, PFSID will be treated as
++	 * reserved, which should be set to 0.
++	 */
++	if (!ecap_dit(info->iommu->ecap))
++		info->pfsid = 0;
++	else if (pdev && pdev->is_virtfn) {
++		if (ecap_dit(info->iommu->ecap))
++			dev_warn(&pdev->dev, "SRIOV VF device IOTLB enabled without flow control\n");
++		info->pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
++	} else
++		info->pfsid = PCI_DEVID(info->bus, info->devfn);
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ 	/* The PCIe spec, in its wisdom, declares that the behaviour of
+@@ -1524,7 +1537,8 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+ 
+ 		sid = info->bus << 8 | info->devfn;
+ 		qdep = info->ats_qdep;
+-		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
++		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
++				qdep, addr, mask);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ }
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index dfacd49..678a0f4 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -504,9 +504,8 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
+ 			     u8 fm, u64 type);
+ extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 			  unsigned int size_order, u64 type);
+-extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+-			       u64 addr, unsigned mask);
+-
++extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
++			u16 qdep, u64 addr, unsigned mask);
+ extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+ 
+ extern int dmar_ir_support(void);
 -- 
 2.7.4
