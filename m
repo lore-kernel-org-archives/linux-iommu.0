@@ -1,46 +1,52 @@
-From: David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
-Subject: Re: [PATCH 01/12] iommu-common: move to arch/sparc
-Date: Mon, 16 Apr 2018 09:58:33 -0400 (EDT)
-Message-ID: <20180416.095833.969403163564136309.davem@davemloft.net>
-References: <20180415145947.1248-1-hch@lst.de>
-	<20180415145947.1248-2-hch@lst.de>
-	<f0305a92-b206-1567-3c25-67fbd194047d@linux.vnet.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f0305a92-b206-1567-3c25-67fbd194047d-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: khandual-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
-Cc: linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH RFC] dma-direct: Try reallocation with GFP_DMA32 if possible
+Date: Mon, 16 Apr 2018 17:18:19 +0200
+Message-ID: <20180416151819.27520-1-tiwai@suse.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Anshuman Khandual <khandual-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Date: Mon, 16 Apr 2018 14:26:07 +0530
+As the recent swiotlb bug revealed, we seem to have given up the
+direct DMA allocation too early and felt back to swiotlb allocation.
+The reason is that swiotlb allocator expected that dma_direct_alloc()
+would try harder to get pages even below 64bit DMA mask with
+GFP_DMA32, but the function doesn't do that but only deals with
+GFP_DMA case.
 
-> On 04/15/2018 08:29 PM, Christoph Hellwig wrote:
->> This code is only used by sparc, and all new iommu drivers should use the
->> drivers/iommu/ framework.  Also remove the unused exports.
->> 
->> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> 
-> Right, these functions are used only from SPARC architecture. Simple
-> git grep confirms it as well. Hence it makes sense to move them into
-> arch code instead.
+This patch adds a similar fallback reallocation with GFP_DMA32 as
+we've done with GFP_DMA.  The condition is that the coherent mask is
+smaller than 64bit (i.e. some address limitation), and neither GFP_DMA
+nor GFP_DMA32 is set beforehand.
 
-Well, we put these into a common location and used type friendly for
-powerpc because we hoped powerpc would convert over to using this
-common piece of code as well.
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 
-But nobody did the powerpc work.
+---
 
-If you look at the powerpc iommu support, it's the same code basically
-for entry allocation.
+This is a resend of a test patch included in the previous thread
+("swiotlb: Fix unexpected swiotlb_alloc_coherent() failures").
+
+ lib/dma-direct.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/lib/dma-direct.c b/lib/dma-direct.c
+index bbfb229aa067..970d39155618 100644
+--- a/lib/dma-direct.c
++++ b/lib/dma-direct.c
+@@ -84,6 +84,13 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		__free_pages(page, page_order);
+ 		page = NULL;
+ 
++		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
++		    dev->coherent_dma_mask < DMA_BIT_MASK(64) &&
++		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
++			gfp |= GFP_DMA32;
++			goto again;
++		}
++
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
+ 		    dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
+ 		    !(gfp & GFP_DMA)) {
+-- 
+2.16.3
