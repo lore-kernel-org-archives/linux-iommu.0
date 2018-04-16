@@ -1,169 +1,188 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v4 10/22] iommu: introduce device fault data
-Date: Mon, 16 Apr 2018 14:48:59 -0700
-Message-ID: <1523915351-54415-11-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v4 01/22] iommu: introduce bind_pasid_table API function
+Date: Mon, 16 Apr 2018 14:48:50 -0700
+Message-ID: <1523915351-54415-2-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu@vger.kernel.org, Yi L <yi.l.liu@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523915351-54415-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Device faults detected by IOMMU can be reported outside IOMMU
-subsystem for further processing. This patch intends to provide
-a generic device fault data such that device drivers can be
-communicated with IOMMU faults without model specific knowledge.
+Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
+use in the guest:
+https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
 
-The proposed format is the result of discussion at:
-https://lkml.org/lkml/2017/11/10/291
-Part of the code is based on Jean-Philippe Brucker's patchset
-(https://patchwork.kernel.org/patch/9989315/).
+As part of the proposed architecture, when an SVM capable PCI
+device is assigned to a guest, nested mode is turned on. Guest owns the
+first level page tables (request with PASID) which performs GVA->GPA
+translation. Second level page tables are owned by the host for GPA->HPA
+translation for both request with and without PASID.
 
-The assumption is that model specific IOMMU driver can filter and
-handle most of the internal faults if the cause is within IOMMU driver
-control. Therefore, the fault reasons can be reported are grouped
-and generalized based common specifications such as PCI ATS.
+A new IOMMU driver interface is therefore needed to perform tasks as
+follows:
+* Enable nested translation and appropriate translation type
+* Assign guest PASID table pointer (in GPA) and size to host IOMMU
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+This patch introduces new API functions to perform bind/unbind guest PASID
+tables. Based on common data, model specific IOMMU drivers can be extended
+to perform the specific steps for binding pasid table of assigned devices.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/iommu.h | 102 +++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 100 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c      | 19 +++++++++++++++++++
+ include/linux/iommu.h      | 24 ++++++++++++++++++++++++
+ include/uapi/linux/iommu.h | 32 ++++++++++++++++++++++++++++++++
+ 3 files changed, 75 insertions(+)
+ create mode 100644 include/uapi/linux/iommu.h
 
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d2aa2320..3a69620 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1325,6 +1325,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ 
++int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
++			struct pasid_table_config *pasidt_binfo)
++{
++	if (unlikely(!domain->ops->bind_pasid_table))
++		return -ENODEV;
++
++	return domain->ops->bind_pasid_table(domain, dev, pasidt_binfo);
++}
++EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
++
++void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
++{
++	if (unlikely(!domain->ops->unbind_pasid_table))
++		return;
++
++	domain->ops->unbind_pasid_table(domain, dev);
++}
++EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
++
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e963dbd..8968933 100644
+index 19938ee..8ad111f 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -49,13 +49,17 @@ struct bus_type;
- struct device;
- struct iommu_domain;
- struct notifier_block;
-+struct iommu_fault_event;
+@@ -25,6 +25,7 @@
+ #include <linux/errno.h>
+ #include <linux/err.h>
+ #include <linux/of.h>
++#include <uapi/linux/iommu.h>
  
- /* iommu fault flags */
--#define IOMMU_FAULT_READ	0x0
--#define IOMMU_FAULT_WRITE	0x1
-+#define IOMMU_FAULT_READ		(1 << 0)
-+#define IOMMU_FAULT_WRITE		(1 << 1)
-+#define IOMMU_FAULT_EXEC		(1 << 2)
-+#define IOMMU_FAULT_PRIV		(1 << 3)
+ #define IOMMU_READ	(1 << 0)
+ #define IOMMU_WRITE	(1 << 1)
+@@ -187,6 +188,8 @@ struct iommu_resv_region {
+  * @domain_get_windows: Return the number of windows for a domain
+  * @of_xlate: add OF master IDs to iommu grouping
+  * @pgsize_bitmap: bitmap of all possible supported page sizes
++ * @bind_pasid_table: bind pasid table pointer for guest SVM
++ * @unbind_pasid_table: unbind pasid table pointer and restore defaults
+  */
+ struct iommu_ops {
+ 	bool (*capable)(enum iommu_cap);
+@@ -233,8 +236,14 @@ struct iommu_ops {
+ 	u32 (*domain_get_windows)(struct iommu_domain *domain);
  
- typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
- 			struct device *, unsigned long, int, void *);
-+typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
+ 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
++
+ 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
  
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
-@@ -264,6 +268,99 @@ struct iommu_device {
- 	struct device *dev;
++	int (*bind_pasid_table)(struct iommu_domain *domain, struct device *dev,
++				struct pasid_table_config *pasidt_binfo);
++	void (*unbind_pasid_table)(struct iommu_domain *domain,
++				struct device *dev);
++
+ 	unsigned long pgsize_bitmap;
  };
  
-+/*  Generic fault types, can be expanded IRQ remapping fault */
-+enum iommu_fault_type {
-+	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
-+	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
-+};
-+
-+enum iommu_fault_reason {
-+	IOMMU_FAULT_REASON_UNKNOWN = 0,
-+
-+	/* IOMMU internal error, no specific reason to report out */
-+	IOMMU_FAULT_REASON_INTERNAL,
-+
-+	/* Could not access the PASID table */
-+	IOMMU_FAULT_REASON_PASID_FETCH,
-+
-+	/*
-+	 * PASID is out of range (e.g. exceeds the maximum PASID
-+	 * supported by the IOMMU) or disabled.
-+	 */
-+	IOMMU_FAULT_REASON_PASID_INVALID,
-+
-+	/* Could not access the page directory (Invalid PASID entry) */
-+	IOMMU_FAULT_REASON_PGD_FETCH,
-+
-+	/* Could not access the page table entry (Bad address) */
-+	IOMMU_FAULT_REASON_PTE_FETCH,
-+
-+	/* Protection flag check failed */
-+	IOMMU_FAULT_REASON_PERMISSION,
-+};
-+
-+/**
-+ * struct iommu_fault_event - Generic per device fault data
-+ *
-+ * - PCI and non-PCI devices
-+ * - Recoverable faults (e.g. page request), information based on PCI ATS
-+ * and PASID spec.
-+ * - Un-recoverable faults of device interest
-+ * - DMA remapping and IRQ remapping faults
-+
-+ * @type contains fault type.
-+ * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
-+ *         faults are not reported
-+ * @addr: tells the offending page address
-+ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
-+ * @rid: requestor ID
-+ * @page_req_group_id: page request group index
-+ * @last_req: last request in a page request group
-+ * @pasid_valid: indicates if the PRQ has a valid PASID
-+ * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
-+ * @device_private: if present, uniquely identify device-specific
-+ *                  private data for an individual page request.
-+ * @iommu_private: used by the IOMMU driver for storing fault-specific
-+ *                 data. Users should not modify this field before
-+ *                 sending the fault response.
-+ */
-+struct iommu_fault_event {
-+	enum iommu_fault_type type;
-+	enum iommu_fault_reason reason;
-+	u64 addr;
-+	u32 pasid;
-+	u32 page_req_group_id;
-+	u32 last_req : 1;
-+	u32 pasid_valid : 1;
-+	u32 prot;
-+	u64 device_private;
-+	u64 iommu_private;
-+};
-+
-+/**
-+ * struct iommu_fault_param - per-device IOMMU fault data
-+ * @dev_fault_handler: Callback function to handle IOMMU faults at device level
-+ * @data: handler private data
-+ *
-+ */
-+struct iommu_fault_param {
-+	iommu_dev_fault_handler_t handler;
-+	void *data;
-+};
-+
-+/**
-+ * struct iommu_param - collection of per-device IOMMU data
-+ *
-+ * @fault_param: IOMMU detected device fault reporting data
-+ *
-+ * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
-+ *	struct iommu_group	*iommu_group;
-+ *	struct iommu_fwspec	*iommu_fwspec;
-+ */
-+struct iommu_param {
-+	struct iommu_fault_param *fault_param;
-+};
-+
- int  iommu_device_register(struct iommu_device *iommu);
- void iommu_device_unregister(struct iommu_device *iommu);
- int  iommu_device_sysfs_add(struct iommu_device *iommu,
-@@ -437,6 +534,7 @@ struct iommu_ops {};
- struct iommu_group {};
- struct iommu_fwspec {};
- struct iommu_device {};
-+struct iommu_fault_param {};
+@@ -296,6 +305,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+ extern void iommu_detach_device(struct iommu_domain *domain,
+ 				struct device *dev);
++extern int iommu_bind_pasid_table(struct iommu_domain *domain,
++		struct device *dev, struct pasid_table_config *pasidt_binfo);
++extern void iommu_unbind_pasid_table(struct iommu_domain *domain,
++				struct device *dev);
+ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+@@ -696,6 +709,17 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ 	return NULL;
+ }
  
- static inline bool iommu_present(struct bus_type *bus)
- {
++static inline
++int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
++			struct pasid_table_config *pasidt_binfo)
++{
++	return -EINVAL;
++}
++static inline
++void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
++{
++}
++
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #endif /* __LINUX_IOMMU_H */
+diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+new file mode 100644
+index 0000000..9f7a6bf
+--- /dev/null
++++ b/include/uapi/linux/iommu.h
+@@ -0,0 +1,32 @@
++/*
++ * IOMMU user API definitions
++ *
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef _UAPI_IOMMU_H
++#define _UAPI_IOMMU_H
++
++#include <linux/types.h>
++
++/**
++ * PASID table data used to bind guest PASID table to the host IOMMU. This will
++ * enable guest managed first level page tables.
++ * @version: for future extensions and identification of the data format
++ * @bytes: size of this structure
++ * @base_ptr:	PASID table pointer
++ * @pasid_bits:	number of bits supported in the guest PASID table, must be less
++ *		or equal than the host supported PASID size.
++ */
++struct pasid_table_config {
++	__u32 version;
++#define PASID_TABLE_CFG_VERSION 1
++	__u32 bytes;
++	__u64 base_ptr;
++	__u8 pasid_bits;
++};
++
++#endif /* _UAPI_IOMMU_H */
 -- 
 2.7.4
