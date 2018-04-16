@@ -1,54 +1,48 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v4 22/22] iommu: use sva invalidate and device fault trace event
-Date: Mon, 16 Apr 2018 14:49:11 -0700
-Message-ID: <1523915351-54415-23-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v4 15/22] iommu/config: add build dependency for dmar
+Date: Mon, 16 Apr 2018 14:49:04 -0700
+Message-ID: <1523915351-54415-16-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523915351-54415-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-For performance and debugging purposes, these trace events help
-analyzing device faults and passdown invalidations that interact
-with IOMMU subsystem.
-E.g.
-IOMMU:0000:00:0a.0 type=2 reason=0 addr=0x00000000007ff000 pasid=1
-group=1 last=0 prot=1
+Intel VT-d interrupts come from both IRQ remapping and DMA remapping.
+In order to report non-recoverable faults back to device driver, we
+need to have access to IOMMU fault reporting APIs. This patch adds
+build depenency to DMAR code where fault IRQ handlers can selectively
+report faults.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f6512692..e2090d2 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -979,6 +979,7 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
- 		mutex_unlock(&fparam->lock);
- 	}
- 	ret = fparam->handler(evt, fparam->data);
-+	trace_dev_fault(dev, evt);
- done_unlock:
- 	mutex_unlock(&dev->iommu_param->lock);
- 	return ret;
-@@ -1547,6 +1548,7 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
- 		return -ENODEV;
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 73590ba..8d8b63f 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -139,6 +139,7 @@ config AMD_IOMMU_V2
+ # Intel IOMMU support
+ config DMAR_TABLE
+ 	bool
++	select IOMMU_API
  
- 	ret = domain->ops->sva_invalidate(domain, dev, inv_info);
-+	trace_sva_invalidate(dev, inv_info);
- 
- 	return ret;
- }
-@@ -1584,6 +1586,7 @@ int iommu_page_response(struct device *dev,
- 		if (evt->pasid == msg->pasid &&
- 		    msg->page_req_group_id == evt->page_req_group_id) {
- 			msg->private_data = evt->iommu_private;
-+			trace_dev_page_response(dev, msg);
- 			ret = domain->ops->page_response(dev, msg);
- 			list_del(&evt->list);
- 			kfree(evt);
+ config INTEL_IOMMU
+ 	bool "Support for Intel IOMMU using DMA Remapping Devices"
 -- 
 2.7.4
