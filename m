@@ -1,76 +1,375 @@
-From: Enric Balletbo Serra <eballetbo-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/rockchip: make clock handling optional
-Date: Tue, 17 Apr 2018 16:27:36 +0200
-Message-ID: <CAFqH_531GBbpKtQQyU827Wn+Lf4uHbLJJtp=hZHkkiZUYX+g4w@mail.gmail.com>
-References: <20180417120915.31535-1-heiko@sntech.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/6 v2] iommu: of: make of_pci_map_rid() available for
+	other devices too
+Date: Tue, 17 Apr 2018 17:52:36 +0100
+Message-ID: <41b32766-e21a-e946-6c8f-440e5c87d0ee@arm.com>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+	<1523960514-25457-1-git-send-email-nipun.gupta@nxp.com>
+	<1523960514-25457-3-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180417120915.31535-1-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, JeffyChen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, vicencb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523960514-25457-3-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-2018-04-17 14:09 GMT+02:00 Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>:
-> iommu clocks are optional, so the driver should not fail if they are not
-> present. Instead just set the number of clocks to 0, which the clk-blk APIs
-> can handle just fine.
->
-> Fixes: f2e3a5f557ad ("iommu/rockchip: Control clocks needed to access the IOMMU")
-> Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On 17/04/18 11:21, Nipun Gupta wrote:
+> iommu-map property is also used by devices with fsl-mc. This
+> patch moves the of_pci_map_rid to generic location, so that it
+> can be used by other busses too.
+> 
+> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 > ---
-> changes in v2:
-> - keep it required in the binding for future variants
->   but optional in the code for backwards compatiblity
-> - follow Robin Murphy's beautification suggestion
->
-> As the original changes breaks a lot of display support in 4.17-rc1,
-> this should abviously go in as fix into 4.17.
->
->  drivers/iommu/rockchip-iommu.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 5fc8656c60f9..422d22990289 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1175,8 +1175,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
->         for (i = 0; i < iommu->num_clocks; ++i)
->                 iommu->clocks[i].id = rk_iommu_clocks[i];
->
-> +       /*
-> +        * iommu clocks should be present for all new devices and devicetrees
-> +        * but there are older devicetrees without clocks out in the wild.
-> +        * So clocks as optional for the time being.
-> +        */
->         err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
-> -       if (err)
-> +       if (err == -ENOENT)
-> +               iommu->num_clocks = 0;
-> +       else if (err)
->                 return err;
->
->         err = clk_bulk_prepare(iommu->num_clocks, iommu->clocks);
-> --
-> 2.16.2
->
->
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+>   drivers/iommu/of_iommu.c | 106 +++++++++++++++++++++++++++++++++++++++++++++--
 
-Thanks to this patch my display is back :)
+Doesn't this break "msi-parent" parsing for !CONFIG_OF_IOMMU? I guess 
+you don't want fsl-mc to have to depend on PCI, but this looks like a 
+step in the wrong direction.
 
-Tested-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+I'm not entirely sure where of_map_rid() fits best, but from a quick 
+look around the least-worst option might be drivers/of/of_address.c, 
+unless Rob and Frank have a better idea of where generic DT-based ID 
+translation routines could live?
+
+>   drivers/of/irq.c         |   6 +--
+>   drivers/pci/of.c         | 101 --------------------------------------------
+>   include/linux/of_iommu.h |  11 +++++
+>   include/linux/of_pci.h   |  10 -----
+>   5 files changed, 117 insertions(+), 117 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 5c36a8b..4e7712f 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -138,6 +138,106 @@ static int of_iommu_xlate(struct device *dev,
+>   	return ops->of_xlate(dev, iommu_spec);
+>   }
+>   
+> +/**
+> + * of_map_rid - Translate a requester ID through a downstream mapping.
+> + * @np: root complex device node.
+> + * @rid: device requester ID to map.
+> + * @map_name: property name of the map to use.
+> + * @map_mask_name: optional property name of the mask to use.
+> + * @target: optional pointer to a target device node.
+> + * @id_out: optional pointer to receive the translated ID.
+> + *
+> + * Given a device requester ID, look up the appropriate implementation-defined
+> + * platform ID and/or the target device which receives transactions on that
+> + * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
+> + * @id_out may be NULL if only the other is required. If @target points to
+> + * a non-NULL device node pointer, only entries targeting that node will be
+> + * matched; if it points to a NULL value, it will receive the device node of
+> + * the first matching target phandle, with a reference held.
+> + *
+> + * Return: 0 on success or a standard error code on failure.
+> + */
+> +int of_map_rid(struct device_node *np, u32 rid,
+> +		   const char *map_name, const char *map_mask_name,
+> +		   struct device_node **target, u32 *id_out)
+> +{
+> +	u32 map_mask, masked_rid;
+> +	int map_len;
+> +	const __be32 *map = NULL;
+> +
+> +	if (!np || !map_name || (!target && !id_out))
+> +		return -EINVAL;
+> +
+> +	map = of_get_property(np, map_name, &map_len);
+> +	if (!map) {
+> +		if (target)
+> +			return -ENODEV;
+> +		/* Otherwise, no map implies no translation */
+> +		*id_out = rid;
+> +		return 0;
+> +	}
+> +
+> +	if (!map_len || map_len % (4 * sizeof(*map))) {
+> +		pr_err("%pOF: Error: Bad %s length: %d\n", np,
+> +			map_name, map_len);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* The default is to select all bits. */
+> +	map_mask = 0xffffffff;
+> +
+> +	/*
+> +	 * Can be overridden by "{iommu,msi}-map-mask" property.
+> +	 */
+> +	if (map_mask_name)
+> +		of_property_read_u32(np, map_mask_name, &map_mask);
+> +
+> +	masked_rid = map_mask & rid;
+> +	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
+> +		struct device_node *phandle_node;
+> +		u32 rid_base = be32_to_cpup(map + 0);
+> +		u32 phandle = be32_to_cpup(map + 1);
+> +		u32 out_base = be32_to_cpup(map + 2);
+> +		u32 rid_len = be32_to_cpup(map + 3);
+> +
+> +		if (rid_base & ~map_mask) {
+> +			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
+> +				np, map_name, map_name,
+> +				map_mask, rid_base);
+> +			return -EFAULT;
+> +		}
+> +
+> +		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
+> +			continue;
+> +
+> +		phandle_node = of_find_node_by_phandle(phandle);
+> +		if (!phandle_node)
+> +			return -ENODEV;
+> +
+> +		if (target) {
+> +			if (*target)
+> +				of_node_put(phandle_node);
+> +			else
+> +				*target = phandle_node;
+> +
+> +			if (*target != phandle_node)
+> +				continue;
+> +		}
+> +
+> +		if (id_out)
+> +			*id_out = masked_rid - rid_base + out_base;
+> +
+> +		pr_debug("%pOF: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
+> +			np, map_name, map_mask, rid_base, out_base,
+> +			rid_len, rid, masked_rid - rid_base + out_base);
+> +		return 0;
+> +	}
+> +
+> +	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
+> +		np, map_name, rid, target && *target ? *target : NULL);
+> +	return -EFAULT;
+> +}
+> +
+>   struct of_pci_iommu_alias_info {
+>   	struct device *dev;
+>   	struct device_node *np;
+> @@ -149,9 +249,9 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+>   	struct of_phandle_args iommu_spec = { .args_count = 1 };
+>   	int err;
+>   
+> -	err = of_pci_map_rid(info->np, alias, "iommu-map",
+> -			     "iommu-map-mask", &iommu_spec.np,
+> -			     iommu_spec.args);
+> +	err = of_map_rid(info->np, alias, "iommu-map",
+> +			 "iommu-map-mask", &iommu_spec.np,
+> +			 iommu_spec.args);
+
+Super-nit: Apparently I missed rewrapping this to 2 lines in 
+d87beb749281, but if it's being touched again, that would be nice ;)
+
+Robin.
+
+>   	if (err)
+>   		return err == -ENODEV ? NO_IOMMU : err;
+>   
+> diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+> index 02ad93a..b72eeec 100644
+> --- a/drivers/of/irq.c
+> +++ b/drivers/of/irq.c
+> @@ -22,7 +22,7 @@
+>   #include <linux/module.h>
+>   #include <linux/of.h>
+>   #include <linux/of_irq.h>
+> -#include <linux/of_pci.h>
+> +#include <linux/of_iommu.h>
+>   #include <linux/string.h>
+>   #include <linux/slab.h>
+>   
+> @@ -588,8 +588,8 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
+>   	 * "msi-map" property.
+>   	 */
+>   	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent)
+> -		if (!of_pci_map_rid(parent_dev->of_node, rid_in, "msi-map",
+> -				    "msi-map-mask", np, &rid_out))
+> +		if (!of_map_rid(parent_dev->of_node, rid_in, "msi-map",
+> +				"msi-map-mask", np, &rid_out))
+>   			break;
+>   	return rid_out;
+>   }
+> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+> index a28355c..d2cebbe 100644
+> --- a/drivers/pci/of.c
+> +++ b/drivers/pci/of.c
+> @@ -362,107 +362,6 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+>   EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
+>   #endif /* CONFIG_OF_ADDRESS */
+>   
+> -/**
+> - * of_pci_map_rid - Translate a requester ID through a downstream mapping.
+> - * @np: root complex device node.
+> - * @rid: PCI requester ID to map.
+> - * @map_name: property name of the map to use.
+> - * @map_mask_name: optional property name of the mask to use.
+> - * @target: optional pointer to a target device node.
+> - * @id_out: optional pointer to receive the translated ID.
+> - *
+> - * Given a PCI requester ID, look up the appropriate implementation-defined
+> - * platform ID and/or the target device which receives transactions on that
+> - * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
+> - * @id_out may be NULL if only the other is required. If @target points to
+> - * a non-NULL device node pointer, only entries targeting that node will be
+> - * matched; if it points to a NULL value, it will receive the device node of
+> - * the first matching target phandle, with a reference held.
+> - *
+> - * Return: 0 on success or a standard error code on failure.
+> - */
+> -int of_pci_map_rid(struct device_node *np, u32 rid,
+> -		   const char *map_name, const char *map_mask_name,
+> -		   struct device_node **target, u32 *id_out)
+> -{
+> -	u32 map_mask, masked_rid;
+> -	int map_len;
+> -	const __be32 *map = NULL;
+> -
+> -	if (!np || !map_name || (!target && !id_out))
+> -		return -EINVAL;
+> -
+> -	map = of_get_property(np, map_name, &map_len);
+> -	if (!map) {
+> -		if (target)
+> -			return -ENODEV;
+> -		/* Otherwise, no map implies no translation */
+> -		*id_out = rid;
+> -		return 0;
+> -	}
+> -
+> -	if (!map_len || map_len % (4 * sizeof(*map))) {
+> -		pr_err("%pOF: Error: Bad %s length: %d\n", np,
+> -			map_name, map_len);
+> -		return -EINVAL;
+> -	}
+> -
+> -	/* The default is to select all bits. */
+> -	map_mask = 0xffffffff;
+> -
+> -	/*
+> -	 * Can be overridden by "{iommu,msi}-map-mask" property.
+> -	 * If of_property_read_u32() fails, the default is used.
+> -	 */
+> -	if (map_mask_name)
+> -		of_property_read_u32(np, map_mask_name, &map_mask);
+> -
+> -	masked_rid = map_mask & rid;
+> -	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
+> -		struct device_node *phandle_node;
+> -		u32 rid_base = be32_to_cpup(map + 0);
+> -		u32 phandle = be32_to_cpup(map + 1);
+> -		u32 out_base = be32_to_cpup(map + 2);
+> -		u32 rid_len = be32_to_cpup(map + 3);
+> -
+> -		if (rid_base & ~map_mask) {
+> -			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
+> -				np, map_name, map_name,
+> -				map_mask, rid_base);
+> -			return -EFAULT;
+> -		}
+> -
+> -		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
+> -			continue;
+> -
+> -		phandle_node = of_find_node_by_phandle(phandle);
+> -		if (!phandle_node)
+> -			return -ENODEV;
+> -
+> -		if (target) {
+> -			if (*target)
+> -				of_node_put(phandle_node);
+> -			else
+> -				*target = phandle_node;
+> -
+> -			if (*target != phandle_node)
+> -				continue;
+> -		}
+> -
+> -		if (id_out)
+> -			*id_out = masked_rid - rid_base + out_base;
+> -
+> -		pr_debug("%pOF: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
+> -			np, map_name, map_mask, rid_base, out_base,
+> -			rid_len, rid, masked_rid - rid_base + out_base);
+> -		return 0;
+> -	}
+> -
+> -	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
+> -		np, map_name, rid, target && *target ? *target : NULL);
+> -	return -EFAULT;
+> -}
+> -
+>   #if IS_ENABLED(CONFIG_OF_IRQ)
+>   /**
+>    * of_irq_parse_pci - Resolve the interrupt for a PCI device
+> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> index 4fa654e..432b53c 100644
+> --- a/include/linux/of_iommu.h
+> +++ b/include/linux/of_iommu.h
+> @@ -15,6 +15,10 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+>   extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+>   					struct device_node *master_np);
+>   
+> +int of_map_rid(struct device_node *np, u32 rid,
+> +	       const char *map_name, const char *map_mask_name,
+> +	       struct device_node **target, u32 *id_out);
+> +
+>   #else
+>   
+>   static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+> @@ -30,6 +34,13 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+>   	return NULL;
+>   }
+>   
+> +static inline int of_map_rid(struct device_node *np, u32 rid,
+> +			     const char *map_name, const char *map_mask_name,
+> +			     struct device_node **target, u32 *id_out)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+>   #endif	/* CONFIG_OF_IOMMU */
+>   
+>   extern struct of_device_id __iommu_of_table;
+> diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+> index 091033a..a23b44a 100644
+> --- a/include/linux/of_pci.h
+> +++ b/include/linux/of_pci.h
+> @@ -17,9 +17,6 @@ struct device_node *of_pci_find_child_device(struct device_node *parent,
+>   int of_get_pci_domain_nr(struct device_node *node);
+>   int of_pci_get_max_link_speed(struct device_node *node);
+>   void of_pci_check_probe_only(void);
+> -int of_pci_map_rid(struct device_node *np, u32 rid,
+> -		   const char *map_name, const char *map_mask_name,
+> -		   struct device_node **target, u32 *id_out);
+>   #else
+>   static inline struct device_node *of_pci_find_child_device(struct device_node *parent,
+>   					     unsigned int devfn)
+> @@ -44,13 +41,6 @@ static inline int of_pci_get_devfn(struct device_node *np)
+>   	return -1;
+>   }
+>   
+> -static inline int of_pci_map_rid(struct device_node *np, u32 rid,
+> -			const char *map_name, const char *map_mask_name,
+> -			struct device_node **target, u32 *id_out)
+> -{
+> -	return -EINVAL;
+> -}
+> -
+>   static inline int
+>   of_pci_get_max_link_speed(struct device_node *node)
+>   {
+> 
