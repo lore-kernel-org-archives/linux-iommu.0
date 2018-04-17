@@ -1,127 +1,81 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 9/9] iommu/vt-d: Clean up PASID talbe management for SVM
-Date: Tue, 17 Apr 2018 11:03:22 +0800
-Message-ID: <1523934202-21669-10-git-send-email-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 7/9] iommu/vt-d: Calculate PTS value
+Date: Tue, 17 Apr 2018 11:03:20 +0800
+Message-ID: <1523934202-21669-8-git-send-email-baolu.lu@linux.intel.com>
 References: <1523934202-21669-1-git-send-email-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1523934202-21669-1-git-send-email-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1523934202-21669-1-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The previous per iommu pasid table alloc/free interfaces
-are no longer used. Clean up the driver by removing it.
+Calculate PTS (PASID Table Size) value for the extended
+context entry from the real size of the PASID table for
+a domain.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |  6 +++---
- drivers/iommu/intel-svm.c   | 17 ++---------------
- include/linux/intel-iommu.h |  5 ++---
- 3 files changed, 7 insertions(+), 21 deletions(-)
+ drivers/iommu/intel-iommu.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5fe7f91..5acb90d 100644
+index 99c643b..d4f9cea 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1736,7 +1736,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	if (pasid_enabled(iommu)) {
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
--		intel_svm_free_pasid_tables(iommu);
-+		intel_svm_exit(iommu);
- 	}
- #endif
- }
-@@ -3291,7 +3291,7 @@ static int __init init_dmars(void)
- 			hw_pass_through = 0;
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 		if (pasid_enabled(iommu))
--			intel_svm_alloc_pasid_tables(iommu);
-+			intel_svm_init(iommu);
- #endif
- 	}
- 
-@@ -4268,7 +4268,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+@@ -5146,22 +5146,16 @@ static void intel_iommu_put_resv_regions(struct device *dev,
  
  #ifdef CONFIG_INTEL_IOMMU_SVM
- 	if (pasid_enabled(iommu))
--		intel_svm_alloc_pasid_tables(iommu);
-+		intel_svm_init(iommu);
- #endif
- 
- 	if (dmaru->ignored) {
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 3b14819..38cae65 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -34,7 +34,7 @@
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
-+int intel_svm_init(struct intel_iommu *iommu)
+ #define MAX_NR_PASID_BITS (20)
+-static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
++static inline unsigned long intel_iommu_get_pts(struct dmar_domain *domain)
  {
- 	struct page *pages;
- 	int order;
-@@ -59,15 +59,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- 		iommu->pasid_max = 0x20000;
+-	/*
+-	 * Convert ecap_pss to extend context entry pts encoding, also
+-	 * respect the soft pasid_max value set by the iommu.
+-	 * - number of PASID bits = ecap_pss + 1
+-	 * - number of PASID table entries = 2^(pts + 5)
+-	 * Therefore, pts = ecap_pss - 4
+-	 * e.g. KBL ecap_pss = 0x13, PASID has 20 bits, pts = 15
+-	 */
+-	if (ecap_pss(iommu->ecap) < 5)
++	int pts;
++
++	pts = find_first_bit((unsigned long *)&domain->max_pasid,
++			     MAX_NR_PASID_BITS);
++	if (pts < 5)
+ 		return 0;
  
- 	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
--	if (!pages) {
--		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
--			iommu->name);
--		return -ENOMEM;
--	}
--	iommu->pasid_table = page_address(pages);
--	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
--
- 	if (ecap_dis(iommu->ecap)) {
- 		/* Just making it explicit... */
- 		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
-@@ -82,14 +73,10 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- 	return 0;
+-	/* pasid_max is encoded as actual number of entries not the bits */
+-	return find_first_bit((unsigned long *)&iommu->pasid_max,
+-			MAX_NR_PASID_BITS) - 5;
++	return pts - 5;
  }
  
--int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-+int intel_svm_exit(struct intel_iommu *iommu)
- {
- 	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
+@@ -5198,7 +5192,7 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sd
+ 		if (iommu->pasid_state_table)
+ 			context[1].hi = (u64)virt_to_phys(iommu->pasid_state_table);
+ 		context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
+-			intel_iommu_get_pts(iommu);
++			intel_iommu_get_pts(domain);
  
--	if (iommu->pasid_table) {
--		free_pages((unsigned long)iommu->pasid_table, order);
--		iommu->pasid_table = NULL;
--	}
- 	if (iommu->pasid_state_table) {
- 		free_pages((unsigned long)iommu->pasid_state_table, order);
- 		iommu->pasid_state_table = NULL;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 08e5811..44c7613 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -470,7 +470,6 @@ struct intel_iommu {
- 	 * devices away to userspace processes (e.g. for DPDK) and don't
- 	 * want to trust that userspace will use *only* the PASID it was
- 	 * told to. But while it's all driver-arbitrated, we're fine. */
--	struct pasid_entry *pasid_table;
- 	struct pasid_state_entry *pasid_state_table;
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-@@ -539,8 +538,8 @@ void free_pgtable_page(void *vaddr);
- struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
--extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
--extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+int intel_svm_init(struct intel_iommu *iommu);
-+int intel_svm_exit(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
- 
+ 		wmb();
+ 		/* CONTEXT_TT_MULTI_LEVEL and CONTEXT_TT_DEV_IOTLB are both
 -- 
 2.7.4
