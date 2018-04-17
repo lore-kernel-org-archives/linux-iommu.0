@@ -1,71 +1,81 @@
-From: "Hook, Gary" <ghook@amd.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v3 1/2] iommu - Enable debugfs exposure of the IOMMU
-Date: Tue, 17 Apr 2018 14:06:47 -0400
-Message-ID: <e5e8c59f-ebaa-1b87-713a-ee9ab9c3b5d1@amd.com>
+Date: Tue, 17 Apr 2018 19:13:52 +0100
+Message-ID: <a24f9f4c-0c65-a77c-a18b-7a6bf5a33b85@arm.com>
 References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
- <152302066417.47565.4017200105445420643.stgit@sosxen2.amd.com>
- <1523663790.2747.4.camel@intel.com>
- <10e422dd-a3ca-8ecb-50fa-e7f131a55a12@amd.com>
- <80b1e9e5-3048-391a-6d7d-adeeece1bf46@arm.com>
+	<152302066417.47565.4017200105445420643.stgit@sosxen2.amd.com>
+	<9123cd44-e01f-bff6-8441-792acbde10bc@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <80b1e9e5-3048-391a-6d7d-adeeece1bf46@arm.com>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <9123cd44-e01f-bff6-8441-792acbde10bc-5C7GfCeVMHo@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, "Mehta, Sohil" <sohil.mehta@intel.com>, "gary.hook@amd.com" <gary.hook@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/17/2018 1:55 PM, Robin Murphy wrote:
-> On 17/04/18 18:36, Hook, Gary wrote:
->> On 4/13/2018 7:55 PM, Mehta, Sohil wrote:
->>> On Fri, 2018-04-06 at 08:17 -0500, Gary R Hook wrote:
->>>> +struct dentry *iommu_debugfs_setup(void)
->>>> +{
->>>> +    if (!debugfs_initialized())
->>>
->>> This check is probably not needed.
->>
->> Ah, so it isn't. Thank you.
->>
->>>
->>>> +        return NULL;
->>>> +
->>>> +    if (!iommu_debugfs_dir)
->>>> +        iommu_debugfs_dir = debugfs_create_dir("iommu",
->>>> NULL);
->>>> +
->>>> +    if (iommu_debugfs_dir)
->>>> +        pr_warn("WARNING: IOMMU DEBUGFS SUPPORT HAS BEEN
->>>> ENABLED IN THIS KERNEL\n");
->>>> +
->>>
->>> As this gets called for each IOMMU, do you want to use pr_warn_once?
->>
->> That works, yes.
-> 
-> Or I guess you could just roll the pr_warn() into the previous if() 
-> condition, i.e. only warn when the singleton debugfs_dir is actually 
-> created.
-
-That makes more sense for a code path this isn't going to be hit more 
-than a few times at most.
-
-> 
-> Robin.
-> 
->>
->>>
->>>> +    return iommu_debugfs_dir;
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_debugfs_setup);
->>>
->>> -Sohil
->>>
->>
->> _______________________________________________
->> iommu mailing list
->> iommu@lists.linux-foundation.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTcvMDQvMTggMTg6NDYsIEhvb2ssIEdhcnkgd3JvdGU6Cj4gT24gNC82LzIwMTggOToxNyBB
+TSwgR2FyeSBSIEhvb2sgd3JvdGU6Cj4+IFByb3ZpZGUgYmFzZSBlbmFibGVtZW50IGZvciB1c2lu
+ZyBkZWJ1Z2ZzIHRvIGV4cG9zZSBpbnRlcm5hbCBkYXRhIG9mCj4+IGFuIElPTU1VIGRyaXZlci4g
+V2hlbiBjYWxsZWQsIGNyZWF0ZSB0aGUgL3N5cy9rZXJuZWwvZGVidWcvaW9tbXUKPj4gZGlyZWN0
+b3J5LsKgIEVtaXQgYSBzdHJvbmcgd2FybmluZyBhdCBib290IHRpbWUgdG8gaW5kaWNhdGUgdGhh
+dCB0aGlzCj4+IGZlYXR1cmUgaXMgZW5hYmxlZC4KPj4KPj4gVGhpcyBwYXRjaCBhZGRzIGEgdG9w
+LWxldmVsIGZ1bmN0aW9uIHRoYXQgd2lsbCBjcmVhdGUgdGhlIChhYm92ZSkKPj4gZGlyZWN0b3J5
+LCB1bmRlciB3aGljaCBhIGRyaXZlciBtYXkgY3JlYXRlIGEgaHctc3BlY2lmaWMgZGlyZWN0b3J5
+IGZvcgo+PiBpdHMgdXNlLiBUaGUgZnVuY3Rpb24KPj4KPj4gwqDCoMKgwqBpb21tdV9kZWJ1Z2Zz
+X3NldHVwKCkKPj4KPj4gcmV0dXJucyBhIHBvaW50ZXIgdG8gdGhlIG5ldyBkZW50cnkgc3RydWN0
+dXJlIGNyZWF0ZWQgZm9yCj4+IC9zeXMva2VybmVsL2RlYnVnL2lvbW11LCBvciBOVUxMIGluIHRo
+ZSBldmVudCBvZiBhIGZhaWx1cmUuIEFuIElPTU1VCj4+IGRyaXZlciBzaG91bGQgY2FsbCB0aGlz
+IGZ1bmN0aW9uIGZpcnN0LCBhbmQgdGhlbiBjcmVhdGUgYSBkaXJlY3RvcnkKPj4gYmVuZWF0aCBp
+dC4gQSBkcml2ZXIgaW1wbGVtZW50YXRpb24gbWlnaHQgbG9vayBzb21ldGhpbmcgbGlrZToKPj4K
+Pj4gc3RhdGljIHN0cnVjdCBkZW50cnkgKm15X2RlYnVnZnM7Cj4+Cj4+IMKgwqDCoMKgc3RydWN0
+IGRlbnRyeSAqZF90b3A7Cj4+IMKgwqDCoMKgaWYgKCFteV9kZWJ1Z2ZzKSB7Cj4+IMKgwqDCoMKg
+wqDCoMKgIGRfdG9wID0gaW9tbXVfZGVidWdmc19zZXR1cCgpOwo+PiDCoMKgwqDCoMKgwqDCoCBp
+ZiAoZF90b3ApCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbXlfZGVidWdmcyA9IGRlYnVnZnNf
+Y3JlYXRlX2RpcigidmVuZG9yIiwgZF90b3ApOwo+PiDCoMKgwqDCoH0KPj4KPj4gU2luY2UgdGhl
+IElPTU1VIGRyaXZlciBjYW4gbm90IGJlIHJlbW92ZWQgZnJvbSB0aGUgcnVubmluZyBzeXN0ZW0s
+IHRoaXMKPj4gcGF0Y2ggb25seSBwcm92aWRlcyBhbiAib24iIGZ1bmN0aW9uLgo+Pgo+PiBTaWdu
+ZWQtb2ZmLWJ5OiBHYXJ5IFIgSG9vayA8Z2FyeS5ob29rQGFtZC5jb20+Cj4+IC0tLQo+PiDCoCBk
+cml2ZXJzL2lvbW11L0tjb25maWfCoMKgwqDCoMKgwqDCoMKgIHzCoMKgIDExICsrKysrKysrCj4+
+IMKgIGRyaXZlcnMvaW9tbXUvTWFrZWZpbGXCoMKgwqDCoMKgwqDCoCB8wqDCoMKgIDEgKwo+PiDC
+oCBkcml2ZXJzL2lvbW11L2lvbW11LWRlYnVnZnMuYyB8wqDCoCA1OCAKPj4gKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPj4gwqAgaW5jbHVkZS9saW51eC9pb21tdS5o
+wqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgIDQgKysrCj4+IMKgIDQgZmlsZXMgY2hhbmdlZCwgNzQg
+aW5zZXJ0aW9ucygrKQo+PiDCoCBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9pb21tdS9pb21t
+dS1kZWJ1Z2ZzLmMKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZyBiL2Ry
+aXZlcnMvaW9tbXUvS2NvbmZpZwo+PiBpbmRleCBmM2EyMTM0M2U2MzYuLmMxZTM5ZGFiZmVjMiAx
+MDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9LY29uZmlnCj4+ICsrKyBiL2RyaXZlcnMvaW9t
+bXUvS2NvbmZpZwo+PiBAQCAtNjAsNiArNjAsMTcgQEAgY29uZmlnIElPTU1VX0lPX1BHVEFCTEVf
+QVJNVjdTX1NFTEZURVNUCj4+IMKgIGVuZG1lbnUKPj4gK2NvbmZpZyBJT01NVV9ERUJVRwo+PiAr
+wqDCoMKgIGJvb2wgIkVuYWJsZSBJT01NVSBpbnRlcm5hbHMgaW4gRGVidWdGUyIKPj4gK8KgwqDC
+oCBkZXBlbmRzIG9uIERFQlVHX0ZTCj4+ICvCoMKgwqAgZGVmYXVsdCBuCj4+ICvCoMKgwqAgaGVs
+cAo+PiArwqDCoMKgwqDCoCBBbGxvd3MgZXhwb3N1cmUgb2YgSU9NTVUgZGV2aWNlIGludGVybmFs
+cy4gVGhpcyBvcHRpb24gZW5hYmxlcwo+PiArwqDCoMKgwqDCoCB0aGUgdXNlIG9mIGRlYnVnZnMg
+YnkgSU9NTVUgZHJpdmVycyBhcyByZXF1aXJlZC4gRGV2aWNlcyBjYW4sCj4+ICvCoMKgwqDCoMKg
+IGF0IGluaXRpYWxpemF0aW9uIHRpbWUsIGNhdXNlIHRoZSBJT01NVSBjb2RlIHRvIGNyZWF0ZSBh
+IHRvcC1sZXZlbAo+PiArwqDCoMKgwqDCoCBkZWJ1Zy9pb21tdSBkaXJlY3RvcnksIGFuZCB0aGVu
+IHBvcHVsYXRlIGEgc3ViZGlyZWN0b3J5IHdpdGgKPj4gK8KgwqDCoMKgwqAgZW50cmllcyBhcyBy
+ZXF1aXJlZC4KPiAKPiBJIHNob3VsZCBleHBsaWNpdGx5IGFzayBhYm91dCB0aGlzOgo+IAo+IEpv
+ZXJnIGhhZCBzdWdnZXN0ZWQgSU9NTVVfREVCVUdGUywgYnV0IGhlcmUgSSd2ZSBjaGFuZ2VkIHRv
+IElPTU1VX0RFQlVHLiAKPiBJJ20gbm90IHNlZWluZyBhIGxvdCBvZiBDT05GSUcgb3B0aW9ucyB0
+aGF0IHVzZSBERUJVR0ZTIGZvciBkZWJ1Z2ZzIAo+IG9wdGlvbnMsIHNvIEkgY2hvc2UgdG8gZm9s
+bG93IGFuIGltcGxpZWQgY29udmVudGlvbi4KPiAKPiBRdWVzdGlvbjogc2hvdWxkIHRoaXMgaW5k
+ZWVkIGJlIElPTU1VX0RFQlVHRlM/Cj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF5eXl5eXl5eXl5eXl4KClBlcnNvbmFsbHkg
+SSdkIHNheSB5ZXMsIHNpbmNlIHRoZXJlIGlzIGF0IGxlYXN0IHNvbWUgcHJlY2VkZW50IGZvciAK
+Kl9ERUJVR0ZTIGFscmVhZHksIGFuZCBpdCBkb2VzIGhlbHAgbWFrZSB0aGUgaW50ZW50IHRoYXQg
+bXVjaCBjbGVhcmVyIAooKl9ERUJVRyBvZnRlbiBqdXN0IG1lYW5zIGxvdHMgb2YgZG1lc2cgc3Bh
+bSByYXRoZXIgdGhhbiBhbiBhY3R1YWwgCmRlYnVnZnMgaW50ZXJmYWNlKS4KClJvYmluLgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
