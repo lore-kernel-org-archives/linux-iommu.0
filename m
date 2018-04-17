@@ -1,81 +1,73 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 1/2] iommu - Enable debugfs exposure of the IOMMU
-Date: Tue, 17 Apr 2018 19:13:52 +0100
-Message-ID: <a24f9f4c-0c65-a77c-a18b-7a6bf5a33b85@arm.com>
-References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
-	<152302066417.47565.4017200105445420643.stgit@sosxen2.amd.com>
-	<9123cd44-e01f-bff6-8441-792acbde10bc@amd.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v3 11/20] mailbox: Remove depends on HAS_DMA in case of
+ platform dependency
+Date: Tue, 17 Apr 2018 19:49:11 +0200
+Message-ID: <1523987360-18760-12-git-send-email-geert@linux-m68k.org>
+References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9123cd44-e01f-bff6-8441-792acbde10bc-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Felipe Balbi <balbi@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Tejun Heo <tj@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Stefan Richter <stefanr@s5r6.in-berlin.de>, Alan Tull <atull@kernel.org>, Moritz Fischer <mdf@kernel.org>, Wolfram Sang <wsa@the-dreams.de>, Jonathan Cameron <jic23@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matias Bjorling <mb@lightnvm.io>, Jassi Brar <jassisinghbrar@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, David Woodhouse <dwmw2@infradead.org>Br
+Cc: devel@driverdev.osuosl.org, alsa-devel@alsa-project.org, linux-media@vger.kernel.org, linux-iio@vger.kernel.org, netdev@vger.kernel.org, linux-fpga@vger.kernel.org, linux-usb@vger.kernel.org, linux-mmc@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-spi@vger.kernel.org, linux-block@vger.kernel.org, linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mtd@lists.infradead.org, linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-remoteproc@vger.kernel.org, linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org, linux-i2c@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTcvMDQvMTggMTg6NDYsIEhvb2ssIEdhcnkgd3JvdGU6Cj4gT24gNC82LzIwMTggOToxNyBB
-TSwgR2FyeSBSIEhvb2sgd3JvdGU6Cj4+IFByb3ZpZGUgYmFzZSBlbmFibGVtZW50IGZvciB1c2lu
-ZyBkZWJ1Z2ZzIHRvIGV4cG9zZSBpbnRlcm5hbCBkYXRhIG9mCj4+IGFuIElPTU1VIGRyaXZlci4g
-V2hlbiBjYWxsZWQsIGNyZWF0ZSB0aGUgL3N5cy9rZXJuZWwvZGVidWcvaW9tbXUKPj4gZGlyZWN0
-b3J5LsKgIEVtaXQgYSBzdHJvbmcgd2FybmluZyBhdCBib290IHRpbWUgdG8gaW5kaWNhdGUgdGhh
-dCB0aGlzCj4+IGZlYXR1cmUgaXMgZW5hYmxlZC4KPj4KPj4gVGhpcyBwYXRjaCBhZGRzIGEgdG9w
-LWxldmVsIGZ1bmN0aW9uIHRoYXQgd2lsbCBjcmVhdGUgdGhlIChhYm92ZSkKPj4gZGlyZWN0b3J5
-LCB1bmRlciB3aGljaCBhIGRyaXZlciBtYXkgY3JlYXRlIGEgaHctc3BlY2lmaWMgZGlyZWN0b3J5
-IGZvcgo+PiBpdHMgdXNlLiBUaGUgZnVuY3Rpb24KPj4KPj4gwqDCoMKgwqBpb21tdV9kZWJ1Z2Zz
-X3NldHVwKCkKPj4KPj4gcmV0dXJucyBhIHBvaW50ZXIgdG8gdGhlIG5ldyBkZW50cnkgc3RydWN0
-dXJlIGNyZWF0ZWQgZm9yCj4+IC9zeXMva2VybmVsL2RlYnVnL2lvbW11LCBvciBOVUxMIGluIHRo
-ZSBldmVudCBvZiBhIGZhaWx1cmUuIEFuIElPTU1VCj4+IGRyaXZlciBzaG91bGQgY2FsbCB0aGlz
-IGZ1bmN0aW9uIGZpcnN0LCBhbmQgdGhlbiBjcmVhdGUgYSBkaXJlY3RvcnkKPj4gYmVuZWF0aCBp
-dC4gQSBkcml2ZXIgaW1wbGVtZW50YXRpb24gbWlnaHQgbG9vayBzb21ldGhpbmcgbGlrZToKPj4K
-Pj4gc3RhdGljIHN0cnVjdCBkZW50cnkgKm15X2RlYnVnZnM7Cj4+Cj4+IMKgwqDCoMKgc3RydWN0
-IGRlbnRyeSAqZF90b3A7Cj4+IMKgwqDCoMKgaWYgKCFteV9kZWJ1Z2ZzKSB7Cj4+IMKgwqDCoMKg
-wqDCoMKgIGRfdG9wID0gaW9tbXVfZGVidWdmc19zZXR1cCgpOwo+PiDCoMKgwqDCoMKgwqDCoCBp
-ZiAoZF90b3ApCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbXlfZGVidWdmcyA9IGRlYnVnZnNf
-Y3JlYXRlX2RpcigidmVuZG9yIiwgZF90b3ApOwo+PiDCoMKgwqDCoH0KPj4KPj4gU2luY2UgdGhl
-IElPTU1VIGRyaXZlciBjYW4gbm90IGJlIHJlbW92ZWQgZnJvbSB0aGUgcnVubmluZyBzeXN0ZW0s
-IHRoaXMKPj4gcGF0Y2ggb25seSBwcm92aWRlcyBhbiAib24iIGZ1bmN0aW9uLgo+Pgo+PiBTaWdu
-ZWQtb2ZmLWJ5OiBHYXJ5IFIgSG9vayA8Z2FyeS5ob29rQGFtZC5jb20+Cj4+IC0tLQo+PiDCoCBk
-cml2ZXJzL2lvbW11L0tjb25maWfCoMKgwqDCoMKgwqDCoMKgIHzCoMKgIDExICsrKysrKysrCj4+
-IMKgIGRyaXZlcnMvaW9tbXUvTWFrZWZpbGXCoMKgwqDCoMKgwqDCoCB8wqDCoMKgIDEgKwo+PiDC
-oCBkcml2ZXJzL2lvbW11L2lvbW11LWRlYnVnZnMuYyB8wqDCoCA1OCAKPj4gKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPj4gwqAgaW5jbHVkZS9saW51eC9pb21tdS5o
-wqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgIDQgKysrCj4+IMKgIDQgZmlsZXMgY2hhbmdlZCwgNzQg
-aW5zZXJ0aW9ucygrKQo+PiDCoCBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9pb21tdS9pb21t
-dS1kZWJ1Z2ZzLmMKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvS2NvbmZpZyBiL2Ry
-aXZlcnMvaW9tbXUvS2NvbmZpZwo+PiBpbmRleCBmM2EyMTM0M2U2MzYuLmMxZTM5ZGFiZmVjMiAx
-MDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9LY29uZmlnCj4+ICsrKyBiL2RyaXZlcnMvaW9t
-bXUvS2NvbmZpZwo+PiBAQCAtNjAsNiArNjAsMTcgQEAgY29uZmlnIElPTU1VX0lPX1BHVEFCTEVf
-QVJNVjdTX1NFTEZURVNUCj4+IMKgIGVuZG1lbnUKPj4gK2NvbmZpZyBJT01NVV9ERUJVRwo+PiAr
-wqDCoMKgIGJvb2wgIkVuYWJsZSBJT01NVSBpbnRlcm5hbHMgaW4gRGVidWdGUyIKPj4gK8KgwqDC
-oCBkZXBlbmRzIG9uIERFQlVHX0ZTCj4+ICvCoMKgwqAgZGVmYXVsdCBuCj4+ICvCoMKgwqAgaGVs
-cAo+PiArwqDCoMKgwqDCoCBBbGxvd3MgZXhwb3N1cmUgb2YgSU9NTVUgZGV2aWNlIGludGVybmFs
-cy4gVGhpcyBvcHRpb24gZW5hYmxlcwo+PiArwqDCoMKgwqDCoCB0aGUgdXNlIG9mIGRlYnVnZnMg
-YnkgSU9NTVUgZHJpdmVycyBhcyByZXF1aXJlZC4gRGV2aWNlcyBjYW4sCj4+ICvCoMKgwqDCoMKg
-IGF0IGluaXRpYWxpemF0aW9uIHRpbWUsIGNhdXNlIHRoZSBJT01NVSBjb2RlIHRvIGNyZWF0ZSBh
-IHRvcC1sZXZlbAo+PiArwqDCoMKgwqDCoCBkZWJ1Zy9pb21tdSBkaXJlY3RvcnksIGFuZCB0aGVu
-IHBvcHVsYXRlIGEgc3ViZGlyZWN0b3J5IHdpdGgKPj4gK8KgwqDCoMKgwqAgZW50cmllcyBhcyBy
-ZXF1aXJlZC4KPiAKPiBJIHNob3VsZCBleHBsaWNpdGx5IGFzayBhYm91dCB0aGlzOgo+IAo+IEpv
-ZXJnIGhhZCBzdWdnZXN0ZWQgSU9NTVVfREVCVUdGUywgYnV0IGhlcmUgSSd2ZSBjaGFuZ2VkIHRv
-IElPTU1VX0RFQlVHLiAKPiBJJ20gbm90IHNlZWluZyBhIGxvdCBvZiBDT05GSUcgb3B0aW9ucyB0
-aGF0IHVzZSBERUJVR0ZTIGZvciBkZWJ1Z2ZzIAo+IG9wdGlvbnMsIHNvIEkgY2hvc2UgdG8gZm9s
-bG93IGFuIGltcGxpZWQgY29udmVudGlvbi4KPiAKPiBRdWVzdGlvbjogc2hvdWxkIHRoaXMgaW5k
-ZWVkIGJlIElPTU1VX0RFQlVHRlM/Cj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF5eXl5eXl5eXl5eXl4KClBlcnNvbmFsbHkg
-SSdkIHNheSB5ZXMsIHNpbmNlIHRoZXJlIGlzIGF0IGxlYXN0IHNvbWUgcHJlY2VkZW50IGZvciAK
-Kl9ERUJVR0ZTIGFscmVhZHksIGFuZCBpdCBkb2VzIGhlbHAgbWFrZSB0aGUgaW50ZW50IHRoYXQg
-bXVjaCBjbGVhcmVyIAooKl9ERUJVRyBvZnRlbiBqdXN0IG1lYW5zIGxvdHMgb2YgZG1lc2cgc3Bh
-bSByYXRoZXIgdGhhbiBhbiBhY3R1YWwgCmRlYnVnZnMgaW50ZXJmYWNlKS4KClJvYmluLgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+In most cases this other symbol is an architecture or platform specific
+symbol, or PCI.
+
+Generic symbols and drivers without platform dependencies keep their
+dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+cannot work anyway.
+
+This simplifies the dependencies, and allows to improve compile-testing.
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+---
+v3:
+  - Rebase to v4.17-rc1,
+  - Removed bogus notes,
+
+v2:
+  - Add Reviewed-by, Acked-by,
+  - Drop RFC state,
+  - Split per subsystem.
+---
+ drivers/mailbox/Kconfig | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/mailbox/Kconfig b/drivers/mailbox/Kconfig
+index a2bb27446dce4e2b..725dce5ba62d5baf 100644
+--- a/drivers/mailbox/Kconfig
++++ b/drivers/mailbox/Kconfig
+@@ -162,7 +162,6 @@ config XGENE_SLIMPRO_MBOX
+ config BCM_PDC_MBOX
+ 	tristate "Broadcom FlexSparx DMA Mailbox"
+ 	depends on ARCH_BCM_IPROC || COMPILE_TEST
+-	depends on HAS_DMA
+ 	help
+ 	  Mailbox implementation for the Broadcom FlexSparx DMA ring manager,
+ 	  which provides access to various offload engines on Broadcom
+@@ -172,7 +171,6 @@ config BCM_FLEXRM_MBOX
+ 	tristate "Broadcom FlexRM Mailbox"
+ 	depends on ARM64
+ 	depends on ARCH_BCM_IPROC || COMPILE_TEST
+-	depends on HAS_DMA
+ 	select GENERIC_MSI_IRQ_DOMAIN
+ 	default m if ARCH_BCM_IPROC
+ 	help
+-- 
+2.7.4
