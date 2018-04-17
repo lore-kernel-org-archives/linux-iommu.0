@@ -1,16 +1,14 @@
 From: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
-	AMD IOMMU
-Date: Tue, 17 Apr 2018 13:42:53 -0400
-Message-ID: <823c10d2-e9ab-0f17-22c7-c2eea312bef8@amd.com>
+Subject: Re: [PATCH v3 1/2] iommu - Enable debugfs exposure of the IOMMU
+Date: Tue, 17 Apr 2018 13:46:12 -0400
+Message-ID: <9123cd44-e01f-bff6-8441-792acbde10bc@amd.com>
 References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
-	<152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
-	<1523926423.2747.19.camel@intel.com>
+	<152302066417.47565.4017200105445420643.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1523926423.2747.19.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <152302066417.47565.4017200105445420643.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -21,31 +19,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "gary.hook-5C7GfCeVMHo@public.gmane.org" <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gNC8xNi8yMDE4IDg6NTIgUE0sIE1laHRhLCBTb2hpbCB3cm90ZToKPiBPbiBGcmksIDIwMTgt
-MDQtMDYgYXQgMDg6MTcgLTA1MDAsIEdhcnkgUiBIb29rIHdyb3RlOgo+Pgo+PiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9pb21tdS9NYWtlZmlsZSBiL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUKPj4gaW5k
-ZXggNWViMTEyMWQ1NGI5Li4wY2EyNTBmNjI2ZDkgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9t
-bXUvTWFrZWZpbGUKPj4gKysrIGIvZHJpdmVycy9pb21tdS9NYWtlZmlsZQo+PiBAQCAtMTEsNiAr
-MTEsNyBAQCBvYmotJChDT05GSUdfSU9NTVVfSU9WQSkgKz0gaW92YS5vCj4+ICDCoG9iai0kKENP
-TkZJR19PRl9JT01NVSnCoCs9IG9mX2lvbW11Lm8KPj4gIMKgb2JqLSQoQ09ORklHX01TTV9JT01N
-VSkgKz0gbXNtX2lvbW11Lm8KPj4gIMKgb2JqLSQoQ09ORklHX0FNRF9JT01NVSkgKz0gYW1kX2lv
-bW11Lm8gYW1kX2lvbW11X2luaXQubwo+PiArb2JqLSQoQ09ORklHX0lPTU1VX0RFQlVHKSArPSBh
-bWRfaW9tbXVfZGVidWdmcy5vCj4gCj4gQ29tcGlsaW5nIGFtZF9pb21tdV9kZWJ1Z2ZzLmMgc2Vl
-bXMgdG8gZGVwZW5kIG9ubHkKPiBvbsKgQ09ORklHX0lPTU1VX0RFQlVHLiBDYW4gd2UgcHJldmVu
-dCB0aGUgY29kZSB3aXRoaW4KPiBhbWRfaW9tbXVfZGVidWdmcy5jIGZyb20gZ2V0dGluZyBjb21w
-aWxlZCB3aGVuIGVpdGhlciBDT05GSUdfQU1EX0lPTU1VCj4gb3IgQ09ORklHX0lPTU1VX0RFQlVH
-IGlzIGRpc2FibGVkPwoKVGhhdCdzIGEgZ29vZCBwb2ludC4gTXkgaW50ZW50aW9uIHdhcyB0aGF0
-IG9ubHkgb25lIHN3aXRjaCB3YXMgcmVxdWlyZWQgCnRvIGluY29ycG9yYXRlIGFueSBEZWJ1Z0ZT
-IHN1cHBvcnQsIGJ1dCBJIHNlZSBub3cgdGhhdCBJIGRpZG4ndCBjb25zaWRlciAKYWxsIG9mIHRo
-ZSBjYXNlcy4KCkl0IGFwcGVhcnMgdGhhdCBhIHBlci1kZXZpY2Ugc3dpdGNoIGlzIGFsc28gbmVj
-ZXNzYXJ5LiBVbmxlc3Mgc29tZW9uZSAKaGFzIGEgYmV0dGVyIGlkZWEuCgo+PiAgwqBvYmotJChD
-T05GSUdfQU1EX0lPTU1VX1YyKSArPSBhbWRfaW9tbXVfdjIubwo+PiAgwqBvYmotJChDT05GSUdf
-QVJNX1NNTVUpICs9IGFybS1zbW11Lm8KPj4gIMKgb2JqLSQoQ09ORklHX0FSTV9TTU1VX1YzKSAr
-PSBhcm0tc21tdS12My5vCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
-cmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9t
-bXU=
+On 4/6/2018 9:17 AM, Gary R Hook wrote:
+> Provide base enablement for using debugfs to expose internal data of
+> an IOMMU driver. When called, create the /sys/kernel/debug/iommu
+> directory.  Emit a strong warning at boot time to indicate that this
+> feature is enabled.
+> 
+> This patch adds a top-level function that will create the (above)
+> directory, under which a driver may create a hw-specific directory for
+> its use. The function
+> 
+> 	iommu_debugfs_setup()
+> 
+> returns a pointer to the new dentry structure created for
+> /sys/kernel/debug/iommu, or NULL in the event of a failure. An IOMMU
+> driver should call this function first, and then create a directory
+> beneath it. A driver implementation might look something like:
+> 
+> static struct dentry *my_debugfs;
+> 
+> 	struct dentry *d_top;
+> 	if (!my_debugfs) {
+> 		d_top = iommu_debugfs_setup();
+> 		if (d_top)
+> 			my_debugfs = debugfs_create_dir("vendor", d_top);
+> 	}
+> 
+> Since the IOMMU driver can not be removed from the running system, this
+> patch only provides an "on" function.
+> 
+> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+> ---
+>   drivers/iommu/Kconfig         |   11 ++++++++
+>   drivers/iommu/Makefile        |    1 +
+>   drivers/iommu/iommu-debugfs.c |   58 +++++++++++++++++++++++++++++++++++++++++
+>   include/linux/iommu.h         |    4 +++
+>   4 files changed, 74 insertions(+)
+>   create mode 100644 drivers/iommu/iommu-debugfs.c
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index f3a21343e636..c1e39dabfec2 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -60,6 +60,17 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+>   
+>   endmenu
+>   
+> +config IOMMU_DEBUG
+> +	bool "Enable IOMMU internals in DebugFS"
+> +	depends on DEBUG_FS
+> +	default n
+> +	help
+> +	  Allows exposure of IOMMU device internals. This option enables
+> +	  the use of debugfs by IOMMU drivers as required. Devices can,
+> +	  at initialization time, cause the IOMMU code to create a top-level
+> +	  debug/iommu directory, and then populate a subdirectory with
+> +	  entries as required.
+
+I should explicitly ask about this:
+
+Joerg had suggested IOMMU_DEBUGFS, but here I've changed to IOMMU_DEBUG. 
+I'm not seeing a lot of CONFIG options that use DEBUGFS for debugfs 
+options, so I chose to follow an implied convention.
+
+Question: should this indeed be IOMMU_DEBUGFS?
+                                 ^^^^^^^^^^^^^
