@@ -1,11 +1,17 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH v2] iommu/rockchip: make clock handling optional
-Date: Tue, 17 Apr 2018 14:09:15 +0200
-Message-ID: <20180417120915.31535-1-heiko@sntech.de>
+From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+Subject: Re: [PATCH 01/12] iommu-common: move to arch/sparc
+Date: Tue, 17 Apr 2018 22:53:53 +1000
+Message-ID: <87wox60za6.fsf@concordia.ellerman.id.au>
+References: <20180415145947.1248-1-hch@lst.de>
+	<20180415145947.1248-2-hch@lst.de>
+	<f0305a92-b206-1567-3c25-67fbd194047d@linux.vnet.ibm.com>
+	<20180416.095833.969403163564136309.davem@davemloft.net>
+	<f5741528-427d-3537-5498-2080766df0fe@linux.vnet.ibm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <f5741528-427d-3537-5498-2080766df0fe-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,49 +21,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org, vicencb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
+To: Anshuman Khandual <khandual-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>khandual-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+Cc: linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu clocks are optional, so the driver should not fail if they are not
-present. Instead just set the number of clocks to 0, which the clk-blk APIs
-can handle just fine.
-
-Fixes: f2e3a5f557ad ("iommu/rockchip: Control clocks needed to access the IOMMU")
-Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-changes in v2:
-- keep it required in the binding for future variants
-  but optional in the code for backwards compatiblity
-- follow Robin Murphy's beautification suggestion
-
-As the original changes breaks a lot of display support in 4.17-rc1,
-this should abviously go in as fix into 4.17.
-
- drivers/iommu/rockchip-iommu.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 5fc8656c60f9..422d22990289 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1175,8 +1175,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	for (i = 0; i < iommu->num_clocks; ++i)
- 		iommu->clocks[i].id = rk_iommu_clocks[i];
+Anshuman Khandual <khandual-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org> writes:
+> On 04/16/2018 07:28 PM, David Miller wrote:
+>> From: Anshuman Khandual <khandual-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+>> Date: Mon, 16 Apr 2018 14:26:07 +0530
+>> 
+>>> On 04/15/2018 08:29 PM, Christoph Hellwig wrote:
+>>>> This code is only used by sparc, and all new iommu drivers should use the
+>>>> drivers/iommu/ framework.  Also remove the unused exports.
+>>>>
+>>>> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+>>>
+>>> Right, these functions are used only from SPARC architecture. Simple
+>>> git grep confirms it as well. Hence it makes sense to move them into
+>>> arch code instead.
+>> 
+>> Well, we put these into a common location and used type friendly for
+>> powerpc because we hoped powerpc would convert over to using this
+>> common piece of code as well.
+>> 
+>> But nobody did the powerpc work.
  
-+	/*
-+	 * iommu clocks should be present for all new devices and devicetrees
-+	 * but there are older devicetrees without clocks out in the wild.
-+	 * So clocks as optional for the time being.
-+	 */
- 	err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
--	if (err)
-+	if (err == -ENOENT)
-+		iommu->num_clocks = 0;
-+	else if (err)
- 		return err;
- 
- 	err = clk_bulk_prepare(iommu->num_clocks, iommu->clocks);
--- 
-2.16.2
+Sorry.
+
+>> If you look at the powerpc iommu support, it's the same code basically
+>> for entry allocation.
+>
+> I understand. But there are some differences in iommu_table structure,
+> how both regular and large IOMMU pools are being initialized etc. So
+> if the movement of code into SPARC help cleaning up these generic config
+> options in general, I guess we should do that. But I will leave it upto
+> others who have more experience in this area.
+>
+> +mpe
+
+This is the first I've heard of it, I guess it's probably somewhere on
+Ben's append-only TODO list.
+
+Some of the code does look very similar, but not 100%. So someone would
+need to do some work to reconcile the two and test the result. TBH I
+doubt we're going to get around to it any time soon. Unless we have a
+volunteer?
+
+cheers
