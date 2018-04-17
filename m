@@ -1,15 +1,14 @@
-From: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v3 1/2] iommu - Enable debugfs exposure of the IOMMU
-Date: Tue, 17 Apr 2018 13:46:12 -0400
-Message-ID: <9123cd44-e01f-bff6-8441-792acbde10bc@amd.com>
-References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
-	<152302066417.47565.4017200105445420643.stgit@sosxen2.amd.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH v2 00/21] Allow compile-testing NO_DMA (drivers)
+Date: Tue, 17 Apr 2018 19:48:01 +0200
+Message-ID: <CAMuHMdUrLW7gdsUfKQ5FHBHh1t5ecYBSy-6ZKxPSJoP6TQzXvw@mail.gmail.com>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+	<CAL_JsqJMppYaz31Gg8BH2OaAxs56dnjZ4y+nzBBp-Tt2odaqCw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <152302066417.47565.4017200105445420643.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <CAL_JsqJMppYaz31Gg8BH2OaAxs56dnjZ4y+nzBBp-Tt2odaqCw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,72 +18,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-ALSA <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, MTD Maling List <linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux I2C <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, "James E . J . Bottomley" <jejb-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, open list:SERI
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/6/2018 9:17 AM, Gary R Hook wrote:
-> Provide base enablement for using debugfs to expose internal data of
-> an IOMMU driver. When called, create the /sys/kernel/debug/iommu
-> directory.  Emit a strong warning at boot time to indicate that this
-> feature is enabled.
-> 
-> This patch adds a top-level function that will create the (above)
-> directory, under which a driver may create a hw-specific directory for
-> its use. The function
-> 
-> 	iommu_debugfs_setup()
-> 
-> returns a pointer to the new dentry structure created for
-> /sys/kernel/debug/iommu, or NULL in the event of a failure. An IOMMU
-> driver should call this function first, and then create a directory
-> beneath it. A driver implementation might look something like:
-> 
-> static struct dentry *my_debugfs;
-> 
-> 	struct dentry *d_top;
-> 	if (!my_debugfs) {
-> 		d_top = iommu_debugfs_setup();
-> 		if (d_top)
-> 			my_debugfs = debugfs_create_dir("vendor", d_top);
-> 	}
-> 
-> Since the IOMMU driver can not be removed from the running system, this
-> patch only provides an "on" function.
-> 
-> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-> ---
->   drivers/iommu/Kconfig         |   11 ++++++++
->   drivers/iommu/Makefile        |    1 +
->   drivers/iommu/iommu-debugfs.c |   58 +++++++++++++++++++++++++++++++++++++++++
->   include/linux/iommu.h         |    4 +++
->   4 files changed, 74 insertions(+)
->   create mode 100644 drivers/iommu/iommu-debugfs.c
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f3a21343e636..c1e39dabfec2 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -60,6 +60,17 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
->   
->   endmenu
->   
-> +config IOMMU_DEBUG
-> +	bool "Enable IOMMU internals in DebugFS"
-> +	depends on DEBUG_FS
-> +	default n
-> +	help
-> +	  Allows exposure of IOMMU device internals. This option enables
-> +	  the use of debugfs by IOMMU drivers as required. Devices can,
-> +	  at initialization time, cause the IOMMU code to create a top-level
-> +	  debug/iommu directory, and then populate a subdirectory with
-> +	  entries as required.
+Hi Rob,
 
-I should explicitly ask about this:
+On Thu, Apr 5, 2018 at 2:32 AM, Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> On Fri, Mar 16, 2018 at 8:51 AM, Geert Uytterhoeven
+> <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
+>> If NO_DMA=y, get_dma_ops() returns a reference to the non-existing
+>> symbol bad_dma_ops, thus causing a link failure if it is ever used.
+>>
+>> The intention of this is twofold:
+>>   1. To catch users of the DMA API on systems that do no support the DMA
+>>      mapping API,
+>>   2. To avoid building drivers that cannot work on such systems anyway.
+>>
+>> However, the disadvantage is that we have to keep on adding dependencies
+>> on HAS_DMA all over the place.
+>>
+>> Thanks to the COMPILE_TEST symbol, lots of drivers now depend on one or
+>> more platform dependencies (that imply HAS_DMA) || COMPILE_TEST, thus
+>> already covering intention #2.  Having to add an explicit dependency on
+>> HAS_DMA here is cumbersome, and hinders compile-testing.
+>
+> The same can be said for CONFIG_IOMEM and CONFIG_OF. Any plans to
+> remove those too? CONFIG_IOMEM is mostly just a !CONFIG_UM option.
 
-Joerg had suggested IOMMU_DEBUGFS, but here I've changed to IOMMU_DEBUG. 
-I'm not seeing a lot of CONFIG options that use DEBUGFS for debugfs 
-options, so I chose to follow an implied convention.
+Perhaps, if time permits...
 
-Question: should this indeed be IOMMU_DEBUGFS?
-                                 ^^^^^^^^^^^^^
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
