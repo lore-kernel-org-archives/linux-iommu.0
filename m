@@ -1,113 +1,59 @@
-From: "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>
-Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
- AMD IOMMU
-Date: Wed, 18 Apr 2018 08:31:36 +0000
-Message-ID: <1524040290.4031.25.camel@hxt-semitech.com>
-References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
-         <152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
-         <1523664612.2747.13.camel@intel.com>
-         <efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
-         <1524031122.4031.5.camel@hxt-semitech.com>
-         <1524036520.2747.31.camel@intel.com>
+From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 0/3] intel-iommu: fix mapping PSI missing for iommu_map()
+Date: Wed, 18 Apr 2018 16:39:50 +0800
+Message-ID: <20180418083953.21492-1-peterx@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1524036520.2747.31.camel@intel.com>
-Content-Language: en-US
-Content-ID: <1C2E6DF8FCA0C8448B44B1E023EB6DEE@hxt-semitech.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "sohil.mehta@intel.com" <sohil.mehta@intel.com>, "gary.hook@amd.com" <gary.hook@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "ghook@amd.com" <ghook@amd.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Sohil
+v2:
+- cc correct people and iommu list
 
-On Wed, 2018-04-18 at 07:27 +0000, Mehta, Sohil wrote:
-> On Wed, 2018-04-18 at 05:58 +0000, Yang, Shunyong wrote:
-> > 
-> > Hi, Gary and Sohil,
-> > 
-> > On Tue, 2018-04-17 at 13:38 -0400, Hook, Gary wrote:
-> > > 
-> > > On 4/13/2018 8:08 PM, Mehta, Sohil wrote:
-> > > > 
-> > > >  
-> > > > On Fri, 2018-04-06 at 08:17 -0500, Gary R Hook wrote:
-> > > > > 
-> > > > >  
-> > > > >   
-> > > > > +
-> > > > > +void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
-> > > > > +{
-> > > > > + char name[MAX_NAME_LEN + 1];
-> > > > > + struct dentry *d_top;
-> > > > > +
-> > > > > + if (!debugfs_initialized())
-> > > > Probably not needed.
-> > > Right.
-> > When will this check is needed?
-> > IMO, this function is to check debugfs ready status before we want
-> > to
-> > use debugfs. I just want to understand when we should use
-> > debugfs_initialized();
-> > 
-> You are right debugfs_initialized() can be used to check if debugfs
-> is
-> ready. However in this case we can also rely on debugfs_create_dir()
-> which is called in iommu_debufs_setup().
-> 
-> debugfs_create_dir() says:
-> 
->  * If debugfs is not enabled in the kernel, the value -%ENODEV will
-> be
->  * returned.
+(PSI stands for: Page Selective Invalidations)
 
-It seems "If debugfs is not enabled in the kernel"
-means CONFIG_DEBUG_FS is not configured. Following is the code of no
-such config.
+Intel IOMMU has the caching mode to ease emulation of the device.
+When that bit is set, we need to send PSIs even for newly mapped
+pages.  However current driver is not fully obey the rule.  E.g.,
+iommu_map() API will only do the mapping but it never sent the PSIs
+before.  That can be problematic to emulated IOMMU devices since
+they'll never be able to build up the shadow page tables if without
+such information.  This patchset tries to fix the problem.
 
-  static inline struct dentry *debugfs_create_dir(const char *name,
-						struct dentry *parent)
-  {
-	return ERR_PTR(-ENODEV);
-  }
+Patch 1 is a tracing enhancement that helped me to triage the problem.
+It might even be useful in the future.
 
-Looking into the code, debugfs_initialized() return the value of
-debugfs_registered. debugfs_registered is set to true after
-debugfs_init() has been called.
-However, debugfs_create_dir() doesn't call debugfs_initialized() or
-check debugfs_registered value.
-So, there is tiny different of checking status by debugfs_create_dir()
-and debugfs_initialized(). Although it can achieve functionality here.
+Patch 2 generalized a helper to notify the MAP PSIs.
 
-Maybe the original design is to call debugfs_initialized() before
-calling debugfs_create_xxx()?
+Patch 3 fixes the real problem by making sure every domain mapping
+will trigger the MAP PSI notifications.
 
-Thanks.
-Shunyong.
+Without the patchset, nested device assignment (assign one device
+firstly to L1 guest, then to L2 guest) won't work for QEMU.  After
+applying the patchset, it works.
 
-> 
-> Sohil
-> 
-> > 
-> > Thanks.
-> > Shunyong.
-> > 
-> > > 
-> > >  
-> > > > 
-> > > >  
-> > > >  
-> > > > > 
-> > > > >  
-> > > > > +         return;
-> > > > > +
-> > > > > + mutex_lock(&amd_iommu_debugfs_lock);
-> > > > > + if (!amd_iommu_debugfs) {
-> > > > > +         d_top = iommu_debugfs_setup();
-> > > > > +         if (d_top)
-> > > > > +                 amd_iommu_debugfs =
-> > > > > debugfs_create_dir("amd", d_top);
-> > > > > + }
-> > > > > + mutex_unlock(&amd_iommu_debugfs_lock);
+Please review.  Thanks.
+
+Peter Xu (3):
+  intel-iommu: add some traces for PSIs
+  intel-iommu: generalize __mapping_notify_one()
+  intel-iommu: fix iotlb psi missing for mappings
+
+ drivers/iommu/dmar.c        |  3 ++
+ drivers/iommu/intel-iommu.c | 68 ++++++++++++++++++++++++++++++++-------------
+ 2 files changed, 52 insertions(+), 19 deletions(-)
+
+-- 
+2.14.3
