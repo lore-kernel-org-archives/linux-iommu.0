@@ -1,60 +1,113 @@
-From: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+From: "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>
 Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
-	AMD IOMMU
-Date: Wed, 18 Apr 2018 07:27:28 +0000
-Message-ID: <1524036520.2747.31.camel@intel.com>
+ AMD IOMMU
+Date: Wed, 18 Apr 2018 08:31:36 +0000
+Message-ID: <1524040290.4031.25.camel@hxt-semitech.com>
 References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
-	<152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
-	<1523664612.2747.13.camel@intel.com>
-	<efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
-	<1524031122.4031.5.camel@hxt-semitech.com>
+         <152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
+         <1523664612.2747.13.camel@intel.com>
+         <efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
+         <1524031122.4031.5.camel@hxt-semitech.com>
+         <1524036520.2747.31.camel@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1524031122.4031.5.camel-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1524036520.2747.31.camel@intel.com>
 Content-Language: en-US
-Content-ID: <1D07B9325DA45C4BAB58AB717D0D9AC3-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>, "gary.hook-5C7GfCeVMHo@public.gmane.org" <gary.hook-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "ghook-5C7GfCeVMHo@public.gmane.org" <ghook-5C7GfCeVMHo@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-ID: <1C2E6DF8FCA0C8448B44B1E023EB6DEE@hxt-semitech.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "sohil.mehta@intel.com" <sohil.mehta@intel.com>, "gary.hook@amd.com" <gary.hook@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "ghook@amd.com" <ghook@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCAyMDE4LTA0LTE4IGF0IDA1OjU4ICswMDAwLCBZYW5nLCBTaHVueW9uZyB3cm90ZToN
-Cj4gSGksIEdhcnkgYW5kIFNvaGlsLA0KPiANCj4gT24gVHVlLCAyMDE4LTA0LTE3IGF0IDEzOjM4
-IC0wNDAwLCBIb29rLCBHYXJ5IHdyb3RlOg0KPiA+IE9uIDQvMTMvMjAxOCA4OjA4IFBNLCBNZWh0
-YSwgU29oaWwgd3JvdGU6DQo+ID4gPsKgDQo+ID4gPiBPbiBGcmksIDIwMTgtMDQtMDYgYXQgMDg6
-MTcgLTA1MDAsIEdhcnkgUiBIb29rIHdyb3RlOg0KPiA+ID4gPsKgDQo+ID4gPiA+IMKgwqANCj4g
-PiA+ID4gKw0KPiA+ID4gPiArdm9pZCBhbWRfaW9tbXVfZGVidWdmc19zZXR1cChzdHJ1Y3QgYW1k
-X2lvbW11ICppb21tdSkNCj4gPiA+ID4gK3sNCj4gPiA+ID4gK8KgY2hhciBuYW1lW01BWF9OQU1F
-X0xFTiArIDFdOw0KPiA+ID4gPiArwqBzdHJ1Y3QgZGVudHJ5ICpkX3RvcDsNCj4gPiA+ID4gKw0K
-PiA+ID4gPiArwqBpZiAoIWRlYnVnZnNfaW5pdGlhbGl6ZWQoKSkNCj4gPiA+IFByb2JhYmx5IG5v
-dCBuZWVkZWQuDQo+ID4gUmlnaHQuDQo+IA0KPiBXaGVuIHdpbGwgdGhpcyBjaGVjayBpcyBuZWVk
-ZWQ/DQo+IElNTywgdGhpcyBmdW5jdGlvbiBpcyB0byBjaGVjayBkZWJ1Z2ZzIHJlYWR5IHN0YXR1
-cyBiZWZvcmUgd2Ugd2FudCB0bw0KPiB1c2UgZGVidWdmcy4gSSBqdXN0IHdhbnQgdG8gdW5kZXJz
-dGFuZCB3aGVuIHdlIHNob3VsZCB1c2UNCj4gZGVidWdmc19pbml0aWFsaXplZCgpOw0KPiANCg0K
-WW91IGFyZSByaWdodCBkZWJ1Z2ZzX2luaXRpYWxpemVkKCkgY2FuIGJlIHVzZWQgdG8gY2hlY2sg
-aWYgZGVidWdmcyBpcw0KcmVhZHkuIEhvd2V2ZXIgaW4gdGhpcyBjYXNlIHdlIGNhbiBhbHNvIHJl
-bHkgb24gZGVidWdmc19jcmVhdGVfZGlyKCkNCndoaWNoIGlzIGNhbGxlZCBpbiBpb21tdV9kZWJ1
-ZnNfc2V0dXAoKS4NCg0KZGVidWdmc19jcmVhdGVfZGlyKCkgc2F5czoNCg0KwqAqIElmIGRlYnVn
-ZnMgaXMgbm90IGVuYWJsZWQgaW4gdGhlIGtlcm5lbCwgdGhlIHZhbHVlIC0lRU5PREVWIHdpbGwg
-YmUNCsKgKiByZXR1cm5lZC4NCg0KU29oaWwNCg0KPiBUaGFua3MuDQo+IFNodW55b25nLg0KPiAN
-Cj4gPsKgDQo+ID4gPsKgDQo+ID4gPsKgDQo+ID4gPiA+wqANCj4gPiA+ID4gK8KgwqDCoMKgwqDC
-oMKgwqDCoHJldHVybjsNCj4gPiA+ID4gKw0KPiA+ID4gPiArwqBtdXRleF9sb2NrKCZhbWRfaW9t
-bXVfZGVidWdmc19sb2NrKTsNCj4gPiA+ID4gK8KgaWYgKCFhbWRfaW9tbXVfZGVidWdmcykgew0K
-PiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgZF90b3AgPSBpb21tdV9kZWJ1Z2ZzX3NldHVwKCk7
-DQo+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqBpZiAoZF90b3ApDQo+ID4gPiA+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgYW1kX2lvbW11X2RlYnVnZnMgPQ0KPiA+ID4gPiBk
-ZWJ1Z2ZzX2NyZWF0ZV9kaXIoImFtZCIsIGRfdG9wKTsNCj4gPiA+ID4gK8KgfQ0KPiA+ID4gPiAr
-wqBtdXRleF91bmxvY2soJmFtZF9pb21tdV9kZWJ1Z2ZzX2xvY2spOwpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi, Sohil
+
+On Wed, 2018-04-18 at 07:27 +0000, Mehta, Sohil wrote:
+> On Wed, 2018-04-18 at 05:58 +0000, Yang, Shunyong wrote:
+> > 
+> > Hi, Gary and Sohil,
+> > 
+> > On Tue, 2018-04-17 at 13:38 -0400, Hook, Gary wrote:
+> > > 
+> > > On 4/13/2018 8:08 PM, Mehta, Sohil wrote:
+> > > > 
+> > > >  
+> > > > On Fri, 2018-04-06 at 08:17 -0500, Gary R Hook wrote:
+> > > > > 
+> > > > >  
+> > > > >   
+> > > > > +
+> > > > > +void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
+> > > > > +{
+> > > > > + char name[MAX_NAME_LEN + 1];
+> > > > > + struct dentry *d_top;
+> > > > > +
+> > > > > + if (!debugfs_initialized())
+> > > > Probably not needed.
+> > > Right.
+> > When will this check is needed?
+> > IMO, this function is to check debugfs ready status before we want
+> > to
+> > use debugfs. I just want to understand when we should use
+> > debugfs_initialized();
+> > 
+> You are right debugfs_initialized() can be used to check if debugfs
+> is
+> ready. However in this case we can also rely on debugfs_create_dir()
+> which is called in iommu_debufs_setup().
+> 
+> debugfs_create_dir() says:
+> 
+>  * If debugfs is not enabled in the kernel, the value -%ENODEV will
+> be
+>  * returned.
+
+It seems "If debugfs is not enabled in the kernel"
+means CONFIG_DEBUG_FS is not configured. Following is the code of no
+such config.
+
+  static inline struct dentry *debugfs_create_dir(const char *name,
+						struct dentry *parent)
+  {
+	return ERR_PTR(-ENODEV);
+  }
+
+Looking into the code, debugfs_initialized() return the value of
+debugfs_registered. debugfs_registered is set to true after
+debugfs_init() has been called.
+However, debugfs_create_dir() doesn't call debugfs_initialized() or
+check debugfs_registered value.
+So, there is tiny different of checking status by debugfs_create_dir()
+and debugfs_initialized(). Although it can achieve functionality here.
+
+Maybe the original design is to call debugfs_initialized() before
+calling debugfs_create_xxx()?
+
+Thanks.
+Shunyong.
+
+> 
+> Sohil
+> 
+> > 
+> > Thanks.
+> > Shunyong.
+> > 
+> > > 
+> > >  
+> > > > 
+> > > >  
+> > > >  
+> > > > > 
+> > > > >  
+> > > > > +         return;
+> > > > > +
+> > > > > + mutex_lock(&amd_iommu_debugfs_lock);
+> > > > > + if (!amd_iommu_debugfs) {
+> > > > > +         d_top = iommu_debugfs_setup();
+> > > > > +         if (d_top)
+> > > > > +                 amd_iommu_debugfs =
+> > > > > debugfs_create_dir("amd", d_top);
+> > > > > + }
+> > > > > + mutex_unlock(&amd_iommu_debugfs_lock);
