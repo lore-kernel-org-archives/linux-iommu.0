@@ -1,7 +1,8 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 3/7] vfio/type1: Update iova list on detach
-Date: Wed, 18 Apr 2018 12:40:41 +0100
-Message-ID: <20180418114045.7968-4-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 7/7] vfio/type1: remove duplicate retrieval of reserved
+	regions
+Date: Wed, 18 Apr 2018 12:40:45 +0100
+Message-ID: <20180418114045.7968-8-shameerali.kolothum.thodi@huawei.com>
 References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,140 +22,56 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Get a copy of iova list on _group_detach and try to update the list.
-On success replace the current one with the copy. Leave the list as
-it is if update fails.
+As we now already have the reserved regions list, just pass that into
+vfio_iommu_has_sw_msi() fn.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 91 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 91 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index a0a79e1..6fd6841 100644
+index 44d0f13d..13c631a 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1776,12 +1776,88 @@ static void vfio_sanity_check_pfn_list(struct vfio_iommu *iommu)
- 	WARN_ON(iommu->notifier.head);
+@@ -1313,15 +1313,13 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
+ 	return NULL;
  }
  
-+/*
-+ * Called when a domain is removed in detach. It is possible that
-+ * the removed domain decided the iova aperture window. Modify the
-+ * iova aperture with the smallest window among existing domains.
-+ */
-+static void vfio_iommu_aper_expand(struct vfio_iommu *iommu,
-+				   struct list_head *iova_copy)
-+{
-+	struct vfio_domain *domain;
-+	struct iommu_domain_geometry geo;
-+	struct vfio_iova *node;
-+	dma_addr_t start = 0;
-+	dma_addr_t end = (dma_addr_t)~0;
-+
-+	list_for_each_entry(domain, &iommu->domain_list, next) {
-+		iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY,
-+				      &geo);
-+		if (geo.aperture_start > start)
-+			start = geo.aperture_start;
-+		if (geo.aperture_end < end)
-+			end = geo.aperture_end;
-+	}
-+
-+	/* Modify aperture limits. The new aper is either same or bigger */
-+	node = list_first_entry(iova_copy, struct vfio_iova, list);
-+	node->start = start;
-+	node = list_last_entry(iova_copy, struct vfio_iova, list);
-+	node->end = end;
-+}
-+
-+/*
-+ * Called when a group is detached. The reserved regions for that
-+ * group can be part of valid iova now. But since reserved regions
-+ * may be duplicated among groups, populate the iova valid regions
-+ * list again.
-+ */
-+static int vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
-+				   struct list_head *iova_copy)
-+{
-+	struct vfio_domain *d;
-+	struct vfio_group *g;
-+	struct vfio_iova *node;
-+	dma_addr_t start, end;
-+	LIST_HEAD(resv_regions);
-+	int ret;
-+
-+	list_for_each_entry(d, &iommu->domain_list, next) {
-+		list_for_each_entry(g, &d->group_list, next)
-+			iommu_get_group_resv_regions(g->iommu_group,
-+							 &resv_regions);
-+	}
-+
-+	if (list_empty(&resv_regions))
-+		return 0;
-+
-+	node = list_first_entry(iova_copy, struct vfio_iova, list);
-+	start = node->start;
-+	node = list_last_entry(iova_copy, struct vfio_iova, list);
-+	end = node->end;
-+
-+	/* purge the iova list and create new one */
-+	vfio_iommu_iova_free(iova_copy);
-+
-+	ret = vfio_iommu_aper_resize(iova_copy, start, end);
-+	if (ret)
-+		goto done;
-+
-+	/* Exclude current reserved regions from iova ranges */
-+	ret = vfio_iommu_resv_exclude(iova_copy, &resv_regions);
-+done:
-+	vfio_iommu_resv_free(&resv_regions);
-+	return ret;
-+}
-+
- static void vfio_iommu_type1_detach_group(void *iommu_data,
- 					  struct iommu_group *iommu_group)
+-static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
++static bool vfio_iommu_has_sw_msi(struct list_head *group_resv_regions,
++						phys_addr_t *base)
  {
- 	struct vfio_iommu *iommu = iommu_data;
- 	struct vfio_domain *domain;
- 	struct vfio_group *group;
-+	bool iova_copy_fail;
-+	LIST_HEAD(iova_copy);
+-	struct list_head group_resv_regions;
+-	struct iommu_resv_region *region, *next;
++	struct iommu_resv_region *region;
+ 	bool ret = false;
  
- 	mutex_lock(&iommu->lock);
- 
-@@ -1804,6 +1880,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+-	INIT_LIST_HEAD(&group_resv_regions);
+-	iommu_get_group_resv_regions(group, &group_resv_regions);
+-	list_for_each_entry(region, &group_resv_regions, list) {
++	list_for_each_entry(region, group_resv_regions, list) {
+ 		/*
+ 		 * The presence of any 'real' MSI regions should take
+ 		 * precedence over the software-managed one if the
+@@ -1337,8 +1335,7 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
+ 			ret = true;
  		}
  	}
- 
-+	/*
-+	 * Get a copy of iova list. If success, use copy to update the
-+	 * list and to replace the current one.
-+	 */
-+	iova_copy_fail = !!vfio_iommu_iova_get_copy(iommu, &iova_copy);
+-	list_for_each_entry_safe(region, next, &group_resv_regions, list)
+-		kfree(region);
 +
- 	list_for_each_entry(domain, &iommu->domain_list, next) {
- 		group = find_iommu_group(domain, iommu_group);
- 		if (!group)
-@@ -1829,10 +1911,19 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 			iommu_domain_free(domain->domain);
- 			list_del(&domain->next);
- 			kfree(domain);
-+			if (!iova_copy_fail && !list_empty(&iommu->domain_list))
-+				vfio_iommu_aper_expand(iommu, &iova_copy);
- 		}
- 		break;
- 	}
- 
-+	if (!iova_copy_fail && !list_empty(&iommu->domain_list)) {
-+		if (!vfio_iommu_resv_refresh(iommu, &iova_copy))
-+			vfio_iommu_iova_insert_copy(iommu, &iova_copy);
-+		else
-+			vfio_iommu_iova_free(&iova_copy);
-+	}
-+
- detach_group_done:
- 	mutex_unlock(&iommu->lock);
+ 	return ret;
  }
+ 
+@@ -1673,7 +1670,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
+-	resv_msi = vfio_iommu_has_sw_msi(iommu_group, &resv_msi_base);
++	resv_msi = vfio_iommu_has_sw_msi(&group_resv_regions, &resv_msi_base);
+ 
+ 	INIT_LIST_HEAD(&domain->group_list);
+ 	list_add(&group->next, &domain->group_list);
 -- 
 2.7.4
