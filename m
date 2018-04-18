@@ -1,14 +1,20 @@
-From: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-Subject: Re: [PATCH v3 07/20] i2c: Remove depends on HAS_DMA in case of
-	platform dependency
-Date: Wed, 18 Apr 2018 09:01:54 +0200
-Message-ID: <20180418070154.mgvdb2ne7tdqyyra@ninjato>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
-	<1523987360-18760-8-git-send-email-geert@linux-m68k.org>
+From: "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
+	AMD IOMMU
+Date: Wed, 18 Apr 2018 07:27:28 +0000
+Message-ID: <1524036520.2747.31.camel@intel.com>
+References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
+	<152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
+	<1523664612.2747.13.camel@intel.com>
+	<efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
+	<1524031122.4031.5.camel@hxt-semitech.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0613545038917178784=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1523987360-18760-8-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+In-Reply-To: <1524031122.4031.5.camel-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
+Content-Language: en-US
+Content-ID: <1D07B9325DA45C4BAB58AB717D0D9AC3-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,68 +24,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-k
+To: "shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>, "gary.hook-5C7GfCeVMHo@public.gmane.org" <gary.hook-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "ghook-5C7GfCeVMHo@public.gmane.org" <ghook-5C7GfCeVMHo@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============0613545038917178784==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="65i3mhai7gxgnaf3"
-Content-Disposition: inline
-
-
---65i3mhai7gxgnaf3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Apr 17, 2018 at 07:49:07PM +0200, Geert Uytterhoeven wrote:
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
->=20
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
->=20
-> This simplifies the dependencies, and allows to improve compile-testing.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-Applied to for-current, thanks!
-
-
---65i3mhai7gxgnaf3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlrW7V4ACgkQFA3kzBSg
-KbbXkQ/6A+My2+u0mIuo0vlx8PQNM4nXpuGAjtIwhvCDZDUsVnYi3wAnpwGSSbUe
-dFFkEoD6fo2xikBdF1xjwU36oCMO3VV4zdSPXKmBLQgLd+EDY1WS1sX54kYzNb2T
-aqxIL8J8Uf7SNNVxg1iaPLQbakS96xLocim26fWdV+H+ggLJxthEQlZrR2LKV/m2
-UHE+8NLy13Zq0+WAd9l/aX+7Lo5WZUBFAZIorLEI8v2nfWtUf3oBVBU97FxbjDwc
-gEmi2qqcggS3CtaGQmHUJc6FiirvHbNGfLAI/3SzAZ2qkrcn+kJbls3LJ6wEpfvp
-OHkQyujvT2QokgW/xddLqyMTl16EDiPKT2YWjP/fsgpfAZEubDCVyDt4VJ8sNMLH
-Zvm5A1jU/9k3LE0dxG8fEiwW3RkD7qtsUDayY1T4BZvafjXVww+VRJZyxRVCGOqd
-ohBossb6pK0difN2MbnaSeE1ykkn9sGbEot/AyQ5xfw9Mjjkm8VfBuIT/GqgIr3r
-vegJZcPwC8rdJTz5qg/6lj3JuIL51OxBfuFaIpYQR6klrer9y9VSbKKuFJyAW0Y1
-E4+f1d2cxaJPcuUbvfINWpyBLBHTFARdWYcE9tFxxOHBXLxgRnRKKljZZYq5yc6b
-LR03w8WxaMKC4cT6mPgBHSck/LY70C5pA4k/VlOj2+MNa4cPA30=
-=opRi
------END PGP SIGNATURE-----
-
---65i3mhai7gxgnaf3--
-
---===============0613545038917178784==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0613545038917178784==--
+T24gV2VkLCAyMDE4LTA0LTE4IGF0IDA1OjU4ICswMDAwLCBZYW5nLCBTaHVueW9uZyB3cm90ZToN
+Cj4gSGksIEdhcnkgYW5kIFNvaGlsLA0KPiANCj4gT24gVHVlLCAyMDE4LTA0LTE3IGF0IDEzOjM4
+IC0wNDAwLCBIb29rLCBHYXJ5IHdyb3RlOg0KPiA+IE9uIDQvMTMvMjAxOCA4OjA4IFBNLCBNZWh0
+YSwgU29oaWwgd3JvdGU6DQo+ID4gPsKgDQo+ID4gPiBPbiBGcmksIDIwMTgtMDQtMDYgYXQgMDg6
+MTcgLTA1MDAsIEdhcnkgUiBIb29rIHdyb3RlOg0KPiA+ID4gPsKgDQo+ID4gPiA+IMKgwqANCj4g
+PiA+ID4gKw0KPiA+ID4gPiArdm9pZCBhbWRfaW9tbXVfZGVidWdmc19zZXR1cChzdHJ1Y3QgYW1k
+X2lvbW11ICppb21tdSkNCj4gPiA+ID4gK3sNCj4gPiA+ID4gK8KgY2hhciBuYW1lW01BWF9OQU1F
+X0xFTiArIDFdOw0KPiA+ID4gPiArwqBzdHJ1Y3QgZGVudHJ5ICpkX3RvcDsNCj4gPiA+ID4gKw0K
+PiA+ID4gPiArwqBpZiAoIWRlYnVnZnNfaW5pdGlhbGl6ZWQoKSkNCj4gPiA+IFByb2JhYmx5IG5v
+dCBuZWVkZWQuDQo+ID4gUmlnaHQuDQo+IA0KPiBXaGVuIHdpbGwgdGhpcyBjaGVjayBpcyBuZWVk
+ZWQ/DQo+IElNTywgdGhpcyBmdW5jdGlvbiBpcyB0byBjaGVjayBkZWJ1Z2ZzIHJlYWR5IHN0YXR1
+cyBiZWZvcmUgd2Ugd2FudCB0bw0KPiB1c2UgZGVidWdmcy4gSSBqdXN0IHdhbnQgdG8gdW5kZXJz
+dGFuZCB3aGVuIHdlIHNob3VsZCB1c2UNCj4gZGVidWdmc19pbml0aWFsaXplZCgpOw0KPiANCg0K
+WW91IGFyZSByaWdodCBkZWJ1Z2ZzX2luaXRpYWxpemVkKCkgY2FuIGJlIHVzZWQgdG8gY2hlY2sg
+aWYgZGVidWdmcyBpcw0KcmVhZHkuIEhvd2V2ZXIgaW4gdGhpcyBjYXNlIHdlIGNhbiBhbHNvIHJl
+bHkgb24gZGVidWdmc19jcmVhdGVfZGlyKCkNCndoaWNoIGlzIGNhbGxlZCBpbiBpb21tdV9kZWJ1
+ZnNfc2V0dXAoKS4NCg0KZGVidWdmc19jcmVhdGVfZGlyKCkgc2F5czoNCg0KwqAqIElmIGRlYnVn
+ZnMgaXMgbm90IGVuYWJsZWQgaW4gdGhlIGtlcm5lbCwgdGhlIHZhbHVlIC0lRU5PREVWIHdpbGwg
+YmUNCsKgKiByZXR1cm5lZC4NCg0KU29oaWwNCg0KPiBUaGFua3MuDQo+IFNodW55b25nLg0KPiAN
+Cj4gPsKgDQo+ID4gPsKgDQo+ID4gPsKgDQo+ID4gPiA+wqANCj4gPiA+ID4gK8KgwqDCoMKgwqDC
+oMKgwqDCoHJldHVybjsNCj4gPiA+ID4gKw0KPiA+ID4gPiArwqBtdXRleF9sb2NrKCZhbWRfaW9t
+bXVfZGVidWdmc19sb2NrKTsNCj4gPiA+ID4gK8KgaWYgKCFhbWRfaW9tbXVfZGVidWdmcykgew0K
+PiA+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgZF90b3AgPSBpb21tdV9kZWJ1Z2ZzX3NldHVwKCk7
+DQo+ID4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqBpZiAoZF90b3ApDQo+ID4gPiA+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgYW1kX2lvbW11X2RlYnVnZnMgPQ0KPiA+ID4gPiBk
+ZWJ1Z2ZzX2NyZWF0ZV9kaXIoImFtZCIsIGRfdG9wKTsNCj4gPiA+ID4gK8KgfQ0KPiA+ID4gPiAr
+wqBtdXRleF91bmxvY2soJmFtZF9pb21tdV9kZWJ1Z2ZzX2xvY2spOwpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
+b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
