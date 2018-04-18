@@ -1,13 +1,11 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 3/3] intel-iommu: fix iotlb psi missing for mappings
-Date: Wed, 18 Apr 2018 16:39:53 +0800
-Message-ID: <20180418083953.21492-4-peterx@redhat.com>
-References: <20180418083953.21492-1-peterx@redhat.com>
+From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v6 0/7] vfio/type1: Add support for valid iova list management
+Date: Wed, 18 Apr 2018 12:40:38 +0100
+Message-ID: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180418083953.21492-1-peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,116 +15,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When caching mode is enabled for IOMMU, we should send explicit IOTLB
-PSIs even for newly created mappings.  However these events are missing
-for all intel_iommu_map() callers, e.g., iommu_map().  One direct user
-is the vfio-pci driver.
+This series introduces an iova list associated with a vfio 
+iommu. The list is kept updated taking care of iommu apertures,
+and reserved regions. Also this series adds checks for any conflict
+with existing dma mappings whenever a new device group is attached to
+the domain.
 
-To make sure we'll send the PSIs always when necessary, this patch
-firstly introduced domain_mapping() helper for page mappings, then fixed
-the problem by generalizing the explicit map IOTLB PSI logic into that
-new helper. With that, we let iommu_domain_identity_map() to use the
-simplified version to avoid sending the notifications, while for all the
-rest of cases we send the notifications always.
+User-space can retrieve valid iova ranges using VFIO_IOMMU_GET_INFO
+ioctl capability chains. Any dma map request outside the valid iova
+range will be rejected.
 
-For VM case, we send the PSIs to all the backend IOMMUs for the domain.
+v5 --> v6
 
-This patch allows the nested device assignment to work with QEMU (assign
-device firstly to L1 guest, then assign it again to L2 guest).
+ -Rebased to 4.17-rc1
+ -Changed the ordering such that previous patch#7 "iommu/dma: Move
+  PCI window region reservation back...")  is now patch #4. This
+  will avoid any bisection issues pointed out by Alex.
+ -Added Robin's Reviewed-by tag for patch#4
 
-Signed-off-by: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 43 ++++++++++++++++++++++++++++++++++---------
- 1 file changed, 34 insertions(+), 9 deletions(-)
+v4 --> v5
+Rebased to next-20180315.
+ 
+ -Incorporated the corner case bug fix suggested by Alex to patch #5.
+ -Based on suggestions by Alex and Robin, added patch#7. This
+  moves the PCI window  reservation back in to DMA specific path.
+  This is to fix the issue reported by Eric[1].
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index bf111e60857c..eb0f0911342f 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2353,18 +2353,47 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	return 0;
- }
- 
-+static int domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
-+                         struct scatterlist *sg, unsigned long phys_pfn,
-+                         unsigned long nr_pages, int prot)
-+{
-+       int ret;
-+       struct intel_iommu *iommu;
-+
-+       /* Do the real mapping first */
-+       ret = __domain_mapping(domain, iov_pfn, sg, phys_pfn, nr_pages, prot);
-+       if (ret)
-+               return ret;
-+
-+       /* Notify about the new mapping */
-+       if (domain_type_is_vm(domain)) {
-+	       /* VM typed domains can have more than one IOMMUs */
-+	       int iommu_id;
-+	       for_each_domain_iommu(iommu_id, domain) {
-+		       iommu = g_iommus[iommu_id];
-+		       __mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
-+	       }
-+       } else {
-+	       /* General domains only have one IOMMU */
-+	       iommu = domain_get_iommu(domain);
-+	       __mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
-+       }
-+
-+       return 0;
-+}
-+
- static inline int domain_sg_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 				    struct scatterlist *sg, unsigned long nr_pages,
- 				    int prot)
- {
--	return __domain_mapping(domain, iov_pfn, sg, 0, nr_pages, prot);
-+	return domain_mapping(domain, iov_pfn, sg, 0, nr_pages, prot);
- }
- 
- static inline int domain_pfn_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 				     unsigned long phys_pfn, unsigned long nr_pages,
- 				     int prot)
- {
--	return __domain_mapping(domain, iov_pfn, NULL, phys_pfn, nr_pages, prot);
-+	return domain_mapping(domain, iov_pfn, NULL, phys_pfn, nr_pages, prot);
- }
- 
- static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
-@@ -2669,9 +2698,9 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
- 	 */
- 	dma_pte_clear_range(domain, first_vpfn, last_vpfn);
- 
--	return domain_pfn_mapping(domain, first_vpfn, first_vpfn,
--				  last_vpfn - first_vpfn + 1,
--				  DMA_PTE_READ|DMA_PTE_WRITE);
-+	return __domain_mapping(domain, first_vpfn, NULL,
-+				first_vpfn, last_vpfn - first_vpfn + 1,
-+				DMA_PTE_READ|DMA_PTE_WRITE);
- }
- 
- static int domain_prepare_identity_map(struct device *dev,
-@@ -3638,8 +3667,6 @@ static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
- 	if (ret)
- 		goto error;
- 
--	__mapping_notify_one(iommu, domain, mm_to_dma_pfn(iova_pfn), size);
--
- 	start_paddr = (phys_addr_t)iova_pfn << PAGE_SHIFT;
- 	start_paddr += paddr & ~PAGE_MASK;
- 	return start_paddr;
-@@ -3857,8 +3884,6 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
- 		return 0;
- 	}
- 
--	__mapping_notify_one(iommu, domain, start_vpfn, size);
--
- 	return nelems;
- }
- 
+Note:
+The patch #7 has dependency with [2][3]
+
+1. https://patchwork.kernel.org/patch/10232043/
+2. https://patchwork.kernel.org/patch/10216553/
+3. https://patchwork.kernel.org/patch/10216555/
+
+v3 --> v4
+ Addressed comments received for v3.
+ -dma_addr_t instead of phys_addr_t
+ -LIST_HEAD() usage.
+ -Free up iova_copy list in case of error.
+ -updated logic in filling the iova caps info(patch #5)
+
+RFCv2 --> v3
+ Removed RFC tag.
+ Addressed comments from Alex and Eric:
+ - Added comments to make iova list management logic more clear.
+ - Use of iova list copy so that original is not altered in
+   case of failure.
+
+RFCv1 --> RFCv2
+ Addressed comments from Alex:
+-Introduced IOVA list management and added checks for conflicts with 
+ existing dma map entries during attach/detach.
+
+Shameer Kolothum (7):
+  vfio/type1: Introduce iova list and add iommu aperture validity check
+  vfio/type1: Check reserve region conflict and update iova list
+  vfio/type1: Update iova list on detach
+  iommu/dma: Move PCI window region reservation back into dma specific
+    path.
+  vfio/type1: check dma map request is within a valid iova range
+  vfio/type1: Add IOVA range capability support
+  vfio/type1: remove duplicate retrieval of reserved regions
+
+ drivers/iommu/dma-iommu.c       |  54 ++---
+ drivers/vfio/vfio_iommu_type1.c | 497 +++++++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/vfio.h       |  23 ++
+ 3 files changed, 533 insertions(+), 41 deletions(-)
+
 -- 
-2.14.3
+2.7.4
