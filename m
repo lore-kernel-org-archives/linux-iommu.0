@@ -1,8 +1,8 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 2/7] vfio/type1: Check reserve region conflict and update
-	iova list
-Date: Wed, 18 Apr 2018 12:40:40 +0100
-Message-ID: <20180418114045.7968-3-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 4/7] iommu/dma: Move PCI window region reservation back
+	into dma specific path.
+Date: Wed, 18 Apr 2018 12:40:42 +0100
+Message-ID: <20180418114045.7968-5-shameerali.kolothum.thodi@huawei.com>
 References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,150 +22,103 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This retrieves the reserved regions associated with dev group and
-checks for conflicts with any existing dma mappings. Also update
-the iova list excluding the reserved regions.
+This pretty much reverts commit 273df9635385 ("iommu/dma: Make PCI
+window reservation generic")  by moving the PCI window region
+reservation back into the dma specific path so that these regions
+doesn't get exposed via the IOMMU API interface. With this change,
+the vfio interface will report only iommu specific reserved regions
+to the user space.
 
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 90 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+ drivers/iommu/dma-iommu.c | 54 ++++++++++++++++++++++-------------------------
+ 1 file changed, 25 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 775946d..a0a79e1 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1422,6 +1422,82 @@ static int vfio_iommu_aper_resize(struct list_head *iova,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f05f3cf..ddcbbdb 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -167,40 +167,16 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+  * @list: Reserved region list from iommu_get_resv_regions()
+  *
+  * IOMMU drivers can use this to implement their .get_resv_regions callback
+- * for general non-IOMMU-specific reservations. Currently, this covers host
+- * bridge windows for PCI devices and GICv3 ITS region reservation on ACPI
+- * based ARM platforms that may require HW MSI reservation.
++ * for general non-IOMMU-specific reservations. Currently, this covers GICv3
++ * ITS region reservation on ACPI based ARM platforms that may require HW MSI
++ * reservation.
+  */
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+ {
+-	struct pci_host_bridge *bridge;
+-	struct resource_entry *window;
+-
+-	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode) &&
+-		iort_iommu_msi_get_resv_regions(dev, list) < 0)
+-		return;
+-
+-	if (!dev_is_pci(dev))
+-		return;
+-
+-	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
+-	resource_list_for_each_entry(window, &bridge->windows) {
+-		struct iommu_resv_region *region;
+-		phys_addr_t start;
+-		size_t length;
+-
+-		if (resource_type(window->res) != IORESOURCE_MEM)
+-			continue;
+ 
+-		start = window->res->start - window->offset;
+-		length = window->res->end - window->res->start + 1;
+-		region = iommu_alloc_resv_region(start, length, 0,
+-				IOMMU_RESV_RESERVED);
+-		if (!region)
+-			return;
++	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
++		iort_iommu_msi_get_resv_regions(dev, list);
+ 
+-		list_add_tail(&region->list, list);
+-	}
+ }
+ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ 
+@@ -229,6 +205,23 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
  	return 0;
  }
  
-+/*
-+ * Check reserved region conflicts with existing dma mappings
-+ */
-+static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
-+				struct list_head *resv_regions)
++static void iova_reserve_pci_windows(struct pci_dev *dev,
++		struct iova_domain *iovad)
 +{
-+	struct iommu_resv_region *region;
++	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
++	struct resource_entry *window;
++	unsigned long lo, hi;
 +
-+	/* Check for conflict with existing dma mappings */
-+	list_for_each_entry(region, resv_regions, list) {
-+		if (vfio_find_dma(iommu, region->start, region->length))
-+			return true;
-+	}
++	resource_list_for_each_entry(window, &bridge->windows) {
++		if (resource_type(window->res) != IORESOURCE_MEM)
++			continue;
 +
-+	return false;
-+}
-+
-+/*
-+ * Check iova region overlap with  reserved regions and
-+ * exclude them from the iommu iova range
-+ */
-+static int vfio_iommu_resv_exclude(struct list_head *iova,
-+					struct list_head *resv_regions)
-+{
-+	struct iommu_resv_region *resv;
-+	struct vfio_iova *n, *next;
-+
-+	list_for_each_entry(resv, resv_regions, list) {
-+		phys_addr_t start, end;
-+
-+		start = resv->start;
-+		end = resv->start + resv->length - 1;
-+
-+		list_for_each_entry_safe(n, next, iova, list) {
-+			int ret = 0;
-+
-+			/* No overlap */
-+			if ((start > n->end) || (end < n->start))
-+				continue;
-+			/*
-+			 * Insert a new node if current node overlaps with the
-+			 * reserve region to exlude that from valid iova range.
-+			 * Note that, new node is inserted before the current
-+			 * node and finally the current node is deleted keeping
-+			 * the list updated and sorted.
-+			 */
-+			if (start > n->start)
-+				ret = vfio_iommu_iova_insert(&n->list,
-+							n->start, start - 1);
-+			if (!ret && end < n->end)
-+				ret = vfio_iommu_iova_insert(&n->list,
-+							end + 1, n->end);
-+			if (ret)
-+				return ret;
-+
-+			list_del(&n->list);
-+			kfree(n);
-+		}
-+	}
-+
-+	if (list_empty(iova))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static void vfio_iommu_resv_free(struct list_head *resv_regions)
-+{
-+	struct iommu_resv_region *n, *next;
-+
-+	list_for_each_entry_safe(n, next, resv_regions, list) {
-+		list_del(&n->list);
-+		kfree(n);
++		lo = iova_pfn(iovad, window->res->start - window->offset);
++		hi = iova_pfn(iovad, window->res->end - window->offset);
++		reserve_iova(iovad, lo, hi);
 +	}
 +}
 +
- static void vfio_iommu_iova_free(struct list_head *iova)
+ static int iova_reserve_iommu_regions(struct device *dev,
+ 		struct iommu_domain *domain)
  {
- 	struct vfio_iova *n, *next;
-@@ -1475,6 +1551,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	phys_addr_t resv_msi_base;
- 	struct iommu_domain_geometry geo;
- 	LIST_HEAD(iova_copy);
-+	LIST_HEAD(group_resv_regions);
+@@ -238,6 +231,9 @@ static int iova_reserve_iommu_regions(struct device *dev,
+ 	LIST_HEAD(resv_regions);
+ 	int ret = 0;
  
- 	mutex_lock(&iommu->lock);
- 
-@@ -1553,6 +1630,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_detach;
- 	}
- 
-+	iommu_get_group_resv_regions(iommu_group, &group_resv_regions);
++	if (dev_is_pci(dev))
++		iova_reserve_pci_windows(to_pci_dev(dev), iovad);
 +
-+	if (vfio_iommu_resv_conflict(iommu, &group_resv_regions)) {
-+		ret = -EINVAL;
-+		goto out_detach;
-+	}
-+
- 	/* Get a copy of the current iova list and work on it */
- 	ret = vfio_iommu_iova_get_copy(iommu, &iova_copy);
- 	if (ret)
-@@ -1563,6 +1647,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
- 
-+	ret = vfio_iommu_resv_exclude(&iova_copy, &group_resv_regions);
-+	if (ret)
-+		goto out_detach;
-+
- 	resv_msi = vfio_iommu_has_sw_msi(iommu_group, &resv_msi_base);
- 
- 	INIT_LIST_HEAD(&domain->group_list);
-@@ -1623,6 +1711,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	/* Delete the old one and insert new iova list */
- 	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
- 	mutex_unlock(&iommu->lock);
-+	vfio_iommu_resv_free(&group_resv_regions);
- 
- 	return 0;
- 
-@@ -1631,6 +1720,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- out_domain:
- 	iommu_domain_free(domain->domain);
- 	vfio_iommu_iova_free(&iova_copy);
-+	vfio_iommu_resv_free(&group_resv_regions);
- out_free:
- 	kfree(domain);
- 	kfree(group);
+ 	iommu_get_resv_regions(dev, &resv_regions);
+ 	list_for_each_entry(region, &resv_regions, list) {
+ 		unsigned long lo, hi;
 -- 
 2.7.4
