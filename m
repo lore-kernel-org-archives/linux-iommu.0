@@ -1,19 +1,18 @@
-From: "Yang, Shunyong" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
-	AMD IOMMU
-Date: Wed, 18 Apr 2018 05:58:48 +0000
-Message-ID: <1524031122.4031.5.camel@hxt-semitech.com>
-References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
-	<152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
-	<1523664612.2747.13.camel@intel.com>
-	<efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [PATCH 2/6 v2] iommu: of: make of_pci_map_rid() available for
+	other devices too
+Date: Wed, 18 Apr 2018 06:21:46 +0000
+Message-ID: <HE1PR0401MB2425A73A3BFF84B15B764FC6E6B60@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+References: <1520260166-29387-1-git-send-email-nipun.gupta@nxp.com>
+	<1523960514-25457-1-git-send-email-nipun.gupta@nxp.com>
+	<1523960514-25457-3-git-send-email-nipun.gupta@nxp.com>
+	<41b32766-e21a-e946-6c8f-440e5c87d0ee@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <efa2b7a3-04a7-20b1-3651-89ebafa85c27-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <41b32766-e21a-e946-6c8f-440e5c87d0ee-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Content-ID: <EC3196134C782D4F8A962BA6463288F5-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,93 +22,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "gary.hook-5C7GfCeVMHo@public.gmane.org" <gary.hook-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "ghook-5C7GfCeVMHo@public.gmane.org" <ghook-5C7GfCeVMHo@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Gary and Sohil,
 
-On Tue, 2018-04-17 at 13:38 -0400, Hook, Gary wrote:
-> On 4/13/2018 8:08 PM, Mehta, Sohil wrote:
-> > =
 
-> > On Fri, 2018-04-06 at 08:17 -0500, Gary R Hook wrote:
-> > > =
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> Sent: Tuesday, April 17, 2018 10:23 PM
+> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
+> frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+> Cc: will.deacon-5wv7dgnIgG8@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org; catalin.marinas-5wv7dgnIgG8@public.gmane.org;
+> hch-jcswGhMUV9g@public.gmane.org; gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org;
+> m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org;
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linuxppc-
+> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bharat Bhushan
+> <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>; stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Laurentiu Tudor
+> <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>; Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>
+> Subject: Re: [PATCH 2/6 v2] iommu: of: make of_pci_map_rid() available for
+> other devices too
+> 
+> On 17/04/18 11:21, Nipun Gupta wrote:
+> > iommu-map property is also used by devices with fsl-mc. This patch
+> > moves the of_pci_map_rid to generic location, so that it can be used
+> > by other busses too.
+> >
+> > Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> > ---
+> >   drivers/iommu/of_iommu.c | 106
+> > +++++++++++++++++++++++++++++++++++++++++++++--
+> 
+> Doesn't this break "msi-parent" parsing for !CONFIG_OF_IOMMU? I guess you
+> don't want fsl-mc to have to depend on PCI, but this looks like a step in the
+> wrong direction.
 
-> > > =A0=A0
-> > > +
-> > > +void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
-> > > +{
-> > > +	char name[MAX_NAME_LEN + 1];
-> > > +	struct dentry *d_top;
-> > > +
-> > > +	if (!debugfs_initialized())
-> > Probably not needed.
-> Right.
+Thanks for pointing out.
+Agree, this will break "msi-parent" parsing for !CONFIG_OF_IOMMU case.
 
-When will this check is needed?
-IMO, this function is to check debugfs ready status before we want to
-use debugfs. I just want to understand when we should use
-debugfs_initialized();
+> 
+> I'm not entirely sure where of_map_rid() fits best, but from a quick look around
+> the least-worst option might be drivers/of/of_address.c, unless Rob and Frank
+> have a better idea of where generic DT-based ID translation routines could live?
+> 
+> >   drivers/of/irq.c         |   6 +--
+> >   drivers/pci/of.c         | 101 --------------------------------------------
+> >   include/linux/of_iommu.h |  11 +++++
+> >   include/linux/of_pci.h   |  10 -----
+> >   5 files changed, 117 insertions(+), 117 deletions(-)
+> >
 
-Thanks.
-Shunyong.
+[...]
 
-> =
+> >   struct of_pci_iommu_alias_info {
+> >   	struct device *dev;
+> >   	struct device_node *np;
+> > @@ -149,9 +249,9 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16
+> alias, void *data)
+> >   	struct of_phandle_args iommu_spec = { .args_count = 1 };
+> >   	int err;
+> >
+> > -	err = of_pci_map_rid(info->np, alias, "iommu-map",
+> > -			     "iommu-map-mask", &iommu_spec.np,
+> > -			     iommu_spec.args);
+> > +	err = of_map_rid(info->np, alias, "iommu-map",
+> > +			 "iommu-map-mask", &iommu_spec.np,
+> > +			 iommu_spec.args);
+> 
+> Super-nit: Apparently I missed rewrapping this to 2 lines in d87beb749281, but if
+> it's being touched again, that would be nice ;)
 
-> > =
+Sure.. I'll take care of this in the next version :)
 
-> > =
-
-> > > =
-
-> > > +		return;
-> > > +
-> > > +	mutex_lock(&amd_iommu_debugfs_lock);
-> > > +	if (!amd_iommu_debugfs) {
-> > > +		d_top =3D iommu_debugfs_setup();
-> > > +		if (d_top)
-> > > +			amd_iommu_debugfs =3D
-> > > debugfs_create_dir("amd", d_top);
-> > > +	}
-> > > +	mutex_unlock(&amd_iommu_debugfs_lock);
-> > =
-
-> > You can do the above only once if you iterate over the IOMMUs here
-> > =A0=A0instead of doing it in=A0amd_iommu_init.
-> I'm not sure it matters, given the finite number of IOMMUs in a
-> system,=A0
-> and the fact that this work is done exactly once. However, removal of
-> a=A0
-> lock is fine thing, so I'll move this around.
-> =
-
-> > =
-
-> > =
-
-> > > =
-
-> > > +	if (amd_iommu_debugfs) {
-> > > +		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu-
-> > > > =
-
-> > > > index);
-> > > +		iommu->debugfs =3D debugfs_create_dir(name,
-> > > +						=A0=A0=A0=A0amd_iommu_de
-> > > bugf
-> > > s);
-> > > +		if (!iommu->debugfs) {
-> > > +			debugfs_remove_recursive(amd_iommu_debug
-> > > fs);
-> > > +			amd_iommu_debugfs =3D NULL;
-> > > +		}
-> > > +	}
-> > > +}
-> > -Sohil
-> > =
-
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Regards,
+Nipun
