@@ -1,64 +1,32 @@
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: [PATCH v6 5/7] vfio/type1: check dma map request is within a valid iova range
-Date: Wed, 18 Apr 2018 12:40:43 +0100
-Message-ID: <20180418114045.7968-6-shameerali.kolothum.thodi@huawei.com>
-References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
+From: "Mehta, Sohil" <sohil.mehta@intel.com>
+Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
+ AMD IOMMU
+Date: Wed, 18 Apr 2018 20:16:27 +0000
+Message-ID: <1524082659.2747.37.camel@intel.com>
+References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
+         <152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
+         <1523664612.2747.13.camel@intel.com>
+         <efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
+         <1524031122.4031.5.camel@hxt-semitech.com>
+         <1524036520.2747.31.camel@intel.com>
+         <1524040290.4031.25.camel@hxt-semitech.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
+In-Reply-To: <1524040290.4031.25.camel@hxt-semitech.com>
+Content-Language: en-US
+Content-ID: <3899D9E6BD7CE04EAE32C61B6F339008@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: alex.williamson@redhat.com, eric.auger@redhat.com, pmorel@linux.vnet.ibm.com
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linuxarm@huawei.com, john.garry@huawei.com, xuwei5@hisilicon.com, Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: "shunyong.yang@hxt-semitech.com" <shunyong.yang@hxt-semitech.com>, "gary.hook@amd.com" <gary.hook@amd.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "ghook@amd.com" <ghook@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This checks and rejects any dma map request outside valid iova
-range.
-
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/vfio/vfio_iommu_type1.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 6fd6841..bf33281 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1091,6 +1091,23 @@ static int vfio_pin_map_dma(struct vfio_iommu *iommu, struct vfio_dma *dma,
- 	return ret;
- }
- 
-+/*
-+ * Check dma map request is within a valid iova range
-+ */
-+static bool vfio_iommu_iova_dma_valid(struct vfio_iommu *iommu,
-+				dma_addr_t start, dma_addr_t end)
-+{
-+	struct list_head *iova = &iommu->iova_list;
-+	struct vfio_iova *node;
-+
-+	list_for_each_entry(node, iova, list) {
-+		if ((start >= node->start) && (end <= node->end))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 			   struct vfio_iommu_type1_dma_map *map)
- {
-@@ -1129,6 +1146,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 		goto out_unlock;
- 	}
- 
-+	if (!vfio_iommu_iova_dma_valid(iommu, iova, iova + size - 1)) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
- 	dma = kzalloc(sizeof(*dma), GFP_KERNEL);
- 	if (!dma) {
- 		ret = -ENOMEM;
--- 
-2.7.4
+T24gV2VkLCAyMDE4LTA0LTE4IGF0IDA4OjMxICswMDAwLCBZYW5nLCBTaHVueW9uZyB3cm90ZToN
+Cj4gTWF5YmUgdGhlIG9yaWdpbmFsIGRlc2lnbiBpcyB0byBjYWxswqBkZWJ1Z2ZzX2luaXRpYWxp
+emVkKCkgYmVmb3JlDQo+IGNhbGxpbmfCoGRlYnVnZnNfY3JlYXRlX3h4eCgpPw0KDQpJIGFtIHVu
+YXdhcmUgb2YgdGhlIG9yaWdpbmFsIGRlc2lnbi4gU29tZW9uZSBlbHNlIHdvdWxkIHByb2JhYmx5
+IGhhdmUNCm1vcmUgY29udGV4dC4gSG93ZXZlciwgbG9va2luZyBhdCBvdGhlciBwbGFjZXMgaW4g
+dGhlIGtlcm5lbCB3aGVyZQ0KZGVidWdmc19jcmVhdGVfeHgoKSBpcyB1c2VkLCB0aGUgY29tbW9u
+IGNvbnZlbnRpb24gc2VlbXMgdG8gYmUgdG8gYXZvaWQNCmNhbGxpbmfCoGRlYnVnZnNfaW5pdGlh
+bGl6ZWQoKS4NCg0KwqBTb2hpbA==
