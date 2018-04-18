@@ -1,8 +1,8 @@
 From: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 1/7] vfio/type1: Introduce iova list and add iommu aperture
-	validity check
-Date: Wed, 18 Apr 2018 12:40:39 +0100
-Message-ID: <20180418114045.7968-2-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 2/7] vfio/type1: Check reserve region conflict and update
+	iova list
+Date: Wed, 18 Apr 2018 12:40:40 +0100
+Message-ID: <20180418114045.7968-3-shameerali.kolothum.thodi@huawei.com>
 References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,98 +22,34 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This introduces an iova list that is valid for dma mappings. Make
-sure the new iommu aperture window doesn't conflict with the current
-one or with any existing dma mappings during attach.
+This retrieves the reserved regions associated with dev group and
+checks for conflicts with any existing dma mappings. Also update
+the iova list excluding the reserved regions.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/vfio/vfio_iommu_type1.c | 183 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 180 insertions(+), 3 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 90 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 5c212bf..775946d 100644
+index 775946d..a0a79e1 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -60,6 +60,7 @@ MODULE_PARM_DESC(disable_hugepages,
- 
- struct vfio_iommu {
- 	struct list_head	domain_list;
-+	struct list_head	iova_list;
- 	struct vfio_domain	*external_domain; /* domain for external user */
- 	struct mutex		lock;
- 	struct rb_root		dma_list;
-@@ -92,6 +93,12 @@ struct vfio_group {
- 	struct list_head	next;
- };
- 
-+struct vfio_iova {
-+	struct list_head	list;
-+	dma_addr_t		start;
-+	dma_addr_t		end;
-+};
-+
- /*
-  * Guest RAM pinning working set or DMA target
-  */
-@@ -1313,6 +1320,149 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
- 	return ret;
+@@ -1422,6 +1422,82 @@ static int vfio_iommu_aper_resize(struct list_head *iova,
+ 	return 0;
  }
  
 +/*
-+ * This is a helper function to insert an address range to iova list.
-+ * The list starts with a single entry corresponding to the IOMMU
-+ * domain geometry to which the device group is attached. The list
-+ * aperture gets modified when a new domain is added to the container
-+ * if the new aperture doesn't conflict with the current one or with
-+ * any existing dma mappings. The list is also modified to exclude
-+ * any reserved regions associated with the device group.
++ * Check reserved region conflicts with existing dma mappings
 + */
-+static int vfio_iommu_iova_insert(struct list_head *head,
-+				  dma_addr_t start, dma_addr_t end)
++static bool vfio_iommu_resv_conflict(struct vfio_iommu *iommu,
++				struct list_head *resv_regions)
 +{
-+	struct vfio_iova *region;
++	struct iommu_resv_region *region;
 +
-+	region = kmalloc(sizeof(*region), GFP_KERNEL);
-+	if (!region)
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&region->list);
-+	region->start = start;
-+	region->end = end;
-+
-+	list_add_tail(&region->list, head);
-+	return 0;
-+}
-+
-+/*
-+ * Check the new iommu aperture conflicts with existing aper or with any
-+ * existing dma mappings.
-+ */
-+static bool vfio_iommu_aper_conflict(struct vfio_iommu *iommu,
-+				     dma_addr_t start, dma_addr_t end)
-+{
-+	struct vfio_iova *first, *last;
-+	struct list_head *iova = &iommu->iova_list;
-+
-+	if (list_empty(iova))
-+		return false;
-+
-+	/* Disjoint sets, return conflict */
-+	first = list_first_entry(iova, struct vfio_iova, list);
-+	last = list_last_entry(iova, struct vfio_iova, list);
-+	if ((start > last->end) || (end < first->start))
-+		return true;
-+
-+	/* Check for any existing dma mappings outside the new start */
-+	if (start > first->start) {
-+		if (vfio_find_dma(iommu, first->start, start - first->start))
-+			return true;
-+	}
-+
-+	/* Check for any existing dma mappings outside the new end */
-+	if (end < last->end) {
-+		if (vfio_find_dma(iommu, end + 1, last->end - end))
++	/* Check for conflict with existing dma mappings */
++	list_for_each_entry(region, resv_regions, list) {
++		if (vfio_find_dma(iommu, region->start, region->length))
 +			return true;
 +	}
 +
@@ -121,172 +57,115 @@ index 5c212bf..775946d 100644
 +}
 +
 +/*
-+ * Resize iommu iova aperture window. This is called only if the new
-+ * aperture has no conflict with existing aperture and dma mappings.
++ * Check iova region overlap with  reserved regions and
++ * exclude them from the iommu iova range
 + */
-+static int vfio_iommu_aper_resize(struct list_head *iova,
-+				      dma_addr_t start,
-+				      dma_addr_t end)
++static int vfio_iommu_resv_exclude(struct list_head *iova,
++					struct list_head *resv_regions)
 +{
-+	struct vfio_iova *node, *next;
++	struct iommu_resv_region *resv;
++	struct vfio_iova *n, *next;
++
++	list_for_each_entry(resv, resv_regions, list) {
++		phys_addr_t start, end;
++
++		start = resv->start;
++		end = resv->start + resv->length - 1;
++
++		list_for_each_entry_safe(n, next, iova, list) {
++			int ret = 0;
++
++			/* No overlap */
++			if ((start > n->end) || (end < n->start))
++				continue;
++			/*
++			 * Insert a new node if current node overlaps with the
++			 * reserve region to exlude that from valid iova range.
++			 * Note that, new node is inserted before the current
++			 * node and finally the current node is deleted keeping
++			 * the list updated and sorted.
++			 */
++			if (start > n->start)
++				ret = vfio_iommu_iova_insert(&n->list,
++							n->start, start - 1);
++			if (!ret && end < n->end)
++				ret = vfio_iommu_iova_insert(&n->list,
++							end + 1, n->end);
++			if (ret)
++				return ret;
++
++			list_del(&n->list);
++			kfree(n);
++		}
++	}
 +
 +	if (list_empty(iova))
-+		return vfio_iommu_iova_insert(iova, start, end);
-+
-+	/* Adjust iova list start */
-+	list_for_each_entry_safe(node, next, iova, list) {
-+		if (start < node->start)
-+			break;
-+		if ((start >= node->start) && (start < node->end)) {
-+			node->start = start;
-+			break;
-+		}
-+		/* Delete nodes before new start */
-+		list_del(&node->list);
-+		kfree(node);
-+	}
-+
-+	/* Adjust iova list end */
-+	list_for_each_entry_safe(node, next, iova, list) {
-+		if (end > node->end)
-+			continue;
-+		if ((end > node->start) && (end <= node->end)) {
-+			node->end = end;
-+			continue;
-+		}
-+		/* Delete nodes after new end */
-+		list_del(&node->list);
-+		kfree(node);
-+	}
++		return -EINVAL;
 +
 +	return 0;
 +}
 +
-+static void vfio_iommu_iova_free(struct list_head *iova)
++static void vfio_iommu_resv_free(struct list_head *resv_regions)
 +{
-+	struct vfio_iova *n, *next;
++	struct iommu_resv_region *n, *next;
 +
-+	list_for_each_entry_safe(n, next, iova, list) {
++	list_for_each_entry_safe(n, next, resv_regions, list) {
 +		list_del(&n->list);
 +		kfree(n);
 +	}
 +}
 +
-+static int vfio_iommu_iova_get_copy(struct vfio_iommu *iommu,
-+				    struct list_head *iova_copy)
-+{
-+
-+	struct list_head *iova = &iommu->iova_list;
-+	struct vfio_iova *n;
-+	int ret;
-+
-+	list_for_each_entry(n, iova, list) {
-+		ret = vfio_iommu_iova_insert(iova_copy, n->start, n->end);
-+		if (ret)
-+			goto out_free;
-+	}
-+
-+	return 0;
-+
-+out_free:
-+	vfio_iommu_iova_free(iova_copy);
-+	return ret;
-+}
-+
-+static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
-+					struct list_head *iova_copy)
-+{
-+	struct list_head *iova = &iommu->iova_list;
-+
-+	vfio_iommu_iova_free(iova);
-+
-+	list_splice_tail(iova_copy, iova);
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
+ static void vfio_iommu_iova_free(struct list_head *iova)
  {
-@@ -1323,6 +1473,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	int ret;
- 	bool resv_msi, msi_remap;
+ 	struct vfio_iova *n, *next;
+@@ -1475,6 +1551,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
  	phys_addr_t resv_msi_base;
-+	struct iommu_domain_geometry geo;
-+	LIST_HEAD(iova_copy);
+ 	struct iommu_domain_geometry geo;
+ 	LIST_HEAD(iova_copy);
++	LIST_HEAD(group_resv_regions);
  
  	mutex_lock(&iommu->lock);
  
-@@ -1392,6 +1544,25 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_domain;
+@@ -1553,6 +1630,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 		goto out_detach;
+ 	}
  
-+	/* Get aperture info */
-+	iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY, &geo);
++	iommu_get_group_resv_regions(iommu_group, &group_resv_regions);
 +
-+	if (vfio_iommu_aper_conflict(iommu, geo.aperture_start,
-+					    geo.aperture_end)) {
++	if (vfio_iommu_resv_conflict(iommu, &group_resv_regions)) {
 +		ret = -EINVAL;
 +		goto out_detach;
 +	}
 +
-+	/* Get a copy of the current iova list and work on it */
-+	ret = vfio_iommu_iova_get_copy(iommu, &iova_copy);
-+	if (ret)
-+		goto out_detach;
-+
-+	ret = vfio_iommu_aper_resize(&iova_copy, geo.aperture_start,
-+						 geo.aperture_end);
+ 	/* Get a copy of the current iova list and work on it */
+ 	ret = vfio_iommu_iova_get_copy(iommu, &iova_copy);
+ 	if (ret)
+@@ -1563,6 +1647,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
++	ret = vfio_iommu_resv_exclude(&iova_copy, &group_resv_regions);
 +	if (ret)
 +		goto out_detach;
 +
  	resv_msi = vfio_iommu_has_sw_msi(iommu_group, &resv_msi_base);
  
  	INIT_LIST_HEAD(&domain->group_list);
-@@ -1425,8 +1596,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 				list_add(&group->next, &d->group_list);
- 				iommu_domain_free(domain->domain);
- 				kfree(domain);
--				mutex_unlock(&iommu->lock);
--				return 0;
-+				goto done;
- 			}
- 
- 			ret = iommu_attach_group(domain->domain, iommu_group);
-@@ -1449,7 +1619,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	}
- 
- 	list_add(&domain->next, &iommu->domain_list);
--
-+done:
-+	/* Delete the old one and insert new iova list */
-+	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
+@@ -1623,6 +1711,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	/* Delete the old one and insert new iova list */
+ 	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
  	mutex_unlock(&iommu->lock);
++	vfio_iommu_resv_free(&group_resv_regions);
  
  	return 0;
-@@ -1458,6 +1630,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	iommu_detach_group(domain->domain, iommu_group);
+ 
+@@ -1631,6 +1720,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
  out_domain:
  	iommu_domain_free(domain->domain);
-+	vfio_iommu_iova_free(&iova_copy);
+ 	vfio_iommu_iova_free(&iova_copy);
++	vfio_iommu_resv_free(&group_resv_regions);
  out_free:
  	kfree(domain);
  	kfree(group);
-@@ -1596,6 +1769,7 @@ static void *vfio_iommu_type1_open(unsigned long arg)
- 	}
- 
- 	INIT_LIST_HEAD(&iommu->domain_list);
-+	INIT_LIST_HEAD(&iommu->iova_list);
- 	iommu->dma_list = RB_ROOT;
- 	mutex_init(&iommu->lock);
- 	BLOCKING_INIT_NOTIFIER_HEAD(&iommu->notifier);
-@@ -1638,6 +1812,9 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 		list_del(&domain->next);
- 		kfree(domain);
- 	}
-+
-+	vfio_iommu_iova_free(&iommu->iova_list);
-+
- 	kfree(iommu);
- }
- 
 -- 
 2.7.4
