@@ -1,102 +1,66 @@
-From: Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH v3 15/20] net: Remove depends on HAS_DMA in case of
- platform dependency
-Date: Thu, 19 Apr 2018 19:41:15 +0300
-Message-ID: <87wox3i1xw.fsf@kamboji.qca.qualcomm.com>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
- <1523987360-18760-16-git-send-email-geert@linux-m68k.org>
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/iova: Update cached node pointer when current node
+	fails to get any free IOVA
+Date: Thu, 19 Apr 2018 22:42:34 +0530
+Message-ID: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <1523987360-18760-16-git-send-email-geert@linux-m68k.org> (Geert
- Uytterhoeven's message of "Tue, 17 Apr 2018 19:49:15 +0200")
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org, linux-wireless@vger.kernel.org, linux-fpga@vger.kernel.org, linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org, Bjorn Andersson <bjorn.andersson@linaro.org>, Eric Anholt <eric@anholt.net>, netdev@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux1394-devel@lists.sourceforge.net, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Stefan Wahren <stefan.wahren@i2se.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Herbert Xu <herbert@gondor.apana.org.au>, Richard Weinberger <richard@nod.at>, Joerg Roedel <joro@8bytes.org>, Jassi Brar <jassisinghbrar@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, linux-serial@vger.kernel.org, Matias Bjorling <mb@lightnvm.io>, David Woodhouse <dwmw2@infradead.org>l
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-(adding linux-wireless)
+The performance drop is observed with long hours iperf testing using 40G
+cards. This is mainly due to long iterations in finding the free iova
+range in 32bit address space.
 
-Geert Uytterhoeven <geert@linux-m68k.org> writes:
+In current implementation for 64bit PCI devices, there is always first
+attempt to allocate iova from 32bit(SAC preferred over DAC) address
+range. Once we run out 32bit range, there is allocation from higher range,
+however due to cached32_node optimization it does not suppose to be
+painful. cached32_node always points to recently allocated 32-bit node.
+When address range is full, it will be pointing to last allocated node
+(leaf node), so walking rbtree to find the available range is not
+expensive affair. However this optimization does not behave well when
+one of the middle node is freed. In that case cached32_node is updated
+to point to next iova range. The next iova allocation will consume free
+range and again update cached32_node to itself. From now on, walking
+over 32-bit range is more expensive.
 
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
->
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
->
-> This simplifies the dependencies, and allows to improve compile-testing.
->
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Reviewed-by: Mark Brown <broonie@kernel.org>
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> v3:
->   - Rebase to v4.17-rc1,
->   - Drop obsolete note about FSL_FMAN,
->
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Split per subsystem.
-> ---
->  drivers/net/ethernet/amd/Kconfig                | 2 +-
->  drivers/net/ethernet/apm/xgene-v2/Kconfig       | 1 -
->  drivers/net/ethernet/apm/xgene/Kconfig          | 1 -
->  drivers/net/ethernet/arc/Kconfig                | 6 ++++--
->  drivers/net/ethernet/broadcom/Kconfig           | 2 --
->  drivers/net/ethernet/calxeda/Kconfig            | 2 +-
->  drivers/net/ethernet/hisilicon/Kconfig          | 2 +-
->  drivers/net/ethernet/marvell/Kconfig            | 8 +++-----
->  drivers/net/ethernet/mellanox/mlxsw/Kconfig     | 2 +-
->  drivers/net/ethernet/renesas/Kconfig            | 2 --
->  drivers/net/wireless/broadcom/brcm80211/Kconfig | 1 -
->  drivers/net/wireless/quantenna/qtnfmac/Kconfig  | 2 +-
->  12 files changed, 12 insertions(+), 19 deletions(-)
+This patch adds fix to update cached node to leaf node when there are no
+iova free range left, which avoids unnecessary long iterations.
 
-For wireless:
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/iova.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
-
-Leaving the hunks for linux-wireless list to see:
-
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/Kconfig b/drivers/net/wireless/broadcom/brcm80211/Kconfig
-> index 9d99eb42d9176f0f..6acba67bca07abd7 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/Kconfig
-> +++ b/drivers/net/wireless/broadcom/brcm80211/Kconfig
-> @@ -60,7 +60,6 @@ config BRCMFMAC_PCIE
->  	bool "PCIE bus interface support for FullMAC driver"
->  	depends on BRCMFMAC
->  	depends on PCI
-> -	depends on HAS_DMA
->  	select BRCMFMAC_PROTO_MSGBUF
->  	select FW_LOADER
->  	---help---
-> diff --git a/drivers/net/wireless/quantenna/qtnfmac/Kconfig b/drivers/net/wireless/quantenna/qtnfmac/Kconfig
-> index 025fa6018550895a..8d1492a90bd135c0 100644
-> --- a/drivers/net/wireless/quantenna/qtnfmac/Kconfig
-> +++ b/drivers/net/wireless/quantenna/qtnfmac/Kconfig
-> @@ -7,7 +7,7 @@ config QTNFMAC
->  config QTNFMAC_PEARL_PCIE
->  	tristate "Quantenna QSR10g PCIe support"
->  	default n
-> -	depends on HAS_DMA && PCI && CFG80211
-> +	depends on PCI && CFG80211
->  	select QTNFMAC
->  	select FW_LOADER
->  	select CRC32
-
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 83fe262..e6ee2ea 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -201,6 +201,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	} while (curr && new_pfn <= curr_iova->pfn_hi);
+ 
+ 	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
++		/* No more cached node points to free hole, update to leaf node.
++		 */
++		struct iova *prev_iova;
++
++		prev_iova = rb_entry(prev, struct iova, node);
++		__cached_rbnode_insert_update(iovad, prev_iova);
+ 		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 		return -ENOMEM;
+ 	}
 -- 
-Kalle Valo
+2.9.4
