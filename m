@@ -1,12 +1,15 @@
-From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] iommu/iova: Update cached node pointer when current node
-	fails to get any free IOVA
-Date: Thu, 19 Apr 2018 22:42:34 +0530
-Message-ID: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
-Mime-Version: 1.0
+From: Jag Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: fix usage of force parameter in
+	intel_ir_reconfigure_irte()
+Date: Thu, 19 Apr 2018 22:17:42 -0400
+Message-ID: <183BCE4E-1BCF-4410-AFA7-1D46B7978AD3@oracle.com>
+References: <1520375981-4958-1-git-send-email-jag.raman@oracle.com>
+	<23b8f026-2dc2-e00e-98d5-f1a090e3e534@oracle.com>
+Mime-Version: 1.0 (Mac OS X Mail 11.3 \(3445.6.18\))
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <23b8f026-2dc2-e00e-98d5-f1a090e3e534-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,51 +19,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The performance drop is observed with long hours iperf testing using 40G
-cards. This is mainly due to long iterations in finding the free iova
-range in 32bit address space.
 
-In current implementation for 64bit PCI devices, there is always first
-attempt to allocate iova from 32bit(SAC preferred over DAC) address
-range. Once we run out 32bit range, there is allocation from higher range,
-however due to cached32_node optimization it does not suppose to be
-painful. cached32_node always points to recently allocated 32-bit node.
-When address range is full, it will be pointing to last allocated node
-(leaf node), so walking rbtree to find the available range is not
-expensive affair. However this optimization does not behave well when
-one of the middle node is freed. In that case cached32_node is updated
-to point to next iova range. The next iova allocation will consume free
-range and again update cached32_node to itself. From now on, walking
-over 32-bit range is more expensive.
 
-This patch adds fix to update cached node to leaf node when there are no
-iova free range left, which avoids unnecessary long iterations.
+> On Apr 4, 2018, at 2:06 PM, Jag Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
+> 
+> 
+> 
+> On 3/6/2018 5:39 PM, Jagannathan Raman wrote:
+>> It was noticed that the IRTE configured for guest OS kernel
+>> was over-written while the guest was running. As a result,
+>> vt-d Posted Interrupts configured for the guest are not being
+>> delivered directly, and instead bounces off the host. Every
+>> interrupt delivery takes a VM Exit.
+>> It was noticed that the following stack is doing the over-write:
+>> [  147.463177]  modify_irte+0x171/0x1f0
+>> [  147.463405]  intel_ir_set_affinity+0x5c/0x80
+>> [  147.463641]  msi_domain_set_affinity+0x32/0x90
+>> [  147.463881]  irq_do_set_affinity+0x37/0xd0
+>> [  147.464125]  irq_set_affinity_locked+0x9d/0xb0
+>> [  147.464374]  __irq_set_affinity+0x42/0x70
+>> [  147.464627]  write_irq_affinity.isra.5+0xe1/0x110
+>> [  147.464895]  proc_reg_write+0x38/0x70
+>> [  147.465150]  __vfs_write+0x36/0x180
+>> [  147.465408]  ? handle_mm_fault+0xdf/0x200
+>> [  147.465671]  ? _cond_resched+0x15/0x30
+>> [  147.465936]  vfs_write+0xad/0x1a0
+>> [  147.466204]  SyS_write+0x52/0xc0
+>> [  147.466472]  do_syscall_64+0x74/0x1a0
+>> [  147.466744]  entry_SYSCALL_64_after_hwframe+0x3d/0xa2
+>> reversing the sense of force check in intel_ir_reconfigure_irte()
+>> restores proper posted interrupt functionality
+>> Signed-off-by: Jagannathan Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  Hi Thomas,
+>>  I noticed that you added intel_ir_reconfigure_irte() with the
+>>  following commit:
+>>  d491bdff888e ("iommu/vt-d: Reevaluate vector configuration on
+>>  activate()")
+>>  Could you please confirm the usage of "force" parameter in
+>>  intel_ir_reconfigure_irte()?
+>>  drivers/iommu/intel_irq_remapping.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+>> index 66f69af..3062a15 100644
+>> --- a/drivers/iommu/intel_irq_remapping.c
+>> +++ b/drivers/iommu/intel_irq_remapping.c
+>> @@ -1136,7 +1136,7 @@ static void intel_ir_reconfigure_irte(struct irq_data *irqd, bool force)
+>>  	irte->dest_id = IRTE_DEST(cfg->dest_apicid);
+>>    	/* Update the hardware only if the interrupt is in remapped mode. */
+>> -	if (!force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
+>> +	if (force || ir_data->irq_2_iommu.mode == IRQ_REMAPPING)
+>>  		modify_irte(&ir_data->irq_2_iommu, irte);
+>>  }
+>>  
+> 
+> *ping*
 
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/iova.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+*ping*
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 83fe262..e6ee2ea 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -201,6 +201,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	} while (curr && new_pfn <= curr_iova->pfn_hi);
- 
- 	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
-+		/* No more cached node points to free hole, update to leaf node.
-+		 */
-+		struct iova *prev_iova;
-+
-+		prev_iova = rb_entry(prev, struct iova, node);
-+		__cached_rbnode_insert_update(iovad, prev_iova);
- 		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- 		return -ENOMEM;
- 	}
--- 
-2.9.4
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
