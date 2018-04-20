@@ -1,17 +1,15 @@
-From: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 04/22] iommu/vt-d: add bind_pasid_table function
-Date: Fri, 20 Apr 2018 19:25:34 +0100
-Message-ID: <AM4PR0802MB2369F739C91B630CA99B3D3BA3B40@AM4PR0802MB2369.eurprd08.prod.outlook.com>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-5-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180417131047.0a9c310f@w520.home>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 09/12] PCI: remove CONFIG_PCI_BUS_ADDR_T_64BIT
+Date: Fri, 20 Apr 2018 13:42:14 -0500
+Message-ID: <20180420184214.GT28657@bhelgaas-glaptop.roam.corp.google.com>
+References: <20180415145947.1248-1-hch@lst.de>
+	<20180415145947.1248-10-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180417131047.0a9c310f-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180415145947.1248-10-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,30 +19,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 17, 2018 at 08:10:47PM +0100, Alex Williamson wrote:
-[...]
-> > +	/* Assign guest PASID table pointer and size order */
-> > +	ctx_lo = (pasidt_binfo->base_ptr & VTD_PAGE_MASK) |
-> > +		(pasidt_binfo->pasid_bits - MIN_NR_PASID_BITS);
+On Sun, Apr 15, 2018 at 04:59:44PM +0200, Christoph Hellwig wrote:
+> This symbol is now always identical to CONFIG_ARCH_DMA_ADDR_T_64BIT, so
+> remove it.
 > 
-> Where does this IOMMU API interface define that base_ptr is 4K
-> aligned or the format of the PASID table?  Are these all standardized
-> or do they vary by host IOMMU?  If they're standards, maybe we could
-> note that and the spec which defines them when we declare base_ptr.  If
-> they're IOMMU specific then I don't understand how we'll match a user
-> provided PASID table to the requirements and format of the host IOMMU.
-> Thanks,
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
-On SMMUv3 the minimum alignment for base_ptr is 64 bytes, so a guest
-under a vSMMU might pass a pointer that's not aligned on 4k.
+Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 
-Maybe this information could be part of the data passed to userspace
-about IOMMU table formats and features? They're not part of this series,
-but I think we wanted to communicate IOMMU-specific features via sysfs.
+Please merge this along with the rest of the series; let me know if you
+need anything more from me.
 
-Thanks,
-Jean
+> ---
+>  drivers/pci/Kconfig | 4 ----
+>  drivers/pci/bus.c   | 4 ++--
+>  include/linux/pci.h | 2 +-
+>  3 files changed, 3 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
+> index 34b56a8f8480..29a487f31dae 100644
+> --- a/drivers/pci/Kconfig
+> +++ b/drivers/pci/Kconfig
+> @@ -5,10 +5,6 @@
+>  
+>  source "drivers/pci/pcie/Kconfig"
+>  
+> -config PCI_BUS_ADDR_T_64BIT
+> -	def_bool y if (ARCH_DMA_ADDR_T_64BIT || 64BIT)
+> -	depends on PCI
+> -
+>  config PCI_MSI
+>  	bool "Message Signaled Interrupts (MSI and MSI-X)"
+>  	depends on PCI
+> diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
+> index bc2ded4c451f..35b7fc87eac5 100644
+> --- a/drivers/pci/bus.c
+> +++ b/drivers/pci/bus.c
+> @@ -120,7 +120,7 @@ int devm_request_pci_bus_resources(struct device *dev,
+>  EXPORT_SYMBOL_GPL(devm_request_pci_bus_resources);
+>  
+>  static struct pci_bus_region pci_32_bit = {0, 0xffffffffULL};
+> -#ifdef CONFIG_PCI_BUS_ADDR_T_64BIT
+> +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>  static struct pci_bus_region pci_64_bit = {0,
+>  				(pci_bus_addr_t) 0xffffffffffffffffULL};
+>  static struct pci_bus_region pci_high = {(pci_bus_addr_t) 0x100000000ULL,
+> @@ -230,7 +230,7 @@ int pci_bus_alloc_resource(struct pci_bus *bus, struct resource *res,
+>  					  resource_size_t),
+>  		void *alignf_data)
+>  {
+> -#ifdef CONFIG_PCI_BUS_ADDR_T_64BIT
+> +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>  	int rc;
+>  
+>  	if (res->flags & IORESOURCE_MEM_64) {
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 73178a2fcee0..55371cb827ad 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -670,7 +670,7 @@ int raw_pci_read(unsigned int domain, unsigned int bus, unsigned int devfn,
+>  int raw_pci_write(unsigned int domain, unsigned int bus, unsigned int devfn,
+>  		  int reg, int len, u32 val);
+>  
+> -#ifdef CONFIG_PCI_BUS_ADDR_T_64BIT
+> +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>  typedef u64 pci_bus_addr_t;
+>  #else
+>  typedef u32 pci_bus_addr_t;
+> -- 
+> 2.17.0
+> 
