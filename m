@@ -1,15 +1,15 @@
-From: Boris Brezillon <boris.brezillon-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v3 14/20] mtd: Remove depends on HAS_DMA in case of
-	platform dependency
-Date: Sun, 22 Apr 2018 19:12:57 +0200
-Message-ID: <20180422191257.255bdd9f@bbrezillon>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
-	<1523987360-18760-15-git-send-email-geert@linux-m68k.org>
+From: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 10/22] iommu: introduce device fault data
+Date: Mon, 23 Apr 2018 11:11:41 +0100
+Message-ID: <20180423101140.GA38106@ostrya.localdomain>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1523915351-54415-11-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1523987360-18760-15-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1523915351-54415-11-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,112 +19,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, Alan Tull <atull@k>
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 17 Apr 2018 19:49:14 +0200
-Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
+On Mon, Apr 16, 2018 at 10:48:59PM +0100, Jacob Pan wrote:
+> +/**
+> + * struct iommu_fault_event - Generic per device fault data
+> + *
+> + * - PCI and non-PCI devices
+> + * - Recoverable faults (e.g. page request), information based on PCI ATS
+> + * and PASID spec.
+> + * - Un-recoverable faults of device interest
+> + * - DMA remapping and IRQ remapping faults
+> +
+> + * @type contains fault type.
+> + * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
+> + *         faults are not reported
+> + * @addr: tells the offending page address
+> + * @pasid: contains process address space ID, used in shared virtual memory(SVM)
+> + * @rid: requestor ID
 
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
-> 
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
-> 
-> This simplifies the dependencies, and allows to improve compile-testing.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+You can remove @rid from the comment
 
-Applied to mtd/next.
+> + * @page_req_group_id: page request group index
+> + * @last_req: last request in a page request group
+> + * @pasid_valid: indicates if the PRQ has a valid PASID
+> + * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
+> + * @device_private: if present, uniquely identify device-specific
+> + *                  private data for an individual page request.
+> + * @iommu_private: used by the IOMMU driver for storing fault-specific
+> + *                 data. Users should not modify this field before
+> + *                 sending the fault response.
+
+In my opinion you can remove @iommu_private entirely. I proposed this
+field so that the IOMMU driver can store fault metadata when reporting
+them, and read them back when completing the fault. I'm not using it in
+SMMUv3 anymore (instead re-fetching the metadata) and it can't be used
+anyway, because the value isn't copied into page_response_msg.
 
 Thanks,
+Jean
 
-Boris
-
-> ---
-> v3:
->   - Rebase to v4.17-rc1,
-> 
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Drop new dependency of MTD_NAND_MARVELL on HAS_DMA,
->   - Split per subsystem.
-> ---
->  drivers/mtd/nand/raw/Kconfig | 8 ++------
->  drivers/mtd/spi-nor/Kconfig  | 2 +-
->  2 files changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
-> index 19a2b283fbbe627e..6871ff0fd300bb81 100644
-> --- a/drivers/mtd/nand/raw/Kconfig
-> +++ b/drivers/mtd/nand/raw/Kconfig
-> @@ -46,7 +46,7 @@ config MTD_NAND_DENALI
->  config MTD_NAND_DENALI_PCI
->          tristate "Support Denali NAND controller on Intel Moorestown"
->  	select MTD_NAND_DENALI
-> -	depends on HAS_DMA && PCI
-> +	depends on PCI
->          help
->            Enable the driver for NAND flash on Intel Moorestown, using the
->            Denali NAND controller core.
-> @@ -152,7 +152,6 @@ config MTD_NAND_S3C2410_CLKSTOP
->  config MTD_NAND_TANGO
->  	tristate "NAND Flash support for Tango chips"
->  	depends on ARCH_TANGO || COMPILE_TEST
-> -	depends on HAS_DMA
->  	help
->  	  Enables the NAND Flash controller on Tango chips.
->  
-> @@ -285,7 +284,7 @@ config MTD_NAND_MARVELL
->  	tristate "NAND controller support on Marvell boards"
->  	depends on PXA3xx || ARCH_MMP || PLAT_ORION || ARCH_MVEBU || \
->  		   COMPILE_TEST
-> -	depends on HAS_IOMEM && HAS_DMA
-> +	depends on HAS_IOMEM
->  	help
->  	  This enables the NAND flash controller driver for Marvell boards,
->  	  including:
-> @@ -447,7 +446,6 @@ config MTD_NAND_SH_FLCTL
->  	tristate "Support for NAND on Renesas SuperH FLCTL"
->  	depends on SUPERH || COMPILE_TEST
->  	depends on HAS_IOMEM
-> -	depends on HAS_DMA
->  	help
->  	  Several Renesas SuperH CPU has FLCTL. This option enables support
->  	  for NAND Flash using FLCTL.
-> @@ -515,7 +513,6 @@ config MTD_NAND_SUNXI
->  config MTD_NAND_HISI504
->  	tristate "Support for NAND controller on Hisilicon SoC Hip04"
->  	depends on ARCH_HISI || COMPILE_TEST
-> -	depends on HAS_DMA
->  	help
->  	  Enables support for NAND controller on Hisilicon SoC Hip04.
->  
-> @@ -529,7 +526,6 @@ config MTD_NAND_QCOM
->  config MTD_NAND_MTK
->  	tristate "Support for NAND controller on MTK SoCs"
->  	depends on ARCH_MEDIATEK || COMPILE_TEST
-> -	depends on HAS_DMA
->  	help
->  	  Enables support for NAND controller on MTK SoCs.
->  	  This controller is found on mt27xx, mt81xx, mt65xx SoCs.
-> diff --git a/drivers/mtd/spi-nor/Kconfig b/drivers/mtd/spi-nor/Kconfig
-> index 89da88e591215db1..c493b8230a38c059 100644
-> --- a/drivers/mtd/spi-nor/Kconfig
-> +++ b/drivers/mtd/spi-nor/Kconfig
-> @@ -71,7 +71,7 @@ config SPI_FSL_QUADSPI
->  config SPI_HISI_SFC
->  	tristate "Hisilicon SPI-NOR Flash Controller(SFC)"
->  	depends on ARCH_HISI || COMPILE_TEST
-> -	depends on HAS_IOMEM && HAS_DMA
-> +	depends on HAS_IOMEM
->  	help
->  	  This enables support for hisilicon SPI-NOR flash controller.
->  
+> + */
+> +struct iommu_fault_event {
+> +	enum iommu_fault_type type;
+> +	enum iommu_fault_reason reason;
+> +	u64 addr;
+> +	u32 pasid;
+> +	u32 page_req_group_id;
+> +	u32 last_req : 1;
+> +	u32 pasid_valid : 1;
+> +	u32 prot;
+> +	u64 device_private;
+> +	u64 iommu_private;
+> +};
