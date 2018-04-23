@@ -1,15 +1,15 @@
-From: Ganapatrao Kulkarni <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
-	fails to get any free IOVA
-Date: Mon, 23 Apr 2018 23:11:13 +0530
-Message-ID: <CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
-References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
-	<c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 10/12] arm: don't build swiotlb by default
+Date: Mon, 23 Apr 2018 16:09:30 -0400
+Message-ID: <20180423200930.GB5215@char.us.oracle.com>
+References: <20180423170419.20330-1-hch@lst.de>
+	<20180423170419.20330-11-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c6c3655b-cef2-1112-e8a7-79c99f9ddac6-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180423170419.20330-11-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,90 +19,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 23, 2018 at 10:07 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 19/04/18 18:12, Ganapatrao Kulkarni wrote:
->>
->> The performance drop is observed with long hours iperf testing using 40G
->> cards. This is mainly due to long iterations in finding the free iova
->> range in 32bit address space.
->>
->> In current implementation for 64bit PCI devices, there is always first
->> attempt to allocate iova from 32bit(SAC preferred over DAC) address
->> range. Once we run out 32bit range, there is allocation from higher range,
->> however due to cached32_node optimization it does not suppose to be
->> painful. cached32_node always points to recently allocated 32-bit node.
->> When address range is full, it will be pointing to last allocated node
->> (leaf node), so walking rbtree to find the available range is not
->> expensive affair. However this optimization does not behave well when
->> one of the middle node is freed. In that case cached32_node is updated
->> to point to next iova range. The next iova allocation will consume free
->> range and again update cached32_node to itself. From now on, walking
->> over 32-bit range is more expensive.
->>
->> This patch adds fix to update cached node to leaf node when there are no
->> iova free range left, which avoids unnecessary long iterations.
->
->
-> The only trouble with this is that "allocation failed" doesn't uniquely mean
-> "space full". Say that after some time the 32-bit space ends up empty except
-> for one page at 0x1000 and one at 0x80000000, then somebody tries to
-> allocate 2GB. If we move the cached node down to the leftmost entry when
-> that fails, all subsequent allocation attempts are now going to fail despite
-> the space being 99.9999% free!
->
-> I can see a couple of ways to solve that general problem of free space above
-> the cached node getting lost, but neither of them helps with the case where
-> there is genuinely insufficient space (and if anything would make it even
-> slower). In terms of the optimisation you want here, i.e. fail fast when an
-> allocation cannot possibly succeed, the only reliable idea which comes to
-> mind is free-PFN accounting. I might give that a go myself to see how ugly
-> it looks.
+On Mon, Apr 23, 2018 at 07:04:17PM +0200, Christoph Hellwig wrote:
+> swiotlb is only used as a library of helper for xen-swiotlb if Xen support
+> is enabled on arm, so don't build it by default.
+> 
 
-i see 2 problems in current implementation,
-1. We don't replenish the 32 bits range, until first attempt of second
-allocation(64 bit) fails.
-2. Having  per cpu cache might not yield good hit on platforms with
-more number of CPUs.
-
-however irrespective of current issues, It makes sense to update
-cached node as done in this patch , when there is failure to get iova
-range using current cached pointer which is forcing for the
-unnecessary time consuming do-while iterations until any replenish
-happens!
-
-thanks
-Ganapat
-
->
-> Robin.
->
->
->> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->> ---
->>   drivers/iommu/iova.c | 6 ++++++
->>   1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index 83fe262..e6ee2ea 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -201,6 +201,12 @@ static int __alloc_and_insert_iova_range(struct
->> iova_domain *iovad,
->>         } while (curr && new_pfn <= curr_iova->pfn_hi);
->>         if (limit_pfn < size || new_pfn < iovad->start_pfn) {
->> +               /* No more cached node points to free hole, update to leaf
->> node.
->> +                */
->> +               struct iova *prev_iova;
->> +
->> +               prev_iova = rb_entry(prev, struct iova, node);
->> +               __cached_rbnode_insert_update(iovad, prev_iova);
->>                 spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->>                 return -ENOMEM;
->>         }
->>
->
+CCing Stefano
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>  arch/arm/Kconfig | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index aa1c187d756d..90b81a3a28a7 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -1774,7 +1774,7 @@ config SECCOMP
+>  	  defined by each seccomp mode.
+>  
+>  config SWIOTLB
+> -	def_bool y
+> +	bool
+>  
+>  config PARAVIRT
+>  	bool "Enable paravirtualization code"
+> @@ -1807,6 +1807,7 @@ config XEN
+>  	depends on MMU
+>  	select ARCH_DMA_ADDR_T_64BIT
+>  	select ARM_PSCI
+> +	select SWIOTLB
+>  	select SWIOTLB_XEN
+>  	select PARAVIRT
+>  	help
+> -- 
+> 2.17.0
+> 
