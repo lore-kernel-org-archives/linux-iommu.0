@@ -1,13 +1,15 @@
-From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 2/2] iommu/arm-smmu-v3: Support software retention for pm_resume
-Date: Mon, 23 Apr 2018 19:45:59 +0800
-Message-ID: <1524483959-54940-3-git-send-email-xieyisheng1@huawei.com>
-References: <1524483959-54940-1-git-send-email-xieyisheng1@huawei.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 13/22] iommu: introduce page response function
+Date: Mon, 23 Apr 2018 05:16:49 -0700
+Message-ID: <20180423051649.63f0febd@jacob-builder>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1523915351-54415-14-git-send-email-jacob.jun.pan@linux.intel.com>
+	<AM4PR0802MB23698019B80CCE6B083D1448A3890@AM4PR0802MB2369.eurprd08.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1524483959-54940-1-git-send-email-xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <AM4PR0802MB23698019B80CCE6B083D1448A3890-Gx+wUQKpQCVHkdfAM7dXeUdOKmgb957onBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,186 +19,199 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When system suspend, hisilicon's smmu will do power gating for smmu,
-this time smmu's reg will be set to default value for not having
-hardware retention, which means need software do the retention instead.
+On Mon, 23 Apr 2018 12:47:10 +0100
+Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-The patch is to use arm_smmu_device_reset() to restore the register of
-smmu. However, it need to save the msis setting at probe if smmu do not
-support hardware retention.
+> On Mon, Apr 16, 2018 at 10:49:02PM +0100, Jacob Pan wrote:
+> [...]
+> > +	/*
+> > +	 * Check if we have a matching page request pending to
+> > respond,
+> > +	 * otherwise return -EINVAL
+> > +	 */
+> > +	list_for_each_entry_safe(evt, iter,
+> > &param->fault_param->faults, list) {  
+> 
+> I don't think you need the "_safe" iterator if you're exiting the loop
+> right after removing the event.
+> 
+you are right, good catch!
+> > +		if (evt->pasid == msg->pasid &&
+> > +		    msg->page_req_group_id ==
+> > evt->page_req_group_id) {
+> > +			msg->private_data = evt->iommu_private;  
+> 
+> Ah sorry, I missed this bit in my review of 10/22. I thought
+> private_data would be for evt->device_private. In this case I guess we
+> can drop device_private, or do you plan to use it?
+> 
+NP. vt-d still plan to use device_private for gfx device.
+> > +			ret = domain->ops->page_response(dev, msg);
+> > +			list_del(&evt->list);
+> > +			kfree(evt);
+> > +			break;
+> > +		}
+> > +	}
+> > +
+> > +done_unlock:
+> > +	mutex_unlock(&param->fault_param->lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_page_response);
+> > +
+> >  static void __iommu_detach_device(struct iommu_domain *domain,
+> >  				  struct device *dev)
+> >  {
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 32435f9..058b552 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -163,6 +163,55 @@ struct iommu_resv_region {
+> >  #ifdef CONFIG_IOMMU_API
+> >  
+> >  /**
+> > + * enum page_response_code - Return status of fault handlers,
+> > telling the IOMMU
+> > + * driver how to proceed with the fault.
+> > + *
+> > + * @IOMMU_FAULT_STATUS_SUCCESS: Fault has been handled and the
+> > page tables
+> > + *	populated, retry the access. This is "Success" in PCI
+> > PRI.
+> > + * @IOMMU_FAULT_STATUS_FAILURE: General error. Drop all subsequent
+> > faults from
+> > + *	this device if possible. This is "Response Failure" in
+> > PCI PRI.
+> > + * @IOMMU_FAULT_STATUS_INVALID: Could not handle this fault, don't
+> > retry the
+> > + *	access. This is "Invalid Request" in PCI PRI.
+> > + */
+> > +enum page_response_code {
+> > +	IOMMU_PAGE_RESP_SUCCESS = 0,
+> > +	IOMMU_PAGE_RESP_INVALID,
+> > +	IOMMU_PAGE_RESP_FAILURE,
+> > +};  
+> 
+> Field names aren't consistent with the comment. I'd go with
+> IOMMU_PAGE_RESP_* 
+> 
+will do.
+> > +
+> > +/**
+> > + * enum page_request_handle_t - Return page request/response
+> > handler status
+> > + *
+> > + * @IOMMU_FAULT_STATUS_HANDLED: Stop processing the fault, and do
+> > not send a
+> > + *	reply to the device.
+> > + * @IOMMU_FAULT_STATUS_CONTINUE: Fault was not handled. Call the
+> > next handler,
+> > + *	or terminate.
+> > + */
+> > +enum page_request_handle_t {
+> > +	IOMMU_PAGE_RESP_HANDLED = 0,
+> > +	IOMMU_PAGE_RESP_CONTINUE,  
+> 
+> Same here regarding the comment. Here I'd prefer
+> "iommu_fault_status_t" for the enum and IOMMU_FAULT_STATUS_* for the
+> fields, because they can be used for unrecoverable faults as well.
+> 
+> But since you're not using these values in your patches, I guess you
+> can drop this enum? At the moment the return value of fault handler
+> is 0 (as specified at iommu_register_device_fault_handler), meaning
+> that the handler always takes ownership of the fault.
+> 
+> It will be easy to extend once we introduce multiple fault handlers
+> that can either take the fault or pass it to the next one. Existing
+> implementations will still return 0 - HANDLED, and new ones will
+> return either HANDLED or CONTINUE.
+> 
+I shall drop these, only put in here to match your patch. i am looking
+into converting vt-d svm prq to your queued fault patch. I think it will
+give both functional and performance benefit.
+> > +/**
+> > + * Generic page response information based on PCI ATS and PASID
+> > spec.
+> > + * @addr: servicing page address
+> > + * @pasid: contains process address space ID
+> > + * @resp_code: response code
+> > + * @page_req_group_id: page request group index
+> > + * @type: group or stream/single page response  
+> 
+> @type isn't in the structure
+> 
+missed that, i move it to iommu private data since it is vtd only
+> > + * @private_data: uniquely identify device-specific private data
+> > for an
+> > + *                individual page response  
+> 
+> IOMMU-specific? If it is set by iommu.c, I think we should comment
+> about it, something like "This field is written by the IOMMU core".
+> Maybe also rename it to iommu_private to be consistent with
+> iommu_fault_event
+> 
+sounds good.
+> > + */
+> > +struct page_response_msg {
+> > +	u64 addr;
+> > +	u32 pasid;
+> > +	enum page_response_code resp_code;
+> > +	u32 pasid_present:1;
+> > +	u32 page_req_group_id;
+> > +	u64 private_data;
+> > +};
+> > +
+> > +/**
+> >   * struct iommu_ops - iommu ops and capabilities
+> >   * @capable: check capability
+> >   * @domain_alloc: allocate iommu domain
+> > @@ -195,6 +244,7 @@ struct iommu_resv_region {
+> >   * @bind_pasid_table: bind pasid table pointer for guest SVM
+> >   * @unbind_pasid_table: unbind pasid table pointer and restore
+> > defaults
+> >   * @sva_invalidate: invalidate translation caches of shared
+> > virtual address
+> > + * @page_response: handle page request response
+> >   */
+> >  struct iommu_ops {
+> >  	bool (*capable)(enum iommu_cap);
+> > @@ -250,6 +300,7 @@ struct iommu_ops {
+> >  				struct device *dev);
+> >  	int (*sva_invalidate)(struct iommu_domain *domain,
+> >  		struct device *dev, struct tlb_invalidate_info
+> > *inv_info);
+> > +	int (*page_response)(struct device *dev, struct
+> > page_response_msg *msg); 
+> >  	unsigned long pgsize_bitmap;
+> >  };
+> > @@ -471,6 +522,7 @@ extern int
+> > iommu_unregister_device_fault_handler(struct device *dev); 
+> >  extern int iommu_report_device_fault(struct device *dev, struct
+> > iommu_fault_event *evt); 
+> > +extern int iommu_page_response(struct device *dev, struct
+> > page_response_msg *msg);  
+> 
+> Please also define a -ENODEV function for !CONFIG_IOMMU_API, otherwise
+> it doesn't build.
+> 
+> And I think struct page_response_msg and the enums should be declared
+> outside #ifdef CONFIG_IOMMU_API. Same for struct iommu_fault_event and
+> the enums in patch 10/22. Otherwise device drivers will have to add
+> #ifdefs everywhere their code accesses these structures.
+> 
+> Thanks,
+> Jean
+> 
+good point.
+> >  extern int iommu_group_id(struct iommu_group *group);
+> >  extern struct iommu_group *iommu_group_get_for_dev(struct device
+> > *dev); extern struct iommu_domain
+> > *iommu_group_default_domain(struct iommu_group *); -- 
+> > 2.7.4
+> >   
 
-Signed-off-by: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 69 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 66 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 044df6e..6cb56d8 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -534,6 +534,11 @@ struct arm_smmu_strtab_cfg {
- 	u32				strtab_base_cfg;
- };
- 
-+struct arm_smmu_msi_val {
-+	u64				doorbell;
-+	u32				data;
-+};
-+
- /* An SMMUv3 instance */
- struct arm_smmu_device {
- 	struct device			*dev;
-@@ -558,6 +563,7 @@ struct arm_smmu_device {
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
- #define ARM_SMMU_OPT_PAGE0_REGS_ONLY	(1 << 1)
-+#define ARM_SMMU_OPT_SW_RETENTION	(1 << 2)
- 	u32				options;
- 
- 	struct arm_smmu_cmdq		cmdq;
-@@ -587,6 +593,8 @@ struct arm_smmu_device {
- 
- 	u32				sync_count;
- 
-+	struct arm_smmu_msi_val		*msi;
-+	bool				probed;
- 	bool				bypass;
- 
- 	/* IOMMU core code handle */
-@@ -630,6 +638,7 @@ struct arm_smmu_option_prop {
- static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
- 	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-+	{ ARM_SMMU_OPT_SW_RETENTION, "hisilicon,broken-hardware-retention" },
- 	{ 0, NULL},
- };
- 
-@@ -2228,7 +2237,8 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
- 	phys_addr_t doorbell;
- 	struct device *dev = msi_desc_to_dev(desc);
- 	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
--	phys_addr_t *cfg = arm_smmu_msi_cfg[desc->platform.msi_index];
-+	int msi_index = desc->platform.msi_index;
-+	phys_addr_t *cfg = arm_smmu_msi_cfg[msi_index];
- 
- 	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
- 	doorbell &= MSI_CFG0_ADDR_MASK;
-@@ -2236,6 +2246,28 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
- 	writeq_relaxed(doorbell, smmu->base + cfg[0]);
- 	writel_relaxed(msg->data, smmu->base + cfg[1]);
- 	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
-+
-+	if (smmu->options & ARM_SMMU_OPT_SW_RETENTION) {
-+		smmu->msi[msi_index].doorbell = doorbell;
-+		smmu->msi[msi_index].data = msg->data;
-+	}
-+}
-+
-+static void arm_smmu_restore_msis(struct arm_smmu_device *smmu)
-+{
-+	int nevc = ARM_SMMU_MAX_MSIS - 1;
-+
-+	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
-+		nevc--;
-+
-+	for (; nevc >= 0; nevc--) {
-+		phys_addr_t *cfg = arm_smmu_msi_cfg[nevc];
-+		struct arm_smmu_msi_val msi_val = smmu->msi[nevc];
-+
-+		writeq_relaxed(msi_val.doorbell, smmu->base + cfg[0]);
-+		writel_relaxed(msi_val.data, smmu->base + cfg[1]);
-+		writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
-+	}
- }
- 
- static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
-@@ -2261,6 +2293,16 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
- 		return;
- 	}
- 
-+	if (smmu->probed) {
-+		BUG_ON(!(smmu->options & ARM_SMMU_OPT_SW_RETENTION));
-+		arm_smmu_restore_msis(smmu);
-+		return;
-+	} else if (smmu->options & ARM_SMMU_OPT_SW_RETENTION) {
-+		smmu->msi = devm_kmalloc_array(dev, nvec,
-+					       sizeof(*(smmu->msi)),
-+					       GFP_KERNEL);
-+	}
-+
- 	/* Allocate MSIs for evtq, gerror and priq. Ignore cmdq */
- 	ret = platform_msi_domain_alloc_irqs(dev, nvec, arm_smmu_write_msi_msg);
- 	if (ret) {
-@@ -2294,6 +2336,9 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
- 
- 	arm_smmu_setup_msis(smmu);
- 
-+	if (smmu->probed)
-+		return;
-+
- 	/* Request interrupt lines */
- 	irq = smmu->evtq.q.irq;
- 	if (irq) {
-@@ -2348,7 +2393,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 	}
- 
- 	irq = smmu->combined_irq;
--	if (irq) {
-+	if (irq && !smmu->probed) {
- 		/*
- 		 * Cavium ThunderX2 implementation doesn't not support unique
- 		 * irq lines. Use single irq line for all the SMMUv3 interrupts.
-@@ -2360,7 +2405,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
- 					"arm-smmu-v3-combined-irq", smmu);
- 		if (ret < 0)
- 			dev_warn(smmu->dev, "failed to enable combined irq\n");
--	} else
-+	} else if (!irq)
- 		arm_smmu_setup_unique_irqs(smmu);
- 
- 	if (smmu->features & ARM_SMMU_FEAT_PRI)
-@@ -2882,6 +2927,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		if (ret)
- 			return ret;
- 	}
-+
-+	smmu->probed = true;
-+
- 	return 0;
- }
- 
-@@ -2899,6 +2947,20 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
- 	arm_smmu_device_remove(pdev);
- }
- 
-+static int arm_smmu_pm_resume(struct device *dev)
-+{
-+	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-+
-+	if (smmu->options & ARM_SMMU_OPT_SW_RETENTION)
-+		return arm_smmu_device_reset(smmu);
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops arm_smmu_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(NULL, arm_smmu_pm_resume)
-+};
-+
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v3", },
- 	{ },
-@@ -2909,6 +2971,7 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
- 	.driver	= {
- 		.name		= "arm-smmu-v3",
- 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
-+		.pm		= &arm_smmu_pm_ops,
- 	},
- 	.probe	= arm_smmu_device_probe,
- 	.remove	= arm_smmu_device_remove,
--- 
-1.7.12.4
+[Jacob Pan]
