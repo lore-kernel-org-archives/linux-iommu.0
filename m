@@ -1,16 +1,15 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 11/12] swiotlb: move the SWIOTLB config symbol to
-	lib/Kconfig
-Date: Mon, 23 Apr 2018 16:11:27 -0400
-Message-ID: <20180423201127.GC5215@char.us.oracle.com>
-References: <20180423170419.20330-1-hch@lst.de>
-	<20180423170419.20330-12-hch@lst.de>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 05/22] iommu: introduce iommu invalidate API function
+Date: Mon, 23 Apr 2018 13:43:25 -0700
+Message-ID: <20180423134325.6780f6ac@jacob-builder>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1523915351-54415-6-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20180420181951.GA50099@ostrya.localdomain>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180423170419.20330-12-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180420181951.GA50099-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,313 +19,332 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org, "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 23, 2018 at 07:04:18PM +0200, Christoph Hellwig wrote:
-> This way we have one central definition of it, and user can select it as
-> needed.  Note that we also add a second ARCH_HAS_SWIOTLB symbol to
-> indicate the architecture supports swiotlb at all, so that we can still
-> make the usage optional for a few architectures that want this feature
-> to be user selectable.
+On Fri, 20 Apr 2018 19:19:54 +0100
+Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-If I follow this select business this will enable it on ARM and x86 by default.
+> Hi Jacob,
+> 
+> On Mon, Apr 16, 2018 at 10:48:54PM +0100, Jacob Pan wrote:
+> [...]
+> > +/**
+> > + * enum iommu_inv_granularity - Generic invalidation granularity
+> > + *
+> > + * When an invalidation request is sent to IOMMU to flush
+> > translation caches,
+> > + * it may carry different granularity. These granularity levels
+> > are not specific
+> > + * to a type of translation cache. For an example, PASID selective
+> > granularity
+> > + * is only applicable to PASID cache invalidation.  
+> 
+> I'm still confused by this, I think we should add more definitions
+> because architectures tend to use different names. What you call
+> "Translations caches" encompasses all caches that can be invalidated
+> with this request, right? So all of:
+> 
+yes correct.
+> * "TLB" and "DTLB" that cache IOVA->GPA and GPA->PA (TLB is in the
+>   IOMMU, DTLB is an ATC in an endpoint),
+> * "PASID cache" that cache PASID->Translation Table,
+> * "Context cache" that cache RID->PASID table
+> 
+> Does this match the model you're using?
+> 
+yes. PASID cache and context caches are in the IOMMU.
+> The last name is a bit unfortunate. Since the Arm architecture uses
+> the name "context" for what a PASID points to, "Device cache" would
+> suit us better but it's not important.
+> 
+or call it device context cache. actually so far context cache is here
+only for completeness purpose. the expected use case is that QEMU traps
+guest device context cache flush and call bind_pasid_table.
 
-As such:
-Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> I don't understand what you mean by "PASID selective granularity is
+> only applicable to PASID cache invalidation", it seems to contradict
+> the preceding sentence.
+You are right. That was a mistake. I meant to say "These granularity
+levels are specific to a type of"
 
-Thank you!
+> What if user sends an invalidation with
+> IOMMU_INV_TYPE_TLB and IOMMU_INV_GRANU_ALL_PASID? Doesn't this remove
+> from the TLBs all entries with the given PASID?
 > 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  arch/arm/Kconfig                |  4 +---
->  arch/arm64/Kconfig              |  5 ++---
->  arch/ia64/Kconfig               |  9 +--------
->  arch/mips/Kconfig               |  3 +++
->  arch/mips/cavium-octeon/Kconfig |  5 -----
->  arch/mips/loongson64/Kconfig    |  8 --------
->  arch/powerpc/Kconfig            |  9 ---------
->  arch/unicore32/mm/Kconfig       |  5 -----
->  arch/x86/Kconfig                | 14 +++-----------
->  lib/Kconfig                     | 15 +++++++++++++++
->  10 files changed, 25 insertions(+), 52 deletions(-)
+No, this meant to invalidate all PASID of a given domain ID. I need to
+correct the description.
+The dilemma here is to map model specific fields into generic list. not
+all combinations are legal.
+> > + * This enum is a collection of granularities for all types of
+> > translation
+> > + * caches. The idea is to make it easy for IOMMU model specific
+> > driver do
+> > + * conversion from generic to model specific value.
+> > + */
+> > +enum iommu_inv_granularity {  
 > 
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index 90b81a3a28a7..f91f69174630 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -106,6 +106,7 @@ config ARM
->  	select REFCOUNT_FULL
->  	select RTC_LIB
->  	select SYS_SUPPORTS_APM_EMULATION
-> +	select ARCH_HAS_SWIOTLB
->  	# Above selects are sorted alphabetically; please add new ones
->  	# according to that.  Thanks.
->  	help
-> @@ -1773,9 +1774,6 @@ config SECCOMP
->  	  and the task is only allowed to execute a few safe syscalls
->  	  defined by each seccomp mode.
->  
-> -config SWIOTLB
-> -	bool
-> -
->  config PARAVIRT
->  	bool "Enable paravirtualization code"
->  	help
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 4d924eb32e7f..056bc7365adf 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -21,6 +21,7 @@ config ARM64
->  	select ARCH_HAS_SG_CHAIN
->  	select ARCH_HAS_STRICT_KERNEL_RWX
->  	select ARCH_HAS_STRICT_MODULE_RWX
-> +	select ARCH_HAS_SWIOTLB
->  	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
->  	select ARCH_HAVE_NMI_SAFE_CMPXCHG
->  	select ARCH_INLINE_READ_LOCK if !PREEMPT
-> @@ -144,6 +145,7 @@ config ARM64
->  	select POWER_SUPPLY
->  	select REFCOUNT_FULL
->  	select SPARSE_IRQ
-> +	select SWIOTLB
->  	select SYSCTL_EXCEPTION_TRACE
->  	select THREAD_INFO_IN_TASK
->  	help
-> @@ -239,9 +241,6 @@ config HAVE_GENERIC_GUP
->  config SMP
->  	def_bool y
->  
-> -config SWIOTLB
-> -	def_bool y
-> -
->  config KERNEL_MODE_NEON
->  	def_bool y
->  
-> diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-> index 685d557eea48..d396230913e6 100644
-> --- a/arch/ia64/Kconfig
-> +++ b/arch/ia64/Kconfig
-> @@ -56,6 +56,7 @@ config IA64
->  	select HAVE_ARCH_AUDITSYSCALL
->  	select NEED_DMA_MAP_STATE
->  	select NEED_SG_DMA_LENGTH
-> +	select ARCH_HAS_SWIOTLB
->  	default y
->  	help
->  	  The Itanium Processor Family is Intel's 64-bit successor to
-> @@ -80,9 +81,6 @@ config MMU
->  	bool
->  	default y
->  
-> -config SWIOTLB
-> -       bool
-> -
->  config STACKTRACE_SUPPORT
->  	def_bool y
->  
-> @@ -139,7 +137,6 @@ config IA64_GENERIC
->  	bool "generic"
->  	select NUMA
->  	select ACPI_NUMA
-> -	select DMA_DIRECT_OPS
->  	select SWIOTLB
->  	select PCI_MSI
->  	help
-> @@ -160,7 +157,6 @@ config IA64_GENERIC
->  
->  config IA64_DIG
->  	bool "DIG-compliant"
-> -	select DMA_DIRECT_OPS
->  	select SWIOTLB
->  
->  config IA64_DIG_VTD
-> @@ -176,7 +172,6 @@ config IA64_HP_ZX1
->  
->  config IA64_HP_ZX1_SWIOTLB
->  	bool "HP-zx1/sx1000 with software I/O TLB"
-> -	select DMA_DIRECT_OPS
->  	select SWIOTLB
->  	help
->  	  Build a kernel that runs on HP zx1 and sx1000 systems even when they
-> @@ -200,7 +195,6 @@ config IA64_SGI_UV
->  	bool "SGI-UV"
->  	select NUMA
->  	select ACPI_NUMA
-> -	select DMA_DIRECT_OPS
->  	select SWIOTLB
->  	help
->  	  Selecting this option will optimize the kernel for use on UV based
-> @@ -211,7 +205,6 @@ config IA64_SGI_UV
->  
->  config IA64_HP_SIM
->  	bool "Ski-simulator"
-> -	select DMA_DIRECT_OPS
->  	select SWIOTLB
->  	depends on !PM
->  
-> diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-> index e10cc5c7be69..b6b4c1e154f8 100644
-> --- a/arch/mips/Kconfig
-> +++ b/arch/mips/Kconfig
-> @@ -912,6 +912,8 @@ config CAVIUM_OCTEON_SOC
->  	select MIPS_NR_CPU_NR_MAP_1024
->  	select BUILTIN_DTB
->  	select MTD_COMPLEX_MAPPINGS
-> +	select ARCH_HAS_SWIOTLB
-> +	select SWIOTLB
->  	select SYS_SUPPORTS_RELOCATABLE
->  	help
->  	  This option supports all of the Octeon reference boards from Cavium
-> @@ -1367,6 +1369,7 @@ config CPU_LOONGSON3
->  	select MIPS_PGD_C0_CONTEXT
->  	select MIPS_L1_CACHE_SHIFT_6
->  	select GPIOLIB
-> +	select ARCH_HAS_SWIOTLB
->  	help
->  		The Loongson 3 processor implements the MIPS64R2 instruction
->  		set with many extensions.
-> diff --git a/arch/mips/cavium-octeon/Kconfig b/arch/mips/cavium-octeon/Kconfig
-> index 5d73041547a7..4984e462be30 100644
-> --- a/arch/mips/cavium-octeon/Kconfig
-> +++ b/arch/mips/cavium-octeon/Kconfig
-> @@ -67,11 +67,6 @@ config CAVIUM_OCTEON_LOCK_L2_MEMCPY
->  	help
->  	  Lock the kernel's implementation of memcpy() into L2.
->  
-> -config SWIOTLB
-> -	def_bool y
-> -	select DMA_DIRECT_OPS
-> -	select NEED_SG_DMA_LENGTH
-> -
->  config OCTEON_ILM
->  	tristate "Module to measure interrupt latency using Octeon CIU Timer"
->  	help
-> diff --git a/arch/mips/loongson64/Kconfig b/arch/mips/loongson64/Kconfig
-> index 641a1477031e..c79e6a565572 100644
-> --- a/arch/mips/loongson64/Kconfig
-> +++ b/arch/mips/loongson64/Kconfig
-> @@ -130,14 +130,6 @@ config LOONGSON_UART_BASE
->  	default y
->  	depends on EARLY_PRINTK || SERIAL_8250
->  
-> -config SWIOTLB
-> -	bool "Soft IOMMU Support for All-Memory DMA"
-> -	default y
-> -	depends on CPU_LOONGSON3
-> -	select DMA_DIRECT_OPS
-> -	select NEED_SG_DMA_LENGTH
-> -	select NEED_DMA_MAP_STATE
-> -
->  config PHYS48_TO_HT40
->  	bool
->  	default y if CPU_LOONGSON3
-> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-> index a4b2ac7c3d2e..1887f8f86a77 100644
-> --- a/arch/powerpc/Kconfig
-> +++ b/arch/powerpc/Kconfig
-> @@ -474,15 +474,6 @@ config MPROFILE_KERNEL
->  	depends on PPC64 && CPU_LITTLE_ENDIAN
->  	def_bool !DISABLE_MPROFILE_KERNEL
->  
-> -config SWIOTLB
-> -	bool "SWIOTLB support"
-> -	default n
-> -	---help---
-> -	  Support for IO bounce buffering for systems without an IOMMU.
-> -	  This allows us to DMA to the full physical address space on
-> -	  platforms where the size of a physical address is larger
-> -	  than the bus address.  Not all platforms support this.
-> -
->  config HOTPLUG_CPU
->  	bool "Support for enabling/disabling CPUs"
->  	depends on SMP && (PPC_PSERIES || \
-> diff --git a/arch/unicore32/mm/Kconfig b/arch/unicore32/mm/Kconfig
-> index 1d9fed0ada71..82759b6aba67 100644
-> --- a/arch/unicore32/mm/Kconfig
-> +++ b/arch/unicore32/mm/Kconfig
-> @@ -39,8 +39,3 @@ config CPU_TLB_SINGLE_ENTRY_DISABLE
->  	default y
->  	help
->  	  Say Y here to disable the TLB single entry operations.
-> -
-> -config SWIOTLB
-> -	def_bool y
-> -	select DMA_DIRECT_OPS
-> -	select NEED_SG_DMA_LENGTH
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 07b031f99eb1..7a5fec800992 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -24,6 +24,7 @@ config X86_64
->  	depends on 64BIT
->  	# Options that are inherently 64-bit kernel only:
->  	select ARCH_HAS_GIGANTIC_PAGE if (MEMORY_ISOLATION && COMPACTION) || CMA
-> +	select ARCH_HAS_SWIOTLB
->  	select ARCH_SUPPORTS_INT128
->  	select ARCH_USE_CMPXCHG_LOCKREF
->  	select HAVE_ARCH_SOFT_DIRTY
-> @@ -677,6 +678,7 @@ config STA2X11
->  	bool "STA2X11 Companion Chip Support"
->  	depends on X86_32_NON_STANDARD && PCI
->  	select ARCH_HAS_PHYS_TO_DMA
-> +	select ARCH_HAS_SWIOTLB
->  	select X86_DEV_DMA_OPS
->  	select X86_DMA_REMAP
->  	select SWIOTLB
-> @@ -916,17 +918,6 @@ config CALGARY_IOMMU_ENABLED_BY_DEFAULT
->  	  Calgary anyway, pass 'iommu=calgary' on the kernel command line.
->  	  If unsure, say Y.
->  
-> -# need this always selected by IOMMU for the VIA workaround
-> -config SWIOTLB
-> -	def_bool y if X86_64
-> -	select NEED_DMA_MAP_STATE
-> -	---help---
-> -	  Support for software bounce buffers used on x86-64 systems
-> -	  which don't have a hardware IOMMU. Using this PCI devices
-> -	  which can only access 32-bits of memory can be used on systems
-> -	  with more than 3 GB of memory.
-> -	  If unsure, say Y.
-> -
->  config MAXSMP
->  	bool "Enable Maximum number of SMP Processors and NUMA Nodes"
->  	depends on X86_64 && SMP && DEBUG_KERNEL
-> @@ -1448,6 +1439,7 @@ config HIGHMEM
->  config X86_PAE
->  	bool "PAE (Physical Address Extension) Support"
->  	depends on X86_32 && !HIGHMEM4G
-> +	select ARCH_HAS_SWIOTLB
->  	select PHYS_ADDR_T_64BIT
->  	select SWIOTLB
->  	---help---
-> diff --git a/lib/Kconfig b/lib/Kconfig
-> index 1f12faf03819..01a37920949c 100644
-> --- a/lib/Kconfig
-> +++ b/lib/Kconfig
-> @@ -451,6 +451,21 @@ config DMA_VIRT_OPS
->  	depends on HAS_DMA && (!64BIT || ARCH_DMA_ADDR_T_64BIT)
->  	default n
->  
-> +config ARCH_HAS_SWIOTLB
-> +	bool
-> +
-> +config SWIOTLB
-> +	bool "SWIOTLB support"
-> +	default ARCH_HAS_SWIOTLB
-> +	select DMA_DIRECT_OPS
-> +	select NEED_DMA_MAP_STATE
-> +	select NEED_SG_DMA_LENGTH
-> +	---help---
-> +	  Support for IO bounce buffering for systems without an IOMMU.
-> +	  This allows us to DMA to the full physical address space on
-> +	  platforms where the size of a physical address is larger
-> +	  than the bus address.  If unsure, say Y.
-> +
->  config CHECK_SIGNATURE
->  	bool
->  
-> -- 
-> 2.17.0
+> In patch 9, inv_type_granu_map has some valid fields with granularity
+> == 0. Does it mean "invalidate all caches"?
 > 
+> I don't think user should ever be allowed to invalidate caches entries
+> of devices and domains it doesn't own.
+> 
+Agreed, I removed global granu to avoid device invalidation beyond
+device itself. But I missed some of the fields in
+inv_type_granu_map{}. 
+> > +	IOMMU_INV_GRANU_DOMAIN = 1,	/* all TLBs associated
+> > with a domain */
+> > +	IOMMU_INV_GRANU_DEVICE,		/* caching
+> > structure associated with a
+> > +					 * device ID
+> > +					 */
+> > +	IOMMU_INV_GRANU_DOMAIN_PAGE,	/* address range with
+> > a domain */  
+> 
+> > +	IOMMU_INV_GRANU_ALL_PASID,	/* cache of a given
+> > PASID */  
+> 
+> If this corresponds to QI_GRAN_ALL_ALL in patch 9, the comment should
+> be "Cache of all PASIDs"? Or maybe "all entries for all PASIDs"? Is it
+> different from GRANU_DOMAIN then?
+QI_GRAN_ALL_ALL maps to VT-d spec 6.5.2.4, which invalidates all ext
+TLB cache within a domain. It could reuse GRANU_DOMAIN but I was
+also trying to match the naming convention in the spec.
+
+> > +	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate
+> > specified PASID */ +
+> > +	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within
+> > all PASIDs */
+> > +	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a
+> > PASIDs */  
+> 
+> Are the "NG" variant needed since there is a
+> IOMMU_INVALIDATE_GLOBAL_PAGE below? We should drop either flag or
+> granule.
+> 
+> FWIW I'm starting to think more granule options is actually better
+> than flags, because it flattens the combinations and keeps them to two
+> dimensions, that we can understand and explain with a table.
+> 
+> > +	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective
+> > within a PASID */  
+> 
+> Maybe this should be called "NG_PAGE_PASID",
+Sure. I was thinking page range already implies non-global pages.
+> and "DOMAIN_PAGE" should
+> instead be "PAGE_PASID". If I understood their meaning correctly, it
+> would be more consistent with the rest.
+> 
+I am trying not to mix granu between request w/ PASID and w/o.
+DOMAIN_PAGE meant to be for request w/o PASID.
+
+> > +	IOMMU_INV_NR_GRANU,
+> > +};
+> > +
+> > +/** enum iommu_inv_type - Generic translation cache types for
+> > invalidation
+> > + *
+> > + * Invalidation requests sent to IOMMU may indicate which
+> > translation cache
+> > + * to be operated on.
+> > + * Combined with enum iommu_inv_granularity, model specific driver
+> > can do a
+> > + * simple lookup to convert generic type to model specific value.
+> > + */
+> > +enum iommu_inv_type {  
+> 
+> These should be flags (1 << 0), (1 << 1) etc, since IOMMUs will want
+> to invalidate multiple caches at once (at least DTLB and TLB). You
+> could then do for_each_set_bit in the driver
+> 
+I was thinking the invalidation to be inclusive as we discussed earlier
+,last year :).
+TLB includes DLTB
+PASID cache includes TLB and DTLB. I need to document it better.
+> > +	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
+> > +	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure cache
+> > */
+> > +	IOMMU_INV_TYPE_PASID,	/* PASID cache */
+> > +	IOMMU_INV_TYPE_CONTEXT,	/* device context entry
+> > cache */
+> > +	IOMMU_INV_NR_TYPE
+> > +};  
+> 
+> We need to summarize and explain valid combinations, because reading
+> inv_type_granu_map and inv_type_granu_table is a bit tedious. I tried
+> to reproduce inv_type_granu_map here (Cell format is PASID_TAGGED /
+> !PASID_TAGGED). Could you check if this matches your model?
+great summary. thanks
+> 
+>             type |   DTLB    |    TLB    |   PASID   |  CONTEXT
+>  granule         |           |           |           |
+> -----------------+-----------+-----------+-----------+-----------
+>    -             |     / Y   |     / Y   |           |     / Y
+what is this row?
+>  DOMAIN          |           |     / Y   |           |     / Y
+>  DEVICE          |           |           |           |     / Y
+>  DOMAIN_PAGE     |           |     / Y   |           |
+>  ALL_PASID       |   Y       |   Y       |           |
+>  PASID_SEL       |   Y       |           |   Y       |
+>  NG_ALL_PASID    |           |   Y       |   Y       |
+>  NG_PASID        |           |   Y       |           |
+>  PAGE_PASID      |           |   Y       |           |
+> 
+Mostly match what I intended for VT-d. Just one thing on the PASID
+column, all PASID associated with a given domain ID can go either
+NG_ALL_PASID (as in your table) or ALL_PASID.
+
+Here is what I plan to change in comments that can reflect what you
+have in the table above.
+Can I also copy your table in the next version?
+
+enum iommu_inv_granularity {
+	IOMMU_INV_GRANU_DOMAIN = 1,	/* IOTLBs and device context
+					 * cache associated with a
+					 * domain ID
+					 */
+
+	IOMMU_INV_GRANU_DEVICE,		/* device context cache
+					 * associated with a device ID
+					 */
+
+	IOMMU_INV_GRANU_DOMAIN_PAGE,	/* IOTLBs associated with
+					 * address range of a
+					 * given domain ID
+					 */
+
+        IOMMU_INV_GRANU_ALL_PASID,	/* DTLB or IOTLB of all
+        				 * PASIDs associated to a
+					 * given domain ID
+					 */
+
+	IOMMU_INV_GRANU_PASID_SEL,	/* DTLB and PASID cache
+					 * associated to a PASID
+					 */
+
+	IOMMU_INV_GRANU_NG_ALL_PASID,	/* IOTLBs of non-global
+					 * pages for all PASIDs for a
+					 * given domain ID
+				   	 */
+
+	IOMMU_INV_GRANU_NG_PASID,	/* IOTLBs of non-global
+					 * pages for a given PASID
+					 */
+
+   	IOMMU_INV_GRANU_PAGE_PASID,	/* IOTLBs of selected page
+					 *  range within a PASID
+					 */
+
+> There is no intersection between PASID_TAGGED and !PASID_TAGGED (Y/Y),
+> so the flag might not be needed.
+> 
+right
+
+> I think the API can be more relaxed. Each IOMMU driver can add more
+> restrictions, but I think the SMMU can support these combinations:
+> 
+>               |   DTLB    |    TLB    |   PASID   |  CONTEXT
+> --------------+-----------+-----------+-----------+-----------
+>  DOMAIN       |    Y      |     Y     |     Y     |     Y
+>  DEVICE       |    Y      |     Y     |     Y     |     Y
+>  DOMAIN_PAGE  |    Y      |     Y     |           |
+>  ALL_PASID    |    Y      |     Y     |     Y     |
+>  PASID_SEL    |    Y      |     Y     |     Y     |
+>  NG_ALL_PASID |    Y      |     Y     |     Y     |
+>  NG_PASID     |    Y      |     Y     |     Y     |
+>  PAGE_PASID   |    Y      |     Y     |           |
+> 
+> Two are missing in the PASID column because it doesn't make any sense
+> to target the PASID cache with a page-selective invalidation. And for
+> the context cache, we can only invalidate per device or per domain.
+> So I think this is the biggest set of allowed combinations.
+> 
+right, not all combinations are allowed, it is up to each IOMMU driver
+to convert and sanitize based on a built-in valid map. e.g. in my vt-d
+patch inv_type_granu_map[]
+> 
+> > +
+> > +/**
+> > + * Translation cache invalidation header that contains mandatory
+> > meta data.
+> > + * @version:	info format version, expecting future extesions
+> > + * @type:	type of translation cache to be invalidated
+> > + */
+> > +struct tlb_invalidate_hdr {
+> > +	__u32 version;
+> > +#define TLB_INV_HDR_VERSION_1 1
+> > +	enum iommu_inv_type type;
+> > +};
+> > +
+> > +/**
+> > + * Translation cache invalidation information, contains generic
+> > IOMMU
+> > + * data which can be parsed based on model ID by model specific
+> > drivers.
+> > + *
+> > + * @granularity:	requested invalidation granularity, type
+> > dependent
+> > + * @size:		2^size of 4K pages, 0 for 4k, 9 for 2MB,
+> > etc.  
+> 
+> Maybe start the size at 1 byte, we don't know what sort of granularity
+> future architectures will offer.
+> 
+I can't see any case we are not operating at sub-page size. why would
+anyone cache translation for 1 byte, that is too much overhead.
+> > + * @pasid:		processor address space ID value per PCI
+> > spec.
+> > + * @addr:		page address to be invalidated
+> > + * @flags	IOMMU_INVALIDATE_PASID_TAGGED: DMA with PASID
+> > tagged,
+> > + *						@pasid validity
+> > can be
+> > + *						deduced from
+> > @granularity  
+> 
+> This is really hurting my brain... Two dimensions was already
+> difficult, but I can't follow anymore. What does PASID_TAGGED say if
+> not "@pasid is valid"? I thought VT-d mandated PASID for nested
+> translation?
+> 
+you already have 3-D in your granu table :), this is the same as your
+"Y" and "/Y" filed.
+I need the PASID_TAGGED flag to differentiate different IOTLB types.
+PASID_TAGGED is used only when @pasid is valid, which is implied in the
+grnu. E.g. certain granu is only allowed for PASID tagged case.
+
+> > + *		IOMMU_INVALIDATE_ADDR_LEAF: leaf paging entries
+> > + *		IOMMU_INVALIDATE_GLOBAL_PAGE: global pages
+> > + *
+> > + */
+> > +struct tlb_invalidate_info {
+> > +	struct tlb_invalidate_hdr	hdr;
+> > +	enum iommu_inv_granularity	granularity;
+> > +	__u32		flags;
+> > +#define IOMMU_INVALIDATE_NO_PASID	(1 << 0)  
+> 
+> I suggested NO_PASID because Arm can have pasid-tagged and one
+> no-pasid address spaces within the same domain in DSS0 mode. AMD
+> would also need this for their GIoV mode, if I understood it
+> correctly.
+> 
+> When specifying NO_PASID, the user invalidates mappings for the
+> address space that doesn't have a PASID, but the same granularities
+> as PASID contexts apply. I now think we can remove the NO_PASID flag
+> and avoid a lot of confusion.
+> 
+> The GIoV and DSS0 modes are implemented by reserving entry 0 of the
+> PASID table for NO_PASID translations. Given that the guest specifies
+> this mode at BIND_TABLE time, the host understands that when the guest
+> invalidates PASID 0, if GIoV or DSS0 was enabled, then the
+> invalidation applies to the NO_PASID context. So you can drop this
+> flag in my opinion.
+> 
+sounds good. PASID0 is used for request w/o PASID so both GIOVA and SVA
+have PASIDs. Will drop.
+> Thanks,
+> Jean
+
+[Jacob Pan]
