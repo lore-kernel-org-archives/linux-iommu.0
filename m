@@ -1,13 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 12/12] swiotlb: remove the CONFIG_DMA_DIRECT_OPS ifdefs
-Date: Mon, 23 Apr 2018 19:04:19 +0200
-Message-ID: <20180423170419.20330-13-hch@lst.de>
-References: <20180423170419.20330-1-hch@lst.de>
+From: Ganapatrao Kulkarni <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
+	fails to get any free IOVA
+Date: Mon, 23 Apr 2018 23:11:13 +0530
+Message-ID: <CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
+References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
+	<c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180423170419.20330-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <c6c3655b-cef2-1112-e8a7-79c99f9ddac6-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,50 +19,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-swiotlb now selects the DMA_DIRECT_OPS config symbol, so this will
-always be true.
+On Mon, Apr 23, 2018 at 10:07 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 19/04/18 18:12, Ganapatrao Kulkarni wrote:
+>>
+>> The performance drop is observed with long hours iperf testing using 40G
+>> cards. This is mainly due to long iterations in finding the free iova
+>> range in 32bit address space.
+>>
+>> In current implementation for 64bit PCI devices, there is always first
+>> attempt to allocate iova from 32bit(SAC preferred over DAC) address
+>> range. Once we run out 32bit range, there is allocation from higher range,
+>> however due to cached32_node optimization it does not suppose to be
+>> painful. cached32_node always points to recently allocated 32-bit node.
+>> When address range is full, it will be pointing to last allocated node
+>> (leaf node), so walking rbtree to find the available range is not
+>> expensive affair. However this optimization does not behave well when
+>> one of the middle node is freed. In that case cached32_node is updated
+>> to point to next iova range. The next iova allocation will consume free
+>> range and again update cached32_node to itself. From now on, walking
+>> over 32-bit range is more expensive.
+>>
+>> This patch adds fix to update cached node to leaf node when there are no
+>> iova free range left, which avoids unnecessary long iterations.
+>
+>
+> The only trouble with this is that "allocation failed" doesn't uniquely mean
+> "space full". Say that after some time the 32-bit space ends up empty except
+> for one page at 0x1000 and one at 0x80000000, then somebody tries to
+> allocate 2GB. If we move the cached node down to the leftmost entry when
+> that fails, all subsequent allocation attempts are now going to fail despite
+> the space being 99.9999% free!
+>
+> I can see a couple of ways to solve that general problem of free space above
+> the cached node getting lost, but neither of them helps with the case where
+> there is genuinely insufficient space (and if anything would make it even
+> slower). In terms of the optimisation you want here, i.e. fail fast when an
+> allocation cannot possibly succeed, the only reliable idea which comes to
+> mind is free-PFN accounting. I might give that a go myself to see how ugly
+> it looks.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- lib/swiotlb.c | 4 ----
- 1 file changed, 4 deletions(-)
+i see 2 problems in current implementation,
+1. We don't replenish the 32 bits range, until first attempt of second
+allocation(64 bit) fails.
+2. Having  per cpu cache might not yield good hit on platforms with
+more number of CPUs.
 
-diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index fece57566d45..6954f7ad200a 100644
---- a/lib/swiotlb.c
-+++ b/lib/swiotlb.c
-@@ -692,7 +692,6 @@ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
- 	}
- }
- 
--#ifdef CONFIG_DMA_DIRECT_OPS
- static inline bool dma_coherent_ok(struct device *dev, dma_addr_t addr,
- 		size_t size)
- {
-@@ -764,7 +763,6 @@ static bool swiotlb_free_buffer(struct device *dev, size_t size,
- 				 DMA_ATTR_SKIP_CPU_SYNC);
- 	return true;
- }
--#endif
- 
- static void
- swiotlb_full(struct device *dev, size_t size, enum dma_data_direction dir,
-@@ -1045,7 +1043,6 @@ swiotlb_dma_supported(struct device *hwdev, u64 mask)
- 	return __phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
- }
- 
--#ifdef CONFIG_DMA_DIRECT_OPS
- void *swiotlb_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs)
- {
-@@ -1089,4 +1086,3 @@ const struct dma_map_ops swiotlb_dma_ops = {
- 	.unmap_page		= swiotlb_unmap_page,
- 	.dma_supported		= dma_direct_supported,
- };
--#endif /* CONFIG_DMA_DIRECT_OPS */
--- 
-2.17.0
+however irrespective of current issues, It makes sense to update
+cached node as done in this patch , when there is failure to get iova
+range using current cached pointer which is forcing for the
+unnecessary time consuming do-while iterations until any replenish
+happens!
+
+thanks
+Ganapat
+
+>
+> Robin.
+>
+>
+>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>   drivers/iommu/iova.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index 83fe262..e6ee2ea 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -201,6 +201,12 @@ static int __alloc_and_insert_iova_range(struct
+>> iova_domain *iovad,
+>>         } while (curr && new_pfn <= curr_iova->pfn_hi);
+>>         if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+>> +               /* No more cached node points to free hole, update to leaf
+>> node.
+>> +                */
+>> +               struct iova *prev_iova;
+>> +
+>> +               prev_iova = rb_entry(prev, struct iova, node);
+>> +               __cached_rbnode_insert_update(iovad, prev_iova);
+>>                 spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>>                 return -ENOMEM;
+>>         }
+>>
+>
