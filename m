@@ -1,15 +1,19 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v4 12/22] iommu: introduce device fault report API
-Date: Tue, 24 Apr 2018 11:29:43 -0700
-Message-ID: <20180424112943.79af1c3f@jacob-builder>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-13-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180423113013.GB38106@ostrya.localdomain>
+From: Jean-Philippe Brucker via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH 03/37] iommu/sva: Manage process address spaces
+Date: Tue, 24 Apr 2018 19:52:55 +0100
+Message-ID: <73db4255-9f7a-28d8-a37f-6ecbf1135cb0@arm.com>
+References: <20180212183352.22730-1-jean-philippe.brucker@arm.com>
+	<20180212183352.22730-4-jean-philippe.brucker@arm.com>
+	<57d77955-caa7-ddac-df7d-7eef1f05dbb2@codeaurora.org>
+	<66ec18ca-ea4e-d224-c9c5-8dbee5da8a72@arm.com>
+	<e7c4053a-20cc-d2db-16da-100b1157eca4@codeaurora.org>
+Reply-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180423113013.GB38106-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>
+In-Reply-To: <e7c4053a-20cc-d2db-16da-100b1157eca4-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,85 +23,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Sudeep Holla <Sudeep.Holla-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 23 Apr 2018 12:30:13 +0100
-Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+On 24/04/18 18:17, Sinan Kaya wrote:
+> On 4/24/2018 5:33 AM, Jean-Philippe Brucker wrote:
+>>> Please return pasid when you find an io_mm that is already bound. Something like
+>>> *pasid = io_mm->pasid should do the work here when bond is true.
+>> Right. I think we should also keep returning 0, not switch to -EEXIST or
+>> similar. So in next version a driver can call bind(devX, mmY) multiple
+>> times, but the first unbind() removes the bond.
+> 
+> If we are going to allow multiple binds, then the last unbind should
+> remove the bond rather than the first one via reference counting.
 
-> On Mon, Apr 16, 2018 at 10:49:01PM +0100, Jacob Pan wrote:
-> [...]
-> > +int iommu_register_device_fault_handler(struct device *dev,
-> > +					iommu_dev_fault_handler_t
-> > handler,
-> > +					void *data)
-> > +{
-> > +	struct iommu_param *param = dev->iommu_param;
-> > +
-> > +	/*
-> > +	 * Device iommu_param should have been allocated when
-> > device is
-> > +	 * added to its iommu_group.
-> > +	 */
-> > +	if (!param)
-> > +		return -EINVAL;
-> > +
-> > +	/* Only allow one fault handler registered for each device
-> > */
-> > +	if (param->fault_param)
-> > +		return -EBUSY;
-> > +
-> > +	mutex_lock(&param->lock);
-> > +	get_device(dev);
-> > +	param->fault_param =
-> > +		kzalloc(sizeof(struct iommu_fault_param),
-> > GFP_ATOMIC);  
-> 
-> This can be GFP_KERNEL
-> 
-yes, will change.
-> [...]
-> > +int iommu_report_device_fault(struct device *dev, struct
-> > iommu_fault_event *evt) +{
-> > +	int ret = 0;
-> > +	struct iommu_fault_event *evt_pending;
-> > +	struct iommu_fault_param *fparam;
-> > +
-> > +	/* iommu_param is allocated when device is added to group
-> > */
-> > +	if (!dev->iommu_param | !evt)
-> > +		return -EINVAL;
-> > +	/* we only report device fault if there is a handler
-> > registered */
-> > +	mutex_lock(&dev->iommu_param->lock);
-> > +	if (!dev->iommu_param->fault_param ||
-> > +		!dev->iommu_param->fault_param->handler) {
-> > +		ret = -EINVAL;
-> > +		goto done_unlock;
-> > +	}
-> > +	fparam = dev->iommu_param->fault_param;
-> > +	if (evt->type == IOMMU_FAULT_PAGE_REQ && evt->last_req) {
-> > +		evt_pending = kzalloc(sizeof(*evt_pending),
-> > GFP_ATOMIC);  
-> 
-> We're expecting caller to be a thread at the moment, so this could be
-> GFP_KERNEL too. You could also use kmemdup to remove the memcpy below
-> 
-good idea. will do.
-> [...]
-> > +static inline int iommu_register_device_fault_handler(struct
-> > device *dev,
-> > +
-> > iommu_dev_fault_handler_t handler,
-> > +						void *data)
-> > +{
-> > +	return 0;  
-> 
-> Should return -ENODEV
-> 
-right. thanks.
-> Thanks,
-> Jean
+Yeah that's probably better. Since a bond belongs to a device driver it
+doesn't need multiple bind/unbind, so earlier in this thread (1/37) I
+talked about removing the bond->refs. But thinking about it, there still
+is a need for it. When mm exits, we now need to call the device driver's
+mm_exit handler outside of the spinlock, so we have to take a ref in
+order to prevent a concurrent unbind() from freeing the bond.
 
-[Jacob Pan]
+Thanks,
+Jean
