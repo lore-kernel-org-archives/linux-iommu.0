@@ -1,67 +1,73 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 2/4] dma-mapping: Introduce dma_iommu_detach_device() API
-Date: Wed, 25 Apr 2018 11:18:13 +0200
-Message-ID: <20180425091815.16264-2-thierry.reding@gmail.com>
+Subject: [PATCH 3/4] ARM: dma-mapping: Implement
+ arch_iommu_detach_device()
+Date: Wed, 25 Apr 2018 11:18:14 +0200
+Message-ID: <20180425091815.16264-3-thierry.reding@gmail.com>
 References: <20180425091815.16264-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 In-Reply-To: <20180425091815.16264-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
+ <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/nouveau>
+List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
+ <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-
-The dma_iommu_detach_device() API can be used by drivers to forcibly
-detach a device from an IOMMU that architecture code might have attached
-to. This is useful for drivers that need explicit control over the IOMMU
-using the IOMMU API directly.
-
-Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/base/dma-mapping.c  | 8 ++++++++
- include/linux/dma-mapping.h | 2 ++
- 2 files changed, 10 insertions(+)
-
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index d82566d6e237..18ddf32b10c9 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -366,3 +366,11 @@ void dma_deconfigure(struct device *dev)
- 	of_dma_deconfigure(dev);
- 	acpi_dma_deconfigure(dev);
- }
-+
-+void dma_iommu_detach_device(struct device *dev)
-+{
-+#ifdef arch_iommu_detach_device
-+	arch_iommu_detach_device(dev);
-+#endif
-+}
-+EXPORT_SYMBOL(dma_iommu_detach_device);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f8ab1c0f589e..732191a2c64e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -671,6 +671,8 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
- static inline void arch_teardown_dma_ops(struct device *dev) { }
- #endif
- 
-+extern void dma_iommu_detach_device(struct device *dev);
-+
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
- {
- 	if (dev->dma_parms && dev->dma_parms->max_segment_size)
--- 
-2.17.0
+RnJvbTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KCkltcGxlbWVudCB0aGlz
+IGZ1bmN0aW9uIHRvIGVuYWJsZSBkcml2ZXJzIGZyb20gZGV0YWNoaW5nIGZyb20gYW55IElPTU1V
+CmRvbWFpbnMgdGhhdCBhcmNoaXRlY3R1cmUgY29kZSBtaWdodCBoYXZlIGF0dGFjaGVkIHRoZW0g
+dG8gc28gdGhhdCB0aGV5CmNhbiB0YWtlIGV4Y2x1c2l2ZSBjb250cm9sIG9mIHRoZSBJT01NVSB2
+aWEgdGhlIElPTU1VIEFQSS4KClNpZ25lZC1vZmYtYnk6IFRoaWVycnkgUmVkaW5nIDx0cmVkaW5n
+QG52aWRpYS5jb20+Ci0tLQogYXJjaC9hcm0vaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaCB8ICAz
+ICsrKwogYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmctbm9tbXUuYyAgICB8ICA0ICsrKysKIGFyY2gv
+YXJtL21tL2RtYS1tYXBwaW5nLmMgICAgICAgICAgfCAxOSArKysrKysrKysrKysrKysrKysrCiAz
+IGZpbGVzIGNoYW5nZWQsIDI2IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9hcmNoL2FybS9p
+bmNsdWRlL2FzbS9kbWEtbWFwcGluZy5oIGIvYXJjaC9hcm0vaW5jbHVkZS9hc20vZG1hLW1hcHBp
+bmcuaAppbmRleCA4NDM2ZjZhZGU1N2QuLmQ2ZDViZDQ0Zjk2MiAxMDA2NDQKLS0tIGEvYXJjaC9h
+cm0vaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaAorKysgYi9hcmNoL2FybS9pbmNsdWRlL2FzbS9k
+bWEtbWFwcGluZy5oCkBAIC0xMDMsNiArMTAzLDkgQEAgZXh0ZXJuIHZvaWQgYXJjaF9zZXR1cF9k
+bWFfb3BzKHN0cnVjdCBkZXZpY2UgKmRldiwgdTY0IGRtYV9iYXNlLCB1NjQgc2l6ZSwKICNkZWZp
+bmUgYXJjaF90ZWFyZG93bl9kbWFfb3BzIGFyY2hfdGVhcmRvd25fZG1hX29wcwogZXh0ZXJuIHZv
+aWQgYXJjaF90ZWFyZG93bl9kbWFfb3BzKHN0cnVjdCBkZXZpY2UgKmRldik7CiAKKyNkZWZpbmUg
+YXJjaF9pb21tdV9kZXRhY2hfZGV2aWNlIGFyY2hfaW9tbXVfZGV0YWNoX2RldmljZQorZXh0ZXJu
+IHZvaWQgYXJjaF9pb21tdV9kZXRhY2hfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldik7CisKIC8q
+IGRvIG5vdCB1c2UgdGhpcyBmdW5jdGlvbiBpbiBhIGRyaXZlciAqLwogc3RhdGljIGlubGluZSBi
+b29sIGlzX2RldmljZV9kbWFfY29oZXJlbnQoc3RydWN0IGRldmljZSAqZGV2KQogewpkaWZmIC0t
+Z2l0IGEvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmctbm9tbXUuYyBiL2FyY2gvYXJtL21tL2RtYS1t
+YXBwaW5nLW5vbW11LmMKaW5kZXggNjE5ZjI0YTQyZDA5Li42MGZlZjk3ZDg0NTIgMTAwNjQ0Ci0t
+LSBhL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLW5vbW11LmMKKysrIGIvYXJjaC9hcm0vbW0vZG1h
+LW1hcHBpbmctbm9tbXUuYwpAQCAtMjQyLDYgKzI0MiwxMCBAQCB2b2lkIGFyY2hfdGVhcmRvd25f
+ZG1hX29wcyhzdHJ1Y3QgZGV2aWNlICpkZXYpCiB7CiB9CiAKK3ZvaWQgYXJjaF9pb21tdV9kZXRh
+Y2hfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldikKK3sKK30KKwogI2RlZmluZSBQUkVBTExPQ19E
+TUFfREVCVUdfRU5UUklFUwk0MDk2CiAKIHN0YXRpYyBpbnQgX19pbml0IGRtYV9kZWJ1Z19kb19p
+bml0KHZvaWQpCmRpZmYgLS1naXQgYS9hcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jIGIvYXJjaC9h
+cm0vbW0vZG1hLW1hcHBpbmcuYwppbmRleCA4YzM5OGZlZGJiYjYuLjE5NTc5MzhkOGM5YyAxMDA2
+NDQKLS0tIGEvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYworKysgYi9hcmNoL2FybS9tbS9kbWEt
+bWFwcGluZy5jCkBAIC0yMzY2LDYgKzIzNjYsMjEgQEAgc3RhdGljIHZvaWQgYXJtX3RlYXJkb3du
+X2lvbW11X2RtYV9vcHMoc3RydWN0IGRldmljZSAqZGV2KQogCWFybV9pb21tdV9yZWxlYXNlX21h
+cHBpbmcobWFwcGluZyk7CiB9CiAKK3ZvaWQgYXJjaF9pb21tdV9kZXRhY2hfZGV2aWNlKHN0cnVj
+dCBkZXZpY2UgKmRldikKK3sKKwlzdHJ1Y3QgZG1hX2lvbW11X21hcHBpbmcgKm1hcHBpbmcgPSB0
+b19kbWFfaW9tbXVfbWFwcGluZyhkZXYpOworCWNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqZG1h
+X29wczsKKworCWlmICghbWFwcGluZykKKwkJcmV0dXJuOworCisJYXJtX2lvbW11X3JlbGVhc2Vf
+bWFwcGluZyhtYXBwaW5nKTsKKwlhcm1faW9tbXVfZGV0YWNoX2RldmljZShkZXYpOworCisJZG1h
+X29wcyA9IGFybV9nZXRfZG1hX21hcF9vcHMoZGV2LT5hcmNoZGF0YS5kbWFfY29oZXJlbnQpOwor
+CXNldF9kbWFfb3BzKGRldiwgZG1hX29wcyk7Cit9CisKICNlbHNlCiAKIHN0YXRpYyBib29sIGFy
+bV9zZXR1cF9pb21tdV9kbWFfb3BzKHN0cnVjdCBkZXZpY2UgKmRldiwgdTY0IGRtYV9iYXNlLCB1
+NjQgc2l6ZSwKQEAgLTIzNzgsNiArMjM5MywxMCBAQCBzdGF0aWMgdm9pZCBhcm1fdGVhcmRvd25f
+aW9tbXVfZG1hX29wcyhzdHJ1Y3QgZGV2aWNlICpkZXYpIHsgfQogCiAjZGVmaW5lIGFybV9nZXRf
+aW9tbXVfZG1hX21hcF9vcHMgYXJtX2dldF9kbWFfbWFwX29wcwogCit2b2lkIGFyY2hfaW9tbXVf
+ZGV0YWNoX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYpCit7Cit9CisKICNlbmRpZgkvKiBDT05G
+SUdfQVJNX0RNQV9VU0VfSU9NTVUgKi8KIAogc3RhdGljIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29w
+cyAqYXJtX2dldF9kbWFfbWFwX29wcyhib29sIGNvaGVyZW50KQotLSAKMi4xNy4wCgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpOb3V2ZWF1IG1haWxpbmcg
+bGlzdApOb3V2ZWF1QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
+dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL25vdXZlYXUK
