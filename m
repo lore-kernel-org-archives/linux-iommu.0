@@ -1,27 +1,67 @@
-From: David Rientjes <rientjes@google.com>
-Subject: Re: [GIT PULL] dma mapping fixes for 4.17-rc3
-Date: Wed, 25 Apr 2018 00:09:45 -0700 (PDT)
-Message-ID: <alpine.DEB.2.21.1804250009400.51102@chino.kir.corp.google.com>
-References: <20180425052225.GA2350@infradead.org> <alpine.DEB.2.21.1804242352290.51102@chino.kir.corp.google.com> <20180425065930.GA16791@infradead.org>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: noveau vs arm dma ops
+Date: Wed, 25 Apr 2018 01:54:39 -0700
+Message-ID: <20180425085439.GA29996@infradead.org>
+References: <f1100bd6-dd98-55a9-a92f-1cad919f235f@amd.com>
+ <20180420124625.GA31078@infradead.org>
+ <20180420152111.GR31310@phenom.ffwll.local>
+ <20180424184847.GA3247@infradead.org>
+ <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+ <20180425054855.GA17038@infradead.org>
+ <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+ <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+ <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180425065930.GA16791@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180425074151.GA2271@ulmo>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <treding@nvidia.com>
+Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Christoph Hellwig <hch@infradead.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 24 Apr 2018, Christoph Hellwig wrote:
-
-> On Tue, Apr 24, 2018 at 11:54:26PM -0700, David Rientjes wrote:
-> > Shouldn't that test for dev->coherent_dma_mask < DMA_BIT_MASK(32) be more 
-> > accurately <=? 
-> 
-> No, it should really be <.  The exactly 32-bit case is already covered
-> with GFP_DMA32.  Eventualy it should be < 24-bit with a separate
-> GFP_DMA32 case for > 32-bit && < 64-bit.  Takashi has been working on
-> that, but it is 4.18 material.
-> 
-
-Ack, thanks.
+W2Rpc2N1c3Npb24gYWJvdXQgdGhpcyBwYXRjaCwgd2hpY2ggc2hvdWxkIGhhdmUgYmVlbiBjY2Vk
+IHRvIHRoZSBpb21tdQogYW5kIGxpbnV4LWFybS1rZXJuZWwgbGlzdHMsIGJ1dCB3YXNuJ3Q6CiBo
+dHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9kcmktZGV2ZWwvbXNnMTczNjMwLmh0bWxdCgpP
+biBXZWQsIEFwciAyNSwgMjAxOCBhdCAwOTo0MTo1MUFNICswMjAwLCBUaGllcnJ5IFJlZGluZyB3
+cm90ZToKPiA+IEFQSSBmcm9tIHRoZSBpb21tdS9kbWEtbWFwcGluZyBjb2RlLiAgRHJpdmVycyBo
+YXZlIG5vIGJ1c2luZXNzIHBva2luZwo+ID4gaW50byB0aGVzZSBkZXRhaWxzLgo+IAo+IFRoZSBp
+bnRlcmZhY2VzIHRoYXQgdGhlIGFib3ZlIHBhdGNoIHVzZXMgYXJlIGFsbCBFWFBPUlRfU1lNQk9M
+X0dQTCwKPiB3aGljaCBpcyByYXRoZXIgbWlzbGVhZGluZyBpZiB0aGV5IGFyZSBub3QgbWVhbnQg
+dG8gYmUgdXNlZCBieSBkcml2ZXJzCj4gZGlyZWN0bHkuCgpUaGUgb25seSByZWFzb24gdGhlIERN
+QSBvcHMgYXJlIGV4cG9ydGVkIGlzIGJlY2F1c2UgZ2V0X2FyY2hfZG1hX29wcwpyZWZlcmVuY2Vz
+IChvciBpbiBjYXNlIG9mIHRoZSBjb2hlcmVudCBvbmVzIHVzZWQgdG8gcmVmZXJlbmNlKS4gIFdl
+CmRvbid0IGxldCBkcml2ZXJzIGFzc2lnbiByYW5kb20gZG1hIG9wcy4KCj4gCj4gPiBUaGllcnJ5
+LCBwbGVhc2UgcmVzZW5kIHRoaXMgd2l0aCBhdCBsZWFzdCB0aGUgaW9tbXUgbGlzdCBhbmQKPiA+
+IGxpbnV4LWFybS1rZXJuZWwgaW4gQ2MgdG8gaGF2ZSBhIHByb3BlciBkaXNjdXNzaW9uIG9uIHRo
+ZSByaWdodCBBUEkuCj4gCj4gSSdtIGNlcnRhaW5seSBvcGVuIHRvIGhlbHAgd2l0aCBmaW5kaW5n
+IGEgY29ycmVjdCBzb2x1dGlvbiwgYnV0IHRoZQo+IHBhdGNoIGFib3ZlIHdhcyBwdXJwb3NlZnVs
+bHkgdGVyc2UgYmVjYXVzZSB0aGlzIGlzIHNvbWV0aGluZyB0aGF0IEkKPiBob3BlIHdlIGNhbiBn
+ZXQgYmFja3BvcnRlZCB0byB2NC4xNiB0byB1bmJyZWFrIE5vdXZlYXUuIENvb3JkaW5hdGluZwo+
+IHN1Y2ggYSBiYWNrcG9ydCBiZXR3ZWVuIEFSTSBhbmQgRFJNIHRyZWVzIGRvZXMgbm90IHNvdW5k
+IGxpa2Ugc29tZXRoaW5nCj4gdGhhdCB3b3VsZCBoZWxwIGdldHRpbmcgdGhpcyBmaXhlZCBpbiB2
+NC4xNi4KCkNvb3JkaW5hdGluZyB0aGUgYmFja3BvcnQgb2YgYSB0cml2aWFsIGhlbHBlciBpbiB0
+aGUgYXJtIHRyZWUgaXMgbm90CnRoZSBlbmQgb2YgdGhlIHdvcmxkLiAgUmVhbGx5LCB0aGlzIGNv
+d2JveSBhdHRpdHVkZSBpcyBhIGdvb2QgcmVhc29uCndoeSBncmFwaGljcyBmb2xrcyBoYXZlIHN1
+Y2ggYSBiYWQgcmVwLiAgWW91IGtlZXAgcG9raW5nIGludG8gcmFuZG9tCmtlcm5lbCBpbnRlcm5h
+bHMsIGRvbid0IHRhbGsgdG8gYW5veW9uZSBhbmQgdGhlbiBjb21wbGFpbiBpZiBwZW9wbGUKYXJl
+IHVwc2V0LiAgVGhpcyBzaG91bGRuJ3QgYmUgc3VycHJpc2luZy4KCj4gR3JhbnRlZCwgdGhpcyBp
+c3N1ZSBjb3VsZCd2ZSBiZWVuIGNhdWdodCB3aXRoIGEgbGl0dGxlIG1vcmUgdGVzdGluZywgYnV0
+Cj4gaW4gcmV0cm9zcGVjdCBJIHRoaW5rIGl0IHdvdWxkJ3ZlIGJlZW4gYSBsb3QgYmV0dGVyIGlm
+IEFSTV9ETUFfVVNFX0lPTU1VCj4gd2FzIGp1c3QgZW5hYmxlZCB1bmNvbmRpdGlvbmFsbHkgaWYg
+aXQgaGFzIHNpZGUtZWZmZWN0cyB0aGF0IHBsYXRmb3Jtcwo+IGRvbid0IG9wdCBpbiB0byBidXQg
+aGF2ZSB0byBleHBsaWNpdGx5IG9wdCBvdXQgb2YuCgpBZ3JlZWQgb24gdGhhdCBjb3VudC4gIFBs
+ZWFzZSBzZW5kIGEgcGF0Y2guCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNr
+dG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2Ry
+aS1kZXZlbAo=
