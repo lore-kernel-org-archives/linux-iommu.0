@@ -1,52 +1,78 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 4/4] drm/nouveau: tegra: Use
- dma_iommu_detach_device()
-Date: Wed, 25 Apr 2018 11:18:15 +0200
-Message-ID: <20180425091815.16264-4-thierry.reding@gmail.com>
-References: <20180425091815.16264-1-thierry.reding@gmail.com>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: noveau vs arm dma ops
+Date: Wed, 25 Apr 2018 10:25:33 +0100
+Message-ID: <20180425092533.GO16141@n2100.armlinux.org.uk>
+References: <20180420124625.GA31078@infradead.org>
+ <20180420152111.GR31310@phenom.ffwll.local>
+ <20180424184847.GA3247@infradead.org>
+ <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+ <20180425054855.GA17038@infradead.org>
+ <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+ <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+ <20180425064335.GB28100@infradead.org>
+ <20180425074151.GA2271@ulmo>
+ <20180425085439.GA29996@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180425091815.16264-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/nouveau>
-List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180425085439.GA29996@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <treding@nvidia.com>
+Cc: Christoph Hellwig <hch@infradead.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>, Dan Williams <dan.j.williams@intel.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KClVzZSB0aGUgbmV3IGRt
-YV9pb21tdV9kZXRhY2hfZGV2aWNlKCkgZnVuY3Rpb24gdG8gcmVwbGFjZSB0aGUgb3Blbi1jb2Rl
-ZAplcXVpdmFsZW50LgoKU2lnbmVkLW9mZi1ieTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZp
-ZGlhLmNvbT4KLS0tCiAuLi4vZHJtL25vdXZlYXUvbnZrbS9lbmdpbmUvZGV2aWNlL3RlZ3JhLmMg
-ICAgfCAxOSArKy0tLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25z
-KCspLCAxNyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vbm91dmVh
-dS9udmttL2VuZ2luZS9kZXZpY2UvdGVncmEuYyBiL2RyaXZlcnMvZ3B1L2RybS9ub3V2ZWF1L252
-a20vZW5naW5lL2RldmljZS90ZWdyYS5jCmluZGV4IDIzNDI4YTcwNTZlOS4uYzBhN2YzODM5Y2Ji
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbm91dmVhdS9udmttL2VuZ2luZS9kZXZpY2Uv
-dGVncmEuYworKysgYi9kcml2ZXJzL2dwdS9kcm0vbm91dmVhdS9udmttL2VuZ2luZS9kZXZpY2Uv
-dGVncmEuYwpAQCAtMjAsMTAgKzIwLDYgQEAKICAqIERFQUxJTkdTIElOIFRIRSBTT0ZUV0FSRS4K
-ICAqLwogCi0jaWYgSVNfRU5BQkxFRChDT05GSUdfQVJNX0RNQV9VU0VfSU9NTVUpCi0jaW5jbHVk
-ZSA8YXNtL2RtYS1pb21tdS5oPgotI2VuZGlmCi0KICNpbmNsdWRlIDxjb3JlL3RlZ3JhLmg+CiAj
-aWZkZWYgQ09ORklHX05PVVZFQVVfUExBVEZPUk1fRFJJVkVSCiAjaW5jbHVkZSAicHJpdi5oIgpA
-QCAtMTEwLDE5ICsxMDYsOCBAQCBudmttX2RldmljZV90ZWdyYV9wcm9iZV9pb21tdShzdHJ1Y3Qg
-bnZrbV9kZXZpY2VfdGVncmEgKnRkZXYpCiAJdW5zaWduZWQgbG9uZyBwZ3NpemVfYml0bWFwOwog
-CWludCByZXQ7CiAKLSNpZiBJU19FTkFCTEVEKENPTkZJR19BUk1fRE1BX1VTRV9JT01NVSkKLQlp
-ZiAoZGV2LT5hcmNoZGF0YS5tYXBwaW5nKSB7Ci0JCXN0cnVjdCBkbWFfaW9tbXVfbWFwcGluZyAq
-bWFwcGluZyA9IHRvX2RtYV9pb21tdV9tYXBwaW5nKGRldik7Ci0KLQkJYXJtX2lvbW11X3JlbGVh
-c2VfbWFwcGluZyhtYXBwaW5nKTsKLQkJYXJtX2lvbW11X2RldGFjaF9kZXZpY2UoZGV2KTsKLQot
-CQlpZiAoZGV2LT5hcmNoZGF0YS5kbWFfY29oZXJlbnQpCi0JCQlzZXRfZG1hX29wcyhkZXYsICZh
-cm1fY29oZXJlbnRfZG1hX29wcyk7Ci0JCWVsc2UKLQkJCXNldF9kbWFfb3BzKGRldiwgJmFybV9k
-bWFfb3BzKTsKLQl9Ci0jZW5kaWYKKwkvKiBtYWtlIHN1cmUgd2UgY2FuIHVzZSB0aGUgSU9NTVUg
-ZXhjbHVzaXZlbHkgKi8KKwlkbWFfaW9tbXVfZGV0YWNoX2RldmljZShkZXYpOwogCiAJaWYgKCF0
-ZGV2LT5mdW5jLT5pb21tdV9iaXQpCiAJCXJldHVybjsKLS0gCjIuMTcuMAoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTm91dmVhdSBtYWlsaW5nIGxpc3QK
-Tm91dmVhdUBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9ub3V2ZWF1Cg==
+On Wed, Apr 25, 2018 at 01:54:39AM -0700, Christoph Hellwig wrote:
+> [discussion about this patch, which should have been cced to the iommu
+>  and linux-arm-kernel lists, but wasn't:
+>  https://www.spinics.net/lists/dri-devel/msg173630.html]
+> 
+> On Wed, Apr 25, 2018 at 09:41:51AM +0200, Thierry Reding wrote:
+> > > API from the iommu/dma-mapping code.  Drivers have no business poking
+> > > into these details.
+> > 
+> > The interfaces that the above patch uses are all EXPORT_SYMBOL_GPL,
+> > which is rather misleading if they are not meant to be used by drivers
+> > directly.
+
+EXPORT_SYMBOL* means nothing as far as whether a driver should
+be able to use the symbol or not - it merely means that the symbol is
+made available to a module.  Modules cover much more than just device
+drivers - we have library modules, filesystem modules, helper modules
+to name a few non-driver classes of modules.
+
+We also have symbols that are exported as part of the architecture
+implementation detail of a public interface.  For example, the
+public interface "copy_from_user" is implemented as an inline
+function (actually several layers of inline functions) eventually
+calling into arm_copy_from_user().  arm_copy_from_user() is exported,
+but drivers (in fact no module) is allowed to make direct reference
+to arm_copy_from_user() - it'd fail when software PAN is enabled.
+
+The whole idea that "if a symbol is exported, it's fine for a driver
+to use it" is a complete work of fiction, always has been, and always
+will be.
+
+We've had this with the architecture implementation details of the
+DMA API before, and with the architecture implementation details of
+the CPU cache flushing.  There's only so much commentry, or __
+prefixes you can add to a symbol before things get rediculous, and
+none of it stops people creating this abuse.  The only thing that
+seems to prevent it is to make life hard for folk wanting to use
+the symbols (eg, hiding the symbol prototype in a private header,
+etc.)
+
+Never, ever go under the covers of an interface.  If the interface
+doesn't do what you want, _discuss_ it, don't just think "oh, that
+architecture private facility looks like what I need, I'll use that
+directly."
+
+If you ever are on the side of trying to maintain those implementation
+details that are abused in this way, you'll soon understand why this
+behaviour by driver authors is soo annoying, and the maintainability
+problems it creates.
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
+According to speedtest.net: 8.21Mbps down 510kbps up
