@@ -1,44 +1,71 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v2 3/5] ARM: dma-mapping: Implement
-	arch_iommu_detach_device()
-Date: Wed, 25 Apr 2018 08:20:49 -0700
-Message-ID: <20180425152049.GD16075@infradead.org>
+From: Jordan Crouse <jcrouse@codeaurora.org>
+Subject: Re: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
+ mapping
+Date: Wed, 25 Apr 2018 09:28:49 -0600
+Message-ID: <20180425152849.GA2447@jcrouse-lnx.qualcomm.com>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
-	<20180425101051.15349-3-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20180425101051.15349-3-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20180425101051.15349-1-thierry.reding@gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: nouveau@lists.freedesktop.org, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-> +void arch_iommu_detach_device(struct device *dev)
-> +{
-> +#ifdef CONFIG_ARM_DMA_USE_IOMMU
-> +	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
-> +	const struct dma_map_ops *dma_ops;
-> +
-> +	if (!mapping)
-> +		return;
-> +
-> +	arm_iommu_release_mapping(mapping);
-> +	arm_iommu_detach_device(dev);
-> +
-> +	dma_ops = arm_get_dma_map_ops(dev->archdata.dma_coherent);
-> +	set_dma_ops(dev, dma_ops);
-
-Why not simply:
-
-	set_dma_ops(dev, arm_get_dma_map_ops(dev->archdata.dma_coherent));
+T24gV2VkLCBBcHIgMjUsIDIwMTggYXQgMTI6MTA6NDdQTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcg
+d3JvdGU6Cj4gRnJvbTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KPiAKPiBE
+ZXBlbmRpbmcgb24gdGhlIGtlcm5lbCBjb25maWd1cmF0aW9uLCBlYXJseSBBUk0gYXJjaGl0ZWN0
+dXJlIHNldHVwIGNvZGUKPiBtYXkgaGF2ZSBhdHRhY2hlZCB0aGUgR1BVIHRvIGEgRE1BL0lPTU1V
+IG1hcHBpbmcgdGhhdCB0cmFuc3BhcmVudGx5IHVzZXMKPiB0aGUgSU9NTVUgdG8gYmFjayB0aGUg
+RE1BIEFQSS4gVGVncmEgcmVxdWlyZXMgc3BlY2lhbCBoYW5kbGluZyBmb3IgSU9NTVUKPiBiYWNr
+ZWQgYnVmZmVycyAoYSBzcGVjaWFsIGJpdCBpbiB0aGUgR1BVJ3MgTU1VIHBhZ2UgdGFibGVzIGlu
+ZGljYXRlcyB0aGUKPiBtZW1vcnkgcGF0aCB0byB0YWtlOiB2aWEgdGhlIFNNTVUgb3IgZGlyZWN0
+bHkgdG8gdGhlIG1lbW9yeSBjb250cm9sbGVyKS4KPiBUcmFuc3BhcmVudGx5IGJhY2tpbmcgRE1B
+IG1lbW9yeSB3aXRoIGFuIElPTU1VIHByZXZlbnRzIE5vdXZlYXUgZnJvbQo+IHByb3Blcmx5IGhh
+bmRsaW5nIHN1Y2ggbWVtb3J5IGFjY2Vzc2VzIGFuZCBjYXVzZXMgbWVtb3J5IGFjY2VzcyBmYXVs
+dHMuCj4gCj4gQXMgYSBzaWRlLW5vdGU6IGJ1ZmZlcnMgb3RoZXIgdGhhbiB0aG9zZSBhbGxvY2F0
+ZWQgaW4gaW5zdGFuY2UgbWVtb3J5Cj4gZG9uJ3QgbmVlZCB0byBiZSBwaHlzaWNhbGx5IGNvbnRp
+Z3VvdXMgZnJvbSB0aGUgR1BVJ3MgcGVyc3BlY3RpdmUgc2luY2UKPiB0aGUgR1BVIGNhbiBtYXAg
+dGhlbSBpbnRvIGNvbnRpZ3VvdXMgYnVmZmVycyB1c2luZyBpdHMgb3duIE1NVS4gTWFwcGluZwo+
+IHRoZXNlIGJ1ZmZlcnMgdGhyb3VnaCB0aGUgSU9NTVUgaXMgdW5uZWNlc3NhcnkgYW5kIHdpbGwg
+ZXZlbiBsZWFkIHRvCj4gcGVyZm9ybWFuY2UgZGVncmFkYXRpb24gYmVjYXVzZSBvZiB0aGUgYWRk
+aXRpb25hbCB0cmFuc2xhdGlvbi4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBUaGllcnJ5IFJlZGluZyA8
+dHJlZGluZ0BudmlkaWEuY29tPgo+IC0tLQo+IEkgaGFkIGFscmVhZHkgc2VudCB0aGlzIG91dCBp
+bmRlcGVuZGVudGx5IHRvIGZpeCBhIHJlZ3Jlc3Npb24gdGhhdCB3YXMKPiBpbnRyb2R1Y2VkIGlu
+IHY0LjE2LCBidXQgdGhlbiBDaHJpc3RvcGggcG9pbnRlZCBvdXQgdGhhdCBpdCBzaG91bGQndmUK
+PiBiZWVuIHNlbnQgdG8gYSB3aWRlciBhdWRpZW5jZSBhbmQgc2hvdWxkIHVzZSBhIGNvcmUgQVBJ
+IHJhdGhlciB0aGFuCj4gY2FsbGluZyBpbnRvIGFyY2hpdGVjdHVyZSBjb2RlIGRpcmVjdGx5Lgo+
+IAo+IEkndmUgYWRkZWQgaXQgdG8gdGhpcyBzZXJpZXMgZm9yIGVhc2llciByZWZlcmVuY2UgYW5k
+IHRvIHNob3cgdGhlIG5lZWQKPiBmb3IgdGhlIG5ldyBBUEkuCgpUaGlzIGlzIGdvb2Qgc3R1ZmYs
+IEkgYW0gc3RydWdnbGluZyB3aXRoIHNvbWV0aGluZyBzaW1pbGFyIG9uIEFSTTY0LiBPbmUKcHJv
+YmxlbSB0aGF0IEkgd2Fzbid0IGFibGUgdG8gZnVsbHkgc29sdmUgY2xlYW5seSB3YXMgdGhhdCBm
+b3IgYXJtLXNtbXUgCnRoZSBTTU1VIEhXIHJlc291cmNlcyBhcmUgbm90IHJlbGVhc2VkIHVudGls
+IHRoZSBkb21haW4gaXRzZWxmIGlzIGRlc3Ryb3llZAphbmQgSSBuZXZlciBxdWl0ZSBmaWd1cmVk
+IG91dCBhIHdheSB0byBzd2FwIHRoZSBkZWZhdWx0IGRvbWFpbiBjbGVhbmx5LgoKVGhpcyBpcyBh
+IHByb2JsZW0gZm9yIHRoZSBNU00gR1BVIGJlY2F1c2Ugbm90IG9ubHkgZG8gd2UgcnVuIG91ciBv
+d24gSU9NTVUgYXMKeW91IGRvIHdlIGFsc28gaGF2ZSBhIGhhcmR3YXJlIGRlcGVuZGVuY3kgdG8g
+dXNlIGNvbnRleHQgYmFuayAwIHRvCmFzeW5jaHJvbm91c2x5IHN3aXRjaCB0aGUgcGFnZXRhYmxl
+IGR1cmluZyByZW5kZXJpbmcuCgpJJ20gbm90IHN1cmUgaWYgdGhpcyBpcyBhIHByb2JsZW0geW91
+IGhhdmUgZW5jb3VudGVyZWQuIEluIGFueSBldmVudCwgdGhpcyBjb2RlCmdldHMgdXMgYSBsaXR0
+bGUgYml0IGZ1cnRoZXIgZG93biB0aGUgcGF0aCBhbmQgYXQgbGVhc3QgdGhlcmUgaXMgc29tZWJv
+ZHkgZWxzZQpvdXQgdGhlcmUgaW4gdGhlIGNvbGQgZGFyayB3b3JsZCB0aGF0IHVuZGVyc3RhbmRz
+IG15IHBhaW4uIDopCgpGb3IgeW91ciBpbnRlcmVzdCwgaGVyZSB3YXMgbXkgaGFsZi1oZWFydGVk
+IGF0dGVtcHQgdG8gYXZvaWQgY3JlYXRpbmcgRE1BCmRvbWFpbnMgaW4gdGhlIGZpcnN0IHBsYWNl
+IGJhc2VkIG9uIGEgYmxhY2tsaXN0IHRvIHRyeSB0byBzcHVyIGEgYml0IG9mCmRpc2N1c3Npb246
+IGh0dHBzOi8vcGF0Y2h3b3JrLmZyZWVkZXNrdG9wLm9yZy9zZXJpZXMvNDE1NzMvCgpKb3JkYW4K
+Ci0tIApUaGUgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIgb2Yg
+Q29kZSBBdXJvcmEgRm9ydW0sCmEgTGludXggRm91bmRhdGlvbiBDb2xsYWJvcmF0aXZlIFByb2pl
+Y3QKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRl
+dmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8v
+bGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
