@@ -1,100 +1,100 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 3/4] ARM: dma-mapping: Implement arch_iommu_detach_device()
-Date: Wed, 25 Apr 2018 11:29:38 +0200
-Message-ID: <20180425092938.GA21182@ulmo>
-References: <20180425091815.16264-1-thierry.reding@gmail.com>
-	<20180425091815.16264-3-thierry.reding@gmail.com>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: noveau vs arm dma ops
+Date: Wed, 25 Apr 2018 12:04:29 +0200
+Message-ID: <20180425100429.GR25142@phenom.ffwll.local>
+References: <20180420124625.GA31078@infradead.org>
+ <20180420152111.GR31310@phenom.ffwll.local>
+ <20180424184847.GA3247@infradead.org>
+ <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+ <20180425054855.GA17038@infradead.org>
+ <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+ <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+ <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
+ <20180425085439.GA29996@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2336374934013037688=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180425091815.16264-3-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20180425085439.GA29996@infradead.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Thierry Reding <treding@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============2336374934013037688==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="huq684BweRXVnRxX"
-Content-Disposition: inline
-
-
---huq684BweRXVnRxX
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Apr 25, 2018 at 11:18:14AM +0200, Thierry Reding wrote:
-[...]
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 8c398fedbbb6..1957938d8c9c 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2366,6 +2366,21 @@ static void arm_teardown_iommu_dma_ops(struct devi=
-ce *dev)
->  	arm_iommu_release_mapping(mapping);
->  }
-> =20
-> +void arch_iommu_detach_device(struct device *dev)
-> +{
-> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
-> +	const struct dma_map_ops *dma_ops;
-> +
-> +	if (!mapping)
-> +		return;
-> +
-> +	arm_iommu_release_mapping(mapping);
-> +	arm_iommu_detach_device(dev);
-> +
-> +	dma_ops =3D arm_get_dma_map_ops(dev->archdata.dma_coherent);
-> +	set_dma_ops(dev, dma_ops);
-> +}
-
-Oh, the irony! This doesn't actually build and I failed to notice
-because I forgot to enable ARM_DMA_USE_IOMMU...
-
-Sorry about that, but I think we can use this as basis to discuss
-whether the API is good and I'll make sure to properly test the next
-revision before sending it out.
-
-Thierry
-
---huq684BweRXVnRxX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrgSn8ACgkQ3SOs138+
-s6F1ww/+Io3Jb9byScviM7GR6y34CYPzZt1/CqxuuQRTH6emuGKJAX7mWuU9ijVk
-U2GvdZWo5Jx20V4+22CJhlV6MqWGLOKKDrhCDD45X4v5q4U1BRQYwxzbHwjqmFdm
-kmOsvWuupQ/flF4ZsX9EfVsikoQMZMyhplHpaue2DN5iiOG1abD5tYDoYYNeog0e
-0QSdcdYK6phHNgbP03DILieeH+fg3UwjSaGrE/9gX2aGNfR6taHtHe8h5A1xwosr
-eVjpzOYSZVpDd/inbte2mAzI6mj2gng4XTAKpN40jJV4ckKthcmvNRZOp5t6UnsA
-+zkbK2yPOxvFXZToCWgcGQOXN1/6BOrYpqp7ZkoOKenbfsr6+c8d0MUYEBW0OFrl
-y5xVg5Ycj/o/q52/LETGHUK2b1IYm2af1vw/poauQZOx1G9HtFnxtoJXR3U3T5X3
-Py37aFcImZELUq3JkNr/dk4NCIBuXU0dMQhx14qKHJ9UPlPUpnWQKMpwarY2UXAf
-opHXDgD//tpBKolmdlHHnAR+6Dqo3mFuU5RUAmYJakfMCiSyM1Zz/zTwJKAN1tEV
-qlBJRrNnDHliroPYVlYq1lOxbAttvhIMMpEsH6QbxCICcTY2FPG6wCdAa9eo+fTW
-mZ8LIqwLIsM+taZdbznDlL8PjpgSrCG5//SmHXXonYTvKt8VG54=
-=J0eW
------END PGP SIGNATURE-----
-
---huq684BweRXVnRxX--
-
---===============2336374934013037688==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2336374934013037688==--
+T24gV2VkLCBBcHIgMjUsIDIwMTggYXQgMDE6NTQ6MzlBTSAtMDcwMCwgQ2hyaXN0b3BoIEhlbGx3
+aWcgd3JvdGU6Cj4gW2Rpc2N1c3Npb24gYWJvdXQgdGhpcyBwYXRjaCwgd2hpY2ggc2hvdWxkIGhh
+dmUgYmVlbiBjY2VkIHRvIHRoZSBpb21tdQo+ICBhbmQgbGludXgtYXJtLWtlcm5lbCBsaXN0cywg
+YnV0IHdhc24ndDoKPiAgaHR0cHM6Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvZHJpLWRldmVsL21z
+ZzE3MzYzMC5odG1sXQo+IAo+IE9uIFdlZCwgQXByIDI1LCAyMDE4IGF0IDA5OjQxOjUxQU0gKzAy
+MDAsIFRoaWVycnkgUmVkaW5nIHdyb3RlOgo+ID4gPiBBUEkgZnJvbSB0aGUgaW9tbXUvZG1hLW1h
+cHBpbmcgY29kZS4gIERyaXZlcnMgaGF2ZSBubyBidXNpbmVzcyBwb2tpbmcKPiA+ID4gaW50byB0
+aGVzZSBkZXRhaWxzLgo+ID4gCj4gPiBUaGUgaW50ZXJmYWNlcyB0aGF0IHRoZSBhYm92ZSBwYXRj
+aCB1c2VzIGFyZSBhbGwgRVhQT1JUX1NZTUJPTF9HUEwsCj4gPiB3aGljaCBpcyByYXRoZXIgbWlz
+bGVhZGluZyBpZiB0aGV5IGFyZSBub3QgbWVhbnQgdG8gYmUgdXNlZCBieSBkcml2ZXJzCj4gPiBk
+aXJlY3RseS4KPiAKPiBUaGUgb25seSByZWFzb24gdGhlIERNQSBvcHMgYXJlIGV4cG9ydGVkIGlz
+IGJlY2F1c2UgZ2V0X2FyY2hfZG1hX29wcwo+IHJlZmVyZW5jZXMgKG9yIGluIGNhc2Ugb2YgdGhl
+IGNvaGVyZW50IG9uZXMgdXNlZCB0byByZWZlcmVuY2UpLiAgV2UKPiBkb24ndCBsZXQgZHJpdmVy
+cyBhc3NpZ24gcmFuZG9tIGRtYSBvcHMuCj4gCj4gPiAKPiA+ID4gVGhpZXJyeSwgcGxlYXNlIHJl
+c2VuZCB0aGlzIHdpdGggYXQgbGVhc3QgdGhlIGlvbW11IGxpc3QgYW5kCj4gPiA+IGxpbnV4LWFy
+bS1rZXJuZWwgaW4gQ2MgdG8gaGF2ZSBhIHByb3BlciBkaXNjdXNzaW9uIG9uIHRoZSByaWdodCBB
+UEkuCj4gPiAKPiA+IEknbSBjZXJ0YWlubHkgb3BlbiB0byBoZWxwIHdpdGggZmluZGluZyBhIGNv
+cnJlY3Qgc29sdXRpb24sIGJ1dCB0aGUKPiA+IHBhdGNoIGFib3ZlIHdhcyBwdXJwb3NlZnVsbHkg
+dGVyc2UgYmVjYXVzZSB0aGlzIGlzIHNvbWV0aGluZyB0aGF0IEkKPiA+IGhvcGUgd2UgY2FuIGdl
+dCBiYWNrcG9ydGVkIHRvIHY0LjE2IHRvIHVuYnJlYWsgTm91dmVhdS4gQ29vcmRpbmF0aW5nCj4g
+PiBzdWNoIGEgYmFja3BvcnQgYmV0d2VlbiBBUk0gYW5kIERSTSB0cmVlcyBkb2VzIG5vdCBzb3Vu
+ZCBsaWtlIHNvbWV0aGluZwo+ID4gdGhhdCB3b3VsZCBoZWxwIGdldHRpbmcgdGhpcyBmaXhlZCBp
+biB2NC4xNi4KPiAKPiBDb29yZGluYXRpbmcgdGhlIGJhY2twb3J0IG9mIGEgdHJpdmlhbCBoZWxw
+ZXIgaW4gdGhlIGFybSB0cmVlIGlzIG5vdAo+IHRoZSBlbmQgb2YgdGhlIHdvcmxkLiAgUmVhbGx5
+LCB0aGlzIGNvd2JveSBhdHRpdHVkZSBpcyBhIGdvb2QgcmVhc29uCj4gd2h5IGdyYXBoaWNzIGZv
+bGtzIGhhdmUgc3VjaCBhIGJhZCByZXAuICBZb3Uga2VlcCBwb2tpbmcgaW50byByYW5kb20KPiBr
+ZXJuZWwgaW50ZXJuYWxzLCBkb24ndCB0YWxrIHRvIGFub3lvbmUgYW5kIHRoZW4gY29tcGxhaW4g
+aWYgcGVvcGxlCj4gYXJlIHVwc2V0LiAgVGhpcyBzaG91bGRuJ3QgYmUgc3VycHJpc2luZy4KCk5v
+dCByZWFsbHkgYWdyZWVpbmcgb24gdGhlIGNvd2JveSB0aGluZy4gVGhlIGZ1bmRhbWVudGFsIHBy
+b2JsZW0gaXMgdGhhdAp0aGUgZG1hIGFwaSBwcm92aWRlcyBhYnN0cmFjdGlvbiB0aGF0IHNlcmlv
+dXNseSBnZXRzIGluIHRoZSB3YXkgb2Ygd3JpdGluZwphIGdwdSBkcml2ZXIuIFNvbWUgZXhhbXBs
+ZXM6CgotIFdlIG5ldmVyIHdhbnQgYm91bmNlIGJ1ZmZlcnMsIGV2ZXIuIGRtYV9tYXBfc2cgZ2l2
+ZXMgdXMgdGhhdCwgc28gdGhlcmUncwogIGhhY2tzIHRvIGZhbGwgYmFjayB0byBhIGNhY2hlIG9m
+IHBhZ2VzIGFsbG9jYXRlZCB1c2luZwogIGRtYV9hbGxvY19jb2hlcmVudCBpZiB5b3UgYnVpbGQg
+YSBrZXJuZWwgd2l0aCBib3VuY2UgYnVmZmVycy4KCi0gZG1hIGFwaSBoaWRlcyB0aGUgY2FjaGUg
+Zmx1c2hpbmcgcmVxdWlyZW1lbnRzIGZyb20gdXMuIEdQVXMgbG92ZQogIG5vbi1zbm9vcGVkIGFj
+Y2VzcywgYW5kIHdvcnNlIGdpdmUgdXNlcnNwYWNlIGNvbnRyb2wgb3ZlciB0aGF0LiBXZSB3YW50
+CiAgYSBzdHJpY3Qgc2VwYXJhdGlvbiBiZXR3ZWVuIG1hcHBpbmcgc3R1ZmYgYW5kIGZsdXNoaW5n
+IHN0dWZmLiBXaXRoIHRoZQogIElPTU1VIGFwaSB3ZSBtb3N0bHkgaGF2ZSB0aGUgZm9ybWVyLCBi
+dXQgZm9yIHRoZSBsYXRlciBhcmNoIG1haW50YWluZXJzCiAgcmVndWxhcmx5IHRlbGxzIHRoZXkg
+d29uJ3QgYWxsb3cgdGhhdC4gU28gd2UgaGF2ZSBkcm1fY2xmbHVzaC5jLgoKLSBkbWEgYXBpIGhp
+ZGVzIGhvdy93aGVyZSBtZW1vcnkgaXMgYWxsb2NhdGVkLiBLaW5kYSBzaW1pbGFyIHByb2JsZW0s
+CiAgZXhjZXB0IG5vdyBmb3IgQ01BIG9yIGFkZHJlc3MgbGltaXRzLiBTbyBlaXRoZXIgd2Ugcm9s
+bCBvdXIgb3duCiAgYWxsb2NhdG9ycyBhbmQgdGhlbiBkbWFfbWFwX3NnIChhbmQgcHJheSBpdCBk
+b2Vzbid0IGJvdW5jZSBidWZmZXIpLCBvcgogIHdlIHVzZSBkbWFfYWxsb2NfY29oZXJlbnQgYW5k
+IHRoZW4gZ3JhYiB0aGUgc2d0IHRvIGdldCBhdCB0aGUgQ01BCiAgYWxsb2NhdGlvbnMgYmVjYXVz
+ZSB0aGF0J3MgdGhlIG9ubHkgd2F5LiBXaGljaCBzdWNrcywgYmVjYXVzZSB3ZSBjYW4ndAogIGRp
+cmVjdGx5IHRlbGwgQ01BIGhvdyB0byBiYWNrIG9mZiBpZiB0aGVyZSdzIHNvbWUgd2F5IHRvIG1h
+a2UgQ01BIG1lbW9yeQogIGF2YWlsYWJsZSB0aHJvdWdoIG90aGVyIG1lYW5zIChncHVzIGxvdmUg
+dG8gaG9nIGFsbCBvZiBtZW1vcnksIHNvIHdlCiAgaGF2ZSBzaHJpbmtlcnMgYW5kIGV2ZXJ5dGhp
+bmcpLgoKRm9yIGRpc3BsYXkgZHJpdmVycyB0aGUgZG1hIGFwaSBtb3N0bHkgd29ya3MsIHVudGls
+IHlvdSBzdGFydCBzaGFyaW5nCmJ1ZmZlcnMgd2l0aCBvdGhlciBkZXZpY2VzLgoKU28gZnJvbSBv
+dXIgcGVyc3BlY3RpdmUgaXQgbG9va3MgZmFpcmx5IG9mdGVuIHRoYXQgY29yZSBmb2xrcyBqdXN0
+IGRvbid0CndhbnQgdG8gc3VwcG9ydCBncHUgdXNlLWNhc2VzLCBzbyB3ZSBwbGF5IGEgYml0IG1v
+cmUgY293Ym95IGFuZCBnZXQgdGhpbmdzCmRvbmUgc29tZSBvdGhlciB3YXkuIFNpbmNlIHRoaXMg
+aGFzIGJlZW4gZ29pbmcgb24gZm9yIHllYXJzIG5vdyB3ZSBvZnRlbgpkb24ndCBldmVuIGJvdGhl
+ciB0byBzdGFydCBhIGRpc2N1c3Npb24gZmlyc3QsIHNpbmNlIGl0IHRlbmRlZCB0byBnbwpub3do
+ZXJlIHVzZWZ1bC4KLURhbmllbAoKPiA+IEdyYW50ZWQsIHRoaXMgaXNzdWUgY291bGQndmUgYmVl
+biBjYXVnaHQgd2l0aCBhIGxpdHRsZSBtb3JlIHRlc3RpbmcsIGJ1dAo+ID4gaW4gcmV0cm9zcGVj
+dCBJIHRoaW5rIGl0IHdvdWxkJ3ZlIGJlZW4gYSBsb3QgYmV0dGVyIGlmIEFSTV9ETUFfVVNFX0lP
+TU1VCj4gPiB3YXMganVzdCBlbmFibGVkIHVuY29uZGl0aW9uYWxseSBpZiBpdCBoYXMgc2lkZS1l
+ZmZlY3RzIHRoYXQgcGxhdGZvcm1zCj4gPiBkb24ndCBvcHQgaW4gdG8gYnV0IGhhdmUgdG8gZXhw
+bGljaXRseSBvcHQgb3V0IG9mLgo+IAo+IEFncmVlZCBvbiB0aGF0IGNvdW50LiAgUGxlYXNlIHNl
+bmQgYSBwYXRjaC4KCi0tIApEYW5pZWwgVmV0dGVyClNvZnR3YXJlIEVuZ2luZWVyLCBJbnRlbCBD
+b3Jwb3JhdGlvbgpodHRwOi8vYmxvZy5mZndsbC5jaApfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBs
+aXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
+bi9saXN0aW5mby9kcmktZGV2ZWwK
