@@ -1,87 +1,256 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: noveau vs arm dma ops
-Date: Wed, 25 Apr 2018 08:33:12 -0700
-Message-ID: <20180425153312.GD27076@infradead.org>
-References: <20180420152111.GR31310@phenom.ffwll.local>
- <20180424184847.GA3247@infradead.org>
- <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
- <20180425054855.GA17038@infradead.org>
- <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
- <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
- <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
- <20180425085439.GA29996@infradead.org>
- <20180425100429.GR25142@phenom.ffwll.local>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 14/22] iommu: handle page response timeout
+Date: Wed, 25 Apr 2018 08:37:11 -0700
+Message-ID: <20180425083711.222202e7@jacob-builder>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1523915351-54415-15-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20180423153622.GC38106@ostrya.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20180425100429.GR25142@phenom.ffwll.local>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Christoph Hellwig <hch@infradead.org>, Thierry Reding <treding@nvidia.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Jerome Glisse <jglisse@redhat.com>, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Logan Gunthorpe <logang@deltatee.com>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180423153622.GC38106-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBBcHIgMjUsIDIwMTggYXQgMTI6MDQ6MjlQTSArMDIwMCwgRGFuaWVsIFZldHRlciB3
-cm90ZToKPiA+IENvb3JkaW5hdGluZyB0aGUgYmFja3BvcnQgb2YgYSB0cml2aWFsIGhlbHBlciBp
-biB0aGUgYXJtIHRyZWUgaXMgbm90Cj4gPiB0aGUgZW5kIG9mIHRoZSB3b3JsZC4gIFJlYWxseSwg
-dGhpcyBjb3dib3kgYXR0aXR1ZGUgaXMgYSBnb29kIHJlYXNvbgo+ID4gd2h5IGdyYXBoaWNzIGZv
-bGtzIGhhdmUgc3VjaCBhIGJhZCByZXAuICBZb3Uga2VlcCBwb2tpbmcgaW50byByYW5kb20KPiA+
-IGtlcm5lbCBpbnRlcm5hbHMsIGRvbid0IHRhbGsgdG8gYW5veW9uZSBhbmQgdGhlbiBjb21wbGFp
-biBpZiBwZW9wbGUKPiA+IGFyZSB1cHNldC4gIFRoaXMgc2hvdWxkbid0IGJlIHN1cnByaXNpbmcu
-Cj4gCj4gTm90IHJlYWxseSBhZ3JlZWluZyBvbiB0aGUgY293Ym95IHRoaW5nLiBUaGUgZnVuZGFt
-ZW50YWwgcHJvYmxlbSBpcyB0aGF0Cj4gdGhlIGRtYSBhcGkgcHJvdmlkZXMgYWJzdHJhY3Rpb24g
-dGhhdCBzZXJpb3VzbHkgZ2V0cyBpbiB0aGUgd2F5IG9mIHdyaXRpbmcKPiBhIGdwdSBkcml2ZXIu
-IFNvbWUgZXhhbXBsZXM6CgpTbyB0YWxrIHRvIG90aGVyIHBlb3BsZS4gIE1heWJlIHBlb3BsZSBz
-aGFyZSB5b3VyIGZydXN0YXRpb24uICBPciBtYXliZQpvdGhlciBwZW9wbGUgaGF2ZSBhIHdheSB0
-byBoZWxwLgoKPiAtIFdlIG5ldmVyIHdhbnQgYm91bmNlIGJ1ZmZlcnMsIGV2ZXIuIGRtYV9tYXBf
-c2cgZ2l2ZXMgdXMgdGhhdCwgc28gdGhlcmUncwo+ICAgaGFja3MgdG8gZmFsbCBiYWNrIHRvIGEg
-Y2FjaGUgb2YgcGFnZXMgYWxsb2NhdGVkIHVzaW5nCj4gICBkbWFfYWxsb2NfY29oZXJlbnQgaWYg
-eW91IGJ1aWxkIGEga2VybmVsIHdpdGggYm91bmNlIGJ1ZmZlcnMuCgpnZXRfcmVxdWlyZWRfbWFz
-aygpIGlzIHN1cHBvc2VkIHRvIHRlbGwgeW91IGlmIHlvdSBhcmUgc2FmZS4gIEhvd2V2ZXIKd2Ug
-YXJlIG1pc3NpbmcgbG90cyBvZiBpbXBsZW1lbnRhdGlvbnMgb2YgaXQgZm9yIGlvbW11cyBzbyB5
-b3UgbWlnaHQgZ2V0CnNvbWUgZmFsc2UgbmVnYXRpdmVzLCBpbXByb3ZlbWVudHMgd2VsY29tZS4g
-IEl0J3MgYmVlbiBvbiBteSBsaXN0IG9mCnRoaW5ncyB0byBmaXggaW4gdGhlIERNQSBBUEksIGJ1
-dCBpdCBpcyBub3doZXJlIG5lYXIgdGhlIHRvcC4KCj4gLSBkbWEgYXBpIGhpZGVzIHRoZSBjYWNo
-ZSBmbHVzaGluZyByZXF1aXJlbWVudHMgZnJvbSB1cy4gR1BVcyBsb3ZlCj4gICBub24tc25vb3Bl
-ZCBhY2Nlc3MsIGFuZCB3b3JzZSBnaXZlIHVzZXJzcGFjZSBjb250cm9sIG92ZXIgdGhhdC4gV2Ug
-d2FudAo+ICAgYSBzdHJpY3Qgc2VwYXJhdGlvbiBiZXR3ZWVuIG1hcHBpbmcgc3R1ZmYgYW5kIGZs
-dXNoaW5nIHN0dWZmLiBXaXRoIHRoZQo+ICAgSU9NTVUgYXBpIHdlIG1vc3RseSBoYXZlIHRoZSBm
-b3JtZXIsIGJ1dCBmb3IgdGhlIGxhdGVyIGFyY2ggbWFpbnRhaW5lcnMKPiAgIHJlZ3VsYXJseSB0
-ZWxscyB0aGV5IHdvbid0IGFsbG93IHRoYXQuIFNvIHdlIGhhdmUgZHJtX2NsZmx1c2guYy4KClRo
-ZSBwcm9ibGVtIGlzIHRoYXQgYSBjYWNoZSBmbHVzaGluZyBBUEkgZW50aXJlbHkgc2VwYXJhdGUg
-aXMgaGFyZC4gVGhhdApiZWluZyBzYWlkIGlmIHlvdSBsb29rIGF0IG15IGdlbmVyaWMgZG1hLW5v
-bmNvaGVyZW50IEFQSSBzZXJpZXMgaXQgdHJpZXMKdG8gbW92ZSB0aGF0IHdheS4gIFNvIGZhciBp
-dCBpcyBpbiBlYXJseSBzdGFnZXMgYW5kIGFwcGFyZW50bHkgcmF0aGVyCmJ1Z2d5IHVuZm9ydHVu
-YXRlbHkuCgo+IC0gZG1hIGFwaSBoaWRlcyBob3cvd2hlcmUgbWVtb3J5IGlzIGFsbG9jYXRlZC4g
-S2luZGEgc2ltaWxhciBwcm9ibGVtLAo+ICAgZXhjZXB0IG5vdyBmb3IgQ01BIG9yIGFkZHJlc3Mg
-bGltaXRzLiBTbyBlaXRoZXIgd2Ugcm9sbCBvdXIgb3duCj4gICBhbGxvY2F0b3JzIGFuZCB0aGVu
-IGRtYV9tYXBfc2cgKGFuZCBwcmF5IGl0IGRvZXNuJ3QgYm91bmNlIGJ1ZmZlciksIG9yCj4gICB3
-ZSB1c2UgZG1hX2FsbG9jX2NvaGVyZW50IGFuZCB0aGVuIGdyYWIgdGhlIHNndCB0byBnZXQgYXQg
-dGhlIENNQQo+ICAgYWxsb2NhdGlvbnMgYmVjYXVzZSB0aGF0J3MgdGhlIG9ubHkgd2F5LiBXaGlj
-aCBzdWNrcywgYmVjYXVzZSB3ZSBjYW4ndAo+ICAgZGlyZWN0bHkgdGVsbCBDTUEgaG93IHRvIGJh
-Y2sgb2ZmIGlmIHRoZXJlJ3Mgc29tZSB3YXkgdG8gbWFrZSBDTUEgbWVtb3J5Cj4gICBhdmFpbGFi
-bGUgdGhyb3VnaCBvdGhlciBtZWFucyAoZ3B1cyBsb3ZlIHRvIGhvZyBhbGwgb2YgbWVtb3J5LCBz
-byB3ZQo+ICAgaGF2ZSBzaHJpbmtlcnMgYW5kIGV2ZXJ5dGhpbmcpLgoKSWYgeW91IHJlYWxseSBj
-YXJlIGFib3V0IGRvaW5nIGV4cGxpY2l0bHkgY2FjaGUgZmx1c2hpbmcgYW55d2F5IChzZWUKYWJv
-dmUpIGFsbG9jYXRpbmcgeW91ciBvd24gbWVtb3J5IGFuZCBtYXBwaW5nIGl0IHdoZXJlIG5lZWRl
-ZCBpcyBieQpmYXIgdGhlIHN1cGVyaW9yIHNvbHV0aW9uLiAgT24gY2FjaGUgY29oZXJlbnQgYXJj
-aGl0ZWN0dXJlcwpkbWFfYWxsb2NfY29oZXJlbnQgaXMgbm90aGluZyBidXQgYWxsb2NhdGUgbWVt
-b3J5ICsgZG1hX21hcF9zaW5nbGUuCk9uIG5vbiBjb2hlcmVudCBhbGxvY2F0aW9ucyB0aGUgbWVt
-b3J5IG1pZ2h0IGNvbWUgdGhyb3VnaCBhIHNwZWNpYWwKcG9vbCBvciBtdXN0IGJlIHVzZWQgdGhy
-b3VnaCBhIHNwZWNpYWwgdmlydHVhbCBhZGRyZXNzIG1hcHBpbmcgdGhhdAppcyBzZXQgdXAgZWl0
-aGVyIHN0YXRpY2FsbHkgb3IgZHluYW1pY2FsbHkuICBGb3IgdGhhdCBjYXNlIHNwbGl0dGluZwph
-bGxvY2F0aW9uIGFuZCBtYXBwaW5nIGlzIGEgZ29vZCBpZGVhIGluIG1hbnkgd2F5cywgYW5kIEkg
-cGxhbiB0byBtb3ZlCnRvd2FyZHMgdGhhdCBvbmNlIHRoZSBudW1iZXIgb2YgZG1hIG1hcHBpbmcg
-aW1wbGVtZW50YXRpb25zIGlzIGRvd24KdG8gYSByZWFzb25hYmxlIG51bWJlciBzbyB0aGF0IGl0
-IGNhbiBhY3R1YWxseSBiZSBkb25lLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVl
-ZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
-by9kcmktZGV2ZWwK
+On Mon, 23 Apr 2018 16:36:23 +0100
+Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+
+> On Mon, Apr 16, 2018 at 10:49:03PM +0100, Jacob Pan wrote:
+> > When IO page faults are reported outside IOMMU subsystem, the page
+> > request handler may fail for various reasons. E.g. a guest received
+> > page requests but did not have a chance to run for a long time. The
+> > irresponsive behavior could hold off limited resources on the
+> > pending device.
+> > There can be hardware or credit based software solutions as
+> > suggested in the PCI ATS Ch-4. To provide a basic safty net this
+> > patch introduces a per device deferrable timer which monitors the
+> > longest pending page fault that requires a response. Proper action
+> > such as sending failure response code could be taken when timer
+> > expires but not included in this patch. We need to consider the
+> > life cycle of page groupd ID to prevent confusion with reused group
+> > ID by a device. For now, a warning message provides clue of such
+> > failure.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  drivers/iommu/iommu.c | 60
+> > +++++++++++++++++++++++++++++++++++++++++++++++++--
+> > include/linux/iommu.h |  4 ++++ 2 files changed, 62 insertions(+),
+> > 2 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 628346c..f6512692 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -799,6 +799,39 @@ int iommu_group_unregister_notifier(struct
+> > iommu_group *group, }
+> >  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+> >  
+> > +/* Max time to wait for a pending page request */
+> > +#define IOMMU_PAGE_RESPONSE_MAXTIME (HZ * 10)
+> > +static void iommu_dev_fault_timer_fn(struct timer_list *t)
+> > +{
+> > +	struct iommu_fault_param *fparam = from_timer(fparam, t,
+> > timer);
+> > +	struct iommu_fault_event *evt, *iter;
+> > +
+> > +	u64 now;
+> > +
+> > +	now = get_jiffies_64();
+> > +
+> > +	/* The goal is to ensure driver or guest page fault
+> > handler(via vfio)
+> > +	 * send page response on time. Otherwise, limited queue
+> > resources
+> > +	 * may be occupied by some irresponsive guests or
+> > drivers.  
+> 
+> By "limited queue resources", do you mean the PRI fault queue in the
+> pIOMMU device, or something else?
+> 
+I am referring to the device resource for tracking pending PRQs. Intel
+IOMMU does not track pending PRQs.
+> 
+> I'm still uneasy about this timeout. We don't really know if the guest
+> doesn't respond because it is suspended, because it doesn't support
+> PRI or because it's attempting to kill the host. In the first case,
+> then receiving and responding to page requests later than 10s should
+> be fine, right?
+> 
+when a guest is going into system suspend, suspend callback functions of
+assigned device driver and vIOMMU should be called. I think vIOMMU
+should propagate the iommu_suspend call to host IOMMU driver, therefore
+terminate all the pending PRQs. We can make the timeout adjustable.
+
+> Or maybe the guest is doing something weird like fetching pages from
+> network storage and it occasionally hits a latency oddity. This
+> wouldn't interrupt the fault queues, because other page requests for
+> the same device can be serviced in parallel, but if you implement a
+> PRG timeout it would still unfairly disable PRI.
+> 
+The timeout here is intended to be a broader and basic safety net at
+per device level. We can implement finer grain safety mechanism but I
+am guessing it is better to be done in HW.
+> In the other cases (unsupported PRI or rogue guest) then disabling PRI
+> using a FAILURE status might be the right thing to do. However,
+> assuming the device follows the PCI spec it will stop sending page
+> requests once there are as many PPRs in flight as the allocated
+> credit.
+> 
+Agreed, here I am not taking any actions. There may be need to drain
+in-fly requests.
+> Even though drivers set the PPR credit number arbitrarily (because
+> finding an ideal number is difficult or impossible), the device stops
+> issuing faults at some point if the guest is unresponsive, and it
+> won't grab any more shared resources, or use slots in shared queues.
+> Resources for pending faults can be cleaned when the device is reset
+> and assigned to a different guest.
+> 
+> 
+> That's for sane endpoints that follow the spec. If on the other hand,
+> we can't rely on the device implementation to respect our maximum
+> credit allocation, then we should do the accounting ourselves and
+> reject incoming faults with INVALID as fast as possible. Otherwise
+> it's an easy way for a guest to DoS the host and I don't think a
+> timeout solves this problem (The guest can wait 9 seconds before
+> replying to faults and meanwhile fill all the queues). In addition
+> the timeout is done on PRGs but not individual page faults, so a
+> guest could overflow the queues by triggering lots of page requests
+> without setting the last bit.
+> 
+> 
+> If there isn't any possibility of memory leak or abusing resources, I
+> don't think it's our problem that the guest is excessively slow at
+> handling page requests. Setting an upper bound to page request latency
+> might do more harm than good. Ensuring that devices respect the number
+> of allocated in-flight PPRs is more important in my opinion.
+> 
+How about we have a really long timeout, e.g. 1 min similar to device
+invalidate response timeout in ATS spec., just for basic safety and
+diagnosis. Optionally, we could have quota in parallel.
+
+> > +	 * When per device pending fault list is not empty, we
+> > periodically checks
+> > +	 * if any anticipated page response time has expired.
+> > +	 *
+> > +	 * TODO:
+> > +	 * We could do the following if response time expires:
+> > +	 * 1. send page response code FAILURE to all pending PRQ
+> > +	 * 2. inform device driver or vfio
+> > +	 * 3. drain in-flight page requests and responses for this
+> > device
+> > +	 * 4. clear pending fault list such that driver can
+> > unregister fault
+> > +	 *    handler(otherwise blocked when pending faults are
+> > present).
+> > +	 */
+> > +	list_for_each_entry_safe(evt, iter, &fparam->faults, list)
+> > {
+> > +		if (time_after64(evt->expire, now))
+> > +			pr_err("Page response time expired!, pasid
+> > %d gid %d exp %llu now %llu\n",
+> > +				evt->pasid,
+> > evt->page_req_group_id, evt->expire, now);
+> > +	}
+> > +	mod_timer(t, now + IOMMU_PAGE_RESPONSE_MAXTIME);
+> > +}
+> > +
+> >  /**
+> >   * iommu_register_device_fault_handler() - Register a device fault
+> > handler
+> >   * @dev: the device
+> > @@ -806,8 +839,8 @@
+> > EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+> >   * @data: private data passed as argument to the handler
+> >   *
+> >   * When an IOMMU fault event is received, call this handler with
+> > the fault event
+> > - * and data as argument. The handler should return 0. If the fault
+> > is
+> > - * recoverable (IOMMU_FAULT_PAGE_REQ), the handler must also
+> > complete
+> > + * and data as argument. The handler should return 0 on success.
+> > If the fault is
+> > + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also
+> > complete  
+> 
+> This change might belong in patch 12/22
+> 
+Good point, will fix
+> >   * the fault by calling iommu_page_response() with one of the
+> > following
+> >   * response code:
+> >   * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
+> > @@ -848,6 +881,9 @@ int iommu_register_device_fault_handler(struct
+> > device *dev, param->fault_param->data = data;
+> >  	INIT_LIST_HEAD(&param->fault_param->faults);
+> >  
+> > +	timer_setup(&param->fault_param->timer,
+> > iommu_dev_fault_timer_fn,
+> > +		TIMER_DEFERRABLE);
+> > +
+> >  	mutex_unlock(&param->lock);
+> >  
+> >  	return 0;
+> > @@ -905,6 +941,8 @@ int iommu_report_device_fault(struct device
+> > *dev, struct iommu_fault_event *evt) {
+> >  	int ret = 0;
+> >  	struct iommu_fault_event *evt_pending;
+> > +	struct timer_list *tmr;
+> > +	u64 exp;
+> >  	struct iommu_fault_param *fparam;
+> >  
+> >  	/* iommu_param is allocated when device is added to group
+> > */ @@ -925,6 +963,17 @@ int iommu_report_device_fault(struct device
+> > *dev, struct iommu_fault_event *evt) goto done_unlock;
+> >  		}
+> >  		memcpy(evt_pending, evt, sizeof(struct
+> > iommu_fault_event));
+> > +		/* Keep track of response expiration time */
+> > +		exp = get_jiffies_64() +
+> > IOMMU_PAGE_RESPONSE_MAXTIME;
+> > +		evt_pending->expire = exp;
+> > +
+> > +		if (list_empty(&fparam->faults)) {  
+> 
+> The list_empty() and timer modification need to be inside
+> fparam->lock, otherwise we race with iommu_page_response
+> 
+right, thanks.
+> Thanks,
+> Jean
+> 
+> > +			/* First pending event, start timer */
+> > +			tmr =
+> > &dev->iommu_param->fault_param->timer;
+> > +			WARN_ON(timer_pending(tmr));
+> > +			mod_timer(tmr, exp);
+> > +		}
+> > +
+> >  		mutex_lock(&fparam->lock);
+> >  		list_add_tail(&evt_pending->list, &fparam->faults);
+> >  		mutex_unlock(&fparam->lock);
+> > @@ -1542,6 +1591,13 @@ int iommu_page_response(struct device *dev,
+> >  		}
+> >  	}
+> >  
+> > +	/* stop response timer if no more pending request */
+> > +	if (list_empty(&param->fault_param->faults) &&
+> > +		timer_pending(&param->fault_param->timer)) {
+> > +		pr_debug("no pending PRQ, stop timer\n");
+> > +		del_timer(&param->fault_param->timer);
+> > +	}  
+
+[Jacob Pan]
