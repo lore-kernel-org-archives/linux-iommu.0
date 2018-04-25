@@ -1,69 +1,67 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM
- DMA/IOMMU mapping
-Date: Wed, 25 Apr 2018 12:10:47 +0200
-Message-ID: <20180425101051.15349-1-thierry.reding@gmail.com>
+Subject: [PATCH v2 2/5] dma-mapping: Introduce dma_iommu_detach_device() API
+Date: Wed, 25 Apr 2018 12:10:48 +0200
+Message-ID: <20180425101051.15349-2-thierry.reding@gmail.com>
+References: <20180425101051.15349-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/nouveau>
-List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180425101051.15349-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KCkRlcGVuZGluZyBvbiB0
-aGUga2VybmVsIGNvbmZpZ3VyYXRpb24sIGVhcmx5IEFSTSBhcmNoaXRlY3R1cmUgc2V0dXAgY29k
-ZQptYXkgaGF2ZSBhdHRhY2hlZCB0aGUgR1BVIHRvIGEgRE1BL0lPTU1VIG1hcHBpbmcgdGhhdCB0
-cmFuc3BhcmVudGx5IHVzZXMKdGhlIElPTU1VIHRvIGJhY2sgdGhlIERNQSBBUEkuIFRlZ3JhIHJl
-cXVpcmVzIHNwZWNpYWwgaGFuZGxpbmcgZm9yIElPTU1VCmJhY2tlZCBidWZmZXJzIChhIHNwZWNp
-YWwgYml0IGluIHRoZSBHUFUncyBNTVUgcGFnZSB0YWJsZXMgaW5kaWNhdGVzIHRoZQptZW1vcnkg
-cGF0aCB0byB0YWtlOiB2aWEgdGhlIFNNTVUgb3IgZGlyZWN0bHkgdG8gdGhlIG1lbW9yeSBjb250
-cm9sbGVyKS4KVHJhbnNwYXJlbnRseSBiYWNraW5nIERNQSBtZW1vcnkgd2l0aCBhbiBJT01NVSBw
-cmV2ZW50cyBOb3V2ZWF1IGZyb20KcHJvcGVybHkgaGFuZGxpbmcgc3VjaCBtZW1vcnkgYWNjZXNz
-ZXMgYW5kIGNhdXNlcyBtZW1vcnkgYWNjZXNzIGZhdWx0cy4KCkFzIGEgc2lkZS1ub3RlOiBidWZm
-ZXJzIG90aGVyIHRoYW4gdGhvc2UgYWxsb2NhdGVkIGluIGluc3RhbmNlIG1lbW9yeQpkb24ndCBu
-ZWVkIHRvIGJlIHBoeXNpY2FsbHkgY29udGlndW91cyBmcm9tIHRoZSBHUFUncyBwZXJzcGVjdGl2
-ZSBzaW5jZQp0aGUgR1BVIGNhbiBtYXAgdGhlbSBpbnRvIGNvbnRpZ3VvdXMgYnVmZmVycyB1c2lu
-ZyBpdHMgb3duIE1NVS4gTWFwcGluZwp0aGVzZSBidWZmZXJzIHRocm91Z2ggdGhlIElPTU1VIGlz
-IHVubmVjZXNzYXJ5IGFuZCB3aWxsIGV2ZW4gbGVhZCB0bwpwZXJmb3JtYW5jZSBkZWdyYWRhdGlv
-biBiZWNhdXNlIG9mIHRoZSBhZGRpdGlvbmFsIHRyYW5zbGF0aW9uLgoKU2lnbmVkLW9mZi1ieTog
-VGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KLS0tCkkgaGFkIGFscmVhZHkgc2Vu
-dCB0aGlzIG91dCBpbmRlcGVuZGVudGx5IHRvIGZpeCBhIHJlZ3Jlc3Npb24gdGhhdCB3YXMKaW50
-cm9kdWNlZCBpbiB2NC4xNiwgYnV0IHRoZW4gQ2hyaXN0b3BoIHBvaW50ZWQgb3V0IHRoYXQgaXQg
-c2hvdWxkJ3ZlCmJlZW4gc2VudCB0byBhIHdpZGVyIGF1ZGllbmNlIGFuZCBzaG91bGQgdXNlIGEg
-Y29yZSBBUEkgcmF0aGVyIHRoYW4KY2FsbGluZyBpbnRvIGFyY2hpdGVjdHVyZSBjb2RlIGRpcmVj
-dGx5LgoKSSd2ZSBhZGRlZCBpdCB0byB0aGlzIHNlcmllcyBmb3IgZWFzaWVyIHJlZmVyZW5jZSBh
-bmQgdG8gc2hvdyB0aGUgbmVlZApmb3IgdGhlIG5ldyBBUEkuCgogLi4uL2RybS9ub3V2ZWF1L252
-a20vZW5naW5lL2RldmljZS90ZWdyYS5jICAgIHwgMTkgKysrKysrKysrKysrKysrKysrKwogMSBm
-aWxlIGNoYW5nZWQsIDE5IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9k
-cm0vbm91dmVhdS9udmttL2VuZ2luZS9kZXZpY2UvdGVncmEuYyBiL2RyaXZlcnMvZ3B1L2RybS9u
-b3V2ZWF1L252a20vZW5naW5lL2RldmljZS90ZWdyYS5jCmluZGV4IDc4NTk3ZGE2MzEzYS4uMjM0
-MjhhNzA1NmU5IDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbm91dmVhdS9udmttL2VuZ2lu
-ZS9kZXZpY2UvdGVncmEuYworKysgYi9kcml2ZXJzL2dwdS9kcm0vbm91dmVhdS9udmttL2VuZ2lu
-ZS9kZXZpY2UvdGVncmEuYwpAQCAtMTksNiArMTksMTEgQEAKICAqIEZST00sIE9VVCBPRiBPUiBJ
-TiBDT05ORUNUSU9OIFdJVEggVEhFIFNPRlRXQVJFIE9SIFRIRSBVU0UgT1IgT1RIRVIKICAqIERF
-QUxJTkdTIElOIFRIRSBTT0ZUV0FSRS4KICAqLworCisjaWYgSVNfRU5BQkxFRChDT05GSUdfQVJN
-X0RNQV9VU0VfSU9NTVUpCisjaW5jbHVkZSA8YXNtL2RtYS1pb21tdS5oPgorI2VuZGlmCisKICNp
-bmNsdWRlIDxjb3JlL3RlZ3JhLmg+CiAjaWZkZWYgQ09ORklHX05PVVZFQVVfUExBVEZPUk1fRFJJ
-VkVSCiAjaW5jbHVkZSAicHJpdi5oIgpAQCAtMTA1LDYgKzExMCwyMCBAQCBudmttX2RldmljZV90
-ZWdyYV9wcm9iZV9pb21tdShzdHJ1Y3QgbnZrbV9kZXZpY2VfdGVncmEgKnRkZXYpCiAJdW5zaWdu
-ZWQgbG9uZyBwZ3NpemVfYml0bWFwOwogCWludCByZXQ7CiAKKyNpZiBJU19FTkFCTEVEKENPTkZJ
-R19BUk1fRE1BX1VTRV9JT01NVSkKKwlpZiAoZGV2LT5hcmNoZGF0YS5tYXBwaW5nKSB7CisJCXN0
-cnVjdCBkbWFfaW9tbXVfbWFwcGluZyAqbWFwcGluZyA9IHRvX2RtYV9pb21tdV9tYXBwaW5nKGRl
-dik7CisKKwkJYXJtX2lvbW11X3JlbGVhc2VfbWFwcGluZyhtYXBwaW5nKTsKKwkJYXJtX2lvbW11
-X2RldGFjaF9kZXZpY2UoZGV2KTsKKworCQlpZiAoZGV2LT5hcmNoZGF0YS5kbWFfY29oZXJlbnQp
-CisJCQlzZXRfZG1hX29wcyhkZXYsICZhcm1fY29oZXJlbnRfZG1hX29wcyk7CisJCWVsc2UKKwkJ
-CXNldF9kbWFfb3BzKGRldiwgJmFybV9kbWFfb3BzKTsKKwl9CisjZW5kaWYKKwogCWlmICghdGRl
-di0+ZnVuYy0+aW9tbXVfYml0KQogCQlyZXR1cm47CiAKLS0gCjIuMTcuMAoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTm91dmVhdSBtYWlsaW5nIGxpc3QK
-Tm91dmVhdUBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9ub3V2ZWF1Cg==
+From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+The dma_iommu_detach_device() API can be used by drivers to forcibly
+detach a device from an IOMMU that architecture code might have attached
+to. This is useful for drivers that need explicit control over the IOMMU
+using the IOMMU API directly.
+
+Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/base/dma-mapping.c  | 8 ++++++++
+ include/linux/dma-mapping.h | 2 ++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index d82566d6e237..18ddf32b10c9 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -366,3 +366,11 @@ void dma_deconfigure(struct device *dev)
+ 	of_dma_deconfigure(dev);
+ 	acpi_dma_deconfigure(dev);
+ }
++
++void dma_iommu_detach_device(struct device *dev)
++{
++#ifdef arch_iommu_detach_device
++	arch_iommu_detach_device(dev);
++#endif
++}
++EXPORT_SYMBOL(dma_iommu_detach_device);
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index f8ab1c0f589e..732191a2c64e 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -671,6 +671,8 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+ static inline void arch_teardown_dma_ops(struct device *dev) { }
+ #endif
+ 
++extern void dma_iommu_detach_device(struct device *dev);
++
+ static inline unsigned int dma_get_max_seg_size(struct device *dev)
+ {
+ 	if (dev->dma_parms && dev->dma_parms->max_segment_size)
+-- 
+2.17.0
