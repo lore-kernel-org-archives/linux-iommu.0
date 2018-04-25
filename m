@@ -1,67 +1,89 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: noveau vs arm dma ops
-Date: Wed, 25 Apr 2018 01:54:39 -0700
-Message-ID: <20180425085439.GA29996@infradead.org>
-References: <f1100bd6-dd98-55a9-a92f-1cad919f235f@amd.com>
- <20180420124625.GA31078@infradead.org>
- <20180420152111.GR31310@phenom.ffwll.local>
- <20180424184847.GA3247@infradead.org>
- <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
- <20180425054855.GA17038@infradead.org>
- <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
- <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
- <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 1/4] drm/nouveau: tegra: Detach from ARM DMA/IOMMU mapping
+Date: Wed, 25 Apr 2018 11:18:12 +0200
+Message-ID: <20180425091815.16264-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20180425074151.GA2271@ulmo>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <treding@nvidia.com>
-Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Christoph Hellwig <hch@infradead.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-W2Rpc2N1c3Npb24gYWJvdXQgdGhpcyBwYXRjaCwgd2hpY2ggc2hvdWxkIGhhdmUgYmVlbiBjY2Vk
-IHRvIHRoZSBpb21tdQogYW5kIGxpbnV4LWFybS1rZXJuZWwgbGlzdHMsIGJ1dCB3YXNuJ3Q6CiBo
-dHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9kcmktZGV2ZWwvbXNnMTczNjMwLmh0bWxdCgpP
-biBXZWQsIEFwciAyNSwgMjAxOCBhdCAwOTo0MTo1MUFNICswMjAwLCBUaGllcnJ5IFJlZGluZyB3
-cm90ZToKPiA+IEFQSSBmcm9tIHRoZSBpb21tdS9kbWEtbWFwcGluZyBjb2RlLiAgRHJpdmVycyBo
-YXZlIG5vIGJ1c2luZXNzIHBva2luZwo+ID4gaW50byB0aGVzZSBkZXRhaWxzLgo+IAo+IFRoZSBp
-bnRlcmZhY2VzIHRoYXQgdGhlIGFib3ZlIHBhdGNoIHVzZXMgYXJlIGFsbCBFWFBPUlRfU1lNQk9M
-X0dQTCwKPiB3aGljaCBpcyByYXRoZXIgbWlzbGVhZGluZyBpZiB0aGV5IGFyZSBub3QgbWVhbnQg
-dG8gYmUgdXNlZCBieSBkcml2ZXJzCj4gZGlyZWN0bHkuCgpUaGUgb25seSByZWFzb24gdGhlIERN
-QSBvcHMgYXJlIGV4cG9ydGVkIGlzIGJlY2F1c2UgZ2V0X2FyY2hfZG1hX29wcwpyZWZlcmVuY2Vz
-IChvciBpbiBjYXNlIG9mIHRoZSBjb2hlcmVudCBvbmVzIHVzZWQgdG8gcmVmZXJlbmNlKS4gIFdl
-CmRvbid0IGxldCBkcml2ZXJzIGFzc2lnbiByYW5kb20gZG1hIG9wcy4KCj4gCj4gPiBUaGllcnJ5
-LCBwbGVhc2UgcmVzZW5kIHRoaXMgd2l0aCBhdCBsZWFzdCB0aGUgaW9tbXUgbGlzdCBhbmQKPiA+
-IGxpbnV4LWFybS1rZXJuZWwgaW4gQ2MgdG8gaGF2ZSBhIHByb3BlciBkaXNjdXNzaW9uIG9uIHRo
-ZSByaWdodCBBUEkuCj4gCj4gSSdtIGNlcnRhaW5seSBvcGVuIHRvIGhlbHAgd2l0aCBmaW5kaW5n
-IGEgY29ycmVjdCBzb2x1dGlvbiwgYnV0IHRoZQo+IHBhdGNoIGFib3ZlIHdhcyBwdXJwb3NlZnVs
-bHkgdGVyc2UgYmVjYXVzZSB0aGlzIGlzIHNvbWV0aGluZyB0aGF0IEkKPiBob3BlIHdlIGNhbiBn
-ZXQgYmFja3BvcnRlZCB0byB2NC4xNiB0byB1bmJyZWFrIE5vdXZlYXUuIENvb3JkaW5hdGluZwo+
-IHN1Y2ggYSBiYWNrcG9ydCBiZXR3ZWVuIEFSTSBhbmQgRFJNIHRyZWVzIGRvZXMgbm90IHNvdW5k
-IGxpa2Ugc29tZXRoaW5nCj4gdGhhdCB3b3VsZCBoZWxwIGdldHRpbmcgdGhpcyBmaXhlZCBpbiB2
-NC4xNi4KCkNvb3JkaW5hdGluZyB0aGUgYmFja3BvcnQgb2YgYSB0cml2aWFsIGhlbHBlciBpbiB0
-aGUgYXJtIHRyZWUgaXMgbm90CnRoZSBlbmQgb2YgdGhlIHdvcmxkLiAgUmVhbGx5LCB0aGlzIGNv
-d2JveSBhdHRpdHVkZSBpcyBhIGdvb2QgcmVhc29uCndoeSBncmFwaGljcyBmb2xrcyBoYXZlIHN1
-Y2ggYSBiYWQgcmVwLiAgWW91IGtlZXAgcG9raW5nIGludG8gcmFuZG9tCmtlcm5lbCBpbnRlcm5h
-bHMsIGRvbid0IHRhbGsgdG8gYW5veW9uZSBhbmQgdGhlbiBjb21wbGFpbiBpZiBwZW9wbGUKYXJl
-IHVwc2V0LiAgVGhpcyBzaG91bGRuJ3QgYmUgc3VycHJpc2luZy4KCj4gR3JhbnRlZCwgdGhpcyBp
-c3N1ZSBjb3VsZCd2ZSBiZWVuIGNhdWdodCB3aXRoIGEgbGl0dGxlIG1vcmUgdGVzdGluZywgYnV0
-Cj4gaW4gcmV0cm9zcGVjdCBJIHRoaW5rIGl0IHdvdWxkJ3ZlIGJlZW4gYSBsb3QgYmV0dGVyIGlm
-IEFSTV9ETUFfVVNFX0lPTU1VCj4gd2FzIGp1c3QgZW5hYmxlZCB1bmNvbmRpdGlvbmFsbHkgaWYg
-aXQgaGFzIHNpZGUtZWZmZWN0cyB0aGF0IHBsYXRmb3Jtcwo+IGRvbid0IG9wdCBpbiB0byBidXQg
-aGF2ZSB0byBleHBsaWNpdGx5IG9wdCBvdXQgb2YuCgpBZ3JlZWQgb24gdGhhdCBjb3VudC4gIFBs
-ZWFzZSBzZW5kIGEgcGF0Y2guCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNr
-dG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2Ry
-aS1kZXZlbAo=
+From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+Depending on the kernel configuration, early ARM architecture setup code
+may have attached the GPU to a DMA/IOMMU mapping that transparently uses
+the IOMMU to back the DMA API. Tegra requires special handling for IOMMU
+backed buffers (a special bit in the GPU's MMU page tables indicates the
+memory path to take: via the SMMU or directly to the memory controller).
+Transparently backing DMA memory with an IOMMU prevents Nouveau from
+properly handling such memory accesses and causes memory access faults.
+
+As a side-note: buffers other than those allocated in instance memory
+don't need to be physically contiguous from the GPU's perspective since
+the GPU can map them into contiguous buffers using its own MMU. Mapping
+these buffers through the IOMMU is unnecessary and will even lead to
+performance degradation because of the additional translation.
+
+Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+---
+I had already sent this out independently to fix a regression that was
+introduced in v4.16, but then Christoph pointed out that it should've
+been sent to a wider audience and should use a core API rather than
+calling into architecture code directly.
+
+I've added it to this series for easier reference and to show the need
+for the new API.
+
+ .../drm/nouveau/nvkm/engine/device/tegra.c    | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+index 78597da6313a..23428a7056e9 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+@@ -19,6 +19,11 @@
+  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  * DEALINGS IN THE SOFTWARE.
+  */
++
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++#include <asm/dma-iommu.h>
++#endif
++
+ #include <core/tegra.h>
+ #ifdef CONFIG_NOUVEAU_PLATFORM_DRIVER
+ #include "priv.h"
+@@ -105,6 +110,20 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
+ 	unsigned long pgsize_bitmap;
+ 	int ret;
+ 
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++	if (dev->archdata.mapping) {
++		struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
++
++		arm_iommu_release_mapping(mapping);
++		arm_iommu_detach_device(dev);
++
++		if (dev->archdata.dma_coherent)
++			set_dma_ops(dev, &arm_coherent_dma_ops);
++		else
++			set_dma_ops(dev, &arm_dma_ops);
++	}
++#endif
++
+ 	if (!tdev->func->iommu_bit)
+ 		return;
+ 
+-- 
+2.17.0
