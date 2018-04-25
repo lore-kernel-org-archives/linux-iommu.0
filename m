@@ -1,78 +1,100 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: noveau vs arm dma ops
-Date: Wed, 25 Apr 2018 10:25:33 +0100
-Message-ID: <20180425092533.GO16141@n2100.armlinux.org.uk>
-References: <20180420124625.GA31078@infradead.org>
- <20180420152111.GR31310@phenom.ffwll.local>
- <20180424184847.GA3247@infradead.org>
- <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
- <20180425054855.GA17038@infradead.org>
- <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
- <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
- <20180425064335.GB28100@infradead.org>
- <20180425074151.GA2271@ulmo>
- <20180425085439.GA29996@infradead.org>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/4] ARM: dma-mapping: Implement arch_iommu_detach_device()
+Date: Wed, 25 Apr 2018 11:29:38 +0200
+Message-ID: <20180425092938.GA21182@ulmo>
+References: <20180425091815.16264-1-thierry.reding@gmail.com>
+	<20180425091815.16264-3-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180425085439.GA29996@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <treding@nvidia.com>
-Cc: Christoph Hellwig <hch@infradead.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>, Dan Williams <dan.j.williams@intel.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="===============2336374934013037688=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180425091815.16264-3-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 25, 2018 at 01:54:39AM -0700, Christoph Hellwig wrote:
-> [discussion about this patch, which should have been cced to the iommu
->  and linux-arm-kernel lists, but wasn't:
->  https://www.spinics.net/lists/dri-devel/msg173630.html]
-> 
-> On Wed, Apr 25, 2018 at 09:41:51AM +0200, Thierry Reding wrote:
-> > > API from the iommu/dma-mapping code.  Drivers have no business poking
-> > > into these details.
-> > 
-> > The interfaces that the above patch uses are all EXPORT_SYMBOL_GPL,
-> > which is rather misleading if they are not meant to be used by drivers
-> > directly.
 
-EXPORT_SYMBOL* means nothing as far as whether a driver should
-be able to use the symbol or not - it merely means that the symbol is
-made available to a module.  Modules cover much more than just device
-drivers - we have library modules, filesystem modules, helper modules
-to name a few non-driver classes of modules.
+--===============2336374934013037688==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="huq684BweRXVnRxX"
+Content-Disposition: inline
 
-We also have symbols that are exported as part of the architecture
-implementation detail of a public interface.  For example, the
-public interface "copy_from_user" is implemented as an inline
-function (actually several layers of inline functions) eventually
-calling into arm_copy_from_user().  arm_copy_from_user() is exported,
-but drivers (in fact no module) is allowed to make direct reference
-to arm_copy_from_user() - it'd fail when software PAN is enabled.
 
-The whole idea that "if a symbol is exported, it's fine for a driver
-to use it" is a complete work of fiction, always has been, and always
-will be.
+--huq684BweRXVnRxX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-We've had this with the architecture implementation details of the
-DMA API before, and with the architecture implementation details of
-the CPU cache flushing.  There's only so much commentry, or __
-prefixes you can add to a symbol before things get rediculous, and
-none of it stops people creating this abuse.  The only thing that
-seems to prevent it is to make life hard for folk wanting to use
-the symbols (eg, hiding the symbol prototype in a private header,
-etc.)
+On Wed, Apr 25, 2018 at 11:18:14AM +0200, Thierry Reding wrote:
+[...]
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 8c398fedbbb6..1957938d8c9c 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -2366,6 +2366,21 @@ static void arm_teardown_iommu_dma_ops(struct devi=
+ce *dev)
+>  	arm_iommu_release_mapping(mapping);
+>  }
+> =20
+> +void arch_iommu_detach_device(struct device *dev)
+> +{
+> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
+> +	const struct dma_map_ops *dma_ops;
+> +
+> +	if (!mapping)
+> +		return;
+> +
+> +	arm_iommu_release_mapping(mapping);
+> +	arm_iommu_detach_device(dev);
+> +
+> +	dma_ops =3D arm_get_dma_map_ops(dev->archdata.dma_coherent);
+> +	set_dma_ops(dev, dma_ops);
+> +}
 
-Never, ever go under the covers of an interface.  If the interface
-doesn't do what you want, _discuss_ it, don't just think "oh, that
-architecture private facility looks like what I need, I'll use that
-directly."
+Oh, the irony! This doesn't actually build and I failed to notice
+because I forgot to enable ARM_DMA_USE_IOMMU...
 
-If you ever are on the side of trying to maintain those implementation
-details that are abused in this way, you'll soon understand why this
-behaviour by driver authors is soo annoying, and the maintainability
-problems it creates.
+Sorry about that, but I think we can use this as basis to discuss
+whether the API is good and I'll make sure to properly test the next
+revision before sending it out.
 
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-According to speedtest.net: 8.21Mbps down 510kbps up
+Thierry
+
+--huq684BweRXVnRxX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrgSn8ACgkQ3SOs138+
+s6F1ww/+Io3Jb9byScviM7GR6y34CYPzZt1/CqxuuQRTH6emuGKJAX7mWuU9ijVk
+U2GvdZWo5Jx20V4+22CJhlV6MqWGLOKKDrhCDD45X4v5q4U1BRQYwxzbHwjqmFdm
+kmOsvWuupQ/flF4ZsX9EfVsikoQMZMyhplHpaue2DN5iiOG1abD5tYDoYYNeog0e
+0QSdcdYK6phHNgbP03DILieeH+fg3UwjSaGrE/9gX2aGNfR6taHtHe8h5A1xwosr
+eVjpzOYSZVpDd/inbte2mAzI6mj2gng4XTAKpN40jJV4ckKthcmvNRZOp5t6UnsA
++zkbK2yPOxvFXZToCWgcGQOXN1/6BOrYpqp7ZkoOKenbfsr6+c8d0MUYEBW0OFrl
+y5xVg5Ycj/o/q52/LETGHUK2b1IYm2af1vw/poauQZOx1G9HtFnxtoJXR3U3T5X3
+Py37aFcImZELUq3JkNr/dk4NCIBuXU0dMQhx14qKHJ9UPlPUpnWQKMpwarY2UXAf
+opHXDgD//tpBKolmdlHHnAR+6Dqo3mFuU5RUAmYJakfMCiSyM1Zz/zTwJKAN1tEV
+qlBJRrNnDHliroPYVlYq1lOxbAttvhIMMpEsH6QbxCICcTY2FPG6wCdAa9eo+fTW
+mZ8LIqwLIsM+taZdbznDlL8PjpgSrCG5//SmHXXonYTvKt8VG54=
+=J0eW
+-----END PGP SIGNATURE-----
+
+--huq684BweRXVnRxX--
+
+--===============2336374934013037688==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2336374934013037688==--
