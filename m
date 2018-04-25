@@ -1,134 +1,82 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 5/5] ARM: Unconditionally enable
- ARM_DMA_USE_IOMMU
-Date: Wed, 25 Apr 2018 12:10:51 +0200
-Message-ID: <20180425101051.15349-5-thierry.reding@gmail.com>
+From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Subject: Re: [PATCH v2 5/5] ARM: Unconditionally enable ARM_DMA_USE_IOMMU
+Date: Wed, 25 Apr 2018 11:25:11 +0100
+Message-ID: <20180425102511.GP16141@n2100.armlinux.org.uk>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
+	<20180425101051.15349-5-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180425101051.15349-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/nouveau>
-List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180425101051.15349-5-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KClRoZSBBUk1fRE1BX1VT
-RV9JT01NVSBLY29uZmlnIG9wdGlvbiBoYXMgc2lkZS1lZmZlY3RzIHRoYXQgZHJpdmVycyBjYW4K
-bm90IG9wdCBpbnRvIGJ1dCBoYXZlIHRvIGV4cGxpY2l0bHkgb3B0IG91dCBvZi4gVGhpcyBjYW4g
-bGVhZCB0byBzdWJ0bGUKYnVncyB0aGF0IGFyZSBkaWZmaWN1bHQgdG8gdHJhY2sgZG93biBhbmQg
-bm90IGltbWVkaWF0ZWx5IG9idmlvdXMgdG8gYmUKcmVsYXRlZCB0byB0aGlzIEtjb25maWcgb3B0
-aW9uLgoKVG8gYXZvaWQgdGhpcyBjb25mdXNpb24sIGFsd2F5cyBlbmFibGUgdGhlIG9wdGlvbiB0
-byBleHBvc2UgYW55IGx1cmtpbmcKYnVncyBvbmNlIGFuZCBhbGxvdyBhbnkgcmVncmVzc2lvbnMg
-aW50cm9kdWNlZCBieSB0aGUgRE1BL0lPTU1VIGNvZGUgdG8KYmUgY2F1Z2h0IG1vcmUgcXVpY2ts
-eSBpbiB0aGUgZnV0dXJlLgoKTm90ZSB0aGF0IHNvbWUgZHJpdmVycyBzdGlsbCB1c2UgdGhlIEtj
-b25maWcgc3ltYm9sIHRvIHByb3ZpZGUgZGlmZmVyZW50CmNvZGUgcGF0aHMgZGVwZW5kaW5nIG9u
-IHdoYXQgYXJjaGl0ZWN0dXJlIHRoZSBjb2RlIHJ1bnMgb24gKGUuZy4gMzItYml0CkFSTSB2cy4g
-NjQtYml0IEFSTSB3aGljaCBoYXZlIGRpZmZlcmVudCBhbmQgaW5jb21wYXRpYmxlIGltcGxlbWVu
-dGF0aW9ucwpvZiB0aGUgRE1BL0lPTU1VIGludGVncmF0aW9uIGNvZGUpLCBzbyBsZWF2ZSB0aGUg
-c3ltYm9sIGluIHBsYWNlIHRvIGtlZXAKdGhvc2UgZHJpdmVycyB3b3JraW5nLgoKRm9yIHRoZSBs
-b25nIHRlcm0sIGl0IGlzIHByZWZlcmFibGUgdG8gdHJhbnNpdGlvbiBldmVyeW9uZSB0byB0aGUK
-Z2VuZXJpYyBETUEvSU9NTVUgaW50ZWdyYXRpb24gY29kZSBpbiBkcml2ZXJzL2lvbW11L2RtYS1p
-b21tdS5jLgoKU2lnbmVkLW9mZi1ieTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNv
-bT4KLS0tCkNoYW5nZXMgaW4gdjI6Ci0gbmV3IHBhdGNoCgogYXJjaC9hcm0vS2NvbmZpZyAgICAg
-ICAgICAgICAgIHwgIDIgKy0KIGFyY2gvYXJtL2luY2x1ZGUvYXNtL2RldmljZS5oICB8ICA2IC0t
-LS0tLQogYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYyAgICAgIHwgMTggLS0tLS0tLS0tLS0tLS0t
-LS0tCiBkcml2ZXJzL2lvbW11L0tjb25maWcgICAgICAgICAgfCAgNyAtLS0tLS0tCiBkcml2ZXJz
-L21lZGlhL3BsYXRmb3JtL0tjb25maWcgfCAgMSAtCiA1IGZpbGVzIGNoYW5nZWQsIDEgaW5zZXJ0
-aW9uKCspLCAzMyBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9hcmNoL2FybS9LY29uZmlnIGIv
-YXJjaC9hcm0vS2NvbmZpZwppbmRleCBmYTBiMTkwZjhhMzguLjNjOTFkZTc4NTM1YSAxMDA2NDQK
-LS0tIGEvYXJjaC9hcm0vS2NvbmZpZworKysgYi9hcmNoL2FybS9LY29uZmlnCkBAIC0xMjQsNyAr
-MTI0LDcgQEAgY29uZmlnIE5FRURfU0dfRE1BX0xFTkdUSAogCWJvb2wKIAogY29uZmlnIEFSTV9E
-TUFfVVNFX0lPTU1VCi0JYm9vbAorCWRlZl9ib29sIHkKIAlzZWxlY3QgQVJNX0hBU19TR19DSEFJ
-TgogCXNlbGVjdCBORUVEX1NHX0RNQV9MRU5HVEgKIApkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vaW5j
-bHVkZS9hc20vZGV2aWNlLmggYi9hcmNoL2FybS9pbmNsdWRlL2FzbS9kZXZpY2UuaAppbmRleCAz
-MjM0ZmU5YmJhNmUuLmMzY2YzOGUxNjg2NiAxMDA2NDQKLS0tIGEvYXJjaC9hcm0vaW5jbHVkZS9h
-c20vZGV2aWNlLmgKKysrIGIvYXJjaC9hcm0vaW5jbHVkZS9hc20vZGV2aWNlLmgKQEAgLTEzLDkg
-KzEzLDcgQEAgc3RydWN0IGRldl9hcmNoZGF0YSB7CiAjaWZkZWYgQ09ORklHX0lPTU1VX0FQSQog
-CXZvaWQgKmlvbW11OyAvKiBwcml2YXRlIElPTU1VIGRhdGEgKi8KICNlbmRpZgotI2lmZGVmIENP
-TkZJR19BUk1fRE1BX1VTRV9JT01NVQogCXN0cnVjdCBkbWFfaW9tbXVfbWFwcGluZwkqbWFwcGlu
-ZzsKLSNlbmRpZgogI2lmZGVmIENPTkZJR19YRU4KIAljb25zdCBzdHJ1Y3QgZG1hX21hcF9vcHMg
-KmRldl9kbWFfb3BzOwogI2VuZGlmCkBAIC0zMSwxMCArMjksNiBAQCBzdHJ1Y3QgcGRldl9hcmNo
-ZGF0YSB7CiAjZW5kaWYKIH07CiAKLSNpZmRlZiBDT05GSUdfQVJNX0RNQV9VU0VfSU9NTVUKICNk
-ZWZpbmUgdG9fZG1hX2lvbW11X21hcHBpbmcoZGV2KSAoKGRldiktPmFyY2hkYXRhLm1hcHBpbmcp
-Ci0jZWxzZQotI2RlZmluZSB0b19kbWFfaW9tbXVfbWFwcGluZyhkZXYpIE5VTEwKLSNlbmRpZgog
-CiAjZW5kaWYKZGlmZiAtLWdpdCBhL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMgYi9hcmNoL2Fy
-bS9tbS9kbWEtbWFwcGluZy5jCmluZGV4IGNjNjNhMjViZDA4OC4uZjZjMjhlZDU2NTFhIDEwMDY0
-NAotLS0gYS9hcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jCisrKyBiL2FyY2gvYXJtL21tL2RtYS1t
-YXBwaW5nLmMKQEAgLTExNzQsOCArMTE3NCw2IEBAIHN0YXRpYyBpbnQgX19pbml0IGRtYV9kZWJ1
-Z19kb19pbml0KHZvaWQpCiB9CiBjb3JlX2luaXRjYWxsKGRtYV9kZWJ1Z19kb19pbml0KTsKIAot
-I2lmZGVmIENPTkZJR19BUk1fRE1BX1VTRV9JT01NVQotCiBzdGF0aWMgaW50IF9fZG1hX2luZm9f
-dG9fcHJvdChlbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBkaXIsIHVuc2lnbmVkIGxvbmcgYXR0cnMp
-CiB7CiAJaW50IHByb3QgPSAwOwpAQCAtMjM2NiwyMCArMjM2NCw2IEBAIHN0YXRpYyB2b2lkIGFy
-bV90ZWFyZG93bl9pb21tdV9kbWFfb3BzKHN0cnVjdCBkZXZpY2UgKmRldikKIAlhcm1faW9tbXVf
-cmVsZWFzZV9tYXBwaW5nKG1hcHBpbmcpOwogfQogCi0jZWxzZQotCi1zdGF0aWMgYm9vbCBhcm1f
-c2V0dXBfaW9tbXVfZG1hX29wcyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHU2NCBkbWFfYmFzZSwgdTY0
-IHNpemUsCi0JCQkJICAgIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKmlvbW11KQotewotCXJldHVy
-biBmYWxzZTsKLX0KLQotc3RhdGljIHZvaWQgYXJtX3RlYXJkb3duX2lvbW11X2RtYV9vcHMoc3Ry
-dWN0IGRldmljZSAqZGV2KSB7IH0KLQotI2RlZmluZSBhcm1fZ2V0X2lvbW11X2RtYV9tYXBfb3Bz
-IGFybV9nZXRfZG1hX21hcF9vcHMKLQotI2VuZGlmCS8qIENPTkZJR19BUk1fRE1BX1VTRV9JT01N
-VSAqLwotCiBzdGF0aWMgY29uc3Qgc3RydWN0IGRtYV9tYXBfb3BzICphcm1fZ2V0X2RtYV9tYXBf
-b3BzKGJvb2wgY29oZXJlbnQpCiB7CiAJcmV0dXJuIGNvaGVyZW50ID8gJmFybV9jb2hlcmVudF9k
-bWFfb3BzIDogJmFybV9kbWFfb3BzOwpAQCAtMjQyNiw3ICsyNDEwLDYgQEAgdm9pZCBhcmNoX3Rl
-YXJkb3duX2RtYV9vcHMoc3RydWN0IGRldmljZSAqZGV2KQogCiB2b2lkIGFyY2hfaW9tbXVfZGV0
-YWNoX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYpCiB7Ci0jaWZkZWYgQ09ORklHX0FSTV9ETUFf
-VVNFX0lPTU1VCiAJc3RydWN0IGRtYV9pb21tdV9tYXBwaW5nICptYXBwaW5nID0gdG9fZG1hX2lv
-bW11X21hcHBpbmcoZGV2KTsKIAljb25zdCBzdHJ1Y3QgZG1hX21hcF9vcHMgKmRtYV9vcHM7CiAK
-QEAgLTI0MzgsNSArMjQyMSw0IEBAIHZvaWQgYXJjaF9pb21tdV9kZXRhY2hfZGV2aWNlKHN0cnVj
-dCBkZXZpY2UgKmRldikKIAogCWRtYV9vcHMgPSBhcm1fZ2V0X2RtYV9tYXBfb3BzKGRldi0+YXJj
-aGRhdGEuZG1hX2NvaGVyZW50KTsKIAlzZXRfZG1hX29wcyhkZXYsIGRtYV9vcHMpOwotI2VuZGlm
-CiB9CmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L0tjb25maWcgYi9kcml2ZXJzL2lvbW11L0tj
-b25maWcKaW5kZXggZGYxNzFjYjg1ODIyLi43ZjBiM2NhNzZhMTcgMTAwNjQ0Ci0tLSBhL2RyaXZl
-cnMvaW9tbXUvS2NvbmZpZworKysgYi9kcml2ZXJzL2lvbW11L0tjb25maWcKQEAgLTIyNiw3ICsy
-MjYsNiBAQCBjb25maWcgUk9DS0NISVBfSU9NTVUKIAlkZXBlbmRzIG9uIEFSTSB8fCBBUk02NAog
-CWRlcGVuZHMgb24gQVJDSF9ST0NLQ0hJUCB8fCBDT01QSUxFX1RFU1QKIAlzZWxlY3QgSU9NTVVf
-QVBJCi0Jc2VsZWN0IEFSTV9ETUFfVVNFX0lPTU1VCiAJaGVscAogCSAgU3VwcG9ydCBmb3IgSU9N
-TVVzIGZvdW5kIG9uIFJvY2tjaGlwIHJrMzJ4eCBTT0NzLgogCSAgVGhlc2UgSU9NTVVzIGFsbG93
-IHZpcnR1YWxpemF0aW9uIG9mIHRoZSBhZGRyZXNzIHNwYWNlIHVzZWQgYnkgbW9zdApAQCAtMjU5
-LDcgKzI1OCw2IEBAIGNvbmZpZyBFWFlOT1NfSU9NTVUKIAlkZXBlbmRzIG9uIEFSQ0hfRVhZTk9T
-ICYmIE1NVQogCWRlcGVuZHMgb24gIUNQVV9CSUdfRU5ESUFOICMgcmV2aXNpdCBkcml2ZXIgaWYg
-d2UgY2FuIGVuYWJsZSBiaWctZW5kaWFuIHB0ZXMKIAlzZWxlY3QgSU9NTVVfQVBJCi0Jc2VsZWN0
-IEFSTV9ETUFfVVNFX0lPTU1VCiAJaGVscAogCSAgU3VwcG9ydCBmb3IgdGhlIElPTU1VIChTeXN0
-ZW0gTU1VKSBvZiBTYW1zdW5nIEV4eW5vcyBhcHBsaWNhdGlvbgogCSAgcHJvY2Vzc29yIGZhbWls
-eS4gVGhpcyBlbmFibGVzIEgvVyBtdWx0aW1lZGlhIGFjY2VsZXJhdG9ycyB0byBzZWUKQEAgLTI4
-Myw3ICsyODEsNiBAQCBjb25maWcgSVBNTVVfVk1TQQogCWRlcGVuZHMgb24gQVJDSF9SRU5FU0FT
-IHx8IChDT01QSUxFX1RFU1QgJiYgIUdFTkVSSUNfQVRPTUlDNjQpCiAJc2VsZWN0IElPTU1VX0FQ
-SQogCXNlbGVjdCBJT01NVV9JT19QR1RBQkxFX0xQQUUKLQlzZWxlY3QgQVJNX0RNQV9VU0VfSU9N
-TVUKIAloZWxwCiAJICBTdXBwb3J0IGZvciB0aGUgUmVuZXNhcyBWTVNBLWNvbXBhdGlibGUgSVBN
-TVUgUmVuZXNhcyBmb3VuZCBpbiB0aGUKIAkgIFItTW9iaWxlIEFQRTYgYW5kIFItQ2FyIEgyL00y
-IFNvQ3MuCkBAIC0zMDQsNyArMzAxLDYgQEAgY29uZmlnIEFSTV9TTU1VCiAJZGVwZW5kcyBvbiAo
-QVJNNjQgfHwgQVJNKSAmJiBNTVUKIAlzZWxlY3QgSU9NTVVfQVBJCiAJc2VsZWN0IElPTU1VX0lP
-X1BHVEFCTEVfTFBBRQotCXNlbGVjdCBBUk1fRE1BX1VTRV9JT01NVSBpZiBBUk0KIAloZWxwCiAJ
-ICBTdXBwb3J0IGZvciBpbXBsZW1lbnRhdGlvbnMgb2YgdGhlIEFSTSBTeXN0ZW0gTU1VIGFyY2hp
-dGVjdHVyZQogCSAgdmVyc2lvbnMgMSBhbmQgMi4KQEAgLTM0NCw3ICszNDAsNiBAQCBjb25maWcg
-TVRLX0lPTU1VCiAJYm9vbCAiTVRLIElPTU1VIFN1cHBvcnQiCiAJZGVwZW5kcyBvbiBBUk0gfHwg
-QVJNNjQKIAlkZXBlbmRzIG9uIEFSQ0hfTUVESUFURUsgfHwgQ09NUElMRV9URVNUCi0Jc2VsZWN0
-IEFSTV9ETUFfVVNFX0lPTU1VCiAJc2VsZWN0IElPTU1VX0FQSQogCXNlbGVjdCBJT01NVV9ETUEK
-IAlzZWxlY3QgSU9NTVVfSU9fUEdUQUJMRV9BUk1WN1MKQEAgLTM2MSw3ICszNTYsNiBAQCBjb25m
-aWcgTVRLX0lPTU1VX1YxCiAJYm9vbCAiTVRLIElPTU1VIFZlcnNpb24gMSAoTTRVIGdlbjEpIFN1
-cHBvcnQiCiAJZGVwZW5kcyBvbiBBUk0KIAlkZXBlbmRzIG9uIEFSQ0hfTUVESUFURUsgfHwgQ09N
-UElMRV9URVNUCi0Jc2VsZWN0IEFSTV9ETUFfVVNFX0lPTU1VCiAJc2VsZWN0IElPTU1VX0FQSQog
-CXNlbGVjdCBNRU1PUlkKIAlzZWxlY3QgTVRLX1NNSQpAQCAtMzc5LDcgKzM3Myw2IEBAIGNvbmZp
-ZyBRQ09NX0lPTU1VCiAJZGVwZW5kcyBvbiBIQVNfRE1BCiAJc2VsZWN0IElPTU1VX0FQSQogCXNl
-bGVjdCBJT01NVV9JT19QR1RBQkxFX0xQQUUKLQlzZWxlY3QgQVJNX0RNQV9VU0VfSU9NTVUKIAlo
-ZWxwCiAJICBTdXBwb3J0IGZvciBJT01NVSBvbiBjZXJ0YWluIFF1YWxjb21tIFNvQ3MuCiAKZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvbWVkaWEvcGxhdGZvcm0vS2NvbmZpZyBiL2RyaXZlcnMvbWVkaWEv
-cGxhdGZvcm0vS2NvbmZpZwppbmRleCBlMzIyOWY3YmFlZDEuLjVmNzEzNWIwNTJlZCAxMDA2NDQK
-LS0tIGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9LY29uZmlnCisrKyBiL2RyaXZlcnMvbWVkaWEv
-cGxhdGZvcm0vS2NvbmZpZwpAQCAtNjYsNyArNjYsNiBAQCBjb25maWcgVklERU9fT01BUDMKIAlk
-ZXBlbmRzIG9uIChBUkNIX09NQVAzICYmIE9NQVBfSU9NTVUpIHx8IENPTVBJTEVfVEVTVAogCWRl
-cGVuZHMgb24gQ09NTU9OX0NMSwogCWRlcGVuZHMgb24gSEFTX0RNQSAmJiBPRgotCXNlbGVjdCBB
-Uk1fRE1BX1VTRV9JT01NVSBpZiBPTUFQX0lPTU1VCiAJc2VsZWN0IFZJREVPQlVGMl9ETUFfQ09O
-VElHCiAJc2VsZWN0IE1GRF9TWVNDT04KIAlzZWxlY3QgVjRMMl9GV05PREUKLS0gCjIuMTcuMAoK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTm91dmVhdSBt
-YWlsaW5nIGxpc3QKTm91dmVhdUBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
-cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9ub3V2ZWF1Cg==
+On Wed, Apr 25, 2018 at 12:10:51PM +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> The ARM_DMA_USE_IOMMU Kconfig option has side-effects that drivers can
+> not opt into but have to explicitly opt out of. This can lead to subtle
+> bugs that are difficult to track down and not immediately obvious to be
+> related to this Kconfig option.
+> 
+> To avoid this confusion, always enable the option to expose any lurking
+> bugs once and allow any regressions introduced by the DMA/IOMMU code to
+> be caught more quickly in the future.
+> 
+> Note that some drivers still use the Kconfig symbol to provide different
+> code paths depending on what architecture the code runs on (e.g. 32-bit
+> ARM vs. 64-bit ARM which have different and incompatible implementations
+> of the DMA/IOMMU integration code), so leave the symbol in place to keep
+> those drivers working.
+> 
+> For the long term, it is preferable to transition everyone to the
+> generic DMA/IOMMU integration code in drivers/iommu/dma-iommu.c.
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Changes in v2:
+> - new patch
+> 
+>  arch/arm/Kconfig               |  2 +-
+>  arch/arm/include/asm/device.h  |  6 ------
+>  arch/arm/mm/dma-mapping.c      | 18 ------------------
+>  drivers/iommu/Kconfig          |  7 -------
+>  drivers/media/platform/Kconfig |  1 -
+>  5 files changed, 1 insertion(+), 33 deletions(-)
+> 
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index fa0b190f8a38..3c91de78535a 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -124,7 +124,7 @@ config NEED_SG_DMA_LENGTH
+>  	bool
+>  
+>  config ARM_DMA_USE_IOMMU
+> -	bool
+> +	def_bool y
+>  	select ARM_HAS_SG_CHAIN
+>  	select NEED_SG_DMA_LENGTH
+
+This doesn't work - as has recently been discussed with hch, we can't
+globally enable NEED_SG_DMA_LENGTH on ARM - the ARM architecture
+pre-dates the addition of the DMA length member in the scatterlist,
+and not every machine supports the splitting of the DMA length from
+the non-DMA length member.  Hence, this will cause a regression,
+sorry.
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
+According to speedtest.net: 8.21Mbps down 510kbps up
