@@ -1,42 +1,29 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v2 5/5] ARM: Unconditionally enable ARM_DMA_USE_IOMMU
-Date: Wed, 25 Apr 2018 08:17:45 -0700
-Message-ID: <20180425151745.GA16075@infradead.org>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
+	mapping
+Date: Wed, 25 Apr 2018 08:18:15 -0700
+Message-ID: <20180425151815.GB16075@infradead.org>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
- <20180425101051.15349-5-thierry.reding@gmail.com>
- <20180425102511.GP16141@n2100.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180425102511.GP16141@n2100.armlinux.org.uk>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: nouveau@lists.freedesktop.org, Joerg Roedel <joro@8bytes.org>, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180425101051.15349-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 25, 2018 at 11:25:11AM +0100, Russell King - ARM Linux wrote:
-> >  config ARM_DMA_USE_IOMMU
-> > -	bool
-> > +	def_bool y
-> >  	select ARM_HAS_SG_CHAIN
-> >  	select NEED_SG_DMA_LENGTH
-> 
-> This doesn't work - as has recently been discussed with hch, we can't
-> globally enable NEED_SG_DMA_LENGTH on ARM - the ARM architecture
-> pre-dates the addition of the DMA length member in the scatterlist,
-> and not every machine supports the splitting of the DMA length from
-> the non-DMA length member.  Hence, this will cause a regression,
-> sorry.
+The series seems to miss a cover letter.
 
-Agreed as-is.  However supporting it everywhere should not be much work,
-I'll take a look at it.
+Also I really think this patch original patch shouldn't be in the proper
+series.
