@@ -1,11 +1,13 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/4] drm/nouveau: tegra: Detach from ARM DMA/IOMMU mapping
-Date: Wed, 25 Apr 2018 11:18:12 +0200
-Message-ID: <20180425091815.16264-1-thierry.reding@gmail.com>
+Subject: [PATCH 2/4] dma-mapping: Introduce dma_iommu_detach_device() API
+Date: Wed, 25 Apr 2018 11:18:13 +0200
+Message-ID: <20180425091815.16264-2-thierry.reding@gmail.com>
+References: <20180425091815.16264-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180425091815.16264-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,69 +23,45 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Depending on the kernel configuration, early ARM architecture setup code
-may have attached the GPU to a DMA/IOMMU mapping that transparently uses
-the IOMMU to back the DMA API. Tegra requires special handling for IOMMU
-backed buffers (a special bit in the GPU's MMU page tables indicates the
-memory path to take: via the SMMU or directly to the memory controller).
-Transparently backing DMA memory with an IOMMU prevents Nouveau from
-properly handling such memory accesses and causes memory access faults.
-
-As a side-note: buffers other than those allocated in instance memory
-don't need to be physically contiguous from the GPU's perspective since
-the GPU can map them into contiguous buffers using its own MMU. Mapping
-these buffers through the IOMMU is unnecessary and will even lead to
-performance degradation because of the additional translation.
+The dma_iommu_detach_device() API can be used by drivers to forcibly
+detach a device from an IOMMU that architecture code might have attached
+to. This is useful for drivers that need explicit control over the IOMMU
+using the IOMMU API directly.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
-I had already sent this out independently to fix a regression that was
-introduced in v4.16, but then Christoph pointed out that it should've
-been sent to a wider audience and should use a core API rather than
-calling into architecture code directly.
+ drivers/base/dma-mapping.c  | 8 ++++++++
+ include/linux/dma-mapping.h | 2 ++
+ 2 files changed, 10 insertions(+)
 
-I've added it to this series for easier reference and to show the need
-for the new API.
-
- .../drm/nouveau/nvkm/engine/device/tegra.c    | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
-
-diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-index 78597da6313a..23428a7056e9 100644
---- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-@@ -19,6 +19,11 @@
-  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  * DEALINGS IN THE SOFTWARE.
-  */
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index d82566d6e237..18ddf32b10c9 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -366,3 +366,11 @@ void dma_deconfigure(struct device *dev)
+ 	of_dma_deconfigure(dev);
+ 	acpi_dma_deconfigure(dev);
+ }
 +
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+#include <asm/dma-iommu.h>
++void dma_iommu_detach_device(struct device *dev)
++{
++#ifdef arch_iommu_detach_device
++	arch_iommu_detach_device(dev);
 +#endif
-+
- #include <core/tegra.h>
- #ifdef CONFIG_NOUVEAU_PLATFORM_DRIVER
- #include "priv.h"
-@@ -105,6 +110,20 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
- 	unsigned long pgsize_bitmap;
- 	int ret;
++}
++EXPORT_SYMBOL(dma_iommu_detach_device);
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index f8ab1c0f589e..732191a2c64e 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -671,6 +671,8 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+ static inline void arch_teardown_dma_ops(struct device *dev) { }
+ #endif
  
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+	if (dev->archdata.mapping) {
-+		struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
++extern void dma_iommu_detach_device(struct device *dev);
 +
-+		arm_iommu_release_mapping(mapping);
-+		arm_iommu_detach_device(dev);
-+
-+		if (dev->archdata.dma_coherent)
-+			set_dma_ops(dev, &arm_coherent_dma_ops);
-+		else
-+			set_dma_ops(dev, &arm_dma_ops);
-+	}
-+#endif
-+
- 	if (!tdev->func->iommu_bit)
- 		return;
- 
+ static inline unsigned int dma_get_max_seg_size(struct device *dev)
+ {
+ 	if (dev->dma_parms && dev->dma_parms->max_segment_size)
 -- 
 2.17.0
