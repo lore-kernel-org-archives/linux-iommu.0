@@ -1,9 +1,8 @@
 From: Russell King - ARM Linux <linux@armlinux.org.uk>
 Subject: Re: noveau vs arm dma ops
-Date: Wed, 25 Apr 2018 23:54:43 +0100
-Message-ID: <20180425225443.GQ16141@n2100.armlinux.org.uk>
-References: <20180424184847.GA3247@infradead.org>
- <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+Date: Thu, 26 Apr 2018 00:26:46 +0100
+Message-ID: <20180425232646.GR16141@n2100.armlinux.org.uk>
+References: <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
  <20180425054855.GA17038@infradead.org>
  <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
  <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
@@ -12,97 +11,99 @@ References: <20180424184847.GA3247@infradead.org>
  <20180425085439.GA29996@infradead.org>
  <20180425100429.GR25142@phenom.ffwll.local>
  <20180425153312.GD27076@infradead.org>
+ <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180425153312.GD27076@infradead.org>
+In-Reply-To: <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Thierry Reding <treding@nvidia.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Jerome Glisse <jglisse@redhat.com>, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Logan Gunthorpe <logang@deltatee.com>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: Christoph Hellwig <hch@infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Thierry Reding <treding@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 25, 2018 at 08:33:12AM -0700, Christoph Hellwig wrote:
-> On Wed, Apr 25, 2018 at 12:04:29PM +0200, Daniel Vetter wrote:
-> > - dma api hides the cache flushing requirements from us. GPUs love
-> >   non-snooped access, and worse give userspace control over that. We want
-> >   a strict separation between mapping stuff and flushing stuff. With the
-> >   IOMMU api we mostly have the former, but for the later arch maintainers
-> >   regularly tells they won't allow that. So we have drm_clflush.c.
-> 
-> The problem is that a cache flushing API entirely separate is hard. That
-> being said if you look at my generic dma-noncoherent API series it tries
-> to move that way.  So far it is in early stages and apparently rather
-> buggy unfortunately.
+On Wed, Apr 25, 2018 at 11:35:13PM +0200, Daniel Vetter wrote:
+> On arm that doesn't work. The iommu api seems like a good fit, except
+> the dma-api tends to get in the way a bit (drm/msm apparently has
+> similar problems like tegra), and if you need contiguous memory
+> dma_alloc_coherent is the only way to get at contiguous memory. There
+> was a huge discussion years ago about that, and direct cma access was
+> shot down because it would have exposed too much of the caching
+> attribute mangling required (most arm platforms need wc-pages to not
+> be in the kernel's linear map apparently).
 
-And if folk want a cacheable mapping with explicit cache flushing, the
-cache flushing must not be defined in terms of "this is what CPU seems
-to need" but from the point of view of a CPU with infinite prefetching,
-infinite caching and infinite capacity to perform writebacks of dirty
-cache lines at unexpected moments when the memory is mapped in a
-cacheable mapping.
+I think you completely misunderstand ARM from what you've written above,
+and this worries me greatly about giving DRM the level of control that
+is being asked for.
 
-(The reason for that is you're operating in a non-CPU specific space,
-so you can't make any guarantees as to how much caching or prefetching
-will occur by the CPU - different CPUs will do different amounts.)
+Modern ARMs have a PIPT cache or a non-aliasing VIPT cache, and cache
+attributes are stored in the page tables.  These caches are inherently
+non-aliasing when there are multiple mappings (which is a great step
+forward compared to the previous aliasing caches.)
 
-So, for example, the sequence:
+As the cache attributes are stored in the page tables, this in theory
+allows different virtual mappings of the same physical memory to have
+different cache attributes.  However, there's a problem, and that's
+called speculative prefetching.
 
-GPU writes to memory
-			CPU reads from cacheable memory
+Let's say you have one mapping which is cacheable, and another that is
+marked as write combining.  If a cache line is speculatively prefetched
+through the cacheable mapping of this memory, and then you read the
+same physical location through the write combining mapping, it is
+possible that you could read cached data.
 
-if the memory was previously dirty (iow, CPU has written), you need to
-flush the dirty cache lines _before_ the GPU writes happen, but you
-don't know whether the CPU has speculatively prefetched, so you need
-to flush any prefetched cache lines before reading from the cacheable
-memory _after_ the GPU has finished writing.
+So, it is generally accepted that all mappings of any particular
+physical bit of memory should have the same cache attributes to avoid
+unpredictable behaviour.
 
-Also note that "flush" there can be "clean the cache", "clean and
-invalidate the cache" or "invalidate the cache" as appropriate - some
-CPUs are able to perform those three operations, and the appropriate
-one depends on not only where in the above sequence it's being used,
-but also on what the operations are.
+This presents a problem with what is generally called "lowmem" where
+the memory is mapped in kernel virtual space with cacheable
+attributes.  It can also happen with highmem if the memory is
+kmapped.
 
-So, the above sequence could be:
+This is why, on ARM, you can't use something like get_free_pages() to
+grab some pages from the system, pass it to the GPU, map it into
+userspace as write-combining, etc.  It _might_ work for some CPUs,
+but ARM CPUs vary in how much prefetching they do, and what may work
+for one particular CPU is in no way guaranteed to work for another
+ARM CPU.
 
-			CPU invalidates cache for memory
-				(due to possible dirty cache lines)
-GPU writes to memory
-			CPU invalidates cache for memory
-				(to get rid of any speculatively prefetched
-				 lines)
-			CPU reads from cacheable memory
+The official line from architecture folk is to assume that the caches
+infinitely speculate, are of infinite size, and can writeback *dirty*
+data at any moment.
 
-Yes, in the above case, _two_ cache operations are required to ensure
-correct behaviour.  However, if you know for certain that the memory was
-previously clean, then the first cache operation can be skipped.
+The way to stop things like speculative prefetches to particular
+physical memory is to, quite "simply", not have any cacheable
+mappings of that physical memory anywhere in the system.
 
-What I'm pointing out is there's much more than just "I want to flush
-the cache" here, which is currently what DRM seems to assume at the
-moment with the code in drm_cache.c.
+Now, cache flushes on ARM tend to be fairly expensive for GPU buffers.
+If you have, say, an 8MB buffer (for a 1080p frame) and you need to
+do a cache operation on that buffer, you'll be iterating over it
+32 or maybe 64 bytes at a time "just in case" there's a cache line
+present.  Referring to my previous email, where I detailed the
+potential need for _two_ flushes, one before the GPU operation and
+one after, and this becomes _really_ expensive.  At that point, you're
+probably way better off using write-combine memory where you don't
+need to spend CPU cycles performing cache flushing - potentially
+across all CPUs in the system if cache operations aren't broadcasted.
 
-If we can agree a set of interfaces that allows _proper_ use of these
-facilities, one which can be used appropriately, then there shouldn't
-be a problem.  The DMA API does that via it's ideas about who owns a
-particular buffer (because of the above problem) and that's something
-which would need to be carried over to such a cache flushing API (it
-should be pretty obvious that having a GPU read or write memory while
-the cache for that memory is being cleaned will lead to unexpected
-results.)
+This isn't a simple matter of "just provide some APIs for cache
+operations" - there's much more that needs to be understood by
+all parties here, especially when we have GPU drivers that can be
+used with quite different CPUs.
 
-Also note that things get even more interesting in a SMP environment
-if cache operations aren't broadcasted across the SMP cluster (which
-means cache operations have to be IPI'd to other CPUs.)
+It may well be that for some combinations of CPUs and workloads, it's
+better to use write-combine memory without cache flushing, but for
+other CPUs that tradeoff (for the same workload) could well be
+different.
 
-The next issue, which I've brought up before, is that exposing cache
-flushing to userspace on architectures where it isn't already exposed
-comes.  As has been shown by Google Project Zero, this risks exposing
-those architectures to Spectre and Meltdown exploits where they weren't
-at such a risk before.  (I've pretty much shown here that you _do_
-need to control which cache lines get flushed to make these exploits
-work, and flushing the cache by reading lots of data in liu of having
-the ability to explicitly flush bits of cache makes it very difficult
-to impossible for them to work.)
+Older ARMs get more interesting, because they have aliasing caches.
+That means the CPU cache aliases across different virtual space
+mappings in some way, which complicates (a) the mapping of memory
+and (b) handling the cache operations on it.
+
+It's too late for me to go into that tonight, and I probably won't
+be reading mail for the next week and a half, sorry.
 
 -- 
 RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
