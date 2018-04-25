@@ -1,7 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 2/5] dma-mapping: Introduce dma_iommu_detach_device() API
-Date: Wed, 25 Apr 2018 12:10:48 +0200
-Message-ID: <20180425101051.15349-2-thierry.reding@gmail.com>
+Subject: [PATCH v2 3/5] ARM: dma-mapping: Implement arch_iommu_detach_device()
+Date: Wed, 25 Apr 2018 12:10:49 +0200
+Message-ID: <20180425101051.15349-3-thierry.reding@gmail.com>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,45 +23,73 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-The dma_iommu_detach_device() API can be used by drivers to forcibly
-detach a device from an IOMMU that architecture code might have attached
-to. This is useful for drivers that need explicit control over the IOMMU
-using the IOMMU API directly.
+Implement this function to enable drivers from detaching from any IOMMU
+domains that architecture code might have attached them to so that they
+can take exclusive control of the IOMMU via the IOMMU API.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/base/dma-mapping.c  | 8 ++++++++
- include/linux/dma-mapping.h | 2 ++
- 2 files changed, 10 insertions(+)
+Changes in v2:
+- fix compilation
 
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index d82566d6e237..18ddf32b10c9 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -366,3 +366,11 @@ void dma_deconfigure(struct device *dev)
- 	of_dma_deconfigure(dev);
- 	acpi_dma_deconfigure(dev);
+ arch/arm/include/asm/dma-mapping.h |  3 +++
+ arch/arm/mm/dma-mapping-nommu.c    |  4 ++++
+ arch/arm/mm/dma-mapping.c          | 17 +++++++++++++++++
+ 3 files changed, 24 insertions(+)
+
+diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
+index 8436f6ade57d..d6d5bd44f962 100644
+--- a/arch/arm/include/asm/dma-mapping.h
++++ b/arch/arm/include/asm/dma-mapping.h
+@@ -103,6 +103,9 @@ extern void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ #define arch_teardown_dma_ops arch_teardown_dma_ops
+ extern void arch_teardown_dma_ops(struct device *dev);
+ 
++#define arch_iommu_detach_device arch_iommu_detach_device
++extern void arch_iommu_detach_device(struct device *dev);
++
+ /* do not use this function in a driver */
+ static inline bool is_device_dma_coherent(struct device *dev)
+ {
+diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
+index 619f24a42d09..60fef97d8452 100644
+--- a/arch/arm/mm/dma-mapping-nommu.c
++++ b/arch/arm/mm/dma-mapping-nommu.c
+@@ -242,6 +242,10 @@ void arch_teardown_dma_ops(struct device *dev)
+ {
+ }
+ 
++void arch_iommu_detach_device(struct device *dev)
++{
++}
++
+ #define PREALLOC_DMA_DEBUG_ENTRIES	4096
+ 
+ static int __init dma_debug_do_init(void)
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 8c398fedbbb6..cc63a25bd088 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2423,3 +2423,20 @@ void arch_teardown_dma_ops(struct device *dev)
+ 
+ 	arm_teardown_iommu_dma_ops(dev);
  }
 +
-+void dma_iommu_detach_device(struct device *dev)
++void arch_iommu_detach_device(struct device *dev)
 +{
-+#ifdef arch_iommu_detach_device
-+	arch_iommu_detach_device(dev);
++#ifdef CONFIG_ARM_DMA_USE_IOMMU
++	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
++	const struct dma_map_ops *dma_ops;
++
++	if (!mapping)
++		return;
++
++	arm_iommu_release_mapping(mapping);
++	arm_iommu_detach_device(dev);
++
++	dma_ops = arm_get_dma_map_ops(dev->archdata.dma_coherent);
++	set_dma_ops(dev, dma_ops);
 +#endif
 +}
-+EXPORT_SYMBOL(dma_iommu_detach_device);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f8ab1c0f589e..732191a2c64e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -671,6 +671,8 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
- static inline void arch_teardown_dma_ops(struct device *dev) { }
- #endif
- 
-+extern void dma_iommu_detach_device(struct device *dev);
-+
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
- {
- 	if (dev->dma_parms && dev->dma_parms->max_segment_size)
 -- 
 2.17.0
