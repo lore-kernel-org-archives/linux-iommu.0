@@ -1,131 +1,142 @@
-From: Ganapatrao Kulkarni <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
-	fails to get any free IOVA
-Date: Thu, 26 Apr 2018 15:15:00 +0530
-Message-ID: <CAKTKpr4skf3=Aw1YJNPppSjUT7w7_CF6QhefeHZDQXzENCfm5g@mail.gmail.com>
-References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
-	<c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com>
-	<CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
+From: Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>
+Subject: Re: noveau vs arm dma ops
+Date: Thu, 26 Apr 2018 11:45:26 +0200
+Message-ID: <CAKMK7uF9UpFe=nuV29as54mvO7s-kJV4nLa-Uju3jqZU9Ebw6w@mail.gmail.com>
+References: <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+ <20180425054855.GA17038@infradead.org>
+ <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+ <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+ <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
+ <20180425085439.GA29996@infradead.org>
+ <20180425100429.GR25142@phenom.ffwll.local>
+ <20180425153312.GD27076@infradead.org>
+ <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
+ <20180426090942.GA18811@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20180426090942.GA18811-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, amd-gfx list <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Mon, Apr 23, 2018 at 11:11 PM, Ganapatrao Kulkarni
-<gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> On Mon, Apr 23, 2018 at 10:07 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 19/04/18 18:12, Ganapatrao Kulkarni wrote:
->>>
->>> The performance drop is observed with long hours iperf testing using 40G
->>> cards. This is mainly due to long iterations in finding the free iova
->>> range in 32bit address space.
->>>
->>> In current implementation for 64bit PCI devices, there is always first
->>> attempt to allocate iova from 32bit(SAC preferred over DAC) address
->>> range. Once we run out 32bit range, there is allocation from higher range,
->>> however due to cached32_node optimization it does not suppose to be
->>> painful. cached32_node always points to recently allocated 32-bit node.
->>> When address range is full, it will be pointing to last allocated node
->>> (leaf node), so walking rbtree to find the available range is not
->>> expensive affair. However this optimization does not behave well when
->>> one of the middle node is freed. In that case cached32_node is updated
->>> to point to next iova range. The next iova allocation will consume free
->>> range and again update cached32_node to itself. From now on, walking
->>> over 32-bit range is more expensive.
->>>
->>> This patch adds fix to update cached node to leaf node when there are no
->>> iova free range left, which avoids unnecessary long iterations.
->>
->>
->> The only trouble with this is that "allocation failed" doesn't uniquely mean
->> "space full". Say that after some time the 32-bit space ends up empty except
->> for one page at 0x1000 and one at 0x80000000, then somebody tries to
->> allocate 2GB. If we move the cached node down to the leftmost entry when
->> that fails, all subsequent allocation attempts are now going to fail despite
->> the space being 99.9999% free!
->>
->> I can see a couple of ways to solve that general problem of free space above
->> the cached node getting lost, but neither of them helps with the case where
->> there is genuinely insufficient space (and if anything would make it even
->> slower). In terms of the optimisation you want here, i.e. fail fast when an
->> allocation cannot possibly succeed, the only reliable idea which comes to
->> mind is free-PFN accounting. I might give that a go myself to see how ugly
->> it looks.
-
-For this testing, dual port intel 40G card(XL710) used and both ports
-were connected in loop-back. Ran iperf server and clients on both
-ports(used NAT to route packets out on intended ports).There were 10
-iperf clients invoked every 60 seconds in loop for hours for each
-port. Initially the performance on both ports is seen close to line
-rate, however after test ran about 4 to 6 hours, the performance
-started dropping  to very low (to few hundred Mbps) on both
-connections.
-
-IMO,  this is common bug and should happen on any other platforms too
-and needs to be fixed at the earliest.
-Please let me know if you have better way to fix this,  i am happy to
-test your patch!
-
->
-> i see 2 problems in current implementation,
-> 1. We don't replenish the 32 bits range, until first attempt of second
-> allocation(64 bit) fails.
-> 2. Having  per cpu cache might not yield good hit on platforms with
-> more number of CPUs.
->
-> however irrespective of current issues, It makes sense to update
-> cached node as done in this patch , when there is failure to get iova
-> range using current cached pointer which is forcing for the
-> unnecessary time consuming do-while iterations until any replenish
-> happens!
->
-> thanks
-> Ganapat
->
->>
->> Robin.
->>
->>
->>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->>> ---
->>>   drivers/iommu/iova.c | 6 ++++++
->>>   1 file changed, 6 insertions(+)
->>>
->>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>> index 83fe262..e6ee2ea 100644
->>> --- a/drivers/iommu/iova.c
->>> +++ b/drivers/iommu/iova.c
->>> @@ -201,6 +201,12 @@ static int __alloc_and_insert_iova_range(struct
->>> iova_domain *iovad,
->>>         } while (curr && new_pfn <= curr_iova->pfn_hi);
->>>         if (limit_pfn < size || new_pfn < iovad->start_pfn) {
->>> +               /* No more cached node points to free hole, update to leaf
->>> node.
->>> +                */
->>> +               struct iova *prev_iova;
->>> +
->>> +               prev_iova = rb_entry(prev, struct iova, node);
->>> +               __cached_rbnode_insert_update(iovad, prev_iova);
->>>                 spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->>>                 return -ENOMEM;
->>>         }
->>>
->>
-
-thanks
-Ganapat
+T24gVGh1LCBBcHIgMjYsIDIwMTggYXQgMTE6MDkgQU0sIENocmlzdG9waCBIZWxsd2lnIDxoY2hA
+aW5mcmFkZWFkLm9yZz4gd3JvdGU6Cj4gT24gV2VkLCBBcHIgMjUsIDIwMTggYXQgMTE6MzU6MTNQ
+TSArMDIwMCwgRGFuaWVsIFZldHRlciB3cm90ZToKPj4gPiBnZXRfcmVxdWlyZWRfbWFzaygpIGlz
+IHN1cHBvc2VkIHRvIHRlbGwgeW91IGlmIHlvdSBhcmUgc2FmZS4gIEhvd2V2ZXIKPj4gPiB3ZSBh
+cmUgbWlzc2luZyBsb3RzIG9mIGltcGxlbWVudGF0aW9ucyBvZiBpdCBmb3IgaW9tbXVzIHNvIHlv
+dSBtaWdodCBnZXQKPj4gPiBzb21lIGZhbHNlIG5lZ2F0aXZlcywgaW1wcm92ZW1lbnRzIHdlbGNv
+bWUuICBJdCdzIGJlZW4gb24gbXkgbGlzdCBvZgo+PiA+IHRoaW5ncyB0byBmaXggaW4gdGhlIERN
+QSBBUEksIGJ1dCBpdCBpcyBub3doZXJlIG5lYXIgdGhlIHRvcC4KPj4KPj4gSSBoYXNuJ3QgY29t
+ZSB1cCBpbiBhIHdoaWxlIGluIHNvbWUgZmlyZXdvcmtzLCBzbyBJIGhvbmVzdGx5IGRvbid0Cj4+
+IHJlbWVtYmVyIGV4YWN0bHkgd2hhdCB0aGUgaXNzdWVzIGhhdmUgYmVlbi4gQnV0Cj4+Cj4+IGNv
+bW1pdCBkNzY2ZWY1MzAwNmMyYzM4YTdmZTJiZWYwOTA0MTA1YTc5MzM4M2YyCj4+IEF1dGhvcjog
+Q2hyaXMgV2lsc29uIDxjaHJpc0BjaHJpcy13aWxzb24uY28udWs+Cj4+IERhdGU6ICAgTW9uIERl
+YyAxOSAxMjo0Mzo0NSAyMDE2ICswMDAwCj4+Cj4+ICAgICBkcm0vaTkxNTogRmFsbGJhY2sgdG8g
+c2luZ2xlIFBBR0VfU0laRSBzZWdtZW50cyBmb3IgRE1BIHJlbWFwcGluZwo+Pgo+PiBhbmQgdGhl
+IHZhcmlvdXMgYml0cyBvZiBjb2RlIHRoYXQgYQo+Pgo+PiAkIGdpdCBncmVwIFNXSU9UTEIgLS0g
+ZHJpdmVycy9ncHUKPj4KPj4gdHVybnMgdXAgaXMgd2hhdCB3ZSdyZSBkb2luZyB0byBoYWNrIGFy
+b3VuZCB0aGF0IHN0dWZmLiBBbmQgaW4gZ2VuZXJhbAo+PiAodGhlcmUncyBzb21lIGV4Y2VwdGlv
+bnMpIGdwdXMgc2hvdWxkIGJlIGFibGUgdG8gYWRkcmVzcyBldmVyeXRoaW5nLAo+PiBzbyBJIG5l
+dmVyIGZ1bGx5IHVuZGVyc3Rvb2Qgd2hlcmUgdGhhdCdzIGV2ZW4gY29taW5nIGZyb20uCj4KPiBJ
+J20gcHJldHR5IHN1cmUgSSd2ZSBzZWVuIHNvbWUgb2RkbHkgbG93IGRtYSBtYXNrcyBpbiBHUFUg
+ZHJpdmVycy4gIEUuZy4KPiBkdXBsaWNhdGVkIGluIHZhcmlvdXMgQU1EIGZpbGVzOgo+Cj4gICAg
+ICAgICBhZGV2LT5uZWVkX2RtYTMyID0gZmFsc2U7Cj4gICAgICAgICBkbWFfYml0cyA9IGFkZXYt
+Pm5lZWRfZG1hMzIgPyAzMiA6IDQwOwo+ICAgICAgICAgciA9IHBjaV9zZXRfZG1hX21hc2soYWRl
+di0+cGRldiwgRE1BX0JJVF9NQVNLKGRtYV9iaXRzKSk7Cj4gICAgICAgICBpZiAocikgewo+ICAg
+ICAgICAgICAgICAgICBhZGV2LT5uZWVkX2RtYTMyID0gdHJ1ZTsKPiAgICAgICAgICAgICAgICAg
+ZG1hX2JpdHMgPSAzMjsKPiAgICAgICAgICAgICAgICAgZGV2X3dhcm4oYWRldi0+ZGV2LCAiYW1k
+Z3B1OiBObyBzdWl0YWJsZSBETUEgYXZhaWxhYmxlLlxuIik7Cj4gICAgICAgICB9Cj4KPiBzeW5v
+cHNpczoKPgo+IGRyaXZlcnMvZ3B1L2RybS9icmlkZ2Uvc3lub3BzeXMvZHctaGRtaS1pMnMtYXVk
+aW8uYzogICAgcGRldmluZm8uZG1hX21hc2sgICAgICAgPSBETUFfQklUX01BU0soMzIpOwo+IGRy
+aXZlcnMvZ3B1L2RybS9icmlkZ2Uvc3lub3BzeXMvZHctaGRtaS5jOiAgICAgICAgICAgICAgcGRl
+dmluZm8uZG1hX21hc2sgPSBETUFfQklUX01BU0soMzIpOwo+IGRyaXZlcnMvZ3B1L2RybS9icmlk
+Z2Uvc3lub3BzeXMvZHctaGRtaS5jOiAgICAgICAgICAgICAgcGRldmluZm8uZG1hX21hc2sgPSBE
+TUFfQklUX01BU0soMzIpOwo+Cj4gZXRuYXZpdiBnZXRzIGl0IHJpZ2h0Ogo+Cj4gZHJpdmVycy9n
+cHUvZHJtL2V0bmF2aXYvZXRuYXZpdl9ncHUuYzogICAgICAgICAgdTMyIGRtYV9tYXNrID0gKHUz
+MilkbWFfZ2V0X3JlcXVpcmVkX21hc2soZ3B1LT5kZXYpOwo+Cj4KPiBCdXQgeWVzLCB0aGUgc3dp
+b3RsYiBoYWNrZXJ5IHJlYWxseSBpcmtzIG1lLiAgSSBqdXN0IGhhdmUgc29tZSBtb3JlCj4gaW1w
+b3J0YW50IGFuZCBiaWdnZXIgZmlyZXMgdG8gZmlnaHQgZmlyc3QsIGJ1dCBJIHBsYW4gdG8gZ2V0
+IGJhY2sgdG8gdGhlCj4gcm9vdCBjYXVzZSBvZiB0aGF0IGV2ZW50dWFsbHkuCj4KPj4KPj4gPj4g
+LSBkbWEgYXBpIGhpZGVzIHRoZSBjYWNoZSBmbHVzaGluZyByZXF1aXJlbWVudHMgZnJvbSB1cy4g
+R1BVcyBsb3ZlCj4+ID4+ICAgbm9uLXNub29wZWQgYWNjZXNzLCBhbmQgd29yc2UgZ2l2ZSB1c2Vy
+c3BhY2UgY29udHJvbCBvdmVyIHRoYXQuIFdlIHdhbnQKPj4gPj4gICBhIHN0cmljdCBzZXBhcmF0
+aW9uIGJldHdlZW4gbWFwcGluZyBzdHVmZiBhbmQgZmx1c2hpbmcgc3R1ZmYuIFdpdGggdGhlCj4+
+ID4+ICAgSU9NTVUgYXBpIHdlIG1vc3RseSBoYXZlIHRoZSBmb3JtZXIsIGJ1dCBmb3IgdGhlIGxh
+dGVyIGFyY2ggbWFpbnRhaW5lcnMKPj4gPj4gICByZWd1bGFybHkgdGVsbHMgdGhleSB3b24ndCBh
+bGxvdyB0aGF0LiBTbyB3ZSBoYXZlIGRybV9jbGZsdXNoLmMuCj4+ID4KPj4gPiBUaGUgcHJvYmxl
+bSBpcyB0aGF0IGEgY2FjaGUgZmx1c2hpbmcgQVBJIGVudGlyZWx5IHNlcGFyYXRlIGlzIGhhcmQu
+IFRoYXQKPj4gPiBiZWluZyBzYWlkIGlmIHlvdSBsb29rIGF0IG15IGdlbmVyaWMgZG1hLW5vbmNv
+aGVyZW50IEFQSSBzZXJpZXMgaXQgdHJpZXMKPj4gPiB0byBtb3ZlIHRoYXQgd2F5LiAgU28gZmFy
+IGl0IGlzIGluIGVhcmx5IHN0YWdlcyBhbmQgYXBwYXJlbnRseSByYXRoZXIKPj4gPiBidWdneSB1
+bmZvcnR1bmF0ZWx5Lgo+Pgo+PiBJJ20gYXNzdW1pbmcgdGhpcyBzdHVmZiBoZXJlPwo+Pgo+PiBo
+dHRwczovL2xrbWwub3JnL2xrbWwvMjAxOC80LzIwLzE0Ngo+Pgo+PiBBbnl3YXkgZ290IGxvc3Qg
+aW4gYWxsIHRoYXQgd29yayBhIGJpdCwgbG9va3MgcmVhbGx5IG5pY2UuCj4KPiBUaGF0IHVybCBk
+b2Vzbid0IHNlZW0gdG8gd29yayBjdXJyZW50bHkuICBCdXQgSSBhbSB0YWxraW5nIGFib3V0IHRo
+ZQo+IHRocmVhZCB0aXRsZWQgJ1tSRkNdIGNvbW1vbiBub24tY2FjaGUgY29oZXJlbnQgZGlyZWN0
+IGRtYSBtYXBwaW5nIG9wcycKPgo+PiBZZWFoIHRoZSBhYm92ZSBpcyBwcmV0dHkgbXVjaCB3aGF0
+IHdlIGRvIG9uIHg4Ni4gZG1hLWFwaSBiZWxpZXZlcwo+PiBldmVyeXRoaW5nIGlzIGNvaGVyZW50
+LCBzbyBkbWFfbWFwX3NnIGRvZXMgdGhlIG1hcHBpbmcgd2Ugd2FudCBhbmQKPj4gbm90aGluZyBl
+bHNlIChtaW51cyBzd2lvdGxiIGZ1bikuIENhY2hlIGZsdXNoaW5nLCBhbGxvY2F0aW9ucywgYWxs
+Cj4+IGRvbmUgYnkgdGhlIGRyaXZlci4KPgo+IFdoaWNoIHNvdW5kcyBsaWtlIHRoZSByaWdodCB0
+aGluZyB0byBkbyB0byBtZS4KPgo+PiBPbiBhcm0gdGhhdCBkb2Vzbid0IHdvcmsuIFRoZSBpb21t
+dSBhcGkgc2VlbXMgbGlrZSBhIGdvb2QgZml0LCBleGNlcHQKPj4gdGhlIGRtYS1hcGkgdGVuZHMg
+dG8gZ2V0IGluIHRoZSB3YXkgYSBiaXQgKGRybS9tc20gYXBwYXJlbnRseSBoYXMKPj4gc2ltaWxh
+ciBwcm9ibGVtcyBsaWtlIHRlZ3JhKSwgYW5kIGlmIHlvdSBuZWVkIGNvbnRpZ3VvdXMgbWVtb3J5
+Cj4+IGRtYV9hbGxvY19jb2hlcmVudCBpcyB0aGUgb25seSB3YXkgdG8gZ2V0IGF0IGNvbnRpZ3Vv
+dXMgbWVtb3J5LiBUaGVyZQo+PiB3YXMgYSBodWdlIGRpc2N1c3Npb24geWVhcnMgYWdvIGFib3V0
+IHRoYXQsIGFuZCBkaXJlY3QgY21hIGFjY2VzcyB3YXMKPj4gc2hvdCBkb3duIGJlY2F1c2UgaXQg
+d291bGQgaGF2ZSBleHBvc2VkIHRvbyBtdWNoIG9mIHRoZSBjYWNoaW5nCj4+IGF0dHJpYnV0ZSBt
+YW5nbGluZyByZXF1aXJlZCAobW9zdCBhcm0gcGxhdGZvcm1zIG5lZWQgd2MtcGFnZXMgdG8gbm90
+Cj4+IGJlIGluIHRoZSBrZXJuZWwncyBsaW5lYXIgbWFwIGFwcGFyZW50bHkpLgo+Cj4gU2ltcGxl
+IGNtYV9hbGxvYygpIGRvZXNuJ3QgZG8gYW55dGhpbmcgYWJvdXQgY2FjaGUgaGFuZGxpbmcsIGl0
+Cj4ganVzdCBpcyBhIHZlcnkgZHVtYiBhbGxvY2F0b3IgZm9yIGxhcmdlIGNvbnRpZ3VvdXMgcmVn
+aW9ucyBpbnNpZGUKPiBhIGJpZyBwb29sLgo+Cj4gSSdtIG5vdCB0aGUgQ01BIG1haW50YWluZXIs
+IGJ1dCBpbiBnZW5lcmFsIEknZCBsb3ZlIHRvIHNlZSBhbgo+IEVYUE9SVF9TWU1CT0xfR1BMIHNs
+YXBwZWQgb250byBjbWFfYWxsb2MvcmVsZWFzZSBhbmQgZHJpdmVycyB1c2UKPiB0aGF0IHdlcmUg
+bmVlZGVkLiAgVXNpbmcgdGhhdCBwbHVzIGRtYV9tYXAqL2RtYV91bm1hcCogc291bmRzIGxpa2UK
+PiBhIG11Y2ggc2FuZXIgaW50ZXJmYWNlIHRoYW4gZG1hX2FsbG9jX2F0dHJzICsgRE1BX0FUVFJf
+Tk9OX0NPTlNJU1RFTlQKPiBvciBETUFfQVRUUl9OT19LRVJORUxfTUFQUElORy4KPgo+IFlvdSBk
+b24ndCBoYXBwZW4gdG8gaGF2ZSBhIHBvaW50ZXIgdG8gdGhhdCBwcmV2aW91cyBkaXNjdXNzaW9u
+PwoKSSdsbCB0cnkgdG8gZGlnIHRoZW0gdXAsIEkgdHJpZWQgdG8gc3RheSBhcyBmYXIgYXdheSBm
+cm9tIHRoYXQKZGlzY3Vzc2lvbiBhcyBwb3NzaWJsZSAoc2luY2UgSSBoYXZlIHRoZSBsdXh1cnkg
+dG8gbm90IGNhcmUgZm9yIGludGVsCmdwdXMpLgoKPj4gQW55dGhpbmcgdGhhdCBzZXBhcmF0ZSB0
+aGVzZSAzIHRoaW5ncyBtb3JlIChhbGxvY2F0aW9uIHBvb2xzLCBtYXBwaW5nCj4+IHRocm91Z2gg
+SU9NTVVzIGFuZCBmbHVzaGluZyBjcHUgY2FjaGVzKSBzb3VuZHMgbGlrZSB0aGUgcmlnaHQKPj4g
+ZGlyZWN0aW9uIHRvIG1lLiBFdmVuIGlmIHRoYXQgdGhyb3dzIHNvbWUgcG9ydGFiaWxpdHkgYWNy
+b3NzIHBsYXRmb3Jtcwo+PiBhd2F5IC0gZHJpdmVycyB3aG8gd2FudCB0byBjb250cm9sIHRoaW5n
+cyBpbiB0aGlzIG11Y2ggZGV0YWlsIGFyZW4ndAo+PiByZWFsbHkgcG9ydGFibGUgKHdpdGhvdXQg
+c29tZSBzZXJpb3VzIHdvcmspIGFueXdheS4KPgo+IEFzIGxvbmcgYXMgd2Ugc3RheSBhd2F5IGZy
+b20gdGhlIGRtYSBjb2hlcmVudCBhbGxvY2F0aW9ucyBzZXBhcmF0aW5nCj4gdGhlbSBpcyBmaW5l
+LCBhbmQgSSdtIHdvcmtpbmcgdG93YXJkcyBpdC4gIGRtYSBjb2hlcmVudCBhbGxvY2F0aW9ucyBv
+bgo+IHRoZSBvdGhlciBoYW5kIGFyZSB2ZXJ5IGhhaXJ5IGJlYXN0cywgYW5kIHByb3ZpZGUgYnkg
+dmVyeSBkaWZmZXJlbnQKPiBpbXBsZW1lbnRhdGlvbnMgZGVwZW5kaW5nIG9uIHRoZSBhcmNoaXRl
+Y3R1cmUsIG9yIG9mdGVuIGV2ZW4gZGVwZW5kaW5nCj4gb24gdGhlIHNwZWNpZmljcyBvZiBpbmRp
+dmlkdWFsIGltcGxlbWVudGF0aW9ucyBpbnNpZGUgdGhlIGFyY2hpdGVjdHVyZS4KPgo+IFNvIGZv
+ciB5b3VyIEdQVS9tZWRpYSBjYXNlIGl0IHNlZW1zIGxpa2UgeW91J2QgYmV0dGVyIHN0YXkgYXdh
+eSBmcm9tCj4gdGhlbSBhcyBtdWNoIGFzIHlvdSBjYW4uCgpIbSwgYXQgbGVhc3Qgb24geDg2IHdl
+IGRvIHNldCB1cCB3cml0ZS1jb21iaW5lIG1hcHBpbmdzIG91cnNlbHZlcyAoYnkKY2FsbGluZyBy
+ZWxldmFudCBmdW5jdGlvbnMsIHdoaWNoIGFsc28gY2hhbmdlcyB0aGUga2VybmVsIG1hcHBpbmcg
+dG8KYXZvaWQgYWxpYXNpbmcgZnVuKS4gT2YgY291cnNlIHRoYXQgbWVhbnMgdGhlIGdwdSBkcml2
+ZXJzIGFyZSBsZXNzCnBvcnRhYmxlLCBidXQgdGhlbiB0aGV5J3JlIG5vdCByZWFsbHkgYWxsIHRo
+YXQgcG9ydGFibGUgYW55d2F5IC0gdGhlCmJ1ZmZlciBoYW5kbGluZyBjb2RlIGFsd2F5cyBuZWVk
+cyB0byBiZSB0dW5lZCBmb3IgdGhlIHBsYXRmb3JtIHlvdSdyZQpydW5uaW5nIG9uLiBHUFVzIHJl
+YWxseSBsb3ZlIHdyaXRlLWNvbWJpbmluZyBldmVyeXRoaW5nICh3ZSBkbyB0aGUKc2FtZSBmb3Ig
+b3VyIG1taW8gbWFwcGluZ3MgdG8ga2VybmVsL3VzZXJzcGFjZSwgc2VlIHN0dWZmIGxpa2UKaW8t
+bWFwcGluZy5oLgoKQnV0IGluIG1hbnkgb3RoZXIgY2FzZXMgZG1hX2FsbG9jX2NvaGVyZW50IGlz
+IG9ubHkgdXNlZCBiZWNhdXNlIGl0J3MKdGhlIGNvbnZlbmllbnQvb25seSB3YXkgdG8gYWxsb2Nh
+dGUgdGhlIG1lbW9yeSB3ZSBuZWVkLgotRGFuaWVsCi0tIApEYW5pZWwgVmV0dGVyClNvZnR3YXJl
+IEVuZ2luZWVyLCBJbnRlbCBDb3Jwb3JhdGlvbgorNDEgKDApIDc5IDM2NSA1NyA0OCAtIGh0dHA6
+Ly9ibG9nLmZmd2xsLmNoCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmFtZC1nZnggbWFpbGluZyBsaXN0CmFtZC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vYW1kLWdmeAo=
