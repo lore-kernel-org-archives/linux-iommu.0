@@ -1,130 +1,156 @@
-From: Mikko Perttunen <mperttunen@nvidia.com>
-Subject: Re: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
- mapping
-Date: Thu, 26 Apr 2018 15:59:04 +0300
-Message-ID: <fd6e0d90-7614-296b-2927-7b2745e8fbde@nvidia.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM
+ DMA/IOMMU mapping
+Date: Thu, 26 Apr 2018 15:14:18 +0200
+Message-ID: <20180426131418.GH11985@ulmo>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
  <20180425152849.GA2447@jcrouse-lnx.qualcomm.com>
  <20180426124103.GF11985@ulmo>
+ <fd6e0d90-7614-296b-2927-7b2745e8fbde@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180426124103.GF11985@ulmo>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>, Christoph Hellwig <hch@infradead.org>, Joerg Roedel <joro@8bytes.org>, nouveau@lists.freedesktop.org, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/mixed; boundary="===============1188704640=="
+Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <fd6e0d90-7614-296b-2927-7b2745e8fbde-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
+ <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/nouveau>
+List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
+ <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjYuMDQuMjAxOCAxNTo0MSwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gT24gV2VkLCBBcHIg
-MjUsIDIwMTggYXQgMDk6Mjg6NDlBTSAtMDYwMCwgSm9yZGFuIENyb3VzZSB3cm90ZToKPj4gT24g
-V2VkLCBBcHIgMjUsIDIwMTggYXQgMTI6MTA6NDdQTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcgd3Jv
-dGU6Cj4+PiBGcm9tOiBUaGllcnJ5IFJlZGluZyA8dHJlZGluZ0BudmlkaWEuY29tPgo+Pj4KPj4+
-IERlcGVuZGluZyBvbiB0aGUga2VybmVsIGNvbmZpZ3VyYXRpb24sIGVhcmx5IEFSTSBhcmNoaXRl
-Y3R1cmUgc2V0dXAgY29kZQo+Pj4gbWF5IGhhdmUgYXR0YWNoZWQgdGhlIEdQVSB0byBhIERNQS9J
-T01NVSBtYXBwaW5nIHRoYXQgdHJhbnNwYXJlbnRseSB1c2VzCj4+PiB0aGUgSU9NTVUgdG8gYmFj
-ayB0aGUgRE1BIEFQSS4gVGVncmEgcmVxdWlyZXMgc3BlY2lhbCBoYW5kbGluZyBmb3IgSU9NTVUK
-Pj4+IGJhY2tlZCBidWZmZXJzIChhIHNwZWNpYWwgYml0IGluIHRoZSBHUFUncyBNTVUgcGFnZSB0
-YWJsZXMgaW5kaWNhdGVzIHRoZQo+Pj4gbWVtb3J5IHBhdGggdG8gdGFrZTogdmlhIHRoZSBTTU1V
-IG9yIGRpcmVjdGx5IHRvIHRoZSBtZW1vcnkgY29udHJvbGxlcikuCj4+PiBUcmFuc3BhcmVudGx5
-IGJhY2tpbmcgRE1BIG1lbW9yeSB3aXRoIGFuIElPTU1VIHByZXZlbnRzIE5vdXZlYXUgZnJvbQo+
-Pj4gcHJvcGVybHkgaGFuZGxpbmcgc3VjaCBtZW1vcnkgYWNjZXNzZXMgYW5kIGNhdXNlcyBtZW1v
-cnkgYWNjZXNzIGZhdWx0cy4KPj4+Cj4+PiBBcyBhIHNpZGUtbm90ZTogYnVmZmVycyBvdGhlciB0
-aGFuIHRob3NlIGFsbG9jYXRlZCBpbiBpbnN0YW5jZSBtZW1vcnkKPj4+IGRvbid0IG5lZWQgdG8g
-YmUgcGh5c2ljYWxseSBjb250aWd1b3VzIGZyb20gdGhlIEdQVSdzIHBlcnNwZWN0aXZlIHNpbmNl
-Cj4+PiB0aGUgR1BVIGNhbiBtYXAgdGhlbSBpbnRvIGNvbnRpZ3VvdXMgYnVmZmVycyB1c2luZyBp
-dHMgb3duIE1NVS4gTWFwcGluZwo+Pj4gdGhlc2UgYnVmZmVycyB0aHJvdWdoIHRoZSBJT01NVSBp
-cyB1bm5lY2Vzc2FyeSBhbmQgd2lsbCBldmVuIGxlYWQgdG8KPj4+IHBlcmZvcm1hbmNlIGRlZ3Jh
-ZGF0aW9uIGJlY2F1c2Ugb2YgdGhlIGFkZGl0aW9uYWwgdHJhbnNsYXRpb24uCj4+Pgo+Pj4gU2ln
-bmVkLW9mZi1ieTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlhLmNvbT4KPj4+IC0tLQo+
-Pj4gSSBoYWQgYWxyZWFkeSBzZW50IHRoaXMgb3V0IGluZGVwZW5kZW50bHkgdG8gZml4IGEgcmVn
-cmVzc2lvbiB0aGF0IHdhcwo+Pj4gaW50cm9kdWNlZCBpbiB2NC4xNiwgYnV0IHRoZW4gQ2hyaXN0
-b3BoIHBvaW50ZWQgb3V0IHRoYXQgaXQgc2hvdWxkJ3ZlCj4+PiBiZWVuIHNlbnQgdG8gYSB3aWRl
-ciBhdWRpZW5jZSBhbmQgc2hvdWxkIHVzZSBhIGNvcmUgQVBJIHJhdGhlciB0aGFuCj4+PiBjYWxs
-aW5nIGludG8gYXJjaGl0ZWN0dXJlIGNvZGUgZGlyZWN0bHkuCj4+Pgo+Pj4gSSd2ZSBhZGRlZCBp
-dCB0byB0aGlzIHNlcmllcyBmb3IgZWFzaWVyIHJlZmVyZW5jZSBhbmQgdG8gc2hvdyB0aGUgbmVl
-ZAo+Pj4gZm9yIHRoZSBuZXcgQVBJLgo+Pgo+PiBUaGlzIGlzIGdvb2Qgc3R1ZmYsIEkgYW0gc3Ry
-dWdnbGluZyB3aXRoIHNvbWV0aGluZyBzaW1pbGFyIG9uIEFSTTY0LiBPbmUKPj4gcHJvYmxlbSB0
-aGF0IEkgd2Fzbid0IGFibGUgdG8gZnVsbHkgc29sdmUgY2xlYW5seSB3YXMgdGhhdCBmb3IgYXJt
-LXNtbXUKPj4gdGhlIFNNTVUgSFcgcmVzb3VyY2VzIGFyZSBub3QgcmVsZWFzZWQgdW50aWwgdGhl
-IGRvbWFpbiBpdHNlbGYgaXMgZGVzdHJveWVkCj4+IGFuZCBJIG5ldmVyIHF1aXRlIGZpZ3VyZWQg
-b3V0IGEgd2F5IHRvIHN3YXAgdGhlIGRlZmF1bHQgZG9tYWluIGNsZWFubHkuCj4+Cj4+IFRoaXMg
-aXMgYSBwcm9ibGVtIGZvciB0aGUgTVNNIEdQVSBiZWNhdXNlIG5vdCBvbmx5IGRvIHdlIHJ1biBv
-dXIgb3duIElPTU1VIGFzCj4+IHlvdSBkbyB3ZSBhbHNvIGhhdmUgYSBoYXJkd2FyZSBkZXBlbmRl
-bmN5IHRvIHVzZSBjb250ZXh0IGJhbmsgMCB0bwo+PiBhc3luY2hyb25vdXNseSBzd2l0Y2ggdGhl
-IHBhZ2V0YWJsZSBkdXJpbmcgcmVuZGVyaW5nLgo+Pgo+PiBJJ20gbm90IHN1cmUgaWYgdGhpcyBp
-cyBhIHByb2JsZW0geW91IGhhdmUgZW5jb3VudGVyZWQuCj4KPiBJIGRvbid0IHRoaW5rIEkgaGF2
-ZS4gUmVjZW50IGNoaXBzIGhhdmUgc2ltaWxhciBjYXBhYmlsaXRpZXMsIGJ1dCB0aGV5Cj4gZG9u
-J3QgaGF2ZSB0aGUgcmVzdHJpY3Rpb24gdG8gYSBjb250ZXh0IGJhbmssIGFzIGZhciBhcyBJIHVu
-ZGVyc3RhbmQuCj4gQWRkaW5nIE1pa2tvIHdobydzIGhhZCBtb3JlIGV4cG9zdXJlIHRvIHRoaXMu
-CgpJSVJDIHRoZSBvbmx5IHdheSBJJ3ZlIGdvdHRlbiBIb3N0MXggdG8gd29yayBvbiBUZWdyYTE4
-NiB3aXRoIElPTU1VIAplbmFibGVkIGlzIGRvaW5nIHRoZSBlcXVpdmFsZW50IG9mIHRoaXMgcGF0
-Y2ggKG9yIGFjdHVhbGx5IHVzaW5nIHRoZSBETUEgCkFQSSwgd2hpY2ggbWF5IGJlIHBvc3NpYmxl
-IGJ1dCBoYXMgc29tZSBwb3RlbnRpYWwgaXNzdWVzKS4KCkFzIHlvdSBzYWlkLCB3ZSBkb24ndCBo
-YXZlIGEgbGltaXRhdGlvbiByZWdhcmRpbmcgdGhlIGNvbnRleHQgYmFuayBvciAKc2ltaWxhciAt
-IEhvc3QxeCBoYW5kbGVzIGNvbnRleHQgc3dpdGNoaW5nIGJ5IGNoYW5naW5nIHRoZSBzZW50IHN0
-cmVhbSAKSUQgb24gdGhlIGZseSAod2hpY2ggaXMgcXVpdGUgZGlmZmljdWx0IHRvIGRlYWwgd2l0
-aCBmcm9tIGtlcm5lbCBwb2ludCAKb2YgdmlldyBhcyB3ZWxsKSwgYW5kIHRoZSBhY3R1YWwgR1BV
-IGhhcyBpdHMgb3duIE1NVS4KClRoYW5rcywKTWlra28KCj4KPj4gSW4gYW55IGV2ZW50LCB0aGlz
-IGNvZGUKPj4gZ2V0cyB1cyBhIGxpdHRsZSBiaXQgZnVydGhlciBkb3duIHRoZSBwYXRoIGFuZCBh
-dCBsZWFzdCB0aGVyZSBpcyBzb21lYm9keSBlbHNlCj4+IG91dCB0aGVyZSBpbiB0aGUgY29sZCBk
-YXJrIHdvcmxkIHRoYXQgdW5kZXJzdGFuZHMgbXkgcGFpbi4gOikKPgo+IFRoaXMgZG9lc24ndCBh
-Y3R1YWxseSBmaXggYW55dGhpbmcgb24gNjQtYml0IEFSTSwgYW5kIG9kZGx5IGVub3VnaCBJCj4g
-aGF2ZW4ndCBydW4gaW50byB0aGlzIGlzc3VlIG15c2VsZiBvbiA2NC1iaXQgQVJNIGVpdGhlci4g
-SSB0aGluayB0aGUKPiByZWFzb24gaXMgdGhhdCBJIGhhdmVuJ3QgdGVzdGVkIE5vdXZlYXUgb24g
-VGVncmExODYgeWV0LCB3aGljaCBpcyB0aGUKPiBmaXJzdCBTb0Mgd2hpY2ggaGFzIGFuIEFSTSBT
-TU1VLiBPbiBwcmlvciA2NC1iaXQgQVJNIGNoaXBzIHdlJ3ZlIHVzZWQKPiB0aGUgY3VzdG9tIFRl
-Z3JhIFNNTVUgYW5kIHRoYXQgZHJpdmVyIHNpbXBseSBmb3JiaWRzIGNyZWF0aW5nIGFueSBETUEK
-PiBkb21haW5zLCBzbyBpdCB3aWxsIGFsbG93IG9ubHkgZXhwbGljaXQgdXNhZ2Ugb2YgdGhlIElP
-TU1VIEFQSS4gVGhlcmUKPiBpcyBjb2RlIGluIHRoZSBnZW5lcmljIERNQS9JT01NVSBpbnRlZ3Jh
-dGlvbiBsYXllciB0byBub3QgdXNlIHRoZSBETUEKPiBBUEkgd2l0aCBub24tRE1BIElPTU1VIGRv
-bWFpbnMsIGJ1dCB0aGF0J3Mgbm90IHRydWUgb24gMzItYml0IEFSTSwKPiB1bmZvcnR1bmF0ZWx5
-LiBJdCdzIGVudGlyZWx5IHBvc3NpYmxlIHRoYXQgVGVncmExODYgd2lsbCBzaG93IGV4YWN0bHkK
-PiB0aGUgc2FtZSBwcm9ibGVtIHRoYXQgeW91IGFyZSBkZXNjcmliaW5nLgo+Cj4gV2UgZG8gdXNl
-IHRoZSBJT01NVSBBUEkgZXhwbGljaXRseSBpbiB0aGUgVGVncmEgRFJNIGRyaXZlciBhcyB3ZWxs
-LAo+IGFuZCB0aGF0IGlzIHNvbWV0aGluZyB0aGF0IEkndmUgdGVzdGVkIG9uIFRlZ3JhMTg2IGFu
-ZCB0aGF0IEkga25vdyB0bwo+IGJlIHdvcmtpbmcuIEhvd2V2ZXIsIHRoZSByZWFzb24gd2h5IGl0
-IHdvcmtzIHRoZXJlIGlzIHRoYXQgdGhlIElPTU1VCj4gZ3JvdXAgd2lsbCBjb250YWluIG11bHRp
-cGxlIGRpc3BsYXkgY29udHJvbGxlcnMsIHdoaWNoIHdpbGwgYWdhaW4KPiB0cmlnZ2VyIGEgc3Bl
-Y2lhbCBjYXNlIHRoYXQgd2lsbCBwcmV2ZW50IHRoZSBETUEvSU9NTVUgaW50ZWdyYXRpb24KPiBm
-cm9tIHNldHRpbmcgdXAgYSBETUEgZG9tYWluIGZvciB1c2Ugd2l0aCB0aG9zZSBkZXZpY2VzLgo+
-Cj4+IEZvciB5b3VyIGludGVyZXN0LCBoZXJlIHdhcyBteSBoYWxmLWhlYXJ0ZWQgYXR0ZW1wdCB0
-byBhdm9pZCBjcmVhdGluZyBETUEKPj4gZG9tYWlucyBpbiB0aGUgZmlyc3QgcGxhY2UgYmFzZWQg
-b24gYSBibGFja2xpc3QgdG8gdHJ5IHRvIHNwdXIgYSBiaXQgb2YKPj4gZGlzY3Vzc2lvbjogaHR0
-cHM6Ly9wYXRjaHdvcmsuZnJlZWRlc2t0b3Aub3JnL3Nlcmllcy80MTU3My8KPgo+IFRoaXMgbG9v
-a3MgdmVyeSBpbnRlcmVzdGluZyBhbmQgc2ltcGxlLCBidXQgSSBjYW4gaW1hZ2luZSB0aGF0IGl0
-IHdpbGwKPiBzZWUgc2lnbmlmaWNhbnQgcHVzaGJhY2sgZnJvbSB0aGUgQVJNIFNNTVUgbWFpbnRh
-aW5lcnMgKGlmIG5vdCBjb21wbGV0ZQo+IHNpbGVuY2UpLCBiZWNhdXNlIGl0IGFkZHMgU29DLXNw
-ZWNpZmljIGtub3dsZWRnZSB0byBhbiBvdGhlcndpc2UgZnVsbHkKPiBnZW5lcmljIGRyaXZlci4g
-SGF2aW5nIHRoZSBHUFUgZHJpdmVyIGV4cGxpY2l0bHkgZGV0YWNoIGZyb20gdGhlIElPTU1VCj4g
-ZG9tYWluIHNvdW5kcyBsaWtlIGEgYmV0dGVyIG9wdGlvbiwgYnV0IEkgZG9uJ3Qgc2VlIGhvdyB0
-aGF0IHdvdWxkIGhlbHAKPiB3aXRoIHRoZSBjb250ZXh0IGJhbmsgaXNzdWUgdGhhdCB5b3UncmUg
-c2VlaW5nLgo+Cj4gT25lIG90aGVyIHBvc3NpYmlsaXR5IHRoYXQgSSBjYW4gaW1hZ2luZSBpcyB0
-byBhZGQgc29tZXRoaW5nIHRvIHN0cnVjdAo+IGRldmljZSB0aGF0IGNvdWxkIGJlIHVzZWQgYnkg
-YXJjaF9zZXR1cF9kbWFfb3BzKCkgdG8gbm90IGF0dGFjaCBhbnkgb2YKPiB0aGUgSU9NTVUtYmFj
-a2VkIERNQSBvcGVyYXRpb25zIHRvIHRoZSBkZXZpY2UuIFVuZm9ydHVuYXRlbHkgdGhhdCBjb2Rl
-Cj4gaXMgY2FsbGVkIGJlZm9yZSB0aGUgZHJpdmVyJ3MgLT5wcm9iZSgpIGltcGxlbWVudGF0aW9u
-IGlzIGNhbGxlZCwgc28gYQo+IGRyaXZlciBkb2Vzbid0IGhhdmUgYW4gb3Bwb3J0dW5pdHkgdG8g
-c2V0IGl0LiBTb21ldGhpbmcgbGlrZQo+IG9mX2RtYV9jb25maWd1cmUoKSBjb3VsZCBzdGlsbCBz
-ZXQgdGhhdCB1cCwgcGVyaGFwcyBiYXNlZCBvbiBzb21lIERUCj4gcHJvcGVydHksIHRob3VnaCBJ
-IGNhbiBhbHJlYWR5IGhlYXIgdGhlIE5BSyBmcm9tIERUIG1haW50YWluZXJzIGJlY2F1c2UKPiB0
-aGlzIGlzLCBhZnRlciBhbGwsIHBvbGljeSwgbm90IGhhcmR3YXJlIGRlc2NyaXB0aW9uLgo+Cj4g
-VGhlIGxhc3Qgc29sdXRpb24gdGhhdCBJIGNhbiB0aGluayBvZiB0aGF0IG1pZ2h0IGFsbG93IHVz
-IHRvIGRvIHRoaXMgaXMKPiB0byBhZGQgYSBmbGFnIHRvIHN0cnVjdCBkZXZpY2VfZHJpdmVyIChi
-b29sIGV4cGxpY2l0X2lvbW11PykgdGhhdCB3aWxsCj4gYmUgdXNlZCBieSB0aGUgRE1BL0lPTU1V
-IHNldHVwIGNvZGUgdG8gZGVjaWRlIHdoZXRoZXIgb3Igbm90IHRvIGF0dGFjaAo+IHRvIHRoZSBJ
-T01NVSBhdXRvbWF0aWNhbGx5Lgo+Cj4gVGhvdWdoLCBhZ2FpbiwgSSdtIG5vdCBzdXJlIHRoYXQg
-d291bGQgYWN0dWFsbHkgc29sdmUgeW91ciBiYW5rIHByb2JsZW0uCj4gVGhhdCdzIHJlYWxseSBz
-b21ldGhpbmcgSSBkb24ndCBzZWUgYW55IG90aGVyIHNvbHV0aW9uIHRoYW4gdG8gZml4IGl0IGlu
-Cj4gdGhlIEFSTSBTTU1VIGRyaXZlci4gUGVyaGFwcyBjb250ZXh0IGJhbmsgMCBjYW4gYWx3YXlz
-IGJlIHJlc2VydmVkIGZvcgo+IG5vbi1ETUEgZG9tYWlucz8KPgo+IFRoaWVycnkKPgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGlu
-ZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVl
-ZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+
+--===============1188704640==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="CNfT9TXqV7nd4cfk"
+Content-Disposition: inline
+
+
+--CNfT9TXqV7nd4cfk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Apr 26, 2018 at 03:59:04PM +0300, Mikko Perttunen wrote:
+> On 26.04.2018 15:41, Thierry Reding wrote:
+> > On Wed, Apr 25, 2018 at 09:28:49AM -0600, Jordan Crouse wrote:
+> > > On Wed, Apr 25, 2018 at 12:10:47PM +0200, Thierry Reding wrote:
+> > > > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > > >=20
+> > > > Depending on the kernel configuration, early ARM architecture setup=
+ code
+> > > > may have attached the GPU to a DMA/IOMMU mapping that transparently=
+ uses
+> > > > the IOMMU to back the DMA API. Tegra requires special handling for =
+IOMMU
+> > > > backed buffers (a special bit in the GPU's MMU page tables indicate=
+s the
+> > > > memory path to take: via the SMMU or directly to the memory control=
+ler).
+> > > > Transparently backing DMA memory with an IOMMU prevents Nouveau from
+> > > > properly handling such memory accesses and causes memory access fau=
+lts.
+> > > >=20
+> > > > As a side-note: buffers other than those allocated in instance memo=
+ry
+> > > > don't need to be physically contiguous from the GPU's perspective s=
+ince
+> > > > the GPU can map them into contiguous buffers using its own MMU. Map=
+ping
+> > > > these buffers through the IOMMU is unnecessary and will even lead to
+> > > > performance degradation because of the additional translation.
+> > > >=20
+> > > > Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > > > ---
+> > > > I had already sent this out independently to fix a regression that =
+was
+> > > > introduced in v4.16, but then Christoph pointed out that it should'=
+ve
+> > > > been sent to a wider audience and should use a core API rather than
+> > > > calling into architecture code directly.
+> > > >=20
+> > > > I've added it to this series for easier reference and to show the n=
+eed
+> > > > for the new API.
+> > >=20
+> > > This is good stuff, I am struggling with something similar on ARM64. =
+One
+> > > problem that I wasn't able to fully solve cleanly was that for arm-sm=
+mu
+> > > the SMMU HW resources are not released until the domain itself is des=
+troyed
+> > > and I never quite figured out a way to swap the default domain cleanl=
+y.
+> > >=20
+> > > This is a problem for the MSM GPU because not only do we run our own =
+IOMMU as
+> > > you do we also have a hardware dependency to use context bank 0 to
+> > > asynchronously switch the pagetable during rendering.
+> > >=20
+> > > I'm not sure if this is a problem you have encountered.
+> >=20
+> > I don't think I have. Recent chips have similar capabilities, but they
+> > don't have the restriction to a context bank, as far as I understand.
+> > Adding Mikko who's had more exposure to this.
+>=20
+> IIRC the only way I've gotten Host1x to work on Tegra186 with IOMMU enabl=
+ed
+> is doing the equivalent of this patch (or actually using the DMA API, whi=
+ch
+> may be possible but has some potential issues).
+>=20
+> As you said, we don't have a limitation regarding the context bank or
+> similar - Host1x handles context switching by changing the sent stream ID=
+ on
+> the fly (which is quite difficult to deal with from kernel point of view =
+as
+> well), and the actual GPU has its own MMU.
+
+One instance where we still need the system MMU for GPU is to implement
+support for big pages, which is required in order to do compression and
+better performance in some other use-cases. I don't think we'll need
+anything fancy like context switching in that case, though, because we
+would use the SMMU exclusively to make sparse allocations look
+contiguous to the GPU, so all of the per-process protection would still
+be achieved via the GPU MMU.
+
+Thierry
+
+--CNfT9TXqV7nd4cfk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrh0KcACgkQ3SOs138+
+s6ET/hAAl3I5vduj0GoLRpKqnMsHfj8XJleCYi+4Wx8MNXgI2M3MdfQDyC1hZMUj
+/ed49D0v0gKgmsLi9Xtm6Gf/jJgisI76FaKGJ34ZaUhi1HC5SfZ4gN/FtC7rPt/k
+iqKv8e50+Vy69H3rtGEuNM+xy7qqiA7/IkcJqYJjA4enjm3X5dSJcIJLSVqfXzxX
+n+XWRiBUaSIhilNZUCAPHm8nhKmLVrP7PW0B1+O8HPJk07H3mEMROA2L3cELYwHV
+8CRg8vAEQiA0WSstD6fnU8IwD30KC4qNfbyQF2daptrM7Z/NencqlvRejEOU4g/1
+t94fIw1BrMCTJGXxrO2LperGMyRJwlDG6KfDXliMMolw5Sfp8uZ6Crz5Nike4A7C
+M0JGVIr10PcU9ffRkeB+L0QsJN/euzDzNASrup/l6eK7Jn2wOBrWN8jbr+PleYJm
+AYuBCV2uLGTy1aMb22C098Js9iGuyf90DNW4m+HWZFFPcV8dtQT2h59zvgAKr2Er
+PEQkxKFB8KMxNPuReNz60y3fdkMTJ6Ejc6qX3ZarsF7vH0jNq3Zf7hMClCuOddda
+08uBeFIbyDcPg43eLaN8WcbY8kDahuGQkoI5lZPGgyfMVOia1vGyhFqNrjCSCJpS
+EVj7XsSDHhD/uiKsBUchR1A8xf2eW3LSGCslCFB6D0A+dV+C1II=
+=iN4x
+-----END PGP SIGNATURE-----
+
+--CNfT9TXqV7nd4cfk--
+
+--===============1188704640==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTm91dmVhdSBt
+YWlsaW5nIGxpc3QKTm91dmVhdUBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
+cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9ub3V2ZWF1Cg==
+
+--===============1188704640==--
