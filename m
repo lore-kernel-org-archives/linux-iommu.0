@@ -1,69 +1,45 @@
-From: YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] iommu/io-pgtable-arm: Use for_each_set_bit to simplify code
-Date: Thu, 26 Apr 2018 12:49:29 +0800
-Message-ID: <20180426044929.16896-1-yuehaibing@huawei.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 2/5] ide: kill ide_toggle_bounce
+Date: Thu, 26 Apr 2018 09:20:33 +0200
+Message-ID: <20180426072033.GA14700@lst.de>
+References: <20180424181625.22410-1-hch@lst.de>
+	<20180424181625.22410-3-hch@lst.de>
+	<5aaca0d3-417f-57f3-969f-b4c777c3fd48@kernel.dk>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5aaca0d3-417f-57f3-969f-b4c777c3fd48-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-We can use for_each_set_bit() to simplify code slightly in the
-ARM io-pgtable self tests while unmapping.
+On Tue, Apr 24, 2018 at 08:02:56PM -0600, Jens Axboe wrote:
+> On 4/24/18 12:16 PM, Christoph Hellwig wrote:
+> > ide_toggle_bounce did select various strange block bounce limits, including
+> > not bouncing at all as soon as an iommu is present in the system.  Given
+> > that the dma_map routines now handle any required bounce buffering except
+> > for ISA DMA, and the ide code already must handle either ISA DMA or highmem
+> > at least for iommu equipped systems we can get rid of the block layer
+> > bounce limit setting entirely.
+> 
+> Pretty sure I was the one to add this code, when highmem page IO was
+> enabled about two decades ago...
+> 
+> Outside of DMA, the issue was that the PIO code could not handle
+> highmem. That's not the case anymore, so this should be fine.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/iommu/io-pgtable-arm-v7s.c | 5 +----
- drivers/iommu/io-pgtable-arm.c     | 5 +----
- 2 files changed, 2 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 10e4a3d..50e3a9f 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -898,8 +898,7 @@ static int __init arm_v7s_do_selftests(void)
- 
- 	/* Full unmap */
- 	iova = 0;
--	i = find_first_bit(&cfg.pgsize_bitmap, BITS_PER_LONG);
--	while (i != BITS_PER_LONG) {
-+	for_each_set_bit(i, &cfg.pgsize_bitmap, BITS_PER_LONG) {
- 		size = 1UL << i;
- 
- 		if (ops->unmap(ops, iova, size) != size)
-@@ -916,8 +915,6 @@ static int __init arm_v7s_do_selftests(void)
- 			return __FAIL(ops);
- 
- 		iova += SZ_16M;
--		i++;
--		i = find_next_bit(&cfg.pgsize_bitmap, BITS_PER_LONG, i);
- 	}
- 
- 	free_io_pgtable_ops(ops);
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 39c2a05..4ffdd88 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -1120,8 +1120,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 
- 		/* Full unmap */
- 		iova = 0;
--		j = find_first_bit(&cfg->pgsize_bitmap, BITS_PER_LONG);
--		while (j != BITS_PER_LONG) {
-+		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
- 			size = 1UL << j;
- 
- 			if (ops->unmap(ops, iova, size) != size)
-@@ -1138,8 +1137,6 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 				return __FAIL(ops, i);
- 
- 			iova += SZ_1G;
--			j++;
--			j = find_next_bit(&cfg->pgsize_bitmap, BITS_PER_LONG, j);
- 		}
- 
- 		free_io_pgtable_ops(ops);
--- 
-2.7.0
+Yes, that is the rationale.  Any chance to you could look over the
+other patches as well?  Except for the networking one for which I'd
+really like to see a review from Dave all the users of the interface
+are block related.
