@@ -1,14 +1,15 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
-	mapping
-Date: Thu, 26 Apr 2018 14:09:41 +0200
-Message-ID: <20180426120941.GC11985@ulmo>
+Subject: Re: [PATCH v2 2/5] dma-mapping: Introduce dma_iommu_detach_device()
+	API
+Date: Thu, 26 Apr 2018 14:11:36 +0200
+Message-ID: <20180426121136.GD11985@ulmo>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
-	<20180425151815.GB16075@infradead.org>
+	<20180425101051.15349-2-thierry.reding@gmail.com>
+	<20180425151934.GC16075@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7103677196745434772=="
+Content-Type: multipart/mixed; boundary="===============8683177563047192142=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180425151815.GB16075-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+In-Reply-To: <20180425151934.GC16075-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,57 +24,64 @@ Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <lin
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============7103677196745434772==
+--===============8683177563047192142==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="OBd5C1Lgu00Gd/Tn"
+	protocol="application/pgp-signature"; boundary="NklN7DEeGtkPCoo3"
 Content-Disposition: inline
 
 
---OBd5C1Lgu00Gd/Tn
+--NklN7DEeGtkPCoo3
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 25, 2018 at 08:18:15AM -0700, Christoph Hellwig wrote:
-> The series seems to miss a cover letter.
+On Wed, Apr 25, 2018 at 08:19:34AM -0700, Christoph Hellwig wrote:
+> On Wed, Apr 25, 2018 at 12:10:48PM +0200, Thierry Reding wrote:
+> > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> >=20
+> > The dma_iommu_detach_device() API can be used by drivers to forcibly
+> > detach a device from an IOMMU that architecture code might have attached
+> > to. This is useful for drivers that need explicit control over the IOMMU
+> > using the IOMMU API directly.
 >=20
-> Also I really think this patch original patch shouldn't be in the proper
-> series.
+> Given that no one else implements it making it a generic API seems
+> rather confusing.  For now I'd rename it to
+> arm_dma_iommu_detach_device() and only implement it in arm.
 
-I added a note explaining why I included this. Not everyone in this
-discussion had seen the patch and therefore may not be aware of the
-problem that the series attempts to fix. I agree that it shouldn't
-be merged as part of the series, though.
+That'd be suboptimal because this code is used on both 32-bit and 64-bit
+ARM. If we make the function 32-bit ARM specific then the driver code
+would need to use an #ifdef to make sure compilation doesn't break on
+64-bit ARM.
 
 Thierry
 
---OBd5C1Lgu00Gd/Tn
+--NklN7DEeGtkPCoo3
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrhwYUACgkQ3SOs138+
-s6F1yRAApwk/4hhrzydb/pEWbyUCP78zIU7Fzf2xnts9uNOUTuf6H1VjX3Z7ZhI7
-XCnIuz9Bia+hiokgY2UpvTWPUS6LFuRAy6vgShL7G8fsbmYZsE9q9n98enyF6tmU
-lJKUZxGW0F25sYxEBJ2kizrNR4K8b7nW/mwbpHUK1DUU+YqVwBg/Gd8GLGF6wg+I
-G+xb8rFK207rZv6wzL68U9dOslcYb1GapS8UXqzXZivLMEK/dHal3xYmB0lEv/wL
-7cH9snklso57/WNtr1OGL8+494O8o5tZXYyPXHn7mFF1Rznvbt4CVzcLp1z3S0i+
-u8S2MFo8JI6Vj+WptDp2I3UmIMY7GXDKDhKlowcOTe5n4wfAjN/g1/Sl0Aryn46c
-4NTxl7frwAVLvVkSxcErrT1HXhVgyCT/G4VqWG6Oiue8h/wz87i5OBV9pwqr3VgI
-fxhxV/liF/zHHUBwelP/hd+AkZvejjMZuC+fwoxDOW+vCp7G9P72ec8mGvtWDyBW
-dT3DktsXZ05+G+Iq/I04pQOv786gpezyWr3EaKATDKCHylN/9SWX543wyBzeWhbc
-NY8NoR6KzVAt1V8IGvIuhfGt8QMn6UADnjplsELKoW0FoTYBU8T9VpI5LU7lu6O8
-8JUkXfaeJuCJeBp2SRMpghQHtdVidiIHyD762FcKGvLQ9HLJZU8=
-=hVVR
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrhwfgACgkQ3SOs138+
+s6EHTw//ZCryzeW2f4svmcpSQUrTrRTWPLyEgOfAxcIeMtoliIGtCwYilD4vyk0q
+Y9pOCf3XNj3PQMb6lAi2OjTCcv6AvWbd2K3HKIvZNvz5jY51dL+jtxIgX2EP+udP
+V/yRh3zLYAWEndTMvLw8vbGpZa6iCYRhhS+Ik6PTmH7Yyn+htcIUDzN5LwoFEA/Z
+zaYd2/pZIxjc6alAnyEgfrs2gxxC4fCdr0FIWxmYqtrxDlAx5MGTBcgdiN67XoNI
+MgH4k2MPZQmInjrjwklCp8UbHd92maweTwHojBfEmikvLSL2hzUeL71gfptEQ24g
++x9KPnwP/EquB8/3xrI87xWE99EbRAf1Jv3SrYByaS0jfW2H3TsRtUVCszKxVniS
+vqDp+pUGaqDJgB2e4QXb8Rtlrk11BSWK10Du+w9G1+8bB2bFK+ClfB/8Zim0PV8u
+p3BeVrXrCtiL+egyvvxnfUEQsb61D4FXYn7QqacgR0JDZJjNl4jZmFe+urH2FM/W
+bRDzt7ACb36GCobVR5ujGmA+x1agw2jyis8IcEf2FgOM5CdNIKZzAy1lZQvh5scv
+v3mvTMWBMyAtArb+U3zAiG2NGZGdJI39bjdpYsB+gL5v+ErXd+7voxd38KTaIi45
+nTz6ecCBNkuOWljeUvMdUlkFu29q/VKXCqISAkBtr16JXDk3b44=
+=UbRL
 -----END PGP SIGNATURE-----
 
---OBd5C1Lgu00Gd/Tn--
+--NklN7DEeGtkPCoo3--
 
---===============7103677196745434772==
+--===============8683177563047192142==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7103677196745434772==--
+--===============8683177563047192142==--
