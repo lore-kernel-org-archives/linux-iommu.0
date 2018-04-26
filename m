@@ -1,129 +1,46 @@
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Subject: Re: [Linaro-mm-sig] noveau vs arm dma ops
-Date: Thu, 26 Apr 2018 11:20:44 +0200
-Message-ID: <CAKMK7uG9R6paoP4BmvqDVUP_4Db4Dz8MSXeLwUBMYaORa5-kVw@mail.gmail.com>
-References: <20180424184847.GA3247@infradead.org>
- <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
- <20180425054855.GA17038@infradead.org>
- <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
- <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
- <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
- <20180425085439.GA29996@infradead.org>
- <20180425100429.GR25142@phenom.ffwll.local>
- <20180425153312.GD27076@infradead.org>
- <20180425225443.GQ16141@n2100.armlinux.org.uk>
+Date: Thu, 26 Apr 2018 02:24:22 -0700
+Message-ID: <20180426092422.GA26825@infradead.org>
+References: <20180425054855.GA17038@infradead.org>
+	<CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+	<CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+	<20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
+	<20180425085439.GA29996@infradead.org>
+	<20180425100429.GR25142@phenom.ffwll.local>
+	<20180425153312.GD27076@infradead.org>
+	<20180425225443.GQ16141@n2100.armlinux.org.uk>
+	<CAKMK7uG9R6paoP4BmvqDVUP_4Db4Dz8MSXeLwUBMYaORa5-kVw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180425225443.GQ16141@n2100.armlinux.org.uk>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, iommu@lists.linux-foundation.org, amd-gfx list <amd-gfx@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>, Jerome Glisse <jglisse@redhat.com>, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Thierry Reding <treding@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uG9R6paoP4BmvqDVUP_4Db4Dz8MSXeLwUBMYaORa5-kVw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Daniel Vetter <daniel.vetter-/w4YWyX8dFk@public.gmane.org>
+Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, amd-gfx list <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBBcHIgMjYsIDIwMTggYXQgMTI6NTQgQU0sIFJ1c3NlbGwgS2luZyAtIEFSTSBMaW51
-eAo8bGludXhAYXJtbGludXgub3JnLnVrPiB3cm90ZToKPiBPbiBXZWQsIEFwciAyNSwgMjAxOCBh
-dCAwODozMzoxMkFNIC0wNzAwLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToKPj4gT24gV2VkLCBB
-cHIgMjUsIDIwMTggYXQgMTI6MDQ6MjlQTSArMDIwMCwgRGFuaWVsIFZldHRlciB3cm90ZToKPj4g
-PiAtIGRtYSBhcGkgaGlkZXMgdGhlIGNhY2hlIGZsdXNoaW5nIHJlcXVpcmVtZW50cyBmcm9tIHVz
-LiBHUFVzIGxvdmUKPj4gPiAgIG5vbi1zbm9vcGVkIGFjY2VzcywgYW5kIHdvcnNlIGdpdmUgdXNl
-cnNwYWNlIGNvbnRyb2wgb3ZlciB0aGF0LiBXZSB3YW50Cj4+ID4gICBhIHN0cmljdCBzZXBhcmF0
-aW9uIGJldHdlZW4gbWFwcGluZyBzdHVmZiBhbmQgZmx1c2hpbmcgc3R1ZmYuIFdpdGggdGhlCj4+
-ID4gICBJT01NVSBhcGkgd2UgbW9zdGx5IGhhdmUgdGhlIGZvcm1lciwgYnV0IGZvciB0aGUgbGF0
-ZXIgYXJjaCBtYWludGFpbmVycwo+PiA+ICAgcmVndWxhcmx5IHRlbGxzIHRoZXkgd29uJ3QgYWxs
-b3cgdGhhdC4gU28gd2UgaGF2ZSBkcm1fY2xmbHVzaC5jLgo+Pgo+PiBUaGUgcHJvYmxlbSBpcyB0
-aGF0IGEgY2FjaGUgZmx1c2hpbmcgQVBJIGVudGlyZWx5IHNlcGFyYXRlIGlzIGhhcmQuIFRoYXQK
-Pj4gYmVpbmcgc2FpZCBpZiB5b3UgbG9vayBhdCBteSBnZW5lcmljIGRtYS1ub25jb2hlcmVudCBB
-UEkgc2VyaWVzIGl0IHRyaWVzCj4+IHRvIG1vdmUgdGhhdCB3YXkuICBTbyBmYXIgaXQgaXMgaW4g
-ZWFybHkgc3RhZ2VzIGFuZCBhcHBhcmVudGx5IHJhdGhlcgo+PiBidWdneSB1bmZvcnR1bmF0ZWx5
-Lgo+Cj4gQW5kIGlmIGZvbGsgd2FudCBhIGNhY2hlYWJsZSBtYXBwaW5nIHdpdGggZXhwbGljaXQg
-Y2FjaGUgZmx1c2hpbmcsIHRoZQo+IGNhY2hlIGZsdXNoaW5nIG11c3Qgbm90IGJlIGRlZmluZWQg
-aW4gdGVybXMgb2YgInRoaXMgaXMgd2hhdCBDUFUgc2VlbXMKPiB0byBuZWVkIiBidXQgZnJvbSB0
-aGUgcG9pbnQgb2YgdmlldyBvZiBhIENQVSB3aXRoIGluZmluaXRlIHByZWZldGNoaW5nLAo+IGlu
-ZmluaXRlIGNhY2hpbmcgYW5kIGluZmluaXRlIGNhcGFjaXR5IHRvIHBlcmZvcm0gd3JpdGViYWNr
-cyBvZiBkaXJ0eQo+IGNhY2hlIGxpbmVzIGF0IHVuZXhwZWN0ZWQgbW9tZW50cyB3aGVuIHRoZSBt
-ZW1vcnkgaXMgbWFwcGVkIGluIGEKPiBjYWNoZWFibGUgbWFwcGluZy4KPgo+IChUaGUgcmVhc29u
-IGZvciB0aGF0IGlzIHlvdSdyZSBvcGVyYXRpbmcgaW4gYSBub24tQ1BVIHNwZWNpZmljIHNwYWNl
-LAo+IHNvIHlvdSBjYW4ndCBtYWtlIGFueSBndWFyYW50ZWVzIGFzIHRvIGhvdyBtdWNoIGNhY2hp
-bmcgb3IgcHJlZmV0Y2hpbmcKPiB3aWxsIG9jY3VyIGJ5IHRoZSBDUFUgLSBkaWZmZXJlbnQgQ1BV
-cyB3aWxsIGRvIGRpZmZlcmVudCBhbW91bnRzLikKPgo+IFNvLCBmb3IgZXhhbXBsZSwgdGhlIHNl
-cXVlbmNlOgo+Cj4gR1BVIHdyaXRlcyB0byBtZW1vcnkKPiAgICAgICAgICAgICAgICAgICAgICAg
-ICBDUFUgcmVhZHMgZnJvbSBjYWNoZWFibGUgbWVtb3J5Cj4KPiBpZiB0aGUgbWVtb3J5IHdhcyBw
-cmV2aW91c2x5IGRpcnR5IChpb3csIENQVSBoYXMgd3JpdHRlbiksIHlvdSBuZWVkIHRvCj4gZmx1
-c2ggdGhlIGRpcnR5IGNhY2hlIGxpbmVzIF9iZWZvcmVfIHRoZSBHUFUgd3JpdGVzIGhhcHBlbiwg
-YnV0IHlvdQo+IGRvbid0IGtub3cgd2hldGhlciB0aGUgQ1BVIGhhcyBzcGVjdWxhdGl2ZWx5IHBy
-ZWZldGNoZWQsIHNvIHlvdSBuZWVkCj4gdG8gZmx1c2ggYW55IHByZWZldGNoZWQgY2FjaGUgbGlu
-ZXMgYmVmb3JlIHJlYWRpbmcgZnJvbSB0aGUgY2FjaGVhYmxlCj4gbWVtb3J5IF9hZnRlcl8gdGhl
-IEdQVSBoYXMgZmluaXNoZWQgd3JpdGluZy4KPgo+IEFsc28gbm90ZSB0aGF0ICJmbHVzaCIgdGhl
-cmUgY2FuIGJlICJjbGVhbiB0aGUgY2FjaGUiLCAiY2xlYW4gYW5kCj4gaW52YWxpZGF0ZSB0aGUg
-Y2FjaGUiIG9yICJpbnZhbGlkYXRlIHRoZSBjYWNoZSIgYXMgYXBwcm9wcmlhdGUgLSBzb21lCj4g
-Q1BVcyBhcmUgYWJsZSB0byBwZXJmb3JtIHRob3NlIHRocmVlIG9wZXJhdGlvbnMsIGFuZCB0aGUg
-YXBwcm9wcmlhdGUKPiBvbmUgZGVwZW5kcyBvbiBub3Qgb25seSB3aGVyZSBpbiB0aGUgYWJvdmUg
-c2VxdWVuY2UgaXQncyBiZWluZyB1c2VkLAo+IGJ1dCBhbHNvIG9uIHdoYXQgdGhlIG9wZXJhdGlv
-bnMgYXJlLgo+Cj4gU28sIHRoZSBhYm92ZSBzZXF1ZW5jZSBjb3VsZCBiZToKPgo+ICAgICAgICAg
-ICAgICAgICAgICAgICAgIENQVSBpbnZhbGlkYXRlcyBjYWNoZSBmb3IgbWVtb3J5Cj4gICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAoZHVlIHRvIHBvc3NpYmxlIGRpcnR5IGNhY2hlIGxp
-bmVzKQo+IEdQVSB3cml0ZXMgdG8gbWVtb3J5Cj4gICAgICAgICAgICAgICAgICAgICAgICAgQ1BV
-IGludmFsaWRhdGVzIGNhY2hlIGZvciBtZW1vcnkKPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICh0byBnZXQgcmlkIG9mIGFueSBzcGVjdWxhdGl2ZWx5IHByZWZldGNoZWQKPiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBsaW5lcykKPiAgICAgICAgICAgICAgICAgICAg
-ICAgICBDUFUgcmVhZHMgZnJvbSBjYWNoZWFibGUgbWVtb3J5Cj4KPiBZZXMsIGluIHRoZSBhYm92
-ZSBjYXNlLCBfdHdvXyBjYWNoZSBvcGVyYXRpb25zIGFyZSByZXF1aXJlZCB0byBlbnN1cmUKPiBj
-b3JyZWN0IGJlaGF2aW91ci4gIEhvd2V2ZXIsIGlmIHlvdSBrbm93IGZvciBjZXJ0YWluIHRoYXQg
-dGhlIG1lbW9yeSB3YXMKPiBwcmV2aW91c2x5IGNsZWFuLCB0aGVuIHRoZSBmaXJzdCBjYWNoZSBv
-cGVyYXRpb24gY2FuIGJlIHNraXBwZWQuCj4KPiBXaGF0IEknbSBwb2ludGluZyBvdXQgaXMgdGhl
-cmUncyBtdWNoIG1vcmUgdGhhbiBqdXN0ICJJIHdhbnQgdG8gZmx1c2gKPiB0aGUgY2FjaGUiIGhl
-cmUsIHdoaWNoIGlzIGN1cnJlbnRseSB3aGF0IERSTSBzZWVtcyB0byBhc3N1bWUgYXQgdGhlCj4g
-bW9tZW50IHdpdGggdGhlIGNvZGUgaW4gZHJtX2NhY2hlLmMuCj4KPiBJZiB3ZSBjYW4gYWdyZWUg
-YSBzZXQgb2YgaW50ZXJmYWNlcyB0aGF0IGFsbG93cyBfcHJvcGVyXyB1c2Ugb2YgdGhlc2UKPiBm
-YWNpbGl0aWVzLCBvbmUgd2hpY2ggY2FuIGJlIHVzZWQgYXBwcm9wcmlhdGVseSwgdGhlbiB0aGVy
-ZSBzaG91bGRuJ3QKPiBiZSBhIHByb2JsZW0uICBUaGUgRE1BIEFQSSBkb2VzIHRoYXQgdmlhIGl0
-J3MgaWRlYXMgYWJvdXQgd2hvIG93bnMgYQo+IHBhcnRpY3VsYXIgYnVmZmVyIChiZWNhdXNlIG9m
-IHRoZSBhYm92ZSBwcm9ibGVtKSBhbmQgdGhhdCdzIHNvbWV0aGluZwo+IHdoaWNoIHdvdWxkIG5l
-ZWQgdG8gYmUgY2FycmllZCBvdmVyIHRvIHN1Y2ggYSBjYWNoZSBmbHVzaGluZyBBUEkgKGl0Cj4g
-c2hvdWxkIGJlIHByZXR0eSBvYnZpb3VzIHRoYXQgaGF2aW5nIGEgR1BVIHJlYWQgb3Igd3JpdGUg
-bWVtb3J5IHdoaWxlCj4gdGhlIGNhY2hlIGZvciB0aGF0IG1lbW9yeSBpcyBiZWluZyBjbGVhbmVk
-IHdpbGwgbGVhZCB0byB1bmV4cGVjdGVkCj4gcmVzdWx0cy4pCj4KPiBBbHNvIG5vdGUgdGhhdCB0
-aGluZ3MgZ2V0IGV2ZW4gbW9yZSBpbnRlcmVzdGluZyBpbiBhIFNNUCBlbnZpcm9ubWVudAo+IGlm
-IGNhY2hlIG9wZXJhdGlvbnMgYXJlbid0IGJyb2FkY2FzdGVkIGFjcm9zcyB0aGUgU01QIGNsdXN0
-ZXIgKHdoaWNoCj4gbWVhbnMgY2FjaGUgb3BlcmF0aW9ucyBoYXZlIHRvIGJlIElQSSdkIHRvIG90
-aGVyIENQVXMuKQo+Cj4gVGhlIG5leHQgaXNzdWUsIHdoaWNoIEkndmUgYnJvdWdodCB1cCBiZWZv
-cmUsIGlzIHRoYXQgZXhwb3NpbmcgY2FjaGUKPiBmbHVzaGluZyB0byB1c2Vyc3BhY2Ugb24gYXJj
-aGl0ZWN0dXJlcyB3aGVyZSBpdCBpc24ndCBhbHJlYWR5IGV4cG9zZWQKPiBjb21lcy4gIEFzIGhh
-cyBiZWVuIHNob3duIGJ5IEdvb2dsZSBQcm9qZWN0IFplcm8sIHRoaXMgcmlza3MgZXhwb3NpbmcK
-PiB0aG9zZSBhcmNoaXRlY3R1cmVzIHRvIFNwZWN0cmUgYW5kIE1lbHRkb3duIGV4cGxvaXRzIHdo
-ZXJlIHRoZXkgd2VyZW4ndAo+IGF0IHN1Y2ggYSByaXNrIGJlZm9yZS4gIChJJ3ZlIHByZXR0eSBt
-dWNoIHNob3duIGhlcmUgdGhhdCB5b3UgX2RvXwo+IG5lZWQgdG8gY29udHJvbCB3aGljaCBjYWNo
-ZSBsaW5lcyBnZXQgZmx1c2hlZCB0byBtYWtlIHRoZXNlIGV4cGxvaXRzCj4gd29yaywgYW5kIGZs
-dXNoaW5nIHRoZSBjYWNoZSBieSByZWFkaW5nIGxvdHMgb2YgZGF0YSBpbiBsaXUgb2YgaGF2aW5n
-Cj4gdGhlIGFiaWxpdHkgdG8gZXhwbGljaXRseSBmbHVzaCBiaXRzIG9mIGNhY2hlIG1ha2VzIGl0
-IHZlcnkgZGlmZmljdWx0Cj4gdG8gaW1wb3NzaWJsZSBmb3IgdGhlbSB0byB3b3JrLikKClRoZSBh
-Ym92ZSBpcyBhbHJlYWR5IHdoYXQgd2UncmUgaW1wbGVtZW50aW5nIGluIGk5MTUsIGF0IGxlYXN0
-CmNvbmNlcHR1YWxseSAoaXQgYWxsIGJvaWxzIGRvd24gdG8gY2xmbHVzaCBpbnN0cnVjdGlvbnMg
-YmVjYXVzZSB0aG9zZQpib3RoIGludmFsaWRhdGUgYW5kIGZsdXNoKS4KCk9uZSBhcmNoaXRlY3R1
-cmFsIGd1YXJhbnRlZSB3ZSdyZSBleHBsb2l0aW5nIGlzIHRoYXQgcHJlZmV0Y2hlZCAoYW5kCmhl
-bmNlIG5vbi1kaXJ0eSkgY2FjaGVsaW5lcyB3aWxsIG5ldmVyIGdldCB3cml0dGVuIGJhY2ssIGJ1
-dCBkcm9wcGVkCmluc3RlYWQuIEJ1dCB3ZSBraW5kYSBuZWVkIHRoYXQsIG90aGVyd2lzZSB0aGUg
-Y3B1IGNvdWxkIHJhbmRvbWx5CmNvcnJ1cHQgdGhlIGRhdGEgdGhlIGdwdSBpcyB3cml0aW5nIGFu
-ZCBub24tY29oZXJlbnQgd291bGQganVzdCBub3QKd29yayBvbiB0aG9zZSBwbGF0Zm9ybXMuIEJ1
-dCBhc2lkZSBmcm9tIHRoYXQsIHllcyB3ZSBkbyBhbiBpbnZhbGlkYXRlCmJlZm9yZSByZWFkaW5n
-LCBhbmQgZmx1c2hpbmcgYWZ0ZXIgZXZlcnkgd3JpdGluZyAob3IgYW55dGhpbmcgZWxzZQp0aGF0
-IGNvdWxkIGxlYXZlIGRpcnR5IGNhY2hlbGluZXMgYmVoaW5kKS4gUGx1cyBhIGJpdCBvZiB0cmFj
-a2luZyBpbgp0aGUgZHJpdmVyIChrZXJuZWwvdXNlcnNwYWNlIGJvdGggZG8gdGhpcywgdG9nZXRo
-ZXIsIHdpdGggc29tZQpoaWxhcmlvdXNseSBiYWQgZXZvbHZlZCBzZW1hbnRpY3MgYXQgbGVhc3Qg
-Zm9yIGk5MTUsIGJ1dCBvaCB3ZWxsIGNhbid0CmZpeCB1YXBpIG1pc3Rha2VzKSB0byBhdm9pZCBy
-ZWR1bmRhbnQgY2FjaGVsaW5lIGZsdXNoZXMvaW52YWxpZGF0ZXMuCgpTbyBhY2suCi1EYW5pZWwK
-LS0gCkRhbmllbCBWZXR0ZXIKU29mdHdhcmUgRW5naW5lZXIsIEludGVsIENvcnBvcmF0aW9uCis0
-MSAoMCkgNzkgMzY1IDU3IDQ4IC0gaHR0cDovL2Jsb2cuZmZ3bGwuY2gKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApk
-cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On Thu, Apr 26, 2018 at 11:20:44AM +0200, Daniel Vetter wrote:
+> The above is already what we're implementing in i915, at least
+> conceptually (it all boils down to clflush instructions because those
+> both invalidate and flush).
+
+The clwb instruction that just writes back dirty cache lines might
+be very interesting for the x86 non-coherent dma case.  A lot of
+architectures use their equivalent to prepare to to device transfers.
+
+> One architectural guarantee we're exploiting is that prefetched (and
+> hence non-dirty) cachelines will never get written back, but dropped
+> instead.
+
+And to make this work you'll need exactly this guarantee.
