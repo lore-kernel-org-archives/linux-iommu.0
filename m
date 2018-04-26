@@ -1,82 +1,79 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: noveau vs arm dma ops
-Date: Thu, 26 Apr 2018 12:12:41 +0100
-Message-ID: <20180426111240.GS16141@n2100.armlinux.org.uk>
-References: <20180425054855.GA17038@infradead.org>
- <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
- <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
- <20180425064335.GB28100@infradead.org>
- <20180425074151.GA2271@ulmo>
- <20180425085439.GA29996@infradead.org>
- <20180425100429.GR25142@phenom.ffwll.local>
- <20180425153312.GD27076@infradead.org>
- <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
- <20180426090942.GA18811@infradead.org>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
+	mapping
+Date: Thu, 26 Apr 2018 14:09:41 +0200
+Message-ID: <20180426120941.GC11985@ulmo>
+References: <20180425101051.15349-1-thierry.reding@gmail.com>
+	<20180425151815.GB16075@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180426090942.GA18811@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Daniel Vetter <daniel@ffwll.ch>, "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Thierry Reding <treding@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="===============7103677196745434772=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180425151815.GB16075-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-(While there's a rain shower...)
 
-On Thu, Apr 26, 2018 at 02:09:42AM -0700, Christoph Hellwig wrote:
-> synopsis:
-> 
-> drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c:    pdevinfo.dma_mask       = DMA_BIT_MASK(32);
-> drivers/gpu/drm/bridge/synopsys/dw-hdmi.c:              pdevinfo.dma_mask = DMA_BIT_MASK(32);
-
-This is for the AHB audio driver, and is a correct default on two counts:
-
-1. It is historically usual to initialise DMA masks to 32-bit, and leave
-   it to the device drivers to negotiate via the DMA mask functions if
-   they wish to use higher orders of bits.
-
-2. The AHB audio hardware in the HDMI block only supports 32-bit addresses.
-
-What I've missed from the AHB audio driver is calling the DMA mask
-functions... oops.  Patch below.
-
-> drivers/gpu/drm/bridge/synopsys/dw-hdmi.c:              pdevinfo.dma_mask = DMA_BIT_MASK(32);
-
-This is for the I2S audio driver, and I suspect is wrong - I doubt
-that the I2S sub-device itself does any DMA what so ever.
-
-8<===
-From: Russell King <rmk+kernel@armlinux.org.uk>
-Subject: drm: bridge: dw-hdmi: Negotiate dma mask with DMA API
-
-DMA drivers are supposed to negotiate the DMA mask with the DMA API,
-but this was missing from the AHB audio driver.  Add the necessary
-call.
-
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-index cf3f0caf9c63..16c45b6cd6af 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-@@ -539,6 +539,10 @@ static int snd_dw_hdmi_probe(struct platform_device *pdev)
- 	unsigned revision;
- 	int ret;
- 
-+	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
-+	if (ret)
-+		return ret;
-+
- 	writeb_relaxed(HDMI_IH_MUTE_AHBDMAAUD_STAT0_ALL,
- 		       data->base + HDMI_IH_MUTE_AHBDMAAUD_STAT0);
- 	revision = readb_relaxed(data->base + HDMI_REVISION_ID);
+--===============7103677196745434772==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="OBd5C1Lgu00Gd/Tn"
+Content-Disposition: inline
 
 
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-According to speedtest.net: 8.21Mbps down 510kbps up
+--OBd5C1Lgu00Gd/Tn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Apr 25, 2018 at 08:18:15AM -0700, Christoph Hellwig wrote:
+> The series seems to miss a cover letter.
+>=20
+> Also I really think this patch original patch shouldn't be in the proper
+> series.
+
+I added a note explaining why I included this. Not everyone in this
+discussion had seen the patch and therefore may not be aware of the
+problem that the series attempts to fix. I agree that it shouldn't
+be merged as part of the series, though.
+
+Thierry
+
+--OBd5C1Lgu00Gd/Tn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrhwYUACgkQ3SOs138+
+s6F1yRAApwk/4hhrzydb/pEWbyUCP78zIU7Fzf2xnts9uNOUTuf6H1VjX3Z7ZhI7
+XCnIuz9Bia+hiokgY2UpvTWPUS6LFuRAy6vgShL7G8fsbmYZsE9q9n98enyF6tmU
+lJKUZxGW0F25sYxEBJ2kizrNR4K8b7nW/mwbpHUK1DUU+YqVwBg/Gd8GLGF6wg+I
+G+xb8rFK207rZv6wzL68U9dOslcYb1GapS8UXqzXZivLMEK/dHal3xYmB0lEv/wL
+7cH9snklso57/WNtr1OGL8+494O8o5tZXYyPXHn7mFF1Rznvbt4CVzcLp1z3S0i+
+u8S2MFo8JI6Vj+WptDp2I3UmIMY7GXDKDhKlowcOTe5n4wfAjN/g1/Sl0Aryn46c
+4NTxl7frwAVLvVkSxcErrT1HXhVgyCT/G4VqWG6Oiue8h/wz87i5OBV9pwqr3VgI
+fxhxV/liF/zHHUBwelP/hd+AkZvejjMZuC+fwoxDOW+vCp7G9P72ec8mGvtWDyBW
+dT3DktsXZ05+G+Iq/I04pQOv786gpezyWr3EaKATDKCHylN/9SWX543wyBzeWhbc
+NY8NoR6KzVAt1V8IGvIuhfGt8QMn6UADnjplsELKoW0FoTYBU8T9VpI5LU7lu6O8
+8JUkXfaeJuCJeBp2SRMpghQHtdVidiIHyD762FcKGvLQ9HLJZU8=
+=hVVR
+-----END PGP SIGNATURE-----
+
+--OBd5C1Lgu00Gd/Tn--
+
+--===============7103677196745434772==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7103677196745434772==--
