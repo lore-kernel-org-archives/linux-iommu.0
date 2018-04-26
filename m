@@ -1,45 +1,123 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 2/5] ide: kill ide_toggle_bounce
-Date: Thu, 26 Apr 2018 09:20:33 +0200
-Message-ID: <20180426072033.GA14700@lst.de>
-References: <20180424181625.22410-1-hch@lst.de>
-	<20180424181625.22410-3-hch@lst.de>
-	<5aaca0d3-417f-57f3-969f-b4c777c3fd48@kernel.dk>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: noveau vs arm dma ops
+Date: Thu, 26 Apr 2018 02:09:42 -0700
+Message-ID: <20180426090942.GA18811@infradead.org>
+References: <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+ <20180425054855.GA17038@infradead.org>
+ <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+ <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+ <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
+ <20180425085439.GA29996@infradead.org>
+ <20180425100429.GR25142@phenom.ffwll.local>
+ <20180425153312.GD27076@infradead.org>
+ <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <5aaca0d3-417f-57f3-969f-b4c777c3fd48-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Christoph Hellwig <hch@infradead.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Thierry Reding <treding@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 24, 2018 at 08:02:56PM -0600, Jens Axboe wrote:
-> On 4/24/18 12:16 PM, Christoph Hellwig wrote:
-> > ide_toggle_bounce did select various strange block bounce limits, including
-> > not bouncing at all as soon as an iommu is present in the system.  Given
-> > that the dma_map routines now handle any required bounce buffering except
-> > for ISA DMA, and the ide code already must handle either ISA DMA or highmem
-> > at least for iommu equipped systems we can get rid of the block layer
-> > bounce limit setting entirely.
-> 
-> Pretty sure I was the one to add this code, when highmem page IO was
-> enabled about two decades ago...
-> 
-> Outside of DMA, the issue was that the PIO code could not handle
-> highmem. That's not the case anymore, so this should be fine.
-
-Yes, that is the rationale.  Any chance to you could look over the
-other patches as well?  Except for the networking one for which I'd
-really like to see a review from Dave all the users of the interface
-are block related.
+T24gV2VkLCBBcHIgMjUsIDIwMTggYXQgMTE6MzU6MTNQTSArMDIwMCwgRGFuaWVsIFZldHRlciB3
+cm90ZToKPiA+IGdldF9yZXF1aXJlZF9tYXNrKCkgaXMgc3VwcG9zZWQgdG8gdGVsbCB5b3UgaWYg
+eW91IGFyZSBzYWZlLiAgSG93ZXZlcgo+ID4gd2UgYXJlIG1pc3NpbmcgbG90cyBvZiBpbXBsZW1l
+bnRhdGlvbnMgb2YgaXQgZm9yIGlvbW11cyBzbyB5b3UgbWlnaHQgZ2V0Cj4gPiBzb21lIGZhbHNl
+IG5lZ2F0aXZlcywgaW1wcm92ZW1lbnRzIHdlbGNvbWUuICBJdCdzIGJlZW4gb24gbXkgbGlzdCBv
+Zgo+ID4gdGhpbmdzIHRvIGZpeCBpbiB0aGUgRE1BIEFQSSwgYnV0IGl0IGlzIG5vd2hlcmUgbmVh
+ciB0aGUgdG9wLgo+IAo+IEkgaGFzbid0IGNvbWUgdXAgaW4gYSB3aGlsZSBpbiBzb21lIGZpcmV3
+b3Jrcywgc28gSSBob25lc3RseSBkb24ndAo+IHJlbWVtYmVyIGV4YWN0bHkgd2hhdCB0aGUgaXNz
+dWVzIGhhdmUgYmVlbi4gQnV0Cj4gCj4gY29tbWl0IGQ3NjZlZjUzMDA2YzJjMzhhN2ZlMmJlZjA5
+MDQxMDVhNzkzMzgzZjIKPiBBdXRob3I6IENocmlzIFdpbHNvbiA8Y2hyaXNAY2hyaXMtd2lsc29u
+LmNvLnVrPgo+IERhdGU6ICAgTW9uIERlYyAxOSAxMjo0Mzo0NSAyMDE2ICswMDAwCj4gCj4gICAg
+IGRybS9pOTE1OiBGYWxsYmFjayB0byBzaW5nbGUgUEFHRV9TSVpFIHNlZ21lbnRzIGZvciBETUEg
+cmVtYXBwaW5nCj4gCj4gYW5kIHRoZSB2YXJpb3VzIGJpdHMgb2YgY29kZSB0aGF0IGEKPiAKPiAk
+IGdpdCBncmVwIFNXSU9UTEIgLS0gZHJpdmVycy9ncHUKPiAKPiB0dXJucyB1cCBpcyB3aGF0IHdl
+J3JlIGRvaW5nIHRvIGhhY2sgYXJvdW5kIHRoYXQgc3R1ZmYuIEFuZCBpbiBnZW5lcmFsCj4gKHRo
+ZXJlJ3Mgc29tZSBleGNlcHRpb25zKSBncHVzIHNob3VsZCBiZSBhYmxlIHRvIGFkZHJlc3MgZXZl
+cnl0aGluZywKPiBzbyBJIG5ldmVyIGZ1bGx5IHVuZGVyc3Rvb2Qgd2hlcmUgdGhhdCdzIGV2ZW4g
+Y29taW5nIGZyb20uCgpJJ20gcHJldHR5IHN1cmUgSSd2ZSBzZWVuIHNvbWUgb2RkbHkgbG93IGRt
+YSBtYXNrcyBpbiBHUFUgZHJpdmVycy4gIEUuZy4KZHVwbGljYXRlZCBpbiB2YXJpb3VzIEFNRCBm
+aWxlczoKCglhZGV2LT5uZWVkX2RtYTMyID0gZmFsc2U7CiAgICAgICAgZG1hX2JpdHMgPSBhZGV2
+LT5uZWVkX2RtYTMyID8gMzIgOiA0MDsKICAgICAgICByID0gcGNpX3NldF9kbWFfbWFzayhhZGV2
+LT5wZGV2LCBETUFfQklUX01BU0soZG1hX2JpdHMpKTsKICAgICAgICBpZiAocikgewogICAgICAg
+ICAgICAgICAgYWRldi0+bmVlZF9kbWEzMiA9IHRydWU7CiAgICAgICAgICAgICAgICBkbWFfYml0
+cyA9IDMyOwogICAgICAgICAgICAgICAgZGV2X3dhcm4oYWRldi0+ZGV2LCAiYW1kZ3B1OiBObyBz
+dWl0YWJsZSBETUEgYXZhaWxhYmxlLlxuIik7CiAgICAgICAgfQoKc3lub3BzaXM6Cgpkcml2ZXJz
+L2dwdS9kcm0vYnJpZGdlL3N5bm9wc3lzL2R3LWhkbWktaTJzLWF1ZGlvLmM6ICAgIHBkZXZpbmZv
+LmRtYV9tYXNrICAgICAgID0gRE1BX0JJVF9NQVNLKDMyKTsKZHJpdmVycy9ncHUvZHJtL2JyaWRn
+ZS9zeW5vcHN5cy9kdy1oZG1pLmM6ICAgICAgICAgICAgICBwZGV2aW5mby5kbWFfbWFzayA9IERN
+QV9CSVRfTUFTSygzMik7CmRyaXZlcnMvZ3B1L2RybS9icmlkZ2Uvc3lub3BzeXMvZHctaGRtaS5j
+OiAgICAgICAgICAgICAgcGRldmluZm8uZG1hX21hc2sgPSBETUFfQklUX01BU0soMzIpOwoKZXRu
+YXZpdiBnZXRzIGl0IHJpZ2h0OgoKZHJpdmVycy9ncHUvZHJtL2V0bmF2aXYvZXRuYXZpdl9ncHUu
+YzogICAgICAgICAgdTMyIGRtYV9tYXNrID0gKHUzMilkbWFfZ2V0X3JlcXVpcmVkX21hc2soZ3B1
+LT5kZXYpOwoKCkJ1dCB5ZXMsIHRoZSBzd2lvdGxiIGhhY2tlcnkgcmVhbGx5IGlya3MgbWUuICBJ
+IGp1c3QgaGF2ZSBzb21lIG1vcmUKaW1wb3J0YW50IGFuZCBiaWdnZXIgZmlyZXMgdG8gZmlnaHQg
+Zmlyc3QsIGJ1dCBJIHBsYW4gdG8gZ2V0IGJhY2sgdG8gdGhlCnJvb3QgY2F1c2Ugb2YgdGhhdCBl
+dmVudHVhbGx5LgoKPiAKPiA+PiAtIGRtYSBhcGkgaGlkZXMgdGhlIGNhY2hlIGZsdXNoaW5nIHJl
+cXVpcmVtZW50cyBmcm9tIHVzLiBHUFVzIGxvdmUKPiA+PiAgIG5vbi1zbm9vcGVkIGFjY2Vzcywg
+YW5kIHdvcnNlIGdpdmUgdXNlcnNwYWNlIGNvbnRyb2wgb3ZlciB0aGF0LiBXZSB3YW50Cj4gPj4g
+ICBhIHN0cmljdCBzZXBhcmF0aW9uIGJldHdlZW4gbWFwcGluZyBzdHVmZiBhbmQgZmx1c2hpbmcg
+c3R1ZmYuIFdpdGggdGhlCj4gPj4gICBJT01NVSBhcGkgd2UgbW9zdGx5IGhhdmUgdGhlIGZvcm1l
+ciwgYnV0IGZvciB0aGUgbGF0ZXIgYXJjaCBtYWludGFpbmVycwo+ID4+ICAgcmVndWxhcmx5IHRl
+bGxzIHRoZXkgd29uJ3QgYWxsb3cgdGhhdC4gU28gd2UgaGF2ZSBkcm1fY2xmbHVzaC5jLgo+ID4K
+PiA+IFRoZSBwcm9ibGVtIGlzIHRoYXQgYSBjYWNoZSBmbHVzaGluZyBBUEkgZW50aXJlbHkgc2Vw
+YXJhdGUgaXMgaGFyZC4gVGhhdAo+ID4gYmVpbmcgc2FpZCBpZiB5b3UgbG9vayBhdCBteSBnZW5l
+cmljIGRtYS1ub25jb2hlcmVudCBBUEkgc2VyaWVzIGl0IHRyaWVzCj4gPiB0byBtb3ZlIHRoYXQg
+d2F5LiAgU28gZmFyIGl0IGlzIGluIGVhcmx5IHN0YWdlcyBhbmQgYXBwYXJlbnRseSByYXRoZXIK
+PiA+IGJ1Z2d5IHVuZm9ydHVuYXRlbHkuCj4gCj4gSSdtIGFzc3VtaW5nIHRoaXMgc3R1ZmYgaGVy
+ZT8KPiAKPiBodHRwczovL2xrbWwub3JnL2xrbWwvMjAxOC80LzIwLzE0Ngo+IAo+IEFueXdheSBn
+b3QgbG9zdCBpbiBhbGwgdGhhdCB3b3JrIGEgYml0LCBsb29rcyByZWFsbHkgbmljZS4KClRoYXQg
+dXJsIGRvZXNuJ3Qgc2VlbSB0byB3b3JrIGN1cnJlbnRseS4gIEJ1dCBJIGFtIHRhbGtpbmcgYWJv
+dXQgdGhlCnRocmVhZCB0aXRsZWQgJ1tSRkNdIGNvbW1vbiBub24tY2FjaGUgY29oZXJlbnQgZGly
+ZWN0IGRtYSBtYXBwaW5nIG9wcycKCj4gWWVhaCB0aGUgYWJvdmUgaXMgcHJldHR5IG11Y2ggd2hh
+dCB3ZSBkbyBvbiB4ODYuIGRtYS1hcGkgYmVsaWV2ZXMKPiBldmVyeXRoaW5nIGlzIGNvaGVyZW50
+LCBzbyBkbWFfbWFwX3NnIGRvZXMgdGhlIG1hcHBpbmcgd2Ugd2FudCBhbmQKPiBub3RoaW5nIGVs
+c2UgKG1pbnVzIHN3aW90bGIgZnVuKS4gQ2FjaGUgZmx1c2hpbmcsIGFsbG9jYXRpb25zLCBhbGwK
+PiBkb25lIGJ5IHRoZSBkcml2ZXIuCgpXaGljaCBzb3VuZHMgbGlrZSB0aGUgcmlnaHQgdGhpbmcg
+dG8gZG8gdG8gbWUuCgo+IE9uIGFybSB0aGF0IGRvZXNuJ3Qgd29yay4gVGhlIGlvbW11IGFwaSBz
+ZWVtcyBsaWtlIGEgZ29vZCBmaXQsIGV4Y2VwdAo+IHRoZSBkbWEtYXBpIHRlbmRzIHRvIGdldCBp
+biB0aGUgd2F5IGEgYml0IChkcm0vbXNtIGFwcGFyZW50bHkgaGFzCj4gc2ltaWxhciBwcm9ibGVt
+cyBsaWtlIHRlZ3JhKSwgYW5kIGlmIHlvdSBuZWVkIGNvbnRpZ3VvdXMgbWVtb3J5Cj4gZG1hX2Fs
+bG9jX2NvaGVyZW50IGlzIHRoZSBvbmx5IHdheSB0byBnZXQgYXQgY29udGlndW91cyBtZW1vcnku
+IFRoZXJlCj4gd2FzIGEgaHVnZSBkaXNjdXNzaW9uIHllYXJzIGFnbyBhYm91dCB0aGF0LCBhbmQg
+ZGlyZWN0IGNtYSBhY2Nlc3Mgd2FzCj4gc2hvdCBkb3duIGJlY2F1c2UgaXQgd291bGQgaGF2ZSBl
+eHBvc2VkIHRvbyBtdWNoIG9mIHRoZSBjYWNoaW5nCj4gYXR0cmlidXRlIG1hbmdsaW5nIHJlcXVp
+cmVkIChtb3N0IGFybSBwbGF0Zm9ybXMgbmVlZCB3Yy1wYWdlcyB0byBub3QKPiBiZSBpbiB0aGUg
+a2VybmVsJ3MgbGluZWFyIG1hcCBhcHBhcmVudGx5KS4KClNpbXBsZSBjbWFfYWxsb2MoKSBkb2Vz
+bid0IGRvIGFueXRoaW5nIGFib3V0IGNhY2hlIGhhbmRsaW5nLCBpdApqdXN0IGlzIGEgdmVyeSBk
+dW1iIGFsbG9jYXRvciBmb3IgbGFyZ2UgY29udGlndW91cyByZWdpb25zIGluc2lkZQphIGJpZyBw
+b29sLgoKSSdtIG5vdCB0aGUgQ01BIG1haW50YWluZXIsIGJ1dCBpbiBnZW5lcmFsIEknZCBsb3Zl
+IHRvIHNlZSBhbgpFWFBPUlRfU1lNQk9MX0dQTCBzbGFwcGVkIG9udG8gY21hX2FsbG9jL3JlbGVh
+c2UgYW5kIGRyaXZlcnMgdXNlCnRoYXQgd2VyZSBuZWVkZWQuICBVc2luZyB0aGF0IHBsdXMgZG1h
+X21hcCovZG1hX3VubWFwKiBzb3VuZHMgbGlrZQphIG11Y2ggc2FuZXIgaW50ZXJmYWNlIHRoYW4g
+ZG1hX2FsbG9jX2F0dHJzICsgRE1BX0FUVFJfTk9OX0NPTlNJU1RFTlQKb3IgRE1BX0FUVFJfTk9f
+S0VSTkVMX01BUFBJTkcuCgpZb3UgZG9uJ3QgaGFwcGVuIHRvIGhhdmUgYSBwb2ludGVyIHRvIHRo
+YXQgcHJldmlvdXMgZGlzY3Vzc2lvbj8KCj4gQW55dGhpbmcgdGhhdCBzZXBhcmF0ZSB0aGVzZSAz
+IHRoaW5ncyBtb3JlIChhbGxvY2F0aW9uIHBvb2xzLCBtYXBwaW5nCj4gdGhyb3VnaCBJT01NVXMg
+YW5kIGZsdXNoaW5nIGNwdSBjYWNoZXMpIHNvdW5kcyBsaWtlIHRoZSByaWdodAo+IGRpcmVjdGlv
+biB0byBtZS4gRXZlbiBpZiB0aGF0IHRocm93cyBzb21lIHBvcnRhYmlsaXR5IGFjcm9zcyBwbGF0
+Zm9ybXMKPiBhd2F5IC0gZHJpdmVycyB3aG8gd2FudCB0byBjb250cm9sIHRoaW5ncyBpbiB0aGlz
+IG11Y2ggZGV0YWlsIGFyZW4ndAo+IHJlYWxseSBwb3J0YWJsZSAod2l0aG91dCBzb21lIHNlcmlv
+dXMgd29yaykgYW55d2F5LgoKQXMgbG9uZyBhcyB3ZSBzdGF5IGF3YXkgZnJvbSB0aGUgZG1hIGNv
+aGVyZW50IGFsbG9jYXRpb25zIHNlcGFyYXRpbmcKdGhlbSBpcyBmaW5lLCBhbmQgSSdtIHdvcmtp
+bmcgdG93YXJkcyBpdC4gIGRtYSBjb2hlcmVudCBhbGxvY2F0aW9ucyBvbgp0aGUgb3RoZXIgaGFu
+ZCBhcmUgdmVyeSBoYWlyeSBiZWFzdHMsIGFuZCBwcm92aWRlIGJ5IHZlcnkgZGlmZmVyZW50Cmlt
+cGxlbWVudGF0aW9ucyBkZXBlbmRpbmcgb24gdGhlIGFyY2hpdGVjdHVyZSwgb3Igb2Z0ZW4gZXZl
+biBkZXBlbmRpbmcKb24gdGhlIHNwZWNpZmljcyBvZiBpbmRpdmlkdWFsIGltcGxlbWVudGF0aW9u
+cyBpbnNpZGUgdGhlIGFyY2hpdGVjdHVyZS4KClNvIGZvciB5b3VyIEdQVS9tZWRpYSBjYXNlIGl0
+IHNlZW1zIGxpa2UgeW91J2QgYmV0dGVyIHN0YXkgYXdheSBmcm9tCnRoZW0gYXMgbXVjaCBhcyB5
+b3UgY2FuLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpk
+cmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0
+cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
