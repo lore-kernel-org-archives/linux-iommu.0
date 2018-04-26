@@ -1,78 +1,99 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: noveau vs arm dma ops
-Date: Thu, 26 Apr 2018 02:13:10 -0700
-Message-ID: <20180426091310.GB18811@infradead.org>
-References: <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
- <20180425054855.GA17038@infradead.org>
- <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
- <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
- <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
- <20180425085439.GA29996@infradead.org>
- <20180425100429.GR25142@phenom.ffwll.local>
- <20180425153312.GD27076@infradead.org>
- <20180425225443.GQ16141@n2100.armlinux.org.uk>
+From: "Du, Changbin" <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: fix shift-out-of-bounds in bug checking
+Date: Thu, 26 Apr 2018 17:03:27 +0800
+Message-ID: <20180426090327.ciune4mldns2a6nl@intel.com>
+References: <1524202195-4656-1-git-send-email-changbin.du@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180425225443.GQ16141@n2100.armlinux.org.uk>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, amd-gfx list <amd-gfx@lists.freedesktop.org>, Christoph Hellwig <hch@infradead.org>, Jerome Glisse <jglisse@redhat.com>, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Dan Williams <dan.j.williams@intel.com>, Thierry Reding <treding@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, linux-arm-kernel@lists.infradead.org, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media@vger.kernel.org>
+In-Reply-To: <1524202195-4656-1-git-send-email-changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBBcHIgMjUsIDIwMTggYXQgMTE6NTQ6NDNQTSArMDEwMCwgUnVzc2VsbCBLaW5nIC0g
-QVJNIExpbnV4IHdyb3RlOgo+IAo+IGlmIHRoZSBtZW1vcnkgd2FzIHByZXZpb3VzbHkgZGlydHkg
-KGlvdywgQ1BVIGhhcyB3cml0dGVuKSwgeW91IG5lZWQgdG8KPiBmbHVzaCB0aGUgZGlydHkgY2Fj
-aGUgbGluZXMgX2JlZm9yZV8gdGhlIEdQVSB3cml0ZXMgaGFwcGVuLCBidXQgeW91Cj4gZG9uJ3Qg
-a25vdyB3aGV0aGVyIHRoZSBDUFUgaGFzIHNwZWN1bGF0aXZlbHkgcHJlZmV0Y2hlZCwgc28geW91
-IG5lZWQKPiB0byBmbHVzaCBhbnkgcHJlZmV0Y2hlZCBjYWNoZSBsaW5lcyBiZWZvcmUgcmVhZGlu
-ZyBmcm9tIHRoZSBjYWNoZWFibGUKPiBtZW1vcnkgX2FmdGVyXyB0aGUgR1BVIGhhcyBmaW5pc2hl
-ZCB3cml0aW5nLgo+IAo+IEFsc28gbm90ZSB0aGF0ICJmbHVzaCIgdGhlcmUgY2FuIGJlICJjbGVh
-biB0aGUgY2FjaGUiLCAiY2xlYW4gYW5kCj4gaW52YWxpZGF0ZSB0aGUgY2FjaGUiIG9yICJpbnZh
-bGlkYXRlIHRoZSBjYWNoZSIgYXMgYXBwcm9wcmlhdGUgLSBzb21lCj4gQ1BVcyBhcmUgYWJsZSB0
-byBwZXJmb3JtIHRob3NlIHRocmVlIG9wZXJhdGlvbnMsIGFuZCB0aGUgYXBwcm9wcmlhdGUKPiBv
-bmUgZGVwZW5kcyBvbiBub3Qgb25seSB3aGVyZSBpbiB0aGUgYWJvdmUgc2VxdWVuY2UgaXQncyBi
-ZWluZyB1c2VkLAo+IGJ1dCBhbHNvIG9uIHdoYXQgdGhlIG9wZXJhdGlvbnMgYXJlLgoKQWdyZWVk
-IG9uIGFsbCB0aGVzZSBjb3VudHMuCgo+IElmIHdlIGNhbiBhZ3JlZSBhIHNldCBvZiBpbnRlcmZh
-Y2VzIHRoYXQgYWxsb3dzIF9wcm9wZXJfIHVzZSBvZiB0aGVzZQo+IGZhY2lsaXRpZXMsIG9uZSB3
-aGljaCBjYW4gYmUgdXNlZCBhcHByb3ByaWF0ZWx5LCB0aGVuIHRoZXJlIHNob3VsZG4ndAo+IGJl
-IGEgcHJvYmxlbS4gIFRoZSBETUEgQVBJIGRvZXMgdGhhdCB2aWEgaXQncyBpZGVhcyBhYm91dCB3
-aG8gb3ducyBhCj4gcGFydGljdWxhciBidWZmZXIgKGJlY2F1c2Ugb2YgdGhlIGFib3ZlIHByb2Js
-ZW0pIGFuZCB0aGF0J3Mgc29tZXRoaW5nCj4gd2hpY2ggd291bGQgbmVlZCB0byBiZSBjYXJyaWVk
-IG92ZXIgdG8gc3VjaCBhIGNhY2hlIGZsdXNoaW5nIEFQSSAoaXQKPiBzaG91bGQgYmUgcHJldHR5
-IG9idmlvdXMgdGhhdCBoYXZpbmcgYSBHUFUgcmVhZCBvciB3cml0ZSBtZW1vcnkgd2hpbGUKPiB0
-aGUgY2FjaGUgZm9yIHRoYXQgbWVtb3J5IGlzIGJlaW5nIGNsZWFuZWQgd2lsbCBsZWFkIHRvIHVu
-ZXhwZWN0ZWQKPiByZXN1bHRzLikKCkkndmUgYmVlbiB0cnlpbmcgdG8gY29tZSB1cCB3aXRoIHN1
-Y2ggYW4gaW50ZXJmYWNlLCBmb3Igbm93IG9ubHkgZm9yCmludGVybmFsIHVzZSBpbiBhIGdlbmVy
-aWMgc2V0IG9mIG5vbmNvaGVyZW50IG9wcy4gIFRoZSBBUEkgaXMgYmFzaWNhbGx5CmEgdmFyaWFu
-dCBvZiB0aGUgZXhpc3RpbmcgZG1hX3N5bmNfc2luZ2xlX3RvX2RldmljZS9jcHUgY2FsbHM6Cgpo
-dHRwOi8vZ2l0LmluZnJhZGVhZC5vcmcvdXNlcnMvaGNoL21pc2MuZ2l0L2NvbW1pdGRpZmYvMDQ0
-ZGFlNWY5NDUwOTI4OGY0NjU1ZGUyZjIyY2IwYmVhODU3NzhhZgoKUmV2aWV3IHdlbGNvbWUhCgo+
-IFRoZSBuZXh0IGlzc3VlLCB3aGljaCBJJ3ZlIGJyb3VnaHQgdXAgYmVmb3JlLCBpcyB0aGF0IGV4
-cG9zaW5nIGNhY2hlCj4gZmx1c2hpbmcgdG8gdXNlcnNwYWNlIG9uIGFyY2hpdGVjdHVyZXMgd2hl
-cmUgaXQgaXNuJ3QgYWxyZWFkeSBleHBvc2VkCj4gY29tZXMuICBBcyBoYXMgYmVlbiBzaG93biBi
-eSBHb29nbGUgUHJvamVjdCBaZXJvLCB0aGlzIHJpc2tzIGV4cG9zaW5nCj4gdGhvc2UgYXJjaGl0
-ZWN0dXJlcyB0byBTcGVjdHJlIGFuZCBNZWx0ZG93biBleHBsb2l0cyB3aGVyZSB0aGV5IHdlcmVu
-J3QKPiBhdCBzdWNoIGEgcmlzayBiZWZvcmUuICAoSSd2ZSBwcmV0dHkgbXVjaCBzaG93biBoZXJl
-IHRoYXQgeW91IF9kb18KPiBuZWVkIHRvIGNvbnRyb2wgd2hpY2ggY2FjaGUgbGluZXMgZ2V0IGZs
-dXNoZWQgdG8gbWFrZSB0aGVzZSBleHBsb2l0cwo+IHdvcmssIGFuZCBmbHVzaGluZyB0aGUgY2Fj
-aGUgYnkgcmVhZGluZyBsb3RzIG9mIGRhdGEgaW4gbGl1IG9mIGhhdmluZwo+IHRoZSBhYmlsaXR5
-IHRvIGV4cGxpY2l0bHkgZmx1c2ggYml0cyBvZiBjYWNoZSBtYWtlcyBpdCB2ZXJ5IGRpZmZpY3Vs
-dAo+IHRvIGltcG9zc2libGUgZm9yIHRoZW0gdG8gd29yay4pCgpFeHRlbmRpbmcgZG1hIGNvaGVy
-ZW5jZSB0byB1c2Vyc3BhY2UgaXMgZ29pbmcgdG8gYmUgdGhlIG5leHQgbWFqb3IKbmlnaHRtYXJl
-IGluZGVlZC4gIEknbSBub3Qgc3VyZSBob3cgbXVjaCBvZiB0aGF0IGFjdHVhbGx5IHN0aWxsIGlz
-CmdvaW5nIG9uIGluIHRoZSBncmFwaGljcyB3b3JsZCwgYnV0IHdlJ2xsIG5lZWQgYSBjb2hlcmVu
-dCAocHVuIGludGVuZGVkKQpwbGFuIGhvdyB0byBkZWFsIHdpdGggaXQuCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QK
-ZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9w
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Hello, any reviewer? Thanks!
+
+On Fri, Apr 20, 2018 at 01:29:55PM +0800, changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org wrote:
+> From: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> 
+> It allows to flush more than 4GB of device TLBs. So the mask should be
+> 64bit wide. UBSAN captured this fault as below.
+> 
+> [    3.760024] ================================================================================
+> [    3.768440] UBSAN: Undefined behaviour in drivers/iommu/dmar.c:1348:3
+> [    3.774864] shift exponent 64 is too large for 32-bit type 'int'
+> [    3.780853] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G     U            4.17.0-rc1+ #89
+> [    3.788661] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.2.8 01/26/2016
+> [    3.796034] Call Trace:
+> [    3.798472]  <IRQ>
+> [    3.800479]  dump_stack+0x90/0xfb
+> [    3.803787]  ubsan_epilogue+0x9/0x40
+> [    3.807353]  __ubsan_handle_shift_out_of_bounds+0x10e/0x170
+> [    3.812916]  ? qi_flush_dev_iotlb+0x124/0x180
+> [    3.817261]  qi_flush_dev_iotlb+0x124/0x180
+> [    3.821437]  iommu_flush_dev_iotlb+0x94/0xf0
+> [    3.825698]  iommu_flush_iova+0x10b/0x1c0
+> [    3.829699]  ? fq_ring_free+0x1d0/0x1d0
+> [    3.833527]  iova_domain_flush+0x25/0x40
+> [    3.837448]  fq_flush_timeout+0x55/0x160
+> [    3.841368]  ? fq_ring_free+0x1d0/0x1d0
+> [    3.845200]  ? fq_ring_free+0x1d0/0x1d0
+> [    3.849034]  call_timer_fn+0xbe/0x310
+> [    3.852696]  ? fq_ring_free+0x1d0/0x1d0
+> [    3.856530]  run_timer_softirq+0x223/0x6e0
+> [    3.860625]  ? sched_clock+0x5/0x10
+> [    3.864108]  ? sched_clock+0x5/0x10
+> [    3.867594]  __do_softirq+0x1b5/0x6f5
+> [    3.871250]  irq_exit+0xd4/0x130
+> [    3.874470]  smp_apic_timer_interrupt+0xb8/0x2f0
+> [    3.879075]  apic_timer_interrupt+0xf/0x20
+> [    3.883159]  </IRQ>
+> [    3.885255] RIP: 0010:poll_idle+0x60/0xe7
+> [    3.889252] RSP: 0018:ffffb1b201943e30 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+> [    3.896802] RAX: 0000000080200000 RBX: 000000000000008e RCX: 000000000000001f
+> [    3.903918] RDX: 0000000000000000 RSI: 000000002819aa06 RDI: 0000000000000000
+> [    3.911031] RBP: ffff9e93c6b33280 R08: 00000010f717d567 R09: 000000000010d205
+> [    3.918146] R10: ffffb1b201943df8 R11: 0000000000000001 R12: 00000000e01b169d
+> [    3.925260] R13: 0000000000000000 R14: ffffffffb12aa400 R15: 0000000000000000
+> [    3.932382]  cpuidle_enter_state+0xb4/0x470
+> [    3.936558]  do_idle+0x222/0x310
+> [    3.939779]  cpu_startup_entry+0x78/0x90
+> [    3.943693]  start_secondary+0x205/0x2e0
+> [    3.947607]  secondary_startup_64+0xa5/0xb0
+> [    3.951783] ================================================================================
+> 
+> Signed-off-by: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/dmar.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index accf5838..e4ae600 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -1345,7 +1345,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+>  	struct qi_desc desc;
+>  
+>  	if (mask) {
+> -		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
+> +		BUG_ON(addr & ((1ULL << (VTD_PAGE_SHIFT + mask)) - 1));
+>  		addr |= (1ULL << (VTD_PAGE_SHIFT + mask - 1)) - 1;
+>  		desc.high = QI_DEV_IOTLB_ADDR(addr) | QI_DEV_IOTLB_SIZE;
+>  	} else
+> -- 
+> 2.7.4
+> 
+
+-- 
+Thanks,
+Changbin Du
