@@ -1,99 +1,117 @@
-From: "Du, Changbin" <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: fix shift-out-of-bounds in bug checking
-Date: Thu, 26 Apr 2018 17:03:27 +0800
-Message-ID: <20180426090327.ciune4mldns2a6nl@intel.com>
-References: <1524202195-4656-1-git-send-email-changbin.du@intel.com>
+From: Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>
+Subject: Re: noveau vs arm dma ops
+Date: Thu, 26 Apr 2018 11:17:46 +0200
+Message-ID: <CAKMK7uGF9HAkBPK1+p9fPqP-fdSUOE+i=RGdUPfUiJh8uSnKRg@mail.gmail.com>
+References: <CAKMK7uFL68pu+-9LODTgz+GQYvxpnXOGhxfz9zorJ_JKsPVw2g@mail.gmail.com>
+ <20180425054855.GA17038@infradead.org>
+ <CAKMK7uEFitkNQrD6cLX5Txe11XhVO=LC4YKJXH=VNdq+CY=DjQ@mail.gmail.com>
+ <CAKMK7uFx=KB1vup=WhPCyfUFairKQcRR4BEd7aXaX1Pj-vj3Cw@mail.gmail.com>
+ <20180425064335.GB28100@infradead.org> <20180425074151.GA2271@ulmo>
+ <20180425085439.GA29996@infradead.org>
+ <20180425100429.GR25142@phenom.ffwll.local>
+ <20180425153312.GD27076@infradead.org>
+ <CAKMK7uH14qupTYDa1pr8UC434Vs+97eUXj+fYi=+2uijCLayMA@mail.gmail.com>
+ <20180425232646.GR16141@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1524202195-4656-1-git-send-email-changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20180425232646.GR16141-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Cc: "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx list <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:DMA BUFFER SHARING FRAMEWORK" <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello, any reviewer? Thanks!
-
-On Fri, Apr 20, 2018 at 01:29:55PM +0800, changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org wrote:
-> From: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> It allows to flush more than 4GB of device TLBs. So the mask should be
-> 64bit wide. UBSAN captured this fault as below.
-> 
-> [    3.760024] ================================================================================
-> [    3.768440] UBSAN: Undefined behaviour in drivers/iommu/dmar.c:1348:3
-> [    3.774864] shift exponent 64 is too large for 32-bit type 'int'
-> [    3.780853] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G     U            4.17.0-rc1+ #89
-> [    3.788661] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.2.8 01/26/2016
-> [    3.796034] Call Trace:
-> [    3.798472]  <IRQ>
-> [    3.800479]  dump_stack+0x90/0xfb
-> [    3.803787]  ubsan_epilogue+0x9/0x40
-> [    3.807353]  __ubsan_handle_shift_out_of_bounds+0x10e/0x170
-> [    3.812916]  ? qi_flush_dev_iotlb+0x124/0x180
-> [    3.817261]  qi_flush_dev_iotlb+0x124/0x180
-> [    3.821437]  iommu_flush_dev_iotlb+0x94/0xf0
-> [    3.825698]  iommu_flush_iova+0x10b/0x1c0
-> [    3.829699]  ? fq_ring_free+0x1d0/0x1d0
-> [    3.833527]  iova_domain_flush+0x25/0x40
-> [    3.837448]  fq_flush_timeout+0x55/0x160
-> [    3.841368]  ? fq_ring_free+0x1d0/0x1d0
-> [    3.845200]  ? fq_ring_free+0x1d0/0x1d0
-> [    3.849034]  call_timer_fn+0xbe/0x310
-> [    3.852696]  ? fq_ring_free+0x1d0/0x1d0
-> [    3.856530]  run_timer_softirq+0x223/0x6e0
-> [    3.860625]  ? sched_clock+0x5/0x10
-> [    3.864108]  ? sched_clock+0x5/0x10
-> [    3.867594]  __do_softirq+0x1b5/0x6f5
-> [    3.871250]  irq_exit+0xd4/0x130
-> [    3.874470]  smp_apic_timer_interrupt+0xb8/0x2f0
-> [    3.879075]  apic_timer_interrupt+0xf/0x20
-> [    3.883159]  </IRQ>
-> [    3.885255] RIP: 0010:poll_idle+0x60/0xe7
-> [    3.889252] RSP: 0018:ffffb1b201943e30 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-> [    3.896802] RAX: 0000000080200000 RBX: 000000000000008e RCX: 000000000000001f
-> [    3.903918] RDX: 0000000000000000 RSI: 000000002819aa06 RDI: 0000000000000000
-> [    3.911031] RBP: ffff9e93c6b33280 R08: 00000010f717d567 R09: 000000000010d205
-> [    3.918146] R10: ffffb1b201943df8 R11: 0000000000000001 R12: 00000000e01b169d
-> [    3.925260] R13: 0000000000000000 R14: ffffffffb12aa400 R15: 0000000000000000
-> [    3.932382]  cpuidle_enter_state+0xb4/0x470
-> [    3.936558]  do_idle+0x222/0x310
-> [    3.939779]  cpu_startup_entry+0x78/0x90
-> [    3.943693]  start_secondary+0x205/0x2e0
-> [    3.947607]  secondary_startup_64+0xa5/0xb0
-> [    3.951783] ================================================================================
-> 
-> Signed-off-by: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/dmar.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index accf5838..e4ae600 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1345,7 +1345,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
->  	struct qi_desc desc;
->  
->  	if (mask) {
-> -		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
-> +		BUG_ON(addr & ((1ULL << (VTD_PAGE_SHIFT + mask)) - 1));
->  		addr |= (1ULL << (VTD_PAGE_SHIFT + mask - 1)) - 1;
->  		desc.high = QI_DEV_IOTLB_ADDR(addr) | QI_DEV_IOTLB_SIZE;
->  	} else
-> -- 
-> 2.7.4
-> 
-
--- 
-Thanks,
-Changbin Du
+T24gVGh1LCBBcHIgMjYsIDIwMTggYXQgMToyNiBBTSwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4
+CjxsaW51eEBhcm1saW51eC5vcmcudWs+IHdyb3RlOgo+IE9uIFdlZCwgQXByIDI1LCAyMDE4IGF0
+IDExOjM1OjEzUE0gKzAyMDAsIERhbmllbCBWZXR0ZXIgd3JvdGU6Cj4+IE9uIGFybSB0aGF0IGRv
+ZXNuJ3Qgd29yay4gVGhlIGlvbW11IGFwaSBzZWVtcyBsaWtlIGEgZ29vZCBmaXQsIGV4Y2VwdAo+
+PiB0aGUgZG1hLWFwaSB0ZW5kcyB0byBnZXQgaW4gdGhlIHdheSBhIGJpdCAoZHJtL21zbSBhcHBh
+cmVudGx5IGhhcwo+PiBzaW1pbGFyIHByb2JsZW1zIGxpa2UgdGVncmEpLCBhbmQgaWYgeW91IG5l
+ZWQgY29udGlndW91cyBtZW1vcnkKPj4gZG1hX2FsbG9jX2NvaGVyZW50IGlzIHRoZSBvbmx5IHdh
+eSB0byBnZXQgYXQgY29udGlndW91cyBtZW1vcnkuIFRoZXJlCj4+IHdhcyBhIGh1Z2UgZGlzY3Vz
+c2lvbiB5ZWFycyBhZ28gYWJvdXQgdGhhdCwgYW5kIGRpcmVjdCBjbWEgYWNjZXNzIHdhcwo+PiBz
+aG90IGRvd24gYmVjYXVzZSBpdCB3b3VsZCBoYXZlIGV4cG9zZWQgdG9vIG11Y2ggb2YgdGhlIGNh
+Y2hpbmcKPj4gYXR0cmlidXRlIG1hbmdsaW5nIHJlcXVpcmVkIChtb3N0IGFybSBwbGF0Zm9ybXMg
+bmVlZCB3Yy1wYWdlcyB0byBub3QKPj4gYmUgaW4gdGhlIGtlcm5lbCdzIGxpbmVhciBtYXAgYXBw
+YXJlbnRseSkuCj4KPiBJIHRoaW5rIHlvdSBjb21wbGV0ZWx5IG1pc3VuZGVyc3RhbmQgQVJNIGZy
+b20gd2hhdCB5b3UndmUgd3JpdHRlbiBhYm92ZSwKPiBhbmQgdGhpcyB3b3JyaWVzIG1lIGdyZWF0
+bHkgYWJvdXQgZ2l2aW5nIERSTSB0aGUgbGV2ZWwgb2YgY29udHJvbCB0aGF0Cj4gaXMgYmVpbmcg
+YXNrZWQgZm9yLgo+Cj4gTW9kZXJuIEFSTXMgaGF2ZSBhIFBJUFQgY2FjaGUgb3IgYSBub24tYWxp
+YXNpbmcgVklQVCBjYWNoZSwgYW5kIGNhY2hlCj4gYXR0cmlidXRlcyBhcmUgc3RvcmVkIGluIHRo
+ZSBwYWdlIHRhYmxlcy4gIFRoZXNlIGNhY2hlcyBhcmUgaW5oZXJlbnRseQo+IG5vbi1hbGlhc2lu
+ZyB3aGVuIHRoZXJlIGFyZSBtdWx0aXBsZSBtYXBwaW5ncyAod2hpY2ggaXMgYSBncmVhdCBzdGVw
+Cj4gZm9yd2FyZCBjb21wYXJlZCB0byB0aGUgcHJldmlvdXMgYWxpYXNpbmcgY2FjaGVzLikKPgo+
+IEFzIHRoZSBjYWNoZSBhdHRyaWJ1dGVzIGFyZSBzdG9yZWQgaW4gdGhlIHBhZ2UgdGFibGVzLCB0
+aGlzIGluIHRoZW9yeQo+IGFsbG93cyBkaWZmZXJlbnQgdmlydHVhbCBtYXBwaW5ncyBvZiB0aGUg
+c2FtZSBwaHlzaWNhbCBtZW1vcnkgdG8gaGF2ZQo+IGRpZmZlcmVudCBjYWNoZSBhdHRyaWJ1dGVz
+LiAgSG93ZXZlciwgdGhlcmUncyBhIHByb2JsZW0sIGFuZCB0aGF0J3MKPiBjYWxsZWQgc3BlY3Vs
+YXRpdmUgcHJlZmV0Y2hpbmcuCj4KPiBMZXQncyBzYXkgeW91IGhhdmUgb25lIG1hcHBpbmcgd2hp
+Y2ggaXMgY2FjaGVhYmxlLCBhbmQgYW5vdGhlciB0aGF0IGlzCj4gbWFya2VkIGFzIHdyaXRlIGNv
+bWJpbmluZy4gIElmIGEgY2FjaGUgbGluZSBpcyBzcGVjdWxhdGl2ZWx5IHByZWZldGNoZWQKPiB0
+aHJvdWdoIHRoZSBjYWNoZWFibGUgbWFwcGluZyBvZiB0aGlzIG1lbW9yeSwgYW5kIHRoZW4geW91
+IHJlYWQgdGhlCj4gc2FtZSBwaHlzaWNhbCBsb2NhdGlvbiB0aHJvdWdoIHRoZSB3cml0ZSBjb21i
+aW5pbmcgbWFwcGluZywgaXQgaXMKPiBwb3NzaWJsZSB0aGF0IHlvdSBjb3VsZCByZWFkIGNhY2hl
+ZCBkYXRhLgo+Cj4gU28sIGl0IGlzIGdlbmVyYWxseSBhY2NlcHRlZCB0aGF0IGFsbCBtYXBwaW5n
+cyBvZiBhbnkgcGFydGljdWxhcgo+IHBoeXNpY2FsIGJpdCBvZiBtZW1vcnkgc2hvdWxkIGhhdmUg
+dGhlIHNhbWUgY2FjaGUgYXR0cmlidXRlcyB0byBhdm9pZAo+IHVucHJlZGljdGFibGUgYmVoYXZp
+b3VyLgo+Cj4gVGhpcyBwcmVzZW50cyBhIHByb2JsZW0gd2l0aCB3aGF0IGlzIGdlbmVyYWxseSBj
+YWxsZWQgImxvd21lbSIgd2hlcmUKPiB0aGUgbWVtb3J5IGlzIG1hcHBlZCBpbiBrZXJuZWwgdmly
+dHVhbCBzcGFjZSB3aXRoIGNhY2hlYWJsZQo+IGF0dHJpYnV0ZXMuICBJdCBjYW4gYWxzbyBoYXBw
+ZW4gd2l0aCBoaWdobWVtIGlmIHRoZSBtZW1vcnkgaXMKPiBrbWFwcGVkLgo+Cj4gVGhpcyBpcyB3
+aHksIG9uIEFSTSwgeW91IGNhbid0IHVzZSBzb21ldGhpbmcgbGlrZSBnZXRfZnJlZV9wYWdlcygp
+IHRvCj4gZ3JhYiBzb21lIHBhZ2VzIGZyb20gdGhlIHN5c3RlbSwgcGFzcyBpdCB0byB0aGUgR1BV
+LCBtYXAgaXQgaW50bwo+IHVzZXJzcGFjZSBhcyB3cml0ZS1jb21iaW5pbmcsIGV0Yy4gIEl0IF9t
+aWdodF8gd29yayBmb3Igc29tZSBDUFVzLAo+IGJ1dCBBUk0gQ1BVcyB2YXJ5IGluIGhvdyBtdWNo
+IHByZWZldGNoaW5nIHRoZXkgZG8sIGFuZCB3aGF0IG1heSB3b3JrCj4gZm9yIG9uZSBwYXJ0aWN1
+bGFyIENQVSBpcyBpbiBubyB3YXkgZ3VhcmFudGVlZCB0byB3b3JrIGZvciBhbm90aGVyCj4gQVJN
+IENQVS4KPgo+IFRoZSBvZmZpY2lhbCBsaW5lIGZyb20gYXJjaGl0ZWN0dXJlIGZvbGsgaXMgdG8g
+YXNzdW1lIHRoYXQgdGhlIGNhY2hlcwo+IGluZmluaXRlbHkgc3BlY3VsYXRlLCBhcmUgb2YgaW5m
+aW5pdGUgc2l6ZSwgYW5kIGNhbiB3cml0ZWJhY2sgKmRpcnR5Kgo+IGRhdGEgYXQgYW55IG1vbWVu
+dC4KPgo+IFRoZSB3YXkgdG8gc3RvcCB0aGluZ3MgbGlrZSBzcGVjdWxhdGl2ZSBwcmVmZXRjaGVz
+IHRvIHBhcnRpY3VsYXIKPiBwaHlzaWNhbCBtZW1vcnkgaXMgdG8sIHF1aXRlICJzaW1wbHkiLCBu
+b3QgaGF2ZSBhbnkgY2FjaGVhYmxlCj4gbWFwcGluZ3Mgb2YgdGhhdCBwaHlzaWNhbCBtZW1vcnkg
+YW55d2hlcmUgaW4gdGhlIHN5c3RlbS4KPgo+IE5vdywgY2FjaGUgZmx1c2hlcyBvbiBBUk0gdGVu
+ZCB0byBiZSBmYWlybHkgZXhwZW5zaXZlIGZvciBHUFUgYnVmZmVycy4KPiBJZiB5b3UgaGF2ZSwg
+c2F5LCBhbiA4TUIgYnVmZmVyIChmb3IgYSAxMDgwcCBmcmFtZSkgYW5kIHlvdSBuZWVkIHRvCj4g
+ZG8gYSBjYWNoZSBvcGVyYXRpb24gb24gdGhhdCBidWZmZXIsIHlvdSdsbCBiZSBpdGVyYXRpbmcg
+b3ZlciBpdAo+IDMyIG9yIG1heWJlIDY0IGJ5dGVzIGF0IGEgdGltZSAianVzdCBpbiBjYXNlIiB0
+aGVyZSdzIGEgY2FjaGUgbGluZQo+IHByZXNlbnQuICBSZWZlcnJpbmcgdG8gbXkgcHJldmlvdXMg
+ZW1haWwsIHdoZXJlIEkgZGV0YWlsZWQgdGhlCj4gcG90ZW50aWFsIG5lZWQgZm9yIF90d29fIGZs
+dXNoZXMsIG9uZSBiZWZvcmUgdGhlIEdQVSBvcGVyYXRpb24gYW5kCj4gb25lIGFmdGVyLCBhbmQg
+dGhpcyBiZWNvbWVzIF9yZWFsbHlfIGV4cGVuc2l2ZS4gIEF0IHRoYXQgcG9pbnQsIHlvdSdyZQo+
+IHByb2JhYmx5IHdheSBiZXR0ZXIgb2ZmIHVzaW5nIHdyaXRlLWNvbWJpbmUgbWVtb3J5IHdoZXJl
+IHlvdSBkb24ndAo+IG5lZWQgdG8gc3BlbmQgQ1BVIGN5Y2xlcyBwZXJmb3JtaW5nIGNhY2hlIGZs
+dXNoaW5nIC0gcG90ZW50aWFsbHkKPiBhY3Jvc3MgYWxsIENQVXMgaW4gdGhlIHN5c3RlbSBpZiBj
+YWNoZSBvcGVyYXRpb25zIGFyZW4ndCBicm9hZGNhc3RlZC4KPgo+IFRoaXMgaXNuJ3QgYSBzaW1w
+bGUgbWF0dGVyIG9mICJqdXN0IHByb3ZpZGUgc29tZSBBUElzIGZvciBjYWNoZQo+IG9wZXJhdGlv
+bnMiIC0gdGhlcmUncyBtdWNoIG1vcmUgdGhhdCBuZWVkcyB0byBiZSB1bmRlcnN0b29kIGJ5Cj4g
+YWxsIHBhcnRpZXMgaGVyZSwgZXNwZWNpYWxseSB3aGVuIHdlIGhhdmUgR1BVIGRyaXZlcnMgdGhh
+dCBjYW4gYmUKPiB1c2VkIHdpdGggcXVpdGUgZGlmZmVyZW50IENQVXMuCj4KPiBJdCBtYXkgd2Vs
+bCBiZSB0aGF0IGZvciBzb21lIGNvbWJpbmF0aW9ucyBvZiBDUFVzIGFuZCB3b3JrbG9hZHMsIGl0
+J3MKPiBiZXR0ZXIgdG8gdXNlIHdyaXRlLWNvbWJpbmUgbWVtb3J5IHdpdGhvdXQgY2FjaGUgZmx1
+c2hpbmcsIGJ1dCBmb3IKPiBvdGhlciBDUFVzIHRoYXQgdHJhZGVvZmYgKGZvciB0aGUgc2FtZSB3
+b3JrbG9hZCkgY291bGQgd2VsbCBiZQo+IGRpZmZlcmVudC4KPgo+IE9sZGVyIEFSTXMgZ2V0IG1v
+cmUgaW50ZXJlc3RpbmcsIGJlY2F1c2UgdGhleSBoYXZlIGFsaWFzaW5nIGNhY2hlcy4KPiBUaGF0
+IG1lYW5zIHRoZSBDUFUgY2FjaGUgYWxpYXNlcyBhY3Jvc3MgZGlmZmVyZW50IHZpcnR1YWwgc3Bh
+Y2UKPiBtYXBwaW5ncyBpbiBzb21lIHdheSwgd2hpY2ggY29tcGxpY2F0ZXMgKGEpIHRoZSBtYXBw
+aW5nIG9mIG1lbW9yeQo+IGFuZCAoYikgaGFuZGxpbmcgdGhlIGNhY2hlIG9wZXJhdGlvbnMgb24g
+aXQuCj4KPiBJdCdzIHRvbyBsYXRlIGZvciBtZSB0byBnbyBpbnRvIHRoYXQgdG9uaWdodCwgYW5k
+IEkgcHJvYmFibHkgd29uJ3QKPiBiZSByZWFkaW5nIG1haWwgZm9yIHRoZSBuZXh0IHdlZWsgYW5k
+IGEgaGFsZiwgc29ycnkuCgpJIGRpZG4ndCBrbm93IGFsbCB0aGUgZGV0YWlscyB3ZWxsIGVub3Vn
+aCAoYW5kIG5laXRoZXIgaGFkIHRoZSB0aW1lIHRvCndyaXRlIGEgZmV3IHBhcmFncmFwaHMgbGlr
+ZSB5b3UgZGlkKSwgYnV0IHRoZSBhYm92ZSBpcyB3aGF0IEkgaGFkIGluCm1pbmQgYW5kIG1lYW50
+LiBTb3JyeSBpZiBteSBzbG9wcHkgcmVwbHkgc291bmRlZCBsaWtlIEknbSBtaXhpbmcgc3R1ZmYK
+dXAuCi1EYW5pZWwKLS0gCkRhbmllbCBWZXR0ZXIKU29mdHdhcmUgRW5naW5lZXIsIEludGVsIENv
+cnBvcmF0aW9uCis0MSAoMCkgNzkgMzY1IDU3IDQ4IC0gaHR0cDovL2Jsb2cuZmZ3bGwuY2gKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KYW1kLWdmeCBtYWls
+aW5nIGxpc3QKYW1kLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVl
+ZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9hbWQtZ2Z4Cg==
