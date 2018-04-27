@@ -1,72 +1,61 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: [PATCH 6/6 v3] arm64: dts: ls208xa: comply with the iommu map binding
-	for fsl_mc
-Date: Fri, 27 Apr 2018 15:57:06 +0530
-Message-ID: <1524824826-29473-7-git-send-email-nipun.gupta@nxp.com>
-References: <1524824826-29473-1-git-send-email-nipun.gupta@nxp.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v1 4/4] iommu/tegra: gart: Optimize map/unmap
+Date: Fri, 27 Apr 2018 15:01:57 +0300
+Message-ID: <1980b5a2-3921-04f5-0519-ba926ac66e3d@gmail.com>
+References: <cover.1523304324.git.digetx@gmail.com>
+ <f21a7b6a8f141b87f75687904a76f3728ea639a8.1523304324.git.digetx@gmail.com>
+ <20180427100202.GO30388@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1524824826-29473-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180427100202.GO30388@ulmo>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-fsl-mc bus support the new iommu-map property. Comply to this binding
-for fsl_mc bus.
+On 27.04.2018 13:02, Thierry Reding wrote:
+> On Mon, Apr 09, 2018 at 11:07:22PM +0300, Dmitry Osipenko wrote:
+>> Currently GART writes one page entry at a time. More optimal would be to
+>> aggregate the writes and flush BUS buffer in the end, this gives map/unmap
+>> 10-40% (depending on size of mapping) performance boost compared to a
+>> flushing after each entry update.
+>>
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>> ---
+>>  drivers/iommu/tegra-gart.c | 63 +++++++++++++++++++++++++++++++++++-----------
+>>  1 file changed, 48 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+>> index 4a0607669d34..9f59f5f17661 100644
+>> --- a/drivers/iommu/tegra-gart.c
+>> +++ b/drivers/iommu/tegra-gart.c
+>> @@ -36,7 +36,7 @@
+>>  #define GART_APERTURE_SIZE	SZ_32M
+>>  
+>>  /* bitmap of the page sizes currently supported */
+>> -#define GART_IOMMU_PGSIZES	(SZ_4K)
+>> +#define GART_IOMMU_PGSIZES	GENMASK(24, 12)
+> 
+> That doesn't look right. The GART really only supports 4 KiB pages. You
+> seem to be "emulating" more page sizes here in order to improve mapping
+> performance. That seems wrong to me. I'm wondering if this couldn't be
+> improved by a similar factor by simply moving the flushing into an
+> implementation of ->iotlb_sync().
+> 
+> That said, it seems like ->iotlb_sync() is only used for unmapping, but
+> I don't see a reason why iommu_map() wouldn't need to call it as well
+> after going through several calls to ->map(). It seems to me like a
+> driver that implements ->iotlb_sync() would want to use it to optimize
+> for both the mapping and unmapping cases.
 
-Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
----
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+I vaguely remember looking at the IOMMU syncing, but decided to try at first the
+way this patch is. I'll be happy to switch to map/unmap syncing, let's see what
+Joerg would suggest.
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-index 137ef4d..6010505 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-@@ -184,6 +184,7 @@
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 		ranges;
-+		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
- 
- 		clockgen: clocking@1300000 {
- 			compatible = "fsl,ls2080a-clockgen";
-@@ -357,6 +358,8 @@
- 			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
- 			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
- 			msi-parent = <&its>;
-+			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
-+			dma-coherent;
- 			#address-cells = <3>;
- 			#size-cells = <1>;
- 
-@@ -460,6 +463,8 @@
- 			compatible = "arm,mmu-500";
- 			reg = <0 0x5000000 0 0x800000>;
- 			#global-interrupts = <12>;
-+			#iommu-cells = <1>;
-+			stream-match-mask = <0x7C00>;
- 			interrupts = <0 13 4>, /* global secure fault */
- 				     <0 14 4>, /* combined secure interrupt */
- 				     <0 15 4>, /* global non-secure fault */
-@@ -502,7 +507,6 @@
- 				     <0 204 4>, <0 205 4>,
- 				     <0 206 4>, <0 207 4>,
- 				     <0 208 4>, <0 209 4>;
--			mmu-masters = <&fsl_mc 0x300 0>;
- 		};
- 
- 		dspi: dspi@2100000 {
--- 
-1.9.1
+> Joerg, I've gone over the git log and header files and I see no mention
+> of why the TLB flush interface isn't used for mapping. Do you recall any
+> special reasons why the same shouldn't be applied for mapping? Would you
+> accept any patches doing this?
