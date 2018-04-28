@@ -1,18 +1,14 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v4 05/22] iommu: introduce iommu invalidate API function
-Date: Sat, 28 Apr 2018 02:41:08 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19113D5F3@SHSMSX101.ccr.corp.intel.com>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-6-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180420181951.GA50099@ostrya.localdomain>
-	<20180423134325.6780f6ac@jacob-builder>
-	<72ee47c4-55fa-4ff1-d94e-cc26203e3eda@arm.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH v4 1/2] dma-mapping: move dma configuration to bus
+	infrastructure
+Date: Sat, 28 Apr 2018 08:21:58 +0530
+Message-ID: <1524883919-29484-1-git-send-email-nipun.gupta@nxp.com>
+References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <72ee47c4-55fa-4ff1-d94e-cc26203e3eda-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1520868292-2479-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,37 +18,282 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org" <Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>, "Liu,
-	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
-	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Saturday, April 28, 2018 2:08 AM
-> 
-> [...]
-> >> If this corresponds to QI_GRAN_ALL_ALL in patch 9, the comment should
-> >> be "Cache of all PASIDs"? Or maybe "all entries for all PASIDs"? Is it
-> >> different from GRANU_DOMAIN then?
-> > QI_GRAN_ALL_ALL maps to VT-d spec 6.5.2.4, which invalidates all ext
-> > TLB cache within a domain. It could reuse GRANU_DOMAIN but I was
-> > also trying to match the naming convention in the spec.
-> 
-> Sorry I don't quite understand the difference between TLB and ext TLB
-> invalidation. Can an ext TLB invalidation do everything a TLB can do
-> plus some additional parameters (introduced in more recent version of
-> the spec), or do they have distinct purposes? I'm trying to understand
-> why it needs to be user-visible
+It is bus specific aspect to map a given device on the bus and
+relevant firmware description of its DMA configuration.
+So, this change introduces 'dma_configure' as bus callback
+giving flexibility to busses for implementing its own dma
+configuration function.
 
-distinct purpose though some overlapped effect:
+The change eases the addition of new busses w.r.t. adding the dma
+configuration functionality.
 
-IOTLB invalidate is more for 2nd-level cache on granularity (global/
-domain/PSI), with side effect on 1st-level and nested caches (global/
-domain).
+This patch also updates the PCI, Platform, ACPI and host1x bus to
+use new introduced callbacks.
 
-Extended IOTLB invalidate is specifically for 1st-level and nested
-caches on granularity (per-domain: all PASIDs/per PASID/PSI). 
+Suggested-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>  # PCI parts
+---
+ - The patches are based on the comments on:
+   https://patchwork.kernel.org/patch/10259087/
 
-Thanks
-Kevin
+Changes in v2:
+  - Do not have dma_deconfigure callback
+  - Have '/dma_common_configure/' API to provide a common DMA
+    configuration which can be used by busses if it suits them.
+  - Platform and ACPI bus to use '/dma_common_configure/' in
+    '/dma_configure/' callback.
+  - Updated commit message
+  - Updated pci_dma_configure API with changes suggested by Robin
+
+Changes in v3:
+  - Move dma_common_configure() within platform_dma_configure() and
+    reuse platofrm_dma_configure() for AMBA bus too
+  - Declare 'attr' in pci_dma_configure() inside the else statement
+    where it is used.
+
+Changes in v4:
+  - Rebased on top of 4.17-rc2
+
+ drivers/amba/bus.c              |  4 ++++
+ drivers/base/dma-mapping.c      | 31 ++++---------------------------
+ drivers/base/platform.c         | 17 +++++++++++++++++
+ drivers/gpu/host1x/bus.c        |  8 ++++++++
+ drivers/pci/pci-driver.c        | 32 ++++++++++++++++++++++++++++++++
+ include/linux/device.h          |  4 ++++
+ include/linux/platform_device.h |  2 ++
+ 7 files changed, 71 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 594c228..867dc2b 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -20,6 +20,7 @@
+ #include <linux/sizes.h>
+ #include <linux/limits.h>
+ #include <linux/clk/clk-conf.h>
++#include <linux/platform_device.h>
+ 
+ #include <asm/irq.h>
+ 
+@@ -188,12 +189,15 @@ static int amba_pm_runtime_resume(struct device *dev)
+ /*
+  * Primecells are part of the Advanced Microcontroller Bus Architecture,
+  * so we call the bus "amba".
++ * DMA configuration for platform and AMBA bus is same. So here we reuse
++ * platform's DMA config routine.
+  */
+ struct bus_type amba_bustype = {
+ 	.name		= "amba",
+ 	.dev_groups	= amba_dev_groups,
+ 	.match		= amba_match,
+ 	.uevent		= amba_uevent,
++	.dma_configure	= platform_dma_configure,
+ 	.pm		= &amba_pm,
+ 	.force_dma	= true,
+ };
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index d82566d..f831a58 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -329,36 +329,13 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
+ #endif
+ 
+ /*
+- * Common configuration to enable DMA API use for a device
++ * enables DMA API use for a device
+  */
+-#include <linux/pci.h>
+-
+ int dma_configure(struct device *dev)
+ {
+-	struct device *bridge = NULL, *dma_dev = dev;
+-	enum dev_dma_attr attr;
+-	int ret = 0;
+-
+-	if (dev_is_pci(dev)) {
+-		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
+-		dma_dev = bridge;
+-		if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
+-		    dma_dev->parent->of_node)
+-			dma_dev = dma_dev->parent;
+-	}
+-
+-	if (dma_dev->of_node) {
+-		ret = of_dma_configure(dev, dma_dev->of_node);
+-	} else if (has_acpi_companion(dma_dev)) {
+-		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
+-		if (attr != DEV_DMA_NOT_SUPPORTED)
+-			ret = acpi_dma_configure(dev, attr);
+-	}
+-
+-	if (bridge)
+-		pci_put_host_bridge_device(bridge);
+-
+-	return ret;
++	if (dev->bus->dma_configure)
++		return dev->bus->dma_configure(dev);
++	return 0;
+ }
+ 
+ void dma_deconfigure(struct device *dev)
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 8075ddc..638d42e 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1130,6 +1130,22 @@ int platform_pm_restore(struct device *dev)
+ 
+ #endif /* CONFIG_HIBERNATE_CALLBACKS */
+ 
++int platform_dma_configure(struct device *dev)
++{
++	enum dev_dma_attr attr;
++	int ret = 0;
++
++	if (dev->of_node) {
++		ret = of_dma_configure(dev, dev->of_node);
++	} else if (has_acpi_companion(dev)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
++		if (attr != DEV_DMA_NOT_SUPPORTED)
++			ret = acpi_dma_configure(dev, attr);
++	}
++
++	return ret;
++}
++
+ static const struct dev_pm_ops platform_dev_pm_ops = {
+ 	.runtime_suspend = pm_generic_runtime_suspend,
+ 	.runtime_resume = pm_generic_runtime_resume,
+@@ -1141,6 +1157,7 @@ struct bus_type platform_bus_type = {
+ 	.dev_groups	= platform_dev_groups,
+ 	.match		= platform_match,
+ 	.uevent		= platform_uevent,
++	.dma_configure	= platform_dma_configure,
+ 	.pm		= &platform_dev_pm_ops,
+ 	.force_dma	= true,
+ };
+diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
+index 88a3558..a9ec99d 100644
+--- a/drivers/gpu/host1x/bus.c
++++ b/drivers/gpu/host1x/bus.c
+@@ -314,6 +314,13 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
+ 	return strcmp(dev_name(dev), drv->name) == 0;
+ }
+ 
++static int host1x_dma_configure(struct device *dev)
++{
++	if (dev->of_node)
++		return of_dma_configure(dev, dev->of_node);
++	return 0;
++}
++
+ static const struct dev_pm_ops host1x_device_pm_ops = {
+ 	.suspend = pm_generic_suspend,
+ 	.resume = pm_generic_resume,
+@@ -326,6 +333,7 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
+ struct bus_type host1x_bus_type = {
+ 	.name = "host1x",
+ 	.match = host1x_device_match,
++	.dma_configure	= host1x_dma_configure,
+ 	.pm = &host1x_device_pm_ops,
+ 	.force_dma = true,
+ };
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index b9a1311..ba8c6b4 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -16,6 +16,8 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/suspend.h>
+ #include <linux/kexec.h>
++#include <linux/of_device.h>
++#include <linux/acpi.h>
+ #include "pci.h"
+ #include "pcie/portdrv.h"
+ 
+@@ -1577,6 +1579,35 @@ static int pci_bus_num_vf(struct device *dev)
+ 	return pci_num_vf(to_pci_dev(dev));
+ }
+ 
++/**
++ * pci_dma_configure - Setup DMA configuration
++ * @dev: ptr to dev structure
++ *
++ * Function to update PCI devices's DMA configuration using the same
++ * info from the OF node or ACPI node of host bridge's parent (if any).
++ */
++static int pci_dma_configure(struct device *dev)
++{
++	struct device *bridge;
++	int ret = 0;
++
++	bridge = pci_get_host_bridge_device(to_pci_dev(dev));
++
++	if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
++	    bridge->parent->of_node) {
++		ret = of_dma_configure(dev, bridge->parent->of_node);
++	} else if (has_acpi_companion(bridge)) {
++		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
++		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
++
++		if (attr != DEV_DMA_NOT_SUPPORTED)
++			ret = acpi_dma_configure(dev, attr);
++	}
++
++	pci_put_host_bridge_device(bridge);
++	return ret;
++}
++
+ struct bus_type pci_bus_type = {
+ 	.name		= "pci",
+ 	.match		= pci_bus_match,
+@@ -1589,6 +1620,7 @@ struct bus_type pci_bus_type = {
+ 	.drv_groups	= pci_drv_groups,
+ 	.pm		= PCI_PM_OPS_PTR,
+ 	.num_vf		= pci_bus_num_vf,
++	.dma_configure	= pci_dma_configure,
+ 	.force_dma	= true,
+ };
+ EXPORT_SYMBOL(pci_bus_type);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 0059b99..607c7eb 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -88,6 +88,8 @@ extern int __must_check bus_create_file(struct bus_type *,
+  * @resume:	Called to bring a device on this bus out of sleep mode.
+  * @num_vf:	Called to find out how many virtual functions a device on this
+  *		bus supports.
++ * @dma_configure:	Called to setup DMA configuration on a device on
++			this bus.
+  * @pm:		Power management operations of this bus, callback the specific
+  *		device driver's pm-ops.
+  * @iommu_ops:  IOMMU specific operations for this bus, used to attach IOMMU
+@@ -130,6 +132,8 @@ struct bus_type {
+ 
+ 	int (*num_vf)(struct device *dev);
+ 
++	int (*dma_configure)(struct device *dev);
++
+ 	const struct dev_pm_ops *pm;
+ 
+ 	const struct iommu_ops *iommu_ops;
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 49f634d..3097c94 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -356,6 +356,8 @@ static inline char *early_platform_driver_setup_func(void)		\
+ #define platform_pm_restore		NULL
+ #endif
+ 
++extern int platform_dma_configure(struct device *dev);
++
+ #ifdef CONFIG_PM_SLEEP
+ #define USE_PLATFORM_PM_SLEEP_OPS \
+ 	.suspend = platform_pm_suspend, \
+-- 
+1.9.1
