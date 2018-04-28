@@ -1,14 +1,11 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: [PATCH v4 2/2] drivers: remove force dma flag from buses
-Date: Sat, 28 Apr 2018 08:21:59 +0530
-Message-ID: <1524883919-29484-2-git-send-email-nipun.gupta@nxp.com>
-References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
-	<1524883919-29484-1-git-send-email-nipun.gupta@nxp.com>
+From: changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Subject: [RESEND][PATCH] iommu/vt-d: fix shift-out-of-bounds in bug checking
+Date: Sat, 28 Apr 2018 14:39:47 +0800
+Message-ID: <1524897587-15125-1-git-send-email-changbin.du@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1524883919-29484-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,243 +15,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Cc: zajec5-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, msuchanek-l3A5Bk7waGM@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, johan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With each bus implementing its own DMA configuration callback,
-there is no need for bus to explicitly have force_dma in its
-global structure. This patch modifies of_dma_configure API to
-accept an input parameter which specifies if implicit DMA
-configuration is required even when it is not described by the
-firmware.
+From: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>  # PCI parts
+It allows to flush more than 4GB of device TLBs. So the mask should be
+64bit wide. UBSAN captured this fault as below.
+
+[    3.760024] ================================================================================
+[    3.768440] UBSAN: Undefined behaviour in drivers/iommu/dmar.c:1348:3
+[    3.774864] shift exponent 64 is too large for 32-bit type 'int'
+[    3.780853] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G     U            4.17.0-rc1+ #89
+[    3.788661] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.2.8 01/26/2016
+[    3.796034] Call Trace:
+[    3.798472]  <IRQ>
+[    3.800479]  dump_stack+0x90/0xfb
+[    3.803787]  ubsan_epilogue+0x9/0x40
+[    3.807353]  __ubsan_handle_shift_out_of_bounds+0x10e/0x170
+[    3.812916]  ? qi_flush_dev_iotlb+0x124/0x180
+[    3.817261]  qi_flush_dev_iotlb+0x124/0x180
+[    3.821437]  iommu_flush_dev_iotlb+0x94/0xf0
+[    3.825698]  iommu_flush_iova+0x10b/0x1c0
+[    3.829699]  ? fq_ring_free+0x1d0/0x1d0
+[    3.833527]  iova_domain_flush+0x25/0x40
+[    3.837448]  fq_flush_timeout+0x55/0x160
+[    3.841368]  ? fq_ring_free+0x1d0/0x1d0
+[    3.845200]  ? fq_ring_free+0x1d0/0x1d0
+[    3.849034]  call_timer_fn+0xbe/0x310
+[    3.852696]  ? fq_ring_free+0x1d0/0x1d0
+[    3.856530]  run_timer_softirq+0x223/0x6e0
+[    3.860625]  ? sched_clock+0x5/0x10
+[    3.864108]  ? sched_clock+0x5/0x10
+[    3.867594]  __do_softirq+0x1b5/0x6f5
+[    3.871250]  irq_exit+0xd4/0x130
+[    3.874470]  smp_apic_timer_interrupt+0xb8/0x2f0
+[    3.879075]  apic_timer_interrupt+0xf/0x20
+[    3.883159]  </IRQ>
+[    3.885255] RIP: 0010:poll_idle+0x60/0xe7
+[    3.889252] RSP: 0018:ffffb1b201943e30 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+[    3.896802] RAX: 0000000080200000 RBX: 000000000000008e RCX: 000000000000001f
+[    3.903918] RDX: 0000000000000000 RSI: 000000002819aa06 RDI: 0000000000000000
+[    3.911031] RBP: ffff9e93c6b33280 R08: 00000010f717d567 R09: 000000000010d205
+[    3.918146] R10: ffffb1b201943df8 R11: 0000000000000001 R12: 00000000e01b169d
+[    3.925260] R13: 0000000000000000 R14: ffffffffb12aa400 R15: 0000000000000000
+[    3.932382]  cpuidle_enter_state+0xb4/0x470
+[    3.936558]  do_idle+0x222/0x310
+[    3.939779]  cpu_startup_entry+0x78/0x90
+[    3.943693]  start_secondary+0x205/0x2e0
+[    3.947607]  secondary_startup_64+0xa5/0xb0
+[    3.951783] ================================================================================
+
+Signed-off-by: Changbin Du <changbin.du-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
-Changes in v2:
-  - This is a new change suggested by Robin and Christoph
-    and is added to the series.
+ drivers/iommu/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v3:
-  - Rebase and changes corresponding to the changes in patch 1/2
-
-Changes in v4:
-  - Rebased on top of 4.17-rc2
-
- drivers/amba/bus.c            | 1 -
- drivers/base/platform.c       | 3 +--
- drivers/bcma/main.c           | 2 +-
- drivers/dma/qcom/hidma_mgmt.c | 2 +-
- drivers/gpu/host1x/bus.c      | 5 ++---
- drivers/of/device.c           | 6 ++++--
- drivers/of/of_reserved_mem.c  | 2 +-
- drivers/pci/pci-driver.c      | 3 +--
- include/linux/device.h        | 4 ----
- include/linux/of_device.h     | 8 ++++++--
- 10 files changed, 17 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index 867dc2b..abe73c4 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -199,7 +199,6 @@ struct bus_type amba_bustype = {
- 	.uevent		= amba_uevent,
- 	.dma_configure	= platform_dma_configure,
- 	.pm		= &amba_pm,
--	.force_dma	= true,
- };
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index accf5838..e4ae600 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1345,7 +1345,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+ 	struct qi_desc desc;
  
- static int __init amba_init(void)
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 638d42e..c0ff1e7 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -1136,7 +1136,7 @@ int platform_dma_configure(struct device *dev)
- 	int ret = 0;
- 
- 	if (dev->of_node) {
--		ret = of_dma_configure(dev, dev->of_node);
-+		ret = of_dma_configure(dev, dev->of_node, true);
- 	} else if (has_acpi_companion(dev)) {
- 		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
- 		if (attr != DEV_DMA_NOT_SUPPORTED)
-@@ -1159,7 +1159,6 @@ struct bus_type platform_bus_type = {
- 	.uevent		= platform_uevent,
- 	.dma_configure	= platform_dma_configure,
- 	.pm		= &platform_dev_pm_ops,
--	.force_dma	= true,
- };
- EXPORT_SYMBOL_GPL(platform_bus_type);
- 
-diff --git a/drivers/bcma/main.c b/drivers/bcma/main.c
-index e6986c7..fc1f4ac 100644
---- a/drivers/bcma/main.c
-+++ b/drivers/bcma/main.c
-@@ -207,7 +207,7 @@ static void bcma_of_fill_device(struct device *parent,
- 
- 	core->irq = bcma_of_get_irq(parent, core, 0);
- 
--	of_dma_configure(&core->dev, node);
-+	of_dma_configure(&core->dev, node, false);
- }
- 
- unsigned int bcma_core_irq(struct bcma_device *core, int num)
-diff --git a/drivers/dma/qcom/hidma_mgmt.c b/drivers/dma/qcom/hidma_mgmt.c
-index 000c7019..d64edeb 100644
---- a/drivers/dma/qcom/hidma_mgmt.c
-+++ b/drivers/dma/qcom/hidma_mgmt.c
-@@ -398,7 +398,7 @@ static int __init hidma_mgmt_of_populate_channels(struct device_node *np)
- 		}
- 		of_node_get(child);
- 		new_pdev->dev.of_node = child;
--		of_dma_configure(&new_pdev->dev, child);
-+		of_dma_configure(&new_pdev->dev, child, true);
- 		/*
- 		 * It is assumed that calling of_msi_configure is safe on
- 		 * platforms with or without MSI support.
-diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
-index a9ec99d..b39c1e9 100644
---- a/drivers/gpu/host1x/bus.c
-+++ b/drivers/gpu/host1x/bus.c
-@@ -317,7 +317,7 @@ static int host1x_device_match(struct device *dev, struct device_driver *drv)
- static int host1x_dma_configure(struct device *dev)
- {
- 	if (dev->of_node)
--		return of_dma_configure(dev, dev->of_node);
-+		return of_dma_configure(dev, dev->of_node, true);
- 	return 0;
- }
- 
-@@ -335,7 +335,6 @@ struct bus_type host1x_bus_type = {
- 	.match = host1x_device_match,
- 	.dma_configure	= host1x_dma_configure,
- 	.pm = &host1x_device_pm_ops,
--	.force_dma = true,
- };
- 
- static void __host1x_device_del(struct host1x_device *device)
-@@ -424,7 +423,7 @@ static int host1x_device_add(struct host1x *host1x,
- 	device->dev.bus = &host1x_bus_type;
- 	device->dev.parent = host1x->dev;
- 
--	of_dma_configure(&device->dev, host1x->dev->of_node);
-+	of_dma_configure(&device->dev, host1x->dev->of_node, true);
- 
- 	err = host1x_device_parse_dt(device, driver);
- 	if (err < 0) {
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 064c818..33d8551 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -76,6 +76,8 @@ int of_device_add(struct platform_device *ofdev)
-  * of_dma_configure - Setup DMA configuration
-  * @dev:	Device to apply DMA configuration
-  * @np:		Pointer to OF node having DMA configuration
-+ * @force_dma:  Whether device is to be set up by of_dma_configure() even if
-+ *		DMA capability is not explicitly described by firmware.
-  *
-  * Try to get devices's DMA configuration from DT and update it
-  * accordingly.
-@@ -84,7 +86,7 @@ int of_device_add(struct platform_device *ofdev)
-  * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
-  * to fix up DMA configuration.
-  */
--int of_dma_configure(struct device *dev, struct device_node *np)
-+int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
- {
- 	u64 dma_addr, paddr, size = 0;
- 	int ret;
-@@ -100,7 +102,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
- 		 * DMA configuration regardless of whether "dma-ranges" is
- 		 * correctly specified or not.
- 		 */
--		if (!dev->bus->force_dma)
-+		if (!force_dma)
- 			return ret == -ENODEV ? 0 : ret;
- 
- 		dma_addr = offset = 0;
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 9a4f4246..895c83e 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -353,7 +353,7 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
- 		/* ensure that dma_ops is set for virtual devices
- 		 * using reserved memory
- 		 */
--		of_dma_configure(dev, np);
-+		of_dma_configure(dev, np, true);
- 
- 		dev_info(dev, "assigned reserved memory node %s\n", rmem->name);
- 	} else {
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index ba8c6b4..f8269a7 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -1595,7 +1595,7 @@ static int pci_dma_configure(struct device *dev)
- 
- 	if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
- 	    bridge->parent->of_node) {
--		ret = of_dma_configure(dev, bridge->parent->of_node);
-+		ret = of_dma_configure(dev, bridge->parent->of_node, true);
- 	} else if (has_acpi_companion(bridge)) {
- 		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
- 		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
-@@ -1621,7 +1621,6 @@ struct bus_type pci_bus_type = {
- 	.pm		= PCI_PM_OPS_PTR,
- 	.num_vf		= pci_bus_num_vf,
- 	.dma_configure	= pci_dma_configure,
--	.force_dma	= true,
- };
- EXPORT_SYMBOL(pci_bus_type);
- 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 607c7eb..31dcb29 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -98,8 +98,6 @@ extern int __must_check bus_create_file(struct bus_type *,
-  * @p:		The private data of the driver core, only the driver core can
-  *		touch this.
-  * @lock_key:	Lock class key for use by the lock validator
-- * @force_dma:	Assume devices on this bus should be set up by dma_configure()
-- * 		even if DMA capability is not explicitly described by firmware.
-  *
-  * A bus is a channel between the processor and one or more devices. For the
-  * purposes of the device model, all devices are connected via a bus, even if
-@@ -140,8 +138,6 @@ struct bus_type {
- 
- 	struct subsys_private *p;
- 	struct lock_class_key lock_key;
--
--	bool force_dma;
- };
- 
- extern int __must_check bus_register(struct bus_type *bus);
-diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-index 8da5a1b..165fd30 100644
---- a/include/linux/of_device.h
-+++ b/include/linux/of_device.h
-@@ -55,7 +55,9 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- 	return of_node_get(cpu_dev->of_node);
- }
- 
--int of_dma_configure(struct device *dev, struct device_node *np);
-+int of_dma_configure(struct device *dev,
-+		     struct device_node *np,
-+		     bool force_dma);
- void of_dma_deconfigure(struct device *dev);
- #else /* CONFIG_OF */
- 
-@@ -105,7 +107,9 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- 	return NULL;
- }
- 
--static inline int of_dma_configure(struct device *dev, struct device_node *np)
-+static inline int of_dma_configure(struct device *dev,
-+				   struct device_node *np,
-+				   bool force_dma)
- {
- 	return 0;
- }
+ 	if (mask) {
+-		BUG_ON(addr & ((1 << (VTD_PAGE_SHIFT + mask)) - 1));
++		BUG_ON(addr & ((1ULL << (VTD_PAGE_SHIFT + mask)) - 1));
+ 		addr |= (1ULL << (VTD_PAGE_SHIFT + mask - 1)) - 1;
+ 		desc.high = QI_DEV_IOTLB_ADDR(addr) | QI_DEV_IOTLB_SIZE;
+ 	} else
 -- 
-1.9.1
+2.7.4
