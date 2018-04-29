@@ -1,60 +1,157 @@
-From: Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
-Subject: Re: [PATCH v3 03/20] crypto: Remove depends on HAS_DMA in case of
-	platform dependency
-Date: Sat, 28 Apr 2018 16:24:38 +0800
-Message-ID: <20180428082438.azb64xw6hofisdwi@gondor.apana.org.au>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
-	<1523987360-18760-4-git-send-email-geert@linux-m68k.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1523987360-18760-4-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fpga-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Jassi Brar <jassisinghbrar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matias Bjorling <mb-VR7NuqX4VJ8tq7phqP6ubQ@public.gmane.org>, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, Alan Tull <atull-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel@vg
+From: Gil Kupfer <gilkup@gmail.com>
+Subject: [RFC/RFT] Add noats flag to boot parameters
+Date: Sun, 29 Apr 2018 21:16:48 +0300
+Message-ID: <1525025808-2365-1-git-send-email-gilkup@cs.technion.ac.il>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, dwmw2@infradead.org, bhelgaas@google.com
+Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, nadav.amit@gmail.com, Gil Kupfer <gilkup@cs.technion.ac.il>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 17, 2018 at 07:49:03PM +0200, Geert Uytterhoeven wrote:
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
-> 
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
-> 
-> This simplifies the dependencies, and allows to improve compile-testing.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-> Reviewed-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Acked-by: Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
-> ---
-> v3:
->   - Add Acked-by,
->   - Rebase to v4.17-rc1,
-> 
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Split per subsystem.
-> ---
->  drivers/crypto/Kconfig | 14 ++++----------
->  1 file changed, 4 insertions(+), 10 deletions(-)
+This patch adds noats option to the pci boot parameter.
+When noats is selected, all ATS related functions fail immediately and
+the IOMMU is configured to not use device-iotlb.
 
-Patch applied.  Thanks.
+Any function that checks for ATS capabilities directly against the
+devices should also check this flag. (Currently, such functions exist
+only in IOMMU drivers, and they are covered by this patch.)
+
+The motivation behind this patch is the existence of malicious devices.
+Lots of research has been done about how to utilitize the IOMMU as a
+protection from such devices. When ATS is supported, any I/O device can
+access any physical access by faking device-IOTLB entries.
+Adding the ability to ignore these entries lets sysadmins enhance system
+security.
+
+Signed-off-by: Gil Kupfer <gilkup@cs.technion.ac.il>
+
+---
+This patch is intended to add the ability to disable ATS at boot time.
+
+My IOMMU has the ATS ecap but I don't have any PCI device that supports
+ATS so I can't fully test it. However, I did ran it (with and without the
+new boot flag) on QEMU with virtualized IOMMU with the device-iotlb flag
+and it seems that at least the machine does not crush.
+
+QEMU version:
+	master branch from Jul 11 2017
+	commit aa916e409c04 ("Merge 29741be b876804")
+---
+ Documentation/admin-guide/kernel-parameters.txt |  2 ++
+ drivers/iommu/amd_iommu.c                       | 11 ++++++++---
+ drivers/iommu/intel-iommu.c                     |  3 ++-
+ drivers/pci/ats.c                               |  3 +++
+ drivers/pci/pci.c                               |  7 +++++++
+ include/linux/pci.h                             |  2 ++
+ 6 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 7737ab5..f443362 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3000,6 +3000,8 @@
+ 		pcie_scan_all	Scan all possible PCIe devices.  Otherwise we
+ 				only look for one device below a PCIe downstream
+ 				port.
++		noats		[PCIE, Intel-IOMMU, AMD-IOMMU]
++				do not use PCIe ATS (and IOMMU device-iotlb).
+ 
+ 	pcie_aspm=	[PCIE] Forcibly enable or disable PCIe Active State Power
+ 			Management.
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 0f1219f..2aa757e 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -388,6 +388,9 @@ static bool pci_iommuv2_capable(struct pci_dev *pdev)
+ 	};
+ 	int i, pos;
+ 
++	if (is_pcie_ats_disabled())
++		return false;
++
+ 	for (i = 0; i < 3; ++i) {
+ 		pos = pci_find_ext_capability(pdev, caps[i]);
+ 		if (pos == 0)
+@@ -3602,9 +3605,11 @@ int amd_iommu_device_info(struct pci_dev *pdev,
+ 
+ 	memset(info, 0, sizeof(*info));
+ 
+-	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS);
+-	if (pos)
+-		info->flags |= AMD_IOMMU_DEVICE_FLAG_ATS_SUP;
++	if (!is_pcie_ats_disabled()) {
++		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS);
++		if (pos)
++			info->flags |= AMD_IOMMU_DEVICE_FLAG_ATS_SUP;
++	}
+ 
+ 	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+ 	if (pos)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index fc2765c..7ac4adc 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2434,7 +2434,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	if (dev && dev_is_pci(dev)) {
+ 		struct pci_dev *pdev = to_pci_dev(info->dev);
+ 
+-		if (ecap_dev_iotlb_support(iommu->ecap) &&
++		if (!is_pcie_ats_disabled() &&
++		    ecap_dev_iotlb_support(iommu->ecap) &&
+ 		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
+ 		    dmar_find_matched_atsr_unit(pdev))
+ 			info->ats_supported = 1;
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index eeb9fb2..619024d 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -21,6 +21,9 @@ void pci_ats_init(struct pci_dev *dev)
+ {
+ 	int pos;
+ 
++	if (is_pcie_ats_disabled())
++		return;
++
+ 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
+ 	if (!pos)
+ 		return;
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 563901c..eb77590 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -109,6 +109,10 @@ unsigned int pcibios_max_latency = 255;
+ /* If set, the PCIe ARI capability will not be used. */
+ static bool pcie_ari_disabled;
+ 
++/* If set, the PCIe ATS capability will not be used. */
++static bool pcie_ats_disabled;
++bool is_pcie_ats_disabled(void) { return pcie_ats_disabled; }
++
+ /* Disable bridge_d3 for all PCIe ports */
+ static bool pci_bridge_d3_disable;
+ /* Force bridge_d3 for all PCIe ports */
+@@ -5430,6 +5434,9 @@ static int __init pci_setup(char *str)
+ 		if (*str && (str = pcibios_setup(str)) && *str) {
+ 			if (!strcmp(str, "nomsi")) {
+ 				pci_no_msi();
++			} else if (!strncmp(str, "noats", 5)) {
++				pr_info("PCIe: ATS is disabled\n");
++				pcie_ats_disabled = true;
+ 			} else if (!strcmp(str, "noaer")) {
+ 				pci_no_aer();
+ 			} else if (!strncmp(str, "realloc=", 8)) {
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 8039f9f..58fe5fb 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1420,6 +1420,8 @@ int  ht_create_irq(struct pci_dev *dev, int idx);
+ void ht_destroy_irq(unsigned int irq);
+ #endif /* CONFIG_HT_IRQ */
+ 
++bool is_pcie_ats_disabled(void);
++
+ #ifdef CONFIG_PCI_ATS
+ /* Address Translation Service */
+ void pci_ats_init(struct pci_dev *dev);
 -- 
-Email: Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.7.4
