@@ -1,70 +1,84 @@
-From: Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
-Subject: Re: How to check if Vt-d is capable of posted-interrupt?
-Date: Mon, 30 Apr 2018 14:13:49 -0400
-Message-ID: <CAHyh4xjaLUibVMRVfCc5_kyqhu=HYDfZXkcLRmWsoZ=KCyo+MQ@mail.gmail.com>
-References: <CAHyh4xgMqsxCUOH-_p=DWVWpp0stxfwdfFo2s2cn1nmR2v5Siw@mail.gmail.com>
-	<CAHyh4xjzi5CK8+OJPpnr+F2ABpy5Jbbo1S4YR5ATi62LMRn+Pw@mail.gmail.com>
-	<20180430120941.741f31cb@w520.home>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v4 12/22] iommu: introduce device fault report API
+Date: Mon, 30 Apr 2018 11:54:56 -0700
+Message-ID: <20180430115456.54a4b22e@jacob-builder>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1523915351-54415-13-git-send-email-jacob.jun.pan@linux.intel.com>
+        <b9175586-e638-c807-3ef0-f0e0bc1b8243@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180430120941.741f31cb-DGNDKt5SQtizQB+pC5nmwQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, QEMU Devel Mailing List <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, KVM General <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <b9175586-e638-c807-3ef0-f0e0bc1b8243@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 30, 2018 at 2:09 PM, Alex Williamson
-<alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> On Mon, 30 Apr 2018 13:44:23 -0400
-> Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org> wrote:
->
->> Add iommu mailing list since this question might be more related to iommu.
->>
->> On Mon, Apr 30, 2018 at 10:11 AM, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org> wrote:
->> > Hi,
->> >
->> > I wonder how to check if Vt-d is capable of posted-interrupt? I'm
->> > using Intel E5-2630 v3.
->> >
->> > I was once told that APICv and posted-interrupt capability always come
->> > together. But it seems like my cpu support APICv
->> > (/sys/module/kvm_intel/parameters/enable_apicv is Y), but
->> > posted-interrupt capability is only shipped with the next generation
->> > of the cpu (E5-2600 v4, which is Broadwell).
->> >
->> > What would be an easy way to check this?
->
-> PI support is bit 59 in the capability register which is exposed
-> through sysfs at /sys/class/iommu/dmar*/intel-iommu/cap so you could do
-> something like:
->
-> # for i in $(find /sys/class/iommu/dmar* -type l); do echo -n "$i: "; echo $(( ( 0x$(cat $i/intel-iommu/cap) >> 59 ) & 1 )); done
->
+On Mon, 30 Apr 2018 17:53:52 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-Thanks for a nice solution, Alex.
-It turns out my cpu doesn't have the PI capability.
-/sys/class/iommu/dmar0: 0
-/sys/class/iommu/dmar1: 0
+> Hi,
+> 
+> I noticed a couple issues when testing
+> 
+> On 16/04/18 22:49, Jacob Pan wrote:
+> > +int iommu_register_device_fault_handler(struct device *dev,
+> > +					iommu_dev_fault_handler_t
+> > handler,
+> > +					void *data)
+> > +{
+> > +	struct iommu_param *param = dev->iommu_param;
+> > +
+> > +	/*
+> > +	 * Device iommu_param should have been allocated when
+> > device is
+> > +	 * added to its iommu_group.
+> > +	 */
+> > +	if (!param)
+> > +		return -EINVAL;
+> > +
+> > +	/* Only allow one fault handler registered for each device
+> > */
+> > +	if (param->fault_param)
+> > +		return -EBUSY;  
+> 
+> Should this be inside the param lock? We probably don't expect
+> concurrent register/unregister but it seems cleaner
+agreed, same as corrections below. Thanks!
+> 
+>  [...]  
+> 
+> We should return EINVAL here, if fault_param is NULL. That way users
+> can call unregister_fault_handler unconditionally in their cleanup
+> paths
+> 
+> > +	/* we cannot unregister handler if there are pending
+> > faults */
+> > +	if (list_empty(&param->fault_param->faults)) {  
+> 
+> if (!list_empty(...))
+> 
+> > +		ret = -EBUSY;
+> > +		goto unlock;
+> > +	}
+> > +
+> > +	list_del(&param->fault_param->faults);  
+> 
+> faults is the list head, no need for list_del
+> 
+> > +	kfree(param->fault_param);
+> > +	param->fault_param = NULL;
+> > +	put_device(dev);
+> > +
+> > +unlock:
+> > +	mutex_unlock(&param->lock);
+> > +
+> > +	return 0;  
+> 
+> return ret
+> 
+> Thanks,
+> Jean
 
-> I think the relationship between APICv and PI goes the other direction,
-> if you have PI, you probably have APICv.  Having APICv implies nothing
-> about having PI.  Thanks,
-
-Yeah, I think that makes sense.
-
-Thanks,
-Jintack
-
->
-> Alex
->
+[Jacob Pan]
