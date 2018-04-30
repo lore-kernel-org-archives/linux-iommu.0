@@ -1,64 +1,42 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] media: videobuf-dma-sg: Fix dma_{sync,unmap}_sg() calls
-Date: Mon, 30 Apr 2018 17:56:28 +0100
-Message-ID: <453f27adfa6563d43a17a57b37c9c7db36c2114b.1525107326.git.robin.murphy@arm.com>
+From: Jintack Lim <jintack@cs.columbia.edu>
+Subject: Re: How to check if Vt-d is capable of
+ posted-interrupt?
+Date: Mon, 30 Apr 2018 13:44:23 -0400
+Message-ID: <CAHyh4xjzi5CK8+OJPpnr+F2ABpy5Jbbo1S4YR5ATi62LMRn+Pw@mail.gmail.com>
+References: <CAHyh4xgMqsxCUOH-_p=DWVWpp0stxfwdfFo2s2cn1nmR2v5Siw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <qemu-devel-bounces+gceq-qemu-devel2=m.gmane.org@nongnu.org>
+In-Reply-To: <CAHyh4xgMqsxCUOH-_p=DWVWpp0stxfwdfFo2s2cn1nmR2v5Siw@mail.gmail.com>
+List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
+List-Archive: <http://lists.nongnu.org/archive/html/qemu-devel/>
+List-Post: <mailto:qemu-devel@nongnu.org>
+List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
+List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
+	<mailto:qemu-devel-request@nongnu.org?subject=subscribe>
+Errors-To: qemu-devel-bounces+gceq-qemu-devel2=m.gmane.org@nongnu.org
+Sender: "Qemu-devel"
+	<qemu-devel-bounces+gceq-qemu-devel2=m.gmane.org@nongnu.org>
+To: iommu@lists.linux-foundation.org
+Cc: QEMU Devel Mailing List <qemu-devel@nongnu.org>, KVM General <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This reverts commit fc7f8fd42c2b934ac348995e0c530c917fc277d5.
+Add iommu mailing list since this question might be more related to iommu.
 
-Whilst the rationale for the above commit was in general correct, i.e.
-that users *consuming* the DMA addresses should rely on sglen rather
-than num_pages, it has always been the case that the DMA API itself
-still requires that dma_{sync,unmap}_sg() are called with the original
-number of entries as passed to dma_map_sg(), not the number of mapped
-entries it returned. Thus the particular changes made in that patch
-were erroneous.
-
-At worst this might lead to data loss at the tail end of mapped buffers
-on non-coherent hardware, while at best it's an example of incorrect
-DMA API usage which has proven to mislead readers.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/media/v4l2-core/videobuf-dma-sg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2-core/videobuf-dma-sg.c
-index add2edb23eac..37550f81cc29 100644
---- a/drivers/media/v4l2-core/videobuf-dma-sg.c
-+++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
-@@ -334,7 +334,7 @@ int videobuf_dma_unmap(struct device *dev, struct videobuf_dmabuf *dma)
- 	if (!dma->sglen)
- 		return 0;
- 
--	dma_unmap_sg(dev, dma->sglist, dma->sglen, dma->direction);
-+	dma_unmap_sg(dev, dma->sglist, dma->nr_pages, dma->direction);
- 
- 	vfree(dma->sglist);
- 	dma->sglist = NULL;
-@@ -581,7 +581,7 @@ static int __videobuf_sync(struct videobuf_queue *q,
- 	MAGIC_CHECK(mem->dma.magic, MAGIC_DMABUF);
- 
- 	dma_sync_sg_for_cpu(q->dev, mem->dma.sglist,
--			    mem->dma.sglen, mem->dma.direction);
-+			    mem->dma.nr_pages, mem->dma.direction);
- 
- 	return 0;
- }
--- 
-2.17.0.dirty
+On Mon, Apr 30, 2018 at 10:11 AM, Jintack Lim <jintack@cs.columbia.edu> wrote:
+> Hi,
+>
+> I wonder how to check if Vt-d is capable of posted-interrupt? I'm
+> using Intel E5-2630 v3.
+>
+> I was once told that APICv and posted-interrupt capability always come
+> together. But it seems like my cpu support APICv
+> (/sys/module/kvm_intel/parameters/enable_apicv is Y), but
+> posted-interrupt capability is only shipped with the next generation
+> of the cpu (E5-2600 v4, which is Broadwell).
+>
+> What would be an easy way to check this?
+>
+> Thanks,
+> Jintack
