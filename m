@@ -1,14 +1,17 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v4 2/2] iommu/amd: Add basic debugfs infrastructure for AMD
-	IOMMU
-Date: Mon, 30 Apr 2018 14:59:00 -0500
-Message-ID: <152511834052.8963.15911033411570981710.stgit@taos>
-References: <152511783026.8963.5818249217042882958.stgit@taos>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 2/6] iommu: of: make of_pci_map_rid() available for
+	other devices too
+Date: Mon, 30 Apr 2018 15:56:49 -0500
+Message-ID: <20180430205649.GD95643@bhelgaas-glaptop.roam.corp.google.com>
+References: <1524824826-29473-1-git-send-email-nipun.gupta@nxp.com>
+	<1525069641-8523-1-git-send-email-nipun.gupta@nxp.com>
+	<1525069641-8523-3-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <152511783026.8963.5818249217042882958.stgit@taos>
+Content-Disposition: inline
+In-Reply-To: <1525069641-8523-3-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,143 +21,349 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Implement a skeleton framework for debugfs support in the
-AMD IOMMU.
+On Mon, Apr 30, 2018 at 11:57:17AM +0530, Nipun Gupta wrote:
+> iommu-map property is also used by devices with fsl-mc. This
+> patch moves the of_pci_map_rid to generic location, so that it
+> can be used by other busses too.
+> 
+> 'of_pci_map_rid' is renamed here to 'of_map_rid' and there is no
+> functional change done in the API.
+> 
+> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 
+Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 
-Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
----
- drivers/iommu/Makefile            |    5 ++++
- drivers/iommu/amd_iommu_debugfs.c |   42 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_init.c    |    6 ++++-
- drivers/iommu/amd_iommu_proto.h   |    6 +++++
- drivers/iommu/amd_iommu_types.h   |    3 +++
- 5 files changed, 60 insertions(+), 2 deletions(-)
- create mode 100644 drivers/iommu/amd_iommu_debugfs.c
-
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 74cfbc392862..dd980f7dd8b6 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -30,3 +30,8 @@ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
- obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
-+
-+# This ensures that only the required files are compiled
-+ifeq ($(CONFIG_IOMMU_DEBUGFS), y)
-+obj-$(CONFIG_AMD_IOMMU) += amd_iommu_debugfs.o
-+endif
-diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
-new file mode 100644
-index 000000000000..34bb65cbd798
---- /dev/null
-+++ b/drivers/iommu/amd_iommu_debugfs.c
-@@ -0,0 +1,42 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AMD IOMMU driver
-+ *
-+ * Copyright (C) 2018 Advanced Micro Devices, Inc.
-+ *
-+ * Author: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-+ */
-+
-+#include <linux/debugfs.h>
-+#include <linux/iommu.h>
-+#include <linux/pci.h>
-+#include "amd_iommu_proto.h"
-+#include "amd_iommu_types.h"
-+
-+static struct dentry *amd_iommu_debugfs;
-+static DEFINE_MUTEX(amd_iommu_debugfs_lock);
-+
-+#define	MAX_NAME_LEN	20
-+
-+void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
-+{
-+	char name[MAX_NAME_LEN + 1];
-+	struct dentry *d_top;
-+
-+	mutex_lock(&amd_iommu_debugfs_lock);
-+	if (!amd_iommu_debugfs) {
-+		d_top = iommu_debugfs_setup();
-+		if (d_top)
-+			amd_iommu_debugfs = debugfs_create_dir("amd", d_top);
-+	}
-+	mutex_unlock(&amd_iommu_debugfs_lock);
-+	if (amd_iommu_debugfs) {
-+		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
-+		iommu->debugfs = debugfs_create_dir(name,
-+						    amd_iommu_debugfs);
-+		if (!iommu->debugfs) {
-+			debugfs_remove_recursive(amd_iommu_debugfs);
-+			amd_iommu_debugfs = NULL;
-+		}
-+	}
-+}
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 904c575d1677..031e6dbb8345 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2721,6 +2721,7 @@ int __init amd_iommu_enable_faulting(void)
-  */
- static int __init amd_iommu_init(void)
- {
-+	struct amd_iommu *iommu;
- 	int ret;
- 
- 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
-@@ -2730,14 +2731,15 @@ static int __init amd_iommu_init(void)
- 			disable_iommus();
- 			free_iommu_resources();
- 		} else {
--			struct amd_iommu *iommu;
--
- 			uninit_device_table_dma();
- 			for_each_iommu(iommu)
- 				iommu_flush_all_caches(iommu);
- 		}
- 	}
- 
-+	for_each_iommu(iommu)
-+		amd_iommu_debugfs_setup(iommu);
-+
- 	return ret;
- }
- 
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 640c286a0ab9..39053f11dda3 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -33,6 +33,12 @@ extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
- extern int amd_iommu_init_api(void);
- 
-+#ifdef CONFIG_IOMMU_DEBUGFS
-+void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
-+#else
-+static inline void amd_iommu_debugfs_setup(struct amd_iommu *iommu) {}
-+#endif
-+
- /* Needed for interrupt remapping */
- extern int amd_iommu_prepare(void);
- extern int amd_iommu_enable(void);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 1c9b080276c9..2ca0959ae9e6 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -593,6 +593,9 @@ struct amd_iommu {
- 
- 	u32 flags;
- 	volatile u64 __aligned(8) cmd_sem;
-+
-+	/* DebugFS Info */
-+	struct dentry *debugfs;
- };
- 
- static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
+> ---
+>  drivers/iommu/of_iommu.c |   5 +--
+>  drivers/of/base.c        | 102 +++++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/of/irq.c         |   5 +--
+>  drivers/pci/of.c         | 101 ----------------------------------------------
+>  include/linux/of.h       |  11 +++++
+>  include/linux/of_pci.h   |  10 -----
+>  6 files changed, 117 insertions(+), 117 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 5c36a8b..811e160 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -149,9 +149,8 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+>  	struct of_phandle_args iommu_spec = { .args_count = 1 };
+>  	int err;
+>  
+> -	err = of_pci_map_rid(info->np, alias, "iommu-map",
+> -			     "iommu-map-mask", &iommu_spec.np,
+> -			     iommu_spec.args);
+> +	err = of_map_rid(info->np, alias, "iommu-map", "iommu-map-mask",
+> +			 &iommu_spec.np, iommu_spec.args);
+>  	if (err)
+>  		return err == -ENODEV ? NO_IOMMU : err;
+>  
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index 848f549..c7aac81 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -1995,3 +1995,105 @@ int of_find_last_cache_level(unsigned int cpu)
+>  
+>  	return cache_level;
+>  }
+> +
+> +/**
+> + * of_map_rid - Translate a requester ID through a downstream mapping.
+> + * @np: root complex device node.
+> + * @rid: device requester ID to map.
+> + * @map_name: property name of the map to use.
+> + * @map_mask_name: optional property name of the mask to use.
+> + * @target: optional pointer to a target device node.
+> + * @id_out: optional pointer to receive the translated ID.
+> + *
+> + * Given a device requester ID, look up the appropriate implementation-defined
+> + * platform ID and/or the target device which receives transactions on that
+> + * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
+> + * @id_out may be NULL if only the other is required. If @target points to
+> + * a non-NULL device node pointer, only entries targeting that node will be
+> + * matched; if it points to a NULL value, it will receive the device node of
+> + * the first matching target phandle, with a reference held.
+> + *
+> + * Return: 0 on success or a standard error code on failure.
+> + */
+> +int of_map_rid(struct device_node *np, u32 rid,
+> +	       const char *map_name, const char *map_mask_name,
+> +	       struct device_node **target, u32 *id_out)
+> +{
+> +	u32 map_mask, masked_rid;
+> +	int map_len;
+> +	const __be32 *map = NULL;
+> +
+> +	if (!np || !map_name || (!target && !id_out))
+> +		return -EINVAL;
+> +
+> +	map = of_get_property(np, map_name, &map_len);
+> +	if (!map) {
+> +		if (target)
+> +			return -ENODEV;
+> +		/* Otherwise, no map implies no translation */
+> +		*id_out = rid;
+> +		return 0;
+> +	}
+> +
+> +	if (!map_len || map_len % (4 * sizeof(*map))) {
+> +		pr_err("%pOF: Error: Bad %s length: %d\n", np,
+> +			map_name, map_len);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* The default is to select all bits. */
+> +	map_mask = 0xffffffff;
+> +
+> +	/*
+> +	 * Can be overridden by "{iommu,msi}-map-mask" property.
+> +	 * If of_property_read_u32() fails, the default is used.
+> +	 */
+> +	if (map_mask_name)
+> +		of_property_read_u32(np, map_mask_name, &map_mask);
+> +
+> +	masked_rid = map_mask & rid;
+> +	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
+> +		struct device_node *phandle_node;
+> +		u32 rid_base = be32_to_cpup(map + 0);
+> +		u32 phandle = be32_to_cpup(map + 1);
+> +		u32 out_base = be32_to_cpup(map + 2);
+> +		u32 rid_len = be32_to_cpup(map + 3);
+> +
+> +		if (rid_base & ~map_mask) {
+> +			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
+> +				np, map_name, map_name,
+> +				map_mask, rid_base);
+> +			return -EFAULT;
+> +		}
+> +
+> +		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
+> +			continue;
+> +
+> +		phandle_node = of_find_node_by_phandle(phandle);
+> +		if (!phandle_node)
+> +			return -ENODEV;
+> +
+> +		if (target) {
+> +			if (*target)
+> +				of_node_put(phandle_node);
+> +			else
+> +				*target = phandle_node;
+> +
+> +			if (*target != phandle_node)
+> +				continue;
+> +		}
+> +
+> +		if (id_out)
+> +			*id_out = masked_rid - rid_base + out_base;
+> +
+> +		pr_debug("%pOF: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
+> +			np, map_name, map_mask, rid_base, out_base,
+> +			rid_len, rid, masked_rid - rid_base + out_base);
+> +		return 0;
+> +	}
+> +
+> +	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
+> +		np, map_name, rid, target && *target ? *target : NULL);
+> +	return -EFAULT;
+> +}
+> +EXPORT_SYMBOL_GPL(of_map_rid);
+> diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+> index 02ad93a..e1f6f39 100644
+> --- a/drivers/of/irq.c
+> +++ b/drivers/of/irq.c
+> @@ -22,7 +22,6 @@
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_irq.h>
+> -#include <linux/of_pci.h>
+>  #include <linux/string.h>
+>  #include <linux/slab.h>
+>  
+> @@ -588,8 +587,8 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
+>  	 * "msi-map" property.
+>  	 */
+>  	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent)
+> -		if (!of_pci_map_rid(parent_dev->of_node, rid_in, "msi-map",
+> -				    "msi-map-mask", np, &rid_out))
+> +		if (!of_map_rid(parent_dev->of_node, rid_in, "msi-map",
+> +				"msi-map-mask", np, &rid_out))
+>  			break;
+>  	return rid_out;
+>  }
+> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+> index a28355c..d2cebbe 100644
+> --- a/drivers/pci/of.c
+> +++ b/drivers/pci/of.c
+> @@ -362,107 +362,6 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+>  EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
+>  #endif /* CONFIG_OF_ADDRESS */
+>  
+> -/**
+> - * of_pci_map_rid - Translate a requester ID through a downstream mapping.
+> - * @np: root complex device node.
+> - * @rid: PCI requester ID to map.
+> - * @map_name: property name of the map to use.
+> - * @map_mask_name: optional property name of the mask to use.
+> - * @target: optional pointer to a target device node.
+> - * @id_out: optional pointer to receive the translated ID.
+> - *
+> - * Given a PCI requester ID, look up the appropriate implementation-defined
+> - * platform ID and/or the target device which receives transactions on that
+> - * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
+> - * @id_out may be NULL if only the other is required. If @target points to
+> - * a non-NULL device node pointer, only entries targeting that node will be
+> - * matched; if it points to a NULL value, it will receive the device node of
+> - * the first matching target phandle, with a reference held.
+> - *
+> - * Return: 0 on success or a standard error code on failure.
+> - */
+> -int of_pci_map_rid(struct device_node *np, u32 rid,
+> -		   const char *map_name, const char *map_mask_name,
+> -		   struct device_node **target, u32 *id_out)
+> -{
+> -	u32 map_mask, masked_rid;
+> -	int map_len;
+> -	const __be32 *map = NULL;
+> -
+> -	if (!np || !map_name || (!target && !id_out))
+> -		return -EINVAL;
+> -
+> -	map = of_get_property(np, map_name, &map_len);
+> -	if (!map) {
+> -		if (target)
+> -			return -ENODEV;
+> -		/* Otherwise, no map implies no translation */
+> -		*id_out = rid;
+> -		return 0;
+> -	}
+> -
+> -	if (!map_len || map_len % (4 * sizeof(*map))) {
+> -		pr_err("%pOF: Error: Bad %s length: %d\n", np,
+> -			map_name, map_len);
+> -		return -EINVAL;
+> -	}
+> -
+> -	/* The default is to select all bits. */
+> -	map_mask = 0xffffffff;
+> -
+> -	/*
+> -	 * Can be overridden by "{iommu,msi}-map-mask" property.
+> -	 * If of_property_read_u32() fails, the default is used.
+> -	 */
+> -	if (map_mask_name)
+> -		of_property_read_u32(np, map_mask_name, &map_mask);
+> -
+> -	masked_rid = map_mask & rid;
+> -	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
+> -		struct device_node *phandle_node;
+> -		u32 rid_base = be32_to_cpup(map + 0);
+> -		u32 phandle = be32_to_cpup(map + 1);
+> -		u32 out_base = be32_to_cpup(map + 2);
+> -		u32 rid_len = be32_to_cpup(map + 3);
+> -
+> -		if (rid_base & ~map_mask) {
+> -			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
+> -				np, map_name, map_name,
+> -				map_mask, rid_base);
+> -			return -EFAULT;
+> -		}
+> -
+> -		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
+> -			continue;
+> -
+> -		phandle_node = of_find_node_by_phandle(phandle);
+> -		if (!phandle_node)
+> -			return -ENODEV;
+> -
+> -		if (target) {
+> -			if (*target)
+> -				of_node_put(phandle_node);
+> -			else
+> -				*target = phandle_node;
+> -
+> -			if (*target != phandle_node)
+> -				continue;
+> -		}
+> -
+> -		if (id_out)
+> -			*id_out = masked_rid - rid_base + out_base;
+> -
+> -		pr_debug("%pOF: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
+> -			np, map_name, map_mask, rid_base, out_base,
+> -			rid_len, rid, masked_rid - rid_base + out_base);
+> -		return 0;
+> -	}
+> -
+> -	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
+> -		np, map_name, rid, target && *target ? *target : NULL);
+> -	return -EFAULT;
+> -}
+> -
+>  #if IS_ENABLED(CONFIG_OF_IRQ)
+>  /**
+>   * of_irq_parse_pci - Resolve the interrupt for a PCI device
+> diff --git a/include/linux/of.h b/include/linux/of.h
+> index 4d25e4f..f4251c3 100644
+> --- a/include/linux/of.h
+> +++ b/include/linux/of.h
+> @@ -545,6 +545,10 @@ const __be32 *of_prop_next_u32(struct property *prop, const __be32 *cur,
+>  
+>  extern int of_cpu_node_to_id(struct device_node *np);
+>  
+> +int of_map_rid(struct device_node *np, u32 rid,
+> +	       const char *map_name, const char *map_mask_name,
+> +	       struct device_node **target, u32 *id_out);
+> +
+>  #else /* CONFIG_OF */
+>  
+>  static inline void of_core_init(void)
+> @@ -931,6 +935,13 @@ static inline int of_cpu_node_to_id(struct device_node *np)
+>  	return -ENODEV;
+>  }
+>  
+> +static inline int of_map_rid(struct device_node *np, u32 rid,
+> +			     const char *map_name, const char *map_mask_name,
+> +			     struct device_node **target, u32 *id_out)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+>  #define of_match_ptr(_ptr)	NULL
+>  #define of_match_node(_matches, _node)	NULL
+>  #endif /* CONFIG_OF */
+> diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+> index 091033a..a23b44a 100644
+> --- a/include/linux/of_pci.h
+> +++ b/include/linux/of_pci.h
+> @@ -17,9 +17,6 @@ struct device_node *of_pci_find_child_device(struct device_node *parent,
+>  int of_get_pci_domain_nr(struct device_node *node);
+>  int of_pci_get_max_link_speed(struct device_node *node);
+>  void of_pci_check_probe_only(void);
+> -int of_pci_map_rid(struct device_node *np, u32 rid,
+> -		   const char *map_name, const char *map_mask_name,
+> -		   struct device_node **target, u32 *id_out);
+>  #else
+>  static inline struct device_node *of_pci_find_child_device(struct device_node *parent,
+>  					     unsigned int devfn)
+> @@ -44,13 +41,6 @@ static inline int of_pci_get_devfn(struct device_node *np)
+>  	return -1;
+>  }
+>  
+> -static inline int of_pci_map_rid(struct device_node *np, u32 rid,
+> -			const char *map_name, const char *map_mask_name,
+> -			struct device_node **target, u32 *id_out)
+> -{
+> -	return -EINVAL;
+> -}
+> -
+>  static inline int
+>  of_pci_get_max_link_speed(struct device_node *node)
+>  {
+> -- 
+> 1.9.1
+> 
