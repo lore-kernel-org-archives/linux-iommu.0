@@ -1,16 +1,18 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH v2 2/5] dma-mapping: Introduce dma_iommu_detach_device()
  API
-Date: Mon, 30 Apr 2018 13:02:31 +0200
-Message-ID: <20180430110231.GF2476@ulmo>
+Date: Mon, 30 Apr 2018 12:41:52 +0100
+Message-ID: <e549979d-9f53-a329-da1a-ed5139958762@arm.com>
 References: <20180425101051.15349-1-thierry.reding@gmail.com>
  <20180425101051.15349-2-thierry.reding@gmail.com>
- <20180425151934.GC16075@infradead.org>
- <20180426121136.GD11985@ulmo>
+ <20180425151934.GC16075@infradead.org> <20180426121136.GD11985@ulmo>
+ <20180430110231.GF2476@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0997261042=="
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180426121136.GD11985@ulmo>
+In-Reply-To: <20180430110231.GF2476@ulmo>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -20,81 +22,49 @@ List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Christoph Hellwig <hch@infradead.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Christoph Hellwig <hch@infradead.org>
 Cc: nouveau@lists.freedesktop.org, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-
---===============0997261042==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xkXJwpr35CY/Lc3I"
-Content-Disposition: inline
-
-
---xkXJwpr35CY/Lc3I
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Apr 26, 2018 at 02:11:36PM +0200, Thierry Reding wrote:
-> On Wed, Apr 25, 2018 at 08:19:34AM -0700, Christoph Hellwig wrote:
-> > On Wed, Apr 25, 2018 at 12:10:48PM +0200, Thierry Reding wrote:
-> > > From: Thierry Reding <treding@nvidia.com>
-> > >=20
-> > > The dma_iommu_detach_device() API can be used by drivers to forcibly
-> > > detach a device from an IOMMU that architecture code might have attac=
-hed
-> > > to. This is useful for drivers that need explicit control over the IO=
-MMU
-> > > using the IOMMU API directly.
-> >=20
-> > Given that no one else implements it making it a generic API seems
-> > rather confusing.  For now I'd rename it to
-> > arm_dma_iommu_detach_device() and only implement it in arm.
->=20
-> That'd be suboptimal because this code is used on both 32-bit and 64-bit
-> ARM. If we make the function 32-bit ARM specific then the driver code
-> would need to use an #ifdef to make sure compilation doesn't break on
-> 64-bit ARM.
-
-Do you still want me to make this ARM specific? While I haven't
-encountered this issue on 64-bit ARM yet, I think it would happen there
-as well, under the right circumstances. I could take a shot at
-implementing the equivalent there (which means essentially implementing
-it for drivers/iommu/dma-iommu.c and calling that from 64-bit ARM code).
-
-Thierry
-
---xkXJwpr35CY/Lc3I
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrm98UACgkQ3SOs138+
-s6EExBAAmDM+xgOh1951XBz8yxrk7+Et/NzR5wNx72a5Mnnv6znRSNsYZrBNDS5v
-91+B3jAy6oj9Yd6c7OJ62vPYUlyrri4cV4mIZX2HMhYBtn/Fj5Ur9l8KDS4kgPGB
-9S++aqjlbk40yuxBpb2hHcHY7WDytTXq5UiWcejIn1+TIN0WR0uRFIyXYVgpAqdx
-PQmzMXpCgZWpmKKu9takqENCMJNUqSaU4DDxj7E+PRmZpa2JWYnChjf0sGNupo3D
-+funq3GO8+yThG46fVHHsDygwEelxkzBxdF6fgKC7wiU3kom6vUD6/2NcL8sRH0U
-Fa+XKphCBPsuhL3EmBTtQtABtzIm6+Et9XmGInOR447z85KSp7mwzWcvLaGAfoij
-BIO4AIL9SOg0J1cTce5oOrtCdBriGWFIXpp478MkfyitLPLAbqDkrn+GcfS53LoG
-CXRllGJ3XCmtYJ/3TM9MjoieIHs5X5V5VLER+KTM+iWt4Jh0ooXr8O7orbmiQ99B
-K92wilEwTzvyEMG+HQOO7aP4pt+gqLzV38Ly8yaZDsrTQdFpFjpmaTRWxJof9KTe
-1GudUvLQfDAqD/sGxcQbCKIF908rTy57eCYC5Vb1o/bxxBIyeRc67seLeyDTk1mP
-bXz4i9FFETrp97zMumjuwUcW/oFEmZx56RAsQu2PxnyoI+07xGY=
-=n0M9
------END PGP SIGNATURE-----
-
---xkXJwpr35CY/Lc3I--
-
---===============0997261042==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
-
---===============0997261042==--
+T24gMzAvMDQvMTggMTI6MDIsIFRoaWVycnkgUmVkaW5nIHdyb3RlOgo+IE9uIFRodSwgQXByIDI2
+LCAyMDE4IGF0IDAyOjExOjM2UE0gKzAyMDAsIFRoaWVycnkgUmVkaW5nIHdyb3RlOgo+PiBPbiBX
+ZWQsIEFwciAyNSwgMjAxOCBhdCAwODoxOTozNEFNIC0wNzAwLCBDaHJpc3RvcGggSGVsbHdpZyB3
+cm90ZToKPj4+IE9uIFdlZCwgQXByIDI1LCAyMDE4IGF0IDEyOjEwOjQ4UE0gKzAyMDAsIFRoaWVy
+cnkgUmVkaW5nIHdyb3RlOgo+Pj4+IEZyb206IFRoaWVycnkgUmVkaW5nIDx0cmVkaW5nQG52aWRp
+YS5jb20+Cj4+Pj4KPj4+PiBUaGUgZG1hX2lvbW11X2RldGFjaF9kZXZpY2UoKSBBUEkgY2FuIGJl
+IHVzZWQgYnkgZHJpdmVycyB0byBmb3JjaWJseQo+Pj4+IGRldGFjaCBhIGRldmljZSBmcm9tIGFu
+IElPTU1VIHRoYXQgYXJjaGl0ZWN0dXJlIGNvZGUgbWlnaHQgaGF2ZSBhdHRhY2hlZAo+Pj4+IHRv
+LiBUaGlzIGlzIHVzZWZ1bCBmb3IgZHJpdmVycyB0aGF0IG5lZWQgZXhwbGljaXQgY29udHJvbCBv
+dmVyIHRoZSBJT01NVQo+Pj4+IHVzaW5nIHRoZSBJT01NVSBBUEkgZGlyZWN0bHkuCj4+Pgo+Pj4g
+R2l2ZW4gdGhhdCBubyBvbmUgZWxzZSBpbXBsZW1lbnRzIGl0IG1ha2luZyBpdCBhIGdlbmVyaWMg
+QVBJIHNlZW1zCj4+PiByYXRoZXIgY29uZnVzaW5nLiAgRm9yIG5vdyBJJ2QgcmVuYW1lIGl0IHRv
+Cj4+PiBhcm1fZG1hX2lvbW11X2RldGFjaF9kZXZpY2UoKSBhbmQgb25seSBpbXBsZW1lbnQgaXQg
+aW4gYXJtLgo+Pgo+PiBUaGF0J2QgYmUgc3Vib3B0aW1hbCBiZWNhdXNlIHRoaXMgY29kZSBpcyB1
+c2VkIG9uIGJvdGggMzItYml0IGFuZCA2NC1iaXQKPj4gQVJNLiBJZiB3ZSBtYWtlIHRoZSBmdW5j
+dGlvbiAzMi1iaXQgQVJNIHNwZWNpZmljIHRoZW4gdGhlIGRyaXZlciBjb2RlCj4+IHdvdWxkIG5l
+ZWQgdG8gdXNlIGFuICNpZmRlZiB0byBtYWtlIHN1cmUgY29tcGlsYXRpb24gZG9lc24ndCBicmVh
+ayBvbgo+PiA2NC1iaXQgQVJNLgo+IAo+IERvIHlvdSBzdGlsbCB3YW50IG1lIHRvIG1ha2UgdGhp
+cyBBUk0gc3BlY2lmaWM/IFdoaWxlIEkgaGF2ZW4ndAo+IGVuY291bnRlcmVkIHRoaXMgaXNzdWUg
+b24gNjQtYml0IEFSTSB5ZXQsIEkgdGhpbmsgaXQgd291bGQgaGFwcGVuIHRoZXJlCj4gYXMgd2Vs
+bCwgdW5kZXIgdGhlIHJpZ2h0IGNpcmN1bXN0YW5jZXMuIEkgY291bGQgdGFrZSBhIHNob3QgYXQK
+PiBpbXBsZW1lbnRpbmcgdGhlIGVxdWl2YWxlbnQgdGhlcmUgKHdoaWNoIG1lYW5zIGVzc2VudGlh
+bGx5IGltcGxlbWVudGluZwo+IGl0IGZvciBkcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jIGFuZCBj
+YWxsaW5nIHRoYXQgZnJvbSA2NC1iaXQgQVJNIGNvZGUpLgoKSXQgc291bmRzIGxpa2UgdGhpbmdz
+IGFyZSBnZXR0aW5nIGEgYml0IGJhY2t3YXJkcyBoZXJlOiBpb21tdS1kbWEgc2hvdWxkIApoYXZl
+IG5vdGhpbmcgdG8gZG8gd2l0aCB0aGlzLCBzaW5jZSBpZiB5b3UndmUgZXhwbGljaXRseSBhdHRh
+Y2hlZCB0aGUgCmRldmljZSB0byB5b3VyIG93biBJT01NVSBkb21haW4gdGhlbiB5b3UncmUgYWxy
+ZWFkeSBieXBhc3NpbmcgZXZlcnl0aGluZyAKaXQga25vd3MgYWJvdXQgYW5kIGhhcyBjb250cm9s
+IG92ZXIuIEFyY2ggY29kZSBjYWxsaW5nIGludG8gaW9tbXUtZG1hIHRvIApkbyBzb21ldGhpbmcg
+d2hpY2ggbWFrZXMgYXJjaCBjb2RlIG5vdCB1c2UgaW9tbXUtZG1hIG1ha2VzIHZlcnkgbGl0dGxl
+IApzZW5zZS4KCkFGQUlDUyB0aGUgb25seSBhc3BlY3Qgb2YgYXJtX2lvbW11X2RldGFjaF9kZXZp
+Y2UoKSB3aGljaCBhY3R1YWxseSAKbWF0dGVycyBpbiB0aGlzIGNhc2UgaXMgdGhlIHNldF9kbWFf
+b3BzKCkgYml0LCBzbyB3aGF0IHdlJ3JlIHJlYWxseSAKYWZ0ZXIgaXMgYSBnZW5lcmljIHdheSBm
+b3IgZHJpdmVycyB0byBzYXkgIkhleSwgSSBhY3R1YWxseSBoYXZlIG15IG93biAKTU1VIChvciB3
+YW50IHRvIGNvbnRyb2wgdGhlIG9uZSB5b3UgYWxyZWFkeSBrbm93IGFib3V0KSBzbyBwbGVhc2Ug
+Z2l2ZSAKbWUgZGlyZWN0IERNQSBvcHMiLCB3aGljaCB0aGUgYXJjaCBjb2RlIGhhbmRsZXMgYXMg
+YXBwcm9wcmlhdGUgKG1heWJlIAppdCdzIGFsc28gYWxsb3dlZCB0byBmYWlsIGluIGNhc2VzIGxp
+a2Ugc3dpb3RsYj1mb3JjZSBvciB3aGVuIHRoZXJlIGlzIApSQU0gYmV5b25kIHRoZSBkZXZpY2Un
+cyBETUEgbWFzaykuCgpSb2Jpbi4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
+ZHJpLWRldmVsCg==
