@@ -1,70 +1,100 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 14/22] iommu: handle page response timeout
-Date: Mon, 30 Apr 2018 11:58:10 +0100
-Message-ID: <e98a1385-9e55-c021-4e89-7d07701f4b84@arm.com>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-15-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180423153622.GC38106@ostrya.localdomain>
-	<20180425083711.222202e7@jacob-builder>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 2/5] dma-mapping: Introduce dma_iommu_detach_device()
+ API
+Date: Mon, 30 Apr 2018 13:02:31 +0200
+Message-ID: <20180430110231.GF2476@ulmo>
+References: <20180425101051.15349-1-thierry.reding@gmail.com>
+ <20180425101051.15349-2-thierry.reding@gmail.com>
+ <20180425151934.GC16075@infradead.org>
+ <20180426121136.GD11985@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180425083711.222202e7@jacob-builder>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============0997261042=="
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20180426121136.GD11985@ulmo>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: nouveau@lists.freedesktop.org, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/04/18 16:37, Jacob Pan wrote:
->> In the other cases (unsupported PRI or rogue guest) then disabling PRI
->> using a FAILURE status might be the right thing to do. However,
->> assuming the device follows the PCI spec it will stop sending page
->> requests once there are as many PPRs in flight as the allocated
->> credit.
->>
-> Agreed, here I am not taking any actions. There may be need to drain
-> in-fly requests.
 
-Right, as long as we first ensure that no new fault is generated (by
-using a Response Failure). Though in my opinion not taking action might
-be the safest option :)
+--===============0997261042==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="xkXJwpr35CY/Lc3I"
+Content-Disposition: inline
 
-Another thought: currently the comment in iommu.h says
-"@IOMMU_FAULT_STATUS_FAILURE: General error. Drop all subsequent faults
-from this device if possible. This is "Response Failure" in PCI PRI."
 
-I wonder if we should simply say "Drop all subsequent faults from the
-device". Even if the PCI device doesn't properly implement PRI, the
-IOMMU driver should set a "PRI disabled" bit in the device data that
-prevents it from from reporting new faults and flooding the queue.
-Anyway, it's a small detail that could go in a future patch series.
+--xkXJwpr35CY/Lc3I
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->> If there isn't any possibility of memory leak or abusing resources, I
->> don't think it's our problem that the guest is excessively slow at
->> handling page requests. Setting an upper bound to page request latency
->> might do more harm than good. Ensuring that devices respect the number
->> of allocated in-flight PPRs is more important in my opinion.
->>
-> How about we have a really long timeout, e.g. 1 min similar to device
-> invalidate response timeout in ATS spec., just for basic safety and
-> diagnosis. Optionally, we could have quota in parallel.
+On Thu, Apr 26, 2018 at 02:11:36PM +0200, Thierry Reding wrote:
+> On Wed, Apr 25, 2018 at 08:19:34AM -0700, Christoph Hellwig wrote:
+> > On Wed, Apr 25, 2018 at 12:10:48PM +0200, Thierry Reding wrote:
+> > > From: Thierry Reding <treding@nvidia.com>
+> > >=20
+> > > The dma_iommu_detach_device() API can be used by drivers to forcibly
+> > > detach a device from an IOMMU that architecture code might have attac=
+hed
+> > > to. This is useful for drivers that need explicit control over the IO=
+MMU
+> > > using the IOMMU API directly.
+> >=20
+> > Given that no one else implements it making it a generic API seems
+> > rather confusing.  For now I'd rename it to
+> > arm_dma_iommu_detach_device() and only implement it in arm.
+>=20
+> That'd be suboptimal because this code is used on both 32-bit and 64-bit
+> ARM. If we make the function 32-bit ARM specific then the driver code
+> would need to use an #ifdef to make sure compilation doesn't break on
+> 64-bit ARM.
 
-I agree that for development a timeout is useful. It might be worth
-adding it as an option to the IOMMU module instead of a define. Perhaps
-a number of seconds, 10 being the default and 0 disabling the timeout?
-Otherwise we would probably end up with a succession of patches
-incrementing the timeout by arbitrary values, if people find it
-inconvenient.
+Do you still want me to make this ARM specific? While I haven't
+encountered this issue on 64-bit ARM yet, I think it would happen there
+as well, under the right circumstances. I could take a shot at
+implementing the equivalent there (which means essentially implementing
+it for drivers/iommu/dma-iommu.c and calling that from 64-bit ARM code).
 
-Thanks,
-Jean
+Thierry
+
+--xkXJwpr35CY/Lc3I
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlrm98UACgkQ3SOs138+
+s6EExBAAmDM+xgOh1951XBz8yxrk7+Et/NzR5wNx72a5Mnnv6znRSNsYZrBNDS5v
+91+B3jAy6oj9Yd6c7OJ62vPYUlyrri4cV4mIZX2HMhYBtn/Fj5Ur9l8KDS4kgPGB
+9S++aqjlbk40yuxBpb2hHcHY7WDytTXq5UiWcejIn1+TIN0WR0uRFIyXYVgpAqdx
+PQmzMXpCgZWpmKKu9takqENCMJNUqSaU4DDxj7E+PRmZpa2JWYnChjf0sGNupo3D
++funq3GO8+yThG46fVHHsDygwEelxkzBxdF6fgKC7wiU3kom6vUD6/2NcL8sRH0U
+Fa+XKphCBPsuhL3EmBTtQtABtzIm6+Et9XmGInOR447z85KSp7mwzWcvLaGAfoij
+BIO4AIL9SOg0J1cTce5oOrtCdBriGWFIXpp478MkfyitLPLAbqDkrn+GcfS53LoG
+CXRllGJ3XCmtYJ/3TM9MjoieIHs5X5V5VLER+KTM+iWt4Jh0ooXr8O7orbmiQ99B
+K92wilEwTzvyEMG+HQOO7aP4pt+gqLzV38Ly8yaZDsrTQdFpFjpmaTRWxJof9KTe
+1GudUvLQfDAqD/sGxcQbCKIF908rTy57eCYC5Vb1o/bxxBIyeRc67seLeyDTk1mP
+bXz4i9FFETrp97zMumjuwUcW/oFEmZx56RAsQu2PxnyoI+07xGY=
+=n0M9
+-----END PGP SIGNATURE-----
+
+--xkXJwpr35CY/Lc3I--
+
+--===============0997261042==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
+IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+
+--===============0997261042==--
