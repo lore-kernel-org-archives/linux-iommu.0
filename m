@@ -1,84 +1,47 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 12/22] iommu: introduce device fault report API
-Date: Mon, 30 Apr 2018 11:54:56 -0700
-Message-ID: <20180430115456.54a4b22e@jacob-builder>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1523915351-54415-13-git-send-email-jacob.jun.pan@linux.intel.com>
-        <b9175586-e638-c807-3ef0-f0e0bc1b8243@arm.com>
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v3 2/2] iommu/amd: Add basic debugfs infrastructure for
+	AMD IOMMU
+Date: Mon, 30 Apr 2018 14:57:58 -0500
+Message-ID: <d4534417-0fc0-5e38-ab80-2ffc9cfee2fa@amd.com>
+References: <152302042701.47565.17954813724758433858.stgit@sosxen2.amd.com>
+	<152302067362.47565.628887796165116844.stgit@sosxen2.amd.com>
+	<1523664612.2747.13.camel@intel.com>
+	<efa2b7a3-04a7-20b1-3651-89ebafa85c27@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <b9175586-e638-c807-3ef0-f0e0bc1b8243@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, jacob.jun.pan@linux.intel.com
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <efa2b7a3-04a7-20b1-3651-89ebafa85c27-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>, "Mehta, Sohil" <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 30 Apr 2018 17:53:52 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-
-> Hi,
-> 
-> I noticed a couple issues when testing
-> 
-> On 16/04/18 22:49, Jacob Pan wrote:
-> > +int iommu_register_device_fault_handler(struct device *dev,
-> > +					iommu_dev_fault_handler_t
-> > handler,
-> > +					void *data)
-> > +{
-> > +	struct iommu_param *param = dev->iommu_param;
-> > +
-> > +	/*
-> > +	 * Device iommu_param should have been allocated when
-> > device is
-> > +	 * added to its iommu_group.
-> > +	 */
-> > +	if (!param)
-> > +		return -EINVAL;
-> > +
-> > +	/* Only allow one fault handler registered for each device
-> > */
-> > +	if (param->fault_param)
-> > +		return -EBUSY;  
-> 
-> Should this be inside the param lock? We probably don't expect
-> concurrent register/unregister but it seems cleaner
-agreed, same as corrections below. Thanks!
-> 
->  [...]  
-> 
-> We should return EINVAL here, if fault_param is NULL. That way users
-> can call unregister_fault_handler unconditionally in their cleanup
-> paths
-> 
-> > +	/* we cannot unregister handler if there are pending
-> > faults */
-> > +	if (list_empty(&param->fault_param->faults)) {  
-> 
-> if (!list_empty(...))
-> 
-> > +		ret = -EBUSY;
-> > +		goto unlock;
-> > +	}
-> > +
-> > +	list_del(&param->fault_param->faults);  
-> 
-> faults is the list head, no need for list_del
-> 
-> > +	kfree(param->fault_param);
-> > +	param->fault_param = NULL;
-> > +	put_device(dev);
-> > +
-> > +unlock:
-> > +	mutex_unlock(&param->lock);
-> > +
-> > +	return 0;  
-> 
-> return ret
-> 
-> Thanks,
-> Jean
-
-[Jacob Pan]
+T24gMDQvMTcvMjAxOCAxMjozOCBQTSwgSG9vaywgR2FyeSB3cm90ZToKPiBPbiA0LzEzLzIwMTgg
+ODowOCBQTSwgTWVodGEsIFNvaGlsIHdyb3RlOgo+PiBPbiBGcmksIDIwMTgtMDQtMDYgYXQgMDg6
+MTcgLTA1MDAsIEdhcnkgUiBIb29rIHdyb3RlOgo+Pj4gKwo+Pj4gKwo+Pj4gK8KgwqDCoCBtdXRl
+eF9sb2NrKCZhbWRfaW9tbXVfZGVidWdmc19sb2NrKTsKPj4+ICvCoMKgwqAgaWYgKCFhbWRfaW9t
+bXVfZGVidWdmcykgewo+Pj4gK8KgwqDCoMKgwqDCoMKgIGRfdG9wID0gaW9tbXVfZGVidWdmc19z
+ZXR1cCgpOwo+Pj4gK8KgwqDCoMKgwqDCoMKgIGlmIChkX3RvcCkKPj4+ICvCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIGFtZF9pb21tdV9kZWJ1Z2ZzID0KPj4+IGRlYnVnZnNfY3JlYXRlX2RpcigiYW1k
+IiwgZF90b3ApOwo+Pj4gK8KgwqDCoCB9Cj4+PiArwqDCoMKgIG11dGV4X3VubG9jaygmYW1kX2lv
+bW11X2RlYnVnZnNfbG9jayk7Cj4+Cj4+Cj4+IFlvdSBjYW4gZG8gdGhlIGFib3ZlIG9ubHkgb25j
+ZSBpZiB5b3UgaXRlcmF0ZSBvdmVyIHRoZSBJT01NVXMgaGVyZQo+PiDCoMKgaW5zdGVhZCBvZiBk
+b2luZyBpdCBpbsKgYW1kX2lvbW11X2luaXQuCj4gCj4gSSdtIG5vdCBzdXJlIGl0IG1hdHRlcnMs
+IGdpdmVuIHRoZSBmaW5pdGUgbnVtYmVyIG9mIElPTU1VcyBpbiBhIHN5c3RlbSwgCj4gYW5kIHRo
+ZSBmYWN0IHRoYXQgdGhpcyB3b3JrIGlzIGRvbmUgZXhhY3RseSBvbmNlLiBIb3dldmVyLCByZW1v
+dmFsIG9mIGEgCj4gbG9jayBpcyBmaW5lIHRoaW5nLCBzbyBJJ2xsIG1vdmUgdGhpcyBhcm91bmQu
+CgpBZnRlciB0aGlua2luZyBhYm91dCB0aGlzLCBhbmQgbG9va2luZyBhdCB0aGUgY29kZSwgSSd2
+ZSBkZWNpZGVkIHRvIApsZWF2ZSB0aGlzIGFsb25lLgoKdjQgaXMgb24gaXRzIHdheS4KCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
