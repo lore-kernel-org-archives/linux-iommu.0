@@ -1,157 +1,78 @@
-From: Gil Kupfer <gilkup@gmail.com>
-Subject: [RFC/RFT] Add noats flag to boot parameters
-Date: Sun, 29 Apr 2018 21:16:48 +0300
-Message-ID: <1525025808-2365-1-git-send-email-gilkup@cs.technion.ac.il>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, dwmw2@infradead.org, bhelgaas@google.com
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, nadav.amit@gmail.com, Gil Kupfer <gilkup@cs.technion.ac.il>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [PATCH 2/6 v3] iommu: of: make of_pci_map_rid() available for
+	other devices too
+Date: Mon, 30 Apr 2018 03:27:16 +0000
+Message-ID: <DB6PR0401MB2424DEAB9AE3C3A78ED348C5E6820@DB6PR0401MB2424.eurprd04.prod.outlook.com>
+References: <1524824826-29473-1-git-send-email-nipun.gupta@nxp.com>
+	<1524824826-29473-3-git-send-email-nipun.gupta@nxp.com>
+	<20180427171537.lvzygghnuolk6cnh@rob-hp-laptop>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180427171537.lvzygghnuolk6cnh@rob-hp-laptop>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds noats option to the pci boot parameter.
-When noats is selected, all ATS related functions fail immediately and
-the IOMMU is configured to not use device-iotlb.
 
-Any function that checks for ATS capabilities directly against the
-devices should also check this flag. (Currently, such functions exist
-only in IOMMU drivers, and they are covered by this patch.)
 
-The motivation behind this patch is the existence of malicious devices.
-Lots of research has been done about how to utilitize the IOMMU as a
-protection from such devices. When ATS is supported, any I/O device can
-access any physical access by faking device-IOTLB entries.
-Adding the ability to ignore these entries lets sysadmins enhance system
-security.
+> -----Original Message-----
+> From: Rob Herring [mailto:robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org]
+> Sent: Friday, April 27, 2018 10:46 PM
+> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> Cc: robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org;
+> catalin.marinas-5wv7dgnIgG8@public.gmane.org; hch-jcswGhMUV9g@public.gmane.org; gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org;
+> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
+> frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>;
+> stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>; Leo Li
+> <leoyang.li-3arQi8VN3Tc@public.gmane.org>
+> Subject: Re: [PATCH 2/6 v3] iommu: of: make of_pci_map_rid() available for
+> other devices too
+> 
+> On Fri, Apr 27, 2018 at 03:57:02PM +0530, Nipun Gupta wrote:
+> > iommu-map property is also used by devices with fsl-mc. This
+> > patch moves the of_pci_map_rid to generic location, so that it
+> > can be used by other busses too.
+> >
+> > 'of_pci_map_rid' is renamed here to 'of_map_rid' and there is no
+> > functional change done in the API.
+> >
+> > Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> > ---
+> >  drivers/iommu/of_iommu.c   |   6 +--
+> >  drivers/of/address.c       | 102
+> +++++++++++++++++++++++++++++++++++++++++++++
+> >  drivers/of/irq.c           |   7 ++--
+> >  drivers/pci/of.c           | 101 --------------------------------------------
+> >  include/linux/of_address.h |  11 +++++
+> >  include/linux/of_pci.h     |  10 -----
+> >  6 files changed, 120 insertions(+), 117 deletions(-)
+> 
+> of/address.c isn't really the best fit either, though I don't have a
+> better suggestion.
+> 
+> I'm guessing this breaks on Sparc which doesn't build of/address.c.
+> I guess move it to base.c and of.h if that is the case.
 
-Signed-off-by: Gil Kupfer <gilkup@cs.technion.ac.il>
+Sure, that makes sense. Thank you for the suggestion !!
+I'll spin off new version with this change.
 
----
-This patch is intended to add the ability to disable ATS at boot time.
+Regards,
+Nipun
 
-My IOMMU has the ATS ecap but I don't have any PCI device that supports
-ATS so I can't fully test it. However, I did ran it (with and without the
-new boot flag) on QEMU with virtualized IOMMU with the device-iotlb flag
-and it seems that at least the machine does not crush.
-
-QEMU version:
-	master branch from Jul 11 2017
-	commit aa916e409c04 ("Merge 29741be b876804")
----
- Documentation/admin-guide/kernel-parameters.txt |  2 ++
- drivers/iommu/amd_iommu.c                       | 11 ++++++++---
- drivers/iommu/intel-iommu.c                     |  3 ++-
- drivers/pci/ats.c                               |  3 +++
- drivers/pci/pci.c                               |  7 +++++++
- include/linux/pci.h                             |  2 ++
- 6 files changed, 24 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 7737ab5..f443362 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3000,6 +3000,8 @@
- 		pcie_scan_all	Scan all possible PCIe devices.  Otherwise we
- 				only look for one device below a PCIe downstream
- 				port.
-+		noats		[PCIE, Intel-IOMMU, AMD-IOMMU]
-+				do not use PCIe ATS (and IOMMU device-iotlb).
- 
- 	pcie_aspm=	[PCIE] Forcibly enable or disable PCIe Active State Power
- 			Management.
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 0f1219f..2aa757e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -388,6 +388,9 @@ static bool pci_iommuv2_capable(struct pci_dev *pdev)
- 	};
- 	int i, pos;
- 
-+	if (is_pcie_ats_disabled())
-+		return false;
-+
- 	for (i = 0; i < 3; ++i) {
- 		pos = pci_find_ext_capability(pdev, caps[i]);
- 		if (pos == 0)
-@@ -3602,9 +3605,11 @@ int amd_iommu_device_info(struct pci_dev *pdev,
- 
- 	memset(info, 0, sizeof(*info));
- 
--	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS);
--	if (pos)
--		info->flags |= AMD_IOMMU_DEVICE_FLAG_ATS_SUP;
-+	if (!is_pcie_ats_disabled()) {
-+		pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS);
-+		if (pos)
-+			info->flags |= AMD_IOMMU_DEVICE_FLAG_ATS_SUP;
-+	}
- 
- 	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
- 	if (pos)
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index fc2765c..7ac4adc 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2434,7 +2434,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
- 
--		if (ecap_dev_iotlb_support(iommu->ecap) &&
-+		if (!is_pcie_ats_disabled() &&
-+		    ecap_dev_iotlb_support(iommu->ecap) &&
- 		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
- 		    dmar_find_matched_atsr_unit(pdev))
- 			info->ats_supported = 1;
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index eeb9fb2..619024d 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -21,6 +21,9 @@ void pci_ats_init(struct pci_dev *dev)
- {
- 	int pos;
- 
-+	if (is_pcie_ats_disabled())
-+		return;
-+
- 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
- 	if (!pos)
- 		return;
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 563901c..eb77590 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -109,6 +109,10 @@ unsigned int pcibios_max_latency = 255;
- /* If set, the PCIe ARI capability will not be used. */
- static bool pcie_ari_disabled;
- 
-+/* If set, the PCIe ATS capability will not be used. */
-+static bool pcie_ats_disabled;
-+bool is_pcie_ats_disabled(void) { return pcie_ats_disabled; }
-+
- /* Disable bridge_d3 for all PCIe ports */
- static bool pci_bridge_d3_disable;
- /* Force bridge_d3 for all PCIe ports */
-@@ -5430,6 +5434,9 @@ static int __init pci_setup(char *str)
- 		if (*str && (str = pcibios_setup(str)) && *str) {
- 			if (!strcmp(str, "nomsi")) {
- 				pci_no_msi();
-+			} else if (!strncmp(str, "noats", 5)) {
-+				pr_info("PCIe: ATS is disabled\n");
-+				pcie_ats_disabled = true;
- 			} else if (!strcmp(str, "noaer")) {
- 				pci_no_aer();
- 			} else if (!strncmp(str, "realloc=", 8)) {
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 8039f9f..58fe5fb 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1420,6 +1420,8 @@ int  ht_create_irq(struct pci_dev *dev, int idx);
- void ht_destroy_irq(unsigned int irq);
- #endif /* CONFIG_HT_IRQ */
- 
-+bool is_pcie_ats_disabled(void);
-+
- #ifdef CONFIG_PCI_ATS
- /* Address Translation Service */
- void pci_ats_init(struct pci_dev *dev);
--- 
-2.7.4
+> 
+> Rob
