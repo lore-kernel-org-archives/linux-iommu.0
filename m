@@ -1,11 +1,14 @@
 From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 0/2] Tweak AMD IOMMU logging
-Date: Tue, 01 May 2018 14:52:43 -0500
-Message-ID: <152520429853.30928.9793486018349326103.stgit@taos>
+Subject: [PATCH 1/2] iommu/amd - Update the PASID information printed to the
+	system log
+Date: Tue, 01 May 2018 14:52:52 -0500
+Message-ID: <152520437211.30928.8410126837908568791.stgit@taos>
+References: <152520429853.30928.9793486018349326103.stgit@taos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <152520429853.30928.9793486018349326103.stgit@taos>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,18 +22,97 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Update the AMD IOMMU log messages to be more precise, and
-add a log message for a new event type.
+Provide detailed data for each event, as appropriate.
 
+Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
 ---
+ drivers/iommu/amd_iommu.c |   31 +++++++++++++------------------
+ 1 file changed, 13 insertions(+), 18 deletions(-)
 
-Gary R Hook (2):
-      iommu/amd - Update the PASID information printed to the system log
-      iommu/amd - Update logging information for new event type
-
-
- drivers/iommu/amd_iommu.c       |   39 +++++++++++++++++++++------------------
- drivers/iommu/amd_iommu_types.h |    1 +
- 2 files changed, 22 insertions(+), 18 deletions(-)
-
---
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8c469b51185f..a557565d4413 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -544,7 +544,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ {
+ 	struct device *dev = iommu->iommu.dev;
+-	int type, devid, domid, flags;
++	int type, devid, pasid, flags;
+ 	volatile u32 *event = __evt;
+ 	int count = 0;
+ 	u64 address;
+@@ -552,7 +552,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ retry:
+ 	type    = (event[1] >> EVENT_TYPE_SHIFT)  & EVENT_TYPE_MASK;
+ 	devid   = (event[0] >> EVENT_DEVID_SHIFT) & EVENT_DEVID_MASK;
+-	domid   = (event[1] >> EVENT_DOMID_SHIFT) & EVENT_DOMID_MASK;
++	pasid   = PPR_PASID(*(u64 *)&event[0]);
+ 	flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
+ 	address = (u64)(((u64)event[3]) << 32) | event[2];
+ 
+@@ -567,7 +567,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 	}
+ 
+ 	if (type == EVENT_TYPE_IO_FAULT) {
+-		amd_iommu_report_page_fault(devid, domid, address, flags);
++		amd_iommu_report_page_fault(devid, pasid, address, flags);
+ 		return;
+ 	} else {
+ 		dev_err(dev, "AMD-Vi: Event logged [");
+@@ -575,10 +575,9 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 
+ 	switch (type) {
+ 	case EVENT_TYPE_ILL_DEV:
+-		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+-			"address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+-			address, flags);
++			pasid, address, flags);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+@@ -588,34 +587,30 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+-		dev_err(dev, "PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+-			"domain=0x%04x address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+-			domid, address, flags);
++			pasid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+ 		dev_err(dev, "ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+-		dev_err(dev, "COMMAND_HARDWARE_ERROR address=0x%016llx "
+-			"flags=0x%04x]\n", address, flags);
++		dev_err(dev, "COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
++			address, flags);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+-		dev_err(dev, "IOTLB_INV_TIMEOUT device=%02x:%02x.%x "
+-			"address=0x%016llx]\n",
++		dev_err(dev, "IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+-		dev_err(dev, "INVALID_DEVICE_REQUEST device=%02x:%02x.%x "
+-			"address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+-			address, flags);
++			pasid, address, flags);
+ 		break;
+ 	default:
+-		dev_err(dev, KERN_ERR "UNKNOWN event[0]=0x%08x event[1]=0x%08x "
+-			"event[2]=0x%08x event[3]=0x%08x\n",
++		dev_err(dev, "UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+ 			event[0], event[1], event[2], event[3]);
+ 	}
+ 
